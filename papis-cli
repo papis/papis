@@ -1,0 +1,10 @@
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+from papis.papis import main
+
+if __name__ == "__main__":
+    main()
+
+#vim-run: python3 %
+# vim: ft=python
