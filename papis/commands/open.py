@@ -36,4 +36,4 @@ class Open(Command):
         folders = papis.getFolders(papersDir)
         folders = utils.filterPaper(folders, paperSearch)
         paper   = Paper(folders[0])
-        openFile(paper.getFile(), config)
+        utils.openFile(paper.getFile(), config)

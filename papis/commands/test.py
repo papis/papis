@@ -27,4 +27,4 @@ class Test(Command):
         """
         papersDir = os.path.expanduser(config[args.lib]["dir"])
         printv("Using directory %s"%papersDir)
-        pickFile(["1","3"], config)
+        utils.pickFile(["1","3"], config)
