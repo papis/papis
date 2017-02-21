@@ -1,4 +1,5 @@
 from ..document import Paper
+import papis
 from . import Command
 
 class Open(Command):
