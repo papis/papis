@@ -34,8 +34,8 @@ class Check(Command):
         papersDir = os.path.expanduser(config[args.lib]["dir"])
         self.logger.debug("Using directory %s"%papersDir)
         paperSearch = args.paper
-        folders = utils.getFolders(papersDir)
-        folders = utils.filterPaper(folders, paperSearch)
+        folders = papis.utils.getFolders(papersDir)
+        folders = papis.utils.filterPaper(folders, paperSearch)
         allOk = True
         for folder in folders:
             self.logger.debug(folder)

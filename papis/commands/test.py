@@ -29,4 +29,4 @@ class Test(Command):
         """
         papersDir = os.path.expanduser(config[args.lib]["dir"])
         self.logger.debug("Using directory %s"%papersDir)
-        utils.pickFile(["1","3"], config)
+        papis.utils.pickFile(["1","3"], config)
