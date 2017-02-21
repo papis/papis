@@ -34,6 +34,6 @@ class Edit(Command):
         printv("Using directory %s"%papersDir)
         paperSearch = args.paper
         folders = papis.getFolders(papersDir)
-        folders = papis.filterPaper(folders, paperSearch)
+        folders = utils.filterPaper(folders, paperSearch)
         paper   = Paper(folders[0])
         editFile(paper.getInfoFile(), config)

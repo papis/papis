@@ -33,7 +33,7 @@ class Check(Command):
         printv("Using directory %s"%papersDir)
         paperSearch = args.paper
         folders = papis.getFolders(papersDir)
-        folders = papis.filterPaper(folders, paperSearch)
+        folders = utils.filterPaper(folders, paperSearch)
         allOk = True
         for folder in folders:
             printv(folder)
