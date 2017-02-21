@@ -47,6 +47,7 @@ import tempfile
 import argparse
 
 from .config import Configuration
+import papis.commands
 
 if sys.version_info < (3, 0):
     raise Exception("This script must use python 3.0 or greater")
@@ -165,9 +166,10 @@ def main():
         # print(subparser_name)
 
     # Parse arguments
-    args = parser.parse_args()
     config = Configuration()
 
+    papis.commands.init(parser)
+    args = parser.parse_args()
     exec("import %s as command"%args.command)
     print(command)
     command.init()
