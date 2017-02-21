@@ -2,7 +2,7 @@ from ..document import Paper
 import papis
 import sys
 import os
-import papis.util
+import papis.utils
 from . import Command
 
 class Add(Command):
