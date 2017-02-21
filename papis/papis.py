@@ -140,7 +140,6 @@ def main():
             default="WARNING"
             )
 
-    logging.basicConfig(level = logging.DEBUG)
     subcommands = papis.commands.init(subparsers)
 
     # Parse arguments

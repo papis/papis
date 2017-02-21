@@ -3,6 +3,7 @@ import papis
 import sys
 import os
 import papis.utils
+import papis.bibtex
 from . import Command
 
 class Add(Command):
@@ -59,7 +60,7 @@ class Add(Command):
             paperPath, data = serviceParser(url)
         else:
             paperPath = args.paper
-            data  = bibTexToDict(args.from_bibtex) \
+            data  = papis.bibtex.bibTexToDict(args.from_bibtex) \
                     if args.from_bibtex else dict()
         m = re.match(r"^(.*)\.([a-zA-Z]*)$", os.path.basename(paperPath))
         extension    = m.group(2) if m else ""

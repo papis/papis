@@ -1,4 +1,4 @@
-PYTHON = python
+PYTHON = python3
 VENV_DIR ?= .env
 CLEAN_FILES  ?=
 REQUIREMENTS = requirements.txt
@@ -10,13 +10,13 @@ $(shell find . -name __pycache__) \
 $(wildcard test_* ) \
 
 dev-install-local:
-	python setup.py develop --user
+	$(PYTHON) setup.py develop --user
 
 test: ## Run tests
-	python -m unittest discover
+	$(PYTHON) -m unittest discover
 
 install-local:
-	python setup.py install --user
+	$(PYTHON) setup.py install --user
 
 help: ## Prints help for targets with comments
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
