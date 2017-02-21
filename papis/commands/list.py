@@ -44,7 +44,7 @@ class List(Command):
         papersDir = os.path.expanduser(config[args.lib]["dir"])
         printv("Using directory %s"%papersDir)
         paperSearch = args.paper
-        folders = getFolders(papersDir)
+        folders = papis.getFolders(papersDir)
         folders = filterPaper(folders, paperSearch)
         for folder in folders:
             if args.file:

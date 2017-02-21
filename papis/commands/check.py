@@ -31,7 +31,7 @@ class Check(Command):
         papersDir = os.path.expanduser(config[args.lib]["dir"])
         printv("Using directory %s"%papersDir)
         paperSearch = args.paper
-        folders = getFolders(papersDir)
+        folders = papis.getFolders(papersDir)
         folders = filterPaper(folders, paperSearch)
         allOk = True
         for folder in folders:
