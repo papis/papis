@@ -1,6 +1,7 @@
 
 from ..document import Paper
 import papis
+import papis.util
 from . import Command
 
 class Config(Command):
