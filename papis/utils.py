@@ -3,6 +3,7 @@ from subprocess import Popen, PIPE
 import glob
 import logging
 import os
+import re
 
 logger = logging.getLogger("utils")
 
@@ -89,6 +90,13 @@ def getFolders(folder, recursive=False):
         raise Exception("Recursively search is TODO")
     for f in glob.glob(os.path.join(folder, "*")):
         if os.path.isdir(f):
-            if os.path.exists(os.path.join(f,infoFileName)):
+            if os.path.exists(os.path.join(f,getInfoFileName())):
                 folders.append(f)
     return folders
+
+def getInfoFileName():
+    """TODO: Docstring for getInfoFileName.
+    :returns: TODO
+
+    """
+    return "info.yaml"

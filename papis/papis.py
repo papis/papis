@@ -57,11 +57,6 @@ if sys.version_info < (3, 0):
     sys.exit(1)
 
 
-#  data {{{1  #
-###############
-
-infoFileName = "info.yaml"
-
 #  Utility functions {{{1  #
 ############################
 

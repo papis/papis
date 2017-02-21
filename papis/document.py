@@ -1,3 +1,4 @@
+import papis.utils
 
 class Paper(object):
 
@@ -9,7 +10,7 @@ class Paper(object):
     def __init__(self, folder):
         self._folder       = folder
         self._keys = []
-        self._infoFilePath = os.path.join(folder, infoFileName)
+        self._infoFilePath = os.path.join(folder, papis.utils.getInfoFileName())
         self.loadInformationFromFile()
     def __setitem__(self, obj, value):
         """
