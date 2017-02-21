@@ -40,7 +40,7 @@ class Export(Command):
         papersDir = os.path.expanduser(config[args.lib]["dir"])
         self.logger.debug("Using directory %s"%papersDir)
         paperSearch = args.paper
-        folders = papis.getFolders(papersDir)
+        folders = utils.getFolders(papersDir)
         folders = utils.filterPaper(folders, paperSearch)
         for folder in folders:
             self.logger.debug(folder)

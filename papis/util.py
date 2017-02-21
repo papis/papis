@@ -1,10 +1,13 @@
+from subprocess import call
+from subprocess import Popen, PIPE
+import glob
 import logging
+import os
 
 logger = logging.getLogger("utils")
 
 def which(program):
     # source http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python
-    import os
     def is_exe(fpath):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
     fpath, fname = os.path.split(program)
@@ -24,7 +27,6 @@ def pickFile(files, configuration = {}):
     :fileName: TODO
     :returns: TODO
     """
-    from subprocess import Popen, PIPE
     try:
         picker = configuration["settings"]["picker"]
     except KeyError:
@@ -40,7 +42,6 @@ def openFile(fileName, configuration = {}):
     :fileName: TODO
     :returns: TODO
     """
-    from subprocess import call
     try:
         opener = configuration["settings"]["viewer"]
     except KeyError:
@@ -52,7 +53,6 @@ def editFile(fileName, configuration = {}):
     :fileName: TODO
     :returns: TODO
     """
-    from subprocess import call
     try:
         editor = configuration["settings"]["editor"]
     except KeyError:
@@ -77,3 +77,18 @@ def filterPaper(folders, paperInput):
         print("No results found with the given input")
         sys.exit(1)
     return results
+
+def getFolders(folder, recursive=False):
+    """
+    Get papers from a containing folder
+    :folder: TODO
+    :returns: TODO
+    """
+    folders = list()
+    if recursive:
+        raise Exception("Recursively search is TODO")
+    for f in glob.glob(os.path.join(folder, "*")):
+        if os.path.isdir(f):
+            if os.path.exists(os.path.join(f,infoFileName)):
+                folders.append(f)
+    return folders

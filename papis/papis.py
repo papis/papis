@@ -107,25 +107,6 @@ def add_from_arxiv(url):
         fd.close()
     return (filePath, data)
 
-def getFolders(folder, recursive=False):
-    """
-    Get papers from a containing folder
-
-    :folder: TODO
-    :returns: TODO
-
-    """
-    import glob
-    folders = list()
-    if recursive:
-        raise Exception("Recursively search is TODO")
-    for f in glob.glob(os.path.join(folder, "*")):
-        if os.path.isdir(f):
-            if os.path.exists(os.path.join(f,infoFileName)):
-                folders.append(f)
-    return folders
-
-
 
 def main():
     parser = argparse.ArgumentParser(

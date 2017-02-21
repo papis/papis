@@ -35,7 +35,7 @@ class Open(Command):
         papersDir = os.path.expanduser(config[args.lib]["dir"])
         self.logger.debug("Using directory %s"%papersDir)
         paperSearch = args.paper
-        folders = papis.getFolders(papersDir)
+        folders = utils.getFolders(papersDir)
         folders = utils.filterPaper(folders, paperSearch)
         paper   = Paper(folders[0])
         utils.openFile(paper.getFile(), config)
