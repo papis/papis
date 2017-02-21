@@ -6,6 +6,9 @@ import os
 import papis
 import papis.bibtex
 
+logging.basicConfig(level = logging.DEBUG)
+
+
 class TestBibtex(unittest.TestCase):
     bib_file = None
     bib_entry = None
@@ -16,8 +19,12 @@ class TestBibtex(unittest.TestCase):
         self.bib_entry = """
 % some comments here
 @article{PhysRevLett.105.040504,
-  title     = {Room-Temperature Implementation of the Deutsch-Jozsa Algorithm with a Single Electronic Spin in Diamond},
-  author    = {Shi,
+  title     = {
+  Room-Temperature Implementation of the Deutsch-Jozsa Algorithm with a Single
+  Electronic Spin in Diamond
+  },
+  author    = {
+              Shi,
 % some comments here
                Fazhan and Rong,
                Xing and Xu,
