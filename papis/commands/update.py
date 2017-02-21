@@ -1,5 +1,5 @@
 from ..document import Paper
-from .commands import Command
+from . import Command
 
 
 class Update(Command):

@@ -44,10 +44,13 @@ import yaml
 import shutil
 import requests
 import tempfile
+import logging
 import argparse
 
 from .config import Configuration
 import papis.commands
+
+logger = logging.getLogger("papis")
 
 if sys.version_info < (3, 0):
     raise Exception("This script must use python 3.0 or greater")
@@ -142,6 +145,11 @@ def main():
         default = False,
         action  = "store_true"
     )
+    parser.add_argument("--lib",
+        help    = "Choose a papers library, default general",
+        default = "general",
+        action  = "store"
+    )
     parser.add_argument(
             "--log",
             help="Logging level",
@@ -155,25 +163,29 @@ def main():
             action="store",
             default="WARNING"
             )
+
+    logging.basicConfig(level = logging.DEBUG)
+    papis.commands.init(subparsers)
+
     # Parse arguments
     args = parser.parse_args()
+
     if args.verbose:
         args.log = "DEBUG"
     logging.basicConfig(level = getattr(logging, args.log))
 
-
-    # for subparser_name in [ "add", "update", "list", "export", "check", "open", "edit", "test", "config" ]:
-        # print(subparser_name)
-
-    # Parse arguments
     config = Configuration()
 
-    papis.commands.init(parser)
-    args = parser.parse_args()
-    exec("import %s as command"%args.command)
-    print(command)
-    command.init()
-    command.main(config,args)
+    papersDir = os.path.expanduser(config[args.lib]["dir"])
+    logger.debug("Using directory %s"%papersDir)
+
+
+
+    print(args)
+    # exec("import %s as command"%args.command)
+    # print(command)
+    # command.init()
+    # command.main(config,args)
 
 
 
@@ -187,5 +199,4 @@ def main():
 
 
 
-#vim-run: python3 %
 # vim:set et sw=4 ts=4 ft=python:

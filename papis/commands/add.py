@@ -1,5 +1,5 @@
 from ..document import Paper
-from .commands import Command
+from . import Command
 
 class Add(Command):
     def init(self, parser):

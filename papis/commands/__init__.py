@@ -1,3 +1,5 @@
+import logging
+
 COMMANDS = [
 "add",
 "check",
@@ -5,11 +7,13 @@ COMMANDS = [
 "edit",
 "export",
 "list",
-"no_command",
 "open",
 "test",
 "update"
 ]
+
+logger = logging.getLogger("commands")
+
 
 def init(parser):
     """TODO: Docstring for init.
@@ -19,10 +23,13 @@ def init(parser):
 
     """
     global COMMANDS
+    global logger
     commands = dict()
+    logger.debug("Initializing commands")
     for command in COMMANDS:
-        exec("from .%s import %s as cmd"%(command, command.capitalize()))
-        commands[command] = cmd(parser)
+        logger.debug(command)
+        exec("from .%s import %s"%(command, command.capitalize()))
+        commands[command] = eval(command.capitalize())(parser)
     return commands
 
 class Command(object):
@@ -30,6 +37,7 @@ class Command(object):
     def __init__(self, parser):
         self.parser = parser
         self.args = None
+        self.logger = logging.getLogger(self.__class__.__name__)
         self.init(self.parser)
 
     def init(self):

@@ -1,6 +1,6 @@
 
 from ..document import Paper
-from .commands import Command
+from . import Command
 
 class Config(Command):
     def init(self, parser):
