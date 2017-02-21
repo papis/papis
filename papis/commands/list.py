@@ -1,5 +1,7 @@
 from ..document import Paper
 import papis
+import sys
+import os
 import papis.util
 from . import Command
 
