@@ -75,7 +75,7 @@ def getUrlService(url):
     """
     m = re.match(r".*arxiv.org.*", url)
     if m: # Arxiv
-        printv("Arxiv recognised")
+        logger.debug("Arxiv recognised")
         return "arxiv"
     return ""
 
@@ -90,20 +90,20 @@ def add_from_arxiv(url):
     m = re.match(r".*arxiv.org/abs/(.*)", url)
     if m:
         p_id = m.group(1)
-        printv("Arxiv id = '%s'"%p_id)
+        logger.debug("Arxiv id = '%s'"%p_id)
     else:
         print("Arxiv url fromat not recognised, no document id found")
         sys.exit(1)
     infoUrl = "http://export.arxiv.org/api/query?search_query=%s&start=0&max_results=1"%p_id
     pdfUrl  = "https://arxiv.org/pdf/%s.pdf"%p_id
-    printv("Pdf url  = '%s'"%pdfUrl)
-    printv("Info url = '%s'"%infoUrl)
+    logger.debug("Pdf url  = '%s'"%pdfUrl)
+    logger.debug("Info url = '%s'"%infoUrl)
     response = requests.get(pdfUrl, stream=True)
     if response: # Download pdf
         fd = open(filePath, "wb")
         # fd.write(response.raw)
         shutil.copyfileobj(response.raw, fd)
-        printv("Pdf saved in %s"%filePath)
+        logger.debug("Pdf saved in %s"%filePath)
         fd.close()
     return (filePath, data)
 

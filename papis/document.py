@@ -85,7 +85,7 @@ class Paper(object):
         :returns: TODO
 
         """
-        printv("Updating...")
+        logger.debug("Updating...")
         for key in data:
             if self[key] != data[key]:
                 if force:

@@ -1,12 +1,6 @@
-def header(msg):    print("\n\033[1m"+str(msg)+"\033[0m")
-def success(msg):   print(" \033[1;32m==>\033[0m  "+str(msg))
-def error(msg):     print(" \033[1;31mX\033[0m  "+str(msg))
-def arrow(msg):     print(" \033[1;34m==>\033[0m  "+str(msg))
-def warning(msg):   print(" \033[0;93m==>\033[0m  "+str(msg))
+import logging
 
-def printv(arg1):
-    if VERBOSE:
-        print(arg1)
+logger = logging.getLogger("utils")
 
 def which(program):
     # source http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python
@@ -75,7 +69,7 @@ def filterPaper(folders, paperInput):
     """
     results = []
     regex   = r".*"+re.sub(r"([0-9a-zA-Z])", "\\1.*", paperInput.strip().replace(" ",""))
-    printv("Filter regex = %s"%regex)
+    logger.debug("Filter regex = %s"%regex)
     for folder in folders:
         if re.match(regex, folder, re.IGNORECASE):
             results.append(folder)
