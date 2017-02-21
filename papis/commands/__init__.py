@@ -43,6 +43,6 @@ class Command(object):
     def init(self):
         pass
 
-    def main(self, args=None):
+    def main(self, config=None, args=None):
         if not args:
             self.args = args

@@ -165,7 +165,7 @@ def main():
             )
 
     logging.basicConfig(level = logging.DEBUG)
-    papis.commands.init(subparsers)
+    subcommands = papis.commands.init(subparsers)
 
     # Parse arguments
     args = parser.parse_args()
@@ -179,13 +179,11 @@ def main():
     papersDir = os.path.expanduser(config[args.lib]["dir"])
     logger.debug("Using directory %s"%papersDir)
 
+    if args.command:
+        if args.command in subcommands.keys():
+            subcommands[args.command].main(config, args)
 
 
-    print(args)
-    # exec("import %s as command"%args.command)
-    # print(command)
-    # command.init()
-    # command.main(config,args)
 
 
 
