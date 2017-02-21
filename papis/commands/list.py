@@ -43,7 +43,7 @@ class List(Command):
 
         """
         papersDir = os.path.expanduser(config[args.lib]["dir"])
-        printv("Using directory %s"%papersDir)
+        self.logger.debug("Using directory %s"%papersDir)
         paperSearch = args.paper
         folders = papis.getFolders(papersDir)
         folders = utils.filterPaper(folders, paperSearch)

@@ -47,7 +47,7 @@ class Update(Command):
 
         """
         papersDir = os.path.expanduser(config[args.lib]["dir"])
-        printv("Using directory %s"%papersDir)
+        self.logger.debug("Using directory %s"%papersDir)
         paperSearch = args.paper
         data  = bibTexToDict(args.from_bibtex) \
                 if args.from_bibtex else dict()

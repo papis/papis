@@ -45,7 +45,7 @@ class Add(Command):
 
         """
         papersDir = os.path.expanduser(config[args.lib]["dir"])
-        printv("Using directory %s"%papersDir)
+        self.logger.debug("Using directory %s"%papersDir)
         if args.from_url:
             url = args.from_url
             service = getUrlService(url)
@@ -67,14 +67,14 @@ class Add(Command):
         endPaperPath = os.path.join(papersDir, folderName, paperName )
         ######
         data["file"] = paperName
-        printv("Folder    = % s" % folderName)
-        printv("File      = % s" % paperPath)
-        printv("EndFile   = % s" % endPaperPath)
-        printv("Data      = % s" % data)
-        printv("Ext.      = % s" % extension)
+        self.logger.debug("Folder    = % s" % folderName)
+        self.logger.debug("File      = % s" % paperPath)
+        self.logger.debug("EndFile   = % s" % endPaperPath)
+        self.logger.debug("Data      = % s" % data)
+        self.logger.debug("Ext.      = % s" % extension)
         fullDirPath = os.path.join(papersDir, folderName)
         if not os.path.isdir(fullDirPath):
-            printv("Creating directory '%s'"%fullDirPath)
+            self.logger.debug("Creating directory '%s'"%fullDirPath)
             os.mkdir(fullDirPath)
         shutil.copy(paperPath, endPaperPath)
         paper = Paper(fullDirPath)

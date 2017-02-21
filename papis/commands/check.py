@@ -30,13 +30,13 @@ class Check(Command):
 
         """
         papersDir = os.path.expanduser(config[args.lib]["dir"])
-        printv("Using directory %s"%papersDir)
+        self.logger.debug("Using directory %s"%papersDir)
         paperSearch = args.paper
         folders = papis.getFolders(papersDir)
         folders = utils.filterPaper(folders, paperSearch)
         allOk = True
         for folder in folders:
-            printv(folder)
+            self.logger.debug(folder)
             paper   = Paper(folder)
             allOk &= paper.check()
         if not allOk:

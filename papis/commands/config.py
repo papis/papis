@@ -33,10 +33,10 @@ class Config(Command):
 
         """
         papersDir = os.path.expanduser(config[args.lib]["dir"])
-        printv("Using directory %s"%papersDir)
+        self.logger.debug("Using directory %s"%papersDir)
         # FIXME: Replacing values does not work
         option = " ".join(args.option)
-        printv(option)
+        self.logger.debug(option)
         value = False
         m = re.match(r"([^ ]*)\.(.*)", option)
         if not m:
@@ -49,8 +49,8 @@ class Config(Command):
             value = m.group(2)
         else:
             key = preKey
-        printv("lib -> %s" % lib)
-        printv("key -> %s" % key)
+        self.logger.debug("lib -> %s" % lib)
+        self.logger.debug("key -> %s" % key)
         if not value:
             print(config[lib][key])
         else:
