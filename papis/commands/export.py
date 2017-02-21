@@ -38,7 +38,7 @@ class Export(Command):
         printv("Using directory %s"%papersDir)
         paperSearch = args.paper
         folders = papis.getFolders(papersDir)
-        folders = filterPaper(folders, paperSearch)
+        folders = papis.filterPaper(folders, paperSearch)
         for folder in folders:
             printv(folder)
             paper = Paper(folder)

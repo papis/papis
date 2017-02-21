@@ -45,7 +45,7 @@ class List(Command):
         printv("Using directory %s"%papersDir)
         paperSearch = args.paper
         folders = papis.getFolders(papersDir)
-        folders = filterPaper(folders, paperSearch)
+        folders = papis.filterPaper(folders, paperSearch)
         for folder in folders:
             if args.file:
                 paper = Paper(folder)

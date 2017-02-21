@@ -51,7 +51,7 @@ class Update(Command):
         data  = bibTexToDict(args.from_bibtex) \
                 if args.from_bibtex else dict()
         folders = papis.getFolders(papersDir)
-        folders = filterPaper(folders, paperSearch)
+        folders = papis.filterPaper(folders, paperSearch)
         folder  = folders[0]
         paper   = Paper(folder)
         paper.update(data, args.force, args.interactive)

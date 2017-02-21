@@ -33,6 +33,6 @@ class Open(Command):
         printv("Using directory %s"%papersDir)
         paperSearch = args.paper
         folders = papis.getFolders(papersDir)
-        folders = filterPaper(folders, paperSearch)
+        folders = papis.filterPaper(folders, paperSearch)
         paper   = Paper(folders[0])
         openFile(paper.getFile(), config)
