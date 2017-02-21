@@ -1,6 +1,7 @@
 import os
 import yaml
 import papis.utils
+import papis.bibtex
 
 class Paper(object):
 
@@ -59,13 +60,11 @@ class Paper(object):
         :f: TODO
         :returns: TODO
         """
-        global bibtexTypes
-        global bibtexKeys
         bibtexString = ""
         bibtexType = ""
         # First the type, article ....
         if "type" in self.keys():
-            if self["type"] in bibtexTypes:
+            if self["type"] in papis.bibtex.bibtexTypes:
                 bibtexType = self["type"]
         if not bibtexType:
             bibtexType = "article"
@@ -74,7 +73,7 @@ class Paper(object):
         else:
             ref = self["ref"]
         bibtexString += "@%s{%s,\n"%(bibtexType, ref)
-        for bibKey in bibtexKeys:
+        for bibKey in papis.bibtex.bibtexKeys:
             if bibKey in self.keys():
                 bibtexString += "\t%s = { %s },\n"%(bibKey, self[bibKey])
         bibtexString += "}\n"
