@@ -36,4 +36,4 @@ class Edit(Command):
         folders = papis.getFolders(papersDir)
         folders = utils.filterPaper(folders, paperSearch)
         paper   = Paper(folders[0])
-        editFile(paper.getInfoFile(), config)
+        utils.editFile(paper.getInfoFile(), config)
