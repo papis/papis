@@ -160,6 +160,7 @@ class Picker(object):
             elif c in KEYS_ENTER:
                 return self.get_selected()
             elif c in KEYS_QUIT:
+                curses.endwin()
                 return ""
             else:
                 self.editSearch(c)
