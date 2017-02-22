@@ -1,4 +1,5 @@
 import re
+import sys
 import logging
 
 logger = logging.getLogger("bibtex")
@@ -62,12 +63,17 @@ def bibtexToDict(bibtexFile):
     text = fd.read()
     logger.debug("Removing comments...")
     text = re.sub(r"%.*", "", text)
+    logger.debug("Removing empty lines...")
+    text = re.sub(r"^\s*$", "", text)
     logger.debug("Removing newlines...")
     text = re.sub(r"\n", "", text)
     logger.debug("Parsing document type and reference")
-    type_ref_re = re.compile(r"\s*@(\w+){([\w\-_.]*)\s*,")
+    type_ref_re = re.compile(r"\s*@(\w+){([^,]+),")
     match = re.match(type_ref_re, text)
     text = re.sub(type_ref_re, "", text)
+    if not match:
+        logger.error("Type and reference of the bibtex file could not be parsed")
+        sys.exit(1)
     result["type"] = match.group(1)
     result["ref"]  = match.group(2)
     for key in result.keys():
