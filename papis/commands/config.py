@@ -47,7 +47,8 @@ class Config(Command):
         value = False
         m = re.match(r"([^ ]*)\.(.*)", option)
         if not m:
-            raise Exception("Syntax for option %s not recognised"%option)
+            self.logger.error("Syntax for option %s not recognised"%option)
+            sys.exit(1)
         lib    = m.group(1)
         preKey = m.group(2)
         m = re.match(r"(.*)\s*=\s*(.*)", preKey)
@@ -59,7 +60,10 @@ class Config(Command):
         self.logger.debug("lib -> %s" % lib)
         self.logger.debug("key -> %s" % key)
         if not value:
-            print(config[lib][key])
+            if key in config[lib].keys():
+                print(config[lib][key])
+            else:
+                sys.exit(1)
         else:
             try:
                 config.remove_option(lib,key)
