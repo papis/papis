@@ -7,6 +7,7 @@ COMMANDS = [
 "edit",
 "export",
 "list",
+"rm",
 "open",
 "browse",
 "test",
