@@ -3,6 +3,7 @@ from subprocess import Popen, PIPE
 import glob
 import logging
 import os
+import sys
 import re
 
 logger = logging.getLogger("utils")
