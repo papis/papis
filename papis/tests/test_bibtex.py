@@ -81,3 +81,7 @@ class TestBibtex(unittest.TestCase):
         for key in keys:
             print(key)
             self.assertTrue(key in list(bib_dic.keys()))
+    def test_bibkeys_exist(self):
+        self.assertTrue(len(papis.bibtex.bibtexKeys) != 0)
+    def test_bibtypes_exist(self):
+        self.assertTrue(len(papis.bibtex.bibtexTypes) != 0)
