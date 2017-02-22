@@ -43,9 +43,6 @@ class Picker(object):
         self.index = default_index
         self.custom_handlers = {}
 
-    def register_custom_handler(self, key, func):
-        self.custom_handlers[key] = func
-
     def move_up(self):
         self.index -= 1
         if self.index < 0:
@@ -57,12 +54,12 @@ class Picker(object):
             self.index = 0
 
     def get_selected(self):
-        """return the current selected option as a tuple: (option, index)
+        """return the current selected option
         """
         return self.get_filtered_options()[self.index]
 
     def get_title_lines(self):
-        return [self.title+self.search+"  --"+self.get_search_regex()]
+        return [self.title+self.search]
 
     def get_option_lines(self):
         lines = []
@@ -118,7 +115,7 @@ class Picker(object):
         """draw the curses ui on the screen, handle scroll if needed"""
         self.screen.clear()
 
-        x, y = 1, 1  # start point
+        x, y = 1, 0  # start point
         max_y, max_x = self.screen.getmaxyx()
         max_rows = max_y - y  # the max rows we can draw
 
