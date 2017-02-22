@@ -46,6 +46,7 @@ import requests
 import tempfile
 import logging
 import argparse
+import argcomplete
 
 from .config import Configuration
 import papis.commands
@@ -143,6 +144,8 @@ def main():
 
     subcommands = papis.commands.init(subparsers)
 
+    # autocompletion
+    argcomplete.autocomplete(parser)
     # Parse arguments
     args = parser.parse_args()
 
