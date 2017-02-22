@@ -41,11 +41,6 @@ class Edit(Command):
         self.logger.debug("Using directory %s"%documentsDir)
         documentSearch = args.document
         folders = papis.utils.getFilteredFolders(documentsDir, documentSearch)
-        if len(folders) != 1:
-            folder = papis.utils.pick(folders, config)
-        else:
-            folder = folders[0]
-        if not folder:
-            sys.exit(0)
+        folder = papis.utils.pick(folders, config)
         document   = Document(folder)
         papis.utils.editFile(document.getInfoFile(), config)

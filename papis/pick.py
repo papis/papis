@@ -29,8 +29,6 @@ class Picker(object):
 
     def __init__(self, options, title=None, indicator='*', default_index=0):
 
-        if len(options) == 0:
-            raise ValueError('options should not be an empty list')
 
         self.options = options
         self.title = title
@@ -86,7 +84,7 @@ class Picker(object):
         :returns: TODO
 
         """
-        return r".*"+re.sub(r"(.)", r"\1.*", self.search)
+        return r".*"+re.sub(r"(.)", r"\1.*", self.search, re.DOTALL)
 
     def get_filtered_options(self):
         """TODO: Docstring for get_filtered_options.
@@ -177,6 +175,10 @@ class Picker(object):
         return self.run_loop()
 
     def start(self):
+        if len(self.options) == 0:
+            return ""
+        if len(self.options) == 1:
+            return self.options[0]
         return curses.wrapper(self._start)
 
 

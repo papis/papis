@@ -17,12 +17,14 @@ class Export(Command):
         # export parser
         export_parser = self.parser.add_parser("export",
                 help="Export a document from a given library")
-        export_parser.add_argument("document",
+        export_parser.add_argument(
+                "document",
                 help="Document search",
                 nargs="?",
                 default=".",
                 action="store")
-        export_parser.add_argument("--bibtex",
+        export_parser.add_argument(
+            "--bibtex",
             help    = "Export into bibtex",
             default = False,
             action  = "store_true"
