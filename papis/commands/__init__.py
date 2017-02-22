@@ -8,6 +8,7 @@ COMMANDS = [
 "export",
 "list",
 "open",
+"browse",
 "test",
 "update"
 ]

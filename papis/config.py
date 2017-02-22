@@ -5,8 +5,11 @@ import configparser
 class Configuration(configparser.ConfigParser):
 
     default_info={
-      "general": {
-        'dir'  : '~/Documents/documents'
+      "papers": {
+        'dir'  : '~/Documents/papers'
+      },
+      "settings": {
+        'default': 'papers'
       }
     }
 

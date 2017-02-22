@@ -104,6 +104,7 @@ def add_from_arxiv(url):
 
 
 def main():
+    config = Configuration()
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
         description="Simple documents administration program"
@@ -123,7 +124,7 @@ def main():
     )
     parser.add_argument("-l", "--lib",
         help    = "Choose a documents library, default general",
-        default = "papers",
+        default = config["settings"]["default"] or "papers",
         action  = "store"
     )
     parser.add_argument(
@@ -149,7 +150,6 @@ def main():
         args.log = "DEBUG"
     logging.basicConfig(level = getattr(logging, args.log))
 
-    config = Configuration()
 
     if not args.lib in config.keys():
         logger.error("Library '%s' does not seem to exist"%args.lib)
