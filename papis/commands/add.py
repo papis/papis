@@ -62,7 +62,7 @@ class Add(Command):
             documentPath, data = serviceParser(url)
         else:
             documentPath = args.document
-            data  = papis.bibtex.bibTexToDict(args.from_bibtex) \
+            data  = papis.bibtex.bibtexToDict(args.from_bibtex) \
                     if args.from_bibtex else dict()
         m = re.match(r"^(.*)\.([a-zA-Z]*)$", os.path.basename(documentPath))
         extension    = m.group(2) if m else ""
