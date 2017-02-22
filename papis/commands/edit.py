@@ -3,6 +3,7 @@ import papis
 import sys
 import os
 import papis.utils
+import papis.pick
 from . import Command
 
 
@@ -15,13 +16,17 @@ class Edit(Command):
         :returns: TODO
 
         """
-        edit_parser = self.parser.add_parser("edit",
-                help="Edit document information from a given library")
-        edit_parser.add_argument("document",
+        edit_parser = self.parser.add_parser(
+                "edit",
+                help="Edit document information from a given library"
+                )
+        edit_parser.add_argument(
+                "document",
                 help="Document search",
                 nargs="?",
                 default=".",
-                action="store")
+                action="store"
+                )
 
     def main(self, config, args):
         """
@@ -36,5 +41,11 @@ class Edit(Command):
         self.logger.debug("Using directory %s"%documentsDir)
         documentSearch = args.document
         folders = papis.utils.getFilteredFolders(documentsDir, documentSearch)
-        document   = Document(folders[0])
+        if len(folders) != 1:
+            folder = papis.pick.pick(folders)
+        else:
+            folder = folders[0]
+        if not folder:
+            sys.exit(0)
+        document   = Document(folder)
         papis.utils.editFile(document.getInfoFile(), config)
