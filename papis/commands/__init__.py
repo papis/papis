@@ -25,23 +25,41 @@ def init(parser):
     global COMMANDS
     global logger
     commands = dict()
+    cmd = None
     logger.debug("Initializing commands")
     for command in COMMANDS:
         logger.debug(command)
         exec("from .%s import %s"%(command, command.capitalize()))
-        commands[command] = eval(command.capitalize())(parser)
+        cmd = eval(command.capitalize())(parser)
+        cmd.init()
+        commands[command] = cmd
     return commands
 
 class Command(object):
 
-    def __init__(self, parser):
+    def __init__(self, parser=None):
         self.parser = parser
         self.args = None
         self.logger = logging.getLogger(self.__class__.__name__)
-        self.init(self.parser)
 
     def init(self):
         pass
+
+    def setParser(self, parser):
+        """TODO: Docstring for setParser.
+
+        :parser: TODO
+        :returns: TODO
+
+        """
+        self.parser = parser
+
+    def getParser(self):
+        """TODO: Docstring for getParser.
+        :returns: TODO
+
+        """
+        return self.parser
 
     def main(self, config=None, args=None):
         if not args:
