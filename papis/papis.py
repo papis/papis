@@ -123,7 +123,7 @@ def main():
     )
     parser.add_argument("-l", "--lib",
         help    = "Choose a documents library, default general",
-        default = "general",
+        default = "papers",
         action  = "store"
     )
     parser.add_argument(
