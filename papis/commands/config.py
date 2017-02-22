@@ -3,6 +3,7 @@ from ..document import Paper
 import papis
 import sys
 import os
+import re
 import papis.utils
 from . import Command
 
@@ -14,10 +15,14 @@ class Config(Command):
         :returns: TODO
 
         """
-        config_parser = parser.add_parser("config",
-                help="Manage the configuration options")
 
-        config_parser.add_argument("option",
+        config_parser = parser.add_parser(
+                "config",
+                help="Manage the configuration options"
+                )
+
+        config_parser.add_argument(
+                "option",
                 help="Set or get option",
                 default="",
                 nargs="*",
