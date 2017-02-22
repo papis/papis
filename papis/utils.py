@@ -80,6 +80,16 @@ def filterDocument(folders, documentInput):
         sys.exit(1)
     return results
 
+def getFilteredFolders(directory, search, recursive=False):
+    """
+    Get documents from a containing folder
+    :folder: TODO
+    :returns: TODO
+    """
+    folders = getFolders(directory, recursive)
+    folders = filterDocument(folders, search)
+    return folders
+
 def getFolders(folder, recursive=False):
     """
     Get documents from a containing folder
