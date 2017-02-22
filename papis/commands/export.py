@@ -7,7 +7,7 @@ from . import Command
 
 
 class Export(Command):
-    def init(self, parser):
+    def init(self):
         """TODO: Docstring for init.
 
         :subparser: TODO

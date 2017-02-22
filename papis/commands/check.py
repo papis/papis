@@ -7,7 +7,7 @@ from . import Command
 
 
 class Check(Command):
-    def init(self, parser):
+    def init(self):
         """TODO: Docstring for init.
 
         :subparser: TODO

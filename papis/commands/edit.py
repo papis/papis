@@ -8,7 +8,7 @@ from . import Command
 
 
 class Edit(Command):
-    def init(self, parser):
+    def init(self):
         """TODO: Docstring for init.
 
         :subparser: TODO

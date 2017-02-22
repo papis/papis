@@ -6,7 +6,7 @@ import papis.utils
 from . import Command
 
 class Open(Command):
-    def init(self, parser):
+    def init(self):
         """TODO: Docstring for init.
 
         :subparser: TODO

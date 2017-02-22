@@ -7,7 +7,7 @@ import papis.bibtex
 from . import Command
 
 class Add(Command):
-    def init(self, parser):
+    def init(self):
         """TODO: Docstring for init.
 
         :subparser: TODO

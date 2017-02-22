@@ -8,7 +8,7 @@ import papis.utils
 from . import Command
 
 class Config(Command):
-    def init(self, parser):
+    def init(self):
         """TODO: Docstring for init.
 
         :subparser: TODO
