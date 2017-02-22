@@ -8,15 +8,15 @@ import re
 
 __all__ = ['Picker', 'pick']
 
-Ctrl_P = 16
-Ctrl_N = 14
-Ctrl_H = 8
-Ctrl_C = 3
+CTRL_P = 16
+CTRL_N = 14
+CTRL_H = 8
+CTRL_C = 3
 KEYS_ENTER = (curses.KEY_ENTER, ord('\n'), ord('\r'))
-KEYS_UP = (curses.KEY_UP, Ctrl_P)
-KEYS_DOWN = (curses.KEY_DOWN, Ctrl_N)
-KEYS_ERASE = (curses.KEY_BACKSPACE, Ctrl_H)
-KEYS_QUIT = (Ctrl_C, curses.KEY_EXIT, 27)
+KEYS_UP = (curses.KEY_UP, CTRL_P)
+KEYS_DOWN = (curses.KEY_DOWN, CTRL_N)
+KEYS_ERASE = (curses.KEY_BACKSPACE, CTRL_H)
+KEYS_QUIT = (CTRL_C, curses.KEY_EXIT, 27)
 
 class Picker(object):
     """The :class:`Picker <Picker>` object
