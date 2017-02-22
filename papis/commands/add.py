@@ -59,15 +59,15 @@ class Add(Command):
                 sys.exit(1)
             documentPath, data = serviceParser(url)
         else:
-            documentPath = args.paper
+            documentPath = args.document
             data  = papis.bibtex.bibTexToDict(args.from_bibtex) \
                     if args.from_bibtex else dict()
         m = re.match(r"^(.*)\.([a-zA-Z]*)$", os.path.basename(documentPath))
         extension    = m.group(2) if m else ""
         folderName   = m.group(1) if m else os.path.basename(documentPath)
         folderName   = folderName if not args.name else args.name
-        documentName    = "paper."+extension
-        endDocumentPath = os.path.join(documentsDir, folderName, paperName )
+        documentName    = "document."+extension
+        endDocumentPath = os.path.join(documentsDir, folderName, documentName )
         ######
         data["file"] = documentName
         self.logger.debug("Folder    = % s" % folderName)
