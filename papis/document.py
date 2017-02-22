@@ -1,5 +1,6 @@
 import os
 import yaml
+import logging
 import papis.utils
 import papis.bibtex
 
@@ -13,6 +14,7 @@ class Document(object):
     def __init__(self, folder):
         self._keys = []
         self._folder = folder
+        self.logger = logging.getLogger("Doc")
         self._infoFilePath = os.path.join(folder, papis.utils.getInfoFileName())
         self.loadInformationFromFile()
     def __setitem__(self, obj, value):
@@ -87,7 +89,7 @@ class Document(object):
         :returns: TODO
 
         """
-        logger.debug("Updating...")
+        self.logger.debug("Updating...")
         for key in data:
             if self[key] != data[key]:
                 if force:

@@ -2,6 +2,8 @@ from ..document import Document
 import papis
 import sys
 import os
+import re
+import shutil
 import papis.utils
 import papis.bibtex
 from . import Command
