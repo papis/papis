@@ -151,8 +151,9 @@ def main():
 
     config = Configuration()
 
-    documentsDir = os.path.expanduser(config[args.lib]["dir"])
-    logger.debug("Using directory %s"%documentsDir)
+    if not args.lib in config.keys():
+        logger.error("Library '%s' does not seem to exist"%args.lib)
+        sys.exit(1)
 
     if args.command:
         if args.command in subcommands.keys():
