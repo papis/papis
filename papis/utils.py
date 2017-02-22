@@ -5,6 +5,7 @@ import logging
 import os
 import sys
 import re
+import papis.pick
 
 logger = logging.getLogger("utils")
 
@@ -24,20 +25,22 @@ def which(program):
                 return exe_file
     return None
 
-def pickFile(files, configuration = {}):
+def pick(files, configuration = {}):
     """TODO: Docstring for editFile.
     :fileName: TODO
     :returns: TODO
     """
     try:
-        picker = configuration["settings"]["picker"]
+        logger.debug("Parsing picktool")
+        picker = configuration["settings"]["picktool"]
     except KeyError:
-        picker = os.environ["PICKER"]
-    if not picker:
-        return files[0]
+        return papis.pick.pick(files)
     else:
         # FIXME: Do it more fancy
-        return Popen("echo "+"\n".join(files)+" | "+picker, stdout=PIPE, shell=True).read()
+        return Popen(
+                "echo "+"\n".join(files)+" | "+picker,
+                stdout=PIPE,
+                shell=True).read()
 
 def openFile(fileName, configuration = {}):
     """TODO: Docstring for openFile.

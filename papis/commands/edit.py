@@ -42,7 +42,8 @@ class Edit(Command):
         documentSearch = args.document
         folders = papis.utils.getFilteredFolders(documentsDir, documentSearch)
         if len(folders) != 1:
-            folder = papis.pick.pick(folders)
+            # folder = papis.pick.pick(folders)
+            folder = papis.utils.pick(folders, config)
         else:
             folder = folders[0]
         if not folder:
