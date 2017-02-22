@@ -51,6 +51,7 @@ class Add(Command):
 
         """
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
+        folderName = None
         self.logger.debug("Using directory %s"%documentsDir)
         if args.from_url:
             url = args.from_url
@@ -72,8 +73,8 @@ class Add(Command):
             folderName   = m.group(1) if m else os.path.basename(documentPath)
         elif args.from_bibtex and not args.name:
             args.name = '$year-$author-$title'
-        else:
-            folderName   = folderName if not args.name else \
+        if folderName == None:
+            folderName = folderName if not args.name else \
                                         string\
                                         .Template(args.name)\
                                         .safe_substitute(data)\
