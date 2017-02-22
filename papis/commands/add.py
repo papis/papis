@@ -4,6 +4,7 @@ import sys
 import os
 import re
 import shutil
+import string
 import papis.utils
 import papis.bibtex
 from . import Command
@@ -66,8 +67,15 @@ class Add(Command):
                     if args.from_bibtex else dict()
         m = re.match(r"^(.*)\.([a-zA-Z]*)$", os.path.basename(documentPath))
         extension    = m.group(2) if m else ""
-        folderName   = m.group(1) if m else os.path.basename(documentPath)
-        folderName   = folderName if not args.name else args.name
+        # Set foldername
+        if not args.from_bibtex:
+            folderName   = m.group(1) if m else os.path.basename(documentPath)
+        else:
+            folderName   = folderName if not args.name else \
+                                        string\
+                                        .Template(args.name)\
+                                        .safe_substitute(data)\
+                                        .replace(" ","-")
         documentName    = "document."+extension
         endDocumentPath = os.path.join(documentsDir, folderName, documentName )
         ######
@@ -75,7 +83,6 @@ class Add(Command):
         self.logger.debug("Folder    = % s" % folderName)
         self.logger.debug("File      = % s" % documentPath)
         self.logger.debug("EndFile   = % s" % endDocumentPath)
-        self.logger.debug("Data      = % s" % data)
         self.logger.debug("Ext.      = % s" % extension)
         fullDirPath = os.path.join(documentsDir, folderName)
         if not os.path.isdir(fullDirPath):

@@ -84,7 +84,7 @@ def bibtexToDict(bibtexFile):
         if match:
             key = match.group(1)
             val = re.sub(r"\s+"," ",match.group(2))
-            result[key] = val
+            result[key.lower()] = val
             logger.debug(" [%s] = %s"%(key,val))
     return result
 
