@@ -1,1 +1,1 @@
-eval "$(register-python-argcomplete my-awesome-script.py)"
+eval "$(register-python-argcomplete papis)"
