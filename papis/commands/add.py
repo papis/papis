@@ -68,8 +68,10 @@ class Add(Command):
         m = re.match(r"^(.*)\.([a-zA-Z]*)$", os.path.basename(documentPath))
         extension    = m.group(2) if m else ""
         # Set foldername
-        if not args.from_bibtex:
+        if not args.from_bibtex and not args.name:
             folderName   = m.group(1) if m else os.path.basename(documentPath)
+        elif args.from_bibtex and not args.name:
+            args.name = '$year-$author-$title'
         else:
             folderName   = folderName if not args.name else \
                                         string\
