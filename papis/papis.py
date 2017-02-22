@@ -121,7 +121,7 @@ def main():
         default = False,
         action  = "store_true"
     )
-    parser.add_argument("--lib",
+    parser.add_argument("-l", "--lib",
         help    = "Choose a papers library, default general",
         default = "general",
         action  = "store"
