@@ -14,13 +14,25 @@ class Check(Command):
         :returns: TODO
 
         """
-        check_parser = self.parser.add_parser("check",
-                help="Check document document from a given library")
-        check_parser.add_argument("document",
+        check_parser = self.parser.add_parser(
+                "check",
+                help="Check document document from a given library"
+                )
+        check_parser.add_argument(
+                "document",
                 help="Document search",
                 nargs="?",
                 default=".",
-                action="store")
+                action="store"
+                )
+        check_parser.add_argument(
+                "--keys", "-k",
+                help="Key to check",
+                nargs="*",
+                default=[],
+                action="store"
+                )
+
 
     def main(self, config, args):
         """
@@ -39,7 +51,11 @@ class Check(Command):
         for folder in folders:
             self.logger.debug(folder)
             document   = Document(folder)
-            allOk &= document.check()
+            allOk &= document.checkFile()
+            for key in args.keys:
+                if not key in document.keys():
+                    allOk &= False
+                    print("%s not found in %s"%(key, folder))
         if not allOk:
             print("Errors were detected, please fix the info files")
         else:

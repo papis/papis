@@ -37,7 +37,7 @@ class Document(object):
 
         """
         return self._folder
-    def check(self):
+    def checkFile(self):
         """
         :returns: TODO
         """
