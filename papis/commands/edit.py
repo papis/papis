@@ -1,4 +1,4 @@
-from ..document import Paper
+from ..document import Document
 import papis
 import sys
 import os
@@ -16,9 +16,9 @@ class Edit(Command):
 
         """
         edit_parser = parser.add_parser("edit",
-                help="Edit paper information from a given library")
-        edit_parser.add_argument("paper",
-                help="Paper search",
+                help="Edit document information from a given library")
+        edit_parser.add_argument("document",
+                help="Document search",
                 nargs="?",
                 default=".",
                 action="store")
@@ -32,10 +32,10 @@ class Edit(Command):
         :returns: TODO
 
         """
-        papersDir = os.path.expanduser(config[args.lib]["dir"])
-        self.logger.debug("Using directory %s"%papersDir)
-        paperSearch = args.paper
-        folders = papis.utils.getFolders(papersDir)
-        folders = papis.utils.filterPaper(folders, paperSearch)
-        paper   = Paper(folders[0])
-        papis.utils.editFile(paper.getInfoFile(), config)
+        documentsDir = os.path.expanduser(config[args.lib]["dir"])
+        self.logger.debug("Using directory %s"%documentsDir)
+        documentSearch = args.paper
+        folders = papis.utils.getFolders(documentsDir)
+        folders = papis.utils.filterDocument(folders, documentSearch)
+        document   = Document(folders[0])
+        papis.utils.editFile(document.getInfoFile(), config)

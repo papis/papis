@@ -30,7 +30,7 @@ setup(
 
     description='Simple program to manage literature',
     long_description='Simple program to manage literature',
-    keywords=['paper', 'books', 'bibtex', 'management', 'cli', 'biliography'],
+    keywords=['document', 'books', 'bibtex', 'management', 'cli', 'biliography'],
     packages=["papis"],
     test_suite="papis.tests",
     entry_points=dict(

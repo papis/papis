@@ -61,16 +61,16 @@ def editFile(fileName, configuration = {}):
         editor = os.environ["EDITOR"]
     call([editor, fileName])
 
-def filterPaper(folders, paperInput):
+def filterDocument(folders, documentInput):
     """
 
     :folders: TODO
-    :paperInput: TODO
+    :documentInput: TODO
     :returns: TODO
 
     """
     results = []
-    regex   = r".*"+re.sub(r"([0-9a-zA-Z])", "\\1.*", paperInput.strip().replace(" ",""))
+    regex   = r".*"+re.sub(r"([0-9a-zA-Z])", "\\1.*", documentInput.strip().replace(" ",""))
     logger.debug("Filter regex = %s"%regex)
     for folder in folders:
         if re.match(regex, folder, re.IGNORECASE):
@@ -82,7 +82,7 @@ def filterPaper(folders, paperInput):
 
 def getFolders(folder, recursive=False):
     """
-    Get papers from a containing folder
+    Get documents from a containing folder
     :folder: TODO
     :returns: TODO
     """

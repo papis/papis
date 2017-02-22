@@ -1,4 +1,4 @@
-from ..document import Paper
+from ..document import Document
 import papis
 import sys
 import os
@@ -16,9 +16,9 @@ class Export(Command):
         """
         # export parser
         export_parser = parser.add_parser("export",
-                help="Export a paper from a given library")
-        export_parser.add_argument("paper",
-                help="Paper search",
+                help="Export a document from a given library")
+        export_parser.add_argument("document",
+                help="Document search",
                 nargs="?",
                 default=".",
                 action="store")
@@ -37,15 +37,15 @@ class Export(Command):
         :returns: TODO
 
         """
-        papersDir = os.path.expanduser(config[args.lib]["dir"])
-        self.logger.debug("Using directory %s"%papersDir)
-        paperSearch = args.paper
-        folders = papis.utils.getFolders(papersDir)
-        folders = papis.utils.filterPaper(folders, paperSearch)
+        documentsDir = os.path.expanduser(config[args.lib]["dir"])
+        self.logger.debug("Using directory %s"%documentsDir)
+        documentSearch = args.paper
+        folders = papis.utils.getFolders(documentsDir)
+        folders = papis.utils.filterDocument(folders, documentSearch)
         for folder in folders:
             self.logger.debug(folder)
-            paper = Paper(folder)
+            document = Document(folder)
             if args.bibtex:
-                print(paper.toBibtex())
+                print(document.toBibtex())
             else:
-                print(paper.dump())
+                print(document.dump())

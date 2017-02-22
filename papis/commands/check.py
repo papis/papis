@@ -1,4 +1,4 @@
-from ..document import Paper
+from ..document import Document
 import papis
 import sys
 import os
@@ -15,9 +15,9 @@ class Check(Command):
 
         """
         check_parser = parser.add_parser("check",
-                help="Check paper document from a given library")
-        check_parser.add_argument("paper",
-                help="Paper search",
+                help="Check document document from a given library")
+        check_parser.add_argument("document",
+                help="Document search",
                 nargs="?",
                 default=".",
                 action="store")
@@ -31,16 +31,16 @@ class Check(Command):
         :returns: TODO
 
         """
-        papersDir = os.path.expanduser(config[args.lib]["dir"])
-        self.logger.debug("Using directory %s"%papersDir)
-        paperSearch = args.paper
-        folders = papis.utils.getFolders(papersDir)
-        folders = papis.utils.filterPaper(folders, paperSearch)
+        documentsDir = os.path.expanduser(config[args.lib]["dir"])
+        self.logger.debug("Using directory %s"%documentsDir)
+        documentSearch = args.paper
+        folders = papis.utils.getFolders(documentsDir)
+        folders = papis.utils.filterDocument(folders, documentSearch)
         allOk = True
         for folder in folders:
             self.logger.debug(folder)
-            paper   = Paper(folder)
-            allOk &= paper.check()
+            document   = Document(folder)
+            allOk &= document.check()
         if not allOk:
             print("Errors were detected, please fix the info files")
         else:

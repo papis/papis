@@ -1,5 +1,5 @@
 
-from ..document import Paper
+from ..document import Document
 import papis
 import sys
 import os
@@ -39,8 +39,8 @@ class Config(Command):
         :returns: TODO
 
         """
-        papersDir = os.path.expanduser(config[args.lib]["dir"])
-        self.logger.debug("Using directory %s"%papersDir)
+        documentsDir = os.path.expanduser(config[args.lib]["dir"])
+        self.logger.debug("Using directory %s"%documentsDir)
         # FIXME: Replacing values does not work
         option = " ".join(args.option)
         self.logger.debug(option)

@@ -6,7 +6,7 @@ class Configuration(configparser.ConfigParser):
 
     default_info={
       "general": {
-        'dir'  : '~/Documents/papers'
+        'dir'  : '~/Documents/documents'
       }
     }
 

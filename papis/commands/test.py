@@ -1,4 +1,4 @@
-from ..document import Paper
+from ..document import Document
 import papis
 import sys
 import os
@@ -27,6 +27,6 @@ class Test(Command):
         :returns: TODO
 
         """
-        papersDir = os.path.expanduser(config[args.lib]["dir"])
-        self.logger.debug("Using directory %s"%papersDir)
+        documentsDir = os.path.expanduser(config[args.lib]["dir"])
+        self.logger.debug("Using directory %s"%documentsDir)
         papis.utils.pickFile(["1","3"], config)

@@ -3,10 +3,10 @@ import yaml
 import papis.utils
 import papis.bibtex
 
-class Paper(object):
+class Document(object):
 
     """
-     Structure implementing all information inside a paper,
+     Structure implementing all information inside a document,
      which should be yaml information with few methods
     """
 
@@ -30,7 +30,7 @@ class Paper(object):
         return getattr(self, obj) if hasattr(self, obj) else None
     def getMainFolder(self):
         """
-        Get main folder where the paper and the information is stored
+        Get main folder where the document and the information is stored
         :returns: TODO
 
         """

@@ -1,4 +1,4 @@
-from ..document import Paper
+from ..document import Document
 import papis
 import sys
 import os
@@ -15,22 +15,22 @@ class List(Command):
 
         """
         list_parser = parser.add_parser("list",
-                help="List papers from a given library")
-        list_parser.add_argument("paper",
-                help="Paper search",
+                help="List documents from a given library")
+        list_parser.add_argument("document",
+                help="Document search",
                 default="",
                 nargs="?",
                 action="store"
                 )
         list_parser.add_argument("-i",
             "--info",
-            help    = "Show the info file name associated with the paper",
+            help    = "Show the info file name associated with the document",
             default = False,
             action  = "store_true"
         )
         list_parser.add_argument("-f",
             "--file",
-            help    = "Show the file name associated with the paper",
+            help    = "Show the file name associated with the document",
             default = False,
             action  = "store_true"
         )
@@ -44,17 +44,17 @@ class List(Command):
         :returns: TODO
 
         """
-        papersDir = os.path.expanduser(config[args.lib]["dir"])
-        self.logger.debug("Using directory %s"%papersDir)
-        paperSearch = args.paper
-        folders = papis.utils.getFolders(papersDir)
-        folders = papis.utils.filterPaper(folders, paperSearch)
+        documentsDir = os.path.expanduser(config[args.lib]["dir"])
+        self.logger.debug("Using directory %s"%documentsDir)
+        documentSearch = args.paper
+        folders = papis.utils.getFolders(documentsDir)
+        folders = papis.utils.filterDocument(folders, documentSearch)
         for folder in folders:
             if args.file:
-                paper = Paper(folder)
-                print(paper.getFile())
+                document = Document(folder)
+                print(document.getFile())
             elif args.info:
-                paper = Paper(folder)
-                print(os.path.join(paper.getMainFolder(), paper.getInfoFile()))
+                document = Document(folder)
+                print(os.path.join(document.getMainFolder(), paper.getInfoFile()))
             else:
                 print(folder)

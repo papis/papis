@@ -1,8 +1,9 @@
-from ..document import Paper
+from ..document import Document
 import papis
 import sys
 import os
 import papis.utils
+import papis.bibtex
 from . import Command
 
 
@@ -16,7 +17,7 @@ class Update(Command):
         """
         # update parser
         update_parser = parser.add_parser("update",
-                help="Update a paper from a given library")
+                help="Update a document from a given library")
         update_parser.add_argument("--from-bibtex",
             help    = "Update info from bibtex file",
             action  = "store"
@@ -33,8 +34,8 @@ class Update(Command):
             default = False,
             action  = "store_true"
         )
-        update_parser.add_argument("paper",
-                help="Paper search",
+        update_parser.add_argument("document",
+                help="Document search",
                 action="store")
 
 
@@ -48,15 +49,15 @@ class Update(Command):
         :returns: TODO
 
         """
-        papersDir = os.path.expanduser(config[args.lib]["dir"])
-        self.logger.debug("Using directory %s"%papersDir)
-        paperSearch = args.paper
-        data  = bibTexToDict(args.from_bibtex) \
+        documentsDir = os.path.expanduser(config[args.lib]["dir"])
+        self.logger.debug("Using directory %s"%documentsDir)
+        documentSearch = args.paper
+        data  = papis.bibtex.bibTexToDict(args.from_bibtex) \
                 if args.from_bibtex else dict()
-        folders = papis.utils.getFolders(papersDir)
-        folders = papis.utils.filterPaper(folders, paperSearch)
+        folders = papis.utils.getFolders(documentsDir)
+        folders = papis.utils.filterDocument(folders, documentSearch)
         folder  = folders[0]
-        paper   = Paper(folder)
-        paper.update(data, args.force, args.interactive)
-        paper.save()
+        document   = Document(folder)
+        document.update(data, args.force, args.interactive)
+        document.save()
 

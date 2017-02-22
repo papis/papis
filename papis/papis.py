@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Simple paper management program
+# Simple document management program
 # Copyright © 2016 Alejandro Gallo
 
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -106,7 +106,7 @@ def add_from_arxiv(url):
 def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
-        description="Simple papers administration program"
+        description="Simple documents administration program"
         )
 
     SUBPARSER_HELP = "For further information for every command, type in 'papis <command> -h'"
@@ -122,7 +122,7 @@ def main():
         action  = "store_true"
     )
     parser.add_argument("-l", "--lib",
-        help    = "Choose a papers library, default general",
+        help    = "Choose a documents library, default general",
         default = "general",
         action  = "store"
     )
@@ -151,8 +151,8 @@ def main():
 
     config = Configuration()
 
-    papersDir = os.path.expanduser(config[args.lib]["dir"])
-    logger.debug("Using directory %s"%papersDir)
+    documentsDir = os.path.expanduser(config[args.lib]["dir"])
+    logger.debug("Using directory %s"%documentsDir)
 
     if args.command:
         if args.command in subcommands.keys():
