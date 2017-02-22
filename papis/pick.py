@@ -79,7 +79,8 @@ class Picker(object):
             lines.append(line)
         if not index_found:
             self.index = last_index
-            lines[-1] = "{0} {1}".format(self.indicator, lines[-1].strip(" "))
+            if len(lines):
+                lines[-1] = "{0} {1}".format(self.indicator, lines[-1].strip(" "))
 
         return lines
 
