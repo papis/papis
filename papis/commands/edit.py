@@ -15,7 +15,7 @@ class Edit(Command):
         :returns: TODO
 
         """
-        edit_parser = parser.add_parser("edit",
+        edit_parser = self.parser.add_parser("edit",
                 help="Edit document information from a given library")
         edit_parser.add_argument("document",
                 help="Document search",

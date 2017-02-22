@@ -16,7 +16,7 @@ class Config(Command):
 
         """
 
-        config_parser = parser.add_parser(
+        config_parser = self.parser.add_parser(
                 "config",
                 help="Manage the configuration options"
                 )

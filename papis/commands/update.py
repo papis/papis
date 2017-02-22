@@ -16,7 +16,7 @@ class Update(Command):
 
         """
         # update parser
-        update_parser = parser.add_parser("update",
+        update_parser = self.parser.add_parser("update",
                 help="Update a document from a given library")
         update_parser.add_argument("--from-bibtex",
             help    = "Update info from bibtex file",

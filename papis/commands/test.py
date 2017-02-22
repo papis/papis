@@ -15,7 +15,7 @@ class Test(Command):
 
         """
         # test parser
-        test_parser = parser.add_parser("test",
+        test_parser = self.parser.add_parser("test",
                 help="For testing (ignore)")
 
     def main(self, config, args):

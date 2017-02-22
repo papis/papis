@@ -15,7 +15,7 @@ class Export(Command):
 
         """
         # export parser
-        export_parser = parser.add_parser("export",
+        export_parser = self.parser.add_parser("export",
                 help="Export a document from a given library")
         export_parser.add_argument("document",
                 help="Document search",

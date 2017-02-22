@@ -15,7 +15,7 @@ class Add(Command):
 
         """
         # add parser
-        add_parser = parser.add_parser("add",
+        add_parser = self.parser.add_parser("add",
                 help="Add a document into a given library")
         add_parser.add_argument("document",
                 help="Document file name",

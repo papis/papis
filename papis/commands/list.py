@@ -14,7 +14,7 @@ class List(Command):
         :returns: TODO
 
         """
-        list_parser = parser.add_parser("list",
+        list_parser = self.parser.add_parser("list",
                 help="List documents from a given library")
         list_parser.add_argument("document",
                 help="Document search",

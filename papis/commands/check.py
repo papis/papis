@@ -14,7 +14,7 @@ class Check(Command):
         :returns: TODO
 
         """
-        check_parser = parser.add_parser("check",
+        check_parser = self.parser.add_parser("check",
                 help="Check document document from a given library")
         check_parser.add_argument("document",
                 help="Document search",

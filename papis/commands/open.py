@@ -15,7 +15,7 @@ class Open(Command):
         """
 
         # open parser
-        open_parser = parser.add_parser("open",
+        open_parser = self.parser.add_parser("open",
                 help="Open document document from a given library")
         open_parser.add_argument("document",
                 help="Document search",
