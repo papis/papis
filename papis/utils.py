@@ -83,29 +83,26 @@ def filterDocument(folders, documentInput):
         sys.exit(1)
     return results
 
-def getFilteredFolders(directory, search, recursive=False):
+def getFilteredFolders(directory, search):
     """
     Get documents from a containing folder
     :folder: TODO
     :returns: TODO
     """
-    folders = getFolders(directory, recursive)
+    folders = getFolders(directory)
     folders = filterDocument(folders, search)
     return folders
 
-def getFolders(folder, recursive=False):
+def getFolders(folder):
     """
     Get documents from a containing folder
     :folder: TODO
     :returns: TODO
     """
     folders = list()
-    if recursive:
-        raise Exception("Recursively search is TODO")
-    for f in glob.glob(os.path.join(folder, "*")):
-        if os.path.isdir(f):
-            if os.path.exists(os.path.join(f,getInfoFileName())):
-                folders.append(f)
+    for root, dirnames, filenames in os.walk(folder):
+        if os.path.exists(os.path.join(root, getInfoFileName())):
+            folders.append(root)
     return folders
 
 def getInfoFileName():
