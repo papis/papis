@@ -25,6 +25,11 @@ class Add(Command):
                 default="",
                 nargs="?",
                 action="store")
+        add_parser.add_argument("-d", "--dir",
+            help    = "Subfolder in the library",
+            default = "",
+            action  = "store"
+        )
         add_parser.add_argument("--name",
             help    = "Name for the main folder of the document",
             default = "",
@@ -80,14 +85,14 @@ class Add(Command):
                                         .safe_substitute(data)\
                                         .replace(" ","-")
         documentName    = "document."+extension
-        endDocumentPath = os.path.join(documentsDir, folderName, documentName )
+        endDocumentPath = os.path.join(documentsDir, args.dir, folderName, documentName )
+        fullDirPath = os.path.join(documentsDir, args.dir,  folderName)
         ######
         data["file"] = documentName
         self.logger.debug("Folder    = % s" % folderName)
         self.logger.debug("File      = % s" % documentPath)
         self.logger.debug("EndFile   = % s" % endDocumentPath)
         self.logger.debug("Ext.      = % s" % extension)
-        fullDirPath = os.path.join(documentsDir, folderName)
         if not os.path.isdir(fullDirPath):
             self.logger.debug("Creating directory '%s'"%fullDirPath)
             os.mkdir(fullDirPath)
