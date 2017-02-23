@@ -84,7 +84,7 @@ class Picker(object):
         :returns: TODO
 
         """
-        return r".*"+re.sub(r"(.)", r"\1.*", self.search, re.DOTALL)
+        return r".*"+re.sub(r"\s+", ".*", self.search)
 
     def get_filtered_options(self):
         """TODO: Docstring for get_filtered_options.
@@ -94,7 +94,7 @@ class Picker(object):
         new_lines = []
         regex = self.get_search_regex()
         for line in self.options:
-            if re.match(regex, line):
+            if re.match(regex, line, re.I):
                 new_lines += [line]
         return new_lines
 

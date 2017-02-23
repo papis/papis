@@ -73,7 +73,8 @@ def filterDocument(folders, documentInput):
 
     """
     results = []
-    regex   = r".*"+re.sub(r"([0-9a-zA-Z])", "\\1.*", documentInput.strip().replace(" ",""))
+    # regex   = r".*"+re.sub(r"([0-9a-zA-Z])", "\\1.*", documentInput.strip().replace(" ",""))
+    regex = r".*"+re.sub(r"\s+", ".*", documentInput)
     logger.debug("Filter regex = %s"%regex)
     for folder in folders:
         if re.match(regex, folder, re.IGNORECASE):
