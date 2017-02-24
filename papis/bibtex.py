@@ -1,6 +1,7 @@
 import re
 import sys
 import logging
+import os
 
 logger = logging.getLogger("bibtex")
 
@@ -47,20 +48,23 @@ bibtexKeys = [
   "year"
   ]
 
-def bibtexToDict(bibtexFile):
+def bibtexToDict(bibtex):
     """
     Convert bibtex file to dict
     { type: "article ...", "ref": "example1960etAl", author:" ..."}
 
-    :bibtexFile: TODO
+    :bibtex: TODO
     :returns: TODO
 
     """
     global logger
-    fd = open(bibtexFile, "r")
     result = dict()
-    logger.debug("Reading in file %s"%bibtexFile)
-    text = fd.read()
+    if os.path.exists(bibtex):
+        fd = open(bibtex, "r")
+        logger.debug("Reading in file %s"%bibtex)
+        text = fd.read()
+    else:
+        text = bibtex
     logger.debug("Removing comments...")
     text = re.sub(r"%.*", "", text)
     logger.debug("Removing empty lines...")
