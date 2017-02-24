@@ -1,9 +1,9 @@
-from .downloaders import Downloader
 import re
 import urllib.request
+import papis.downloaders
 
 
-class Aps(Downloader):
+class Aps(papis.downloaders.Downloader):
 
     """Docstring for Aps. """
 

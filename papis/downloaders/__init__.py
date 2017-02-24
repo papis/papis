@@ -1,6 +1,8 @@
 import logging
 import re
-import aps.Aps
+import papis.downloaders.aps
+
+logger = logging.getLogger("downloader")
 
 def getDownloader(url):
     """TODO: Docstring for getDownloader.
@@ -10,7 +12,8 @@ def getDownloader(url):
 
     """
     if re.match(r".*aps.org.*", url):
-        return aps.Aps
+        logger.info("Downloading from aps.org...")
+        return aps.Aps(url)
 
 class Downloader(object):
 
