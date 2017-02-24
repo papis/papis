@@ -8,6 +8,7 @@ import string
 import papis.utils
 import papis.bibtex
 from . import Command
+import papis.downloaders.utils
 
 class Add(Command):
     def init(self):
@@ -58,25 +59,24 @@ class Add(Command):
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
         folderName = None
         self.logger.debug("Using directory %s"%documentsDir)
+        # if documents are posible to download from url, overwrite
+        documentPath = args.document
         if args.from_url:
             url = args.from_url
-            service = getUrlService(url)
-            try:
-                serviceParser = eval("add_from_%s"%service)
-            except:
-                print("No add_from_%s function has been implemented, sorry"%service)
-                sys.exit(1)
-            documentPath, data = serviceParser(url)
+            downloader = papis.downloaders.utils.getDownloader(url)
+            if downloader:
+                data = papis.bibtex.bibtexToDict(downloader.getBibtexData())
+        elif args.from_bibtex:
+            data = papis.bibtex.bibtexToDict(args.from_bibtex)
         else:
-            documentPath = args.document
-            data  = papis.bibtex.bibtexToDict(args.from_bibtex) \
-                    if args.from_bibtex else dict()
+            data = dict()
         m = re.match(r"^(.*)\.([a-zA-Z]*)$", os.path.basename(documentPath))
         extension    = m.group(2) if m else ""
+        self.logger.debug("[ext] = %s"%extension)
         # Set foldername
-        if not args.from_bibtex and not args.name:
+        if not args.from_bibtex and not args.name and not args.from_url:
             folderName   = m.group(1) if m else os.path.basename(documentPath)
-        elif args.from_bibtex and not args.name:
+        elif (args.from_bibtex or args.from_url) and not args.name:
             args.name = '$year-$author-$title'
         if folderName == None:
             folderName = folderName if not args.name else \
