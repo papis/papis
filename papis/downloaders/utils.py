@@ -4,6 +4,10 @@ import papis.downloaders.aps
 
 logger = logging.getLogger("downloader")
 
+DOWNLOADERS = [
+        papis.downloaders.aps.Aps
+        ]
+
 def getDownloader(url):
     """TODO: Docstring for getDownloader.
 
@@ -11,6 +15,9 @@ def getDownloader(url):
     :returns: TODO
 
     """
-    if re.match(r".*aps.org.*", url):
-        logger.info("Downloading from aps.org...")
-        return aps.Aps(url)
+    global DOWNLOADERS
+    for downloader in DOWNLOADERS:
+        result = downloader.match(url)
+        if result:
+            return result
+    return False
