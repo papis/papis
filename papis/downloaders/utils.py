@@ -1,11 +1,13 @@
 import logging
 
 import papis.downloaders.aps
+import papis.downloaders.arxiv
 
 logger = logging.getLogger("downloader")
 
 DOWNLOADERS = [
-        papis.downloaders.aps.Aps
+        papis.downloaders.aps.Aps,
+        papis.downloaders.arxiv.Arxiv,
         ]
 
 def getDownloader(url):
