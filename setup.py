@@ -23,7 +23,13 @@ setup(
     maintainer_email='aamsgallo@gmail.com',
     license='LGPL',
     url='https://github.com/alejandrogallo/papis',
-    install_requires=[],
+    install_requires=[
+       "argcomplete",
+       "configparser",
+       "arxiv2bib",
+       "argparse",
+       "PyYAML"
+        ],
     extras_require=dict(
         dev=[]
     ),
