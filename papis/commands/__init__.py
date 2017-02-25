@@ -1,4 +1,5 @@
 import logging
+import papis.utils
 
 COMMANDS = [
 "add",
@@ -62,6 +63,16 @@ class Command(object):
 
         """
         return self.parser
+    def pick(self, folders, config, strip=""):
+        """TODO: Docstring for pick.
+
+        :folders: TODO
+        :config: TODO
+        :strip: TODO
+        :returns: TODO
+
+        """
+        return strip+papis.utils.pick([f.replace(strip,"") for f in folders], config)
 
     def main(self, config=None, args=None):
         if not args:

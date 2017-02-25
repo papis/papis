@@ -43,10 +43,10 @@ class Export(Command):
         self.logger.debug("Using directory %s"%documentsDir)
         documentSearch = args.document
         folders = papis.utils.getFilteredFolders(documentsDir, documentSearch)
-        for folder in folders:
-            self.logger.debug(folder)
-            document = Document(folder)
-            if args.bibtex:
-                print(document.toBibtex())
-            else:
-                print(document.dump())
+        folder = self.pick(folders, config, strip=documentsDir)
+        self.logger.debug(folder)
+        document = Document(folder)
+        if args.bibtex:
+            print(document.toBibtex())
+        else:
+            print(document.dump())

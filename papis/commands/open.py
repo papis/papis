@@ -36,6 +36,6 @@ class Open(Command):
         self.logger.debug("Using directory %s"%documentsDir)
         documentSearch = args.document
         folders = papis.utils.getFilteredFolders(documentsDir, documentSearch)
-        folder = papis.utils.pick(folders, config)
+        folder = self.pick(folders, config, strip=documentsDir)
         document   = Document(folder)
         papis.utils.openFile(document.getFile(), config)
