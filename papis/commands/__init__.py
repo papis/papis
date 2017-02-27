@@ -12,7 +12,8 @@ COMMANDS = [
 "open",
 "browse",
 "test",
-"update"
+"update",
+"sync"
 ]
 
 logger = logging.getLogger("commands")
