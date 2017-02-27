@@ -2,6 +2,7 @@ from ..document import Document
 import papis
 import sys
 import os
+import shutil
 import papis.utils
 from . import Command
 
@@ -29,6 +30,19 @@ class Export(Command):
             default = False,
             action  = "store_true"
         )
+        export_parser.add_argument(
+            "--folder",
+            help    = "Export document folder to share",
+            default = False,
+            action  = "store_true"
+        )
+        export_parser.add_argument(
+            "-o",
+            "--out",
+            help    = "Outfile or outdir",
+            default = "",
+            action  = "store"
+        )
 
     def main(self, config, args):
         """
@@ -48,5 +62,8 @@ class Export(Command):
         document = Document(folder)
         if args.bibtex:
             print(document.toBibtex())
+        if args.folder:
+            outdir = args.out or os.path.basename(folder)
+            shutil.copytree(folder, outdir)
         else:
             print(document.dump())
