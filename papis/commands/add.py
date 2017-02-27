@@ -3,6 +3,7 @@ import papis
 import sys
 import os
 import re
+import tempfile
 import shutil
 import string
 import papis.utils
@@ -58,20 +59,30 @@ class Add(Command):
         """
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
         folderName = None
+        data = dict()
         self.logger.debug("Using directory %s"%documentsDir)
         # if documents are posible to download from url, overwrite
         documentPath = args.document
         if args.from_url:
+            self.logger.debug("Attempting to retrieve from url")
             url = args.from_url
             downloader = papis.downloaders.utils.getDownloader(url)
             if downloader:
                 data = papis.bibtex.bibtexToDict(downloader.getBibtexData())
+                #FIXME
+                # if len(args.document) == 0:
+                    # doc_data = downloader.getDocumentData()
+                    # if doc_data:
+                        # documentPath = tempfile.mktemp()
+                        # tempfd = open(documentPath, "wb+")
+                        # tempfd.write(doc_data)
+                        # tempfd.close()
         elif args.from_bibtex:
             data = papis.bibtex.bibtexToDict(args.from_bibtex)
         else:
-            data = dict()
+            pass
         m = re.match(r"^(.*)\.([a-zA-Z]*)$", os.path.basename(documentPath))
-        extension    = m.group(2) if m else ""
+        extension    = m.group(2) if m else "pdf"
         self.logger.debug("[ext] = %s"%extension)
         # Set foldername
         if not args.from_bibtex and not args.name and not args.from_url:

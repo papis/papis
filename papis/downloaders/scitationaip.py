@@ -3,28 +3,38 @@ import urllib.request
 import papis.downloaders.base
 
 
-class ScitationAip(papis.downloaders.base.Downloader):
-
-    """Docstring for Aps. """
+class Downloader(papis.downloaders.base.Downloader):
 
     def __init__(self, url):
-        """TODO: to be defined1. """
         papis.downloaders.base.Downloader.__init__(self, url)
 
     @classmethod
     def match(cls, url):
+        # http://aip.scitation.org/doi/10.1063/1.4873138
         if re.match(r".*aip.scitation.org.*", url):
-            return ScitationAip(url)
+            return Downloader(url)
         else:
             return False
+
+    def getDoi(self):
+        doi = re.match(r'.*scitation.org/doi/(.*)', self.getUrl())
+        if doi:
+            self.logger.debug("[doi] = %s"%doi.group(1))
+            return doi.group(1)
+        else:
+            self.logger.error("Doi not found!!")
+
     def getDocumentUrl(self):
         # http://aip.scitation.org/doi/pdf/10.1063/1.4873138
         url = self.getUrl()
-        durl = re.sub(r'(scitation.org/doi)/[a-z]+/(.*)',r'\1/pdf/\2', url)
+        durl = re.sub(r'(scitation.org/doi)/(.*)',r'\1/pdf/\2', url)
         self.logger.debug("[doc url] = %s"%durl)
         return durl
+
     def getBibtexUrl(self):
-        # http://aip.scitation.org/doi/export/10.1063/1.4873138
-        pass
+        url =  "http://aip.scitation.org/action/downloadCitation?format=bibtex&cookieSet=1&doi=%s"%self.getDoi()
+        self.logger.debug("[bibtex url] = %s"%url)
+        return url
+
 
 #vim-run: python3 %

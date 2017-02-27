@@ -1,5 +1,7 @@
 import re
+import os
 import logging
+import urllib.request
 
 class Downloader(object):
 
@@ -7,7 +9,7 @@ class Downloader(object):
 
     def __init__(self, url=""):
         self.url = url
-        self.src = self.__class__.__name__.lower()
+        self.src = os.path.basename(__file__)
         self.logger = logging.getLogger("downloaders:"+self.src)
         self.bibtex_data = None
         self.document_data = None
@@ -42,6 +44,7 @@ class Downloader(object):
         :returns: TODO
 
         """
+        self.logger.debug("Downloading document")
         data = urllib.request.urlopen(self.getDocumentUrl()).read()
         self.document_data = data
     def setUrl(self, url):
