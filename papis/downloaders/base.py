@@ -10,6 +10,7 @@ class Downloader(object):
         self.src = self.__class__.__name__.lower()
         self.logger = logging.getLogger("downloaders:"+self.src)
         self.bibtex_data = None
+        self.document_data = None
         self.logger.debug("[url] = %s"%url)
 
     @classmethod
@@ -27,16 +28,22 @@ class Downloader(object):
         :returns: TODO
 
         """
-        pass
+        data = urllib.request.urlopen(self.getBibtexUrl()).read().decode('utf-8')
+        self.bibtex_data = data
     def getDocumentUrl(self):
         pass
+    def getDocumentData(self):
+        if not self.document_data:
+            self.downloadDocument()
+        return self.document_data
     def downloadDocument(self):
         """Document downloader, it should try to download bibtex information
         from the url
         :returns: TODO
 
         """
-        pass
+        data = urllib.request.urlopen(self.getDocumentUrl()).read()
+        self.document_data = data
     def setUrl(self, url):
         """Url setter for Downloader
 
