@@ -69,14 +69,14 @@ class Add(Command):
             downloader = papis.downloaders.utils.getDownloader(url)
             if downloader:
                 data = papis.bibtex.bibtexToDict(downloader.getBibtexData())
-                #FIXME
-                # if len(args.document) == 0:
-                    # doc_data = downloader.getDocumentData()
-                    # if doc_data:
-                        # documentPath = tempfile.mktemp()
-                        # tempfd = open(documentPath, "wb+")
-                        # tempfd.write(doc_data)
-                        # tempfd.close()
+                if len(args.document) == 0:
+                    doc_data = downloader.getDocumentData()
+                    if doc_data:
+                        documentPath = tempfile.mktemp()
+                        self.logger.debug("Saving in %s"%documentPath)
+                        tempfd = open(documentPath, "wb+")
+                        tempfd.write(doc_data)
+                        tempfd.close()
         elif args.from_bibtex:
             data = papis.bibtex.bibtexToDict(args.from_bibtex)
         else:

@@ -36,13 +36,27 @@ class Arxiv(papis.downloaders.base.Downloader):
         bibtexCli.run()
         data = os.linesep.join(bibtexCli.output)
         self.bibtex_data = data
+    def downloadBibtex(self):
+        """TODO: Docstring for downloadBibtex.
+
+        :arg1: TODO
+        :returns: TODO
+
+        """
+        bibtexCli = arxiv2bib.Cli([self.getBibtexUrl()])
+        bibtexCli.run()
+        data = os.linesep.join(bibtexCli.output)
+        self.bibtex_data = data
     def getDocumentUrl(self):
         """TODO: Docstring for getDocumentUrl.
         :returns: TODO
 
         """
+        # https://arxiv.org/pdf/1702.01590.pdf
         url = self.getUrl()
-        burl = re.sub(r'.*arxiv.org/[a-z]+',r'\1', url)
-        self.logger.debug("[paper id] = %s"%burl)
+        burl = re.sub(r'.*arxiv.org.*/([0-9]+\.[0-9]+).*',r'\1', url)
+        burl = "https://arxiv.org/pdf/"+burl+".pdf"
+        self.logger.debug("[pdf url] = %s"%burl)
+        return burl
 
 #vim-run: python3 %

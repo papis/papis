@@ -45,7 +45,10 @@ class Downloader(object):
 
         """
         self.logger.debug("Downloading document")
-        data = urllib.request.urlopen(self.getDocumentUrl()).read()
+        url = self.getDocumentUrl()
+        if not url:
+            return False
+        data = urllib.request.urlopen(url).read()
         self.document_data = data
     def setUrl(self, url):
         """Url setter for Downloader
