@@ -12,6 +12,7 @@ import papis.downloaders.utils
 
 
 class Add(Command):
+
     def init(self):
         """TODO: Docstring for init.
 
@@ -19,33 +20,43 @@ class Add(Command):
         :returns: TODO
 
         """
-        # add parser
-        add_parser = \
-            self.parser.add_parser("add",
-                                   help="Add a document into a given library")
-        add_parser.add_argument("document",
-                                help="Document file name",
-                                default="",
-                                nargs="?",
-                                action="store")
-        add_parser.add_argument("-d", "--dir",
-                                help="Subfolder in the library",
-                                default="",
-                                action="store")
-        add_parser.add_argument("--name",
-                                help="Name for the main folder",
-                                default="",
-                                action="store")
-        add_parser.add_argument("--from-bibtex",
-                                help="Parse information from a bibtex file",
-                                default="",
-                                action="store")
-        add_parser.add_argument("--from-url",
-                                help="""Get document and information from a
-                                        given url, a parser must be
-                                        implemented""",
-                                default="",
-                                action="store")
+        self.subparser = self.parser.add_parser(
+            "add",
+            help="Add a document into a given library"
+        )
+        self.subparser.add_argument(
+            "document",
+            help="Document file name",
+            default="",
+            nargs="?",
+            action="store"
+        )
+        self.subparser.add_argument(
+            "-d", "--dir",
+            help="Subfolder in the library",
+            default="",
+            action="store"
+        )
+        self.subparser.add_argument(
+            "--name",
+            help="Name for the main folder",
+            default="",
+            action="store"
+        )
+        self.subparser.add_argument(
+            "--from-bibtex",
+            help="Parse information from a bibtex file",
+            default="",
+            action="store"
+        )
+        self.subparser.add_argument(
+            "--from-url",
+            help="""Get document and information from a
+                    given url, a parser must be
+                    implemented""",
+            default="",
+            action="store"
+        )
 
     def main(self, config, args):
         """

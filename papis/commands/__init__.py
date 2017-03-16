@@ -43,10 +43,11 @@ def init(parser):
 
 class Command(object):
 
+    args = None
+    subparser = None
+
     def __init__(self, parser=None):
         self.parser = parser
-        self.parser = None
-        self.args = None
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def init(self):

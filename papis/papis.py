@@ -99,37 +99,40 @@ def main():
         description="Simple documents administration program"
         )
 
-    SUBPARSER_HELP = "For further information for every \
-command, type in 'papis <command> -h'"
+    SUBPARSER_HELP = "For further information for every "\
+                     "command, type in 'papis <command> -h'"
     subparsers = parser.add_subparsers(
         help=SUBPARSER_HELP,
         metavar="command",
         dest="command"
         )
-    parser.add_argument("-v",
-                        "--verbose",
-                        help="Make the output verbose",
-                        default=False,
-                        action="store_true"
-                        )
-    parser.add_argument("-l", "--lib",
-                        help="Choose a documents library, default general",
-                        default=config["settings"]["default"] or "papers",
-                        action="store"
-                        )
     parser.add_argument(
-            "--log",
-            help="Logging level",
-            choices=[
-                "INFO",
-                "DEBUG",
-                "WARNING",
-                "ERROR",
-                "CRITICAL"
-                ],
-            action="store",
-            default="WARNING"
-            )
+        "-v",
+        "--verbose",
+        help="Make the output verbose",
+        default=False,
+        action="store_true"
+    )
+    parser.add_argument(
+        "-l",
+        "--lib",
+        help="Choose a documents library, default general",
+        default=config["settings"]["default"] or "papers",
+        action="store"
+    )
+    parser.add_argument(
+        "--log",
+        help="Logging level",
+        choices=[
+            "INFO",
+            "DEBUG",
+            "WARNING",
+            "ERROR",
+            "CRITICAL"
+            ],
+        action="store",
+        default="WARNING"
+    )
 
     subcommands = papis.commands.init(subparsers)
 
