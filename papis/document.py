@@ -6,9 +6,8 @@ import papis.bibtex
 
 class Document(object):
 
-    """
-     Structure implementing all information inside a document,
-     which should be yaml information with few methods
+    """Structure implementing all information inside a document, which should
+    be yaml information with few methods
     """
 
     def __init__(self, folder):
@@ -17,6 +16,7 @@ class Document(object):
         self.logger = logging.getLogger("Doc")
         self._infoFilePath = os.path.join(folder, papis.utils.getInfoFileName())
         self.loadInformationFromFile()
+
     def __setitem__(self, obj, value):
         """
         :obj: TODO
@@ -24,12 +24,14 @@ class Document(object):
         """
         self._keys.append(obj)
         setattr(self, obj, value)
+
     def __getitem__(self, obj):
         """
         :obj: TODO
         :returns: TODO
         """
         return getattr(self, obj) if hasattr(self, obj) else None
+
     def getMainFolder(self):
         """
         Get main folder where the document and the information is stored
@@ -37,6 +39,19 @@ class Document(object):
 
         """
         return self._folder
+
+    def has(self, key):
+        """Check if the information file has some key defined
+
+        :key: Key name to be checked
+        :returns: True/False
+
+        """
+        if key in self.keys():
+            return True
+        else:
+            return False
+
     def checkFile(self):
         """
         :returns: TODO
@@ -47,6 +62,7 @@ class Document(object):
             return False
         else:
             return True
+
     def save(self):
         """
         :returns: TODO
@@ -57,6 +73,7 @@ class Document(object):
             structure[key] = self[key]
         yaml.dump(structure, fd, default_flow_style=False)
         fd.close()
+
     def toBibtex(self):
         """
         :f: TODO
@@ -71,7 +88,7 @@ class Document(object):
         if not bibtexType:
             bibtexType = "article"
         if not self["ref"]:
-            ref = os.path.basename(self._folder)
+            ref = os.path.basename(self.getMainFolder())
         else:
             ref = self["ref"]
         bibtexString += "@%s{%s,\n"%(bibtexType, ref)
@@ -80,6 +97,7 @@ class Document(object):
                 bibtexString += "\t%s = { %s },\n"%(bibKey, self[bibKey])
         bibtexString += "}\n"
         return bibtexString
+
     def update(self, data, force = False, interactive = False):
         """TODO: Docstring for update.
 
@@ -102,18 +120,21 @@ class Document(object):
                         self[key] = data[key]
                 else:
                     pass
+
     def getInfoFile(self):
         """TODO: Docstring for getFiles.
         :returns: TODO
 
         """
         return self._infoFilePath
+
     def getFile(self):
         """TODO: Docstring for getFiles.
         :returns: TODO
 
         """
-        return os.path.join(self._folder, self["file"])
+        return os.path.join(self.getMainFolder(), self["file"])
+
     def keys(self):
         """TODO: Docstring for keys().
 
@@ -122,6 +143,7 @@ class Document(object):
 
         """
         return self._keys
+
     def dump(self):
         """TODO: Docstring for dump.
         :returns: TODO
@@ -131,6 +153,7 @@ class Document(object):
         for i in self.keys():
             string += str(i)+":   "+str(self[i])+"\n"
         return string
+
     def loadInformationFromFile(self):
         """
         load information from file
