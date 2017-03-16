@@ -35,6 +35,7 @@ def init(parser):
         logger.debug(command)
         exec("from .%s import %s" % (command, command.capitalize()))
         cmd = eval(command.capitalize())(parser)
+        cmd.setParser(parser)
         cmd.init()
         commands[command] = cmd
     return commands
