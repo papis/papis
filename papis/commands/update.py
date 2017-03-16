@@ -15,30 +15,30 @@ class Update(Command):
 
         """
         # update parser
-        update_parser = self.parser.add_parser(
+        self.subparser = self.parser.add_parser(
             "update",
             help="Update a document from a given library"
         )
-        update_parser.add_argument(
+        self.subparser.add_argument(
             "--from-bibtex",
             help="Update info from bibtex file",
             action="store"
         )
-        update_parser.add_argument(
+        self.subparser.add_argument(
             "-i",
             "--interactive",
             help="Interactively update",
             default=False,
             action="store_true"
         )
-        update_parser.add_argument(
+        self.subparser.add_argument(
             "-f",
             "--force",
             help="Force update, overwrite conflicting information",
             default=False,
             action="store_true"
         )
-        update_parser.add_argument(
+        self.subparser.add_argument(
             "document",
             help="Document search",
             action="store"

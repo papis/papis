@@ -16,17 +16,17 @@ class Browse(Command):
         """
 
         # open parser
-        open_parser = self.parser.add_parser(
-                "browse",
-                help="Open document url if this exists"
-                )
-        open_parser.add_argument(
-                "document",
-                help="Document search",
-                nargs="?",
-                default=".",
-                action="store"
-                )
+        self.subparser = self.parser.add_parser(
+            "browse",
+            help="Open document url if this exists"
+        )
+        self.subparser.add_argument(
+            "document",
+            help="Document search",
+            nargs="?",
+            default=".",
+            action="store"
+        )
 
     def main(self, config, args):
         """

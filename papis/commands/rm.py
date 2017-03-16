@@ -15,18 +15,18 @@ class Rm(Command):
 
         """
 
-        parser = self.parser.add_parser(
+        self.subparser = self.parser.add_parser(
             "rm",
             help="Delete entry"
         )
-        parser.add_argument(
+        self.subparser.add_argument(
             "document",
             help="Document search",
             nargs="?",
             default=".",
             action="store"
         )
-        parser.add_argument(
+        self.subparser.add_argument(
             "-f", "--force",
             help="Do not confirm removal",
             default=False,

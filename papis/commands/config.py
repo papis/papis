@@ -14,18 +14,18 @@ class Config(Command):
 
         """
 
-        config_parser = self.parser.add_parser(
-                "config",
-                help="Manage the configuration options"
-                )
+        self.subparser = self.parser.add_parser(
+            "config",
+            help="Manage the configuration options"
+        )
 
-        config_parser.add_argument(
-                "option",
-                help="Set or get option",
-                default="",
-                nargs="*",
-                action="store"
-                )
+        self.subparser.add_argument(
+            "option",
+            help="Set or get option",
+            default="",
+            nargs="*",
+            action="store"
+        )
 
     def main(self, config, args):
         """

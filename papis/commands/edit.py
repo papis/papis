@@ -14,17 +14,17 @@ class Edit(Command):
         :returns: TODO
 
         """
-        edit_parser = self.parser.add_parser(
-                "edit",
-                help="Edit document information from a given library"
-                )
-        edit_parser.add_argument(
-                "document",
-                help="Document search",
-                nargs="?",
-                default=".",
-                action="store"
-                )
+        self.subparser = self.parser.add_parser(
+            "edit",
+            help="Edit document information from a given library"
+        )
+        self.subparser.add_argument(
+            "document",
+            help="Document search",
+            nargs="?",
+            default=".",
+            action="store"
+        )
 
     def main(self, config, args):
         """

@@ -14,19 +14,18 @@ class Open(Command):
 
         """
 
-        # open parser
-        open_parser = self.parser.add_parser(
+        self.subparser = self.parser.add_parser(
             "open",
             help="Open document document from a given library"
         )
-        open_parser.add_argument(
+        self.subparser.add_argument(
             "document",
             help="Document search",
             nargs="?",
             default=".",
             action="store"
         )
-        open_parser.add_argument(
+        self.subparser.add_argument(
             "-n",
             "--notes",
             help="Open notes document, if there is some",
