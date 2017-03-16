@@ -1,11 +1,9 @@
-
-from ..document import Document
-import papis
 import sys
 import os
 import re
-import papis.utils
+import configparser
 from . import Command
+
 
 class Config(Command):
     def init(self):
@@ -29,7 +27,6 @@ class Config(Command):
                 action="store"
                 )
 
-
     def main(self, config, args):
         """
         Main action if the command is triggered
@@ -40,16 +37,16 @@ class Config(Command):
 
         """
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
-        self.logger.debug("Using directory %s"%documentsDir)
+        self.logger.debug("Using directory %s" % documentsDir)
         # FIXME: Replacing values does not work
         option = " ".join(args.option)
         self.logger.debug(option)
         value = False
         m = re.match(r"([^ ]*)\.(.*)", option)
         if not m:
-            self.logger.error("Syntax for option %s not recognised"%option)
+            self.logger.error("Syntax for option %s not recognised" % option)
             sys.exit(1)
-        lib    = m.group(1)
+        lib = m.group(1)
         preKey = m.group(2)
         m = re.match(r"(.*)\s*=\s*(.*)", preKey)
         if m:
@@ -66,7 +63,7 @@ class Config(Command):
                 sys.exit(1)
         else:
             try:
-                config.remove_option(lib,key)
+                config.remove_option(lib, key)
                 config.set(lib, key, value)
             except configparser.NoSectionError:
                 config.add_section(lib)

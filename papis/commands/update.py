@@ -1,6 +1,5 @@
 from ..document import Document
 import papis
-import sys
 import os
 import papis.utils
 import papis.bibtex
@@ -16,29 +15,34 @@ class Update(Command):
 
         """
         # update parser
-        update_parser = self.parser.add_parser("update",
-                help="Update a document from a given library")
-        update_parser.add_argument("--from-bibtex",
-            help    = "Update info from bibtex file",
-            action  = "store"
+        update_parser = self.parser.add_parser(
+            "update",
+            help="Update a document from a given library"
         )
-        update_parser.add_argument("-i",
+        update_parser.add_argument(
+            "--from-bibtex",
+            help="Update info from bibtex file",
+            action="store"
+        )
+        update_parser.add_argument(
+            "-i",
             "--interactive",
-            help    = "Interactively update",
-            default = False,
-            action  = "store_true"
+            help="Interactively update",
+            default=False,
+            action="store_true"
         )
-        update_parser.add_argument("-f",
+        update_parser.add_argument(
+            "-f",
             "--force",
-            help    = "Force update, overwrite conflicting information",
-            default = False,
-            action  = "store_true"
+            help="Force update, overwrite conflicting information",
+            default=False,
+            action="store_true"
         )
-        update_parser.add_argument("document",
-                help="Document search",
-                action="store")
-
-
+        update_parser.add_argument(
+            "document",
+            help="Document search",
+            action="store"
+        )
 
     def main(self, config, args):
         """
@@ -50,13 +54,12 @@ class Update(Command):
 
         """
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
-        self.logger.debug("Using directory %s"%documentsDir)
+        self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
-        data  = papis.bibtex.bibtexToDict(args.from_bibtex) \
-                if args.from_bibtex else dict()
+        data = papis.bibtex.bibtexToDict(args.from_bibtex) \
+            if args.from_bibtex else dict()
         folders = papis.utils.getFilteredFolders(documentsDir, documentSearch)
         folder = papis.utils.pick(folders, config)
         document = Document(folder)
         document.update(data, args.force, args.interactive)
         document.save()
-

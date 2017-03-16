@@ -7,10 +7,6 @@
 
 from __future__ import print_function
 
-import os.path
-import subprocess
-import sys
-
 from setuptools import setup
 
 from papis import __version__
@@ -36,7 +32,14 @@ setup(
 
     description='Simple program to manage literature',
     long_description='Simple program to manage literature',
-    keywords=['document', 'books', 'bibtex', 'management', 'cli', 'biliography'],
+    keywords=[
+        'document',
+        'books',
+        'bibtex',
+        'management',
+        'cli',
+        'biliography'
+        ],
     packages=["papis"],
     test_suite="papis.tests",
     entry_points=dict(

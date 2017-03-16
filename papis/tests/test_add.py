@@ -1,12 +1,10 @@
 import unittest
 import logging
-import tempfile
-import os
 
-import papis
 from papis.commands.add import Add
 
-logging.basicConfig(level = logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
+
 
 class TestClass(unittest.TestCase):
 
@@ -19,5 +17,5 @@ class TestClass(unittest.TestCase):
         pass
 
     def test_existence(self):
-        self.assertTrue(self.command != None)
-        self.assertTrue(self.command.getParser() == None)
+        self.assertTrue(self.command is not None)
+        self.assertTrue(self.command.getParser() is None)

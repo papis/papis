@@ -1,7 +1,7 @@
-import re
 import os
 import logging
 import urllib.request
+
 
 class Downloader(object):
 
@@ -13,31 +13,39 @@ class Downloader(object):
         self.logger = logging.getLogger("downloaders:"+self.src)
         self.bibtex_data = None
         self.document_data = None
-        self.logger.debug("[url] = %s"%url)
+        self.logger.debug("[url] = %s" % url)
 
     @classmethod
     def match(url):
         return False
+
     def getBibtexUrl(self):
         pass
+
     def getBibtexData(self):
         if not self.bibtex_data:
             self.downloadBibtex()
         return self.bibtex_data
+
     def downloadBibtex(self):
         """Bibtex downloader, it should try to download bibtex information from
         the url
         :returns: TODO
 
         """
-        data = urllib.request.urlopen(self.getBibtexUrl()).read().decode('utf-8')
+        data = urllib.request.urlopen(self.getBibtexUrl())\
+            .read()\
+            .decode('utf-8')
         self.bibtex_data = data
+
     def getDocumentUrl(self):
         pass
+
     def getDocumentData(self):
         if not self.document_data:
             self.downloadDocument()
         return self.document_data
+
     def downloadDocument(self):
         """Document downloader, it should try to download bibtex information
         from the url
@@ -50,6 +58,7 @@ class Downloader(object):
             return False
         data = urllib.request.urlopen(url).read()
         self.document_data = data
+
     def setUrl(self, url):
         """Url setter for Downloader
 
@@ -59,6 +68,7 @@ class Downloader(object):
         """
         self.url = url
         return self
+
     def getUrl(self):
         """TODO: Url getter for Downloader
         :returns: url linked to the Downloader

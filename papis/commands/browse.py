@@ -1,10 +1,10 @@
 import webbrowser
 from ..document import Document
 import papis
-import sys
 import os
 import papis.utils
 from . import Command
+
 
 class Browse(Command):
     def init(self):
@@ -38,7 +38,7 @@ class Browse(Command):
 
         """
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
-        self.logger.debug("Using directory %s"%documentsDir)
+        self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
         folders = papis.utils.getFilteredFolders(documentsDir, documentSearch)
         folder = self.pick(folders, config, strip=documentsDir)
@@ -46,4 +46,4 @@ class Browse(Command):
         if "url" in document.keys():
             webbrowser.open(document["url"])
         else:
-            self.logger.warning("No url for %s"%(os.path.basename(folder)))
+            self.logger.warning("No url for %s" % (os.path.basename(folder)))

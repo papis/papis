@@ -1,6 +1,4 @@
-from ..document import Document
 import papis
-import sys
 import os
 import papis.utils
 from . import Command
@@ -15,8 +13,10 @@ class Test(Command):
 
         """
         # test parser
-        test_parser = self.parser.add_parser("test",
-                help="For testing (ignore)")
+        self.subparser = self.parser.add_parser(
+            "test",
+            help="For testing (ignore)"
+        )
 
     def main(self, config, args):
         """
@@ -28,5 +28,5 @@ class Test(Command):
 
         """
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
-        self.logger.debug("Using directory %s"%documentsDir)
-        papis.utils.pickFile(["1","3"], config)
+        self.logger.debug("Using directory %s" % documentsDir)
+        papis.utils.pickFile(["1", "3"], config)

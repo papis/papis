@@ -1,6 +1,5 @@
 from subprocess import call
 from subprocess import Popen, PIPE
-import glob
 import logging
 import os
 import sys
@@ -9,8 +8,10 @@ import papis.pick
 
 logger = logging.getLogger("utils")
 
+
 def which(program):
-    # source http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python
+    # source
+    # stackoverflow.com/questions/377017/test-if-executable-exists-in-python
     def is_exe(fpath):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
     fpath, fname = os.path.split(program)
@@ -25,7 +26,8 @@ def which(program):
                 return exe_file
     return None
 
-def pick(files, configuration = {}):
+
+def pick(files, configuration={}):
     """TODO: Docstring for editFile.
     :fileName: TODO
     :returns: TODO
@@ -42,7 +44,8 @@ def pick(files, configuration = {}):
                 stdout=PIPE,
                 shell=True).read()
 
-def openFile(fileName, configuration = {}):
+
+def openFile(fileName, configuration={}):
     """TODO: Docstring for openFile.
     :fileName: TODO
     :returns: TODO
@@ -53,7 +56,8 @@ def openFile(fileName, configuration = {}):
         opener = "xdg-open"
     call([opener, fileName])
 
-def editFile(fileName, configuration = {}):
+
+def editFile(fileName, configuration={}):
     """TODO: Docstring for editFile.
     :fileName: TODO
     :returns: TODO
@@ -64,6 +68,7 @@ def editFile(fileName, configuration = {}):
         editor = os.environ["EDITOR"]
     call([editor, fileName])
 
+
 def filterDocument(folders, documentInput):
     """
 
@@ -73,9 +78,8 @@ def filterDocument(folders, documentInput):
 
     """
     results = []
-    # regex   = r".*"+re.sub(r"([0-9a-zA-Z])", "\\1.*", documentInput.strip().replace(" ",""))
     regex = r".*"+re.sub(r"\s+", ".*", documentInput)
-    logger.debug("Filter regex = %s"%regex)
+    logger.debug("Filter regex = %s" % regex)
     for folder in folders:
         if re.match(regex, folder, re.IGNORECASE):
             results.append(folder)
@@ -83,6 +87,7 @@ def filterDocument(folders, documentInput):
         print("No results found with the given input")
         sys.exit(1)
     return results
+
 
 def getFilteredFolders(directory, search):
     """
@@ -93,6 +98,7 @@ def getFilteredFolders(directory, search):
     folders = getFolders(directory)
     folders = filterDocument(folders, search)
     return folders
+
 
 def getFolders(folder):
     """
@@ -105,6 +111,7 @@ def getFolders(folder):
         if os.path.exists(os.path.join(root, getInfoFileName())):
             folders.append(root)
     return folders
+
 
 def getInfoFileName():
     """TODO: Docstring for getInfoFileName.

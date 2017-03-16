@@ -1,6 +1,5 @@
 from ..document import Document
 import papis
-import sys
 import os
 import shutil
 import papis.utils
@@ -17,32 +16,34 @@ class Export(Command):
         """
         # export parser
         export_parser = self.parser.add_parser("export",
-                help="Export a document from a given library")
+                                               help="""Export a document from
+                                                       a given library"""
+                                               )
         export_parser.add_argument(
-                "document",
-                help="Document search",
-                nargs="?",
-                default=".",
-                action="store")
+                                   "document",
+                                   help="Document search",
+                                   nargs="?",
+                                   default=".",
+                                   action="store")
         export_parser.add_argument(
-            "--bibtex",
-            help    = "Export into bibtex",
-            default = False,
-            action  = "store_true"
-        )
+                                   "--bibtex",
+                                   help="Export into bibtex",
+                                   default=False,
+                                   action="store_true"
+                                   )
         export_parser.add_argument(
-            "--folder",
-            help    = "Export document folder to share",
-            default = False,
-            action  = "store_true"
-        )
+                                   "--folder",
+                                   help="Export document folder to share",
+                                   default=False,
+                                   action="store_true"
+                                   )
         export_parser.add_argument(
-            "-o",
-            "--out",
-            help    = "Outfile or outdir",
-            default = "",
-            action  = "store"
-        )
+                                   "-o",
+                                   "--out",
+                                   help="Outfile or outdir",
+                                   default="",
+                                   action="store"
+                                   )
 
     def main(self, config, args):
         """
@@ -54,7 +55,7 @@ class Export(Command):
 
         """
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
-        self.logger.debug("Using directory %s"%documentsDir)
+        self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
         folders = papis.utils.getFilteredFolders(documentsDir, documentSearch)
         folder = self.pick(folders, config, strip=documentsDir)

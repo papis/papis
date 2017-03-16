@@ -2,21 +2,25 @@
 import os
 import configparser
 
+
 class Configuration(configparser.ConfigParser):
 
-    default_info={
+    default_info = {
       "papers": {
-        'dir'  : '~/Documents/papers'
+        'dir': '~/Documents/papers'
       },
       "settings": {
         'default': 'papers'
       }
     }
 
-    DEFAULT_FILE_LOCATION= os.path.join(os.path.expanduser("~"), ".papis.conf")
+    DEFAULT_FILE_LOCATION = os.path.join(
+            os.path.expanduser("~"), ".papis.conf")
+
     def __init__(self):
         configparser.ConfigParser.__init__(self)
         self.initialize()
+
     def initialize(self):
         if os.path.exists(self.DEFAULT_FILE_LOCATION):
             self.read(self.DEFAULT_FILE_LOCATION)
@@ -27,6 +31,7 @@ class Configuration(configparser.ConfigParser):
                     self[section][field] = self.default_info[section][field]
             with open(self.DEFAULT_FILE_LOCATION, "w") as configfile:
                 self.write(configfile)
+
     def save(self):
         """
         :f: TODO

@@ -17,15 +17,17 @@ class Aps(papis.downloaders.base.Downloader):
             return Aps(url)
         else:
             return False
+
     def getBibtexUrl(self):
         # http://journals.aps.org/prl/export/10.1103/
         # PhysRevLett.115.066402?type=bibtex&download=true
         # http://journals.aps.org/prl/abstract/10.1103/PhysRevLett.115.066402
         url = self.getUrl()
-        burl = re.sub(r'(aps.org/[a-z]+)/abstract',r'\1/export', url)\
-                +"?type=bibtex&download=true"
-        self.logger.debug("[bibtex url] = %s"%burl)
+        burl = re.sub(r'(aps.org/[a-z]+)/abstract', r'\1/export', url)\
+            + "?type=bibtex&download=true"
+        self.logger.debug("[bibtex url] = %s" % burl)
         return burl
+
     def downloadBibtex(self):
         """TODO: Docstring for downloadBibtex.
 
@@ -33,7 +35,9 @@ class Aps(papis.downloaders.base.Downloader):
         :returns: TODO
 
         """
-        data = urllib.request.urlopen(self.getBibtexUrl()).read().decode('utf-8')
+        data = urllib.request.urlopen(self.getBibtexUrl())\
+            .read()\
+            .decode('utf-8')
         self.bibtex_data = data
 
-#vim-run: python3 %
+# vim-run: python3 %

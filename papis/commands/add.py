@@ -1,6 +1,5 @@
 from ..document import Document
 import papis
-import sys
 import os
 import re
 import tempfile
@@ -11,6 +10,7 @@ import papis.bibtex
 from . import Command
 import papis.downloaders.utils
 
+
 class Add(Command):
     def init(self):
         """TODO: Docstring for init.
@@ -20,33 +20,32 @@ class Add(Command):
 
         """
         # add parser
-        add_parser = self.parser.add_parser("add",
-                help="Add a document into a given library")
+        add_parser = \
+            self.parser.add_parser("add",
+                                   help="Add a document into a given library")
         add_parser.add_argument("document",
-                help="Document file name",
-                default="",
-                nargs="?",
-                action="store")
+                                help="Document file name",
+                                default="",
+                                nargs="?",
+                                action="store")
         add_parser.add_argument("-d", "--dir",
-            help    = "Subfolder in the library",
-            default = "",
-            action  = "store"
-        )
+                                help="Subfolder in the library",
+                                default="",
+                                action="store")
         add_parser.add_argument("--name",
-            help    = "Name for the main folder of the document",
-            default = "",
-            action  = "store"
-        )
+                                help="Name for the main folder",
+                                default="",
+                                action="store")
         add_parser.add_argument("--from-bibtex",
-            help    = "Parse information from a bibtex file",
-            default = "",
-            action  = "store"
-        )
+                                help="Parse information from a bibtex file",
+                                default="",
+                                action="store")
         add_parser.add_argument("--from-url",
-            help    = "Get document and information from a given url, a parser must be implemented",
-            default = "",
-            action  = "store"
-        )
+                                help="""Get document and information from a
+                                        given url, a parser must be
+                                        implemented""",
+                                default="",
+                                action="store")
 
     def main(self, config, args):
         """
@@ -60,7 +59,7 @@ class Add(Command):
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
         folderName = None
         data = dict()
-        self.logger.debug("Using directory %s"%documentsDir)
+        self.logger.debug("Using directory %s" % documentsDir)
         # if documents are posible to download from url, overwrite
         documentPath = args.document
         if args.from_url:
@@ -73,7 +72,7 @@ class Add(Command):
                     doc_data = downloader.getDocumentData()
                     if doc_data:
                         documentPath = tempfile.mktemp()
-                        self.logger.debug("Saving in %s"%documentPath)
+                        self.logger.debug("Saving in %s" % documentPath)
                         tempfd = open(documentPath, "wb+")
                         tempfd.write(doc_data)
                         tempfd.close()
@@ -82,21 +81,24 @@ class Add(Command):
         else:
             pass
         m = re.match(r"^(.*)\.([a-zA-Z]*)$", os.path.basename(documentPath))
-        extension    = m.group(2) if m else "pdf"
-        self.logger.debug("[ext] = %s"%extension)
+        extension = m.group(2) if m else "pdf"
+        self.logger.debug("[ext] = %s" % extension)
         # Set foldername
         if not args.from_bibtex and not args.name and not args.from_url:
-            folderName   = m.group(1) if m else os.path.basename(documentPath)
+            folderName = m.group(1) if m else os.path.basename(documentPath)
         elif (args.from_bibtex or args.from_url) and not args.name:
             args.name = '$year-$author-$title'
-        if folderName == None:
+        if folderName is None:
             folderName = folderName if not args.name else \
                                         string\
                                         .Template(args.name)\
                                         .safe_substitute(data)\
-                                        .replace(" ","-")
-        documentName    = "document."+extension
-        endDocumentPath = os.path.join(documentsDir, args.dir, folderName, documentName )
+                                        .replace(" ", "-")
+        documentName = "document."+extension
+        endDocumentPath = os.path.join(documentsDir,
+                                       args.dir,
+                                       folderName,
+                                       documentName)
         fullDirPath = os.path.join(documentsDir, args.dir,  folderName)
         ######
         data["file"] = documentName
@@ -105,9 +107,9 @@ class Add(Command):
         self.logger.debug("EndFile   = % s" % endDocumentPath)
         self.logger.debug("Ext.      = % s" % extension)
         if not os.path.isdir(fullDirPath):
-            self.logger.debug("Creating directory '%s'"%fullDirPath)
+            self.logger.debug("Creating directory '%s'" % fullDirPath)
             os.mkdir(fullDirPath)
         shutil.copy(documentPath, endDocumentPath)
         document = Document(fullDirPath)
-        document.update(data, force = True)
+        document.update(data, force=True)
         document.save()

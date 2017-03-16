@@ -22,25 +22,11 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-MANUAL =\
-"""
-Yeah... well
-
-TODO:
-    - implement picker functionality
-    - Continue
-"""
-
-
-
-
 #  Import modules {{{1  #
 #########################
 
-import os
 import re
 import sys
-import yaml
 import shutil
 import requests
 import tempfile
@@ -70,10 +56,11 @@ def getUrlService(url):
 
     """
     m = re.match(r".*arxiv.org.*", url)
-    if m: # Arxiv
+    if m:  # Arxiv
         logger.debug("Arxiv recognised")
         return "arxiv"
     return ""
+
 
 def add_from_arxiv(url):
     """TODO: Docstring for add_from_arxiv.
@@ -81,25 +68,26 @@ def add_from_arxiv(url):
     :returns: TODO
     """
     data = {}
-    filePath   = tempfile.mktemp()+".pdf"
-    bibtexPath = tempfile.mktemp()
+    filePath = tempfile.mktemp()+".pdf"
     m = re.match(r".*arxiv.org/abs/(.*)", url)
     if m:
         p_id = m.group(1)
-        logger.debug("Arxiv id = '%s'"%p_id)
+        logger.debug("Arxiv id = '%s'" % p_id)
     else:
         print("Arxiv url fromat not recognised, no document id found")
         sys.exit(1)
-    infoUrl = "http://export.arxiv.org/api/query?search_query=%s&start=0&max_results=1"%p_id
-    pdfUrl  = "https://arxiv.org/pdf/%s.pdf"%p_id
-    logger.debug("Pdf url  = '%s'"%pdfUrl)
-    logger.debug("Info url = '%s'"%infoUrl)
+    infoUrl = \
+        "http://export.arxiv.org/api/query?\
+search_query=%s&start=0&max_results=1" % p_id
+    pdfUrl = "https://arxiv.org/pdf/%s.pdf" % p_id
+    logger.debug("Pdf url  = '%s'" % pdfUrl)
+    logger.debug("Info url = '%s'" % infoUrl)
     response = requests.get(pdfUrl, stream=True)
-    if response: # Download pdf
+    if response:  # Download pdf
         fd = open(filePath, "wb")
         # fd.write(response.raw)
         shutil.copyfileobj(response.raw, fd)
-        logger.debug("Pdf saved in %s"%filePath)
+        logger.debug("Pdf saved in %s" % filePath)
         fd.close()
     return (filePath, data)
 
@@ -111,23 +99,24 @@ def main():
         description="Simple documents administration program"
         )
 
-    SUBPARSER_HELP = "For further information for every command, type in 'papis <command> -h'"
+    SUBPARSER_HELP = "For further information for every \
+command, type in 'papis <command> -h'"
     subparsers = parser.add_subparsers(
         help=SUBPARSER_HELP,
         metavar="command",
         dest="command"
         )
     parser.add_argument("-v",
-        "--verbose",
-        help    = "Make the output verbose",
-        default = False,
-        action  = "store_true"
-    )
+                        "--verbose",
+                        help="Make the output verbose",
+                        default=False,
+                        action="store_true"
+                        )
     parser.add_argument("-l", "--lib",
-        help    = "Choose a documents library, default general",
-        default = config["settings"]["default"] or "papers",
-        action  = "store"
-    )
+                        help="Choose a documents library, default general",
+                        default=config["settings"]["default"] or "papers",
+                        action="store"
+                        )
     parser.add_argument(
             "--log",
             help="Logging level",
@@ -151,29 +140,13 @@ def main():
 
     if args.verbose:
         args.log = "DEBUG"
-    logging.basicConfig(level = getattr(logging, args.log))
+    logging.basicConfig(level=getattr(logging, args.log))
 
-
-    if not args.lib in config.keys():
-        logger.error("Library '%s' does not seem to exist"%args.lib)
+    if args.lib not in config.keys():
+        logger.error("Library '%s' does not seem to exist" % args.lib)
         sys.exit(1)
 
     if args.command:
         if args.command in subcommands.keys():
             subcommands[args.command].main(config, args)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # vim:set et sw=4 ts=4 ft=python:

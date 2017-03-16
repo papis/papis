@@ -12,6 +12,7 @@ DOWNLOADERS = [
         papis.downloaders.scitationaip.Downloader,
         ]
 
+
 def getDownloader(url):
     """TODO: Docstring for getDownloader.
 

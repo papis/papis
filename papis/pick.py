@@ -1,4 +1,4 @@
-#-*-coding:utf-8-*-
+# -*-coding:utf-8-*-
 # adapted from
 # https://github.com/wong2/pick
 
@@ -18,17 +18,18 @@ KEYS_DOWN = (curses.KEY_DOWN, CTRL_N)
 KEYS_ERASE = (curses.KEY_BACKSPACE, CTRL_H)
 KEYS_QUIT = (CTRL_C, curses.KEY_EXIT, 27)
 
+
 class Picker(object):
     """The :class:`Picker <Picker>` object
 
     :param options: a list of options to choose from
     :param title: (optional) a title above options list
     :param indicator: (optional) custom the selection indicator
-    :param default_index: (optional) set this if the default selected option is not the first one
+    :param default_index: (optional) set this if the default
+        selected option is not the first one
     """
 
     def __init__(self, options, title=None, indicator='*', default_index=0):
-
 
         self.options = options
         self.title = title
@@ -36,7 +37,8 @@ class Picker(object):
         self.search = ""
 
         if default_index >= len(options):
-            raise ValueError('default_index should be less than the length of options')
+            raise ValueError('default_index should be less \
+than the length of options')
 
         self.index = default_index
         self.custom_handlers = {}
@@ -75,7 +77,8 @@ class Picker(object):
         if not index_found:
             self.index = last_index
             if len(lines):
-                lines[-1] = "{0} {1}".format(self.indicator, lines[-1].strip(" "))
+                lines[-1] = "{0} {1}"\
+                        .format(self.indicator, lines[-1].strip(" "))
 
         return lines
 

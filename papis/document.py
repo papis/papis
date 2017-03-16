@@ -4,6 +4,7 @@ import logging
 import papis.utils
 import papis.bibtex
 
+
 class Document(object):
 
     """Structure implementing all information inside a document, which should
@@ -14,7 +15,8 @@ class Document(object):
         self._keys = []
         self._folder = folder
         self.logger = logging.getLogger("Doc")
-        self._infoFilePath = os.path.join(folder, papis.utils.getInfoFileName())
+        self._infoFilePath = \
+            os.path.join(folder, papis.utils.getInfoFileName())
         self.loadInformationFromFile()
 
     def __setitem__(self, obj, value):
@@ -58,7 +60,8 @@ class Document(object):
         """
         # Check for the exsitence of the document
         if not os.path.exists(self.getFile()):
-            print("** Error: %s not found in %s"%(self.getFile(), self.getMainFolder()))
+            print("** Error: %s not found in %s" % (
+                self.getFile(), self.getMainFolder()))
             return False
         else:
             return True
@@ -91,14 +94,14 @@ class Document(object):
             ref = os.path.basename(self.getMainFolder())
         else:
             ref = self["ref"]
-        bibtexString += "@%s{%s,\n"%(bibtexType, ref)
+        bibtexString += "@%s{%s,\n" % (bibtexType, ref)
         for bibKey in papis.bibtex.bibtexKeys:
             if bibKey in self.keys():
-                bibtexString += "\t%s = { %s },\n"%(bibKey, self[bibKey])
+                bibtexString += "\t%s = { %s },\n" % (bibKey, self[bibKey])
         bibtexString += "}\n"
         return bibtexString
 
-    def update(self, data, force = False, interactive = False):
+    def update(self, data, force=False, interactive=False):
         """TODO: Docstring for update.
 
         :data: TODO
@@ -113,9 +116,10 @@ class Document(object):
                 if force:
                     self[key] = data[key]
                 elif interactive:
-                    confirmation = input("(%s conflict) Replace '%s' by '%s'? (y/N)"%(
-                        key, self[key], data[key]
-                        ) ) or "N"
+                    confirmation = \
+                        input("(%s conflict) Replace '%s' by '%s'? (y/N)" % (
+                            key, self[key], data[key]
+                            )) or "N"
                     if confirmation in "Yy":
                         self[key] = data[key]
                 else:

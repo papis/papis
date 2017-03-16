@@ -48,6 +48,7 @@ bibtexKeys = [
   "year"
   ]
 
+
 def bibtexToDict(bibtex):
     """
     Convert bibtex file to dict
@@ -61,7 +62,7 @@ def bibtexToDict(bibtex):
     result = dict()
     if os.path.exists(bibtex):
         fd = open(bibtex, "r")
-        logger.debug("Reading in file %s"%bibtex)
+        logger.debug("Reading in file %s" % bibtex)
         text = fd.read()
     else:
         text = bibtex
@@ -76,19 +77,19 @@ def bibtexToDict(bibtex):
     match = re.match(type_ref_re, text)
     text = re.sub(type_ref_re, "", text)
     if not match:
-        logger.error("Type and reference of the bibtex file could not be parsed")
+        logger.error("Type and reference of the bibtex file could \
+                    not be parsed")
         sys.exit(1)
     result["type"] = match.group(1)
-    result["ref"]  = match.group(2)
+    result["ref"] = match.group(2)
     for key in result.keys():
-        logger.debug(" [%s] = %s"%(key,result[key]))
+        logger.debug(" [%s] = %s" % (key, result[key]))
     key_val_re = re.compile(r"\s*(\w+)\s*=\s*{(.*)\s*,?")
     for line in re.sub(r"}\s*,?", "\n", text).split("\n"):
         match = re.match(key_val_re, line)
         if match:
             key = match.group(1)
-            val = re.sub(r"\s+"," ",match.group(2))
+            val = re.sub(r"\s+", " ", match.group(2))
             result[key.lower()] = val
-            logger.debug(" [%s] = %s"%(key,val))
+            logger.debug(" [%s] = %s" % (key, val))
     return result
-

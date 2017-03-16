@@ -6,7 +6,7 @@ import os
 import papis
 import papis.bibtex
 
-logging.basicConfig(level = logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 
 
 class TestBibtex(unittest.TestCase):
@@ -54,13 +54,13 @@ class TestBibtex(unittest.TestCase):
         fd.write(self.bib_entry)
         fd.close()
 
-
     @classmethod
     def tearDownClass(self):
         pass
 
     def test_bib_file_exists(self):
         self.assertTrue(os.path.exists(self.bib_file))
+
     def test_bibtexToDict(self):
         bib_dic = papis.bibtex.bibtexToDict(self.bib_file)
         keys = [
@@ -81,7 +81,9 @@ class TestBibtex(unittest.TestCase):
         for key in keys:
             print(key)
             self.assertTrue(key in list(bib_dic.keys()))
+
     def test_bibkeys_exist(self):
         self.assertTrue(len(papis.bibtex.bibtexKeys) != 0)
+
     def test_bibtypes_exist(self):
         self.assertTrue(len(papis.bibtex.bibtexTypes) != 0)

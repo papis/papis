@@ -1,11 +1,9 @@
 from ..document import Document
 import papis
-import sys
 import os
 import papis.utils
 import papis.pick
 from . import Command
-
 
 
 class Edit(Command):
@@ -38,9 +36,9 @@ class Edit(Command):
 
         """
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
-        self.logger.debug("Using directory %s"%documentsDir)
+        self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
         folders = papis.utils.getFilteredFolders(documentsDir, documentSearch)
         folder = self.pick(folders, config, strip=documentsDir)
-        document   = Document(folder)
+        document = Document(folder)
         papis.utils.editFile(document.getInfoFile(), config)
