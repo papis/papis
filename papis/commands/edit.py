@@ -25,6 +25,12 @@ class Edit(Command):
             default=".",
             action="store"
         )
+        self.subparser.add_argument(
+            "-n",
+            "--notes",
+            help="Open notes document, if there is some",
+            action="store_true"
+        )
 
     def main(self, config, args):
         """
@@ -41,4 +47,22 @@ class Edit(Command):
         folders = papis.utils.getFilteredFolders(documentsDir, documentSearch)
         folder = self.pick(folders, config, strip=documentsDir)
         document = Document(folder)
-        papis.utils.editFile(document.getInfoFile(), config)
+        if args.notes:
+            if not document.has("notes"):
+                self.logger.warning(
+                    "The document selected has no notes attached,\
+                    creating one..."
+                )
+                document["notes"] = "notes.tex"
+                document.save()
+            notesName = document["notes"]
+            notesPath = os.path.join(
+                document.getMainFolder(),
+                notesName
+            )
+            if not os.path.exists(notesPath):
+                self.logger.debug("Creating %s" % notesPath)
+                open(notesPath, "w+").close()
+            papis.utils.editFile(notesPath, config)
+        else:
+            papis.utils.editFile(document.getInfoFile(), config)

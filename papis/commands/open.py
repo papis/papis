@@ -25,12 +25,6 @@ class Open(Command):
             default=".",
             action="store"
         )
-        self.subparser.add_argument(
-            "-n",
-            "--notes",
-            help="Open notes document, if there is some",
-            action="store_true"
-        )
 
     def main(self, config, args):
         """
@@ -47,16 +41,4 @@ class Open(Command):
         folders = papis.utils.getFilteredFolders(documentsDir, documentSearch)
         folder = self.pick(folders, config, strip=documentsDir)
         document = Document(folder)
-        if args.notes:
-            if document.has("notes"):
-                notes = os.path.join(
-                    document.getMainFolder(),
-                    document["notes"]
-                )
-                papis.utils.openFile(notes, config)
-            else:
-                self.logger.error(
-                        "The document selected has no notes attached"
-                        )
-        else:
-            papis.utils.openFile(document.getFile(), config)
+        papis.utils.openFile(document.getFile(), config)
