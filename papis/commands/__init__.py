@@ -13,6 +13,7 @@ COMMANDS = [
     "browse",
     "test",
     "update",
+    "run",
     "sync"
 ]
 
