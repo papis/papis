@@ -64,7 +64,7 @@ class Export(Command):
         document = Document(folder)
         if args.bibtex:
             print(document.toBibtex())
-        if args.folder:
+        elif args.folder:
             outdir = args.out or os.path.basename(folder)
             shutil.copytree(folder, outdir)
         else:
