@@ -73,7 +73,7 @@ def bibtexToDict(bibtex):
     logger.debug("Removing newlines...")
     text = re.sub(r"\n", "", text)
     logger.debug("Parsing document type and reference")
-    type_ref_re = re.compile(r"\s*@(\w+){([^,]+),")
+    type_ref_re = re.compile(r"\s*@(\w+)\s*{([^,]+),")
     match = re.match(type_ref_re, text)
     text = re.sub(type_ref_re, "", text)
     if not match:
