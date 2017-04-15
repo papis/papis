@@ -1,4 +1,3 @@
-from ..document import Document
 import papis
 import os
 import papis.utils

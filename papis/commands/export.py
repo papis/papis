@@ -1,4 +1,3 @@
-from ..document import Document
 import papis
 import os
 import shutil
@@ -63,10 +62,11 @@ class Export(Command):
             documentSearch
         )
         document = self.pick(documents, config)
+        folder = document.getMainFolderName()
         if args.bibtex:
             print(document.toBibtex())
         elif args.folder:
-            outdir = args.out or os.path.basename(folder)
+            outdir = args.out or folder
             shutil.copytree(folder, outdir)
         else:
             print(document.dump())

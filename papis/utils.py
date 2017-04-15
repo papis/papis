@@ -2,7 +2,6 @@ from subprocess import call
 from subprocess import Popen, PIPE
 import logging
 import os
-import sys
 import re
 import papis.pick
 from .document import Document

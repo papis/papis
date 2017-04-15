@@ -1,5 +1,4 @@
 import webbrowser
-from ..document import Document
 import papis
 import os
 import papis.utils
@@ -48,4 +47,6 @@ class Browse(Command):
         if "url" in document.keys():
             webbrowser.open(document["url"])
         else:
-            self.logger.warning("No url for %s" % (os.path.basename(folder)))
+            self.logger.warning(
+                "No url for %s" % (document.getMainFolderName())
+            )

@@ -109,7 +109,7 @@ def main():
     parser.add_argument(
         "-v",
         "--verbose",
-        help="Make the output verbose",
+        help="Make the output verbose (equivalent to --log DEBUG)",
         default=False,
         action="store_true"
     )
