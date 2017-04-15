@@ -38,7 +38,17 @@ class Open(Command):
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
-        folders = papis.utils.getFilteredFolders(documentsDir, documentSearch)
-        folder = self.pick(folders, config, strip=documentsDir)
-        document = Document(folder)
+        documents = papis.utils.getFilteredDocuments(
+            documentsDir,
+            documentSearch
+        )
+        document = self.pick(
+            documents,
+            config
+        )
+        print(documents)
+        print(document)
         papis.utils.openFile(document.getFile(), config)
+        # folders = papis.utils.getFilteredFolders(documentsDir, documentSearch)
+        # folder = self.pick(folders, config, strip=documentsDir)
+        # document = Document(folder)

@@ -70,18 +70,29 @@ class Command(object):
         """
         return self.parser
 
-    def pick(self, folders, config, strip=""):
+    def pick(self, options, papis_config, pick_config={}):
         """TODO: Docstring for pick.
 
-        :folders: TODO
-        :config: TODO
-        :strip: TODO
+        :options: TODO
         :returns: TODO
 
         """
-        return strip+papis.utils.pick(
-            [f.replace(strip, "") for f in folders],
-            config
+        if not pick_config:
+            pick_config = dict(
+                header_filter=lambda x: "{:<70.70}|{:<20.20} ({:.4})".format(
+                    x["title"],
+                    x["author"],
+                    str(x["year"])
+                ),
+                match_filter=lambda x:
+                    x["title"] +
+                    x["author"] +
+                    str(x["year"])
+            )
+        return papis.utils.pick(
+            options,
+            papis_config,
+            pick_config
         )
 
     def main(self, config=None, args=None):

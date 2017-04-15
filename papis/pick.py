@@ -37,7 +37,7 @@ class Picker(object):
             default_index=0,
             header_filter=lambda x: x,
             body_filter=None,
-            match_string=lambda x: x
+            match_filter=lambda x: x
             ):
 
         self.options = options
@@ -46,7 +46,7 @@ class Picker(object):
         self.search = ""
         self.header_filter = header_filter
         self.body_filter = body_filter
-        self.match_string = match_string
+        self.match_filter = match_filter
 
         if default_index >= len(options):
             raise ValueError(
@@ -113,7 +113,7 @@ class Picker(object):
         new_options = []
         regex = self.get_search_regex()
         for option in self.options:
-            if re.match(regex, self.match_string(option), re.I):
+            if re.match(regex, self.match_filter(option), re.I):
                 new_options += [option]
         return new_options
 
@@ -208,7 +208,7 @@ def pick(
         default_index=0,
         header_filter=lambda x: x,
         body_filter=None,
-        match_string=lambda x: x
+        match_filter=lambda x: x
         ):
     """Construct and start a :class:`Picker <Picker>`.
     """
@@ -219,6 +219,6 @@ def pick(
                 default_index,
                 header_filter,
                 body_filter,
-                match_string
+                match_filter
                 )
     return picker.start()

@@ -5,6 +5,7 @@ import os
 import sys
 import re
 import papis.pick
+from .document import Document
 
 logger = logging.getLogger("utils")
 
@@ -27,20 +28,20 @@ def which(program):
     return None
 
 
-def pick(files, configuration={}):
+def pick(options, papis_config={}, pick_config={}):
     """TODO: Docstring for editFile.
     :fileName: TODO
     :returns: TODO
     """
     try:
         logger.debug("Parsing picktool")
-        picker = configuration["settings"]["picktool"]
+        picker = papis_config["settings"]["picktool"]
     except KeyError:
-        return papis.pick.pick(files)
+        return papis.pick.pick(options, **pick_config)
     else:
         # FIXME: Do it more fancy
         return Popen(
-                "echo "+"\n".join(files)+" | "+picker,
+                "echo "+"\n".join(options)+" | "+picker,
                 stdout=PIPE,
                 shell=True).read()
 
@@ -69,35 +70,19 @@ def editFile(fileName, configuration={}):
     call([editor, fileName])
 
 
-def filterDocument(folders, documentInput):
-    """
-
-    :folders: TODO
-    :documentInput: TODO
-    :returns: TODO
-
-    """
-    results = []
-    regex = r".*"+re.sub(r"\s+", ".*", documentInput)
+def matchDocument(document, search):
+    match_string = str(document["title"])\
+                 + str(document["author"])\
+                 + str(document["year"])
+    regex = r".*"+re.sub(r"\s+", ".*", search)
     logger.debug("Filter regex = %s" % regex)
-    for folder in folders:
-        if re.match(regex, folder, re.IGNORECASE):
-            results.append(folder)
-    if len(results) == 0:
-        print("No results found with the given input")
-        sys.exit(1)
-    return results
+    m = re.match(regex, match_string, re.IGNORECASE)
+    return True if m else False
 
 
-def getFilteredFolders(directory, search):
-    """
-    Get documents from a containing folder
-    :folder: TODO
-    :returns: TODO
-    """
-    folders = getFolders(directory)
-    folders = filterDocument(folders, search)
-    return folders
+def getFilteredDocuments(directory, search):
+    documents = [Document(d) for d in getFolders(directory)]
+    return [d for d in documents if matchDocument(d, search)]
 
 
 def getFolders(folder):
