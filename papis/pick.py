@@ -37,8 +37,9 @@ class Picker(object):
         self.search = ""
 
         if default_index >= len(options):
-            raise ValueError('default_index should be less \
-than the length of options')
+            raise ValueError(
+                'default_index should be less than the length of options'
+            )
 
         self.index = default_index
         self.custom_handlers = {}
