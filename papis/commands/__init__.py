@@ -80,14 +80,14 @@ class Command(object):
         if not pick_config:
             pick_config = dict(
                 header_filter=lambda x: "{:<70.70}|{:<20.20} ({:.4})".format(
-                    x["title"],
-                    x["author"],
-                    str(x["year"])
+                    x["title"] or x.getMainFolderName(),
+                    x["author"] or "*" * 20,
+                    str(x["year"] or "****")
                 ),
                 match_filter=lambda x:
-                    x["title"] +
-                    x["author"] +
-                    str(x["year"])
+                    (x["title"] or x.getMainFolderName()) +
+                    (x["author"] or "") +
+                    (str(x["year"]) or "****")
             )
         return papis.utils.pick(
             options,

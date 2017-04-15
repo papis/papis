@@ -42,13 +42,5 @@ class Open(Command):
             documentsDir,
             documentSearch
         )
-        document = self.pick(
-            documents,
-            config
-        )
-        print(documents)
-        print(document)
+        document = self.pick(documents, config)
         papis.utils.openFile(document.getFile(), config)
-        # folders = papis.utils.getFilteredFolders(documentsDir, documentSearch)
-        # folder = self.pick(folders, config, strip=documentsDir)
-        # document = Document(folder)

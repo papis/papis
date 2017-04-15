@@ -44,9 +44,11 @@ class Edit(Command):
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
-        folders = papis.utils.getFilteredFolders(documentsDir, documentSearch)
-        folder = self.pick(folders, config, strip=documentsDir)
-        document = Document(folder)
+        documents = papis.utils.getFilteredDocuments(
+            documentsDir,
+            documentSearch
+        )
+        document = self.pick(documents, config)
         if args.notes:
             if not document.has("notes"):
                 self.logger.warning(

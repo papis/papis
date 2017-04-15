@@ -44,16 +44,19 @@ class Check(Command):
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
-        folders = papis.utils.getFilteredFolders(documentsDir, documentSearch)
+        documents = papis.utils.getFilteredDocuments(
+            documentsDir,
+            documentSearch
+        )
         allOk = True
-        for folder in folders:
-            self.logger.debug(folder)
-            document = Document(folder)
+        for document in documents:
             allOk &= document.checkFile()
             for key in args.keys:
                 if key not in document.keys():
                     allOk &= False
-                    print("%s not found in %s" % (key, folder))
+                    print(
+                        "%s not found in %s" % (key, document.getMainFolder())
+                    )
         if not allOk:
             print("Errors were detected, please fix the info files")
         else:

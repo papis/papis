@@ -38,6 +38,13 @@ class List(Command):
             default=False,
             action="store_true"
         )
+        list_parser.add_argument(
+            "-d",
+            "--dir",
+            help="Show the folder name associated with the document",
+            default=True,
+            action="store_true"
+        )
 
     def main(self, config, args):
         """
@@ -51,13 +58,16 @@ class List(Command):
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
-        folders = papis.utils.getFilteredFolders(documentsDir, documentSearch)
-        for folder in folders:
+        documents = papis.utils.getFilteredDocuments(
+            documentsDir,
+            documentSearch
+        )
+        for document in documents:
             if args.file:
-                document = Document(folder)
                 print(document.getFile())
+            elif args.dir:
+                print(document.getMainFolder())
             elif args.info:
-                document = Document(folder)
                 print(
                     os.path.join(
                         document.getMainFolder(),
@@ -65,4 +75,4 @@ class List(Command):
                     )
                 )
             else:
-                print(folder)
+                print(document)
