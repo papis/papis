@@ -37,10 +37,16 @@ class Document(object):
     def getMainFolder(self):
         """
         Get main folder where the document and the information is stored
-        :returns: TODO
-
+        :returns: Folder path
         """
         return self._folder
+
+    def getMainFolderName(self):
+        """
+        Get main folder name where the document and the information is stored
+        :returns: Folder name
+        """
+        return os.path.basename(self._folder)
 
     def has(self, key):
         """Check if the information file has some key defined
