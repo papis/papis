@@ -29,12 +29,24 @@ class Picker(object):
         selected option is not the first one
     """
 
-    def __init__(self, options, title=None, indicator='*', default_index=0):
+    def __init__(
+            self,
+            options,
+            title=None,
+            indicator='*',
+            default_index=0,
+            header_filter=lambda x: x,
+            body_filter=None,
+            match_string=lambda x: x
+            ):
 
         self.options = options
         self.title = title
         self.indicator = indicator
         self.search = ""
+        self.header_filter = header_filter
+        self.body_filter = body_filter
+        self.match_string = match_string
 
         if default_index >= len(options):
             raise ValueError(
@@ -60,10 +72,13 @@ class Picker(object):
         return self.get_filtered_options()[self.index]
 
     def get_title_lines(self):
+        """Return the main row of the picker, which is normally the search and
+        the prompt text.
+        """
         return [self.title+self.search]
 
     def get_option_lines(self):
-        lines = []
+        headers = []
         index_found = False
         last_index = -1
         for index, option in enumerate(self.get_filtered_options()):
@@ -73,15 +88,15 @@ class Picker(object):
                 prefix = self.indicator
             else:
                 prefix = len(self.indicator) * ' '
-            line = '{0} {1}'.format(prefix, option)
-            lines.append(line)
+            line = '{0} {1}'.format(prefix, self.header_filter(option))
+            headers.append(line)
         if not index_found:
             self.index = last_index
-            if len(lines):
-                lines[-1] = "{0} {1}"\
-                        .format(self.indicator, lines[-1].strip(" "))
+            if len(headers):
+                headers[-1] = "{0} {1}"\
+                        .format(self.indicator, headers[-1].strip(" "))
 
-        return lines
+        return headers
 
     def get_search_regex(self):
         """TODO: Docstring for get_search_regex.
@@ -95,12 +110,12 @@ class Picker(object):
         :returns: TODO
 
         """
-        new_lines = []
+        new_options = []
         regex = self.get_search_regex()
-        for line in self.options:
-            if re.match(regex, line, re.I):
-                new_lines += [line]
-        return new_lines
+        for option in self.options:
+            if re.match(regex, self.match_string(option), re.I):
+                new_options += [option]
+        return new_options
 
     def get_lines(self):
         """TODO: Docstring for get_filtered_lines.
@@ -186,8 +201,24 @@ class Picker(object):
         return curses.wrapper(self._start)
 
 
-def pick(options, title="Pick: ", indicator='>', default_index=0):
+def pick(
+        options,
+        title="Pick: ",
+        indicator='>',
+        default_index=0,
+        header_filter=lambda x: x,
+        body_filter=None,
+        match_string=lambda x: x
+        ):
     """Construct and start a :class:`Picker <Picker>`.
     """
-    picker = Picker(options, title, indicator, default_index)
+    picker = Picker(
+                options,
+                title,
+                indicator,
+                default_index,
+                header_filter,
+                body_filter,
+                match_string
+                )
     return picker.start()
