@@ -26,7 +26,7 @@ class Add(Command):
         )
         self.subparser.add_argument(
             "document",
-            help="Document file name",
+            help="Document search",
             default="",
             nargs="?",
             action="store"
