@@ -24,7 +24,8 @@ setup(
        "configparser",
        "arxiv2bib",
        "argparse",
-       "PyYAML"
+       "PyYAML",
+       "pdfminer2"
         ],
     extras_require=dict(
         dev=[]
