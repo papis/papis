@@ -3,6 +3,7 @@ import papis
 import os
 import re
 import tempfile
+import hashlib
 import shutil
 import string
 import papis.utils
@@ -26,7 +27,7 @@ class Add(Command):
         )
         self.subparser.add_argument(
             "document",
-            help="Document search",
+            help="Document file name",
             default="",
             nargs="?",
             action="store"
@@ -50,6 +51,18 @@ class Add(Command):
             action="store"
         )
         self.subparser.add_argument(
+            "--title",
+            help="Title for document",
+            default="",
+            action="store"
+        )
+        self.subparser.add_argument(
+            "--author",
+            help="Author(s) for document",
+            default="",
+            action="store"
+        )
+        self.subparser.add_argument(
             "--from-url",
             help="""Get document and information from a
                     given url, a parser must be
@@ -58,19 +71,39 @@ class Add(Command):
             action="store"
         )
 
+    def get_hash_folder(self, data, document_path):
+        """Folder name where the document will be stored.
+
+        :data: Data parsed for the actual document
+        :document_path: Path of the document
+
+        """
+        author = "-{:.20}".format(data["author"])\
+                 if "author" in data.keys() else ""
+        fd = open(document_path, "rb")
+        md5 = hashlib.md5(fd.read(4096)).hexdigest()
+        fd.close()
+        result = re.sub(r"[\\'\",.(){}]", "", md5 + author)\
+                   .replace(" ", "-")
+        return result
+
+    def get_document_extension(self, documentPath):
+        """Get document extension
+
+        :document_path: Path of the document
+        :returns: Extension (string)
+
+        """
+        m = re.match(r"^(.*)\.([a-zA-Z0-9]*)$", os.path.basename(documentPath))
+        extension = m.group(2) if m else "pdf"
+        self.logger.debug("[ext] = %s" % extension)
+        return extension
+
     def main(self, config, args):
-        """
-        Main action if the command is triggered
-
-        :config: User configuration
-        :args: CLI user arguments
-        :returns: TODO
-
-        """
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
         folderName = None
         data = dict()
-        self.logger.debug("Using directory %s" % documentsDir)
+        self.logger.debug("Saving in directory %s" % documentsDir)
         # if documents are posible to download from url, overwrite
         documentPath = args.document
         if args.from_url:
@@ -91,32 +124,36 @@ class Add(Command):
             data = papis.bibtex.bibtexToDict(args.from_bibtex)
         else:
             pass
-        m = re.match(r"^(.*)\.([a-zA-Z]*)$", os.path.basename(documentPath))
-        extension = m.group(2) if m else "pdf"
-        self.logger.debug("[ext] = %s" % extension)
-        # Set foldername
-        if not args.from_bibtex and not args.name and not args.from_url:
-            folderName = m.group(1) if m else os.path.basename(documentPath)
-        elif (args.from_bibtex or args.from_url) and not args.name:
-            args.name = '$year-$author-$title'
-        if folderName is None:
-            folderName = folderName if not args.name else \
-                                        string\
-                                        .Template(args.name)\
-                                        .safe_substitute(data)\
-                                        .replace(" ", "-")
+        extension = self.get_document_extension(documentPath)
         documentName = "document."+extension
-        endDocumentPath = os.path.join(documentsDir,
-                                       args.dir,
-                                       folderName,
-                                       documentName)
+        data["file"] = documentName
+        if args.title:
+            data["title"] = args.title
+        if args.author:
+            data["author"] = args.author
+        if "title" not in data.keys():
+            data["title"] = os.path.basename(documentPath)\
+                            .replace("."+extension, "")
+        if not args.name:
+            folderName = self.get_hash_folder(data, documentPath)
+        else:
+            folderName = string\
+                        .Template(args.name)\
+                        .safe_substitute(data)\
+                        .replace(" ", "-")
+        endDocumentPath = os.path.join(
+            documentsDir,
+            args.dir,
+            folderName,
+            documentName
+        )
         fullDirPath = os.path.join(documentsDir, args.dir,  folderName)
         ######
-        data["file"] = documentName
         self.logger.debug("Folder    = % s" % folderName)
         self.logger.debug("File      = % s" % documentPath)
         self.logger.debug("EndFile   = % s" % endDocumentPath)
         self.logger.debug("Ext.      = % s" % extension)
+        ######
         if not os.path.isdir(fullDirPath):
             self.logger.debug("Creating directory '%s'" % fullDirPath)
             os.mkdir(fullDirPath)
