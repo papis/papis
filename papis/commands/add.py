@@ -10,6 +10,8 @@ import papis.utils
 import papis.bibtex
 from . import Command
 import papis.downloaders.utils
+import pdfminer.pdfparser
+import pdfminer.pdfdocument
 
 
 class Add(Command):
@@ -99,6 +101,43 @@ class Add(Command):
         self.logger.debug("[ext] = %s" % extension)
         return extension
 
+    def get_meta_data(self, key, document_path):
+        self.logger.debug("Retrieving %s meta data" % key)
+        extension = self.get_document_extension(document_path)
+        if "pdf" in extension:
+            fd = open(document_path, "rb")
+            parsed = pdfminer.pdfparser.PDFParser(fd)
+            doc = pdfminer.pdfdocument.PDFDocument(parsed)
+            fd.close()
+            for info in doc.info:
+                for info_key in info.keys():
+                    if info_key.lower() == key.lower():
+                        self.logger.debug(
+                            "Found %s meta data %s" %
+                            (info_key, info[info_key])
+                        )
+                        return info[info_key].decode("utf-8")
+        return False
+
+    def get_default_title(self, data, document_path):
+        if "title" in data.keys():
+            return data["title"]
+        extension = self.get_document_extension(document_path)
+        title = self.get_meta_data("title", document_path)
+        if not title:
+            title = os.path.basename(document_path)\
+                            .replace("."+extension, "")
+        return title
+
+    def get_default_author(self, data, document_path):
+        if "author" in data.keys():
+            return data["author"]
+        extension = self.get_document_extension(document_path)
+        author = self.get_meta_data("author", document_path)
+        if not author:
+            author = "Unknown"
+        return author
+
     def main(self, config, args):
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
         folderName = None
@@ -129,11 +168,12 @@ class Add(Command):
         data["file"] = documentName
         if args.title:
             data["title"] = args.title
+        else:
+            data["title"] = self.get_default_title(data, documentPath)
         if args.author:
             data["author"] = args.author
-        if "title" not in data.keys():
-            data["title"] = os.path.basename(documentPath)\
-                            .replace("."+extension, "")
+        else:
+            data["author"] = self.get_default_author(data, documentPath)
         if not args.name:
             folderName = self.get_hash_folder(data, documentPath)
         else:
@@ -141,18 +181,15 @@ class Add(Command):
                         .Template(args.name)\
                         .safe_substitute(data)\
                         .replace(" ", "-")
-        endDocumentPath = os.path.join(
-            documentsDir,
-            args.dir,
-            folderName,
-            documentName
-        )
         fullDirPath = os.path.join(documentsDir, args.dir,  folderName)
+        endDocumentPath = os.path.join(fullDirPath, documentName)
         ######
         self.logger.debug("Folder    = % s" % folderName)
         self.logger.debug("File      = % s" % documentPath)
         self.logger.debug("EndFile   = % s" % endDocumentPath)
         self.logger.debug("Ext.      = % s" % extension)
+        self.logger.debug("Author    = % s" % data["author"])
+        self.logger.debug("Title    = % s" % data["title"])
         ######
         if not os.path.isdir(fullDirPath):
             self.logger.debug("Creating directory '%s'" % fullDirPath)
