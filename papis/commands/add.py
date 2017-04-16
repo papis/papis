@@ -166,6 +166,7 @@ class Add(Command):
         extension = self.get_document_extension(documentPath)
         documentName = "document."+extension
         data["file"] = documentName
+        data["_original_file"] = os.path.basename(documentPath)
         if args.title:
             data["title"] = args.title
         else:
@@ -193,7 +194,7 @@ class Add(Command):
         ######
         if not os.path.isdir(fullDirPath):
             self.logger.debug("Creating directory '%s'" % fullDirPath)
-            os.mkdir(fullDirPath)
+            os.makedirs(fullDirPath)
         shutil.copy(documentPath, endDocumentPath)
         document = Document(fullDirPath)
         document.update(data, force=True)
