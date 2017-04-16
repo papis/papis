@@ -47,6 +47,12 @@ class Add(Command):
             action="store"
         )
         self.subparser.add_argument(
+            "--edit",
+            help="Edit info file after adding document",
+            default="",
+            action="store_true"
+        )
+        self.subparser.add_argument(
             "--from-bibtex",
             help="Parse information from a bibtex file",
             default="",
@@ -126,7 +132,9 @@ class Add(Command):
         title = self.get_meta_data("title", document_path)
         if not title:
             title = os.path.basename(document_path)\
-                            .replace("."+extension, "")
+                            .replace("."+extension, "")\
+                            .replace("_", " ")\
+                            .replace("-", " ")
         return title
 
     def get_default_author(self, data, document_path):
@@ -199,3 +207,5 @@ class Add(Command):
         document = Document(fullDirPath)
         document.update(data, force=True)
         document.save()
+        if args.edit:
+            papis.utils.editFile(document.getInfoFile(), config)
