@@ -25,11 +25,7 @@
 #  Import modules {{{1  #
 #########################
 
-import re
 import sys
-import shutil
-import requests
-import tempfile
 import logging
 import argparse
 import argcomplete
@@ -46,50 +42,6 @@ if sys.version_info < (3, 0):
 
 #  Utility functions {{{1  #
 ############################
-
-
-def getUrlService(url):
-    """TODO: Docstring for getUrlService.
-
-    :url: TODO
-    :returns: TODO
-
-    """
-    m = re.match(r".*arxiv.org.*", url)
-    if m:  # Arxiv
-        logger.debug("Arxiv recognised")
-        return "arxiv"
-    return ""
-
-
-def add_from_arxiv(url):
-    """TODO: Docstring for add_from_arxiv.
-    :url: TODO
-    :returns: TODO
-    """
-    data = {}
-    filePath = tempfile.mktemp()+".pdf"
-    m = re.match(r".*arxiv.org/abs/(.*)", url)
-    if m:
-        p_id = m.group(1)
-        logger.debug("Arxiv id = '%s'" % p_id)
-    else:
-        print("Arxiv url fromat not recognised, no document id found")
-        sys.exit(1)
-    infoUrl = \
-        "http://export.arxiv.org/api/query?\
-search_query=%s&start=0&max_results=1" % p_id
-    pdfUrl = "https://arxiv.org/pdf/%s.pdf" % p_id
-    logger.debug("Pdf url  = '%s'" % pdfUrl)
-    logger.debug("Info url = '%s'" % infoUrl)
-    response = requests.get(pdfUrl, stream=True)
-    if response:  # Download pdf
-        fd = open(filePath, "wb")
-        # fd.write(response.raw)
-        shutil.copyfileobj(response.raw, fd)
-        logger.debug("Pdf saved in %s" % filePath)
-        fd.close()
-    return (filePath, data)
 
 
 def main():
@@ -131,7 +83,7 @@ def main():
             "CRITICAL"
             ],
         action="store",
-        default="WARNING"
+        default="INFO"
     )
 
     subcommands = papis.commands.init(subparsers)
