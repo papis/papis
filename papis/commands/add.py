@@ -123,6 +123,17 @@ class Add(Command):
                             (info_key, info[info_key])
                         )
                         return info[info_key].decode("utf-8")
+        elif "epub" in extension:
+            if key == "author":
+                key = "Creator"
+            info = papis.utils.get_epub_info(document_path)
+            for info_key in info.keys():
+                if info_key.lower() == key.lower():
+                    self.logger.debug(
+                        "Found %s meta data %s" %
+                        (info_key, info[info_key])
+                    )
+                    return str(info[info_key])
         return False
 
     def get_default_title(self, data, document_path):
@@ -140,7 +151,6 @@ class Add(Command):
     def get_default_author(self, data, document_path):
         if "author" in data.keys():
             return data["author"]
-        extension = self.get_document_extension(document_path)
         author = self.get_meta_data("author", document_path)
         if not author:
             author = "Unknown"
