@@ -49,7 +49,7 @@ def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
         description="Simple documents administration program"
-        )
+    )
 
     SUBPARSER_HELP = "For further information for every "\
                      "command, type in 'papis <command> -h'"
@@ -57,7 +57,7 @@ def main():
         help=SUBPARSER_HELP,
         metavar="command",
         dest="command"
-        )
+    )
     parser.add_argument(
         "-v",
         "--verbose",
