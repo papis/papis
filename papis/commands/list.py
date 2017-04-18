@@ -63,7 +63,8 @@ class List(Command):
         )
         for document in documents:
             if args.file:
-                print(document.getFile())
+                for f in document.getFiles():
+                    print(f)
             elif args.dir:
                 print(document.getMainFolder())
             elif args.info:

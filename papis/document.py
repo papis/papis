@@ -65,12 +65,13 @@ class Document(object):
         :returns: TODO
         """
         # Check for the exsitence of the document
-        if not os.path.exists(self.getFile()):
-            print("** Error: %s not found in %s" % (
-                self.getFile(), self.getMainFolder()))
-            return False
-        else:
-            return True
+        for f in self.getFiles():
+            if not os.path.exists(f):
+                print("** Error: %s not found in %s" % (
+                    f, self.getMainFolder()))
+                return False
+            else:
+                return True
 
     def save(self):
         """
@@ -138,12 +139,17 @@ class Document(object):
         """
         return self._infoFilePath
 
-    def getFile(self):
+    def getFiles(self):
         """TODO: Docstring for getFiles.
         :returns: TODO
 
         """
-        return os.path.join(self.getMainFolder(), self["file"])
+        files = self["file"] if isinstance(self["file"], list) \
+            else [self["file"]]
+        result = []
+        for f in files:
+            result.append(os.path.join(self.getMainFolder(), f))
+        return result
 
     def keys(self):
         """TODO: Docstring for keys().

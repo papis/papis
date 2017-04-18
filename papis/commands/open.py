@@ -50,4 +50,12 @@ class Open(Command):
             documentSearch
         )
         document = self.pick(documents, config)
-        papis.utils.openFile(document.getFile(), config)
+        files = document.getFiles()
+        file_to_open = papis.utils.pick(
+            files,
+            config,
+            pick_config=dict(
+                header_filter=lambda x: x.replace(document.getMainFolder(), "")
+            )
+        )
+        papis.utils.openFile(file_to_open, config)
