@@ -53,7 +53,7 @@ def openFile(fileName, configuration={}):
     :returns: TODO
     """
     try:
-        opener = configuration["settings"]["viewer"]
+        opener = configuration["settings"]["opentool"]
     except KeyError:
         opener = "xdg-open"
     call([opener, fileName])

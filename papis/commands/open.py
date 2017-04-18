@@ -24,6 +24,12 @@ class Open(Command):
             default=".",
             action="store"
         )
+        self.subparser.add_argument(
+            "--tool",
+            help="Tool for opening the file (opentool)",
+            default="",
+            action="store"
+        )
 
     def main(self, config, args):
         """
@@ -35,6 +41,8 @@ class Open(Command):
 
         """
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
+        if args.tool:
+            config["settings"]["opentool"] = args.tool
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
         documents = papis.utils.getFilteredDocuments(
