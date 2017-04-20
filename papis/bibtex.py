@@ -73,12 +73,13 @@ def bibtexToDict(bibtex):
     logger.debug("Removing newlines...")
     text = re.sub(r"\n", "", text)
     logger.debug("Parsing document type and reference")
-    type_ref_re = re.compile(r"\s*@(\w+)\s*{([^,]+),")
+    type_ref_re = re.compile(r"\s*@\s*(\w+)\s*{([^,]+),?")
     match = re.match(type_ref_re, text)
     text = re.sub(type_ref_re, "", text)
     if not match:
-        logger.error("Type and reference of the bibtex file could \
-                    not be parsed")
+        logger.error(
+            "Type and reference of the bibtex file could not be parsed"
+        )
         sys.exit(1)
     result["type"] = match.group(1)
     result["ref"] = match.group(2)
@@ -91,5 +92,5 @@ def bibtexToDict(bibtex):
             key = match.group(1)
             val = re.sub(r"\s+", " ", match.group(2))
             result[key.lower()] = val
-            logger.debug(" [%s] = %s" % (key, val))
+            logger.debug("[%s] = %s" % (key, val))
     return result
