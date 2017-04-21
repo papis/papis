@@ -14,6 +14,7 @@ CTRL_H = 8
 CTRL_C = 3
 CTRL_D = 4
 CTRL_U = 21
+CTRL_W = 23
 KEYS_ENTER = (curses.KEY_ENTER, ord('\n'), ord('\r'))
 KEYS_UP = (curses.KEY_UP, CTRL_P)
 KEYS_DOWN = (curses.KEY_DOWN, CTRL_N)
@@ -21,6 +22,7 @@ KEYS_ERASE = (curses.KEY_BACKSPACE, CTRL_H)
 KEYS_QUIT = (CTRL_C, curses.KEY_EXIT, 27)
 KEYS_HALF_DOWN = [CTRL_D]
 KEYS_HALF_UP = [CTRL_U]
+KEYS_DEL_WORD = [CTRL_W]
 
 
 class Picker(object):
@@ -167,6 +169,10 @@ class Picker(object):
         """
         if c in KEYS_ERASE:
             self.search = self.search[0:-1]
+        elif c in KEYS_DEL_WORD:
+            self.search = re.sub(r"\s*$", "", self.search)
+            self.search = re.sub(r"\s*\b[^ ]+$", "", self.search)
+            self.draw()
         else:
             self.search += chr(c)
 
