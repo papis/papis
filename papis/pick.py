@@ -12,11 +12,15 @@ CTRL_P = 16
 CTRL_N = 14
 CTRL_H = 8
 CTRL_C = 3
+CTRL_D = 4
+CTRL_U = 21
 KEYS_ENTER = (curses.KEY_ENTER, ord('\n'), ord('\r'))
 KEYS_UP = (curses.KEY_UP, CTRL_P)
 KEYS_DOWN = (curses.KEY_DOWN, CTRL_N)
 KEYS_ERASE = (curses.KEY_BACKSPACE, CTRL_H)
 KEYS_QUIT = (CTRL_C, curses.KEY_EXIT, 27)
+KEYS_HALF_DOWN = [CTRL_D]
+KEYS_HALF_UP = [CTRL_U]
 
 
 class Picker(object):
@@ -179,6 +183,18 @@ class Picker(object):
             elif c in KEYS_QUIT:
                 curses.endwin()
                 return ""
+            elif c in KEYS_HALF_UP:
+                max_y, max_x = self.screen.getmaxyx()
+                new_index = self.index - int(max_y/4)
+                if new_index < 0:
+                    new_index = 0
+                self.index = new_index
+            elif c in KEYS_HALF_DOWN:
+                max_y, max_x = self.screen.getmaxyx()
+                new_index = self.index + int(max_y/4)
+                if new_index >= max_y:
+                    new_index = max_y
+                self.index = new_index
             else:
                 self.editSearch(c)
 
