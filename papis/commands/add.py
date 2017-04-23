@@ -31,7 +31,7 @@ class Add(Command):
             "document",
             help="Document file name",
             default="",
-            nargs="?",
+            nargs="*",
             action="store"
         )
         self.subparser.add_argument(
@@ -76,6 +76,13 @@ class Add(Command):
                     given url, a parser must be
                     implemented""",
             default="",
+            action="store"
+        )
+        self.subparser.add_argument(
+            "--to",
+            help="""When --to is specified, the document will be added to the
+            selected already existing document entry.""",
+            nargs="?",
             action="store"
         )
 
@@ -156,13 +163,21 @@ class Add(Command):
             author = "Unknown"
         return author
 
+    def clean_document_name(self, documentPath):
+        return re.sub(r"[^a-zA-Z0-9_.-]", "",
+           re.sub(r"\s+", "-",
+               os.path.basename(documentPath)
+            )
+        )
+
     def main(self, config, args):
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
         folderName = None
         data = dict()
         self.logger.debug("Saving in directory %s" % documentsDir)
         # if documents are posible to download from url, overwrite
-        documentPath = args.document
+        documents_paths = args.document
+        documents_names = []
         if args.from_url:
             self.logger.debug("Attempting to retrieve from url")
             url = args.from_url
@@ -172,48 +187,65 @@ class Add(Command):
                 if len(args.document) == 0:
                     doc_data = downloader.getDocumentData()
                     if doc_data:
-                        documentPath = tempfile.mktemp()
-                        self.logger.debug("Saving in %s" % documentPath)
-                        tempfd = open(documentPath, "wb+")
+                        documents_paths.append(tempfile.mktemp())
+                        self.logger.debug("Saving in %s" % documents_paths[-1])
+                        tempfd = open(documents_paths[-1], "wb+")
                         tempfd.write(doc_data)
                         tempfd.close()
         elif args.from_bibtex:
             data = papis.bibtex.bibtexToDict(args.from_bibtex)
         else:
             pass
-        extension = self.get_document_extension(documentPath)
-        documentName = "document."+extension
-        data["file"] = documentName
-        data["_original_file"] = os.path.basename(documentPath)
+        documents_names = [
+            self.clean_document_name(documentPath)
+            for documentPath in documents_paths
+        ]
         if args.title:
             data["title"] = args.title
         else:
-            data["title"] = self.get_default_title(data, documentPath)
+            data["title"] = self.get_default_title(data, documents_paths[0])
         if args.author:
             data["author"] = args.author
         else:
-            data["author"] = self.get_default_author(data, documentPath)
+            data["author"] = self.get_default_author(data, documents_paths[0])
         if not args.name:
-            folderName = self.get_hash_folder(data, documentPath)
+            folderName = self.get_hash_folder(data, documents_paths[0])
         else:
             folderName = string\
                         .Template(args.name)\
                         .safe_substitute(data)\
                         .replace(" ", "-")
+        if args.to:
+            documents = papis.utils.getFilteredDocuments(
+                documentsDir,
+                args.to
+            )
+            document = self.pick(documents, config)
+            data["file"] = document["file"] + documents_names
+            if not document:
+                sys.exit(0)
+            folderName = os.path.basename(document.getMainFolder())
+        else:
+            data["file"] = documents_names
         fullDirPath = os.path.join(documentsDir, args.dir,  folderName)
-        endDocumentPath = os.path.join(fullDirPath, documentName)
         ######
         self.logger.debug("Folder    = % s" % folderName)
-        self.logger.debug("File      = % s" % documentPath)
-        self.logger.debug("EndFile   = % s" % endDocumentPath)
-        self.logger.debug("Ext.      = % s" % extension)
+        self.logger.debug("File      = % s" % documents_paths)
         self.logger.debug("Author    = % s" % data["author"])
         self.logger.debug("Title    = % s" % data["title"])
         ######
         if not os.path.isdir(fullDirPath):
             self.logger.debug("Creating directory '%s'" % fullDirPath)
             os.makedirs(fullDirPath)
-        shutil.copy(documentPath, endDocumentPath)
+        for i in range(len(documents_paths)):
+            documentName = documents_names[i]
+            documentPath = documents_paths[i]
+            endDocumentPath = os.path.join(fullDirPath, documentName)
+            self.logger.debug(
+                "[CP] '%s' to '%s'" %
+                (documentPath, fullDirPath)
+            )
+            shutil.copy(documentPath, endDocumentPath)
         document = Document(fullDirPath)
         document.update(data, force=True)
         document.save()
