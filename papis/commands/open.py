@@ -1,5 +1,6 @@
 import papis
 import os
+import sys
 import papis.utils
 from . import Command
 
@@ -50,6 +51,8 @@ class Open(Command):
             documentSearch
         )
         document = self.pick(documents, config)
+        if not document:
+            sys.exit(0)
         files = document.getFiles()
         file_to_open = papis.utils.pick(
             files,
