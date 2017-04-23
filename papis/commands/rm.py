@@ -50,6 +50,8 @@ class Rm(Command):
             documentSearch
         )
         document = self.pick(documents, config)
+        if not document:
+            sys.exit(0)
         folder = document.getMainFolder()
         if not args.force:
             if input("Are you sure? (Y/n): ") in ["N", "n"]:
