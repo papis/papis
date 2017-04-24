@@ -144,8 +144,8 @@ class Document(object):
         :returns: TODO
 
         """
-        files = self["file"] if isinstance(self["file"], list) \
-            else [self["file"]]
+        files = self["files"] if isinstance(self["files"], list) \
+            else [self["files"]]
         result = []
         for f in files:
             result.append(os.path.join(self.getMainFolder(), f))

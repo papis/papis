@@ -221,12 +221,12 @@ class Add(Command):
                 args.to
             )
             document = self.pick(documents, config)
-            data["file"] = document["file"] + documents_names
+            data["files"] = document["files"] + documents_names
             if not document:
                 sys.exit(0)
             folderName = os.path.basename(document.getMainFolder())
         else:
-            data["file"] = documents_names
+            data["files"] = documents_names
         fullDirPath = os.path.join(documentsDir, args.dir,  folderName)
         ######
         self.logger.debug("Folder    = % s" % folderName)
