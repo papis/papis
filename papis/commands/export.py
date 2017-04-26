@@ -26,9 +26,15 @@ class Export(Command):
             action="store"
         )
         self.subparser.add_argument(
-            "--bibtex",
+            "--yaml",
             help="Export into bibtex",
             default=False,
+            action="store_true"
+        )
+        self.subparser.add_argument(
+            "--bibtex",
+            help="Export into bibtex",
+            default=True,
             action="store_true"
         )
         self.subparser.add_argument(
@@ -68,5 +74,7 @@ class Export(Command):
         elif args.folder:
             outdir = args.out or folder
             shutil.copytree(folder, outdir)
-        else:
+        elif args.yaml:
             print(document.dump())
+        else:
+            pass
