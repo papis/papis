@@ -14,6 +14,10 @@ class Arxiv(papis.downloaders.base.Downloader):
 
     @classmethod
     def match(cls, url):
+        # arXiv:1701.08223v2
+        m = re.match(r"^arxiv:(.*)", url, re.IGNORECASE)
+        if m:
+            url = "https://arxiv.org/abs/{m}".format(m=m.group(1))
         if re.match(r".*arxiv.org.*", url):
             return Arxiv(url)
         else:

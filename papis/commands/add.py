@@ -30,7 +30,7 @@ class Add(Command):
         self.subparser.add_argument(
             "document",
             help="Document file name",
-            default="",
+            default=[],
             nargs="*",
             action="store"
         )
@@ -49,7 +49,6 @@ class Add(Command):
         self.subparser.add_argument(
             "--edit",
             help="Edit info file after adding document",
-            default="",
             action="store_true"
         )
         self.subparser.add_argument(
