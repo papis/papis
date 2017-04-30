@@ -179,6 +179,7 @@ class Add(Command):
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
         folderName = None
         data = dict()
+        bibtex_data = None
         self.logger.debug("Saving in directory %s" % documentsDir)
         # if documents are posible to download from url, overwrite
         documents_paths = args.document
@@ -188,7 +189,12 @@ class Add(Command):
             url = args.from_url
             downloader = papis.downloaders.utils.getDownloader(url)
             if downloader:
-                data = papis.bibtex.bibtexToDict(downloader.getBibtexData())
+                self.logger.debug("Using downloader %s" % downloader)
+                bibtex_data = downloader.getBibtexData()
+                if bibtex_data:
+                    data = papis.bibtex.bibtexToDict(
+                        downloader.getBibtexData()
+                    )
                 if len(args.document) == 0:
                     doc_data = downloader.getDocumentData()
                     if doc_data:
