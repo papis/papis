@@ -77,6 +77,8 @@ class Command(object):
         :returns: TODO
 
         """
+        import os
+        import sys
         if not pick_config:
             pick_config = dict(
                 header_filter=lambda x: "{:<70.70}|{:<20.20} ({:.4})".format(
@@ -85,7 +87,14 @@ class Command(object):
                     str(x["year"] or "****")
                 ),
                 match_filter=lambda x:
-                    (x["title"] or x.getMainFolderName()) +
+                    os.path.dirname(
+                        x.getMainFolder()
+                    ).replace(
+                        os.environ["HOME"], ""
+                    ).replace(
+                        "/", " "
+                    ) +
+                    (x["title"] or "") +
                     (x["author"] or "") +
                     (str(x["year"]) or "****")
             )
