@@ -1,6 +1,7 @@
 from ..document import Document
 import papis
 import os
+import sys
 import re
 import tempfile
 import hashlib
@@ -83,6 +84,11 @@ class Add(Command):
             selected already existing document entry.""",
             nargs="?",
             action="store"
+        )
+        self.subparser.add_argument(
+            "--confirm",
+            help="Ask to confirm before adding to the collection",
+            action="store_true"
         )
 
     def get_hash_folder(self, data, document_path):
@@ -247,6 +253,9 @@ class Add(Command):
             shutil.copy(documentPath, endDocumentPath)
         document = Document(fullDirPath)
         document.update(data, force=True)
+        if args.confirm:
+            if input("Really add? (Y/n): ") in ["N", "n"]:
+                sys.exit(0)
         document.save()
         if args.edit:
             papis.utils.editFile(document.getInfoFile(), config)
