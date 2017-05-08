@@ -1,3 +1,5 @@
+import os
+import glob
 import logging
 import papis.utils
 
@@ -19,14 +21,7 @@ COMMANDS = [
 
 logger = logging.getLogger("commands")
 
-
-def init(parser):
-    """TODO: Docstring for init.
-
-    :parser: TODO
-    :returns: TODO
-
-    """
+def init_internal_commands(parser):
     global COMMANDS
     global logger
     commands = dict()
@@ -39,6 +34,26 @@ def init(parser):
         cmd.setParser(parser)
         cmd.init()
         commands[command] = cmd
+    return commands
+
+def init_external_commands(parser):
+    from .external import External
+    commands = dict()
+    paths = os.environ["PATH"].split(":")
+    for path in paths:
+        scripts = glob.glob(os.path.join(path, "papis-*"))
+        if len(scripts):
+            for script in scripts:
+                cmd = External(parser)
+                cmd.init(script)
+                commands[cmd.get_command_name()] = cmd
+    return commands
+
+
+def init(parser):
+    commands = dict()
+    commands.update(init_internal_commands(parser))
+    commands.update(init_external_commands(parser))
     return commands
 
 
