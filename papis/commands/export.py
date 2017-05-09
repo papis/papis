@@ -1,6 +1,7 @@
 import papis
 import os
 import shutil
+import string
 import papis.utils
 from . import Command
 
@@ -56,6 +57,12 @@ class Export(Command):
             default="",
             action="store"
         )
+        self.subparser.add_argument(
+            "-t",
+            "--text",
+            help="Text formated reference",
+            action="store_true"
+        )
 
     def main(self, config, args):
         """
@@ -77,6 +84,13 @@ class Export(Command):
         folder = document.getMainFolder()
         if args.bibtex:
             print(document.toBibtex())
+        if args.text:
+            text = string.Template(
+                """$author. $title. $journal $pages $month $year""")\
+                .safe_substitute(
+                    document.toDict()
+            )
+            print(text)
         elif args.folder:
             outdir = args.out or document.getMainFolderName()
             shutil.copytree(folder, outdir)
