@@ -34,12 +34,18 @@ class Export(Command):
         self.subparser.add_argument(
             "--bibtex",
             help="Export into bibtex",
-            default=True,
+            default=False,
             action="store_true"
         )
         self.subparser.add_argument(
             "--folder",
             help="Export document folder to share",
+            default=False,
+            action="store_true"
+        )
+        self.subparser.add_argument(
+            "--no-bibtex",
+            help="When exporting to a folder, do not include the bibtex",
             default=False,
             action="store_true"
         )
@@ -68,12 +74,17 @@ class Export(Command):
             documentSearch
         )
         document = self.pick(documents, config)
-        folder = document.getMainFolderName()
+        folder = document.getMainFolder()
         if args.bibtex:
             print(document.toBibtex())
         elif args.folder:
-            outdir = args.out or folder
+            outdir = args.out or document.getMainFolderName()
             shutil.copytree(folder, outdir)
+            if not args.no_bibtex:
+                open(
+                    os.path.join(outdir, "info.bib"),
+                    "w+"
+                ).write(document.toBibtex())
         elif args.yaml:
             print(document.dump())
         else:
