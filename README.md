@@ -21,13 +21,13 @@ An example for that is given below
 ```ini
 [papers]
 dir = ~/Documents/papers
-sync = cd $dir; git pull origin master
 
 [settings]
-viewer = rifle
+opentool = rifle
 editor = vim
 default = papers
 
-[misc]
-dir = ~/Documents/misc
+[books]
+dir = ~/Documents/books
+
 ```
