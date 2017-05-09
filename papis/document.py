@@ -84,6 +84,12 @@ class Document(object):
         yaml.dump(structure, fd, default_flow_style=False)
         fd.close()
 
+    def toDict(self):
+        result = dict()
+        for key in self.keys():
+            key[result] = self[key]
+        return result
+
     def toBibtex(self):
         """
         :f: TODO
