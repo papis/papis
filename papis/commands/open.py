@@ -50,6 +50,9 @@ class Open(Command):
             documentsDir,
             documentSearch
         )
+        if not documents:
+            print("No documents found with that name.")
+            sys.exit(1)
         document = self.pick(documents, config)
         if not document:
             sys.exit(0)
