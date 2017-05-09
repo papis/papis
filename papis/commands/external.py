@@ -38,5 +38,13 @@ class External(Command):
         else:
             return h.decode("ascii")
 
+    def export_variables(self, config, args):
+        """Export environment variables so that external script can access to
+        the information
+        """
+        os.environ["PAPIS_LIB"] = args.lib
+        os.environ["PAPIS_LIB_PATH"] = config[args.lib]["dir"]
+
     def main(self, config, args):
+        self.export_variables(config, args)
         subprocess.call([self.script_path] + args.args)
