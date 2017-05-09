@@ -1,0 +1,30 @@
+#! /usr/bin/env bash
+
+if [[ $1 = "-h" ]]; then
+  echo "Get pdf and bibtex from doi identificator"
+  exit 0
+fi
+
+sciget=sciget.sh
+doi2bib=doi2bib
+
+pdf_output=output.pdf
+doi="$1"
+
+bibtex_file=$(tempfile)
+
+${doi2bib} ${doi} > ${bibtex_file}
+
+if [[ -z $(cat ${bibtex_file}) ]]; then
+  echo "No bibtex retrieved!"
+  exit 1
+fi
+
+${sciget} ${doi}
+
+if [[ ! $? = 0 ]]; then
+  echo "Something happened"
+  exit 1
+fi
+
+papis add ${pdf_output} --from-bibtex ${bibtex_file} --edit
