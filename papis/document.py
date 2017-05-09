@@ -87,7 +87,7 @@ class Document(object):
     def toDict(self):
         result = dict()
         for key in self.keys():
-            key[result] = self[key]
+            result[key] = self[key]
         return result
 
     def toBibtex(self):
