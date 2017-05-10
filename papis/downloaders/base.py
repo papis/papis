@@ -33,7 +33,10 @@ class Downloader(object):
         :returns: TODO
 
         """
-        data = urllib.request.urlopen(self.getBibtexUrl())\
+        url = self.getBibtexUrl()
+        if not url:
+            return False
+        data = urllib.request.urlopen(url)\
             .read()\
             .decode('utf-8')
         self.bibtex_data = data
