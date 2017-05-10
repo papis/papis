@@ -11,6 +11,7 @@ COMMANDS = [
     "export",
     "list",
     "rm",
+    "mv",
     "open",
     "browse",
     "test",
