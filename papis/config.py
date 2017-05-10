@@ -14,14 +14,21 @@ class Configuration(configparser.ConfigParser):
       }
     }
 
+    DEFAULT_DIR_LOCATION = os.path.join(
+        os.path.expanduser("~"), ".papis"
+    )
+
     DEFAULT_FILE_LOCATION = os.path.join(
-            os.path.expanduser("~"), ".papis.conf")
+        DEFAULT_DIR_LOCATION, "config"
+    )
 
     def __init__(self):
         configparser.ConfigParser.__init__(self)
         self.initialize()
 
     def initialize(self):
+        if not os.path.exists(self.DEFAULT_DIR_LOCATION):
+            os.makedirs(self.DEFAULT_DIR_LOCATION)
         if os.path.exists(self.DEFAULT_FILE_LOCATION):
             self.read(self.DEFAULT_FILE_LOCATION)
         else:
@@ -33,10 +40,6 @@ class Configuration(configparser.ConfigParser):
                 self.write(configfile)
 
     def save(self):
-        """
-        :f: TODO
-        :returns: TODO
-        """
         fd = open(self.DEFAULT_FILE_LOCATION, "w")
         self.write(fd)
         fd.close()
