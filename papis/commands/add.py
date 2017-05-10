@@ -253,7 +253,6 @@ class Add(Command):
         for i in range(len(documents_paths)):
             documentName = documents_names[i]
             documentPath = documents_paths[i]
-            assert(os.path.exists(documentName))
             assert(os.path.exists(documentPath))
             endDocumentPath = os.path.join(fullDirPath, documentName)
             self.logger.debug(
