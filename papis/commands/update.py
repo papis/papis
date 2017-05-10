@@ -58,8 +58,10 @@ class Update(Command):
         documentSearch = args.document
         data = papis.bibtex.bibtexToDict(args.from_bibtex) \
             if args.from_bibtex else dict()
-        folders = papis.utils.getFilteredFolders(documentsDir, documentSearch)
-        folder = papis.utils.pick(folders, config)
-        document = Document(folder)
+        documents = papis.utils.getFilteredDocuments(
+            documentsDir,
+            documentSearch
+        )
+        document = self.pick(documents, config)
         document.update(data, args.force, args.interactive)
         document.save()
