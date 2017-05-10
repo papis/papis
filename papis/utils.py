@@ -76,7 +76,6 @@ def matchDocument(document, search):
                  + str(document["author"])\
                  + str(document["year"])
     regex = r".*"+re.sub(r"\s+", ".*", search)
-    logger.debug("Filter regex = %s" % regex)
     m = re.match(regex, match_string, re.IGNORECASE)
     return True if m else False
 
