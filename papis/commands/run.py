@@ -27,7 +27,6 @@ class Run(Command):
                 config[args.lib]["".join(args.run_command)]
             )
         except:
-            # print(config[args.lib][args.run_command])
             command = " ".join(args.run_command)
         self.logger.debug("Command = %s" % command)
         command = string.Template(command).safe_substitute(config[args.lib])
