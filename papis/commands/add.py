@@ -211,34 +211,36 @@ class Add(Command):
             self.clean_document_name(documentPath)
             for documentPath in documents_paths
         ]
-        if args.title:
-            data["title"] = args.title
-        else:
-            data["title"] = self.get_default_title(data, documents_paths[0])
-        if args.author:
-            data["author"] = args.author
-        else:
-            data["author"] = self.get_default_author(data, documents_paths[0])
-        if not args.name:
-            folderName = self.get_hash_folder(data, documents_paths[0])
-        else:
-            folderName = string\
-                        .Template(args.name)\
-                        .safe_substitute(data)\
-                        .replace(" ", "-")
         if args.to:
             documents = papis.utils.getFilteredDocuments(
                 documentsDir,
                 args.to
             )
             document = self.pick(documents, config)
-            data["files"] = document["files"] + documents_names
             if not document:
                 sys.exit(0)
-            folderName = os.path.basename(document.getMainFolder())
+            data = document.toDict()
+            data["files"] = document["files"] + documents_names
+            folderName = document.getMainFolderName()
+            fullDirPath = document.getMainFolder()
         else:
+            if args.title:
+                data["title"] = args.title
+            else:
+                data["title"] = self.get_default_title(data, documents_paths[0])
+            if args.author:
+                data["author"] = args.author
+            else:
+                data["author"] = self.get_default_author(data, documents_paths[0])
+            if not args.name:
+                folderName = self.get_hash_folder(data, documents_paths[0])
+            else:
+                folderName = string\
+                            .Template(args.name)\
+                            .safe_substitute(data)\
+                            .replace(" ", "-")
             data["files"] = documents_names
-        fullDirPath = os.path.join(documentsDir, args.dir,  folderName)
+            fullDirPath = os.path.join(documentsDir, args.dir,  folderName)
         ######
         self.logger.debug("Folder    = % s" % folderName)
         self.logger.debug("File      = % s" % documents_paths)
@@ -251,13 +253,16 @@ class Add(Command):
         for i in range(len(documents_paths)):
             documentName = documents_names[i]
             documentPath = documents_paths[i]
+            assert(os.path.exists(documentName))
+            assert(os.path.exists(documentPath))
             endDocumentPath = os.path.join(fullDirPath, documentName)
             self.logger.debug(
                 "[CP] '%s' to '%s'" %
                 (documentPath, fullDirPath)
             )
             shutil.copy(documentPath, endDocumentPath)
-        document = Document(fullDirPath)
+        if not args.to:
+            document = Document(fullDirPath)
         document.update(data, force=True)
         if args.confirm:
             if input("Really add? (Y/n): ") in ["N", "n"]:
