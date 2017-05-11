@@ -1,7 +1,7 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v0.0.1-15-ga7ebf6c
-MAKEFILE_DATE = 11-05-2017 15:08
+MAKEFILE_VERSION = v0.0.1-16-ga57ce5a
+MAKEFILE_DATE = 11-05-2017 15:20
 MAKEFILE_AUTHOR = Alejandro Gallo
 MAKEFILE_URL = https://github.com/alejandrogallo/python-makefile
 MAKEFILE_LICENSE = GPLv3
@@ -234,6 +234,10 @@ install: ## Install the package
 uninstall: ## Uninstall the package
 	$(ARROW) Uninstalling...
 	$(DBG_FLAG)$(PIP) uninstall $(shell $(PYTHON) setup.py --name)
+
+install-deps-local: ## Install python requirements locally
+	$(ARROW) Installing dependencies...
+	$(DBG_FLAG)$(PIP) install --user -r requirements.txt
 
 install-deps: ## Install python requirements
 	$(ARROW) Installing dependencies...
