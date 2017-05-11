@@ -11,26 +11,22 @@ from setuptools import setup
 
 from papis import __version__
 
+def get_requirements(reqs="requirements.txt"):
+    return open(reqs).read().split("\n")[0:-1]
+# import sys
+# print(sys.prefix)
 
 setup(
     name='papis',
     version=__version__,
     maintainer='Alejandro Gallo',
     maintainer_email='aamsgallo@gmail.com',
-    license='LGPL',
+    license='GPLv3',
     url='https://github.com/alejandrogallo/papis',
-    install_requires=[
-       "argcomplete",
-       "configparser",
-       "arxiv2bib",
-       "argparse",
-       "PyYAML",
-       "pdfminer2"
-        ],
+    install_requires=get_requirements(),
     extras_require=dict(
         dev=[]
     ),
-
     description='Simple program to manage literature',
     long_description='Simple program to manage literature',
     keywords=[
@@ -40,7 +36,7 @@ setup(
         'management',
         'cli',
         'biliography'
-        ],
+    ],
     packages=["papis"],
     test_suite="papis.tests",
     entry_points=dict(
@@ -48,6 +44,5 @@ setup(
             'papis=papis.papis:main'
         ]
     ),
-
-    platforms=['any'],
+    platforms=['linux'],
 )
