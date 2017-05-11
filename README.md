@@ -29,5 +29,10 @@ default = papers
 
 [books]
 dir = ~/Documents/books
+gagp = git add . && git commit && git push origin master
 
 ```
+
+# Installation #
+
+
