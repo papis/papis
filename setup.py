@@ -37,7 +37,11 @@ setup(
         'cli',
         'biliography'
     ],
-    packages=["papis"],
+    packages=[
+        "papis",
+        "papis.commands",
+        "papis.downloaders"
+    ],
     test_suite="papis.tests",
     entry_points=dict(
         console_scripts=[
