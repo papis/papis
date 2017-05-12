@@ -60,7 +60,6 @@ class List(Command):
         list_parser.add_argument(
             "--downloaders",
             help="List available downloaders",
-            default=True,
             action="store_true"
         )
 
