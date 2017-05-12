@@ -98,6 +98,21 @@ def getFolders(folder):
     return folders
 
 
+def isGitRepo(folder):
+    """Check if folder is a git repository
+
+    :folder: Folder to check
+    :returns: True/False
+
+    """
+    logger = logging.getLogger("is_git")
+    if os.path.exists(os.path.join(folder, ".git"):
+        logger.debug("Detected git repo in %s" % folder)
+        return True
+    else:
+        return False
+
+
 def getInfoFileName():
     """TODO: Docstring for getInfoFileName.
     :returns: TODO
