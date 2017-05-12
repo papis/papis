@@ -106,7 +106,7 @@ def isGitRepo(folder):
 
     """
     logger = logging.getLogger("is_git")
-    if os.path.exists(os.path.join(folder, ".git"):
+    if os.path.exists(os.path.join(folder, ".git")):
         logger.debug("Detected git repo in %s" % folder)
         return True
     else:
