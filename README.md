@@ -140,7 +140,21 @@ zip it, and send it to whoever you choose to.
 
 ## Installation
 
-Just use the Makefile:
+### Through pip
+
+Probably the easiest way of installing the package is using `pip`:
+
+```
+pip3 install git+git://github.com/alejandrogallo/papis.git
+```
+
+or if you want to install it locally
+
+```
+pip3 install --user git+git://github.com/alejandrogallo/papis.git
+```
+
+### Using the `Makefile`
 
 If you want to install it globally, just hit
 
