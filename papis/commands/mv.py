@@ -33,9 +33,11 @@ class Mv(Command):
 
     def get_dirs(self, main):
         directories = []
+        p = ""
         for root, dirs, files in os.walk(main):
             for di in dirs:
-                if not os.path.exists(os.path.join(root, di, "info.yaml")) \
+                p = os.path.join(root, di, papis.utils.getInfoFileName())
+                if not os.path.exists(p) \
                 and not re.match(r".*[.]git.*", os.path.join(root,di)):
                     directories.append(di)
         self.logger.debug(directories)
