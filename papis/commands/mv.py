@@ -38,7 +38,7 @@ class Mv(Command):
             for di in dirs:
                 p = os.path.join(root, di, papis.utils.getInfoFileName())
                 if not os.path.exists(p) \
-                and not re.match(r".*[.]git.*", os.path.join(root,di)):
+                and not re.match(r".*[.]git.*", os.path.join(root, di)):
                     directories.append(di)
         self.logger.debug(directories)
         return directories
