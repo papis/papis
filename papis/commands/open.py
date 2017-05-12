@@ -29,6 +29,7 @@ class Open(Command):
         )
 
         self.subparser.add_argument(
+            "-d",
             "--dir",
             help="Open directory",
             action="store_true"
