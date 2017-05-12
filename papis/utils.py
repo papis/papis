@@ -48,10 +48,6 @@ def pick(options, papis_config={}, pick_config={}):
 
 
 def openGeneral(fileName, configuration, key):
-    """TODO: Docstring for openFile.
-    :fileName: TODO
-    :returns: TODO
-    """
     try:
         opener = configuration["settings"][key]
     except KeyError:
@@ -90,10 +86,7 @@ def getFilteredDocuments(directory, search):
 
 
 def getFolders(folder):
-    """
-    Get documents from a containing folder
-    :folder: TODO
-    :returns: TODO
+    """Get documents from a containing folder
     """
     folders = list()
     for root, dirnames, filenames in os.walk(folder):
