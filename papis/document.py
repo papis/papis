@@ -66,6 +66,7 @@ class Document(object):
         """
         # Check for the exsitence of the document
         for f in self.getFiles():
+            self.logger.debug(f)
             if not os.path.exists(f):
                 print("** Error: %s not found in %s" % (
                     f, self.getMainFolder()))

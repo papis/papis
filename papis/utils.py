@@ -47,23 +47,27 @@ def pick(options, papis_config={}, pick_config={}):
                 shell=True).read()
 
 
-def openFile(fileName, configuration={}):
+def openGeneral(fileName, configuration, key):
     """TODO: Docstring for openFile.
     :fileName: TODO
     :returns: TODO
     """
     try:
-        opener = configuration["settings"]["opentool"]
+        opener = configuration["settings"][key]
     except KeyError:
         opener = "xdg-open"
     call([opener, fileName])
 
 
+def openFile(fileName, configuration={}):
+    openGeneral(fileName, configuration, "opentool")
+
+
+def openDir(fileName, configuration={}):
+    openGeneral(fileName, configuration, "file-browser")
+
+
 def editFile(fileName, configuration={}):
-    """TODO: Docstring for editFile.
-    :fileName: TODO
-    :returns: TODO
-    """
     try:
         editor = configuration["settings"]["editor"]
     except KeyError:

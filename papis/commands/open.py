@@ -7,17 +7,12 @@ from . import Command
 
 class Open(Command):
     def init(self):
-        """TODO: Docstring for init.
-
-        :subparser: TODO
-        :returns: TODO
-
-        """
 
         self.subparser = self.parser.add_parser(
             "open",
             help="Open document document from a given library"
         )
+
         self.subparser.add_argument(
             "document",
             help="Document search",
@@ -25,6 +20,7 @@ class Open(Command):
             default=".",
             action="store"
         )
+
         self.subparser.add_argument(
             "--tool",
             help="Tool for opening the file (opentool)",
@@ -32,15 +28,14 @@ class Open(Command):
             action="store"
         )
 
+        self.subparser.add_argument(
+            "--dir",
+            help="Open directory",
+            action="store_true"
+        )
+
     def main(self, config, args):
-        """
-        Main action if the command is triggered
 
-        :config: User configuration
-        :args: CLI user arguments
-        :returns: TODO
-
-        """
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
         if args.tool:
             config["settings"]["opentool"] = args.tool
@@ -56,12 +51,15 @@ class Open(Command):
         document = self.pick(documents, config)
         if not document:
             sys.exit(0)
-        files = document.getFiles()
-        file_to_open = papis.utils.pick(
-            files,
-            config,
-            pick_config=dict(
-                header_filter=lambda x: x.replace(document.getMainFolder(), "")
+        if not args.dir:
+            files = document.getFiles()
+            file_to_open = papis.utils.pick(
+                files,
+                config,
+                pick_config=dict(
+                    header_filter=lambda x: x.replace(document.getMainFolder(), "")
+                )
             )
-        )
-        papis.utils.openFile(file_to_open, config)
+            papis.utils.openFile(file_to_open, config)
+        else:
+            papis.utils.openDir(document.getMainFolder(), config)
