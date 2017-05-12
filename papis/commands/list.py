@@ -1,7 +1,9 @@
 import papis
 import os
+import sys
 import papis.utils
 from . import Command
+import papis.downloaders.utils
 
 
 class List(Command):
@@ -55,6 +57,13 @@ class List(Command):
             action="store_true"
         )
 
+        list_parser.add_argument(
+            "--downloaders",
+            help="List available downloaders",
+            default=True,
+            action="store_true"
+        )
+
     def main(self, config, args):
         """
         Main action if the command is triggered
@@ -64,6 +73,11 @@ class List(Command):
         :returns: TODO
 
         """
+        if args.downloaders:
+            for downloader in \
+            papis.downloaders.utils.getAvailableDownloaders():
+                print(downloader)
+            sys.exit(0)
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document

@@ -4,7 +4,7 @@ import papis.downloaders.base
 import arxiv2bib
 
 
-class Arxiv(papis.downloaders.base.Downloader):
+class Downloader(papis.downloaders.base.Downloader):
 
     """Docstring for Aps. """
 

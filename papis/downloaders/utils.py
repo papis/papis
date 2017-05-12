@@ -8,24 +8,19 @@ import papis.downloaders.get
 
 logger = logging.getLogger("downloader")
 
-DOWNLOADERS = [
-        papis.downloaders.aps.Aps,
-        papis.downloaders.arxiv.Arxiv,
+def getAvailableDownloaders():
+    return [
+        papis.downloaders.aps.Downloader,
+        papis.downloaders.arxiv.Downloader,
         papis.downloaders.scitationaip.Downloader,
         papis.downloaders.libgen.Downloader,
-        papis.downloaders.get.Get,
-        ]
+        papis.downloaders.get.Downloader,
+    ]
+
 
 
 def getDownloader(url):
-    """TODO: Docstring for getDownloader.
-
-    :url: TODO
-    :returns: TODO
-
-    """
-    global DOWNLOADERS
-    for downloader in DOWNLOADERS:
+    for downloader in getAvailableDownloaders():
         result = downloader.match(url)
         if result:
             return result

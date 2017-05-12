@@ -3,7 +3,7 @@ import urllib.request
 import papis.downloaders.base
 
 
-class Aps(papis.downloaders.base.Downloader):
+class Downloader(papis.downloaders.base.Downloader):
 
     """Docstring for Aps. """
 
