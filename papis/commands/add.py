@@ -3,6 +3,7 @@ import papis
 import os
 import sys
 import re
+import yaml
 import tempfile
 import hashlib
 import shutil
@@ -18,16 +19,12 @@ import pdfminer.pdfdocument
 class Add(Command):
 
     def init(self):
-        """TODO: Docstring for init.
 
-        :subparser: TODO
-        :returns: TODO
-
-        """
         self.subparser = self.parser.add_parser(
             "add",
             help="Add a document into a given library"
         )
+
         self.subparser.add_argument(
             "document",
             help="Document file name",
@@ -35,41 +32,55 @@ class Add(Command):
             nargs="*",
             action="store"
         )
+
         self.subparser.add_argument(
             "-d", "--dir",
             help="Subfolder in the library",
             default="",
             action="store"
         )
+
         self.subparser.add_argument(
             "--name",
             help="Name for the main folder",
             default="",
             action="store"
         )
+
         self.subparser.add_argument(
             "--edit",
             help="Edit info file after adding document",
             action="store_true"
         )
-        self.subparser.add_argument(
-            "--from-bibtex",
-            help="Parse information from a bibtex file",
-            default="",
-            action="store"
-        )
+
         self.subparser.add_argument(
             "--title",
             help="Title for document",
             default="",
             action="store"
         )
+
         self.subparser.add_argument(
             "--author",
             help="Author(s) for document",
             default="",
             action="store"
         )
+
+        self.subparser.add_argument(
+            "--from-bibtex",
+            help="Parse information from a bibtex file",
+            default="",
+            action="store"
+        )
+
+        self.subparser.add_argument(
+            "--from-yaml",
+            help="Parse information from a yaml file",
+            default="",
+            action="store"
+        )
+
         self.subparser.add_argument(
             "--from-url",
             help="""Get document and information from a
@@ -78,6 +89,7 @@ class Add(Command):
             default="",
             action="store"
         )
+
         self.subparser.add_argument(
             "--to",
             help="""When --to is specified, the document will be added to the
@@ -85,6 +97,7 @@ class Add(Command):
             nargs="?",
             action="store"
         )
+
         self.subparser.add_argument(
             "--confirm",
             help="Ask to confirm before adding to the collection",
@@ -205,6 +218,8 @@ class Add(Command):
                         tempfd.close()
         elif args.from_bibtex:
             data = papis.bibtex.bibtexToDict(args.from_bibtex)
+        elif args.from_yaml:
+            data = yaml.load(open(args.from_yaml))
         else:
             pass
         documents_names = [
@@ -227,11 +242,17 @@ class Add(Command):
             if args.title:
                 data["title"] = args.title
             else:
-                data["title"] = self.get_default_title(data, documents_paths[0])
+                data["title"] = self.get_default_title(
+                    data,
+                    documents_paths[0]
+                )
             if args.author:
                 data["author"] = args.author
             else:
-                data["author"] = self.get_default_author(data, documents_paths[0])
+                data["author"] = self.get_default_author(
+                    data,
+                    documents_paths[0]
+                )
             if not args.name:
                 folderName = self.get_hash_folder(data, documents_paths[0])
             else:
