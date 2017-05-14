@@ -278,8 +278,6 @@ class Add(Command):
         self.logger.debug("Author = % s" % data["author"])
         self.logger.debug("Title = % s" % data["title"])
         ######
-        print(documents_paths)
-        print(data["files"])
         if not os.path.isdir(temp_dir):
             self.logger.debug("Creating directory '%s'" % temp_dir)
             os.makedirs(temp_dir)
