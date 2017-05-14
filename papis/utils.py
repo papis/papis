@@ -81,7 +81,8 @@ def matchDocument(document, search):
     return True if m else False
 
 
-def getFilteredDocuments(directory, search):
+def getFilteredDocuments(directory, search=""):
+    directory = os.path.expanduser(directory)
     documents = [Document(d) for d in getFolders(directory)]
     return [d for d in documents if matchDocument(d, search)]
 

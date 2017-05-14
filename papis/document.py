@@ -19,6 +19,14 @@ class Document(object):
             os.path.join(folder, papis.utils.getInfoFileName())
         self.loadInformationFromFile()
 
+    def __delitem__(self, obj):
+        """
+        :obj: TODO
+        :returns: TODO
+        """
+        self._keys.pop(self._keys.index(obj))
+        delattr(self, obj)
+
     def __setitem__(self, obj, value):
         """
         :obj: TODO
