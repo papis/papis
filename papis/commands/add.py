@@ -245,24 +245,24 @@ class Add(Command):
             if not document:
                 sys.exit(0)
             data = document.toDict()
+            documents_paths = [
+                os.path.join(
+                    document.getMainFolder(),
+                    d
+                ) for d in document["files"] ] + documents_paths
             data["files"] = document["files"] + documents_names
             folderName = document.getMainFolderName()
             fullDirPath = document.getMainFolder()
         else:
-            if args.title:
-                data["title"] = args.title
-            else:
-                data["title"] = self.get_default_title(
-                    data,
-                    documents_paths[0]
-                )
-            if args.author:
-                data["author"] = args.author
-            else:
-                data["author"] = self.get_default_author(
-                    data,
-                    documents_paths[0]
-                )
+            document = Document(temp_dir)
+            data["title"] = args.title or self.get_default_title(
+                data,
+                documents_paths[0]
+            )
+            data["author"] = args.author or self.get_default_author(
+                data,
+                documents_paths[0]
+            )
             if not args.name:
                 folderName = self.get_hash_folder(data, documents_paths[0])
             else:
@@ -273,30 +273,47 @@ class Add(Command):
             data["files"] = documents_names
             fullDirPath = os.path.join(documentsDir, args.dir,  folderName)
         ######
-        self.logger.debug("Folder    = % s" % folderName)
-        self.logger.debug("File      = % s" % documents_paths)
-        self.logger.debug("Author    = % s" % data["author"])
-        self.logger.debug("Title    = % s" % data["title"])
+        self.logger.debug("Folder = % s" % folderName)
+        self.logger.debug("File = % s" % documents_paths)
+        self.logger.debug("Author = % s" % data["author"])
+        self.logger.debug("Title = % s" % data["title"])
         ######
-        if not os.path.isdir(fullDirPath):
-            self.logger.debug("Creating directory '%s'" % fullDirPath)
-            os.makedirs(fullDirPath)
-        for i in range(len(documents_paths)):
-            documentName = documents_names[i]
+        print(documents_paths)
+        print(data["files"])
+        if not os.path.isdir(temp_dir):
+            self.logger.debug("Creating directory '%s'" % temp_dir)
+            os.makedirs(temp_dir)
+        if args.edit:
+            document.update(data, force=True)
+            document.save()
+            papis.utils.editFile(document.getInfoFile(), config)
+            document.loadInformationFromFile()
+            data = document.toDict()
+        for i in range(min(len(documents_paths), len(data["files"]))):
+            documentName = data["files"][i]
             documentPath = documents_paths[i]
             assert(os.path.exists(documentPath))
-            endDocumentPath = os.path.join(fullDirPath, documentName)
+            endDocumentPath = os.path.join(
+                    document.getMainFolder(), documentName)
+            if os.path.exists(endDocumentPath):
+                self.logger.debug(
+                    "%s exists, ignoring..." % endDocumentPath
+                )
+                continue
             self.logger.debug(
                 "[CP] '%s' to '%s'" %
-                (documentPath, fullDirPath)
+                (documentPath, endDocumentPath)
             )
             shutil.copy(documentPath, endDocumentPath)
-        if not args.to:
-            document = Document(fullDirPath)
         document.update(data, force=True)
         if args.confirm:
             if input("Really add? (Y/n): ") in ["N", "n"]:
                 sys.exit(0)
         document.save()
-        if args.edit:
-            papis.utils.editFile(document.getInfoFile(), config)
+        if args.to:
+            sys.exit(0)
+        self.logger.debug(
+            "[MV] '%s' to '%s'" %
+            (document.getMainFolder(), fullDirPath)
+        )
+        shutil.move(document.getMainFolder(), fullDirPath)

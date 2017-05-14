@@ -82,6 +82,7 @@ class Document(object):
         structure = dict()
         for key in self.keys():
             structure[key] = self[key]
+        self.logger.debug("Saving %s " % self.getInfoFile())
         yaml.dump(structure, fd, default_flow_style=False)
         fd.close()
 
