@@ -6,12 +6,6 @@ from . import Command
 
 class Check(Command):
     def init(self):
-        """TODO: Docstring for init.
-
-        :subparser: TODO
-        :returns: TODO
-
-        """
         self.subparser = self.parser.add_parser(
             "check",
             help="Check document document from a given library"
@@ -32,14 +26,6 @@ class Check(Command):
         )
 
     def main(self, config, args):
-        """
-        Main action if the command is triggered
-
-        :config: User configuration
-        :args: CLI user arguments
-        :returns: TODO
-
-        """
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
@@ -49,6 +35,7 @@ class Check(Command):
         )
         allOk = True
         for document in documents:
+            self.logger.debug("Checking %s" % document.getMainFolder())
             allOk &= document.checkFile()
             for key in args.keys:
                 if key not in document.keys():

@@ -9,8 +9,8 @@ import logging
 import argparse
 import argcomplete
 
-from .config import Configuration
 import papis.commands
+import papis.utils
 
 logger = logging.getLogger("papis")
 
@@ -24,7 +24,7 @@ if sys.version_info < (3, 0):
 
 
 def main():
-    config = Configuration()
+    config = papis.utils.getConfiguration()
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
         description="Simple documents administration program"

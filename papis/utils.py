@@ -4,6 +4,7 @@ import logging
 import os
 import re
 import papis.pick
+import papis.config
 from .document import Document
 import zipfile
 # from lxml import etree
@@ -108,6 +109,10 @@ def isGitRepo(folder):
         return True
     else:
         return False
+
+
+def getConfiguration():
+    return papis.config.Configuration()
 
 
 def getInfoFileName():
