@@ -95,6 +95,8 @@ and so on...
 
 ## Custom scripts
 
+### General scripts
+
 As in [git](http://git-scm.com), you can write custom scripts to include them
 in the command spectrum of papis.
 
@@ -137,6 +139,44 @@ papis -l mylib mail this_paper
 
 this will create a folder called `this_paper` with a selection of a document,
 zip it, and send it to whoever you choose to.
+
+### Python scripts
+
+If you use python is also very easy to control the library using the `papis`
+library. The following is an example illustrating the basics.
+The script below gets all the documents from the `papers` library
+and deletes the `url` from the document information:
+
+```python
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import papis.utils
+
+# Get the user configuration, where all the libraries are defined
+# You can access then for example the "papers" library path like a pythonic
+# dict, i.e., config["papers"]["dir"]
+#
+config = papis.utils.getConfiguration()
+
+# Get the documents. This returns a list of Document objects, which
+# are also similar to python's dicts but with more methods.
+#
+docs = papis.utils.getFilteredDocuments(config["papers"]["dir"])
+
+for doc in docs:
+    if "url" in doc.keys():
+        #
+        # You can access the info of the document by either
+        # doing doc.title or doc["title"].
+        #
+        print(doc.title)
+        del doc["url"]
+        print(doc.keys())
+        print(doc.toDict())
+        # Save the doc
+        doc.save()
+```
 
 ## Installation
 
