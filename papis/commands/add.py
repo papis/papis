@@ -8,6 +8,7 @@ import tempfile
 import hashlib
 import shutil
 import string
+import tempfile
 import papis.utils
 import papis.bibtex
 from . import Command
@@ -188,6 +189,29 @@ class Add(Command):
             )
         )
 
+    def get_from_url(self, args):
+        data = dict()
+        documents_paths = []
+        self.logger.debug("Attempting to retrieve from url")
+        url = args.from_url
+        downloader = papis.downloaders.utils.getDownloader(url)
+        if downloader:
+            self.logger.debug("Using downloader %s" % downloader)
+            bibtex_data = downloader.getBibtexData()
+            if bibtex_data:
+                data = papis.bibtex.bibtexToDict(
+                    downloader.getBibtexData()
+                )
+            if len(args.document) == 0:
+                doc_data = downloader.getDocumentData()
+                if doc_data:
+                    documents_paths.append(tempfile.mktemp())
+                    self.logger.debug("Saving in %s" % documents_paths[-1])
+                    tempfd = open(documents_paths[-1], "wb+")
+                    tempfd.write(doc_data)
+                    tempfd.close()
+        return {"data": data, "documents_paths": documents_paths}
+
     def main(self, config, args):
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
         folderName = None
@@ -197,25 +221,11 @@ class Add(Command):
         # if documents are posible to download from url, overwrite
         documents_paths = args.document
         documents_names = []
+        temp_dir = tempfile.mkdtemp("-"+args.lib)
         if args.from_url:
-            self.logger.debug("Attempting to retrieve from url")
-            url = args.from_url
-            downloader = papis.downloaders.utils.getDownloader(url)
-            if downloader:
-                self.logger.debug("Using downloader %s" % downloader)
-                bibtex_data = downloader.getBibtexData()
-                if bibtex_data:
-                    data = papis.bibtex.bibtexToDict(
-                        downloader.getBibtexData()
-                    )
-                if len(args.document) == 0:
-                    doc_data = downloader.getDocumentData()
-                    if doc_data:
-                        documents_paths.append(tempfile.mktemp())
-                        self.logger.debug("Saving in %s" % documents_paths[-1])
-                        tempfd = open(documents_paths[-1], "wb+")
-                        tempfd.write(doc_data)
-                        tempfd.close()
+            url_data = self.get_from_url(args)
+            data = url_data["data"]
+            documents_paths.append(url_data["documents_paths"])
         elif args.from_bibtex:
             data = papis.bibtex.bibtexToDict(args.from_bibtex)
         elif args.from_yaml:
