@@ -19,7 +19,7 @@ class Downloader(papis.downloaders.base.Downloader):
         if m:
             url = "https://arxiv.org/abs/{m}".format(m=m.group(1))
         if re.match(r".*arxiv.org.*", url):
-            return Arxiv(url)
+            return Downloader(url)
         else:
             return False
 
