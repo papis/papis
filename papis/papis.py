@@ -83,5 +83,5 @@ def main():
 
     if args.command:
         if args.command in subcommands.keys():
-            subcommands[args.command].main(config, args)
+            subcommands[args.command].main(args)
 # vim:set et sw=4 ts=4 ft=python:

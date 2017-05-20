@@ -27,7 +27,7 @@ class Browse(Command):
             action="store"
         )
 
-    def main(self, config, args):
+    def main(self, args):
         """
         Main action if the command is triggered
 

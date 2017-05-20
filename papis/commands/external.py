@@ -45,6 +45,6 @@ class External(Command):
         os.environ["PAPIS_LIB"] = args.lib
         os.environ["PAPIS_LIB_PATH"] = config[args.lib]["dir"]
 
-    def main(self, config, args):
+    def main(self, args):
         self.export_variables(config, args)
         subprocess.call([self.script_path] + args.args)

@@ -63,7 +63,7 @@ class List(Command):
             action="store_true"
         )
 
-    def main(self, config, args):
+    def main(self, args):
         """
         Main action if the command is triggered
 

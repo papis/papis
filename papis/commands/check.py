@@ -25,7 +25,7 @@ class Check(Command):
             action="store"
         )
 
-    def main(self, config, args):
+    def main(self, args):
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document

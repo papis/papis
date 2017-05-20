@@ -2,6 +2,7 @@ import os
 import glob
 import logging
 import papis.utils
+import papis.config
 
 COMMANDS = [
     "add",
@@ -68,6 +69,7 @@ class Command(object):
     def __init__(self, parser=None):
         self.parser = parser
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.config = papis.config.get_configuration()
 
     def init(self):
         pass
@@ -122,6 +124,6 @@ class Command(object):
             pick_config
         )
 
-    def main(self, config=None, args=None):
+    def main(self, args=None):
         if not args:
             self.args = args

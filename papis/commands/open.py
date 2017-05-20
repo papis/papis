@@ -35,7 +35,7 @@ class Open(Command):
             action="store_true"
         )
 
-    def main(self, config, args):
+    def main(self, args):
 
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
         if args.tool:

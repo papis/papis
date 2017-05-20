@@ -212,7 +212,7 @@ class Add(Command):
                     tempfd.close()
         return {"data": data, "documents_paths": documents_paths}
 
-    def main(self, config, args):
+    def main(self, args):
         documentsDir = os.path.expanduser(config[args.lib]["dir"])
         folderName = None
         data = dict()
