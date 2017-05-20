@@ -72,29 +72,20 @@ class Export(Command):
         )
 
         self.subparser.add_argument(
+            "-a", "--all",
+            help="Export all without picking",
+            action="store_true"
+        )
+
+        self.subparser.add_argument(
             "--vcf",
             help="Export contact to vcf format",
             action="store_true"
         )
 
-
-    def main(self, args):
+    def export(self, document):
+        """Main action in export command
         """
-        Main action if the command is triggered
-
-        :config: User configuration
-        :args: CLI user arguments
-        :returns: TODO
-
-        """
-        documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
-        self.logger.debug("Using directory %s" % documentsDir)
-        documentSearch = self.args.document
-        documents = papis.utils.getFilteredDocuments(
-            documentsDir,
-            documentSearch
-        )
-        document = self.pick(documents)
         folder = document.getMainFolder()
         if self.args.bibtex:
             print(document.toBibtex())
@@ -119,3 +110,32 @@ class Export(Command):
             print(document.toVcf())
         else:
             pass
+
+
+    def main(self, args):
+        """
+        Main action if the command is triggered
+
+        :config: User configuration
+        :args: CLI user arguments
+        :returns: TODO
+
+        """
+        document = None
+        documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
+        self.logger.debug("Using directory %s" % documentsDir)
+        documentSearch = self.args.document
+        documents = papis.utils.getFilteredDocuments(
+            documentsDir,
+            documentSearch
+        )
+        if not self.args.all:
+            document = self.pick(documents)
+            if document:
+                documents = [document]
+            else:
+                sys.exit(0)
+        for document in documents:
+            self.export(document)
+
+
