@@ -86,19 +86,9 @@ class Command(object):
 
     def pick(self, options, pick_config={}):
         self.logger.debug("Picking")
-        default_header_format =\
-            "{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:-<4})"
-        default_match_format =\
-            "{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}"
         if not pick_config:
-            try:
-                header_format = papis.config.get("header_format")
-            except:
-                header_format = default_header_format
-            try:
-                match_format = papis.config.get("match_format")
-            except:
-                match_format = default_match_format
+            header_format = papis.config.get_header_format()
+            match_format = papis.config.get_match_format()
             pick_config = dict(
                 header_filter=lambda x: header_format.format(doc=x),
                 match_filter=lambda x: match_format.format(doc=x)

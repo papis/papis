@@ -9,6 +9,7 @@ import hashlib
 import shutil
 import string
 import papis.utils
+import papis.config
 import papis.bibtex
 from . import Command
 import papis.downloaders.utils
@@ -128,7 +129,7 @@ class Add(Command):
 
         """
         m = re.match(r"^(.*)\.([a-zA-Z0-9]*)$", os.path.basename(documentPath))
-        extension = m.group(2) if m else "pdf"
+        extension = m.group(2) if m else "txt"
         self.logger.debug("[ext] = %s" % extension)
         return extension
 
@@ -159,7 +160,7 @@ class Add(Command):
                         (info_key, info[info_key])
                     )
                     return str(info[info_key])
-        return False
+        return None
 
     def get_default_title(self, data, document_path):
         if "title" in data.keys():
@@ -253,14 +254,17 @@ class Add(Command):
             fullDirPath = document.getMainFolder()
         else:
             document = Document(temp_dir)
-            data["title"] = args.title or self.get_default_title(
-                data,
-                documents_paths[0]
-            )
-            data["author"] = args.author or self.get_default_author(
-                data,
-                documents_paths[0]
-            )
+            if not papis.config.inMode("contact"):
+                data["title"] = args.title or self.get_default_title(
+                    data,
+                    documents_paths[0]
+                )
+                data["author"] = args.author or self.get_default_author(
+                    data,
+                    documents_paths[0]
+                )
+                self.logger.debug("Author = % s" % data["author"])
+                self.logger.debug("Title = % s" % data["title"])
             if not args.name:
                 folderName = self.get_hash_folder(data, documents_paths[0])
             else:
@@ -273,8 +277,6 @@ class Add(Command):
         ######
         self.logger.debug("Folder = % s" % folderName)
         self.logger.debug("File = % s" % documents_paths)
-        self.logger.debug("Author = % s" % data["author"])
-        self.logger.debug("Title = % s" % data["title"])
         ######
         if not os.path.isdir(temp_dir):
             self.logger.debug("Creating directory '%s'" % temp_dir)

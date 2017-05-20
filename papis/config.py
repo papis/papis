@@ -53,6 +53,30 @@ def get_configuration():
     return CONFIGURATION
 
 
+def get_default_match_format():
+    return "{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}"
+
+
+def get_default_header_format():
+    return "{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:-<4})"
+
+
+def get_header_format():
+    try:
+        header_format = get("header_format")
+    except:
+        header_format = get_default_header_format()
+    return header_format
+
+
+def get_match_format():
+    try:
+        match_format = get("match_format")
+    except:
+        match_format = get_default_match_format()
+    return match_format
+
+
 class Configuration(configparser.ConfigParser):
 
     default_info = {

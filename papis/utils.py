@@ -87,9 +87,7 @@ def editFile(fileName, configuration={}):
 
 
 def matchDocument(document, search):
-    match_string = str(document["title"])\
-                 + str(document["author"])\
-                 + str(document["year"])
+    match_string = papis.config.get_match_format().format(doc=document)
     regex = r".*"+re.sub(r"\s+", ".*", search)
     m = re.match(regex, match_string, re.IGNORECASE)
     return True if m else False
