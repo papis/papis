@@ -229,6 +229,7 @@ email:
     work: null
     home: null
 tel:
+    cell: null
     work: null
     home: null
 adress:

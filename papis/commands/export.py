@@ -19,6 +19,7 @@ class Export(Command):
             "export",
             help="""Export a document from a given library"""
         )
+
         self.subparser.add_argument(
             "document",
             help="Document search",
@@ -26,30 +27,35 @@ class Export(Command):
             default=".",
             action="store"
         )
+
         self.subparser.add_argument(
             "--yaml",
             help="Export into bibtex",
             default=False,
             action="store_true"
         )
+
         self.subparser.add_argument(
             "--bibtex",
             help="Export into bibtex",
             default=False,
             action="store_true"
         )
+
         self.subparser.add_argument(
             "--folder",
             help="Export document folder to share",
             default=False,
             action="store_true"
         )
+
         self.subparser.add_argument(
             "--no-bibtex",
             help="When exporting to a folder, do not include the bibtex",
             default=False,
             action="store_true"
         )
+
         self.subparser.add_argument(
             "-o",
             "--out",
@@ -57,12 +63,20 @@ class Export(Command):
             default="",
             action="store"
         )
+
         self.subparser.add_argument(
             "-t",
             "--text",
             help="Text formated reference",
             action="store_true"
         )
+
+        self.subparser.add_argument(
+            "--vcf",
+            help="Export contact to vcf format",
+            action="store_true"
+        )
+
 
     def main(self, args):
         """
@@ -73,33 +87,35 @@ class Export(Command):
         :returns: TODO
 
         """
-        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
-        documentSearch = args.document
+        documentSearch = self.args.document
         documents = papis.utils.getFilteredDocuments(
             documentsDir,
             documentSearch
         )
         document = self.pick(documents)
         folder = document.getMainFolder()
-        if args.bibtex:
+        if self.args.bibtex:
             print(document.toBibtex())
-        if args.text:
+        if self.args.text:
             text = string.Template(
-                """$author. $title. $journal $pages $month $year""")\
-                .safe_substitute(
+                """$author. $title. $journal $pages $month $year"""
+                ).safe_substitute(
                     document.toDict()
-            )
+                )
             print(text)
-        elif args.folder:
-            outdir = args.out or document.getMainFolderName()
+        elif self.args.folder:
+            outdir = self.args.out or document.getMainFolderName()
             shutil.copytree(folder, outdir)
-            if not args.no_bibtex:
+            if not self.args.no_bibtex:
                 open(
                     os.path.join(outdir, "info.bib"),
                     "w+"
                 ).write(document.toBibtex())
-        elif args.yaml:
+        elif self.args.yaml:
             print(document.dump())
+        elif self.args.vcf:
+            print(document.toVcf())
         else:
             pass
