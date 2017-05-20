@@ -76,28 +76,12 @@ class Command(object):
         pass
 
     def setParser(self, parser):
-        """TODO: Docstring for setParser.
-
-        :parser: TODO
-        :returns: TODO
-
-        """
         self.parser = parser
 
     def getParser(self):
-        """TODO: Docstring for getParser.
-        :returns: TODO
-
-        """
         return self.parser
 
     def pick(self, options, pick_config={}):
-        """TODO: Docstring for pick.
-
-        :options: TODO
-        :returns: TODO
-
-        """
         if not pick_config:
             pick_config = dict(
                 header_filter=lambda x: "{:<70.70}|{:<20.20} ({:.4})".format(
