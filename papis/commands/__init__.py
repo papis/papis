@@ -40,7 +40,9 @@ def init_internal_commands(parser):
 def init_external_commands(parser):
     from .external import External
     commands = dict()
-    paths = os.environ["PATH"].split(":")
+    paths = []
+    paths.append(papis.config.get_scripts_folder())
+    paths += os.environ["PATH"].split(":")
     for path in paths:
         scripts = glob.glob(os.path.join(path, "papis-*"))
         if len(scripts):
