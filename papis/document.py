@@ -2,6 +2,7 @@ import os
 import yaml
 import logging
 import papis.utils
+import papis.config
 import papis.bibtex
 
 
@@ -98,6 +99,27 @@ class Document(object):
         for key in self.keys():
             result[key] = self[key]
         return result
+
+    def toVcf(self):
+        if not papis.config.inMode("contact"):
+            self.logger.error("Not in contact mode")
+            sys.exit(1)
+        text = \
+        """\
+BEGIN:VCARD
+VERSION:4.0
+FN:{doc[first_name]} {doc[last_name]}
+N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
+        for contact_type in ["email", "tel"]:
+            text += "\n"
+            text += "\n".join([
+                "TEL;TYPE=INTERNET;TYPE={type}:{tel}"\
+                .format(type=t.upper(), tel=self[contact_type][t])
+                for t in self[contact_type].keys() if self[contact_type][t] is not None
+            ])
+        text += "\n"
+        text += "END:VCARD"
+        return text
 
     def toBibtex(self):
         """
