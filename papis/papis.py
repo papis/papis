@@ -38,6 +38,7 @@ def main():
         metavar="command",
         dest="command"
     )
+
     parser.add_argument(
         "-v",
         "--verbose",
@@ -45,6 +46,7 @@ def main():
         default=False,
         action="store_true"
     )
+
     parser.add_argument(
         "-l",
         "--lib",
@@ -52,6 +54,7 @@ def main():
         default=config["settings"]["default"] or "papers",
         action="store"
     )
+
     parser.add_argument(
         "--log",
         help="Logging level",

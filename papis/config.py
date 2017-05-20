@@ -2,6 +2,12 @@
 import os
 import configparser
 import papis.utils
+import logging
+
+logger = logging.getLogger("config")
+
+CONFIGURATION = None
+DEFAULT_MODE = "document"
 
 
 def get_config_folder():
@@ -34,7 +40,10 @@ def get(key):
         raise KeyError("No key %s found in the configuration" % key)
 
 
-CONFIGURATION = None
+def inMode(mode):
+    current_mode = get("mode")
+    logger.debug("current_mode = %s" % current_mode
+    return mode == current_mode
 
 
 def get_configuration():
