@@ -10,6 +10,19 @@ from .document import Document
 # from lxml import etree
 
 logger = logging.getLogger("utils")
+PAPIS_ARGS = None
+
+
+def set_args(args):
+    logger.debug("Setting args")
+    global PAPIS_ARGS
+    if PAPIS_ARGS is None:
+        PAPIS_ARGS = args
+
+
+def get_args(args):
+    logger.debug("Getting args")
+    return PAPIS_ARGS
 
 
 def which(program):
@@ -31,10 +44,6 @@ def which(program):
 
 
 def pick(options, papis_config={}, pick_config={}):
-    """TODO: Docstring for editFile.
-    :fileName: TODO
-    :returns: TODO
-    """
     try:
         logger.debug("Parsing picktool")
         picker = papis_config["settings"]["picktool"]

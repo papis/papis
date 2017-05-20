@@ -39,10 +39,6 @@ class Document(object):
         setattr(self, obj, value)
 
     def __getitem__(self, obj):
-        """
-        :obj: TODO
-        :returns: TODO
-        """
         return getattr(self, obj) if hasattr(self, obj) else None
 
     def getMainFolder(self):

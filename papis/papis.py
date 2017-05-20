@@ -72,6 +72,7 @@ def main():
     argcomplete.autocomplete(parser)
     # Parse arguments
     args = parser.parse_args()
+    papis.utils.set_args(args)
 
     if args.verbose:
         args.log = "DEBUG"
