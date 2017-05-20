@@ -112,10 +112,6 @@ def isGitRepo(folder):
         return False
 
 
-def getConfiguration():
-    return papis.config.Configuration()
-
-
 def getInfoFileName():
     """TODO: Docstring for getInfoFileName.
     :returns: TODO

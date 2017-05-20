@@ -17,6 +17,14 @@ def get_scripts_folder():
         get_config_folder(), "scripts"
     )
 
+CONFIGURATION = None
+
+def get_configuration():
+    global CONFIGURATION
+    if CONFIGURATION is None:
+        CONFIGURATION = Configuration()
+    return CONFIGURATION
+
 class Configuration(configparser.ConfigParser):
 
     default_info = {
