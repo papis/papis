@@ -39,7 +39,7 @@ class Document(object):
         setattr(self, obj, value)
 
     def __getitem__(self, obj):
-        return getattr(self, obj) if hasattr(self, obj) else None
+        return getattr(self, obj) if hasattr(self, obj) else ""
 
     def getMainFolder(self):
         """

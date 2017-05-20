@@ -85,10 +85,11 @@ class Command(object):
         return self.parser
 
     def pick(self, options, pick_config={}):
+        self.logger.debug("Picking")
         default_header_format =\
-            "{doc.title:<70.70}|{doc.author:<20.20} ({doc.year:<4})"
+            "{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:-<4})"
         default_match_format =\
-            "{doc.subfolder}{doc.title}{doc.author}{doc.year}"
+            "{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}"
         if not pick_config:
             if "header_format" in self.config[self.args.lib].keys():
                 header_format = self.config[self.args.lib]["header_format"]
