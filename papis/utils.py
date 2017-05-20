@@ -6,7 +6,7 @@ import re
 import papis.pick
 import papis.config
 from .document import Document
-import zipfile
+# import zipfile
 # from lxml import etree
 
 logger = logging.getLogger("utils")
@@ -121,10 +121,10 @@ def getInfoFileName():
 
 
 def get_epub_info(fname):
-    ns = {
-        'n': 'urn:oasis:names:tc:opendocument:xmlns:container',
-        'pkg': 'http://www.idpf.org/2007/opf',
-        'dc': 'http://purl.org/dc/elements/1.1/'
+    # ns = {
+        # 'n': 'urn:oasis:names:tc:opendocument:xmlns:container',
+        # 'pkg': 'http://www.idpf.org/2007/opf',
+        # 'dc': 'http://purl.org/dc/elements/1.1/'
     }
 
     res = {}
@@ -135,7 +135,8 @@ def get_epub_info(fname):
     # # find the contents metafile
     # txt = zip.read('META-INF/container.xml')
     # tree = etree.fromstring(txt)
-    # cfname = tree.xpath('n:rootfiles/n:rootfile/@full-path', namespaces=ns)[0]
+    # cfname = \
+    #   tree.xpath('n:rootfiles/n:rootfile/@full-path', namespaces=ns)[0]
 
     # # grab the metadata block from the contents metafile
     # cf = zip.read(cfname)
@@ -144,5 +145,5 @@ def get_epub_info(fname):
 
     # # repackage the data
     # for s in ['title', 'language', 'creator', 'date', 'identifier']:
-        # res[s] = p.xpath('dc:%s/text()' % (s), namespaces=ns)[0]
+    #     res[s] = p.xpath('dc:%s/text()' % (s), namespaces=ns)[0]
     return res

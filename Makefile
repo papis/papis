@@ -258,7 +258,7 @@ PY_LINTER ?= flake8
 # TEX_LINTER variable.
 #
 lint: ## Check syntax of sources
-	$(PY_LINTER)
+	$(PY_LINTER) papis
 
 
 

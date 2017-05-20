@@ -21,5 +21,6 @@ class Sync(Command):
                 print("Git repository detected, using sync command '%s'"
                       % self.default_git)
                 sync_command = self.default_git
-        command = string.Template(sync_command).substitute(self.config[args.lib])
+        command = string.Template(sync_command).substitute(
+                self.config[args.lib])
         os.system(command)

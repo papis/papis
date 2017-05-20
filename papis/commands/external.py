@@ -1,8 +1,9 @@
 import os
 import re
-import sys
+import papis.config
 from . import Command
 import subprocess
+
 
 class External(Command):
 
@@ -38,13 +39,16 @@ class External(Command):
         else:
             return h.decode("ascii")
 
-    def export_variables(self, config, args):
+    def export_variables(self, args):
         """Export environment variables so that external script can access to
         the information
         """
         os.environ["PAPIS_LIB"] = args.lib
-        os.environ["PAPIS_LIB_PATH"] = config[args.lib]["dir"]
+        os.environ["PAPIS_LIB_PATH"] = self.config[args.lib]["dir"]
+        os.environ["PAPIS_CONFIG_PATH"] = papis.config.get_config_folder()
+        os.environ["PAPIS_CONFIG_FILE"] = papis.config.get_config_file()
+        os.environ["PAPIS_SCRIPTS_PATH"] = papis.config.get_scripts_folder()
 
     def main(self, args):
-        self.export_variables(config, args)
+        self.export_variables(args)
         subprocess.call([self.script_path] + args.args)

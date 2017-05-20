@@ -22,6 +22,7 @@ COMMANDS = [
 
 logger = logging.getLogger("commands")
 
+
 def init_internal_commands(parser):
     global COMMANDS
     global logger
@@ -36,6 +37,7 @@ def init_internal_commands(parser):
         cmd.init()
         commands[command] = cmd
     return commands
+
 
 def init_external_commands(parser):
     from .external import External
@@ -96,8 +98,6 @@ class Command(object):
         :returns: TODO
 
         """
-        import os
-        import sys
         if not pick_config:
             pick_config = dict(
                 header_filter=lambda x: "{:<70.70}|{:<20.20} ({:.4})".format(

@@ -2,28 +2,34 @@
 import os
 import configparser
 
+
 def get_config_folder():
     return os.path.join(
         os.path.expanduser("~"), ".papis"
     )
+
 
 def get_config_file():
     return os.path.join(
         get_config_folder(), "config"
     )
 
+
 def get_scripts_folder():
     return os.path.join(
         get_config_folder(), "scripts"
     )
 
+
 CONFIGURATION = None
+
 
 def get_configuration():
     global CONFIGURATION
     if CONFIGURATION is None:
         CONFIGURATION = Configuration()
     return CONFIGURATION
+
 
 class Configuration(configparser.ConfigParser):
 
