@@ -30,6 +30,8 @@ class Configuration(configparser.ConfigParser):
 
     DEFAULT_DIR_LOCATION = get_config_folder()
 
+    DEFAULT_SCRIPTS_LOCATION = get_scripts_folder()
+
     DEFAULT_FILE_LOCATION = get_config_file()
 
     def __init__(self):
@@ -39,6 +41,8 @@ class Configuration(configparser.ConfigParser):
     def initialize(self):
         if not os.path.exists(self.DEFAULT_DIR_LOCATION):
             os.makedirs(self.DEFAULT_DIR_LOCATION)
+        if not os.path.exists(self.DEFAULT_SCRIPTS_LOCATION):
+            os.makedirs(self.DEFAULT_SCRIPTS_LOCATION)
         if os.path.exists(self.DEFAULT_FILE_LOCATION):
             self.read(self.DEFAULT_FILE_LOCATION)
         else:
