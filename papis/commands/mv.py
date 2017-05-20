@@ -3,7 +3,6 @@ import papis
 import sys
 import os
 import re
-import shutil
 import papis.utils
 import subprocess
 from . import Command
@@ -38,7 +37,7 @@ class Mv(Command):
             for di in dirs:
                 p = os.path.join(root, di, papis.utils.getInfoFileName())
                 if not os.path.exists(p) \
-                and not re.match(r".*[.]git.*", os.path.join(root, di)):
+                   and not re.match(r".*[.]git.*", os.path.join(root, di)):
                     directories.append(di)
         self.logger.debug(directories)
         return directories
@@ -59,14 +58,14 @@ class Mv(Command):
         :returns: TODO
 
         """
-        documentsDir = os.path.expanduser(config[args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
         documents = papis.utils.getFilteredDocuments(
             documentsDir,
             documentSearch
         )
-        document = self.pick(documents, config)
+        document = self.pick(documents)
         if not document:
             sys.exit(0)
         folder = document.getMainFolder()
@@ -85,14 +84,13 @@ class Mv(Command):
             os.makedirs(new_folder)
         if args.tool:
             mvtool = args.tool
-        elif "mvtool" in config[args.lib].keys():
-            mvtool = config[args.lib]["mvtool"]
-        elif "mvtool" in config["settings"].keys():
-            mvtool = config["settings"]["mvtool"]
+        elif "mvtool" in self.config[args.lib].keys():
+            mvtool = self.config[args.lib]["mvtool"]
+        elif "mvtool" in self.config["settings"].keys():
+            mvtool = self.config["settings"]["mvtool"]
         else:
             mvtool = "mv"
 
         cmd = [mvtool, folder, new_folder]
         self.logger.debug(cmd)
         subprocess.call(cmd)
-

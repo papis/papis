@@ -26,7 +26,7 @@ class Check(Command):
         )
 
     def main(self, args):
-        documentsDir = os.path.expanduser(config[args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
         documents = papis.utils.getFilteredDocuments(

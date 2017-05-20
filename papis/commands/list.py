@@ -64,20 +64,12 @@ class List(Command):
         )
 
     def main(self, args):
-        """
-        Main action if the command is triggered
-
-        :config: User configuration
-        :args: CLI user arguments
-        :returns: TODO
-
-        """
         if args.downloaders:
             for downloader in \
-            papis.downloaders.utils.getAvailableDownloaders():
+               papis.downloaders.utils.getAvailableDownloaders():
                 print(downloader)
             sys.exit(0)
-        documentsDir = os.path.expanduser(config[args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
         documents = papis.utils.getFilteredDocuments(
@@ -85,7 +77,7 @@ class List(Command):
             documentSearch
         )
         if args.pick:
-            documents = [self.pick(documents, config)]
+            documents = [self.pick(documents)]
         for document in documents:
             if args.file:
                 for f in document.getFiles():

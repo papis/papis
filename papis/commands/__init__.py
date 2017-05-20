@@ -15,7 +15,6 @@ COMMANDS = [
     "mv",
     "open",
     "browse",
-    "test",
     "update",
     "run",
     "sync"
@@ -90,7 +89,7 @@ class Command(object):
         """
         return self.parser
 
-    def pick(self, options, papis_config, pick_config={}):
+    def pick(self, options, pick_config={}):
         """TODO: Docstring for pick.
 
         :options: TODO
@@ -120,7 +119,7 @@ class Command(object):
             )
         return papis.utils.pick(
             options,
-            papis_config,
+            self.config,
             pick_config
         )
 

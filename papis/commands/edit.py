@@ -32,22 +32,14 @@ class Edit(Command):
         )
 
     def main(self, args):
-        """
-        Main action if the command is triggered
-
-        :config: User configuration
-        :args: CLI user arguments
-        :returns: TODO
-
-        """
-        documentsDir = os.path.expanduser(config[args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
         documents = papis.utils.getFilteredDocuments(
             documentsDir,
             documentSearch
         )
-        document = self.pick(documents, config)
+        document = self.pick(documents)
         if args.notes:
             if not document.has("notes"):
                 self.logger.warning(
@@ -64,6 +56,6 @@ class Edit(Command):
             if not os.path.exists(notesPath):
                 self.logger.debug("Creating %s" % notesPath)
                 open(notesPath, "w+").close()
-            papis.utils.editFile(notesPath, config)
+            papis.utils.editFile(notesPath, self.config)
         else:
-            papis.utils.editFile(document.getInfoFile(), config)
+            papis.utils.editFile(document.getInfoFile(), self.config)

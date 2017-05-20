@@ -1,4 +1,3 @@
-from ..document import Document
 import papis
 import os
 import papis.utils
@@ -44,16 +43,8 @@ class Update(Command):
             action="store"
         )
 
-    def main(self, config, args):
-        """
-        Main action if the command is triggered
-
-        :config: User configuration
-        :args: CLI user arguments
-        :returns: TODO
-
-        """
-        documentsDir = os.path.expanduser(config[args.lib]["dir"])
+    def main(self, args):
+        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
         data = papis.bibtex.bibtexToDict(args.from_bibtex) \
@@ -62,6 +53,6 @@ class Update(Command):
             documentsDir,
             documentSearch
         )
-        document = self.pick(documents, config)
+        document = self.pick(documents)
         document.update(data, args.force, args.interactive)
         document.save()

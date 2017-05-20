@@ -18,16 +18,16 @@ class Run(Command):
             action="store"
         )
 
-    def main(self, config, args):
-        documentsDir = os.path.expanduser(config[args.lib]["dir"])
+    def main(self, args):
+        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         self.logger.debug("Changing directory into %s" % documentsDir)
         os.chdir(documentsDir)
         try:
             command = os.path.expanduser(
-                config[args.lib]["".join(args.run_command)]
+                self.config[args.lib]["".join(args.run_command)]
             )
         except:
             command = " ".join(args.run_command)
         self.logger.debug("Command = %s" % command)
-        command = string.Template(command).safe_substitute(config[args.lib])
+        command = string.Template(command).safe_substitute(self.config[args.lib])
         os.system(command)

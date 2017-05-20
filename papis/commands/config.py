@@ -36,7 +36,7 @@ class Config(Command):
         :returns: TODO
 
         """
-        documentsDir = os.path.expanduser(config[args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         # FIXME: Replacing values does not work
         option = " ".join(args.option)
@@ -57,15 +57,15 @@ class Config(Command):
         self.logger.debug("lib -> %s" % lib)
         self.logger.debug("key -> %s" % key)
         if not value:
-            if key in config[lib].keys():
-                print(config[lib][key])
+            if key in self.config[lib].keys():
+                print(self.config[lib][key])
             else:
                 sys.exit(1)
         else:
             try:
-                config.remove_option(lib, key)
-                config.set(lib, key, value)
+                self.config.remove_option(lib, key)
+                self.config.set(lib, key, value)
             except configparser.NoSectionError:
-                config.add_section(lib)
-                config.set(lib, key, value)
-            config.save()
+                self.config.add_section(lib)
+                self.config.set(lib, key, value)
+            self.config.save()

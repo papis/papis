@@ -8,7 +8,6 @@ import tempfile
 import hashlib
 import shutil
 import string
-import tempfile
 import papis.utils
 import papis.bibtex
 from . import Command
@@ -184,10 +183,10 @@ class Add(Command):
 
     def clean_document_name(self, documentPath):
         return re.sub(r"[^a-zA-Z0-9_.-]", "",
-           re.sub(r"\s+", "-",
-               os.path.basename(documentPath)
-            )
-        )
+                      re.sub(r"\s+", "-",
+                             os.path.basename(documentPath)
+                             )
+                      )
 
     def get_from_url(self, args):
         data = dict()
@@ -213,10 +212,9 @@ class Add(Command):
         return {"data": data, "documents_paths": documents_paths}
 
     def main(self, args):
-        documentsDir = os.path.expanduser(config[args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         folderName = None
         data = dict()
-        bibtex_data = None
         self.logger.debug("Saving in directory %s" % documentsDir)
         # if documents are posible to download from url, overwrite
         documents_paths = args.document
@@ -241,7 +239,7 @@ class Add(Command):
                 documentsDir,
                 args.to
             )
-            document = self.pick(documents, config)
+            document = self.pick(documents)
             if not document:
                 sys.exit(0)
             data = document.toDict()
@@ -249,7 +247,7 @@ class Add(Command):
                 os.path.join(
                     document.getMainFolder(),
                     d
-                ) for d in document["files"] ] + documents_paths
+                ) for d in document["files"]] + documents_paths
             data["files"] = document["files"] + documents_names
             folderName = document.getMainFolderName()
             fullDirPath = document.getMainFolder()
@@ -284,7 +282,7 @@ class Add(Command):
         if args.edit:
             document.update(data, force=True)
             document.save()
-            papis.utils.editFile(document.getInfoFile(), config)
+            papis.utils.editFile(document.getInfoFile(), self.config)
             document.loadInformationFromFile()
             data = document.toDict()
         for i in range(min(len(documents_paths), len(data["files"]))):

@@ -73,14 +73,14 @@ class Export(Command):
         :returns: TODO
 
         """
-        documentsDir = os.path.expanduser(config[args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
         documents = papis.utils.getFilteredDocuments(
             documentsDir,
             documentSearch
         )
-        document = self.pick(documents, config)
+        document = self.pick(documents)
         folder = document.getMainFolder()
         if args.bibtex:
             print(document.toBibtex())

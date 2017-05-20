@@ -33,7 +33,7 @@ class Rm(Command):
             action="store_true"
         )
 
-    def main(self, config, args):
+    def main(self, args):
         """
         Main action if the command is triggered
 
@@ -42,14 +42,14 @@ class Rm(Command):
         :returns: TODO
 
         """
-        documentsDir = os.path.expanduser(config[args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
         documents = papis.utils.getFilteredDocuments(
             documentsDir,
             documentSearch
         )
-        document = self.pick(documents, config)
+        document = self.pick(documents)
         if not document:
             sys.exit(0)
         folder = document.getMainFolder()
