@@ -75,6 +75,9 @@ class Command(object):
     def init(self):
         pass
 
+    def set_args(self, args):
+        self.args = args
+
     def setParser(self, parser):
         self.parser = parser
 
@@ -82,24 +85,22 @@ class Command(object):
         return self.parser
 
     def pick(self, options, pick_config={}):
+        default_header_format =\
+            "{doc.title:<70.70}|{doc.author:<20.20} ({doc.year:<4})"
+        default_match_format =\
+            "{doc.subfolder}{doc.title}{doc.author}{doc.year}"
         if not pick_config:
+            if "header_format" in self.config[self.args.lib].keys():
+                header_format = self.config[self.args.lib]["header_format"]
+            else:
+                header_format = default_header_format
+            if "match_format" in self.config[self.args.lib].keys():
+                match_format = self.config[self.args.lib]["match_format"]
+            else:
+                match_format = default_match_format
             pick_config = dict(
-                header_filter=lambda x: "{:<70.70}|{:<20.20} ({:.4})".format(
-                    x["title"] or x.getMainFolderName(),
-                    x["author"] or "*" * 20,
-                    str(x["year"] or "****")
-                ),
-                match_filter=lambda x:
-                    os.path.dirname(
-                        x.getMainFolder()
-                    ).replace(
-                        os.environ["HOME"], ""
-                    ).replace(
-                        "/", " "
-                    ) +
-                    (x["title"] or "") +
-                    (x["author"] or "") +
-                    (str(x["year"]) or "****")
+                header_filter=lambda x: header_format.format(doc=x),
+                match_filter=lambda x: match_format.format(doc=x)
             )
         return papis.utils.pick(
             options,
