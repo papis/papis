@@ -18,6 +18,9 @@ class Document(object):
         self._infoFilePath = \
             os.path.join(folder, papis.utils.getInfoFileName())
         self.loadInformationFromFile()
+        self.subfolder = self.getMainFolder()\
+                             .replace(os.environ["HOME"], "")\
+                             .replace("/", " ")
 
     def __delitem__(self, obj):
         """
