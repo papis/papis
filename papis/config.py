@@ -1,6 +1,7 @@
 
 import os
 import configparser
+import papis.utils
 
 
 def get_config_folder():
@@ -19,6 +20,18 @@ def get_scripts_folder():
     return os.path.join(
         get_config_folder(), "scripts"
     )
+
+
+def get(key):
+    lib = papis.utils.get_lib()
+    config = get_configuration()
+    global_section = "settings"
+    if key in config[lib].keys():
+        return config[lib][key]
+    elif key in config[global_section].keys():
+        return config[global_section][key]
+    else:
+        raise KeyError("No key %s found in the configuration" % key)
 
 
 CONFIGURATION = None

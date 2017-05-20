@@ -20,9 +20,14 @@ def set_args(args):
         PAPIS_ARGS = args
 
 
-def get_args(args):
+def get_args():
     logger.debug("Getting args")
     return PAPIS_ARGS
+
+
+def get_lib():
+    logger.debug("Getting lib")
+    return get_args().lib
 
 
 def which(program):
@@ -46,7 +51,7 @@ def which(program):
 def pick(options, papis_config={}, pick_config={}):
     try:
         logger.debug("Parsing picktool")
-        picker = papis_config["settings"]["picktool"]
+        picker = papis.config.get("picktool")
     except KeyError:
         return papis.pick.pick(options, **pick_config)
     else:
