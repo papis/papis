@@ -91,13 +91,13 @@ class Command(object):
         default_match_format =\
             "{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}"
         if not pick_config:
-            if "header_format" in self.config[self.args.lib].keys():
-                header_format = self.config[self.args.lib]["header_format"]
-            else:
+            try:
+                header_format = papis.config.get("header_format")
+            except:
                 header_format = default_header_format
-            if "match_format" in self.config[self.args.lib].keys():
-                match_format = self.config[self.args.lib]["match_format"]
-            else:
+            try:
+                match_format = papis.config.get("match_format")
+            except:
                 match_format = default_match_format
             pick_config = dict(
                 header_filter=lambda x: header_format.format(doc=x),
