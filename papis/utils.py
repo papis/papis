@@ -125,7 +125,7 @@ def get_epub_info(fname):
         # 'n': 'urn:oasis:names:tc:opendocument:xmlns:container',
         # 'pkg': 'http://www.idpf.org/2007/opf',
         # 'dc': 'http://purl.org/dc/elements/1.1/'
-    }
+    # }
 
     res = {}
 
