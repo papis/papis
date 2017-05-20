@@ -2,6 +2,20 @@
 import os
 import configparser
 
+def get_config_folder():
+    return os.path.join(
+        os.path.expanduser("~"), ".papis"
+    )
+
+def get_config_file():
+    return os.path.join(
+        get_config_folder(), "config"
+    )
+
+def get_scripts_folder():
+    return os.path.join(
+        get_config_folder(), "scripts"
+    )
 
 class Configuration(configparser.ConfigParser):
 
@@ -14,13 +28,9 @@ class Configuration(configparser.ConfigParser):
       }
     }
 
-    DEFAULT_DIR_LOCATION = os.path.join(
-        os.path.expanduser("~"), ".papis"
-    )
+    DEFAULT_DIR_LOCATION = get_config_folder()
 
-    DEFAULT_FILE_LOCATION = os.path.join(
-        DEFAULT_DIR_LOCATION, "config"
-    )
+    DEFAULT_FILE_LOCATION = get_config_file()
 
     def __init__(self):
         configparser.ConfigParser.__init__(self)
