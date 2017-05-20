@@ -212,33 +212,63 @@ class Add(Command):
                     tempfd.close()
         return {"data": data, "documents_paths": documents_paths}
 
+    def init_contact_mode(self):
+        """Initialize the contact mode
+        """
+        self.logger.debug("Initialising contact mode")
+        self.args.document = [papis.utils.getInfoFileName()]
+        self.args.from_yaml = papis.utils.getInfoFileName()
+        if os.path.exists(self.args.document[0]):
+            return True
+        template = """
+first_name: null
+last_name: null
+org:
+- null
+email:
+    work: null
+    home: null
+tel:
+    work: null
+    home: null
+adress:
+    work: null
+    home: null
+        """
+        fd = open(self.args.document[0], "w+")
+        fd.write(template)
+        fd.close()
+
+
     def main(self, args):
-        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
+        if papis.config.inMode("contact"):
+            self.init_contact_mode()
+        documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
         folderName = None
         data = dict()
         self.logger.debug("Saving in directory %s" % documentsDir)
         # if documents are posible to download from url, overwrite
-        documents_paths = args.document
+        documents_paths = self.args.document
         documents_names = []
-        temp_dir = tempfile.mkdtemp("-"+args.lib)
-        if args.from_url:
-            url_data = self.get_from_url(args)
+        temp_dir = tempfile.mkdtemp("-"+self.args.lib)
+        if self.args.from_url:
+            url_data = self.get_from_url(self.args)
             data = url_data["data"]
             documents_paths.append(url_data["documents_paths"])
-        elif args.from_bibtex:
-            data = papis.bibtex.bibtexToDict(args.from_bibtex)
-        elif args.from_yaml:
-            data = yaml.load(open(args.from_yaml))
+        elif self.args.from_bibtex:
+            data = papis.bibtex.bibtexToDict(self.args.from_bibtex)
+        elif self.args.from_yaml:
+            data = yaml.load(open(self.args.from_yaml))
         else:
             pass
         documents_names = [
             self.clean_document_name(documentPath)
             for documentPath in documents_paths
         ]
-        if args.to:
+        if self.args.to:
             documents = papis.utils.getFilteredDocuments(
                 documentsDir,
-                args.to
+                self.args.to
             )
             document = self.pick(documents)
             if not document:
@@ -255,25 +285,25 @@ class Add(Command):
         else:
             document = Document(temp_dir)
             if not papis.config.inMode("contact"):
-                data["title"] = args.title or self.get_default_title(
+                data["title"] = self.args.title or self.get_default_title(
                     data,
                     documents_paths[0]
                 )
-                data["author"] = args.author or self.get_default_author(
+                data["author"] = self.args.author or self.get_default_author(
                     data,
                     documents_paths[0]
                 )
                 self.logger.debug("Author = % s" % data["author"])
                 self.logger.debug("Title = % s" % data["title"])
-            if not args.name:
+            if not self.args.name:
                 folderName = self.get_hash_folder(data, documents_paths[0])
             else:
                 folderName = string\
-                            .Template(args.name)\
+                            .Template(self.args.name)\
                             .safe_substitute(data)\
                             .replace(" ", "-")
             data["files"] = documents_names
-            fullDirPath = os.path.join(documentsDir, args.dir,  folderName)
+            fullDirPath = os.path.join(documentsDir, self.args.dir,  folderName)
         ######
         self.logger.debug("Folder = % s" % folderName)
         self.logger.debug("File = % s" % documents_paths)
@@ -281,7 +311,7 @@ class Add(Command):
         if not os.path.isdir(temp_dir):
             self.logger.debug("Creating directory '%s'" % temp_dir)
             os.makedirs(temp_dir)
-        if args.edit:
+        if self.args.edit:
             document.update(data, force=True)
             document.save()
             papis.utils.editFile(document.getInfoFile(), self.config)
@@ -304,11 +334,11 @@ class Add(Command):
             )
             shutil.copy(documentPath, endDocumentPath)
         document.update(data, force=True)
-        if args.confirm:
+        if self.args.confirm:
             if input("Really add? (Y/n): ") in ["N", "n"]:
                 sys.exit(0)
         document.save()
-        if args.to:
+        if self.args.to:
             sys.exit(0)
         self.logger.debug(
             "[MV] '%s' to '%s'" %
