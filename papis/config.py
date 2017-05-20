@@ -42,7 +42,7 @@ def get(key):
 
 def inMode(mode):
     current_mode = get("mode")
-    logger.debug("current_mode = %s" % current_mode
+    logger.debug("current_mode = %s" % current_mode)
     return mode == current_mode
 
 
