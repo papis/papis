@@ -220,6 +220,8 @@ class Add(Command):
         self.args.from_yaml = papis.utils.getInfoFileName()
         if os.path.exists(self.args.document[0]):
             return True
+        self.args.edit = True
+        self.args.confirm = True
         template = """
 first_name: null
 last_name: null
