@@ -92,6 +92,14 @@ class Add(Command):
         )
 
         self.subparser.add_argument(
+            "--from-vcf",
+            help="""\
+                Get contact information from a vcard (.vcf)
+                file""",
+            action="store_true"
+        )
+
+        self.subparser.add_argument(
             "--to",
             help="""When --to is specified, the document will be added to the
             selected already existing document entry.""",
