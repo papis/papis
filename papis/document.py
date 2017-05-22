@@ -113,8 +113,12 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         for contact_type in ["email", "tel"]:
             text += "\n"
             text += "\n".join([
-                "TEL;TYPE=INTERNET;TYPE={type}:{tel}"\
-                .format(type=t.upper(), tel=self[contact_type][t])
+                "{contact_type};TYPE={type}:{tel}"\
+                .format(
+                    contact_type=contact_type.upper(),
+                    type=t.upper(),
+                    tel=self[contact_type][t]
+                    )
                 for t in self[contact_type].keys() if self[contact_type][t] is not None
             ])
         text += "\n"
