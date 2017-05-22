@@ -297,7 +297,6 @@ class Add(Command):
             data = self.vcf_to_data(self.args.from_vcf)
         else:
             pass
-        data = self.vcf_to_data(self.args.from_vcf)
         documents_names = [
             self.clean_document_name(documentPath)
             for documentPath in documents_paths
