@@ -87,6 +87,8 @@ class Export(Command):
         """Main action in export command
         """
         folder = document.getMainFolder()
+        if not self.args.folder and not self.args.out:
+            self.args.out = "/dev/stdout"
         if self.args.bibtex:
             print(document.toBibtex())
         if self.args.text:
@@ -95,7 +97,7 @@ class Export(Command):
                 ).safe_substitute(
                     document.toDict()
                 )
-            print(text)
+            open(self.args.out, "w").write(text)
         elif self.args.folder:
             outdir = self.args.out or document.getMainFolderName()
             shutil.copytree(folder, outdir)
@@ -105,9 +107,9 @@ class Export(Command):
                     "w+"
                 ).write(document.toBibtex())
         elif self.args.yaml:
-            print(document.dump())
+            open(self.args.out, "w").write(document.dump())
         elif self.args.vcf:
-            print(document.toVcf())
+            open(self.args.out, "w").write(document.toVcf())
         else:
             pass
 
