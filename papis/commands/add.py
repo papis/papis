@@ -193,10 +193,10 @@ class Add(Command):
         return author
 
     def clean_document_name(self, documentPath):
+        base = os.path.basename(documentPath)
+        self.logger.debug("Cleaning document name %s " % base)
         return re.sub(r"[^a-zA-Z0-9_.-]", "",
-                      re.sub(r"\s+", "-",
-                             os.path.basename(documentPath)
-                             )
+                      re.sub(r"\s+", "-", base)
                       )
 
     def get_from_url(self, args):
@@ -288,7 +288,7 @@ class Add(Command):
         if self.args.from_url:
             url_data = self.get_from_url(self.args)
             data = url_data["data"]
-            documents_paths.append(url_data["documents_paths"])
+            documents_paths.extend(url_data["documents_paths"])
         elif self.args.from_bibtex:
             data = papis.bibtex.bibtexToDict(self.args.from_bibtex)
         elif self.args.from_yaml:
@@ -297,7 +297,6 @@ class Add(Command):
             data = self.vcf_to_data(self.args.from_vcf)
         else:
             pass
-        data = self.vcf_to_data(self.args.from_vcf)
         documents_names = [
             self.clean_document_name(documentPath)
             for documentPath in documents_paths
