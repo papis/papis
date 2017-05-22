@@ -5,6 +5,7 @@ import sys
 import re
 import yaml
 import tempfile
+import vobject
 import hashlib
 import shutil
 import string
@@ -96,7 +97,8 @@ class Add(Command):
             help="""\
                 Get contact information from a vcard (.vcf)
                 file""",
-            action="store_true"
+            default=None,
+            action="store"
         )
 
         self.subparser.add_argument(
@@ -230,26 +232,47 @@ class Add(Command):
             return True
         self.args.edit = True
         self.args.confirm = True
-        template = """
-first_name: null
-last_name: null
-org:
-- null
-email:
-    work: null
-    home: null
-tel:
-    cell: null
-    work: null
-    home: null
-adress:
-    work: null
-    home: null
-        """
+        template = Document.get_vcf_template()
         fd = open(self.args.document[0], "w+")
         fd.write(template)
         fd.close()
 
+    def vcf_to_data(self, vcard_path):
+        data = yaml.load(Document.get_vcf_template())
+        text = open(vcard_path).read()
+        vcard = vobject.readOne(text)
+        try:
+            data["first_name"] = vcard.n.value.given
+            self.logger.debug("First name = %s" % data["first_name"])
+        except:
+            data["first_name"] = None
+        try:
+            data["last_name"] = vcard.n.value.family
+            self.logger.debug("Last name = %s" % data["last_name"])
+        except:
+            data["last_name"] = None
+        try:
+            if not isinstance(vcard.org.value[0], list):
+                data["org"] = vcard.org.value
+            else:
+                data["org"] = vcard.org.value
+            self.logger.debug("Org = %s" % data["org"])
+        except:
+            data["org"] = []
+        for ctype in ["tel", "email"]:
+            try:
+                vcard_asset = getattr(vcard, ctype)
+                self.logger.debug("Parsing %s" % ctype)
+            except:
+                pass
+            else:
+                try:
+                    param_type = getattr(vcard_asset, "type_param")
+                except:
+                    param_type = "home"
+                data[ctype][param_type.lower()] = getattr(vcard_asset, "value")
+        self.logger.debug("Read in data = %s" % data)
+        return data
 
     def main(self, args):
         if papis.config.inMode("contact"):
@@ -270,8 +293,11 @@ adress:
             data = papis.bibtex.bibtexToDict(self.args.from_bibtex)
         elif self.args.from_yaml:
             data = yaml.load(open(self.args.from_yaml))
+        elif self.args.from_vcf:
+            data = self.vcf_to_data(self.args.from_vcf)
         else:
             pass
+        data = self.vcf_to_data(self.args.from_vcf)
         documents_names = [
             self.clean_document_name(documentPath)
             for documentPath in documents_paths
@@ -295,6 +321,7 @@ adress:
             fullDirPath = document.getMainFolder()
         else:
             document = Document(temp_dir)
+            print(document["org"])
             if not papis.config.inMode("contact"):
                 data["title"] = self.args.title or self.get_default_title(
                     data,

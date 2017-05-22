@@ -100,6 +100,24 @@ class Document(object):
             result[key] = self[key]
         return result
 
+    @classmethod
+    def get_vcf_template(cls):
+        return """\
+first_name: null
+last_name: null
+org:
+- null
+email:
+    work: null
+    home: null
+tel:
+    cell: null
+    work: null
+    home: null
+adress:
+    work: null
+    home: null"""
+
     def toVcf(self):
         if not papis.config.inMode("contact"):
             self.logger.error("Not in contact mode")
