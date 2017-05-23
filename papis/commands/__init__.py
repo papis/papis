@@ -3,6 +3,8 @@ import glob
 import logging
 import papis.utils
 import papis.config
+import argparse
+import argcomplete
 
 COMMANDS = [
     "add",
@@ -21,6 +23,29 @@ COMMANDS = [
 ]
 
 logger = logging.getLogger("commands")
+default_parser = None
+subparser = None
+
+
+def get_default_parser():
+    if default_parser is None:
+        default_parser = argparse.ArgumentParser(
+            formatter_class=argparse.RawTextHelpFormatter,
+            description="Simple documents administration program"
+        )
+    return default_parser
+
+
+def get_subparser():
+    if subparser is None:
+        SUBPARSER_HELP = "For further information for every "\
+                         "command, type in 'papis <command> -h'"
+        subparser = get_default_parser().add_subparsers(
+            help=SUBPARSER_HELP,
+            metavar="command",
+            dest="command"
+        )
+    return subparser
 
 
 def init_internal_commands(parser):
