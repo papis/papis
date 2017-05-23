@@ -1,5 +1,6 @@
 import string
 import os
+import papis.config
 from . import Command
 
 
@@ -19,16 +20,16 @@ class Run(Command):
         )
 
     def main(self, args):
-        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
         self.logger.debug("Changing directory into %s" % documentsDir)
         os.chdir(documentsDir)
         try:
             command = os.path.expanduser(
-                self.config[args.lib]["".join(args.run_command)]
+                papis.config.get("".join(self.args.run_command))
             )
         except:
-            command = " ".join(args.run_command)
+            command = " ".join(self.args.run_command)
         self.logger.debug("Command = %s" % command)
         command = string.Template(command).safe_substitute(
-                self.config[args.lib])
+                self.config[self.args.lib])
         os.system(command)
