@@ -99,14 +99,14 @@ def getFilteredDocuments(directory, search=""):
     return [d for d in documents if matchDocument(d, search)]
 
 
-def get_documents_in_lib(library):
+def get_documents_in_lib(library, search=""):
     config = papis.config.get_configuration()
     directory = config[library]["dir"]
-    return getFilteredDocuments(directory)
+    return getFilteredDocuments(directory, search)
 
 
-def get_documents_in_dir(directory):
-    return getFilteredDocuments(directory)
+def get_documents_in_dir(directory, search=""):
+    return getFilteredDocuments(directory, search)
 
 
 def getFolders(folder):
