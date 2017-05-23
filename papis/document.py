@@ -73,7 +73,7 @@ class Document(object):
         :returns: TODO
         """
         # Check for the exsitence of the document
-        for f in self.getFiles():
+        for f in self.get_files():
             self.logger.debug(f)
             if not os.path.exists(f):
                 print("** Error: %s not found in %s" % (
@@ -192,14 +192,14 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
                     pass
 
     def getInfoFile(self):
-        """TODO: Docstring for getFiles.
+        """TODO: Docstring for get_files.
         :returns: TODO
 
         """
         return self._infoFilePath
 
-    def getFiles(self):
-        """TODO: Docstring for getFiles.
+    def get_files(self):
+        """TODO: Docstring for get_files.
         :returns: TODO
 
         """

@@ -53,7 +53,7 @@ class Open(Command):
         if not document:
             sys.exit(0)
         if not args.dir:
-            files = document.getFiles()
+            files = document.get_files()
             file_to_open = papis.utils.pick(
                 files,
                 self.config,

@@ -80,7 +80,7 @@ class List(Command):
             documents = [self.pick(documents)]
         for document in documents:
             if args.file:
-                for f in document.getFiles():
+                for f in document.get_files():
                     print(f)
             elif args.dir:
                 print(document.getMainFolder())
