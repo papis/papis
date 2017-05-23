@@ -63,6 +63,6 @@ class Open(Command):
                     )
                 )
             )
-            papis.utils.openFile(file_to_open, self.config)
+            papis.utils.open_file(file_to_open, self.config)
         else:
             papis.utils.openDir(document.getMainFolder(), self.config)

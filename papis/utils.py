@@ -70,7 +70,7 @@ def openGeneral(fileName, configuration, key):
     call([opener, fileName])
 
 
-def openFile(fileName, configuration={}):
+def open_file(fileName, configuration={}):
     openGeneral(fileName, configuration, "opentool")
 
 
@@ -78,7 +78,7 @@ def openDir(fileName, configuration={}):
     openGeneral(fileName, configuration, "file-browser")
 
 
-def editFile(fileName, configuration={}):
+def edit_file(fileName, configuration={}):
     try:
         editor = configuration["settings"]["editor"]
     except KeyError:
