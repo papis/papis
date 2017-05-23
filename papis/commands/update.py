@@ -47,7 +47,7 @@ class Update(Command):
         documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
-        data = papis.bibtex.bibtexToDict(args.from_bibtex) \
+        data = papis.bibtex.bibtex_to_dict(args.from_bibtex) \
             if args.from_bibtex else dict()
         documents = papis.utils.get_documents_in_dir(
             documentsDir,

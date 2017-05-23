@@ -209,7 +209,7 @@ class Add(Command):
             self.logger.debug("Using downloader %s" % downloader)
             bibtex_data = downloader.getBibtexData()
             if bibtex_data:
-                data = papis.bibtex.bibtexToDict(
+                data = papis.bibtex.bibtex_to_dict(
                     downloader.getBibtexData()
                 )
             if len(args.document) == 0:
@@ -290,7 +290,7 @@ class Add(Command):
             data = url_data["data"]
             documents_paths.extend(url_data["documents_paths"])
         elif self.args.from_bibtex:
-            data = papis.bibtex.bibtexToDict(self.args.from_bibtex)
+            data = papis.bibtex.bibtex_to_dict(self.args.from_bibtex)
         elif self.args.from_yaml:
             data = yaml.load(open(self.args.from_yaml))
         elif self.args.from_vcf:

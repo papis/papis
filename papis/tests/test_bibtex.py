@@ -61,8 +61,8 @@ class TestBibtex(unittest.TestCase):
     def test_bib_file_exists(self):
         self.assertTrue(os.path.exists(self.bib_file))
 
-    def test_bibtexToDict(self):
-        bib_dic = papis.bibtex.bibtexToDict(self.bib_file)
+    def test_bibtex_to_dict(self):
+        bib_dic = papis.bibtex.bibtex_to_dict(self.bib_file)
         keys = [
           "title",
           "author",
