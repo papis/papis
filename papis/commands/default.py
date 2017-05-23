@@ -3,10 +3,9 @@ import os
 import papis.config
 import papis.commands
 import logging
-from . import Command
 
 
-class Default(Command):
+class Default(papis.commands.Command):
 
     def init(self):
 

@@ -1,11 +1,10 @@
 import os
 import re
 import papis.config
-from . import Command
 import subprocess
 
 
-class External(Command):
+class External(papis.commands.Command):
 
     def init(self, path):
         self.script_path = path

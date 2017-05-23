@@ -12,13 +12,12 @@ import string
 import papis.utils
 import papis.config
 import papis.bibtex
-from . import Command
 import papis.downloaders.utils
 import pdfminer.pdfparser
 import pdfminer.pdfdocument
 
 
-class Add(Command):
+class Add(papis.commands.Command):
 
     def init(self):
 

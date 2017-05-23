@@ -2,10 +2,9 @@ import webbrowser
 import papis
 import os
 import papis.utils
-from . import Command
 
 
-class Browse(Command):
+class Browse(papis.commands.Command):
     def init(self):
         """TODO: Docstring for init.
 

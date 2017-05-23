@@ -1,10 +1,9 @@
 import string
 import os
 import papis.config
-from . import Command
 
 
-class Run(Command):
+class Run(papis.commands.Command):
 
     def init(self):
         self.parser = self.get_subparsers().add_parser(

@@ -2,10 +2,9 @@ import papis
 import os
 import papis.utils
 import papis.pick
-from . import Command
 
 
-class Edit(Command):
+class Edit(papis.commands.Command):
     def init(self):
         """TODO: Docstring for init.
 

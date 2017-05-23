@@ -5,10 +5,9 @@ import os
 import re
 import papis.utils
 import subprocess
-from . import Command
 
 
-class Mv(Command):
+class Mv(papis.commands.Command):
     def init(self):
 
         self.parser = self.get_subparsers().add_parser(

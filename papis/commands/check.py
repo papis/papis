@@ -1,10 +1,9 @@
 import papis
 import os
 import papis.utils
-from . import Command
 
 
-class Check(Command):
+class Check(papis.commands.Command):
     def init(self):
         self.parser = self.get_subparsers().add_parser(
             "check",

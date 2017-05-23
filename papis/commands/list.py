@@ -2,11 +2,10 @@ import papis
 import os
 import sys
 import papis.utils
-from . import Command
 import papis.downloaders.utils
 
 
-class List(Command):
+class List(papis.commands.Command):
     def init(self):
         """TODO: Docstring for init.
 

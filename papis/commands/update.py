@@ -2,10 +2,9 @@ import papis
 import os
 import papis.utils
 import papis.bibtex
-from . import Command
 
 
-class Update(Command):
+class Update(papis.commands.Command):
     def init(self):
         """TODO: Docstring for init.
 

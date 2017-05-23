@@ -1,9 +1,9 @@
 import string
 import os
-from . import Command
+import papis.commands
 
 
-class Sync(Command):
+class Sync(papis.commands.Command):
     default_git = 'cd $dir; git pull origin master'
 
     def init(self):

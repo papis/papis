@@ -2,10 +2,9 @@ import papis
 import os
 import sys
 import papis.utils
-from . import Command
 
 
-class Open(Command):
+class Open(papis.commands.Command):
     def init(self):
 
         self.parser = self.get_subparsers().add_parser(

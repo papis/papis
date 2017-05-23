@@ -3,10 +3,9 @@ import sys
 import os
 import shutil
 import papis.utils
-from . import Command
 
 
-class Rm(Command):
+class Rm(papis.commands.Command):
     def init(self):
         """TODO: Docstring for init.
 

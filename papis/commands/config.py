@@ -2,10 +2,10 @@ import sys
 import os
 import re
 import configparser
-from . import Command
+import papis.commands
 
 
-class Config(Command):
+class Config(papis.commands.Command):
     def init(self):
         """TODO: Docstring for init.
 

@@ -3,10 +3,9 @@ import os
 import shutil
 import string
 import papis.utils
-from . import Command
 
 
-class Export(Command):
+class Export(papis.commands.Command):
     def init(self):
         """TODO: Docstring for init.
 
