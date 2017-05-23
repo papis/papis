@@ -6,13 +6,11 @@ import logging
 from . import Command
 
 
-class Run(Command):
+class Default(Command):
 
     def init(self):
 
-        self.parser = papis.commands.get_default_parser()
-
-        self.parser.add_argument(
+        self.default_parser.add_argument(
             "-v",
             "--verbose",
             help="Make the output verbose (equivalent to --log DEBUG)",
@@ -20,7 +18,7 @@ class Run(Command):
             action="store_true"
         )
 
-        self.parser.add_argument(
+        self.default_parser.add_argument(
             "-l",
             "--lib",
             help="Choose a documents library, default general",
@@ -28,7 +26,7 @@ class Run(Command):
             action="store"
         )
 
-        self.parser.add_argument(
+        self.default_parser.add_argument(
             "--log",
             help="Logging level",
             choices=[

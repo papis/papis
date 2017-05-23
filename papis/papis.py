@@ -6,6 +6,7 @@
 
 import sys
 import logging
+import argcomplete
 
 import papis.commands
 import papis.utils
@@ -26,8 +27,8 @@ def main():
     config = papis.config.get_configuration()
 
     parser = papis.commands.get_default_parser()
-    subparser = papis.commands.get_subparser()
-    subcommands = papis.commands.init(subparser)
+    # subparser = papis.commands.get_subparser()
+    subcommands = papis.commands.init()
 
     # autocompletion
     argcomplete.autocomplete(parser)
