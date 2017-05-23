@@ -58,4 +58,4 @@ class Edit(Command):
                 open(notesPath, "w+").close()
             papis.utils.edit_file(notesPath, self.config)
         else:
-            papis.utils.edit_file(document.getInfoFile(), self.config)
+            papis.utils.edit_file(document.get_info_file(), self.config)

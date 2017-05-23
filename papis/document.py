@@ -17,7 +17,7 @@ class Document(object):
         self._folder = folder
         self.logger = logging.getLogger("Doc")
         self._infoFilePath = \
-            os.path.join(folder, papis.utils.getInfoFileName())
+            os.path.join(folder, papis.utils.get_info_file_name())
         self.loadInformationFromFile()
         self.subfolder = self.get_main_folder()\
                              .replace(os.environ["HOME"], "")\
@@ -90,7 +90,7 @@ class Document(object):
         structure = dict()
         for key in self.keys():
             structure[key] = self[key]
-        self.logger.debug("Saving %s " % self.getInfoFile())
+        self.logger.debug("Saving %s " % self.get_info_file())
         yaml.dump(structure, fd, default_flow_style=False)
         fd.close()
 
@@ -191,7 +191,7 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
                 else:
                     pass
 
-    def getInfoFile(self):
+    def get_info_file(self):
         """TODO: Docstring for get_files.
         :returns: TODO
 

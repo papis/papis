@@ -88,7 +88,7 @@ class List(Command):
                 print(
                     os.path.join(
                         document.get_main_folder(),
-                        document.getInfoFile()
+                        document.get_info_file()
                     )
                 )
             else:

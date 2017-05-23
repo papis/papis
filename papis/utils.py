@@ -110,7 +110,7 @@ def get_folders(folder):
     """
     folders = list()
     for root, dirnames, filenames in os.walk(folder):
-        if os.path.exists(os.path.join(root, getInfoFileName())):
+        if os.path.exists(os.path.join(root, get_info_file_name())):
             folders.append(root)
     return folders
 
@@ -130,8 +130,8 @@ def isGitRepo(folder):
         return False
 
 
-def getInfoFileName():
-    """TODO: Docstring for getInfoFileName.
+def get_info_file_name():
+    """TODO: Docstring for get_info_file_name.
     :returns: TODO
 
     """

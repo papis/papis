@@ -226,8 +226,8 @@ class Add(Command):
         """Initialize the contact mode
         """
         self.logger.debug("Initialising contact mode")
-        self.args.document = [papis.utils.getInfoFileName()]
-        self.args.from_yaml = papis.utils.getInfoFileName()
+        self.args.document = [papis.utils.get_info_file_name()]
+        self.args.from_yaml = papis.utils.get_info_file_name()
         if os.path.exists(self.args.document[0]):
             return True
         self.args.edit = True
@@ -351,7 +351,7 @@ class Add(Command):
         if self.args.edit:
             document.update(data, force=True)
             document.save()
-            papis.utils.edit_file(document.getInfoFile(), self.config)
+            papis.utils.edit_file(document.get_info_file(), self.config)
             document.loadInformationFromFile()
             data = document.toDict()
         for i in range(min(len(documents_paths), len(data["files"]))):
