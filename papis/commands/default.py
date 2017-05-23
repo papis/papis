@@ -22,7 +22,7 @@ class Default(Command):
             "-l",
             "--lib",
             help="Choose a documents library, default general",
-            default=config["settings"]["default"] or "papers",
+            default=self.config["settings"]["default"] or "papers",
             action="store"
         )
 
