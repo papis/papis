@@ -42,7 +42,7 @@ class Open(Command):
             self.config["settings"]["opentool"] = args.tool
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
-        documents = papis.utils.getFilteredDocuments(
+        documents = papis.utils.get_documents_in_dir(
             documentsDir,
             documentSearch
         )

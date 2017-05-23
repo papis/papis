@@ -49,7 +49,7 @@ class Update(Command):
         documentSearch = args.document
         data = papis.bibtex.bibtexToDict(args.from_bibtex) \
             if args.from_bibtex else dict()
-        documents = papis.utils.getFilteredDocuments(
+        documents = papis.utils.get_documents_in_dir(
             documentsDir,
             documentSearch
         )

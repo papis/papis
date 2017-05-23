@@ -93,7 +93,7 @@ def matchDocument(document, search):
     return True if m else False
 
 
-def getFilteredDocuments(directory, search=""):
+def get_documents_in_dir(directory, search=""):
     directory = os.path.expanduser(directory)
     documents = [Document(d) for d in getFolders(directory)]
     return [d for d in documents if matchDocument(d, search)]
@@ -102,11 +102,7 @@ def getFilteredDocuments(directory, search=""):
 def get_documents_in_lib(library, search=""):
     config = papis.config.get_configuration()
     directory = config[library]["dir"]
-    return getFilteredDocuments(directory, search)
-
-
-def get_documents_in_dir(directory, search=""):
-    return getFilteredDocuments(directory, search)
+    return get_documents_in_dir(directory, search)
 
 
 def getFolders(folder):

@@ -162,7 +162,7 @@ config = papis.utils.getConfiguration()
 # Get the documents. This returns a list of Document objects, which
 # are also similar to python's dicts but with more methods.
 #
-docs = papis.utils.getFilteredDocuments(config["papers"]["dir"])
+docs = papis.utils.get_documents_in_dir(config["papers"]["dir"])
 
 for doc in docs:
     if "url" in doc.keys():

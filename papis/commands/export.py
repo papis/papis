@@ -119,7 +119,7 @@ class Export(Command):
         documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = self.args.document
-        documents = papis.utils.getFilteredDocuments(
+        documents = papis.utils.get_documents_in_dir(
             documentsDir,
             documentSearch
         )

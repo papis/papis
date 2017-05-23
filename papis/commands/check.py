@@ -29,7 +29,7 @@ class Check(Command):
         documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
-        documents = papis.utils.getFilteredDocuments(
+        documents = papis.utils.get_documents_in_dir(
             documentsDir,
             documentSearch
         )

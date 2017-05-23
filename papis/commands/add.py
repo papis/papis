@@ -302,7 +302,7 @@ class Add(Command):
             for documentPath in documents_paths
         ]
         if self.args.to:
-            documents = papis.utils.getFilteredDocuments(
+            documents = papis.utils.get_documents_in_dir(
                 documentsDir,
                 self.args.to
             )
