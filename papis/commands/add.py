@@ -312,12 +312,12 @@ class Add(Command):
             data = document.toDict()
             documents_paths = [
                 os.path.join(
-                    document.getMainFolder(),
+                    document.get_main_folder(),
                     d
                 ) for d in document["files"]] + documents_paths
             data["files"] = document["files"] + documents_names
-            folderName = document.getMainFolderName()
-            fullDirPath = document.getMainFolder()
+            folderName = document.get_main_folder_name()
+            fullDirPath = document.get_main_folder()
         else:
             document = Document(temp_dir)
             print(document["org"])
@@ -359,7 +359,7 @@ class Add(Command):
             documentPath = documents_paths[i]
             assert(os.path.exists(documentPath))
             endDocumentPath = os.path.join(
-                    document.getMainFolder(), documentName)
+                    document.get_main_folder(), documentName)
             if os.path.exists(endDocumentPath):
                 self.logger.debug(
                     "%s exists, ignoring..." % endDocumentPath
@@ -379,6 +379,6 @@ class Add(Command):
             sys.exit(0)
         self.logger.debug(
             "[MV] '%s' to '%s'" %
-            (document.getMainFolder(), fullDirPath)
+            (document.get_main_folder(), fullDirPath)
         )
-        shutil.move(document.getMainFolder(), fullDirPath)
+        shutil.move(document.get_main_folder(), fullDirPath)

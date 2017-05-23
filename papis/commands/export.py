@@ -86,7 +86,7 @@ class Export(Command):
     def export(self, document):
         """Main action in export command
         """
-        folder = document.getMainFolder()
+        folder = document.get_main_folder()
         if not self.args.folder and not self.args.out:
             self.args.out = "/dev/stdout"
         if self.args.bibtex:
@@ -99,7 +99,7 @@ class Export(Command):
                 )
             open(self.args.out, "w").write(text)
         elif self.args.folder:
-            outdir = self.args.out or document.getMainFolderName()
+            outdir = self.args.out or document.get_main_folder_name()
             shutil.copytree(folder, outdir)
             if not self.args.no_bibtex:
                 open(

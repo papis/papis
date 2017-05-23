@@ -19,7 +19,7 @@ class Document(object):
         self._infoFilePath = \
             os.path.join(folder, papis.utils.getInfoFileName())
         self.loadInformationFromFile()
-        self.subfolder = self.getMainFolder()\
+        self.subfolder = self.get_main_folder()\
                              .replace(os.environ["HOME"], "")\
                              .replace("/", " ")
 
@@ -42,14 +42,14 @@ class Document(object):
     def __getitem__(self, obj):
         return getattr(self, obj) if hasattr(self, obj) else ""
 
-    def getMainFolder(self):
+    def get_main_folder(self):
         """
         Get main folder where the document and the information is stored
         :returns: Folder path
         """
         return self._folder
 
-    def getMainFolderName(self):
+    def get_main_folder_name(self):
         """
         Get main folder name where the document and the information is stored
         :returns: Folder name
@@ -77,7 +77,7 @@ class Document(object):
             self.logger.debug(f)
             if not os.path.exists(f):
                 print("** Error: %s not found in %s" % (
-                    f, self.getMainFolder()))
+                    f, self.get_main_folder()))
                 return False
             else:
                 return True
@@ -157,7 +157,7 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         if not bibtexType:
             bibtexType = "article"
         if not self["ref"]:
-            ref = os.path.basename(self.getMainFolder())
+            ref = os.path.basename(self.get_main_folder())
         else:
             ref = self["ref"]
         bibtexString += "@%s{%s,\n" % (bibtexType, ref)
@@ -207,7 +207,7 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
             else [self["files"]]
         result = []
         for f in files:
-            result.append(os.path.join(self.getMainFolder(), f))
+            result.append(os.path.join(self.get_main_folder(), f))
         return result
 
     def keys(self):

@@ -74,7 +74,7 @@ def open_file(fileName, configuration={}):
     openGeneral(fileName, configuration, "opentool")
 
 
-def openDir(fileName, configuration={}):
+def open_dir(fileName, configuration={}):
     openGeneral(fileName, configuration, "file-browser")
 
 
@@ -95,7 +95,7 @@ def matchDocument(document, search):
 
 def get_documents_in_dir(directory, search=""):
     directory = os.path.expanduser(directory)
-    documents = [Document(d) for d in getFolders(directory)]
+    documents = [Document(d) for d in get_folders(directory)]
     return [d for d in documents if matchDocument(d, search)]
 
 
@@ -105,7 +105,7 @@ def get_documents_in_lib(library, search=""):
     return get_documents_in_dir(directory, search)
 
 
-def getFolders(folder):
+def get_folders(folder):
     """Get documents from a containing folder
     """
     folders = list()

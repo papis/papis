@@ -48,5 +48,5 @@ class Browse(Command):
             webbrowser.open(document["url"])
         else:
             self.logger.warning(
-                "No url for %s" % (document.getMainFolderName())
+                "No url for %s" % (document.get_main_folder_name())
             )

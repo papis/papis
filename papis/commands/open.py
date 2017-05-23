@@ -59,10 +59,10 @@ class Open(Command):
                 self.config,
                 pick_config=dict(
                     header_filter=lambda x: x.replace(
-                        document.getMainFolder(), ""
+                        document.get_main_folder(), ""
                     )
                 )
             )
             papis.utils.open_file(file_to_open, self.config)
         else:
-            papis.utils.openDir(document.getMainFolder(), self.config)
+            papis.utils.open_dir(document.get_main_folder(), self.config)

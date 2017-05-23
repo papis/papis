@@ -50,7 +50,7 @@ class Edit(Command):
                 document.save()
             notesName = document["notes"]
             notesPath = os.path.join(
-                document.getMainFolder(),
+                document.get_main_folder(),
                 notesName
             )
             if not os.path.exists(notesPath):

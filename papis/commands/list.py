@@ -83,11 +83,11 @@ class List(Command):
                 for f in document.get_files():
                     print(f)
             elif args.dir:
-                print(document.getMainFolder())
+                print(document.get_main_folder())
             elif args.info:
                 print(
                     os.path.join(
-                        document.getMainFolder(),
+                        document.get_main_folder(),
                         document.getInfoFile()
                     )
                 )

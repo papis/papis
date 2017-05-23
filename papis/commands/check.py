@@ -35,13 +35,13 @@ class Check(Command):
         )
         allOk = True
         for document in documents:
-            self.logger.debug("Checking %s" % document.getMainFolder())
+            self.logger.debug("Checking %s" % document.get_main_folder())
             allOk &= document.checkFile()
             for key in args.keys:
                 if key not in document.keys():
                     allOk &= False
                     print(
-                        "%s not found in %s" % (key, document.getMainFolder())
+                        "%s not found in %s" % (key, document.get_main_folder())
                     )
         if not allOk:
             print("Errors were detected, please fix the info files")

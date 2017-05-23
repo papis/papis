@@ -68,7 +68,7 @@ class Mv(Command):
         document = self.pick(documents)
         if not document:
             sys.exit(0)
-        folder = document.getMainFolder()
+        folder = document.get_main_folder()
 
         directories = self.get_dirs(documentsDir)
         readline.set_completer(

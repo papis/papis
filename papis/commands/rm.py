@@ -52,7 +52,7 @@ class Rm(Command):
         document = self.pick(documents)
         if not document:
             sys.exit(0)
-        folder = document.getMainFolder()
+        folder = document.get_main_folder()
         if not args.force:
             if input("Are you sure? (Y/n): ") in ["N", "n"]:
                 sys.exit(0)
