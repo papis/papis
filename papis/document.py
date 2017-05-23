@@ -18,7 +18,7 @@ class Document(object):
         self.logger = logging.getLogger("Doc")
         self._infoFilePath = \
             os.path.join(folder, papis.utils.get_info_file_name())
-        self.loadInformationFromFile()
+        self.load()
         self.subfolder = self.get_main_folder()\
                              .replace(os.environ["HOME"], "")\
                              .replace("/", " ")
@@ -229,7 +229,7 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
             string += str(i)+":   "+str(self[i])+"\n"
         return string
 
-    def loadInformationFromFile(self):
+    def load(self):
         """
         load information from file
         :returns: TODO
