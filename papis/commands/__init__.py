@@ -33,7 +33,7 @@ def init_internal_commands(parser):
         logger.debug(command)
         exec("from .%s import %s" % (command, command.capitalize()))
         cmd = eval(command.capitalize())(parser)
-        cmd.setParser(parser)
+        cmd.set_parser(parser)
         cmd.init()
         commands[command] = cmd
     return commands
@@ -78,10 +78,10 @@ class Command(object):
     def set_args(self, args):
         self.args = args
 
-    def setParser(self, parser):
+    def set_parser(self, parser):
         self.parser = parser
 
-    def getParser(self):
+    def get_parser(self):
         return self.parser
 
     def pick(self, options, pick_config={}):
