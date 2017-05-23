@@ -173,7 +173,7 @@ for doc in docs:
         print(doc.title)
         del doc["url"]
         print(doc.keys())
-        print(doc.toDict())
+        print(doc.to_dict())
         # Save the doc
         doc.save()
 ```

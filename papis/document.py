@@ -94,7 +94,7 @@ class Document(object):
         yaml.dump(structure, fd, default_flow_style=False)
         fd.close()
 
-    def toDict(self):
+    def to_dict(self):
         result = dict()
         for key in self.keys():
             result[key] = self[key]
@@ -118,7 +118,7 @@ adress:
     work: null
     home: null"""
 
-    def toVcf(self):
+    def to_vcf(self):
         if not papis.config.inMode("contact"):
             self.logger.error("Not in contact mode")
             sys.exit(1)
@@ -143,7 +143,7 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         text += "END:VCARD"
         return text
 
-    def toBibtex(self):
+    def to_bibtex(self):
         """
         :f: TODO
         :returns: TODO

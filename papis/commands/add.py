@@ -309,7 +309,7 @@ class Add(Command):
             document = self.pick(documents)
             if not document:
                 sys.exit(0)
-            data = document.toDict()
+            data = document.to_dict()
             documents_paths = [
                 os.path.join(
                     document.get_main_folder(),
@@ -353,7 +353,7 @@ class Add(Command):
             document.save()
             papis.utils.edit_file(document.get_info_file(), self.config)
             document.loadInformationFromFile()
-            data = document.toDict()
+            data = document.to_dict()
         for i in range(min(len(documents_paths), len(data["files"]))):
             documentName = data["files"][i]
             documentPath = documents_paths[i]

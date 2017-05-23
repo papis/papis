@@ -90,12 +90,12 @@ class Export(Command):
         if not self.args.folder and not self.args.out:
             self.args.out = "/dev/stdout"
         if self.args.bibtex:
-            print(document.toBibtex())
+            print(document.to_bibtex())
         if self.args.text:
             text = string.Template(
                 """$author. $title. $journal $pages $month $year"""
                 ).safe_substitute(
-                    document.toDict()
+                    document.to_dict()
                 )
             open(self.args.out, "w").write(text)
         elif self.args.folder:
@@ -105,11 +105,11 @@ class Export(Command):
                 open(
                     os.path.join(outdir, "info.bib"),
                     "w+"
-                ).write(document.toBibtex())
+                ).write(document.to_bibtex())
         elif self.args.yaml:
             open(self.args.out, "w").write(document.dump())
         elif self.args.vcf:
-            open(self.args.out, "w").write(document.toVcf())
+            open(self.args.out, "w").write(document.to_vcf())
         else:
             pass
 
