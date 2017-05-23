@@ -48,7 +48,7 @@ class Mv(papis.commands.Command):
         except IndexError:
             return None
 
-    def main(self, args):
+    def main(self):
         """
         Main action if the command is triggered
 

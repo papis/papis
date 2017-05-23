@@ -273,7 +273,7 @@ class Add(papis.commands.Command):
         self.logger.debug("Read in data = %s" % data)
         return data
 
-    def main(self, args):
+    def main(self):
         if papis.config.inMode("contact"):
             self.init_contact_mode()
         documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])

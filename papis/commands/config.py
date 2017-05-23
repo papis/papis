@@ -27,7 +27,7 @@ class Config(papis.commands.Command):
             action="store"
         )
 
-    def main(self, args):
+    def main(self):
         """
         Main action if the command is triggered
 

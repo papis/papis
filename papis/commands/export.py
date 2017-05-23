@@ -113,7 +113,7 @@ class Export(papis.commands.Command):
             pass
 
 
-    def main(self, args):
+    def main(self):
         document = None
         documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)

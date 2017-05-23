@@ -102,6 +102,9 @@ class Command(object):
     def init(self):
         pass
 
+    def main(self):
+        pass
+
     def set_args(self, args):
         self.args = args
 
@@ -131,7 +134,3 @@ class Command(object):
             self.config,
             pick_config
         )
-
-    def main(self, args=None):
-        if not args:
-            self.args = args

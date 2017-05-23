@@ -40,7 +40,7 @@ class Default(papis.commands.Command):
         )
 
 
-    def main(self, args):
+    def main(self):
         if self.args.verbose:
             self.args.log = "DEBUG"
         logging.basicConfig(level=getattr(logging, self.args.log))

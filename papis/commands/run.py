@@ -18,7 +18,7 @@ class Run(papis.commands.Command):
             action="store"
         )
 
-    def main(self, args):
+    def main(self):
         documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
         self.logger.debug("Changing directory into %s" % documentsDir)
         os.chdir(documentsDir)

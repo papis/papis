@@ -34,7 +34,7 @@ class Open(papis.commands.Command):
             action="store_true"
         )
 
-    def main(self, args):
+    def main(self):
 
         documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         if args.tool:

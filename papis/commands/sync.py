@@ -12,7 +12,7 @@ class Sync(papis.commands.Command):
             help="Sync a library using the sync command"
         )
 
-    def main(self, args):
+    def main(self):
         documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         try:
             sync_command = os.path.expanduser(self.config[args.lib]["sync"])

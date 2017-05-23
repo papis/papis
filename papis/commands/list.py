@@ -13,12 +13,12 @@ class List(papis.commands.Command):
         :returns: TODO
 
         """
-        list_parser = self.get_subparsers().add_parser(
+        self.parser = self.get_subparsers().add_parser(
             "list",
             help="List documents from a given library"
         )
 
-        list_parser.add_argument(
+        self.parser.add_argument(
             "document",
             help="Document search",
             default="",
@@ -26,7 +26,7 @@ class List(papis.commands.Command):
             action="store"
         )
 
-        list_parser.add_argument(
+        self.parser.add_argument(
             "-i",
             "--info",
             help="Show the info file name associated with the document",
@@ -34,14 +34,14 @@ class List(papis.commands.Command):
             action="store_true"
         )
 
-        list_parser.add_argument(
+        self.parser.add_argument(
             "-f",
             "--file",
             help="Show the file name associated with the document",
             action="store_true"
         )
 
-        list_parser.add_argument(
+        self.parser.add_argument(
             "-d",
             "--dir",
             help="Show the folder name associated with the document",
@@ -49,20 +49,20 @@ class List(papis.commands.Command):
             action="store_true"
         )
 
-        list_parser.add_argument(
+        self.parser.add_argument(
             "-p",
             "--pick",
             help="Pick the document instead of listing everything",
             action="store_true"
         )
 
-        list_parser.add_argument(
+        self.parser.add_argument(
             "--downloaders",
             help="List available downloaders",
             action="store_true"
         )
 
-    def main(self, args):
+    def main(self):
         if args.downloaders:
             for downloader in \
                papis.downloaders.utils.getAvailableDownloaders():

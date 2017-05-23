@@ -32,7 +32,7 @@ class Rm(papis.commands.Command):
             action="store_true"
         )
 
-    def main(self, args):
+    def main(self):
         """
         Main action if the command is triggered
 

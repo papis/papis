@@ -30,7 +30,7 @@ class Edit(papis.commands.Command):
             action="store_true"
         )
 
-    def main(self, args):
+    def main(self):
         documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document

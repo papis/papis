@@ -24,7 +24,7 @@ class Check(papis.commands.Command):
             action="store"
         )
 
-    def main(self, args):
+    def main(self):
         documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
