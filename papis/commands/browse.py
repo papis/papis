@@ -15,11 +15,11 @@ class Browse(Command):
         """
 
         # open parser
-        self.subparser = self.parser.add_parser(
+        self.parser = self.get_subparsers().add_parser(
             "browse",
             help="Open document url if this exists"
         )
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "document",
             help="Document search",
             nargs="?",

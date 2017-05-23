@@ -15,12 +15,12 @@ class Export(Command):
 
         """
         # export parser
-        self.subparser = self.parser.add_parser(
+        self.parser = self.get_subparsers().add_parser(
             "export",
             help="""Export a document from a given library"""
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "document",
             help="Document search",
             nargs="?",
@@ -28,35 +28,35 @@ class Export(Command):
             action="store"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "--yaml",
             help="Export into bibtex",
             default=False,
             action="store_true"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "--bibtex",
             help="Export into bibtex",
             default=False,
             action="store_true"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "--folder",
             help="Export document folder to share",
             default=False,
             action="store_true"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "--no-bibtex",
             help="When exporting to a folder, do not include the bibtex",
             default=False,
             action="store_true"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "-o",
             "--out",
             help="Outfile or outdir",
@@ -64,20 +64,20 @@ class Export(Command):
             action="store"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "-t",
             "--text",
             help="Text formated reference",
             action="store_true"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "-a", "--all",
             help="Export all without picking",
             action="store_true"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "--vcf",
             help="Export contact to vcf format",
             action="store_true"

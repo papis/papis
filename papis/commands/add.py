@@ -22,12 +22,12 @@ class Add(Command):
 
     def init(self):
 
-        self.subparser = self.parser.add_parser(
+        self.parser = self.get_subparsers().add_parser(
             "add",
             help="Add a document into a given library"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "document",
             help="Document file name",
             default=[],
@@ -35,55 +35,55 @@ class Add(Command):
             action="store"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "-d", "--dir",
             help="Subfolder in the library",
             default="",
             action="store"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "--name",
             help="Name for the main folder",
             default="",
             action="store"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "--edit",
             help="Edit info file after adding document",
             action="store_true"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "--title",
             help="Title for document",
             default="",
             action="store"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "--author",
             help="Author(s) for document",
             default="",
             action="store"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "--from-bibtex",
             help="Parse information from a bibtex file",
             default="",
             action="store"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "--from-yaml",
             help="Parse information from a yaml file",
             default="",
             action="store"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "--from-url",
             help="""Get document and information from a
                     given url, a parser must be
@@ -92,7 +92,7 @@ class Add(Command):
             action="store"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "--from-vcf",
             help="""\
                 Get contact information from a vcard (.vcf)
@@ -101,7 +101,7 @@ class Add(Command):
             action="store"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "--to",
             help="""When --to is specified, the document will be added to the
             selected already existing document entry.""",
@@ -109,7 +109,7 @@ class Add(Command):
             action="store"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "--confirm",
             help="Ask to confirm before adding to the collection",
             action="store_true"

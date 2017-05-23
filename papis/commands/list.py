@@ -14,7 +14,7 @@ class List(Command):
         :returns: TODO
 
         """
-        list_parser = self.parser.add_parser(
+        list_parser = self.get_subparsers().add_parser(
             "list",
             help="List documents from a given library"
         )

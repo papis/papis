@@ -14,12 +14,12 @@ class Config(Command):
 
         """
 
-        self.subparser = self.parser.add_parser(
+        self.parser = self.get_subparsers().add_parser(
             "config",
             help="Manage the configuration options"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "option",
             help="Set or get option",
             default="",

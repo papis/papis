@@ -6,18 +6,18 @@ from . import Command
 
 class Check(Command):
     def init(self):
-        self.subparser = self.parser.add_parser(
+        self.parser = self.get_subparsers().add_parser(
             "check",
             help="Check document document from a given library"
         )
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "document",
             help="Document search",
             nargs="?",
             default=".",
             action="store"
         )
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "--keys", "-k",
             help="Key to check",
             nargs="*",

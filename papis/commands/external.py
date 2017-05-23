@@ -9,12 +9,12 @@ class External(Command):
 
     def init(self, path):
         self.script_path = path
-        self.subparser = self.parser.add_parser(
+        self.parser = self.get_subparsers().add_parser(
             self.get_command_name(),
             help=self.get_command_help()
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "args",
             help="Arguments",
             nargs="*",

@@ -7,7 +7,7 @@ class Sync(Command):
     default_git = 'cd $dir; git pull origin master'
 
     def init(self):
-        self.subparser = self.parser.add_parser(
+        self.parser = self.get_subparsers().add_parser(
             "sync",
             help="Sync a library using the sync command"
         )

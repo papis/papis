@@ -13,18 +13,18 @@ class Edit(Command):
         :returns: TODO
 
         """
-        self.subparser = self.parser.add_parser(
+        self.parser = self.get_subparsers().add_parser(
             "edit",
             help="Edit document information from a given library"
         )
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "document",
             help="Document search",
             nargs="?",
             default=".",
             action="store"
         )
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "-n",
             "--notes",
             help="Open notes document, if there is some",

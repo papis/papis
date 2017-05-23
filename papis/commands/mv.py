@@ -11,12 +11,12 @@ from . import Command
 class Mv(Command):
     def init(self):
 
-        self.subparser = self.parser.add_parser(
+        self.parser = self.get_subparsers().add_parser(
             "mv",
             help="Move entry"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "document",
             help="Document search",
             nargs="?",
@@ -24,7 +24,7 @@ class Mv(Command):
             action="store"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "-t", "--tool",
             help="Move tool",
             action="store"

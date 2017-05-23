@@ -7,11 +7,11 @@ from . import Command
 class Run(Command):
 
     def init(self):
-        self.subparser = self.parser.add_parser(
+        self.parser = self.get_subparsers().add_parser(
             "run",
             help="Run a command in the library folder"
         )
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "run_command",
             help="Command name or command",
             default="",

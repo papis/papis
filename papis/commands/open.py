@@ -8,12 +8,12 @@ from . import Command
 class Open(Command):
     def init(self):
 
-        self.subparser = self.parser.add_parser(
+        self.parser = self.get_subparsers().add_parser(
             "open",
             help="Open document document from a given library"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "document",
             help="Document search",
             nargs="?",
@@ -21,14 +21,14 @@ class Open(Command):
             action="store"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "--tool",
             help="Tool for opening the file (opentool)",
             default="",
             action="store"
         )
 
-        self.subparser.add_argument(
+        self.parser.add_argument(
             "-d",
             "--dir",
             help="Open directory",
