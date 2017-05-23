@@ -70,15 +70,15 @@ def openGeneral(fileName, configuration, key):
     call([opener, fileName])
 
 
-def openFile(fileName, configuration={}):
+def open_file(fileName, configuration={}):
     openGeneral(fileName, configuration, "opentool")
 
 
-def openDir(fileName, configuration={}):
+def open_dir(fileName, configuration={}):
     openGeneral(fileName, configuration, "file-browser")
 
 
-def editFile(fileName, configuration={}):
+def edit_file(fileName, configuration={}):
     try:
         editor = configuration["settings"]["editor"]
     except KeyError:
@@ -93,28 +93,24 @@ def matchDocument(document, search):
     return True if m else False
 
 
-def getFilteredDocuments(directory, search=""):
+def get_documents_in_dir(directory, search=""):
     directory = os.path.expanduser(directory)
-    documents = [Document(d) for d in getFolders(directory)]
+    documents = [Document(d) for d in get_folders(directory)]
     return [d for d in documents if matchDocument(d, search)]
 
 
-def get_documents_in_lib(library):
+def get_documents_in_lib(library, search=""):
     config = papis.config.get_configuration()
     directory = config[library]["dir"]
-    return getFilteredDocuments(directory)
+    return get_documents_in_dir(directory, search)
 
 
-def get_documents_in_dir(directory):
-    return getFilteredDocuments(directory)
-
-
-def getFolders(folder):
+def get_folders(folder):
     """Get documents from a containing folder
     """
     folders = list()
     for root, dirnames, filenames in os.walk(folder):
-        if os.path.exists(os.path.join(root, getInfoFileName())):
+        if os.path.exists(os.path.join(root, get_info_file_name())):
             folders.append(root)
     return folders
 
@@ -134,8 +130,8 @@ def isGitRepo(folder):
         return False
 
 
-def getInfoFileName():
-    """TODO: Docstring for getInfoFileName.
+def get_info_file_name():
+    """TODO: Docstring for get_info_file_name.
     :returns: TODO
 
     """

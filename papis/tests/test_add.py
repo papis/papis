@@ -18,4 +18,4 @@ class TestClass(unittest.TestCase):
 
     def test_existence(self):
         self.assertTrue(self.command is not None)
-        self.assertTrue(self.command.getParser() is None)
+        self.assertTrue(self.command.get_parser() is None)

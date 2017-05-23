@@ -17,9 +17,9 @@ class Document(object):
         self._folder = folder
         self.logger = logging.getLogger("Doc")
         self._infoFilePath = \
-            os.path.join(folder, papis.utils.getInfoFileName())
-        self.loadInformationFromFile()
-        self.subfolder = self.getMainFolder()\
+            os.path.join(folder, papis.utils.get_info_file_name())
+        self.load()
+        self.subfolder = self.get_main_folder()\
                              .replace(os.environ["HOME"], "")\
                              .replace("/", " ")
 
@@ -42,14 +42,14 @@ class Document(object):
     def __getitem__(self, obj):
         return getattr(self, obj) if hasattr(self, obj) else ""
 
-    def getMainFolder(self):
+    def get_main_folder(self):
         """
         Get main folder where the document and the information is stored
         :returns: Folder path
         """
         return self._folder
 
-    def getMainFolderName(self):
+    def get_main_folder_name(self):
         """
         Get main folder name where the document and the information is stored
         :returns: Folder name
@@ -73,11 +73,11 @@ class Document(object):
         :returns: TODO
         """
         # Check for the exsitence of the document
-        for f in self.getFiles():
+        for f in self.get_files():
             self.logger.debug(f)
             if not os.path.exists(f):
                 print("** Error: %s not found in %s" % (
-                    f, self.getMainFolder()))
+                    f, self.get_main_folder()))
                 return False
             else:
                 return True
@@ -90,11 +90,11 @@ class Document(object):
         structure = dict()
         for key in self.keys():
             structure[key] = self[key]
-        self.logger.debug("Saving %s " % self.getInfoFile())
+        self.logger.debug("Saving %s " % self.get_info_file())
         yaml.dump(structure, fd, default_flow_style=False)
         fd.close()
 
-    def toDict(self):
+    def to_dict(self):
         result = dict()
         for key in self.keys():
             result[key] = self[key]
@@ -118,7 +118,7 @@ adress:
     work: null
     home: null"""
 
-    def toVcf(self):
+    def to_vcf(self):
         if not papis.config.inMode("contact"):
             self.logger.error("Not in contact mode")
             sys.exit(1)
@@ -143,7 +143,7 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         text += "END:VCARD"
         return text
 
-    def toBibtex(self):
+    def to_bibtex(self):
         """
         :f: TODO
         :returns: TODO
@@ -157,7 +157,7 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         if not bibtexType:
             bibtexType = "article"
         if not self["ref"]:
-            ref = os.path.basename(self.getMainFolder())
+            ref = os.path.basename(self.get_main_folder())
         else:
             ref = self["ref"]
         bibtexString += "@%s{%s,\n" % (bibtexType, ref)
@@ -191,15 +191,15 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
                 else:
                     pass
 
-    def getInfoFile(self):
-        """TODO: Docstring for getFiles.
+    def get_info_file(self):
+        """TODO: Docstring for get_files.
         :returns: TODO
 
         """
         return self._infoFilePath
 
-    def getFiles(self):
-        """TODO: Docstring for getFiles.
+    def get_files(self):
+        """TODO: Docstring for get_files.
         :returns: TODO
 
         """
@@ -207,7 +207,7 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
             else [self["files"]]
         result = []
         for f in files:
-            result.append(os.path.join(self.getMainFolder(), f))
+            result.append(os.path.join(self.get_main_folder(), f))
         return result
 
     def keys(self):
@@ -229,7 +229,7 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
             string += str(i)+":   "+str(self[i])+"\n"
         return string
 
-    def loadInformationFromFile(self):
+    def load(self):
         """
         load information from file
         :returns: TODO

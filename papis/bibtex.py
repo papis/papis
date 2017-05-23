@@ -49,7 +49,7 @@ bibtexKeys = [
   ]
 
 
-def bibtexToDict(bibtex):
+def bibtex_to_dict(bibtex):
     """
     Convert bibtex file to dict
     { type: "article ...", "ref": "example1960etAl", author:" ..."}

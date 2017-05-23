@@ -45,14 +45,14 @@ class Rm(Command):
         documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
-        documents = papis.utils.getFilteredDocuments(
+        documents = papis.utils.get_documents_in_dir(
             documentsDir,
             documentSearch
         )
         document = self.pick(documents)
         if not document:
             sys.exit(0)
-        folder = document.getMainFolder()
+        folder = document.get_main_folder()
         if not args.force:
             if input("Are you sure? (Y/n): ") in ["N", "n"]:
                 sys.exit(0)

@@ -35,7 +35,7 @@ class Mv(Command):
         p = ""
         for root, dirs, files in os.walk(main):
             for di in dirs:
-                p = os.path.join(root, di, papis.utils.getInfoFileName())
+                p = os.path.join(root, di, papis.utils.get_info_file_name())
                 if not os.path.exists(p) \
                    and not re.match(r".*[.]git.*", os.path.join(root, di)):
                     directories.append(di)
@@ -61,14 +61,14 @@ class Mv(Command):
         documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
-        documents = papis.utils.getFilteredDocuments(
+        documents = papis.utils.get_documents_in_dir(
             documentsDir,
             documentSearch
         )
         document = self.pick(documents)
         if not document:
             sys.exit(0)
-        folder = document.getMainFolder()
+        folder = document.get_main_folder()
 
         directories = self.get_dirs(documentsDir)
         readline.set_completer(

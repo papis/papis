@@ -86,30 +86,30 @@ class Export(Command):
     def export(self, document):
         """Main action in export command
         """
-        folder = document.getMainFolder()
+        folder = document.get_main_folder()
         if not self.args.folder and not self.args.out:
             self.args.out = "/dev/stdout"
         if self.args.bibtex:
-            print(document.toBibtex())
+            print(document.to_bibtex())
         if self.args.text:
             text = string.Template(
                 """$author. $title. $journal $pages $month $year"""
                 ).safe_substitute(
-                    document.toDict()
+                    document.to_dict()
                 )
             open(self.args.out, "w").write(text)
         elif self.args.folder:
-            outdir = self.args.out or document.getMainFolderName()
+            outdir = self.args.out or document.get_main_folder_name()
             shutil.copytree(folder, outdir)
             if not self.args.no_bibtex:
                 open(
                     os.path.join(outdir, "info.bib"),
                     "w+"
-                ).write(document.toBibtex())
+                ).write(document.to_bibtex())
         elif self.args.yaml:
             open(self.args.out, "w").write(document.dump())
         elif self.args.vcf:
-            open(self.args.out, "w").write(document.toVcf())
+            open(self.args.out, "w").write(document.to_vcf())
         else:
             pass
 
@@ -119,7 +119,7 @@ class Export(Command):
         documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = self.args.document
-        documents = papis.utils.getFilteredDocuments(
+        documents = papis.utils.get_documents_in_dir(
             documentsDir,
             documentSearch
         )

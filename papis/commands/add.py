@@ -209,7 +209,7 @@ class Add(Command):
             self.logger.debug("Using downloader %s" % downloader)
             bibtex_data = downloader.getBibtexData()
             if bibtex_data:
-                data = papis.bibtex.bibtexToDict(
+                data = papis.bibtex.bibtex_to_dict(
                     downloader.getBibtexData()
                 )
             if len(args.document) == 0:
@@ -226,8 +226,8 @@ class Add(Command):
         """Initialize the contact mode
         """
         self.logger.debug("Initialising contact mode")
-        self.args.document = [papis.utils.getInfoFileName()]
-        self.args.from_yaml = papis.utils.getInfoFileName()
+        self.args.document = [papis.utils.get_info_file_name()]
+        self.args.from_yaml = papis.utils.get_info_file_name()
         if os.path.exists(self.args.document[0]):
             return True
         self.args.edit = True
@@ -290,7 +290,7 @@ class Add(Command):
             data = url_data["data"]
             documents_paths.extend(url_data["documents_paths"])
         elif self.args.from_bibtex:
-            data = papis.bibtex.bibtexToDict(self.args.from_bibtex)
+            data = papis.bibtex.bibtex_to_dict(self.args.from_bibtex)
         elif self.args.from_yaml:
             data = yaml.load(open(self.args.from_yaml))
         elif self.args.from_vcf:
@@ -302,22 +302,22 @@ class Add(Command):
             for documentPath in documents_paths
         ]
         if self.args.to:
-            documents = papis.utils.getFilteredDocuments(
+            documents = papis.utils.get_documents_in_dir(
                 documentsDir,
                 self.args.to
             )
             document = self.pick(documents)
             if not document:
                 sys.exit(0)
-            data = document.toDict()
+            data = document.to_dict()
             documents_paths = [
                 os.path.join(
-                    document.getMainFolder(),
+                    document.get_main_folder(),
                     d
                 ) for d in document["files"]] + documents_paths
             data["files"] = document["files"] + documents_names
-            folderName = document.getMainFolderName()
-            fullDirPath = document.getMainFolder()
+            folderName = document.get_main_folder_name()
+            fullDirPath = document.get_main_folder()
         else:
             document = Document(temp_dir)
             print(document["org"])
@@ -351,15 +351,15 @@ class Add(Command):
         if self.args.edit:
             document.update(data, force=True)
             document.save()
-            papis.utils.editFile(document.getInfoFile(), self.config)
-            document.loadInformationFromFile()
-            data = document.toDict()
+            papis.utils.edit_file(document.get_info_file(), self.config)
+            document.load()
+            data = document.to_dict()
         for i in range(min(len(documents_paths), len(data["files"]))):
             documentName = data["files"][i]
             documentPath = documents_paths[i]
             assert(os.path.exists(documentPath))
             endDocumentPath = os.path.join(
-                    document.getMainFolder(), documentName)
+                    document.get_main_folder(), documentName)
             if os.path.exists(endDocumentPath):
                 self.logger.debug(
                     "%s exists, ignoring..." % endDocumentPath
@@ -379,6 +379,6 @@ class Add(Command):
             sys.exit(0)
         self.logger.debug(
             "[MV] '%s' to '%s'" %
-            (document.getMainFolder(), fullDirPath)
+            (document.get_main_folder(), fullDirPath)
         )
-        shutil.move(document.getMainFolder(), fullDirPath)
+        shutil.move(document.get_main_folder(), fullDirPath)

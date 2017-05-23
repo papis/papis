@@ -72,7 +72,7 @@ class List(Command):
         documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
-        documents = papis.utils.getFilteredDocuments(
+        documents = papis.utils.get_documents_in_dir(
             documentsDir,
             documentSearch
         )
@@ -80,15 +80,15 @@ class List(Command):
             documents = [self.pick(documents)]
         for document in documents:
             if args.file:
-                for f in document.getFiles():
+                for f in document.get_files():
                     print(f)
             elif args.dir:
-                print(document.getMainFolder())
+                print(document.get_main_folder())
             elif args.info:
                 print(
                     os.path.join(
-                        document.getMainFolder(),
-                        document.getInfoFile()
+                        document.get_main_folder(),
+                        document.get_info_file()
                     )
                 )
             else:

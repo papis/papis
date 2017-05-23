@@ -35,7 +35,7 @@ class Edit(Command):
         documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = args.document
-        documents = papis.utils.getFilteredDocuments(
+        documents = papis.utils.get_documents_in_dir(
             documentsDir,
             documentSearch
         )
@@ -50,12 +50,12 @@ class Edit(Command):
                 document.save()
             notesName = document["notes"]
             notesPath = os.path.join(
-                document.getMainFolder(),
+                document.get_main_folder(),
                 notesName
             )
             if not os.path.exists(notesPath):
                 self.logger.debug("Creating %s" % notesPath)
                 open(notesPath, "w+").close()
-            papis.utils.editFile(notesPath, self.config)
+            papis.utils.edit_file(notesPath, self.config)
         else:
-            papis.utils.editFile(document.getInfoFile(), self.config)
+            papis.utils.edit_file(document.get_info_file(), self.config)
