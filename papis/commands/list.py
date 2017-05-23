@@ -63,27 +63,27 @@ class List(papis.commands.Command):
         )
 
     def main(self):
-        if args.downloaders:
+        if self.args.downloaders:
             for downloader in \
                papis.downloaders.utils.getAvailableDownloaders():
                 print(downloader)
             sys.exit(0)
-        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
-        documentSearch = args.document
+        documentSearch = self.args.document
         documents = papis.utils.get_documents_in_dir(
             documentsDir,
             documentSearch
         )
-        if args.pick:
+        if self.args.pick:
             documents = [self.pick(documents)]
         for document in documents:
-            if args.file:
+            if self.args.file:
                 for f in document.get_files():
                     print(f)
-            elif args.dir:
+            elif self.args.dir:
                 print(document.get_main_folder())
-            elif args.info:
+            elif self.args.info:
                 print(
                     os.path.join(
                         document.get_main_folder(),

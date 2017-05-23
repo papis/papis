@@ -6,6 +6,7 @@ import papis.config
 import argparse
 
 COMMANDS = [
+    "default",
     "add",
     "check",
     "config",
