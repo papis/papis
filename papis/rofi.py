@@ -12,6 +12,14 @@ def get_options():
         options["width"] = papis.config.get("rofi-width")
     except:
         options["width"] = 80
+    try:
+        options["lines"] = papis.config.get("rofi-lines")
+    except:
+        options["lines"] = 20
+    try:
+        options["fixed_lines"] = papis.config.get("rofi-fixed-lines")
+    except:
+        options["fixed_lines"] = 20
     return options
 
 def pick(
