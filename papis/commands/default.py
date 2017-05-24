@@ -39,6 +39,19 @@ class Default(papis.commands.Command):
             default="INFO"
         )
 
+        self.default_parser.add_argument(
+            "--picktool",
+            help="Override picktool",
+            action="store",
+            default=""
+        )
+
+        self.default_parser.add_argument(
+            "--rofi",
+            help="Use rofi as a picktool",
+            action="store_true"
+        )
+
 
     def main(self):
         self.set_args(papis.commands.get_args())
@@ -51,6 +64,12 @@ class Default(papis.commands.Command):
             sys.exit(1)
 
         commands = papis.commands.get_commands()
+
+        if self.args.rofi:
+            self.args.picktool = "rofi"
+
+        if self.args.picktool:
+            self.config["settings"]["picktool"] = self.args.picktool
 
         if self.args.command:
             if self.args.command in commands.keys():
