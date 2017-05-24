@@ -7,12 +7,7 @@ import papis.downloaders.utils
 
 class List(papis.commands.Command):
     def init(self):
-        """TODO: Docstring for init.
 
-        :subparser: TODO
-        :returns: TODO
-
-        """
         self.parser = self.get_subparsers().add_parser(
             "list",
             help="List documents from a given library"

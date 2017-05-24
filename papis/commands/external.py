@@ -8,6 +8,7 @@ class External(papis.commands.Command):
 
     def init(self, path):
         self.script_path = path
+
         self.parser = self.get_subparsers().add_parser(
             self.get_command_name(),
             help=self.get_command_help()
@@ -38,16 +39,16 @@ class External(papis.commands.Command):
         else:
             return h.decode("ascii")
 
-    def export_variables(self, args):
+    def export_variables(self):
         """Export environment variables so that external script can access to
         the information
         """
-        os.environ["PAPIS_LIB"] = args.lib
-        os.environ["PAPIS_LIB_PATH"] = self.config[args.lib]["dir"]
+        os.environ["PAPIS_LIB"] = self.args.lib
+        os.environ["PAPIS_LIB_PATH"] = self.config[self.args.lib]["dir"]
         os.environ["PAPIS_CONFIG_PATH"] = papis.config.get_config_folder()
         os.environ["PAPIS_CONFIG_FILE"] = papis.config.get_config_file()
         os.environ["PAPIS_SCRIPTS_PATH"] = papis.config.get_scripts_folder()
 
     def main(self):
-        self.export_variables(args)
-        subprocess.call([self.script_path] + args.args)
+        self.export_variables(self.args)
+        subprocess.call([self.script_path] + self.args.args)

@@ -13,14 +13,14 @@ class Sync(papis.commands.Command):
         )
 
     def main(self):
-        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
         try:
-            sync_command = os.path.expanduser(self.config[args.lib]["sync"])
+            sync_command = os.path.expanduser(self.config[self.args.lib]["sync"])
         except KeyError:
             if os.path.exists(os.path.join(documentsDir, ".git", "config")):
                 print("Git repository detected, using sync command '%s'"
                       % self.default_git)
                 sync_command = self.default_git
         command = string.Template(sync_command).substitute(
-                self.config[args.lib])
+                self.config[self.args.lib])
         os.system(command)

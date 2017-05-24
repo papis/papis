@@ -6,10 +6,12 @@ import papis.config
 class Run(papis.commands.Command):
 
     def init(self):
+
         self.parser = self.get_subparsers().add_parser(
             "run",
             help="Run a command in the library folder"
         )
+
         self.parser.add_argument(
             "run_command",
             help="Command name or command",

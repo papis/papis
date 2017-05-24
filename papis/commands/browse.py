@@ -6,18 +6,12 @@ import papis.utils
 
 class Browse(papis.commands.Command):
     def init(self):
-        """TODO: Docstring for init.
 
-        :subparser: TODO
-        :returns: TODO
-
-        """
-
-        # open parser
         self.parser = self.get_subparsers().add_parser(
             "browse",
             help="Open document url if this exists"
         )
+
         self.parser.add_argument(
             "document",
             help="Document search",
@@ -27,17 +21,9 @@ class Browse(papis.commands.Command):
         )
 
     def main(self):
-        """
-        Main action if the command is triggered
-
-        :config: User configuration
-        :args: CLI user arguments
-        :returns: TODO
-
-        """
-        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
-        documentSearch = args.document
+        documentSearch = self.args.document
         documents = papis.utils.get_documents_in_dir(
             documentsDir,
             documentSearch

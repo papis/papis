@@ -6,16 +6,12 @@ import papis.pick
 
 class Edit(papis.commands.Command):
     def init(self):
-        """TODO: Docstring for init.
 
-        :subparser: TODO
-        :returns: TODO
-
-        """
         self.parser = self.get_subparsers().add_parser(
             "edit",
             help="Edit document information from a given library"
         )
+
         self.parser.add_argument(
             "document",
             help="Document search",
@@ -23,6 +19,7 @@ class Edit(papis.commands.Command):
             default=".",
             action="store"
         )
+
         self.parser.add_argument(
             "-n",
             "--notes",
@@ -31,15 +28,15 @@ class Edit(papis.commands.Command):
         )
 
     def main(self):
-        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
-        documentSearch = args.document
+        documentSearch = self.args.document
         documents = papis.utils.get_documents_in_dir(
             documentsDir,
             documentSearch
         )
         document = self.pick(documents)
-        if args.notes:
+        if self.args.notes:
             if not document.has("notes"):
                 self.logger.warning(
                     "The document selected has no notes attached,\

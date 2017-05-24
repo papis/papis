@@ -5,10 +5,12 @@ import papis.utils
 
 class Check(papis.commands.Command):
     def init(self):
+
         self.parser = self.get_subparsers().add_parser(
             "check",
             help="Check document document from a given library"
         )
+
         self.parser.add_argument(
             "document",
             help="Document search",
@@ -16,6 +18,7 @@ class Check(papis.commands.Command):
             default=".",
             action="store"
         )
+
         self.parser.add_argument(
             "--keys", "-k",
             help="Key to check",
@@ -25,9 +28,9 @@ class Check(papis.commands.Command):
         )
 
     def main(self):
-        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
-        documentSearch = args.document
+        documentSearch = self.args.document
         documents = papis.utils.get_documents_in_dir(
             documentsDir,
             documentSearch
@@ -36,7 +39,7 @@ class Check(papis.commands.Command):
         for document in documents:
             self.logger.debug("Checking %s" % document.get_main_folder())
             allOk &= document.checkFile()
-            for key in args.keys:
+            for key in self.args.keys:
                 if key not in document.keys():
                     allOk &= False
                     print(

@@ -7,17 +7,12 @@ import papis.utils
 
 class Rm(papis.commands.Command):
     def init(self):
-        """TODO: Docstring for init.
-
-        :subparser: TODO
-        :returns: TODO
-
-        """
 
         self.parser = self.get_subparsers().add_parser(
             "rm",
             help="Delete entry"
         )
+
         self.parser.add_argument(
             "document",
             help="Document search",
@@ -25,6 +20,7 @@ class Rm(papis.commands.Command):
             default=".",
             action="store"
         )
+
         self.parser.add_argument(
             "-f", "--force",
             help="Do not confirm removal",
@@ -33,17 +29,9 @@ class Rm(papis.commands.Command):
         )
 
     def main(self):
-        """
-        Main action if the command is triggered
-
-        :config: User configuration
-        :args: CLI user arguments
-        :returns: TODO
-
-        """
-        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
-        documentSearch = args.document
+        documentSearch = self.args.document
         documents = papis.utils.get_documents_in_dir(
             documentsDir,
             documentSearch
@@ -52,7 +40,7 @@ class Rm(papis.commands.Command):
         if not document:
             sys.exit(0)
         folder = document.get_main_folder()
-        if not args.force:
+        if not self.args.force:
             if input("Are you sure? (Y/n): ") in ["N", "n"]:
                 sys.exit(0)
         print("Removing %s..." % folder)

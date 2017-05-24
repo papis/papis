@@ -28,18 +28,10 @@ class Config(papis.commands.Command):
         )
 
     def main(self):
-        """
-        Main action if the command is triggered
-
-        :config: User configuration
-        :args: CLI user arguments
-        :returns: TODO
-
-        """
-        documentsDir = os.path.expanduser(self.config[args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         # FIXME: Replacing values does not work
-        option = " ".join(args.option)
+        option = " ".join(self.args.option)
         self.logger.debug(option)
         value = False
         m = re.match(r"([^ ]*)\.(.*)", option)
