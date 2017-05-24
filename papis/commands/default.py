@@ -52,6 +52,12 @@ class Default(papis.commands.Command):
             action="store_true"
         )
 
+        self.default_parser.add_argument(
+            "--pick-lib",
+            help="Pick library to use",
+            action="store_true"
+        )
+
 
     def main(self):
         self.set_args(papis.commands.get_args())
@@ -59,17 +65,21 @@ class Default(papis.commands.Command):
             self.args.log = "DEBUG"
         logging.basicConfig(level=getattr(logging, self.args.log))
 
-        if self.args.lib not in self.config.keys():
-            self.logger.error("Library '%s' does not seem to exist" % self.args.lib)
-            sys.exit(1)
-
-        commands = papis.commands.get_commands()
-
         if self.args.rofi:
             self.args.picktool = "rofi"
 
         if self.args.picktool:
             self.config["settings"]["picktool"] = self.args.picktool
+
+        if self.args.pick_lib:
+            self.args.lib = papis.utils.pick(papis.utils.get_libraries())
+
+
+        if self.args.lib not in self.config.keys():
+            self.logger.error("Library '%s' does not seem to exist" % self.args.lib)
+            sys.exit(1)
+
+        commands = papis.commands.get_commands()
 
         if self.args.command:
             if self.args.command in commands.keys():

@@ -18,6 +18,15 @@ def get_lib():
     return papis.commands.get_args().lib
 
 
+def get_libraries():
+    libs = []
+    config = papis.config.get_configuration()
+    for key in config.keys():
+        if "dir" in config[key]:
+            libs.append(key)
+    return libs
+
+
 def which(program):
     # source
     # stackoverflow.com/questions/377017/test-if-executable-exists-in-python
