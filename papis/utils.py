@@ -102,7 +102,7 @@ def get_folders(folder):
     return folders
 
 
-def isGitRepo(folder):
+def is_git_repo(folder):
     """Check if folder is a git repository
 
     :folder: Folder to check
