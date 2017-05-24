@@ -1,4 +1,3 @@
-from ..document import Document
 import papis
 import os
 import sys
@@ -12,6 +11,7 @@ import string
 import papis.utils
 import papis.config
 import papis.bibtex
+import papis.document
 import papis.downloaders.utils
 import pdfminer.pdfparser
 import pdfminer.pdfdocument
@@ -231,13 +231,13 @@ class Add(papis.commands.Command):
             return True
         self.args.edit = True
         self.args.confirm = True
-        template = Document.get_vcf_template()
+        template = papis.document.Document.get_vcf_template()
         fd = open(self.args.document[0], "w+")
         fd.write(template)
         fd.close()
 
     def vcf_to_data(self, vcard_path):
-        data = yaml.load(Document.get_vcf_template())
+        data = yaml.load(papis.document.Document.get_vcf_template())
         self.logger.debug("Reading in %s " % vcard_path)
         text = open(vcard_path).read()
         vcard = vobject.readOne(text)
@@ -317,7 +317,7 @@ class Add(papis.commands.Command):
             folderName = document.get_main_folder_name()
             fullDirPath = document.get_main_folder()
         else:
-            document = Document(temp_dir)
+            document = papis.document.Document(temp_dir)
             print(document["org"])
             if not papis.config.inMode("contact"):
                 data["title"] = self.args.title or self.get_default_title(
@@ -338,7 +338,9 @@ class Add(papis.commands.Command):
                             .safe_substitute(data)\
                             .replace(" ", "-")
             data["files"] = documents_names
-            fullDirPath = os.path.join(documentsDir, self.args.dir,  folderName)
+            fullDirPath = os.path.join(
+                documentsDir, self.args.dir,  folderName
+            )
         ######
         self.logger.debug("Folder = % s" % folderName)
         self.logger.debug("File = % s" % documents_paths)
