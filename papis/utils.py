@@ -58,7 +58,7 @@ def pick(options, papis_config={}, pick_config={}):
             return papis.rofi.pick(options, **pick_config)
 
 
-def general_open(fileName, key, default_opener="xdg-open"):
+def general_open(fileName, key, default_opener="xdg-open", wait=False):
     config = papis.config.get_configuration()
     try:
         opener = papis.config.get(key)
@@ -67,7 +67,10 @@ def general_open(fileName, key, default_opener="xdg-open"):
     if isinstance(fileName, list):
         fileName = pick(fileName)
     if isinstance(opener, str):
-        return call([opener, fileName])
+        if wait:
+            return os.system(" ".join([opener, fileName]))
+        else:
+            return call([opener, fileName])
     elif hasattr(opener, '__call__'):
         return opener(fileName)
     else:

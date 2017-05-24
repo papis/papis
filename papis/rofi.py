@@ -38,7 +38,7 @@ def pick(
                 header_filter(d) for d in
                 options
             ],
-            xcase_sensitive=False,
+            case_sensitive=False,
             **get_options()
         )
         r.close()

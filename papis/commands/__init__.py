@@ -20,6 +20,7 @@ COMMAND_NAMES = [
     "browse",
     "update",
     "run",
+    "gui",
     "sync"
 ]
 
