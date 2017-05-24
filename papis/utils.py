@@ -74,7 +74,7 @@ def edit_file(fileName, configuration={}):
     call([editor, fileName])
 
 
-def matchDocument(document, search):
+def match_document(document, search):
     match_string = papis.config.get_match_format().format(doc=document)
     regex = r".*"+re.sub(r"\s+", ".*", search)
     m = re.match(regex, match_string, re.IGNORECASE)
@@ -84,7 +84,7 @@ def matchDocument(document, search):
 def get_documents_in_dir(directory, search=""):
     directory = os.path.expanduser(directory)
     documents = [Document(d) for d in get_folders(directory)]
-    return [d for d in documents if matchDocument(d, search)]
+    return [d for d in documents if match_document(d, search)]
 
 
 def get_documents_in_lib(library, search=""):
