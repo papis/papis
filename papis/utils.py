@@ -14,7 +14,6 @@ logger = logging.getLogger("utils")
 
 
 def get_lib():
-    logger.debug("Getting lib")
     return papis.commands.get_args().lib
 
 

@@ -52,7 +52,6 @@ def get_commands():
 def get_args():
     global ARGS
     global logger
-    logger.debug("Getting args")
     return ARGS
 
 
