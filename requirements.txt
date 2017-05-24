@@ -1,5 +1,4 @@
 requests==2.11.1
-setuptools==20.10.1
 argcomplete==1.8.2
 arxiv2bib==1.0.7
 PyYAML==3.12
