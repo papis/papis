@@ -55,7 +55,15 @@ def general_open(fileName, key, default_opener="xdg-open"):
         opener = papis.config.get(key)
     except KeyError:
         opener = default_opener
-    call([opener, fileName])
+    if isinstance(fileName, list):
+        fileName = pick(fileName)
+    if isinstance(opener, str):
+        return call([opener, fileName])
+    elif hasattr(opener, '__call__'):
+        return opener(fileName)
+    else:
+        raise Warning("How should I use the opener %s?" % opener)
+
 
 
 def open_file(fileName):
@@ -67,11 +75,7 @@ def open_dir(fileName):
 
 
 def edit_file(fileName, configuration={}):
-    try:
-        editor = configuration["settings"]["editor"]
-    except KeyError:
-        editor = os.environ["EDITOR"]
-    call([editor, fileName])
+    general_open(fileName, "editor", default_opener=os.environ["EDITOR"])
 
 
 def match_document(document, search):
