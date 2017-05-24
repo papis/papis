@@ -49,20 +49,21 @@ def pick(options, papis_config={}, pick_config={}):
                 shell=True).read()
 
 
-def openGeneral(fileName, configuration, key):
+def general_open(fileName, key, default_opener="xdg-open"):
+    config = papis.config.get_configuration()
     try:
-        opener = configuration["settings"][key]
+        opener = papis.config.get[key]
     except KeyError:
-        opener = "xdg-open"
+        opener = default_opener
     call([opener, fileName])
 
 
-def open_file(fileName, configuration={}):
-    openGeneral(fileName, configuration, "opentool")
+def open_file(fileName):
+    general_open(fileName, "opentool")
 
 
-def open_dir(fileName, configuration={}):
-    openGeneral(fileName, configuration, "file-browser")
+def open_dir(fileName):
+    general_open(fileName, "file-browser")
 
 
 def edit_file(fileName, configuration={}):

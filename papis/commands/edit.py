@@ -52,6 +52,6 @@ class Edit(papis.commands.Command):
             if not os.path.exists(notesPath):
                 self.logger.debug("Creating %s" % notesPath)
                 open(notesPath, "w+").close()
-            papis.utils.edit_file(notesPath, self.config)
+            papis.utils.edit_file(notesPath)
         else:
-            papis.utils.edit_file(document.get_info_file(), self.config)
+            papis.utils.edit_file(document.get_info_file())

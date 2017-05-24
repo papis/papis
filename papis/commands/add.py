@@ -350,7 +350,7 @@ class Add(papis.commands.Command):
         if self.args.edit:
             document.update(data, force=True)
             document.save()
-            papis.utils.edit_file(document.get_info_file(), self.config)
+            papis.utils.edit_file(document.get_info_file())
             document.load()
             data = document.to_dict()
         for i in range(min(len(documents_paths), len(data["files"]))):
