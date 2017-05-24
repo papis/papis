@@ -238,6 +238,7 @@ class Add(papis.commands.Command):
 
     def vcf_to_data(self, vcard_path):
         data = yaml.load(Document.get_vcf_template())
+        self.logger.debug("Reading in %s " % vcard_path)
         text = open(vcard_path).read()
         vcard = vobject.readOne(text)
         try:
@@ -286,16 +287,14 @@ class Add(papis.commands.Command):
         temp_dir = tempfile.mkdtemp("-"+self.args.lib)
         if self.args.from_url:
             url_data = self.get_from_url()
-            data = url_data["data"]
+            data.update(url_data["data"])
             documents_paths.extend(url_data["documents_paths"])
-        elif self.args.from_bibtex:
-            data = papis.bibtex.bibtex_to_dict(self.args.from_bibtex)
-        elif self.args.from_yaml:
-            data = yaml.load(open(self.args.from_yaml))
-        elif self.args.from_vcf:
-            data = self.vcf_to_data(self.args.from_vcf)
-        else:
-            pass
+        if self.args.from_bibtex:
+            data.update(papis.bibtex.bibtex_to_dict(self.args.from_bibtex))
+        if self.args.from_yaml:
+            data.update(yaml.load(open(self.args.from_yaml)))
+        if self.args.from_vcf:
+            data.update(self.vcf_to_data(self.args.from_vcf))
         documents_names = [
             self.clean_document_name(documentPath)
             for documentPath in documents_paths
