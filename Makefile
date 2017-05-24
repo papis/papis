@@ -1,7 +1,7 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v0.0.1-16-ga57ce5a
-MAKEFILE_DATE = 11-05-2017 15:20
+MAKEFILE_VERSION = v0.0.1-17-gd22ca41
+MAKEFILE_DATE = 24-05-2017 11:49
 MAKEFILE_AUTHOR = Alejandro Gallo
 MAKEFILE_URL = https://github.com/alejandrogallo/python-makefile
 MAKEFILE_LICENSE = GPLv3
@@ -258,7 +258,7 @@ PY_LINTER ?= flake8
 # TEX_LINTER variable.
 #
 lint: ## Check syntax of sources
-	$(PY_LINTER) papis
+	$(PY_LINTER)
 
 
 
@@ -279,7 +279,7 @@ update-gh-pages: ## Update github pages
 
 
 test: ## Run the tests
-	$(DBG_FLAG)python setup.py test
+	$(DBG_FLAG)$(PYTHON) setup.py test
 
 
 
