@@ -8,12 +8,13 @@ logging.basicConfig(level=logging.DEBUG)
 
 class TestClass(unittest.TestCase):
 
-    """Test case docstring."""
-
-    def setUp(self):
+    @classmethod
+    def setUpClass(self):
+        self.args = dict()
         self.command = Add()
 
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(self):
         pass
 
     def test_existence(self):
