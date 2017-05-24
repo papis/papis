@@ -45,7 +45,7 @@ setup(
     test_suite="papis.tests",
     entry_points=dict(
         console_scripts=[
-            'papis=papis.papis:main'
+            'papis=papis.main:main'
         ]
     ),
     platforms=['linux'],
