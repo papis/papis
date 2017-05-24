@@ -4,6 +4,7 @@ import logging
 import os
 import re
 import papis.pick
+import papis.rofi
 import papis.config
 import papis.commands
 from .document import Document
@@ -40,13 +41,12 @@ def pick(options, papis_config={}, pick_config={}):
         logger.debug("Parsing picktool")
         picker = papis.config.get("picktool")
     except KeyError:
+        logger.debug("Using default picker")
         return papis.pick.pick(options, **pick_config)
     else:
-        # FIXME: Do it more fancy
-        return Popen(
-                "echo "+"\n".join(options)+" | "+picker,
-                stdout=PIPE,
-                shell=True).read()
+        if picker == "rofi":
+            logger.debug("Using rofi picker")
+            return papis.rofi.pick(options, **pick_config)
 
 
 def general_open(fileName, key, default_opener="xdg-open"):
