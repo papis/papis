@@ -64,4 +64,4 @@ class Open(papis.commands.Command):
             )
             papis.utils.open_file(file_to_open)
         else:
-            papis.utils.open_dir(document.get_main_folder(), self.config)
+            papis.utils.open_dir(document.get_main_folder())
