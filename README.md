@@ -1,6 +1,8 @@
 
 # Papis
 
+[![Build Status](https://travis-ci.org/alejandrogallo/papis.svg?branch=master)](https://travis-ci.org/alejandrogallo/papis)
+
 ## Description
 
 Papis is a command-line based document and bibliography manager.  Its

@@ -1,0 +1,9 @@
+language: bash
+
+script:
+  - make test
+
+before_install:
+  - sudo apt-get install -y python3
+  - sudo apt-get install -y python3-pip
+  - sudo make install-deps
