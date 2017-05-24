@@ -11,4 +11,4 @@ script:
   - make test
 
 install:
-  - sudo make install-deps
+  - sudo make install-deps PIP=pip
