@@ -50,5 +50,5 @@ class External(papis.commands.Command):
         os.environ["PAPIS_SCRIPTS_PATH"] = papis.config.get_scripts_folder()
 
     def main(self):
-        self.export_variables(self.args)
+        self.export_variables()
         subprocess.call([self.script_path] + self.args.args)
