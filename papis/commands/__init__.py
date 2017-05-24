@@ -118,15 +118,15 @@ def init():
     commands.update(init_internal_commands())
     commands.update(init_external_commands())
     set_commands(commands)
+    # autocompletion
+    argcomplete.autocomplete(get_default_parser())
     return commands
 
 
-def main():
+def main(input_args=[]):
     commands = get_commands()
-    # autocompletion
-    argcomplete.autocomplete(get_default_parser())
     # Parse arguments
-    args = get_default_parser().parse_args()
+    args = get_default_parser().parse_args(input_args or None)
     set_args(args)
     commands["default"].main()
 
