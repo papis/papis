@@ -52,7 +52,7 @@ def pick(options, papis_config={}, pick_config={}):
 def general_open(fileName, key, default_opener="xdg-open"):
     config = papis.config.get_configuration()
     try:
-        opener = papis.config.get[key]
+        opener = papis.config.get(key)
     except KeyError:
         opener = default_opener
     call([opener, fileName])
