@@ -12,17 +12,16 @@ import string
 import papis.utils
 import papis.config
 import papis.bibtex
-from . import Command
 import papis.downloaders.utils
 import pdfminer.pdfparser
 import pdfminer.pdfdocument
 
 
-class Add(Command):
+class Add(papis.commands.Command):
 
     def init(self):
 
-        self.parser = self.get_subparsers.add_parser(
+        self.parser = self.get_subparsers().add_parser(
             "add",
             help="Add a document into a given library"
         )
@@ -135,6 +134,7 @@ class Add(Command):
         """Get document extension
 
         :document_path: Path of the document
+        :returns: Extension (string)
 
         """
         m = re.match(r"^(.*)\.([a-zA-Z0-9]*)$", os.path.basename(documentPath))
@@ -323,4 +323,61 @@ class Add(Command):
             if not papis.config.inMode("contact"):
                 data["title"] = self.args.title or self.get_default_title(
                     data,
-???MANY LINES MISSING
+                    documents_paths[0]
+                )
+                data["author"] = self.args.author or self.get_default_author(
+                    data,
+                    documents_paths[0]
+                )
+                self.logger.debug("Author = % s" % data["author"])
+                self.logger.debug("Title = % s" % data["title"])
+            if not self.args.name:
+                folderName = self.get_hash_folder(data, documents_paths[0])
+            else:
+                folderName = string\
+                            .Template(self.args.name)\
+                            .safe_substitute(data)\
+                            .replace(" ", "-")
+            data["files"] = documents_names
+            fullDirPath = os.path.join(documentsDir, self.args.dir,  folderName)
+        ######
+        self.logger.debug("Folder = % s" % folderName)
+        self.logger.debug("File = % s" % documents_paths)
+        ######
+        if not os.path.isdir(temp_dir):
+            self.logger.debug("Creating directory '%s'" % temp_dir)
+            os.makedirs(temp_dir)
+        if self.args.edit:
+            document.update(data, force=True)
+            document.save()
+            papis.utils.edit_file(document.get_info_file(), self.config)
+            document.load()
+            data = document.to_dict()
+        for i in range(min(len(documents_paths), len(data["files"]))):
+            documentName = data["files"][i]
+            documentPath = documents_paths[i]
+            assert(os.path.exists(documentPath))
+            endDocumentPath = os.path.join(
+                    document.get_main_folder(), documentName)
+            if os.path.exists(endDocumentPath):
+                self.logger.debug(
+                    "%s exists, ignoring..." % endDocumentPath
+                )
+                continue
+            self.logger.debug(
+                "[CP] '%s' to '%s'" %
+                (documentPath, endDocumentPath)
+            )
+            shutil.copy(documentPath, endDocumentPath)
+        document.update(data, force=True)
+        if self.args.confirm:
+            if input("Really add? (Y/n): ") in ["N", "n"]:
+                sys.exit(0)
+        document.save()
+        if self.args.to:
+            sys.exit(0)
+        self.logger.debug(
+            "[MV] '%s' to '%s'" %
+            (document.get_main_folder(), fullDirPath)
+        )
+        shutil.move(document.get_main_folder(), fullDirPath)
