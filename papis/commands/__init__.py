@@ -112,6 +112,8 @@ def init_external_commands():
 
 
 def init():
+    if get_commands() is not None:
+       raise RuntimeError("Commands are already initialised")
     commands = dict()
     commands.update(init_internal_commands())
     commands.update(init_external_commands())
