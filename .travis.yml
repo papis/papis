@@ -1,9 +1,14 @@
-language: bash
+language: python
+
+python:
+  - "3.2"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.6"
 
 script:
   - make test
 
-before_install:
-  - sudo apt-get install -y python3
-  - sudo apt-get install -y python3-pip
+install:
   - sudo make install-deps
