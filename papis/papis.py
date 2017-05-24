@@ -6,7 +6,6 @@
 
 import sys
 import logging
-import argcomplete
 
 import papis.commands
 import papis.utils
@@ -24,16 +23,8 @@ if sys.version_info < (3, 0):
 
 
 def main():
-    config = papis.config.get_configuration()
+    papis.commands.init()
+    papis.commands.main()
 
-    parser = papis.commands.get_default_parser()
-    # subparser = papis.commands.get_subparser()
-    subcommands = papis.commands.init()
-
-    # autocompletion
-    argcomplete.autocomplete(parser)
-    # Parse arguments
-    args = parser.parse_args()
-    papis.utils.set_args(args)
 
 # vim:set et sw=4 ts=4 ft=python:

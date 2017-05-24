@@ -10,19 +10,6 @@ from .document import Document
 # from lxml import etree
 
 logger = logging.getLogger("utils")
-PAPIS_ARGS = None
-
-
-def set_args(args):
-    logger.debug("Setting args")
-    global PAPIS_ARGS
-    if PAPIS_ARGS is None:
-        PAPIS_ARGS = args
-
-
-def get_args():
-    logger.debug("Getting args")
-    return PAPIS_ARGS
 
 
 def get_lib():

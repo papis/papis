@@ -4,8 +4,9 @@ import logging
 import papis.utils
 import papis.config
 import argparse
+import argcomplete
 
-COMMANDS = [
+COMMAND_NAMES = [
     "default",
     "add",
     "check",
@@ -23,40 +24,70 @@ COMMANDS = [
 ]
 
 logger = logging.getLogger("commands")
-default_parser = None
-subparsers = None
+DEFAULT_PARSER = None
+SUBPARSERS = None
+COMMANDS = None
+ARGS = None
+
+
+def set_args(args):
+    global ARGS
+    global logger
+    logger.debug("Setting args")
+    if ARGS is None:
+        ARGS = args
+
+
+def set_commands(commands):
+    global COMMANDS
+    logger.debug("Setting commands")
+    COMMANDS = commands
+
+
+def get_commands():
+    global COMMANDS
+    return COMMANDS
+
+
+def get_args():
+    global ARGS
+    global logger
+    logger.debug("Getting args")
+    return ARGS
 
 
 def get_default_parser():
-    global default_parser
-    if default_parser is None:
-        default_parser = argparse.ArgumentParser(
+    global DEFAULT_PARSER
+    global logger
+    if DEFAULT_PARSER is None:
+        DEFAULT_PARSER = argparse.ArgumentParser(
             formatter_class=argparse.RawTextHelpFormatter,
             description="Simple documents administration program"
         )
-    return default_parser
+    return DEFAULT_PARSER
 
 
 def get_subparsers():
-    global subparsers
-    if subparsers is None:
+    global SUBPARSERS
+    global logger
+    if SUBPARSERS is None:
         SUBPARSER_HELP = "For further information for every "\
                          "command, type in 'papis <command> -h'"
-        subparsers = get_default_parser().add_subparsers(
+        SUBPARSERS = get_default_parser().add_subparsers(
             help=SUBPARSER_HELP,
             metavar="command",
             dest="command"
         )
-    return subparsers
+    return SUBPARSERS
 
 
 def init_internal_commands():
-    global COMMANDS
+    global COMMAND_NAMES
     global logger
     commands = dict()
     cmd = None
     logger.debug("Initializing commands")
-    for command in COMMANDS:
+    for command in COMMAND_NAMES:
         logger.debug(command)
         exec("from .%s import %s" % (command, command.capitalize()))
         cmd = eval(command.capitalize())()
@@ -85,17 +116,26 @@ def init():
     commands = dict()
     commands.update(init_internal_commands())
     commands.update(init_external_commands())
+    set_commands(commands)
     return commands
+
+
+def main():
+    commands = get_commands()
+    # autocompletion
+    argcomplete.autocomplete(get_default_parser())
+    # Parse arguments
+    args = get_default_parser().parse_args()
+    set_args(args)
+    commands["default"].main()
 
 
 class Command(object):
 
-    args = None
-    subparsers = None
-
     def __init__(self):
         self.default_parser = get_default_parser()
         self.parser = None
+        self.args = None
         self.subparsers = get_subparsers()
         self.logger = logging.getLogger(self.__class__.__name__)
         self.config = papis.config.get_configuration()

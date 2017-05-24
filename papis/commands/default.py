@@ -41,6 +41,7 @@ class Default(papis.commands.Command):
 
 
     def main(self):
+        self.set_args(papis.commands.get_args())
         if self.args.verbose:
             self.args.log = "DEBUG"
         logging.basicConfig(level=getattr(logging, self.args.log))
@@ -49,7 +50,9 @@ class Default(papis.commands.Command):
             self.logger.error("Library '%s' does not seem to exist" % self.args.lib)
             sys.exit(1)
 
+        commands = papis.commands.get_commands()
+
         if self.args.command:
-            if self.args.command in subcommands.keys():
-                subcommands[self.args.command].set_args(self.args)
-                subcommands[self.args.command].main(self.args)
+            if self.args.command in commands.keys():
+                commands[self.args.command].set_args(self.args)
+                commands[self.args.command].main()
