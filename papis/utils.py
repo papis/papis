@@ -5,6 +5,7 @@ import os
 import re
 import papis.pick
 import papis.config
+import papis.commands
 from .document import Document
 # import zipfile
 # from lxml import etree
@@ -14,7 +15,7 @@ logger = logging.getLogger("utils")
 
 def get_lib():
     logger.debug("Getting lib")
-    return get_args().lib
+    return papis.commands.get_args().lib
 
 
 def which(program):
