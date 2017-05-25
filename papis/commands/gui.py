@@ -66,8 +66,11 @@ class Gui(papis.commands.Command):
                     self.documents[index].get_files()
                 )
             elif key == delete_key:
-                answer = w.text_entry("Are you sure? <b>(y/N)</b>")
-                if answer in "Yy":
+                answer = w.text_entry(
+                    "Are you sure? (y/N)",
+                    message="<b>Be careful!</b>"
+                )
+                if answer and answer in "Yy":
                     self.documents[index].rm()
                     self.documents = self.fetch_documents()
 
