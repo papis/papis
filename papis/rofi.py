@@ -64,4 +64,111 @@ def pick(
         r.close()
     return options[index]
 
+class Gui(object):
+
+    esc_key = -1
+    quit_key = 1
+    edit_key = 2
+    delete_key = 3
+    help_key = 4
+    open_key = 0
+
+    def __init__(self):
+        self.documents = []
+        self.help_message = ""
+        self.keys = self.get_keys()
+
+    def get_help(self):
+        space = " "*10
+        message = \
+"Rofi based gui for papis\n"\
+"========================\n".format(space)
+        for k in self.keys:
+            message += "%s%s%s\n" % (self.keys[k][0], space, self.keys[k][1])
+        return message
+
+    def get_key(self, key, default=""):
+        try:
+            return papis.config.get("rofi-gui", "key-" + key.lower())
+        except:
+            return default
+
+    def get_keys(self):
+        return {
+            "key%s" % self.quit_key: (
+                self.get_key('quit', 'Alt+q'),
+                'Quit'
+            ),
+            "key%s" % self.edit_key: (
+                self.get_key('edit', 'Alt+e'),
+                'Edit'
+            ),
+            "key%s" % self.delete_key: (
+                self.get_key('delete', 'Alt+d'),
+                'Delete'
+            ),
+            "key%s" % self.help_key: (
+                self.get_key('help', 'Alt+h'),
+                'Help'
+            ),
+            "key%s" % self.open_key: (
+                self.get_key('open', 'Enter'),
+                'Open'
+            )
+        }
+
+
+    def main(self, documents):
+        # Set default picker
+        self.documents = documents
+        key = None
+        index = None
+        options = get_options("rofi-gui")
+        header_format = get_header_format("rofi-gui")
+        header_filter = lambda x: header_format.format(doc=x)
+        self.help_message = self.get_help()
+        options.update(self.keys)
+        # Initialize window
+        w = rofi.Rofi()
+        while not (key == self.quit_key or key == self.esc_key):
+            index, key = w.select( "Select: ",
+                [
+                    header_filter(d) for d in
+                    self.documents
+                ],
+                select=index,
+                **options
+            )
+            if key == self.edit_key:
+                self.edit(self.documents[index])
+            elif key == self.open_key:
+                return self.open(self.documents[index])
+            elif key == self.delete_key:
+                self.delete(self.documents[index])
+            elif key == self.help_key:
+                w.error(help_message)
+
+    def delete(self, doc):
+        answer = w.text_entry(
+            "Are you sure? (y/N)",
+            message="<b>Be careful!</b>"
+        )
+        if answer and answer in "Yy":
+            doc.rm()
+            self.documents = self.fetch_documents()
+
+    def open(self, doc):
+        papis.utils.open_file(
+            doc.get_files()
+        )
+
+    def edit(self, doc):
+        papis.utils.general_open(
+            doc.get_info_file(),
+            "xeditor",
+            default_opener="xterm -e vim",
+            wait=True
+        )
+        doc.load()
+
 
