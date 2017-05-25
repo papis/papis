@@ -1,6 +1,7 @@
 import os
 import yaml
 import logging
+import shutil
 import papis.utils
 import papis.config
 import papis.bibtex
@@ -81,6 +82,11 @@ class Document(object):
                 return False
             else:
                 return True
+
+    def rm(self):
+        """Remove document entry
+        """
+        shutil.rmtree(self.get_main_folder())
 
     def save(self):
         """
