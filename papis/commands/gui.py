@@ -31,7 +31,7 @@ class Gui(papis.commands.Command):
         options = papis.rofi.get_options()
         header_format = papis.config.get_header_format(
             "rofi-header_format"
-        ).replace("\\r", "\r")
+        ).replace("\\\\", "\r")
         header_filter = lambda x: header_format.format(doc=x)
         esc_key = -1
         quit_key = 1
@@ -47,7 +47,7 @@ class Gui(papis.commands.Command):
         options.update(keys)
         options.update(
             {
-                "eh": 5,
+                "eh": 3,
                 "sep": '|'
             }
         )

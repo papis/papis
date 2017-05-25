@@ -28,16 +28,41 @@ def get_scripts_folder():
     )
 
 
-def get(key):
+def general_get(key, *args, data_type=""):
+    method = None
     lib = papis.utils.get_lib()
     config = get_configuration()
+    if data_type == int:
+        method = config.getint
+    elif data_type == float:
+        method = config.getfloat
+    elif data_type == bool:
+        method = config.getboolean
+    else:
+        method = config.get
     global_section = "settings"
     if key in config[lib].keys():
-        return config[lib][key]
+        return method(lib, key, *args)
     elif key in config[global_section].keys():
-        return config[global_section][key]
+        return method(global_section, key, *args)
     else:
         raise KeyError("No key %s found in the configuration" % key)
+
+
+def get(key, *args):
+    return general_get(key, *args)
+
+
+def getint(key, *args):
+    return general_get(key, *args, data_type=int)
+
+
+def getfloat(key, *args):
+    return general_get(key, *args, data_type=float)
+
+
+def getboolean(key, *args):
+    return general_get(key, *args, data_type=bool)
 
 
 def inMode(mode):

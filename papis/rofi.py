@@ -4,20 +4,17 @@ import papis.config
 
 def get_options():
     options = dict()
+    options["fullscreen"] = papis.config.getboolean("rofi-fullscreen")
     try:
-        options["fullscreen"] = papis.config.get("rofi-fullscreen")
-    except:
-        options["fullscreen"] = False
-    try:
-        options["width"] = papis.config.get("rofi-width")
+        options["width"] = papis.config.getint("rofi-width")
     except:
         options["width"] = 80
     try:
-        options["lines"] = papis.config.get("rofi-lines")
+        options["lines"] = papis.config.getint("rofi-lines")
     except:
         options["lines"] = 20
     try:
-        options["fixed_lines"] = papis.config.get("rofi-fixed-lines")
+        options["fixed_lines"] = papis.config.getint("rofi-fixed-lines")
     except:
         options["fixed_lines"] = 20
     return options
