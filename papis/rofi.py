@@ -3,41 +3,49 @@ import papis.utils
 import papis.config
 
 
-def get_header_format():
-    return papis.config.get_header_format(
-        "rofi-header_format"
-    ).replace("\\\\", "\r").replace("\\t", "\t")
+def get_header_format(section=None):
+    args = []
+    if section:
+        args = [section, "rofi-header_format"]
+    else:
+        args = ["rofi-header_format"]
+
+    return papis.config.get(
+        *args
+    ).replace("\\\\", "\n").replace("\\t", "\t")
 
 
-def get_options():
+def get_options(section=None):
     options = dict()
+    def args(section, arg):
+        return [section, arg] if section is not None else [arg]
     try:
-        options["fullscreen"] = papis.config.getboolean("rofi-fullscreen")
+        options["fullscreen"] = papis.config.getboolean(*args( section, "rofi-fullscreen" ))
     except:
         options["fullscreen"] = False
     try:
         options["case_sensitive"] =\
-            papis.config.getboolean("rofi-case_sensitive")
+            papis.config.getboolean(*args( section, "rofi-case_sensitive" ))
     except:
         options["case_sensitive"] = False
     try:
-        options["width"] = papis.config.getint("rofi-width")
+        options["width"] = papis.config.getint(*args( section, "rofi-width" ))
     except:
         options["width"] = 80
     try:
-        options["eh"] = papis.config.getint("rofi-eh")
+        options["eh"] = papis.config.getint(*args( section, "rofi-eh" ))
     except:
         options["eh"] = 1
     try:
-        options["sep"] = papis.config.get("rofi-sep")
+        options["sep"] = papis.config.get(*args( section, "rofi-sep" ))
     except:
         options["sep"] = "|"
     try:
-        options["lines"] = papis.config.getint("rofi-lines")
+        options["lines"] = papis.config.getint(*args( section, "rofi-lines" ))
     except:
         options["lines"] = 20
     try:
-        options["fixed_lines"] = papis.config.getint("rofi-fixed-lines")
+        options["fixed_lines"] = papis.config.getint(*args( section, "rofi-fixed-lines" ))
     except:
         options["fixed_lines"] = 20
     return options
