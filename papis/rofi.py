@@ -12,7 +12,7 @@ def get_header_format(section=None):
 
     return papis.config.get(
         *args
-    ).replace("\\\\", "\n").replace("\\t", "\t")
+    )
 
 
 def get_options(section=None):
