@@ -76,11 +76,13 @@ def pick(
 class Gui(object):
 
     esc_key = -1
+    open_key = 0
     quit_key = 1
     edit_key = 2
     delete_key = 3
     help_key = 4
-    open_key = 0
+    open_stay_key = 5
+    normal_widnow_key = 6
 
     def __init__(self):
         self.documents = []
@@ -121,6 +123,14 @@ class Gui(object):
                 self.get_key('help', 'Alt+h'),
                 'Help'
             ),
+            "key%s" % self.open_stay_key: (
+                self.get_key('open-stay', 'Alt+o'),
+                'Help'
+            ),
+            "key%s" % self.normal_widnow_key: (
+                self.get_key('normal-window', 'Alt+w'),
+                'Normal Win'
+            ),
             "key%s" % self.open_key: (
                 self.get_key('open', 'Enter'),
                 'Open'
@@ -154,15 +164,19 @@ class Gui(object):
             if key == self.edit_key:
                 for i in indices:
                     self.edit(self.documents[i])
-            elif key == self.open_key:
+            elif key in [self.open_key, self.open_stay_key]:
                 for i in indices:
                     self.open(self.documents[i])
-                return 0
+                options["normal_window"] ^= True
+                if key == self.open_key:
+                    return 0
             elif key == self.delete_key:
                 for i in indices:
                     self.delete(self.documents[i])
             elif key == self.help_key:
                 self.window.error(self.help_message)
+            elif key == self.normal_widnow_key:
+                options["normal_window"] ^= True
 
     def delete(self, doc):
         answer = self.window.text_entry(
