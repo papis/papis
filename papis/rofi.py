@@ -19,15 +19,13 @@ def get_options(section=None):
     options = dict()
     def args(section, arg):
         return [section, arg] if section is not None else [arg]
-    try:
-        options["fullscreen"] = papis.config.getboolean(*args( section, "rofi-fullscreen" ))
-    except:
-        options["fullscreen"] = False
-    try:
-        options["case_sensitive"] =\
-            papis.config.getboolean(*args( section, "rofi-case_sensitive" ))
-    except:
-        options["case_sensitive"] = False
+    for key in ["fullscreen",
+            "normal_window", "multi_select", "case_sensitive", "markup_rows"]:
+        try:
+            options[key] =\
+                papis.config.getboolean(*args( section, "rofi-"+key ))
+        except:
+            options[key] = False
     try:
         options["width"] = papis.config.getint(*args( section, "rofi-width" ))
     except:
@@ -58,10 +56,10 @@ def pick(
         match_filter=lambda x: x
         ):
     if len(options) == 1:
-        index = 0
+        indices = 0
     else:
         r = rofi.Rofi()
-        index, key = r.select(
+        indices, key = r.select(
             "Select: ",
             [
                 header_filter(d) for d in
@@ -70,7 +68,10 @@ def pick(
             **get_options()
         )
         r.close()
-    return options[index]
+    # TODO: Support multiple choice
+    if not isinstance(indices, list):
+        indices = [indices]
+    return options[indices[0]]
 
 class Gui(object):
 
@@ -85,6 +86,7 @@ class Gui(object):
         self.documents = []
         self.help_message = ""
         self.keys = self.get_keys()
+        self.window = None
 
     def get_help(self):
         space = " "*10
@@ -130,34 +132,40 @@ class Gui(object):
         # Set default picker
         self.documents = documents
         key = None
-        index = None
+        indices = None
         options = get_options("rofi-gui")
         header_format = get_header_format("rofi-gui")
         header_filter = lambda x: header_format.format(doc=x)
         self.help_message = self.get_help()
         options.update(self.keys)
         # Initialize window
-        w = rofi.Rofi()
+        self.window = rofi.Rofi()
         while not (key == self.quit_key or key == self.esc_key):
-            index, key = w.select( "Select: ",
+            indices, key = self.window.select( "Select: ",
                 [
                     header_filter(d) for d in
                     self.documents
                 ],
-                select=index,
+                select=indices,
                 **options
             )
+            if not isinstance(indices, list):
+                indices = [indices]
             if key == self.edit_key:
-                self.edit(self.documents[index])
+                for i in indices:
+                    self.edit(self.documents[i])
             elif key == self.open_key:
-                return self.open(self.documents[index])
+                for i in indices:
+                    self.open(self.documents[i])
+                return 0
             elif key == self.delete_key:
-                self.delete(self.documents[index])
+                for i in indices:
+                    self.delete(self.documents[i])
             elif key == self.help_key:
-                w.error(help_message)
+                self.window.error(self.help_message)
 
     def delete(self, doc):
-        answer = w.text_entry(
+        answer = self.window.text_entry(
             "Are you sure? (y/N)",
             message="<b>Be careful!</b>"
         )
