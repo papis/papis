@@ -9,7 +9,7 @@ class Downloader(papis.downloaders.base.Downloader):
     @classmethod
     def match(cls, url):
         if re.match(r"^http.*\.pdf$", url):
-            return Get(url)
+            return Downloader(url)
         else:
             return False
 

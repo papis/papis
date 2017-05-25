@@ -14,7 +14,7 @@ class Downloader(papis.downloaders.base.Downloader):
     @classmethod
     def match(cls, url):
         if re.match(r".*aps.org.*", url):
-            return Aps(url)
+            return Downloader(url)
         else:
             return False
 
