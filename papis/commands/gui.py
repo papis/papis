@@ -29,7 +29,9 @@ class Gui(papis.commands.Command):
         key = None
         index = None
         options = papis.rofi.get_options()
-        header_format = papis.config.get_header_format()
+        header_format = papis.config.get_header_format(
+            "rofi-header_format"
+        ).replace("\\r", "\r")
         header_filter = lambda x: header_format.format(doc=x)
         esc_key = -1
         quit_key = 1
@@ -43,6 +45,12 @@ class Gui(papis.commands.Command):
             "key%s" % open_key: ('Enter', 'Open')
         }
         options.update(keys)
+        options.update(
+            {
+                "eh": 5,
+                "sep": '|'
+            }
+        )
         # Initialize window
         w = rofi.Rofi()
         while not (key == quit_key or key == esc_key):
