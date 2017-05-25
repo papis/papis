@@ -61,9 +61,9 @@ def get_default_header_format():
     return "{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:-<4})"
 
 
-def get_header_format():
+def get_header_format(key="header_format"):
     try:
-        header_format = get("header_format")
+        header_format = get(key)
     except:
         header_format = get_default_header_format()
     return header_format
