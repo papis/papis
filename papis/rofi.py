@@ -3,19 +3,19 @@ import papis.utils
 import papis.config
 
 
-def get_header_format(section=None):
+def get_header_format(section=None, prefix="rofi-"):
     args = []
     if section:
-        args = [section, "rofi-header_format"]
+        args = [section, prefix+"header_format"]
     else:
-        args = ["rofi-header_format"]
+        args = [prefix+"header_format"]
 
     return papis.config.get(
         *args
     )
 
 
-def get_options(section=None):
+def get_options(section=None, prefix="rofi-"):
     options = dict()
     def args(section, arg):
         return [section, arg] if section is not None else [arg]
@@ -23,27 +23,37 @@ def get_options(section=None):
             "normal_window", "multi_select", "case_sensitive", "markup_rows"]:
         try:
             options[key] =\
-                papis.config.getboolean(*args( section, "rofi-"+key ))
+                papis.config.getboolean(*args( section, prefix+key ))
         except:
             options[key] = False
     try:
-        options["width"] = papis.config.getint(*args( section, "rofi-width" ))
+        options["width"] = papis.config.getint(
+            *args( section, prefix+"width" )
+        )
     except:
         options["width"] = 80
     try:
-        options["eh"] = papis.config.getint(*args( section, "rofi-eh" ))
+        options["eh"] = papis.config.getint(
+            *args( section, prefix+"eh" )
+        )
     except:
         options["eh"] = 1
     try:
-        options["sep"] = papis.config.get(*args( section, "rofi-sep" ))
+        options["sep"] = papis.config.get(
+            *args( section, prefix+"sep" )
+        )
     except:
         options["sep"] = "|"
     try:
-        options["lines"] = papis.config.getint(*args( section, "rofi-lines" ))
+        options["lines"] = papis.config.getint(
+            *args( section, prefix+"lines" )
+        )
     except:
         options["lines"] = 20
     try:
-        options["fixed_lines"] = papis.config.getint(*args( section, "rofi-fixed-lines" ))
+        options["fixed_lines"] = papis.config.getint(
+            *args( section, prefix+"fixed-lines" )
+        )
     except:
         options["fixed_lines"] = 20
     return options
@@ -143,8 +153,8 @@ class Gui(object):
         self.documents = documents
         key = None
         indices = None
-        options = get_options("rofi-gui")
-        header_format = get_header_format("rofi-gui")
+        options = get_options("rofi-gui", prefix="")
+        header_format = get_header_format("rofi-gui", prefix="")
         header_filter = lambda x: header_format.format(doc=x)
         self.help_message = self.get_help()
         options.update(self.keys)
