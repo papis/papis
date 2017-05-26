@@ -44,6 +44,15 @@ papis add -h
 
 etc..
 
+
+## Rofi GUI
+
+There is a gui based on [Rofi](https://davedavenport.github.io/rofi/).
+Here there are some screenshots
+
+![Library selection](images/rofi-lib.png)
+![Book selection](images/rofi-paper.png)
+
 ## Configuration file
 
 Papis uses a configuration file in *INI* format. You can then have several libraries
