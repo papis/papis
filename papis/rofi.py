@@ -3,18 +3,6 @@ import papis.utils
 import papis.config
 
 
-def get_header_format(section=None, prefix="rofi-"):
-    args = []
-    if section:
-        args = [section, prefix+"header_format"]
-    else:
-        args = [prefix+"header_format"]
-
-    return papis.config.get(
-        *args
-    )
-
-
 def get_options(section=None, prefix="rofi-"):
     options = dict()
     def args(section, arg):
@@ -154,7 +142,9 @@ class Gui(object):
         key = None
         indices = None
         options = get_options("rofi-gui", prefix="")
-        header_format = get_header_format("rofi-gui", prefix="")
+        header_format = papis.config.get("rofi-header_format", extras=[
+            ("rofi-gui", "", "header_format")
+        ])
         header_filter = lambda x: header_format.format(doc=x)
         self.help_message = self.get_help()
         options.update(self.keys)
