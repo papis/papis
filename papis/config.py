@@ -28,7 +28,10 @@ def get_scripts_folder():
     )
 
 
-def general_get(*args, data_type=""):
+def general_get(*args, data_type="", extras=[]):
+    """
+    :param: extras: List of tuples containing section and prefixes
+    """
     method = None
     lib = papis.utils.get_lib()
     config = get_configuration()
@@ -48,28 +51,40 @@ def general_get(*args, data_type=""):
     else:
         method = config.get
     global_section = "settings"
-    if key in config[lib].keys():
-        return method(lib, key)
-    elif key in config[global_section].keys():
-        return method(global_section, key)
-    else:
+    extras = [(global_section, "")] + extras + [(lib, "")]
+    print(extras)
+    value = None
+    for extra in extras:
+        section = extra[0]
+        prefix = extra[1]
+        whole_key = extra[2] if len(extra) == 3 else prefix+key
+        if whole_key in config[section].keys():
+            value = config[section][whole_key]
+    if value is None:
         raise KeyError("No key %s found in the configuration" % key)
+    return value
+    # if key in config[lib].keys():
+        # return method(lib, key)
+    # elif key in config[global_section].keys():
+        # return method(global_section, key)
+    # else:
+        # raise KeyError("No key %s found in the configuration" % key)
 
 
-def get(*args):
-    return general_get(*args)
+def get(*args, **kwargs):
+    return general_get(*args, **kwargs)
 
 
-def getint(*args):
-    return general_get(*args, data_type=int)
+def getint(*args, **kwargs):
+    return general_get(*args, data_type=int, **kwargs)
 
 
-def getfloat(*args):
-    return general_get(*args, data_type=float)
+def getfloat(*args, **kwargs):
+    return general_get(*args, data_type=float, **kwargs)
 
 
-def getboolean(*args):
-    return general_get(*args, data_type=bool)
+def getboolean(*args, **kwargs):
+    return general_get(*args, data_type=bool, **kwargs)
 
 
 def inMode(mode):
