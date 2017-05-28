@@ -14,8 +14,14 @@ class Gui(papis.commands.Command):
         )
 
         self.parser.add_argument(
+            "--tk",
+            help="Tk based UI",
+            action="store_true"
+        )
+
+        self.parser.add_argument(
             "--rofi",
-            help="Rofi based gui",
+            help="Rofi based UI",
             action="store_true"
         )
 
@@ -26,6 +32,13 @@ class Gui(papis.commands.Command):
         import papis.rofi
         return papis.rofi.Gui().main(self.documents)
 
+    def tk_main(self):
+        import papis.tk
+        return papis.tk.Gui().main(self.documents)
+
     def main(self):
         self.documents = self.fetch_documents()
-        return self.rofi_main()
+        if self.args.tk:
+            return self.tk_main()
+        else:
+            return self.rofi_main()
