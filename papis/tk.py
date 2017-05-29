@@ -99,6 +99,7 @@ class Gui(tk.Tk,PapisWidget):
         tk.Tk.__init__(self)
         PapisWidget.__init__(self)
         self.index = 0
+        self["bg"] = self.get_config("window-bg", "#273238")
         self.bindings = [
             (self.get_config("focus_prompt", ":"), "focus_prompt"),
             (self.get_config("move_down", "j"), "move_down"),
@@ -108,7 +109,6 @@ class Gui(tk.Tk,PapisWidget):
             (self.get_config("help", "h"), "print_help"),
             (self.get_config("exit", "q"), "exit"),
             (self.get_config("scroll_down", "<Control-e>"), "scroll_down"),
-            (self.get_config("cancel", "<Control-c>"), "cancel"),
             (self.get_config("scroll_up", "<Control-y>"), "scroll_up"),
             ("<Down>", "move_down"),
             ("<Up>", "move_up"),
@@ -133,8 +133,8 @@ class Gui(tk.Tk,PapisWidget):
         )
         self.cmap("<Return>", self.handle_return)
         self.nmap("<Return>", self.open)
-        self.cmap("<Escape>", self.cancel)
-        self.nmap("<Escape>", self.cancel)
+        self.cmap("<Escape>", self.to_normal)
+        self.nmap("<Escape>", self.clear)
         self.map("<Configure>", self.on_resize)
         self.prompt.cmap("<KeyPress>", self.filter_and_draw)
         self.prompt.cmap("<Control-n>", self.move_down)
@@ -218,7 +218,13 @@ class Gui(tk.Tk,PapisWidget):
     def set_documents(self, docs):
         self.documents = docs
 
-    def cancel(self, event=None):
+    def to_normal(self, event=None):
+        print("To normal")
+        self.focus()
+        self.set_mode(self.normal_mode)
+
+    def clear(self, event=None):
+        print("Clear")
         self.prompt.clear()
         self.focus()
         self.set_mode(self.normal_mode)
@@ -245,14 +251,16 @@ class Gui(tk.Tk,PapisWidget):
                     text=self.get_config("header_format", "").format(doc=doc),
                     justify=tk.LEFT,
                     padx=10,
-                    font="Times 14 bold",
-                    relief="ridge",
+                    font=self.get_config("entry-font", "Times 14 normal"),
                     width=10*self.winfo_width(),
                     borderwidth=1,
                     pady=20,
+                    fg=self.get_config("entry-fg", "grey77"),
                     anchor=tk.W,
-                    activeforeground="black",
-                    activebackground="gold4"
+                    activeforeground=self.get_config(
+                        "activeforeground", "gray99"),
+                    activebackground=self.get_config(
+                        "activebackground", "#394249")
                 )
             )
 
@@ -265,7 +273,12 @@ class Gui(tk.Tk,PapisWidget):
     def draw_documents_labels(self, indices=[]):
         if not len(self.documents_lbls):
             return False
-        colors = ["grey", "lightgrey"]
+        colors = (
+            self.get_config(
+                "entry-bg-1", self["bg"]),
+            self.get_config(
+                "entry-bg-2", self["bg"]),
+        )
         primitive_height = self.documents_lbls[0].winfo_height()
         self.index_draw_last = self.index_draw_first +\
                 int(self.winfo_height()/primitive_height) + 1
@@ -287,7 +300,7 @@ class Gui(tk.Tk,PapisWidget):
         indices = self.get_matched_indices()
         self.set_selected(self.documents_lbls[indices[self.index]])
         self.draw_documents_labels()
-        self.focus_prompt()
+        # self.focus_prompt()
         return self.mainloop()
 
     def open(self, event=None):
