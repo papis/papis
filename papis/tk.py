@@ -1,6 +1,8 @@
 
 import tkinter as tk
 import papis.config
+import papis.utils
+import re
 
 
 class Gui(tk.Tk):
@@ -8,6 +10,7 @@ class Gui(tk.Tk):
     def __init__(self):
         super().__init__()
         self.index = 0
+        self.command = ""
         self.lines = 3
         self.index_draw_first = 0
         self.index_draw_last = 0 # int(self.winfo_height()/3.0)
@@ -27,14 +30,39 @@ class Gui(tk.Tk):
         )
         self.bind("<Return>", self.handle_return)
         self.bind("<Escape>", self.cancel)
+        self.bind("<Configure>", self.on_resize)
         self.bind(self.get_config("cancel", "<Control-c>"), self.cancel)
         self.bind(self.get_config("focus_prompt", ":"), self.focus_prompt)
         self.bind(self.get_config("move_down", "j"), self.move_down)
         self.bind(self.get_config("move_up", "k"), self.move_up)
+        self.bind(self.get_config("scroll_down", "<Control-e>"), self.scroll_down)
+        self.bind(self.get_config("scroll_up", "<Control-y>"), self.scroll_up)
         self.bind(self.get_config("open", "o"), self.open)
         self.bind(self.get_config("edit", "e"), self.edit)
         self.bind(self.get_config("exit", "q"), self.exit)
         self.bind_all(self.get_config("autocomplete", "<Tab>"), self.autocomplete)
+        self.prompt.bind("<KeyPress>", self.filter_and_draw)
+
+    def get_matched_indices(self):
+        match_format = self.get_config(
+            "match_format", papis.config.get("match_format")
+        )
+        indices = list()
+        self.get_command()
+        for i, doc in enumerate(self.documents):
+            if papis.utils.match_document(doc, self.command, match_format):
+                indices.append(i)
+        return indices
+
+    def filter_and_draw(self, event=None):
+        indices = self.get_matched_indices()
+        print(indices)
+        self.undraw_documents_labels()
+        self.draw_documents_labels(indices)
+
+    def get_command(self):
+        self.command = self.prompt.get(1.0, tk.END)
+        return self.command
 
     def get_config(self, key, default):
         """Get user configuration
@@ -50,6 +78,9 @@ class Gui(tk.Tk):
         except:
             return default
 
+    def on_resize(self, event=None):
+        self.undraw_documents_labels()
+        self.draw_documents_labels()
 
     def get_selected(self):
         return self.selected
@@ -72,6 +103,23 @@ class Gui(tk.Tk):
             if self.index > 0:
                 self.index -= 1
         self.draw_selection()
+
+    def scroll(self, direction):
+        self.undraw_documents_labels()
+        if direction == "down":
+            self.index_draw_first+=1
+        else:
+            if self.index_draw_first > 0:
+                self.index_draw_first-=1
+        self.draw_documents_labels()
+
+    def scroll_down(self, event=None):
+        print("Scrolling down")
+        self.scroll("down")
+
+    def scroll_up(self, event=None):
+        print("Scrolling up")
+        self.scroll("up")
 
     def move_down(self, event=None):
         self.lower()
@@ -107,8 +155,8 @@ class Gui(tk.Tk):
 
     def handle_return(self, event=None):
         if self.in_command_mode():
-            command = self.prompt.get(1.0, tk.END)
-            print(command)
+            self.command = self.prompt.get(1.0, tk.END)
+            print(self.command)
             self.prompt.delete(1.0, tk.END)
             self.focus()
 
@@ -133,15 +181,24 @@ class Gui(tk.Tk):
                 )
             )
 
-    def draw_documents_labels(self):
-        self.index_draw_first = 0
-        self.index_draw_last = 5
+    def undraw_documents_labels(self):
+        if not len(self.documents_lbls):
+            return False
+        for doc in self.documents_lbls:
+            doc.pack_forget()
+
+    def draw_documents_labels(self, indices=[]):
+        if not len(self.documents_lbls):
+            return False
+        primitive_height = self.documents_lbls[0].winfo_height()
+        self.index_draw_last = self.index_draw_last +\
+                int(self.winfo_height()/primitive_height)
         print(self.index_draw_last)
-        print(self.winfo_height())
+        indices = self.get_matched_indices()
         for i in range(self.index_draw_first, self.index_draw_last):
-            if i >= len(self.documents_lbls):
+            if i >= len(indices):
                 return True
-            doc = self.documents_lbls[i]
+            doc = self.documents_lbls[indices[i]]
             doc.pack(
                 anchor=tk.W,
                 fill=tk.X
@@ -157,14 +214,20 @@ class Gui(tk.Tk):
         return self.mainloop()
 
     def open(self, event=None):
+        if self.in_command_mode():
+            return False
         papis.utils.open_file(
             self.documents[self.index].get_files()
         )
 
     def exit(self, event=None):
+        if self.in_command_mode():
+            return False
         self.quit()
 
     def edit(self, event=None):
+        if self.in_command_mode():
+            return False
         papis.utils.general_open(
             self.documents[self.index].get_info_file(),
             "xeditor",
