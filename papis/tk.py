@@ -343,8 +343,9 @@ class Gui(tk.Tk,PapisWidget):
         self.set_documents_labels()
         indices = self.get_matched_indices()
         self.set_selected(self.documents_lbls[indices[self.index]])
-        self.draw_documents_labels(indices)
-        # self.focus_prompt()
+        self.after(1,
+            self.draw_documents_labels
+        )
         return self.mainloop()
 
     def open(self, event=None):
