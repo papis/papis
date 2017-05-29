@@ -90,8 +90,10 @@ def edit_file(fileName, configuration={}):
     general_open(fileName, "editor", default_opener=os.environ["EDITOR"])
 
 
-def match_document(document, search):
-    match_string = papis.config.get_match_format().format(doc=document)
+def match_document(document, search, match_format=""):
+    if not match_format:
+        match_format = papis.config.get_match_format()
+    match_string = match_format.format(doc=document)
     regex = r".*"+re.sub(r"\s+", ".*", search)
     m = re.match(regex, match_string, re.IGNORECASE)
     return True if m else False
