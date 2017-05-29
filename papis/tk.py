@@ -25,11 +25,29 @@ class PapisWidget(tk.Misc):
         self.logger.debug("Mode -> %s" % mode)
         CURRENT_MODE = mode
 
-    def map(self, key, function, mode=None):
+    def general_map(self, key, function, mode=None, recursive=False):
         def help_function(*args, **kwargs):
             if self.get_mode() == mode or mode is None:
                 return function(*args, **kwargs)
-        self.bind(key, help_function)
+        if recursive:
+            self.bind_all(key, help_function)
+        else:
+            self.bind(key, help_function)
+
+    def noremap(self, key, function, mode=None):
+        self.general_map(key, function, mode, recursive=True)
+
+    def norenmap(self, key, function):
+        self.noremap(key, function, self.normal_mode)
+
+    def noreimap(self, key, function):
+        self.noremap(key, function, self.insert_mode)
+
+    def norecmap(self, key, function):
+        self.noremap(key, function, self.command_mode)
+
+    def map(self, key, function, mode=None):
+        self.general_map(key, function, mode, recursive=False)
 
     def nmap(self, key, function):
         self.map(key, function, self.normal_mode)
@@ -81,7 +99,8 @@ class Prompt(tk.Text,PapisWidget):
         return self.command
 
     def echomsg(self, text):
-        self["height"] = len(text.split("\n"))
+        self.clear()
+        self["height"] = len(text.split("\n"))-1
         self.insert(1.0, text)
 
     def clear(self, event=None):
@@ -95,10 +114,24 @@ class Prompt(tk.Text,PapisWidget):
 
 class Gui(tk.Tk,PapisWidget):
 
+    index_draw_first = 0
+    index_draw_last = 0
+    key = None
+    selected = None
+    documents = []
+    matched_indices = []
+    documents_lbls = []
+    index = 0
+
     def __init__(self):
         tk.Tk.__init__(self)
         PapisWidget.__init__(self)
-        self.index = 0
+        self.geometry(
+            "{}x{}".format(
+                self.get_config("window-width", 900),
+                self.get_config("window-height", 700),
+            )
+        )
         self["bg"] = self.get_config("window-bg", "#273238")
         self.bindings = [
             (self.get_config("focus_prompt", ":"), "focus_prompt"),
@@ -106,7 +139,9 @@ class Gui(tk.Tk,PapisWidget):
             (self.get_config("move_up", "k"), "move_up"),
             (self.get_config("open", "o"), "open"),
             (self.get_config("edit", "e"), "edit"),
+            (self.get_config("move_top", "gg"), "move_top"),
             (self.get_config("help", "h"), "print_help"),
+            (self.get_config("print_info", "i"), "print_info"),
             (self.get_config("exit", "q"), "exit"),
             (self.get_config("scroll_down", "<Control-e>"), "scroll_down"),
             (self.get_config("scroll_up", "<Control-y>"), "scroll_up"),
@@ -114,32 +149,26 @@ class Gui(tk.Tk,PapisWidget):
             ("<Up>", "move_up"),
             (self.get_config("autocomplete", "<Tab>"), "autocomplete"),
         ]
-        self.index_draw_first = 0
-        self.index_draw_last = 0
-        self.key = None
-        self.selected = None
-        self.documents = []
-        self.matched_indices = []
-        self.documents_lbls = []
         self.title("Papis document manager")
         self.prompt = Prompt(
             self,
             bg=self.get_config("prompt-bg", "black"),
-            borderwidth=0,
+            borderwidth=-1,
             cursor="xterm",
+            font="20",
             fg=self.get_config("prompt-fg", "lightgreen"),
             insertbackground=self.get_config("insertbackground", "red"),
             height=1
         )
-        self.cmap("<Return>", self.handle_return)
+        self.norecmap("<Return>", self.to_normal)
         self.nmap("<Return>", self.open)
-        self.cmap("<Escape>", self.to_normal)
-        self.nmap("<Escape>", self.clear)
+        self.noremap("<Escape>", self.clear)
+        self.noremap("<Control-l>", self.redraw_screen)
+        self.cmap("<Control-c>", self.to_normal)
         self.map("<Configure>", self.on_resize)
         self.prompt.cmap("<KeyPress>", self.filter_and_draw)
         self.prompt.cmap("<Control-n>", self.move_down)
         self.prompt.cmap("<Control-p>", self.move_up)
-        self.nmap("c", self.handle_return)
         for bind in self.bindings:
             key = bind[0]
             name = bind[1]
@@ -165,11 +194,13 @@ class Gui(tk.Tk,PapisWidget):
         self.draw_documents_labels(indices)
 
     def on_resize(self, event=None):
-        self.undraw_documents_labels()
-        self.draw_documents_labels()
+        pass
 
     def get_selected(self):
         return self.selected
+
+    def get_selected_doc(self):
+        return self.selected.doc
 
     def set_selected(self, doc_lbl):
         self.selected = doc_lbl
@@ -177,11 +208,18 @@ class Gui(tk.Tk,PapisWidget):
     def move(self, direction):
         indices = self.get_matched_indices()
         if direction == "down":
-            if self.index < len(indices):
+            if self.index < len(indices)-1:
                 self.index += 1
         if direction == "up":
             if self.index > 0:
                 self.index -= 1
+        if self.index > self.index_draw_last-1:
+            self.scroll_down()
+        if self.index < self.index_draw_first:
+            self.scroll_up()
+        self.logger.debug(
+            "index = %s" % (self.index)
+        )
         self.draw_selection()
 
     def scroll(self, direction):
@@ -192,14 +230,23 @@ class Gui(tk.Tk,PapisWidget):
             if self.index_draw_first > 0:
                 self.index_draw_first-=1
         self.draw_documents_labels()
+        if self.index < self.index_draw_first:
+            self.index = self.index_draw_first
+        if self.index > self.index_draw_last:
+            self.index_draw_last
+        self.logger.debug(
+            "%s %s" % (self.index_draw_first, self.index_draw_last)
+        )
 
     def scroll_down(self, event=None):
-        print("Scrolling down")
         self.scroll("down")
 
     def scroll_up(self, event=None):
-        print("Scrolling up")
         self.scroll("up")
+
+    def move_top(self, event=None):
+        self.index_draw_first = 0
+        self.draw_documents_labels()
 
     def move_down(self, event=None):
         self.move("down")
@@ -208,9 +255,9 @@ class Gui(tk.Tk,PapisWidget):
         self.move("up")
 
     def draw_selection(self, event=None):
-        if not len(self.documents):
-            return False
         indices = self.get_matched_indices()
+        if not len(indices):
+            return False
         self.get_selected().configure(state="normal")
         self.set_selected(self.documents_lbls[indices[self.index]])
         self.get_selected().configure(state="active")
@@ -219,21 +266,15 @@ class Gui(tk.Tk,PapisWidget):
         self.documents = docs
 
     def to_normal(self, event=None):
-        print("To normal")
         self.focus()
         self.set_mode(self.normal_mode)
 
     def clear(self, event=None):
-        print("Clear")
         self.prompt.clear()
-        self.focus()
-        self.set_mode(self.normal_mode)
+        self.to_normal()
 
     def autocomplete(self, event=None):
-        print("autocomplete")
-        command = self.prompt.get(1.0, tk.END)
-        print(command)
-        self.prompt["bg"] = "blue"
+        pass
 
     def handle_return(self, event=None):
         command = self.prompt.get_command()
@@ -263,6 +304,7 @@ class Gui(tk.Tk,PapisWidget):
                         "activebackground", "#394249")
                 )
             )
+            setattr(self.documents_lbls[-1], "doc", doc)
 
     def undraw_documents_labels(self):
         if not len(self.documents_lbls):
@@ -270,8 +312,12 @@ class Gui(tk.Tk,PapisWidget):
         for doc in self.documents_lbls:
             doc.pack_forget()
 
+    def redraw_screen(self, event=None):
+        self.draw_documents_labels()
+
     def draw_documents_labels(self, indices=[]):
-        if not len(self.documents_lbls):
+        indices = self.get_matched_indices()
+        if not len(indices):
             return False
         colors = (
             self.get_config(
@@ -282,10 +328,9 @@ class Gui(tk.Tk,PapisWidget):
         primitive_height = self.documents_lbls[0].winfo_height()
         self.index_draw_last = self.index_draw_first +\
                 int(self.winfo_height()/primitive_height) + 1
-        indices = self.get_matched_indices()
         for i in range(self.index_draw_first, self.index_draw_last):
             if i >= len(indices):
-                return True
+                break
             doc = self.documents_lbls[indices[i]]
             doc["bg"] = colors[i%2]
             doc.pack(
@@ -304,16 +349,24 @@ class Gui(tk.Tk,PapisWidget):
         return self.mainloop()
 
     def open(self, event=None):
+        doc = self.get_selected_doc()
         papis.utils.open_file(
-            self.documents[self.index].get_files()
+            doc.get_files()
+        )
+
+    def print_info(self, event=None):
+        doc = self.get_selected_doc()
+        self.prompt.echomsg(
+            doc.dump()
         )
 
     def exit(self, event=None):
         self.quit()
 
     def edit(self, event=None):
+        doc = self.get_selected_doc()
         papis.utils.general_open(
-            self.documents[self.index].get_info_file(),
+            doc.get_info_file(),
             "xeditor",
             default_opener="xterm -e vim",
             wait=True
