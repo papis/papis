@@ -2,17 +2,6 @@
 import tkinter as tk
 import papis.config
 
-def get_header_format(section=None, prefix="rofi-"):
-    args = []
-    if section:
-        args = [section, prefix+"header_format"]
-    else:
-        args = [prefix+"header_format"]
-
-    return papis.config.get(
-        *args
-    )
-
 
 class Gui(tk.Tk):
 
@@ -33,21 +22,34 @@ class Gui(tk.Tk):
             borderwidth=0,
             cursor="xterm",
             fg="white",
-            insertbackground="red",
+            insertbackground=self.get_config("insertbackground", "red"),
             height=1
         )
-        self.bind(":", self.focus_prompt)
         self.bind("<Return>", self.handle_return)
         self.bind("<Escape>", self.cancel)
-        self.bind("<Control-c>", self.cancel)
-        self.bind("j", self.move_down)
-        self.bind("k", self.move_up)
-        self.bind("<Control-n>", self.move_down)
-        self.bind("<Control-p>", self.move_up)
-        self.bind("o", self.open)
-        self.bind("e", self.edit)
-        self.bind("q", self.exit)
-        self.bind_all("<Tab>", self.autocomplete)
+        self.bind(self.get_config("cancel", "<Control-c>"), self.cancel)
+        self.bind(self.get_config("focus_prompt", ":"), self.focus_prompt)
+        self.bind(self.get_config("move_down", "j"), self.move_down)
+        self.bind(self.get_config("move_up", "k"), self.move_up)
+        self.bind(self.get_config("open", "o"), self.open)
+        self.bind(self.get_config("edit", "e"), self.edit)
+        self.bind(self.get_config("exit", "q"), self.exit)
+        self.bind_all(self.get_config("autocomplete", "<Tab>"), self.autocomplete)
+
+    def get_config(self, key, default):
+        """Get user configuration
+
+        :key: Key value
+        :default: Default value
+
+        """
+        try:
+            return papis.config.get(
+                "tk-"+key, extras=[("tk-gui", "", key)]
+            )
+        except:
+            return default
+
 
     def get_selected(self):
         return self.selected
@@ -120,7 +122,7 @@ class Gui(tk.Tk):
             i += 1
             self.documents_lbls.append(
                 tk.Label(
-                    text=get_header_format(prefix="tk-").format(doc=doc),
+                    text=self.get_config("header_format", "").format(doc=doc),
                     justify=tk.LEFT,
                     padx=10,
                     width=self.winfo_width(),
