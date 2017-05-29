@@ -57,6 +57,8 @@ def general_get(*args, data_type="", extras=[]):
         section = extra[0]
         prefix = extra[1]
         whole_key = extra[2] if len(extra) == 3 else prefix+key
+        if section not in config.keys():
+            continue
         if whole_key in config[section].keys():
             value = method(section, whole_key)
     if value is None:
