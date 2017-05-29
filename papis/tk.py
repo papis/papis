@@ -316,9 +316,8 @@ class Gui(tk.Tk,PapisWidget):
         self.draw_documents_labels()
 
     def draw_documents_labels(self, indices=[]):
-        indices = self.get_matched_indices()
         if not len(indices):
-            return False
+            indices = self.get_matched_indices()
         colors = (
             self.get_config(
                 "entry-bg-1", self["bg"]),
@@ -344,7 +343,7 @@ class Gui(tk.Tk,PapisWidget):
         self.set_documents_labels()
         indices = self.get_matched_indices()
         self.set_selected(self.documents_lbls[indices[self.index]])
-        self.draw_documents_labels()
+        self.draw_documents_labels(indices)
         # self.focus_prompt()
         return self.mainloop()
 
