@@ -62,12 +62,6 @@ def general_get(*args, data_type="", extras=[]):
     if value is None:
         raise KeyError("No key %s found in the configuration" % key)
     return value
-    # if key in config[lib].keys():
-        # return method(lib, key)
-    # elif key in config[global_section].keys():
-        # return method(global_section, key)
-    # else:
-        # raise KeyError("No key %s found in the configuration" % key)
 
 
 def get(*args, **kwargs):
