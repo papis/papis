@@ -136,9 +136,17 @@ class Configuration(configparser.ConfigParser):
 
     DEFAULT_FILE_LOCATION = get_config_file()
 
+    logger = logging.getLogger("Configuration")
+
     def __init__(self):
         configparser.ConfigParser.__init__(self)
         self.initialize()
+
+    def handle_includes(self):
+       if "include" in self.keys():
+           for name in self["include"]:
+               self.logger.debug("including %s" % name)
+               self.read(os.path.expanduser(self.get("include", name)))
 
     def initialize(self):
         if not os.path.exists(self.DEFAULT_DIR_LOCATION):
@@ -147,6 +155,7 @@ class Configuration(configparser.ConfigParser):
             os.makedirs(self.DEFAULT_SCRIPTS_LOCATION)
         if os.path.exists(self.DEFAULT_FILE_LOCATION):
             self.read(self.DEFAULT_FILE_LOCATION)
+            self.handle_includes()
         else:
             for section in self.default_info:
                 self[section] = {}
