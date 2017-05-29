@@ -3,44 +3,45 @@ import papis.utils
 import papis.config
 
 
-def get_options(section=None, prefix="rofi-"):
+def get_options():
     options = dict()
-    def args(section, arg):
-        return [section, arg] if section is not None else [arg]
+    prefix = "rofi-"
+    def kwargs(arg):
+        return dict(extras=[("rofi-gui", "", arg)])
     for key in ["fullscreen",
             "normal_window", "multi_select", "case_sensitive", "markup_rows"]:
         try:
             options[key] =\
-                papis.config.getboolean(*args( section, prefix+key ))
+                papis.config.getboolean(prefix+key, **kwargs(key))
         except:
             options[key] = False
     try:
         options["width"] = papis.config.getint(
-            *args( section, prefix+"width" )
+            prefix+"width", **kwargs("width")
         )
     except:
         options["width"] = 80
     try:
         options["eh"] = papis.config.getint(
-            *args( section, prefix+"eh" )
+            prefix+"eh", **kwargs("eh")
         )
     except:
         options["eh"] = 1
     try:
         options["sep"] = papis.config.get(
-            *args( section, prefix+"sep" )
+            prefix+"sep", **kwargs("sep")
         )
     except:
         options["sep"] = "|"
     try:
         options["lines"] = papis.config.getint(
-            *args( section, prefix+"lines" )
+            prefix+"lines", **kwargs("lines")
         )
     except:
         options["lines"] = 20
     try:
         options["fixed_lines"] = papis.config.getint(
-            *args( section, prefix+"fixed-lines" )
+            prefix+"fixed-lines", **kwargs("fixed-lines")
         )
     except:
         options["fixed_lines"] = 20
@@ -141,7 +142,7 @@ class Gui(object):
         self.documents = documents
         key = None
         indices = None
-        options = get_options("rofi-gui", prefix="")
+        options = get_options()
         header_format = papis.config.get("rofi-header_format", extras=[
             ("rofi-gui", "", "header_format")
         ])

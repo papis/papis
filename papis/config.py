@@ -52,14 +52,13 @@ def general_get(*args, data_type="", extras=[]):
         method = config.get
     global_section = "settings"
     extras = [(global_section, "")] + extras + [(lib, "")]
-    print(extras)
     value = None
     for extra in extras:
         section = extra[0]
         prefix = extra[1]
         whole_key = extra[2] if len(extra) == 3 else prefix+key
         if whole_key in config[section].keys():
-            value = config[section][whole_key]
+            value = method(section, whole_key)
     if value is None:
         raise KeyError("No key %s found in the configuration" % key)
     return value
