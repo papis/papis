@@ -25,9 +25,9 @@ class PapisWidget(tk.Misc):
         self.logger.debug("Mode -> %s" % mode)
         CURRENT_MODE = mode
 
-    def map(self, key, function, mode):
+    def map(self, key, function, mode=None):
         def help_function(*args, **kwargs):
-            if self.get_mode() == mode:
+            if self.get_mode() == mode or mode is None:
                 return function(*args, **kwargs)
         self.bind(key, help_function)
 
@@ -131,9 +131,11 @@ class Gui(tk.Tk,PapisWidget):
             insertbackground=self.get_config("insertbackground", "red"),
             height=1
         )
-        self.bind("<Return>", self.handle_return)
-        self.bind("<Escape>", self.cancel)
-        self.bind("<Configure>", self.on_resize)
+        self.cmap("<Return>", self.handle_return)
+        self.nmap("<Return>", self.open)
+        self.cmap("<Escape>", self.cancel)
+        self.nmap("<Escape>", self.cancel)
+        self.map("<Configure>", self.on_resize)
         self.prompt.cmap("<KeyPress>", self.filter_and_draw)
         self.prompt.cmap("<Control-n>", self.move_down)
         self.prompt.cmap("<Control-p>", self.move_up)
