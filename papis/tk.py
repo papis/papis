@@ -144,7 +144,7 @@ class Gui(tk.Tk,PapisWidget):
             (self.get_config("move_bottom", "<Shift-G>"), "move_bottom"),
             (self.get_config("help", "h"), "print_help"),
             (self.get_config("print_info", "i"), "print_info"),
-            (self.get_config("exit", "q"), "exit"),
+            (self.get_config("exit", "<Control-q>"), "exit"),
             (self.get_config("scroll_down", "<Control-e>"), "scroll_down"),
             (self.get_config("scroll_up", "<Control-y>"), "scroll_up"),
             ("<Down>", "move_down"),
