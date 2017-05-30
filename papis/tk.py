@@ -175,10 +175,11 @@ class Gui(tk.Tk,PapisWidget):
             name = bind[1]
             self.nmap(key, getattr(self, name))
 
-    def get_matched_indices(self):
-        command = self.prompt.get_command()
-        if self.prompt.changed():
+    def get_matched_indices(self, force=False):
+        if not self.prompt.changed() and not force:
             return self.matched_indices
+        self.logger.debug("Indexing")
+        command = self.prompt.get_command()
         match_format = self.get_config(
             "match_format", papis.config.get("match_format")
         )
