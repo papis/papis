@@ -12,6 +12,7 @@ class PapisWidget(tk.Misc):
     normal_mode = "normal"
     insert_mode = "insert"
     command_mode = "command"
+
     CURRENT_MODE = normal_mode
 
     def __init__(self):
@@ -19,11 +20,11 @@ class PapisWidget(tk.Misc):
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def get_mode(self):
-        return self.CURRENT_MODE
+        return PapisWidget.CURRENT_MODE
 
     def set_mode(self, mode):
         self.logger.debug("Mode -> %s" % mode)
-        self.CURRENT_MODE = mode
+        PapisWidget.CURRENT_MODE = mode
 
     def general_map(self, key, function, mode=None, recursive=False):
         def help_function(*args, **kwargs):
@@ -75,13 +76,13 @@ class PapisWidget(tk.Misc):
 
 class Prompt(tk.Text,PapisWidget):
 
-    command = ""
-    last_commmand = ""
 
     def __init__(self, *args, **kwargs):
         tk.Text.__init__(self, *args, **kwargs)
         PapisWidget.__init__(self)
         self.bind("<Control-u>", self.clear)
+        self.command = ""
+        self.last_command = ""
 
     def changed(self):
         if self.last_command == self.command:
