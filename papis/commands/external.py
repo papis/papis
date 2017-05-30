@@ -48,6 +48,7 @@ class External(papis.commands.Command):
         os.environ["PAPIS_CONFIG_PATH"] = papis.config.get_config_folder()
         os.environ["PAPIS_CONFIG_FILE"] = papis.config.get_config_file()
         os.environ["PAPIS_SCRIPTS_PATH"] = papis.config.get_scripts_folder()
+        os.environ["PAPIS_VERBOSE"] = "-v" if self.args.verbose else ""
 
     def main(self):
         self.export_variables()
