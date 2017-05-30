@@ -85,6 +85,7 @@ class Prompt(tk.Text,PapisWidget):
         self.last_command = ""
 
     def changed(self):
+        self.get_command()
         if self.last_command == self.command:
             return False
         else:
