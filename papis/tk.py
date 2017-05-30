@@ -123,6 +123,7 @@ class Gui(tk.Tk,PapisWidget):
     def __init__(self):
         tk.Tk.__init__(self)
         PapisWidget.__init__(self)
+        self.protocol("WM_DELETE_WINDOW", self.exit)
         self.geometry(
             "{}x{}".format(
                 self.get_config("window-width", 900),
@@ -361,7 +362,9 @@ class Gui(tk.Tk,PapisWidget):
         )
 
     def exit(self, event=None):
-        self.quit()
+        self.logger.debug("Exiting")
+        self.destroy()
+        sys.exit(0)
 
     def edit(self, event=None):
         doc = self.get_selected_doc()
