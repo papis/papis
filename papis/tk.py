@@ -140,7 +140,8 @@ class Gui(tk.Tk,PapisWidget):
             (self.get_config("move_up", "k"), "move_up"),
             (self.get_config("open", "o"), "open"),
             (self.get_config("edit", "e"), "edit"),
-            (self.get_config("move_top", "gg"), "move_top"),
+            (self.get_config("move_top", "g"), "move_top"),
+            (self.get_config("move_bottom", "<Shift-G>"), "move_bottom"),
             (self.get_config("help", "h"), "print_help"),
             (self.get_config("print_info", "i"), "print_info"),
             (self.get_config("exit", "q"), "exit"),
@@ -220,7 +221,8 @@ class Gui(tk.Tk,PapisWidget):
         if self.index < self.index_draw_first:
             self.scroll_up()
         self.logger.debug(
-            "index = %s" % (self.index)
+            "index = %s in (%s , %s)"
+            % (self.index, self.index_draw_first, self.index_draw_last)
         )
         self.draw_selection()
 
@@ -231,14 +233,11 @@ class Gui(tk.Tk,PapisWidget):
         else:
             if self.index_draw_first > 0:
                 self.index_draw_first-=1
-        self.draw_documents_labels()
         if self.index < self.index_draw_first:
             self.index = self.index_draw_first
         if self.index > self.index_draw_last:
-            self.index_draw_last
-        self.logger.debug(
-            "%s %s" % (self.index_draw_first, self.index_draw_last)
-        )
+            self.index = self.index_draw_last-1
+        self.draw_documents_labels()
 
     def scroll_down(self, event=None):
         self.scroll("down")
@@ -247,8 +246,16 @@ class Gui(tk.Tk,PapisWidget):
         self.scroll("up")
 
     def move_top(self, event=None):
+        self.logger.debug("Moving to top")
         self.index_draw_first = 0
-        self.draw_documents_labels()
+        self.index = self.index_draw_first
+        self.redraw_documents_labels()
+
+    def move_bottom(self, event=None):
+        self.logger.debug("Moving to bottom")
+        self.index_draw_first = len(self.get_matched_indices())-1
+        self.index = self.index_draw_first
+        self.redraw_documents_labels()
 
     def move_down(self, event=None):
         self.move("down")
@@ -309,6 +316,10 @@ class Gui(tk.Tk,PapisWidget):
             )
             setattr(self.documents_lbls[-1], "doc", doc)
 
+    def redraw_documents_labels(self):
+        self.undraw_documents_labels()
+        self.draw_documents_labels()
+
     def undraw_documents_labels(self):
         if self.entries_drawning:
             return False
@@ -319,6 +330,11 @@ class Gui(tk.Tk,PapisWidget):
 
     def redraw_screen(self, event=None):
         self.draw_documents_labels()
+
+    def update_drawing_indices(self):
+        primitive_height = self.documents_lbls[0].winfo_height()
+        self.index_draw_last = self.index_draw_first +\
+                int(self.winfo_height()/primitive_height)
 
     def draw_documents_labels(self, indices=[]):
         if self.entries_drawning:
@@ -334,9 +350,7 @@ class Gui(tk.Tk,PapisWidget):
             self.get_config(
                 "entry-bg-2", self["bg"]),
         )
-        primitive_height = self.documents_lbls[0].winfo_height()
-        self.index_draw_last = self.index_draw_first +\
-                int(self.winfo_height()/primitive_height)
+        self.update_drawing_indices()
         for i in range(self.index_draw_first, self.index_draw_last):
             if i >= len(indices):
                 break
@@ -361,6 +375,9 @@ class Gui(tk.Tk,PapisWidget):
         self.get_matched_indices(True)
         self.after(1,
             self.draw_documents_labels
+        )
+        self.after(200,
+            self.update_drawing_indices
         )
         # self.after(2,
             # self.draw_selection()
