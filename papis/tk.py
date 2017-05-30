@@ -121,6 +121,7 @@ class Gui(tk.Tk,PapisWidget):
     matched_indices = []
     documents_lbls = []
     index = 0
+    entries_drawning = False
 
     def __init__(self):
         tk.Tk.__init__(self)
@@ -258,7 +259,8 @@ class Gui(tk.Tk,PapisWidget):
         indices = self.get_matched_indices()
         if not len(indices):
             return False
-        self.get_selected().configure(state="normal")
+        if self.get_selected() is not None:
+            self.get_selected().configure(state="normal")
         self.set_selected(self.documents_lbls[indices[self.index]])
         self.get_selected().configure(state="active")
 
@@ -307,6 +309,8 @@ class Gui(tk.Tk,PapisWidget):
             setattr(self.documents_lbls[-1], "doc", doc)
 
     def undraw_documents_labels(self):
+        if self.entries_drawning:
+            return False
         if not len(self.documents_lbls):
             return False
         for doc in self.documents_lbls:
@@ -316,6 +320,11 @@ class Gui(tk.Tk,PapisWidget):
         self.draw_documents_labels()
 
     def draw_documents_labels(self, indices=[]):
+        if self.entries_drawning:
+            return False
+        else:
+            self.logger.debug("Drawing")
+            self.entries_drawning = True
         if not len(indices):
             indices = self.get_matched_indices()
         colors = (
@@ -326,7 +335,7 @@ class Gui(tk.Tk,PapisWidget):
         )
         primitive_height = self.documents_lbls[0].winfo_height()
         self.index_draw_last = self.index_draw_first +\
-                int(self.winfo_height()/primitive_height) + 1
+                int(self.winfo_height()/primitive_height)
         for i in range(self.index_draw_first, self.index_draw_last):
             if i >= len(indices):
                 break
@@ -335,20 +344,29 @@ class Gui(tk.Tk,PapisWidget):
             doc.pack(
                 fill=tk.X
             )
+        self.logger.debug("Drawing done")
+        self.entries_drawning = False
         self.draw_selection()
 
     def main(self, documents):
+        self.logger.debug("Packing prompt")
         self.prompt.pack(fill=tk.X, side=tk.BOTTOM)
+        self.logger.debug("Setting docs")
         self.set_documents(documents)
+        self.logger.debug("Creating labels")
         self.set_documents_labels()
-        indices = self.get_matched_indices()
-        self.set_selected(self.documents_lbls[indices[self.index]])
+        # force indexing
+        self.logger.debug("Forcing indexing...")
+        self.get_matched_indices(True)
         self.after(1,
             self.draw_documents_labels
         )
-        self.after(2,
-            self.focus_prompt()
-        )
+        # self.after(2,
+            # self.draw_selection()
+        # )
+        # self.after(2,
+            # self.focus_prompt()
+        # )
         return self.mainloop()
 
     def open(self, event=None):
