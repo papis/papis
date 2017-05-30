@@ -140,11 +140,14 @@ class Gui(tk.Tk,PapisWidget):
             (self.get_config("move_up", "k"), "move_up"),
             (self.get_config("open", "o"), "open"),
             (self.get_config("edit", "e"), "edit"),
+            (self.get_config("clear", "q"), "clear"),
             (self.get_config("move_top", "g"), "move_top"),
             (self.get_config("move_bottom", "<Shift-G>"), "move_bottom"),
             (self.get_config("help", "h"), "print_help"),
             (self.get_config("print_info", "i"), "print_info"),
             (self.get_config("exit", "<Control-q>"), "exit"),
+            (self.get_config("half_down", "<Control-d>"), "half_down"),
+            (self.get_config("half_up", "<Control-u>"), "half_up"),
             (self.get_config("scroll_down", "<Control-e>"), "scroll_down"),
             (self.get_config("scroll_up", "<Control-y>"), "scroll_up"),
             ("<Down>", "move_down"),
@@ -233,10 +236,7 @@ class Gui(tk.Tk,PapisWidget):
         else:
             if self.index_draw_first > 0:
                 self.index_draw_first-=1
-        if self.index < self.index_draw_first:
-            self.index = self.index_draw_first
-        if self.index > self.index_draw_last:
-            self.index = self.index_draw_last-1
+        self.update_selection_index()
         self.draw_documents_labels()
 
     def scroll_down(self, event=None):
@@ -244,6 +244,14 @@ class Gui(tk.Tk,PapisWidget):
 
     def scroll_up(self, event=None):
         self.scroll("up")
+
+    def half_up(self, event=None):
+        self.logger.debug("Half up")
+        print("TODO")
+
+    def half_down(self, event=None):
+        self.logger.debug("Half down")
+        print("TODO")
 
     def move_top(self, event=None):
         self.logger.debug("Moving to top")
@@ -269,6 +277,7 @@ class Gui(tk.Tk,PapisWidget):
             return False
         if self.get_selected() is not None:
             self.get_selected().configure(state="normal")
+        self.update_selection_index()
         self.set_selected(self.documents_lbls[indices[self.index]])
         self.get_selected().configure(state="active")
 
@@ -335,6 +344,15 @@ class Gui(tk.Tk,PapisWidget):
         primitive_height = self.documents_lbls[0].winfo_height()
         self.index_draw_last = self.index_draw_first +\
                 int(self.winfo_height()/primitive_height)
+
+    def update_selection_index(self):
+        indices = self.get_matched_indices()
+        if self.index < self.index_draw_first:
+            self.index = self.index_draw_first
+        if self.index > self.index_draw_last:
+            self.index = self.index_draw_last-1
+        if self.index > len(indices)-1:
+            self.index = len(indices)-1
 
     def draw_documents_labels(self, indices=[]):
         if self.entries_drawning:
