@@ -3,6 +3,7 @@ import tkinter as tk
 import papis.config
 import papis.utils
 import re
+import sys
 import logging
 
 
@@ -11,19 +12,18 @@ class PapisWidget(tk.Misc):
     normal_mode = "normal"
     insert_mode = "insert"
     command_mode = "command"
+    CURRENT_MODE = normal_mode
 
     def __init__(self):
         tk.Misc.__init__(self)
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def get_mode(self):
-        global CURRENT_MODE
-        return CURRENT_MODE
+        return self.CURRENT_MODE
 
     def set_mode(self, mode):
-        global CURRENT_MODE
         self.logger.debug("Mode -> %s" % mode)
-        CURRENT_MODE = mode
+        self.CURRENT_MODE = mode
 
     def general_map(self, key, function, mode=None, recursive=False):
         def help_function(*args, **kwargs):
@@ -71,9 +71,6 @@ class PapisWidget(tk.Misc):
             )
         except:
             return default
-
-
-CURRENT_MODE = PapisWidget.normal_mode
 
 
 class Prompt(tk.Text,PapisWidget):
