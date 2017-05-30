@@ -346,6 +346,9 @@ class Gui(tk.Tk,PapisWidget):
         self.after(1,
             self.draw_documents_labels
         )
+        self.after(2,
+            self.focus_prompt()
+        )
         return self.mainloop()
 
     def open(self, event=None):
