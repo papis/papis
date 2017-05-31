@@ -13,6 +13,7 @@ COMMAND_NAMES = [
     "config",
     "edit",
     "export",
+    "explore",
     "list",
     "rm",
     "mv",
