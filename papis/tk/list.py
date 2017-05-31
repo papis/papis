@@ -11,7 +11,7 @@ class PapisList(tk.Frame, PapisWidget):
     selected = None
     index = 0
     entries_drawning = False
-    primitive_height = 10
+    doc_primitive_height = 10
     matched_indices = []
     documents_lbls = []
 
@@ -132,15 +132,25 @@ class PapisList(tk.Frame, PapisWidget):
         self.selected = doc_lbl
 
     def set_documents_labels(self):
+        self.update_drawing_indices()
+        font_size = self.get_config("entry-font-size", "14")
+        font_name = self.get_config("entry-font-name", "Times")
+        font_style = self.get_config("entry-font-style", "normal")
+        font_lines = self.get_config("entry-lines", "3")
+        font = (font_name, font_size, font_style)
+        doc_primitive_height = int(font_size)*int(font_lines)
+        number_of_entries = self.winfo_height()/doc_primitive_height
+        pady = int(abs(self.winfo_height() - int(font_size)*int(font_lines))/2)
         for doc in self.documents:
             self.documents_lbls.append(
                 tk.Label(
                     text=self.get_config("header_format", "").format(doc=doc),
                     justify=tk.LEFT,
                     padx=10,
-                    font=self.get_config("entry-font", "Times 14 normal"),
+                    pady=pady,
+                    height=font_lines,
+                    font=font,
                     borderwidth=1,
-                    pady=20,
                     fg=self.get_config("entry-fg", "grey77"),
                     anchor=tk.W,
                     activeforeground=self.get_config(
@@ -163,26 +173,6 @@ class PapisList(tk.Frame, PapisWidget):
         for doc in self.documents_lbls:
             doc.pack_forget()
 
-    def redraw_screen(self, event=None):
-        self.draw_documents_labels()
-
-    def update_drawing_indices(self):
-        label_number = self.get_config("labels_per_page", 6)
-        self.primitive_height = int(self["height"]/label_number)
-        self.index_draw_last = self.index_draw_first +\
-                int(self["height"]/self.primitive_height)
-        self.logger.debug("label_h %s" % self.primitive_height)
-        self.logger.debug("i_draw_last %s" % self.index_draw_last)
-
-    def update_selection_index(self):
-        indices = self.get_matched_indices()
-        if self.index < self.index_draw_first:
-            self.index = self.index_draw_first
-        if self.index > self.index_draw_last:
-            self.index = self.index_draw_last-1
-        if self.index > len(indices)-1:
-            self.index = len(indices)-1
-
     def draw_documents_labels(self, indices=[]):
         if self.entries_drawning:
             return False
@@ -204,13 +194,32 @@ class PapisList(tk.Frame, PapisWidget):
                 break
             doc = self.documents_lbls[indices[i]]
             doc["bg"] = colors[i%2]
-            doc["height"] = 4
             doc.pack(
                 fill=tk.X
             )
         self.logger.debug("Drawing done")
         self.entries_drawning = False
         self.draw_selection()
+
+    def redraw_screen(self, event=None):
+        self.redraw_documents_labels()
+
+    def update_drawing_indices(self):
+        label_number = self.get_config("labels_per_page", 6)
+        self.doc_primitive_height = int(self["height"]/label_number)
+        self.index_draw_last = self.index_draw_first +\
+                int(self["height"]/self.doc_primitive_height)
+        self.logger.debug("label_h %s" % self.doc_primitive_height)
+        self.logger.debug("i_draw_last %s" % self.index_draw_last)
+
+    def update_selection_index(self):
+        indices = self.get_matched_indices()
+        if self.index < self.index_draw_first:
+            self.index = self.index_draw_first
+        if self.index > self.index_draw_last:
+            self.index = self.index_draw_last-1
+        if self.index > len(indices)-1:
+            self.index = len(indices)-1
 
     def move(self, direction):
         indices = self.get_matched_indices()
@@ -261,9 +270,9 @@ class PapisList(tk.Frame, PapisWidget):
     def init(self):
         self.set_bindings()
         self.logger.debug("Creating labels")
-        self.set_documents_labels()
         # force indexing
         self.logger.debug("Forcing indexing...")
         self.get_matched_indices(True)
         self.update_height()
+        self.set_documents_labels()
         self.draw_documents_labels()
