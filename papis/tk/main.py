@@ -105,10 +105,11 @@ class Gui(tk.Tk,PapisWidget):
         self.main_frame = papis.tk.PapisList(
             self
         )
+        self.prompt.add_new_command("help", self.print_help)
 
     def set_bindings(self):
         self.logger.debug("Setting bindings")
-        self.norecmap("<Return>", self.to_normal)
+        self.norecmap("<Return>", self.prompt.run)
         self.noremap("<Escape>", self.clear)
         self.cmap("<Control-c>", self.to_normal)
         self.map("<Configure>", self.on_resize)

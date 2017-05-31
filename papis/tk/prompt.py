@@ -1,5 +1,6 @@
 from papis.tk import PapisWidget
 from papis.tk import tk
+import re
 
 class Command(object):
 
@@ -7,10 +8,14 @@ class Command(object):
         self.name = name
         self.function = function
         self.nargs = nargs
+        self.args = []
         self.prompt = prompt
 
-    def run(self, *args):
-        return self.function(*args)
+    def set_args(self, args):
+        self.args = args
+
+    def run(self):
+        return self.function(*self.args)
 
 class Prompt(tk.Text,PapisWidget):
 
@@ -30,9 +35,29 @@ class Prompt(tk.Text,PapisWidget):
             return True
 
     def register_command(self, cmd):
-        self.register_command.append(cmd)
+        self.registered_commands.append(cmd)
+
+    def get_registered_commands(self):
+        return self.registered_commands
+
+    def parse_command(self, command_string):
+        for cmd in self.get_registered_commands():
+            m = re.match(r"^\s*%s\s*" % cmd.name, command_string)
+            if m:
+                return cmd
+        return None
+
+    def run(self, event=None):
+        command_string = self.get_command()
+        command = self.parse_command(command_string)
+        if command is None:
+            self.logger.error("Command %s not recognised" % command_string)
+            return False
+        self.logger.debug("Running %s" % command_string)
+        return command.run()
 
     def add_new_command(self, name, function, nargs=0):
+        self.logger.debug("Adding command %s" % name)
         cmd = Command(name, function, self, nargs)
         self.register_command(cmd)
 
@@ -56,8 +81,5 @@ class Prompt(tk.Text,PapisWidget):
         self.focus_set()
 
     def autocomplete(self, event=None):
-        pass
-
-    def register_command(self, arg1):
         pass
 
