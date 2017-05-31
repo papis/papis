@@ -94,18 +94,13 @@ class Gui(tk.Tk,PapisWidget):
         self.title("Papis document manager")
         self.prompt = papis.tk.Prompt(
             self,
-            bg=self.get_config("prompt-bg", "black"),
-            borderwidth=-1,
-            cursor="xterm",
-            font="20",
-            fg=self.get_config("prompt-fg", "lightgreen"),
-            insertbackground=self.get_config("insertbackground", "red"),
-            height=1
         )
         self.main_frame = papis.tk.PapisList(
             self
         )
         self.prompt.add_new_command("help", self.print_help)
+        self.prompt.add_new_command("q", self.exit)
+        self.prompt.add_new_command("quit", self.exit)
 
     def set_bindings(self):
         self.logger.debug("Setting bindings")

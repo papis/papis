@@ -26,6 +26,16 @@ class Prompt(tk.Text,PapisWidget):
         self.command = ""
         self.last_command = ""
         self.registered_commands = []
+        self.reset_style()
+
+    def reset_style(self):
+        self["font"] = self.get_config("prompt-font-size", "14")
+        self["fg"] = self.get_config("prompt-fg", "lightgreen")
+        self["insertbackground"] = self.get_config("insertbackground", "red")
+        self["bg"] = self.get_config("prompt-bg", "black")
+        self["borderwidth"] = -1
+        self["cursor"] = "xterm"
+        self["height"] = 1
 
     def changed(self):
         self.get_command()
@@ -68,6 +78,11 @@ class Prompt(tk.Text,PapisWidget):
         return self.command
 
     def echomsg(self, text):
+        self.clear()
+        self["height"] = len(text.split("\n"))-1
+        self.insert(1.0, text)
+
+    def echoerr(self, text):
         self.clear()
         self["height"] = len(text.split("\n"))-1
         self.insert(1.0, text)
