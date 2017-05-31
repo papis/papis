@@ -13,16 +13,22 @@ class Document(object):
     be yaml information with few methods
     """
 
-    def __init__(self, folder):
+    subfolder = ""
+    _infoFilePath = ""
+
+    def __init__(self, folder=None, data=None):
         self._keys = []
         self._folder = folder
         self.logger = logging.getLogger("Doc")
-        self._infoFilePath = \
-            os.path.join(folder, papis.utils.get_info_file_name())
-        self.load()
-        self.subfolder = self.get_main_folder()\
-                             .replace(os.environ["HOME"], "")\
-                             .replace("/", " ")
+        if folder is not None:
+            self._infoFilePath = \
+                os.path.join(folder, papis.utils.get_info_file_name())
+            self.load()
+            self.subfolder = self.get_main_folder()\
+                                 .replace(os.environ["HOME"], "")\
+                                 .replace("/", " ")
+        if data is not None:
+            self.update(data)
 
     def __delitem__(self, obj):
         """
@@ -173,7 +179,7 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         bibtexString += "}\n"
         return bibtexString
 
-    def update(self, data, force=False, interactive=False):
+    def update(self, data, force=True, interactive=False):
         """TODO: Docstring for update.
 
         :data: TODO
