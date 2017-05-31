@@ -35,12 +35,15 @@ class Explore(papis.commands.Command):
         self.parser.add_argument(
             "--max",
             help="Maximum number of items",
-            default=False,
+            default=30,
             action="store"
         )
 
     def arxiv(self, search):
-        url = "http://export.arxiv.org/api/query?search_query=all:{}".format("%20".join(search))
+        url = "http://export.arxiv.org/api/query?search_query=all:{}&max_results={}".format(
+            "%20".join(search),
+            self.args.max
+        )
         self.logger.debug("Url = %s" % url)
         raw_data = urllib.request.urlopen(url).read().decode('utf-8')
         soup = bs4.BeautifulSoup(raw_data, "html.parser")
