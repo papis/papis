@@ -3,6 +3,32 @@ from papis.tk import tk
 import papis.config
 import papis.utils
 
+
+class ListEntry(tk.Frame, PapisWidget):
+
+    def __init__(self, master, text):
+        tk.Frame.__init__(self, master)
+        PapisWidget.__init__(self)
+        self["justify"] = tk.LEFT
+        self["padx"] = 10
+        self["font"] = font
+        self["borderwidth"] = 1
+        self["fg"] = self.get_config("entry-fg", "grey77")
+        self["anchor"] = tk.W
+        self["activeforeground"] =self.get_config("activeforeground", "gray99")
+        self["activebackground"] =self.get_config("activebackground", "#394249")
+        self.text = text
+        self.lines = text.split("\n")
+        self["height"] = self.lines
+        self.lines_label = []
+        for line in self.lines:
+            self.lines_label.append(
+                tk.Label(
+                    self
+                )
+            )
+
+
 class PapisList(tk.Frame, PapisWidget):
 
     index_draw_first = 0
