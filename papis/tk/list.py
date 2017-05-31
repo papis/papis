@@ -26,6 +26,8 @@ class PapisList(tk.Frame, PapisWidget):
         self.master.prompt.cmap("<KeyPress>", self.filter_and_draw)
         self.master.prompt.cmap("<Control-n>", self.move_down)
         self.master.prompt.cmap("<Control-p>", self.move_up)
+        self.master.prompt.cmap("<Control-o>", self.open)
+        self.master.prompt.cmap("<Control-i>", self.print_info)
         self.bindings = [
             (self.get_config("move_down", "j"), "move_down"),
             (self.get_config("move_up", "k"), "move_up"),
