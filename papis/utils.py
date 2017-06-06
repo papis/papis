@@ -15,7 +15,11 @@ logger = logging.getLogger("utils")
 
 
 def get_lib():
-    return papis.commands.get_args().lib
+    try:
+        lib = papis.commands.get_args().lib
+    except AttributeError:
+        lib = os.environ["PAPIS_LIB"]
+    return lib
 
 
 def get_libraries():
