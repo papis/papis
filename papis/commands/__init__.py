@@ -21,6 +21,7 @@ COMMAND_NAMES = [
     "browse",
     "update",
     "run",
+    "git",
     "gui",
     "sync"
 ]
@@ -46,9 +47,12 @@ def set_commands(commands):
     COMMANDS = commands
 
 
-def get_commands():
+def get_commands(command=None):
     global COMMANDS
-    return COMMANDS
+    if command is None:
+        return COMMANDS
+    else:
+        return COMMANDS[command]
 
 
 def get_args():
@@ -160,6 +164,9 @@ class Command(object):
 
     def get_parser(self):
         return self.parser
+
+    def get_args(self):
+        return self.args
 
     def get_subparsers(self):
         return self.subparsers

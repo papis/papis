@@ -20,6 +20,12 @@ class Run(papis.commands.Command):
             action="store"
         )
 
+    def set_commands(self, commands):
+        """Set commands to be run
+        :commands: List of commands
+        """
+        self.args.run_command = commands
+
     def main(self):
         documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
         self.logger.debug("Changing directory into %s" % documentsDir)
