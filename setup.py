@@ -10,11 +10,17 @@ from __future__ import print_function
 from setuptools import setup
 
 from papis import __version__
+import re
 
 def get_requirements(reqs="requirements.txt"):
-    return open(reqs).read().split("\n")[0:-1]
-# import sys
-# print(sys.prefix)
+    reqs = [
+        line
+        for line in open(reqs).read().split("\n")[0:-1]
+        if not re.match(r"git\+", line)
+    ]
+    print(reqs)
+    return reqs
+
 
 setup(
     name='papis',
@@ -24,6 +30,9 @@ setup(
     license='GPLv3',
     url='https://github.com/alejandrogallo/papis',
     install_requires=get_requirements(),
+    dependency_links=[
+        "git+git://github.com/alejandrogallo/python-rofi"
+    ],
     extras_require=dict(
         dev=[]
     ),
