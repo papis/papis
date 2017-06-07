@@ -145,7 +145,7 @@ def get_documents(directory, search=""):
         create_cache(folders, cache_path)
     logger.debug("Creating document objects")
     documents = [Document(d) for d in folders]
-    if not search:
+    if search == "" or search == ".":
         return documents
     else:
         logger.debug("Filtering documents with %s " % search)
