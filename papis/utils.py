@@ -145,8 +145,13 @@ def get_documents(directory, search=""):
         folders = get_folders(directory)
         logger.debug("Saving folders in cache %s " % cache_path)
         pickle.dump(folders, open(cache_path, "wb+"))
+    logger.debug("Creating document objects")
     documents = [Document(d) for d in folders]
-    return [d for d in documents if match_document(d, search)]
+    if not search:
+        return documents
+    else:
+        logger.debug("Filtering documents with %s " % search)
+        return [d for d in documents if match_document(d, search)]
 
 
 def get_cache_name(directory):
