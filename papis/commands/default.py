@@ -58,12 +58,23 @@ class Default(papis.commands.Command):
             action="store_true"
         )
 
+        self.default_parser.add_argument(
+            "--clear-cache",
+            help="Clear cache of the library used",
+            action="store_true"
+        )
+
 
     def main(self):
         self.set_args(papis.commands.get_args())
+        log_format = '%(levelname)s:%(name)s:%(message)s'
         if self.args.verbose:
             self.args.log = "DEBUG"
-        logging.basicConfig(level=getattr(logging, self.args.log))
+            log_format = '%(msecs)03d-'+log_format
+        logging.basicConfig(
+            level=getattr(logging, self.args.log),
+            format=log_format
+        )
 
         if self.args.rofi:
             self.args.picktool = "rofi"
@@ -74,9 +85,13 @@ class Default(papis.commands.Command):
         if self.args.pick_lib:
             self.args.lib = papis.utils.pick(papis.utils.get_libraries())
 
+        if self.args.clear_cache:
+            papis.utils.clear_lib_cache(self.args.lib)
 
         if self.args.lib not in self.config.keys():
-            self.logger.error("Library '%s' does not seem to exist" % self.args.lib)
+            self.logger.error(
+                "Library '%s' does not seem to exist" % self.args.lib
+            )
             sys.exit(1)
 
         commands = papis.commands.get_commands()

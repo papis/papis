@@ -16,6 +16,12 @@ def get_config_folder():
     )
 
 
+def get_cache_folder():
+    return os.path.join(
+        get_config_folder(), "cache"
+    )
+
+
 def get_config_file():
     return os.path.join(
         get_config_folder(), "config"

@@ -8,8 +8,8 @@ import papis.commands
 import papis.utils
 import papis.config
 
-logger = logging.getLogger("papis")
 
+logger = logging.getLogger("papis")
 
 def main():
     papis.commands.init()

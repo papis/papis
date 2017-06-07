@@ -104,9 +104,7 @@ def match_document(document, search, match_format=""):
 
 
 def get_documents_in_dir(directory, search=""):
-    directory = os.path.expanduser(directory)
-    documents = [Document(d) for d in get_folders(directory)]
-    return [d for d in documents if match_document(d, search)]
+    return get_documents(directory, search)
 
 
 def get_documents_in_lib(library, search=""):
@@ -118,11 +116,62 @@ def get_documents_in_lib(library, search=""):
 def get_folders(folder):
     """Get documents from a containing folder
     """
+    logger.debug("Indexing folders")
     folders = list()
     for root, dirnames, filenames in os.walk(folder):
         if os.path.exists(os.path.join(root, get_info_file_name())):
             folders.append(root)
     return folders
+
+
+def get_documents(directory, search=""):
+    """Get documents from within a containing folder
+    """
+    import pickle
+    directory = os.path.expanduser(directory)
+    cache = papis.config.get_cache_folder()
+    cache_name = get_cache_name(directory)
+    cache_path = os.path.join(cache, cache_name)
+    folders = []
+    logger.debug("Getting documents from dir %s" % directory)
+    logger.debug("Cache path = %s" % cache_path)
+    if not os.path.exists(cache):
+        logger.debug("Creating cache dir %s " % cache)
+        os.makedirs(cache)
+    if os.path.exists(cache_path):
+        logger.debug("Loading folders from cache")
+        folders = pickle.load(open(cache_path, "rb"))
+    else:
+        folders = get_folders(directory)
+        logger.debug("Saving folders in cache %s " % cache_path)
+        pickle.dump(folders, open(cache_path, "wb+"))
+    documents = [Document(d) for d in folders]
+    return [d for d in documents if match_document(d, search)]
+
+
+def get_cache_name(directory):
+    import hashlib
+    """Get the associated cache name from a directory
+    """
+    return hashlib.md5(directory.encode()).hexdigest()+"-"+os.path.basename(directory)
+
+
+def clear_cache(directory):
+    """Clear cache associated with a directory
+    """
+    directory = os.path.expanduser(directory)
+    cache_name = get_cache_name(directory)
+    cache_path = os.path.join(papis.config.get_cache_folder(), cache_name)
+    logger.debug("Clearing cache %s " % cache_path)
+    os.remove(cache_path)
+
+
+def clear_lib_cache(lib):
+    """Clear cache associated with a library
+    """
+    config = papis.config.get_configuration()
+    directory = config[lib]["dir"]
+    clear_cache(directory)
 
 
 def is_git_repo(folder):
