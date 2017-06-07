@@ -382,3 +382,4 @@ class Add(papis.commands.Command):
             (document.get_main_folder(), fullDirPath)
         )
         shutil.move(document.get_main_folder(), fullDirPath)
+        papis.utils.clear_lib_cache(self.args.lib)
