@@ -127,7 +127,6 @@ def get_folders(folder):
 def get_documents(directory, search=""):
     """Get documents from within a containing folder
     """
-    import pickle
     directory = os.path.expanduser(directory)
     cache = papis.config.get_cache_folder()
     cache_name = get_cache_name(directory)
@@ -140,11 +139,10 @@ def get_documents(directory, search=""):
         os.makedirs(cache)
     if os.path.exists(cache_path):
         logger.debug("Loading folders from cache")
-        folders = pickle.load(open(cache_path, "rb"))
+        folders = get_cache(cache_path)
     else:
         folders = get_folders(directory)
-        logger.debug("Saving folders in cache %s " % cache_path)
-        pickle.dump(folders, open(cache_path, "wb+"))
+        create_cache(folders, cache_path)
     logger.debug("Creating document objects")
     documents = [Document(d) for d in folders]
     if not search:
@@ -152,6 +150,26 @@ def get_documents(directory, search=""):
     else:
         logger.debug("Filtering documents with %s " % search)
         return [d for d in documents if match_document(d, search)]
+
+
+def get_cache(path):
+    import pickle
+    """Save obj in path
+    :obj: Any serializable object
+    :path: Path in string
+    """
+    logger.debug("Getting cache %s " % path)
+    return pickle.load(open(path, "rb"))
+
+
+def create_cache(obj, path):
+    import pickle
+    """Save obj in path
+    :obj: Any serializable object
+    :path: Path in string
+    """
+    logger.debug("Saving in cache %s " % path)
+    pickle.dump(obj, open(path, "wb+"))
 
 
 def get_cache_name(directory):
