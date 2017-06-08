@@ -19,7 +19,7 @@ class Document(object):
     def __init__(self, folder=None, data=None):
         self._keys = []
         self._folder = folder
-        self.logger = logging.getLogger("Doc")
+        # self.logger = logging.getLogger("Doc")
         if folder is not None:
             self._infoFilePath = \
                 os.path.join(folder, papis.utils.get_info_file_name())
@@ -81,7 +81,7 @@ class Document(object):
         """
         # Check for the exsitence of the document
         for f in self.get_files():
-            self.logger.debug(f)
+            # self.logger.debug(f)
             if not os.path.exists(f):
                 print("** Error: %s not found in %s" % (
                     f, self.get_main_folder()))
@@ -102,7 +102,7 @@ class Document(object):
         structure = dict()
         for key in self.keys():
             structure[key] = self[key]
-        self.logger.debug("Saving %s " % self.get_info_file())
+        # self.logger.debug("Saving %s " % self.get_info_file())
         yaml.dump(structure, fd, default_flow_style=False)
         fd.close()
 
@@ -132,7 +132,7 @@ adress:
 
     def to_vcf(self):
         if not papis.config.inMode("contact"):
-            self.logger.error("Not in contact mode")
+            # self.logger.error("Not in contact mode")
             sys.exit(1)
         text = \
         """\
@@ -188,7 +188,7 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         :returns: TODO
 
         """
-        self.logger.debug("Updating...")
+        # self.logger.debug("Updating...")
         for key in data:
             if self[key] != data[key]:
                 if force:
