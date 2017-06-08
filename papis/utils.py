@@ -7,7 +7,7 @@ import papis.pick
 import papis.rofi
 import papis.config
 import papis.commands
-from .document import Document
+import papis.document
 # import zipfile
 # from lxml import etree
 
@@ -144,12 +144,31 @@ def get_documents(directory, search=""):
         folders = get_folders(directory)
         create_cache(folders, cache_path)
     logger.debug("Creating document objects")
-    documents = [Document(d) for d in folders]
+    # TODO: Optimize this step, do it faster
+    # documents = [papis.document.Document(d) for d in folders]
+    documents = folders_to_documents(folders)
+    logger.debug("Done")
     if search == "" or search == ".":
         return documents
     else:
         logger.debug("Filtering documents with %s " % search)
-        return [d for d in documents if match_document(d, search)]
+        documents =  [d for d in documents if match_document(d, search)]
+        logger.debug("Done")
+        return documents
+
+def folders_to_documents(folders):
+    """Turn folders into document efficiently
+    """
+    import multiprocessing
+    np = os.cpu_count()
+    logger.debug("Running in %s cores" % np)
+    pool = multiprocessing.Pool(np)
+    logger.debug("pool started")
+    result = pool.map(papis.document.Document, folders)
+    pool.close()
+    pool.join()
+    logger.debug("pool finished")
+    return result
 
 
 def get_cache(path):
