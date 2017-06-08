@@ -22,6 +22,17 @@ def get_lib():
     return lib
 
 
+def get_arg(arg, default=None):
+    try:
+        val = getattr(papis.commands.get_args(), arg)
+    except AttributeError:
+        try:
+            val = os.environ["PAPIS_"+arg.upper()]
+        except KeyError:
+            val = default
+    return val
+
+
 def get_libraries():
     libs = []
     config = papis.config.get_configuration()
@@ -79,7 +90,6 @@ def general_open(fileName, key, default_opener="xdg-open", wait=False):
         return opener(fileName)
     else:
         raise Warning("How should I use the opener %s?" % opener)
-
 
 
 def open_file(fileName):
@@ -160,7 +170,7 @@ def folders_to_documents(folders):
     """Turn folders into document efficiently
     """
     import multiprocessing
-    np = os.cpu_count()
+    np = get_arg("cores", os.cpu_count())
     logger.debug("Running in %s cores" % np)
     pool = multiprocessing.Pool(np)
     logger.debug("pool started")
