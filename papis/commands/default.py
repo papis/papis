@@ -70,7 +70,7 @@ class Default(papis.commands.Command):
         log_format = '%(levelname)s:%(name)s:%(message)s'
         if self.args.verbose:
             self.args.log = "DEBUG"
-            log_format = '%(msecs)03d-'+log_format
+            log_format = '%(relativeCreated)d-'+log_format
         logging.basicConfig(
             level=getattr(logging, self.args.log),
             format=log_format
