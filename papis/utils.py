@@ -204,8 +204,9 @@ def clear_cache(directory):
     directory = os.path.expanduser(directory)
     cache_name = get_cache_name(directory)
     cache_path = os.path.join(papis.config.get_cache_folder(), cache_name)
-    logger.debug("Clearing cache %s " % cache_path)
-    os.remove(cache_path)
+    if os.path.exists(cache_path):
+        logger.debug("Clearing cache %s " % cache_path)
+        os.remove(cache_path)
 
 
 def clear_lib_cache(lib):
