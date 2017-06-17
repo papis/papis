@@ -30,7 +30,7 @@ setup(
     url='https://github.com/alejandrogallo/papis',
     install_requires=get_requirements(),
     dependency_links=[
-        "git+git://github.com/alejandrogallo/python-rofi"
+        "http://github.com/alejandrogallo/python-rofi/tarball/master"
     ],
     extras_require=dict(
         dev=[]
