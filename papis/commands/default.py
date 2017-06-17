@@ -27,6 +27,14 @@ class Default(papis.commands.Command):
         )
 
         self.default_parser.add_argument(
+            "-c",
+            "--config",
+            help="Configuration file to use",
+            default=None,
+            action="store"
+        )
+
+        self.default_parser.add_argument(
             "--log",
             help="Logging level",
             choices=[
@@ -84,6 +92,11 @@ class Default(papis.commands.Command):
             level=getattr(logging, self.args.log),
             format=log_format
         )
+
+        if self.args.config:
+            papis.config.set_config_file(self.args.config)
+            papis.config.reset_configuration()
+            papis.commands.Command.config = papis.config.get_configuration()
 
         if self.args.rofi:
             self.args.picktool = "rofi"

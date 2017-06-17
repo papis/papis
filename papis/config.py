@@ -8,6 +8,12 @@ logger = logging.getLogger("config")
 
 CONFIGURATION = None
 DEFAULT_MODE = "document"
+OVERRIDE_VARS = {
+    "folder": None,
+    "cache": None,
+    "file": None,
+    "scripts": None
+}
 
 
 def get_config_folder():
@@ -23,9 +29,21 @@ def get_cache_folder():
 
 
 def get_config_file():
-    return os.path.join(
-        get_config_folder(), "config"
-    )
+    if OVERRIDE_VARS["file"] is not None:
+        config_file = OVERRIDE_VARS["file"]
+    else:
+        config_file = os.path.join(
+            get_config_folder(), "config"
+        )
+    logger.debug("Getting config file %s" % config_file)
+    return config_file
+
+
+def set_config_file(filepath):
+    global OVERRIDE_VARS
+    if filepath is not None:
+        logger.debug("Setting config file to %s" % filepath)
+        OVERRIDE_VARS["file"] = filepath
 
 
 def get_scripts_folder():
@@ -97,8 +115,18 @@ def inMode(mode):
 def get_configuration():
     global CONFIGURATION
     if CONFIGURATION is None:
+        logger.debug("Creating configuration")
         CONFIGURATION = Configuration()
     return CONFIGURATION
+
+
+def reset_configuration():
+    global CONFIGURATION
+    if CONFIGURATION is not None:
+        logger.warning("Overwriting previous configuration")
+    CONFIGURATION = None
+    logger.debug("Reseting configuration")
+    return get_configuration()
 
 
 def get_default_match_format():
@@ -136,41 +164,38 @@ class Configuration(configparser.ConfigParser):
       }
     }
 
-    DEFAULT_DIR_LOCATION = get_config_folder()
-
-    DEFAULT_SCRIPTS_LOCATION = get_scripts_folder()
-
-    DEFAULT_FILE_LOCATION = get_config_file()
-
     logger = logging.getLogger("Configuration")
 
     def __init__(self):
         configparser.ConfigParser.__init__(self)
+        self.dir_location = get_config_folder()
+        self.scripts_location = get_scripts_folder()
+        self.file_location = get_config_file()
         self.initialize()
 
     def handle_includes(self):
-       if "include" in self.keys():
+        if "include" in self.keys():
            for name in self["include"]:
                self.logger.debug("including %s" % name)
                self.read(os.path.expanduser(self.get("include", name)))
 
     def initialize(self):
-        if not os.path.exists(self.DEFAULT_DIR_LOCATION):
-            os.makedirs(self.DEFAULT_DIR_LOCATION)
-        if not os.path.exists(self.DEFAULT_SCRIPTS_LOCATION):
-            os.makedirs(self.DEFAULT_SCRIPTS_LOCATION)
-        if os.path.exists(self.DEFAULT_FILE_LOCATION):
-            self.read(self.DEFAULT_FILE_LOCATION)
+        if not os.path.exists(self.dir_location):
+            os.makedirs(self.dir_location)
+        if not os.path.exists(self.scripts_location):
+            os.makedirs(self.scripts_location)
+        if os.path.exists(self.file_location):
+            self.read(self.file_location)
             self.handle_includes()
         else:
             for section in self.default_info:
                 self[section] = {}
                 for field in self.default_info[section]:
                     self[section][field] = self.default_info[section][field]
-            with open(self.DEFAULT_FILE_LOCATION, "w") as configfile:
+            with open(self.file_location, "w") as configfile:
                 self.write(configfile)
 
     def save(self):
-        fd = open(self.DEFAULT_FILE_LOCATION, "w")
+        fd = open(self.file_location, "w")
         self.write(fd)
         fd.close()

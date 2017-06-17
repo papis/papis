@@ -139,13 +139,14 @@ def main(input_args=[]):
 
 class Command(object):
 
+    config = papis.config.get_configuration()
+    parser = None
+    args = None
+
     def __init__(self):
         self.default_parser = get_default_parser()
-        self.parser = None
-        self.args = None
         self.subparsers = get_subparsers()
         self.logger = logging.getLogger(self.__class__.__name__)
-        self.config = papis.config.get_configuration()
 
     def init(self):
         pass
