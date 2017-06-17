@@ -18,7 +18,6 @@ def get_requirements(reqs="requirements.txt"):
         for line in open(reqs).read().split("\n")[0:-1]
         if not re.match(r"git\+", line)
     ]
-    print(reqs)
     return reqs
 
 
