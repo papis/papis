@@ -1,6 +1,8 @@
 import unittest
 import logging
 import papis.commands
+import papis.config
+import os
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -28,6 +30,17 @@ class TestAdd(CommandTest):
 
     def test_existence(self):
         self.assertTrue(self.command is not None)
+
+    def test_config_file_exists(self):
+        self.assertTrue(
+            os.path.exists(
+                os.path.join(
+                    os.path.dirname(__file__),
+                    "resources",
+                    "config_1.ini"
+                )
+            )
+        )
 
     def test_extension(self):
         docs = [
