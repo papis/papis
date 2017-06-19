@@ -198,29 +198,6 @@ class Add(papis.commands.Command):
                       re.sub(r"\s+", "-", base)
                       )
 
-    def get_from_url(self):
-        data = dict()
-        documents_paths = []
-        self.logger.debug("Attempting to retrieve from url")
-        url = self.args.from_url
-        downloader = papis.downloaders.utils.getDownloader(url)
-        if downloader:
-            self.logger.debug("Using downloader %s" % downloader)
-            bibtex_data = downloader.getBibtexData()
-            if bibtex_data:
-                data = papis.bibtex.bibtex_to_dict(
-                    downloader.getBibtexData()
-                )
-            if len(self.args.document) == 0:
-                doc_data = downloader.getDocumentData()
-                if doc_data:
-                    documents_paths.append(tempfile.mktemp())
-                    self.logger.debug("Saving in %s" % documents_paths[-1])
-                    tempfd = open(documents_paths[-1], "wb+")
-                    tempfd.write(doc_data)
-                    tempfd.close()
-        return {"data": data, "documents_paths": documents_paths}
-
     def init_contact_mode(self):
         """Initialize the contact mode
         """
@@ -286,7 +263,7 @@ class Add(papis.commands.Command):
         documents_names = []
         temp_dir = tempfile.mkdtemp("-"+self.args.lib)
         if self.args.from_url:
-            url_data = self.get_from_url()
+            url_data = papis.downloaders.utils.get(self.args.from_url)
             data.update(url_data["data"])
             documents_paths.extend(url_data["documents_paths"])
         if self.args.from_bibtex:
