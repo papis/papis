@@ -52,7 +52,7 @@ def get_scripts_folder():
     )
 
 
-def general_get(*args, data_type="", extras=[]):
+def general_get(*args, data_type="", default=None, extras=[]):
     """
     :param: extras: List of tuples containing section and prefixes
     """
@@ -86,7 +86,10 @@ def general_get(*args, data_type="", extras=[]):
         if whole_key in config[section].keys():
             value = method(section, whole_key)
     if value is None:
-        raise KeyError("No key %s found in the configuration" % key)
+        if default is not None:
+            return default
+        else:
+            raise KeyError("No key %s found in the configuration" % key)
     return value
 
 
@@ -107,7 +110,7 @@ def getboolean(*args, **kwargs):
 
 
 def inMode(mode):
-    current_mode = get("mode")
+    current_mode = get("mode", default=DEFAULT_MODE)
     logger.debug("current_mode = %s" % current_mode)
     return mode == current_mode
 
