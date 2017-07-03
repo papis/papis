@@ -13,6 +13,8 @@ Papis is a command-line based document and bibliography manager.  Its
 command-line interface (*CLI*) is heavily tailored after
 [Git](http://git-scm.com).
 
+Take a look at the [documentation](http://papis.readthedocs.io/en/latest/)!
+
 
 ## Quick start
 
