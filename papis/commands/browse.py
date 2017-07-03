@@ -30,7 +30,9 @@ class Browse(papis.commands.Command):
         )
         document = self.pick(documents)
         if "url" in document.keys():
-            papis.utils.general_open(document["url"], "BROWSER", webbrowser.open)
+            papis.utils.general_open(
+                document["url"], "BROWSER", webbrowser.open
+            )
         else:
             self.logger.warning(
                 "No url for %s" % (document.get_main_folder_name())

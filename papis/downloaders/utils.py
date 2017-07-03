@@ -10,6 +10,7 @@ import papis.downloaders.get
 
 logger = logging.getLogger("downloader")
 
+
 def getAvailableDownloaders():
     return [
         papis.downloaders.aps.Downloader,

@@ -1,7 +1,4 @@
-import os
-import sys
 import bs4
-import re
 import papis.utils
 import papis.document
 import papis.config
@@ -40,7 +37,8 @@ class Explore(papis.commands.Command):
         )
 
     def arxiv(self, search):
-        url = "http://export.arxiv.org/api/query?search_query=all:{}&max_results={}".format(
+        main_url = "http://export.arxiv.org/api/query?search_query="
+        url = main_url+"all:{}&max_results={}".format(
             "%20".join(search),
             self.args.max
         )
@@ -52,7 +50,9 @@ class Explore(papis.commands.Command):
         documents = []
         for entry in entries:
             data = dict()
-            data["abstract"] = entry.find("summary").get_text().replace("\n", " ")
+            data["abstract"] = entry.find("summary").get_text().replace(
+                "\n", " "
+            )
             data["url"] = entry.find("id").get_text()
             data["year"] = entry.find("published").get_text()[0:4]
             data["title"] = entry.find("title").get_text().replace("\n", " ")

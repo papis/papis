@@ -43,7 +43,9 @@ class Check(papis.commands.Command):
                 if key not in document.keys():
                     allOk &= False
                     print(
-                        "%s not found in %s" % (key, document.get_main_folder())
+                        "%s not found in %s" % (
+                            key, document.get_main_folder()
+                        )
                     )
         if not allOk:
             print("Errors were detected, please fix the info files")

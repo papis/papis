@@ -6,8 +6,10 @@ import papis.config
 def get_options():
     options = dict()
     prefix = "rofi-"
+
     def kwargs(arg):
         return dict(extras=[("rofi-gui", "", arg)])
+
     for key in ["fullscreen",
             "normal_window", "multi_select", "case_sensitive", "markup_rows"]:
         try:
@@ -71,6 +73,7 @@ def pick(
     if not isinstance(indices, list):
         indices = [indices]
     return options[indices[0]]
+
 
 class Gui(object):
 
@@ -136,7 +139,6 @@ class Gui(object):
             )
         }
 
-
     def main(self, documents):
         # Set default picker
         self.documents = documents
@@ -152,7 +154,7 @@ class Gui(object):
         # Initialize window
         self.window = rofi.Rofi()
         while not (key == self.quit_key or key == self.esc_key):
-            indices, key = self.window.select( "Select: ",
+            indices, key = self.window.select("Select: ",
                 [
                     header_filter(d) for d in
                     self.documents
@@ -201,5 +203,3 @@ class Gui(object):
             wait=True
         )
         doc.load()
-
-

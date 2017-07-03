@@ -78,8 +78,12 @@ class Update(papis.commands.Command):
                 document_path = document_paths[0]
                 old_doc = self.pick(document["files"])
                 if not input("Really replace document %s? (Y/n): " % old_doc) in ["N", "n"]:
-                    new_path = os.path.join(document.get_main_folder(), old_doc)
-                    self.logger.debug("Moving %s to %s" %(document_path, new_path))
+                    new_path = os.path.join(
+                        document.get_main_folder(), old_doc
+                    )
+                    self.logger.debug(
+                        "Moving %s to %s" %(document_path, new_path)
+                    )
                     shutil.move(document_path, new_path)
         document.update(data, self.args.force, self.args.interactive)
         document.save()

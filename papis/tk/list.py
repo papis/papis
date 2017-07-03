@@ -11,12 +11,18 @@ class ListEntry(tk.Frame, PapisWidget):
         PapisWidget.__init__(self)
         self["justify"] = tk.LEFT
         self["padx"] = 10
-        self["font"] = font
+        self["font"] = "12"
         self["borderwidth"] = 1
         self["fg"] = self.get_config("entry-fg", "grey77")
         self["anchor"] = tk.W
-        self["activeforeground"] =self.get_config("activeforeground", "gray99")
-        self["activebackground"] =self.get_config("activebackground", "#394249")
+        self["activeforeground"] = self.get_config(
+            "activeforeground",
+            "gray99"
+        )
+        self["activebackground"] = self.get_config(
+            "activebackground",
+            "#394249"
+        )
         self.text = text
         self.lines = text.split("\n")
         self["height"] = self.lines
@@ -100,10 +106,10 @@ class PapisList(tk.Frame, PapisWidget):
     def scroll(self, direction):
         self.undraw_documents_labels()
         if direction == "down":
-            self.index_draw_first+=1
+            self.index_draw_first += 1
         else:
             if self.index_draw_first > 0:
-                self.index_draw_first-=1
+                self.index_draw_first -= 1
         self.update_selection_index()
         self.draw_documents_labels()
 
@@ -149,7 +155,6 @@ class PapisList(tk.Frame, PapisWidget):
         self.set_selected(self.documents_lbls[indices[self.index]])
         self.get_selected().configure(state="active")
 
-
     def get_selected(self):
         return self.selected
 
@@ -167,7 +172,7 @@ class PapisList(tk.Frame, PapisWidget):
         font_lines = self.get_config("entry-lines", "3")
         font = (font_name, font_size, font_style)
         doc_primitive_height = int(font_size)*int(font_lines)
-        number_of_entries = self.winfo_height()/doc_primitive_height
+        # number_of_entries = self.winfo_height()/doc_primitive_height
         pady = int(abs(self.winfo_height() - int(font_size)*int(font_lines))/2)
         for doc in self.documents:
             self.documents_lbls.append(
@@ -221,7 +226,7 @@ class PapisList(tk.Frame, PapisWidget):
             if i >= len(indices):
                 break
             doc = self.documents_lbls[indices[i]]
-            doc["bg"] = colors[i%2]
+            doc["bg"] = colors[i % 2]
             doc.pack(
                 fill=tk.X
             )
@@ -236,7 +241,7 @@ class PapisList(tk.Frame, PapisWidget):
         label_number = self.get_config("labels_per_page", 6)
         self.doc_primitive_height = int(self["height"]/label_number)
         self.index_draw_last = self.index_draw_first +\
-                int(self["height"]/self.doc_primitive_height)
+            int(self["height"]/self.doc_primitive_height)
         self.logger.debug("label_h %s" % self.doc_primitive_height)
         self.logger.debug("i_draw_last %s" % self.index_draw_last)
 

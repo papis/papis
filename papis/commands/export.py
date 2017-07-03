@@ -1,5 +1,6 @@
 import papis
 import os
+import sys
 import shutil
 import string
 import papis.utils
@@ -112,7 +113,6 @@ class Export(papis.commands.Command):
         else:
             pass
 
-
     def main(self):
         document = None
         documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
@@ -130,5 +130,3 @@ class Export(papis.commands.Command):
                 sys.exit(0)
         for document in documents:
             self.export(document)
-
-

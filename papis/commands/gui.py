@@ -1,6 +1,3 @@
-import sys
-import os
-import re
 import papis.utils
 import papis.config
 

@@ -11,6 +11,7 @@ import papis.config
 
 logger = logging.getLogger("papis")
 
+
 def main():
     papis.commands.init()
     papis.commands.main()

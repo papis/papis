@@ -6,6 +6,7 @@ import os
 
 logging.basicConfig(level=logging.DEBUG)
 
+
 class CommandTest(unittest.TestCase):
 
     @classmethod
@@ -45,7 +46,7 @@ class TestAdd(CommandTest):
     def test_help_message(self):
         # TODO: Check if thread returns succesfully or not
         import threading
-        args = ( "add", "-h" )
+        args = ("add", "-h")
         t = threading.Thread(
             target=papis.commands.main,
             args=[args]
@@ -65,4 +66,3 @@ class TestAdd(CommandTest):
             self.assertTrue(
                 self.command.get_document_extension(d[0]) == d[1]
             )
-

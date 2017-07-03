@@ -1,6 +1,7 @@
 import os
+import sys
 import yaml
-import logging
+# import logging
 import shutil
 import papis.utils
 import papis.config
@@ -149,7 +150,8 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
                     type=t.upper(),
                     tel=self[contact_type][t]
                     )
-                for t in self[contact_type].keys() if self[contact_type][t] is not None
+                for t in self[contact_type].keys() \
+                if self[contact_type][t] is not None
             ])
         text += "\n"
         text += "END:VCARD"

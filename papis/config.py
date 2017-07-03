@@ -178,9 +178,9 @@ class Configuration(configparser.ConfigParser):
 
     def handle_includes(self):
         if "include" in self.keys():
-           for name in self["include"]:
-               self.logger.debug("including %s" % name)
-               self.read(os.path.expanduser(self.get("include", name)))
+            for name in self["include"]:
+                self.logger.debug("including %s" % name)
+                self.read(os.path.expanduser(self.get("include", name)))
 
     def initialize(self):
         if not os.path.exists(self.dir_location):

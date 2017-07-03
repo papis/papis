@@ -1,11 +1,11 @@
 
 import papis.config
 import papis.utils
-import re
 import sys
 import logging
 from papis.tk import tk
 import papis.tk
+
 
 class PapisWidget(tk.Misc):
 
@@ -78,7 +78,7 @@ class PapisWidget(tk.Misc):
             return default
 
 
-class Gui(tk.Tk,PapisWidget):
+class Gui(tk.Tk, PapisWidget):
 
     def __init__(self):
         tk.Tk.__init__(self)
@@ -133,7 +133,7 @@ class Gui(tk.Tk,PapisWidget):
         self.to_normal()
 
     def handle_return(self, event=None):
-        command = self.prompt.get_command()
+        self.prompt.get_command()
         self.prompt.clear()
         self.focus()
 
@@ -148,7 +148,8 @@ class Gui(tk.Tk,PapisWidget):
         self.logger.debug("Setting docs")
         # self.main_frame.pack(fill=tk.X, side=tk.TOP)
         self.main_frame.set_documents(documents)
-        self.after(200,
+        self.after(
+            200,
             self.main_frame.init
         )
         return self.mainloop()

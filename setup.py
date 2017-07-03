@@ -12,6 +12,7 @@ from setuptools import setup
 from papis import __version__
 import re
 
+
 def get_requirements(reqs="requirements.txt"):
     reqs = [
         line

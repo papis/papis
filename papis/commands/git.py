@@ -1,5 +1,3 @@
-import string
-import os
 import papis.commands
 
 

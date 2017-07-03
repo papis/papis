@@ -1,5 +1,4 @@
 from subprocess import call
-from subprocess import Popen, PIPE
 import logging
 import os
 import re
@@ -74,7 +73,6 @@ def pick(options, papis_config={}, pick_config={}):
 
 
 def general_open(fileName, key, default_opener="xdg-open", wait=False):
-    config = papis.config.get_configuration()
     try:
         opener = papis.config.get(key)
     except KeyError:
@@ -162,9 +160,10 @@ def get_documents(directory, search=""):
         return documents
     else:
         logger.debug("Filtering documents with %s " % search)
-        documents =  [d for d in documents if match_document(d, search)]
+        documents = [d for d in documents if match_document(d, search)]
         logger.debug("Done")
         return documents
+
 
 def folders_to_documents(folders):
     """Turn folders into document efficiently
@@ -205,7 +204,9 @@ def get_cache_name(directory):
     import hashlib
     """Get the associated cache name from a directory
     """
-    return hashlib.md5(directory.encode()).hexdigest()+"-"+os.path.basename(directory)
+    return hashlib\
+           .md5(directory.encode())\
+           .hexdigest()+"-"+os.path.basename(directory)
 
 
 def clear_cache(directory):

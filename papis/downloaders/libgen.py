@@ -1,6 +1,5 @@
 import re
 import bs4
-import sys
 import papis.downloaders.base
 import urllib.request
 

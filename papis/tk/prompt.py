@@ -2,6 +2,7 @@ from papis.tk import PapisWidget
 from papis.tk import tk
 import re
 
+
 class Command(object):
 
     def __init__(self, name, function, prompt, nargs=0):
@@ -17,7 +18,8 @@ class Command(object):
     def run(self):
         return self.function(*self.args)
 
-class Prompt(tk.Text,PapisWidget):
+
+class Prompt(tk.Text, PapisWidget):
 
     def __init__(self, *args, **kwargs):
         tk.Text.__init__(self, *args, **kwargs)
@@ -97,4 +99,3 @@ class Prompt(tk.Text,PapisWidget):
 
     def autocomplete(self, event=None):
         pass
-

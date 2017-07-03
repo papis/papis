@@ -1,4 +1,3 @@
-import string
 import os
 import sys
 import papis.config
@@ -80,7 +79,6 @@ class Default(papis.commands.Command):
             default=os.cpu_count(),
             action="store"
         )
-
 
     def main(self):
         self.set_args(papis.commands.get_args())
