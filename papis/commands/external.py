@@ -1,5 +1,6 @@
 import os
 import re
+import argparse
 import papis.config
 import subprocess
 
@@ -17,7 +18,7 @@ class External(papis.commands.Command):
         self.parser.add_argument(
             "args",
             help="Arguments",
-            nargs="*",
+            nargs=argparse.REMAINDER,
             action="store"
         )
 
