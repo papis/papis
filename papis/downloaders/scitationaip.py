@@ -16,10 +16,11 @@ class Downloader(papis.downloaders.base.Downloader):
             return False
 
     def getDoi(self):
-        doi = re.match(r'.*scitation.org/doi/(.*)', self.getUrl())
-        if doi:
-            self.logger.debug("[doi] = %s" % doi.group(1))
-            return doi.group(1)
+        mdoi = re.match(r'.*scitation.org/doi/(.*)', self.getUrl())
+        if mdoi:
+            doi = mdoi.group(1).replace("abs/", "")
+            self.logger.debug("[doi] = %s" % doi)
+            return doi
         else:
             self.logger.error("Doi not found!!")
 
