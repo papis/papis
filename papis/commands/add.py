@@ -93,6 +93,13 @@ class Add(papis.commands.Command):
         )
 
         self.parser.add_argument(
+            "--from-doi",
+            help="Doi to try to get information from",
+            default="",
+            action="store"
+        )
+
+        self.parser.add_argument(
             "--from-vcf",
             help="""\
                 Get contact information from a vcard (.vcf)

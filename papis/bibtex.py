@@ -78,9 +78,9 @@ def bibtex_to_dict(bibtex):
     text = re.sub(type_ref_re, "", text)
     if not match:
         logger.error(
-            "Type and reference of the bibtex file could not be parsed"
+            "Type and reference of the bibtex file could not be parsed", exc_info=False
         )
-        sys.exit(1)
+        return result
     result["type"] = match.group(1)
     result["ref"] = match.group(2)
     for key in result.keys():
