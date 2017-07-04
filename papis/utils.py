@@ -228,7 +228,7 @@ def clear_lib_cache(lib):
     clear_cache(directory)
 
 
-def is_git_repo(folder):
+def folder_is_git_repo(folder):
     """Check if folder is a git repository
 
     :folder: Folder to check
@@ -243,9 +243,20 @@ def is_git_repo(folder):
         return False
 
 
+def lib_is_git_repo(library):
+    """Check if library is a git repository
+
+    :folder: Library to check
+    :returns: True/False
+
+    """
+    config = papis.config.get_configuration()
+    return folder_is_git_repo(config.get(library, "dir"))
+
+
 def get_info_file_name():
-    """TODO: Docstring for get_info_file_name.
-    :returns: TODO
+    """Get the name of the general info file for any document
+    :returns: string
 
     """
     return "info.yaml"
