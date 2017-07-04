@@ -7,6 +7,8 @@ import papis.rofi
 import papis.config
 import papis.commands
 import papis.document
+import papis.crossref
+import papis.bibtex
 # import zipfile
 # from lxml import etree
 
@@ -235,8 +237,8 @@ def folder_is_git_repo(folder):
     :returns: True/False
 
     """
-    logger = logging.getLogger("is_git")
-    if os.path.exists(os.path.join(folder, ".git")):
+    logger.debug("Check if %s is a git repo" % folder)
+    if os.path.exists(os.path.join(folder,".git")):
         logger.debug("Detected git repo in %s" % folder)
         return True
     else:
@@ -260,6 +262,10 @@ def get_info_file_name():
 
     """
     return "info.yaml"
+
+def doi_to_data(doi):
+    bibtex = papis.crossref.doi_to_bibtex(doi)
+    return papis.bibtex.bibtex_to_dict(bibtex)
 
 
 def get_epub_info(fname):

@@ -18,7 +18,7 @@ class Downloader(papis.downloaders.base.Downloader):
     def getDoi(self):
         mdoi = re.match(r'.*scitation.org/doi/(.*)', self.getUrl())
         if mdoi:
-            doi = mdoi.group(1).replace("abs/", "")
+            doi = mdoi.group(1).replace("abs/", "").replace("full/", "")
             self.logger.debug("[doi] = %s" % doi)
             return doi
         else:
@@ -26,8 +26,7 @@ class Downloader(papis.downloaders.base.Downloader):
 
     def getDocumentUrl(self):
         # http://aip.scitation.org/doi/pdf/10.1063/1.4873138
-        url = self.getUrl()
-        durl = re.sub(r'(scitation.org/doi)/(.*)', r'\1/pdf/\2', url)
+        durl = "http://aip.scitation.org/doi/pdf/%s" % self.getDoi()
         self.logger.debug("[doc url] = %s" % durl)
         return durl
 

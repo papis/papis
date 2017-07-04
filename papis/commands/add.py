@@ -282,6 +282,9 @@ class Add(papis.commands.Command):
             documents_paths.extend(url_data["documents_paths"])
         if self.args.from_bibtex:
             data.update(papis.bibtex.bibtex_to_dict(self.args.from_bibtex))
+        if self.args.from_doi:
+            self.logger.debug("Try using doi %s" % self.args.from_doi)
+            data.update(papis.utils.doi_to_data(self.args.from_doi))
         if self.args.from_yaml:
             data.update(yaml.load(open(self.args.from_yaml)))
         if self.args.from_vcf:
