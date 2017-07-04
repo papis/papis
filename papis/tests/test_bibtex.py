@@ -41,7 +41,11 @@ class TestBibtex(unittest.TestCase):
   journal   = {Phys. Rev. Lett.}, % some other comment here
   volume    = {105},
   issue     = {4},
+
   pages     = {040504},
+
+
+
   numpages  = {4},
   year      = {2010},
   month     = {Jul},
