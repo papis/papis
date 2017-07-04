@@ -8,6 +8,7 @@ import vobject
 import hashlib
 import shutil
 import string
+import subprocess
 import papis.utils
 import papis.config
 import papis.bibtex
@@ -111,6 +112,12 @@ class Add(papis.commands.Command):
         self.parser.add_argument(
             "--confirm",
             help="Ask to confirm before adding to the collection",
+            action="store_true"
+        )
+
+        self.parser.add_argument(
+            "--commit",
+            help="Commit document if library is a git repository",
             action="store_true"
         )
 
@@ -360,3 +367,5 @@ class Add(papis.commands.Command):
         )
         shutil.move(document.get_main_folder(), fullDirPath)
         papis.utils.clear_lib_cache(self.args.lib)
+        if self.args.commit and papis.utils.lib_is_git_repo(self.args.lib):
+            subprocess.call(["git", "add", "-m", "Add document", fullDirPath])
