@@ -15,6 +15,9 @@ command-line interface (*CLI*) is heavily tailored after
 
 Take a look at the [documentation](http://papis.readthedocs.io/en/latest/)!
 
+## Help Wanted
+
+*Papis* is looking for active developers to help improve the code.
 
 ## Quick start
 
