@@ -251,7 +251,6 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         try:
             fd = open(self._infoFilePath, "r")
         except:
-            print("Warning: No info file found")
             return False
         structure = yaml.load(fd)
         fd.close()
