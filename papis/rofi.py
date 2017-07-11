@@ -127,7 +127,7 @@ class Gui(object):
             ),
             "key%s" % self.open_stay_key: (
                 self.get_key('open-stay', 'Alt+o'),
-                'Help'
+                'Open'
             ),
             "key%s" % self.normal_widnow_key: (
                 self.get_key('normal-window', 'Alt+w'),
