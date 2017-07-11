@@ -64,6 +64,7 @@ def bibtex_to_dict(bibtex):
         fd = open(bibtex, "r")
         logger.debug("Reading in file %s" % bibtex)
         text = fd.read()
+        fd.close()
     else:
         text = bibtex
     logger.debug("Removing comments...")
