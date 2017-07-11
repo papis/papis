@@ -101,7 +101,11 @@ def open_dir(fileName):
 
 
 def edit_file(fileName, configuration={}):
-    general_open(fileName, "editor", default_opener=os.environ["EDITOR"])
+    try:
+        default_opener = os.environ["EDITOR"]
+    except:
+        default_opener = "vim"
+    general_open(fileName, "editor", default_opener=default_opener)
 
 
 def match_document(document, search, match_format=""):
