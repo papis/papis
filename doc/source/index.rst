@@ -11,8 +11,19 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-.. include:: README.rst
+Description
+-----------
 
+Papis is a command-line based document and bibliography manager. Its
+command-line interface (*CLI*) is heavily tailored after
+`Git <http://git-scm.com>`__.
+
+.. include:: quick_start.rst
+.. include:: configuration.rst
+.. include:: index.rst
+.. include:: install.rst
+.. include:: quick_start.rst
+.. include:: scripting.rst
 
 Indices and tables
 ==================
