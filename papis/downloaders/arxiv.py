@@ -23,12 +23,17 @@ class Downloader(papis.downloaders.base.Downloader):
         else:
             return False
 
-    def getBibtexUrl(self):
-        # https://arxiv.org/abs/1702.01590
+    def get_identifier(self):
+        """Get arxiv identifier
+        :returns: Identifier
+
+        """
         url = self.getUrl()
-        burl = re.sub(r'.*arxiv.org.*/([0-9]+\.[0-9]+).*', r'\1', url)
-        self.logger.debug("[paper id] = %s" % burl)
-        return burl
+        return re.sub(r'^.*arxiv.org/(abs|pdf)/(.*)\/?$', r'\2', url)
+
+    def getBibtexUrl(self):
+        identifier = self.get_identifier()
+        return identifier
 
     def downloadBibtex(self):
         """TODO: Docstring for downloadBibtex.
@@ -43,15 +48,12 @@ class Downloader(papis.downloaders.base.Downloader):
         self.bibtex_data = data
 
     def getDocumentUrl(self):
-        """TODO: Docstring for getDocumentUrl.
-        :returns: TODO
-
-        """
-        # https://arxiv.org/pdf/1702.01590.pdf
+        # https://arxiv.org/pdf/1702.01590
         url = self.getUrl()
-        burl = re.sub(r'.*arxiv.org.*/([0-9]+\.[0-9]+).*', r'\1', url)
-        burl = "https://arxiv.org/pdf/"+burl+".pdf"
-        self.logger.debug("[pdf url] = %s" % burl)
-        return burl
+        identifier = self.get_identifier()
+        self.logger.debug("[paper id] = %s" % identifier)
+        pdf_url = "https://arxiv.org/pdf/"+identifier+".pdf"
+        self.logger.debug("[pdf url] = %s" % pdf_url)
+        return pdf_url
 
 # vim-run: python3 %
