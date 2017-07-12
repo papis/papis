@@ -1,4 +1,5 @@
 import rofi
+import webbrowser
 import papis.utils
 import papis.config
 
@@ -85,6 +86,7 @@ class Gui(object):
     help_key = 4
     open_stay_key = 5
     normal_widnow_key = 6
+    browse_key = 7
 
     def __init__(self):
         self.documents = []
@@ -136,6 +138,10 @@ class Gui(object):
             "key%s" % self.open_key: (
                 self.get_key('open', 'Enter'),
                 'Open'
+            ),
+            "key%s" % self.browse_key: (
+                self.get_key('browse', 'Alt+u'),
+                'Browse'
             )
         }
 
@@ -178,6 +184,9 @@ class Gui(object):
                     self.delete(self.documents[i])
             elif key == self.help_key:
                 self.window.error(self.help_message)
+            elif key == self.browse_key:
+                for i in indices:
+                    self.browse(self.documents[i])
             elif key == self.normal_widnow_key:
                 options["normal_window"] ^= True
 
@@ -194,6 +203,15 @@ class Gui(object):
         papis.utils.open_file(
             doc.get_files()
         )
+
+    def browse(self, doc):
+        url = doc["url"]
+        if not url:
+            self.window.error("No url for document found")
+        else:
+            papis.utils.general_open(
+                doc["url"], "BROWSER", webbrowser.open
+            )
 
     def edit(self, doc):
         papis.utils.general_open(
