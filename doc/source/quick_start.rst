@@ -2,6 +2,8 @@
 Quick start
 ===========
 
+This is a tutorial that should be enough to get you started using papis.
+
 You have installed everything, then you can do
 
 ::
