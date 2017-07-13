@@ -20,7 +20,6 @@ command-line interface (*CLI*) is heavily tailored after
 
 .. include:: quick_start.rst
 .. include:: configuration.rst
-.. include:: index.rst
 .. include:: install.rst
 .. include:: quick_start.rst
 .. include:: scripting.rst
