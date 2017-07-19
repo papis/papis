@@ -20,7 +20,7 @@ class Default(papis.commands.Command):
         self.default_parser.add_argument(
             "-l",
             "--lib",
-            help="Choose a documents library, default general",
+            help="Choose a library name or library path (unamed library)",
             default=self.config["settings"]["default"] or "papers",
             action="store"
         )
