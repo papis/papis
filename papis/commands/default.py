@@ -105,9 +105,6 @@ class Default(papis.commands.Command):
         if self.args.pick_lib:
             self.args.lib = papis.utils.pick(papis.utils.get_libraries())
 
-        if self.args.clear_cache:
-            papis.utils.clear_lib_cache(self.args.lib)
-
         if self.args.lib not in self.config.keys():
             if os.path.exists(self.args.lib):
                 # Check if the path exists, then use this path as a new library
@@ -119,6 +116,9 @@ class Default(papis.commands.Command):
                     "Library '%s' does not seem to exist" % self.args.lib
                 )
                 sys.exit(1)
+
+        if self.args.clear_cache:
+            papis.utils.clear_lib_cache(self.args.lib)
 
         commands = papis.commands.get_commands()
 
