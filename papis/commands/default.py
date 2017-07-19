@@ -109,10 +109,16 @@ class Default(papis.commands.Command):
             papis.utils.clear_lib_cache(self.args.lib)
 
         if self.args.lib not in self.config.keys():
-            self.logger.error(
-                "Library '%s' does not seem to exist" % self.args.lib
-            )
-            sys.exit(1)
+            if os.path.exists(self.args.lib):
+                # Check if the path exists, then use this path as a new library
+                self.logger.debug("Using library %s" % self.args.lib)
+                self.config[self.args.lib] = dict()
+                self.config[self.args.lib]["dir"] = self.args.lib
+            else:
+                self.logger.error(
+                    "Library '%s' does not seem to exist" % self.args.lib
+                )
+                sys.exit(1)
 
         commands = papis.commands.get_commands()
 
