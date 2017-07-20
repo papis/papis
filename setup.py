@@ -73,9 +73,16 @@ setup(
         'cli',
         'biliography'
     ],
+    package_data=dict(
+        papis=[
+            'gui/vim/main.vim',
+        ],
+    ),
     packages=[
         "papis",
         "papis.gui",
+        "papis.gui.tk",
+        "papis.gui.vim",
         "papis.commands",
         "papis.downloaders",
     ],
