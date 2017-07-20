@@ -13,15 +13,6 @@ import papis
 import re
 
 
-def get_requirements(reqs="requirements.txt"):
-    reqs = [
-        line
-        for line in open(reqs).read().split("\n")[0:-1]
-        if not re.match(r"git\+", line)
-    ]
-    return reqs
-
-
 setup(
     name='papis',
     version=papis.__version__,
@@ -31,7 +22,17 @@ setup(
     author_email=papis.__email__,
     license=papis.__license__,
     url='https://github.com/alejandrogallo/papis',
-    install_requires=get_requirements(),
+    install_requires=[
+        "requests>=2.11.1",
+        "argcomplete>=1.8.2",
+        "arxiv2bib>=1.0.7",
+        "PyYAML>=3.12",
+        "pdfminer2>=20151206",
+        "chardet>=3.0.2",
+        "beautifulsoup4>=4.4.1",
+        "vobject>=0.9.4.1",
+        "python-rofi",
+    ],
     classifiers=[
         'Environment :: Console',
         'Environment :: Console :: Curses',
@@ -52,7 +53,10 @@ setup(
         "http://github.com/alejandrogallo/python-rofi/tarball/master"
     ],
     extras_require=dict(
-        dev=[]
+        dev=[
+            "sphinx",
+            'sphinxarg.ext',
+        ]
     ),
     description='Simple program to manage literature',
     long_description='Simple program to manage literature',
