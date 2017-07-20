@@ -56,6 +56,11 @@ proceed to add some documents.
 Adding the first document
 -------------------------
 
+If you don't have any special pdf lying around let me choose one for you:
+`PDF <https://www.gutenberg.org/files/28233/28233-pdf.pdf?session_id=8cecccb488f337378d5826ba1f31984f612f7ff5/>`_
+
+
+
 you can then work with the library by doing
 
 ::
