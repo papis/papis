@@ -85,5 +85,5 @@ setup(
             'papis=papis.main:main'
         ]
     ),
-    platforms=['linux'],
+    platforms=['linux', 'OSX'],
 )
