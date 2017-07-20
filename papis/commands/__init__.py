@@ -34,6 +34,12 @@ ARGS = None
 
 
 def set_args(args):
+    """
+    Set general command line arguments, this can be used also for testing.
+
+    :param args: Arguments
+    :type  args: Argument object
+    """
     global ARGS
     global logger
     logger.debug("Setting args")
@@ -42,13 +48,27 @@ def set_args(args):
 
 
 def set_commands(commands):
+    """
+    Set general initialized commands.
+
+    :param commands: List of initialized command objects
+    :type  commands: List
+    """
     global COMMANDS
     logger.debug("Setting commands")
     COMMANDS = commands
 
 
 def get_commands(command=None):
+    """
+    Get general initialized commands.
+
+    :param command: Command that should be returned.
+    :type  command: str
+    """
     global COMMANDS
+    if COMMANDS is None:
+        raise Exception("Commands have not been set yet")
     if command is None:
         return COMMANDS
     else:
@@ -56,8 +76,10 @@ def get_commands(command=None):
 
 
 def get_args():
+    """
+    Get general command line arguments.
+    """
     global ARGS
-    global logger
     return ARGS
 
 
