@@ -6,11 +6,6 @@
 Welcome to papis's documentation!
 =================================
 
-Contents:
-
-.. toctree::
-   :maxdepth: 2
-
 Description
 ===========
 
