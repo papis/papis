@@ -3,8 +3,8 @@ import papis.config
 import papis.utils
 import sys
 import logging
-from papis.tk import tk
-import papis.tk
+from papis.gui.tk import tk
+import papis.gui.tk
 
 
 class PapisWidget(tk.Misc):
@@ -92,10 +92,10 @@ class Gui(tk.Tk, PapisWidget):
         )
         self["bg"] = self.get_config("window-bg", "#273238")
         self.title("Papis document manager")
-        self.prompt = papis.tk.Prompt(
+        self.prompt = papis.gui.tk.Prompt(
             self,
         )
-        self.main_frame = papis.tk.PapisList(
+        self.main_frame = papis.gui.tk.PapisList(
             self
         )
         self.prompt.add_new_command("help", self.print_help)

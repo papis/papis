@@ -3,7 +3,7 @@ import logging
 import os
 import re
 import papis.pick
-import papis.rofi
+import papis.gui.rofi
 import papis.config
 import papis.commands
 import papis.document
@@ -71,7 +71,7 @@ def pick(options, papis_config={}, pick_config={}):
     else:
         if picker == "rofi":
             logger.debug("Using rofi picker")
-            return papis.rofi.pick(options, **pick_config)
+            return papis.gui.rofi.pick(options, **pick_config)
 
 
 def general_open(fileName, key, default_opener="xdg-open", wait=False):

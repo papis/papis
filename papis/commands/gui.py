@@ -26,12 +26,12 @@ class Gui(papis.commands.Command):
         return papis.utils.get_documents_in_lib(self.args.lib)
 
     def rofi_main(self):
-        import papis.rofi
-        return papis.rofi.Gui().main(self.documents)
+        import papis.gui.rofi
+        return papis.gui.rofi.Gui().main(self.documents)
 
     def tk_main(self):
-        import papis.tk
-        return papis.tk.Gui().main(self.documents)
+        import papis.gui.tk
+        return papis.gui.tk.Gui().main(self.documents)
 
     def main(self):
         self.documents = self.fetch_documents()

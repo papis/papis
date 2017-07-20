@@ -75,7 +75,7 @@ setup(
     ],
     packages=[
         "papis",
-        "papis.tk",
+        "papis.gui",
         "papis.commands",
         "papis.downloaders",
     ],

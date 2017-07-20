@@ -10,6 +10,6 @@ class TestTk(unittest.TestCase):
 
     def test_import_tk(self):
         try:
-            import papis.tk
+            import papis.gui.tk
         except:
             self.assertFalse(True)

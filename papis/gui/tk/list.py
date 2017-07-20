@@ -1,5 +1,5 @@
-from papis.tk import PapisWidget
-from papis.tk import tk
+from papis.gui.tk import PapisWidget
+from papis.gui.tk import tk
 import papis.config
 import papis.utils
 
