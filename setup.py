@@ -9,7 +9,7 @@ from __future__ import print_function
 
 from setuptools import setup
 
-from papis import __version__
+import papis
 import re
 
 
@@ -24,12 +24,30 @@ def get_requirements(reqs="requirements.txt"):
 
 setup(
     name='papis',
-    version=__version__,
+    version=papis.__version__,
     maintainer='Alejandro Gallo',
     maintainer_email='aamsgallo@gmail.com',
-    license='GPLv3',
+    author=papis.__author__,
+    author_email=papis.__email__,
+    license=papis.__license__,
     url='https://github.com/alejandrogallo/papis',
     install_requires=get_requirements(),
+    classifiers=[
+        'Environment :: Console',
+        'Environment :: Console :: Curses',
+        'Intended Audience :: Developers',
+        'Intended Audience :: End Users/Desktop',
+        'Intended Audience :: System Administrators',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Operating System :: MacOS',
+        'Operating System :: POSIX',
+        'Operating System :: Unix',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Topic :: Utilities',
+    ],
     dependency_links=[
         "http://github.com/alejandrogallo/python-rofi/tarball/master"
     ],
@@ -48,8 +66,9 @@ setup(
     ],
     packages=[
         "papis",
+        "papis.tk",
         "papis.commands",
-        "papis.downloaders"
+        "papis.downloaders",
     ],
     test_suite="papis.tests",
     entry_points=dict(

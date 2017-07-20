@@ -67,8 +67,6 @@ def get_commands(command=None):
     :type  command: str
     """
     global COMMANDS
-    if COMMANDS is None:
-        raise Exception("Commands have not been set yet")
     if command is None:
         return COMMANDS
     else:
