@@ -34,6 +34,7 @@ setup(
         "python-rofi",
     ],
     classifiers=[
+        'Development Status :: 3 - Alpha',
         'Environment :: Console',
         'Environment :: Console :: Curses',
         'Intended Audience :: Developers',
@@ -53,7 +54,11 @@ setup(
         "http://github.com/alejandrogallo/python-rofi/tarball/master"
     ],
     extras_require=dict(
-        dev=[
+        # List additional groups of dependencies here (e.g. development
+        # dependencies). You can install these using the following syntax,
+        # for example:
+        # $ pip install -e .[develop]
+        develop=[
             "sphinx",
             'sphinxarg.ext',
         ]
