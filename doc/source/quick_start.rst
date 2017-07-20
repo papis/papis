@@ -10,6 +10,10 @@ But before taking a look at its database structure let us see how is the daily
 usage of papis for a regular user. This tutorial is command-line based, so you
 should be familiar with opening a terminal window in your system.
 
+We will illustrate the process by creating a first library with a couple of
+```pdf``` documents in it. Papis can be highly configured using configuration
+files. Many programs use configuration files without you maybe being aware of
+it. Papis' configuration files are stored together inside a folder.
 
 You have installed everything, then you can do
 
@@ -18,7 +22,7 @@ You have installed everything, then you can do
     papis -h
 
 To see the help, the first time that papis is run it will create a
-configuration folder anf a configuration file in
+configuration folder and a configuration file in
 
 ::
 
