@@ -60,7 +60,7 @@ setup(
         # $ pip install -e .[develop]
         develop=[
             "sphinx",
-            'sphinxarg.ext',
+            'sphinx-argparse',
         ]
     ),
     description='Simple program to manage literature',
