@@ -1,3 +1,7 @@
+"""
+This command is to list contents of a library.
+"""
+
 import papis
 import os
 import sys

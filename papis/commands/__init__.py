@@ -137,6 +137,19 @@ def main(input_args=[]):
     commands["default"].main()
 
 
+def init_and_return_parser():
+    """This function is here for the automatic documentation of the
+    subcommands.
+    :returns: General command line parser
+    """
+    try:
+        init()
+    except Exception:
+        pass
+    finally:
+        return get_default_parser()
+
+
 class Command(object):
 
     config = papis.config.get_configuration()
