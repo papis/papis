@@ -40,8 +40,21 @@ class List(papis.commands.Command):
             "-d",
             "--dir",
             help="Show the folder name associated with the document",
-            default=True,
             action="store_true"
+        )
+
+        self.parser.add_argument(
+            "--format",
+            help="List entries using special format",
+            default=None,
+            action="store"
+        )
+
+        self.parser.add_argument(
+            "--template",
+            help="Use template file for formating output",
+            default=None,
+            action="store"
         )
 
         self.parser.add_argument(
@@ -58,6 +71,15 @@ class List(papis.commands.Command):
         )
 
     def main(self):
+        if self.args.template:
+            if not os.path.exists(self.args.template):
+                self.logger.error(
+                    "Template file %s not found" % self.args.template
+                )
+                sys.exit(1)
+            fd = open(self.args.template)
+            self.args.format = fd.read()
+            fd.close()
         if self.args.downloaders:
             for downloader in \
                papis.downloaders.utils.getAvailableDownloaders():
@@ -76,8 +98,6 @@ class List(papis.commands.Command):
             if self.args.file:
                 for f in document.get_files():
                     print(f)
-            elif self.args.dir:
-                print(document.get_main_folder())
             elif self.args.info:
                 print(
                     os.path.join(
@@ -85,5 +105,9 @@ class List(papis.commands.Command):
                         document.get_info_file()
                     )
                 )
+            elif self.args.format:
+                print(
+                    self.args.format.format(doc=document)
+                )
             else:
-                print(document)
+                print(document.get_main_folder())
