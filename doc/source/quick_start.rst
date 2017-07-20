@@ -2,7 +2,14 @@
 Quick start
 ===========
 
-This is a tutorial that should be enough to get you started using papis.
+This is a tutorial that should be enough to get you started using papis.  Papis
+tries to be as simple and lightweight as possible, therefore its database
+structure is ridicoulously simple.
+
+But before taking a look at its database structure let us see how is the daily
+usage of papis for a regular user. This tutorial is command-line based, so you
+should be familiar with opening a terminal window in your system.
+
 
 You have installed everything, then you can do
 

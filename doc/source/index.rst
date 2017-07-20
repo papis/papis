@@ -12,7 +12,7 @@ Contents:
    :maxdepth: 2
 
 Description
------------
+===========
 
 Papis is a command-line based document and bibliography manager. Its
 command-line interface (*CLI*) is heavily tailored after
