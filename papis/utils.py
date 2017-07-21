@@ -4,6 +4,7 @@ import os
 import re
 import papis.pick
 import papis.gui.rofi
+import papis.gui.vim
 import papis.config
 import papis.commands
 import papis.document
@@ -72,6 +73,9 @@ def pick(options, papis_config={}, pick_config={}):
         if picker == "rofi":
             logger.debug("Using rofi picker")
             return papis.gui.rofi.pick(options, **pick_config)
+        elif picker == "vim":
+            logger.debug("Using vim picker")
+            return papis.gui.vim.pick(options, **pick_config)
 
 
 def general_open(fileName, key, default_opener="xdg-open", wait=False):

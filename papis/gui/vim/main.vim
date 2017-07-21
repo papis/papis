@@ -10,6 +10,11 @@ function! PapisHelp()
     echomsg "Open - ".g:papis_open_key
 endfunction
 
+function! Pick()
+    :silent! exe "!echo ".(line(".") - 2)
+    :silent! quit!
+endfunction
+
 exec "nnoremap ".g:papis_help_key." :call PapisHelp()<cr>"
 exec "nnoremap ".g:papis_open_key." :call PapisOpen()<cr>"
 nnoremap q :quit<cr>
