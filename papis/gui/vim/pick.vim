@@ -11,3 +11,4 @@ function! Pick()
 endfunction
 
 nnoremap <Return> :call Pick()<cr>
+syntax match Comment "^#.*$"

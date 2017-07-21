@@ -25,15 +25,19 @@ def pick(
         body_filter=None,
         match_filter=lambda x: x
         ):
+    if len(options) == 1:
+        return options[0]
+    if len(options) == 0:
+        return None
     temp_file = tempfile.mktemp()
     fd = open(temp_file, "w+")
-    fd.write("# Put your cursor on a line and press enter to pick\n")
     headers = [
         header_filter(d) for d in
         options
     ]
     for header in headers:
         fd.write(header+"\n")
+    fd.write("# Put your cursor on a line and press enter to pick\n")
     fd.close()
     process = subprocess.call(
         ["vim", "-S", pick_vim_path, temp_file]
@@ -41,8 +45,7 @@ def pick(
     fd = open(temp_file)
     index = fd.read()
     fd.close()
-    ret = options[int(index)-2]
-    print(ret)
+    ret = options[int(index)-1]
     return ret
 
 
