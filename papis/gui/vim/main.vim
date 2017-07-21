@@ -93,7 +93,7 @@ function! PapisGo(direction)
   exe ":normal! zt"
 endfunction
 
-exec "nnoremap <buffer> ".g:papis_help_key." :silent call PapisHelp()<cr>"
+exec "nnoremap <buffer> ".g:papis_help_key." :call PapisHelp()<cr>"
 exec "nnoremap <buffer> ".g:papis_open_key." :silent call PapisExeCommand('open')<cr>"
 exec "nnoremap <buffer> <Return> :silent call PapisExeCommand('open')<cr>"
 exec "nnoremap <buffer> ".g:papis_open_dir_key." :silent call PapisExeCommand('open', '--dir')<cr>"
