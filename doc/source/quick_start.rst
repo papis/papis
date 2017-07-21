@@ -57,8 +57,27 @@ Adding the first document
 -------------------------
 
 If you don't have any special pdf lying around let me choose one for you:
-`PDF <https://www.gutenberg.org/files/28233/28233-pdf.pdf?session_id=8cecccb488f337378d5826ba1f31984f612f7ff5/>`_
+`PDF <https://www.gutenberg.org/files/28233/28233-pdf.pdf?session_id=8cecccb488f337378d5826ba1f31984f612f7ff5/>`_.
+You can download this document and we are going to add it into the papers
+library.
 
+Supposing that you have the document in the current directory and you have renamed
+the document to ``document.pdf``, you can do the following to add this into your
+library:
+
+.. code:: bash
+
+  papis add document.pdf --author "Newton" --title "Principia Mathematica"
+
+And it's done! We have added our first book to the library.
+
+Let us see how this works exactly. Papis consists of many commands, and one
+of these commands is ``add``.
+
+.. code:: yaml
+
+  author: Newton
+  title: Principia Mathematica
 
 
 you can then work with the library by doing
