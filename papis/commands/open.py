@@ -35,10 +35,9 @@ class Open(papis.commands.Command):
         )
 
     def main(self):
-
-        documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.get_config()[self.args.lib]["dir"])
         if self.args.tool:
-            self.config["settings"]["opentool"] = self.args.tool
+            self.get_config()["settings"]["opentool"] = self.args.tool
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = self.args.document
         documents = papis.utils.get_documents_in_dir(
@@ -55,7 +54,7 @@ class Open(papis.commands.Command):
             files = document.get_files()
             file_to_open = papis.utils.pick(
                 files,
-                self.config,
+                self.get_config(),
                 pick_config=dict(
                     header_filter=lambda x: x.replace(
                         document.get_main_folder(), ""

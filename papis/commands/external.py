@@ -46,7 +46,7 @@ class External(papis.commands.Command):
         the information
         """
         os.environ["PAPIS_LIB"] = self.args.lib
-        os.environ["PAPIS_LIB_PATH"] = self.config[self.args.lib]["dir"]
+        os.environ["PAPIS_LIB_PATH"] = self.get_config()[self.args.lib]["dir"]
         os.environ["PAPIS_CONFIG_PATH"] = papis.config.get_config_folder()
         os.environ["PAPIS_CONFIG_FILE"] = papis.config.get_config_file()
         os.environ["PAPIS_SCRIPTS_PATH"] = papis.config.get_scripts_folder()

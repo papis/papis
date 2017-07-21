@@ -21,7 +21,7 @@ class Default(papis.commands.Command):
             "-l",
             "--lib",
             help="Choose a library name or library path (unamed library)",
-            default=self.config["settings"]["default"] or "papers",
+            default=self.get_config()["settings"]["default"] or "papers",
             action="store"
         )
 
@@ -100,17 +100,17 @@ class Default(papis.commands.Command):
             self.args.picktool = "rofi"
 
         if self.args.picktool:
-            self.config["settings"]["picktool"] = self.args.picktool
+            self.get_config()["settings"]["picktool"] = self.args.picktool
 
         if self.args.pick_lib:
             self.args.lib = papis.utils.pick(papis.utils.get_libraries())
 
-        if self.args.lib not in self.config.keys():
+        if self.args.lib not in self.get_config().keys():
             if os.path.exists(self.args.lib):
                 # Check if the path exists, then use this path as a new library
                 self.logger.debug("Using library %s" % self.args.lib)
-                self.config[self.args.lib] = dict()
-                self.config[self.args.lib]["dir"] = self.args.lib
+                self.get_config()[self.args.lib] = dict()
+                self.get_config()[self.args.lib]["dir"] = self.args.lib
             else:
                 self.logger.error(
                     "Library '%s' does not seem to exist" % self.args.lib

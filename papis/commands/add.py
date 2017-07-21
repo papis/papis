@@ -270,7 +270,7 @@ class Add(papis.commands.Command):
     def main(self):
         if papis.config.inMode("contact"):
             self.init_contact_mode()
-        documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.get_config()[self.args.lib]["dir"])
         folderName = None
         data = dict()
         self.logger.debug("Saving in directory %s" % documentsDir)

@@ -4,18 +4,17 @@
 import sys
 import logging
 
-import papis.commands
-import papis.utils
-import papis.config
-
 
 logger = logging.getLogger("papis")
 if "--debug" in sys.argv:
-    print("DEBUG MODE FOR DEVELOPERS ON")
     log_format = '%(relativeCreated)d-'
     log_format += '%(levelname)s:%(name)s:%(message)s'
     logging.basicConfig(level=logging.DEBUG, format=log_format)
     sys.argv.pop(sys.argv.index("--debug"))
+    logger.debug("DEBUG MODE FOR DEVELOPERS ON")
+
+
+import papis.commands
 
 
 def main():

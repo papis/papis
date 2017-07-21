@@ -60,7 +60,7 @@ class Update(papis.commands.Command):
         )
 
     def main(self):
-        documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.get_config()[self.args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = self.args.document
         data = papis.bibtex.bibtex_to_dict(self.args.from_bibtex) \

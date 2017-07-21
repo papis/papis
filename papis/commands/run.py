@@ -27,7 +27,7 @@ class Run(papis.commands.Command):
         self.args.run_command = commands
 
     def main(self):
-        documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.get_config()[self.args.lib]["dir"])
         self.logger.debug("Changing directory into %s" % documentsDir)
         os.chdir(documentsDir)
         try:
@@ -38,5 +38,5 @@ class Run(papis.commands.Command):
             command = " ".join(self.args.run_command)
         self.logger.debug("Command = %s" % command)
         command = string.Template(command).safe_substitute(
-                self.config[self.args.lib])
+                self.get_config()[self.args.lib])
         os.system(command)

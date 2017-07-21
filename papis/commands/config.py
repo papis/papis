@@ -28,7 +28,9 @@ class Config(papis.commands.Command):
         )
 
     def main(self):
-        documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
+        documentsDir = os.path.expanduser(
+            self.get_config()[self.args.lib]["dir"]
+        )
         self.logger.debug("Using directory %s" % documentsDir)
         # FIXME: Replacing values does not work
         option = " ".join(self.args.option)
@@ -49,15 +51,15 @@ class Config(papis.commands.Command):
         self.logger.debug("lib -> %s" % lib)
         self.logger.debug("key -> %s" % key)
         if not value:
-            if key in self.config[lib].keys():
-                print(self.config[lib][key])
+            if key in self.get_config()[lib].keys():
+                print(self.get_config()[lib][key])
             else:
                 sys.exit(1)
         else:
             try:
-                self.config.remove_option(lib, key)
-                self.config.set(lib, key, value)
+                self.get_config().remove_option(lib, key)
+                self.get_config().set(lib, key, value)
             except configparser.NoSectionError:
-                self.config.add_section(lib)
-                self.config.set(lib, key, value)
-            self.config.save()
+                self.get_config().add_section(lib)
+                self.get_config().set(lib, key, value)
+            self.get_config().save()

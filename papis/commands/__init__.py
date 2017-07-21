@@ -1,5 +1,4 @@
 import os
-import glob
 import logging
 import papis.utils
 import papis.config
@@ -122,6 +121,7 @@ def init_internal_commands():
 
 
 def init_external_commands():
+    import glob
     from .external import External
     logger.debug("Initializing external commands")
     commands = dict()
@@ -175,8 +175,8 @@ def init_and_return_parser():
 
 class Command(object):
 
-    config = papis.config.get_configuration()
     parser = None
+    config = None
     args = None
 
     def __init__(self):
@@ -199,6 +199,11 @@ class Command(object):
     def set_subparsers(self, subparsers):
         self.subparsers = subparsers
 
+    def get_config(self):
+        if self.config is None:
+            self.config = papis.config.get_configuration()
+        return self.config
+
     def get_parser(self):
         return self.parser
 
@@ -219,6 +224,6 @@ class Command(object):
             )
         return papis.utils.pick(
             options,
-            self.config,
+            self.get_config(),
             pick_config
         )

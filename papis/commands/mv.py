@@ -49,7 +49,7 @@ class Mv(papis.commands.Command):
             return None
 
     def main(self):
-        documentsDir = os.path.expanduser(self.config[self.args.lib]["dir"])
+        documentsDir = os.path.expanduser(self.get_config()[self.args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = self.args.document
         documents = papis.utils.get_documents_in_dir(
@@ -75,10 +75,10 @@ class Mv(papis.commands.Command):
             os.makedirs(new_folder)
         if self.args.tool:
             mvtool = self.args.tool
-        elif "mvtool" in self.config[self.args.lib].keys():
-            mvtool = self.config[self.args.lib]["mvtool"]
-        elif "mvtool" in self.config["settings"].keys():
-            mvtool = self.config["settings"]["mvtool"]
+        elif "mvtool" in self.get_config()[self.args.lib].keys():
+            mvtool = self.get_config()[self.args.lib]["mvtool"]
+        elif "mvtool" in self.get_config()["settings"].keys():
+            mvtool = self.get_config()["settings"]["mvtool"]
         else:
             mvtool = "mv"
 
