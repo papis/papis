@@ -41,7 +41,7 @@ class Gui(papis.commands.Command):
 
     def vim_main(self):
         import papis.gui.vim
-        return papis.gui.vim.Gui().main(self.documents)
+        return papis.gui.vim.Gui().main(self.documents, self.args)
 
     def main(self):
         self.documents = self.fetch_documents()
