@@ -111,7 +111,7 @@ def init_internal_commands():
     global logger
     commands = dict()
     cmd = None
-    logger.debug("Initializing commands")
+    logger.debug("Initializing internal commands")
     for command in COMMAND_NAMES:
         logger.debug(command)
         exec("from .%s import %s" % (command, command.capitalize()))
@@ -123,6 +123,7 @@ def init_internal_commands():
 
 def init_external_commands():
     from .external import External
+    logger.debug("Initializing external commands")
     commands = dict()
     paths = []
     paths.append(papis.config.get_scripts_folder())
@@ -132,8 +133,10 @@ def init_external_commands():
         if len(scripts):
             for script in scripts:
                 cmd = External()
+                logger.debug(script)
                 cmd.init(script)
                 commands[cmd.get_command_name()] = cmd
+    logger.debug("Initializing external commands done")
     return commands
 
 
