@@ -10,8 +10,8 @@ import papis.bibtex
 
 class Document(object):
 
-    """Structure implementing all information inside a document, which should
-    be yaml information with few methods
+    """Class implementing the entry abstraction of a document in a library.
+    It is basically a python dictionary with more methods.
     """
 
     subfolder = ""
@@ -31,56 +31,63 @@ class Document(object):
         if data is not None:
             self.update(data)
 
-    def __delitem__(self, obj):
+    def __delitem__(self, key):
+        """Deletes property from document, e.g. ``del doc['url']``.
+        :param key: Name of the property.
+        :type  key: str
         """
-        :obj: TODO
-        :returns: TODO
-        """
-        self._keys.pop(self._keys.index(obj))
-        delattr(self, obj)
+        self._keys.pop(self._keys.index(key))
+        delattr(self, key)
 
-    def __setitem__(self, obj, value):
+    def __setitem__(self, key, value):
+        """Sets property to value from document, e.g. ``doc['url'] =
+        'www.gnu.org'``.
+        :param key: Name of the property.
+        :type  key: str
+        :param value: Value of the parameter
+        :type  value: str,int,float,list
         """
-        :obj: TODO
-        :returns: TODO
-        """
-        self._keys.append(obj)
-        setattr(self, obj, value)
+        self._keys.append(key)
+        setattr(self, key, value)
 
-    def __getitem__(self, obj):
-        return getattr(self, obj) if hasattr(self, obj) else ""
+    def __getitem__(self, key):
+        """Gets property to value from document, e.g. ``a = doc['url']``.
+        If the property `key` does not exist, then the empy string is returned.
+
+        :param key: Name of the property.
+        :type  key: str
+        :returns: Value of the property
+        :rtype:  str,int,float,list
+        """
+        return getattr(self, key) if hasattr(self, key) else ""
 
     def get_main_folder(self):
-        """
-        Get main folder where the document and the information is stored
+        """Get full path for the folder where the document and the information
+        is stored.
         :returns: Folder path
         """
         return self._folder
 
     def get_main_folder_name(self):
-        """
-        Get main folder name where the document and the information is stored
+        """Get main folder name where the document and the information is
+        stored.
         :returns: Folder name
         """
         return os.path.basename(self._folder)
 
     def has(self, key):
-        """Check if the information file has some key defined
+        """Check if the information file has some key defined.
 
-        :key: Key name to be checked
+        :param key: Key name to be checked
         :returns: True/False
+        """
+        return key in self.keys()
 
+    def check_files(self):
+        """Check for the exsitence of the document's files
+        :returns: False if some file does not exist, True otherwise
+        :rtype:  bool
         """
-        if key in self.keys():
-            return True
-        else:
-            return False
-
-    def checkFile(self):
-        """
-        :returns: TODO
-        """
-        # Check for the exsitence of the document
         for f in self.get_files():
             # self.logger.debug(f)
             if not os.path.exists(f):
@@ -91,13 +98,12 @@ class Document(object):
                 return True
 
     def rm(self):
-        """Remove document entry
+        """Removes document's folder, effectively removing it from the library.
         """
         shutil.rmtree(self.get_main_folder())
 
     def save(self):
-        """
-        :returns: TODO
+        """Saves the current document's information into the info file.
         """
         fd = open(self._infoFilePath, "w+")
         structure = dict()
@@ -108,6 +114,10 @@ class Document(object):
         fd.close()
 
     def to_dict(self):
+        """Gets a python dictionary with the information of the document
+        :returns: Python dictionary
+        :rtype:  dict
+        """
         result = dict()
         for key in self.keys():
             result[key] = self[key]
@@ -136,7 +146,7 @@ adress:
             # self.logger.error("Not in contact mode")
             sys.exit(1)
         text = \
-        """\
+            """\
 BEGIN:VCARD
 VERSION:4.0
 FN:{doc[first_name]} {doc[last_name]}
@@ -158,9 +168,9 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         return text
 
     def to_bibtex(self):
-        """
-        :f: TODO
-        :returns: TODO
+        """Create a bibtex string from document's information
+        :returns: String containing bibtex formating
+        :rtype:  str
         """
         bibtexString = ""
         bibtexType = ""
@@ -182,12 +192,16 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         return bibtexString
 
     def update(self, data, force=True, interactive=False):
-        """TODO: Docstring for update.
+        """Update document's information from an info dictionary.
 
-        :data: TODO
-        :force: TODO
-        :interactive: TODO
-        :returns: TODO
+        :param data: Dictionary with key and values to be updated
+        :type  data: dict
+        :param force: If True, the update turns into a replace, i.e., it
+            replaces the old value by the new value stored in data.
+        :type  force: bool
+        :param interactive: If True, it will ask for user's input every time
+            that the values differ.
+        :type  interactive: bool
 
         """
         # self.logger.debug("Updating...")
@@ -206,16 +220,17 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
                     pass
 
     def get_info_file(self):
-        """TODO: Docstring for get_files.
-        :returns: TODO
-
+        """Get full path for the info file
+        :returns: Full path for the info file
+        :rtype: str
         """
         return self._infoFilePath
 
     def get_files(self):
-        """TODO: Docstring for get_files.
-        :returns: TODO
+        """Get the files linked to the document, if any.
 
+        :returns: List of full file paths
+        :rtype:  list
         """
         files = self["files"] if isinstance(self["files"], list) \
             else [self["files"]]
@@ -225,17 +240,17 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         return result
 
     def keys(self):
-        """TODO: Docstring for keys().
+        """Returns the keys defined for the document.
 
-        :arg1: TODO
-        :returns: TODO
-
+        :returns: Keys for the document
+        :rtype:  list
         """
         return self._keys
 
     def dump(self):
-        """TODO: Docstring for dump.
-        :returns: TODO
+        """Return information string without any obvious format
+        :returns: String with document's information
+        :rtype:  str
 
         """
         string = ""
@@ -244,14 +259,9 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         return string
 
     def load(self):
+        """Load information from info file
         """
-        load information from file
-        :returns: TODO
-        """
-        try:
-            fd = open(self._infoFilePath, "r")
-        except:
-            return False
+        fd = open(self._infoFilePath, "r")
         structure = yaml.load(fd)
         fd.close()
         for key in structure:

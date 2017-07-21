@@ -38,7 +38,7 @@ class Check(papis.commands.Command):
         allOk = True
         for document in documents:
             self.logger.debug("Checking %s" % document.get_main_folder())
-            allOk &= document.checkFile()
+            allOk &= document.check_files()
             for key in self.args.keys:
                 if key not in document.keys():
                     allOk &= False
