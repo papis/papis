@@ -54,6 +54,7 @@ function! PapisExeCommand(cmd, ...)
     let title_line = PapisGetIdentifier()
     let command = ":!papis -l ".g:papis_lib." ".a:cmd." ".join(a:000)." '".title_line."'"
     exe command
+    redraw!
 endfunction
 
 function! PapisHelp()
@@ -81,21 +82,21 @@ function! PapisGo(direction)
   exe ":normal! zt"
 endfunction
 
-exec "nnoremap <buffer> ".g:papis_help_key." :call PapisHelp()<cr>"
-exec "nnoremap <buffer> ".g:papis_open_key." :call PapisExeCommand('open')<cr>"
-exec "nnoremap <buffer> <Return> :call PapisExeCommand('open')<cr>"
-exec "nnoremap <buffer> ".g:papis_open_dir_key." :call PapisExeCommand('open', '--dir')<cr>"
-exec "nnoremap <buffer> ".g:papis_edit_key." :call PapisExeCommand('edit')<cr>"
+exec "nnoremap <buffer> ".g:papis_help_key." :silent call PapisHelp()<cr>"
+exec "nnoremap <buffer> ".g:papis_open_key." :silent call PapisExeCommand('open')<cr>"
+exec "nnoremap <buffer> <Return> :silent call PapisExeCommand('open')<cr>"
+exec "nnoremap <buffer> ".g:papis_open_dir_key." :silent call PapisExeCommand('open', '--dir')<cr>"
+exec "nnoremap <buffer> ".g:papis_edit_key." :silent call PapisExeCommand('edit')<cr>"
 
-exec "nnoremap <buffer> ".g:papis_next_key." :call PapisGo('next')<cr>"
-exec "nnoremap <buffer> ".g:papis_prev_key." :call PapisGo('prev')<cr>"
-nmap <buffer> <Up> :call PapisGo('prev')<cr>
-nmap <buffer> <Down> :call PapisGo('next')<cr>
-nmap <buffer> <S-g> :call PapisGo("bottom")<cr>
-nmap <buffer> <C-d> :call PapisGo("half-down")<cr>
-nmap <buffer> <C-u> :call PapisGo("half-up")<cr>
+exec "nnoremap <buffer> ".g:papis_next_key." :silent call PapisGo('next')<cr>"
+exec "nnoremap <buffer> ".g:papis_prev_key." :silent call PapisGo('prev')<cr>"
+nmap <buffer> <Up> :silent call PapisGo('prev')<cr>
+nmap <buffer> <Down> :silent call PapisGo('next')<cr>
+nmap <buffer> <S-g> :silent call PapisGo("bottom")<cr>
+nmap <buffer> <C-d> :silent call PapisGo("half-down")<cr>
+nmap <buffer> <C-u> :silent call PapisGo("half-up")<cr>
 
-nnoremap q :quit<cr>
+nnoremap <buffer> q :quit<cr>
 command! -nargs=0 PapisHelp    call PapisHelp()
 command! -nargs=0 PapisOpen    call PapisExeCommand("open")
 command! -nargs=0 PapisOpenDir call PapisExeCommand("open", '--dir')
