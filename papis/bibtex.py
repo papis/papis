@@ -1,11 +1,10 @@
 import re
-import sys
 import logging
 import os
 
 logger = logging.getLogger("bibtex")
 
-bibtexTypes = [
+bibtex_types = [
   "article",
   "book",
   "booklet",
@@ -22,7 +21,7 @@ bibtexTypes = [
   "unpublished"
 ]
 
-bibtexKeys = [
+bibtex_keys = [
   "address",
   "annote",
   "author",
@@ -52,11 +51,16 @@ bibtexKeys = [
 def bibtex_to_dict(bibtex):
     """
     Convert bibtex file to dict
-    { type: "article ...", "ref": "example1960etAl", author:" ..."}
 
-    :bibtex: TODO
-    :returns: TODO
+    .. code:: python
 
+        { type: "article ...", "ref": "example1960etAl", author:" ..."}
+
+    :param bibtex: Bibtex file path or bibtex information in string format.
+    :type  bibtex: str
+    :returns: Dictionary with bibtex information with keys that bibtex
+        formally recognizes.
+    :rtype:  dict
     """
     global logger
     result = dict()
@@ -79,7 +83,8 @@ def bibtex_to_dict(bibtex):
     text = re.sub(type_ref_re, "", text)
     if not match:
         logger.error(
-            "Type and reference of the bibtex file could not be parsed", exc_info=False
+            "Type and reference of the bibtex file could not be parsed",
+            exc_info=False
         )
         return result
     result["type"] = match.group(1)

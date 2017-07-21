@@ -166,7 +166,7 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         bibtexType = ""
         # First the type, article ....
         if "type" in self.keys():
-            if self["type"] in papis.bibtex.bibtexTypes:
+            if self["type"] in papis.bibtex.bibtex_types:
                 bibtexType = self["type"]
         if not bibtexType:
             bibtexType = "article"
@@ -175,7 +175,7 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         else:
             ref = self["ref"]
         bibtexString += "@%s{%s,\n" % (bibtexType, ref)
-        for bibKey in papis.bibtex.bibtexKeys:
+        for bibKey in papis.bibtex.bibtex_keys:
             if bibKey in self.keys():
                 bibtexString += "\t%s = { %s },\n" % (bibKey, self[bibKey])
         bibtexString += "}\n"
