@@ -2,16 +2,16 @@ import logging
 
 import tempfile
 import papis.bibtex
-import papis.downloaders.aps
-import papis.downloaders.arxiv
-import papis.downloaders.scitationaip
-import papis.downloaders.libgen
-import papis.downloaders.get
 
 logger = logging.getLogger("downloader")
 
 
 def getAvailableDownloaders():
+    import papis.downloaders.aps
+    import papis.downloaders.arxiv
+    import papis.downloaders.scitationaip
+    import papis.downloaders.libgen
+    import papis.downloaders.get
     return [
         papis.downloaders.aps.Downloader,
         papis.downloaders.arxiv.Downloader,

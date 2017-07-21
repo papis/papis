@@ -14,9 +14,6 @@ import papis.config
 import papis.bibtex
 import papis.document
 import papis.downloaders.utils
-import pdfminer.pdfparser
-import pdfminer.pdfdocument
-
 
 class Add(papis.commands.Command):
 
@@ -160,6 +157,11 @@ class Add(papis.commands.Command):
         self.logger.debug("Retrieving %s meta data" % key)
         extension = self.get_document_extension(document_path)
         if "pdf" in extension:
+            # We put the import statements here because they slow down the
+            # whole program if initializing the cli command it is in the top,
+            # only import it if it is being used
+            import pdfminer.pdfparser
+            import pdfminer.pdfdocument
             fd = open(document_path, "rb")
             parsed = pdfminer.pdfparser.PDFParser(fd)
             doc = pdfminer.pdfdocument.PDFDocument(parsed)
