@@ -1,8 +1,9 @@
 import os
 import re
 import argparse
-import papis.config
 import subprocess
+import papis.config
+import papis.commands
 
 
 class External(papis.commands.Command):

@@ -3,8 +3,6 @@ import logging
 import os
 import re
 import papis.pick
-import papis.gui.rofi
-import papis.gui.vim
 import papis.config
 import papis.commands
 import papis.document
@@ -63,6 +61,7 @@ def which(program):
 
 
 def pick(options, papis_config={}, pick_config={}):
+    import papis.config
     try:
         logger.debug("Parsing picktool")
         picker = papis.config.get("picktool")
@@ -71,9 +70,11 @@ def pick(options, papis_config={}, pick_config={}):
         return papis.pick.pick(options, **pick_config)
     else:
         if picker == "rofi":
+            import papis.gui.rofi
             logger.debug("Using rofi picker")
             return papis.gui.rofi.pick(options, **pick_config)
         elif picker == "vim":
+            import papis.gui.vim
             logger.debug("Using vim picker")
             return papis.gui.vim.pick(options, **pick_config)
 
