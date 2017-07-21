@@ -3,6 +3,9 @@ let g:papis_open_key = "o"
 let g:papis_open_dir_key = "<S-o>"
 let g:papis_edit_key = "e"
 
+let g:papis_next_key = "j"
+let g:papis_prev_key = "k"
+
 let g:papis_title_magic_word =  "Title :"
 let g:papis_author_magic_word = "Author:"
 let g:papis_year_magic_word =   "Year  :"
@@ -16,6 +19,9 @@ let g:papis_config_path = $PAPIS_CONFIG_PATH
 let g:papis_config_file = $PAPIS_CONFIG_FILE
 let g:papis_scripts_path = $PAPIS_SCRIPTS_PATH
 let g:papis_verbose = $PAPIS_VERBOSE
+
+" Set no modifiable
+setlocal nomodifiable
 
 syntax match Comment "^[^:]*:"
 exe 'syntax region Statement start="'.g:papis_title_magic_word.'" contains=Comment end="$" keepend'
@@ -57,10 +63,37 @@ function! PapisHelp()
     echomsg "Edit     - ".g:papis_edit_key
 endfunction
 
-exec "nnoremap ".g:papis_help_key." :call PapisHelp()<cr>"
-exec "nnoremap ".g:papis_open_key." :call PapisExeCommand('open')<cr>"
-exec "nnoremap ".g:papis_open_dir_key." :call PapisExeCommand('open', '--dir')<cr>"
-exec "nnoremap ".g:papis_edit_key." :call PapisExeCommand('edit')<cr>"
+function! PapisGo(direction)
+  let back = "b"
+  if a:direction == "next"
+    let back = ""
+  elseif a:direction == "bottom"
+    exe ":normal! G"
+  elseif a:direction == "half-down"
+    exe ":normal! \<C-d>"
+  elseif a:direction == "half-up"
+    if 1 == line(".")
+      return
+    endif
+    exe ":normal! \<C-u>"
+  endif
+  call cursor(search(g:papis_title_magic_word, back), 0)
+  exe ":normal! zt"
+endfunction
+
+exec "nnoremap <buffer> ".g:papis_help_key." :call PapisHelp()<cr>"
+exec "nnoremap <buffer> ".g:papis_open_key." :call PapisExeCommand('open')<cr>"
+exec "nnoremap <buffer> <Return> :call PapisExeCommand('open')<cr>"
+exec "nnoremap <buffer> ".g:papis_open_dir_key." :call PapisExeCommand('open', '--dir')<cr>"
+exec "nnoremap <buffer> ".g:papis_edit_key." :call PapisExeCommand('edit')<cr>"
+
+exec "nnoremap <buffer> ".g:papis_next_key." :call PapisGo('next')<cr>"
+exec "nnoremap <buffer> ".g:papis_prev_key." :call PapisGo('prev')<cr>"
+nmap <buffer> <Up> :call PapisGo('prev')<cr>
+nmap <buffer> <Down> :call PapisGo('next')<cr>
+nmap <buffer> <S-g> :call PapisGo("bottom")<cr>
+nmap <buffer> <C-d> :call PapisGo("half-down")<cr>
+nmap <buffer> <C-u> :call PapisGo("half-up")<cr>
 
 nnoremap q :quit<cr>
 command! -nargs=0 PapisHelp    call PapisHelp()

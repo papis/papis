@@ -46,5 +46,5 @@ class Gui(object):
         fd.close()
 
         subprocess.call(
-                ["vim", "-S", self.main_vim_path, "-R", temp_file]
+                ["vim", "-S", self.main_vim_path, temp_file]
         )
