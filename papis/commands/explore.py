@@ -1,4 +1,3 @@
-import bs4
 import papis.utils
 import papis.document
 import papis.config
@@ -37,6 +36,9 @@ class Explore(papis.commands.Command):
         )
 
     def arxiv(self, search):
+        # FIXME: use a more lightweight library than bs4, it needs some time
+        # to import the module
+        import bs4
         main_url = "http://export.arxiv.org/api/query?search_query="
         url = main_url+"all:{}&max_results={}".format(
             "%20".join(search),
