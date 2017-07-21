@@ -1,4 +1,3 @@
-
 import os
 import configparser
 import papis.utils
@@ -17,18 +16,28 @@ OVERRIDE_VARS = {
 
 
 def get_config_folder():
+    """Get folder where the configuration files are stored,
+    e.g. /home/user/.papis
+    """
     return os.path.join(
         os.path.expanduser("~"), ".papis"
     )
 
 
 def get_cache_folder():
+    """Get folder where the cache files are stored,
+    e.g. /home/user/.papis/cache
+    """
     return os.path.join(
         get_config_folder(), "cache"
     )
 
 
 def get_config_file():
+    """Get the path of the main configuration file,
+    e.g. /home/user/.papis/config
+    """
+    global OVERRIDE_VARS
     if OVERRIDE_VARS["file"] is not None:
         config_file = OVERRIDE_VARS["file"]
     else:
@@ -40,6 +49,8 @@ def get_config_file():
 
 
 def set_config_file(filepath):
+    """Override the main configuration file path
+    """
     global OVERRIDE_VARS
     if filepath is not None:
         logger.debug("Setting config file to %s" % filepath)
@@ -47,14 +58,23 @@ def set_config_file(filepath):
 
 
 def get_scripts_folder():
+    """Get folder where the scripts are stored,
+    e.g. /home/user/.papis/scripts
+    """
     return os.path.join(
         get_config_folder(), "scripts"
     )
 
 
-def general_get(*args, data_type="", default=None, extras=[]):
-    """
-    :param: extras: List of tuples containing section and prefixes
+def general_get(*args, data_type=None, default=None, extras=[]):
+    """General getter method that will be specialised for different modules.
+
+    :param data_type: The data type that should be expected for the value of
+        the variable.
+    :type  data_type: DataType, e.g. int, src ...
+    :param default: Default value for the configuration variable if it is not set.
+    :type  default: It should be the same that ``data_type``
+    :param extras: List of tuples containing section and prefixes
     """
     method = None
     lib = papis.utils.get_lib()
@@ -94,18 +114,26 @@ def general_get(*args, data_type="", default=None, extras=[]):
 
 
 def get(*args, **kwargs):
+    """String getter
+    """
     return general_get(*args, **kwargs)
 
 
 def getint(*args, **kwargs):
+    """Integer getter
+    """
     return general_get(*args, data_type=int, **kwargs)
 
 
 def getfloat(*args, **kwargs):
+    """Float getter
+    """
     return general_get(*args, data_type=float, **kwargs)
 
 
 def getboolean(*args, **kwargs):
+    """Bool getter
+    """
     return general_get(*args, data_type=bool, **kwargs)
 
 
@@ -116,6 +144,13 @@ def inMode(mode):
 
 
 def get_configuration():
+    """Get the configuratoin object, if no papis configuration has ever been
+    initialized, it initializes one. Only one configuration per process should
+    ever be configurated.
+
+    :returns: Configuration object
+    :rtype:  papis.config.Configuration
+    """
     global CONFIGURATION
     if CONFIGURATION is None:
         logger.debug("Creating configuration")
@@ -124,6 +159,11 @@ def get_configuration():
 
 
 def reset_configuration():
+    """Destroys existing configuration and returns a new one.
+
+    :returns: Configuration object
+    :rtype:  papis.config.Configuration
+    """
     global CONFIGURATION
     if CONFIGURATION is not None:
         logger.warning("Overwriting previous configuration")
@@ -132,14 +172,17 @@ def reset_configuration():
     return get_configuration()
 
 
+# DELETE
 def get_default_match_format():
     return "{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}"
 
 
+# DELETE
 def get_default_header_format():
     return "{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:-<4})"
 
 
+# DELETE
 def get_header_format(key="header_format"):
     try:
         header_format = get(key)
@@ -148,6 +191,7 @@ def get_header_format(key="header_format"):
     return header_format
 
 
+# DELETE
 def get_match_format():
     try:
         match_format = get("match_format")
