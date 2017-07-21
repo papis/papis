@@ -22,16 +22,15 @@ let g:papis_verbose = $PAPIS_VERBOSE
 
 " Set no modifiable
 setlocal nomodifiable
+" Do not show line numbers, as they can be quite large
+setlocal nonumber
+setlocal nolist
 
 syntax match Comment "^[^:]*:"
 exe 'syntax region Statement start="'.g:papis_title_magic_word.'" contains=Comment end="$" keepend'
 syntax match Number "[0-9]\+"
 exe "syntax match Statement '".g:papis_document_separator."'"
 
-
-"exe "syntax keyword papisMagicWord ".g:papis_title_magic_word
-"highlight link papisMagicWord Number
-"
 function! PapisGetIdentifier()
     " This function returns a paper identifier for the current entry
     let current_line = getline(".")
@@ -68,8 +67,20 @@ function! PapisGo(direction)
   let back = "b"
   if a:direction == "next"
     let back = ""
+  elseif a:direction == "prev"
+    let back = "b"
+    if 1 == line(".")
+      return
+    endif
   elseif a:direction == "bottom"
     exe ":normal! G"
+  elseif a:direction == "screen-down"
+    exe ":normal! \<C-f>"
+  elseif a:direction == "screen-up"
+    if 1 == line(".")
+      return
+    endif
+    exe ":normal! \<C-b>"
   elseif a:direction == "half-down"
     exe ":normal! \<C-d>"
   elseif a:direction == "half-up"
@@ -90,11 +101,13 @@ exec "nnoremap <buffer> ".g:papis_edit_key." :silent call PapisExeCommand('edit'
 
 exec "nnoremap <buffer> ".g:papis_next_key." :silent call PapisGo('next')<cr>"
 exec "nnoremap <buffer> ".g:papis_prev_key." :silent call PapisGo('prev')<cr>"
-nmap <buffer> <Up> :silent call PapisGo('prev')<cr>
-nmap <buffer> <Down> :silent call PapisGo('next')<cr>
-nmap <buffer> <S-g> :silent call PapisGo("bottom")<cr>
-nmap <buffer> <C-d> :silent call PapisGo("half-down")<cr>
-nmap <buffer> <C-u> :silent call PapisGo("half-up")<cr>
+nnoremap <buffer> <Up>   :silent call PapisGo('prev')<cr>
+nnoremap <buffer> <Down> :silent call PapisGo('next')<cr>
+nnoremap <buffer> <S-g>  :silent call PapisGo("bottom")<cr>
+nnoremap <buffer> <C-d>  :silent call PapisGo("half-down")<cr>
+nnoremap <buffer> <C-u>  :silent call PapisGo("half-up")<cr>
+nnoremap <buffer> <C-f>  :silent call PapisGo("screen-down")<cr>
+nnoremap <buffer> <C-b>  :silent call PapisGo("screen-up")<cr>
 
 nnoremap <buffer> q :quit<cr>
 command! -nargs=0 PapisHelp    call PapisHelp()
