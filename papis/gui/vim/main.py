@@ -13,6 +13,11 @@ main_vim_path = os.path.join(
     "main.vim"
 )
 
+pick_vim_path = os.path.join(
+    os.path.dirname(__file__),
+    "pick.vim"
+)
+
 
 def pick(
         options,
@@ -22,17 +27,23 @@ def pick(
         ):
     temp_file = tempfile.mktemp()
     fd = open(temp_file, "w+")
-    fd.write("# Put your cursor on a line and press enter to pick")
+    fd.write("# Put your cursor on a line and press enter to pick\n")
     headers = [
         header_filter(d) for d in
         options
     ]
     for header in headers:
         fd.write(header+"\n")
-    process = os.popen(
-        " ".join(["vim", "-S", main_vim_path, "-R", temp_file])
+    fd.close()
+    process = subprocess.call(
+        ["vim", "-S", pick_vim_path, temp_file]
     )
-    print(process.read())
+    fd = open(temp_file)
+    index = fd.read()
+    fd.close()
+    ret = options[int(index)-2]
+    print(ret)
+    return ret
 
 
 class Gui(object):

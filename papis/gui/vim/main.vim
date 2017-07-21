@@ -21,7 +21,7 @@ let g:papis_scripts_path = $PAPIS_SCRIPTS_PATH
 let g:papis_verbose = $PAPIS_VERBOSE
 
 " Set no modifiable
-setlocal nomodifiable
+"setlocal nomodifiable
 " Do not show line numbers, as they can be quite large
 setlocal nonumber
 setlocal nolist
@@ -91,11 +91,6 @@ function! PapisGo(direction)
   endif
   call cursor(search(g:papis_title_magic_word, back), 0)
   exe ":normal! zt"
-endfunction
-
-function! Pick()
-    :silent! exe "!echo ".(line(".") - 2)
-    :silent! quit!
 endfunction
 
 exec "nnoremap <buffer> ".g:papis_help_key." :call PapisHelp()<cr>"
