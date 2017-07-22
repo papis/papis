@@ -71,6 +71,7 @@ List
     :module: papis.commands
     :func: init_and_return_parser
     :prog: papis
+    :path: list
 
 Browse
 ------
