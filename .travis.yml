@@ -9,4 +9,4 @@ script:
   - make test
 
 install:
-  - sudo make install-deps PIP=pip
+  - sudo make install
