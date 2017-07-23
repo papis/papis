@@ -5,8 +5,8 @@ import logging
 
 logger = logging.getLogger("config")
 
-CONFIGURATION = None
-DEFAULT_MODE = "document"
+CONFIGURATION = None #: Global configuration object variable.
+DEFAULT_MODE = "document" #: Default mode in the modal architecture.
 OVERRIDE_VARS = {
     "folder": None,
     "cache": None,
