@@ -71,54 +71,49 @@ library:
 
 And it's done! We have added our first book to the library.
 
-Let us see how this works exactly. Papis consists of many commands, and one
-of these commands is ``add``.
+Let us see how this works exactly. Papis consists of many commands, and one of
+these commands is ``add``. Add itself has many flags, which are options for the
+given command. In the example above we have used the flags ``author`` and
+``title`` to tell papis to use ``Newton`` as the author name and ``Principia
+Mathematica`` as the title of the document. You can see all the posible flags
+for the command ``add`` if you use the ``--help`` flag, i.e., if you issue the
+following command
+
+.. code:: bash
+
+  papis add --help
+
+Now you are asking yourself, what happened with the pdf file? Where it is
+stored?  Is it stored in an obscure database somewhere in my computer? No,
+papis just copied the ``document.pdf`` file into a folder inside the library
+folder ``~/Documents/papers/``. If you go now there, you will see that a folder
+with a weird name has been created. Inside of the folder there is the
+``document.pdf`` file and another file, ``info.yaml``.
+
+If you open the ``info.yaml`` file you will see the following contents:
 
 .. code:: yaml
 
   author: Newton
   title: Principia Mathematica
+  files:
+  - document.pdf
 
+This file is all that papis uses to store the information of your newly added
+document. It is stored in a nicely readable `yaml
+<https://en.wikipedia.org/wiki/YAML/>`_ format.
 
-you can then work with the library by doing
-
-::
-
-    papis -l library-name open
-
-and so on...
-
-
-You have installed everything, then you can do
+Now you already have your first document, and.. you can open it!
+Just do
 
 ::
 
-    papis -h
+  papis open
 
-To see the help, the first time that papis is run it will create a
-configuration folder and a configuration file in
+and the document should just open in your default pdf viewer.
+You can change the default pdf viewer in your configuration file
+(see section on :ref:`configuration-file`).
 
-::
 
-    ~/.papis/config
-
-There you will have already a library called papers defined with
-directory path ``~/Documents/papers/``. Therefore in principle you could
-now do the following:
-
-::
-
-    papis -v add --from-url https://arxiv.org/abs/1211.1036
-
-And this will download the paper in ``https://arxiv.org/abs/1211.1036``
-and also copy the relevant information of its bibliography.
-
-You can know more about each command doing
-
-::
-
-    papis -h
-    papis add -h
-
-etc..
+Nice Reading!!
 

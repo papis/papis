@@ -1,5 +1,11 @@
+.. _configuration-file:
+
 Configuration file
 ------------------
+
+.. Warning::
+
+  In construction!
 
 Papis uses a configuration file in *INI* format. You can then have
 several libraries which work independently from each other.
