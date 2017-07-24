@@ -261,7 +261,12 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
     def load(self):
         """Load information from info file
         """
-        fd = open(self._infoFilePath, "r")
+        # TODO: think about if it's better to raise an exception here
+        # if no info file is found
+        try:
+            fd = open(self._infoFilePath, "r")
+        except:
+            return False
         structure = yaml.load(fd)
         fd.close()
         for key in structure:
