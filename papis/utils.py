@@ -15,11 +15,33 @@ logger = logging.getLogger("utils")
 
 
 def get_lib():
+    """Get current library, it either retrieves the library from
+    the environment PAPIS_LIB variable or from the command line
+    args passed by the user.
+
+    :param library: Name of library or path to a given library
+    :type  library: str
+    """
     try:
         lib = papis.commands.get_args().lib
     except AttributeError:
         lib = os.environ["PAPIS_LIB"]
     return lib
+
+
+def set_lib(library):
+    """Set current library, it either sets the library in
+    the environment PAPIS_LIB variable or in the command line
+    args passed by the user.
+
+    :param library: Name of library or path to a given library
+    :type  library: str
+    """
+    try:
+        args = papis.commands.get_args()
+        args.lib = library
+    except AttributeError:
+        os.environ["PAPIS_LIB"] = library
 
 
 def get_arg(arg, default=None):
@@ -276,32 +298,3 @@ def get_info_file_name():
 def doi_to_data(doi):
     bibtex = papis.crossref.doi_to_bibtex(doi)
     return papis.bibtex.bibtex_to_dict(bibtex)
-
-
-def get_epub_info(fname):
-    # ns = {
-        # 'n': 'urn:oasis:names:tc:opendocument:xmlns:container',
-        # 'pkg': 'http://www.idpf.org/2007/opf',
-        # 'dc': 'http://purl.org/dc/elements/1.1/'
-    # }
-
-    res = {}
-
-    # prepare to read from the .epub file
-    # zip = zipfile.ZipFile(fname)
-
-    # # find the contents metafile
-    # txt = zip.read('META-INF/container.xml')
-    # tree = etree.fromstring(txt)
-    # cfname = \
-    #   tree.xpath('n:rootfiles/n:rootfile/@full-path', namespaces=ns)[0]
-
-    # # grab the metadata block from the contents metafile
-    # cf = zip.read(cfname)
-    # tree = etree.fromstring(cf)
-    # p = tree.xpath('/pkg:package/pkg:metadata', namespaces=ns)[0]
-
-    # # repackage the data
-    # for s in ['title', 'language', 'creator', 'date', 'identifier']:
-    #     res[s] = p.xpath('dc:%s/text()' % (s), namespaces=ns)[0]
-    return res
