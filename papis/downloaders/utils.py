@@ -10,12 +10,14 @@ def getAvailableDownloaders():
     import papis.downloaders.aps
     import papis.downloaders.arxiv
     import papis.downloaders.scitationaip
+    import papis.downloaders.annualreviews
     import papis.downloaders.libgen
     import papis.downloaders.get
     return [
         papis.downloaders.aps.Downloader,
         papis.downloaders.arxiv.Downloader,
         papis.downloaders.scitationaip.Downloader,
+        papis.downloaders.annualreviews.Downloader,
         papis.downloaders.libgen.Downloader,
         papis.downloaders.get.Downloader,
     ]
