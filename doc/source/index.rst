@@ -6,18 +6,21 @@
 Welcome to papis's documentation!
 =================================
 
-Description
-===========
-
 Papis is a command-line based document and bibliography manager. Its
 command-line interface (*CLI*) is heavily tailored after
 `Git <http://git-scm.com>`__.
 
-.. include:: quick_start.rst
-.. include:: configuration.rst
-.. include:: install.rst
-.. include:: commands.rst
-.. include:: scripting.rst
+.. toctree::
+   :maxdepth: 2
+
+   quick_start
+   install
+   configuration
+   info_file
+   commands
+   scripting
+
+
 
 Indices and tables
 ==================

@@ -57,8 +57,8 @@ Adding the first document
 -------------------------
 
 If you don't have any special pdf lying around let me choose one for you:
-`PDF <https://www.gutenberg.org/files/28233/28233-pdf.pdf?session_id=8cecccb488f337378d5826ba1f31984f612f7ff5/>`_.
-You can download this document and we are going to add it into the papers
+`link <https://www.gutenberg.org/files/28233/28233-pdf.pdf?session_id=8cecccb488f337378d5826ba1f31984f612f7ff5/>`_.
+You can download this document and we are going to add it into the ``papers``
 library.
 
 Supposing that you have the document in the current directory and you have renamed
@@ -72,18 +72,18 @@ library:
 And it's done! We have added our first book to the library.
 
 Let us see how this works exactly. Papis consists of many commands, and one of
-these commands is ``add``. Add itself has many flags, which are options for the
+these commands is ``add``. ``Add`` itself has many flags, which are options for the
 given command. In the example above we have used the flags ``author`` and
-``title`` to tell papis to use ``Newton`` as the author name and ``Principia
-Mathematica`` as the title of the document. You can see all the posible flags
-for the command ``add`` if you use the ``--help`` flag, i.e., if you issue the
+``title`` to tell papis to use ``Newton`` as the author's name and ``Principia
+Mathematica`` as the document's title. You can see all the posible flags
+for the command ``add`` if you use the ``help`` flag, i.e., if you issue the
 following command
 
 .. code:: bash
 
   papis add --help
 
-Now you are asking yourself, what happened with the pdf file? Where it is
+Now you are asking yourself, what happened to the pdf file? Where it is
 stored?  Is it stored in an obscure database somewhere in my computer? No,
 papis just copied the ``document.pdf`` file into a folder inside the library
 folder ``~/Documents/papers/``. If you go now there, you will see that a folder
@@ -114,6 +114,18 @@ and the document should just open in your default pdf viewer.
 You can change the default pdf viewer in your configuration file
 (see section on :ref:`configuration-file`).
 
+Now you can try to repeat the same process with another pdf file lying around.
+When you hit ``papis open`` again, it will ask you which one you want.
+If you input parts of the title or the author's name it will try to match
+what you typed with the paper you are looking for, so that you can get the
+paper that you are looking for very easily.
+
+
+.. raw:: html
+
+  <script type="text/javascript"
+  src="https://asciinema.org/a/U7e5yHvpf3kKqH8kHSh6MEa4o.js"
+  id="asciicast-U7e5yHvpf3kKqH8kHSh6MEa4o" async></script>
 
 Nice Reading!!
 
