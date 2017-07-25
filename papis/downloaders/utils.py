@@ -32,11 +32,16 @@ def getDownloader(url):
 def get(url, data_format="bibtex"):
     data = dict()
     documents_paths = []
+    doi = None
     logger.debug("Attempting to retrieve from url")
     downloader = getDownloader(url)
     if not downloader:
         logger.warning("Using downloader %s" % downloader)
         return None
+    try:
+        doi = downloader.getDoi()
+    except:
+        logger.debug("Doi not found from url...")
     logger.debug("Using downloader %s" % downloader)
     if data_format == "bibtex":
         bibtex_data = downloader.getBibtexData()
@@ -51,4 +56,8 @@ def get(url, data_format="bibtex"):
         tempfd = open(documents_paths[-1], "wb+")
         tempfd.write(doc_data)
         tempfd.close()
-    return {"data": data, "documents_paths": documents_paths}
+    return {
+        "data": data,
+        "doi": doi,
+        "documents_paths": documents_paths
+    }

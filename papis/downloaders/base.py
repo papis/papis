@@ -2,6 +2,7 @@ import os
 import logging
 import urllib.request
 
+# TODO: Raise NotImplemented exceptions
 
 class Downloader(object):
 
@@ -43,6 +44,9 @@ class Downloader(object):
 
     def getDocumentUrl(self):
         pass
+
+    def getDoi(self):
+        raise NotImplementedError("Doi not implemented for this downloader")
 
     def getDocumentData(self):
         if not self.document_data:

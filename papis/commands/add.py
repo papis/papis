@@ -92,7 +92,7 @@ class Add(papis.commands.Command):
         self.parser.add_argument(
             "--from-doi",
             help="Doi to try to get information from",
-            default="",
+            default=None,
             action="store"
         )
 
@@ -282,6 +282,12 @@ class Add(papis.commands.Command):
             url_data = papis.downloaders.utils.get(self.args.from_url)
             data.update(url_data["data"])
             documents_paths.extend(url_data["documents_paths"])
+            # If no data was retrieved and doi was found, try to get
+            # information with the document's doi
+            if not data and\
+                url_data["doi"] is not None and\
+                not self.args.from_doi:
+                self.args.from_doi = url_data["doi"]
         if self.args.from_bibtex:
             data.update(papis.bibtex.bibtex_to_dict(self.args.from_bibtex))
         if self.args.from_doi:
