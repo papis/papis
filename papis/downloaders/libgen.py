@@ -18,11 +18,6 @@ class Downloader(papis.downloaders.base.Downloader):
             return False
 
     def downloadBibtex(self):
-        """Bibtex downloader, it should try to download bibtex information from
-        the url
-        :returns: TODO
-
-        """
         raw_data = urllib.request.urlopen(self.getUrl())\
             .read()\
             .decode('utf-8')

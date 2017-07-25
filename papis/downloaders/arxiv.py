@@ -6,10 +6,7 @@ import arxiv2bib
 
 class Downloader(papis.downloaders.base.Downloader):
 
-    """Docstring for Aps. """
-
     def __init__(self, url):
-        """TODO: to be defined1. """
         papis.downloaders.base.Downloader.__init__(self, url)
 
     @classmethod
@@ -26,7 +23,6 @@ class Downloader(papis.downloaders.base.Downloader):
     def get_identifier(self):
         """Get arxiv identifier
         :returns: Identifier
-
         """
         url = self.getUrl()
         return re.sub(r'^.*arxiv.org/(abs|pdf)/(.*)\/?$', r'\2', url)
@@ -36,12 +32,6 @@ class Downloader(papis.downloaders.base.Downloader):
         return identifier
 
     def downloadBibtex(self):
-        """TODO: Docstring for downloadBibtex.
-
-        :arg1: TODO
-        :returns: TODO
-
-        """
         bibtexCli = arxiv2bib.Cli([self.getBibtexUrl()])
         bibtexCli.run()
         data = os.linesep.join(bibtexCli.output)
