@@ -6,6 +6,7 @@ import logging
 logger = logging.getLogger("config")
 
 CONFIGURATION = None #: Global configuration object variable.
+DEFAULT_SETTINGS = None #: Default settings for the whole papis.
 DEFAULT_MODE = "document" #: Default mode in the modal architecture.
 OVERRIDE_VARS = {
     "folder": None,
@@ -13,6 +14,45 @@ OVERRIDE_VARS = {
     "file": None,
     "scripts": None
 }
+
+
+general_settings = {
+    "mode": "document",
+    "match_format": "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
+    "header_format": "{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:-<4})",
+    "opentool": "xdg-open",
+    "editor": "xdg-open",
+    "file-browser": "xdg-open",
+    "default": "papers",
+}
+
+
+def get_default_settings(section="", key=""):
+    """Get the default settings for all non-user variables
+    in papis.
+
+    If section and key are given, then the setting
+    for the given section and the given key are returned.
+
+    If only ``key`` is given, then the setting
+    for the ``general`` section is returned.
+
+    :param section: Particular section of the default settings
+    :type  section: str
+    :param key: Setting's name to be queried for.
+    :type  key: str
+    """
+    global DEFAULT_SETTINGS
+    if DEFAULT_SETTINGS is None:
+        DEFAULT_SETTINGS = {
+            "general": general_settings,
+        }
+    if not section and not key:
+        return DEFAULT_SETTINGS
+    elif not section:
+        return DEFAULT_SETTINGS["general"][key]
+    else:
+        return DEFAULT_SETTINGS[section][key]
 
 
 def get_config_folder():
