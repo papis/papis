@@ -2,6 +2,7 @@ import logging
 
 import tempfile
 import papis.bibtex
+import papis.config
 
 logger = logging.getLogger("downloader")
 
@@ -29,6 +30,21 @@ def getDownloader(url):
         if result:
             return result
     return False
+
+
+def download_document_from_doi(doi):
+    """Download a document knowing the doi number
+
+    :param doi: Doi number
+    :type  doi: string
+    :returns: Path to downloaded local document
+
+    """
+    tempf = tempfile.mktemp()
+    external_downloader = papis.config.get(
+        "doc-doi-downloader"
+    )
+
 
 
 def get(url, data_format="bibtex"):
