@@ -1,4 +1,3 @@
-import readline
 import papis
 import sys
 import os
@@ -49,6 +48,7 @@ class Mv(papis.commands.Command):
             return None
 
     def main(self):
+        import readline
         documentsDir = os.path.expanduser(self.get_config()[self.args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = self.args.document

@@ -1,4 +1,3 @@
-import webbrowser
 import papis
 import os
 import papis.utils
@@ -21,6 +20,7 @@ class Browse(papis.commands.Command):
         )
 
     def main(self):
+        import webbrowser
         documentsDir = os.path.expanduser(self.get_config()[self.args.lib]["dir"])
         self.logger.debug("Using directory %s" % documentsDir)
         documentSearch = self.args.document

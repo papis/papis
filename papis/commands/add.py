@@ -4,7 +4,6 @@ import sys
 import re
 import yaml
 import tempfile
-import vobject
 import hashlib
 import shutil
 import string
@@ -230,6 +229,7 @@ class Add(papis.commands.Command):
         fd.close()
 
     def vcf_to_data(self, vcard_path):
+        import vobject
         data = yaml.load(papis.document.Document.get_vcf_template())
         self.logger.debug("Reading in %s " % vcard_path)
         text = open(vcard_path).read()
