@@ -45,8 +45,11 @@ def get_default_settings(section="", key=""):
     global DEFAULT_SETTINGS
     if DEFAULT_SETTINGS is None:
         DEFAULT_SETTINGS = {
-            "general": general_settings,
+            "settings": general_settings,
         }
+        DEFAULT_SETTINGS.update(
+            papis.gui.get_default_settings()
+        )
     if not section and not key:
         return DEFAULT_SETTINGS
     elif not section:
