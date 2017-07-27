@@ -9,6 +9,7 @@ logger = logging.getLogger("downloader")
 
 def getAvailableDownloaders():
     import papis.downloaders.aps
+    import papis.downloaders.acs
     import papis.downloaders.arxiv
     import papis.downloaders.scitationaip
     import papis.downloaders.annualreviews
@@ -17,6 +18,7 @@ def getAvailableDownloaders():
     import papis.downloaders.get
     return [
         papis.downloaders.aps.Downloader,
+        papis.downloaders.acs.Downloader,
         papis.downloaders.arxiv.Downloader,
         papis.downloaders.scitationaip.Downloader,
         papis.downloaders.annualreviews.Downloader,
