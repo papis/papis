@@ -31,12 +31,12 @@ class Prompt(tk.Text, PapisWidget):
         self.reset_style()
 
     def reset_style(self):
-        self["font"] = self.get_config("prompt-font-size", "14")
-        self["fg"] = self.get_config("prompt-fg", "lightgreen")
-        self["insertbackground"] = self.get_config("insertbackground", "red")
-        self["bg"] = self.get_config("prompt-bg", "black")
+        self["font"] = self.get_config("prompt-font-size")
+        self["fg"] = self.get_config("prompt-fg")
+        self["insertbackground"] = self.get_config("insertbackground")
+        self["bg"] = self.get_config("prompt-bg")
         self["borderwidth"] = -1
-        self["cursor"] = "xterm"
+        self["cursor"] = self.get_config("cursor")
         self["height"] = 1
 
     def changed(self):

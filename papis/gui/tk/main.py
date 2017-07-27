@@ -63,19 +63,12 @@ class PapisWidget(tk.Misc):
         self.focus()
         self.set_mode(self.normal_mode)
 
-    def get_config(self, key, default):
-        """Get user configuration
-
-        :key: Key value
-        :default: Default value
-
+    def get_config(self, key):
+        """Get configuration to key
         """
-        try:
-            return papis.config.get(
-                "tk-"+key, extras=[("tk-gui", "", key)]
-            )
-        except:
-            return default
+        return papis.config.get(
+            key, section="tk-gui"
+        )
 
 
 class Gui(tk.Tk, PapisWidget):
@@ -86,11 +79,11 @@ class Gui(tk.Tk, PapisWidget):
         self.protocol("WM_DELETE_WINDOW", self.exit)
         self.geometry(
             "{}x{}".format(
-                self.get_config("window-width", 900),
-                self.get_config("window-height", 700),
+                self.get_config("window-width"),
+                self.get_config("window-height"),
             )
         )
-        self["bg"] = self.get_config("window-bg", "#273238")
+        self["bg"] = self.get_config("window-bg")
         self.title("Papis document manager")
         self.prompt = papis.gui.tk.Prompt(
             self,
@@ -109,11 +102,10 @@ class Gui(tk.Tk, PapisWidget):
         self.cmap("<Control-c>", self.to_normal)
         self.map("<Configure>", self.on_resize)
         self.bindings = [
-            (self.get_config("exit", "<Control-q>"), "exit"),
-            (self.get_config("focus_prompt", ":"), "focus_prompt"),
-            (self.get_config("clear", "q"), "clear"),
-            (self.get_config("exit", "<Control-q>"), "exit"),
-            (self.get_config("help", "h"), "print_help"),
+            (self.get_config("exit"), "exit"),
+            (self.get_config("focus_prompt"), "focus_prompt"),
+            (self.get_config("clear"), "clear"),
+            (self.get_config("help"), "print_help"),
         ]
         for bind in self.bindings:
             key = bind[0]

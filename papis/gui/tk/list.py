@@ -13,16 +13,10 @@ class ListEntry(tk.Frame, PapisWidget):
         self["padx"] = 10
         self["font"] = "12"
         self["borderwidth"] = 1
-        self["fg"] = self.get_config("entry-fg", "grey77")
+        self["fg"] = self.get_config("entry-fg")
         self["anchor"] = tk.W
-        self["activeforeground"] = self.get_config(
-            "activeforeground",
-            "gray99"
-        )
-        self["activebackground"] = self.get_config(
-            "activebackground",
-            "#394249"
-        )
+        self["activeforeground"] = self.get_config("activeforeground")
+        self["activebackground"] = self.get_config("activebackground")
         self.text = text
         self.lines = text.split("\n")
         self["height"] = self.lines
@@ -61,17 +55,17 @@ class PapisList(tk.Frame, PapisWidget):
         self.master.prompt.cmap("<Control-o>", self.open)
         self.master.prompt.cmap("<Control-i>", self.print_info)
         self.bindings = [
-            (self.get_config("move_down", "j"), "move_down"),
-            (self.get_config("move_up", "k"), "move_up"),
-            (self.get_config("open", "o"), "open"),
-            (self.get_config("edit", "e"), "edit"),
-            (self.get_config("move_top", "g"), "move_top"),
-            (self.get_config("move_bottom", "<Shift-G>"), "move_bottom"),
-            (self.get_config("print_info", "i"), "print_info"),
-            (self.get_config("half_down", "<Control-d>"), "half_down"),
-            (self.get_config("half_up", "<Control-u>"), "half_up"),
-            (self.get_config("scroll_down", "<Control-e>"), "scroll_down"),
-            (self.get_config("scroll_up", "<Control-y>"), "scroll_up"),
+            (self.get_config("move_down"), "move_down"),
+            (self.get_config("move_up"), "move_up"),
+            (self.get_config("open"), "open"),
+            (self.get_config("edit"), "edit"),
+            (self.get_config("move_top"), "move_top"),
+            (self.get_config("move_bottom"), "move_bottom"),
+            (self.get_config("print_info"), "print_info"),
+            (self.get_config("half_down"), "half_down"),
+            (self.get_config("half_up"), "half_up"),
+            (self.get_config("scroll_down"), "scroll_down"),
+            (self.get_config("scroll_up"), "scroll_up"),
             ("<Down>", "move_down"),
             ("<Up>", "move_up"),
         ]
@@ -85,9 +79,7 @@ class PapisList(tk.Frame, PapisWidget):
             return self.matched_indices
         self.logger.debug("Indexing")
         command = self.master.prompt.get_command()
-        match_format = self.get_config(
-            "match_format", papis.config.get("match_format")
-        )
+        match_format = self.get_config("match-format")
         indices = list()
         for i, doc in enumerate(self.documents):
             if papis.utils.match_document(doc, command, match_format):
@@ -166,10 +158,10 @@ class PapisList(tk.Frame, PapisWidget):
 
     def set_documents_labels(self):
         self.update_drawing_indices()
-        font_size = self.get_config("entry-font-size", "14")
-        font_name = self.get_config("entry-font-name", "Times")
-        font_style = self.get_config("entry-font-style", "normal")
-        font_lines = self.get_config("entry-lines", "3")
+        font_size = self.get_config("entry-font-size")
+        font_name = self.get_config("entry-font-name")
+        font_style = self.get_config("entry-font-style")
+        font_lines = self.get_config("entry-lines")
         font = (font_name, font_size, font_style)
         doc_primitive_height = int(font_size)*int(font_lines)
         # number_of_entries = self.winfo_height()/doc_primitive_height
@@ -177,19 +169,17 @@ class PapisList(tk.Frame, PapisWidget):
         for doc in self.documents:
             self.documents_lbls.append(
                 tk.Label(
-                    text=self.get_config("header_format", "").format(doc=doc),
+                    text=self.get_config("header-format").format(doc=doc),
                     justify=tk.LEFT,
                     padx=10,
                     pady=pady,
                     height=font_lines,
                     font=font,
                     borderwidth=1,
-                    fg=self.get_config("entry-fg", "grey77"),
+                    fg=self.get_config("entry-fg"),
                     anchor=tk.W,
-                    activeforeground=self.get_config(
-                        "activeforeground", "gray99"),
-                    activebackground=self.get_config(
-                        "activebackground", "#394249")
+                    activeforeground=self.get_config("activeforeground"),
+                    activebackground=self.get_config("activebackground")
                 )
             )
             setattr(self.documents_lbls[-1], "doc", doc)
@@ -215,10 +205,8 @@ class PapisList(tk.Frame, PapisWidget):
         if not len(indices):
             indices = self.get_matched_indices()
         colors = (
-            self.get_config(
-                "entry-bg-1", self["bg"]),
-            self.get_config(
-                "entry-bg-2", self["bg"]),
+            self.get_config("entry-bg-odd"),
+            self.get_config("entry-bg-pair"),
         )
         self.update_height()
         self.update_drawing_indices()
@@ -238,7 +226,7 @@ class PapisList(tk.Frame, PapisWidget):
         self.redraw_documents_labels()
 
     def update_drawing_indices(self):
-        label_number = self.get_config("labels_per_page", 6)
+        label_number = self.get_config("labels-per-page")
         self.doc_primitive_height = int(self["height"]/label_number)
         self.index_draw_last = self.index_draw_first +\
             int(self["height"]/self.doc_primitive_height)
