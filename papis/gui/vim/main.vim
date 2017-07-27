@@ -1,4 +1,8 @@
+let g:papis_search_key = "/"
+let g:papis_next_search_key = "n"
+let g:papis_prev_search_key = "N"
 let g:papis_help_key = "h"
+let g:papis_delete_key = "dd"
 let g:papis_open_key = "o"
 let g:papis_open_dir_key = "<S-o>"
 let g:papis_edit_key = "e"
@@ -61,6 +65,8 @@ function! PapisHelp()
     echomsg "Open     - ".g:papis_open_key
     echomsg "Open dir - ".g:papis_open_dir_key
     echomsg "Edit     - ".g:papis_edit_key
+    echomsg "Search   - ".g:papis_search_key
+    echomsg "Delete   - ".g:papis_delete_key
 endfunction
 
 function! PapisGo(direction)
@@ -93,8 +99,28 @@ function! PapisGo(direction)
   exe ":normal! zt"
 endfunction
 
+function! PapisSearch(...)
+  "set nohlsearch
+  if len(a:000) == 0
+    let @/ = "\\c".substitute(input("Search: "), "  *", ".*", "g")
+    exec "normal! n"
+  elseif a:000[0] == "n"
+    exec "normal! nn"
+  else
+    exec "normal! N"
+  endif
+  set hlsearch
+  call PapisGo("next")
+  call PapisGo("prev")
+endfunction
+
+exec "nnoremap <buffer> ".g:papis_search_key." :call PapisSearch()<cr>"
+exec "nnoremap <buffer> ".g:papis_next_search_key." :call PapisSearch('n')<cr>"
+exec "nnoremap <buffer> ".g:papis_prev_search_key." :call PapisSearch('p')<cr>"
+exec "nnoremap <buffer> f :call PapisSearch()<cr>"
 exec "nnoremap <buffer> ".g:papis_help_key." :call PapisHelp()<cr>"
 exec "nnoremap <buffer> ".g:papis_open_key." :silent call PapisExeCommand('open')<cr>"
+exec "nnoremap <buffer> ".g:papis_delete_key." :silent call PapisExeCommand('rm')<cr>"
 exec "nnoremap <buffer> <Return> :silent call PapisExeCommand('open')<cr>"
 exec "nnoremap <buffer> ".g:papis_open_dir_key." :silent call PapisExeCommand('open', '--dir')<cr>"
 exec "nnoremap <buffer> ".g:papis_edit_key." :silent call PapisExeCommand('edit')<cr>"
