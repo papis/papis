@@ -17,14 +17,24 @@ OVERRIDE_VARS = {
 
 
 general_settings = {
-    "mode": "document",
-    "match_format": "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
-    "header_format": "{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:-<4})",
-    "opentool": "xdg-open",
-    "editor": "xdg-open",
-    "file-browser": "xdg-open",
-    "default": "papers",
+    "mode"         : "document",
+    "opentool"     : "xdg-open",
+    "editor"       : "xdg-open",
+    "file-browser" : "xdg-open",
+    "default"      : "papers",
+    "match_format" : \
+        "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
+    "header_format": \
+        "{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:-<4})",
 }
+
+
+def get_general_settings_name():
+    """Get the section name of the general settings
+    :returns: Section's name
+    :rtype:  str
+    """
+    return "settings"
 
 
 def get_default_settings(section="", key=""):
@@ -43,9 +53,10 @@ def get_default_settings(section="", key=""):
     :type  key: str
     """
     global DEFAULT_SETTINGS
+    import papis.gui
     if DEFAULT_SETTINGS is None:
         DEFAULT_SETTINGS = {
-            "settings": general_settings,
+            get_general_settings_name(): general_settings,
         }
         DEFAULT_SETTINGS.update(
             papis.gui.get_default_settings()
@@ -53,7 +64,7 @@ def get_default_settings(section="", key=""):
     if not section and not key:
         return DEFAULT_SETTINGS
     elif not section:
-        return DEFAULT_SETTINGS["general"][key]
+        return DEFAULT_SETTINGS[get_general_settings_name()][key]
     else:
         return DEFAULT_SETTINGS[section][key]
 
@@ -109,7 +120,7 @@ def get_scripts_folder():
     )
 
 
-def general_get(*args, data_type=None, default=None, extras=[]):
+def general_get(key, section=None, data_type=None):
     """General getter method that will be specialised for different modules.
 
     :param data_type: The data type that should be expected for the value of
@@ -119,16 +130,19 @@ def general_get(*args, data_type=None, default=None, extras=[]):
     :type  default: It should be the same that ``data_type``
     :param extras: List of tuples containing section and prefixes
     """
+    # Init main variables
     method = None
-    lib = papis.utils.get_lib()
+    value = None
     config = get_configuration()
-    if len(args) == 1:
-        key = args[0]
-    elif len(args) == 2:
-        lib = args[0]
-        key = args[1]
-    else:
-        raise Exception("Problem with args parsing")
+    lib = papis.utils.get_lib()
+    global_section = get_general_settings_name()
+    specialized_key = section + "-" + key if section is not None else key
+    extras = [(section, key)] if section is not None else []
+    sections = [(global_section, specialized_key)] +\
+        extras + [(lib, specialized_key)]
+    default_settings = get_default_settings()
+
+    # Check data type for setting getter method
     if data_type == int:
         method = config.getint
     elif data_type == float:
@@ -137,22 +151,31 @@ def general_get(*args, data_type=None, default=None, extras=[]):
         method = config.getboolean
     else:
         method = config.get
-    global_section = "settings"
-    extras = [(global_section, "")] + extras + [(lib, "")]
-    value = None
-    for extra in extras:
-        section = extra[0]
-        prefix = extra[1]
-        whole_key = extra[2] if len(extra) == 3 else prefix+key
-        if section not in config.keys():
+
+    # Try to get key's value from configuration
+    for extra in sections:
+        sec = extra[0]
+        whole_key = extra[1]
+        if sec not in config.keys():
             continue
-        if whole_key in config[section].keys():
-            value = method(section, whole_key)
+        if whole_key in config[sec].keys():
+            value = method(sec, whole_key)
+
     if value is None:
-        if default is not None:
-            return default
+        try:
+            default = default_settings.get(
+                section or global_section
+            ).get(
+                specialized_key if section is None else key
+            )
+        except KeyError:
+            raise papis.exceptions.DefaultSettingValueMissing(
+                "Value for '%s' is not at all registered and known" % (
+                    key
+                )
+            )
         else:
-            raise KeyError("No key %s found in the configuration" % key)
+            return default
     return value
 
 
