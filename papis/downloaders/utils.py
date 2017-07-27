@@ -3,6 +3,7 @@ import logging
 import tempfile
 import papis.bibtex
 import papis.config
+import papis.exceptions
 
 logger = logging.getLogger("downloader")
 
@@ -66,12 +67,18 @@ def get(url, data_format="bibtex"):
         logger.debug("Doi not found from url...")
     logger.debug("Using downloader %s" % downloader)
     if data_format == "bibtex":
-        bibtex_data = downloader.getBibtexData()
-        if bibtex_data:
-            data = papis.bibtex.bibtex_to_dict(
-                downloader.getBibtexData()
-            )
-    doc_data = downloader.getDocumentData()
+        try:
+            bibtex_data = downloader.getBibtexData()
+            if bibtex_data:
+                data = papis.bibtex.bibtex_to_dict(
+                    downloader.getBibtexData()
+                )
+        except papis.exceptions.NotImplemented:
+            data = dict()
+    try:
+        doc_data = downloader.getDocumentData()
+    except papis.exceptions.NotImplemented:
+        doc_data = False
     if doc_data:
         documents_paths.append(tempfile.mktemp())
         logger.debug("Saving in %s" % documents_paths[-1])
