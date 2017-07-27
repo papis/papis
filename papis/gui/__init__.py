@@ -2,14 +2,19 @@
 def get_default_settings():
     return {
         "vim-gui": {
-            "help_key"        : "h",
-            "open_key"        : "o",
-            "edit_key"        : "e",
-            "search_key"      : "/",
-            "delete_key"      : "dd",
-            "open_dir_key"    : "<S-o>",
-            "next_search_key" : "n",
-            "prev_search_key" : "N",
+            "help-key"          : "h",
+            "open-key"          : "o",
+            "edit-key"          : "e",
+            "search-key"        : "/",
+            "delete-key"        : "dd",
+            "open-dir-key"      : "<S-o>",
+            "next-search-key"   : "n",
+            "prev-search-key"   : "N",
+            "header-format" : \
+                "Title : {doc[title]}\n"\
+                "Author: {doc[author]}\n"\
+                "Year  : {doc[year]}\n"\
+                "-------\n",
         },
         "tk-gui": {
             "open"          : "o",

@@ -67,13 +67,8 @@ class Gui(object):
 
     def main(self, documents, args):
         header_format = papis.config.get(
-            "vim-header-format",
-            default=textwrap.dedent("""\
-            Title : {doc[title]}
-            Author: {doc[author]}
-            Year  : {doc[year]}
-            -------
-            """)
+            "header-format",
+            section="vim-gui"
         )
         self.export_variables(args)
         temp_file = tempfile.mktemp()
