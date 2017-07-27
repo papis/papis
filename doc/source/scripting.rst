@@ -4,8 +4,12 @@ Custom scripts
 As in `git <http://git-scm.com>`__, you can write custom scripts to
 include them in the command spectrum of papis.
 
-Imagine you want to write a script to send papers to someone via
-``mutt``, you could write the following script caled ``papis-mail``:
+Example: Mail script
+--------------------
+
+Imagine you want to write a script to send papers to someone via the email
+client ``mutt`` (you can try to do it with another mail client), you could
+write the following script called ``papis-mail``:
 
 .. code:: sh
 
@@ -24,10 +28,11 @@ Imagine you want to write a script to send papers to someone via
 
     mutt -a ${zip_name}
 
-Papis defines environment variables such as ``PAPIS_LIB`` so that
-external scripts can make use of the user input.
+Papis defines environment variables such as ``PAPIS_LIB`` so that external
+scripts can make use of the user input.
 
-If you have the script above in your path you can run
+To use the script you can put it somewhere in your ``PATH`` or alternatively
+inside the ``~/.papis/scripts`` folder. If this is the case then you can run
 
 ::
 
