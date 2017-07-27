@@ -6,48 +6,20 @@ import papis.config
 
 def get_options():
     options = dict()
-    prefix = "rofi-"
-
-    def kwargs(arg):
-        return dict(extras=[("rofi-gui", "", arg)])
 
     for key in ["fullscreen",
             "normal_window", "multi_select", "case_sensitive", "markup_rows"]:
-        try:
-            options[key] =\
-                papis.config.getboolean(prefix+key, **kwargs(key))
-        except:
-            options[key] = False
-    try:
-        options["width"] = papis.config.getint(
-            prefix+"width", **kwargs("width")
-        )
-    except:
-        options["width"] = 80
-    try:
-        options["eh"] = papis.config.getint(
-            prefix+"eh", **kwargs("eh")
-        )
-    except:
-        options["eh"] = 1
-    try:
-        options["sep"] = papis.config.get(
-            prefix+"sep", **kwargs("sep")
-        )
-    except:
-        options["sep"] = "|"
-    try:
-        options["lines"] = papis.config.getint(
-            prefix+"lines", **kwargs("lines")
-        )
-    except:
-        options["lines"] = 20
-    try:
-        options["fixed_lines"] = papis.config.getint(
-            prefix+"fixed-lines", **kwargs("fixed-lines")
-        )
-    except:
-        options["fixed_lines"] = 20
+        options[key] =\
+            papis.config.getboolean(key, section="rofi-gui")
+
+    for key in ["width", "eh", "lines", "fixed_lines"]:
+        options[key] =\
+            papis.config.getint(key, section="rofi-gui")
+
+    for key in ["sep"]:
+        options[key] =\
+            papis.config.get(key, section="rofi-gui")
+
     return options
 
 
@@ -103,44 +75,41 @@ class Gui(object):
             message += "%s%s%s\n" % (self.keys[k][0], space, self.keys[k][1])
         return message
 
-    def get_key(self, key, default=""):
-        try:
-            return papis.config.get("rofi-gui", "key-" + key.lower())
-        except:
-            return default
+    def get_key(self, key):
+        return papis.config.get("key-" + key.lower(), section="rofi-gui")
 
     def get_keys(self):
         return {
             "key%s" % self.quit_key: (
-                self.get_key('quit', 'Alt+q'),
+                self.get_key('quit'),
                 'Quit'
             ),
             "key%s" % self.edit_key: (
-                self.get_key('edit', 'Alt+e'),
+                self.get_key('edit'),
                 'Edit'
             ),
             "key%s" % self.delete_key: (
-                self.get_key('delete', 'Alt+d'),
+                self.get_key('delete'),
                 'Delete'
             ),
             "key%s" % self.help_key: (
-                self.get_key('help', 'Alt+h'),
+                self.get_key('help'),
                 'Help'
             ),
             "key%s" % self.open_stay_key: (
-                self.get_key('open-stay', 'Alt+o'),
+                self.get_key('open-stay'),
                 'Open'
             ),
             "key%s" % self.normal_widnow_key: (
-                self.get_key('normal-window', 'Alt+w'),
+                self.get_key('normal-window'),
                 'Normal Win'
             ),
             "key%s" % self.open_key: (
-                self.get_key('open', 'Enter'),
+                self.get_key('open'),
                 'Open'
             ),
             "key%s" % self.browse_key: (
-                self.get_key('browse', 'Alt+u'),
+                self.get_key('browse'),
                 'Browse'
             )
         }
@@ -151,9 +120,7 @@ class Gui(object):
         key = None
         indices = None
         options = get_options()
-        header_format = papis.config.get("rofi-header_format", extras=[
-            ("rofi-gui", "", "header_format")
-        ])
+        header_format = papis.config.get("header-format", section="rofi-gui")
         header_filter = lambda x: header_format.format(doc=x)
         self.help_message = self.get_help()
         options.update(self.keys)
