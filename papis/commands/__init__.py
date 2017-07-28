@@ -218,6 +218,8 @@ class Command(object):
 
     def pick(self, options, pick_config={}):
         self.logger.debug("Picking")
+        if len(options) == 0:
+            return None
         if not pick_config:
             header_format = papis.config.get("header-format")
             match_format = papis.config.get("match-format")
