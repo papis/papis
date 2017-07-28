@@ -13,5 +13,5 @@ script:
   - make test
 
 install:
-  - sudo pip install setuptools
-  - sudo make install
+  - pip install setuptools
+  - make install
