@@ -19,6 +19,7 @@ OVERRIDE_VARS = {
 general_settings = {
     "mode"            : "document",
     "opentool"        : "xdg-open",
+    "browser"         : "xdg-open",
     "picktool"        : "papis.pick",
     "editor"          : "xdg-open",
     "file-browser"    : "xdg-open",

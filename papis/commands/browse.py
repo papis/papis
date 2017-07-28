@@ -31,7 +31,7 @@ class Browse(papis.commands.Command):
         document = self.pick(documents)
         if "url" in document.keys():
             papis.utils.general_open(
-                document["url"], "BROWSER", webbrowser.open
+                document["url"], "browser"
             )
         else:
             self.logger.warning(
