@@ -89,13 +89,12 @@ class List(papis.commands.Command):
                papis.downloaders.utils.getAvailableDownloaders():
                 print(downloader)
             sys.exit(0)
-        documentsDir = os.path.expanduser(self.get_config()[self.args.lib]["dir"])
-        self.logger.debug("Using directory %s" % documentsDir)
-        documentSearch = self.args.document
-        documents = papis.utils.get_documents_in_dir(
-            documentsDir,
-            documentSearch
+
+        documents = papis.utils.get_documents_in_lib(
+            self.get_args().lib,
+            self.get_args().document
         )
+
         if self.args.pick:
             documents = [self.pick(documents)]
         for document in documents:

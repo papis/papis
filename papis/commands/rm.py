@@ -29,12 +29,9 @@ class Rm(papis.commands.Command):
         )
 
     def main(self):
-        documentsDir = os.path.expanduser(self.get_config()[self.args.lib]["dir"])
-        self.logger.debug("Using directory %s" % documentsDir)
-        documentSearch = self.args.document
-        documents = papis.utils.get_documents_in_dir(
-            documentsDir,
-            documentSearch
+        documents = papis.utils.get_documents_in_lib(
+            self.get_args().lib,
+            self.get_args().document
         )
         document = self.pick(documents)
         if not document:

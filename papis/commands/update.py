@@ -60,16 +60,13 @@ class Update(papis.commands.Command):
         )
 
     def main(self):
-        documentsDir = os.path.expanduser(self.get_config()[self.args.lib]["dir"])
-        self.logger.debug("Using directory %s" % documentsDir)
-        documentSearch = self.args.document
-        data = papis.bibtex.bibtex_to_dict(self.args.from_bibtex) \
-            if self.args.from_bibtex else dict()
-        documents = papis.utils.get_documents_in_dir(
-            documentsDir,
-            documentSearch
+        documents = papis.utils.get_documents_in_lib(
+            self.get_args().lib,
+            self.get_args().document
         )
         document = self.pick(documents)
+        data = papis.bibtex.bibtex_to_dict(self.args.from_bibtex) \
+            if self.args.from_bibtex else dict()
         if self.args.from_url:
             url_data = papis.downloaders.utils.get(self.args.from_url)
             data.update(url_data["data"])

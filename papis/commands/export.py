@@ -114,21 +114,18 @@ class Export(papis.commands.Command):
             pass
 
     def main(self):
-        document = None
-        documentsDir = os.path.expanduser(
-            self.get_config()[self.args.lib]["dir"]
+
+        documents = papis.utils.get_documents_in_lib(
+            self.get_args().lib,
+            self.get_args().document
         )
-        self.logger.debug("Using directory %s" % documentsDir)
-        documentSearch = self.args.document
-        documents = papis.utils.get_documents_in_dir(
-            documentsDir,
-            documentSearch
-        )
+
         if not self.args.all:
             document = self.pick(documents)
             if document:
                 documents = [document]
             else:
                 sys.exit(0)
+
         for document in documents:
             self.export(document)

@@ -1,10 +1,10 @@
-import string
 import os
+import string
 import papis.commands
+import papis.config
 
 
 class Sync(papis.commands.Command):
-    default_git = 'cd $dir; git pull origin master'
 
     def init(self):
         self.parser = self.get_subparsers().add_parser(
@@ -13,16 +13,11 @@ class Sync(papis.commands.Command):
         )
 
     def main(self):
-        documentsDir = os.path.expanduser(self.get_config()[self.args.lib]["dir"])
-        try:
-            sync_command = os.path.expanduser(
-                self.get_config()[self.args.lib]["sync"]
-            )
-        except KeyError:
-            if os.path.exists(os.path.join(documentsDir, ".git", "config")):
-                print("Git repository detected, using sync command '%s'"
-                      % self.default_git)
-                sync_command = self.default_git
+        sync_command = os.path.expanduser(
+            papis.config.get("sync-command")
+        )
         command = string.Template(sync_command).substitute(
-                self.get_config()[self.args.lib])
+            self.get_config()[self.args.lib]
+        )
+        print(command)
         os.system(command)
