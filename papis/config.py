@@ -22,9 +22,9 @@ general_settings = {
     "editor"       : "xdg-open",
     "file-browser" : "xdg-open",
     "default"      : "papers",
-    "match_format" : \
+    "match-format" : \
         "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
-    "header_format": \
+    "header-format": \
         "{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:-<4})",
 }
 
@@ -236,34 +236,6 @@ def reset_configuration():
     CONFIGURATION = None
     logger.debug("Reseting configuration")
     return get_configuration()
-
-
-# DELETE
-def get_default_match_format():
-    return "{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}"
-
-
-# DELETE
-def get_default_header_format():
-    return "{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:-<4})"
-
-
-# DELETE
-def get_header_format(key="header_format"):
-    try:
-        header_format = get(key)
-    except:
-        header_format = get_default_header_format()
-    return header_format
-
-
-# DELETE
-def get_match_format():
-    try:
-        match_format = get("match_format")
-    except:
-        match_format = get_default_match_format()
-    return match_format
 
 
 class Configuration(configparser.ConfigParser):

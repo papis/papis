@@ -216,8 +216,8 @@ class Command(object):
     def pick(self, options, pick_config={}):
         self.logger.debug("Picking")
         if not pick_config:
-            header_format = papis.config.get_header_format()
-            match_format = papis.config.get_match_format()
+            header_format = papis.config.get("header-format")
+            match_format = papis.config.get("match-format")
             pick_config = dict(
                 header_filter=lambda x: header_format.format(doc=x),
                 match_filter=lambda x: match_format.format(doc=x)

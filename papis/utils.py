@@ -137,7 +137,7 @@ def edit_file(fileName, configuration={}):
 
 def match_document(document, search, match_format=""):
     if not match_format:
-        match_format = papis.config.get_match_format()
+        match_format = papis.config.get("match-format")
     match_string = match_format.format(doc=document)
     regex = r".*"+re.sub(r"\s+", ".*", search)
     m = re.match(regex, match_string, re.IGNORECASE)
