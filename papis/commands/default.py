@@ -100,7 +100,7 @@ class Default(papis.commands.Command):
             self.args.picktool = "rofi"
 
         if self.args.picktool:
-            self.get_config()["settings"]["picktool"] = self.args.picktool
+            papis.config.set("picktool", self.args.picktool)
 
         if self.args.pick_lib:
             self.args.lib = papis.utils.pick(papis.utils.get_libraries())

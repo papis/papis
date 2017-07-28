@@ -121,6 +121,13 @@ def get_scripts_folder():
     )
 
 
+def set(key, val, section=None):
+    config = get_configuration()
+    # FIXME: Right now we can only save val in string form
+    # FIXME: It would be nice to be able to save also int and booleans
+    config.set(section or get_general_settings_name(), key, str(val))
+
+
 def general_get(key, section=None, data_type=None):
     """General getter method that will be specialised for different modules.
 
