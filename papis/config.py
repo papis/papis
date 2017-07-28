@@ -22,6 +22,7 @@ general_settings = {
     "browser"         : "xdg-open",
     "picktool"        : "papis.pick",
     "editor"          : "xdg-open",
+    "notes-name"      : "notes.tex",
     "file-browser"    : "xdg-open",
     "default-library" : "papers",
     "match-format"    : \

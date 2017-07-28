@@ -2,6 +2,7 @@ import papis
 import os
 import papis.utils
 import papis.pick
+import papis.config
 
 
 class Edit(papis.commands.Command):
@@ -23,31 +24,30 @@ class Edit(papis.commands.Command):
         self.parser.add_argument(
             "-n",
             "--notes",
-            help="Open notes document, if there is some",
+            help="Open notes document",
             action="store_true"
         )
 
     def main(self):
-        documentsDir = os.path.expanduser(self.get_config()[self.args.lib]["dir"])
-        self.logger.debug("Using directory %s" % documentsDir)
-        documentSearch = self.args.document
-        documents = papis.utils.get_documents_in_dir(
-            documentsDir,
-            documentSearch
+
+        documents = papis.utils.get_documents_in_lib(
+            self.get_args().lib,
+            self.args.document
         )
         document = self.pick(documents)
+
         if self.args.notes:
+            self.logger.debug("Editing notes")
             if not document.has("notes"):
                 self.logger.warning(
-                    "The document selected has no notes attached,\
-                    creating one..."
+                    "The document selected has no notes attached,"\
+                    " creating one..."
                 )
-                document["notes"] = "notes.tex"
+                document["notes"] = papis.config.get("notes-name")
                 document.save()
-            notesName = document["notes"]
             notesPath = os.path.join(
                 document.get_main_folder(),
-                notesName
+                document["notes"]
             )
             if not os.path.exists(notesPath):
                 self.logger.debug("Creating %s" % notesPath)
