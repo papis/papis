@@ -227,6 +227,5 @@ class Command(object):
             )
         return papis.utils.pick(
             options,
-            self.get_config(),
             pick_config
         )

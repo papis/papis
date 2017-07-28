@@ -69,7 +69,21 @@ def get_libraries():
     return libs
 
 
-def pick(options, papis_config={}, pick_config={}):
+def pick(options, pick_config={}):
+    """This is a wrapper for the various pickers that are supported.
+    Depending on the configuration different selectors or 'pickers'
+    are used.
+    :param options: List of different objects. The type of the objects within
+        the list must be supported by the pickers. This is the reason why this
+        function is difficult to generalize for external picker programs.
+    :type  options: list
+    :param pick_config: Dictionary with additional configuration for the
+        used picker. This depends on the picker.
+    :type  pick_config: dict
+    :returns: Returns elements of ``options``.
+    :rtype: Element(s) of ``options``
+    """
+    # Leave this import here
     import papis.config
     logger.debug("Parsing picktool")
     picker = papis.config.get("picktool")
@@ -84,6 +98,8 @@ def pick(options, papis_config={}, pick_config={}):
     elif picker == "papis.pick":
         logger.debug("Using papis.pick picker")
         return papis.pick.pick(options, **pick_config)
+    else:
+        raise Exception("I don't know how to use the picker '%s'" % picker)
 
 
 def general_open(fileName, key, default_opener="xdg-open", wait=False):
