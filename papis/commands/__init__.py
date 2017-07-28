@@ -176,7 +176,6 @@ def init_and_return_parser():
 class Command(object):
 
     parser = None
-    config = None
     args = None
 
     def __init__(self):
@@ -200,9 +199,13 @@ class Command(object):
         self.subparsers = subparsers
 
     def get_config(self):
-        if self.config is None:
-            self.config = papis.config.get_configuration()
-        return self.config
+        """Get configuration for the whole papis. It just simply retrieves the
+        general configuration using the main ``papis.config`` API.
+
+        :returns: General configuration
+        :rtype: dict
+        """
+        return papis.config.get_configuration()
 
     def get_parser(self):
         return self.parser
