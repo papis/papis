@@ -122,6 +122,9 @@ def get_scripts_folder():
 
 
 def set(key, val, section=None):
+    """Set a key to val in some section and make these changes available
+    everywhere.
+    """
     config = get_configuration()
     if not config.has_section(section or "settings"):
         config.add_section(section or "settings")
@@ -254,8 +257,8 @@ class Configuration(configparser.ConfigParser):
       "papers": {
         'dir': '~/Documents/papers'
       },
-      "settings": {
-        'default': 'papers'
+      get_general_settings_name(): {
+        'default-library': 'papers'
       }
     }
 
@@ -289,8 +292,3 @@ class Configuration(configparser.ConfigParser):
                     self[section][field] = self.default_info[section][field]
             with open(self.file_location, "w") as configfile:
                 self.write(configfile)
-
-    def save(self):
-        fd = open(self.file_location, "w")
-        self.write(fd)
-        fd.close()
