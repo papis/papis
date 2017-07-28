@@ -84,21 +84,19 @@ def which(program):
 
 def pick(options, papis_config={}, pick_config={}):
     import papis.config
-    try:
-        logger.debug("Parsing picktool")
-        picker = papis.config.get("picktool")
-    except KeyError:
-        logger.debug("Using default picker")
+    logger.debug("Parsing picktool")
+    picker = papis.config.get("picktool")
+    if picker == "rofi":
+        import papis.gui.rofi
+        logger.debug("Using rofi picker")
+        return papis.gui.rofi.pick(options, **pick_config)
+    elif picker == "vim":
+        import papis.gui.vim
+        logger.debug("Using vim picker")
+        return papis.gui.vim.pick(options, **pick_config)
+    elif picker == "papis.pick":
+        logger.debug("Using papis.pick picker")
         return papis.pick.pick(options, **pick_config)
-    else:
-        if picker == "rofi":
-            import papis.gui.rofi
-            logger.debug("Using rofi picker")
-            return papis.gui.rofi.pick(options, **pick_config)
-        elif picker == "vim":
-            import papis.gui.vim
-            logger.debug("Using vim picker")
-            return papis.gui.vim.pick(options, **pick_config)
 
 
 def general_open(fileName, key, default_opener="xdg-open", wait=False):
