@@ -177,17 +177,13 @@ def general_get(key, section=None, data_type=None):
 
     if value is None:
         try:
-            default = default_settings.get(
+            default = default_settings[
                 section or global_section
-            ).get(
+            ][
                 specialized_key if section is None else key
-            )
-        except KeyError:
-            raise papis.exceptions.DefaultSettingValueMissing(
-                "Value for '%s' is not at all registered and known" % (
-                    key
-                )
-            )
+            ]
+        except KeyError as e:
+            raise papis.exceptions.DefaultSettingValueMissing(key)
         else:
             return default
     return value
