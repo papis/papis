@@ -61,6 +61,11 @@ def get_arg(arg, default=None):
 
 
 def get_libraries():
+    """Get all libraries declared in the configuration. A library is discovered
+    if the ``dir`` key defined in the library section.
+    :returns: List of library names
+    :rtype: list
+    """
     libs = []
     config = papis.config.get_configuration()
     for key in config.keys():
