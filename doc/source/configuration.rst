@@ -24,20 +24,27 @@ for some miscellaneous documents. An example for that is given below
     gagp = git add . && git commit && git push origin master
 
 
-Default variables
------------------
+Default settings
+----------------
 
 .. exec::
 
     import papis.config
+    import os
     settings = papis.config.get_default_settings()
     sep = " " * 4
+    folder = "configuration"
+    source = os.path.dirname(__file__)
     for section, vals in settings.items():
         print(section)
         print("^"*len(section))
         print("\n")
         for key, val in sorted(vals.items()):
+            doc_file = os.path.join(
+                folder, section, key + ".rst"
+            )
             print("%s" % key)
+
             if "\n" in str(val):
                 print(sep + "Default:")
                 print((sep * 2) + "::")
@@ -46,6 +53,12 @@ Default variables
                     print((sep * 3) + "%s " % line)
             else:
                 print((sep * 3) + "Default: ``%s``" % val)
+
+            print("\n")
+
+            if os.path.exists(os.path.join(source, doc_file)):
+                print((sep * 3) + ".. include:: %s" % doc_file)
+
             print("\n")
 
 
