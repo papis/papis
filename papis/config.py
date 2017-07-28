@@ -123,6 +123,8 @@ def get_scripts_folder():
 
 def set(key, val, section=None):
     config = get_configuration()
+    if not config.has_section(section or "settings"):
+        config.add_section(section or "settings")
     # FIXME: Right now we can only save val in string form
     # FIXME: It would be nice to be able to save also int and booleans
     config.set(section or get_general_settings_name(), key, str(val))
