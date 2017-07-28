@@ -85,4 +85,4 @@ class Mv(papis.commands.Command):
         cmd = [mvtool, folder, new_folder]
         self.logger.debug(cmd)
         subprocess.call(cmd)
-        papis.utils.clear_lib_cache(self.args.lib)
+        papis.utils.clear_lib_cache()

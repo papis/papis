@@ -45,4 +45,4 @@ class Rm(papis.commands.Command):
                 sys.exit(0)
         print("Removing %s..." % folder)
         shutil.rmtree(folder)
-        papis.utils.clear_lib_cache(self.args.lib)
+        papis.utils.clear_lib_cache()

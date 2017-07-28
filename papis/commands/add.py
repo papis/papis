@@ -384,7 +384,7 @@ class Add(papis.commands.Command):
             (document.get_main_folder(), fullDirPath)
         )
         shutil.move(document.get_main_folder(), fullDirPath)
-        papis.utils.clear_lib_cache(self.args.lib)
+        papis.utils.clear_lib_cache()
         if self.args.commit and papis.utils.lib_is_git_repo(self.args.lib):
             subprocess.call(["git", "-C", fullDirPath, "add", "."])
             subprocess.call(

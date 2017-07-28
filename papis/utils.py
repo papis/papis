@@ -255,11 +255,16 @@ def clear_cache(directory):
         os.remove(cache_path)
 
 
-def clear_lib_cache(lib):
-    """Clear cache associated with a library
+def clear_lib_cache(lib=None):
+    """Clear cache associated with a library. If no library is given
+    then the current library is used.
+
+    :param lib: Library name.
+    :type  lib: str
     """
-    config = papis.config.get_configuration()
-    directory = config[lib]["dir"]
+    if lib is None:
+        lib = get_lib()
+    directory = papis.config.get("dir", section=lib)
     clear_cache(directory)
 
 
@@ -267,9 +272,11 @@ def folder_is_git_repo(folder):
     """Check if folder is a git repository
 
     :folder: Folder to check
-    :returns: True/False
+    :returns: Wether is git repo or not
+    :rtype:  bool
 
     """
+    # TODO: Improve detection of git repository
     logger.debug("Check if %s is a git repo" % folder)
     git_path = os.path.join(os.path.expanduser(folder),".git")
     if os.path.exists(git_path):
@@ -282,9 +289,9 @@ def folder_is_git_repo(folder):
 def lib_is_git_repo(library):
     """Check if library is a git repository
 
-    :folder: Library to check
-    :returns: True/False
-
+    :library: Library to check
+    :returns: Wether is git repo or not
+    :rtype:  bool
     """
     config = papis.config.get_configuration()
     return folder_is_git_repo(config.get(library, "dir"))
@@ -292,11 +299,19 @@ def lib_is_git_repo(library):
 
 def get_info_file_name():
     """Get the name of the general info file for any document
-    :returns: string
-
+    :returns: Name of the file.
+    :rtype: str
     """
     return "info.yaml"
 
 def doi_to_data(doi):
+    """Try to get from a DOI expression a dictionary with the document's data
+    using the crossref module.
+
+    :param doi: DOI expression.
+    :type  doi: str
+    :returns: Document's data
+    :rtype: dict
+    """
     bibtex = papis.crossref.doi_to_bibtex(doi)
     return papis.bibtex.bibtex_to_dict(bibtex)
