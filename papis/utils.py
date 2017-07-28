@@ -25,7 +25,12 @@ def get_lib():
     try:
         lib = papis.commands.get_args().lib
     except AttributeError:
-        lib = os.environ["PAPIS_LIB"]
+        try:
+            lib = os.environ["PAPIS_LIB"]
+        except KeyError:
+            # Do not put papis.config.get because get is a special function
+            # that also needs the library to see if some key was overriden!
+            lib = papis.config.get_default_settings(key="default-library")
     return lib
 
 

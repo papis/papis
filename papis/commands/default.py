@@ -21,7 +21,7 @@ class Default(papis.commands.Command):
             "-l",
             "--lib",
             help="Choose a library name or library path (unamed library)",
-            default=self.get_config()["settings"]["default"] or "papers",
+            default=papis.config.get("default-library"),
             action="store"
         )
 

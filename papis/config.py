@@ -17,15 +17,15 @@ OVERRIDE_VARS = {
 
 
 general_settings = {
-    "mode"         : "document",
-    "opentool"     : "xdg-open",
-    "picktool"     : "papis.pick",
-    "editor"       : "xdg-open",
-    "file-browser" : "xdg-open",
-    "default"      : "papers",
-    "match-format" : \
+    "mode"            : "document",
+    "opentool"        : "xdg-open",
+    "picktool"        : "papis.pick",
+    "editor"          : "xdg-open",
+    "file-browser"    : "xdg-open",
+    "default-library" : "papers",
+    "match-format"    : \
         "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
-    "header-format": \
+    "header-format"   : \
         "{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:-<4})",
 }
 
