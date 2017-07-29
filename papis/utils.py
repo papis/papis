@@ -169,6 +169,13 @@ def get_folders(folder):
 
 def get_documents(directory, search=""):
     """Get documents from within a containing folder
+
+    :param directory: Folder to look for documents.
+    :type  directory: str
+    :param search: Valid papis search
+    :type  search: str
+    :returns: List of document objects.
+    :rtype: list
     """
     directory = os.path.expanduser(directory)
     cache = papis.config.get_cache_folder()
@@ -188,7 +195,6 @@ def get_documents(directory, search=""):
         create_cache(folders, cache_path)
     logger.debug("Creating document objects")
     # TODO: Optimize this step, do it faster
-    # documents = [papis.document.Document(d) for d in folders]
     documents = folders_to_documents(folders)
     logger.debug("Done")
     if search == "" or search == ".":
@@ -201,9 +207,16 @@ def get_documents(directory, search=""):
 
 
 def folders_to_documents(folders):
-    """Turn folders into document efficiently
+    """Turn folders into documents, this is done in a multiprocessing way, this
+    step is quite critical for performance.
+
+    :param folders: List of folder paths.
+    :type  folders: list
+    :returns: List of document objects.
+    :rtype:  list
     """
     import multiprocessing
+    logger = logging.getLogger("dir2doc")
     np = get_arg("cores", multiprocessing.cpu_count())
     logger.debug("Running in %s cores" % np)
     pool = multiprocessing.Pool(np)
@@ -216,29 +229,43 @@ def folders_to_documents(folders):
 
 
 def get_cache(path):
-    import pickle
-    """Save obj in path
-    :obj: Any serializable object
-    :path: Path in string
+    """Get contents stored in a cache file ``path`` in pickle binary format.
+
+    :param path: Path to the cache file.
+    :type  path: str
+    :returns: Content of the cache file.
+    :rtype: object
     """
+    import pickle
     logger.debug("Getting cache %s " % path)
     return pickle.load(open(path, "rb"))
 
 
 def create_cache(obj, path):
-    import pickle
-    """Save obj in path
-    :obj: Any serializable object
-    :path: Path in string
+    """Create a cache file in ``path`` with obj as its content using pickle
+    binary format.
+
+    :param obj: Any seriazable object.
+    :type  obj: object
+    :param path: Path to the cache file.
+    :type  path: str
+    :returns: Nothing
+    :rtype: None
     """
+    import pickle
     logger.debug("Saving in cache %s " % path)
     pickle.dump(obj, open(path, "wb+"))
 
 
 def get_cache_name(directory):
-    import hashlib
-    """Get the associated cache name from a directory
+    """Create a cache file name out of the path of a given directory.
+
+    :param directory: Folder name to be used as a seed for the cache name.
+    :type  directory: str
+    :returns: Name for the cache file.
+    :rtype:  str
     """
+    import hashlib
     return hashlib\
            .md5(directory.encode())\
            .hexdigest()+"-"+os.path.basename(directory)
@@ -246,6 +273,11 @@ def get_cache_name(directory):
 
 def clear_cache(directory):
     """Clear cache associated with a directory
+
+    :param directory: Folder name that was used as a seed for the cache name.
+    :type  directory: str
+    :returns: Nothing
+    :rtype: None
     """
     directory = os.path.expanduser(directory)
     cache_name = get_cache_name(directory)
