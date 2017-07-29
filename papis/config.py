@@ -217,6 +217,14 @@ def getboolean(*args, **kwargs):
 
 
 def in_mode(mode):
+    """Get mode of the library. In principle every library can have a mode,
+    and depending on the mode some extra options can be offered.
+
+    :param mode: Name of the mode used.
+    :type  mode: str
+    :returns: Return true if mode matches
+    :rtype: bool
+    """
     current_mode = get("mode")
     logger.debug("current_mode = %s" % current_mode)
     return mode == current_mode
