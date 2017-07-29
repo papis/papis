@@ -85,15 +85,6 @@ def get_config_folder():
     )
 
 
-def get_cache_folder():
-    """Get folder where the cache files are stored,
-    e.g. /home/user/.papis/cache
-    """
-    return os.path.join(
-        get_config_folder(), "cache"
-    )
-
-
 def get_config_file():
     """Get the path of the main configuration file,
     e.g. /home/user/.papis/config

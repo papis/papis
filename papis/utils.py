@@ -221,22 +221,15 @@ def get_documents(directory, search=""):
     :returns: List of document objects.
     :rtype: list
     """
+    import papis.config
     directory = os.path.expanduser(directory)
-    cache = papis.config.get_cache_folder()
-    cache_name = get_cache_name(directory)
-    cache_path = os.path.join(cache, cache_name)
-    folders = []
-    logger.debug("Getting documents from dir %s" % directory)
-    logger.debug("Cache path = %s" % cache_path)
-    if not os.path.exists(cache):
-        logger.debug("Creating cache dir %s " % cache)
-        os.makedirs(cache)
-    if os.path.exists(cache_path):
-        logger.debug("Loading folders from cache")
-        folders = get_cache(cache_path)
+
+    if papis.config.getboolean("use-cache"):
+        import papis.cache
+        folders = papis.cache.get_folders(directory)
     else:
-        folders = get_folders(directory)
-        create_cache(folders, cache_path)
+        folders = get_folders()
+
     logger.debug("Creating document objects")
     # TODO: Optimize this step, do it faster
     documents = folders_to_documents(folders)
@@ -270,78 +263,6 @@ def folders_to_documents(folders):
     pool.join()
     logger.debug("pool finished")
     return result
-
-
-def get_cache(path):
-    """Get contents stored in a cache file ``path`` in pickle binary format.
-
-    :param path: Path to the cache file.
-    :type  path: str
-    :returns: Content of the cache file.
-    :rtype: object
-    """
-    import pickle
-    logger.debug("Getting cache %s " % path)
-    return pickle.load(open(path, "rb"))
-
-
-def create_cache(obj, path):
-    """Create a cache file in ``path`` with obj as its content using pickle
-    binary format.
-
-    :param obj: Any seriazable object.
-    :type  obj: object
-    :param path: Path to the cache file.
-    :type  path: str
-    :returns: Nothing
-    :rtype: None
-    """
-    import pickle
-    logger.debug("Saving in cache %s " % path)
-    pickle.dump(obj, open(path, "wb+"))
-
-
-def get_cache_name(directory):
-    """Create a cache file name out of the path of a given directory.
-
-    :param directory: Folder name to be used as a seed for the cache name.
-    :type  directory: str
-    :returns: Name for the cache file.
-    :rtype:  str
-    """
-    import hashlib
-    return hashlib\
-           .md5(directory.encode())\
-           .hexdigest()+"-"+os.path.basename(directory)
-
-
-def clear_cache(directory):
-    """Clear cache associated with a directory
-
-    :param directory: Folder name that was used as a seed for the cache name.
-    :type  directory: str
-    :returns: Nothing
-    :rtype: None
-    """
-    directory = os.path.expanduser(directory)
-    cache_name = get_cache_name(directory)
-    cache_path = os.path.join(papis.config.get_cache_folder(), cache_name)
-    if os.path.exists(cache_path):
-        logger.debug("Clearing cache %s " % cache_path)
-        os.remove(cache_path)
-
-
-def clear_lib_cache(lib=None):
-    """Clear cache associated with a library. If no library is given
-    then the current library is used.
-
-    :param lib: Library name.
-    :type  lib: str
-    """
-    if lib is None:
-        lib = get_lib()
-    directory = papis.config.get("dir", section=lib)
-    clear_cache(directory)
 
 
 def folder_is_git_repo(folder):
@@ -380,6 +301,20 @@ def get_info_file_name():
     :rtype: str
     """
     return papis.config.get("info-name")
+
+
+def clear_lib_cache(lib=None):
+    """Clear cache associated with a library. If no library is given
+    then the current library is used.
+
+    :param lib: Library name.
+    :type  lib: str
+    """
+    import papis.cache
+    lib = papis.utils.get_lib() if lib is None else lib
+    directory = papis.config.get("dir", section=lib)
+    papis.cache.clear(directory)
+
 
 def doi_to_data(doi):
     """Try to get from a DOI expression a dictionary with the document's data
