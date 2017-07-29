@@ -216,7 +216,7 @@ def getboolean(*args, **kwargs):
     return general_get(*args, data_type=bool, **kwargs)
 
 
-def inMode(mode):
+def in_mode(mode):
     current_mode = get("mode")
     logger.debug("current_mode = %s" % current_mode)
     return mode == current_mode

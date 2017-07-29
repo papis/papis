@@ -268,7 +268,7 @@ class Add(papis.commands.Command):
         return data
 
     def main(self):
-        if papis.config.inMode("contact"):
+        if papis.config.in_mode("contact"):
             self.init_contact_mode()
         documentsDir = os.path.expanduser(self.get_config()[self.args.lib]["dir"])
         folderName = None
@@ -321,7 +321,7 @@ class Add(papis.commands.Command):
         else:
             document = papis.document.Document(temp_dir)
             print(document["org"])
-            if not papis.config.inMode("contact"):
+            if not papis.config.in_mode("contact"):
                 data["title"] = self.args.title or self.get_default_title(
                     data,
                     documents_paths[0]

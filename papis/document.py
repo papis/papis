@@ -142,7 +142,7 @@ adress:
     home: null"""
 
     def to_vcf(self):
-        if not papis.config.inMode("contact"):
+        if not papis.config.in_mode("contact"):
             # self.logger.error("Not in contact mode")
             sys.exit(1)
         text = \
