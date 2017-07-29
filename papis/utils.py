@@ -171,8 +171,7 @@ def get_documents_in_lib(library, search=""):
     :returns: List of filtered documents.
     :rtype: list
     """
-    config = papis.config.get_configuration()
-    directory = config[library]["dir"]
+    directory = papis.config.get("dir", section=library)
     return get_documents_in_dir(directory, search)
 
 
@@ -362,7 +361,7 @@ def get_info_file_name():
     :returns: Name of the file.
     :rtype: str
     """
-    return papis.config.get("info.yaml")
+    return papis.config.get("info-name")
 
 def doi_to_data(doi):
     """Try to get from a DOI expression a dictionary with the document's data
