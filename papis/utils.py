@@ -299,10 +299,11 @@ def lib_is_git_repo(library):
 
 def get_info_file_name():
     """Get the name of the general info file for any document
+
     :returns: Name of the file.
     :rtype: str
     """
-    return "info.yaml"
+    return papis.config.get("info.yaml")
 
 def doi_to_data(doi):
     """Try to get from a DOI expression a dictionary with the document's data
