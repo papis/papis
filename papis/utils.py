@@ -125,16 +125,34 @@ def general_open(fileName, key, default_opener="xdg-open", wait=False):
         raise Warning("How should I use the opener %s?" % opener)
 
 
-def open_file(fileName):
-    general_open(fileName, "opentool")
+def open_file(file_path):
+    """Open file using the ``opentool`` key value as a program to
+    handle file_path.
+
+    :param file_path: File path to be handled.
+    :type  file_path: str
+    """
+    general_open(file_path, "opentool")
 
 
-def open_dir(fileName):
-    general_open(fileName, "file-browser")
+def open_dir(dir_path):
+    """Open dir using the ``file-browser`` key value as a program to
+    open dir_path.
+
+    :param dir_path: Folder path to be handled.
+    :type  dir_path: str
+    """
+    general_open(dir_path, "file-browser")
 
 
-def edit_file(fileName, configuration={}):
-    general_open(fileName, "editor")
+def edit_file(file_path):
+    """Edit file using the ``editor`` key value as a program to
+    handle file_path.
+
+    :param file_path: File path to be handled.
+    :type  file_path: str
+    """
+    general_open(file_path, "editor")
 
 
 def match_document(document, search, match_format=""):
