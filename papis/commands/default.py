@@ -55,19 +55,13 @@ class Default(papis.commands.Command):
         )
 
         self.default_parser.add_argument(
-            "--rofi",
-            help="Use rofi as a picktool",
-            action="store_true"
-        )
-
-        self.default_parser.add_argument(
             "--pick-lib",
             help="Pick library to use",
             action="store_true"
         )
 
         self.default_parser.add_argument(
-            "--clear-cache",
+            "--clear-cache", "--cc",
             help="Clear cache of the library used",
             action="store_true"
         )
@@ -95,9 +89,6 @@ class Default(papis.commands.Command):
             papis.config.set_config_file(self.args.config)
             papis.config.reset_configuration()
             papis.commands.Command.config = papis.config.get_configuration()
-
-        if self.args.rofi:
-            self.args.picktool = "rofi"
 
         if self.args.picktool:
             papis.config.set("picktool", self.args.picktool)

@@ -49,5 +49,7 @@ class Gui(papis.commands.Command):
             return self.tk_main()
         if self.args.vim:
             return self.vim_main()
-        else:
+        if self.args.vim:
             return self.rofi_main()
+        default = papis.config.get("default-gui")
+        return exec("self.%s_main()" % default)
