@@ -204,7 +204,7 @@ def folders_to_documents(folders):
     """Turn folders into document efficiently
     """
     import multiprocessing
-    np = get_arg("cores", os.cpu_count())
+    np = get_arg("cores", multiprocessing.cpu_count())
     logger.debug("Running in %s cores" % np)
     pool = multiprocessing.Pool(np)
     logger.debug("pool started")

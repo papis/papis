@@ -76,7 +76,7 @@ class Default(papis.commands.Command):
             "-j", "--cores",
             help="Number of cores to run some multicore functionality",
             type=int,
-            default=os.cpu_count(),
+            default=__import__("multiprocessing").cpu_count(),
             action="store"
         )
 
