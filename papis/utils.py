@@ -147,17 +147,44 @@ def match_document(document, search, match_format=""):
 
 
 def get_documents_in_dir(directory, search=""):
+    """Get documents contained in the given folder with possibly a search
+    string.
+
+    :param directory: Folder path.
+    :type  directory: str
+    :param search: Search string
+    :type  search: str
+    :returns: List of filtered documents.
+    :rtype: list
+    """
     return get_documents(directory, search)
 
 
 def get_documents_in_lib(library, search=""):
+    """Get documents contained in the given library with possibly a search
+    string.
+
+    :param library: Library name.
+    :type  library: str
+    :param search: Search string
+    :type  search: str
+    :returns: List of filtered documents.
+    :rtype: list
+    """
     config = papis.config.get_configuration()
     directory = config[library]["dir"]
     return get_documents_in_dir(directory, search)
 
 
 def get_folders(folder):
-    """Get documents from a containing folder
+    """This is the main indexing routine. It looks inside ``folder`` and crawls
+    the whole directory structure in search for subfolders containing an info
+    file.
+
+    :param folder: Folder to look into.
+    :type  folder: str
+    :returns: List of folders containing an info file.
+    :rtype: list
     """
     logger.debug("Indexing folders")
     folders = list()
