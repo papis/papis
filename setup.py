@@ -22,6 +22,7 @@ setup(
     install_requires=[
         "requests>=2.11.1",
         "argcomplete>=1.8.2",
+        "configparser>=3.0.0",
         "arxiv2bib>=1.0.7",
         "PyYAML>=3.12",
         "pdfminer2==20151206",
