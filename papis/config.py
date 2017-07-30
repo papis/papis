@@ -24,6 +24,7 @@ general_settings = {
     "editor"          : "xdg-open",
     "sync-command"    : "git -C $dir pull origin master",
     "notes-name"      : "notes.tex",
+    "format-doc-name" : "doc",
     "use-cache"       : True,
     "default-gui"     : "vim",
     "info-name"       : "info.yaml",

@@ -155,13 +155,51 @@ def edit_file(file_path):
     general_open(file_path, "editor")
 
 
-def match_document(document, search, match_format=""):
-    if not match_format:
-        match_format = papis.config.get("match-format")
-    match_string = match_format.format(doc=document)
-    regex = r".*"+re.sub(r"\s+", ".*", search)
-    m = re.match(regex, match_string, re.IGNORECASE)
-    return True if m else False
+def get_regex_from_search(search):
+    """Creates a default regex from a search string.
+
+    :param search: A valid search string
+    :type  search: str
+    :returns: Regular expression
+    :rtype: str
+    """
+    return r".*"+re.sub(r"\s+", ".*", search)
+
+def format_doc(python_format, document):
+    """Construct a string using a pythonic format string and a document.
+
+    :param python_format: Python-like format string.
+        (`see <
+            https://docs.python.org/2/library/string.html#format-string-syntax
+        >`_)
+    :type  python_format: str
+    :param document: Papis document
+    :type  document: papis.document.Document
+    :returns: Formated string
+    :rtype: str
+    """
+    doc = papis.config.get("format-doc-name")
+    return python_format.format({doc: document})
+
+
+def match_document(document, search, match_format=None):
+    """Main function to match document to a given search.
+
+    :param document: Papis document
+    :type  document: papis.document.Document
+    :param search: A valid search string
+    :type  search: str
+    :param match_format: Python-like format string.
+        (`see <
+            https://docs.python.org/2/library/string.html#format-string-syntax
+        >`_)
+    :type  match_format: str
+    :returns: Non false if matches, true-ish if it does match.
+    """
+    match_format = match_format or papis.config.get("match-format")
+    match_string = format_doc(match_format, document)
+    regex = get_regex_from_search(search)
+    return re.match(regex, match_string, re.IGNORECASE)
 
 
 def get_documents_in_dir(directory, search=""):
