@@ -29,11 +29,14 @@ Take a look at the [documentation](http://papis.readthedocs.io/en/latest/)!
   so that it matches all papers with a regex match for `stein`, then also where
   the year matches `192` (i.e., 1920, 1921...) and then also it matches
   `ueber die` using the default `match-format` configuration variable.
-  *This can be done by updating the function `papis.utils.match_document`*.
+  This can be done by updating the function `papis.utils.match_document`.
 - [ ] Match search strings to documents using multiple cores
   through the standard `multiprocess` module.
+- [ ] Make sure that `setup.py` installs the `python-rofi` module from
+  `https://github.com/alejandrogallo/python-rofi` and not from the original
+  website.
 - [ ] Bibitem support for exporting references in the export command.
-  *This can be done by looking at the code papis.commands.export`*.
+  This can be done by looking at the code papis.commands.export`.
 - [ ] Youtube video explaining the main uses of `papis`.
 - [ ] Debian package.
 - [ ] Testing on Windows.
