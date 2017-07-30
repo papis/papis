@@ -26,7 +26,7 @@ setup(
         "argcomplete>=1.8.2",
         "arxiv2bib>=1.0.7",
         "PyYAML>=3.12",
-        "pdfminer2>=20151206",
+        "pdfminer2==20151206",
         "chardet>=3.0.2",
         "beautifulsoup4>=4.4.1",
         "vobject>=0.9.4.1",
