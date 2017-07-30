@@ -5,8 +5,6 @@
 #   ./venv/bin/pip install --editable .
 #   ./venv/bin/pip install --editable .[dev]  # with dev requirements, too
 
-from __future__ import print_function
-
 from setuptools import setup
 
 import papis
@@ -60,6 +58,7 @@ setup(
         develop=[
             "sphinx",
             'sphinx-argparse',
+            'pytest',
         ]
     ),
     description='Simple program to manage literature',
@@ -91,5 +90,5 @@ setup(
             'papis=papis.main:main'
         ]
     ),
-    platforms=['linux', 'OSX'],
+    platforms=['linux', 'osx'],
 )

@@ -5,8 +5,6 @@ import papis.downloaders.utils
 
 class TestRecognizer(unittest.TestCase):
 
-    """Test case docstring."""
-
     def setUp(self):
         pass
 
@@ -22,9 +20,10 @@ class TestRecognizer(unittest.TestCase):
         aps = papis\
             .downloaders\
             .utils\
-            .getDownloader("http://journals.aps.org/prb/abstract/"
-                           "10.1103/PhysRevB.95.085434")
-        self.assertTrue(aps.src == "aps")
+            .getDownloader(
+                "http://journals.aps.org/prb/abstract/"
+                "10.1103/PhysRevB.95.085434"
+            )
         self.assertTrue(len(aps.getBibtexUrl()))
         aps.downloadBibtex()
         self.assertTrue(len(aps.getBibtexData()) != 0)
