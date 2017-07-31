@@ -20,21 +20,18 @@ If you want to install it globally, just hit
 
 ::
 
-    sudo make install-deps
     sudo make install
 
 If you want to install it locally:
 
 ::
 
-    make install-deps-local
     make install-local
 
 If you want to install it locally and have the development version:
 
 ::
 
-    make install-deps-local
     make install-dev-local
 
 And to see the available targets hit:
@@ -79,6 +76,17 @@ If you want to develop on the code, you can also alternatively hit
   ::
 
     export PATH=$PATH:$HOME/.local/bin
+
+Using pip
+---------
+
+We haven't published the project yet, but if you have git installed
+in your system you can do:
+
+::
+
+  pip install git+git://github.com/alejandrogallo/papis.git
+
 
 Requirements
 ------------
