@@ -1,7 +1,7 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v0.0.1-19-gc59fd92
-MAKEFILE_DATE = 31-07-2017 11:22
+MAKEFILE_VERSION = v0.0.1-21-g392d792
+MAKEFILE_DATE = 31-07-2017 15:47
 MAKEFILE_AUTHOR = Alejandro Gallo
 MAKEFILE_URL = https://github.com/alejandrogallo/python-makefile
 MAKEFILE_LICENSE = GPLv3
@@ -219,11 +219,11 @@ REQUIREMENTS ?= requirements.txt
 # Command to be run when make `install` is run
 INSTALL_COMMAND ?= $(PYTHON) setup.py install
 # Command to be run when make `install-local` is run
-INSTALL_LOCAL_COMMAND ?= $(PYTHON) setup.py install --local
+INSTALL_LOCAL_COMMAND ?= $(PYTHON) setup.py install --user
 # Command to be run when make `install-dev` is run
 INSTALL_DEV_COMMAND ?= $(PYTHON) setup.py develop
 # Command to be run when make `install-dev-local` is run
-INSTALL_DEV_LOCAL_COMMAND ?= $(PYTHON) setup.py develop --local
+INSTALL_DEV_LOCAL_COMMAND ?= $(PYTHON) setup.py develop --user
 # Command to be run when make `uninstall` is run
 UNINSTALL_COMMAND ?= $(PIP) uninstall $(shell $(PYTHON) setup.py --name)
 # Command to be run when make `install-deps` is run
