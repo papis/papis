@@ -17,6 +17,7 @@ command-line interface (*CLI*) is heavily tailored after
    install
    configuration
    info_file
+   database_structure
    commands
    scripting
 

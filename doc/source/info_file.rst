@@ -1,6 +1,4 @@
 The ``info.yaml`` file
 ======================
 
-.. Warning::
-
-  Coming soon...
+At the heart of papis there is the information file.
