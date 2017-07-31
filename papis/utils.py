@@ -249,6 +249,13 @@ def get_folders(folder):
     return folders
 
 
+class DocMatcher(object):
+    search = ""
+    @classmethod
+    def return_if_match(cls, doc):
+        return doc if papis.utils.match_document(doc, cls.search) else None
+
+
 def filter_documents(documents, search=""):
     """Filter documents. It can be done in a multi core way.
 
@@ -261,6 +268,7 @@ def filter_documents(documents, search=""):
 
     """
     logger = logging.getLogger('filter')
+    papis.utils.DocMatcher.search = search
     if search == "" or search == ".":
         return documents
     else:
@@ -277,7 +285,6 @@ def filter_documents(documents, search=""):
                 np
             )
         )
-        papis.utils.DocMatcher.search = search
         logger.debug("pool started")
         begin_t = time.time()
         result = pool.map(
@@ -313,16 +320,6 @@ def get_documents(directory, search=""):
     logger.debug("Done")
 
     return filter_documents(documents, search)
-
-
-
-class DocMatcher(object):
-    search = ""
-    @classmethod
-    def return_if_match(cls, doc):
-        # return doc if papis.utils.match_document(doc, cls.search) else None
-        if papis.utils.match_document(doc, cls.search):
-            return doc
 
 
 def folders_to_documents(folders):
