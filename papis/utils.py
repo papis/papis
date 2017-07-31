@@ -249,6 +249,46 @@ def get_folders(folder):
     return folders
 
 
+def filter_documents(documents, search=""):
+    """Filter documents. It can be done in a multi core way.
+
+    :param documents: List of papis documents.
+    :type  documents: papis.documents.Document
+    :param search: Valid papis search string.
+    :type  search: str
+    :returns: List of filtered documents
+    :rtype:  list
+
+    """
+    logger = logging.getLogger('filter')
+    if search == "" or search == ".":
+        return documents
+    else:
+        # Doing this multiprocessing in filtering does not seem
+        # to help much, I don't know if it's because I'm doing something
+        # wrong or it is really like this.
+        import multiprocessing
+        import time
+        np = get_arg("cores", multiprocessing.cpu_count())
+        pool = multiprocessing.Pool(np)
+        logger.debug(
+            "Filtering docs (search %s) using %s cores" % (
+                search,
+                np
+            )
+        )
+        papis.utils.DocMatcher.search = search
+        logger.debug("pool started")
+        begin_t = time.time()
+        result = pool.map(
+            papis.utils.DocMatcher.return_if_match, documents
+        )
+        pool.close()
+        pool.join()
+        logger.debug("pool done (%s ms)" % (1000*time.time()-1000*begin_t))
+        return [d for d in result if d is not None]
+
+
 def get_documents(directory, search=""):
     """Get documents from within a containing folder
 
@@ -269,16 +309,20 @@ def get_documents(directory, search=""):
         folders = get_folders()
 
     logger.debug("Creating document objects")
-    # TODO: Optimize this step, do it faster
     documents = folders_to_documents(folders)
     logger.debug("Done")
-    if search == "" or search == ".":
-        return documents
-    else:
-        logger.debug("Filtering documents with %s " % search)
-        documents = [d for d in documents if match_document(d, search)]
-        logger.debug("Done")
-        return documents
+
+    return filter_documents(documents, search)
+
+
+
+class DocMatcher(object):
+    search = ""
+    @classmethod
+    def return_if_match(cls, doc):
+        # return doc if papis.utils.match_document(doc, cls.search) else None
+        if papis.utils.match_document(doc, cls.search):
+            return doc
 
 
 def folders_to_documents(folders):
@@ -291,15 +335,17 @@ def folders_to_documents(folders):
     :rtype:  list
     """
     import multiprocessing
+    import time
     logger = logging.getLogger("dir2doc")
     np = get_arg("cores", multiprocessing.cpu_count())
     logger.debug("Running in %s cores" % np)
     pool = multiprocessing.Pool(np)
     logger.debug("pool started")
+    begin_t = time.time()
     result = pool.map(papis.document.Document, folders)
     pool.close()
     pool.join()
-    logger.debug("pool finished")
+    logger.debug("pool done (%s ms)" % (1000*time.time()-1000*begin_t))
     return result
 
 
