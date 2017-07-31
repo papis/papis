@@ -74,6 +74,13 @@ class Default(papis.commands.Command):
             action="store"
         )
 
+        self.default_parser.add_argument(
+            "--set",
+            help="Set key value, e.g., "
+                 "--set info-name=information.yaml:opentool=evince",
+            action="store"
+        )
+
     def main(self):
         self.set_args(papis.commands.get_args())
         log_format = '%(levelname)s:%(name)s:%(message)s'
@@ -84,6 +91,14 @@ class Default(papis.commands.Command):
             level=getattr(logging, self.args.log),
             format=log_format
         )
+
+        if self.args.set:
+            key_vals = [d.split("=") for d in self.args.set.split(":")]
+            for pair in key_vals:
+                print(pair)
+                key = pair[0]
+                val = pair[1]
+                papis.config.set(key, val)
 
         if self.args.config:
             papis.config.set_config_file(self.args.config)
