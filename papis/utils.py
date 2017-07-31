@@ -179,7 +179,7 @@ def format_doc(python_format, document):
     :rtype: str
     """
     doc = papis.config.get("format-doc-name")
-    return python_format.format({doc: document})
+    return python_format.format(**{doc: document})
 
 
 def match_document(document, search, match_format=None):
