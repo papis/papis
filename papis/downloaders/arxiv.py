@@ -11,7 +11,22 @@ class Downloader(papis.downloaders.base.Downloader):
 
     @classmethod
     def match(cls, url):
-        # arXiv:1701.08223v2
+        """
+        >>> Downloader.match(\
+                'blah://pubs.arxiv.org/doi/abs/10.1021/acs.jchemed.6b00559'\
+            ) is False
+        False
+        >>> Downloader.match(\
+                'blah://pubs.arxiv.org/!@#!@$!%!@%!$che.6b00559'\
+            ) is False
+        False
+        >>> Downloader.match(\
+                'arxiv.com/!@#!@$!%!@%!$chemed.6b00559'\
+            ) is False
+        True
+        >>> Downloader.match('arXiv:1701.08223v2') is False
+        False
+        """
         m = re.match(r"^arxiv:(.*)", url, re.IGNORECASE)
         if m:
             url = "https://arxiv.org/abs/{m}".format(m=m.group(1))
@@ -46,4 +61,4 @@ class Downloader(papis.downloaders.base.Downloader):
         self.logger.debug("[pdf url] = %s" % pdf_url)
         return pdf_url
 
-# vim-run: python3 %
+# vim-run: python3 -m doctest %

@@ -9,7 +9,20 @@ class Downloader(papis.downloaders.base.Downloader):
 
     @classmethod
     def match(cls, url):
-        # http://iopscience.iop.org/article/10.1088/0305-4470/24/2/004
+        """
+        >>> Downloader.match(\
+                'http://iopscience.iop.org/article/10.1088/0305-4470/24/2/004'\
+            ) is False
+        False
+        >>> Downloader.match(\
+                'blah://iop.org/!@#!@$!%!@%!$che.6b00559'\
+            ) is False
+        True
+        >>> Downloader.match(\
+                'iopscience.iop.com/!@#!@$!%!@%!$chemed.6b00559'\
+            ) is False
+        True
+        """
         if re.match(r".*iopscience.iop.org.*", url):
             cleaned_url = re.sub(r"\/pdf$", "",
                 re.sub(r"\/$", "", url)

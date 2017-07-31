@@ -9,7 +9,20 @@ class Downloader(papis.downloaders.base.Downloader):
 
     @classmethod
     def match(cls, url):
-        # http://pubs.acs.org/doi/abs/10.1021/acs.jchemed.6b00559
+        """
+        >>> Downloader.match(\
+                'blah://pubs.acs.org/doi/abs/10.1021/acs.jchemed.6b00559'\
+            ) is False
+        False
+        >>> Downloader.match(\
+                'blah://pubs.acs.org/!@#!@$!%!@%!$che.6b00559'\
+            ) is False
+        False
+        >>> Downloader.match(\
+                'acs.com/!@#!@$!%!@%!$chemed.6b00559'\
+            ) is False
+        True
+        """
         if re.match(r".*acs.org.*", url):
             return Downloader(url)
         else:
@@ -39,4 +52,4 @@ class Downloader(papis.downloaders.base.Downloader):
         self.logger.debug("[bibtex url] = %s" % url)
         return url
 
-# vim-run: python3 %
+# vim-run: python3 -m doctest %
