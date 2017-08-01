@@ -15,29 +15,63 @@ As an example let us consider the following library
 ::
 
   /home/fulano/Documents/papers/
-  ├── 046e75f514ec734a1334fbaef69202ef--Hedin-Lars-
+  ├── folder1
   │   └── paper.pdf
-  ├── cc
-  │   ├── 874f8ddf69391babdeb2712e1a14dc2b-HERMANN
+  ├── folder2
+  │   ├── folder3
   │   │   ├── info.yaml
-  │   │   └── s0217979203020442.pdf
-  │   └── a79190dbd574c21792d545b71755aeab-Scuseria-Gustavo-E
+  │   │   └── blahblahblah.pdf
+  │   └── folder4
   │       ├── info.yaml
   │       └── output.pdf
   ├── classics
-  │   └── ac61103f8b7bb4c69fb6ecd0bfc63f37-Feynman-Richard-P
+  │   └── folder5
   │       ├── info.yaml
   │       └── output.pdf
   ├── physics
-  │   └── penrose
-  │       └── 1829d718969c7271c5905fe3a997497b-Roger-Penrose
+  │   └── newton
+  │       └── principia
   │           ├── document.pdf
+  │           ├── supplements.pdf
   │           └── info.yaml
   └─── rpa
-      └── 697d14061ee3554777c7c276d47b0d7c-Furche-Filipp
+      └── bohm
           ├── info.yaml
           ├── notes.tex
           └── output.pdf
 
+The first thing that you might notice is that there are really many folders of
+course. Just to check that you undeerstand exactly what is a document, just
+please think about which of these pdfs is not a valid papis document... That's
+right!, ``folder1/paper.pdf`` is not a valid document since the folder1 does not
+contain any ``info.yaml`` file. You see also that it does not matter how deep the
+folder structure is, you can have in your library a ``physics`` folder, where you
+have a ``newton`` folder, where also you have a folder containing the actual book
+``document.pdf`` plus some supplementary information ``supplements.pdf``.  In this
+case inside the ``info.yaml`` you would have the following ``file`` section
+
+.. code:: yaml
+
+  files:
+  - document.pdf
+  - supplements.pdf
+
+so that you are telling papis that in this folder there are two relevant files.
+
 Cache system
 ------------
+
+The fact that there is no database means that papis should crawl through
+the library folder and see which folders have an ``info.yaml`` file, which
+is for slow computers quite bad.
+
+Papis implements a very rudimentary caching system. A cache is created for
+every library. Inside the cache only the paths to the different valid papis
+documents is stored. These cache files are stored in
+
+::
+
+  ~/.papis/cache
+
+Some papis commands clear the cache automatically, for example the ``add`` and ``rm``
+command clear the cache when something is changed.

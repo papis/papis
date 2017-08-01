@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to papis's documentation!
+Welcome to papis' documentation!
 =================================
 
 Papis is a command-line based document and bibliography manager. Its
