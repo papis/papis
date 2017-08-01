@@ -26,11 +26,18 @@ class Downloader(papis.downloaders.base.Downloader):
         True
         >>> Downloader.match('arXiv:1701.08223v2') is False
         False
+        >>> import re; re.match(\
+                r".*\.pdf\.pdf$",\
+                Downloader.match('https://arxiv.org/pdf/1707.09820.pdf').getDocumentUrl()\
+            ) is None
+        True
         """
         m = re.match(r"^arxiv:(.*)", url, re.IGNORECASE)
         if m:
             url = "https://arxiv.org/abs/{m}".format(m=m.group(1))
         if re.match(r".*arxiv.org.*", url):
+            # https://arxiv.org/pdf/1707.09820|.pdf?blahslas=sdfad|
+            url = re.sub(r"\.pdf.*$", "", url)
             return Downloader(url)
         else:
             return False
