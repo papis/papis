@@ -172,7 +172,12 @@ class Add(papis.commands.Command):
                             "Found %s meta data %s" %
                             (info_key, info[info_key])
                         )
-                        return info[info_key].decode("utf-8")
+                        try:
+                            # Sometimes there is a problem with decoding
+                            # utf8 because of pdfminer implementation
+                            return info[info_key].decode("utf-8")
+                        except:
+                            return None
         elif "epub" in extension:
             if key == "author":
                 key = "Creator"
