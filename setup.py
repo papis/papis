@@ -5,7 +5,18 @@
 #   ./venv/bin/pip install --editable .
 #   ./venv/bin/pip install --editable .[dev]  # with dev requirements, too
 
-from setuptools import setup
+import sys
+
+try:
+    from setuptools import setup
+except ImportError:
+    print(
+        "Error: You do not have setuptools installed, please\n"
+        "       install it. For example doing\n"
+        "\n"
+        "       pip3 install setuptools\n"
+    )
+    sys.exit(1)
 
 import papis
 
