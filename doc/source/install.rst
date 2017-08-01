@@ -96,7 +96,8 @@ system ``python3`` distribution
 
 ::
 
-    python3-readline
     python3-ncurses
+    python3-setuptools
+    python3-readline
 
 However if you have a general enough python distribution they should be installed.
