@@ -7,17 +7,25 @@
 
 import sys
 
-try:
-    from setuptools import setup
-except ImportError:
-    print(
-        "Error: You do not have setuptools installed, please\n"
-        "       install it. For example doing\n"
-        "\n"
-        "       pip3 install setuptools\n"
-    )
-    sys.exit(1)
+main_dependencies = [
+    "setuptools",
+    "curses"
+]
 
+for dep in main_dependencies:
+    try:
+        __import__(dep)
+    except ImportError:
+        print(
+            "Error: You do not have %s installed, please\n"
+            "       install it. For example doing\n"
+            "\n"
+            "       pip3 install %s\n" % (dep, dep)
+        )
+        sys.exit(1)
+
+
+from setuptools import setup
 import papis
 
 
