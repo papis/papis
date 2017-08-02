@@ -2,18 +2,11 @@ import papis
 import os
 import sys
 import shutil
-import string
 import papis.utils
 
 
 class Export(papis.commands.Command):
     def init(self):
-        """TODO: Docstring for init.
-
-        :subparser: TODO
-        :returns: TODO
-
-        """
         # export parser
         self.parser = self.get_subparsers().add_parser(
             "export",
@@ -92,11 +85,8 @@ class Export(papis.commands.Command):
         if self.args.bibtex:
             print(document.to_bibtex())
         if self.args.text:
-            text = string.Template(
-                """$author. $title. $journal $pages $month $year"""
-                ).safe_substitute(
-                    document.to_dict()
-                )
+            text_format = papis.config.get('export-text-format')
+            text = papis.utils.format_doc(text_format, document)
             open(self.args.out, "w").write(text)
         elif self.args.folder:
             outdir = self.args.out or document.get_main_folder_name()

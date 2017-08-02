@@ -33,6 +33,9 @@ general_settings = {
     "info-name"       : "info.yaml",
     "file-browser"    : "xdg-open",
     "default-library" : "papers",
+    "export-text-format" : \
+        "{doc[author]}. {doc[title]}. {doc[journal]} {doc[pages]}"
+        " {doc[month]} {doc[year]}",
     "match-format"    : \
         "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
     "header-format"   : \
