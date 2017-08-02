@@ -45,9 +45,7 @@ class Mv(papis.commands.Command):
             self.get_args().search
         )
 
-        document = self.pick(documents)
-        if not document:
-            sys.exit(0)
+        document = self.pick(documents) or sys.exit(0)
 
         lib_dir = os.path.expanduser(papis.config.get('dir'))
         folder = document.get_main_folder()

@@ -1,5 +1,6 @@
 import papis
 import os
+import sys
 import papis.utils
 
 
@@ -18,7 +19,7 @@ class Browse(papis.commands.Command):
             self.get_args().lib,
             self.get_args().search
         )
-        document = self.pick(documents)
+        document = self.pick(documents) or sys.exit(0)
         if "url" in document.keys():
             papis.utils.general_open(
                 document["url"], "browser"

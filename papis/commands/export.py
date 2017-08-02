@@ -105,11 +105,8 @@ class Export(papis.commands.Command):
         )
 
         if not self.args.all:
-            document = self.pick(documents)
-            if document:
-                documents = [document]
-            else:
-                sys.exit(0)
+            document = self.pick(documents) or sys.exit(0)
+            documents = [document]
 
         for document in documents:
             self.export(document)

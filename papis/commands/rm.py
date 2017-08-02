@@ -27,9 +27,7 @@ class Rm(papis.commands.Command):
             self.get_args().lib,
             self.get_args().search
         )
-        document = self.pick(documents)
-        if not document:
-            sys.exit(0)
+        document = self.pick(documents) or sys.exit(0)
         folder = document.get_main_folder()
         if not self.args.force:
             if input("Are you sure? (Y/n): ") in ["N", "n"]:

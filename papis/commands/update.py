@@ -1,5 +1,6 @@
 import papis
 import os
+import sys
 import shutil
 import papis.utils
 import papis.bibtex
@@ -58,7 +59,7 @@ class Update(papis.commands.Command):
             self.get_args().lib,
             self.get_args().search
         )
-        document = self.pick(documents)
+        document = self.pick(documents) or sys.exit(0)
         data = papis.bibtex.bibtex_to_dict(self.args.from_bibtex) \
             if self.args.from_bibtex else dict()
         if self.args.from_url:
