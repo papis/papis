@@ -12,13 +12,7 @@ class Open(papis.commands.Command):
             help="Open document document from a given library"
         )
 
-        self.parser.add_argument(
-            "document",
-            help="Document search",
-            nargs="?",
-            default=".",
-            action="store"
-        )
+        self.add_search_argument()
 
         self.parser.add_argument(
             "--tool",
@@ -40,7 +34,7 @@ class Open(papis.commands.Command):
 
         documents = papis.utils.get_documents_in_lib(
             self.get_args().lib,
-            self.args.document
+            self.args.search
         )
         if not documents:
             print("No documents found with that name.")

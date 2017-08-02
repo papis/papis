@@ -14,6 +14,8 @@ class Update(papis.commands.Command):
             help="Update a document from a given library"
         )
 
+        self.add_search_argument()
+
         self.parser.add_argument(
             "--from-bibtex",
             help="Update info from bibtex file",
@@ -51,18 +53,10 @@ class Update(papis.commands.Command):
             action="store"
         )
 
-        self.parser.add_argument(
-            "document",
-            help="Document search",
-            nargs="?",
-            default=".",
-            action="store"
-        )
-
     def main(self):
         documents = papis.utils.get_documents_in_lib(
             self.get_args().lib,
-            self.get_args().document
+            self.get_args().search
         )
         document = self.pick(documents)
         data = papis.bibtex.bibtex_to_dict(self.args.from_bibtex) \
@@ -83,4 +77,5 @@ class Update(papis.commands.Command):
                     )
                     shutil.move(document_path, new_path)
         document.update(data, self.args.force, self.args.interactive)
+        self.add_search_argument()
         document.save()

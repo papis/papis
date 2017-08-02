@@ -189,6 +189,15 @@ class Command(object):
     def main(self):
         pass
 
+    def add_search_argument(self):
+        self.parser.add_argument(
+            "search",
+            help="Search query string",
+            nargs="?",
+            default=".",
+            action="store"
+        )
+
     def set_args(self, args):
         self.args = args
 

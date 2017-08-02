@@ -1,5 +1,6 @@
 import papis
 import os
+import sys
 import papis.utils
 import papis.pick
 import papis.config
@@ -13,13 +14,7 @@ class Edit(papis.commands.Command):
             help="Edit document information from a given library"
         )
 
-        self.parser.add_argument(
-            "document",
-            help="Document search",
-            nargs="?",
-            default=".",
-            action="store"
-        )
+        self.add_search_argument()
 
         self.parser.add_argument(
             "-n",
@@ -32,9 +27,9 @@ class Edit(papis.commands.Command):
 
         documents = papis.utils.get_documents_in_lib(
             self.get_args().lib,
-            self.args.document
+            self.args.search
         )
-        document = self.pick(documents)
+        document = self.pick(documents) or sys.exit(0)
 
         if self.args.notes:
             self.logger.debug("Editing notes")

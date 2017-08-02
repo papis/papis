@@ -11,18 +11,12 @@ class Browse(papis.commands.Command):
             help="Open document url if this exists"
         )
 
-        self.parser.add_argument(
-            "document",
-            help="Document search",
-            nargs="?",
-            default=".",
-            action="store"
-        )
+        self.add_search_argument()
 
     def main(self):
         documents = papis.utils.get_documents_in_lib(
             self.get_args().lib,
-            self.get_args().document
+            self.get_args().search
         )
         document = self.pick(documents)
         if "url" in document.keys():

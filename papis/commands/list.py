@@ -17,13 +17,7 @@ class List(papis.commands.Command):
             help="List documents from a given library"
         )
 
-        self.parser.add_argument(
-            "document",
-            help="Document search",
-            default="",
-            nargs="?",
-            action="store"
-        )
+        self.add_search_argument()
 
         self.parser.add_argument(
             "-i",
@@ -92,7 +86,7 @@ class List(papis.commands.Command):
 
         documents = papis.utils.get_documents_in_lib(
             self.get_args().lib,
-            self.get_args().document
+            self.get_args().search
         )
 
         if self.args.pick:

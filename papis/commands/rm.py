@@ -13,13 +13,7 @@ class Rm(papis.commands.Command):
             help="Delete entry"
         )
 
-        self.parser.add_argument(
-            "document",
-            help="Document search",
-            nargs="?",
-            default=".",
-            action="store"
-        )
+        self.add_search_argument()
 
         self.parser.add_argument(
             "-f", "--force",
@@ -31,7 +25,7 @@ class Rm(papis.commands.Command):
     def main(self):
         documents = papis.utils.get_documents_in_lib(
             self.get_args().lib,
-            self.get_args().document
+            self.get_args().search
         )
         document = self.pick(documents)
         if not document:

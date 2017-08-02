@@ -11,13 +11,7 @@ class Check(papis.commands.Command):
             help="Check document document from a given library"
         )
 
-        self.parser.add_argument(
-            "document",
-            help="Document search",
-            nargs="?",
-            default=".",
-            action="store"
-        )
+        self.add_search_argument()
 
         self.parser.add_argument(
             "--keys", "-k",
@@ -30,7 +24,7 @@ class Check(papis.commands.Command):
     def main(self):
         documents = papis.utils.get_documents_in_lib(
             self.get_args().lib,
-            self.get_args().document
+            self.get_args().search
         )
         allOk = True
         for document in documents:

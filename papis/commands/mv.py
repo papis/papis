@@ -14,13 +14,7 @@ class Mv(papis.commands.Command):
             help="Move entry"
         )
 
-        self.parser.add_argument(
-            "document",
-            help="Document search",
-            nargs="?",
-            default=".",
-            action="store"
-        )
+        self.add_search_argument()
 
         self.parser.add_argument(
             "--git",
@@ -41,12 +35,14 @@ class Mv(papis.commands.Command):
         return directories
 
     def main(self):
+
         # Leave this imports here for performance
         import prompt_toolkit
         import prompt_toolkit.contrib.completers
+
         documents = papis.utils.get_documents_in_lib(
             self.get_args().lib,
-            self.args.document
+            self.get_args().search
         )
 
         document = self.pick(documents)

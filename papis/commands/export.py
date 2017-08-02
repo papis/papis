@@ -7,19 +7,13 @@ import papis.utils
 
 class Export(papis.commands.Command):
     def init(self):
-        # export parser
+
         self.parser = self.get_subparsers().add_parser(
             "export",
             help="""Export a document from a given library"""
         )
 
-        self.parser.add_argument(
-            "document",
-            help="Document search",
-            nargs="?",
-            default=".",
-            action="store"
-        )
+        self.add_search_argument()
 
         self.parser.add_argument(
             "--yaml",
@@ -107,7 +101,7 @@ class Export(papis.commands.Command):
 
         documents = papis.utils.get_documents_in_lib(
             self.get_args().lib,
-            self.get_args().document
+            self.get_args().search
         )
 
         if not self.args.all:
