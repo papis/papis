@@ -5,7 +5,7 @@ import configparser
 import papis.commands
 
 
-class Config(papis.commands.Command):
+class Command(papis.commands.Command):
     def init(self):
 
         self.parser = self.get_subparsers().add_parser(

@@ -14,7 +14,7 @@ import papis.bibtex
 import papis.document
 import papis.downloaders.utils
 
-class Add(papis.commands.Command):
+class Command(papis.commands.Command):
 
     def init(self):
 

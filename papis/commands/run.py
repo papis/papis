@@ -4,7 +4,7 @@ import papis.config
 import papis.exceptions
 
 
-class Run(papis.commands.Command):
+class Command(papis.commands.Command):
 
     def init(self):
 

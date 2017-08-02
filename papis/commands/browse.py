@@ -4,7 +4,7 @@ import sys
 import papis.utils
 
 
-class Browse(papis.commands.Command):
+class Command(papis.commands.Command):
     def init(self):
 
         self.parser = self.get_subparsers().add_parser(

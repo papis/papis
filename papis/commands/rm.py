@@ -5,7 +5,7 @@ import shutil
 import papis.utils
 
 
-class Rm(papis.commands.Command):
+class Command(papis.commands.Command):
     def init(self):
 
         self.parser = self.get_subparsers().add_parser(

@@ -105,6 +105,18 @@ def get_subparsers():
     return SUBPARSERS
 
 
+def get_command_class_by_name(name):
+    """This returns returns a command class ready to be initialised
+
+    :param name: Name of the command, e.g., add
+    :type  name: str
+    :returns: A command not initialized
+    :rtype: papis.commands.Command
+    """
+    exec("import papis.commands.%s" % (name))
+    return eval("papis.commands.%s.Command" % name)
+
+
 def init_internal_commands():
     global COMMAND_NAMES
     global logger
@@ -113,8 +125,7 @@ def init_internal_commands():
     logger.debug("Initializing internal commands")
     for command in COMMAND_NAMES:
         logger.debug(command)
-        exec("from .%s import %s" % (command, command.capitalize()))
-        cmd = eval(command.capitalize())()
+        cmd = get_command_class_by_name(command)()
         cmd.init()
         commands[command] = cmd
     return commands
@@ -122,7 +133,7 @@ def init_internal_commands():
 
 def init_external_commands():
     import glob
-    from .external import External
+    from papis.commands.external import Command as External
     logger.debug("Initializing external commands")
     commands = dict()
     paths = []

@@ -6,7 +6,7 @@ import papis.pick
 import papis.config
 
 
-class Edit(papis.commands.Command):
+class Command(papis.commands.Command):
     def init(self):
 
         self.parser = self.get_subparsers().add_parser(

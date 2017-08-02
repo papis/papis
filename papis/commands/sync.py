@@ -4,7 +4,7 @@ import papis.commands
 import papis.config
 
 
-class Sync(papis.commands.Command):
+class Command(papis.commands.Command):
 
     def init(self):
         self.parser = self.get_subparsers().add_parser(

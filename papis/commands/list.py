@@ -9,7 +9,7 @@ import papis.utils
 import papis.downloaders.utils
 
 
-class List(papis.commands.Command):
+class Command(papis.commands.Command):
     def init(self):
 
         self.parser = self.get_subparsers().add_parser(

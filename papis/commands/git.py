@@ -1,7 +1,7 @@
 import papis.commands
 
 
-class Git(papis.commands.Command):
+class Command(papis.commands.Command):
 
     def init(self):
 

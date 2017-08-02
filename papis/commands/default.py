@@ -5,7 +5,7 @@ import papis.commands
 import logging
 
 
-class Default(papis.commands.Command):
+class Command(papis.commands.Command):
 
     def init(self):
 

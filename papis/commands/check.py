@@ -3,7 +3,7 @@ import os
 import papis.utils
 
 
-class Check(papis.commands.Command):
+class Command(papis.commands.Command):
     def init(self):
 
         self.parser = self.get_subparsers().add_parser(

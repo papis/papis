@@ -7,7 +7,7 @@ import papis.bibtex
 import papis.downloaders.utils
 
 
-class Update(papis.commands.Command):
+class Command(papis.commands.Command):
     def init(self):
 
         self.parser = self.get_subparsers().add_parser(

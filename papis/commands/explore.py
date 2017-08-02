@@ -5,7 +5,7 @@ import papis.bibtex
 import urllib.request
 
 
-class Explore(papis.commands.Command):
+class Command(papis.commands.Command):
 
     def init(self):
 

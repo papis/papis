@@ -6,7 +6,7 @@ import papis.config
 import papis.commands
 
 
-class External(papis.commands.Command):
+class Command(papis.commands.Command):
 
     def init(self, path):
         self.script_path = path
