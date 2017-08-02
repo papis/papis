@@ -23,6 +23,7 @@ general_settings = {
     "picktool"        : "papis.pick",
     "mvtool"          : "mv",
     "editor"          : "xdg-open",
+    "xeditor"         : "xdg-open",
     "sync-command"    : "git -C $dir pull origin master",
     "notes-name"      : "notes.tex",
     "format-doc-name" : "doc",

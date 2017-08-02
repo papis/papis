@@ -61,7 +61,7 @@ class Gui(object):
     def export_variables(self, args):
         """Export variables so that vim can use some papis information
         """
-        external_cmd = papis.commands.external.External()
+        external_cmd = papis.commands.external.Command()
         external_cmd.set_args(args)
         external_cmd.export_variables()
 

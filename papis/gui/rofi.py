@@ -177,14 +177,13 @@ class Gui(object):
             self.window.error("No url for document found")
         else:
             papis.utils.general_open(
-                doc["url"], "BROWSER", webbrowser.open
+                doc["url"], "browser"
             )
 
     def edit(self, doc):
         papis.utils.general_open(
             doc.get_info_file(),
             "xeditor",
-            default_opener="xterm -e vim",
             wait=True
         )
         doc.load()
