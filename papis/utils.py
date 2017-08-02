@@ -354,13 +354,17 @@ def folder_is_git_repo(folder):
     :rtype:  bool
 
     """
-    # TODO: Improve detection of git repository
+    import subprocess
     logger.debug("Check if %s is a git repo" % folder)
-    git_path = os.path.join(os.path.expanduser(folder),".git")
-    if os.path.exists(git_path):
-        logger.debug("Detected git repo in %s" % git_path)
+    try:
+        subprocess.check_call(
+            ' '.join(['git', '-C', folder, 'status']),
+            stdout=None,
+            shell=True
+        )
+        logger.debug("Detected git repo in %s" % folder)
         return True
-    else:
+    except:
         return False
 
 
