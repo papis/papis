@@ -3,7 +3,6 @@ import logging
 import tempfile
 import papis.bibtex
 import papis.config
-import papis.exceptions
 
 logger = logging.getLogger("downloader")
 

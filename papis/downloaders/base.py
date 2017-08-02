@@ -1,7 +1,6 @@
 import os
 import logging
 import urllib.request
-import papis.exceptions
 
 
 class Downloader(object):
