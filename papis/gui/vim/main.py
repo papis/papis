@@ -76,7 +76,7 @@ class Gui(object):
         fd = open(temp_file, "w+")
         for doc in documents:
             fd.write(
-                header_format.format(doc=doc)
+                papis.utils.format_doc(header_format, doc)
             )
         fd.close()
 

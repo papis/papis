@@ -142,6 +142,7 @@ adress:
     home: null"""
 
     def to_vcf(self):
+        # TODO: Generalize using the doc variable.
         if not papis.config.in_mode("contact"):
             # self.logger.error("Not in contact mode")
             sys.exit(1)

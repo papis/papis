@@ -110,7 +110,7 @@ class List(papis.commands.Command):
                 )
             elif self.args.format:
                 print(
-                    self.args.format.format(doc=document)
+                    papis.utils.format_doc(self.args.format, document)
                 )
             else:
                 print(document.get_main_folder())

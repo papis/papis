@@ -169,7 +169,10 @@ class PapisList(tk.Frame, PapisWidget):
         for doc in self.documents:
             self.documents_lbls.append(
                 tk.Label(
-                    text=self.get_config("header-format").format(doc=doc),
+                    text=papis.utils.format_doc(
+                        self.get_config("header-format"),
+                        doc
+                    ),
                     justify=tk.LEFT,
                     padx=10,
                     pady=pady,

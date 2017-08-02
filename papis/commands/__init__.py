@@ -224,8 +224,8 @@ class Command(object):
             header_format = papis.config.get("header-format")
             match_format = papis.config.get("match-format")
             pick_config = dict(
-                header_filter=lambda x: header_format.format(doc=x),
-                match_filter=lambda x: match_format.format(doc=x)
+                header_filter=lambda x: papis.utils.format_doc(header_format, x),
+                match_filter=lambda x: papis.utils.format_doc(match_format, x)
             )
         return papis.utils.pick(
             options,

@@ -121,7 +121,7 @@ class Gui(object):
         indices = None
         options = get_options()
         header_format = papis.config.get("header-format", section="rofi-gui")
-        header_filter = lambda x: header_format.format(doc=x)
+        header_filter = lambda x: papis.utils.format_doc(header_format, x)
         self.help_message = self.get_help()
         options.update(self.keys)
         # Initialize window
