@@ -23,9 +23,9 @@ class Mv(papis.commands.Command):
         )
 
         self.parser.add_argument(
-            "-t", "--tool",
-            help="Move tool",
-            action="store"
+            "--git",
+            help="Move document using git (git mv)",
+            action="store_true"
         )
 
     def get_dirs(self, main):
@@ -40,49 +40,49 @@ class Mv(papis.commands.Command):
         self.logger.debug(directories)
         return directories
 
-    def completer(self, text, state, values):
-        options = [x for x in values if x.startswith(text)]
-        try:
-            return options[state]
-        except IndexError:
-            return None
-
     def main(self):
-        import readline
-        documentsDir = os.path.expanduser(self.get_config()[self.args.lib]["dir"])
-        self.logger.debug("Using directory %s" % documentsDir)
-        documentSearch = self.args.document
-        documents = papis.utils.get_documents_in_dir(
-            documentsDir,
-            documentSearch
+        # Leave this imports here for performance
+        import prompt_toolkit
+        import prompt_toolkit.contrib.completers
+        documents = papis.utils.get_documents_in_lib(
+            self.get_args().lib,
+            self.args.document
         )
+
         document = self.pick(documents)
         if not document:
             sys.exit(0)
+
+        lib_dir = os.path.expanduser(papis.config.get('dir'))
         folder = document.get_main_folder()
 
-        directories = self.get_dirs(documentsDir)
-        readline.set_completer(
-            lambda text, state: self.completer(text, state, directories)
-        )
-        readline.parse_and_bind("tab: complete")
+        directories = self.get_dirs(lib_dir)
 
-        print("Enter directory: (Tab completion enabled)")
-        new_folder = os.path.join(documentsDir, input("dir: "))
+        completer = prompt_toolkit.contrib.completers.WordCompleter(
+            directories
+        )
+
+        try:
+            new_folder = os.path.join(
+                lib_dir,
+                prompt_toolkit.prompt(
+                    "Enter directory: (Tab completion enabled)\n"
+                    ">  ",
+                    completer=completer
+                )
+            )
+        except:
+            sys.exit(0)
+
         self.logger.info(new_folder)
+
         if not os.path.exists(new_folder):
             self.logger.info("Creating path %s" % new_folder)
             os.makedirs(new_folder)
-        if self.args.tool:
-            mvtool = self.args.tool
-        elif "mvtool" in self.get_config()[self.args.lib].keys():
-            mvtool = self.get_config()[self.args.lib]["mvtool"]
-        elif "mvtool" in self.get_config()["settings"].keys():
-            mvtool = self.get_config()["settings"]["mvtool"]
-        else:
-            mvtool = "mv"
 
-        cmd = [mvtool, folder, new_folder]
+        mvtool = papis.config.get("mvtool")
+
+        cmd = ["git mv" if self.args.git else mvtool, folder, new_folder]
         self.logger.debug(cmd)
         subprocess.call(cmd)
         papis.utils.clear_lib_cache()

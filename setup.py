@@ -40,6 +40,7 @@ setup(
         "chardet>=3.0.2",
         "beautifulsoup4>=4.4.1",
         "vobject>=0.9.4.1",
+        "prompt-toolkit>=1.0.0",
         "python-rofi",
     ],
     classifiers=[
