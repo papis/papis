@@ -73,11 +73,11 @@ def get(url, data_format="bibtex"):
                 data = papis.bibtex.bibtex_to_dict(
                     downloader.getBibtexData()
                 )
-        except papis.exceptions.NotImplemented:
+        except NotImplementedError:
             data = dict()
     try:
         doc_data = downloader.getDocumentData()
-    except papis.exceptions.NotImplemented:
+    except NotImplementedError:
         doc_data = False
     if doc_data:
         documents_paths.append(tempfile.mktemp())

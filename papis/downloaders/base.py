@@ -33,7 +33,7 @@ class Downloader(object):
         :param url: Url where the document should be retrieved from.
         :type  url: str
         """
-        raise papis.exceptions.NotImplemented(
+        raise NotImplementedError(
             "Matching url not implemented for this downloader"
         )
 
@@ -45,7 +45,7 @@ class Downloader(object):
         :returns: Bibtex url
         :rtype:  str
         """
-        raise papis.exceptions.NotImplemented(
+        raise NotImplementedError(
             "Getting bibtex url not implemented for this downloader"
         )
 
@@ -85,7 +85,7 @@ class Downloader(object):
         :returns: Document url
         :rtype:  str
         """
-        raise papis.exceptions.NotImplemented(
+        raise NotImplementedError(
             "Getting bibtex url not implemented for this downloader"
         )
 
@@ -97,7 +97,7 @@ class Downloader(object):
         :returns: Document doi
         :rtype:  str
         """
-        raise papis.exceptions.NotImplemented(
+        raise NotImplementedError(
             "Getting document url not implemented for this downloader"
         )
 
