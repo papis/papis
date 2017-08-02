@@ -46,12 +46,6 @@ class Add(papis.commands.Command):
         )
 
         self.parser.add_argument(
-            "--edit",
-            help="Edit info file after adding document",
-            action="store_true"
-        )
-
-        self.parser.add_argument(
             "--title",
             help="Title for document",
             default="",
@@ -115,7 +109,15 @@ class Add(papis.commands.Command):
         self.parser.add_argument(
             "--confirm",
             help="Ask to confirm before adding to the collection",
-            action="store_true"
+            action='store_false' if papis.config.get('add-confirm') \
+                else 'store_true'
+        )
+
+        self.parser.add_argument(
+            "--edit",
+            help="Edit info file after adding document",
+            action='store_false' if papis.config.get('add-edit') \
+                else 'store_true'
         )
 
         self.parser.add_argument(

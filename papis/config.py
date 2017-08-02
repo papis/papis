@@ -26,6 +26,8 @@ general_settings = {
     "notes-name"      : "notes.tex",
     "format-doc-name" : "doc",
     "use-cache"       : True,
+    "add-confirm"     : False,
+    "add-edit"        : False,
     "default-gui"     : "vim",
     "info-name"       : "info.yaml",
     "file-browser"    : "xdg-open",
