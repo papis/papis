@@ -245,18 +245,16 @@ class Command(papis.commands.Command):
     def main(self):
         if papis.config.in_mode("contact"):
             self.init_contact_mode()
-        documentsDir = os.path.expanduser(self.get_config()[self.args.lib]["dir"])
+        lib_dir = os.path.expanduser(papis.config.get('dir'))
         folderName = None
         data = dict()
-        self.logger.debug("Saving in directory %s" % documentsDir)
-        # if documents are posible to download from url, overwrite
-        documents_paths = self.args.document
+        in_documents_paths = self.args.document
         documents_names = []
         temp_dir = tempfile.mkdtemp("-"+self.args.lib)
         if self.args.from_url:
             url_data = papis.downloaders.utils.get(self.args.from_url)
             data.update(url_data["data"])
-            documents_paths.extend(url_data["documents_paths"])
+            in_documents_paths.extend(url_data["documents_paths"])
             # If no data was retrieved and doi was found, try to get
             # information with the document's doi
             if not data and\
@@ -293,22 +291,22 @@ class Command(papis.commands.Command):
             data.update(papis.utils.vcf_to_data(self.args.from_vcf))
         documents_names = [
             self.clean_document_name(documentPath)
-            for documentPath in documents_paths
+            for documentPath in in_documents_paths
         ]
         if self.args.to:
             documents = papis.utils.get_documents_in_dir(
-                documentsDir,
+                lib_dir,
                 self.args.to
             )
             document = self.pick(documents)
             if not document:
                 sys.exit(0)
             data = document.to_dict()
-            documents_paths = [
+            in_documents_paths = [
                 os.path.join(
                     document.get_main_folder(),
                     d
-                ) for d in document["files"]] + documents_paths
+                ) for d in document["files"]] + in_documents_paths
             data["files"] = document["files"] + documents_names
             folderName = document.get_main_folder_name()
             fullDirPath = document.get_main_folder()
@@ -318,16 +316,16 @@ class Command(papis.commands.Command):
             if not papis.config.in_mode("contact"):
                 data["title"] = self.args.title or self.get_default_title(
                     data,
-                    documents_paths[0]
+                    in_documents_paths[0]
                 )
                 data["author"] = self.args.author or self.get_default_author(
                     data,
-                    documents_paths[0]
+                    in_documents_paths[0]
                 )
                 self.logger.debug("Author = % s" % data["author"])
                 self.logger.debug("Title = % s" % data["title"])
             if not self.args.name:
-                folderName = self.get_hash_folder(data, documents_paths[0])
+                folderName = self.get_hash_folder(data, in_documents_paths[0])
             else:
                 folderName = string\
                             .Template(self.args.name)\
@@ -335,11 +333,11 @@ class Command(papis.commands.Command):
                             .replace(" ", "-")
             data["files"] = documents_names
             fullDirPath = os.path.join(
-                documentsDir, self.args.dir,  folderName
+                lib_dir, self.args.dir,  folderName
             )
         ######
         self.logger.debug("Folder = % s" % folderName)
-        self.logger.debug("File = % s" % documents_paths)
+        self.logger.debug("File = % s" % in_documents_paths)
         ######
         if not os.path.isdir(temp_dir):
             self.logger.debug("Creating directory '%s'" % temp_dir)
@@ -351,9 +349,9 @@ class Command(papis.commands.Command):
             self.logger.debug("Loading the changes made by editing")
             document.load()
             data = document.to_dict()
-        for i in range(min(len(documents_paths), len(data["files"]))):
+        for i in range(min(len(in_documents_paths), len(data["files"]))):
             documentName = data["files"][i]
-            documentPath = documents_paths[i]
+            documentPath = in_documents_paths[i]
             assert(os.path.exists(documentPath))
             endDocumentPath = os.path.join(
                     document.get_main_folder(), documentName)
@@ -369,7 +367,7 @@ class Command(papis.commands.Command):
             shutil.copy(documentPath, endDocumentPath)
         document.update(data, force=True)
         if self.get_args().open:
-            for d_path in documents_paths:
+            for d_path in in_documents_paths:
                 papis.utils.open_file(d_path)
         if self.args.confirm:
             if not papis.utils.confirm('Really add?'):
