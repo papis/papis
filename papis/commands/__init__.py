@@ -1,10 +1,11 @@
-import os
 import logging
+
+logger = logging.getLogger("commands")
+logger.debug("importing")
+
+import os
 import papis.utils
 import papis.config
-import argparse
-import argcomplete
-
 COMMAND_NAMES = [
     "default",
     "add",
@@ -25,7 +26,6 @@ COMMAND_NAMES = [
     "sync"
 ]
 
-logger = logging.getLogger("commands")
 DEFAULT_PARSER = None
 SUBPARSERS = None
 COMMANDS = None
@@ -81,6 +81,7 @@ def get_args():
 
 
 def get_default_parser():
+    import argparse
     global DEFAULT_PARSER
     global logger
     if DEFAULT_PARSER is None:
@@ -152,22 +153,25 @@ def init_external_commands():
 
 
 def init():
+    # import argcomplete
     if get_commands() is not None:
         raise RuntimeError("Commands are already initialised")
     commands = dict()
     commands.update(init_internal_commands())
-    commands.update(init_external_commands())
+    # commands.update(init_external_commands())
     set_commands(commands)
     # autocompletion
-    argcomplete.autocomplete(get_default_parser())
+    # argcomplete.autocomplete(get_default_parser())
     return commands
 
 
 def main(input_args=[]):
+    init()
     commands = get_commands()
     # Parse arguments
     args = get_default_parser().parse_args(input_args or None)
     set_args(args)
+    logger.debug("running main")
     commands["default"].main()
 
 
