@@ -25,10 +25,7 @@ class Command(papis.commands.Command):
 
     def get_command_name(self):
         m = re.match(r"^.*papis-(.*)$", self.script_path)
-        if not m:
-            return None
-        else:
-            return m.group(1)
+        return m.group(1) if m else None
 
     def get_command_help(self):
         p = subprocess.Popen(
