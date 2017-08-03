@@ -473,3 +473,24 @@ def vcf_to_data(vcard_path):
             data[ctype][param_type.lower()] = getattr(vcard_asset, "value")
     logger.debug("Read in data = %s" % data)
     return data
+
+
+def confirm(prompt, yes=True):
+    """Confirm with user input
+
+    :param prompt: Question or text that the user gets.
+    :type  prompt: str
+    :param yes: If yes should be the default.
+    :type  yes: bool
+    :returns: True if go ahead, False if stop
+    :rtype:  bool
+
+    """
+    import prompt_toolkit
+    result = prompt_toolkit.prompt(
+        pompt + '(%s):' % ('Y/n' if yes else 'y/N')
+    )
+    if yes:
+        return result not in 'Nn':
+    else:
+        return result not in 'Yy':
