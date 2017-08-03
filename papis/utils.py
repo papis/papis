@@ -423,7 +423,7 @@ def yaml_to_data(yaml_path):
     :rtype:  dict
     """
     import yaml
-    return yaml.load(open(self.args.from_yaml))
+    return yaml.load(open(yaml_path))
 
 
 def vcf_to_data(vcard_path):
