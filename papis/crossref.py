@@ -187,10 +187,15 @@ def get_citation_info_from_results(container):
 
     """
     citations_info = dict(citations=[])
+    logger.debug("Getting citations..")
 
     for node in container.getElementsByTagName("citation"):
         citation = dict()
-        doi = node.getElementsByTagName('doi')[0].firstChild.data
+        # Some documents do not have a doi:
+        doi_node = node.getElementsByTagName('doi')
+        if len(doi_node) == 0:
+            continue
+        doi = doi_node[0].firstChild.data
         citation[ 'doi' ] = doi
         citations_info['citations'].append(citation)
 
@@ -205,6 +210,7 @@ def get_author_info_from_results(container):
     :rtype:  dict
 
     """
+    logger.debug("Getting authors..")
     authors_info = dict(author_list=[], author=None)
 
     for node in container.getElementsByTagName("person_name"):

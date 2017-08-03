@@ -19,7 +19,10 @@ logger.debug("Imported commands")
 
 
 def main():
-    papis.commands.main()
+    try:
+        papis.commands.main()
+    except KeyboardInterrupt:
+        print('Getting you out of here...')
 
 
 if sys.version_info < (3, 2):
