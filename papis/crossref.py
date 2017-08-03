@@ -244,7 +244,12 @@ def get_cross_ref(doi):
         "format": "unixref"
     })
     req_url = "http://www.crossref.org/openurl/?" + params
-    url = Request(req_url)
+    url = Request(
+        req_url,
+        headers={
+            'User-Agent': papis.config.get('user-agent')
+        }
+    )
     doc = urlopen(url).read()
     logger.debug("Request url: %s" % req_url)
 
