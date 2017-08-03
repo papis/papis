@@ -488,9 +488,9 @@ def confirm(prompt, yes=True):
     """
     import prompt_toolkit
     result = prompt_toolkit.prompt(
-        pompt + '(%s):' % ('Y/n' if yes else 'y/N')
+        prompt + ' (%s): ' % ('Y/n' if yes else 'y/N')
     )
     if yes:
-        return result not in 'Nn':
+        return result not in ['N', 'n']
     else:
-        return result not in 'Yy':
+        return result not in ['Y', 'y']
