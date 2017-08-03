@@ -158,7 +158,7 @@ def init():
         raise RuntimeError("Commands are already initialised")
     commands = dict()
     commands.update(init_internal_commands())
-    # commands.update(init_external_commands())
+    commands.update(init_external_commands())
     set_commands(commands)
     # autocompletion
     # argcomplete.autocomplete(get_default_parser())
