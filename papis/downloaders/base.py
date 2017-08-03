@@ -1,6 +1,7 @@
 import os
 import logging
 import urllib.request
+import papis.config
 
 
 class Downloader(object):
@@ -124,7 +125,13 @@ class Downloader(object):
         url = self.getDocumentUrl()
         if not url:
             return False
-        data = urllib.request.urlopen(url).read()
+        request = urllib.request.Request(
+            url,
+            headers={
+                'User-Agent': papis.config.get('user-agent')
+            }
+        )
+        data = urllib.request.urlopen(request).read()
         self.document_data = data
 
     def setUrl(self, url):
