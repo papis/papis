@@ -329,6 +329,7 @@ class Command(papis.commands.Command):
             document.update(data, force=True)
             document.save()
             papis.utils.edit_file(document.get_info_file())
+            self.logger.debug("Loading the changes made by editing")
             document.load()
             data = document.to_dict()
         for i in range(min(len(documents_paths), len(data["files"]))):
@@ -348,6 +349,9 @@ class Command(papis.commands.Command):
             )
             shutil.copy(documentPath, endDocumentPath)
         document.update(data, force=True)
+        if self.get_args().open:
+            for d_path in documents_paths:
+                papis.utils.open_file(d_path)
         if self.args.confirm:
             if input("Really add? (Y/n): ") in ["N", "n"]:
                 sys.exit(0)
