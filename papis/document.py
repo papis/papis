@@ -1,7 +1,5 @@
 import os
 import sys
-import yaml
-# import logging
 import shutil
 import papis.utils
 import papis.config
@@ -20,7 +18,6 @@ class Document(object):
     def __init__(self, folder=None, data=None):
         self._keys = []
         self._folder = folder
-        # self.logger = logging.getLogger("Doc")
         if folder is not None:
             self._infoFilePath = \
                 os.path.join(folder, papis.utils.get_info_file_name())
@@ -105,6 +102,7 @@ class Document(object):
     def save(self):
         """Saves the current document's information into the info file.
         """
+        import yaml
         fd = open(self._infoFilePath, "w+")
         structure = dict()
         for key in self.keys():
@@ -262,8 +260,9 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
     def load(self):
         """Load information from info file
         """
+        import yaml
         # TODO: think about if it's better to raise an exception here
-        # if no info file is found
+        # TODO: if no info file is found
         try:
             fd = open(self._infoFilePath, "r")
         except:
