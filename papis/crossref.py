@@ -9,7 +9,7 @@
 from __future__ import unicode_literals
 import logging
 logger = logging.getLogger("crossref")
-logger.debug("#############################")
+logger.debug("importing")
 
 import sys
 import unicodedata

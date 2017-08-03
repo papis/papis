@@ -1,5 +1,9 @@
 from subprocess import call
 import logging
+
+logger = logging.getLogger("utils")
+logger.debug("importing")
+
 import os
 import re
 import papis.pick
@@ -9,7 +13,6 @@ import papis.document
 import papis.crossref
 import papis.bibtex
 
-logger = logging.getLogger("utils")
 
 
 def get_lib():

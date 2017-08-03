@@ -1,9 +1,12 @@
-import os
-import configparser
-import papis.utils
 import logging
 
 logger = logging.getLogger("config")
+logger.debug("importing")
+
+import os
+import configparser
+import papis.utils
+
 
 CONFIGURATION = None #: Global configuration object variable.
 DEFAULT_SETTINGS = None #: Default settings for the whole papis.

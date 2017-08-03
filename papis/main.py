@@ -15,6 +15,7 @@ if "--debug" in sys.argv:
 
 
 import papis.commands
+logger.debug("Imported commands")
 
 
 def main():
@@ -23,7 +24,7 @@ def main():
 
 
 if sys.version_info < (3, 2):
-    raise Exception("This script must use python 3.2 or greater")
+    raise Exception("This program must use python 3.2 or greater")
 
 if __name__ == "__main__":
     main()
