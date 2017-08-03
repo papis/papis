@@ -153,7 +153,7 @@ def init_external_commands():
 
 
 def init():
-    # import argcomplete
+    import argcomplete
     if get_commands() is not None:
         raise RuntimeError("Commands are already initialised")
     commands = dict()
@@ -161,7 +161,7 @@ def init():
     commands.update(init_external_commands())
     set_commands(commands)
     # autocompletion
-    # argcomplete.autocomplete(get_default_parser())
+    argcomplete.autocomplete(get_default_parser())
     return commands
 
 
