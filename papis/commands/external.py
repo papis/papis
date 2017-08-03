@@ -28,22 +28,20 @@ class Command(papis.commands.Command):
         return m.group(1) if m else None
 
     def get_command_help(self):
-        p = subprocess.Popen(
-            [self.script_path, "-h"],
-            stdout=subprocess.PIPE
-        )
-        h, err = p.communicate()
-        if not h or (not p.returncode == 0):
-            return "No help message available"
-        else:
-            return h.decode("ascii")
+        magic_word = papis.config.get("scripts-short-help-regex")
+        with open(self.script_path) as fd:
+            for line in fd:
+                m = re.match(magic_word, line)
+                if m:
+                    return m.group(1)
+        return "No help message available"
 
     def export_variables(self):
         """Export environment variables so that external script can access to
         the information
         """
         os.environ["PAPIS_LIB"] = self.args.lib
-        os.environ["PAPIS_LIB_PATH"] = self.get_config()[self.args.lib]["dir"]
+        os.environ["PAPIS_LIB_PATH"] = papis.config.get('dir')
         os.environ["PAPIS_CONFIG_PATH"] = papis.config.get_config_folder()
         os.environ["PAPIS_CONFIG_FILE"] = papis.config.get_config_file()
         os.environ["PAPIS_SCRIPTS_PATH"] = papis.config.get_scripts_folder()
