@@ -268,6 +268,25 @@ class Command(papis.commands.Command):
         if self.args.from_doi:
             self.logger.debug("Try using doi %s" % self.args.from_doi)
             data.update(papis.utils.doi_to_data(self.args.from_doi))
+            if len(self.get_args().document) == 0 and \
+                    papis.config.get('doc-url-key-name') in data.keys():
+                doc_url = data[papis.config.get('doc-url-key-name')]
+                self.logger.info(
+                    'I am trying to download the document from %s' % doc_url
+                )
+                down = papis.downloaders.utils.get_downloader(
+                    doc_url,
+                    'get'
+                )
+                file_name = tempfile.mktemp()
+                fd = open(file_name, 'wb+')
+                fd.write(down.getDocumentData())
+                fd.close()
+                self.logger.info('Opening the file')
+                papis.utils.open_file(file_name)
+                if papis.utils.confirm('Do you want to use this file?'):
+                    self.args.document.append(file_name)
+
         if self.args.from_yaml:
             data.update(papis.utils.yaml_to_data(self.args.from_yaml))
         if self.args.from_vcf:
@@ -353,7 +372,7 @@ class Command(papis.commands.Command):
             for d_path in documents_paths:
                 papis.utils.open_file(d_path)
         if self.args.confirm:
-            if input("Really add? (Y/n): ") in ["N", "n"]:
+            if not papis.utils.confirm('Really add?'):
                 sys.exit(0)
         document.save()
         if self.args.to:
