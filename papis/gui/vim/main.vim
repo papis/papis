@@ -10,7 +10,7 @@ let g:papis_edit_key = "e"
 let g:papis_next_key = "j"
 let g:papis_prev_key = "k"
 
-let g:papis_title_magic_word =  "Title :"
+let g:papis_title_magic_word =  "Title *:"
 let g:papis_author_magic_word = "Author:"
 let g:papis_year_magic_word =   "Year  :"
 let g:papis_tags_magic_word =   "Tags  :"
