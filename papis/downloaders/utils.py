@@ -28,11 +28,30 @@ def getAvailableDownloaders():
     ]
 
 
-def getDownloader(url):
-    for downloader in getAvailableDownloaders():
-        result = downloader.match(url)
-        if result:
-            return result
+def get_downloader(url, downloader=False):
+    """Get downloader object. If only a url is given, the url is matched
+    against the match method of the downloaders.
+
+    :param url: Url of the document
+    :type  url: str
+    :param downloader: Name of the downloader, if any.
+    :type  downloader: str
+
+    """
+    if not downloader:
+        for downloader in getAvailableDownloaders():
+            result = downloader.match(url)
+            if result:
+                return result
+    else:
+        try:
+            mod = __import__(
+                'papis.downloaders.%s' % downloader,
+                fromlist=['Downloader']
+            )
+            return getattr(mod, 'Downloader')(url)
+        except ImportError:
+            logger.error("No downloader named %s" % downloader)
     return False
 
 
@@ -56,7 +75,7 @@ def get(url, data_format="bibtex"):
     documents_paths = []
     doi = None
     logger.debug("Attempting to retrieve from url")
-    downloader = getDownloader(url)
+    downloader = get_downloader(url)
     if not downloader:
         logger.warning("Using downloader %s" % downloader)
         return None

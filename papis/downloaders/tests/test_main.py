@@ -16,11 +16,11 @@ class TestRecognizer(unittest.TestCase):
 
     def test_downloader_getter(self):
         # Function exists
-        self.assertTrue(papis.downloaders.utils.getDownloader)
+        self.assertTrue(papis.downloaders.utils.get_downloader)
         aps = papis\
             .downloaders\
             .utils\
-            .getDownloader(
+            .get_downloader(
                 "http://journals.aps.org/prb/abstract/"
                 "10.1103/PhysRevB.95.085434"
             )
