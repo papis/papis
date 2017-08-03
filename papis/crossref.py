@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Adapted for papis from
+# Heavily adapted for papis from
 #   author: François-Xavier Coudert
-#   e-mail: fxcoudert@gmail.com
 #   license: MIT License
 #   src: https://github.com/fxcoudert/tools/blob/master/doi2bib
 #
@@ -15,6 +14,7 @@ logger.debug("#############################")
 import sys
 import unicodedata
 import re
+import papis.config
 
 # CrossRef queries
 #
@@ -149,8 +149,8 @@ latex_accents = {
 }
 
 
-def replace_latex_accents(str):
-    s = unicodedata.normalize('NFC', str)
+def replace_latex_accents(string):
+    s = unicodedata.normalize('NFC', string)
     return "".join([latex_accents[c] if c in latex_accents else c for c in s])
 
 
@@ -178,6 +178,49 @@ def validate_doi(doi):
       return resolvedURL
 
 
+def get_citation_info_from_results(container):
+    """This function retrieves the citations from the container's answer
+
+    :param container: xml information
+    :returns: Dictionary with information to be added
+    :rtype:  dict
+
+    """
+    citations_info = dict(citations=[])
+
+    for node in container.getElementsByTagName("citation"):
+        citation = dict()
+        doi = node.getElementsByTagName('doi')[0].firstChild.data
+        citation[ 'doi' ] = doi
+        citations_info['citations'].append(citation)
+
+    return citations_info
+
+
+def get_author_info_from_results(container):
+    """This function retrieves the authors from the container answer
+
+    :param container: xml information
+    :returns: Dictionary with information to be added
+    :rtype:  dict
+
+    """
+    authors_info = dict(author_list=[], author=None)
+
+    for node in container.getElementsByTagName("person_name"):
+        author = dict()
+        surname = node.getElementsByTagName('surname')[0].firstChild.data
+        given_name = node.getElementsByTagName('given_name')[0].firstChild.data
+        author[ 'surname' ] = surname
+        author[ 'given_name' ] = given_name
+        authors_info['author_list'].append(author)
+
+    authors_info['author'] = ', '.join([
+        "{au[given_name]} {au[surname]}".format(au=author)
+        for author in authors_info['author_list']
+    ])
+
+    return authors_info
 
 
 def get_cross_ref(doi):
@@ -216,101 +259,72 @@ def get_cross_ref(doi):
 
     record = records[0]
 
-    # Helper functions
-    def findItemNamed(container, name):
-        list = container.getElementsByTagName(name)
-        if (len(list) == 0):
+    # helper functions
+    def find_item_named(container, name):
+        obj_list = container.getElementsByTagName(name)
+        if (len(obj_list) == 0):
             return None
         else:
-            return list[0]
+            return obj_list[0]
+
     def data(node):
         if node is None:
             return None
         else:
             return node.firstChild.data
 
-    res = dict(doi=doi)
+    res = dict()
 
-    # Journal information
-    journal = findItemNamed(record, "journal_metadata")
+    # JOURNAL INFO
+    journal = find_item_named(record, "journal_metadata")
     if journal:
-        res["fullJournal"] = data(findItemNamed(journal, "full_title"))
-        res["shortJournal"] = data(findItemNamed(journal, "abbrev_title"))
+        res["full_journal_title"] = data(find_item_named(journal, "full_title"))
+        res["abbrev_journal_title"] = data(find_item_named(journal, "abbrev_title"))
 
-    # Volume information
-    issue = findItemNamed(record, "journal_issue")
-    res["issue"] = data(findItemNamed(issue, "issue"))
-    res["volume"] = data(findItemNamed(issue, "volume"))
-    res["year"] = data(findItemNamed(issue, "year"))
+    # VOLUME INFO
+    issue = find_item_named(record, "journal_issue")
+    res["issue"] = data(find_item_named(issue, "issue"))
+    res["volume"] = data(find_item_named(issue, "volume"))
+    res["year"] = data(find_item_named(issue, "year"))
 
-    # Other information
-    other = findItemNamed(record, "journal_article")
-    res["title"] = data(findItemNamed(other, "title"))
-    res["firstPage"] = data(findItemNamed(other, "first_page"))
-    res["lastPage"] = data(findItemNamed(other, "last_page"))
-    res["doi"] = data(findItemNamed(other, "doi"))
+    # URLS INFO
+    doi_resources = record\
+        .getElementsByTagName('doi_data')[0]\
+        .getElementsByTagName('item')
+    for resource in doi_resources:
+        if resource.hasAttribute('crawler'):
+            key = papis.config.get('doc-url-key-name')
+        else:
+            key = 'url'
+        if key:
+            res[key] = resource.getElementsByTagName('resource')[0]\
+                    .firstChild.data
+        key = False
+
+    # OTHER INFO
+    other = find_item_named(record, "journal_article")
+    res["title"] = data(find_item_named(other, "title"))
+    res["first_page"] = data(find_item_named(other, "first_page"))
+    res["last_page"] = data(find_item_named(other, "last_page"))
+    if res["first_page"] is not None and res["last_page"] is not None:
+        res['pages'] = res["first_page"] + "--" + res["last_page"]
+    else:
+        del res['first_page']
+        del res['last_page']
+    res["doi"] = data(find_item_named(other, "doi"))
     if res["year"] is None:
-        res["year"] = data(findItemNamed(other, "year"))
+        res["year"] = data(find_item_named(other, "year"))
 
-    # Author list
-    res["authors"] = []
-    for node in other.getElementsByTagName("person_name"):
-        surname = data(findItemNamed(node, "surname"))
-        givenName = data(findItemNamed(node, "given_name"))
+    # AUTHOR INFO
+    res.update(get_author_info_from_results(record))
 
-    if givenName is None:
-        res["authors"].append(surname)
-    elif surname is None:
-        res["authors"].append(givenName)
-    else:
-        res["authors"].append(surname + ", " + givenName)
+    # CITATION INFO
+    res.update(get_citation_info_from_results(record))
 
-    # Create a citation key
-    r = re.compile("\W")
-    if len(res["authors"]) > 0:
-        key = r.sub('', res["authors"][0].split(",")[0])
-    else:
-        key = ""
-    if res["year"] is not None:
-        key = key + res["year"]
-
-    res["key"] = key
+    # REFERENCE BUILDING
+    res["ref"] = doi
 
     return res
-
-
-def bibtex_entry(ref):
-    # Output all information in bibtex format
-    latex = replace_latex_accents
-    s = "@article{" + ref["key"] + ",\n"
-
-    if len(ref["authors"]) > 0:
-        s = s + "  author = {" + latex(" and ".join(ref["authors"])) + "},\n"
-
-    if ref["doi"] is not None:
-        s = s + "  doi = {" + ref["doi"] + "},\n"
-    try:
-        s = s + "  url = {" + ref["url"] + "},\n"
-    except:
-        s = s + "  url = {https://doi.org/"+ ref["doi"] + "},\n"
-    if ref["title"] is not None:
-        s = s + "  title = {" + latex(ref["title"]) + "},\n"
-    if ref["shortJournal"] is not None:
-        s = s + "  journal = {" + latex(ref["shortJournal"]) + "},\n"
-    if ref["year"] is not None:
-        s = s + "  year = {" + latex(ref["year"]) + "},\n"
-    if ref["volume"] is not None:
-        s = s + "  volume = {" + latex(ref["volume"]) + "},\n"
-    if ref["issue"] is not None:
-        s = s + "  issue = {" + latex(ref["issue"]) + "},\n"
-    if ref["firstPage"] is not None:
-        if ref["lastPage"] is not None:
-            s = s + "  pages = {" + latex(ref["firstPage"]) + "--" + latex(ref["lastPage"]) + "},\n"
-        else:
-            s = s + "  pages = {" + latex(ref["firstPage"]) + "},\n"
-
-    s = s + "}"
-    return s
 
 
 def doi_to_data(doi):
@@ -331,22 +345,3 @@ def doi_to_data(doi):
         return dict()
     else:
         return data
-
-
-def doi_to_bibtex(doi):
-    """Search throu crossref information from doi entry
-
-    :param doi: Doi identificator
-    :type  doi: str
-    :returns: Bibtex entry string
-
-    """
-    global logger
-    try:
-        ref = get_cross_ref(doi)
-    except Exception as e:
-        logger.error(
-            "Couldn't resolve DOI '" + doi + "' through CrossRef: " + str(e) + "\n"
-        )
-    else:
-        return bibtex_entry(ref)
