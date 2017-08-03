@@ -2,7 +2,6 @@ import papis
 import os
 import sys
 import re
-import yaml
 import tempfile
 import hashlib
 import shutil
@@ -235,44 +234,6 @@ class Command(papis.commands.Command):
         fd.write(template)
         fd.close()
 
-    def vcf_to_data(self, vcard_path):
-        import vobject
-        data = yaml.load(papis.document.Document.get_vcf_template())
-        self.logger.debug("Reading in %s " % vcard_path)
-        text = open(vcard_path).read()
-        vcard = vobject.readOne(text)
-        try:
-            data["first_name"] = vcard.n.value.given
-            self.logger.debug("First name = %s" % data["first_name"])
-        except:
-            data["first_name"] = None
-        try:
-            data["last_name"] = vcard.n.value.family
-            self.logger.debug("Last name = %s" % data["last_name"])
-        except:
-            data["last_name"] = None
-        try:
-            if not isinstance(vcard.org.value[0], list):
-                data["org"] = vcard.org.value
-            else:
-                data["org"] = vcard.org.value
-            self.logger.debug("Org = %s" % data["org"])
-        except:
-            data["org"] = []
-        for ctype in ["tel", "email"]:
-            try:
-                vcard_asset = getattr(vcard, ctype)
-                self.logger.debug("Parsing %s" % ctype)
-            except:
-                pass
-            else:
-                try:
-                    param_type = getattr(vcard_asset, "type_param")
-                except:
-                    param_type = "home"
-                data[ctype][param_type.lower()] = getattr(vcard_asset, "value")
-        self.logger.debug("Read in data = %s" % data)
-        return data
 
     def main(self):
         if papis.config.in_mode("contact"):
@@ -301,9 +262,9 @@ class Command(papis.commands.Command):
             self.logger.debug("Try using doi %s" % self.args.from_doi)
             data.update(papis.utils.doi_to_data(self.args.from_doi))
         if self.args.from_yaml:
-            data.update(yaml.load(open(self.args.from_yaml)))
+            data.update(papis.utils.yaml_to_data(self.args.from_yaml))
         if self.args.from_vcf:
-            data.update(self.vcf_to_data(self.args.from_vcf))
+            data.update(papis.utils.vcf_to_data(self.args.from_vcf))
         documents_names = [
             self.clean_document_name(documentPath)
             for documentPath in documents_paths
