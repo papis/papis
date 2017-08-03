@@ -8,8 +8,6 @@ import papis.commands
 import papis.document
 import papis.crossref
 import papis.bibtex
-# import zipfile
-# from lxml import etree
 
 logger = logging.getLogger("utils")
 
@@ -410,5 +408,65 @@ def doi_to_data(doi):
     :returns: Document's data
     :rtype: dict
     """
-    bibtex = papis.crossref.doi_to_bibtex(doi)
-    return papis.bibtex.bibtex_to_dict(bibtex)
+    return papis.crossref.doi_to_data(doi)
+
+
+def yaml_to_data(yaml_path):
+    """Convert a yaml file into a dictionary using the yaml module.
+
+    :param yaml_path: Path to a yaml file
+    :type  yaml_path: str
+    :returns: Dictionary containing the info of the yaml file
+    :rtype:  dict
+    """
+    import yaml
+    return yaml.load(open(self.args.from_yaml))
+
+
+def vcf_to_data(vcard_path):
+    """Convert a vcf file into a dictionary using the vobject module.
+
+    :param vcf_path: Path to a vcf file
+    :type  vcf_path: str
+    :returns: Dictionary containing the info of the vcf file
+    :rtype:  dict
+    """
+    import vobject
+    import yaml
+    import papis.document.Document
+    data = yaml.load(papis.document.Document.get_vcf_template())
+    logger.debug("Reading in %s " % vcard_path)
+    text = open(vcard_path).read()
+    vcard = vobject.readOne(text)
+    try:
+        data["first_name"] = vcard.n.value.given
+        logger.debug("First name = %s" % data["first_name"])
+    except:
+        data["first_name"] = None
+    try:
+        data["last_name"] = vcard.n.value.family
+        logger.debug("Last name = %s" % data["last_name"])
+    except:
+        data["last_name"] = None
+    try:
+        if not isinstance(vcard.org.value[0], list):
+            data["org"] = vcard.org.value
+        else:
+            data["org"] = vcard.org.value
+        logger.debug("Org = %s" % data["org"])
+    except:
+        data["org"] = []
+    for ctype in ["tel", "email"]:
+        try:
+            vcard_asset = getattr(vcard, ctype)
+            logger.debug("Parsing %s" % ctype)
+        except:
+            pass
+        else:
+            try:
+                param_type = getattr(vcard_asset, "type_param")
+            except:
+                param_type = "home"
+            data[ctype][param_type.lower()] = getattr(vcard_asset, "value")
+    logger.debug("Read in data = %s" % data)
+    return data
