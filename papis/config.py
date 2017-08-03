@@ -31,7 +31,9 @@ general_settings = {
     "add-confirm"     : False,
     "add-edit"        : False,
     "default-gui"     : "vim",
+    "scripts-short-help-regex": ".*papis-short-help: *(.*)",
     "info-name"       : "info.yaml",
+    "doc-url-key-name": "doc_url",
     "file-browser"    : "xdg-open",
     "default-library" : "papers",
     "export-text-format" : \

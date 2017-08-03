@@ -26,6 +26,7 @@ bibtex_keys = [
   "annote",
   "author",
   "booktitle",
+  "doi",
   "chapter",
   "crossref",
   "edition",
