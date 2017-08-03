@@ -19,7 +19,6 @@ logger.debug("Imported commands")
 
 
 def main():
-    papis.commands.init()
     papis.commands.main()
 
 
