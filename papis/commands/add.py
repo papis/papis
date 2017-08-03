@@ -113,8 +113,15 @@ class Command(papis.commands.Command):
         )
 
         self.parser.add_argument(
+            "--open",
+            help="Open file before adding document",
+            action='store_false' if papis.config.get('add-open') \
+                else 'store_true'
+        )
+
+        self.parser.add_argument(
             "--edit",
-            help="Edit info file after adding document",
+            help="Edit info file before adding document",
             action='store_false' if papis.config.get('add-edit') \
                 else 'store_true'
         )

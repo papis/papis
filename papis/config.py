@@ -33,6 +33,7 @@ general_settings = {
     "use-cache"       : True,
     "add-confirm"     : False,
     "add-edit"        : False,
+    "add-open"        : False,
     "default-gui"     : "vim",
     "scripts-short-help-regex": ".*papis-short-help: *(.*)",
     "info-name"       : "info.yaml",
