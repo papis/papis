@@ -38,6 +38,7 @@ Take a look at the [documentation](http://papis.readthedocs.io/en/latest/)!
 - [ ] Bibitem support for exporting references in the export command.
   This can be done by looking at the code papis.commands.export`.
 - [ ] Youtube video explaining the main uses of `papis`.
+- [ ] Implement proxy to donwload papers.
 - [ ] Debian package.
 - [ ] Testing on Windows.
 - [ ] Logo.
