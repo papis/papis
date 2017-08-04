@@ -172,40 +172,6 @@ class Command(papis.commands.Command):
         # TODO: pdfminer does not work very well
         self.logger.debug("Retrieving %s meta data" % key)
         extension = self.get_document_extension(document_path)
-        if "pdf" in extension:
-            # We put the import statements here because they slow down the
-            # whole program if initializing the cli command it is in the top,
-            # only import it if it is being used
-            import pdfminer.pdfparser
-            import pdfminer.pdfdocument
-            fd = open(document_path, "rb")
-            parsed = pdfminer.pdfparser.PDFParser(fd)
-            doc = pdfminer.pdfdocument.PDFDocument(parsed)
-            fd.close()
-            for info in doc.info:
-                for info_key in info.keys():
-                    if info_key.lower() == key.lower():
-                        self.logger.debug(
-                            "Found %s meta data %s" %
-                            (info_key, info[info_key])
-                        )
-                        try:
-                            # Sometimes there is a problem with decoding
-                            # utf8 because of pdfminer implementation
-                            return info[info_key].decode("utf-8")
-                        except:
-                            return None
-        elif "epub" in extension:
-            if key == "author":
-                key = "Creator"
-            info = papis.utils.get_epub_info(document_path)
-            for info_key in info.keys():
-                if info_key.lower() == key.lower():
-                    self.logger.debug(
-                        "Found %s meta data %s" %
-                        (info_key, info[info_key])
-                    )
-                    return str(info[info_key])
         return None
 
     def get_default_title(self, data, document_path):
