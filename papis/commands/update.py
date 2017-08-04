@@ -88,7 +88,6 @@ class Command(papis.commands.Command):
         if self.args.from_doi:
             self.logger.debug("Try using doi %s" % self.args.from_doi)
             data.update(papis.utils.doi_to_data(self.args.from_doi))
-            print(data)
 
         document.update(data, self.args.force, self.args.interactive)
         document.save()
