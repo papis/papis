@@ -41,7 +41,7 @@ class Command(papis.commands.Command):
             url = 'https://doi.org/' + document['doi']
         elif papis.config.get('doc-url-key-name') in document.keys():
             url = document[papis.config.get('doc-url-key-name')]
-        elif 'title' in document.keys():
+        else:
             from urllib.parse import urlencode
             params = {
                 'q': papis.utils.format_doc(
@@ -54,7 +54,7 @@ class Command(papis.commands.Command):
 
         if url is None:
             self.logger.warning(
-                "No url for %s" % (document.get_main_folder_name())
+                "No url for %s possible" % (document.get_main_folder_name())
             )
         else:
             self.logger.debug("Opening url %s:" % url)
