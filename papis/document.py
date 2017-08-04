@@ -203,17 +203,18 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         :type  interactive: bool
 
         """
-        # self.logger.debug("Updating...")
         for key in data:
             if self[key] != data[key]:
                 if force:
                     self[key] = data[key]
                 elif interactive:
                     confirmation = \
-                        input("(%s conflict) Replace '%s' by '%s'? (y/N)" % (
-                            key, self[key], data[key]
-                            )) or "N"
-                    if confirmation in "Yy":
+                        papis.utils.confirm(
+                            "(%s conflict) Replace '%s' by '%s'?" % (
+                                key, self[key], data[key]
+                            )
+                        )
+                    if confirmation:
                         self[key] = data[key]
                 else:
                     pass
