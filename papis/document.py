@@ -203,7 +203,7 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         :type  interactive: bool
 
         """
-        for key in data:
+        for key in data.keys():
             if self[key] != data[key]:
                 if force:
                     self[key] = data[key]
@@ -216,8 +216,8 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
                         )
                     if confirmation:
                         self[key] = data[key]
-                else:
-                    pass
+                elif self[key] is None or self[key] == '':
+                    self[key] = data[key]
 
     def get_info_file(self):
         """Get full path for the info file
