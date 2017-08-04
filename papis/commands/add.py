@@ -222,9 +222,11 @@ class Command(papis.commands.Command):
     def clean_document_name(self, documentPath):
         base = os.path.basename(documentPath)
         self.logger.debug("Cleaning document name %s " % base)
-        return re.sub(r"[^a-zA-Z0-9_.-]", "",
-                      re.sub(r"\s+", "-", base)
-                      )
+        cleaned = re.sub(
+            r"[^a-zA-Z0-9_.-]", "",
+            re.sub(r"\s+", "-", base)
+        )
+        return cleaned
 
     def init_contact_mode(self):
         """Initialize the contact mode
