@@ -30,7 +30,7 @@ class Command(papis.commands.Command):
         document = self.pick(documents) or sys.exit(0)
         folder = document.get_main_folder()
         if not self.args.force:
-            if input("Are you sure? (Y/n): ") in ["N", "n"]:
+            if not papis.utils.confirm("Are you sure?"):
                 sys.exit(0)
         print("Removing %s..." % folder)
         shutil.rmtree(folder)
