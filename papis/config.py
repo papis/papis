@@ -34,6 +34,8 @@ general_settings = {
     "add-confirm"     : False,
     "add-edit"        : False,
     "add-open"        : False,
+    "browse-query-format"   : "{doc[title]} {doc[author]}",
+    "search-engine"   : "https://duckduckgo.com",
     "user-agent"      : \
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) '
         'AppleWebKit/537.36 (KHTML, like Gecko) '
