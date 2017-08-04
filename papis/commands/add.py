@@ -81,9 +81,8 @@ class Command(papis.commands.Command):
 
         self.parser.add_argument(
             "--from-url",
-            help="""Get document and information from a
-                    given url, a parser must be
-                    implemented""",
+            help="Get document and information from a"
+                "given url, a parser must be implemented",
             default="",
             action="store"
         )
@@ -97,17 +96,15 @@ class Command(papis.commands.Command):
 
         self.parser.add_argument(
             "--from-vcf",
-            help="""\
-                Get contact information from a vcard (.vcf)
-                file""",
+            help="Get contact information from a vcard (.vcf) file",
             default=None,
             action="store"
         )
 
         self.parser.add_argument(
             "--to",
-            help="""When --to is specified, the document will be added to the
-            selected already existing document entry.""",
+            help="When --to is specified, the document will be added to the"
+                "selected already existing document entry.",
             nargs="?",
             action="store"
         )
@@ -281,9 +278,7 @@ class Command(papis.commands.Command):
                 lib_dir,
                 self.args.to
             )
-            document = self.pick(documents)
-            if not document:
-                sys.exit(0)
+            document = self.pick(documents) or sys.exit(0)
             data = document.to_dict()
             in_documents_paths = [
                 os.path.join(
@@ -307,7 +302,10 @@ class Command(papis.commands.Command):
                 self.logger.debug("Author = % s" % data["author"])
                 self.logger.debug("Title = % s" % data["title"])
             if not self.args.name:
-                out_folder_name = self.get_hash_folder(data, in_documents_paths[0])
+                out_folder_name = self.get_hash_folder(
+                    data,
+                    in_documents_paths[0]
+                )
             else:
                 out_folder_name = string\
                             .Template(self.args.name)\
@@ -317,10 +315,8 @@ class Command(papis.commands.Command):
             fullDirPath = os.path.join(
                 lib_dir, self.args.dir,  out_folder_name
             )
-        ######
-        self.logger.debug("Folder = % s" % out_folder_name)
-        self.logger.debug("File = % s" % in_documents_paths)
-        ######
+        self.logger.debug("Folder  = % s" % out_folder_name)
+        self.logger.debug("File(s) = % s" % in_documents_paths)
         if not os.path.isdir(temp_dir):
             self.logger.debug("Creating directory '%s'" % temp_dir)
             os.makedirs(temp_dir)

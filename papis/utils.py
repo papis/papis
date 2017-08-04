@@ -14,7 +14,6 @@ import papis.crossref
 import papis.bibtex
 
 
-
 def get_lib():
     """Get current library, it either retrieves the library from
     the environment PAPIS_LIB variable or from the command line
@@ -494,6 +493,7 @@ def confirm(prompt, yes=True):
         return result not in ['N', 'n']
     else:
         return result not in ['Y', 'y']
+
 
 def input(prompt, default=""):
     """Prompt user for input
