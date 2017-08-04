@@ -273,21 +273,34 @@ class Command(papis.commands.Command):
             self.clean_document_name(doc_path)
             for doc_path in in_documents_paths
         ]
+
+        # Decide if we are adding the documents to an already existing document
+        # or it is a new document
         if self.args.to:
+            self.logger.debug(
+                "Searching for the document where to add the files"
+            )
             documents = papis.utils.get_documents_in_dir(
                 lib_dir,
                 self.args.to
             )
             document = self.pick(documents) or sys.exit(0)
+            document.update(
+                data,
+                interactive=self.args.interactive
+            )
+            document.save()
             data = document.to_dict()
             in_documents_paths = [
                 os.path.join(
                     document.get_main_folder(),
                     d
-                ) for d in document["files"]] + in_documents_paths
-            data["files"] = document["files"] + in_documents_names
+                ) for d in document.get_files()
+            ] + in_documents_paths
+            data["files"] = document.get_files() + in_documents_names
+            # set out folder name the folder of the found document
             out_folder_name = document.get_main_folder_name()
-            fullDirPath = document.get_main_folder()
+            out_folder_path = document.get_main_folder()
         else:
             document = papis.document.Document(temp_dir)
             if not papis.config.in_mode("contact"):
@@ -312,37 +325,54 @@ class Command(papis.commands.Command):
                             .safe_substitute(data)\
                             .replace(" ", "-")
             data["files"] = in_documents_names
-            fullDirPath = os.path.join(
+            out_folder_path = os.path.join(
                 lib_dir, self.args.dir,  out_folder_name
             )
-        self.logger.debug("Folder  = % s" % out_folder_name)
-        self.logger.debug("File(s) = % s" % in_documents_paths)
+
+        self.logger.debug("Folder name = % s" % out_folder_name)
+        self.logger.debug("Folder path = % s" % out_folder_path)
+        self.logger.debug("File(s)     = % s" % in_documents_paths)
+
+        # Create folders if they do not exists.
         if not os.path.isdir(temp_dir):
             self.logger.debug("Creating directory '%s'" % temp_dir)
             os.makedirs(temp_dir)
+        if not os.path.isdir(out_folder_path):
+            self.logger.debug("Creating directory '%s'" % out_folder_path)
+            os.makedirs(out_folder_path)
+
+        # Check if the user wants to edit before submitting the doc
+        # to the library
         if self.args.edit:
-            document.update(data, force=True)
+            document.update(
+                data, force=True, interactive=self.args.interactive
+            )
             document.save()
+            self.logger.debug("Editing file before adding it")
             papis.utils.edit_file(document.get_info_file())
             self.logger.debug("Loading the changes made by editing")
             document.load()
             data = document.to_dict()
+
         for i in range(min(len(in_documents_paths), len(data["files"]))):
-            documentName = data["files"][i]
-            documentPath = in_documents_paths[i]
-            assert(os.path.exists(documentPath))
+            in_doc_name = data["files"][i]
+            in_file_path = in_documents_paths[i]
+            assert(os.path.exists(in_file_path))
             endDocumentPath = os.path.join(
-                    document.get_main_folder(), documentName)
+                document.get_main_folder(),
+                in_doc_name
+            )
             if os.path.exists(endDocumentPath):
                 self.logger.debug(
-                    "%s exists, ignoring..." % endDocumentPath
+                    "%s already exists, ignoring..." % endDocumentPath
                 )
                 continue
             self.logger.debug(
                 "[CP] '%s' to '%s'" %
-                (documentPath, endDocumentPath)
+                (in_file_path, endDocumentPath)
             )
-            shutil.copy(documentPath, endDocumentPath)
+            shutil.copy(in_file_path, endDocumentPath)
+
         document.update(data, force=True)
         if self.get_args().open:
             for d_path in in_documents_paths:
@@ -355,12 +385,12 @@ class Command(papis.commands.Command):
             sys.exit(0)
         self.logger.debug(
             "[MV] '%s' to '%s'" %
-            (document.get_main_folder(), fullDirPath)
+            (document.get_main_folder(), out_folder_path)
         )
-        shutil.move(document.get_main_folder(), fullDirPath)
+        shutil.move(document.get_main_folder(), out_folder_path)
         papis.utils.clear_lib_cache()
         if self.args.commit and papis.utils.lib_is_git_repo(self.args.lib):
-            subprocess.call(["git", "-C", fullDirPath, "add", "."])
+            subprocess.call(["git", "-C", out_folder_path, "add", "."])
             subprocess.call(
-                ["git", "-C", fullDirPath, "commit", "-m", "\"Add document\""]
+                ["git", "-C", out_folder_path, "commit", "-m", "Add document"]
             )

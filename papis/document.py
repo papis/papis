@@ -190,7 +190,7 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         bibtexString += "}\n"
         return bibtexString
 
-    def update(self, data, force=True, interactive=False):
+    def update(self, data, force=False, interactive=False):
         """Update document's information from an info dictionary.
 
         :param data: Dictionary with key and values to be updated
