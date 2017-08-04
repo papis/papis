@@ -494,3 +494,20 @@ def confirm(prompt, yes=True):
         return result not in ['N', 'n']
     else:
         return result not in ['Y', 'y']
+
+def input(prompt, default=""):
+    """Prompt user for input
+
+    :param prompt: Question or text that the user gets.
+    :type  prompt: str
+    :param default: Default value to give if the user does not input anything
+    :type  default: str
+    :returns: User input or default
+    :rtype:  bool
+
+    """
+    import prompt_toolkit
+    result = prompt_toolkit.prompt(
+        prompt + ' (%s): ' % (default)
+    )
+    return result if result else default
