@@ -38,6 +38,13 @@ class Command(papis.commands.Command):
         )
 
         self.parser.add_argument(
+            "-i", "--interactive",
+            help="Do some of the actions interactively",
+            action='store_false' if papis.config.get('add-interactive') \
+                else 'store_true'
+        )
+
+        self.parser.add_argument(
             "--name",
             help="Name for the main folder",
             default="",
@@ -161,6 +168,8 @@ class Command(papis.commands.Command):
         return extension
 
     def get_meta_data(self, key, document_path):
+        # TODO: Consistent a general way to get metadata from documents.
+        # TODO: pdfminer does not work very well
         self.logger.debug("Retrieving %s meta data" % key)
         extension = self.get_document_extension(document_path)
         if "pdf" in extension:
@@ -200,8 +209,7 @@ class Command(papis.commands.Command):
         return None
 
     def get_default_title(self, data, document_path):
-        if "title" in data.keys():
-            return data["title"]
+        if "title" in data.keys(): return data["title"]
         extension = self.get_document_extension(document_path)
         title = self.get_meta_data("title", document_path)
         if not title:
@@ -209,14 +217,21 @@ class Command(papis.commands.Command):
                             .replace("."+extension, "")\
                             .replace("_", " ")\
                             .replace("-", " ")
+            if self.get_args().interactive:
+                title = papis.utils.input(
+                    'Title?', title
+                )
         return title
 
     def get_default_author(self, data, document_path):
-        if "author" in data.keys():
-            return data["author"]
+        if "author" in data.keys(): return data["author"]
         author = self.get_meta_data("author", document_path)
         if not author:
             author = "Unknown"
+            if self.get_args().interactive:
+                author = papis.utils.input(
+                    'Author?', author
+                )
         return author
 
     def clean_document_name(self, documentPath):
@@ -314,7 +329,6 @@ class Command(papis.commands.Command):
             fullDirPath = document.get_main_folder()
         else:
             document = papis.document.Document(temp_dir)
-            print(document["org"])
             if not papis.config.in_mode("contact"):
                 data["title"] = self.args.title or self.get_default_title(
                     data,

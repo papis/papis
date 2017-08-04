@@ -32,6 +32,7 @@ general_settings = {
     "format-doc-name" : "doc",
     "use-cache"       : True,
     "add-confirm"     : False,
+    "add-interactive" : False,
     "add-edit"        : False,
     "add-open"        : False,
     "browse-query-format"   : "{doc[title]} {doc[author]}",
