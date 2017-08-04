@@ -66,10 +66,9 @@ def bibtex_to_dict(bibtex):
     global logger
     result = dict()
     if os.path.exists(bibtex):
-        fd = open(bibtex, "r")
-        logger.debug("Reading in file %s" % bibtex)
-        text = fd.read()
-        fd.close()
+        with open(bibtex) as fd:
+            logger.debug("Reading in file %s" % bibtex)
+            text = fd.read()
     else:
         text = bibtex
     logger.debug("Removing comments...")
