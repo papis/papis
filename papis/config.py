@@ -81,10 +81,14 @@ def get_default_settings(section="", key=""):
     """
     global DEFAULT_SETTINGS
     import papis.gui
+    # We use an OrderedDict so that the first entry will always be the general
+    # settings, also good for automatic documentation
+    from collections import OrderedDict
     if DEFAULT_SETTINGS is None:
-        DEFAULT_SETTINGS = {
+        DEFAULT_SETTINGS = OrderedDict()
+        DEFAULT_SETTINGS.update({
             get_general_settings_name(): general_settings,
-        }
+        })
         DEFAULT_SETTINGS.update(
             papis.gui.get_default_settings()
         )
