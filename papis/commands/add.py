@@ -162,6 +162,7 @@ class Command(papis.commands.Command):
         :returns: Extension (string)
 
         """
+        # TODO: mimetype based (mimetype, rifle, ranger-fm ...?)
         m = re.match(r"^(.*)\.([a-zA-Z0-9]*)$", os.path.basename(documentPath))
         extension = m.group(2) if m else "txt"
         self.logger.debug("[ext] = %s" % extension)
@@ -220,19 +221,17 @@ class Command(papis.commands.Command):
         self.args.edit = True
         self.args.confirm = True
         template = papis.document.Document.get_vcf_template()
-        fd = open(self.args.document[0], "w+")
-        fd.write(template)
-        fd.close()
-
+        with open(self.args.document[0], "w+") as fd:
+            fd.write(template)
 
     def main(self):
         if papis.config.in_mode("contact"):
             self.init_contact_mode()
         lib_dir = os.path.expanduser(papis.config.get('dir'))
-        folderName = None
         data = dict()
+        out_folder_name = None
         in_documents_paths = self.args.document
-        documents_names = []
+        in_documents_names = []
         temp_dir = tempfile.mkdtemp("-"+self.args.lib)
         if self.args.from_url:
             url_data = papis.downloaders.utils.get(self.args.from_url)
@@ -240,14 +239,16 @@ class Command(papis.commands.Command):
             in_documents_paths.extend(url_data["documents_paths"])
             # If no data was retrieved and doi was found, try to get
             # information with the document's doi
-            if not data and\
-                url_data["doi"] is not None and\
+            self.logger.warning(
+                "I could not get any data from %s" % self.args.from_url
+            )
+            if not data and url_data["doi"] is not None and\
                 not self.args.from_doi:
                 self.args.from_doi = url_data["doi"]
         if self.args.from_bibtex:
             data.update(papis.bibtex.bibtex_to_dict(self.args.from_bibtex))
         if self.args.from_doi:
-            self.logger.debug("Try using doi %s" % self.args.from_doi)
+            self.logger.debug("I'll try using doi %s" % self.args.from_doi)
             data.update(papis.utils.doi_to_data(self.args.from_doi))
             if len(self.get_args().document) == 0 and \
                     papis.config.get('doc-url-key-name') in data.keys():
@@ -260,9 +261,8 @@ class Command(papis.commands.Command):
                     'get'
                 )
                 file_name = tempfile.mktemp()
-                fd = open(file_name, 'wb+')
-                fd.write(down.getDocumentData())
-                fd.close()
+                with open(file_name, 'wb+') as fd:
+                    fd.write(down.getDocumentData())
                 self.logger.info('Opening the file')
                 papis.utils.open_file(file_name)
                 if papis.utils.confirm('Do you want to use this file?'):
@@ -272,9 +272,9 @@ class Command(papis.commands.Command):
             data.update(papis.utils.yaml_to_data(self.args.from_yaml))
         if self.args.from_vcf:
             data.update(papis.utils.vcf_to_data(self.args.from_vcf))
-        documents_names = [
-            self.clean_document_name(documentPath)
-            for documentPath in in_documents_paths
+        in_documents_names = [
+            self.clean_document_name(doc_path)
+            for doc_path in in_documents_paths
         ]
         if self.args.to:
             documents = papis.utils.get_documents_in_dir(
@@ -290,8 +290,8 @@ class Command(papis.commands.Command):
                     document.get_main_folder(),
                     d
                 ) for d in document["files"]] + in_documents_paths
-            data["files"] = document["files"] + documents_names
-            folderName = document.get_main_folder_name()
+            data["files"] = document["files"] + in_documents_names
+            out_folder_name = document.get_main_folder_name()
             fullDirPath = document.get_main_folder()
         else:
             document = papis.document.Document(temp_dir)
@@ -307,18 +307,18 @@ class Command(papis.commands.Command):
                 self.logger.debug("Author = % s" % data["author"])
                 self.logger.debug("Title = % s" % data["title"])
             if not self.args.name:
-                folderName = self.get_hash_folder(data, in_documents_paths[0])
+                out_folder_name = self.get_hash_folder(data, in_documents_paths[0])
             else:
-                folderName = string\
+                out_folder_name = string\
                             .Template(self.args.name)\
                             .safe_substitute(data)\
                             .replace(" ", "-")
-            data["files"] = documents_names
+            data["files"] = in_documents_names
             fullDirPath = os.path.join(
-                lib_dir, self.args.dir,  folderName
+                lib_dir, self.args.dir,  out_folder_name
             )
         ######
-        self.logger.debug("Folder = % s" % folderName)
+        self.logger.debug("Folder = % s" % out_folder_name)
         self.logger.debug("File = % s" % in_documents_paths)
         ######
         if not os.path.isdir(temp_dir):
