@@ -18,12 +18,6 @@ class Command(papis.commands.Command):
         self.add_search_argument()
 
         self.parser.add_argument(
-            "--from-bibtex",
-            help="Update info from bibtex file",
-            action="store"
-        )
-
-        self.parser.add_argument(
             "-i",
             "--interactive",
             help="Interactively update",
@@ -48,13 +42,27 @@ class Command(papis.commands.Command):
         )
 
         self.parser.add_argument(
+            "--from-bibtex",
+            help="Update info from bibtex file",
+            action="store"
+        )
+
+        self.parser.add_argument(
             "--from-url",
             help="Get document or information from url",
             default=None,
             action="store"
         )
 
+        self.parser.add_argument(
+            "--from-doi",
+            help="Doi to try to get information from",
+            default=None,
+            action="store"
+        )
+
     def main(self):
+        # TODO: Try to recycle some of this code with command add.
         documents = papis.utils.get_documents_in_lib(
             self.get_args().lib,
             self.get_args().search
@@ -69,7 +77,7 @@ class Command(papis.commands.Command):
             if not len(document_paths) == 0:
                 document_path = document_paths[0]
                 old_doc = self.pick(document["files"])
-                if not input("Really replace document %s? (Y/n): " % old_doc) in ["N", "n"]:
+                if papis.utils.confirm("Really replace document %s?" % old_doc):
                     new_path = os.path.join(
                         document.get_main_folder(), old_doc
                     )
@@ -77,6 +85,10 @@ class Command(papis.commands.Command):
                         "Moving %s to %s" %(document_path, new_path)
                     )
                     shutil.move(document_path, new_path)
+        if self.args.from_doi:
+            self.logger.debug("Try using doi %s" % self.args.from_doi)
+            data.update(papis.utils.doi_to_data(self.args.from_doi))
+            print(data)
+
         document.update(data, self.args.force, self.args.interactive)
-        self.add_search_argument()
         document.save()
