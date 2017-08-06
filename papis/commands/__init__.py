@@ -17,6 +17,7 @@ COMMAND_NAMES = [
     "list",
     "rm",
     "mv",
+    "rename",
     "open",
     "browse",
     "update",
