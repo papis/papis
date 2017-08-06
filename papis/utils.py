@@ -14,6 +14,26 @@ import papis.crossref
 import papis.bibtex
 
 
+def get_lib():
+    """Get current library, it either retrieves the library from
+    the environment PAPIS_LIB variable or from the command line
+    args passed by the user.
+
+    :returns: Library name
+    :rtype:  str
+    """
+    try:
+        lib = papis.commands.get_args().lib
+    except AttributeError:
+        try:
+            lib = os.environ["PAPIS_LIB"]
+        except KeyError:
+            # Do not put papis.config.get because get is a special function
+            # that also needs the library to see if some key was overriden!
+            lib = papis.config.get_default_settings(key="default-library")
+    return lib
+
+
 def general_open(fileName, key, default_opener="xdg-open", wait=False):
     try:
         opener = papis.config.get(key)

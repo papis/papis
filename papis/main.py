@@ -15,6 +15,7 @@ if "--debug" in sys.argv:
 
 
 import papis.commands
+import papis.api
 logger.debug("Imported commands")
 
 

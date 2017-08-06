@@ -8,6 +8,7 @@ import os
 import re
 import papis.pick
 import papis.cache
+import papis.utils
 import papis.commands
 import papis.config
 
@@ -17,19 +18,10 @@ def get_lib():
     the environment PAPIS_LIB variable or from the command line
     args passed by the user.
 
-    :param library: Name of library or path to a given library
-    :type  library: str
+    :returns: Library name
+    :rtype:  str
     """
-    try:
-        lib = papis.commands.get_args().lib
-    except AttributeError:
-        try:
-            lib = os.environ["PAPIS_LIB"]
-        except KeyError:
-            # Do not put papis.config.get because get is a special function
-            # that also needs the library to see if some key was overriden!
-            lib = papis.config.get_default_settings(key="default-library")
-    return lib
+    return papis.utils.get_lib()
 
 
 def set_lib(library):
@@ -149,7 +141,7 @@ def get_documents_in_dir(directory, search=""):
     return papis.utils.get_documents(directory, search)
 
 
-def get_documents_in_lib(library, search=""):
+def get_documents_in_lib(library=None, search=""):
     """Get documents contained in the given library with possibly a search
     string.
 

@@ -3,6 +3,7 @@ import sys
 import os
 import shutil
 import papis.api
+import papis.utils
 
 
 class Command(papis.commands.Command):
