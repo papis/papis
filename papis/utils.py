@@ -14,99 +14,6 @@ import papis.crossref
 import papis.bibtex
 
 
-def get_lib():
-    """Get current library, it either retrieves the library from
-    the environment PAPIS_LIB variable or from the command line
-    args passed by the user.
-
-    :param library: Name of library or path to a given library
-    :type  library: str
-    """
-    try:
-        lib = papis.commands.get_args().lib
-    except AttributeError:
-        try:
-            lib = os.environ["PAPIS_LIB"]
-        except KeyError:
-            # Do not put papis.config.get because get is a special function
-            # that also needs the library to see if some key was overriden!
-            lib = papis.config.get_default_settings(key="default-library")
-    return lib
-
-
-def set_lib(library):
-    """Set current library, it either sets the library in
-    the environment PAPIS_LIB variable or in the command line
-    args passed by the user.
-
-    :param library: Name of library or path to a given library
-    :type  library: str
-    """
-    try:
-        args = papis.commands.get_args()
-        args.lib = library
-    except AttributeError:
-        os.environ["PAPIS_LIB"] = library
-
-
-def get_arg(arg, default=None):
-    try:
-        val = getattr(papis.commands.get_args(), arg)
-    except AttributeError:
-        try:
-            val = os.environ["PAPIS_"+arg.upper()]
-        except KeyError:
-            val = default
-    return val
-
-
-def get_libraries():
-    """Get all libraries declared in the configuration. A library is discovered
-    if the ``dir`` key defined in the library section.
-    :returns: List of library names
-    :rtype: list
-    """
-    libs = []
-    config = papis.config.get_configuration()
-    for key in config.keys():
-        if "dir" in config[key]:
-            libs.append(key)
-    return libs
-
-
-def pick(options, pick_config={}):
-    """This is a wrapper for the various pickers that are supported.
-    Depending on the configuration different selectors or 'pickers'
-    are used.
-    :param options: List of different objects. The type of the objects within
-        the list must be supported by the pickers. This is the reason why this
-        function is difficult to generalize for external picker programs.
-    :type  options: list
-    :param pick_config: Dictionary with additional configuration for the
-        used picker. This depends on the picker.
-    :type  pick_config: dict
-    :returns: Returns elements of ``options``.
-    :rtype: Element(s) of ``options``
-    """
-    # Leave this import here
-    import papis.config
-    logger.debug("Parsing picktool")
-    picker = papis.config.get("picktool")
-    if picker == "rofi":
-        import papis.gui.rofi
-        logger.debug("Using rofi picker")
-        return papis.gui.rofi.pick(options, **pick_config)
-    elif picker == "vim":
-        import papis.gui.vim
-        logger.debug("Using vim picker")
-        return papis.gui.vim.pick(options, **pick_config)
-    elif picker == "papis.pick":
-        logger.debug("Using papis.pick picker")
-        return papis.pick.pick(options, **pick_config)
-    else:
-        raise Exception("I don't know how to use the picker '%s'" % picker)
-
-
 def general_open(fileName, key, default_opener="xdg-open", wait=False):
     try:
         opener = papis.config.get(key)
@@ -125,36 +32,6 @@ def general_open(fileName, key, default_opener="xdg-open", wait=False):
         raise Warning("How should I use the opener %s?" % opener)
 
 
-def open_file(file_path):
-    """Open file using the ``opentool`` key value as a program to
-    handle file_path.
-
-    :param file_path: File path to be handled.
-    :type  file_path: str
-    """
-    general_open(file_path, "opentool")
-
-
-def open_dir(dir_path):
-    """Open dir using the ``file-browser`` key value as a program to
-    open dir_path.
-
-    :param dir_path: Folder path to be handled.
-    :type  dir_path: str
-    """
-    general_open(dir_path, "file-browser")
-
-
-def edit_file(file_path):
-    """Edit file using the ``editor`` key value as a program to
-    handle file_path.
-
-    :param file_path: File path to be handled.
-    :type  file_path: str
-    """
-    general_open(file_path, "editor")
-
-
 def get_regex_from_search(search):
     """Creates a default regex from a search string.
 
@@ -164,6 +41,7 @@ def get_regex_from_search(search):
     :rtype: str
     """
     return r".*"+re.sub(r"\s+", ".*", search)
+
 
 def format_doc(python_format, document):
     """Construct a string using a pythonic format string and a document.
@@ -200,35 +78,6 @@ def match_document(document, search, match_format=None):
     match_string = format_doc(match_format, document)
     regex = get_regex_from_search(search)
     return re.match(regex, match_string, re.IGNORECASE)
-
-
-def get_documents_in_dir(directory, search=""):
-    """Get documents contained in the given folder with possibly a search
-    string.
-
-    :param directory: Folder path.
-    :type  directory: str
-    :param search: Search string
-    :type  search: str
-    :returns: List of filtered documents.
-    :rtype: list
-    """
-    return get_documents(directory, search)
-
-
-def get_documents_in_lib(library, search=""):
-    """Get documents contained in the given library with possibly a search
-    string.
-
-    :param library: Library name.
-    :type  library: str
-    :param search: Search string
-    :type  search: str
-    :returns: List of filtered documents.
-    :rtype: list
-    """
-    directory = papis.config.get("dir", section=library)
-    return get_documents_in_dir(directory, search)
 
 
 def get_folders(folder):
@@ -388,19 +237,6 @@ def get_info_file_name():
     return papis.config.get("info-name")
 
 
-def clear_lib_cache(lib=None):
-    """Clear cache associated with a library. If no library is given
-    then the current library is used.
-
-    :param lib: Library name.
-    :type  lib: str
-    """
-    import papis.cache
-    lib = papis.utils.get_lib() if lib is None else lib
-    directory = papis.config.get("dir", section=lib)
-    papis.cache.clear(directory)
-
-
 def doi_to_data(doi):
     """Try to get from a DOI expression a dictionary with the document's data
     using the crossref module.
@@ -512,6 +348,7 @@ def input(prompt, default=""):
     )
     return result if result else default
 
+
 def clean_document_name(doc_path):
     """Get a file path and return the basename of the path cleaned.
 
@@ -527,6 +364,7 @@ def clean_document_name(doc_path):
         re.sub(r"\s+", "-", base)
     )
     return cleaned
+
 
 def git_commit(path="", message=""):
     """Commits changes in the path with a message.
