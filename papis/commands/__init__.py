@@ -255,6 +255,7 @@ class Command(object):
         return self.subparsers
 
     def pick(self, options, pick_config={}):
+        import papis.api
         self.logger.debug("Picking")
         if len(options) == 0:
             return None
@@ -265,7 +266,7 @@ class Command(object):
                 header_filter=lambda x: papis.utils.format_doc(header_format, x),
                 match_filter=lambda x: papis.utils.format_doc(match_format, x)
             )
-        return papis.utils.pick(
+        return papis.api.pick(
             options,
             pick_config
         )

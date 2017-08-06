@@ -1,5 +1,6 @@
 from papis.gui.tk import PapisWidget
 from papis.gui.tk import tk
+import papis.api
 import papis.config
 import papis.utils
 
@@ -265,7 +266,7 @@ class PapisList(tk.Frame, PapisWidget):
 
     def open(self, event=None):
         doc = self.get_selected_doc()
-        papis.utils.open_file(
+        papis.api.open_file(
             doc.get_files()
         )
 

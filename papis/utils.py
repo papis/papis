@@ -6,7 +6,7 @@ logger.debug("importing")
 
 import os
 import re
-import papis.pick
+import papis.api
 import papis.config
 import papis.commands
 import papis.document
@@ -20,7 +20,7 @@ def general_open(fileName, key, default_opener="xdg-open", wait=False):
     except KeyError:
         opener = default_opener
     if isinstance(fileName, list):
-        fileName = pick(fileName)
+        fileName = papis.api.pick(fileName)
     if isinstance(opener, str):
         if wait:
             return os.system(" ".join([opener, fileName]))
@@ -126,7 +126,7 @@ def filter_documents(documents, search=""):
         # wrong or it is really like this.
         import multiprocessing
         import time
-        np = get_arg("cores", multiprocessing.cpu_count())
+        np = papis.api.get_arg("cores", multiprocessing.cpu_count())
         pool = multiprocessing.Pool(np)
         logger.debug(
             "Filtering docs (search %s) using %s cores" % (
@@ -183,7 +183,7 @@ def folders_to_documents(folders):
     import multiprocessing
     import time
     logger = logging.getLogger("dir2doc")
-    np = get_arg("cores", multiprocessing.cpu_count())
+    np = papis.api.get_arg("cores", multiprocessing.cpu_count())
     logger.debug("Running in %s cores" % np)
     pool = multiprocessing.Pool(np)
     logger.debug("pool started")

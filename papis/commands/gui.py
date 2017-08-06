@@ -29,7 +29,7 @@ class Command(papis.commands.Command):
         )
 
     def fetch_documents(self):
-        return papis.utils.get_documents_in_lib(self.args.lib)
+        return papis.api.get_documents_in_lib(self.args.lib)
 
     def rofi_main(self):
         import papis.gui.rofi

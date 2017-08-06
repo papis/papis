@@ -2,6 +2,7 @@ import papis
 import sys
 import os
 import re
+import papis.api
 import papis.utils
 import subprocess
 
@@ -35,7 +36,7 @@ class Command(papis.commands.Command):
         import prompt_toolkit
         import prompt_toolkit.contrib.completers
 
-        documents = papis.utils.get_documents_in_lib(
+        documents = papis.api.get_documents_in_lib(
             self.get_args().lib,
             self.get_args().search
         )
@@ -75,4 +76,4 @@ class Command(papis.commands.Command):
             ['mv', folder, new_folder]
         self.logger.debug(cmd)
         subprocess.call(cmd)
-        papis.utils.clear_lib_cache()
+        papis.api.clear_lib_cache()

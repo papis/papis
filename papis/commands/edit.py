@@ -1,6 +1,7 @@
 import papis
 import os
 import sys
+import papis.api
 import papis.utils
 import papis.pick
 import papis.config
@@ -25,7 +26,7 @@ class Command(papis.commands.Command):
 
     def main(self):
 
-        documents = papis.utils.get_documents_in_lib(
+        documents = papis.api.get_documents_in_lib(
             self.get_args().lib,
             self.args.search
         )
@@ -47,6 +48,6 @@ class Command(papis.commands.Command):
             if not os.path.exists(notesPath):
                 self.logger.debug("Creating %s" % notesPath)
                 open(notesPath, "w+").close()
-            papis.utils.edit_file(notesPath)
+            papis.api.edit_file(notesPath)
         else:
-            papis.utils.edit_file(document.get_info_file())
+            papis.api.edit_file(document.get_info_file())

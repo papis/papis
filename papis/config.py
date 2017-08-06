@@ -7,6 +7,7 @@ import os
 import configparser
 import papis.utils
 import papis.exceptions
+import papis.api
 
 
 CONFIGURATION = None #: Global configuration object variable.
@@ -167,11 +168,12 @@ def general_get(key, section=None, data_type=None):
     :type  default: It should be the same that ``data_type``
     :param extras: List of tuples containing section and prefixes
     """
+    import papis.api
     # Init main variables
     method = None
     value = None
     config = get_configuration()
-    lib = papis.utils.get_lib()
+    lib = papis.api.get_lib()
     global_section = get_general_settings_name()
     specialized_key = section + "-" + key if section is not None else key
     extras = [(section, key)] if section is not None else []

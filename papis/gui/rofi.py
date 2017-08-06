@@ -1,5 +1,6 @@
 import rofi
 import webbrowser
+import papis.api
 import papis.utils
 import papis.config
 
@@ -167,7 +168,7 @@ class Gui(object):
             self.documents = self.fetch_documents()
 
     def open(self, doc):
-        papis.utils.open_file(
+        papis.api.open_file(
             doc.get_files()
         )
 

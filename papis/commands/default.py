@@ -1,5 +1,6 @@
 import os
 import sys
+import papis.api
 import papis.config
 import papis.commands
 import logging
@@ -109,7 +110,7 @@ class Command(papis.commands.Command):
             papis.config.set("picktool", self.args.picktool)
 
         if self.args.pick_lib:
-            self.args.lib = papis.utils.pick(papis.utils.get_libraries())
+            self.args.lib = papis.api.pick(papis.api.get_libraries())
 
         if self.args.lib not in self.get_config().keys():
             if os.path.exists(self.args.lib):
@@ -124,7 +125,7 @@ class Command(papis.commands.Command):
                 sys.exit(1)
 
         if self.args.clear_cache:
-            papis.utils.clear_lib_cache(self.args.lib)
+            papis.api.clear_lib_cache(self.args.lib)
 
         commands = papis.commands.get_commands()
 

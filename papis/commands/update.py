@@ -63,7 +63,7 @@ class Command(papis.commands.Command):
 
     def main(self):
         # TODO: Try to recycle some of this code with command add.
-        documents = papis.utils.get_documents_in_lib(
+        documents = papis.api.get_documents_in_lib(
             self.get_args().lib,
             self.get_args().search
         )

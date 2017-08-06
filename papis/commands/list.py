@@ -84,7 +84,7 @@ class Command(papis.commands.Command):
                 print(downloader)
             sys.exit(0)
 
-        documents = papis.utils.get_documents_in_lib(
+        documents = papis.api.get_documents_in_lib(
             self.get_args().lib,
             self.get_args().search
         )

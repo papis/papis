@@ -28,7 +28,7 @@ class Command(papis.commands.Command):
         self.add_search_argument()
 
     def main(self):
-        documents = papis.utils.get_documents_in_lib(
+        documents = papis.api.get_documents_in_lib(
             self.get_args().lib,
             self.get_args().search
         )

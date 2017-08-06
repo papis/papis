@@ -1,6 +1,7 @@
 import papis
 import os
 import sys
+import papis.api
 import papis.utils
 
 
@@ -32,7 +33,7 @@ class Command(papis.commands.Command):
         if self.args.tool:
             papis.config.set("opentool", self.args.tool)
 
-        documents = papis.utils.get_documents_in_lib(
+        documents = papis.api.get_documents_in_lib(
             self.get_args().lib,
             self.args.search
         )
@@ -46,7 +47,7 @@ class Command(papis.commands.Command):
 
         if not self.args.dir:
             files = document.get_files()
-            file_to_open = papis.utils.pick(
+            file_to_open = papis.api.pick(
                 files,
                 pick_config=dict(
                     header_filter=lambda x: x.replace(
@@ -54,7 +55,7 @@ class Command(papis.commands.Command):
                     )
                 )
             )
-            papis.utils.open_file(file_to_open)
+            papis.api.open_file(file_to_open)
         else:
             # Open directory
-            papis.utils.open_dir(document.get_main_folder())
+            papis.api.open_dir(document.get_main_folder())

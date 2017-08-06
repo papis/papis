@@ -7,6 +7,7 @@ import hashlib
 import shutil
 import string
 import subprocess
+import papis.api
 import papis.utils
 import papis.config
 import papis.bibtex
@@ -252,7 +253,7 @@ class Command(papis.commands.Command):
                 with open(file_name, 'wb+') as fd:
                     fd.write(down.getDocumentData())
                 self.logger.info('Opening the file')
-                papis.utils.open_file(file_name)
+                papis.api.open_file(file_name)
                 if papis.utils.confirm('Do you want to use this file?'):
                     self.args.document.append(file_name)
 
@@ -271,7 +272,7 @@ class Command(papis.commands.Command):
             self.logger.debug(
                 "Searching for the document where to add the files"
             )
-            documents = papis.utils.get_documents_in_dir(
+            documents = papis.api.get_documents_in_dir(
                 lib_dir,
                 self.args.to
             )
@@ -340,7 +341,7 @@ class Command(papis.commands.Command):
             )
             document.save()
             self.logger.debug("Editing file before adding it")
-            papis.utils.edit_file(document.get_info_file())
+            papis.api.edit_file(document.get_info_file())
             self.logger.debug("Loading the changes made by editing")
             document.load()
             data = document.to_dict()
@@ -367,7 +368,7 @@ class Command(papis.commands.Command):
         document.update(data, force=True)
         if self.get_args().open:
             for d_path in in_documents_paths:
-                papis.utils.open_file(d_path)
+                papis.api.open_file(d_path)
         if self.args.confirm:
             if not papis.utils.confirm('Really add?'):
                 sys.exit(0)
@@ -379,7 +380,7 @@ class Command(papis.commands.Command):
             (document.get_main_folder(), out_folder_path)
         )
         shutil.move(document.get_main_folder(), out_folder_path)
-        papis.utils.clear_lib_cache()
+        papis.api.clear_lib_cache()
         if self.args.commit and papis.utils.lib_is_git_repo(self.args.lib):
             subprocess.call(["git", "-C", out_folder_path, "add", "."])
             subprocess.call(
