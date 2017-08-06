@@ -511,3 +511,19 @@ def input(prompt, default=""):
         prompt + ' (%s): ' % (default)
     )
     return result if result else default
+
+def clean_document_name(doc_path):
+    """Get a file path and return the basename of the path cleaned.
+
+    :param doc_path: Path of a document.
+    :type  doc_path: str
+    :returns: Basename of the path cleaned
+    :rtype:  str
+    """
+    base = os.path.basename(doc_path)
+    logger.debug("Cleaning document name %s " % base)
+    cleaned = re.sub(
+        r"[^a-zA-Z0-9_.-]", "",
+        re.sub(r"\s+", "-", base)
+    )
+    return cleaned
