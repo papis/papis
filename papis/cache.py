@@ -1,6 +1,5 @@
 import logging
 import os
-import papis.api
 import papis.utils
 import papis.config
 
@@ -83,8 +82,6 @@ def clear_lib_cache(lib=None):
     :param lib: Library name.
     :type  lib: str
     """
-    if lib is None:
-        lib = papis.api.get_lib()
     directory = papis.config.get("dir", section=lib)
     clear(directory)
 
