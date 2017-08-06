@@ -198,15 +198,6 @@ class Command(papis.commands.Command):
                 )
         return author
 
-    def clean_document_name(self, documentPath):
-        base = os.path.basename(documentPath)
-        self.logger.debug("Cleaning document name %s " % base)
-        cleaned = re.sub(
-            r"[^a-zA-Z0-9_.-]", "",
-            re.sub(r"\s+", "-", base)
-        )
-        return cleaned
-
     def init_contact_mode(self):
         """Initialize the contact mode
         """
@@ -270,7 +261,7 @@ class Command(papis.commands.Command):
         if self.args.from_vcf:
             data.update(papis.utils.vcf_to_data(self.args.from_vcf))
         in_documents_names = [
-            self.clean_document_name(doc_path)
+            papis.utils.clean_document_name(doc_path)
             for doc_path in in_documents_paths
         ]
 
