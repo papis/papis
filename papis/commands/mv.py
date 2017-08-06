@@ -15,12 +15,7 @@ class Command(papis.commands.Command):
         )
 
         self.add_search_argument()
-
-        self.parser.add_argument(
-            "--git",
-            help="Move document using git (git mv)",
-            action="store_true"
-        )
+        self.add_git_argument()
 
     def get_dirs(self, main):
         directories = []
@@ -76,7 +71,8 @@ class Command(papis.commands.Command):
 
         mvtool = papis.config.get("mvtool")
 
-        cmd = ["git mv" if self.args.git else mvtool, folder, new_folder]
+        cmd = (['git', '-C', folder] if self.args.git else []) + \
+            ['mv', folder, new_folder]
         self.logger.debug(cmd)
         subprocess.call(cmd)
         papis.utils.clear_lib_cache()

@@ -32,6 +32,7 @@ general_settings = {
     "notes-name"      : "notes.tex",
     "format-doc-name" : "doc",
     "use-cache"       : True,
+    "use-git"       : False,
     "add-confirm"     : False,
     "add-interactive" : False,
     "add-edit"        : False,

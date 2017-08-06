@@ -213,6 +213,19 @@ class Command(object):
             action="store"
         )
 
+    def add_git_argument(
+            self,
+            flags=['--git'],
+            help="Run command involving git",
+            action='store_false' if papis.config.get('use-git') \
+                else 'store_true'
+            ):
+        self.parser.add_argument(
+            *flags,
+            help=help,
+            action=action
+        )
+
     def set_args(self, args):
         self.args = args
 

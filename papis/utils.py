@@ -527,3 +527,22 @@ def clean_document_name(doc_path):
         re.sub(r"\s+", "-", base)
     )
     return cleaned
+
+def git_commit(path="", message=""):
+    """Commits changes in the path with a message.
+    If the path is not given, then the lib path is used.
+
+    :param path: Folder where a git repo exists.
+    :type  path: str
+    :param message: Commit message
+    :type  message: str
+    :returns: None
+
+    """
+    logger.debug('Commiting...')
+    path = path or os.path.expanduser(papis.config.get('dir'))
+    message = '-m "%s"' % message if len(message) > 0 else ''
+    cmd = ['git', '-C', path, 'commit', message]
+    logger.debug(cmd)
+    message = '-m "%s"' % message if len(message) > 0 else ''
+    call(cmd)
