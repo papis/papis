@@ -1,3 +1,7 @@
+"""This module describes which functions are intended to be used by users to
+create papis scripts.
+"""
+
 from subprocess import call
 import logging
 
@@ -20,6 +24,11 @@ def get_lib():
     :returns: Library name
     :rtype:  str
 
+    >>> get_lib() == papis.config.get_default_settings(key='default-library')
+    True
+    >>> set_lib('books')
+    >>> get_lib()
+    'books'
     """
     return papis.config.get_lib()
 
@@ -150,6 +159,10 @@ def get_documents_in_dir(directory, search=""):
 
     :returns: List of filtered documents.
     :rtype: list
+
+    >>> docs = get_documents_in_dir('non/existent/path')
+    >>> len(docs)
+    0
 
     """
     return papis.utils.get_documents(directory, search)
