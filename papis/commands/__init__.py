@@ -218,9 +218,10 @@ class Command(object):
             self,
             flags=['--git'],
             help="Run command involving git",
-            action='store_false' if papis.config.get('use-git') \
-                else 'store_true'
+            action=None
             ):
+        action = action or ('store_false' if papis.config.get('use-git')
+                                else 'store_true')
         self.parser.add_argument(
             *flags,
             help=help,
