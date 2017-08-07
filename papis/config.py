@@ -5,7 +5,6 @@ logger.debug("importing")
 
 import os
 import configparser
-import papis.utils
 import papis.exceptions
 
 
@@ -171,7 +170,7 @@ def general_get(key, section=None, data_type=None):
     method = None
     value = None
     config = get_configuration()
-    lib = papis.config.get_default_settings(key='default-library')
+    lib = get_lib()
     global_section = get_general_settings_name()
     specialized_key = section + "-" + key if section is not None else key
     extras = [(section, key)] if section is not None else []
@@ -263,6 +262,27 @@ def get_configuration():
         logger.debug("Creating configuration")
         CONFIGURATION = Configuration()
     return CONFIGURATION
+
+
+def get_lib():
+    """Get current library, it either retrieves the library from
+    the environment PAPIS_LIB variable or from the command line
+    args passed by the user.
+
+    :param library: Name of library or path to a given library
+    :type  library: str
+    """
+    import papis.commands
+    try:
+        lib = papis.commands.get_args().lib
+    except AttributeError:
+        try:
+            lib = os.environ["PAPIS_LIB"]
+        except KeyError:
+            # Do not put papis.config.get because get is a special function
+            # that also needs the library to see if some key was overriden!
+            lib = papis.config.get_default_settings(key="default-library")
+    return lib
 
 
 def reset_configuration():
