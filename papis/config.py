@@ -7,7 +7,6 @@ import os
 import configparser
 import papis.exceptions
 import papis.utils
-import papis.api
 
 
 CONFIGURATION = None #: Global configuration object variable.
@@ -64,6 +63,8 @@ def get_general_settings_name():
     """Get the section name of the general settings
     :returns: Section's name
     :rtype:  str
+    >>> get_general_settings_name()
+    'settings'
     """
     return "settings"
 
@@ -82,6 +83,14 @@ def get_default_settings(section="", key=""):
     :type  section: str
     :param key: Setting's name to be queried for.
     :type  key: str
+
+    >>> import collections
+    >>> type(get_default_settings()) is collections.OrderedDict
+    True
+    >>> get_default_settings(key='mvtool')
+    'mv'
+    >>> get_default_settings(key='help-key', section='vim-gui')
+    'h'
     """
     global DEFAULT_SETTINGS
     import papis.gui
@@ -149,6 +158,9 @@ def get_scripts_folder():
 def set(key, val, section=None):
     """Set a key to val in some section and make these changes available
     everywhere.
+    >>> set('picktool', 'rofi')
+    >>> get('picktool')
+    'rofi'
     """
     config = get_configuration()
     if not config.has_section(section or "settings"):
@@ -221,18 +233,27 @@ def get(*args, **kwargs):
 
 def getint(*args, **kwargs):
     """Integer getter
+    >>> set('something', 42)
+    >>> getint('something')
+    42
     """
     return general_get(*args, data_type=int, **kwargs)
 
 
 def getfloat(*args, **kwargs):
     """Float getter
+    >>> set('something', 0.42)
+    >>> getfloat('something')
+    0.42
     """
     return general_get(*args, data_type=float, **kwargs)
 
 
 def getboolean(*args, **kwargs):
     """Bool getter
+    >>> set('add-open', True)
+    >>> getboolean('add-open')
+    True
     """
     return general_get(*args, data_type=bool, **kwargs)
 
@@ -273,6 +294,9 @@ def get_lib():
 
     :param library: Name of library or path to a given library
     :type  library: str
+    >>> papis.api.set_lib('hello-world')
+    >>> get_lib()
+    'hello-world'
     """
     import papis.commands
     try:
