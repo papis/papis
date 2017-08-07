@@ -6,7 +6,6 @@ logger.debug("importing")
 
 import os
 import re
-import papis.pick
 import papis.cache
 import papis.utils
 import papis.commands
@@ -99,6 +98,7 @@ def pick(options, pick_config={}):
         logger.debug("Using vim picker")
         return papis.gui.vim.pick(options, **pick_config)
     elif picker == "papis.pick":
+        import papis.pick
         logger.debug("Using papis.pick picker")
         return papis.pick.pick(options, **pick_config)
     else:
