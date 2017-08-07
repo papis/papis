@@ -203,7 +203,6 @@ def init():
 
 
 def main(input_args=[]):
-    init()
     commands = get_commands()
     # Parse arguments
     args = get_default_parser().parse_args(input_args or None)
