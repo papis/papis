@@ -93,6 +93,10 @@ def pick(options, pick_config={}):
     :returns: Returns elements of ``options``.
     :rtype: Element(s) of ``options``
 
+    >>> papis.config.set('picktool', 'papis.pick')
+    >>> pick(['something'])
+    'something'
+
     """
     # Leave this import here
     import papis.config
