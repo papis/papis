@@ -171,7 +171,7 @@ def general_get(key, section=None, data_type=None):
     method = None
     value = None
     config = get_configuration()
-    lib = papis.utils.get_lib()
+    lib = papis.config.get_default_settings(key='default-library')
     global_section = get_general_settings_name()
     specialized_key = section + "-" + key if section is not None else key
     extras = [(section, key)] if section is not None else []
