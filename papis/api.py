@@ -20,6 +20,7 @@ def get_lib():
 
     :returns: Library name
     :rtype:  str
+
     """
     return papis.config.get_lib()
 
@@ -31,6 +32,7 @@ def set_lib(library):
 
     :param library: Name of library or path to a given library
     :type  library: str
+
     """
     try:
         args = papis.commands.get_args()
@@ -53,8 +55,10 @@ def get_arg(arg, default=None):
 def get_libraries():
     """Get all libraries declared in the configuration. A library is discovered
     if the ``dir`` key defined in the library section.
+
     :returns: List of library names
     :rtype: list
+
     """
     libs = []
     config = papis.config.get_configuration()
@@ -68,15 +72,19 @@ def pick(options, pick_config={}):
     """This is a wrapper for the various pickers that are supported.
     Depending on the configuration different selectors or 'pickers'
     are used.
+
     :param options: List of different objects. The type of the objects within
-    the list must be supported by the pickers. This is the reason why this
-    function is difficult to generalize for external picker programs.
+        the list must be supported by the pickers. This is the reason why this
+        function is difficult to generalize for external picker programs.
     :type  options: list
+
     :param pick_config: Dictionary with additional configuration for the used
-    picker. This depends on the picker.
+        picker. This depends on the picker.
     :type  pick_config: dict
+
     :returns: Returns elements of ``options``.
     :rtype: Element(s) of ``options``
+
     """
     # Leave this import here
     import papis.config
@@ -103,6 +111,7 @@ def open_file(file_path):
 
     :param file_path: File path to be handled.
     :type  file_path: str
+
     """
     papis.utils.general_open(file_path, "opentool")
 
@@ -113,6 +122,7 @@ def open_dir(dir_path):
 
     :param dir_path: Folder path to be handled.
     :type  dir_path: str
+
     """
     papis.utils.general_open(dir_path, "file-browser")
 
@@ -123,6 +133,7 @@ def edit_file(file_path):
 
     :param file_path: File path to be handled.
     :type  file_path: str
+
     """
     papis.utils.general_open(file_path, "editor")
 
@@ -133,10 +144,13 @@ def get_documents_in_dir(directory, search=""):
 
     :param directory: Folder path.
     :type  directory: str
+
     :param search: Search string
     :type  search: str
+
     :returns: List of filtered documents.
     :rtype: list
+
     """
     return papis.utils.get_documents(directory, search)
 
@@ -147,10 +161,13 @@ def get_documents_in_lib(library=None, search=""):
 
     :param library: Library name.
     :type  library: str
+
     :param search: Search string
     :type  search: str
+
     :returns: List of filtered documents.
     :rtype: list
+
     """
     directory = papis.config.get("dir", section=library)
     return papis.api.get_documents_in_dir(directory, search)
@@ -162,6 +179,7 @@ def clear_lib_cache(lib=None):
 
     :param lib: Library name.
     :type  lib: str
+
     """
     lib = papis.api.get_lib() if lib is None else lib
     directory = papis.config.get("dir", section=lib)
