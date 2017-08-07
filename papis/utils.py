@@ -14,26 +14,6 @@ import papis.crossref
 import papis.bibtex
 
 
-def get_lib():
-    """Get current library, it either retrieves the library from
-    the environment PAPIS_LIB variable or from the command line
-    args passed by the user.
-
-    :param library: Name of library or path to a given library
-    :type  library: str
-    """
-    try:
-        lib = papis.commands.get_args().lib
-    except AttributeError:
-        try:
-            lib = os.environ["PAPIS_LIB"]
-        except KeyError:
-            # Do not put papis.config.get because get is a special function
-            # that also needs the library to see if some key was overriden!
-            lib = papis.config.get_default_settings(key="default-library")
-    return lib
-
-
 def set_lib(library):
     """Set current library, it either sets the library in
     the environment PAPIS_LIB variable or in the command line
@@ -396,7 +376,7 @@ def clear_lib_cache(lib=None):
     :type  lib: str
     """
     import papis.cache
-    lib = papis.utils.get_lib() if lib is None else lib
+    lib = papis.config.get_lib() if lib is None else lib
     directory = papis.config.get("dir", section=lib)
     papis.cache.clear(directory)
 
