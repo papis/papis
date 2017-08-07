@@ -24,12 +24,11 @@ def get_options():
     return options
 
 
-def pick(
-        options,
-        header_filter=lambda x: x,
-        body_filter=None,
-        match_filter=lambda x: x
-        ):
+def pick(options, header_filter=None, body_filter=None, match_filter=None):
+    if header_filter is None:
+        header_filter = lambda x: papis.utils.format_doc(
+            papis.config.get('header-format', section='rofi-gui'), x
+        )
     if len(options) == 1:
         indices = 0
     else:

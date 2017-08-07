@@ -110,7 +110,10 @@ class Command(papis.commands.Command):
             papis.config.set("picktool", self.args.picktool)
 
         if self.args.pick_lib:
-            self.args.lib = papis.api.pick(papis.api.get_libraries())
+            self.args.lib = papis.api.pick(
+                papis.utils.get_libraries(),
+                pick_config=dict(header_filter=lambda x: x)
+            )
 
         if self.args.lib not in self.get_config().keys():
             if os.path.exists(self.args.lib):

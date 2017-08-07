@@ -21,7 +21,7 @@ def get_lib():
     :returns: Library name
     :rtype:  str
     """
-    return papis.utils.get_lib()
+    return papis.config.get_lib()
 
 
 def set_lib(library):
