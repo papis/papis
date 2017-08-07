@@ -83,7 +83,7 @@ def clear_lib_cache(lib=None):
     :type  lib: str
     """
     if lib is None:
-        lib = papis.utils.get_lib()
+        lib = papis.config.get_lib()
     directory = papis.config.get("dir", section=lib)
     clear(directory)
 
