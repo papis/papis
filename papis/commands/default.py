@@ -111,7 +111,7 @@ class Command(papis.commands.Command):
 
         if self.args.pick_lib:
             self.args.lib = papis.api.pick(
-                papis.utils.get_libraries(),
+                papis.api.get_libraries(),
                 pick_config=dict(header_filter=lambda x: x)
             )
 
