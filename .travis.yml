@@ -11,6 +11,7 @@ python:
 
 script:
   - make test
+  - make test-non-pythonic
 
 install:
   - pip install setuptools
