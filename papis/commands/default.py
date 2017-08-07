@@ -96,7 +96,6 @@ class Command(papis.commands.Command):
         if self.args.set:
             key_vals = [d.split("=") for d in self.args.set.split(",")]
             for pair in key_vals:
-                print(pair)
                 key = pair[0]
                 val = pair[1]
                 papis.config.set(key, val)
