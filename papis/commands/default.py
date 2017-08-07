@@ -78,7 +78,7 @@ class Command(papis.commands.Command):
         self.default_parser.add_argument(
             "--set",
             help="Set key value, e.g., "
-                 "--set info-name=information.yaml:opentool=evince",
+                 "--set info-name=information.yaml,opentool=evince",
             action="store"
         )
 
@@ -94,7 +94,7 @@ class Command(papis.commands.Command):
         )
 
         if self.args.set:
-            key_vals = [d.split("=") for d in self.args.set.split(":")]
+            key_vals = [d.split("=") for d in self.args.set.split(",")]
             for pair in key_vals:
                 print(pair)
                 key = pair[0]
