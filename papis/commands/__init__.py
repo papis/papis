@@ -65,12 +65,42 @@ def get_commands(command=None):
 
     :param command: Command that should be returned.
     :type  command: str
+    >>> get_commands() is not None
+    True
+    >>> type(get_commands()) is dict
+    True
+    >>> 'add' in get_commands().keys()
+    True
     """
     global COMMANDS
+    if COMMANDS is None:
+        init_commands()
     if command is None:
         return COMMANDS
     else:
         return COMMANDS[command]
+
+
+def list_commands():
+    """List all available commands
+    :returns: List containing the names of the commands
+    :rtype:  list
+
+    >>> len(list_commands()) > 0
+    True
+    >>> type(list_commands()) is list
+    True
+    >>> 'add' in list_commands() and 'open' in list_commands()
+    True
+    >>> 'default' in list_commands()
+    False
+    >>> 'external' in list_commands()
+    False
+    """
+    return [
+        cmd for cmd in get_commands().keys()
+        if cmd not in ['default', 'external']
+    ]
 
 
 def get_args():
@@ -153,17 +183,23 @@ def init_external_commands():
     return commands
 
 
-def init():
-    import argcomplete
-    if get_commands() is not None:
-        raise RuntimeError("Commands are already initialised")
+def init_commands():
+    """Initialize all the commands
+    """
     commands = dict()
     commands.update(init_internal_commands())
     commands.update(init_external_commands())
     set_commands(commands)
+
+
+def init():
+    import argcomplete
+    if get_commands() is not None:
+        raise RuntimeError("Commands are already initialised")
+    init_commands()
     # autocompletion
     argcomplete.autocomplete(get_default_parser())
-    return commands
+    return get_commands()
 
 
 def main(input_args=[]):
