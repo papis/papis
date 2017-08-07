@@ -20,6 +20,7 @@ command-line interface (*CLI*) is heavily tailored after
    database_structure
    commands
    scripting
+   api
 
 
 

@@ -69,11 +69,11 @@ def pick(options, pick_config={}):
     Depending on the configuration different selectors or 'pickers'
     are used.
     :param options: List of different objects. The type of the objects within
-        the list must be supported by the pickers. This is the reason why this
-        function is difficult to generalize for external picker programs.
+    the list must be supported by the pickers. This is the reason why this
+    function is difficult to generalize for external picker programs.
     :type  options: list
-    :param pick_config: Dictionary with additional configuration for the
-        used picker. This depends on the picker.
+    :param pick_config: Dictionary with additional configuration for the used
+    picker. This depends on the picker.
     :type  pick_config: dict
     :returns: Returns elements of ``options``.
     :rtype: Element(s) of ``options``
