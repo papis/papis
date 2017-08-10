@@ -37,6 +37,7 @@ general_settings = {
     "add-interactive" : False,
     "add-edit"        : False,
     "add-open"        : False,
+    "check-keys"      : 'files',
     "browse-query-format"   : "{doc[title]} {doc[author]}",
     "search-engine"   : "https://duckduckgo.com",
     "user-agent"      : \
