@@ -50,6 +50,7 @@ setup(
         "prompt-toolkit>=1.0.0",
         "python-rofi",
     ],
+    python_requires='>=3',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
