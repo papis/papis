@@ -5,5 +5,5 @@ Comment=Launches the papis document opener after picking a library
 Icon=utilities-terminal
 Terminal=true
 Exec=papis --pick-lib open
-Categories=ConsoleOnly;System;FileTools
+Categories=ConsoleOnly;Office
 MimeType=inode/directory;
