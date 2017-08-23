@@ -100,6 +100,10 @@ setup(
     ),
     data_files=[
 
+        ("share/doc/papis/", [
+            "README.md",
+        ]),
+
         ("share/man/man1", [
             "doc/build/man/papis.1",
             "doc/build/man/papis-config.1",
