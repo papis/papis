@@ -78,6 +78,7 @@ setup(
         develop=[
             "sphinx",
             'sphinx-argparse',
+            'sphinx_rtd_theme',
             'pytest',
         ]
     ),
