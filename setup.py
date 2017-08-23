@@ -97,6 +97,18 @@ setup(
             'gui/vim/main.vim',
         ],
     ),
+    data_files=[
+
+        ("share/man/man1", [
+            "doc/build/man/papis.1",
+            "doc/build/man/papis-config.1",
+        ]),
+
+        ("share/applications", [
+            "contrib/papis.desktop",
+        ]),
+
+    ],
     packages=[
         "papis",
         "papis.gui",
