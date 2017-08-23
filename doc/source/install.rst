@@ -1,6 +1,32 @@
 Installation
 ============
 
+Using pip
+---------
+
+The easiest way of installing papis is using the ``PyPi`` repositories and
+the package manager ``pip3``, just open a terminal and type in
+
+::
+
+  pip3 install papis
+
+If you are on GNU/Linux like systems you might need to type ``sudo``
+
+::
+
+  sudo pip3 install papis
+
+of if you prefer installing it locally then simply type
+
+::
+
+  pip3 install --user papis
+
+
+From source
+-----------
+
 First of all you have to get the code, open a terminal and hit
 
 ::
@@ -14,7 +40,7 @@ Go inside of the ``papis`` source folder and you can either use the ``Makefile``
 or install it with ``python3``.
 
 Using the Makefile
-------------------
+^^^^^^^^^^^^^^^^^^
 
 If you want to install it globally, just hit
 
@@ -41,7 +67,7 @@ And to see the available targets hit:
     make help
 
 Using python3
--------------
+^^^^^^^^^^^^^
 
 The general command that you have to hit is by using the ``setup.py`` script:
 
@@ -76,16 +102,6 @@ If you want to develop on the code, you can also alternatively hit
   ::
 
     export PATH=$PATH:$HOME/.local/bin
-
-Using pip
----------
-
-We haven't published the project yet, but if you have git installed
-in your system you can do:
-
-::
-
-  pip install git+git://github.com/alejandrogallo/papis.git
 
 
 Requirements
