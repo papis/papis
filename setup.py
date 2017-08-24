@@ -39,6 +39,7 @@ setup(
     license=papis.__license__,
     url='https://github.com/alejandrogallo/papis',
     install_requires=[
+        "papis-python-rofi>=1.0.1",
         "requests>=2.11.1",
         "argcomplete>=1.8.2",
         "configparser>=3.0.0",
@@ -48,7 +49,6 @@ setup(
         "beautifulsoup4>=4.4.1",
         "vobject>=0.9.4.1",
         "prompt-toolkit>=1.0.0",
-        "python-rofi",
     ],
     python_requires='>=3',
     classifiers=[
@@ -67,9 +67,6 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Topic :: Utilities',
-    ],
-    dependency_links=[
-        "http://github.com/alejandrogallo/python-rofi/tarball/master"
     ],
     extras_require=dict(
         # List additional groups of dependencies here (e.g. development

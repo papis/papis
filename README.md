@@ -32,7 +32,7 @@ Take a look at the [documentation](http://papis.readthedocs.io/en/latest/)!
   This can be done by updating the function `papis.utils.match_document`.
 - [X] Match search strings to documents using multiple cores
   through the standard `multiprocess` module.
-- [ ] Make sure that `setup.py` installs the `python-rofi` module from
+- [X] Make sure that `setup.py` installs the `python-rofi` module from
   `https://github.com/alejandrogallo/python-rofi` and not from the original
   website.
 - [ ] Bibitem support for exporting references in the export command.
