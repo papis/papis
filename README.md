@@ -7,6 +7,10 @@
     <img src='https://readthedocs.org/projects/papis/badge/?version=latest' alt='Documentation Status' />
 </a>
 
+<a href="https://badge.fury.io/py/papis">
+  <img src="https://badge.fury.io/py/papis.svg" alt="PyPI version" height="18">
+</a>
+
 ## Description
 
 Papis is a command-line based document and bibliography manager.  Its
