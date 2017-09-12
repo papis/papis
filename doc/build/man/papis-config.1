@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS-CONFIG" "1" "Aug 24, 2017" "0.1.2" "papis"
+.TH "PAPIS-CONFIG" "1" "Sep 13, 2017" "0.1.3" "papis"
 .SH NAME
 papis-config \- Papis Configuration
 .
@@ -216,14 +216,20 @@ Default: \fBMozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (K
 .B xeditor
 Default: \fBxdg\-open\fP
 .UNINDENT
-.SS vim\-gui
+.SS rofi\-gui
 .INDENT 0.0
 .TP
-.B delete\-key
-Default: \fBdd\fP
+.B case_sensitive
+Default: \fBFalse\fP
 .TP
-.B edit\-key
-Default: \fBe\fP
+.B eh
+Default: \fB3\fP
+.TP
+.B fixed_lines
+Default: \fB20\fP
+.TP
+.B fullscreen
+Default: \fBFalse\fP
 .TP
 .B header\-format
 .INDENT 7.0
@@ -234,33 +240,56 @@ Default: \fBe\fP
 .sp
 .nf
 .ft C
-Title : {doc[title]}
-Author: {doc[author]}
-Year  : {doc[year]}
-\-\-\-\-\-\-\-
+<b>{doc[title]}</b>
+{doc[empty]}  <i>{doc[author]}</i>
+{doc[empty]}  <span foreground="red">({doc[year]:\->4})</span><span foreground="green">{doc[tags]}</span>
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
 .UNINDENT
 .TP
-.B help\-key
-Default: \fBh\fP
+.B key\-browse
+Default: \fBAlt+u\fP
 .TP
-.B next\-search\-key
-Default: \fBn\fP
+.B key\-delete
+Default: \fBAlt+d\fP
 .TP
-.B open\-dir\-key
-Default: \fB<S\-o>\fP
+.B key\-edit
+Default: \fBAlt+e\fP
 .TP
-.B open\-key
-Default: \fBo\fP
+.B key\-help
+Default: \fBAlt+h\fP
 .TP
-.B prev\-search\-key
-Default: \fBN\fP
+.B key\-normal\-window
+Default: \fBAlt+w\fP
 .TP
-.B search\-key
-Default: \fB/\fP
+.B key\-open
+Default: \fBEnter\fP
+.TP
+.B key\-open\-stay
+Default: \fBAlt+o\fP
+.TP
+.B key\-quit
+Default: \fBAlt+q\fP
+.TP
+.B lines
+Default: \fB10\fP
+.TP
+.B markup_rows
+Default: \fBTrue\fP
+.TP
+.B multi_select
+Default: \fBTrue\fP
+.TP
+.B normal_window
+Default: \fBFalse\fP
+.TP
+.B sep
+Default: \fB|\fP
+.TP
+.B width
+Default: \fB80\fP
 .UNINDENT
 .SS tk\-gui
 .INDENT 0.0
@@ -394,20 +423,14 @@ Default: \fB700\fP
 .B window\-width
 Default: \fB1200\fP
 .UNINDENT
-.SS rofi\-gui
+.SS vim\-gui
 .INDENT 0.0
 .TP
-.B case_sensitive
-Default: \fBFalse\fP
+.B delete\-key
+Default: \fBdd\fP
 .TP
-.B eh
-Default: \fB3\fP
-.TP
-.B fixed_lines
-Default: \fB20\fP
-.TP
-.B fullscreen
-Default: \fBFalse\fP
+.B edit\-key
+Default: \fBe\fP
 .TP
 .B header\-format
 .INDENT 7.0
@@ -418,56 +441,33 @@ Default: \fBFalse\fP
 .sp
 .nf
 .ft C
-<b>{doc[title]}</b>
-{doc[empty]}  <i>{doc[author]}</i>
-{doc[empty]}  <span foreground="red">({doc[year]:\->4})</span><span foreground="green">{doc[tags]}</span>
+Title : {doc[title]}
+Author: {doc[author]}
+Year  : {doc[year]}
+\-\-\-\-\-\-\-
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
 .UNINDENT
 .TP
-.B key\-browse
-Default: \fBAlt+u\fP
+.B help\-key
+Default: \fBh\fP
 .TP
-.B key\-delete
-Default: \fBAlt+d\fP
+.B next\-search\-key
+Default: \fBn\fP
 .TP
-.B key\-edit
-Default: \fBAlt+e\fP
+.B open\-dir\-key
+Default: \fB<S\-o>\fP
 .TP
-.B key\-help
-Default: \fBAlt+h\fP
+.B open\-key
+Default: \fBo\fP
 .TP
-.B key\-normal\-window
-Default: \fBAlt+w\fP
+.B prev\-search\-key
+Default: \fBN\fP
 .TP
-.B key\-open
-Default: \fBEnter\fP
-.TP
-.B key\-open\-stay
-Default: \fBAlt+o\fP
-.TP
-.B key\-quit
-Default: \fBAlt+q\fP
-.TP
-.B lines
-Default: \fB10\fP
-.TP
-.B markup_rows
-Default: \fBTrue\fP
-.TP
-.B multi_select
-Default: \fBTrue\fP
-.TP
-.B normal_window
-Default: \fBFalse\fP
-.TP
-.B sep
-Default: \fB|\fP
-.TP
-.B width
-Default: \fB80\fP
+.B search\-key
+Default: \fB/\fP
 .UNINDENT
 .SH AUTHOR
 Alejandro Gallo
