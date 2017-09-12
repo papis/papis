@@ -329,9 +329,6 @@ class Command(papis.commands.Command):
         if not os.path.isdir(temp_dir):
             self.logger.debug("Creating directory '%s'" % temp_dir)
             os.makedirs(temp_dir)
-        if not os.path.isdir(out_folder_path):
-            self.logger.debug("Creating directory '%s'" % out_folder_path)
-            os.makedirs(out_folder_path)
 
         # Check if the user wants to edit before submitting the doc
         # to the library
