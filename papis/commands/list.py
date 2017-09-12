@@ -1,5 +1,46 @@
 """
 This command is to list contents of a library.
+
+Examples
+^^^^^^^^
+
+ - List all document files associated will all entries:
+
+    .. code:: bash
+
+        papis list --file
+
+    .. raw:: HTML
+
+        <script type="text/javascript"
+        src="https://asciinema.org/a/XwD0ZaUORoOonwDw4rXoQDkjZ.js"
+        id="asciicast-XwD0ZaUORoOonwDw4rXoQDkjZ" async></script>
+
+ - List all document year and title with custom formatting:
+
+    .. code:: bash
+
+        papis list --format '{doc[year]} {doc[title]}'
+
+    .. raw:: HTML
+
+        <script type="text/javascript"
+        src="https://asciinema.org/a/NZ8Ii1wWYPo477CIL4vZhUqOy.js"
+        id="asciicast-NZ8Ii1wWYPo477CIL4vZhUqOy" async></script>
+
+ - List all documents according to the bibitem formatting (stored in a template
+   file ``bibitem.template``):
+
+    .. code:: bash
+
+        papis list --template bibitem.template
+
+    .. raw:: HTML
+
+        <script type="text/javascript"
+        src="https://asciinema.org/a/QZTBZ3tFfyk9WQuJ9WWB2UpSw.js"
+        id="asciicast-QZTBZ3tFfyk9WQuJ9WWB2UpSw" async></script>
+
 """
 
 import papis
@@ -43,14 +84,15 @@ class Command(papis.commands.Command):
 
         self.parser.add_argument(
             "--format",
-            help="List entries using special format",
+            help="List entries using a custom papis format, e.g."
+                " '{doc[year] {doc[title]}",
             default=None,
             action="store"
         )
 
         self.parser.add_argument(
             "--template",
-            help="Use template file for formating output",
+            help="Template file containing a papis format to list entries",
             default=None,
             action="store"
         )
