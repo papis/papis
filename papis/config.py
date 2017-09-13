@@ -393,7 +393,9 @@ class Configuration(configparser.ConfigParser):
 
     def initialize(self):
         if not os.path.exists(self.dir_location):
-            print('Creating configuration folder in %s' % self.dir_location)
+            self.logger.warning(
+                'Creating configuration folder in %s' % self.dir_location
+            )
             os.makedirs(self.dir_location)
         if not os.path.exists(self.scripts_location):
             os.makedirs(self.scripts_location)
