@@ -165,6 +165,7 @@ def get_documents_in_dir(directory, search=""):
     :rtype: list
 
     >>> docs = get_documents_in_dir('non/existent/path')
+    ...
     >>> len(docs)
     0
 
