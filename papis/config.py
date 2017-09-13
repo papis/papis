@@ -137,7 +137,7 @@ def get_config_dirs():
         # get_config_home should also be included on top of XDG_CONFIG_DIRS
         dirs = [
             os.path.join(d, 'papis') for d in
-            os.environ.get('XDG_CONFIG_DIRS').split(':') + get_config_home()
+            os.environ.get('XDG_CONFIG_DIRS').split(':') + [get_config_home()]
         ]
     else:
         # If not, take XDG_CONFIG_HOME and $HOME/.papis for backwards
