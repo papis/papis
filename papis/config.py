@@ -34,6 +34,10 @@ general_settings = {
     "notes-name"      : "notes.tex",
     "format-doc-name" : "doc",
     "use-cache"       : True,
+    "cache-dir"       : \
+        os.path.join(os.environ.get('XDG_CACHE_HOME'), 'papis') if
+        os.environ.get('XDG_CACHE_HOME') else \
+        os.path.join(os.path.expanduser('~'), '.cache', 'papis'),
     "use-git"         : False,
     "add-confirm"     : False,
     "add-interactive" : False,
