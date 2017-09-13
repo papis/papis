@@ -120,13 +120,46 @@ def get_default_settings(section="", key=""):
         return DEFAULT_SETTINGS[section][key]
 
 
+def get_config_home():
+    """Returns the base directory relative to which user specific configuration
+    files should be stored.
+
+    :returns: Configuration base directory
+    :rtype:  str
+    """
+    return os.environ.get('XDG_CONFIG_HOME') or \
+        os.path.join(os.path.expanduser('~'), '.config')
+
+
+def get_config_dirs():
+    dirs = []
+    if os.environ.get('XDG_CONFIG_DIRS'):
+        # get_config_home should also be included on top of XDG_CONFIG_DIRS
+        dirs = [
+            os.path.join(d, 'papis') for d in
+            os.environ.get('XDG_CONFIG_DIRS').split(':') + get_config_home()
+        ]
+    else:
+        # If not, take XDG_CONFIG_HOME and $HOME/.papis for backwards
+        # compatibility
+        dirs = [
+            os.path.join(get_config_home(), 'papis'),
+            os.path.join(os.path.expanduser('~'), '.papis'),
+        ]
+    return dirs
+
+
 def get_config_folder():
     """Get folder where the configuration files are stored,
-    e.g. /home/user/.papis
+    e.g. ``/home/user/.papis``. It is XDG compatible, which means that if the
+    environment variable ``XDG_CONFIG_HOME`` is defined it will use the
+    configuration folder ``XDG_CONFIG_HOME/papis`` instead.
     """
-    return os.path.join(
-        os.path.expanduser("~"), ".papis"
-    )
+    config_dirs = get_config_dirs()
+    for config_dir in config_dirs:
+        if os.path.exists(config_dir):
+            return config_dir
+    return config_dirs[0]
 
 
 def get_config_file():
@@ -360,6 +393,7 @@ class Configuration(configparser.ConfigParser):
 
     def initialize(self):
         if not os.path.exists(self.dir_location):
+            print('Creating configuration folder in %s' % self.dir_location)
             os.makedirs(self.dir_location)
         if not os.path.exists(self.scripts_location):
             os.makedirs(self.scripts_location)
