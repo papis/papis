@@ -137,6 +137,12 @@ class Command(papis.commands.Command):
             action="store_true"
         )
 
+        self.parser.add_argument(
+            "--no-document",
+            help="Add entry without a document related to it",
+            action="store_true"
+        )
+
     def get_hash_folder(self, data, document_path):
         """Folder name where the document will be stored.
 
@@ -296,6 +302,17 @@ class Command(papis.commands.Command):
         else:
             document = papis.document.Document(temp_dir)
             if not papis.config.in_mode("contact"):
+                if len(in_documents_paths) == 0:
+                    if not self.get_args().no_document:
+                        self.logger.error("No documents to be added")
+                        sys.exit(1)
+                    else:
+                        in_documents_paths = [document.get_info_file()]
+                        # We need the names to add them in the file field
+                        # in the info file
+                        in_documents_names = [papis.utils.get_info_file_name()]
+                        # Save document to create the info file
+                        document.save()
                 data["title"] = self.args.title or self.get_default_title(
                     data,
                     in_documents_paths[0]
