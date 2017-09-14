@@ -39,8 +39,8 @@ Take a look at the [documentation](http://papis.readthedocs.io/en/latest/)!
 - [X] Make sure that `setup.py` installs the `python-rofi` module from
   `https://github.com/alejandrogallo/python-rofi` and not from the original
   website.
-- [ ] Bibitem support for exporting references in the export command.
-  This can be done by looking at the code papis.commands.export`.
+- [X] Bibitem support for exporting references in the export command.
+    (**Done** through the ``--template`` option of list)
 - [ ] Youtube video explaining the main uses of `papis`.
 - [ ] Implement proxy to donwload papers.
 - [ ] Debian package.
