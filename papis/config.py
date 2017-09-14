@@ -135,17 +135,16 @@ def get_config_dirs():
     dirs = []
     if os.environ.get('XDG_CONFIG_DIRS'):
         # get_config_home should also be included on top of XDG_CONFIG_DIRS
-        dirs = [
+        dirs += [
             os.path.join(d, 'papis') for d in
-            os.environ.get('XDG_CONFIG_DIRS').split(':') + [get_config_home()]
+            os.environ.get('XDG_CONFIG_DIRS').split(':')
         ]
-    else:
-        # If not, take XDG_CONFIG_HOME and $HOME/.papis for backwards
-        # compatibility
-        dirs = [
-            os.path.join(get_config_home(), 'papis'),
-            os.path.join(os.path.expanduser('~'), '.papis'),
-        ]
+    # Take XDG_CONFIG_HOME and $HOME/.papis for backwards
+    # compatibility
+    dirs += [
+        os.path.join(get_config_home(), 'papis'),
+        os.path.join(os.path.expanduser('~'), '.papis')
+    ]
     return dirs
 
 
@@ -159,7 +158,8 @@ def get_config_folder():
     for config_dir in config_dirs:
         if os.path.exists(config_dir):
             return config_dir
-    return config_dirs[0]
+    # If no folder is found, then get the config home
+    return os.path.join(get_config_home(), 'papis')
 
 
 def get_config_file():
