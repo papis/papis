@@ -114,6 +114,7 @@ class Picker(object):
         # Clean up ( and )
         cleaned_search = cleaned_search.replace('(', '\\(')\
                                        .replace(')', '\\)')\
+                                       .replace('+', '\\+')\
                                        .replace('[', '\\[')\
                                        .replace(']', '\\]')
         open('test', 'a+').write(cleaned_search+'\n')
