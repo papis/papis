@@ -117,7 +117,6 @@ class Picker(object):
                                        .replace('+', '\\+')\
                                        .replace('[', '\\[')\
                                        .replace(']', '\\]')
-        open('test', 'a+').write(cleaned_search+'\n')
         return r".*"+re.sub(r"\s+", ".*", cleaned_search)
 
     def get_filtered_options(self):
