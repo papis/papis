@@ -4,6 +4,7 @@
 
 import curses
 import re
+import string
 
 
 __all__ = ['Picker', 'pick']
@@ -15,10 +16,10 @@ CTRL_C = 3
 CTRL_D = 4
 CTRL_U = 21
 CTRL_W = 23
-KEYS_ENTER = (curses.KEY_ENTER, ord('\n'), ord('\r'))
-KEYS_UP = (curses.KEY_UP, CTRL_P)
-KEYS_DOWN = (curses.KEY_DOWN, CTRL_N)
-KEYS_ERASE = (curses.KEY_BACKSPACE, CTRL_H)
+KEYS_ENTER = [curses.KEY_ENTER, ord('\n'), ord('\r')]
+KEYS_UP = [curses.KEY_UP, CTRL_P]
+KEYS_DOWN = [curses.KEY_DOWN, CTRL_N]
+KEYS_ERASE = [curses.KEY_BACKSPACE, CTRL_H]
 KEYS_QUIT = (CTRL_C, curses.KEY_EXIT, 27)
 KEYS_HALF_DOWN = [CTRL_D]
 KEYS_HALF_UP = [CTRL_U]
@@ -109,7 +110,14 @@ class Picker(object):
         :returns: TODO
 
         """
-        return r".*"+re.sub(r"\s+", ".*", self.search)
+        cleaned_search = self.search
+        # Clean up ( and )
+        cleaned_search = cleaned_search.replace('(', '\\(')\
+                                       .replace(')', '\\)')\
+                                       .replace('[', '\\[')\
+                                       .replace(']', '\\]')
+        open('test', 'a+').write(cleaned_search+'\n')
+        return r".*"+re.sub(r"\s+", ".*", cleaned_search)
 
     def get_filtered_options(self):
         """TODO: Docstring for get_filtered_options.
@@ -201,7 +209,7 @@ class Picker(object):
                 if new_index >= max_y:
                     new_index = max_y
                 self.index = new_index
-            else:
+            elif chr(c) in string.printable or c in KEYS_ERASE + KEYS_DEL_WORD:
                 self.editSearch(c)
 
     def config_curses(self):
