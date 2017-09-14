@@ -42,10 +42,11 @@ class Command(papis.commands.Command):
             )
         )
 
-        self.logger.info(new_folder)
+        self.logger.debug(new_folder)
 
         if os.path.exists(new_folder):
-            self.logger.exception("Path %s already exists!" % new_folder)
+            self.logger.warning("Path %s already exists" % new_folder)
+            sys.exit(1)
 
         mvtool = papis.config.get("mvtool")
 
