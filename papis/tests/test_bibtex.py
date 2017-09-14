@@ -2,6 +2,7 @@ import unittest
 import logging
 import tempfile
 import os
+import re
 
 import papis
 import papis.bibtex
@@ -38,7 +39,7 @@ class TestBibtex(unittest.TestCase):
                Wolfgang and Feng,
                Mang and Du,
                Jiangfeng},
-  journal   = {Phys. Rev. Lett.}, % some other comment here
+  journal   = {Phys. {Rev}. Lett.}, % some other comment here
   volume    = {105},
   issue     = {4},
 
@@ -48,7 +49,7 @@ class TestBibtex(unittest.TestCase):
 
   numpages  = {4},
   year      = {2010},
-  month     = {Jul},
+  month     = Jul,
   publisher = {American Physical Society},
   doi       = {10.1103/PhysRevLett.105.040504},
   url       = {http://link.aps.org/doi/10.1103/PhysRevLett.105.040504}
@@ -66,7 +67,7 @@ class TestBibtex(unittest.TestCase):
         self.assertTrue(os.path.exists(self.bib_file))
 
     def test_bibtex_to_dict(self):
-        bib_dic = papis.bibtex.bibtex_to_dict(self.bib_file)
+        bib_dic = papis.bibtex.bibtex_to_dict(self.bib_file)[0]
         keys = [
           "title",
           "author",
@@ -85,6 +86,8 @@ class TestBibtex(unittest.TestCase):
         for key in keys:
             print(key)
             self.assertTrue(key in list(bib_dic.keys()))
+        print(bib_dic['journal'])
+        self.assertTrue(re.match(r".*Rev.*", bib_dic['journal']))
 
     def test_bibkeys_exist(self):
         self.assertTrue(len(papis.bibtex.bibtex_keys) != 0)

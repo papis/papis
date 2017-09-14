@@ -49,6 +49,7 @@ setup(
         "beautifulsoup4>=4.4.1",
         "vobject>=0.9.4.1",
         "prompt-toolkit>=1.0.0",
+        "bibtexparser>=0.6.2",
     ],
     python_requires='>=3',
     classifiers=[

@@ -90,7 +90,7 @@ def get(url, data_format="bibtex"):
             if bibtex_data:
                 data = papis.bibtex.bibtex_to_dict(
                     downloader.getBibtexData()
-                )
+                )[0] if len(data) > 0 else dict()
         except NotImplementedError:
             data = dict()
     try:

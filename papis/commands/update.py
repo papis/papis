@@ -68,8 +68,15 @@ class Command(papis.commands.Command):
             self.get_args().search
         )
         document = self.pick(documents) or sys.exit(0)
-        data = papis.bibtex.bibtex_to_dict(self.args.from_bibtex) \
-            if self.args.from_bibtex else dict()
+        data = dict()
+        if self.args.from_bibtex:
+            bib_data = papis.bibtex.bibtex_to_dict(self.args.from_bibtex)
+            if len(bib_data) > 1:
+                self.logger.warning(
+                    'Your bibtex file contains more than one entry,'
+                    ' I will be taking the first entry'
+                )
+            data.update(bib_data[0])
         if self.args.from_url:
             url_data = papis.downloaders.utils.get(self.args.from_url)
             data.update(url_data["data"])

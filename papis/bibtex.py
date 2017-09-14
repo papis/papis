@@ -49,6 +49,28 @@ bibtex_keys = [
   ]
 
 
+def bibtexparser_entry_to_papis(entry):
+    """Convert keys of a bib entry in bibtexparser format to papis compatible
+    format.
+
+    :param entry: Dictionary with keys of bibtexparser format.
+    :type  entry: dict
+    :returns: Dictionary with keys of papis format.
+
+    """
+    result = dict()
+    for key in entry.keys():
+        if key == 'ID':
+            result['ref'] = entry[key]
+        elif key == 'ENTRYTYPE':
+            result['type'] = entry[key]
+        elif key == 'link':
+            result['url'] = entry[key]
+        else:
+            result[key] = entry[key]
+    return result
+
+
 def bibtex_to_dict(bibtex):
     """
     Convert bibtex file to dict
@@ -61,8 +83,11 @@ def bibtex_to_dict(bibtex):
     :type  bibtex: str
     :returns: Dictionary with bibtex information with keys that bibtex
         formally recognizes.
-    :rtype:  dict
+    :rtype:  list
     """
+    import bibtexparser
+    # bibtexparser has too many debug messages to be useful
+    logging.getLogger("bibtexparser.bparser").setLevel(logging.WARNING)
     global logger
     result = dict()
     if os.path.exists(bibtex):
@@ -75,28 +100,7 @@ def bibtex_to_dict(bibtex):
     text = re.sub(r"%.*", "", text)
     logger.debug("Removing empty lines...")
     text = re.sub(r"^\s*$", "", text)
-    logger.debug("Removing newlines...")
-    text = re.sub(r"\n", "", text)
-    logger.debug("Parsing document type and reference")
-    type_ref_re = re.compile(r"\s*@\s*(\w+)\s*{([^,]+),?")
-    match = re.match(type_ref_re, text)
-    text = re.sub(type_ref_re, "", text)
-    if not match:
-        logger.error(
-            "Type and reference of the bibtex file could not be parsed",
-            exc_info=False
-        )
-        return result
-    result["type"] = match.group(1)
-    result["ref"] = match.group(2)
-    for key in result.keys():
-        logger.debug(" [%s] = %s" % (key, result[key]))
-    key_val_re = re.compile(r"\s*(\w+)\s*=\s*{(.*)\s*,?")
-    for line in re.sub(r"}\s*,?", "\n", text).split("\n"):
-        match = re.match(key_val_re, line)
-        if match:
-            key = match.group(1)
-            val = re.sub(r"\s+", " ", match.group(2))
-            result[key.lower()] = val
-            logger.debug("[%s] = %s" % (key, val))
-    return result
+    entries = bibtexparser.loads(text).entries
+    # Clean entries
+    return [bibtexparser_entry_to_papis(entry) for entry in entries]
+

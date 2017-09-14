@@ -241,7 +241,13 @@ class Command(papis.commands.Command):
                 not self.args.from_doi:
                 self.args.from_doi = url_data["doi"]
         if self.args.from_bibtex:
-            data.update(papis.bibtex.bibtex_to_dict(self.args.from_bibtex))
+            bib_data = papis.bibtex.bibtex_to_dict(self.args.from_bibtex)
+            if len(bib_data) > 1:
+                self.logger.warning(
+                    'Your bibtex file contains more than one entry,'
+                    ' I will be taking the first entry'
+                )
+            data.update(bib_data[0])
         if self.args.from_doi:
             self.logger.debug("I'll try using doi %s" % self.args.from_doi)
             data.update(papis.utils.doi_to_data(self.args.from_doi))
