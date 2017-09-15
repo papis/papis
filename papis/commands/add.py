@@ -319,6 +319,9 @@ class Command(papis.commands.Command):
                         # in the info file
                         in_documents_names = [papis.utils.get_info_file_name()]
                         # Save document to create the info file
+                        document.update(
+                            data, force=True, interactive=self.args.interactive
+                        )
                         document.save()
                 data["title"] = self.args.title or self.get_default_title(
                     data,
@@ -331,6 +334,7 @@ class Command(papis.commands.Command):
                 self.logger.debug("Author = % s" % data["author"])
                 self.logger.debug("Title = % s" % data["title"])
             if not self.args.name:
+                self.logger.debug("Getting an automatic name")
                 out_folder_name = self.get_hash_folder(
                     data,
                     in_documents_paths[0]
@@ -381,11 +385,12 @@ class Command(papis.commands.Command):
                     "%s already exists, ignoring..." % endDocumentPath
                 )
                 continue
-            self.logger.debug(
-                "[CP] '%s' to '%s'" %
-                (in_file_path, endDocumentPath)
-            )
-            shutil.copy(in_file_path, endDocumentPath)
+            if not self.args.no_document:
+                self.logger.debug(
+                    "[CP] '%s' to '%s'" %
+                    (in_file_path, endDocumentPath)
+                )
+                shutil.copy(in_file_path, endDocumentPath)
 
         document.update(data, force=True)
         if self.get_args().open:
