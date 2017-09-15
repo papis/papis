@@ -391,7 +391,7 @@ class Command(papis.commands.Command):
                 papis.api.open_file(d_path)
         if self.args.confirm:
             if not papis.utils.confirm('Really add?'):
-                sys.exit(0)
+                return 0
         document.save()
         if self.args.to:
             sys.exit(0)
