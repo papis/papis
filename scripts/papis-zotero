@@ -46,7 +46,10 @@ def add(entry, pdf_file=None):
 
 
 for entry in entries:
-    print('INFO: Processing ref %s' % entry['ref'])
+    print('INFO: Processing  |   ref: %s' % entry['ref'])
+    print('                  |Author: %s' % entry['author'])
+    print('                  | Title: %s' % entry['title'])
+    print('                  |')
     pdf_file = None
     if 'file' in entry.keys():
         pdf_file = entry.get('file').split(':')[1]
