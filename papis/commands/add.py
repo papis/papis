@@ -270,6 +270,7 @@ class Command(papis.commands.Command):
                     self.args.document.append(file_name)
 
         if self.args.from_yaml:
+            self.logger.debug("Yaml input file = %s" % self.args.from_yaml)
             data.update(papis.utils.yaml_to_data(self.args.from_yaml))
         if self.args.from_vcf:
             data.update(papis.utils.vcf_to_data(self.args.from_vcf))
@@ -366,6 +367,7 @@ class Command(papis.commands.Command):
             document.load()
             data = document.to_dict()
 
+        # First prepare everything in the temporary directory
         for i in range(min(len(in_documents_paths), len(data["files"]))):
             in_doc_name = data["files"][i]
             in_file_path = in_documents_paths[i]

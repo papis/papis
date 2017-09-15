@@ -43,8 +43,7 @@ def set_args(args):
     global ARGS
     global logger
     logger.debug("Setting args")
-    if ARGS is None:
-        ARGS = args
+    ARGS = args
 
 
 def set_commands(commands):
