@@ -1,5 +1,6 @@
 import os
 import sys
+import papis
 import papis.api
 import papis.config
 import papis.commands
@@ -14,6 +15,14 @@ class Command(papis.commands.Command):
             "-v",
             "--verbose",
             help="Make the output verbose (equivalent to --log DEBUG)",
+            default=False,
+            action="store_true"
+        )
+
+        self.default_parser.add_argument(
+            "-V",
+            "--version",
+            help="Show version number",
             default=False,
             action="store_true"
         )
@@ -92,6 +101,10 @@ class Command(papis.commands.Command):
             level=getattr(logging, self.args.log),
             format=log_format
         )
+
+        if self.args.version:
+            print('Papis - %s' % papis.__version__)
+            sys.exit(0)
 
         if self.args.set:
             key_vals = [d.split("=") for d in self.args.set.split(",")]
