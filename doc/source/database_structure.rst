@@ -73,5 +73,21 @@ documents is stored. These cache files are stored in
 
   ~/.papis/cache
 
-Some papis commands clear the cache automatically, for example the ``add`` and ``rm``
-command clear the cache when something is changed.
+Some papis commands clear the cache automatically, for example the ``add`` and
+``rm`` command clear the cache when something is changed.
+
+Disabling the cache
+^^^^^^^^^^^^^^^^^^^
+
+You can disable the cache using the configuration setting ``use-cache``
+and set it to ``False``, e.g.
+
+.. code:: ini
+
+  [settings]
+
+  use-cache = False
+
+  [books]
+  # Use cache for books but don't use for the rest of libraries
+  use-cache = True
