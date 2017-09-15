@@ -53,6 +53,7 @@ for entry in entries:
     pdf_file = None
     if 'file' in entry.keys():
         pdf_file = entry.get('file').split(':')[1]
+        pdf_file = os.path.join(os.path.dirname(bib_file), pdf_file)
         print('\tINFO: File field detected (%s)' % pdf_file)
         if not os.path.exists(pdf_file):
             print('\tWARNING: Path (%s) not found! Ignoring it' % pdf_file)
