@@ -164,7 +164,7 @@ class Gui(object):
         )
         if answer and answer in "Yy":
             doc.rm()
-            self.documents = self.fetch_documents()
+            self.documents = papis.api.get_documents_in_lib()
 
     def open(self, doc):
         papis.api.open_file(
