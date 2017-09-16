@@ -69,7 +69,7 @@ class Command(papis.commands.Command):
         self.pick(documents)
 
     def main(self):
-        if self.arxiv:
+        if self.args.arxiv:
             self.arxiv(self.args.search)
         else:
             self.arxiv(self.args.search)
