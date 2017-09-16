@@ -13,11 +13,44 @@
 
 ## Description
 
-Papis is a command-line based document and bibliography manager.  Its
-command-line interface (*CLI*) is heavily tailored after
-[Git](http://git-scm.com).
+Papis is a powerful and highly extensible command-line based document and
+bibliography manager.
 
 Take a look at the [documentation](http://papis.readthedocs.io/en/latest/)!
+
+## Super quick start
+
+Install papis with pip3
+```
+sudo pip3 install papis
+```
+
+Let us download a couple of documents
+```
+wget http://www.gnu.org/s/libc/manual/pdf/libc.pdf
+wget https://gcc.gnu.org/onlinedocs/cpp.pdf
+```
+
+Now add it to the (default created library)
+```
+papis add libc.pdf --author "Sandra Loosemore" --title "GNU C reference manual" --confirm
+papis add cpp.pdf --author "R. Stallman et al." --title "The C Preprocessor" --confirm
+```
+
+Now open one for example
+```
+papis open
+```
+
+<script type="text/javascript"
+   src="https://asciinema.org/a/HVMFsvBE9blDpzYYg9jsSEaO0"
+   id="asciicast-14" async>
+</script>
+
+Or export them to bibtex
+```
+papis export --bibtex --all > mylib.bib
+```
 
 ## Help Wanted
 
