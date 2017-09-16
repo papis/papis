@@ -1,0 +1,480 @@
+.\" Man page generated from reStructuredText.
+.
+.TH "PAPIS-CONFIG" "1" "Sep 16, 2017" "0.1.5" "papis"
+.SH NAME
+papis-config \- Papis Configuration
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.sp
+Papis uses a configuration file in \fIINI\fP format. You can then have
+several libraries which work independently from each other.
+.sp
+For example, maybe you want to have one library for papers and the other
+for some miscellaneous documents. An example for that is given below
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[papers]
+dir = ~/Documents/papers
+
+[settings]
+editor = vim
+default\-library = papers
+
+[books]
+dir = ~/Documents/books
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+A more complete example of a configuration file is the following
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[settings]
+# Open file with rifle, a nice python program
+opentool = rifle
+# Use gvim as a graphical editor
+xeditor = gvim
+# Use ranger as a file browser, too a  nice python package
+file\-browser = ranger
+# Ask for confirmation when doing papis add ...
+add\-confirm = True
+# Edit the info.yaml file before adding a doc into the library
+# papis add \-\-edit
+add\-edit = True
+# Open the files before adding a document into the library
+# papis add \-\-open
+add\-open = True
+
+# Define custom default match and header formats
+match\-format = {doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}
+header\-format = > {doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:\-<4})
+
+# Commands that will be run when one does papis run ...
+# e.g., papis run gagp will run the command below in the library folder
+gagp = git commit \-a && git push origin master
+gs = git status
+gm = git commit
+gp = git push
+gu = git pull
+gma = git commit \-a
+
+# Define a lib
+[papers]
+dir = ~/Documents/papers
+
+# Define a lib for books
+[books]
+dir = ~/Documents/books
+
+# Define a lib for Videos
+[videos]
+dir = ~/Videos/courses
+
+# Define a lib for contacts, why not?
+# To make it work you just have to define some default settings
+[contacts]
+dir = ~/contacts/general
+mode = contact
+header\-format = {doc[first_name]} {doc[last_name]}
+match\-format = {doc[org]} {doc[first_name]} {doc[last_name]}
+browse\-query\-format = {doc[first_name]} {doc[last_name]}
+add\-open = False
+rofi\-gui\-gui\-eh = 2
+rofi\-gui\-header\-format = %(header\-format)s
+                     {doc[tel][cell]}
+tk\-gui\-header\-format = %(rofi\-gui\-header\-format)s
+vim\-gui\-header\-format = Title: %(header\-format)s
+                        Tel  : {doc[tel]}
+                        Mail : {doc[email]}
+                     {doc[empty]}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SH DEFAULT SETTINGS
+.SS settings
+.INDENT 0.0
+.TP
+.B add\-confirm
+Default: \fBFalse\fP
+.TP
+.B add\-edit
+Default: \fBFalse\fP
+.TP
+.B add\-interactive
+Default: \fBFalse\fP
+.TP
+.B add\-open
+Default: \fBFalse\fP
+.TP
+.B browse\-query\-format
+Default: \fB{doc[title]} {doc[author]}\fP
+.TP
+.B browser
+Default: \fBxdg\-open\fP
+.TP
+.B cache\-dir
+Default: \fB/home/gallo/.cache/papis\fP
+.TP
+.B check\-keys
+Default: \fBfiles\fP
+.TP
+.B default\-gui
+Default: \fBvim\fP
+.TP
+.B default\-library
+Default: \fBpapers\fP
+.sp
+Library to be open if no library has not been explicitly selected.
+.TP
+.B doc\-url\-key\-name
+Default: \fBdoc_url\fP
+.TP
+.B editor
+Default: \fBvim\fP
+.TP
+.B export\-text\-format
+Default: \fB{doc[author]}. {doc[title]}. {doc[journal]} {doc[pages]} {doc[month]} {doc[year]}\fP
+.TP
+.B file\-browser
+Default: \fBxdg\-open\fP
+.TP
+.B format\-doc\-name
+Default: \fBdoc\fP
+.TP
+.B header\-format
+Default: \fB{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:\-<4})\fP
+.TP
+.B info\-name
+Default: \fBinfo.yaml\fP
+.TP
+.B match\-format
+Default: \fB{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}\fP
+.TP
+.B mode
+Default: \fBdocument\fP
+.TP
+.B mvtool
+Default: \fBmv\fP
+.TP
+.B notes\-name
+Default: \fBnotes.tex\fP
+.TP
+.B opentool
+Default: \fBxdg\-open\fP
+.TP
+.B picktool
+Default: \fBpapis.pick\fP
+.TP
+.B scripts\-short\-help\-regex
+Default: \fB\&.*papis\-short\-help: *(.*)\fP
+.TP
+.B search\-engine
+Default: \fBhttps://duckduckgo.com\fP
+.TP
+.B sync\-command
+Default: \fBgit \-C $dir pull origin master\fP
+.TP
+.B use\-cache
+Default: \fBTrue\fP
+.TP
+.B use\-git
+Default: \fBFalse\fP
+.TP
+.B user\-agent
+Default: \fBMozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36\fP
+.TP
+.B xeditor
+Default: \fBxdg\-open\fP
+.UNINDENT
+.SS rofi\-gui
+.INDENT 0.0
+.TP
+.B case_sensitive
+Default: \fBFalse\fP
+.TP
+.B eh
+Default: \fB3\fP
+.TP
+.B fixed_lines
+Default: \fB20\fP
+.TP
+.B fullscreen
+Default: \fBFalse\fP
+.TP
+.B header\-format
+.INDENT 7.0
+.TP
+.B Default:
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+<b>{doc[title]}</b>
+{doc[empty]}  <i>{doc[author]}</i>
+{doc[empty]}  <span foreground="red">({doc[year]:\->4})</span><span foreground="green">{doc[tags]}</span>
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.TP
+.B key\-browse
+Default: \fBAlt+u\fP
+.TP
+.B key\-delete
+Default: \fBAlt+d\fP
+.TP
+.B key\-edit
+Default: \fBAlt+e\fP
+.TP
+.B key\-help
+Default: \fBAlt+h\fP
+.TP
+.B key\-normal\-window
+Default: \fBAlt+w\fP
+.TP
+.B key\-open
+Default: \fBEnter\fP
+.TP
+.B key\-open\-stay
+Default: \fBAlt+o\fP
+.TP
+.B key\-quit
+Default: \fBAlt+q\fP
+.TP
+.B lines
+Default: \fB10\fP
+.TP
+.B markup_rows
+Default: \fBTrue\fP
+.TP
+.B multi_select
+Default: \fBTrue\fP
+.TP
+.B normal_window
+Default: \fBFalse\fP
+.TP
+.B sep
+Default: \fB|\fP
+.TP
+.B width
+Default: \fB80\fP
+.UNINDENT
+.SS tk\-gui
+.INDENT 0.0
+.TP
+.B activebackground
+Default: \fB#394249\fP
+.TP
+.B activeforeground
+Default: \fBgray99\fP
+.TP
+.B borderwidth
+Default: \fB\-1\fP
+.TP
+.B clear
+Default: \fBq\fP
+.TP
+.B cursor
+Default: \fBxterm\fP
+.TP
+.B edit
+Default: \fBe\fP
+.TP
+.B entry\-bg\-odd
+Default: \fB#273238\fP
+.TP
+.B entry\-bg\-pair
+Default: \fB#273238\fP
+.TP
+.B entry\-bg\-size
+Default: \fB14\fP
+.TP
+.B entry\-fg
+Default: \fBgrey77\fP
+.TP
+.B entry\-font\-name
+Default: \fBTimes\fP
+.TP
+.B entry\-font\-size
+Default: \fB14\fP
+.TP
+.B entry\-font\-style
+Default: \fBnormal\fP
+.TP
+.B entry\-lines
+Default: \fB3\fP
+.TP
+.B exit
+Default: \fB<Control\-q>\fP
+.TP
+.B focus_prompt
+Default: \fB:\fP
+.TP
+.B half_down
+Default: \fB<Control\-d>\fP
+.TP
+.B half_up
+Default: \fB<Control\-u>\fP
+.TP
+.B header\-format
+.INDENT 7.0
+.TP
+.B Default:
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+{doc[title]}
+{doc[empty]}   {doc[author]}
+({doc[year]:\->4})
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.TP
+.B height
+Default: \fB1\fP
+.TP
+.B help
+Default: \fBh\fP
+.TP
+.B insertbackground
+Default: \fBred\fP
+.TP
+.B labels\-per\-page
+Default: \fB6\fP
+.TP
+.B match\-format
+Default: \fB{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}\fP
+.TP
+.B move_bottom
+Default: \fB<Shift\-G>\fP
+.TP
+.B move_down
+Default: \fBj\fP
+.TP
+.B move_top
+Default: \fBg\fP
+.TP
+.B move_up
+Default: \fBk\fP
+.TP
+.B open
+Default: \fBo\fP
+.TP
+.B print_info
+Default: \fBi\fP
+.TP
+.B prompt\-bg
+Default: \fBblack\fP
+.TP
+.B prompt\-fg
+Default: \fBlightgreen\fP
+.TP
+.B prompt\-font\-size
+Default: \fB14\fP
+.TP
+.B scroll_down
+Default: \fB<Control\-e>\fP
+.TP
+.B scroll_up
+Default: \fB<Control\-y>\fP
+.TP
+.B window\-bg
+Default: \fB#273238\fP
+.TP
+.B window\-height
+Default: \fB700\fP
+.TP
+.B window\-width
+Default: \fB1200\fP
+.UNINDENT
+.SS vim\-gui
+.INDENT 0.0
+.TP
+.B delete\-key
+Default: \fBdd\fP
+.TP
+.B edit\-key
+Default: \fBe\fP
+.TP
+.B header\-format
+.INDENT 7.0
+.TP
+.B Default:
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+Title : {doc[title]}
+Author: {doc[author]}
+Year  : {doc[year]}
+\-\-\-\-\-\-\-
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.TP
+.B help\-key
+Default: \fBh\fP
+.TP
+.B next\-search\-key
+Default: \fBn\fP
+.TP
+.B open\-dir\-key
+Default: \fB<S\-o>\fP
+.TP
+.B open\-key
+Default: \fBo\fP
+.TP
+.B prev\-search\-key
+Default: \fBN\fP
+.TP
+.B search\-key
+Default: \fB/\fP
+.UNINDENT
+.SH AUTHOR
+Alejandro Gallo
+.SH COPYRIGHT
+2017, Alejandro Gallo
+.\" Generated by docutils manpage writer.
+.
