@@ -13,7 +13,13 @@ class Command(papis.commands.Command):
 
         self.parser = self.get_subparsers().add_parser(
             self.get_command_name(),
+            add_help=False,
             help=self.get_command_help()
+        )
+
+        self.parser.add_argument(
+            "-h", "--help",
+            action="store_true"
         )
 
         self.parser.add_argument(
@@ -48,5 +54,7 @@ class Command(papis.commands.Command):
         os.environ["PAPIS_VERBOSE"] = "-v" if self.args.verbose else ""
 
     def main(self):
+        if self.args.help:
+            self.args.args = ['-h'] + self.args.args
         self.export_variables()
         subprocess.call([self.script_path] + self.args.args)
