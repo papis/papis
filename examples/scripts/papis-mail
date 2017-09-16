@@ -1,0 +1,27 @@
+#! /usr/bin/env bash
+# papis-short-help:  Email a paper to my friend
+# Copyright © 2017 Alejandro Gallo. GPLv3
+
+if [[ $1 = "-h" ]]; then
+  echo "Email a paper to my friend"
+  cat <<EOF
+Usage: papis output_folder
+EOF
+  exit 0
+fi
+
+folder_name=$1
+zip_name="${folder_name}.zip"
+mail_agent=mutt
+
+papis -l ${PAPIS_LIB} export --folder --out ${folder_name}
+if [[ ! -f ${folder_name} ]]; then
+  echo "${folder_name} not created, exiting..."
+  exit 1
+fi
+echo "Ziping folder (${folder_name} => ${zip_name})"
+zip -r ${zip_name} ${folder_name}
+
+${mail_agent} -a ${zip_name}
+
+
