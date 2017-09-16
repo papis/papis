@@ -24,6 +24,7 @@ import papis.config
 # You need a CrossRef API key. 
 #
 CROSSREF_KEY = "fx.coudert@chimie-paristech.fr"
+CROSSREF_KEY = "a.gallo@fkf.mpg.de"
 #
 # Using Google allows one to find other API keys:
 # zter:zter321
