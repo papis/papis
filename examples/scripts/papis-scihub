@@ -1,0 +1,108 @@
+#! /usr/bin/env bash
+# papis-short-help: Get pdf and bibtex from doi identificator
+
+cat <<EOF
+                             WARNING NOTICE:
+----------------------------------------------------------------------------
+This script uses the platform SCI-HUB, which might be in conflict with local
+laws in your country. Use it at your own risk.
+
+If you just want to obtain information using the doi number, then
+use the legally obtainable doi information included in papis
+
+  papis add path/to/the/document --from-doi DOI_NUMBER
+
+----------------------------------------------------------------------------
+EOF
+
+sciget(){
+  link=$1
+  output_pdf=output.pdf
+
+  link="http://sci-hub.io/$link"
+
+  pdf_url="http:$(curl -s ${link} | grep -Eom1 '//[^ ]+\.pdf')"
+
+  echo
+  log "link = ${link}"
+  log "pdf_url = ${pdf_url}"
+  echo
+
+  if [[ -z ${pdf_url} ]]; then
+    exit 1
+  fi
+
+  cat <<EOF
+
+  ____   ____ ___      _   _ _   _ ____  
+  / ___| / ___|_ _|    | | | | | | | __ ) 
+  \___ \| |    | |_____| |_| | | | |  _ \ 
+  ___) | |___ | |_____|  _  | |_| | |_) |
+  |____/ \____|___|    |_| |_|\___/|____/ 
+
+
+  Downloading...
+
+
+EOF
+
+wget ${pdf_url} -O ${output_pdf}
+
+if ! file ${output_pdf} | grep PDF ; then
+  log "${output_pdf} is not a pdf, going to the website"
+  log "Tell the website that you are human"
+  ${BROWSER} ${pdf_url}
+  read -p "Robots ready? (y/N)" -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    log "Downloading again ..."
+    wget ${pdf_url} -O ${output_pdf}
+    if ! file ${output_pdf} | grep PDF ; then
+      log "There was a problem downloading the file"
+      rm ${output_pdf}
+      exit 1
+    fi
+  else
+    log "Taking you out of here..."
+    rm ${output_pdf}
+    exit 0
+  fi
+  REPLY= # unset REPLY after using it
+fi
+}
+
+log() {
+  echo "$(basename $0)> $@"
+}
+
+if [[ $1 = "-h" ]]; then
+  echo "Get pdf and bibtex from doi identificator"
+  cat <<EOF
+Usage: papis scihub DOI <papis add flags>
+
+Examples:
+---------
+
+  papis scihub 10.1002/andp.19053220607 -d einstein_papers --name photon_definition
+EOF
+  exit 0
+fi
+
+sciget=sciget
+
+pdf_output=output.pdf
+doi="$1"
+shift
+log "Doi: ${doi}"
+[[ -n $@ ]] && log "Other args: $@"
+
+${sciget} ${doi}
+
+if [[ ! $? = 0 ]]; then
+  log "Something happened"
+  exit 1
+fi
+
+set -x
+papis ${PAPIS_VERBOSE} -l ${PAPIS_LIB} add ${pdf_output} --from-doi ${doi} $@
+set +x
