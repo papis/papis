@@ -48,7 +48,7 @@ Or export them to bibtex
 papis export --bibtex --all > mylib.bib
 ```
 
-[![asciicast](https://asciinema.org/a/LqGxoYp0RV78eg4hQBdhKQjst)](https://asciinema.org/a/LqGxoYp0RV78eg4hQBdhKQjst)
+[![asciicast](https://asciinema.org/a/LqGxoYp0RV78eg4hQBdhKQjst.png)](https://asciinema.org/a/LqGxoYp0RV78eg4hQBdhKQjst)
 
 AND MUCH, MUCH MORE!
 
