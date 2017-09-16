@@ -31,7 +31,7 @@ wget http://www.gnu.org/s/libc/manual/pdf/libc.pdf
 wget https://gcc.gnu.org/onlinedocs/cpp.pdf
 ```
 
-Now add it to the (default created library)
+Now add them to the (defaultly created) library
 ```
 papis add libc.pdf --author "Sandra Loosemore" --title "GNU C reference manual" --confirm
 papis add cpp.pdf --author "R. Stallman et al." --title "The C Preprocessor" --confirm
@@ -42,15 +42,15 @@ Now open one for example
 papis open
 ```
 
-<script type="text/javascript"
-   src="https://asciinema.org/a/HVMFsvBE9blDpzYYg9jsSEaO0"
-   id="asciicast-14" async>
-</script>
-
+[![asciicast](https://asciinema.org/a/HVMFsvBE9blDpzYYg9jsSEaO0.png)](https://asciinema.org/a/HVMFsvBE9blDpzYYg9jsSEaO0)
 Or export them to bibtex
 ```
 papis export --bibtex --all > mylib.bib
 ```
+
+[![asciicast](https://asciinema.org/a/LqGxoYp0RV78eg4hQBdhKQjst)](https://asciinema.org/a/LqGxoYp0RV78eg4hQBdhKQjst)
+
+AND MUCH, MUCH MORE!
 
 ## Help Wanted
 
