@@ -81,8 +81,9 @@ setup(
             'pytest',
         ]
     ),
-    description='Simple program to manage literature',
-    long_description='Simple program to manage literature',
+    description='Powerful and highly extensible command-line based document '
+                'and bibliography manager',
+    long_description='',
     keywords=[
         'document',
         'books',
