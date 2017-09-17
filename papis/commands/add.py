@@ -96,6 +96,13 @@ class Command(papis.commands.Command):
         )
 
         self.parser.add_argument(
+            "--from-pmid",
+            help="PMID to try to get information from",
+            default=None,
+            action="store"
+        )
+
+        self.parser.add_argument(
             "--from-vcf",
             help="Get contact information from a vcard (.vcf) file",
             default=None,
@@ -248,6 +255,20 @@ class Command(papis.commands.Command):
                     ' I will be taking the first entry'
                 )
             data.update(bib_data[0])
+        if self.args.from_pmid:
+            self.logger.debug("I'll try using PMID %s via HubMed" % self.args.from_pmid)
+            hubmed_url = "http://pubmed.macropus.org/articles/?format=text%%2Fbibtex&id=%s" % self.args.from_pmid
+            bibtex_data = papis.downloaders.utils.get_downloader(
+                hubmed_url,
+                "get"
+            ).getDocumentData().decode("utf-8")
+            bibtex_data = papis.bibtex.bibtex_to_dict(bibtex_data)
+            if len(bibtex_data):
+                data.update(bibtex_data[0])
+                if "doi" in data and not self.args.from_doi:
+                    self.args.from_doi = data["doi"]
+            else:
+                self.logger.error("PMID %s not found or invalid" % self.args.from_pmid)
         if self.args.from_doi:
             self.logger.debug("I'll try using doi %s" % self.args.from_doi)
             data.update(papis.utils.doi_to_data(self.args.from_doi))
