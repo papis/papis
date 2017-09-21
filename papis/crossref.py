@@ -336,6 +336,14 @@ def get_cross_ref(doi):
     # REFERENCE BUILDING
     res["ref"] = doi
 
+    # Journal checking
+    # If the key journal does not exist check for abbrev_journal_title
+    # and full_journal_title and set it then to one of them
+    if 'journal' not in res.keys():
+        for key in ['abbrev_journal_title', 'full_journal_title']:
+            if key in res.keys():
+                res['journal'] = res[key]
+
     return res
 
 
