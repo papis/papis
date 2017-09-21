@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS" "1" "Sep 16, 2017" "0.1.5" "papis"
+.TH "PAPIS" "1" "Sep 21, 2017" "0.2" "papis"
 .SH NAME
 papis \- Papis Documentation
 .
@@ -640,6 +640,52 @@ Default: \fB|\fP
 .B width
 Default: \fB80\fP
 .UNINDENT
+.SS vim\-gui
+.INDENT 0.0
+.TP
+.B delete\-key
+Default: \fBdd\fP
+.TP
+.B edit\-key
+Default: \fBe\fP
+.TP
+.B header\-format
+.INDENT 7.0
+.TP
+.B Default:
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+Title : {doc[title]}
+Author: {doc[author]}
+Year  : {doc[year]}
+\-\-\-\-\-\-\-
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.TP
+.B help\-key
+Default: \fBh\fP
+.TP
+.B next\-search\-key
+Default: \fBn\fP
+.TP
+.B open\-dir\-key
+Default: \fB<S\-o>\fP
+.TP
+.B open\-key
+Default: \fBo\fP
+.TP
+.B prev\-search\-key
+Default: \fBN\fP
+.TP
+.B search\-key
+Default: \fB/\fP
+.UNINDENT
 .SS tk\-gui
 .INDENT 0.0
 .TP
@@ -772,52 +818,6 @@ Default: \fB700\fP
 .B window\-width
 Default: \fB1200\fP
 .UNINDENT
-.SS vim\-gui
-.INDENT 0.0
-.TP
-.B delete\-key
-Default: \fBdd\fP
-.TP
-.B edit\-key
-Default: \fBe\fP
-.TP
-.B header\-format
-.INDENT 7.0
-.TP
-.B Default:
-.INDENT 7.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-Title : {doc[title]}
-Author: {doc[author]}
-Year  : {doc[year]}
-\-\-\-\-\-\-\-
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.TP
-.B help\-key
-Default: \fBh\fP
-.TP
-.B next\-search\-key
-Default: \fBn\fP
-.TP
-.B open\-dir\-key
-Default: \fB<S\-o>\fP
-.TP
-.B open\-key
-Default: \fBo\fP
-.TP
-.B prev\-search\-key
-Default: \fBN\fP
-.TP
-.B search\-key
-Default: \fB/\fP
-.UNINDENT
 .SH THE INFO.YAML FILE
 .sp
 At the heart of papis there is the information file.
@@ -944,8 +944,9 @@ use\-cache = True
 usage: papis add [\-h] [\-d DIR] [\-i] [\-\-name NAME] [\-\-title TITLE]
                  [\-\-author AUTHOR] [\-\-from\-bibtex FROM_BIBTEX]
                  [\-\-from\-yaml FROM_YAML] [\-\-from\-url FROM_URL]
-                 [\-\-from\-doi FROM_DOI] [\-\-from\-vcf FROM_VCF] [\-\-to [TO]]
-                 [\-\-confirm] [\-\-open] [\-\-edit] [\-\-commit] [\-\-no\-document]
+                 [\-\-from\-doi FROM_DOI] [\-\-from\-pmid FROM_PMID]
+                 [\-\-from\-vcf FROM_VCF] [\-\-to [TO]] [\-\-confirm] [\-\-open]
+                 [\-\-edit] [\-\-commit] [\-\-no\-document]
                  [document [document ...]]
 .ft P
 .fi
@@ -1004,6 +1005,9 @@ Default: “”
 .TP
 .B\-\-from\-doi
 Doi to try to get information from
+.TP
+.B\-\-from\-pmid
+PMID to try to get information from
 .TP
 .B\-\-from\-vcf
 Get contact information from a vcard (.vcf) file
