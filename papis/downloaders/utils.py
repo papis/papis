@@ -77,7 +77,9 @@ def get(url, data_format="bibtex"):
     logger.debug("Attempting to retrieve from url")
     downloader = get_downloader(url)
     if not downloader:
-        logger.warning("Using downloader %s" % downloader)
+        logger.warning(
+            "No matching Downloader for the url %s found" % url
+        )
         return None
     try:
         doi = downloader.getDoi()
@@ -89,8 +91,9 @@ def get(url, data_format="bibtex"):
             bibtex_data = downloader.getBibtexData()
             if bibtex_data:
                 data = papis.bibtex.bibtex_to_dict(
-                    downloader.getBibtexData()
-                )[0] if len(data) > 0 else dict()
+                    bibtex_data
+                )
+                data = data[0] if len(data) > 0 else dict()
         except NotImplementedError:
             data = dict()
     try:
