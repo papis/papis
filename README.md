@@ -52,6 +52,23 @@ papis export --bibtex --all > mylib.bib
 
 AND MUCH, MUCH MORE!
 
+## Main features
+
+  - Synchronizing of documents: put your documents in some folder and
+    synchronize it using the tools you love: git, dropbox, rsync, OwnCloud,
+    Google Drive ... whatever.
+  - Share libraries with colleagues without forcing them to open an account,
+    nowhere, never.
+  - Download directly paper information from *DOI* number via *Crossref*.
+  - (optional) **scihub** support, use the example papis script
+    `examples/scripts/papis-scihub` to download papers from scihub and add them
+    to your library with all the relevant information, in a matter of seconds.
+  - Import from Zotero using the `examples/scripts/papis-zotero`.
+  - Create custom scripts to help you achieve great tasks easily ([doc](http://papis.readthedocs.io/en/latest/scripting.html)).
+  - Export documents into many formats (bibtex, yaml..)
+  - Command-line granularity, all the power of a library at the tip of your
+    fingers.
+
 ## Help Wanted
 
 *Papis* is looking for active developers to help improve the code.
@@ -76,7 +93,6 @@ AND MUCH, MUCH MORE!
     (**Done** through the ``--template`` option of list)
 - [ ] Youtube video explaining the main uses of `papis`.
 - [ ] Implement proxy to donwload papers.
-- [ ] Debian package.
 - [ ] Testing on Windows.
 - [ ] Logo.
 - [ ] Gtk or Qt based GUI.
