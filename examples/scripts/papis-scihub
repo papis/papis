@@ -16,13 +16,14 @@ use the legally obtainable doi information included in papis
 ----------------------------------------------------------------------------
 EOF
 
+
 sciget(){
   link=$1
   output_pdf=output.pdf
 
   link="http://sci-hub.io/$link"
 
-  pdf_url="http:$(curl -s ${link} | grep -Eom1 '//[^ ]+\.pdf')"
+  pdf_url="http:$(wget -O - ${link} | grep -Eom1 '//[^ ]+\.pdf')"
 
   echo
   log "link = ${link}"
@@ -48,11 +49,12 @@ sciget(){
 EOF
 
 wget ${pdf_url} -O ${output_pdf}
+browser=${BROWSER:-xdg-open}
 
 if ! file ${output_pdf} | grep PDF ; then
   log "${output_pdf} is not a pdf, going to the website"
   log "Tell the website that you are human"
-  ${BROWSER} ${pdf_url}
+  ${browser} ${pdf_url}
   read -p "Robots ready? (y/N)" -n 1 -r
   echo
   if [[ $REPLY =~ ^[Yy]$ ]]; then
