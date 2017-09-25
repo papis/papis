@@ -28,14 +28,14 @@ sudo pip3 install papis
 Let us download a couple of documents
 ```
 wget http://www.gnu.org/s/libc/manual/pdf/libc.pdf
-wget https://www.cs.duke.edu/courses/common/compsci092/papers/open/stallman-open-free.pdf
+wget http://www.ams.org/notices/201304/rnoti-p434.pdf 
 ```
 
 Now add them to the (defaultly created) library
 ```
 papis add libc.pdf --author "Sandra Loosemore" --title "GNU C reference manual" --confirm
 # Get paper information automatically via de DOI
-papis add stallman-open-free.pdf --from-doi 10.1145/1516046.1516058  
+papis add --from-doi 10.1090/noti963 rnoti-p434.pdf 
 ```
 
 Now open one for example
@@ -44,14 +44,15 @@ papis open
 ```
 
 
-[![asciicast](https://asciinema.org/a/FrlcGRSuIgIV2XPehPaEni5OK.png)](https://asciinema.org/a/FrlcGRSuIgIV2XPehPaEni5OK)
+[![asciicast](https://asciinema.org/a/oEHU9oPlGrKPOQzGMxvqkh5Fe.png)](https://asciinema.org/a/oEHU9oPlGrKPOQzGMxvqkh5Fe)
 Or edit them and export them to bibtex
+
 ```
-papis edit stallman
+papis edit
 papis export --all --bibtex > mylib.bib
 ```
 
-[![asciicast](https://asciinema.org/a/ueWqY7CxM6J1dJxqJvH80KKP4.png)](https://asciinema.org/a/ueWqY7CxM6J1dJxqJvH80KKP4)
+[![asciicast](https://asciinema.org/a/QrUntd87K97hoKowxkAb4AYZ0.png)](https://asciinema.org/a/QrUntd87K97hoKowxkAb4AYZ0)
 
 find help messages in all commands:
 ```
