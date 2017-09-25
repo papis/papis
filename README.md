@@ -28,13 +28,14 @@ sudo pip3 install papis
 Let us download a couple of documents
 ```
 wget http://www.gnu.org/s/libc/manual/pdf/libc.pdf
-wget https://gcc.gnu.org/onlinedocs/cpp.pdf
+wget https://www.cs.duke.edu/courses/common/compsci092/papers/open/stallman-open-free.pdf
 ```
 
 Now add them to the (defaultly created) library
 ```
 papis add libc.pdf --author "Sandra Loosemore" --title "GNU C reference manual" --confirm
-papis add cpp.pdf --author "R. Stallman et al." --title "The C Preprocessor" --confirm
+# Get paper information automatically via de DOI
+papis add stallman-open-free.pdf --from-doi 10.1145/1516046.1516058  
 ```
 
 Now open one for example
@@ -42,14 +43,23 @@ Now open one for example
 papis open
 ```
 
-[![asciicast](https://asciinema.org/a/HVMFsvBE9blDpzYYg9jsSEaO0.png)](https://asciinema.org/a/HVMFsvBE9blDpzYYg9jsSEaO0)
-Or export them to bibtex
+
+[![asciicast](https://asciinema.org/a/FrlcGRSuIgIV2XPehPaEni5OK.png)](https://asciinema.org/a/FrlcGRSuIgIV2XPehPaEni5OK)
+Or edit them and export them to bibtex
 ```
-papis export --bibtex --all > mylib.bib
+papis edit stallman
+papis export --all --bibtex > mylib.bib
 ```
 
-[![asciicast](https://asciinema.org/a/LqGxoYp0RV78eg4hQBdhKQjst.png)](https://asciinema.org/a/LqGxoYp0RV78eg4hQBdhKQjst)
+[![asciicast](https://asciinema.org/a/ueWqY7CxM6J1dJxqJvH80KKP4.png)](https://asciinema.org/a/ueWqY7CxM6J1dJxqJvH80KKP4)
 
+find help messages in all commands:
+```
+papis -h
+papis add -h
+```
+
+[![asciicast](https://asciinema.org/a/48Dv1rfX44yjJD6Sbc71gpXGr.png)](https://asciinema.org/a/48Dv1rfX44yjJD6Sbc71gpXGr)
 AND MUCH, MUCH MORE!
 
 ## Main features
