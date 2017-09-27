@@ -10,7 +10,7 @@ class Command(papis.commands.Command):
 
         self.parser = self.get_subparsers().add_parser(
             "open",
-            help="Open document document from a given library"
+            help="Open document from a given library"
         )
 
         self.add_search_argument()

@@ -28,7 +28,7 @@ class Command(papis.commands.Command):
 
         self.parser = self.get_subparsers().add_parser(
             "check",
-            help="Check document document from a given library"
+            help="Check document from a given library"
         )
 
         self.add_search_argument()
@@ -36,7 +36,7 @@ class Command(papis.commands.Command):
         self.parser.add_argument(
             "--keys", "-k",
             help="Comma separated keys to check",
-            default=papis.config.get('check-keys').split(','),
+            default=papis.config.get('check-keys'),
             action="store"
         )
 
