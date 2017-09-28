@@ -42,6 +42,7 @@ setup(
         "papis-python-rofi>=1.0.1",
         "requests>=2.11.1",
         "argcomplete>=1.8.2",
+        "pyparsing>=2.2.0",
         "configparser>=3.0.0",
         "arxiv2bib>=1.0.7",
         "PyYAML>=3.12",

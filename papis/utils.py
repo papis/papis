@@ -99,10 +99,73 @@ def get_folders(folder):
 
 
 class DocMatcher(object):
+    """This class implements the mini query language for papis.
+    All its methods are static, it could be also implemented as a separate
+    module.
+
+    The static methods are to be used as follows:
+    First the search string has to be set,
+        DocMatcher.set_search(search_string)
+    and then the parse method should be called in order to decypher the
+    search_string,
+        DocMatcher.parse()
+    Now the DocMatcher is ready to match documents with the input query
+    via the `return_if_match` method, which is used to parallelize the
+    matching.
+    """
+    import papis.config
     search = ""
+    parsed_search = []
+    doc_format = '{%s[DOC_KEY]}' % (papis.config.get('format-doc-name'))
+    logger = logging.getLogger('DocMatcher')
+
     @classmethod
     def return_if_match(cls, doc):
-        return doc if papis.utils.match_document(doc, cls.search) else None
+        match = None
+        for parsed in cls.parsed_search:
+            if len(parsed) == 1:
+                search = parsed[0]
+                sformat = None
+            elif len(parsed) == 3:
+                search = parsed[2]
+                sformat = cls.doc_format.replace('DOC_KEY',parsed[0])
+            match = doc if papis.utils.match_document(
+                doc, search, match_format=sformat) else None
+            if not match:
+                break
+        return match
+
+    @classmethod
+    def set_search(cls, search):
+        cls.search = search
+
+    @classmethod
+    def parse(cls, search=False):
+        search = search or cls.search
+        import pyparsing
+        papis_alphas = pyparsing.printables.replace('=', '')
+        papis_key = pyparsing.Word(pyparsing.alphas)
+        papis_value = pyparsing.QuotedString(
+            quoteChar='"', escChar='\\', escQuote='\\'
+        ) ^ pyparsing.QuotedString(
+            quoteChar="'", escChar='\\', escQuote='\\'
+        ) ^ papis_key
+        equal = pyparsing.ZeroOrMore(" ")+pyparsing.Literal('=')+pyparsing.ZeroOrMore(" ")
+
+        papis_query = pyparsing.ZeroOrMore(
+                pyparsing.Group(
+                    pyparsing.ZeroOrMore(
+                        papis_key
+                        + equal
+                    ) +
+                    papis_value
+                    )
+                )
+        parsed = papis_query.parseString(search)
+        cls.logger.debug('Parsed search = %s' % parsed)
+        cls.logger.debug('Sformat search = %s' % cls.doc_format)
+        cls.parsed_search = parsed
+
 
 
 def filter_documents(documents, search=""):
@@ -117,7 +180,8 @@ def filter_documents(documents, search=""):
 
     """
     logger = logging.getLogger('filter')
-    papis.utils.DocMatcher.search = search
+    papis.utils.DocMatcher.set_search(search)
+    papis.utils.DocMatcher.parse()
     if search == "" or search == ".":
         return documents
     else:
