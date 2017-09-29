@@ -116,7 +116,7 @@ class DocMatcher(object):
     import papis.config
     search = ""
     parsed_search = None
-    doc_format = '{%s[DOC_KEY]}' % (papis.config.get('format-doc-name'))
+    doc_format = '{' + papis.config.get('format-doc-name') + '[DOC_KEY]}'
     logger = logging.getLogger('DocMatcher')
 
     @classmethod
