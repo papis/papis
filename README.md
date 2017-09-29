@@ -86,7 +86,7 @@ AND MUCH, MUCH MORE!
 
 ## TODO
 
-- [ ] Implement a mini query language in order to filter by field the searches,
+- [X] Implement a mini query language in order to filter by field the searches,
   for example:
   ```
   papis open "author=stein year=192 ueber die "
