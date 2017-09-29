@@ -115,12 +115,19 @@ class DocMatcher(object):
     """
     import papis.config
     search = ""
-    parsed_search = []
+    parsed_search = None
     doc_format = '{%s[DOC_KEY]}' % (papis.config.get('format-doc-name'))
     logger = logging.getLogger('DocMatcher')
 
     @classmethod
     def return_if_match(cls, doc):
+        """Use the attribute `cls.parsed_search` to match the `doc` document
+        to the previously parsed query.
+        :param doc: Papis document to match against.
+        :type  doc: papis.document.Document
+        :returns: True if it matches, False if some query requirement does
+            not match.
+        """
         match = None
         for parsed in cls.parsed_search:
             if len(parsed) == 1:
@@ -141,8 +148,30 @@ class DocMatcher(object):
 
     @classmethod
     def parse(cls, search=False):
-        search = search or cls.search
+        """Parse the main query text. This method will also set the
+        class attribute `parsed_search` to the parsed query, and it will
+        return it too.
+        :param cls: The class object, since it is a static method
+        :type  cls: object
+        :param search: Search text string if a custom search string is to be
+            used. False if the `cls.search` class attribute is to be used.
+        :type  search: str
+        :returns: Parsed query
+        :rtype:  list
+        >>> print(DocMatcher.parse('hello author = einstein'))
+        [['hello'], ['author', '=', 'einstein']]
+        >>> print(DocMatcher.parse(''))
+        []
+        >>> print(\
+            DocMatcher.parse(\
+                '"hello world whatever =" tags = \\\'hello ====\\\''))
+        [['hello world whatever ='], ['tags', '=', 'hello ====']]
+        >>> print(DocMatcher.parse('hello'))
+        [['hello']]
+        """
         import pyparsing
+        cls.logger.debug('Parsing search')
+        search = search or cls.search
         papis_alphas = pyparsing.printables.replace('=', '')
         papis_key = pyparsing.Word(pyparsing.alphas)
         papis_value = pyparsing.QuotedString(
@@ -150,21 +179,21 @@ class DocMatcher(object):
         ) ^ pyparsing.QuotedString(
             quoteChar="'", escChar='\\', escQuote='\\'
         ) ^ papis_key
-        equal = pyparsing.ZeroOrMore(" ")+pyparsing.Literal('=')+pyparsing.ZeroOrMore(" ")
+        equal = pyparsing.ZeroOrMore(" ") + \
+                pyparsing.Literal('=')    + \
+                pyparsing.ZeroOrMore(" ")
 
         papis_query = pyparsing.ZeroOrMore(
-                pyparsing.Group(
-                    pyparsing.ZeroOrMore(
-                        papis_key
-                        + equal
-                    ) +
-                    papis_value
-                    )
-                )
+            pyparsing.Group(
+                pyparsing.ZeroOrMore(
+                    papis_key + equal
+                ) + papis_value
+            )
+        )
         parsed = papis_query.parseString(search)
         cls.logger.debug('Parsed search = %s' % parsed)
-        cls.logger.debug('Sformat search = %s' % cls.doc_format)
         cls.parsed_search = parsed
+        return cls.parsed_search
 
 
 
