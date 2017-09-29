@@ -6,7 +6,6 @@ logger.debug("importing")
 import os
 import configparser
 import papis.exceptions
-import papis.utils
 
 
 CONFIGURATION = None #: Global configuration object variable.
