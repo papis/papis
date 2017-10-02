@@ -169,8 +169,8 @@ class Command(papis.commands.Command):
                  if "author" in data.keys() else ""
         with open(document_path, "rb") as fd:
             md5 = hashlib.md5(fd.read(4096)).hexdigest()
-        result = re.sub(r"[\\'\",.(){}]", "", md5 + author)\
-                   .replace(" ", "-")
+        result = md5 + author
+        result = papis.utils.clean_document_name(result)
         return result
 
     def get_document_extension(self, documentPath):
@@ -238,26 +238,33 @@ class Command(papis.commands.Command):
             self.init_contact_mode()
         lib_dir = os.path.expanduser(papis.config.get('dir'))
         data = dict()
+        # The folder name of the new document that will be created
         out_folder_name = None
+        # The real paths of the documents to be added
         in_documents_paths = self.args.document
+        # The basenames of the documents to be added
         in_documents_names = []
+        # The folder name of the temporary document to be created
         temp_dir = tempfile.mkdtemp("-"+self.args.lib)
+
         if self.args.from_folder:
             original_document = papis.document.Document(self.args.from_folder)
             self.args.from_yaml = original_document.get_info_file()
             in_documents_paths = original_document.get_files()
+
         if self.args.from_url:
             url_data = papis.downloaders.utils.get(self.args.from_url)
             data.update(url_data["data"])
             in_documents_paths.extend(url_data["documents_paths"])
             # If no data was retrieved and doi was found, try to get
             # information with the document's doi
-            self.logger.warning(
-                "I could not get any data from %s" % self.args.from_url
-            )
             if not data and url_data["doi"] is not None and\
                 not self.args.from_doi:
+                self.logger.warning(
+                    "I could not get any data from %s" % self.args.from_url
+                )
                 self.args.from_doi = url_data["doi"]
+
         if self.args.from_bibtex:
             bib_data = papis.bibtex.bibtex_to_dict(self.args.from_bibtex)
             if len(bib_data) > 1:
@@ -266,9 +273,13 @@ class Command(papis.commands.Command):
                     ' I will be taking the first entry'
                 )
             data.update(bib_data[0])
+
         if self.args.from_pmid:
-            self.logger.debug("I'll try using PMID %s via HubMed" % self.args.from_pmid)
-            hubmed_url = "http://pubmed.macropus.org/articles/?format=text%%2Fbibtex&id=%s" % self.args.from_pmid
+            self.logger.debug(
+                "I'll try using PMID %s via HubMed" % self.args.from_pmid
+            )
+            hubmed_url = "http://pubmed.macropus.org/articles/"\
+                         "?format=text%%2Fbibtex&id=%s" % self.args.from_pmid
             bibtex_data = papis.downloaders.utils.get_downloader(
                 hubmed_url,
                 "get"
@@ -279,7 +290,10 @@ class Command(papis.commands.Command):
                 if "doi" in data and not self.args.from_doi:
                     self.args.from_doi = data["doi"]
             else:
-                self.logger.error("PMID %s not found or invalid" % self.args.from_pmid)
+                self.logger.error(
+                    "PMID %s not found or invalid" % self.args.from_pmid
+                )
+
         if self.args.from_doi:
             self.logger.debug("I'll try using doi %s" % self.args.from_doi)
             data.update(papis.utils.doi_to_data(self.args.from_doi))
@@ -304,6 +318,7 @@ class Command(papis.commands.Command):
         if self.args.from_yaml:
             self.logger.debug("Yaml input file = %s" % self.args.from_yaml)
             data.update(papis.utils.yaml_to_data(self.args.from_yaml))
+
         if self.args.from_vcf:
             data.update(papis.utils.vcf_to_data(self.args.from_vcf))
         in_documents_names = [
