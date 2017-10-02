@@ -81,6 +81,14 @@ class Command(papis.commands.Command):
         )
 
         self.parser.add_argument(
+            "--from-folder",
+            help="Add document from folder being a valid papis document"
+                 " (containing info.yaml)",
+            default="",
+            action="store"
+        )
+
+        self.parser.add_argument(
             "--from-url",
             help="Get document and information from a"
                 "given url, a parser must be implemented",
@@ -235,6 +243,10 @@ class Command(papis.commands.Command):
         in_documents_paths = self.args.document
         in_documents_names = []
         temp_dir = tempfile.mkdtemp("-"+self.args.lib)
+        if self.args.from_folder:
+            original_document = papis.document.Document(self.args.from_folder)
+            self.args.from_yaml = original_document.get_info_file()
+            in_documents_paths = original_document.get_files()
         if self.args.from_url:
             url_data = papis.downloaders.utils.get(self.args.from_url)
             data.update(url_data["data"])
