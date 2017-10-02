@@ -167,9 +167,8 @@ class Command(papis.commands.Command):
         """
         author = "-{:.20}".format(data["author"])\
                  if "author" in data.keys() else ""
-        fd = open(document_path, "rb")
-        md5 = hashlib.md5(fd.read(4096)).hexdigest()
-        fd.close()
+        with open(document_path, "rb") as fd:
+            md5 = hashlib.md5(fd.read(4096)).hexdigest()
         result = re.sub(r"[\\'\",.(){}]", "", md5 + author)\
                    .replace(" ", "-")
         return result

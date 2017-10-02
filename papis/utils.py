@@ -6,6 +6,7 @@ logger.debug("importing")
 
 import os
 import re
+import string
 import papis.api
 import papis.config
 import papis.commands
@@ -449,13 +450,26 @@ def clean_document_name(doc_path):
     :type  doc_path: str
     :returns: Basename of the path cleaned
     :rtype:  str
+
+    >>> clean_document_name('{{] __ }}albert )(*& $ß $+_ einstein (*]')
+    'albert-ss-_-einstein'
+    >>> clean_document_name('/ashfd/df/  #$%@#$ }{_+"[ ]hello öworld--- .pdf')
+    'hello-oworld----.pdf'
     """
+    import unidecode
     base = os.path.basename(doc_path)
     logger.debug("Cleaning document name %s " % base)
-    cleaned = re.sub(
-        r"[^a-zA-Z0-9_.-]", "",
-        re.sub(r"\s+", "-", base)
+    trans_dict = dict.fromkeys(
+        string.punctuation.translate(
+          str.maketrans(dict.fromkeys('.-_'))
+        )
     )
+    translation = str.maketrans(trans_dict)
+    cleaned = base.translate(translation)
+    cleaned = cleaned.strip(string.whitespace+string.punctuation)
+    cleaned = cleaned.strip()
+    cleaned = re.sub(r"\s+", "-", cleaned)
+    cleaned = unidecode.unidecode(cleaned)
     return cleaned
 
 

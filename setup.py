@@ -51,6 +51,8 @@ setup(
         "vobject>=0.9.4.1",
         "prompt-toolkit>=1.0.0",
         "bibtexparser>=0.6.2",
+        "Unidecode>=0.4.21",
+        "pyparser>=1.0",
     ],
     python_requires='>=3',
     classifiers=[
