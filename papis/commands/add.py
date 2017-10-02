@@ -343,13 +343,8 @@ class Command(papis.commands.Command):
             )
             document.save()
             data = document.to_dict()
-            in_documents_paths = [
-                os.path.join(
-                    document.get_main_folder(),
-                    d
-                ) for d in document.get_files()
-            ] + in_documents_paths
-            data["files"] = document.get_files() + in_documents_names
+            in_documents_paths = document.get_files() + in_documents_paths
+            data["files"] = [os.path.basename(f) for f in in_documents_paths]
             # set out folder name the folder of the found document
             out_folder_name = document.get_main_folder_name()
             out_folder_path = document.get_main_folder()
