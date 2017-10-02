@@ -39,6 +39,7 @@ general_settings = {
         os.path.join(os.path.expanduser('~'), '.cache', 'papis'),
     "use-git"         : False,
     "add-confirm"     : False,
+    "add-name"        : "",
     "add-interactive" : False,
     "add-edit"        : False,
     "add-open"        : False,

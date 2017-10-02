@@ -47,8 +47,8 @@ class Command(papis.commands.Command):
 
         self.parser.add_argument(
             "--name",
-            help="Name for the main folder",
-            default="",
+            help="Name for the document's folder (papis format)",
+            default=papis.config.get('add-name'),
             action="store"
         )
 
@@ -375,6 +375,7 @@ class Command(papis.commands.Command):
                 )
                 self.logger.debug("Author = % s" % data["author"])
                 self.logger.debug("Title = % s" % data["title"])
+
             if not self.args.name:
                 self.logger.debug("Getting an automatic name")
                 out_folder_name = self.get_hash_folder(
@@ -382,10 +383,19 @@ class Command(papis.commands.Command):
                     in_documents_paths[0]
                 )
             else:
-                out_folder_name = string\
-                            .Template(self.args.name)\
-                            .safe_substitute(data)\
-                            .replace(" ", "-")
+                temp_doc = papis.document.Document(data=data)
+                out_folder_name = papis.utils.format_doc(
+                    self.args.name,
+                    temp_doc
+                )
+                out_folder_name = papis.utils.clean_document_name(
+                    out_folder_name
+                )
+                del temp_doc
+            if len(out_folder_name) == 0:
+                self.logger.error('The output folder name is empty')
+                sys.exit(1)
+
             data["files"] = in_documents_names
             out_folder_path = os.path.join(
                 lib_dir, self.args.dir,  out_folder_name
