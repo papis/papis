@@ -1,6 +1,7 @@
 import re
 import logging
 import os
+import papis.config
 
 logger = logging.getLogger("bibtex")
 
@@ -19,7 +20,7 @@ bibtex_types = [
   "proceedings",
   "techreport",
   "unpublished"
-]
+] + re.sub(r" *", "", papis.config.get('extra-bibtex-types')).split(',')
 
 bibtex_keys = [
   "address",
@@ -46,7 +47,7 @@ bibtex_keys = [
   "title",
   "volume",
   "year"
-  ]
+  ] + re.sub(r" *", "", papis.config.get('extra-bibtex-keys')).split(',')
 
 
 def bibtexparser_entry_to_papis(entry):

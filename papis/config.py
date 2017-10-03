@@ -55,6 +55,8 @@ general_settings = {
     "info-name"       : "info.yaml",
     "doc-url-key-name": "doc_url",
     "file-browser"    : "xdg-open",
+    "extra-bibtex-keys" : "",
+    "extra-bibtex-types" : "",
     "default-library" : "papers",
     "export-text-format" : \
         "{doc[author]}. {doc[title]}. {doc[journal]} {doc[pages]}"
