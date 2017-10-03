@@ -94,6 +94,17 @@ class Document(object):
             else:
                 return True
 
+    def rm_file(self, filepath):
+        """Remove file from document, it also removes the entry in `files`
+
+        :filepath: Full file path for file
+        """
+        basename = os.path.basename(filepath)
+        if basename not in self['files']:
+            raise Exception("File %s not tracked by document" % basename)
+        os.remove(filepath)
+        self['files'].pop(self['files'].index(basename))
+
     def rm(self):
         """Removes document's folder, effectively removing it from the library.
         """

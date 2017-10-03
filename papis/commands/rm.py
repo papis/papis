@@ -17,6 +17,13 @@ class Command(papis.commands.Command):
         self.add_search_argument()
 
         self.parser.add_argument(
+            "--file",
+            help="Remove files from a document instead of the whole folder",
+            default=False,
+            action="store_true"
+        )
+
+        self.parser.add_argument(
             "-f", "--force",
             help="Do not confirm removal",
             default=False,
@@ -29,10 +36,22 @@ class Command(papis.commands.Command):
             self.get_args().search
         )
         document = self.pick(documents) or sys.exit(0)
-        folder = document.get_main_folder()
-        if not self.args.force:
-            if not papis.utils.confirm("Are you sure?"):
-                sys.exit(0)
-        print("Removing %s..." % folder)
-        shutil.rmtree(folder)
-        papis.api.clear_lib_cache()
+        if self.get_args().file:
+            filepath = papis.api.pick(
+                document.get_files()
+            )
+            if not filepath: return 0
+            if not self.args.force:
+                if not papis.utils.confirm("Are you sure?"):
+                    return 0
+            print("Removing %s..." % filepath)
+            document.rm_file(filepath)
+            document.save()
+        else:
+            folder = document.get_main_folder()
+            if not self.args.force:
+                if not papis.utils.confirm("Are you sure?"):
+                    return 0
+            print("Removing %s..." % folder)
+            shutil.rmtree(folder)
+            papis.api.clear_lib_cache()
