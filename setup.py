@@ -53,6 +53,7 @@ setup(
         "bibtexparser>=0.6.2",
         "Unidecode>=0.4.21",
         "pyparser>=1.0",
+        "python-magic>=0.4.13",
     ],
     python_requires='>=3',
     classifiers=[
