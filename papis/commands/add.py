@@ -111,6 +111,14 @@ class Command(papis.commands.Command):
         )
 
         self.parser.add_argument(
+            "--from-lib",
+            help="Add document from another library",
+            default="",
+            action="store"
+        )
+
+
+        self.parser.add_argument(
             "--from-vcf",
             help="Get contact information from a vcard (.vcf) file",
             default=None,
@@ -246,6 +254,13 @@ class Command(papis.commands.Command):
         in_documents_names = []
         # The folder name of the temporary document to be created
         temp_dir = tempfile.mkdtemp("-"+self.args.lib)
+
+        if self.args.from_lib:
+            doc = self.pick(
+                papis.api.get_documents_in_lib(self.get_args().from_lib)
+            )
+            if doc:
+                self.args.from_folder = doc.get_main_folder()
 
         if self.args.from_folder:
             original_document = papis.document.Document(self.args.from_folder)
