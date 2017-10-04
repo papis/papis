@@ -186,7 +186,8 @@ def get_documents_in_lib(library=None, search=""):
     :rtype: list
 
     """
-    directory = papis.config.get("dir", section=library)
+    directory = library if os.path.exists(library) \
+        else papis.config.get("dir", section=library)
     return papis.api.get_documents_in_dir(directory, search)
 
 
