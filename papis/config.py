@@ -29,7 +29,7 @@ general_settings = {
                         or os.environ.get('VISUAL')
                         or 'xdg-open',
     "xeditor"         : "xdg-open",
-    "sync-command"    : "git -C $dir pull origin master",
+    "sync-command"    : "git -C {lib[dir]} pull origin master",
     "notes-name"      : "notes.tex",
     "format-doc-name" : "doc",
     "use-cache"       : True,
