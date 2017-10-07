@@ -22,6 +22,7 @@ command-line interface (*CLI*) is heavily tailored after
    queries
    scripting
    api
+   git
    faq
 
 

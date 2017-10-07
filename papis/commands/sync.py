@@ -3,7 +3,7 @@ This is the command that can be used to synchronize libraries.
 You can customize the sync command using the configuration setting
 `sync-command`.
 
-Examples of `sync-command` are:
+Examples of `sync-command` setting usage are:
 
     - For git compatibility, use for instance
 
@@ -17,8 +17,6 @@ Examples of `sync-command` are:
 
         sync-command = rsync -r some/remote/host {lib[dir]}
 
-Examples
-^^^^^^^^
 """
 import os
 import string
