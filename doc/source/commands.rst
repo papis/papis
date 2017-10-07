@@ -92,7 +92,7 @@ Git
     :path: git
 
 Sync
----
+----
 .. automodule:: papis.commands.sync
 .. argparse::
     :module: papis.commands
