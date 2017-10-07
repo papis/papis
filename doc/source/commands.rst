@@ -82,6 +82,15 @@ Browse
     :prog: papis
     :path: browse
 
+Config
+------
+.. automodule:: papis.commands.config
+.. argparse::
+    :module: papis.commands
+    :func: init_and_return_parser
+    :prog: papis
+    :path: config
+
 Git
 ---
 .. automodule:: papis.commands.git

@@ -91,3 +91,13 @@ and set it to ``False``, e.g.
   [books]
   # Use cache for books but don't use for the rest of libraries
   use-cache = True
+
+Clearing the cache
+^^^^^^^^^^^^^^^^^^
+
+To clear the cache for a given library you can use the flag
+``--clear-cache``, e.g.
+
+.. code::
+
+    papis --clear-cache
