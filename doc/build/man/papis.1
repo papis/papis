@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS" "1" "Oct 03, 2017" "0.3" "papis"
+.TH "PAPIS" "1" "Oct 10, 2017" "0.4" "papis"
 .SH NAME
 papis \- Papis Documentation
 .
@@ -503,7 +503,7 @@ Default: \fB{doc[title]} {doc[author]}\fP
 Default: \fBxdg\-open\fP
 .TP
 .B cache\-dir
-Default: \fB/home/gallo/.cache/papis\fP
+Default: \fB/home/ale/.cache/papis\fP
 .TP
 .B check\-keys
 Default: \fBfiles\fP
@@ -524,6 +524,28 @@ Default: \fBvim\fP
 .TP
 .B export\-text\-format
 Default: \fB{doc[author]}. {doc[title]}. {doc[journal]} {doc[pages]} {doc[month]} {doc[year]}\fP
+.TP
+.B extra\-bibtex\-keys
+Default: 
+.nf
+\(ga\(ga
+.fi
+
+.nf
+\(ga\(ga
+.fi
+
+.TP
+.B extra\-bibtex\-types
+Default: 
+.nf
+\(ga\(ga
+.fi
+
+.nf
+\(ga\(ga
+.fi
+
 .TP
 .B file\-browser
 Default: \fBxdg\-open\fP
@@ -562,7 +584,7 @@ Default: \fB\&.*papis\-short\-help: *(.*)\fP
 Default: \fBhttps://duckduckgo.com\fP
 .TP
 .B sync\-command
-Default: \fBgit \-C $dir pull origin master\fP
+Default: \fBgit \-C {lib[dir]} pull origin master\fP
 .TP
 .B use\-cache
 Default: \fBTrue\fP
@@ -575,6 +597,127 @@ Default: \fBMozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (K
 .TP
 .B xeditor
 Default: \fBxdg\-open\fP
+.UNINDENT
+.SS vim\-gui
+.INDENT 0.0
+.TP
+.B delete\-key
+Default: \fBdd\fP
+.TP
+.B edit\-key
+Default: \fBe\fP
+.TP
+.B header\-format
+.INDENT 7.0
+.TP
+.B Default:
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+Title : {doc[title]}
+Author: {doc[author]}
+Year  : {doc[year]}
+\-\-\-\-\-\-\-
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.TP
+.B help\-key
+Default: \fBh\fP
+.TP
+.B next\-search\-key
+Default: \fBn\fP
+.TP
+.B open\-dir\-key
+Default: \fB<S\-o>\fP
+.TP
+.B open\-key
+Default: \fBo\fP
+.TP
+.B prev\-search\-key
+Default: \fBN\fP
+.TP
+.B search\-key
+Default: \fB/\fP
+.UNINDENT
+.SS rofi\-gui
+.INDENT 0.0
+.TP
+.B case_sensitive
+Default: \fBFalse\fP
+.TP
+.B eh
+Default: \fB3\fP
+.TP
+.B fixed_lines
+Default: \fB20\fP
+.TP
+.B fullscreen
+Default: \fBFalse\fP
+.TP
+.B header\-format
+.INDENT 7.0
+.TP
+.B Default:
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+<b>{doc[title]}</b>
+{doc[empty]}  <i>{doc[author]}</i>
+{doc[empty]}  <span foreground="red">({doc[year]:\->4})</span><span foreground="green">{doc[tags]}</span>
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.TP
+.B key\-browse
+Default: \fBAlt+u\fP
+.TP
+.B key\-delete
+Default: \fBAlt+d\fP
+.TP
+.B key\-edit
+Default: \fBAlt+e\fP
+.TP
+.B key\-help
+Default: \fBAlt+h\fP
+.TP
+.B key\-normal\-window
+Default: \fBAlt+w\fP
+.TP
+.B key\-open
+Default: \fBEnter\fP
+.TP
+.B key\-open\-stay
+Default: \fBAlt+o\fP
+.TP
+.B key\-quit
+Default: \fBAlt+q\fP
+.TP
+.B lines
+Default: \fB10\fP
+.TP
+.B markup_rows
+Default: \fBTrue\fP
+.TP
+.B multi_select
+Default: \fBTrue\fP
+.TP
+.B normal_window
+Default: \fBFalse\fP
+.TP
+.B sep
+Default: \fB|\fP
+.TP
+.B width
+Default: \fB80\fP
 .UNINDENT
 .SS tk\-gui
 .INDENT 0.0
@@ -707,127 +850,6 @@ Default: \fB700\fP
 .TP
 .B window\-width
 Default: \fB1200\fP
-.UNINDENT
-.SS rofi\-gui
-.INDENT 0.0
-.TP
-.B case_sensitive
-Default: \fBFalse\fP
-.TP
-.B eh
-Default: \fB3\fP
-.TP
-.B fixed_lines
-Default: \fB20\fP
-.TP
-.B fullscreen
-Default: \fBFalse\fP
-.TP
-.B header\-format
-.INDENT 7.0
-.TP
-.B Default:
-.INDENT 7.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-<b>{doc[title]}</b>
-{doc[empty]}  <i>{doc[author]}</i>
-{doc[empty]}  <span foreground="red">({doc[year]:\->4})</span><span foreground="green">{doc[tags]}</span>
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.TP
-.B key\-browse
-Default: \fBAlt+u\fP
-.TP
-.B key\-delete
-Default: \fBAlt+d\fP
-.TP
-.B key\-edit
-Default: \fBAlt+e\fP
-.TP
-.B key\-help
-Default: \fBAlt+h\fP
-.TP
-.B key\-normal\-window
-Default: \fBAlt+w\fP
-.TP
-.B key\-open
-Default: \fBEnter\fP
-.TP
-.B key\-open\-stay
-Default: \fBAlt+o\fP
-.TP
-.B key\-quit
-Default: \fBAlt+q\fP
-.TP
-.B lines
-Default: \fB10\fP
-.TP
-.B markup_rows
-Default: \fBTrue\fP
-.TP
-.B multi_select
-Default: \fBTrue\fP
-.TP
-.B normal_window
-Default: \fBFalse\fP
-.TP
-.B sep
-Default: \fB|\fP
-.TP
-.B width
-Default: \fB80\fP
-.UNINDENT
-.SS vim\-gui
-.INDENT 0.0
-.TP
-.B delete\-key
-Default: \fBdd\fP
-.TP
-.B edit\-key
-Default: \fBe\fP
-.TP
-.B header\-format
-.INDENT 7.0
-.TP
-.B Default:
-.INDENT 7.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-Title : {doc[title]}
-Author: {doc[author]}
-Year  : {doc[year]}
-\-\-\-\-\-\-\-
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.TP
-.B help\-key
-Default: \fBh\fP
-.TP
-.B next\-search\-key
-Default: \fBn\fP
-.TP
-.B open\-dir\-key
-Default: \fB<S\-o>\fP
-.TP
-.B open\-key
-Default: \fBo\fP
-.TP
-.B prev\-search\-key
-Default: \fBN\fP
-.TP
-.B search\-key
-Default: \fB/\fP
 .UNINDENT
 .SH THE INFO.YAML FILE
 .sp
@@ -966,6 +988,20 @@ use\-cache = True
 .fi
 .UNINDENT
 .UNINDENT
+.SS Clearing the cache
+.sp
+To clear the cache for a given library you can use the flag
+\fB\-\-clear\-cache\fP, e.g.
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis \-\-clear\-cache
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
 .SH COMMANDS
 .SS Add
 .INDENT 0.0
@@ -977,8 +1013,9 @@ usage: papis add [\-h] [\-d DIR] [\-i] [\-\-name NAME] [\-\-title TITLE]
                  [\-\-author AUTHOR] [\-\-from\-bibtex FROM_BIBTEX]
                  [\-\-from\-yaml FROM_YAML] [\-\-from\-folder FROM_FOLDER]
                  [\-\-from\-url FROM_URL] [\-\-from\-doi FROM_DOI]
-                 [\-\-from\-pmid FROM_PMID] [\-\-from\-vcf FROM_VCF] [\-\-to [TO]]
-                 [\-\-confirm] [\-\-open] [\-\-edit] [\-\-commit] [\-\-no\-document]
+                 [\-\-from\-pmid FROM_PMID] [\-\-from\-lib FROM_LIB]
+                 [\-\-from\-vcf FROM_VCF] [\-\-to [TO]] [\-\-confirm] [\-\-open]
+                 [\-\-edit] [\-\-commit] [\-\-no\-document]
                  [document [document ...]]
 .ft P
 .fi
@@ -1045,6 +1082,11 @@ Doi to try to get information from
 .TP
 .B\-\-from\-pmid
 PMID to try to get information from
+.TP
+.B\-\-from\-lib
+Add document from another library
+.sp
+Default: “”
 .TP
 .B\-\-from\-vcf
 Get contact information from a vcard (.vcf) file
@@ -1137,13 +1179,80 @@ Open notes document
 Default: False
 .UNINDENT
 .SS Export
+.sp
+The export command is useful to work with other programs such as bibtex.
+.sp
+Some examples of its usage are:
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+Export one of the documents matching the author with einstein to bibtex:
+.UNINDENT
 .INDENT 0.0
 .INDENT 3.5
 .sp
 .nf
 .ft C
-usage: papis export [\-h] [\-\-yaml] [\-\-bibtex] [\-\-folder] [\-\-no\-bibtex] [\-o OUT]
-                    [\-t] [\-a] [\-\-vcf]
+papis export \-\-bibtex \(aqauthor = einstein\(aq
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+or export all of them
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis export \-\-bibtex \-\-all \(aqauthor = einstein\(aq
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Export all documents to bibtex and save them into a \fBlib.bib\fP file
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis export \-\-all \-\-bibtex \-\-out lib.bib
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Export a folder of one of the documents matching the word \fBkrebs\fP
+into a folder named, \fBinteresting\-document\fP
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis export \-\-folder \-\-out interesting\-document krebs
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+this will create the folder \fBinteresting\-document\fP containing the
+\fBinfo.yaml\fP file, the linked documents and a \fBbibtex\fP file for
+sharing with other people.
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+usage: papis export [\-h] [\-\-yaml] [\-\-bibtex] [\-\-json] [\-\-folder] [\-\-no\-bibtex]
+                    [\-o OUT] [\-t] [\-a] [\-\-vcf]
                     [search]
 .ft P
 .fi
@@ -1161,12 +1270,17 @@ Default: “.”
 .INDENT 0.0
 .TP
 .B\-\-yaml
-Export into bibtex
+Export into yaml
 .sp
 Default: False
 .TP
 .B\-\-bibtex
 Export into bibtex
+.sp
+Default: False
+.TP
+.B\-\-json
+Export into json
 .sp
 Default: False
 .TP
@@ -1238,7 +1352,7 @@ Default: 30
 .sp
 .nf
 .ft C
-usage: papis rm [\-h] [\-f] [search]
+usage: papis rm [\-h] [\-\-file] [\-f] [search]
 .ft P
 .fi
 .UNINDENT
@@ -1253,6 +1367,11 @@ Default: “.”
 .UNINDENT
 .SS Named Arguments
 .INDENT 0.0
+.TP
+.B\-\-file
+Remove files from a document instead of the whole folder
+.sp
+Default: False
 .TP
 .B\-f, \-\-force
 Do not confirm removal
@@ -1431,13 +1550,174 @@ Search query string
 .sp
 Default: “.”
 .UNINDENT
-.SS Git
+.SS Config
+.sp
+The command config is a useful command because it allows you to check
+the configuration settings’ values that your current \fIpapis\fP session
+is using.
+.sp
+For example let’s say that you want to see which \fBdir\fP setting your
+current library is using (i.e., the directory or the dir that appears
+in the definition of the library in the configuration file), then you
+would simply do:
 .INDENT 0.0
 .INDENT 3.5
 .sp
 .nf
 .ft C
-usage: papis git [\-h] commands [commands ...]
+papis config dir
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+If you wanted to see which \fBdir\fP the library \fBbooks\fP has, for example
+then you would do
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis \-l books config dir
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+This works as well for default settings, i.e., settings that you have not
+customized, for example the setting \fBmatch\-format\fP, you would check
+it with
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis config match\-format
+> {doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+You can find a list of all available settings in the configuration section.
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+usage: papis config [\-h] option
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS Positional Arguments
+.INDENT 0.0
+.TP
+.Boption
+Variable to print
+.sp
+Default: “”
+.UNINDENT
+.SS Run
+.sp
+This command is useful to issue commands in the directory of your library.
+.sp
+Here are some examples of its usage:
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+List files in your directory
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis run ls
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Find a file in your directory using the \fBfind\fP command
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis run find \-name \(aqdocument.pdf\(aq
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+usage: papis run [\-h] ...
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS Positional Arguments
+.INDENT 0.0
+.TP
+.Brun_command
+Command name or command
+.sp
+Default: “”
+.UNINDENT
+.SS Git
+.sp
+This command is useful if your library is itself a git repository.
+You can use this command to issue git commands in your library
+repository without having to change your current directory.
+.sp
+Here are some examples of its usage:
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+Check the status of the library repository:
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis git status
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Commit all changes:
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis git commit \-a
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+usage: papis git [\-h] ...
 .ft P
 .fi
 .UNINDENT
@@ -1449,6 +1729,55 @@ usage: papis git [\-h] commands [commands ...]
 Commands
 .sp
 Default: “”
+.UNINDENT
+.SS Sync
+.sp
+This is the command that can be used to synchronize libraries.
+You can customize the sync command using the configuration setting
+\fIsync\-command\fP\&.
+.sp
+Examples of \fIsync\-command\fP setting usage are:
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+For git compatibility, use for instance
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+sync\-command = git \-C {lib[dir]} pull origin master
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+For rsync compatibility, use for instance
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+sync\-command = rsync \-r some/remote/host {lib[dir]}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+usage: papis sync [\-h]
+.ft P
+.fi
+.UNINDENT
 .UNINDENT
 .SH QUERY LANGUAGE
 .sp
@@ -1767,6 +2096,31 @@ args passed by the user.
 .B Parameters
 \fBlibrary\fP (\fIstr\fP) – Name of library or path to a given library
 .UNINDENT
+.UNINDENT
+.SH GIT
+.sp
+Papis is conceived to work well with the tool \fIgit\fP\&.
+.SH FAQ
+.sp
+Here are some problems that users have come accross with often:
+.INDENT 0.0
+.IP \(bu 2
+When I remove a folder manually in a library or I synchronize manually
+the library I do not see the new papers in the library.
+\fBAnswer\fP: You probably need to update the cache because papis did not
+know anything about your changes in the library since you did it by yourself.
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis \-\-clear\-cache
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+will do.
 .UNINDENT
 .INDENT 0.0
 .IP \(bu 2

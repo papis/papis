@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS-CONFIG" "1" "Oct 03, 2017" "0.3" "papis"
+.TH "PAPIS-CONFIG" "1" "Oct 10, 2017" "0.4" "papis"
 .SH NAME
 papis-config \- Papis Configuration
 .
@@ -157,7 +157,7 @@ Default: \fB{doc[title]} {doc[author]}\fP
 Default: \fBxdg\-open\fP
 .TP
 .B cache\-dir
-Default: \fB/home/gallo/.cache/papis\fP
+Default: \fB/home/ale/.cache/papis\fP
 .TP
 .B check\-keys
 Default: \fBfiles\fP
@@ -178,6 +178,28 @@ Default: \fBvim\fP
 .TP
 .B export\-text\-format
 Default: \fB{doc[author]}. {doc[title]}. {doc[journal]} {doc[pages]} {doc[month]} {doc[year]}\fP
+.TP
+.B extra\-bibtex\-keys
+Default: 
+.nf
+\(ga\(ga
+.fi
+
+.nf
+\(ga\(ga
+.fi
+
+.TP
+.B extra\-bibtex\-types
+Default: 
+.nf
+\(ga\(ga
+.fi
+
+.nf
+\(ga\(ga
+.fi
+
 .TP
 .B file\-browser
 Default: \fBxdg\-open\fP
@@ -216,7 +238,7 @@ Default: \fB\&.*papis\-short\-help: *(.*)\fP
 Default: \fBhttps://duckduckgo.com\fP
 .TP
 .B sync\-command
-Default: \fBgit \-C $dir pull origin master\fP
+Default: \fBgit \-C {lib[dir]} pull origin master\fP
 .TP
 .B use\-cache
 Default: \fBTrue\fP
@@ -229,6 +251,127 @@ Default: \fBMozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (K
 .TP
 .B xeditor
 Default: \fBxdg\-open\fP
+.UNINDENT
+.SS vim\-gui
+.INDENT 0.0
+.TP
+.B delete\-key
+Default: \fBdd\fP
+.TP
+.B edit\-key
+Default: \fBe\fP
+.TP
+.B header\-format
+.INDENT 7.0
+.TP
+.B Default:
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+Title : {doc[title]}
+Author: {doc[author]}
+Year  : {doc[year]}
+\-\-\-\-\-\-\-
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.TP
+.B help\-key
+Default: \fBh\fP
+.TP
+.B next\-search\-key
+Default: \fBn\fP
+.TP
+.B open\-dir\-key
+Default: \fB<S\-o>\fP
+.TP
+.B open\-key
+Default: \fBo\fP
+.TP
+.B prev\-search\-key
+Default: \fBN\fP
+.TP
+.B search\-key
+Default: \fB/\fP
+.UNINDENT
+.SS rofi\-gui
+.INDENT 0.0
+.TP
+.B case_sensitive
+Default: \fBFalse\fP
+.TP
+.B eh
+Default: \fB3\fP
+.TP
+.B fixed_lines
+Default: \fB20\fP
+.TP
+.B fullscreen
+Default: \fBFalse\fP
+.TP
+.B header\-format
+.INDENT 7.0
+.TP
+.B Default:
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+<b>{doc[title]}</b>
+{doc[empty]}  <i>{doc[author]}</i>
+{doc[empty]}  <span foreground="red">({doc[year]:\->4})</span><span foreground="green">{doc[tags]}</span>
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.TP
+.B key\-browse
+Default: \fBAlt+u\fP
+.TP
+.B key\-delete
+Default: \fBAlt+d\fP
+.TP
+.B key\-edit
+Default: \fBAlt+e\fP
+.TP
+.B key\-help
+Default: \fBAlt+h\fP
+.TP
+.B key\-normal\-window
+Default: \fBAlt+w\fP
+.TP
+.B key\-open
+Default: \fBEnter\fP
+.TP
+.B key\-open\-stay
+Default: \fBAlt+o\fP
+.TP
+.B key\-quit
+Default: \fBAlt+q\fP
+.TP
+.B lines
+Default: \fB10\fP
+.TP
+.B markup_rows
+Default: \fBTrue\fP
+.TP
+.B multi_select
+Default: \fBTrue\fP
+.TP
+.B normal_window
+Default: \fBFalse\fP
+.TP
+.B sep
+Default: \fB|\fP
+.TP
+.B width
+Default: \fB80\fP
 .UNINDENT
 .SS tk\-gui
 .INDENT 0.0
@@ -361,127 +504,6 @@ Default: \fB700\fP
 .TP
 .B window\-width
 Default: \fB1200\fP
-.UNINDENT
-.SS rofi\-gui
-.INDENT 0.0
-.TP
-.B case_sensitive
-Default: \fBFalse\fP
-.TP
-.B eh
-Default: \fB3\fP
-.TP
-.B fixed_lines
-Default: \fB20\fP
-.TP
-.B fullscreen
-Default: \fBFalse\fP
-.TP
-.B header\-format
-.INDENT 7.0
-.TP
-.B Default:
-.INDENT 7.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-<b>{doc[title]}</b>
-{doc[empty]}  <i>{doc[author]}</i>
-{doc[empty]}  <span foreground="red">({doc[year]:\->4})</span><span foreground="green">{doc[tags]}</span>
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.TP
-.B key\-browse
-Default: \fBAlt+u\fP
-.TP
-.B key\-delete
-Default: \fBAlt+d\fP
-.TP
-.B key\-edit
-Default: \fBAlt+e\fP
-.TP
-.B key\-help
-Default: \fBAlt+h\fP
-.TP
-.B key\-normal\-window
-Default: \fBAlt+w\fP
-.TP
-.B key\-open
-Default: \fBEnter\fP
-.TP
-.B key\-open\-stay
-Default: \fBAlt+o\fP
-.TP
-.B key\-quit
-Default: \fBAlt+q\fP
-.TP
-.B lines
-Default: \fB10\fP
-.TP
-.B markup_rows
-Default: \fBTrue\fP
-.TP
-.B multi_select
-Default: \fBTrue\fP
-.TP
-.B normal_window
-Default: \fBFalse\fP
-.TP
-.B sep
-Default: \fB|\fP
-.TP
-.B width
-Default: \fB80\fP
-.UNINDENT
-.SS vim\-gui
-.INDENT 0.0
-.TP
-.B delete\-key
-Default: \fBdd\fP
-.TP
-.B edit\-key
-Default: \fBe\fP
-.TP
-.B header\-format
-.INDENT 7.0
-.TP
-.B Default:
-.INDENT 7.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-Title : {doc[title]}
-Author: {doc[author]}
-Year  : {doc[year]}
-\-\-\-\-\-\-\-
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.TP
-.B help\-key
-Default: \fBh\fP
-.TP
-.B next\-search\-key
-Default: \fBn\fP
-.TP
-.B open\-dir\-key
-Default: \fB<S\-o>\fP
-.TP
-.B open\-key
-Default: \fBo\fP
-.TP
-.B prev\-search\-key
-Default: \fBN\fP
-.TP
-.B search\-key
-Default: \fB/\fP
 .UNINDENT
 .SH AUTHOR
 Alejandro Gallo
