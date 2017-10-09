@@ -19,6 +19,7 @@ import string
 import os
 import papis.config
 import papis.exceptions
+import argparse
 
 
 class Command(papis.commands.Command):
@@ -34,7 +35,7 @@ class Command(papis.commands.Command):
             "run_command",
             help="Command name or command",
             default="",
-            nargs="+",
+            nargs=argparse.REMAINDER,
             action="store"
         )
 

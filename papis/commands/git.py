@@ -18,6 +18,7 @@ Here are some examples of its usage:
         papis git commit -a
 """
 import papis.commands
+import argparse
 
 
 class Command(papis.commands.Command):
@@ -33,7 +34,7 @@ class Command(papis.commands.Command):
             "commands",
             help="Commands",
             default="",
-            nargs="+",
+            nargs=argparse.REMAINDER,
             action="store"
         )
 
