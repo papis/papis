@@ -77,23 +77,23 @@ class Command(papis.commands.Command):
         if not self.args.folder and not self.args.out:
             self.args.out = "/dev/stdout"
         if self.args.bibtex:
-            print(document.to_bibtex())
+            open(self.args.out, 'a+').write(document.to_bibtex())
         if self.args.text:
             text_format = papis.config.get('export-text-format')
             text = papis.utils.format_doc(text_format, document)
-            open(self.args.out, "w").write(text)
+            open(self.args.out, "a+").write(text)
         elif self.args.folder:
             outdir = self.args.out or document.get_main_folder_name()
             shutil.copytree(folder, outdir)
             if not self.args.no_bibtex:
                 open(
                     os.path.join(outdir, "info.bib"),
-                    "w+"
+                    "a+"
                 ).write(document.to_bibtex())
         elif self.args.yaml:
-            open(self.args.out, "w").write(document.dump())
+            open(self.args.out, "a+").write(document.dump())
         elif self.args.vcf:
-            open(self.args.out, "w").write(document.to_vcf())
+            open(self.args.out, "a+").write(document.to_vcf())
         else:
             pass
 
