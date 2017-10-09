@@ -1,3 +1,20 @@
+"""
+This command is useful to issue commands in the directory of your library.
+
+Here are some examples of its usage:
+
+    - List files in your directory
+
+    .. code::
+
+        papis run ls
+
+    - Find a file in your directory using the ``find`` command
+
+    .. code::
+
+        papis run find -name 'document.pdf'
+"""
 import string
 import os
 import papis.config

@@ -91,6 +91,15 @@ Config
     :prog: papis
     :path: config
 
+Run
+---
+.. automodule:: papis.commands.run
+.. argparse::
+    :module: papis.commands
+    :func: init_and_return_parser
+    :prog: papis
+    :path: run
+
 Git
 ---
 .. automodule:: papis.commands.git
