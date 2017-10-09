@@ -1,5 +1,37 @@
 """
 The export command is useful to work with other programs such as bibtex.
+
+Some examples of its usage are:
+
+    - Export one of the documents matching the author with einstein to bibtex:
+
+    .. code::
+
+        papis export --bibtex 'author = einstein'
+
+    or export all of them
+
+    .. code::
+
+        papis export --bibtex --all 'author = einstein'
+
+    - Export all documents to bibtex and save them into a ``lib.bib`` file
+
+    .. code::
+
+        papis export --all --bibtex --out lib.bib
+
+    - Export a folder of one of the documents matching the word ``krebs``
+      into a folder named, ``interesting-document``
+
+    .. code::
+
+        papis export --folder --out interesting-document krebs
+
+    this will create the folder ``interesting-document`` containing the
+    ``info.yaml`` file, the linked documents and a ``bibtex`` file for
+    sharing with other people.
+
 """
 import papis
 import os
