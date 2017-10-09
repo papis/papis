@@ -122,6 +122,14 @@ class Document(object):
         yaml.dump(structure, fd, default_flow_style=False)
         fd.close()
 
+    def to_json(self):
+        """Export information into a json string
+        :returns: Json formatted info file
+        :rtype:  str
+        """
+        import json
+        return json.dumps(self.to_dict())
+
     def to_dict(self):
         """Gets a python dictionary with the information of the document
         :returns: Python dictionary
