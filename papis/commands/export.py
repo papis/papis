@@ -33,6 +33,13 @@ class Command(papis.commands.Command):
         )
 
         self.parser.add_argument(
+            "--json",
+            help="Export into json",
+            default=False,
+            action="store_true"
+        )
+
+        self.parser.add_argument(
             "--folder",
             help="Export document folder to share",
             default=False,
@@ -89,6 +96,12 @@ class Command(papis.commands.Command):
 
         if not self.args.out and not self.get_args().folder:
             self.args.out = sys.stdout
+
+        if self.args.json:
+            import json
+            return self.args.out.write(
+                json.dumps([document.to_dict() for document in documents])
+            )
 
         if self.args.yaml:
             import yaml
