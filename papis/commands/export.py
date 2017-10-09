@@ -1,3 +1,6 @@
+"""
+The export command is useful to work with other programs such as bibtex.
+"""
 import papis
 import os
 import sys
@@ -17,7 +20,7 @@ class Command(papis.commands.Command):
 
         self.parser.add_argument(
             "--yaml",
-            help="Export into bibtex",
+            help="Export into yaml",
             default=False,
             action="store_true"
         )
@@ -70,33 +73,6 @@ class Command(papis.commands.Command):
             action="store_true"
         )
 
-    def export(self, document):
-        """Main action in export command
-        """
-        folder = document.get_main_folder()
-        if not self.args.folder and not self.args.out:
-            self.args.out = "/dev/stdout"
-        if self.args.bibtex:
-            open(self.args.out, 'a+').write(document.to_bibtex())
-        if self.args.text:
-            text_format = papis.config.get('export-text-format')
-            text = papis.utils.format_doc(text_format, document)
-            open(self.args.out, "a+").write(text)
-        elif self.args.folder:
-            outdir = self.args.out or document.get_main_folder_name()
-            shutil.copytree(folder, outdir)
-            if not self.args.no_bibtex:
-                open(
-                    os.path.join(outdir, "info.bib"),
-                    "a+"
-                ).write(document.to_bibtex())
-        elif self.args.yaml:
-            open(self.args.out, "a+").write(document.dump())
-        elif self.args.vcf:
-            open(self.args.out, "a+").write(document.to_vcf())
-        else:
-            pass
-
     def main(self):
 
         documents = papis.api.get_documents_in_lib(
@@ -108,5 +84,38 @@ class Command(papis.commands.Command):
             document = self.pick(documents) or sys.exit(0)
             documents = [document]
 
+        if self.args.out and not self.get_args().folder:
+            self.args.out = open(self.get_args().out, 'a+')
+
+        if not self.args.out and not self.get_args().folder:
+            self.args.out = sys.stdout
+
+        if self.args.yaml:
+            import yaml
+            return self.args.out.write(
+                yaml.dump_all([document.to_dict() for document in documents])
+            )
+
         for document in documents:
-            self.export(document)
+            if self.args.bibtex:
+                self.args.out.write(document.to_bibtex())
+            if self.args.text:
+                text_format = papis.config.get('export-text-format')
+                text = papis.utils.format_doc(text_format, document)
+                self.args.out.write(text)
+            elif self.args.folder:
+                folder = document.get_main_folder()
+                outdir = self.args.out or document.get_main_folder_name()
+                if not len(documents) == 1:
+                    outdir = os.path.join(
+                        outdir, document.get_main_folder_name())
+                shutil.copytree(folder, outdir)
+                if not self.args.no_bibtex:
+                    open(
+                        os.path.join(outdir, "info.bib"),
+                        "a+"
+                    ).write(document.to_bibtex())
+            elif self.args.vcf:
+                self.args.out.write(document.to_vcf())
+            else:
+                pass
