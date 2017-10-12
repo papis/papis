@@ -82,8 +82,7 @@ def get_data(
     ):
     results = []
     dict_params = {
-        "q": "Hartree-Fock Ab Initio Treatment of Crystalline Systems",
-        # "q": "9783540193173",
+        "q": query,
         "p": page,
         "a": author,
         "c": category,
