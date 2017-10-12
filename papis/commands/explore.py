@@ -23,6 +23,12 @@ class Command(papis.commands.Command):
         )
 
         self.parser.add_argument(
+            "--isbnplus",
+            help="Search through isbnplus.org",
+            action="store_true"
+        )
+
+        self.parser.add_argument(
             "--arxiv",
             help="Search on the arxiv",
             action="store_true"
@@ -34,6 +40,15 @@ class Command(papis.commands.Command):
             default=30,
             action="store"
         )
+
+    def isbnplus(self, search):
+        import papis.isbn
+        data = papis.isbn.get_data(query=search)
+        doc = self.pick(
+            [papis.document.Document(data=d) for d in data]
+        )
+        if doc:
+            print(doc.dump())
 
     def arxiv(self, search):
         # FIXME: use a more lightweight library than bs4, it needs some time
@@ -71,5 +86,7 @@ class Command(papis.commands.Command):
     def main(self):
         if self.args.arxiv:
             self.arxiv(self.args.search)
+        elif self.args.isbnplus:
+            self.isbnplus(self.args.search)
         else:
             self.arxiv(self.args.search)
