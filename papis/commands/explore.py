@@ -35,11 +35,29 @@ class Command(papis.commands.Command):
         )
 
         self.parser.add_argument(
+            "--libgen",
+            help="Search on library genesis",
+            action="store_true"
+        )
+
+        self.parser.add_argument(
             "--max",
             help="Maximum number of items",
             default=30,
             action="store"
         )
+
+    def libgen(self, search):
+        from pylibgen import Library
+        lg = Library()
+        ids = lg.search(ascii(search), 'title')
+        data = lg.lookup(ids)
+        doc = self.pick(
+            [papis.document.Document(data=d) for d in data]
+        )
+        if doc:
+            doc['doc_url'] = lg.get_download_url(doc['md5'])
+        return doc
 
     def isbnplus(self, search):
         import papis.isbn
@@ -47,8 +65,7 @@ class Command(papis.commands.Command):
         doc = self.pick(
             [papis.document.Document(data=d) for d in data]
         )
-        if doc:
-            print(doc.dump())
+        return doc
 
     def arxiv(self, search):
         # FIXME: use a more lightweight library than bs4, it needs some time
@@ -81,12 +98,19 @@ class Command(papis.commands.Command):
             )
             document = papis.document.Document(data=data)
             documents.append(document)
-        self.pick(documents)
+        doc = self.pick(documents)
+        return doc
 
     def main(self):
+        doc = None
         if self.args.arxiv:
-            self.arxiv(self.args.search)
+            doc = self.arxiv(self.args.search)
         elif self.args.isbnplus:
-            self.isbnplus(self.args.search)
+            doc = self.isbnplus(self.args.search)
+        elif self.args.libgen:
+            doc = self.libgen(self.args.search)
         else:
-            self.arxiv(self.args.search)
+            doc = self.arxiv(self.args.search)
+
+        if doc:
+            print(doc.dump())
