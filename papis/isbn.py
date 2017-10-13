@@ -96,7 +96,7 @@ def get_data(
         {x:dict_params[x] for x in dict_params if dict_params[x]}
     )
     req_url = ISBNPLUS_BASEURL + "search?" + params
-    logger.debug("isbn url = " + req_url)
+    logger.debug("url = " + req_url)
     url = urllib.request.Request(
         req_url,
         headers={
@@ -109,7 +109,7 @@ def get_data(
     for book in root.find_all('book'):
         book_data = book_to_data(book)
         results.append(book_data)
-
+    logger.debug('%s records retrieved' % len(results))
     return results
 
 
