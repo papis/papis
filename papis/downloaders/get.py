@@ -23,4 +23,4 @@ class Downloader(papis.downloaders.base.Downloader):
             return False
 
     def getDocumentUrl(self):
-        return self.getUrl()
+        return self.get_url()

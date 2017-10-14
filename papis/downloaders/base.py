@@ -146,7 +146,7 @@ class Downloader(object):
         self.url = url
         return self
 
-    def getUrl(self):
+    def get_url(self):
         """Url getter for Downloader
         :returns: Main url of the Downloader
         :rtype:  str

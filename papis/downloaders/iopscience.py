@@ -32,7 +32,7 @@ class Downloader(papis.downloaders.base.Downloader):
             return False
 
     def getDoi(self):
-        mdoi = re.match(r'.*annualreviews.org/doi/(.*)', self.getUrl())
+        mdoi = re.match(r'.*annualreviews.org/doi/(.*)', self.get_url())
         if mdoi:
             doi = mdoi.group(1).replace("abs/", "").replace("full/", "")
             self.logger.debug("[doi] = %s" % doi)
@@ -42,7 +42,7 @@ class Downloader(papis.downloaders.base.Downloader):
 
     def getDocumentUrl(self):
         # http://iopscience.iop.org/article/10.1088/0305-4470/24/2/004/pdf
-        durl = self.getUrl()+"/pdf"
+        durl = self.get_url()+"/pdf"
         self.logger.debug("[doc url] = %s" % durl)
         return durl
 
@@ -50,7 +50,7 @@ class Downloader(papis.downloaders.base.Downloader):
         """Get article's id for IOP
         :returns: Article id
         """
-        url = self.getUrl()
+        url = self.get_url()
         m = re.match(r"^.*iop.org/[^/]+/[^/]+/(.*)$", url)
         if not m:
             self.logger.error("Could not retrieve articleId from url")

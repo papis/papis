@@ -30,7 +30,7 @@ class Downloader(papis.downloaders.base.Downloader):
 
     def getDoi(self):
         # http://pubs.acs.org/doi/whatever/10.1021/acs.jchemed.6b00559
-        mdoi = re.match(r'.*acs.org/doi/[^/]+/(.*)', self.getUrl())
+        mdoi = re.match(r'.*acs.org/doi/[^/]+/(.*)', self.get_url())
         if mdoi:
             doi = mdoi.group(1).replace("abs/", "").replace("full/", "")
             self.logger.debug("[doi] = %s" % doi)

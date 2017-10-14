@@ -46,7 +46,7 @@ class Downloader(papis.downloaders.base.Downloader):
         """Get arxiv identifier
         :returns: Identifier
         """
-        url = self.getUrl()
+        url = self.get_url()
         return re.sub(r'^.*arxiv.org/(abs|pdf)/(.*)\/?$', r'\2', url)
 
     def getBibtexUrl(self):
@@ -63,7 +63,7 @@ class Downloader(papis.downloaders.base.Downloader):
 
     def getDocumentUrl(self):
         # https://arxiv.org/pdf/1702.01590
-        url = self.getUrl()
+        url = self.get_url()
         identifier = self.get_identifier()
         self.logger.debug("[paper id] = %s" % identifier)
         pdf_url = "https://arxiv.org/pdf/"+identifier+".pdf"

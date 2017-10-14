@@ -18,7 +18,7 @@ class Downloader(papis.downloaders.base.Downloader):
             return False
 
     def downloadBibtex(self):
-        raw_data = urllib.request.urlopen(self.getUrl())\
+        raw_data = urllib.request.urlopen(self.get_url())\
             .read()\
             .decode('utf-8')
         soup = bs4.BeautifulSoup(raw_data, "html.parser")

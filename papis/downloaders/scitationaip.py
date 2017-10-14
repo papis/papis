@@ -16,7 +16,7 @@ class Downloader(papis.downloaders.base.Downloader):
             return False
 
     def getDoi(self):
-        mdoi = re.match(r'.*scitation.org/doi/(.*)', self.getUrl())
+        mdoi = re.match(r'.*scitation.org/doi/(.*)', self.get_url())
         if mdoi:
             doi = mdoi.group(1).replace("abs/", "").replace("full/", "")
             self.logger.debug("[doi] = %s" % doi)
