@@ -24,7 +24,7 @@ class Downloader(papis.downloaders.base.Downloader):
         else:
             self.logger.error("Doi not found!!")
 
-    def getDocumentUrl(self):
+    def get_document_url(self):
         # http://annualreviews.org/doi/pdf/10.1146/annurev-conmatphys-031214-014726
         durl = "http://annualreviews.org/doi/pdf/%s" % self.get_doi()
         self.logger.debug("[doc url] = %s" % durl)

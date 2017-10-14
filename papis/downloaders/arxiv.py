@@ -28,7 +28,7 @@ class Downloader(papis.downloaders.base.Downloader):
         False
         >>> import re; re.match(\
                 r".*\.pdf\.pdf$",\
-                Downloader.match('https://arxiv.org/pdf/1707.09820.pdf').getDocumentUrl()\
+                Downloader.match('https://arxiv.org/pdf/1707.09820.pdf').get_document_url()\
             ) is None
         True
         """
@@ -61,7 +61,7 @@ class Downloader(papis.downloaders.base.Downloader):
         data = os.linesep.join(bibtexCli.output)
         self.bibtex_data = data
 
-    def getDocumentUrl(self):
+    def get_document_url(self):
         # https://arxiv.org/pdf/1702.01590
         url = self.get_url()
         identifier = self.get_identifier()

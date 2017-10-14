@@ -79,7 +79,7 @@ class Downloader(object):
             .decode('utf-8')
         self.bibtex_data = data
 
-    def getDocumentUrl(self):
+    def get_document_url(self):
         """It returns the urls that is to be access to download
         the document information. It has to be implemented for every
         downloader, or otherwise it will raise an exception.
@@ -116,7 +116,7 @@ class Downloader(object):
 
     def downloadDocument(self):
         """Document downloader, it should try to download document information from
-        the url provided by ``getDocumentUrl``.
+        the url provided by ``get_document_url``.
 
         It sets the ``document_data`` attribute if it succeeds.
 
@@ -124,7 +124,7 @@ class Downloader(object):
         :rtype:  None
         """
         self.logger.debug("Downloading document")
-        url = self.getDocumentUrl()
+        url = self.get_document_url()
         if not url:
             return False
         request = urllib.request.Request(

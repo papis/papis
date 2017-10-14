@@ -29,7 +29,7 @@ class Downloader(papis.downloaders.base.Downloader):
         else:
             return False
 
-    def getDocumentUrl(self):
+    def get_document_url(self):
         # http://whatever.aps.org/whatever/whatever/10.1103/PhysRevLett.115.066402
         # https://journals.aps.org/prl/pdf/10.1103/PhysRevLett.119.030403
         url = self.get_url()

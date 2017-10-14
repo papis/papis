@@ -40,7 +40,7 @@ class Downloader(papis.downloaders.base.Downloader):
         else:
             self.logger.error("Doi not found!!")
 
-    def getDocumentUrl(self):
+    def get_document_url(self):
         # http://iopscience.iop.org/article/10.1088/0305-4470/24/2/004/pdf
         durl = self.get_url()+"/pdf"
         self.logger.debug("[doc url] = %s" % durl)
