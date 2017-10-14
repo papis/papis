@@ -39,7 +39,7 @@ class Downloader(object):
             "Matching url not implemented for this downloader"
         )
 
-    def getBibtexUrl(self):
+    def get_bibtex_url(self):
         """It returns the urls that is to be access to download
         the bibtex information. It has to be implemented for every
         downloader, or otherwise it will raise an exception.
@@ -64,14 +64,14 @@ class Downloader(object):
 
     def download_bibtex(self):
         """Bibtex downloader, it should try to download bibtex information from
-        the url provided by ``getBibtexUrl``.
+        the url provided by ``get_bibtex_url``.
 
         It sets the ``bibtex_data`` attribute if it succeeds.
 
         :returns: Nothing
         :rtype:  None
         """
-        url = self.getBibtexUrl()
+        url = self.get_bibtex_url()
         if not url:
             return False
         data = urllib.request.urlopen(url)\

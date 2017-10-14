@@ -49,12 +49,12 @@ class Downloader(papis.downloaders.base.Downloader):
         url = self.get_url()
         return re.sub(r'^.*arxiv.org/(abs|pdf)/(.*)\/?$', r'\2', url)
 
-    def getBibtexUrl(self):
+    def get_bibtex_url(self):
         identifier = self.get_identifier()
         return identifier
 
     def download_bibtex(self):
-        bib_url = self.getBibtexUrl()
+        bib_url = self.get_bibtex_url()
         bibtexCli = arxiv2bib.Cli([bib_url])
         bibtexCli.run()
         self.logger.debug("[bibtex url] = %s" % bib_url)

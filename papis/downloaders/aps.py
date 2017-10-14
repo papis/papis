@@ -44,7 +44,7 @@ class Downloader(papis.downloaders.base.Downloader):
         self.logger.debug("[document doi] = %s" % burl)
         return burl
 
-    def getBibtexUrl(self):
+    def get_bibtex_url(self):
         # http://journals.aps.org/prl/export/10.1103/
         # PhysRevLett.115.066402?type=bibtex&download=true
         # http://journals.aps.org/prl/abstract/10.1103/PhysRevLett.115.066402
@@ -55,7 +55,7 @@ class Downloader(papis.downloaders.base.Downloader):
         return burl
 
     def download_bibtex(self):
-        data = urllib.request.urlopen(self.getBibtexUrl())\
+        data = urllib.request.urlopen(self.get_bibtex_url())\
             .read()\
             .decode('utf-8')
         self.bibtex_data = data

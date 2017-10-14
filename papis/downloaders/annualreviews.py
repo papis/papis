@@ -30,7 +30,7 @@ class Downloader(papis.downloaders.base.Downloader):
         self.logger.debug("[doc url] = %s" % durl)
         return durl
 
-    def getBibtexUrl(self):
+    def get_bibtex_url(self):
         # http://www.annualreviews.org/action/showCitFormats?doi=10.1146/annurev-conmatphys-031214-014726
         url = "http://annualreviews.org/action/downloadCitation"\
               "?format=bibtex&cookieSet=1&doi=%s" % self.get_doi()

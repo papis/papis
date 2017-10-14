@@ -24,7 +24,7 @@ class TestRecognizer(unittest.TestCase):
                 "http://journals.aps.org/prb/abstract/"
                 "10.1103/PhysRevB.95.085434"
             )
-        self.assertTrue(len(aps.getBibtexUrl()))
+        self.assertTrue(len(aps.get_bibtex_url()))
         aps.download_bibtex()
         self.assertTrue(len(aps.getBibtexData()) != 0)
         print(aps.getBibtexData())
