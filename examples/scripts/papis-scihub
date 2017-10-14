@@ -107,5 +107,8 @@ if [[ ! $? = 0 ]]; then
 fi
 
 set -x
-papis ${PAPIS_VERBOSE} -l ${PAPIS_LIB} add ${pdf_output} --from-doi ${doi} $@
+papis ${PAPIS_VERBOSE} -l ${PAPIS_LIB} \
+  add ${pdf_output} \
+  --from-url ${doi} \
+  --from-doi ${doi} $@
 set +x
