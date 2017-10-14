@@ -136,7 +136,7 @@ class Downloader(object):
         data = urllib.request.urlopen(request).read()
         self.document_data = data
 
-    def setUrl(self, url):
+    def set_url(self, url):
         """Url setter for Downloader
 
         :param url: String containing a valid url
