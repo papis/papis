@@ -2,6 +2,7 @@ import os
 import logging
 import urllib.request
 import papis.config
+import papis.utils
 
 
 class Downloader(object):
@@ -16,6 +17,7 @@ class Downloader(object):
         self.bibtex_data = None
         self.document_data = None
         self.logger.debug("[url] = %s" % url)
+        self.expected_document_format = 'pdf'
 
     @classmethod
     def match(url):
@@ -150,3 +152,9 @@ class Downloader(object):
         :rtype:  str
         """
         return self.url
+
+    def check_document_format(self):
+        return papis.utils.file_is(
+            self.getDocumentData(),
+            self.expected_document_format
+        )
