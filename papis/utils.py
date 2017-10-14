@@ -501,15 +501,25 @@ def file_is(file_description, fmt):
 
     """
     import magic
+    logger.debug("Checking filetype")
     if os.path.exists(file_description):
-        return True \
-            if re.match(r".*%s.*" % fmt, magic.from_file(file_description, mime=True)) \
-            else False
+        result = re.match(
+            r".*%s.*" % fmt, magic.from_file(file_description, mime=True)
+        )
+        if result:
+            logger.debug(
+                "File %s appears to be of type %s" % (file_description, fmt)
+            )
     else:
         # Suppose is a buffer
-        return True \
-            if re.match(r".*%s.*" % fmt, magic.from_buffer(file_description, mime=True)) \
-            else False
+        result = re.match(
+            r".*%s.*" % fmt, magic.from_buffer(file_description, mime=True)
+        )
+        if result:
+            logger.debug(
+                "Buffer appears to be of type %s" % (fmt)
+            )
+    return True if result else False
 
 
 def is_pdf(file_description):
