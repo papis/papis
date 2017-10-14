@@ -71,16 +71,19 @@ def download_document_from_doi(doi):
 
 
 def get(url, data_format="bibtex", expected_doc_format=None):
-    data = dict()
-    documents_paths = []
-    doi = None
     logger.debug("Attempting to retrieve from url")
+    result = {
+        "data": dict(),
+        "doi": None,
+        "documents_paths": []
+    }
     downloader = get_downloader(url)
     if not downloader:
         logger.warning(
             "No matching Downloader for the url %s found" % url
         )
-        return None
+        return result
+    logger.debug("Using downloader %s" % downloader)
     if downloader.expected_document_format is None and \
             expected_doc_format is not None:
         downloader.expected_document_format = expected_doc_format
@@ -88,30 +91,27 @@ def get(url, data_format="bibtex", expected_doc_format=None):
         doi = downloader.get_doi()
     except:
         logger.debug("Doi not found from url...")
-    logger.debug("Using downloader %s" % downloader)
     if data_format == "bibtex":
         try:
             bibtex_data = downloader.get_bibtex_data()
             if bibtex_data:
-                data = papis.bibtex.bibtex_to_dict(
+                result["data"] = papis.bibtex.bibtex_to_dict(
                     bibtex_data
                 )
-                data = data[0] if len(data) > 0 else dict()
+                result["data"] = result["data"][0] \
+                    if len(result["data"]) > 0 else dict()
         except NotImplementedError:
-            data = dict()
+            pass
     try:
         doc_data = downloader.get_document_data()
     except NotImplementedError:
         doc_data = False
     if doc_data:
         if downloader.check_document_format():
-            documents_paths.append(tempfile.mktemp())
-            logger.debug("Saving in %s" % documents_paths[-1])
-            tempfd = open(documents_paths[-1], "wb+")
-            tempfd.write(doc_data)
-            tempfd.close()
-    return {
-        "data": data,
-        "doi": doi,
-        "documents_paths": documents_paths
-    }
+            result["documents_paths"].append(tempfile.mktemp())
+            logger.debug(
+                "Saving downloaded data in %s" % result["documents_paths"][-1]
+            )
+            with open(result["documents_paths"][-1], "wb+") as fd:
+                fd.write(doc_data)
+    return result
