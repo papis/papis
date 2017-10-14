@@ -31,7 +31,7 @@ class Downloader(papis.downloaders.base.Downloader):
         else:
             return False
 
-    def getDoi(self):
+    def get_doi(self):
         mdoi = re.match(r'.*annualreviews.org/doi/(.*)', self.get_url())
         if mdoi:
             doi = mdoi.group(1).replace("abs/", "").replace("full/", "")

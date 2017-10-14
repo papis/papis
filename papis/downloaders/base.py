@@ -91,7 +91,7 @@ class Downloader(object):
             "Getting bibtex url not implemented for this downloader"
         )
 
-    def getDoi(self):
+    def get_doi(self):
         """It returns the doi of the document, if it is retrievable.
         It has to be implemented for every downloader, or otherwise it will
         raise an exception.

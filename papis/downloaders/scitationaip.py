@@ -15,7 +15,7 @@ class Downloader(papis.downloaders.base.Downloader):
         else:
             return False
 
-    def getDoi(self):
+    def get_doi(self):
         mdoi = re.match(r'.*scitation.org/doi/(.*)', self.get_url())
         if mdoi:
             doi = mdoi.group(1).replace("abs/", "").replace("full/", "")
@@ -26,12 +26,12 @@ class Downloader(papis.downloaders.base.Downloader):
 
     def getDocumentUrl(self):
         # http://aip.scitation.org/doi/pdf/10.1063/1.4873138
-        durl = "http://aip.scitation.org/doi/pdf/%s" % self.getDoi()
+        durl = "http://aip.scitation.org/doi/pdf/%s" % self.get_doi()
         self.logger.debug("[doc url] = %s" % durl)
         return durl
 
     def getBibtexUrl(self):
         url = "http://aip.scitation.org/action/downloadCitation"\
-              "?format=bibtex&cookieSet=1&doi=%s" % self.getDoi()
+              "?format=bibtex&cookieSet=1&doi=%s" % self.get_doi()
         self.logger.debug("[bibtex url] = %s" % url)
         return url

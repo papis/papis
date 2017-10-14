@@ -82,7 +82,7 @@ def get(url, data_format="bibtex"):
         )
         return None
     try:
-        doi = downloader.getDoi()
+        doi = downloader.get_doi()
     except:
         logger.debug("Doi not found from url...")
     logger.debug("Using downloader %s" % downloader)
