@@ -97,7 +97,7 @@ def get(url, data_format="bibtex"):
         except NotImplementedError:
             data = dict()
     try:
-        doc_data = downloader.getDocumentData()
+        doc_data = downloader.get_document_data()
     except NotImplementedError:
         doc_data = False
     if doc_data:

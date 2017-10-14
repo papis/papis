@@ -103,7 +103,7 @@ class Downloader(object):
             "Getting document url not implemented for this downloader"
         )
 
-    def getDocumentData(self):
+    def get_document_data(self):
         """Get the document_data data if it has been downloaded already
         and if not download it and return the data in binary format.
 
@@ -155,6 +155,6 @@ class Downloader(object):
 
     def check_document_format(self):
         return papis.utils.file_is(
-            self.getDocumentData(),
+            self.get_document_data(),
             self.expected_document_format
         )

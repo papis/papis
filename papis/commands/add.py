@@ -298,7 +298,7 @@ class Command(papis.commands.Command):
             bibtex_data = papis.downloaders.utils.get_downloader(
                 hubmed_url,
                 "get"
-            ).getDocumentData().decode("utf-8")
+            ).get_document_data().decode("utf-8")
             bibtex_data = papis.bibtex.bibtex_to_dict(bibtex_data)
             if len(bibtex_data):
                 data.update(bibtex_data[0])
@@ -324,7 +324,7 @@ class Command(papis.commands.Command):
                 )
                 file_name = tempfile.mktemp()
                 with open(file_name, 'wb+') as fd:
-                    fd.write(down.getDocumentData())
+                    fd.write(down.get_document_data())
                 self.logger.info('Opening the file')
                 papis.api.open_file(file_name)
                 if papis.utils.confirm('Do you want to use this file?'):
