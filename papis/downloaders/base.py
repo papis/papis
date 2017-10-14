@@ -111,10 +111,10 @@ class Downloader(object):
         :rtype:  str
         """
         if not self.document_data:
-            self.downloadDocument()
+            self.download_document()
         return self.document_data
 
-    def downloadDocument(self):
+    def download_document(self):
         """Document downloader, it should try to download document information from
         the url provided by ``get_document_url``.
 
