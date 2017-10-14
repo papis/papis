@@ -54,7 +54,7 @@ class Downloader(papis.downloaders.base.Downloader):
         self.logger.debug("[bibtex url] = %s" % burl)
         return burl
 
-    def downloadBibtex(self):
+    def download_bibtex(self):
         data = urllib.request.urlopen(self.getBibtexUrl())\
             .read()\
             .decode('utf-8')

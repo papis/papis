@@ -59,10 +59,10 @@ class Downloader(object):
         :rtype:  str
         """
         if not self.bibtex_data:
-            self.downloadBibtex()
+            self.download_bibtex()
         return self.bibtex_data
 
-    def downloadBibtex(self):
+    def download_bibtex(self):
         """Bibtex downloader, it should try to download bibtex information from
         the url provided by ``getBibtexUrl``.
 

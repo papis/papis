@@ -53,7 +53,7 @@ class Downloader(papis.downloaders.base.Downloader):
         identifier = self.get_identifier()
         return identifier
 
-    def downloadBibtex(self):
+    def download_bibtex(self):
         bib_url = self.getBibtexUrl()
         bibtexCli = arxiv2bib.Cli([bib_url])
         bibtexCli.run()

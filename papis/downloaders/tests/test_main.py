@@ -25,6 +25,6 @@ class TestRecognizer(unittest.TestCase):
                 "10.1103/PhysRevB.95.085434"
             )
         self.assertTrue(len(aps.getBibtexUrl()))
-        aps.downloadBibtex()
+        aps.download_bibtex()
         self.assertTrue(len(aps.getBibtexData()) != 0)
         print(aps.getBibtexData())

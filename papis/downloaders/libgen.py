@@ -17,7 +17,7 @@ class Downloader(papis.downloaders.base.Downloader):
         else:
             return False
 
-    def downloadBibtex(self):
+    def download_bibtex(self):
         raw_data = urllib.request.urlopen(self.get_url())\
             .read()\
             .decode('utf-8')
