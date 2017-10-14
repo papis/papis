@@ -166,7 +166,13 @@ class Downloader(object):
         if self.expected_document_format == \
                 self.expected_document_format_unknown:
             return True
-        return papis.utils.file_is(
+        result = papis.utils.file_is(
             self.get_document_data(),
             self.expected_document_format
         )
+        if not result:
+            self.logger.debug(
+                "The downloaded data does not seem to be of"
+                "the correct type (%s)" % self.expected_document_format
+            )
+        return result

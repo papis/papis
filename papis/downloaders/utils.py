@@ -101,11 +101,12 @@ def get(url, data_format="bibtex"):
     except NotImplementedError:
         doc_data = False
     if doc_data:
-        documents_paths.append(tempfile.mktemp())
-        logger.debug("Saving in %s" % documents_paths[-1])
-        tempfd = open(documents_paths[-1], "wb+")
-        tempfd.write(doc_data)
-        tempfd.close()
+        if downloader.check_document_format():
+            documents_paths.append(tempfile.mktemp())
+            logger.debug("Saving in %s" % documents_paths[-1])
+            tempfd = open(documents_paths[-1], "wb+")
+            tempfd.write(doc_data)
+            tempfd.close()
     return {
         "data": data,
         "doi": doi,

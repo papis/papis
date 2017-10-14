@@ -20,10 +20,9 @@ class Downloader(papis.downloaders.base.Downloader):
         mdoi = re.match(r'.*scitation.org/doi/(.*)', self.get_url())
         if mdoi:
             doi = mdoi.group(1).replace("abs/", "").replace("full/", "")
-            self.logger.debug("[doi] = %s" % doi)
             return doi
         else:
-            self.logger.error("Doi not found!!")
+            return None
 
     def get_document_url(self):
         # http://aip.scitation.org/doi/pdf/10.1063/1.4873138
