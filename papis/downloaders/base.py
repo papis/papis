@@ -12,13 +12,15 @@ class Downloader(object):
 
     def __init__(self, url="", name=""):
         self.url = url
-        self.src = name or os.path.basename(__file__)
-        self.logger = logging.getLogger("downloaders:"+self.src)
+        self.name = name or os.path.basename(__file__)
+        self.logger = logging.getLogger("downloaders:"+self.name)
         self.bibtex_data = None
         self.document_data = None
         self.logger.debug("[url] = %s" % url)
-        self.expected_document_format_unknown = 'unknown'
-        self.expected_document_format = self.expected_document_format_unknown
+        self.expected_document_format = None
+
+    def __repr__(self):
+        return self.get_name()
 
     @classmethod
     def match(url):
@@ -163,8 +165,7 @@ class Downloader(object):
         :returns: True if it is of the right type, else otherwise
         :rtype:  bool
         """
-        if self.expected_document_format == \
-                self.expected_document_format_unknown:
+        if self.expected_document_format is None:
             return True
         result = papis.utils.file_is(
             self.get_document_data(),
@@ -176,3 +177,10 @@ class Downloader(object):
                 "the correct type (%s)" % self.expected_document_format
             )
         return result
+
+    def get_name(self):
+        """Get name of the downloader
+        :returns: Name
+
+        """
+        return self.name
