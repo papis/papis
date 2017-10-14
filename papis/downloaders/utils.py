@@ -88,7 +88,7 @@ def get(url, data_format="bibtex"):
     logger.debug("Using downloader %s" % downloader)
     if data_format == "bibtex":
         try:
-            bibtex_data = downloader.getBibtexData()
+            bibtex_data = downloader.get_bibtex_data()
             if bibtex_data:
                 data = papis.bibtex.bibtex_to_dict(
                     bibtex_data

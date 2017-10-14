@@ -26,5 +26,5 @@ class TestRecognizer(unittest.TestCase):
             )
         self.assertTrue(len(aps.get_bibtex_url()))
         aps.download_bibtex()
-        self.assertTrue(len(aps.getBibtexData()) != 0)
-        print(aps.getBibtexData())
+        self.assertTrue(len(aps.get_bibtex_data()) != 0)
+        print(aps.get_bibtex_data())

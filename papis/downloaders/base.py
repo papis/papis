@@ -51,7 +51,7 @@ class Downloader(object):
             "Getting bibtex url not implemented for this downloader"
         )
 
-    def getBibtexData(self):
+    def get_bibtex_data(self):
         """Get the bibtex_data data if it has been downloaded already
         and if not download it and return the data in utf-8 format.
 
