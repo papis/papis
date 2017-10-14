@@ -17,7 +17,8 @@ class Downloader(object):
         self.bibtex_data = None
         self.document_data = None
         self.logger.debug("[url] = %s" % url)
-        self.expected_document_format = 'pdf'
+        self.expected_document_format_unknown = 'unknown'
+        self.expected_document_format = self.expected_document_format_unknown
 
     @classmethod
     def match(url):
@@ -154,6 +155,9 @@ class Downloader(object):
         return self.url
 
     def check_document_format(self):
+        if self.expected_document_format == \
+                self.expected_document_format_unknown:
+            return True
         return papis.utils.file_is(
             self.get_document_data(),
             self.expected_document_format

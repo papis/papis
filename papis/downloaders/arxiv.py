@@ -8,6 +8,7 @@ class Downloader(papis.downloaders.base.Downloader):
 
     def __init__(self, url):
         papis.downloaders.base.Downloader.__init__(self, url)
+        self.expected_document_format = 'pdf'
 
     @classmethod
     def match(cls, url):
