@@ -5,7 +5,9 @@ import papis.downloaders.base
 class Downloader(papis.downloaders.base.Downloader):
 
     def __init__(self, url):
-        papis.downloaders.base.Downloader.__init__(self, url)
+        papis.downloaders.base.Downloader.__init__(
+            self, url, name="iopscience"
+        )
         self.expected_document_format = 'pdf'
 
     @classmethod
@@ -25,9 +27,6 @@ class Downloader(papis.downloaders.base.Downloader):
         True
         """
         if re.match(r".*iopscience.iop.org.*", url):
-            cleaned_url = re.sub(r"\/pdf$", "",
-                re.sub(r"\/$", "", url)
-            )
             return Downloader(url)
         else:
             return False

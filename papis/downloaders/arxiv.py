@@ -7,7 +7,7 @@ import arxiv2bib
 class Downloader(papis.downloaders.base.Downloader):
 
     def __init__(self, url):
-        papis.downloaders.base.Downloader.__init__(self, url)
+        papis.downloaders.base.Downloader.__init__(self, url, name="arxiv")
         self.expected_document_format = 'pdf'
 
     @classmethod
@@ -64,7 +64,6 @@ class Downloader(papis.downloaders.base.Downloader):
 
     def get_document_url(self):
         # https://arxiv.org/pdf/1702.01590
-        url = self.get_url()
         identifier = self.get_identifier()
         self.logger.debug("[paper id] = %s" % identifier)
         pdf_url = "https://arxiv.org/pdf/"+identifier+".pdf"

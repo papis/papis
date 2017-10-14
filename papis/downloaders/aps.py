@@ -6,7 +6,7 @@ import papis.downloaders.base
 class Downloader(papis.downloaders.base.Downloader):
 
     def __init__(self, url):
-        papis.downloaders.base.Downloader.__init__(self, url)
+        papis.downloaders.base.Downloader.__init__(self, url, name="aps")
         self.expected_document_format = 'pdf'
 
     @classmethod

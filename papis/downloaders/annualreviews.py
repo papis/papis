@@ -5,12 +5,14 @@ import papis.downloaders.base
 class Downloader(papis.downloaders.base.Downloader):
 
     def __init__(self, url):
-        papis.downloaders.base.Downloader.__init__(self, url)
+        papis.downloaders.base.Downloader.__init__(
+            self, url, name="annualreviews"
+        )
         self.expected_document_format = 'pdf'
 
     @classmethod
     def match(cls, url):
-        #http://www.annualreviews.org/doi/blahblah/blahblah
+        # http://www.annualreviews.org/doi/blahblah/blahblah
         if re.match(r".*annualreviews.org.*", url):
             return Downloader(url)
         else:

@@ -10,9 +10,9 @@ class Downloader(object):
     """This is the base class for every downloader.
     """
 
-    def __init__(self, url=""):
+    def __init__(self, url="", name=""):
         self.url = url
-        self.src = os.path.basename(__file__)
+        self.src = name or os.path.basename(__file__)
         self.logger = logging.getLogger("downloaders:"+self.src)
         self.bibtex_data = None
         self.document_data = None
@@ -171,7 +171,7 @@ class Downloader(object):
             self.expected_document_format
         )
         if not result:
-            self.logger.debug(
+            self.logger.warning(
                 "The downloaded data does not seem to be of"
                 "the correct type (%s)" % self.expected_document_format
             )
