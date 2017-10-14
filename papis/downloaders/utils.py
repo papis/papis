@@ -70,7 +70,7 @@ def download_document_from_doi(doi):
 
 
 
-def get(url, data_format="bibtex"):
+def get(url, data_format="bibtex", expected_doc_format=None):
     data = dict()
     documents_paths = []
     doi = None
@@ -81,6 +81,9 @@ def get(url, data_format="bibtex"):
             "No matching Downloader for the url %s found" % url
         )
         return None
+    if downloader.expected_document_format is None and \
+            expected_doc_format is not None:
+        downloader.expected_document_format = expected_doc_format
     try:
         doi = downloader.get_doi()
     except:
