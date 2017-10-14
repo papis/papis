@@ -493,30 +493,36 @@ def git_commit(path="", message=""):
     call(cmd)
 
 
-def file_is(file_path, fmt):
+def file_is(file_description, fmt):
     """Get if file stored in `file_path` is a `fmt` document.
 
-    :file_path: Full path for a `fmt` file.
+    :file_path: Full path for a `fmt` file or a buffer containing `fmt` data.
     :returns: True if is `fmt` and False otherwise
 
     """
     import magic
-    return True \
-        if re.match(r".*%s.*" % fmt, magic.from_file(file_path, mime=True)) \
-        else False
+    if os.path.exists(file_description):
+        return True \
+            if re.match(r".*%s.*" % fmt, magic.from_file(file_description, mime=True)) \
+            else False
+    else:
+        # Suppose is a buffer
+        return True \
+            if re.match(r".*%s.*" % fmt, magic.from_buffer(file_description, mime=True)) \
+            else False
 
 
-def is_pdf(file_path):
-    return file_is(file_path, 'pdf')
+def is_pdf(file_description):
+    return file_is(file_description, 'pdf')
 
 
-def is_djvu(file_path):
-    return file_is(file_path, 'djvu')
+def is_djvu(file_description):
+    return file_is(file_description, 'djvu')
 
 
-def is_epub(file_path):
-    return file_is(file_path, 'epub')
+def is_epub(file_description):
+    return file_is(file_description, 'epub')
 
 
-def is_mobi(file_path):
-    return file_is(file_path, 'mobi')
+def is_mobi(file_description):
+    return file_is(file_description, 'mobi')
