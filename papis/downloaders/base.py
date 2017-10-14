@@ -155,6 +155,14 @@ class Downloader(object):
         return self.url
 
     def check_document_format(self):
+        """Check if the downloaded document has the filetype that the
+        downloader expects. If the downloader does not expect any special
+        filetype, accept anything because there is no way to know if it is
+        correct.
+
+        :returns: True if it is of the right type, else otherwise
+        :rtype:  bool
+        """
         if self.expected_document_format == \
                 self.expected_document_format_unknown:
             return True
