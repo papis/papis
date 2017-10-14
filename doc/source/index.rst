@@ -23,6 +23,7 @@ command-line interface (*CLI*) is heavily tailored after
    scripting
    api
    git
+   scihub
    faq
 
 
