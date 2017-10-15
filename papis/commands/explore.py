@@ -1,8 +1,10 @@
 import papis.utils
+import papis.commands
 import papis.document
 import papis.config
 import papis.bibtex
 import urllib.request
+import tempfile
 
 
 class Command(papis.commands.Command):
@@ -41,11 +43,40 @@ class Command(papis.commands.Command):
         )
 
         self.parser.add_argument(
+            "--add",
+            help="Add document selected",
+            action="store_true"
+        )
+
+        self.parser.add_argument(
             "--max",
             help="Maximum number of items",
             default=30,
             action="store"
         )
+
+    def add(self, doc):
+        if self.args.libgen:
+            if not 'doc_url' in doc.keys():
+                self.logger.error('No doc_url data retrieved')
+                return 1
+            self.logger.info('Downloading document')
+            doc_data = urllib.request.urlopen(
+                doc['doc_url']
+            ).read()
+            file_name = tempfile.mktemp()
+            with open(file_name, 'wb+') as fd:
+                fd.write(doc_data)
+            papis.commands.main(
+                ['add', '--from-url', doc['doc_url'], file_name]
+            )
+        elif self.args.arxiv:
+            if not 'url' in doc.keys():
+                self.logger.error('No doc_url data retrieved')
+                return 1
+            papis.commands.main(
+                ['add', '--from-url', doc['url']]
+            )
 
     def libgen(self, search):
         from pylibgen import Library
@@ -114,3 +145,5 @@ class Command(papis.commands.Command):
 
         if doc:
             print(doc.dump())
+            if self.args.add:
+                self.add(doc)

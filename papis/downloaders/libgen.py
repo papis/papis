@@ -12,13 +12,17 @@ class Downloader(papis.downloaders.base.Downloader):
     @classmethod
     def match(cls, url):
         # http://libgen.io/ads.php?md5=CBA569C45B32CA3DF52E736CD8EF6340
-        if re.match(r".*libgen.*", url):
+        if re.match(r".*libgen.*md5=.*", url):
             return Downloader(url)
         else:
             return False
 
+    def get_md5(self):
+        return re.match(r'.*md5=([A-Z0-9]+).*', self.get_url()).group(1)
+
     def download_bibtex(self):
-        raw_data = urllib.request.urlopen(self.get_url())\
+        url = 'http://libgen.io/ads.php?md5=%s' % self.get_md5()
+        raw_data = urllib.request.urlopen(url)\
             .read()\
             .decode('utf-8')
         soup = bs4.BeautifulSoup(raw_data, "html.parser")
