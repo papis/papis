@@ -71,7 +71,7 @@ documents is stored. These cache files are stored in
 
 ::
 
-  ~/.papis/cache
+  ~/.cache/papis/
 
 Some papis commands clear the cache automatically, for example the ``add`` and
 ``rm`` command clear the cache when something is changed.
