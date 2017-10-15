@@ -1,3 +1,19 @@
+"""
+The add command is one of the central commands of the papis command line
+interface. It is a very versatile command with a fair amount of options.
+
+Examples
+^^^^^^^^
+
+    - Add a document located in ``~/Documents/interesting.pdf``
+      and name the folder where it will be stored in the database
+      ``interesting-paper-2021``
+
+    .. code::
+
+        papis add ~/Documents/interesting.pdf --name interesting-paper-2021
+
+"""
 import papis
 import os
 import sys
