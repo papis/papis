@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS" "1" "Oct 10, 2017" "0.4" "papis"
+.TH "PAPIS" "1" "Oct 15, 2017" "0.4.1" "papis"
 .SH NAME
 papis \- Papis Documentation
 .
@@ -503,7 +503,7 @@ Default: \fB{doc[title]} {doc[author]}\fP
 Default: \fBxdg\-open\fP
 .TP
 .B cache\-dir
-Default: \fB/home/ale/.cache/papis\fP
+Default: \fB/home/gallo/.cache/papis\fP
 .TP
 .B check\-keys
 Default: \fBfiles\fP
@@ -597,127 +597,6 @@ Default: \fBMozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (K
 .TP
 .B xeditor
 Default: \fBxdg\-open\fP
-.UNINDENT
-.SS vim\-gui
-.INDENT 0.0
-.TP
-.B delete\-key
-Default: \fBdd\fP
-.TP
-.B edit\-key
-Default: \fBe\fP
-.TP
-.B header\-format
-.INDENT 7.0
-.TP
-.B Default:
-.INDENT 7.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-Title : {doc[title]}
-Author: {doc[author]}
-Year  : {doc[year]}
-\-\-\-\-\-\-\-
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.TP
-.B help\-key
-Default: \fBh\fP
-.TP
-.B next\-search\-key
-Default: \fBn\fP
-.TP
-.B open\-dir\-key
-Default: \fB<S\-o>\fP
-.TP
-.B open\-key
-Default: \fBo\fP
-.TP
-.B prev\-search\-key
-Default: \fBN\fP
-.TP
-.B search\-key
-Default: \fB/\fP
-.UNINDENT
-.SS rofi\-gui
-.INDENT 0.0
-.TP
-.B case_sensitive
-Default: \fBFalse\fP
-.TP
-.B eh
-Default: \fB3\fP
-.TP
-.B fixed_lines
-Default: \fB20\fP
-.TP
-.B fullscreen
-Default: \fBFalse\fP
-.TP
-.B header\-format
-.INDENT 7.0
-.TP
-.B Default:
-.INDENT 7.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-<b>{doc[title]}</b>
-{doc[empty]}  <i>{doc[author]}</i>
-{doc[empty]}  <span foreground="red">({doc[year]:\->4})</span><span foreground="green">{doc[tags]}</span>
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.TP
-.B key\-browse
-Default: \fBAlt+u\fP
-.TP
-.B key\-delete
-Default: \fBAlt+d\fP
-.TP
-.B key\-edit
-Default: \fBAlt+e\fP
-.TP
-.B key\-help
-Default: \fBAlt+h\fP
-.TP
-.B key\-normal\-window
-Default: \fBAlt+w\fP
-.TP
-.B key\-open
-Default: \fBEnter\fP
-.TP
-.B key\-open\-stay
-Default: \fBAlt+o\fP
-.TP
-.B key\-quit
-Default: \fBAlt+q\fP
-.TP
-.B lines
-Default: \fB10\fP
-.TP
-.B markup_rows
-Default: \fBTrue\fP
-.TP
-.B multi_select
-Default: \fBTrue\fP
-.TP
-.B normal_window
-Default: \fBFalse\fP
-.TP
-.B sep
-Default: \fB|\fP
-.TP
-.B width
-Default: \fB80\fP
 .UNINDENT
 .SS tk\-gui
 .INDENT 0.0
@@ -850,6 +729,127 @@ Default: \fB700\fP
 .TP
 .B window\-width
 Default: \fB1200\fP
+.UNINDENT
+.SS vim\-gui
+.INDENT 0.0
+.TP
+.B delete\-key
+Default: \fBdd\fP
+.TP
+.B edit\-key
+Default: \fBe\fP
+.TP
+.B header\-format
+.INDENT 7.0
+.TP
+.B Default:
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+Title : {doc[title]}
+Author: {doc[author]}
+Year  : {doc[year]}
+\-\-\-\-\-\-\-
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.TP
+.B help\-key
+Default: \fBh\fP
+.TP
+.B next\-search\-key
+Default: \fBn\fP
+.TP
+.B open\-dir\-key
+Default: \fB<S\-o>\fP
+.TP
+.B open\-key
+Default: \fBo\fP
+.TP
+.B prev\-search\-key
+Default: \fBN\fP
+.TP
+.B search\-key
+Default: \fB/\fP
+.UNINDENT
+.SS rofi\-gui
+.INDENT 0.0
+.TP
+.B case_sensitive
+Default: \fBFalse\fP
+.TP
+.B eh
+Default: \fB3\fP
+.TP
+.B fixed_lines
+Default: \fB20\fP
+.TP
+.B fullscreen
+Default: \fBFalse\fP
+.TP
+.B header\-format
+.INDENT 7.0
+.TP
+.B Default:
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+<b>{doc[title]}</b>
+{doc[empty]}  <i>{doc[author]}</i>
+{doc[empty]}  <span foreground="red">({doc[year]:\->4})</span><span foreground="green">{doc[tags]}</span>
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.TP
+.B key\-browse
+Default: \fBAlt+u\fP
+.TP
+.B key\-delete
+Default: \fBAlt+d\fP
+.TP
+.B key\-edit
+Default: \fBAlt+e\fP
+.TP
+.B key\-help
+Default: \fBAlt+h\fP
+.TP
+.B key\-normal\-window
+Default: \fBAlt+w\fP
+.TP
+.B key\-open
+Default: \fBEnter\fP
+.TP
+.B key\-open\-stay
+Default: \fBAlt+o\fP
+.TP
+.B key\-quit
+Default: \fBAlt+q\fP
+.TP
+.B lines
+Default: \fB10\fP
+.TP
+.B markup_rows
+Default: \fBTrue\fP
+.TP
+.B multi_select
+Default: \fBTrue\fP
+.TP
+.B normal_window
+Default: \fBFalse\fP
+.TP
+.B sep
+Default: \fB|\fP
+.TP
+.B width
+Default: \fB80\fP
 .UNINDENT
 .SH THE INFO.YAML FILE
 .sp
@@ -1320,7 +1320,8 @@ Default: False
 .sp
 .nf
 .ft C
-usage: papis explore [\-h] [\-\-arxiv] [\-\-max MAX] [search [search ...]]
+usage: papis explore [\-h] [\-\-isbnplus] [\-\-arxiv] [\-\-libgen] [\-\-max MAX]
+                     [search [search ...]]
 .ft P
 .fi
 .UNINDENT
@@ -1336,8 +1337,18 @@ Default: []
 .SS Named Arguments
 .INDENT 0.0
 .TP
+.B\-\-isbnplus
+Search through isbnplus.org
+.sp
+Default: False
+.TP
 .B\-\-arxiv
 Search on the arxiv
+.sp
+Default: False
+.TP
+.B\-\-libgen
+Search on library genesis
 .sp
 Default: False
 .TP
@@ -2100,6 +2111,102 @@ args passed by the user.
 .SH GIT
 .sp
 Papis is conceived to work well with the tool \fIgit\fP\&.
+.SH SCIHUB SUPPORT
+.sp
+Papis has a script that uses the scihub platform to download scientific
+papers. Due to legal caution the script is not included directly
+as a papis command, and it is written \fBbash\fP\&.
+.sp
+If you want to use it, you can download it from
+\fI\%here\fP
+and copy it into your papis script folder.
+.sp
+Usuar locations for your script folder are
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+\fB~/.config/papis/scripts\fP
+.IP \(bu 2
+\fB~/.papis/scripts\fP
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.sp
+Therefore, if you decide to have the script folder in the first option,
+you can install the script by doing:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+wget \-O ~/.config/papis/scripts/papis\-scihub https://raw.githubusercontent.com/alejandrogallo/papis/master/examples/scripts/papis\-scihub
+chmod +x ~/.config/papis/scripts/papis\-scihub
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+The \fBchmod +x\fP command is necessary to make the \fBpapis\-scihub\fP file
+executable.
+.sp
+Now you can type
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis scihub \-h
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+and see the help message of the script.
+.sp
+Some usage examples are:
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+Download via the doi number:
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis scihub 10\&.1002/andp.19053220607 \-d einstein_papers \-\-name photon_definition
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.IP \(bu 2
+Download via a url that contains the doi number in the format \fB\&.*/doi/<doinumber>\fP
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis scihub http://physicstoday.scitation.org/doi/10.1063/1.881498 \-\-name important_paper
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.IP \(bu 2
+Download via the \fBdoi.org\fP url:
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis scihub https://doi.org/10.1016/j.physrep.2016.12.002
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
 .SH FAQ
 .sp
 Here are some problems that users have come accross with often:
