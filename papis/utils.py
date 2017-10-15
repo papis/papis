@@ -502,7 +502,9 @@ def file_is(file_description, fmt):
     """
     import magic
     logger.debug("Checking filetype")
-    if os.path.exists(file_description):
+    try:
+        # This means that the file_description is a string
+        file_description.decode('utf-8')
         result = re.match(
             r".*%s.*" % fmt, magic.from_file(file_description, mime=True)
         )
@@ -510,8 +512,8 @@ def file_is(file_description, fmt):
             logger.debug(
                 "File %s appears to be of type %s" % (file_description, fmt)
             )
-    else:
-        # Suppose is a buffer
+    except:
+        # Suppose that file_description is a buffer
         result = re.match(
             r".*%s.*" % fmt, magic.from_buffer(file_description, mime=True)
         )
