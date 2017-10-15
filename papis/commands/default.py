@@ -107,10 +107,13 @@ class Command(papis.commands.Command):
             return 0
 
         if self.args.set:
-            key_vals = [d.split("=") for d in self.args.set.split(",")]
+            key_vals = papis.utils.DocMatcher.parse(self.args.set)
+            self.logger.debug('Parsed set %s' % key_vals)
             for pair in key_vals:
+                if len(pair) != 3:
+                    continue
                 key = pair[0]
-                val = pair[1]
+                val = pair[2]
                 papis.config.set(key, val)
 
         if self.args.config:
