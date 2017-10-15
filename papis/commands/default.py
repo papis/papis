@@ -87,7 +87,7 @@ class Command(papis.commands.Command):
         self.default_parser.add_argument(
             "--set",
             help="Set key value, e.g., "
-                 "--set info-name=information.yaml,opentool=evince",
+                 "--set 'info-name = \"information.yaml\"  opentool = evince'",
             action="store"
         )
 
