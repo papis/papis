@@ -20,14 +20,14 @@ it. Papis' configuration files are stored together inside the folder
 
 ::
 
-    ~/.papis
+    ~/.config/papis
 
 Bear in mind that ``~`` means "Home Directory". Inside this directory a
 configuration file is found,
 
 ::
 
-    ~/.papis/config
+    ~/.config/papis/config
 
 Right now we will open this file to edit and we will create a library.  In
 papis everything should be human-readabale and human-editable. So adding a
@@ -49,7 +49,7 @@ we will be adding to the library will be located inside
 care of your papers library is inside the ``~/Documents/mypapers`` directory,
 self-contained.
 
-So now add the two lines to the ``~/.papis/config`` file and save it, and we will
+So now add the two lines to the ``~/.config/papis/config`` file and save it, and we will
 proceed to add some documents.
 
 
