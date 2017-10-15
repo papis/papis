@@ -72,7 +72,7 @@ class Command(papis.commands.Command):
             )
         elif self.args.arxiv:
             if not 'url' in doc.keys():
-                self.logger.error('No doc_url data retrieved')
+                self.logger.error('No url data retrieved')
                 return 1
             papis.commands.main(
                 ['add', '--from-url', doc['url']]
