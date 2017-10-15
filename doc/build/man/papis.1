@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS" "1" "Oct 15, 2017" "0.4.1" "papis"
+.TH "PAPIS" "1" "Oct 15, 2017" "0.4.2" "papis"
 .SH NAME
 papis \- Papis Documentation
 .
@@ -54,7 +54,7 @@ it. Papis’ configuration files are stored together inside the folder
 .sp
 .nf
 .ft C
-~/.papis
+~/.config/papis
 .ft P
 .fi
 .UNINDENT
@@ -67,7 +67,7 @@ configuration file is found,
 .sp
 .nf
 .ft C
-~/.papis/config
+~/.config/papis/config
 .ft P
 .fi
 .UNINDENT
@@ -99,7 +99,7 @@ we will be adding to the library will be located inside
 care of your papers library is inside the \fB~/Documents/mypapers\fP directory,
 self\-contained.
 .sp
-So now add the two lines to the \fB~/.papis/config\fP file and save it, and we will
+So now add the two lines to the \fB~/.config/papis/config\fP file and save it, and we will
 proceed to add some documents.
 .SS Adding the first document
 .sp
@@ -960,7 +960,7 @@ documents is stored. These cache files are stored in
 .sp
 .nf
 .ft C
-~/.papis/cache
+~/.cache/papis/
 .ft P
 .fi
 .UNINDENT
@@ -1004,6 +1004,30 @@ papis \-\-clear\-cache
 .UNINDENT
 .SH COMMANDS
 .SS Add
+.sp
+The add command is one of the central commands of the papis command line
+interface. It is a very versatile command with a fair amount of options.
+.SS Examples
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+Add a document located in \fB~/Documents/interesting.pdf\fP
+and name the folder where it will be stored in the database
+\fBinteresting\-paper\-2021\fP
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis add ~/Documents/interesting.pdf \-\-name interesting\-paper\-2021
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
 .INDENT 0.0
 .INDENT 3.5
 .sp
