@@ -30,7 +30,8 @@ class Command(papis.commands.Command):
             self.get_args().lib,
             self.args.search
         )
-        document = self.pick(documents) or sys.exit(0)
+        document = self.pick(documents)
+        if not document: return 0
 
         if self.args.notes:
             self.logger.debug("Editing notes")

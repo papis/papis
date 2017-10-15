@@ -88,7 +88,8 @@ class Command(papis.commands.Command):
             self.get_args().lib,
             self.get_args().search
         )
-        document = self.pick(documents) or sys.exit(0)
+        document = self.pick(documents)
+        if not document: return 0
         data = dict()
 
         if self.args.auto:

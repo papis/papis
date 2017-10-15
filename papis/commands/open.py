@@ -39,11 +39,10 @@ class Command(papis.commands.Command):
         )
         if not documents:
             print("No documents found with that name.")
-            sys.exit(1)
+            return 1
 
         document = self.pick(documents)
-        if not document:
-            sys.exit(0)
+        if not document: return 0
 
         if not self.args.dir:
             files = document.get_files()

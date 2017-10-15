@@ -116,7 +116,7 @@ class Command(papis.commands.Command):
                 self.logger.error(
                     "Template file %s not found" % self.args.template
                 )
-                sys.exit(1)
+                return 1
             fd = open(self.args.template)
             self.args.format = fd.read()
             fd.close()
@@ -124,7 +124,7 @@ class Command(papis.commands.Command):
             for downloader in \
                papis.downloaders.utils.getAvailableDownloaders():
                 print(downloader)
-            sys.exit(0)
+            return 0
 
         documents = papis.api.get_documents_in_lib(
             self.get_args().lib,

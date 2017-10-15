@@ -351,7 +351,8 @@ class Command(papis.commands.Command):
                 lib_dir,
                 self.args.to
             )
-            document = self.pick(documents) or sys.exit(0)
+            document = self.pick(documents)
+            if not document: return 0
             document.update(
                 data,
                 interactive=self.args.interactive
@@ -369,7 +370,7 @@ class Command(papis.commands.Command):
                 if len(in_documents_paths) == 0:
                     if not self.get_args().no_document:
                         self.logger.error("No documents to be added")
-                        sys.exit(1)
+                        return 1
                     else:
                         in_documents_paths = [document.get_info_file()]
                         # We need the names to add them in the file field
@@ -409,7 +410,7 @@ class Command(papis.commands.Command):
                 del temp_doc
             if len(out_folder_name) == 0:
                 self.logger.error('The output folder name is empty')
-                sys.exit(1)
+                return 1
 
             data["files"] = in_documents_names
             out_folder_path = os.path.join(
@@ -468,7 +469,7 @@ class Command(papis.commands.Command):
                 return 0
         document.save()
         if self.args.to:
-            sys.exit(0)
+            return 0
         self.logger.debug(
             "[MV] '%s' to '%s'" %
             (document.get_main_folder(), out_folder_path)

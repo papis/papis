@@ -26,7 +26,8 @@ class Command(papis.commands.Command):
             self.get_args().search
         )
 
-        document = self.pick(documents) or sys.exit(0)
+        document = self.pick(documents)
+        if not document: return 0
 
         folder = document.get_main_folder()
         subfolder = os.path.dirname(folder)
@@ -46,7 +47,7 @@ class Command(papis.commands.Command):
 
         if os.path.exists(new_folder):
             self.logger.warning("Path %s already exists" % new_folder)
-            sys.exit(1)
+            return 1
 
         mvtool = papis.config.get("mvtool")
 

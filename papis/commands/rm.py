@@ -35,7 +35,8 @@ class Command(papis.commands.Command):
             self.get_args().lib,
             self.get_args().search
         )
-        document = self.pick(documents) or sys.exit(0)
+        document = self.pick(documents)
+        if not document: return 0
         if self.get_args().file:
             filepath = papis.api.pick(
                 document.get_files()

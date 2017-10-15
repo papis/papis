@@ -104,7 +104,7 @@ class Command(papis.commands.Command):
 
         if self.args.version:
             print('Papis - %s' % papis.__version__)
-            sys.exit(0)
+            return 0
 
         if self.args.set:
             key_vals = [d.split("=") for d in self.args.set.split(",")]
@@ -137,7 +137,7 @@ class Command(papis.commands.Command):
                 self.logger.error(
                     "Library '%s' does not seem to exist" % self.args.lib
                 )
-                sys.exit(1)
+                return 1
 
         if self.args.clear_cache:
             papis.api.clear_lib_cache(self.args.lib)
