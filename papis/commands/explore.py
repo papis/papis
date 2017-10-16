@@ -19,8 +19,7 @@ class Command(papis.commands.Command):
         self.parser.add_argument(
             "search",
             help="Search string",
-            default=[],
-            nargs="*",
+            default="",
             action="store"
         )
 
@@ -54,6 +53,20 @@ class Command(papis.commands.Command):
             default=30,
             action="store"
         )
+
+    def parse_search(self):
+        key_vals = papis.utils.DocMatcher.parse(self.args.search)
+        result = {'query': ""}
+        self.logger.debug('Parsed set %s' % key_vals)
+        for pair in key_vals:
+            if len(pair) == 3:
+                key = pair[0]
+                val = pair[2]
+                result[key] = val
+            else:
+                val = pair[0]
+                result['query'] += ' ' + val
+        return result
 
     def add(self, doc):
         if self.args.libgen:
@@ -99,37 +112,24 @@ class Command(papis.commands.Command):
         return doc
 
     def arxiv(self, search):
-        # FIXME: use a more lightweight library than bs4, it needs some time
-        # to import the module
-        import bs4
-        main_url = "http://export.arxiv.org/api/query?search_query="
-        url = main_url+"all:{}&max_results={}".format(
-            "%20".join(search),
-            self.args.max
+        import papis.arxiv
+        parsed = self.parse_search()
+        data = papis.arxiv.get_data(
+            query=parsed.get('query'),
+            author=parsed.get('author'),
+            title=parsed.get('title'),
+            abstract=parsed.get('abstract'),
+            comment=parsed.get('comment'),
+            journal=parsed.get('journal'),
+            report_number=parsed.get('report_number'),
+            category=parsed.get('category'),
+            id_list=parsed.get('id_list'),
+            page=parsed.get('page') or 0,
+            max_results=self.args.max
         )
-        self.logger.debug("Url = %s" % url)
-        raw_data = urllib.request.urlopen(url).read().decode('utf-8')
-        soup = bs4.BeautifulSoup(raw_data, "html.parser")
-        entries = soup.find_all("entry")
-        self.logger.debug("%s matches" % len(entries))
-        documents = []
-        for entry in entries:
-            data = dict()
-            data["abstract"] = entry.find("summary").get_text().replace(
-                "\n", " "
-            )
-            data["url"] = entry.find("id").get_text()
-            data["year"] = entry.find("published").get_text()[0:4]
-            data["title"] = entry.find("title").get_text().replace("\n", " ")
-            data["author"] = ", ".join(
-                [
-                    author.get_text().replace("\n", "")
-                    for author in entry.find_all("author")
-                ]
-            )
-            document = papis.document.Document(data=data)
-            documents.append(document)
-        doc = self.pick(documents)
+        doc = self.pick(
+            [papis.document.Document(data=d) for d in data]
+        )
         return doc
 
     def main(self):
