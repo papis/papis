@@ -102,7 +102,7 @@ def get_folders(directory):
     logger.debug("Cache path = %s" % cache_path)
     if not os.path.exists(cache):
         logger.debug("Creating cache dir %s " % cache)
-        os.makedirs(cache)
+        os.makedirs(cache, mode=papis.config.getint('dir-umask'))
     if os.path.exists(cache_path):
         logger.debug("Loading folders from cache")
         folders = get(cache_path)

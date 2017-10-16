@@ -22,6 +22,7 @@ OVERRIDE_VARS = {
 general_settings = {
     "mode"            : "document",
     "opentool"        : "xdg-open",
+    "dir-umask"       : 0o755,
     "browser"         : "xdg-open",
     "picktool"        : "papis.pick",
     "mvtool"          : "mv",

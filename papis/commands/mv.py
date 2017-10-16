@@ -3,6 +3,7 @@ import sys
 import os
 import re
 import papis.api
+import papis.config
 import papis.utils
 import subprocess
 
@@ -69,7 +70,7 @@ class Command(papis.commands.Command):
 
         if not os.path.exists(new_folder):
             self.logger.info("Creating path %s" % new_folder)
-            os.makedirs(new_folder)
+            os.makedirs(new_folder, mode=papis.config.getint('dir-umask'))
 
         mvtool = papis.config.get("mvtool")
 

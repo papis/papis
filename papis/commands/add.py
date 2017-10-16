@@ -440,7 +440,7 @@ class Command(papis.commands.Command):
         # Create folders if they do not exists.
         if not os.path.isdir(temp_dir):
             self.logger.debug("Creating directory '%s'" % temp_dir)
-            os.makedirs(temp_dir)
+            os.makedirs(temp_dir, mode=papis.config.getint('dir-umask'))
 
         # Check if the user wants to edit before submitting the doc
         # to the library
