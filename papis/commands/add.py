@@ -491,6 +491,9 @@ class Command(papis.commands.Command):
             (document.get_main_folder(), out_folder_path)
         )
         shutil.move(document.get_main_folder(), out_folder_path)
+        # Let us chmod it because it might come from a temp folder
+        # and temp folders are per default 0o600
+        os.chmod(out_folder_path, papis.config.getint('dir-umask'))
         papis.api.clear_lib_cache()
         if self.args.commit and papis.utils.lib_is_git_repo(self.args.lib):
             subprocess.call(["git", "-C", out_folder_path, "add", "."])
