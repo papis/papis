@@ -76,6 +76,25 @@ def get_libraries():
     return libs
 
 
+def pick_doc(documents):
+    """Pick a document from documents with the correct formatting
+
+    :documents: List of documents
+    :returns: Document
+
+    """
+    header_format = papis.config.get("header-format")
+    match_format = papis.config.get("match-format")
+    pick_config = dict(
+        header_filter=lambda x: papis.utils.format_doc(header_format, x),
+        match_filter=lambda x: papis.utils.format_doc(match_format, x)
+    )
+    return papis.api.pick(
+        documents,
+        pick_config
+    )
+
+
 def pick(options, pick_config={}):
     """This is a wrapper for the various pickers that are supported.
     Depending on the configuration different selectors or 'pickers'
