@@ -93,9 +93,19 @@ class Command(papis.commands.Command):
 
     def libgen(self, search):
         from pylibgen import Library
+        parsed = self.parse_search()
         lg = Library()
-        ids = lg.search(ascii(search), 'title')
-        data = lg.lookup(ids)
+        ids = []
+        for key in ['title', 'author', 'isbn']:
+            if parsed.get(key):
+                ids += lg.search(ascii(parsed.get(key)), key)
+        if len(ids) == 0:
+            ids = lg.search(ascii(parsed.get('query')), 'title')
+        if len(ids):
+            data = lg.lookup(ids)
+        else:
+            self.logger.error("No documents found")
+            return None
         doc = self.pick(
             [papis.document.Document(data=d) for d in data]
         )
