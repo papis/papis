@@ -73,7 +73,9 @@ AND MUCH, MUCH MORE!
   - Download directly paper information from *DOI* number via *Crossref*.
   - (optional) **scihub** support, use the example papis script
     `examples/scripts/papis-scihub` to download papers from scihub and add them
-    to your library with all the relevant information, in a matter of seconds.
+    to your library with all the relevant information, in a matter of seconds,
+    also you can check the documentation
+     [here](http://papis.readthedocs.io/en/latest/scihub.html).
   - Import from Zotero using the `examples/scripts/papis-zotero`.
   - Create custom scripts to help you achieve great tasks easily ([doc](http://papis.readthedocs.io/en/latest/scripting.html)).
   - Export documents into many formats (bibtex, yaml..)
