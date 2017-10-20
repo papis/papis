@@ -174,7 +174,7 @@ class DocMatcher(object):
         cls.logger.debug('Parsing search')
         search = search or cls.search
         papis_alphas = pyparsing.printables.replace('=', '')
-        papis_key = pyparsing.Word(pyparsing.alphanums)
+        papis_key = pyparsing.Word(pyparsing.alphanums + '-')
         papis_value = pyparsing.QuotedString(
             quoteChar='"', escChar='\\', escQuote='\\'
         ) ^ pyparsing.QuotedString(
