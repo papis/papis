@@ -1,0 +1,41 @@
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
+# papis-short-help: Git add <document>
+# Copyright © 2017 Alejandro Gallo. GPLv3
+import sys
+import os
+import papis.api
+import papis.commands
+import subprocess
+
+
+def usage():
+    print("Usage: papis ga <document-search>")
+
+
+def add(doc):
+    path = os.path.expanduser(papis.config.get('dir'))
+    cmd = ['git', '-C', path, 'add'] + doc.get_files() + [doc.get_info_file()]
+    print(cmd)
+    subprocess.call(cmd)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        search = ""
+    else:
+        search = sys.argv[1]
+        if search in ['-h', '--help']:
+            usage()
+            sys.exit(0)
+
+    documents = papis.api.get_documents_in_lib(
+        papis.api.get_lib(),
+        search=search
+    )
+
+    doc = papis.api.pick_doc(
+        documents
+    )
+
+    add(doc)
