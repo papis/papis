@@ -149,6 +149,13 @@ latex_accents = {
   "\xa0": " ",     # Unprintable characters
 }
 
+def get_data(query=""):
+    import habanero
+    cr = habanero.Crossref()
+    results = cr.works(query=query)
+    for r in results["message"]["items"]:
+        print(r)
+    return results["message"]["items"]
 
 def replace_latex_accents(string):
     s = unicodedata.normalize('NFC', string)

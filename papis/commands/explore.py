@@ -42,6 +42,12 @@ class Command(papis.commands.Command):
         )
 
         self.parser.add_argument(
+            "--crossref",
+            help="Search on library genesis",
+            action="store_true"
+        )
+
+        self.parser.add_argument(
             "--add",
             help="Add document selected",
             action="store_true"
@@ -113,6 +119,15 @@ class Command(papis.commands.Command):
             doc['doc_url'] = lg.get_download_url(doc['md5'])
         return doc
 
+    def crossref(self, search):
+        import papis.crossref
+        data = papis.crossref.get_data(query=search)
+        documents = [papis.document.Document(data=d) for d in data]
+        doc = self.pick(
+            documents
+        )
+        return doc
+
     def isbnplus(self, search):
         import papis.isbn
         data = papis.isbn.get_data(query=search)
@@ -148,6 +163,8 @@ class Command(papis.commands.Command):
             doc = self.arxiv(self.args.search)
         elif self.args.isbnplus:
             doc = self.isbnplus(self.args.search)
+        elif self.args.crossref:
+            doc = self.crossref(self.args.search)
         elif self.args.libgen:
             doc = self.libgen(self.args.search)
         else:
