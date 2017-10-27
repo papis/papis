@@ -29,6 +29,12 @@ class Command(papis.commands.Command):
             action="store_true"
         )
 
+        self.parser.add_argument(
+            "--all",
+            help="Open all matching documents",
+            action="store_true"
+        )
+
     def main(self):
         if self.args.tool:
             papis.config.set("opentool", self.args.tool)
@@ -41,20 +47,22 @@ class Command(papis.commands.Command):
             print("No documents found with that name.")
             return 1
 
-        document = self.pick(documents)
-        if not document: return 0
+        if not self.args.all:
+            documents = [d for d in self.pick(documents) if d is not None]
+            if not len(documents): return 0
 
-        if not self.args.dir:
-            files = document.get_files()
-            file_to_open = papis.api.pick(
-                files,
-                pick_config=dict(
-                    header_filter=lambda x: x.replace(
-                        document.get_main_folder(), ""
+        for document in documents:
+            if not self.args.dir:
+                files = document.get_files()
+                file_to_open = papis.api.pick(
+                    files,
+                    pick_config=dict(
+                        header_filter=lambda x: x.replace(
+                            document.get_main_folder(), ""
+                        )
                     )
                 )
-            )
-            papis.api.open_file(file_to_open)
-        else:
-            # Open directory
-            papis.api.open_dir(document.get_main_folder())
+                papis.api.open_file(file_to_open)
+            else:
+                # Open directory
+                papis.api.open_dir(document.get_main_folder())
