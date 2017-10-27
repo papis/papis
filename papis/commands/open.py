@@ -48,7 +48,8 @@ class Command(papis.commands.Command):
             return 1
 
         if not self.args.all:
-            documents = [d for d in self.pick(documents) if d is not None]
+            documents = [self.pick(documents)]
+            documents = [d for d in documents if d]
             if not len(documents): return 0
 
         for document in documents:
