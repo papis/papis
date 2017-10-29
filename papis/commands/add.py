@@ -476,6 +476,22 @@ class Command(papis.commands.Command):
                 )
                 shutil.copy(in_file_path, endDocumentPath)
 
+        # Duplication checking
+        self.logger.debug("Check if the added document is already existing")
+        found_document = papis.utils.locate_document(
+            document, papis.api.get_documents_in_lib(papis.api.get_lib())
+        )
+        if found_document is not None:
+            self.logger.warning("DUPLICATION WARNING")
+            self.logger.warning(
+                "This document seems to be already in your libray: \n\n" +
+                found_document.dump()
+            )
+            self.logger.warning(
+                "Use the update command if you just want to update the info."
+            )
+            self.args.confirm = True
+
         document.update(data, force=True)
         if self.get_args().open:
             for d_path in in_documents_paths:
