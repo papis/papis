@@ -493,6 +493,29 @@ def git_commit(path="", message=""):
     call(cmd)
 
 
+def locate_document(document, documents):
+    """Try to figure out if a document is already within a list of documents.
+
+    :param document: Document to be searched for
+    :type  document: papis.document.Document
+    :param documents: Documents to search in
+    :type  documents: list
+    :returns: TODO
+
+    """
+    for d in documents:
+        for key in ['doi', 'ref', 'isbn', 'isbn10', 'url']:
+            if 'doi' in document.keys() and 'doi' in d.keys():
+                if document['doi'] == d['doi']:
+                    return d
+    docs = filter_documents(
+        documents, search='author = "{doc[author]}" title = "{doc[title]}"'
+    )
+    if len(docs) == 1:
+        return docs[0]
+    return None
+
+
 def file_is(file_description, fmt):
     """Get if file stored in `file_path` is a `fmt` document.
 
