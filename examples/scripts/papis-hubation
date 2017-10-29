@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # papis-short-help: Download citation using scihub.org
 # Copyright © 2017 Alejandro Gallo. GPLv3
+# Last modified: 2017-10-29
 import sys
 import papis.api
 import papis.commands
@@ -9,6 +10,10 @@ import papis.commands
 
 def usage():
     print("Usage: papis hubation <papis-search> <add-flags>")
+
+def print_no_citations_and_exit():
+    print('The document does not have any citation information')
+    sys.exit(1)
 
 
 if len(sys.argv) < 2:
@@ -31,10 +36,14 @@ doc = papis.api.pick_doc(
 )
 
 if 'citations' not in doc.keys():
-    print('Document does not have any citations')
-    sys.exit(1)
+    print_no_citations_and_exit()
 
-doi = papis.api.pick([d.get('doi') for d in doc['citations']])
+dois = [d.get('doi') for d in doc['citations']]
+
+if not len(dois):
+    print_no_citations_and_exit()
+
+doi = papis.api.pick(dois)
 doi or sys.exit(0)
 
 print('DOI %s selected' % doi)
