@@ -13,6 +13,14 @@ Examples
 
         papis add ~/Documents/interesting.pdf --name interesting-paper-2021
 
+    - Add a paper that you have locally in a file and get the paper
+      information through its ``doi`` identificator (in this case
+      ``10.10763/1.3237134`` as an example):
+
+    .. code::
+
+        papis add ~/Documents/interesting.pdf --from-doi 10.10763/1.3237134
+
 """
 import papis
 import os
