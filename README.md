@@ -76,15 +76,14 @@ AND MUCH, MUCH MORE!
     to your library with all the relevant information, in a matter of seconds,
     also you can check the documentation
      [here](http://papis.readthedocs.io/en/latest/scihub.html).
-  - Import from Zotero using the `examples/scripts/papis-zotero`.
-  - Create custom scripts to help you achieve great tasks easily ([doc](http://papis.readthedocs.io/en/latest/scripting.html)).
+  - Import from Zotero and other managers using the script in
+    `examples/scripts/papis-zotero`
+    ([doc](http://papis.readthedocs.io/en/latest/importing.html)).
+  - Create custom scripts to help you achieve great tasks easily
+    ([doc](http://papis.readthedocs.io/en/latest/scripting.html)).
   - Export documents into many formats (bibtex, yaml..)
   - Command-line granularity, all the power of a library at the tip of your
     fingers.
-
-## Help Wanted
-
-*Papis* is looking for active developers to help improve the code.
 
 ## TODO
 
