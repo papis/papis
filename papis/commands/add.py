@@ -31,6 +31,8 @@ import hashlib
 import shutil
 import string
 import subprocess
+import mimetypes
+import magic
 import papis.api
 import papis.utils
 import papis.config
@@ -190,6 +192,10 @@ class Command(papis.commands.Command):
             action="store_true"
         )
 
+        mimetypes.knownfiles.append(os.path.expanduser('~/.mime.types'))
+        mimetypes.knownfiles.append(os.path.join(papis.PAPISDIR, 'data', 'mime.types'))
+        self.mimetypes = mimetypes.MimeTypes()
+
     def get_hash_folder(self, data, document_path):
         """Folder name where the document will be stored.
 
@@ -205,6 +211,22 @@ class Command(papis.commands.Command):
         result = papis.utils.clean_document_name(result)
         return result
 
+    def get_document_mimetype(self, documentPath):
+        """Get document extension
+
+        :document_path: Path of the document
+        :returns: Mimetype (string)
+
+        """
+        # TODO: Consider extracting this functionality intu papis.util
+        try:
+          mimetype = magic.from_file(documentPath, mime=True)
+          self.logger.debug("From file -> [mimetype] = %s" % mimetype)
+          return mimetype or 'text/plain'
+        except FileNotFoundError as e:
+          self.logger.debug("Unable to open [%s] to read mimetype" % documentPath)
+          raise
+
     def get_document_extension(self, documentPath):
         """Get document extension
 
@@ -212,10 +234,17 @@ class Command(papis.commands.Command):
         :returns: Extension (string)
 
         """
-        # TODO: mimetype based (mimetype, rifle, ranger-fm ...?)
-        m = re.match(r"^(.*)\.([a-zA-Z0-9]*)$", os.path.basename(documentPath))
-        extension = m.group(2) if m else "txt"
-        self.logger.debug("[ext] = %s" % extension)
+        mimetype = self.get_document_mimetype(documentPath)
+        extension = self.mimetypes.guess_extension(mimetype)
+        
+        if extension not in ['.pdf', '.epub', '.djvu']:
+          _, extension = os.path.splitext(documentPath)
+          if not extension:
+            extension = '.txt'
+
+        # strip leading period
+        extension = extension[1:]
+        self.logger.debug("[extension] = %s" % extension)
         return extension
 
     def get_meta_data(self, key, document_path):

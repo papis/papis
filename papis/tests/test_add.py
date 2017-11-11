@@ -55,14 +55,43 @@ class TestAdd(CommandTest):
         t.join()
         self.assertFalse(t.isAlive())
 
-    def test_extension(self):
-        docs = [
-            ["blahblah.pdf", "pdf"],
-            ["b.lahblah.pdf", "pdf"],
-            ["no/extension/blahblah", "txt"],
-            ["a/asdfsdf21/blahblah.epub", "epub"],
+    def test_mimetypes(self):
+        test_data_path = os.path.join(papis.PAPISDIR, 'tests', 'data')
+        exist_docs = [
+            [os.path.join(test_data_path, 'text_file'), "text/plain"],
+            [os.path.join(test_data_path, 'text_file.txt'), "text/plain"],
+            [os.path.join(test_data_path, 'text_file.pdf'), "text/plain"],
+            [os.path.join(test_data_path, 'pdf_file'), "application/pdf"],
+            [os.path.join(test_data_path, 'pdf_file.pdf'), "application/pdf"],
+            [os.path.join(test_data_path, 'pdf_file.txt'), "application/pdf"],
+            [os.path.join(test_data_path, 'epub_file'), "application/epub+zip"],
+            [os.path.join(test_data_path, 'epub_file.epub'), "application/epub+zip"],
+            [os.path.join(test_data_path, 'epub_file.pdf'), "application/epub+zip"],
         ]
-        for d in docs:
+        for d in exist_docs:
+            self.assertTrue(
+                self.command.get_document_mimetype(d[0]) == d[1]
+            )
+        with self.assertRaises(FileNotFoundError):
+          self.command.get_document_mimetype(os.path.join(test_data_path, "does_not_exist.pdf"))
+
+    def test_extensions(self):
+        test_data_path = os.path.join(papis.PAPISDIR, 'tests', 'data')
+        exist_docs = [
+            [os.path.join(test_data_path, 'text_file.txt'), "txt"],
+            [os.path.join(test_data_path, 'text_file'), "txt"],
+            [os.path.join(test_data_path, 'pdf_file'), "pdf"],
+            [os.path.join(test_data_path, 'pdf_file.pdf'), "pdf"],
+            [os.path.join(test_data_path, 'pdf_file.txt'), "pdf"],
+            [os.path.join(test_data_path, 'epub_file'), "epub"],
+            [os.path.join(test_data_path, 'epub_file.epub'), "epub"],
+            [os.path.join(test_data_path, 'epub_file.pdf'), "epub"],
+            [os.path.join(test_data_path, 'empty_file'), "txt"],
+            [os.path.join(test_data_path, 'empty_file.mobi'), "mobi"],
+        ]
+        for d in exist_docs:
             self.assertTrue(
                 self.command.get_document_extension(d[0]) == d[1]
             )
+        with self.assertRaises(FileNotFoundError):
+          self.command.get_document_mimetype(os.path.join(test_data_path, "does_not_exist.pdf"))
