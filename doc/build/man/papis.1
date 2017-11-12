@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS" "1" "Oct 16, 2017" "0.4.5" "papis"
+.TH "PAPIS" "1" "Nov 12, 2017" "0.4.6" "papis"
 .SH NAME
 papis \- Papis Documentation
 .
@@ -601,81 +601,6 @@ Default: \fBMozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (K
 .B xeditor
 Default: \fBxdg\-open\fP
 .UNINDENT
-.SS rofi\-gui
-.INDENT 0.0
-.TP
-.B case_sensitive
-Default: \fBFalse\fP
-.TP
-.B eh
-Default: \fB3\fP
-.TP
-.B fixed_lines
-Default: \fB20\fP
-.TP
-.B fullscreen
-Default: \fBFalse\fP
-.TP
-.B header\-format
-.INDENT 7.0
-.TP
-.B Default:
-.INDENT 7.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-<b>{doc[title]}</b>
-{doc[empty]}  <i>{doc[author]}</i>
-{doc[empty]}  <span foreground="red">({doc[year]:\->4})</span><span foreground="green">{doc[tags]}</span>
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.TP
-.B key\-browse
-Default: \fBAlt+u\fP
-.TP
-.B key\-delete
-Default: \fBAlt+d\fP
-.TP
-.B key\-edit
-Default: \fBAlt+e\fP
-.TP
-.B key\-help
-Default: \fBAlt+h\fP
-.TP
-.B key\-normal\-window
-Default: \fBAlt+w\fP
-.TP
-.B key\-open
-Default: \fBEnter\fP
-.TP
-.B key\-open\-stay
-Default: \fBAlt+o\fP
-.TP
-.B key\-quit
-Default: \fBAlt+q\fP
-.TP
-.B lines
-Default: \fB10\fP
-.TP
-.B markup_rows
-Default: \fBTrue\fP
-.TP
-.B multi_select
-Default: \fBTrue\fP
-.TP
-.B normal_window
-Default: \fBFalse\fP
-.TP
-.B sep
-Default: \fB|\fP
-.TP
-.B width
-Default: \fB80\fP
-.UNINDENT
 .SS vim\-gui
 .INDENT 0.0
 .TP
@@ -854,6 +779,81 @@ Default: \fB700\fP
 .B window\-width
 Default: \fB1200\fP
 .UNINDENT
+.SS rofi\-gui
+.INDENT 0.0
+.TP
+.B case_sensitive
+Default: \fBFalse\fP
+.TP
+.B eh
+Default: \fB3\fP
+.TP
+.B fixed_lines
+Default: \fB20\fP
+.TP
+.B fullscreen
+Default: \fBFalse\fP
+.TP
+.B header\-format
+.INDENT 7.0
+.TP
+.B Default:
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+<b>{doc[title]}</b>
+{doc[empty]}  <i>{doc[author]}</i>
+{doc[empty]}  <span foreground="red">({doc[year]:\->4})</span><span foreground="green">{doc[tags]}</span>
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.TP
+.B key\-browse
+Default: \fBAlt+u\fP
+.TP
+.B key\-delete
+Default: \fBAlt+d\fP
+.TP
+.B key\-edit
+Default: \fBAlt+e\fP
+.TP
+.B key\-help
+Default: \fBAlt+h\fP
+.TP
+.B key\-normal\-window
+Default: \fBAlt+w\fP
+.TP
+.B key\-open
+Default: \fBEnter\fP
+.TP
+.B key\-open\-stay
+Default: \fBAlt+o\fP
+.TP
+.B key\-quit
+Default: \fBAlt+q\fP
+.TP
+.B lines
+Default: \fB10\fP
+.TP
+.B markup_rows
+Default: \fBTrue\fP
+.TP
+.B multi_select
+Default: \fBTrue\fP
+.TP
+.B normal_window
+Default: \fBFalse\fP
+.TP
+.B sep
+Default: \fB|\fP
+.TP
+.B width
+Default: \fB80\fP
+.UNINDENT
 .SH THE INFO.YAML FILE
 .sp
 At the heart of papis there is the information file.  The info file contains
@@ -1029,6 +1029,22 @@ papis add ~/Documents/interesting.pdf \-\-name interesting\-paper\-2021
 .fi
 .UNINDENT
 .UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Add a paper that you have locally in a file and get the paper
+information through its \fBdoi\fP identificator (in this case
+\fB10.10763/1.3237134\fP as an example):
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis add ~/Documents/interesting.pdf \-\-from\-doi 10.10763/1.3237134
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
 .UNINDENT
 .UNINDENT
 .INDENT 0.0
@@ -1152,7 +1168,7 @@ Default: False
 .sp
 .nf
 .ft C
-usage: papis open [\-h] [\-\-tool TOOL] [\-d] [search]
+usage: papis open [\-h] [\-\-tool TOOL] [\-d] [\-\-all] [search]
 .ft P
 .fi
 .UNINDENT
@@ -1175,6 +1191,11 @@ Default: “”
 .TP
 .B\-d, \-\-dir
 Open directory
+.sp
+Default: False
+.TP
+.B\-\-all
+Open all matching documents
 .sp
 Default: False
 .UNINDENT
@@ -1349,7 +1370,7 @@ Default: False
 .ft C
 usage: papis explore [\-h] [\-\-isbnplus] [\-\-arxiv] [\-\-libgen] [\-\-add]
                      [\-\-max MAX]
-                     [search [search ...]]
+                     search
 .ft P
 .fi
 .UNINDENT
@@ -1360,7 +1381,7 @@ usage: papis explore [\-h] [\-\-isbnplus] [\-\-arxiv] [\-\-libgen] [\-\-add]
 .Bsearch
 Search string
 .sp
-Default: []
+Default: “”
 .UNINDENT
 .SS Named Arguments
 .INDENT 0.0
@@ -2251,6 +2272,87 @@ papis scihub https://doi.org/10.1016/j.physrep.2016.12.002
 .UNINDENT
 .UNINDENT
 .UNINDENT
+.UNINDENT
+.UNINDENT
+.SH IMPORTING FROM BIBTEX FILES
+.sp
+Many users will want to import a library from a bibtex file
+that another program such as \fBzotero\fP, \fBmendeley\fP or
+\fBjabref\fP will have exported. These programs usually have a
+field called \fBFILE\fP or \fBfile\fP that points to a path
+where the document file can be found.
+.sp
+To import such a library you can use a script originally
+intended for \fBzotero\fP but that is general enought to work
+for other programs too.
+.sp
+To install this script you can copy the file \fBpapis\-zotero\fP in the
+repository’s example directory to your papis \fBconfig/scripts\fP directory.
+.sp
+You can do this automatically issuing the following commands
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+wget \-O ~/.config/papis/scripts/papis\-zotero https://raw.githubusercontent.com/alejandrogallo/papis/master/examples/scripts/papis\-zotero
+chmod +x ~/.config/papis/scripts/papis\-zotero
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Now the zotero script is accessible from papis:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis zotero \-h
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+If you have a bibtex somewhere in your computer, you can use the script:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis zotero library.bib
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+\fBWARNING:\fP
+.INDENT 0.0
+.INDENT 3.5
+Note that if your bibtex file has some pdf entries, i.e., looks like:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+@article{Einstein1905Photon,
+  author = { A. Einstein },
+  doi = { 10.1002/andp.19053220607 },
+  journal = { Ann. Phys. },
+  pages = { 132\-\-148 },
+  title = { Über einen die Erzeugung und Verwandlung des Lichtes betreffenden heuristischen Gesichtspunkt },
+  FILE = { path/to/some/relative/file.pdf },
+  volume = { 322 },
+  year = { 1905 },
+}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+then \fBpapis\-zotero\fP will interpret the path of the \fBFILE\fP entry
+as a relative path, so you should run the command where this relative path
+makes sense.
 .UNINDENT
 .UNINDENT
 .SH FAQ
