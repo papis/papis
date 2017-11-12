@@ -98,7 +98,7 @@ def bibtex_to_dict(bibtex):
     else:
         text = bibtex
     logger.debug("Removing comments...")
-    text = re.sub(r"%.*", "", text)
+    text = re.sub(r" +%.*", "", text)
     logger.debug("Removing empty lines...")
     text = re.sub(r"^\s*$", "", text)
     entries = bibtexparser.loads(text).entries
