@@ -62,3 +62,27 @@ Then if you type
 this will create a folder called ``this_paper`` with a selection of a
 document, zip it, and send it to whoever you choose to.
 
+Example: Accessing papis from within mutt
+-----------------------------------------
+
+You may want to pick documents to attach to your email in ``mutt``
+from the papis interface.
+
+Add this code to your ``muttrc``
+
+::
+
+   # # macro to attach paper from papis
+   macro attach,compose \cp \
+   "\
+   <enter-command>unset wait_key<enter>\                        # Don't require 'press any key'
+   <shell-escape>rm -f /tmp/paper.pdf<enter>\                   # remove the file /tmp/paper.pdf if it already exists
+   <shell-escape>papis export --file -o /tmp/paper.pdf<enter>\  # start papis with the --file flag
+   <attach-file>/tmp/paper.pdf<enter>\                          # attach the new file created by papis
+   "
+
+Try it out with ``Ctrl-p`` on your ``Compose`` screen. This makes use
+of the ``papis export --file`` flag that moves the paper you choose to
+a temporary location (``/tmp/paper.pdf``). Mutt will then attach the
+paper to the email, which you can rename to be more descriptive with
+``R``.

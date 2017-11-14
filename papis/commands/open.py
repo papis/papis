@@ -14,7 +14,7 @@ class Command(papis.commands.Command):
         )
 
         self.add_search_argument()
-
+        
         self.parser.add_argument(
             "--tool",
             help="Tool for opening the file (opentool)",
@@ -34,7 +34,7 @@ class Command(papis.commands.Command):
             help="Open all matching documents",
             action="store_true"
         )
-
+        
     def main(self):
         if self.args.tool:
             papis.config.set("opentool", self.args.tool)
