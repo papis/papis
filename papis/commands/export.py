@@ -112,6 +112,13 @@ class Command(papis.commands.Command):
             action="store_true"
         )
 
+        self.parser.add_argument(
+            "--file",
+            help="Export (copy) pdf file to outfile",
+            default=False,
+            action="store_true"
+        )
+
     def main(self):
 
         documents = papis.api.get_documents_in_lib(
@@ -163,5 +170,16 @@ class Command(papis.commands.Command):
                     ).write(document.to_bibtex())
             elif self.args.vcf:
                 self.args.out.write(document.to_vcf())
+            elif self.args.file:
+                files = document.get_files()
+                file_to_open = papis.api.pick(
+                    files,
+                    pick_config=dict(
+                        header_filter=lambda x: x.replace(
+                            document.get_main_folder(), ""
+                        )
+                    )
+                )
+                shutil.copyfile(file_to_open, self.args.out.name)
             else:
                 pass

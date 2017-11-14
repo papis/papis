@@ -14,7 +14,6 @@ class Command(papis.commands.Command):
         )
 
         self.add_search_argument()
-
         
         self.parser.add_argument(
             "--tool",
@@ -36,13 +35,6 @@ class Command(papis.commands.Command):
             action="store_true"
         )
         
-        self.parser.add_argument(
-            "--attach",
-            help="Copies the file to /tmp/paper.pdf rather than open it",
-            default=False,
-            action="store_true"
-        )
-
     def main(self):
         if self.args.tool:
             papis.config.set("opentool", self.args.tool)
@@ -71,11 +63,7 @@ class Command(papis.commands.Command):
                         )
                     )
                 )
-                if not self.args.attach:
-                    papis.api.open_file(file_to_open)
-                else:
-                    from shutil import copyfile
-                    copyfile(file_to_open, "/tmp/paper.pdf")
+                papis.api.open_file(file_to_open)
             else:
                 # Open directory
                 papis.api.open_dir(document.get_main_folder())
