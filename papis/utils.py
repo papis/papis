@@ -14,8 +14,7 @@ import papis.document
 import papis.crossref
 import papis.bibtex
 
-
-def general_open(fileName, key, default_opener="xdg-open", wait=False):
+def general_open(fileName, key, default_opener="xdg-open", wait=True):
     try:
         opener = papis.config.get(key)
     except KeyError:
@@ -26,7 +25,13 @@ def general_open(fileName, key, default_opener="xdg-open", wait=False):
         if wait:
             return os.system(" ".join([opener, fileName]))
         else:
-            return call([opener, fileName])
+            cmd = opener.split() + [fileName]
+            logger.debug("Open cmd %s" % cmd)
+            import subprocess
+            return subprocess.Popen(
+                cmd, shell=False,
+                stdin=None, stdout=None, stderr=None, close_fds=True
+            )
     elif hasattr(opener, '__call__'):
         return opener(fileName)
     else:
