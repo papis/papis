@@ -44,7 +44,7 @@ def get_regex_from_search(search):
     return r".*"+re.sub(r"\s+", ".*", search)
 
 
-def format_doc(python_format, document):
+def format_doc(python_format, document, key=""):
     """Construct a string using a pythonic format string and a document.
 
     :param python_format: Python-like format string.
@@ -57,7 +57,7 @@ def format_doc(python_format, document):
     :returns: Formated string
     :rtype: str
     """
-    doc = papis.config.get("format-doc-name")
+    doc = key or papis.config.get("format-doc-name")
     return python_format.format(**{doc: document})
 
 

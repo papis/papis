@@ -3,6 +3,8 @@ import os
 import sys
 import papis.api
 import papis.utils
+import papis.config
+import subprocess
 
 
 class Command(papis.commands.Command):
@@ -35,6 +37,13 @@ class Command(papis.commands.Command):
             action="store_true"
         )
 
+        self.parser.add_argument(
+            "-m",
+            "--mark",
+            help="Open mark",
+            action="store_true"
+        )
+
     def main(self):
         if self.args.tool:
             papis.config.set("opentool", self.args.tool)
@@ -53,7 +62,32 @@ class Command(papis.commands.Command):
             if not len(documents): return 0
 
         for document in documents:
-            if not self.args.dir:
+            if self.args.dir:
+                # Open directory
+                papis.api.open_dir(document.get_main_folder())
+            else:
+                if self.args.mark:
+                    marks = document[papis.config.get("mark-key-name")]
+                    if not marks: continue
+                    mark = papis.api.pick(
+                        marks,
+                        dict(
+                            header_filter=lambda x: papis.utils.format_doc(
+                                papis.config.get("mark-header-format"),
+                                x, key=papis.config.get("format-mark-name")
+                            ),
+                            match_filter=lambda x: papis.utils.format_doc(
+                                papis.config.get("mark-header-format"),
+                                x, key=papis.config.get("format-mark-name")
+                            )
+                        )
+                    )
+                    if not mark: continue
+                    opener = papis.utils.format_doc(
+                        papis.config.get("mark-opener-format"),
+                        mark, key=papis.config.get("format-mark-name")
+                    )
+                    papis.config.set("opentool", opener)
                 files = document.get_files()
                 file_to_open = papis.api.pick(
                     files,
@@ -63,7 +97,4 @@ class Command(papis.commands.Command):
                         )
                     )
                 )
-                papis.api.open_file(file_to_open)
-            else:
-                # Open directory
-                papis.api.open_dir(document.get_main_folder())
+                papis.api.open_file(file_to_open, wait=False)
