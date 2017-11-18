@@ -137,15 +137,17 @@ def pick(options, pick_config={}):
         raise Exception("I don't know how to use the picker '%s'" % picker)
 
 
-def open_file(file_path):
+def open_file(file_path, wait=True):
     """Open file using the ``opentool`` key value as a program to
     handle file_path.
 
     :param file_path: File path to be handled.
     :type  file_path: str
+    :param wait: Wait for the completion of the opener program to continue
+    :type  wait: bool
 
     """
-    papis.utils.general_open(file_path, "opentool")
+    papis.utils.general_open(file_path, "opentool", wait=wait)
 
 
 def open_dir(dir_path):
