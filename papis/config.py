@@ -1,3 +1,86 @@
+"""
+Default settings
+----------------
+
+General
+*******
+
+
+.. papis-config:: mode
+
+    Papis is a modal program and it can be configured to support different
+    operating modes. The default is considering that every papis document
+    or entry is a 'document'.
+
+.. papis-config:: opentool
+
+.. papis-config:: dir-umask
+
+.. papis-config:: browser
+
+.. papis-config:: picktool
+
+.. papis-config:: mvtool
+
+.. papis-config:: editor
+    :default: $EDITOR
+
+.. papis-config:: xeditor
+
+.. papis-config:: sync-command
+
+.. papis-config:: notes-name
+
+.. papis-config:: format-doc-name
+
+.. papis-config:: use-cache
+
+.. papis-config:: cache-dir
+
+.. papis-config:: use-git
+
+.. papis-config:: add-confirm
+
+.. papis-config:: add-name
+
+.. papis-config:: add-interactive
+
+.. papis-config:: add-edit
+
+.. papis-config:: add-open
+
+.. papis-config:: check-keys
+
+.. papis-config:: browse-query-format
+
+.. papis-config:: search-engine
+
+.. papis-config:: user-agent
+
+.. papis-config:: default-gui
+
+.. papis-config:: scripts-short-help-regex
+
+.. papis-config:: info-name
+
+.. papis-config:: doc-url-key-name
+
+.. papis-config:: file-browser
+
+.. papis-config:: extra-bibtex-keys
+
+.. papis-config:: extra-bibtex-types
+
+.. papis-config:: default-library
+
+.. papis-config:: export-text-format
+
+.. papis-config:: match-format
+
+.. papis-config:: header-format
+
+
+"""
 import logging
 
 logger = logging.getLogger("config")
@@ -48,9 +131,7 @@ general_settings = {
     "browse-query-format"   : "{doc[title]} {doc[author]}",
     "search-engine"   : "https://duckduckgo.com",
     "user-agent"      : \
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) '
-        'AppleWebKit/537.36 (KHTML, like Gecko) '
-        'Chrome/35.0.1916.47 Safari/537.36',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)',
     "default-gui"     : "vim",
     "scripts-short-help-regex": ".*papis-short-help: *(.*)",
     "info-name"       : "info.yaml",

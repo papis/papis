@@ -55,10 +55,11 @@ try:
 except ImportError:
     from io import StringIO
 
+from docutils.parsers.rst import Directive
 import sphinx.util.compat
 import docutils
 
-class ExecDirective(sphinx.util.compat.Directive):
+class ExecDirective(Directive):
     """Execute the specified python code and insert the output into the
     document"""
     has_content = True
@@ -99,8 +100,56 @@ class ExecDirective(sphinx.util.compat.Directive):
         finally:
             sys.stdout = oldStdout
 
+class PapisConfig(Directive):
+    has_content = True
+    optional_arguments = 3
+    required_arguments = 1
+    option_spec = dict(default=str, section=str, description=str)
+    add_index = True
+    def run(self):
+        import papis.config
+        key = self.arguments[0]
+        section = self.options.get(
+            'section',
+            papis.config.get_general_settings_name()
+        )
+        default = self.options.get(
+            'default',
+            papis.config.get_default_settings(section=section, key=key)
+        )
+        source = self.state_machine.input_lines.source(
+            self.lineno - self.state_machine.input_offset - 1
+        )
+
+        lines = []
+        lines.append("")
+        lines.append(
+            ".. _config-{section}-{key}:".format(section=section, key=key)
+        )
+        lines.append("")
+        lines.append(
+                "**{key}** (config-{section}-{key}_)".format(section=section, key=key)
+        )
+        lines.append(
+            "    - **Default**: ``{value}``".format(value=default)
+            if default else
+            "    - **Default**: ".format(value=default)
+        )
+        lines.append("")
+
+        newViewList = docutils.statemachine.ViewList(lines)
+        self.content = newViewList + self.content
+
+        node = docutils.nodes.paragraph()
+        node.document = self.state.document
+        self.state.nested_parse(
+            self.content, self.content_offset, node
+        )
+        return node.children
+
 def setup(app):
     app.add_directive('exec', ExecDirective)
+    app.add_directive('papis-config', PapisConfig)
 # }}} Exec directive #
 
 # Add any paths that contain templates here, relative to this directory.
