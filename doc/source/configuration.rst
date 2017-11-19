@@ -85,6 +85,10 @@ A more complete example of a configuration file is the following
                        {doc[empty]}
 
 
+Default settings
+----------------
+
 .. automodule:: papis.config
+.. automodule:: papis.gui
 
 

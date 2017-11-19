@@ -121,6 +121,7 @@ class PapisConfig(Directive):
             self.lineno - self.state_machine.input_offset - 1
         )
 
+
         lines = []
         lines.append("")
         lines.append(
@@ -130,11 +131,18 @@ class PapisConfig(Directive):
         lines.append(
                 "**{key}** (config-{section}-{key}_)".format(section=section, key=key)
         )
-        lines.append(
-            "    - **Default**: ``{value}``".format(value=default)
-            if default else
-            "    - **Default**: ".format(value=default)
-        )
+        if '\n' in str(default):
+            lines.append(
+                "    - **Default**: "
+            )
+            lines.append("        .. code::")
+            lines.append("")
+            for lindef in default.split('\n'):
+                lines.append(3*"    " + lindef)
+        else:
+            lines.append(
+                "    - **Default**: ``{value}``".format(value=default)
+            )
         lines.append("")
 
         newViewList = docutils.statemachine.ViewList(lines)

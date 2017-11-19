@@ -1,7 +1,4 @@
 """
-Default settings
-----------------
-
 General
 *******
 
@@ -14,9 +11,18 @@ General
 
 .. papis-config:: opentool
 
+    This is the general program that will be used to open documents.
+    As for now papis is not intended to detect the type of document to be open
+    and decide upon it how to open the document. You should set this
+    to the right program for the tool. If you are in linux you might want
+    to take a look at `ranger <http://ranger.nongnu.org>`_ or let
+    the default handle it in your system.
+    For mac users you might set this to ``open``.
+
 .. papis-config:: dir-umask
 
 .. papis-config:: browser
+    :default: $BROWSER
 
 .. papis-config:: picktool
 
@@ -106,7 +112,7 @@ general_settings = {
     "mode"            : "document",
     "opentool"        : "xdg-open",
     "dir-umask"       : 0o755,
-    "browser"         : "xdg-open",
+    "browser"         : os.environ.get('BROWSER') or 'xdg-open',
     "picktool"        : "papis.pick",
     "mvtool"          : "mv",
     "editor"          : os.environ.get('EDITOR')
