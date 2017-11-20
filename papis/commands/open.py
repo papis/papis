@@ -41,7 +41,8 @@ class Command(papis.commands.Command):
             "-m",
             "--mark",
             help="Open mark",
-            action="store_true"
+            action='store_false' if papis.config.get('open-mark') \
+                else 'store_true'
         )
 
     def main(self):
@@ -74,18 +75,18 @@ class Command(papis.commands.Command):
                         dict(
                             header_filter=lambda x: papis.utils.format_doc(
                                 papis.config.get("mark-header-format"),
-                                x, key=papis.config.get("format-mark-name")
+                                x, key=papis.config.get("mark-format-name")
                             ),
                             match_filter=lambda x: papis.utils.format_doc(
                                 papis.config.get("mark-header-format"),
-                                x, key=papis.config.get("format-mark-name")
+                                x, key=papis.config.get("mark-format-name")
                             )
                         )
                     )
                     if not mark: continue
                     opener = papis.utils.format_doc(
                         papis.config.get("mark-opener-format"),
-                        mark, key=papis.config.get("format-mark-name")
+                        mark, key=papis.config.get("mark-format-name")
                     )
                     papis.config.set("opentool", opener)
                 files = document.get_files()

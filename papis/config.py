@@ -85,6 +85,57 @@ General
 
 .. papis-config:: header-format
 
+.. papis-config:: open-mark
+
+    If this option is set to ``True``, then every time that papis opens
+    a document it will ask to open a mark first.
+    If it is set to ``False``, then doing
+
+    .. code::
+
+        papis open --mark
+
+    will avoid opening a mark.
+
+.. papis-config:: mark-key-name
+
+    This is the default key name for the marks in the info file, for
+    example if you set ``mark-key-name = bookmarks`` then you would have
+    in your ``info.yaml`` file
+
+    .. code::
+
+        author: J. Krishnamurti
+        bookmarks:
+        - name: Chapter 1
+          value: 120
+
+.. papis-config:: mark-format-name
+
+    This is the name of the mark to be passed to the options
+    ``mark-header-format`` etc... E.g. if you set ``mark-format-name = m``
+    then you could set ``mark-header-format = {m[value]} - {m[name]}``.
+
+.. papis-config:: mark-header-format
+
+    This is the format in which the mark will appear whenever the user
+    has to pick one, you can change this in order to make ``marks`` work
+    in the way you like. Per default it is assumed that every mark
+    has a ``name`` and a ``value`` key, but this you can change.
+
+.. papis-config:: mark-match-format
+
+    Format in which the mark name has to match the user input.
+
+.. papis-config:: mark-opener-format
+
+    Due to the difficulty to generalize opening a general document
+    at a given bookmark, the user should set this in whichever way
+    it suits their needs. For example
+        - If you are using the pdf viewer ``evince`` and you want to open a
+          mark, you would use ``mark-opener-format = evince -p {mark[value]}``.
+        - If you are using ``zathura``, do ``mark-opener-format = zathura -P
+          {mark[value]}``.
 
 """
 import logging
@@ -128,11 +179,13 @@ general_settings = {
         os.environ.get('XDG_CACHE_HOME') else \
         os.path.join(os.path.expanduser('~'), '.cache', 'papis'),
     "use-git"         : False,
+
     "add-confirm"     : False,
     "add-name"        : "",
     "add-interactive" : False,
     "add-edit"        : False,
     "add-open"        : False,
+
     "check-keys"      : 'files',
     "browse-query-format"   : "{doc[title]} {doc[author]}",
     "search-engine"   : "https://duckduckgo.com",
@@ -142,11 +195,14 @@ general_settings = {
     "scripts-short-help-regex": ".*papis-short-help: *(.*)",
     "info-name"       : "info.yaml",
     "doc-url-key-name": "doc_url",
-    "mark-key-name"   : "marks",
-    "format-mark-name"   : "mark",
-    "mark-header-format" : "{mark[name]} - {mark[value]}",
-    "mark-match-format"  : "{mark[name]} - {mark[value]}",
-    "mark-opener-format"  : "xdg-open",
+
+    "open-mark": False,
+    "mark-key-name": "marks",
+    "mark-format-name": "mark",
+    "mark-header-format": "{mark[name]} - {mark[value]}",
+    "mark-match-format": "{mark[name]} - {mark[value]}",
+    "mark-opener-format": "xdg-open",
+
     "file-browser"    : "xdg-open",
     "extra-bibtex-keys" : "",
     "extra-bibtex-types" : "",
