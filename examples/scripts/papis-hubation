@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 # papis-short-help: Download citation using scihub.org
 # Copyright © 2017 Alejandro Gallo. GPLv3
-# Last modified: 2017-10-29
+# Last modified: 2017-11-19
 import sys
 import papis.api
 import papis.commands
+import papis.crossref
+import papis.document
 
 
 def usage():
@@ -40,10 +42,25 @@ if 'citations' not in doc.keys():
 
 dois = [d.get('doi') for d in doc['citations']]
 
-if not len(dois):
-    print_no_citations_and_exit()
+print("%s citations found" % len(dois))
+print("Fetching citations' information online")
+dois_with_data = []
+for j,doi in enumerate(dois):
+    progress = "%s/%s (doi: %s)" % (j+1, len(dois), doi)
+    sys.stdout.write(progress)
+    sys.stdout.flush()
+    dois_with_data.append(
+        papis.crossref.doi_to_data(doi)
+    )
+    sys.stdout.write("\b" * (len(progress)))
+    sys.stdout.write(" " * (len(progress)))
+    sys.stdout.flush()
+    sys.stdout.write("\b" * (len(progress)))
+documents = [papis.document.Document(data=d) for d in dois_with_data]
+doc = papis.api.pick_doc(documents)
+doc or sys.exit(0)
+doi = doc["doi"]
 
-doi = papis.api.pick(dois)
 doi or sys.exit(0)
 
 print('DOI %s selected' % doi)

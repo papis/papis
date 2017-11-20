@@ -1,3 +1,92 @@
+"""
+General
+*******
+
+
+.. papis-config:: mode
+
+    Papis is a modal program and it can be configured to support different
+    operating modes. The default is considering that every papis document
+    or entry is a 'document'.
+
+.. papis-config:: opentool
+
+    This is the general program that will be used to open documents.
+    As for now papis is not intended to detect the type of document to be open
+    and decide upon it how to open the document. You should set this
+    to the right program for the tool. If you are in linux you might want
+    to take a look at `ranger <http://ranger.nongnu.org>`_ or let
+    the default handle it in your system.
+    For mac users you might set this to ``open``.
+
+.. papis-config:: dir-umask
+
+.. papis-config:: browser
+    :default: $BROWSER
+
+.. papis-config:: picktool
+
+.. papis-config:: mvtool
+
+.. papis-config:: editor
+    :default: $EDITOR
+
+.. papis-config:: xeditor
+
+.. papis-config:: sync-command
+
+.. papis-config:: notes-name
+
+.. papis-config:: format-doc-name
+
+.. papis-config:: use-cache
+
+.. papis-config:: cache-dir
+
+.. papis-config:: use-git
+
+.. papis-config:: add-confirm
+
+.. papis-config:: add-name
+
+.. papis-config:: add-interactive
+
+.. papis-config:: add-edit
+
+.. papis-config:: add-open
+
+.. papis-config:: check-keys
+
+.. papis-config:: browse-query-format
+
+.. papis-config:: search-engine
+
+.. papis-config:: user-agent
+
+.. papis-config:: default-gui
+
+.. papis-config:: scripts-short-help-regex
+
+.. papis-config:: info-name
+
+.. papis-config:: doc-url-key-name
+
+.. papis-config:: file-browser
+
+.. papis-config:: extra-bibtex-keys
+
+.. papis-config:: extra-bibtex-types
+
+.. papis-config:: default-library
+
+.. papis-config:: export-text-format
+
+.. papis-config:: match-format
+
+.. papis-config:: header-format
+
+
+"""
 import logging
 
 logger = logging.getLogger("config")
@@ -23,7 +112,7 @@ general_settings = {
     "mode"            : "document",
     "opentool"        : "xdg-open",
     "dir-umask"       : 0o755,
-    "browser"         : "xdg-open",
+    "browser"         : os.environ.get('BROWSER') or 'xdg-open',
     "picktool"        : "papis.pick",
     "mvtool"          : "mv",
     "editor"          : os.environ.get('EDITOR')
@@ -48,9 +137,7 @@ general_settings = {
     "browse-query-format"   : "{doc[title]} {doc[author]}",
     "search-engine"   : "https://duckduckgo.com",
     "user-agent"      : \
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) '
-        'AppleWebKit/537.36 (KHTML, like Gecko) '
-        'Chrome/35.0.1916.47 Safari/537.36',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)',
     "default-gui"     : "vim",
     "scripts-short-help-regex": ".*papis-short-help: *(.*)",
     "info-name"       : "info.yaml",

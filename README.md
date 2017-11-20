@@ -87,22 +87,9 @@ AND MUCH, MUCH MORE!
 
 ## TODO
 
-- [X] Implement a mini query language in order to filter by field the searches,
-  for example:
-  ```
-  papis open "author=stein year=192 ueber die "
-  ```
-  so that it matches all papers with a regex match for `stein`, then also where
-  the year matches `192` (i.e., 1920, 1921...) and then also it matches
-  `ueber die` using the default `match-format` configuration variable.
-  This can be done by updating the function `papis.utils.match_document`.
-- [X] Match search strings to documents using multiple cores
-  through the standard `multiprocess` module.
-- [X] Make sure that `setup.py` installs the `python-rofi` module from
-  `https://github.com/alejandrogallo/python-rofi` and not from the original
-  website.
-- [X] Bibitem support for exporting references in the export command.
-    (**Done** through the ``--template`` option of list)
+- [ ] Find a good way to document configuration settings from within
+  the source code.
+- [ ] Improve the unit testing infrastructure.
 - [ ] Youtube video explaining the main uses of `papis`.
 - [ ] Implement proxy to donwload papers.
 - [ ] Testing on Windows.
