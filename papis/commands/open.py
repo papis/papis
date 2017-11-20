@@ -68,27 +68,29 @@ class Command(papis.commands.Command):
                 papis.api.open_dir(document.get_main_folder())
             else:
                 if self.args.mark:
+                    self.logger.debug("Getting document's marks")
                     marks = document[papis.config.get("mark-key-name")]
-                    if not marks: continue
-                    mark = papis.api.pick(
-                        marks,
-                        dict(
-                            header_filter=lambda x: papis.utils.format_doc(
-                                papis.config.get("mark-header-format"),
-                                x, key=papis.config.get("mark-format-name")
-                            ),
-                            match_filter=lambda x: papis.utils.format_doc(
-                                papis.config.get("mark-header-format"),
-                                x, key=papis.config.get("mark-format-name")
+                    if marks:
+                        self.logger.debug("Picking marks")
+                        mark = papis.api.pick(
+                            marks,
+                            dict(
+                                header_filter=lambda x: papis.utils.format_doc(
+                                    papis.config.get("mark-header-format"),
+                                    x, key=papis.config.get("mark-format-name")
+                                ),
+                                match_filter=lambda x: papis.utils.format_doc(
+                                    papis.config.get("mark-header-format"),
+                                    x, key=papis.config.get("mark-format-name")
+                                )
                             )
                         )
-                    )
-                    if not mark: continue
-                    opener = papis.utils.format_doc(
-                        papis.config.get("mark-opener-format"),
-                        mark, key=papis.config.get("mark-format-name")
-                    )
-                    papis.config.set("opentool", opener)
+                        if mark:
+                            opener = papis.utils.format_doc(
+                                papis.config.get("mark-opener-format"),
+                                mark, key=papis.config.get("mark-format-name")
+                            )
+                            papis.config.set("opentool", opener)
                 files = document.get_files()
                 file_to_open = papis.api.pick(
                     files,
