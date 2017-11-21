@@ -53,3 +53,57 @@ If you have a bibtex somewhere in your computer, you can use the script:
   then ``papis-zotero`` will interpret the path of the ``FILE`` entry
   as a relative path, so you should run the command where this relative path
   makes sense.
+
+Importing from zotero sqlite file
+=================================
+
+There is also a script by *Felix Hummel* that decodes the
+``zotero.sqlite`` sqlite file that ``zotero`` uses to manage documents
+and creates papis Documents out of it.
+
+This script will retrieve the documents from zotero (be it ``pdf`` documents
+or else) and important information like tags.
+
+.. code:: bash
+
+  wget -O ~/.config/papis/scripts/papis-zotero-sql https://raw.githubusercontent.com/alejandrogallo/papis/master/examples/scripts/papis-zotero-sql
+  chmod +x ~/.config/papis/scripts/papis-zotero-sql
+
+Now you have to go to the directory where zotero saves all the information,
+it would look something like this on linux systems:
+
+.. code:: bash
+
+  cd ~/.mozilla/firefox/zqb7ju1q.default/zotero
+
+Maybe the path is slightly different, it may vary from version to version from
+zotero.  In the zotero data directory there should be a file called
+``zotero.sqlite`` and there might be a ``storage`` directory with
+document data inside. These will be used by ``zotero-sql`` to
+retrieve information and files from.
+
+Now you can use the script as
+
+.. code:: bash
+
+  papis zotero-sql
+
+This script by default will create a directory named ``Documents`` (in your
+current directory) where papis documents are stored. You can add these document
+by simply moving them to your library folder
+
+.. code::
+
+  mv Documents/*      /path/to/your/papis/library
+
+or also by adding them through papis using the folder flag
+
+.. code::
+
+  papis add --from-folder Documents/ZOTERO_ID
+
+or write a ``bash`` for loop to do it with all the converted documents
+
+.. code::
+
+  for folder in Documents/* ; do papis add --from-folder $folder ; done
