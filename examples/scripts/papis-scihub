@@ -21,12 +21,40 @@ use the legally obtainable doi information included in papis
 
 EOF
 
+SCIHUB_POSSIBLE_DOMAIN_NAMES=(
+sci-hub.io
+sci-hub.cc
+sci-hub.ac
+sci-hub.biz
+)
+
+SCIHUB_URL=""
 
 sciget(){
   link=$1
+  for domain in ${SCIHUB_POSSIBLE_DOMAIN_NAMES[@]} ; do
+    if ping -c 1 ${domain} 2> /dev/null; then
+      SCIHUB_URL="http://${domain}"
+    fi
+  done
   output_pdf=output.pdf
 
-  link="http://sci-hub.io/$link"
+  if [[ -z ${SCIHUB_URL} ]]; then
+    cat <<EOF
+
+    !!ALL URLS FOR SCIHUB THAT WE KNOW OF APPEAR TO BE DOWN!!
+    ${SCIHUB_POSSIBLE_DOMAIN_NAMES[@]}
+
+    Please consider opening an issue in https://github.com/alejandrogallo/papis
+    for this problem or editing in the script the SCIHUB_POSSIBLE_URLS
+    list variable.
+EOF
+    exit 1
+  else
+    log "Using SCIHUB URL ${SCIHUB_URL}"
+  fi
+
+  link="${SCIHUB_URL}/$link"
 
   pdf_url="http:$(wget -O - ${link} | grep -Eom1 '//[^ ]+\.pdf')"
 
