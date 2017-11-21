@@ -92,6 +92,11 @@ class Command(papis.commands.Command):
                             )
                             papis.config.set("opentool", opener)
                 files = document.get_files()
+                if len(files) == 0:
+                    self.logger.error(
+                        "The document chosen has no files attached"
+                    )
+                    return 1
                 file_to_open = papis.api.pick(
                     files,
                     pick_config=dict(
