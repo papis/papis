@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 # papis-short-help: Get pdf and bibtex from doi identificator
-# Copyright © 2017 Alejandro Gallo. GPLv3
+# Copyright 2017 Alejandro Gallo. GPLv3
+# Last modified 2017-11-21
 
 cat <<EOF
 ----------------------------------------------------------------------------
