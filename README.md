@@ -16,7 +16,14 @@
 Papis is a powerful and highly extensible command-line based document and
 bibliography manager.
 
-Take a look at the [documentation](http://papis.readthedocs.io/en/latest/)!
+Learn more:
+  - Take a look at the [documentation](http://papis.readthedocs.io/en/latest/)!
+  - The folks at
+  [OSTechNix](https://www.ostechnix.com/) have dedicated us a review, you may
+  also check it out
+  [here](
+  https://www.ostechnix.com/papis-command-line-based-document-bibliography-manager/
+  ).
 
 ## Super quick start
 
@@ -87,7 +94,7 @@ AND MUCH, MUCH MORE!
 
 ## TODO
 
-- [ ] Find a good way to document configuration settings from within
+- [X] Find a good way to document configuration settings from within
   the source code.
 - [ ] Improve the unit testing infrastructure.
 - [ ] Youtube video explaining the main uses of `papis`.
