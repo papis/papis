@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS" "1" "Nov 20, 2017" "0.4.6" "papis"
+.TH "PAPIS" "1" "Nov 21, 2017" "0.4.6" "papis"
 .SH NAME
 papis \- Papis Documentation
 .
@@ -777,6 +777,114 @@ For mac users you might set this to \fBopen\fP\&.
 .INDENT 7.0
 .IP \(bu 2
 \fBDefault\fP: \fB{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:\-<4})\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBopen\-mark\fP (\fI\%config\-settings\-open\-mark\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBFalse\fP
+.UNINDENT
+.UNINDENT
+.sp
+If this option is set to \fBTrue\fP, then every time that papis opens
+a document it will ask to open a mark first.
+If it is set to \fBFalse\fP, then doing
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis open \-\-mark
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+will avoid opening a mark.
+.INDENT 0.0
+.TP
+\fBmark\-key\-name\fP (\fI\%config\-settings\-mark\-key\-name\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBmarks\fP
+.UNINDENT
+.UNINDENT
+.sp
+This is the default key name for the marks in the info file, for
+example if you set \fBmark\-key\-name = bookmarks\fP then you would have
+in your \fBinfo.yaml\fP file
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+author: J. Krishnamurti
+bookmarks:
+\- name: Chapter 1
+  value: 120
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBmark\-format\-name\fP (\fI\%config\-settings\-mark\-format\-name\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBmark\fP
+.UNINDENT
+.UNINDENT
+.sp
+This is the name of the mark to be passed to the options
+\fBmark\-header\-format\fP etc… E.g. if you set \fBmark\-format\-name = m\fP
+then you could set \fBmark\-header\-format = {m[value]} \- {m[name]}\fP\&.
+.INDENT 0.0
+.TP
+\fBmark\-header\-format\fP (\fI\%config\-settings\-mark\-header\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB{mark[name]} \- {mark[value]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+This is the format in which the mark will appear whenever the user
+has to pick one, you can change this in order to make \fBmarks\fP work
+in the way you like. Per default it is assumed that every mark
+has a \fBname\fP and a \fBvalue\fP key, but this you can change.
+.INDENT 0.0
+.TP
+\fBmark\-match\-format\fP (\fI\%config\-settings\-mark\-match\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB{mark[name]} \- {mark[value]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+Format in which the mark name has to match the user input.
+.INDENT 0.0
+.TP
+\fBmark\-opener\-format\fP (\fI\%config\-settings\-mark\-opener\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBxdg\-open\fP
+.UNINDENT
+.UNINDENT
+.sp
+Due to the difficulty to generalize opening a general document
+at a given bookmark, the user should set this in whichever way
+it suits their needs. For example
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+If you are using the pdf viewer \fBevince\fP and you want to open a
+mark, you would use \fBmark\-opener\-format = evince \-p {mark[value]}\fP\&.
+.IP \(bu 2
+If you are using \fBzathura\fP, do \fBmark\-opener\-format = zathura \-P
+{mark[value]}\fP\&.
+.UNINDENT
 .UNINDENT
 .UNINDENT
 .SS Vim gui
@@ -1676,7 +1784,7 @@ Default: False
 .sp
 .nf
 .ft C
-usage: papis open [\-h] [\-\-tool TOOL] [\-d] [\-\-all] [search]
+usage: papis open [\-h] [\-\-tool TOOL] [\-d] [\-\-all] [\-m] [search]
 .ft P
 .fi
 .UNINDENT
@@ -1704,6 +1812,11 @@ Default: False
 .TP
 .B\-\-all
 Open all matching documents
+.sp
+Default: False
+.TP
+.B\-m, \-\-mark
+Open mark
 .sp
 Default: False
 .UNINDENT
@@ -2649,13 +2762,18 @@ open dir_path.
 .UNINDENT
 .INDENT 0.0
 .TP
-.B papis.api.open_file(file_path)
+.B papis.api.open_file(file_path, wait=True)
 Open file using the \fBopentool\fP key value as a program to
 handle file_path.
 .INDENT 7.0
 .TP
 .B Parameters
+.INDENT 7.0
+.IP \(bu 2
 \fBfile_path\fP (\fIstr\fP) – File path to be handled.
+.IP \(bu 2
+\fBwait\fP (\fIbool\fP) – Wait for the completion of the opener program to continue
+.UNINDENT
 .UNINDENT
 .UNINDENT
 .INDENT 0.0

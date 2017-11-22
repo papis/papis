@@ -107,3 +107,10 @@ or write a ``bash`` for loop to do it with all the converted documents
 .. code::
 
   for folder in Documents/* ; do papis add --from-folder $folder ; done
+
+.. warning::
+
+  Please be aware that the database structure of zotero is version dependent
+  and this script **might** not work fully with your version.
+  You can check `issue #18 <https://github.com/alejandrogallo/papis/issues/18>`_
+  for more information.
