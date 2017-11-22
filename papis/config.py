@@ -159,17 +159,29 @@ OVERRIDE_VARS = {
 }
 
 
+def get_default_opener():
+    """Get the default file opener for the current system
+    """
+    import sys
+    if sys.platform.startswith('darwin'):
+        return "open"
+    elif os.name == 'nt':
+        return "start"
+    elif os.name == 'posix':
+        return "xdg-open"
+
+
 general_settings = {
     "mode"            : "document",
-    "opentool"        : "xdg-open",
+    "opentool"        : get_default_opener(),
     "dir-umask"       : 0o755,
-    "browser"         : os.environ.get('BROWSER') or 'xdg-open',
+    "browser"         : os.environ.get('BROWSER') or get_default_opener(),
     "picktool"        : "papis.pick",
     "mvtool"          : "mv",
     "editor"          : os.environ.get('EDITOR')
                         or os.environ.get('VISUAL')
-                        or 'xdg-open',
-    "xeditor"         : "xdg-open",
+                        or get_default_opener(),
+    "xeditor"         : get_default_opener(),
     "sync-command"    : "git -C {lib[dir]} pull origin master",
     "notes-name"      : "notes.tex",
     "format-doc-name" : "doc",
@@ -201,9 +213,9 @@ general_settings = {
     "mark-format-name": "mark",
     "mark-header-format": "{mark[name]} - {mark[value]}",
     "mark-match-format": "{mark[name]} - {mark[value]}",
-    "mark-opener-format": "xdg-open",
+    "mark-opener-format": get_default_opener(),
 
-    "file-browser"    : "xdg-open",
+    "file-browser"    : get_default_opener(),
     "extra-bibtex-keys" : "",
     "extra-bibtex-types" : "",
     "default-library" : "papers",
