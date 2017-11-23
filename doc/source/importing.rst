@@ -57,7 +57,7 @@ If you have a bibtex somewhere in your computer, you can use the script:
 Importing from zotero sqlite file
 =================================
 
-There is also a script by *Felix Hummel* that decodes the
+There is also a script that decodes the
 ``zotero.sqlite`` sqlite file that ``zotero`` uses to manage documents
 and creates papis Documents out of it.
 
