@@ -60,5 +60,5 @@ class Command(papis.commands.Command):
         else:
             self.logger.debug("Opening url %s:" % url)
             papis.utils.general_open(
-                url, "browser"
+                url, "browser", wait=False
             )
