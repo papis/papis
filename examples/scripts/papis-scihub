@@ -1,13 +1,13 @@
 #! /usr/bin/env bash
 # papis-short-help: Get pdf and bibtex from doi identificator
 # Copyright 2017 Alejandro Gallo. GPLv3
-# Last modified 2017-11-21
+# Last modified 2017-11-29
 
 cat <<EOF
 ----------------------------------------------------------------------------
 
                              WARNING NOTICE:
-papis-scihub v1.0.0
+papis-scihub v1.1.0
 ----------------------------------------------------------------------------
 
 This script uses the platform SCI-HUB, which might be in conflict with local
@@ -23,11 +23,11 @@ use the legally obtainable doi information included in papis
 EOF
 
 SCIHUB_POSSIBLE_DOMAIN_NAMES=(
+sci-hub.bz
 sci-hub.io
 sci-hub.cc
 sci-hub.ac
 sci-hub.biz
-sci-hub.bz
 )
 
 SCIHUB_URL=""
@@ -35,8 +35,11 @@ SCIHUB_URL=""
 sciget(){
   link=$1
   for domain in ${SCIHUB_POSSIBLE_DOMAIN_NAMES[@]} ; do
-    if ping -c 1 ${domain} 2> /dev/null; then
+    # ping one packet with two seconds of timeout
+    log "Trying ${domain}"
+    if ping -W 1 -c 1 ${domain} 2> /dev/null; then
       SCIHUB_URL="http://${domain}"
+      break
     fi
   done
   output_pdf=output.pdf
