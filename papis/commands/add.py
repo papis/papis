@@ -491,13 +491,15 @@ class Command(papis.commands.Command):
             document, papis.api.get_documents_in_lib(papis.api.get_lib())
         )
         if found_document is not None:
+            self.logger.warning('\n' + found_document.dump())
+            print("\n\n")
             self.logger.warning("DUPLICATION WARNING")
             self.logger.warning(
-                "This document seems to be already in your libray: \n\n" +
-                found_document.dump()
+                "The document above seems to be already in your libray: \n\n"
             )
             self.logger.warning(
-                "Use the update command if you just want to update the info."
+                "(Hint) Use the update command if you just want to update"
+                " the info."
             )
             self.args.confirm = True
 
