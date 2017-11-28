@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS-CONFIG" "1" "Nov 21, 2017" "0.4.6" "papis"
+.TH "PAPIS-CONFIG" "1" "Nov 28, 2017" "0.4.7" "papis"
 .SH NAME
 papis-config \- Papis Configuration
 .
@@ -161,6 +161,9 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fB493\fP
 .UNINDENT
 .UNINDENT
+.sp
+This is the default \fBumask\fP that will be used to create the new
+documents’ directories.
 .INDENT 0.0
 .TP
 \fBbrowser\fP (\fI\%config\-settings\-browser\fP)
@@ -169,12 +172,30 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fB$BROWSER\fP
 .UNINDENT
 .UNINDENT
+.sp
+Program to be used for opening websites, the default is the environment
+variable \fB$BROWSER\fP\&.
 .INDENT 0.0
 .TP
 \fBpicktool\fP (\fI\%config\-settings\-picktool\fP)
 .INDENT 7.0
 .IP \(bu 2
 \fBDefault\fP: \fBpapis.pick\fP
+.UNINDENT
+.UNINDENT
+.sp
+This is the program used whenever papis asks you to pick a document
+or options in general.
+.INDENT 0.0
+.TP
+.B Possible options are:
+.INDENT 7.0
+.IP \(bu 2
+papis.pick
+.IP \(bu 2
+rofi
+.IP \(bu 2
+vim
 .UNINDENT
 .UNINDENT
 .INDENT 0.0
@@ -185,6 +206,10 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fBmv\fP
 .UNINDENT
 .UNINDENT
+.sp
+Tool used to in the \fBpapis mv\fP command to move documents.
+If you are using \fBgit\fP to manage your documents, you might consider
+setting it to \fBmvtool = git mv\fP\&.
 .INDENT 0.0
 .TP
 \fBeditor\fP (\fI\%config\-settings\-editor\fP)
@@ -193,6 +218,11 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fB$EDITOR\fP
 .UNINDENT
 .UNINDENT
+.sp
+Editor used to edit files in papis, for instance for the \fBpapis edit\fP
+command. It defaults to the \fB$EDITOR\fP environment variable, if this is
+not set then it will default to the \fB$VISUAL\fP environment variable.
+Otherwise the default editor in your system will be used.
 .INDENT 0.0
 .TP
 \fBxeditor\fP (\fI\%config\-settings\-xeditor\fP)
@@ -201,6 +231,10 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fBxdg\-open\fP
 .UNINDENT
 .UNINDENT
+.sp
+Sometimes papis might use an editor that uses a windowing system
+(GUI Editor), you can set this to your prefered gui based editor, e.g.:
+\fBgedit\fP, \fBxemacs\fP, \fBgvim\fP to name a few.
 .INDENT 0.0
 .TP
 \fBsync\-command\fP (\fI\%config\-settings\-sync\-command\fP)
@@ -209,6 +243,8 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fBgit \-C {lib[dir]} pull origin master\fP
 .UNINDENT
 .UNINDENT
+.sp
+Command that is to be used when \fBpapis sync\fP is run.
 .INDENT 0.0
 .TP
 \fBnotes\-name\fP (\fI\%config\-settings\-notes\-name\fP)
@@ -217,14 +253,10 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fBnotes.tex\fP
 .UNINDENT
 .UNINDENT
-.INDENT 0.0
-.TP
-\fBformat\-doc\-name\fP (\fI\%config\-settings\-format\-doc\-name\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBdoc\fP
-.UNINDENT
-.UNINDENT
+.sp
+In \fBpapis edit\fP you can edit notes about the document. \fBnotes\-name\fP
+is the default name of the notes file, which by default is supposed
+to be a TeX file.
 .INDENT 0.0
 .TP
 \fBuse\-cache\fP (\fI\%config\-settings\-use\-cache\fP)
@@ -233,6 +265,9 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fBTrue\fP
 .UNINDENT
 .UNINDENT
+.sp
+Set to \fBFalse\fP if you do not want to use the \fBcache\fP
+for the given library.
 .INDENT 0.0
 .TP
 \fBcache\-dir\fP (\fI\%config\-settings\-cache\-dir\fP)
@@ -249,6 +284,9 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fBFalse\fP
 .UNINDENT
 .UNINDENT
+.sp
+Some commands will issue git commands if this option is set to \fBTrue\fP\&.
+For example in \fBmv\fP or \fBrename\fP\&.
 .INDENT 0.0
 .TP
 \fBadd\-confirm\fP (\fI\%config\-settings\-add\-confirm\fP)
@@ -257,6 +295,11 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fBFalse\fP
 .UNINDENT
 .UNINDENT
+.sp
+If set to \fBTrue\fP, everytime you run \fBpapis add\fP
+the flag \fB\-\-confirm\fP will be added automatically. If is set to \fBTrue\fP
+and you add it, i.e., you run \fBpapis add \-\-confirm\fP, then it will
+fave the contrary effect, i.e., it will not ask for confirmation.
 .INDENT 0.0
 .TP
 \fBadd\-name\fP (\fI\%config\-settings\-add\-name\fP)
@@ -273,6 +316,10 @@ For mac users you might set this to \fBopen\fP\&.
 
 .UNINDENT
 .UNINDENT
+.sp
+Default name for newly added documents. For example, if you want
+your documents to be \fBauthor\-title\fP then you should set it to
+the papis format: \fB{doc[author]}\-{doc[title]}\fP\&.
 .INDENT 0.0
 .TP
 \fBadd\-interactive\fP (\fI\%config\-settings\-add\-interactive\fP)
@@ -281,6 +328,11 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fBFalse\fP
 .UNINDENT
 .UNINDENT
+.sp
+If set to \fBTrue\fP, everytime you run \fBpapis add\fP
+the flag \fB\-\-interactive\fP will be added automatically. If is set to
+\fBTrue\fP and you add it, i.e., you run \fBpapis add \-\-interactive\fP, then it
+will fave the contrary effect, i.e., it will not run in interactive mode.
 .INDENT 0.0
 .TP
 \fBadd\-edit\fP (\fI\%config\-settings\-add\-edit\fP)
@@ -289,6 +341,12 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fBFalse\fP
 .UNINDENT
 .UNINDENT
+.sp
+If set to \fBTrue\fP, everytime you run \fBpapis add\fP
+the flag \fB\-\-edit\fP will be added automatically. If is set to
+\fBTrue\fP and you add it, i.e., you run \fBpapis add \-\-edit\fP, then it
+will fave the contrary effect, i.e., it will not prompt to edit the info
+file.
 .INDENT 0.0
 .TP
 \fBadd\-open\fP (\fI\%config\-settings\-add\-open\fP)
@@ -297,6 +355,12 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fBFalse\fP
 .UNINDENT
 .UNINDENT
+.sp
+If set to \fBTrue\fP, everytime you run \fBpapis add\fP
+the flag \fB\-\-open\fP will be added automatically. If is set to
+\fBTrue\fP and you add it, i.e., you run \fBpapis add \-\-open\fP, then it
+will fave the contrary effect, i.e., it will not open the attached files
+before adding the document to the library.
 .INDENT 0.0
 .TP
 \fBcheck\-keys\fP (\fI\%config\-settings\-check\-keys\fP)
@@ -305,6 +369,9 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fBfiles\fP
 .UNINDENT
 .UNINDENT
+.sp
+Comma separated key values to be checked by default by the command
+\fBcheck\fP\&. E.g: \fBcheck\-keys = author, doi\fP\&.
 .INDENT 0.0
 .TP
 \fBbrowse\-query\-format\fP (\fI\%config\-settings\-browse\-query\-format\fP)
@@ -313,6 +380,9 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fB{doc[title]} {doc[author]}\fP
 .UNINDENT
 .UNINDENT
+.sp
+The query string that is to be searched for in the \fBbrowse\fP command
+whenever a search engine is used.
 .INDENT 0.0
 .TP
 \fBsearch\-engine\fP (\fI\%config\-settings\-search\-engine\fP)
@@ -321,6 +391,8 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fBhttps://duckduckgo.com\fP
 .UNINDENT
 .UNINDENT
+.sp
+Search engine to be used by some commands like \fBbrowse\fP\&.
 .INDENT 0.0
 .TP
 \fBuser\-agent\fP (\fI\%config\-settings\-user\-agent\fP)
@@ -329,6 +401,9 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fBMozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)\fP
 .UNINDENT
 .UNINDENT
+.sp
+User agent used by papis whenever it obtains information from external
+servers.
 .INDENT 0.0
 .TP
 \fBdefault\-gui\fP (\fI\%config\-settings\-default\-gui\fP)
@@ -337,6 +412,9 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fBvim\fP
 .UNINDENT
 .UNINDENT
+.sp
+Default gui to be used by papis, it can have the values given
+by \fBpapis gui \-\-help\fP\&.
 .INDENT 0.0
 .TP
 \fBscripts\-short\-help\-regex\fP (\fI\%config\-settings\-scripts\-short\-help\-regex\fP)
@@ -345,6 +423,9 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fB\&.*papis\-short\-help: *(.*)\fP
 .UNINDENT
 .UNINDENT
+.sp
+This is the format of the short help indicator in external papis
+commands.
 .INDENT 0.0
 .TP
 \fBinfo\-name\fP (\fI\%config\-settings\-info\-name\fP)
@@ -353,6 +434,8 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fBinfo.yaml\fP
 .UNINDENT
 .UNINDENT
+.sp
+The default name of the information files.
 .INDENT 0.0
 .TP
 \fBdoc\-url\-key\-name\fP (\fI\%config\-settings\-doc\-url\-key\-name\fP)
@@ -361,6 +444,10 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fBdoc_url\fP
 .UNINDENT
 .UNINDENT
+.sp
+Some documents might have associated apart from an url also a file url,
+the key name appearing in the information file is defined by
+this setting.
 .INDENT 0.0
 .TP
 \fBfile\-browser\fP (\fI\%config\-settings\-file\-browser\fP)
@@ -369,6 +456,10 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fBxdg\-open\fP
 .UNINDENT
 .UNINDENT
+.sp
+File browser to be used when opening a directory, it defaults to the
+default file browser in your system, however you can set it to different
+file browsers such as \fBdolphin\fP, \fBthunar\fP, \fBranger\fP to name a few.
 .INDENT 0.0
 .TP
 \fBextra\-bibtex\-keys\fP (\fI\%config\-settings\-extra\-bibtex\-keys\fP)
@@ -385,6 +476,11 @@ For mac users you might set this to \fBopen\fP\&.
 
 .UNINDENT
 .UNINDENT
+.sp
+When exporting documents in bibtex format, you might want to add
+non\-standard bibtex keys such as \fBdoc_url\fP or \fBtags\fP, you can add
+these here as comma separated values, for example
+\fBextra\-bibtex\-keys = tags, doc_url\fP\&.
 .INDENT 0.0
 .TP
 \fBextra\-bibtex\-types\fP (\fI\%config\-settings\-extra\-bibtex\-types\fP)
@@ -401,6 +497,10 @@ For mac users you might set this to \fBopen\fP\&.
 
 .UNINDENT
 .UNINDENT
+.sp
+Allow non\-standard bibtex types to be recognised, e.g,
+\fBextra\-bibtex\-types = wikipedia, video, song\fP\&.
+See \fI\%bibtex reference\fP\&.
 .INDENT 0.0
 .TP
 \fBdefault\-library\fP (\fI\%config\-settings\-default\-library\fP)
@@ -409,6 +509,9 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fBpapers\fP
 .UNINDENT
 .UNINDENT
+.sp
+The name of the library that is to be searched when \fBpapis\fP
+is run without library arguments.
 .INDENT 0.0
 .TP
 \fBexport\-text\-format\fP (\fI\%config\-settings\-export\-text\-format\fP)
@@ -417,6 +520,22 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fB{doc[author]}. {doc[title]}. {doc[journal]} {doc[pages]} {doc[month]} {doc[year]}\fP
 .UNINDENT
 .UNINDENT
+.sp
+The default output papis format for \fBpapis export \-\-text\fP\&.
+.INDENT 0.0
+.TP
+\fBformat\-doc\-name\fP (\fI\%config\-settings\-format\-doc\-name\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBdoc\fP
+.UNINDENT
+.UNINDENT
+.sp
+This setting controls the name of the document in the papis format strings
+like in format strings such as \fBmatch\-format\fP or \fBheader\-format\fP\&.
+For instance, if you are managing videos, you might want to
+set this option to \fBvid\fP in order to set  the \fBheader\-format\fP to
+\fB{doc[title]} \- {doc[director]} \- {doc[duration]}\fP\&.
 .INDENT 0.0
 .TP
 \fBmatch\-format\fP (\fI\%config\-settings\-match\-format\fP)
@@ -425,6 +544,11 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fB{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}\fP
 .UNINDENT
 .UNINDENT
+.sp
+Default format that is used to match a document against in order to select
+it. For example if the \fBmatch\-format\fP is equal to
+\fB{doc[year]} {doc[author]}\fP then title of a document will not work
+to match a document, onlye the year and author.
 .INDENT 0.0
 .TP
 \fBheader\-format\fP (\fI\%config\-settings\-header\-format\fP)
@@ -433,6 +557,8 @@ For mac users you might set this to \fBopen\fP\&.
 \fBDefault\fP: \fB{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:\-<4})\fP
 .UNINDENT
 .UNINDENT
+.sp
+Default format that is used to show a document in order to select it.
 .INDENT 0.0
 .TP
 \fBopen\-mark\fP (\fI\%config\-settings\-open\-mark\fP)
