@@ -151,7 +151,7 @@ class Command(papis.commands.Command):
 
         self.parser.add_argument(
             "--to",
-            help="When --to is specified, the document will be added to the"
+            help="When --to is specified, the document will be added to the "
                 "selected already existing document entry.",
             nargs="?",
             action="store"
