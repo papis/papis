@@ -27,6 +27,7 @@ sci-hub.io
 sci-hub.cc
 sci-hub.ac
 sci-hub.biz
+sci-hub.bz
 )
 
 SCIHUB_URL=""
