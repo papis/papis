@@ -360,6 +360,7 @@ class Command(papis.commands.Command):
 
         if self.args.from_vcf:
             data.update(papis.utils.vcf_to_data(self.args.from_vcf))
+
         in_documents_names = [
             papis.utils.clean_document_name(doc_path)
             for doc_path in in_documents_paths

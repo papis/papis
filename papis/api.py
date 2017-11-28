@@ -150,26 +150,30 @@ def open_file(file_path, wait=True):
     papis.utils.general_open(file_path, "opentool", wait=wait)
 
 
-def open_dir(dir_path):
+def open_dir(dir_path, wait=True):
     """Open dir using the ``file-browser`` key value as a program to
     open dir_path.
 
     :param dir_path: Folder path to be handled.
     :type  dir_path: str
+    :param wait: Wait for the completion of the opener program to continue
+    :type  wait: bool
 
     """
-    papis.utils.general_open(dir_path, "file-browser")
+    papis.utils.general_open(dir_path, "file-browser", wait=wait)
 
 
-def edit_file(file_path):
+def edit_file(file_path, wait=True):
     """Edit file using the ``editor`` key value as a program to
     handle file_path.
 
     :param file_path: File path to be handled.
     :type  file_path: str
+    :param wait: Wait for the completion of the opener program to continue
+    :type  wait: bool
 
     """
-    papis.utils.general_open(file_path, "editor")
+    papis.utils.general_open(file_path, "editor", wait=wait)
 
 
 def get_documents_in_dir(directory, search=""):
