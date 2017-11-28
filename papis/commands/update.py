@@ -7,7 +7,6 @@ import papis.bibtex
 import papis.downloaders.utils
 import papis.api
 import papis.document
-import papis.isbn
 
 
 class Command(papis.commands.Command):
@@ -103,6 +102,7 @@ class Command(papis.commands.Command):
             data.update(yaml.load(open(self.args.from_yaml)))
 
         if self.args.from_isbnplus:
+            import papis.isbn
             doc = self.pick(
                 [
                     papis.document.Document(data=d)
