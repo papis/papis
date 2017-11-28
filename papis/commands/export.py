@@ -126,6 +126,10 @@ class Command(papis.commands.Command):
             self.get_args().search
         )
 
+        if self.args.json and self.args.folder or \
+           self.args.yaml and self.args.folder:
+            self.logger.warning("Only --folder flag will be considered")
+
         if not self.args.all:
             document = self.pick(documents)
             if not document: return 0
@@ -137,13 +141,13 @@ class Command(papis.commands.Command):
         if not self.args.out and not self.get_args().folder:
             self.args.out = sys.stdout
 
-        if self.args.json:
+        if self.args.json and not self.args.folder:
             import json
             return self.args.out.write(
                 json.dumps([document.to_dict() for document in documents])
             )
 
-        if self.args.yaml:
+        if self.args.yaml and not self.args.folder:
             import yaml
             return self.args.out.write(
                 yaml.dump_all([document.to_dict() for document in documents])
