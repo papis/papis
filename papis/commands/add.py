@@ -459,7 +459,7 @@ class Command(papis.commands.Command):
             )
             document.save()
             self.logger.debug("Editing file before adding it")
-            papis.api.edit_file(document.get_info_file())
+            papis.api.edit_file(document.get_info_file(), wait=True)
             self.logger.debug("Loading the changes made by editing")
             document.load()
             data = document.to_dict()
