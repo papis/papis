@@ -514,7 +514,10 @@ def locate_document(document, documents):
                 if document['doi'] == d['doi']:
                     return d
     docs = filter_documents(
-        documents, search='author = "{doc[author]}" title = "{doc[title]}"'
+        documents,
+        search='author = "{doc[author]}" title = "{doc[title]}"'.format(
+            doc=document
+        )
     )
     if len(docs) == 1:
         return docs[0]
