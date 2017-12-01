@@ -28,6 +28,15 @@ Edit
     :prog: papis
     :path: edit
 
+Update
+------
+.. automodule:: papis.commands.update
+.. argparse::
+    :module: papis.commands
+    :func: init_and_return_parser
+    :prog: papis
+    :path: update
+
 Export
 ------
 .. automodule:: papis.commands.export
