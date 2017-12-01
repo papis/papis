@@ -151,6 +151,7 @@ class Command(papis.commands.Command):
         elif self.args.libgen:
             doc = self.libgen(self.args.search)
         else:
+            self.args.arxiv = True
             doc = self.arxiv(self.args.search)
 
         if doc:
