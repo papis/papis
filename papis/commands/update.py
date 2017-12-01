@@ -7,7 +7,7 @@ Examples
 - Update a document automatically and interactively
 (searching by ``doi`` number in *crossref*, or in other sources...)
 
-    ..code ::
+    .. code::
 
         papis update --auto -i "author = dyson"
 
@@ -17,7 +17,7 @@ Examples
   done if you use the ``-i`` flag for interactively doing it). In the example
   ``libraryfile.bib`` is a file containing many entries.
 
-    ..code ::
+    .. code::
 
         papis update --from-bibtex libraryfile.bib -i
 
