@@ -255,6 +255,14 @@ General
         - If you are using ``zathura``, do ``mark-opener-format = zathura -P
           {mark[value]}``.
 
+.. papis-config:: info-allow-unicode
+
+    This flag is to be set if you want to allow unicode characters
+    in your info file or not. If it is set to false then a representation
+    for the unicode characters will be written in its place.
+    Since we should be living in an unicode world, it is set to ``True``
+    by default.
+
 """
 import logging
 
@@ -344,6 +352,8 @@ general_settings = {
         "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
     "header-format"   : \
         "{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:-<4})",
+
+    "info-allow-unicode": True,
 }
 
 
