@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS-CONFIG" "1" "Nov 28, 2017" "0.4.8" "papis"
+.TH "PAPIS-CONFIG" "1" "Dec 06, 2017" "0.4.9" "papis"
 .SH NAME
 papis-config \- Papis Configuration
 .
@@ -667,6 +667,20 @@ If you are using \fBzathura\fP, do \fBmark\-opener\-format = zathura \-P
 .UNINDENT
 .UNINDENT
 .UNINDENT
+.INDENT 0.0
+.TP
+\fBinfo\-allow\-unicode\fP (\fI\%config\-settings\-info\-allow\-unicode\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBTrue\fP
+.UNINDENT
+.UNINDENT
+.sp
+This flag is to be set if you want to allow unicode characters
+in your info file or not. If it is set to false then a representation
+for the unicode characters will be written in its place.
+Since we should be living in an unicode world, it is set to \fBTrue\fP
+by default.
 .SS Vim gui
 .INDENT 0.0
 .TP

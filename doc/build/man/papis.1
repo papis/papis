@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS" "1" "Nov 28, 2017" "0.4.8" "papis"
+.TH "PAPIS" "1" "Dec 06, 2017" "0.4.9" "papis"
 .SH NAME
 papis \- Papis Documentation
 .
@@ -1025,6 +1025,20 @@ If you are using \fBzathura\fP, do \fBmark\-opener\-format = zathura \-P
 .UNINDENT
 .UNINDENT
 .UNINDENT
+.INDENT 0.0
+.TP
+\fBinfo\-allow\-unicode\fP (\fI\%config\-settings\-info\-allow\-unicode\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBTrue\fP
+.UNINDENT
+.UNINDENT
+.sp
+This flag is to be set if you want to allow unicode characters
+in your info file or not. If it is set to false then a representation
+for the unicode characters will be written in its place.
+Since we should be living in an unicode world, it is set to \fBTrue\fP
+by default.
 .SS Vim gui
 .INDENT 0.0
 .TP
@@ -1982,6 +1996,111 @@ Default: “.”
 .TP
 .B\-n, \-\-notes
 Open notes document
+.sp
+Default: False
+.UNINDENT
+.SS Update
+.sp
+This command is to update the information of the documents.
+Some examples of the usage are given below
+.SS Examples
+.INDENT 0.0
+.IP \(bu 2
+Update a document automatically and interactively
+.UNINDENT
+.sp
+(searching by \fBdoi\fP number in \fIcrossref\fP, or in other sources…)
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis update \-\-auto \-i "author = dyson"
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Update your library from a bib(la)tex file where many entries are listed.
+papis will try to look for documents in your library that match these
+entries and will ask you entry per entry to update it (of course this is
+done if you use the \fB\-i\fP flag for interactively doing it). In the example
+\fBlibraryfile.bib\fP is a file containing many entries.
+.INDENT 2.0
+.INDENT 3.5
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis update \-\-from\-bibtex libraryfile.bib \-i
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+usage: papis update [\-h] [\-i] [\-f] [\-d DOCUMENT]
+                    [\-\-from\-isbnplus FROM_ISBNPLUS] [\-\-from\-yaml FROM_YAML]
+                    [\-\-from\-bibtex FROM_BIBTEX] [\-\-from\-url FROM_URL]
+                    [\-\-from\-doi FROM_DOI] [\-\-auto]
+                    [search]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS Positional Arguments
+.INDENT 0.0
+.TP
+.Bsearch
+Search query string
+.sp
+Default: “.”
+.UNINDENT
+.SS Named Arguments
+.INDENT 0.0
+.TP
+.B\-i, \-\-interactive
+Interactively update
+.sp
+Default: False
+.TP
+.B\-f, \-\-force
+Force update, overwrite conflicting information
+.sp
+Default: False
+.TP
+.B\-d, \-\-document
+Overwrite an existing document
+.TP
+.B\-\-from\-isbnplus
+Update info from isbnplus.org
+.TP
+.B\-\-from\-yaml
+Update info from yaml file
+.TP
+.B\-\-from\-bibtex
+Update info from bibtex file
+.TP
+.B\-\-from\-url
+Get document or information from url
+.TP
+.B\-\-from\-doi
+Doi to try to get information from
+.TP
+.B\-\-auto
+Try to parse information from different sources
 .sp
 Default: False
 .UNINDENT
