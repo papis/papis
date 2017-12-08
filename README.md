@@ -28,6 +28,12 @@ Learn more:
     https://ubunlog.com/papis-administrador-documentos/
   ).
 
+## Contributing
+
+Contributions are very welcome! Take a look at the files ``CONTRIBUTING.md``
+for general rules, ``ROADMAP.md`` for possible contribution topics
+and ``HACKING.md`` for additional code-related information.
+
 ## Super quick start
 
 Install papis with pip3
@@ -98,10 +104,3 @@ AND MUCH, MUCH MORE!
 ## Authors
 
 See the ``AUTHORS`` list for a list of authored commits.
-
-## TODO
-
-  There is a list of open projects and todos that are listed
-  and explained in the ``ROADMAP.md`` file.
-
-
