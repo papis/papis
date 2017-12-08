@@ -3,6 +3,22 @@
 If you want to contribute you might take one of these topics and
 start working on them.
 
+## Bash and Zsh autocompletion script
+
+We have been using the package
+``[argcomplete](https://github.com/kislyuk/argcomplete)``
+to provide a quite rudimentary bash autocompletion.
+
+It would be nice to have an extensible bash and zsh autocompletion
+script that we can update **by hand** each time that we update
+the cli. I insist it should be **by hand** in order to ensure
+to better performance of the autocompletion. At least to my knowledge
+``argcomplete`` has to run the program every time it spits out the
+autocompletion, which in my opinion for papis is suboptimal.
+
+Therefore is someone is skilled in bash or zsh autocompletion, she
+can contribute one.
+
 ## Use [habanero](https://github.com/sckott/habanero) for ``crossref``
 
 Right now papis is parsing crossref with a hand-made module.
