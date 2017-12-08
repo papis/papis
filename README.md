@@ -28,6 +28,28 @@ Learn more:
     https://ubunlog.com/papis-administrador-documentos/
   ).
 
+## Main features
+
+  - Synchronizing of documents: put your documents in some folder and
+    synchronize it using the tools you love: git, dropbox, rsync, OwnCloud,
+    Google Drive ... whatever.
+  - Share libraries with colleagues without forcing them to open an account,
+    nowhere, never.
+  - Download directly paper information from *DOI* number via *Crossref*.
+  - (optional) **scihub** support, use the example papis script
+    `examples/scripts/papis-scihub` to download papers from scihub and add them
+    to your library with all the relevant information, in a matter of seconds,
+    also you can check the documentation
+     [here](http://papis.readthedocs.io/en/latest/scihub.html).
+  - Import from Zotero and other managers using the script in
+    `examples/scripts/papis-zotero`
+    ([doc](http://papis.readthedocs.io/en/latest/importing.html)).
+  - Create custom scripts to help you achieve great tasks easily
+    ([doc](http://papis.readthedocs.io/en/latest/scripting.html)).
+  - Export documents into many formats (bibtex, yaml..)
+  - Command-line granularity, all the power of a library at the tip of your
+    fingers.
+
 ## Contributing
 
 Contributions are very welcome! Take a look at the files ``CONTRIBUTING.md``
@@ -78,28 +100,6 @@ papis add -h
 
 [![asciicast](https://asciinema.org/a/48Dv1rfX44yjJD6Sbc71gpXGr.png)](https://asciinema.org/a/48Dv1rfX44yjJD6Sbc71gpXGr)
 AND MUCH, MUCH MORE!
-
-## Main features
-
-  - Synchronizing of documents: put your documents in some folder and
-    synchronize it using the tools you love: git, dropbox, rsync, OwnCloud,
-    Google Drive ... whatever.
-  - Share libraries with colleagues without forcing them to open an account,
-    nowhere, never.
-  - Download directly paper information from *DOI* number via *Crossref*.
-  - (optional) **scihub** support, use the example papis script
-    `examples/scripts/papis-scihub` to download papers from scihub and add them
-    to your library with all the relevant information, in a matter of seconds,
-    also you can check the documentation
-     [here](http://papis.readthedocs.io/en/latest/scihub.html).
-  - Import from Zotero and other managers using the script in
-    `examples/scripts/papis-zotero`
-    ([doc](http://papis.readthedocs.io/en/latest/importing.html)).
-  - Create custom scripts to help you achieve great tasks easily
-    ([doc](http://papis.readthedocs.io/en/latest/scripting.html)).
-  - Export documents into many formats (bibtex, yaml..)
-  - Command-line granularity, all the power of a library at the tip of your
-    fingers.
 
 ## Authors
 
