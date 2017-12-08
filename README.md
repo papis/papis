@@ -95,14 +95,13 @@ AND MUCH, MUCH MORE!
   - Command-line granularity, all the power of a library at the tip of your
     fingers.
 
+## Authors
+
+See the ``AUTHORS`` list for a list of authored commits.
+
 ## TODO
 
-- [X] Find a good way to document configuration settings from within
-  the source code.
-- [ ] Improve the unit testing infrastructure.
-- [ ] Youtube video explaining the main uses of `papis`.
-- [ ] Implement proxy to donwload papers.
-- [ ] Testing on Windows.
-- [ ] Logo.
-- [ ] Gtk or Qt based GUI.
+  There is a list of open projects and todos that are listed
+  and explained in the ``ROADMAP.md`` file.
+
 
