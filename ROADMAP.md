@@ -3,6 +3,29 @@
 If you want to contribute you might take one of these topics and
 start working on them.
 
+## PDF or general document type content indexing
+
+A feature that many people want appears to be search-in-document
+feature, this is, the capability of searching keywords inside documents.
+
+For this we would need a reliable way of turning PDF files or any other
+format into text and being able to discriminate between trivial words
+of this text and choose the most representative keywords of the text.
+
+This in turn would be stored in some local cache and the user would
+be able to search in this text like
+
+```
+papis open "text = 'neural GAN'"
+```
+
+or something like this. This would mean that the words ``neural`` and ``GAN``
+should be searched also in the cache of the text-converted file.
+
+The problems for this is that is difficult to make sure that the user
+have good tools to convert into text even only for ``pdf`` and there is
+no nice solution of a python library doing this.
+
 ## Implement [BASE](https://en.wikipedia.org/wiki/BASE_(search_engine)) support
 
 The greate BASE search engine offers a free service for open source projects
