@@ -3,6 +3,41 @@
 If you want to contribute you might take one of these topics and
 start working on them.
 
+## Implement [BASE](https://en.wikipedia.org/wiki/BASE_(search_engine)) support
+
+The greate BASE search engine offers a free service for open source projects
+and I have already been in contact with them, I just lack the time
+to delve into their API and implement it in *clean* python.
+
+For the moment the one interested in implementing this would have to create
+a file in the spirit of
+
+```
+papis/arxiv.py
+```
+
+where a module method ``get_data`` is implemented that has a signature
+similar (but not necessarily equal to)
+
+```python
+def get_data(
+    query="",
+    author="",
+    title="",
+    abstract="",
+    comment="",
+    journal="",
+    report_number="",
+    category="",
+    id_list="",
+    page=0,
+    max_results=30
+    ):
+```
+
+etc... Also the user agent of this function should be called ``papis``
+as already discussed with the people from **BASE**.
+
 ## Bash and Zsh autocompletion script
 
 We have been using the package
