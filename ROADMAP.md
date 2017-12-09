@@ -1,4 +1,4 @@
-# RODAMAP
+# ROADMAP
 
 If you want to contribute you might take one of these topics and
 start working on them.
@@ -28,7 +28,7 @@ no nice solution of a python library doing this.
 
 ## Implement [BASE](https://en.wikipedia.org/wiki/BASE_(search_engine)) support
 
-The greate BASE search engine offers a free service for open source projects
+The great BASE search engine offers a free service for open source projects
 and I have already been in contact with them, I just lack the time
 to delve into their API and implement it in *clean* python.
 
@@ -130,7 +130,7 @@ the BeautifulSoup package can parse them using the existing code
 If someone has experience with youtube, it would be nice to have a review
 in youtube explaining the main uses of papis and of her workflow.
 
-## Implement proxy to donwload papers.
+## Implement proxy to download papers.
 
 The downloaders implemented should be downloading the documents
 via a normal http connection. If the users have an account at some university
