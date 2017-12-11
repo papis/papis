@@ -1,5 +1,4 @@
-"""
-General
+"""General
 *******
 
 .. papis-config:: local-config-file
@@ -269,6 +268,17 @@ General
     Since we should be living in an unicode world, it is set to ``True``
     by default.
 
+.. papis-config:: ref-format
+
+    This flag is set to change the ``ref`` flag in the info.yaml file
+    when a document is imported. For example: I prefer the format
+    FirstAuthorYear e.g. Plews2019. This would be achieved by the
+    following:
+
+        ``ref-format = {doc[author_list][0][surname]}{doc[year]}``
+
+    The default behaviour is to set the doi as the ref.
+
 """
 import logging
 
@@ -361,6 +371,7 @@ general_settings = {
         "{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:-<4})",
 
     "info-allow-unicode": True,
+    "ref-format"      : "{doc[doi]}",
 }
 
 
