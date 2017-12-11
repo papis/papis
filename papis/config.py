@@ -1,4 +1,5 @@
-"""General
+"""
+General
 *******
 
 .. papis-config:: local-config-file
