@@ -21,6 +21,12 @@ Examples
 
         papis add ~/Documents/interesting.pdf --from-doi 10.10763/1.3237134
 
+    - Add paper to a library named ``machine-learning`` from ``arxiv.org``
+
+    .. code::
+
+        papis -l machine-learning add --from-url https://arxiv.org/abs/1712.03134
+
 """
 import papis
 import os
