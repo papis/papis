@@ -2,6 +2,12 @@
 General
 *******
 
+.. papis-config:: local-config-file
+
+    Name AND relative path of the local configuration file that papis
+    will additionally read if the file is present in the current
+    directory or in the base directory of a given library.
+
 
 .. papis-config:: mode
 
@@ -299,6 +305,7 @@ def get_default_opener():
 
 general_settings = {
     "mode"            : "document",
+    "local-config-file": ".papis.config",
     "opentool"        : get_default_opener(),
     "dir-umask"       : 0o755,
     "browser"         : os.environ.get('BROWSER') or get_default_opener(),
@@ -615,8 +622,28 @@ def get_configuration():
     if CONFIGURATION is None:
         logger.debug("Creating configuration")
         CONFIGURATION = Configuration()
+        # Handle local configuration file, and merge it if it exists
+        local_config_file = papis.config.get("local-config-file")
+        merge_configuration_from_path(local_config_file, CONFIGURATION)
     return CONFIGURATION
 
+def merge_configuration_from_path(path, configuration):
+    """
+    Merge information of a configuration file found in `path`
+    to the information of the configuration object stored in `configuration`.
+    The function checks for the existence of path.
+
+    :param path: Path to the configuration file
+    :type  path: str
+    :param configuration: Configuration object
+    :type  configuration: papis.config.Configuration
+    """
+    if os.path.exists(path):
+        logger.debug(
+            "Merging configuration from " + path
+        )
+        configuration.read(path)
+        configuration.handle_includes()
 
 def get_lib():
     """Get current library, it either retrieves the library from

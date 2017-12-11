@@ -84,6 +84,32 @@ A more complete example of a configuration file is the following
                           Mail : {doc[email]}
                        {doc[empty]}
 
+Local configuration files
+-------------------------
+Papis also offers the possibility of creating local configuration files.
+The name of the local configuration file can be configured with the
+``local-config-file`` setting.
+
+The local configuration file can be found in the current directory of
+where you are issuing the papis command or in the directory of the
+library that you are considering in the papis command.
+
+For instance let us suppose that you are in some project folder
+``~/Documents/myproject`` and you have a local config file there
+with a definition of a new library. Then whenever you are
+in the ``~/Documents/myproject`` directory papis will also source the
+local configuration file found there.
+
+On the other hand, also if you have a configuration file in the library folder
+for your papers, for instance in
+
+::
+
+  ~/Documents/papers/.papis.config
+
+then everytime that you use this library also papis will source this
+configuration file.
+
 
 Default settings
 ----------------

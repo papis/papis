@@ -142,6 +142,20 @@ class Command(papis.commands.Command):
                 )
                 return 1
 
+        # Now the library should be set, let us check if there is a
+        # local configuration file there, and if there is one, then
+        # merge its contents
+        local_config_file = os.path.expanduser(
+            os.path.join(
+                papis.config.get("dir"),
+                papis.config.get("local-config-file")
+            )
+        )
+        papis.config.merge_configuration_from_path(
+            local_config_file,
+            self.get_config()
+        )
+
         if self.args.clear_cache:
             papis.api.clear_lib_cache(self.args.lib)
 
