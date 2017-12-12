@@ -156,3 +156,13 @@ uncluttered.
 People should be able to control everything by configurable
 keyboard shortcuts. I do not know however if papis needs a GUI. This is
 therefore a low priority for papis.
+
+## Linux distros and macOS packages.
+
+It would be nice to implement packages for the common linux distributions
+and for brew in macOS.
+
+  - [ ] Brew (MacOS)
+  - [ ] Debian/Ubuntu
+  - [ ] Archlinux
+  - [ ] Other
