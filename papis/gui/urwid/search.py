@@ -108,10 +108,11 @@ class Search(urwid.WidgetWrap):
         'enter': "open_file",
         'u': "open_url",
         'b': "view_bibtex",
-        # 'meta i': "copyID",
-        # 'meta f': "copyPath",
-        # 'meta u': "copyURL",
-        # 'meta b': "copyBibtex",
+        'N': "page_down",
+        'page down': "page_down",
+        ' ': "page_down",
+        'P': "page_up",
+        'page up': "page_up",
     }
 
     def __init__(self, ui, query=None):
@@ -135,37 +136,45 @@ class Search(urwid.WidgetWrap):
         self.__super.__init__(w)
 
 
-    def next_entry(self):
+    def next_entry(self, size, key):
         """next entry"""
         entry, pos = self.listbox.get_focus()
         if not entry: return
         if pos + 1 >= self.lenitems: return
         self.listbox.set_focus(pos + 1)
 
-    def filter(self):
+    def filter(self, size, key):
         filterQuery = self.ui.prompt("Filter: ").get_text()
         # self.ui.set_status(filterQuery)
 
-    def go_to_first(self):
+    def page_down(self, size, key):
+        """page down"""
+        self.listbox.keypress(size, 'page down')
+
+    def page_up(self, size, key):
+        """page up"""
+        self.listbox.keypress(size, 'page up')
+
+    def go_to_first(self, size, key):
         """first entry"""
         entry, pos = self.listbox.get_focus()
         if not entry: return
         self.listbox.set_focus(0)
 
-    def go_to_last(self):
+    def go_to_last(self, size, key):
         """last entry"""
         entry, pos = self.listbox.get_focus()
         if not entry: return
         self.listbox.set_focus(self.lenitems-1)
 
-    def prev_entry(self):
+    def prev_entry(self, size, key):
         """previous entry"""
         entry, pos = self.listbox.get_focus()
         if not entry: return
         if pos == 0: return
         self.listbox.set_focus(pos - 1)
 
-    def open_file(self):
+    def open_file(self, size, key):
         """open document file"""
         entry = self.listbox.get_focus()[0]
         if not entry: return
@@ -180,7 +189,7 @@ class Search(urwid.WidgetWrap):
         self.ui.set_status('opening file: %s...' % path)
         papis.api.open_file(path)
 
-    def open_url(self):
+    def open_url(self, size, key):
         """open document URL in browser"""
         entry = self.listbox.get_focus()[0]
         if not entry: return
@@ -192,63 +201,15 @@ class Search(urwid.WidgetWrap):
         url = urls[0]
         self.ui.set_status('opening url: %s...' % url)
 
-    def view_bibtex(self):
+    def view_bibtex(self, size, key):
         """view document bibtex"""
         entry = self.listbox.get_focus()[0]
         if not entry: return
         self.ui.newbuffer(['bibview', 'ref = ' + entry.docid])
 
-    def copyID(self):
-        """copy document ID to clipboard"""
-        entry = self.listbox.get_focus()[0]
-        if not entry: return
-        docid = "id:%s" % entry["id"]
-        xclip(docid)
-        self.ui.set_status('docid yanked: %s' % docid)
-
-    def copyPath(self):
-        """copy document file path to clipboard"""
-        entry = self.listbox.get_focus()[0]
-        if not entry: return
-        path = entry.doc.get_fullpaths()[0]
-        if not path:
-            self.ui.echoerr(
-                'id:%s: file path not found.' % entry.docid
-            )
-            return
-        xclip(path)
-        self.ui.set_status('path yanked: %s' % path)
-
-    def copyURL(self):
-        """copy document URL to clipboard"""
-        entry = self.listbox.get_focus()[0]
-        if not entry: return
-        urls = entry.doc.get_urls()
-        if not urls:
-            self.ui.echoerr(
-                'id:%s: URL not found.' % entry.docid
-            )
-            return
-        url = urls[0]
-        xclip(url)
-        self.ui.set_status('url yanked: %s' % url)
-
-    def copyBibtex(self):
-        """copy document bibtex to clipboard"""
-        entry = self.listbox.get_focus()[0]
-        if not entry: return
-        bibtex = entry.doc.get_bibpath()
-        if not bibtex:
-            self.ui.echoerr(
-                'id:%s: bibtex not found.' % entry.docid
-            )
-            return
-        xclip(bibtex, isfile=True)
-        self.ui.set_status('bibtex yanked: %s' % bibtex)
-
     def keypress(self, size, key):
         if key in self.keys:
-            cmd = "self.%s()" % (self.keys[key])
-            eval(cmd)
+            cmd = eval("self.%s" % (self.keys[key]))
+            cmd(size, key)
         else:
             self.ui.keypress(key)
