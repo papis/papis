@@ -214,6 +214,14 @@ Rofi gui
 
 def get_default_settings():
     return {
+        "urwid-gui": {
+            "search-key": "/",
+            "help-key": "?",
+            "quit-key": "Q",
+            "redraw-key": "r",
+            "kill-buffer-key": "q",
+            "show-fields": "title,author,year,abstract",
+        },
         "vim-gui": {
             "help-key"          : "h",
             "open-key"          : "o",
