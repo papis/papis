@@ -18,6 +18,7 @@ Copyright 2012, 2013
 Jameson Rollins <jrollins@finestructure.net>
 """
 
+import re
 import sys
 import urwid
 from .search import Search
@@ -99,7 +100,17 @@ class UI():
     def set_header(self, text=None):
         if text:
             self.header_string = '%s' % (text)
-        self.view.set_header(urwid.AttrMap(urwid.Text(self.header_string), 'header'))
+        self.view.set_header(
+            urwid.AttrMap(urwid.Text(self.header_string), 'header')
+        )
+
+    def echoerr(self, text):
+        self.view.set_footer(
+            urwid.AttrMap(urwid.Text('ERROR: ' + text), 'error')
+        )
+
+    def echo(self, text=None):
+        return self.set_status(text)
 
     def set_status(self, text=None):
         if text:

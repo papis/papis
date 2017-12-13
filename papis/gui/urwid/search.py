@@ -175,7 +175,7 @@ class Search(urwid.WidgetWrap):
             return
         path = path[0]
         if not os.path.exists(path):
-            self.ui.set_status('ERROR: id:%s: file not found.' % entry.docid)
+            self.ui.echoerr('id:%s: file not found.' % entry.docid)
             return
         self.ui.set_status('opening file: %s...' % path)
         papis.api.open_file(path)
@@ -212,7 +212,9 @@ class Search(urwid.WidgetWrap):
         if not entry: return
         path = entry.doc.get_fullpaths()[0]
         if not path:
-            self.ui.set_status('ERROR: id:%s: file path not found.' % entry.docid)
+            self.ui.echoerr(
+                'id:%s: file path not found.' % entry.docid
+            )
             return
         xclip(path)
         self.ui.set_status('path yanked: %s' % path)
@@ -223,7 +225,9 @@ class Search(urwid.WidgetWrap):
         if not entry: return
         urls = entry.doc.get_urls()
         if not urls:
-            self.ui.set_status('ERROR: id:%s: URL not found.' % entry.docid)
+            self.ui.echoerr(
+                'id:%s: URL not found.' % entry.docid
+            )
             return
         url = urls[0]
         xclip(url)
@@ -235,7 +239,9 @@ class Search(urwid.WidgetWrap):
         if not entry: return
         bibtex = entry.doc.get_bibpath()
         if not bibtex:
-            self.ui.set_status('ERROR: id:%s: bibtex not found.' % entry.docid)
+            self.ui.echoerr(
+                'id:%s: bibtex not found.' % entry.docid
+            )
             return
         xclip(bibtex, isfile=True)
         self.ui.set_status('bibtex yanked: %s' % bibtex)
