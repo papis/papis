@@ -103,9 +103,6 @@ class Search(urwid.WidgetWrap):
         'enter': "open_file",
         'u': "open_url",
         'b': "viewBibtex",
-        '+': "addTags",
-        '-': "removeTags",
-        'a': "archive",
         'meta i': "copyID",
         'meta f': "copyPath",
         'meta u': "copyURL",
@@ -140,6 +137,9 @@ class Search(urwid.WidgetWrap):
         if not entry: return
         if pos + 1 >= self.lenitems: return
         self.listbox.set_focus(pos + 1)
+
+    def filter(self):
+        pass
 
     def goToFirst(self):
         """first entry"""
@@ -234,50 +234,6 @@ class Search(urwid.WidgetWrap):
             return
         xclip(bibtex, isfile=True)
         self.ui.set_status('bibtex yanked: %s' % bibtex)
-
-    def addTags(self):
-        """add tags from document (space separated)"""
-        self.promptTag('+')
-
-    def removeTags(self):
-        """remove tags from document (space separated)"""
-        self.promptTag('-')
-
-    def promptTag(self, sign):
-        entry = self.listbox.get_focus()[0]
-        if not entry: return
-        if sign is '+':
-            # FIXME: autocomplete to existing tags
-            prompt = 'add tags: '
-        elif sign is '-':
-            # FIXME: autocomplete to doc tags only
-            prompt = 'remove tags: '
-        urwid.connect_signal(self.ui.prompt(prompt), 'done', self._promptTag_done, sign)
-
-    def _promptTag_done(self, tag_string, sign):
-        self.ui.view.set_focus('body')
-        urwid.disconnect_signal(self, self.ui.prompt, 'done', self._promptTag_done)
-        if not tag_string:
-            self.ui.set_status('No tags set.')
-            return
-        entry = self.listbox.get_focus()[0]
-        with Database(self.ui.xroot, writable=True) as db:
-            doc = db[entry.docid]
-            tags = tag_string.split()
-            if sign is '+':
-                doc.add_tags(tags)
-                msg = "Added tags: %s" % (tag_string)
-            elif sign is '-':
-                doc.remove_tags(tags)
-                msg = "Removed tags: %s" % (tag_string)
-            doc.sync()
-        tags = doc.get_tags()
-        entry.fields['tags'].set_text(' '.join(tags))
-        self.ui.set_status(msg)
-
-    def archive(self):
-        """archive document (remove 'new' tag)"""
-        self._promptTag_done('new', '-')
 
     def keypress(self, size, key):
         if key in self.keys:
