@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS-CONFIG" "1" "Oct 16, 2017" "0.4.5" "papis"
+.TH "PAPIS-CONFIG" "1" "Dec 06, 2017" "0.4.9" "papis"
 .SH NAME
 papis-config \- Papis Configuration
 .
@@ -124,225 +124,636 @@ vim\-gui\-header\-format = Title: %(header\-format)s
 .UNINDENT
 .UNINDENT
 .SH DEFAULT SETTINGS
-.SS settings
+.SS General
 .INDENT 0.0
 .TP
-.B add\-confirm
-Default: \fBFalse\fP
-.TP
-.B add\-edit
-Default: \fBFalse\fP
-.TP
-.B add\-interactive
-Default: \fBFalse\fP
-.TP
-.B add\-name
-Default: 
-.nf
-\(ga\(ga
-.fi
-
-.nf
-\(ga\(ga
-.fi
-
-.TP
-.B add\-open
-Default: \fBFalse\fP
-.TP
-.B browse\-query\-format
-Default: \fB{doc[title]} {doc[author]}\fP
-.TP
-.B browser
-Default: \fBxdg\-open\fP
-.TP
-.B cache\-dir
-Default: \fB/home/gallo/.cache/papis\fP
-.TP
-.B check\-keys
-Default: \fBfiles\fP
-.TP
-.B default\-gui
-Default: \fBvim\fP
-.TP
-.B default\-library
-Default: \fBpapers\fP
-.sp
-Library to be open if no library has not been explicitly selected.
-.TP
-.B dir\-umask
-Default: \fB493\fP
-.TP
-.B doc\-url\-key\-name
-Default: \fBdoc_url\fP
-.TP
-.B editor
-Default: \fBvim\fP
-.TP
-.B export\-text\-format
-Default: \fB{doc[author]}. {doc[title]}. {doc[journal]} {doc[pages]} {doc[month]} {doc[year]}\fP
-.TP
-.B extra\-bibtex\-keys
-Default: 
-.nf
-\(ga\(ga
-.fi
-
-.nf
-\(ga\(ga
-.fi
-
-.TP
-.B extra\-bibtex\-types
-Default: 
-.nf
-\(ga\(ga
-.fi
-
-.nf
-\(ga\(ga
-.fi
-
-.TP
-.B file\-browser
-Default: \fBxdg\-open\fP
-.TP
-.B format\-doc\-name
-Default: \fBdoc\fP
-.TP
-.B header\-format
-Default: \fB{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:\-<4})\fP
-.TP
-.B info\-name
-Default: \fBinfo.yaml\fP
-.TP
-.B match\-format
-Default: \fB{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}\fP
-.TP
-.B mode
-Default: \fBdocument\fP
-.TP
-.B mvtool
-Default: \fBmv\fP
-.TP
-.B notes\-name
-Default: \fBnotes.tex\fP
-.TP
-.B opentool
-Default: \fBxdg\-open\fP
-.TP
-.B picktool
-Default: \fBpapis.pick\fP
-.TP
-.B scripts\-short\-help\-regex
-Default: \fB\&.*papis\-short\-help: *(.*)\fP
-.TP
-.B search\-engine
-Default: \fBhttps://duckduckgo.com\fP
-.TP
-.B sync\-command
-Default: \fBgit \-C {lib[dir]} pull origin master\fP
-.TP
-.B use\-cache
-Default: \fBTrue\fP
-.TP
-.B use\-git
-Default: \fBFalse\fP
-.TP
-.B user\-agent
-Default: \fBMozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36\fP
-.TP
-.B xeditor
-Default: \fBxdg\-open\fP
+\fBmode\fP (\fI\%config\-settings\-mode\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBdocument\fP
 .UNINDENT
-.SS rofi\-gui
+.UNINDENT
+.sp
+Papis is a modal program and it can be configured to support different
+operating modes. The default is considering that every papis document
+or entry is a ‘document’.
 .INDENT 0.0
 .TP
-.B case_sensitive
-Default: \fBFalse\fP
-.TP
-.B eh
-Default: \fB3\fP
-.TP
-.B fixed_lines
-Default: \fB20\fP
-.TP
-.B fullscreen
-Default: \fBFalse\fP
-.TP
-.B header\-format
+\fBopentool\fP (\fI\%config\-settings\-opentool\fP)
 .INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBxdg\-open\fP
+.UNINDENT
+.UNINDENT
+.sp
+This is the general program that will be used to open documents.
+As for now papis is not intended to detect the type of document to be open
+and decide upon it how to open the document. You should set this
+to the right program for the tool. If you are in linux you might want
+to take a look at \fI\%ranger\fP or let
+the default handle it in your system.
+For mac users you might set this to \fBopen\fP\&.
+.INDENT 0.0
 .TP
-.B Default:
+\fBdir\-umask\fP (\fI\%config\-settings\-dir\-umask\fP)
 .INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB493\fP
+.UNINDENT
+.UNINDENT
+.sp
+This is the default \fBumask\fP that will be used to create the new
+documents’ directories.
+.INDENT 0.0
+.TP
+\fBbrowser\fP (\fI\%config\-settings\-browser\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB$BROWSER\fP
+.UNINDENT
+.UNINDENT
+.sp
+Program to be used for opening websites, the default is the environment
+variable \fB$BROWSER\fP\&.
+.INDENT 0.0
+.TP
+\fBpicktool\fP (\fI\%config\-settings\-picktool\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBpapis.pick\fP
+.UNINDENT
+.UNINDENT
+.sp
+This is the program used whenever papis asks you to pick a document
+or options in general.
+.INDENT 0.0
+.TP
+.B Possible options are:
+.INDENT 7.0
+.IP \(bu 2
+papis.pick
+.IP \(bu 2
+rofi
+.IP \(bu 2
+vim
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBmvtool\fP (\fI\%config\-settings\-mvtool\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBmv\fP
+.UNINDENT
+.UNINDENT
+.sp
+Tool used to in the \fBpapis mv\fP command to move documents.
+If you are using \fBgit\fP to manage your documents, you might consider
+setting it to \fBmvtool = git mv\fP\&.
+.INDENT 0.0
+.TP
+\fBeditor\fP (\fI\%config\-settings\-editor\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB$EDITOR\fP
+.UNINDENT
+.UNINDENT
+.sp
+Editor used to edit files in papis, for instance for the \fBpapis edit\fP
+command. It defaults to the \fB$EDITOR\fP environment variable, if this is
+not set then it will default to the \fB$VISUAL\fP environment variable.
+Otherwise the default editor in your system will be used.
+.INDENT 0.0
+.TP
+\fBxeditor\fP (\fI\%config\-settings\-xeditor\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBxdg\-open\fP
+.UNINDENT
+.UNINDENT
+.sp
+Sometimes papis might use an editor that uses a windowing system
+(GUI Editor), you can set this to your prefered gui based editor, e.g.:
+\fBgedit\fP, \fBxemacs\fP, \fBgvim\fP to name a few.
+.INDENT 0.0
+.TP
+\fBsync\-command\fP (\fI\%config\-settings\-sync\-command\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBgit \-C {lib[dir]} pull origin master\fP
+.UNINDENT
+.UNINDENT
+.sp
+Command that is to be used when \fBpapis sync\fP is run.
+.INDENT 0.0
+.TP
+\fBnotes\-name\fP (\fI\%config\-settings\-notes\-name\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBnotes.tex\fP
+.UNINDENT
+.UNINDENT
+.sp
+In \fBpapis edit\fP you can edit notes about the document. \fBnotes\-name\fP
+is the default name of the notes file, which by default is supposed
+to be a TeX file.
+.INDENT 0.0
+.TP
+\fBuse\-cache\fP (\fI\%config\-settings\-use\-cache\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBTrue\fP
+.UNINDENT
+.UNINDENT
+.sp
+Set to \fBFalse\fP if you do not want to use the \fBcache\fP
+for the given library.
+.INDENT 0.0
+.TP
+\fBcache\-dir\fP (\fI\%config\-settings\-cache\-dir\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB/home/ale/.cache/papis\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBuse\-git\fP (\fI\%config\-settings\-use\-git\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBFalse\fP
+.UNINDENT
+.UNINDENT
+.sp
+Some commands will issue git commands if this option is set to \fBTrue\fP\&.
+For example in \fBmv\fP or \fBrename\fP\&.
+.INDENT 0.0
+.TP
+\fBadd\-confirm\fP (\fI\%config\-settings\-add\-confirm\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBFalse\fP
+.UNINDENT
+.UNINDENT
+.sp
+If set to \fBTrue\fP, everytime you run \fBpapis add\fP
+the flag \fB\-\-confirm\fP will be added automatically. If is set to \fBTrue\fP
+and you add it, i.e., you run \fBpapis add \-\-confirm\fP, then it will
+fave the contrary effect, i.e., it will not ask for confirmation.
+.INDENT 0.0
+.TP
+\fBadd\-name\fP (\fI\%config\-settings\-add\-name\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: 
+.nf
+\(ga\(ga
+.fi
+
+.nf
+\(ga\(ga
+.fi
+
+.UNINDENT
+.UNINDENT
+.sp
+Default name for newly added documents. For example, if you want
+your documents to be \fBauthor\-title\fP then you should set it to
+the papis format: \fB{doc[author]}\-{doc[title]}\fP\&.
+.INDENT 0.0
+.TP
+\fBadd\-interactive\fP (\fI\%config\-settings\-add\-interactive\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBFalse\fP
+.UNINDENT
+.UNINDENT
+.sp
+If set to \fBTrue\fP, everytime you run \fBpapis add\fP
+the flag \fB\-\-interactive\fP will be added automatically. If is set to
+\fBTrue\fP and you add it, i.e., you run \fBpapis add \-\-interactive\fP, then it
+will fave the contrary effect, i.e., it will not run in interactive mode.
+.INDENT 0.0
+.TP
+\fBadd\-edit\fP (\fI\%config\-settings\-add\-edit\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBFalse\fP
+.UNINDENT
+.UNINDENT
+.sp
+If set to \fBTrue\fP, everytime you run \fBpapis add\fP
+the flag \fB\-\-edit\fP will be added automatically. If is set to
+\fBTrue\fP and you add it, i.e., you run \fBpapis add \-\-edit\fP, then it
+will fave the contrary effect, i.e., it will not prompt to edit the info
+file.
+.INDENT 0.0
+.TP
+\fBadd\-open\fP (\fI\%config\-settings\-add\-open\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBFalse\fP
+.UNINDENT
+.UNINDENT
+.sp
+If set to \fBTrue\fP, everytime you run \fBpapis add\fP
+the flag \fB\-\-open\fP will be added automatically. If is set to
+\fBTrue\fP and you add it, i.e., you run \fBpapis add \-\-open\fP, then it
+will fave the contrary effect, i.e., it will not open the attached files
+before adding the document to the library.
+.INDENT 0.0
+.TP
+\fBcheck\-keys\fP (\fI\%config\-settings\-check\-keys\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBfiles\fP
+.UNINDENT
+.UNINDENT
+.sp
+Comma separated key values to be checked by default by the command
+\fBcheck\fP\&. E.g: \fBcheck\-keys = author, doi\fP\&.
+.INDENT 0.0
+.TP
+\fBbrowse\-query\-format\fP (\fI\%config\-settings\-browse\-query\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB{doc[title]} {doc[author]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+The query string that is to be searched for in the \fBbrowse\fP command
+whenever a search engine is used.
+.INDENT 0.0
+.TP
+\fBsearch\-engine\fP (\fI\%config\-settings\-search\-engine\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBhttps://duckduckgo.com\fP
+.UNINDENT
+.UNINDENT
+.sp
+Search engine to be used by some commands like \fBbrowse\fP\&.
+.INDENT 0.0
+.TP
+\fBuser\-agent\fP (\fI\%config\-settings\-user\-agent\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBMozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)\fP
+.UNINDENT
+.UNINDENT
+.sp
+User agent used by papis whenever it obtains information from external
+servers.
+.INDENT 0.0
+.TP
+\fBdefault\-gui\fP (\fI\%config\-settings\-default\-gui\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBvim\fP
+.UNINDENT
+.UNINDENT
+.sp
+Default gui to be used by papis, it can have the values given
+by \fBpapis gui \-\-help\fP\&.
+.INDENT 0.0
+.TP
+\fBscripts\-short\-help\-regex\fP (\fI\%config\-settings\-scripts\-short\-help\-regex\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB\&.*papis\-short\-help: *(.*)\fP
+.UNINDENT
+.UNINDENT
+.sp
+This is the format of the short help indicator in external papis
+commands.
+.INDENT 0.0
+.TP
+\fBinfo\-name\fP (\fI\%config\-settings\-info\-name\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBinfo.yaml\fP
+.UNINDENT
+.UNINDENT
+.sp
+The default name of the information files.
+.INDENT 0.0
+.TP
+\fBdoc\-url\-key\-name\fP (\fI\%config\-settings\-doc\-url\-key\-name\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBdoc_url\fP
+.UNINDENT
+.UNINDENT
+.sp
+Some documents might have associated apart from an url also a file url,
+the key name appearing in the information file is defined by
+this setting.
+.INDENT 0.0
+.TP
+\fBfile\-browser\fP (\fI\%config\-settings\-file\-browser\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBxdg\-open\fP
+.UNINDENT
+.UNINDENT
+.sp
+File browser to be used when opening a directory, it defaults to the
+default file browser in your system, however you can set it to different
+file browsers such as \fBdolphin\fP, \fBthunar\fP, \fBranger\fP to name a few.
+.INDENT 0.0
+.TP
+\fBextra\-bibtex\-keys\fP (\fI\%config\-settings\-extra\-bibtex\-keys\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: 
+.nf
+\(ga\(ga
+.fi
+
+.nf
+\(ga\(ga
+.fi
+
+.UNINDENT
+.UNINDENT
+.sp
+When exporting documents in bibtex format, you might want to add
+non\-standard bibtex keys such as \fBdoc_url\fP or \fBtags\fP, you can add
+these here as comma separated values, for example
+\fBextra\-bibtex\-keys = tags, doc_url\fP\&.
+.INDENT 0.0
+.TP
+\fBextra\-bibtex\-types\fP (\fI\%config\-settings\-extra\-bibtex\-types\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: 
+.nf
+\(ga\(ga
+.fi
+
+.nf
+\(ga\(ga
+.fi
+
+.UNINDENT
+.UNINDENT
+.sp
+Allow non\-standard bibtex types to be recognised, e.g,
+\fBextra\-bibtex\-types = wikipedia, video, song\fP\&.
+See \fI\%bibtex reference\fP\&.
+.INDENT 0.0
+.TP
+\fBdefault\-library\fP (\fI\%config\-settings\-default\-library\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBpapers\fP
+.UNINDENT
+.UNINDENT
+.sp
+The name of the library that is to be searched when \fBpapis\fP
+is run without library arguments.
+.INDENT 0.0
+.TP
+\fBexport\-text\-format\fP (\fI\%config\-settings\-export\-text\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB{doc[author]}. {doc[title]}. {doc[journal]} {doc[pages]} {doc[month]} {doc[year]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+The default output papis format for \fBpapis export \-\-text\fP\&.
+.INDENT 0.0
+.TP
+\fBformat\-doc\-name\fP (\fI\%config\-settings\-format\-doc\-name\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBdoc\fP
+.UNINDENT
+.UNINDENT
+.sp
+This setting controls the name of the document in the papis format strings
+like in format strings such as \fBmatch\-format\fP or \fBheader\-format\fP\&.
+For instance, if you are managing videos, you might want to
+set this option to \fBvid\fP in order to set  the \fBheader\-format\fP to
+\fB{doc[title]} \- {doc[director]} \- {doc[duration]}\fP\&.
+.INDENT 0.0
+.TP
+\fBmatch\-format\fP (\fI\%config\-settings\-match\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+Default format that is used to match a document against in order to select
+it. For example if the \fBmatch\-format\fP is equal to
+\fB{doc[year]} {doc[author]}\fP then title of a document will not work
+to match a document, onlye the year and author.
+.INDENT 0.0
+.TP
+\fBheader\-format\fP (\fI\%config\-settings\-header\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:\-<4})\fP
+.UNINDENT
+.UNINDENT
+.sp
+Default format that is used to show a document in order to select it.
+.INDENT 0.0
+.TP
+\fBopen\-mark\fP (\fI\%config\-settings\-open\-mark\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBFalse\fP
+.UNINDENT
+.UNINDENT
+.sp
+If this option is set to \fBTrue\fP, then every time that papis opens
+a document it will ask to open a mark first.
+If it is set to \fBFalse\fP, then doing
+.INDENT 0.0
 .INDENT 3.5
 .sp
 .nf
 .ft C
-<b>{doc[title]}</b>
-{doc[empty]}  <i>{doc[author]}</i>
-{doc[empty]}  <span foreground="red">({doc[year]:\->4})</span><span foreground="green">{doc[tags]}</span>
+papis open \-\-mark
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
-.UNINDENT
-.TP
-.B key\-browse
-Default: \fBAlt+u\fP
-.TP
-.B key\-delete
-Default: \fBAlt+d\fP
-.TP
-.B key\-edit
-Default: \fBAlt+e\fP
-.TP
-.B key\-help
-Default: \fBAlt+h\fP
-.TP
-.B key\-normal\-window
-Default: \fBAlt+w\fP
-.TP
-.B key\-open
-Default: \fBEnter\fP
-.TP
-.B key\-open\-stay
-Default: \fBAlt+o\fP
-.TP
-.B key\-quit
-Default: \fBAlt+q\fP
-.TP
-.B lines
-Default: \fB10\fP
-.TP
-.B markup_rows
-Default: \fBTrue\fP
-.TP
-.B multi_select
-Default: \fBTrue\fP
-.TP
-.B normal_window
-Default: \fBFalse\fP
-.TP
-.B sep
-Default: \fB|\fP
-.TP
-.B width
-Default: \fB80\fP
-.UNINDENT
-.SS vim\-gui
+.sp
+will avoid opening a mark.
 .INDENT 0.0
 .TP
-.B delete\-key
-Default: \fBdd\fP
-.TP
-.B edit\-key
-Default: \fBe\fP
-.TP
-.B header\-format
+\fBmark\-key\-name\fP (\fI\%config\-settings\-mark\-key\-name\fP)
 .INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBmarks\fP
+.UNINDENT
+.UNINDENT
+.sp
+This is the default key name for the marks in the info file, for
+example if you set \fBmark\-key\-name = bookmarks\fP then you would have
+in your \fBinfo.yaml\fP file
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+author: J. Krishnamurti
+bookmarks:
+\- name: Chapter 1
+  value: 120
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B Default:
+\fBmark\-format\-name\fP (\fI\%config\-settings\-mark\-format\-name\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBmark\fP
+.UNINDENT
+.UNINDENT
+.sp
+This is the name of the mark to be passed to the options
+\fBmark\-header\-format\fP etc… E.g. if you set \fBmark\-format\-name = m\fP
+then you could set \fBmark\-header\-format = {m[value]} \- {m[name]}\fP\&.
+.INDENT 0.0
+.TP
+\fBmark\-header\-format\fP (\fI\%config\-settings\-mark\-header\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB{mark[name]} \- {mark[value]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+This is the format in which the mark will appear whenever the user
+has to pick one, you can change this in order to make \fBmarks\fP work
+in the way you like. Per default it is assumed that every mark
+has a \fBname\fP and a \fBvalue\fP key, but this you can change.
+.INDENT 0.0
+.TP
+\fBmark\-match\-format\fP (\fI\%config\-settings\-mark\-match\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB{mark[name]} \- {mark[value]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+Format in which the mark name has to match the user input.
+.INDENT 0.0
+.TP
+\fBmark\-opener\-format\fP (\fI\%config\-settings\-mark\-opener\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBxdg\-open\fP
+.UNINDENT
+.UNINDENT
+.sp
+Due to the difficulty to generalize opening a general document
+at a given bookmark, the user should set this in whichever way
+it suits their needs. For example
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+If you are using the pdf viewer \fBevince\fP and you want to open a
+mark, you would use \fBmark\-opener\-format = evince \-p {mark[value]}\fP\&.
+.IP \(bu 2
+If you are using \fBzathura\fP, do \fBmark\-opener\-format = zathura \-P
+{mark[value]}\fP\&.
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBinfo\-allow\-unicode\fP (\fI\%config\-settings\-info\-allow\-unicode\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBTrue\fP
+.UNINDENT
+.UNINDENT
+.sp
+This flag is to be set if you want to allow unicode characters
+in your info file or not. If it is set to false then a representation
+for the unicode characters will be written in its place.
+Since we should be living in an unicode world, it is set to \fBTrue\fP
+by default.
+.SS Vim gui
+.INDENT 0.0
+.TP
+\fBhelp\-key\fP (\fI\%config\-vim\-gui\-help\-key\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBh\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBopen\-key\fP (\fI\%config\-vim\-gui\-open\-key\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBo\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBedit\-key\fP (\fI\%config\-vim\-gui\-edit\-key\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBe\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBsearch\-key\fP (\fI\%config\-vim\-gui\-search\-key\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB/\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBdelete\-key\fP (\fI\%config\-vim\-gui\-delete\-key\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBdd\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBopen\-dir\-key\fP (\fI\%config\-vim\-gui\-open\-dir\-key\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB<S\-o>\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBnext\-search\-key\fP (\fI\%config\-vim\-gui\-next\-search\-key\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBn\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBprev\-search\-key\fP (\fI\%config\-vim\-gui\-prev\-search\-key\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBN\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBheader\-format\fP (\fI\%config\-vim\-gui\-header\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+.INDENT 2.0
+.TP
+\fBDefault\fP: 
 .INDENT 7.0
 .INDENT 3.5
 .sp
@@ -357,86 +768,319 @@ Year  : {doc[year]}
 .UNINDENT
 .UNINDENT
 .UNINDENT
-.TP
-.B help\-key
-Default: \fBh\fP
-.TP
-.B next\-search\-key
-Default: \fBn\fP
-.TP
-.B open\-dir\-key
-Default: \fB<S\-o>\fP
-.TP
-.B open\-key
-Default: \fBo\fP
-.TP
-.B prev\-search\-key
-Default: \fBN\fP
-.TP
-.B search\-key
-Default: \fB/\fP
 .UNINDENT
-.SS tk\-gui
+.UNINDENT
+.SS Tk gui
 .INDENT 0.0
 .TP
-.B activebackground
-Default: \fB#394249\fP
-.TP
-.B activeforeground
-Default: \fBgray99\fP
-.TP
-.B borderwidth
-Default: \fB\-1\fP
-.TP
-.B clear
-Default: \fBq\fP
-.TP
-.B cursor
-Default: \fBxterm\fP
-.TP
-.B edit
-Default: \fBe\fP
-.TP
-.B entry\-bg\-odd
-Default: \fB#273238\fP
-.TP
-.B entry\-bg\-pair
-Default: \fB#273238\fP
-.TP
-.B entry\-bg\-size
-Default: \fB14\fP
-.TP
-.B entry\-fg
-Default: \fBgrey77\fP
-.TP
-.B entry\-font\-name
-Default: \fBTimes\fP
-.TP
-.B entry\-font\-size
-Default: \fB14\fP
-.TP
-.B entry\-font\-style
-Default: \fBnormal\fP
-.TP
-.B entry\-lines
-Default: \fB3\fP
-.TP
-.B exit
-Default: \fB<Control\-q>\fP
-.TP
-.B focus_prompt
-Default: \fB:\fP
-.TP
-.B half_down
-Default: \fB<Control\-d>\fP
-.TP
-.B half_up
-Default: \fB<Control\-u>\fP
-.TP
-.B header\-format
+\fBopen\fP (\fI\%config\-tk\-gui\-open\fP)
 .INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBo\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B Default:
+\fBedit\fP (\fI\%config\-tk\-gui\-edit\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBe\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBexit\fP (\fI\%config\-tk\-gui\-exit\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB<Control\-q>\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBclear\fP (\fI\%config\-tk\-gui\-clear\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBq\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBhelp\fP (\fI\%config\-tk\-gui\-help\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBh\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBfocus_prompt\fP (\fI\%config\-tk\-gui\-focus_prompt\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB:\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBmove_down\fP (\fI\%config\-tk\-gui\-move_down\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBj\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBmove_up\fP (\fI\%config\-tk\-gui\-move_up\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBk\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBmove_top\fP (\fI\%config\-tk\-gui\-move_top\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBg\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBmove_bottom\fP (\fI\%config\-tk\-gui\-move_bottom\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB<Shift\-G>\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBprint_info\fP (\fI\%config\-tk\-gui\-print_info\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBi\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBhalf_down\fP (\fI\%config\-tk\-gui\-half_down\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB<Control\-d>\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBhalf_up\fP (\fI\%config\-tk\-gui\-half_up\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB<Control\-u>\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBscroll_down\fP (\fI\%config\-tk\-gui\-scroll_down\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB<Control\-e>\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBscroll_up\fP (\fI\%config\-tk\-gui\-scroll_up\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB<Control\-y>\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBprompt\-fg\fP (\fI\%config\-tk\-gui\-prompt\-fg\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBlightgreen\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBprompt\-bg\fP (\fI\%config\-tk\-gui\-prompt\-bg\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBblack\fP
+.UNINDENT
+.UNINDENT
+.sp
+Color of the foreground of an entry
+.INDENT 0.0
+.TP
+\fBentry\-fg\fP (\fI\%config\-tk\-gui\-entry\-fg\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBgrey77\fP
+.UNINDENT
+.UNINDENT
+.sp
+Color of the foreground of an active entry
+.INDENT 0.0
+.TP
+\fBactiveforeground\fP (\fI\%config\-tk\-gui\-activeforeground\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBgray99\fP
+.UNINDENT
+.UNINDENT
+.sp
+Color of the background of an active entry
+.INDENT 0.0
+.TP
+\fBactivebackground\fP (\fI\%config\-tk\-gui\-activebackground\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB#394249\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBinsertbackground\fP (\fI\%config\-tk\-gui\-insertbackground\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBred\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBprompt\-font\-size\fP (\fI\%config\-tk\-gui\-prompt\-font\-size\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB14\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBentry\-bg\-size\fP (\fI\%config\-tk\-gui\-entry\-bg\-size\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB14\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBentry\-font\-size\fP (\fI\%config\-tk\-gui\-entry\-font\-size\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB14\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBentry\-font\-name\fP (\fI\%config\-tk\-gui\-entry\-font\-name\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBTimes\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBentry\-font\-style\fP (\fI\%config\-tk\-gui\-entry\-font\-style\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBnormal\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBentry\-lines\fP (\fI\%config\-tk\-gui\-entry\-lines\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB3\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBentry\-bg\-odd\fP (\fI\%config\-tk\-gui\-entry\-bg\-odd\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB#273238\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBentry\-bg\-pair\fP (\fI\%config\-tk\-gui\-entry\-bg\-pair\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB#273238\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBcursor\fP (\fI\%config\-tk\-gui\-cursor\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBxterm\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBheight\fP (\fI\%config\-tk\-gui\-height\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB1\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBlabels\-per\-page\fP (\fI\%config\-tk\-gui\-labels\-per\-page\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB6\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBborderwidth\fP (\fI\%config\-tk\-gui\-borderwidth\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB\-1\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBwindow\-width\fP (\fI\%config\-tk\-gui\-window\-width\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB1200\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBwindow\-bg\fP (\fI\%config\-tk\-gui\-window\-bg\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB#273238\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBwindow\-height\fP (\fI\%config\-tk\-gui\-window\-height\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB700\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBmatch\-format\fP (\fI\%config\-tk\-gui\-match\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBheader\-format\fP (\fI\%config\-tk\-gui\-header\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+.INDENT 2.0
+.TP
+\fBDefault\fP: 
 .INDENT 7.0
 .INDENT 3.5
 .sp
@@ -450,63 +1094,175 @@ Default: \fB<Control\-u>\fP
 .UNINDENT
 .UNINDENT
 .UNINDENT
+.UNINDENT
+.UNINDENT
+.SS Rofi gui
+.INDENT 0.0
 .TP
-.B height
-Default: \fB1\fP
+\fBkey\-quit\fP (\fI\%config\-rofi\-gui\-key\-quit\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBAlt+q\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B help
-Default: \fBh\fP
+\fBkey\-edit\fP (\fI\%config\-rofi\-gui\-key\-edit\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBAlt+e\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B insertbackground
-Default: \fBred\fP
+\fBkey\-delete\fP (\fI\%config\-rofi\-gui\-key\-delete\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBAlt+d\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B labels\-per\-page
-Default: \fB6\fP
+\fBkey\-help\fP (\fI\%config\-rofi\-gui\-key\-help\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBAlt+h\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B match\-format
-Default: \fB{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}\fP
+\fBkey\-open\-stay\fP (\fI\%config\-rofi\-gui\-key\-open\-stay\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBAlt+o\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B move_bottom
-Default: \fB<Shift\-G>\fP
+\fBkey\-normal\-window\fP (\fI\%config\-rofi\-gui\-key\-normal\-window\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBAlt+w\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B move_down
-Default: \fBj\fP
+\fBkey\-browse\fP (\fI\%config\-rofi\-gui\-key\-browse\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBAlt+u\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B move_top
-Default: \fBg\fP
+\fBkey\-open\fP (\fI\%config\-rofi\-gui\-key\-open\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBEnter\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B move_up
-Default: \fBk\fP
+\fBeh\fP (\fI\%config\-rofi\-gui\-eh\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB3\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B open
-Default: \fBo\fP
+\fBsep\fP (\fI\%config\-rofi\-gui\-sep\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB|\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B print_info
-Default: \fBi\fP
+\fBwidth\fP (\fI\%config\-rofi\-gui\-width\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB80\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B prompt\-bg
-Default: \fBblack\fP
+\fBlines\fP (\fI\%config\-rofi\-gui\-lines\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB10\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B prompt\-fg
-Default: \fBlightgreen\fP
+\fBfullscreen\fP (\fI\%config\-rofi\-gui\-fullscreen\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBFalse\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B prompt\-font\-size
-Default: \fB14\fP
+\fBnormal_window\fP (\fI\%config\-rofi\-gui\-normal_window\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBFalse\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B scroll_down
-Default: \fB<Control\-e>\fP
+\fBfixed_lines\fP (\fI\%config\-rofi\-gui\-fixed_lines\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB20\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B scroll_up
-Default: \fB<Control\-y>\fP
+\fBmarkup_rows\fP (\fI\%config\-rofi\-gui\-markup_rows\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBTrue\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B window\-bg
-Default: \fB#273238\fP
+\fBmulti_select\fP (\fI\%config\-rofi\-gui\-multi_select\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBTrue\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B window\-height
-Default: \fB700\fP
+\fBcase_sensitive\fP (\fI\%config\-rofi\-gui\-case_sensitive\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBFalse\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
-.B window\-width
-Default: \fB1200\fP
+\fBheader\-format\fP (\fI\%config\-rofi\-gui\-header\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+.INDENT 2.0
+.TP
+\fBDefault\fP: 
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+<b>{doc[title]}</b>
+{doc[empty]}  <i>{doc[author]}</i>
+{doc[empty]}  <span foreground="red">({doc[year]:\->4})</span><span foreground="green">{doc[tags]}</span>
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
 .UNINDENT
 .SH AUTHOR
 Alejandro Gallo

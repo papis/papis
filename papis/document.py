@@ -119,7 +119,12 @@ class Document(object):
         for key in self.keys():
             structure[key] = self[key]
         # self.logger.debug("Saving %s " % self.get_info_file())
-        yaml.dump(structure, fd, default_flow_style=False)
+        yaml.dump(
+            structure,
+            fd,
+            allow_unicode=papis.config.getboolean("info-allow-unicode"),
+            default_flow_style=False
+        )
         fd.close()
 
     def to_json(self):

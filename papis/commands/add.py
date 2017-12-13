@@ -13,6 +13,20 @@ Examples
 
         papis add ~/Documents/interesting.pdf --name interesting-paper-2021
 
+    - Add a paper that you have locally in a file and get the paper
+      information through its ``doi`` identificator (in this case
+      ``10.10763/1.3237134`` as an example):
+
+    .. code::
+
+        papis add ~/Documents/interesting.pdf --from-doi 10.10763/1.3237134
+
+    - Add paper to a library named ``machine-learning`` from ``arxiv.org``
+
+    .. code::
+
+        papis -l machine-learning add --from-url https://arxiv.org/abs/1712.03134
+
 """
 import papis
 import os
@@ -143,7 +157,7 @@ class Command(papis.commands.Command):
 
         self.parser.add_argument(
             "--to",
-            help="When --to is specified, the document will be added to the"
+            help="When --to is specified, the document will be added to the "
                 "selected already existing document entry.",
             nargs="?",
             action="store"
@@ -352,6 +366,7 @@ class Command(papis.commands.Command):
 
         if self.args.from_vcf:
             data.update(papis.utils.vcf_to_data(self.args.from_vcf))
+
         in_documents_names = [
             papis.utils.clean_document_name(doc_path)
             for doc_path in in_documents_paths
@@ -450,7 +465,7 @@ class Command(papis.commands.Command):
             )
             document.save()
             self.logger.debug("Editing file before adding it")
-            papis.api.edit_file(document.get_info_file())
+            papis.api.edit_file(document.get_info_file(), wait=True)
             self.logger.debug("Loading the changes made by editing")
             document.load()
             data = document.to_dict()
@@ -475,6 +490,24 @@ class Command(papis.commands.Command):
                     (in_file_path, endDocumentPath)
                 )
                 shutil.copy(in_file_path, endDocumentPath)
+
+        # Duplication checking
+        self.logger.debug("Check if the added document is already existing")
+        found_document = papis.utils.locate_document(
+            document, papis.api.get_documents_in_lib(papis.api.get_lib())
+        )
+        if found_document is not None:
+            self.logger.warning('\n' + found_document.dump())
+            print("\n\n")
+            self.logger.warning("DUPLICATION WARNING")
+            self.logger.warning(
+                "The document above seems to be already in your libray: \n\n"
+            )
+            self.logger.warning(
+                "(Hint) Use the update command if you just want to update"
+                " the info."
+            )
+            self.args.confirm = True
 
         document.update(data, force=True)
         if self.get_args().open:

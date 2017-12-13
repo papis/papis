@@ -112,12 +112,23 @@ class Command(papis.commands.Command):
             action="store_true"
         )
 
+        self.parser.add_argument(
+            "--file",
+            help="Export (copy) pdf file to outfile",
+            default=False,
+            action="store_true"
+        )
+
     def main(self):
 
         documents = papis.api.get_documents_in_lib(
             self.get_args().lib,
             self.get_args().search
         )
+
+        if self.args.json and self.args.folder or \
+           self.args.yaml and self.args.folder:
+            self.logger.warning("Only --folder flag will be considered")
 
         if not self.args.all:
             document = self.pick(documents)
@@ -130,13 +141,13 @@ class Command(papis.commands.Command):
         if not self.args.out and not self.get_args().folder:
             self.args.out = sys.stdout
 
-        if self.args.json:
+        if self.args.json and not self.args.folder:
             import json
             return self.args.out.write(
                 json.dumps([document.to_dict() for document in documents])
             )
 
-        if self.args.yaml:
+        if self.args.yaml and not self.args.folder:
             import yaml
             return self.args.out.write(
                 yaml.dump_all([document.to_dict() for document in documents])
@@ -163,5 +174,16 @@ class Command(papis.commands.Command):
                     ).write(document.to_bibtex())
             elif self.args.vcf:
                 self.args.out.write(document.to_vcf())
+            elif self.args.file:
+                files = document.get_files()
+                file_to_open = papis.api.pick(
+                    files,
+                    pick_config=dict(
+                        header_filter=lambda x: x.replace(
+                            document.get_main_folder(), ""
+                        )
+                    )
+                )
+                shutil.copyfile(file_to_open, self.args.out.name)
             else:
                 pass

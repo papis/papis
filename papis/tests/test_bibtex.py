@@ -40,6 +40,9 @@ class TestBibtex(unittest.TestCase):
                Mang and Du,
                Jiangfeng},
   journal   = {Phys. {Rev}. Lett.}, % some other comment here
+
+  abstract = {... to 100 {\%}(concurrent intercalation)...},
+
   volume    = {105},
   issue     = {4},
 
@@ -72,6 +75,7 @@ class TestBibtex(unittest.TestCase):
           "title",
           "author",
           "journal",
+          "abstract",
           "volume",
           "issue",
           "pages",
@@ -88,6 +92,7 @@ class TestBibtex(unittest.TestCase):
             self.assertTrue(key in list(bib_dic.keys()))
         print(bib_dic['journal'])
         self.assertTrue(re.match(r".*Rev.*", bib_dic['journal']))
+        self.assertTrue(re.match(r".*concurrent inter.*", bib_dic['abstract']))
 
     def test_bibkeys_exist(self):
         self.assertTrue(len(papis.bibtex.bibtex_keys) != 0)

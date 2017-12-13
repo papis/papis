@@ -23,6 +23,12 @@ of if you prefer installing it locally then simply type
 
   pip3 install --user papis
 
+You can also **update** papis with ``pip``
+
+::
+
+  pip3 install --upgrade papis
+
 
 From source
 -----------

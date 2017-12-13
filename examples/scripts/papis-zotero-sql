@@ -1,0 +1,261 @@
+#! /usr/bin/env python3
+# papis-short-help: Convert zotero library to papis library using sqlite
+# Copyright Felix Hummel 2017 GPLv3
+# -*- coding: utf-8 -*-
+import sqlite3
+import yaml
+import os
+import shutil
+import glob
+import dateutil.parser
+
+# path to zotero SQLite database "zoter.sqlite" and "storage" to be imported
+inputPath = "."
+
+# path where all items will be exported to
+# created if not existing
+outputPath = "Documents"
+
+# zotero item types to be excluded.
+# "attachment" are automatically excluded and will be treated as "files"
+excludedTypes = ["note"]
+
+# dictionary of zotero attachments mime types to be included
+# mapped onto their respective extension to be used in papis
+includedAttachments = {"application/pdf":"pdf"}
+
+# dictionary translating from zotero to papis type names
+translatedTypes = {"journalArticle":"article"}
+
+# dictionary translating from zotero to papis field names
+translatedFields = {"DOI":"doi"}
+
+# seperator between multiple tags
+tagDelimiter = ","
+
+# if no attachment is found, give info.yaml as content file
+# set to None if no file should be given in that case
+defaultFile = "info.yaml"
+
+###############################################################################
+
+# concatenate given strings to SQL tuple of strings
+def getTuple(elements):
+  elementsTuple = "("
+  for element in elements:
+    if elementsTuple != "(": elementsTuple += ","
+    elementsTuple += "\"" + element + "\""
+  elementsTuple += ")"
+  return elementsTuple
+
+
+def getFields(connection, itemId):
+  itemFieldQuery = """
+    SELECT
+      fields.fieldName,
+      itemDataValues.value
+    FROM
+      fields,
+      itemData,
+      itemDataValues
+    WHERE
+      itemData.itemID = {itemID} AND
+      fields.fieldID = itemData.fieldID AND
+      itemDataValues.valueID = itemData.valueID
+  """
+  fieldCursor = connection.cursor()
+  fieldCursor.execute(itemFieldQuery.format(itemID=itemId))
+  fields = {}
+  for fieldRow in fieldCursor:
+    fieldName = translatedFields.get(fieldRow[0], fieldRow[0])
+    fieldValue = fieldRow[1]
+    fields[fieldName] = fieldValue;
+  return fields
+
+
+def getCreators(connection, itemId):
+  itemCreatorQuery = """
+    SELECT
+      creatorTypes.creatorType,
+      creatorData.firstName,
+      creatorData.lastName
+    FROM
+      creatorTypes,
+      creators,
+      creatorData,
+      itemCreators
+    WHERE
+      itemCreators.itemID = {itemID} AND
+      creatorTypes.creatorTypeID = itemCreators.creatorTypeID AND
+      creators.creatorID = itemCreators.creatorID AND
+      creatorData.creatorDataID = creators.creatorDataID
+    ORDER BY
+      creatorTypes.creatorType
+  """
+  creatorCursor = connection.cursor()
+  creatorCursor.execute(
+    itemCreatorQuery.format(itemID=itemId)
+  )
+  creators = {}
+
+  for creatorRow in creatorCursor:
+    creatorName = creatorRow[0]
+    creatorNameList = creatorName + "_list"
+    givenName = creatorRow[1]
+    surname = creatorRow[2]
+
+    currentCreators = creators.get(creatorName, "")
+    if currentCreators != "": currentCreators += " and "
+    currentCreators += "{surname}, {givenName}".format(
+      givenName=givenName, surname=surname
+    )
+    creators[creatorName] = currentCreators
+
+    currentCreatorsList = creators.get(creatorNameList, [])
+    currentCreatorsList.append({"given_name":givenName, "surname":surname})
+    creators[creatorNameList] = currentCreatorsList
+
+  return creators
+
+
+def getFiles(connection, itemId, itemKey):
+  itemAttachmentQuery = """
+    SELECT
+      items.key,
+      itemAttachments.path,
+      itemAttachments.mimeType
+    FROM
+      itemAttachments,
+      items
+    WHERE
+      itemAttachments.sourceItemID = {itemID} AND
+      itemAttachments.mimeType IN {mimeTypes} AND
+      items.itemID = itemAttachments.itemID
+  """
+  mimeTypes = getTuple(includedAttachments.keys())
+  attachmentCursor = connection.cursor()
+  attachmentCursor.execute(
+    itemAttachmentQuery.format(itemID=itemId, mimeTypes=mimeTypes)
+  )
+  files = []
+  for attachmentRow in attachmentCursor:
+    key = attachmentRow[0]
+    path = attachmentRow[1]
+    mime = attachmentRow[2]
+    extension = includedAttachments[mime]
+    try:
+      # NOTE: a single file is assumed in the attachment's folder
+      # to avoid using path, which may contain invalid characters
+      importPath = glob.glob(inputPath + "/storage/" + key + "/*.*")[0]
+      localPath = os.path.join(outputPath, itemKey, key + "." + extension)
+      shutil.copyfile(importPath, localPath)
+      files.append(key + "." + extension)
+    except:
+      print(
+        "failed to export attachment {key}: {path} ({mime})".format(
+          key=key, path=path, mime=mime
+        )
+      )
+      pass
+
+  if files == [] and defaultFile: files.append(defaultFile)
+  return {"files":files}
+
+
+def getTags(connection, itemId):
+  itemTagQuery = """
+    SELECT
+      tags.name
+    FROM
+      tags,
+      itemTags
+    WHERE
+      itemTags.itemID = {itemID} AND
+      tags.tagID = itemTags.tagID
+  """
+  tagCursor = connection.cursor()
+  tagCursor.execute(itemTagQuery.format(itemID=itemId))
+  tags = ""
+  for tagRow in tagCursor:
+    if tags != "": tags += tagDelimiter + " "
+    tags += "{tag}".format(tag=tagRow[0])
+
+  return {"tags":tags}
+
+
+def cleanItem(item):
+  if item.get("year") is None and item.get("date") is not None:
+    try:
+      item["year"] = dateutil.parser.parse(item["date"].split(" ")[-1]).year
+    except:
+      pass
+
+
+###############################################################################
+
+connection = sqlite3.connect(os.path.join(inputPath, "zotero.sqlite"))
+cursor = connection.cursor()
+
+excludedTypes.append("attachment")
+excludedTypeTuple = getTuple(excludedTypes)
+itemsCountQuery = """
+  SELECT
+    COUNT(item.itemID)
+  FROM
+    items item,
+    itemTypes itemType
+  WHERE
+    itemType.itemTypeID = item.itemTypeID AND
+    itemType.typeName NOT IN {excludedTypeTuple}
+  ORDER BY
+    item.itemID
+"""
+cursor.execute(itemsCountQuery.format(excludedTypeTuple=excludedTypeTuple))
+for row in cursor:
+  itemsCount = row[0]
+
+
+itemsQuery = """
+  SELECT
+    item.itemID,
+    itemType.typeName,
+    key
+  FROM
+    items item,
+    itemTypes itemType
+  WHERE
+    itemType.itemTypeID = item.itemTypeID AND
+    itemType.typeName NOT IN {excludedTypeTuple}
+  ORDER BY
+    item.itemID
+"""
+
+cursor.execute(itemsQuery.format(excludedTypeTuple=excludedTypeTuple))
+currentItem = 0
+for row in cursor:
+  currentItem += 1
+  itemId = row[0]
+  itemType = translatedTypes.get(row[1], row[1])
+  itemKey = row[2]
+  print(
+    "exporting item {currentItem}/{itemsCount}: {key}".format(
+      currentItem=currentItem, itemsCount=itemsCount, key=itemKey
+    )
+  )
+
+  path = os.path.join(outputPath, itemKey)
+  if not os.path.exists(path): os.makedirs(path)
+
+  item = {"ref":itemKey, "type":itemType}
+  item.update(getFields(connection, itemId))
+  item.update(getCreators(connection, itemId))
+  item.update(getTags(connection, itemId))
+  item.update(getFiles(connection, itemId, itemKey))
+  cleanItem(item)
+
+  itemFile = open(os.path.join(path, "info.yaml"), "w+")
+  yaml.dump(item, itemFile, default_flow_style=False)
+  itemFile.close()
+
+print("done")
+

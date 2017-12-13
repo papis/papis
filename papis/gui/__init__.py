@@ -1,3 +1,216 @@
+"""
+Vim gui
+*******
+
+.. papis-config:: help-key
+    :section: vim-gui
+
+.. papis-config:: open-key
+    :section: vim-gui
+
+.. papis-config:: edit-key
+    :section: vim-gui
+
+.. papis-config:: search-key
+    :section: vim-gui
+
+.. papis-config:: delete-key
+    :section: vim-gui
+
+.. papis-config:: open-dir-key
+    :section: vim-gui
+
+.. papis-config:: next-search-key
+    :section: vim-gui
+
+.. papis-config:: prev-search-key
+    :section: vim-gui
+
+.. papis-config:: header-format
+    :section: vim-gui
+
+Tk gui
+*******
+.. papis-config:: open
+    :section: tk-gui
+
+.. papis-config:: edit
+    :section: tk-gui
+
+.. papis-config:: exit
+    :section: tk-gui
+
+.. papis-config:: clear
+    :section: tk-gui
+
+.. papis-config:: help
+    :section: tk-gui
+
+.. papis-config:: focus_prompt
+    :section: tk-gui
+
+.. papis-config:: move_down
+    :section: tk-gui
+
+.. papis-config:: move_up
+    :section: tk-gui
+
+.. papis-config:: move_top
+    :section: tk-gui
+
+.. papis-config:: move_bottom
+    :section: tk-gui
+
+.. papis-config:: print_info
+    :section: tk-gui
+
+.. papis-config:: half_down
+    :section: tk-gui
+
+.. papis-config:: half_up
+    :section: tk-gui
+
+.. papis-config:: scroll_down
+    :section: tk-gui
+
+.. papis-config:: scroll_up
+    :section: tk-gui
+
+.. papis-config:: prompt-fg
+    :section: tk-gui
+
+.. papis-config:: prompt-bg
+    :section: tk-gui
+
+    Color of the foreground of an entry
+
+.. papis-config:: entry-fg
+    :section: tk-gui
+
+    Color of the foreground of an active entry
+
+.. papis-config:: activeforeground
+    :section: tk-gui
+
+    Color of the background of an active entry
+
+.. papis-config:: activebackground
+    :section: tk-gui
+
+.. papis-config:: insertbackground
+    :section: tk-gui
+
+.. papis-config:: prompt-font-size
+    :section: tk-gui
+
+.. papis-config:: entry-bg-size
+    :section: tk-gui
+
+.. papis-config:: entry-font-size
+    :section: tk-gui
+
+.. papis-config:: entry-font-name
+    :section: tk-gui
+
+.. papis-config:: entry-font-style
+    :section: tk-gui
+
+.. papis-config:: entry-lines
+    :section: tk-gui
+
+.. papis-config:: entry-bg-odd
+    :section: tk-gui
+
+.. papis-config:: entry-bg-pair
+    :section: tk-gui
+
+.. papis-config:: cursor
+    :section: tk-gui
+
+.. papis-config:: height
+    :section: tk-gui
+
+.. papis-config:: labels-per-page
+    :section: tk-gui
+
+.. papis-config:: borderwidth
+    :section: tk-gui
+
+.. papis-config:: window-width
+    :section: tk-gui
+
+.. papis-config:: window-bg
+    :section: tk-gui
+
+.. papis-config:: window-height
+    :section: tk-gui
+
+.. papis-config:: match-format
+    :section: tk-gui
+
+.. papis-config:: header-format
+    :section: tk-gui
+
+Rofi gui
+********
+.. papis-config:: key-quit
+    :section: rofi-gui
+
+.. papis-config:: key-edit
+    :section: rofi-gui
+
+.. papis-config:: key-delete
+    :section: rofi-gui
+
+.. papis-config:: key-help
+    :section: rofi-gui
+
+.. papis-config:: key-open-stay
+    :section: rofi-gui
+
+.. papis-config:: key-normal-window
+    :section: rofi-gui
+
+.. papis-config:: key-browse
+    :section: rofi-gui
+
+.. papis-config:: key-open
+    :section: rofi-gui
+
+.. papis-config:: eh
+    :section: rofi-gui
+
+.. papis-config:: sep
+    :section: rofi-gui
+
+.. papis-config:: width
+    :section: rofi-gui
+
+.. papis-config:: lines
+    :section: rofi-gui
+
+.. papis-config:: fullscreen
+    :section: rofi-gui
+
+.. papis-config:: normal_window
+    :section: rofi-gui
+
+.. papis-config:: fixed_lines
+    :section: rofi-gui
+
+.. papis-config:: markup_rows
+    :section: rofi-gui
+
+.. papis-config:: multi_select
+    :section: rofi-gui
+
+.. papis-config:: case_sensitive
+    :section: rofi-gui
+
+.. papis-config:: header-format
+    :section: rofi-gui
+
+"""
 
 def get_default_settings():
     return {

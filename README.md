@@ -16,7 +16,45 @@
 Papis is a powerful and highly extensible command-line based document and
 bibliography manager.
 
-Take a look at the [documentation](http://papis.readthedocs.io/en/latest/)!
+Learn more:
+  - Take a look at the [documentation](http://papis.readthedocs.io/en/latest/)!
+  - The folks at
+  [OSTechNix](https://www.ostechnix.com/) have dedicated us a review, you may
+  also check it out
+  [here](
+  https://www.ostechnix.com/papis-command-line-based-document-bibliography-manager/
+  ).
+  - A review in spanish is also available at [ubunlog](
+    https://ubunlog.com/papis-administrador-documentos/
+  ).
+
+## Main features
+
+  - Synchronizing of documents: put your documents in some folder and
+    synchronize it using the tools you love: git, dropbox, rsync, OwnCloud,
+    Google Drive ... whatever.
+  - Share libraries with colleagues without forcing them to open an account,
+    nowhere, never.
+  - Download directly paper information from *DOI* number via *Crossref*.
+  - (optional) **scihub** support, use the example papis script
+    `examples/scripts/papis-scihub` to download papers from scihub and add them
+    to your library with all the relevant information, in a matter of seconds,
+    also you can check the documentation
+     [here](http://papis.readthedocs.io/en/latest/scihub.html).
+  - Import from Zotero and other managers using the script in
+    `examples/scripts/papis-zotero`
+    ([doc](http://papis.readthedocs.io/en/latest/importing.html)).
+  - Create custom scripts to help you achieve great tasks easily
+    ([doc](http://papis.readthedocs.io/en/latest/scripting.html)).
+  - Export documents into many formats (bibtex, yaml..)
+  - Command-line granularity, all the power of a library at the tip of your
+    fingers.
+
+## Contributing
+
+Contributions are very welcome! Take a look at the files ``CONTRIBUTING.md``
+for general rules, ``ROADMAP.md`` for possible contribution topics
+and ``HACKING.md`` for additional code-related information.
 
 ## Super quick start
 
@@ -63,50 +101,6 @@ papis add -h
 [![asciicast](https://asciinema.org/a/48Dv1rfX44yjJD6Sbc71gpXGr.png)](https://asciinema.org/a/48Dv1rfX44yjJD6Sbc71gpXGr)
 AND MUCH, MUCH MORE!
 
-## Main features
+## Authors
 
-  - Synchronizing of documents: put your documents in some folder and
-    synchronize it using the tools you love: git, dropbox, rsync, OwnCloud,
-    Google Drive ... whatever.
-  - Share libraries with colleagues without forcing them to open an account,
-    nowhere, never.
-  - Download directly paper information from *DOI* number via *Crossref*.
-  - (optional) **scihub** support, use the example papis script
-    `examples/scripts/papis-scihub` to download papers from scihub and add them
-    to your library with all the relevant information, in a matter of seconds,
-    also you can check the documentation
-     [here](http://papis.readthedocs.io/en/latest/scihub.html).
-  - Import from Zotero using the `examples/scripts/papis-zotero`.
-  - Create custom scripts to help you achieve great tasks easily ([doc](http://papis.readthedocs.io/en/latest/scripting.html)).
-  - Export documents into many formats (bibtex, yaml..)
-  - Command-line granularity, all the power of a library at the tip of your
-    fingers.
-
-## Help Wanted
-
-*Papis* is looking for active developers to help improve the code.
-
-## TODO
-
-- [X] Implement a mini query language in order to filter by field the searches,
-  for example:
-  ```
-  papis open "author=stein year=192 ueber die "
-  ```
-  so that it matches all papers with a regex match for `stein`, then also where
-  the year matches `192` (i.e., 1920, 1921...) and then also it matches
-  `ueber die` using the default `match-format` configuration variable.
-  This can be done by updating the function `papis.utils.match_document`.
-- [X] Match search strings to documents using multiple cores
-  through the standard `multiprocess` module.
-- [X] Make sure that `setup.py` installs the `python-rofi` module from
-  `https://github.com/alejandrogallo/python-rofi` and not from the original
-  website.
-- [X] Bibitem support for exporting references in the export command.
-    (**Done** through the ``--template`` option of list)
-- [ ] Youtube video explaining the main uses of `papis`.
-- [ ] Implement proxy to donwload papers.
-- [ ] Testing on Windows.
-- [ ] Logo.
-- [ ] Gtk or Qt based GUI.
-
+See the ``AUTHORS`` list for a list of authored commits.

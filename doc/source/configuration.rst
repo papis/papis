@@ -84,42 +84,37 @@ A more complete example of a configuration file is the following
                           Mail : {doc[email]}
                        {doc[empty]}
 
+Local configuration files
+-------------------------
+Papis also offers the possibility of creating local configuration files.
+The name of the local configuration file can be configured with the
+``local-config-file`` setting.
+
+The local configuration file can be found in the current directory of
+where you are issuing the papis command or in the directory of the
+library that you are considering in the papis command.
+
+For instance let us suppose that you are in some project folder
+``~/Documents/myproject`` and you have a local config file there
+with a definition of a new library. Then whenever you are
+in the ``~/Documents/myproject`` directory papis will also source the
+local configuration file found there.
+
+On the other hand, also if you have a configuration file in the library folder
+for your papers, for instance in
+
+::
+
+  ~/Documents/papers/.papis.config
+
+then everytime that you use this library also papis will source this
+configuration file.
+
 
 Default settings
 ----------------
 
-.. exec::
-
-    import papis.config
-    import os
-    settings = papis.config.get_default_settings()
-    sep = " " * 4
-    folder = "configuration"
-    source = os.path.dirname(__file__)
-    for section, vals in settings.items():
-        print(section)
-        print("^"*len(section))
-        print("\n")
-        for key, val in sorted(vals.items()):
-            doc_file = os.path.join(
-                folder, section, key + ".rst"
-            )
-            print("%s" % key)
-
-            if "\n" in str(val):
-                print(sep + "Default:")
-                print((sep * 2) + "::")
-                print("")
-                for line in val.split("\n"):
-                    print((sep * 3) + "%s " % line)
-            else:
-                print((sep * 3) + "Default: ``%s``" % val)
-
-            print("\n")
-
-            if os.path.exists(os.path.join(source, doc_file)):
-                print((sep * 3) + ".. include:: %s" % doc_file)
-
-            print("\n")
+.. automodule:: papis.config
+.. automodule:: papis.gui
 
 

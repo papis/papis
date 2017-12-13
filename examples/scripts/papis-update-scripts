@@ -1,0 +1,38 @@
+#! /usr/bin/env python3
+# papis-short-help: Update all scripts from papis repository
+# -*- coding: utf-8 -*-
+
+import os
+import urllib.request
+import papis.config
+
+AVAILABLE_SCRIPTS = [
+    "papis-ga",
+    "papis-hubation",
+    "papis-mail",
+    "papis-scihub",
+    "papis-update-scripts",
+    "papis-zotero",
+    "papis-zotero-sql",
+]
+
+github_base_path = "https://raw.githubusercontent.com/alejandrogallo/papis/" \
+                   "master/examples/scripts/"
+
+scripts_folder_path = papis.config.get_scripts_folder()
+
+def update_script(script_name):
+    """Download script into the script folder
+    :script_name: The name of the script, e.g., papis-scihub
+    """
+    url = github_base_path + script_name
+    script_path = os.path.join(scripts_folder_path, script_name)
+    script_text = urllib.request.urlopen(url).read().decode('utf-8')
+    with open(script_path, 'w+') as fd:
+        fd.write(script_text)
+
+
+for local_script in os.listdir(scripts_folder_path):
+    if local_script in AVAILABLE_SCRIPTS:
+        print('Updating ' + local_script)
+        update_script(local_script)

@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 # papis-short-help: Convert zotero library to papis library
-# Copyright © 2017 Alejandro Gallo. GPLv3
+# Copyright 2017 Alejandro Gallo. GPLv3
 import tempfile
 import sys
 import os
@@ -9,6 +9,7 @@ import papis.bibtex
 import papis.api
 import papis.commands
 import papis.config
+import papis.utils
 import yaml
 
 
@@ -47,9 +48,16 @@ def add(entry, pdf_file=None):
 
 
 for entry in entries:
-    print('INFO: Processing  |   ref: %s' % entry['ref'])
-    print('                  |Author: %s' % entry['author'])
-    print('                  | Title: %s' % entry['title'])
+    for basic_field in ['ref', 'author', 'title']:
+        if basic_field not in entry.keys():
+            print(entry)
+            entry[basic_field] = papis.utils.input(
+                '%s Not found, please insert' % basic_field,
+                default="???????"
+            )
+    print('INFO: Processing  |   ref: %s' % entry.get('ref'))
+    print('                  |Author: %s' % entry.get('author'))
+    print('                  | Title: %s' % entry.get('title'))
     print('                  |')
     pdf_file = None
     if 'file' in entry.keys():

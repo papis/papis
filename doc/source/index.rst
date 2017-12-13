@@ -24,6 +24,7 @@ command-line interface (*CLI*) is heavily tailored after
    api
    git
    scihub
+   importing
    faq
 
 
