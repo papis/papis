@@ -95,7 +95,10 @@ class Search(urwid.WidgetWrap):
     keys = {
         'j': "nextEntry",
         'k': "prevEntry",
+        'G': "goToLast",
+        'g': "goToFirst",
         'down': "nextEntry",
+        'f': "filter",
         'up': "prevEntry",
         'enter': "open_file",
         'u': "open_url",
@@ -137,6 +140,18 @@ class Search(urwid.WidgetWrap):
         if not entry: return
         if pos + 1 >= self.lenitems: return
         self.listbox.set_focus(pos + 1)
+
+    def goToFirst(self):
+        """first entry"""
+        entry, pos = self.listbox.get_focus()
+        if not entry: return
+        self.listbox.set_focus(0)
+
+    def goToLast(self):
+        """last entry"""
+        entry, pos = self.listbox.get_focus()
+        if not entry: return
+        self.listbox.set_focus(self.lenitems-1)
 
     def prevEntry(self):
         """previous entry"""
