@@ -317,6 +317,7 @@ def get_default_opener():
 general_settings = {
     "mode"            : "document",
     "local-config-file": ".papis.config",
+    "database-backend": "papis",
     "opentool"        : get_default_opener(),
     "dir-umask"       : 0o755,
     "browser"         : os.environ.get('BROWSER') or get_default_opener(),
