@@ -1,6 +1,5 @@
 import urwid
 
-############################################################
 
 class Bibview(urwid.WidgetWrap):
 

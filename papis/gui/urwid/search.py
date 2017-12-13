@@ -3,7 +3,6 @@ import os
 import subprocess
 import urwid
 
-############################################################
 
 def xclip(text, isfile=False):
     """Copy text or file contents into X clipboard."""
@@ -19,7 +18,6 @@ def xclip(text, isfile=False):
     if f:
         f.close()
 
-############################################################
 
 class DocListItem(urwid.WidgetWrap):
 
@@ -42,8 +40,10 @@ class DocListItem(urwid.WidgetWrap):
         self.c1width = 10
 
         self.rowHeader = urwid.AttrMap(
-            urwid.Text('id:%s ' % (self.docid)),
-            'head', 'head_focus')
+            urwid.Text('ref:%s ' % (self.docid)),
+            'head',
+            'head_focus'
+        )
         docfields = [self.docfield(field) for field in show_fields]
 
         # FIXME: how do we hightlight everything in pile during focus?
@@ -51,24 +51,30 @@ class DocListItem(urwid.WidgetWrap):
             [
                 urwid.Divider('-'),
                 self.rowHeader,
-            ] + docfields
-            ,
-            focus_item=1)
+            ] + docfields,
+            focus_item=1
+        )
         self.__super.__init__(w)
 
     def docfield(self, field):
         attr_map = field
         return urwid.Columns(
             [
-                ('fixed', self.c1width,
-                 urwid.AttrMap(
-                     urwid.Text(field + ':'),
-                     'field', 'field_focus')),
+                (
+                    'fixed',
+                    self.c1width,
+                    urwid.AttrMap(
+                        urwid.Text(field + ':'),
+                        'field',
+                        'field_focus'
+                    )
+                ),
                 urwid.AttrMap(
                     self.fields[field],
-                    attr_map)
-                ]
-            )
+                    attr_map
+                )
+            ]
+        )
 
     def selectable(self):
         return True
@@ -76,7 +82,6 @@ class DocListItem(urwid.WidgetWrap):
     def keypress(self, size, key):
         return key
 
-############################################################
 
 class Search(urwid.WidgetWrap):
 
@@ -90,24 +95,24 @@ class Search(urwid.WidgetWrap):
         ('title', 'yellow', ''),
         ('author', 'dark cyan, bold', ''),
         ('year', 'dark red', '',),
-        ]
+    ]
 
     keys = {
-        'j': "nextEntry",
-        'k': "prevEntry",
-        'G': "goToLast",
-        'g': "goToFirst",
-        'down': "nextEntry",
+        'j': "next_entry",
+        'k': "prev_entry",
+        'G': "go_to_last",
+        'g': "go_to_first",
+        'down': "next_entry",
         'f': "filter",
-        'up': "prevEntry",
+        'up': "prev_entry",
         'enter': "open_file",
         'u': "open_url",
-        'b': "viewBibtex",
-        'meta i': "copyID",
-        'meta f': "copyPath",
-        'meta u': "copyURL",
-        'meta b': "copyBibtex",
-        }
+        'b': "view_bibtex",
+        # 'meta i': "copyID",
+        # 'meta f': "copyPath",
+        # 'meta u': "copyURL",
+        # 'meta b': "copyBibtex",
+    }
 
     def __init__(self, ui, query=None):
         self.ui = ui
@@ -129,9 +134,8 @@ class Search(urwid.WidgetWrap):
 
         self.__super.__init__(w)
 
-    ##########
 
-    def nextEntry(self):
+    def next_entry(self):
         """next entry"""
         entry, pos = self.listbox.get_focus()
         if not entry: return
@@ -139,21 +143,22 @@ class Search(urwid.WidgetWrap):
         self.listbox.set_focus(pos + 1)
 
     def filter(self):
-        pass
+        filterQuery = self.ui.prompt("Filter: ").get_text()
+        # self.ui.set_status(filterQuery)
 
-    def goToFirst(self):
+    def go_to_first(self):
         """first entry"""
         entry, pos = self.listbox.get_focus()
         if not entry: return
         self.listbox.set_focus(0)
 
-    def goToLast(self):
+    def go_to_last(self):
         """last entry"""
         entry, pos = self.listbox.get_focus()
         if not entry: return
         self.listbox.set_focus(self.lenitems-1)
 
-    def prevEntry(self):
+    def prev_entry(self):
         """previous entry"""
         entry, pos = self.listbox.get_focus()
         if not entry: return
@@ -181,17 +186,17 @@ class Search(urwid.WidgetWrap):
         if not entry: return
         urls = [entry.doc["url"]]
         if not urls:
-            self.ui.set_status('ERROR: id:%s: no URLs found.' % entry.docid)
+            self.ui.echoerr('id:%s: no URLs found.' % entry.docid)
             return
         # FIXME: open all instead of just first?
         url = urls[0]
         self.ui.set_status('opening url: %s...' % url)
 
-    def viewBibtex(self):
+    def view_bibtex(self):
         """view document bibtex"""
         entry = self.listbox.get_focus()[0]
         if not entry: return
-        self.ui.newbuffer(['bibview', 'id:' + entry.docid])
+        self.ui.newbuffer(['bibview', 'ref = ' + entry.docid])
 
     def copyID(self):
         """copy document ID to clipboard"""

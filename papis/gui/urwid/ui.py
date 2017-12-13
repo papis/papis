@@ -27,8 +27,6 @@ from .help import Help
 import papis.database
 import papis.config
 
-############################################################
-
 
 class UI():
 
@@ -36,26 +34,27 @@ class UI():
         ('header', 'white', 'dark blue'),
         ('footer', 'white', 'dark blue'),
         ('prompt', 'black', 'light green'),
-        ]
+        ('error', 'black', 'light red'),
+    ]
 
     keys = {
         papis.config.get("help-key", section="urwid-gui"): "help",
-        papis.config.get("search-key", section="urwid-gui"): "promptSearch",
-        papis.config.get("kill-buffer-key", section="urwid-gui"): "killBuffer",
+        papis.config.get("prompt-key", section="urwid-gui"): "prompt_enter",
+        papis.config.get("search-key", section="urwid-gui"): "prompt_search",
+        papis.config.get("kill-buffer-key", section="urwid-gui"): "kill_buffer",
         papis.config.get("quit-key", section="urwid-gui"): "quit",
         papis.config.get("redraw-key", section="urwid-gui"): "redraw",
-        }
+    }
 
     def __init__(self, db=None, cmd=None):
         self.db = papis.database.Database()
 
         self.header_string = "Papis"
-        self.status_string = "q: quit buffer, Q: quit Xapers, ?: help"
+        self.status_string = "q: quit buffer, Q: quit Papis, ?: help"
 
         self.view = urwid.Frame(urwid.SolidFill())
         self.set_header()
         self.set_status()
-        self.devnull = open('/dev/null', 'r')
 
         if not cmd:
             cmd = ['search', '']
@@ -86,7 +85,7 @@ class UI():
             self.palette,
             unhandled_input=self.keypress,
             handle_mouse=False,
-            )
+        )
 
     def main(self):
         self.mainloop.run()
@@ -105,7 +104,9 @@ class UI():
     def set_status(self, text=None):
         if text:
             self.status_string = '%s' % (text)
-        self.view.set_footer(urwid.AttrMap(urwid.Text(self.status_string), 'footer'))
+        self.view.set_footer(
+            urwid.AttrMap(urwid.Text(self.status_string), 'footer')
+        )
 
     def newbuffer(self, cmd):
         UI(db=self.db, cmd=cmd).main()
@@ -119,41 +120,81 @@ class UI():
 
     ##########
 
-    def promptSearch(self):
+    def prompt_enter(self):
+        """Prompt enter"""
+        prompt = ':'
+        urwid.connect_signal(
+            self.prompt(prompt),
+            'done',
+            self._prompt_enter_done
+        )
+
+    def _prompt_enter_done(self, query):
+        self.view.set_focus('body')
+        urwid.disconnect_signal(
+            self,
+            self.prompt,
+            'done',
+            self._prompt_search_done
+        )
+        if not query:
+            self.set_status()
+            return
+        self.set_status(query)
+        match = re.match(r" *([a-z]+)  *(.*)", query)
+        if match:
+            cmd = match.group(1)
+            args = match.group(2)
+            # self.set_status(cmd + args)
+            self.newbuffer([cmd, args])
+        else:
+            self.echoerr(
+                "No such command (%s)" % query
+            )
+
+    def prompt_search(self):
         """search database"""
         prompt = 'search: '
-        urwid.connect_signal(self.prompt(prompt), 'done', self._promptSearch_done)
+        urwid.connect_signal(
+            self.prompt(prompt),
+            'done',
+            self._prompt_search_done
+        )
 
-    def _promptSearch_done(self, query):
+    def _prompt_search_done(self, query):
         self.view.set_focus('body')
-        urwid.disconnect_signal(self, self.prompt, 'done', self._promptSearch_done)
+        urwid.disconnect_signal(
+            self,
+            self.prompt,
+            'done',
+            self._prompt_search_done
+        )
         if not query:
             self.set_status()
             return
         self.newbuffer(['search', query])
 
-    def killBuffer(self):
-        """kill current buffer"""
+    def kill_buffer(self):
+        """Kill current buffer"""
         raise urwid.ExitMainLoop()
 
     def redraw(self):
+        """Redraw screen"""
         self.set_status("Redrawing...")
         self.mainloop.draw_screen()
 
     def quit(self):
-        """quit Papis"""
+        """Quit Papis"""
         sys.exit()
 
     def help(self):
-        """help"""
+        """Show help"""
         self.newbuffer(['help', self.buffer])
 
     def keypress(self, key):
         if key in self.keys:
             cmd = "self.%s()" % (self.keys[key])
             eval(cmd)
-
-############################################################
 
 
 class PromptEdit(urwid.Edit):

@@ -215,6 +215,7 @@ Rofi gui
 def get_default_settings():
     return {
         "urwid-gui": {
+            "prompt-key": ":",
             "search-key": "/",
             "help-key": "?",
             "quit-key": "Q",
