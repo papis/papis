@@ -134,6 +134,7 @@ class Search(urwid.WidgetWrap):
         w = self.listbox
 
         self.__super.__init__(w)
+        self.update_prompt()
 
 
     def next_entry(self, size, key):
@@ -142,30 +143,44 @@ class Search(urwid.WidgetWrap):
         if not entry: return
         if pos + 1 >= self.lenitems: return
         self.listbox.set_focus(pos + 1)
+        self.update_prompt()
+
+    def update_prompt(self):
+        """
+        Write a statusline in the prompt to get some extra information
+        of the document one is at.
+        """
+        entry, pos = self.listbox.get_focus()
+        self.ui.echo("%s/%s" % (pos+1, self.lenitems))
 
     def filter(self, size, key):
+        #TODO: get a live filtering of the documents
         filterQuery = self.ui.prompt("Filter: ").get_text()
         # self.ui.set_status(filterQuery)
 
     def page_down(self, size, key):
         """page down"""
         self.listbox.keypress(size, 'page down')
+        self.update_prompt()
 
     def page_up(self, size, key):
         """page up"""
         self.listbox.keypress(size, 'page up')
+        self.update_prompt()
 
     def go_to_first(self, size, key):
         """first entry"""
         entry, pos = self.listbox.get_focus()
         if not entry: return
         self.listbox.set_focus(0)
+        self.update_prompt()
 
     def go_to_last(self, size, key):
         """last entry"""
         entry, pos = self.listbox.get_focus()
         if not entry: return
         self.listbox.set_focus(self.lenitems-1)
+        self.update_prompt()
 
     def prev_entry(self, size, key):
         """previous entry"""
@@ -173,6 +188,7 @@ class Search(urwid.WidgetWrap):
         if not entry: return
         if pos == 0: return
         self.listbox.set_focus(pos - 1)
+        self.update_prompt()
 
     def open_file(self, size, key):
         """open document file"""
