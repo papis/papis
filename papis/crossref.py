@@ -14,7 +14,9 @@ logger.debug("importing")
 import sys
 import unicodedata
 import re
+from string import ascii_lowercase
 import papis.config
+import papis.utils
 
 # CrossRef queries
 #
@@ -336,6 +338,25 @@ def get_cross_ref(doi):
     # REFERENCE BUILDING
     res['ref'] = papis.utils.format_doc(papis.config.get("ref-format"), res)
 
+    # Check if reference field with the same tag already exists
+    documents = papis.api.get_documents_in_lib(
+        'papers',
+    )
+    ref_list = [doc['ref'] for doc in documents]
+
+    if res['ref'] in ref_list:
+        m = papis.utils.create_identifier(ascii_lowercase)
+        while True:
+            append_string = next(m)
+            # Check if appended tag already exists
+            if str(res['ref'] + '{}').format(append_string) in ref_list:
+                continue            # It does? Keep checking.
+            # If it doesn't...
+            else:
+                # ...make this the new ref tag value 
+                res['ref'] = str(res['ref'] + '{}').format(append_string)
+                break
+    
     # Journal checking
     # If the key journal does not exist check for abbrev_journal_title
     # and full_journal_title and set it then to one of them

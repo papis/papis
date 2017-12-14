@@ -1,5 +1,6 @@
 from subprocess import call
 import logging
+from itertools import count, product
 
 logger = logging.getLogger("utils")
 logger.debug("importing")
@@ -103,6 +104,31 @@ def get_folders(folder):
             folders.append(root)
     return folders
 
+def create_identifier(input_list):
+    """This creates a generator object capable of iterating over lists to
+    create combinations of that list that result in unique strings.
+    Ideally for use in modifying an existing string to make it unique.
+
+    Example: 
+    >>> m = create_identifier(string.ascii_lowercase) 
+    >>> next(m)
+    'a'
+    >>> list(itertools.islice(create_identifier(string.ascii_uppercase),30))
+    ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+    'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
+    'Z', 'AA', 'AB', 'AC', 'AD']
+
+    (`see <
+        https://stackoverflow.com/questions/14381940/
+        >`_)
+
+    :param input_list: list to iterate over
+    :type  input_list: list
+
+    """
+    for n in count(1):
+        for s in product(input_list, repeat=n):
+            yield ''.join(s)
 
 class DocMatcher(object):
     """This class implements the mini query language for papis.
