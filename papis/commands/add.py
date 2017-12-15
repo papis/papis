@@ -492,6 +492,7 @@ class Command(papis.commands.Command):
         # First prepare everything in the temporary directory
         g = papis.utils.create_identifier(ascii_lowercase)
         string_append = ''
+        new_file_list = []
         for i in range(min(len(in_documents_paths), len(data["files"]))):
             in_doc_name = data["files"][i]
             in_file_path = in_documents_paths[i]
@@ -499,19 +500,22 @@ class Command(papis.commands.Command):
 
             # Rename the file in the staging area per options or flags
             if self.args.file_name: # Use args if set
-                new_filename = self.args.file_name
+                new_filename = papis.utils.clean_document_name(
+                    self.args.file_name
+                )
             else:                   # if not use naming format
-                new_filename = self.get_file_name(data)
-
+                new_filename = papis.utils.clean_document_name(
+                    self.get_file_name(data) + string_append + '.pdf'
+                )
+            new_file_list.append(new_filename)
+                
             endDocumentPath = os.path.join(
                 document.get_main_folder(),
-                new_filename + string_append + '.pdf'
+                new_filename
             )
             string_append = next(g)
-            
+
             # Check if the absolute file path is > 255 characters
-            print (os.path.abspath(endDocumentPath))
-            print (len(os.path.abspath(endDocumentPath)))
             if len(os.path.abspath(endDocumentPath)) >= 255:
                 self.logger.warning('Length of absolute path is > 255 characters. This may cause some issues with some pdf viewers')
                 
@@ -527,6 +531,8 @@ class Command(papis.commands.Command):
                 )
                 shutil.copy(in_file_path, endDocumentPath)
 
+        data['files'] = new_file_list
+                
         # Duplication checking
         self.logger.debug("Check if the added document is already existing")
         found_document = papis.utils.locate_document(
