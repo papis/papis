@@ -22,3 +22,20 @@ get_papis_flags(){
   uniq
 }
 
+get_config_keys(){
+  python3 <<EOF
+import papis.config
+settings = papis.config.get_default_settings()
+keys = []
+for key, val in settings.items():
+  if key == "settings":
+    append = False
+  else:
+    append = True
+  for subkey in val:
+    if append:
+      print(key+"-"+subkey)
+    else:
+      print(subkey)
+EOF
+}

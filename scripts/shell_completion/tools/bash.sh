@@ -28,6 +28,11 @@ case "\$cur" in
 esac
 
 case "\$prev" in
+
+  config)
+    COMPREPLY=( \$( compgen -W "$(get_papis_flags config | paste -s ) $(get_config_keys | paste -s )" -- \$cur ) )
+    ;;
+
 EOF
 
 for cmd in ${COMMANDS[@]}; do
@@ -44,6 +49,30 @@ EOF
 done
 
 cat >> ${out} <<EOF
+
+  --picktool)
+    COMPREPLY=( \$( compgen -W "papis.pick vim rofi" -- \$cur ) )
+    ;;
+
+  --log)
+    COMPREPLY=( \$( compgen -W "INFO DEBUG WARNING ERROR CRITICAL" -- \$cur ) )
+    ;;
+
+  --out|-o)
+    COMPREPLY=( \$( compgen -f -- \$cur ) )
+    ;;
+
+  --from-*)
+    COMPREPLY=( \$( compgen -f -- \$cur ) )
+    ;;
+
+  --lib|-l|--from-lib)
+    COMPREPLY=( \$( compgen -f -W "\$(papis list --libraries)" -- \$cur ) )
+    ;;
+
+  --set)
+    COMPREPLY=( \$( compgen -W "$(get_config_keys | sed s/$/=/ | paste -s )" -- \$cur ) )
+    ;;
 
 esac
 
