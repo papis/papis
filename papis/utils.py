@@ -116,9 +116,7 @@ def create_identifier(input_list):
     'a'
     >>> import itertools, string
     >>> list(itertools.islice(create_identifier(string.ascii_uppercase),30))
-    ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
-    'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
-    'Z', 'AA', 'AB', 'AC', 'AD']
+    ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
 
     (`see <
         https://stackoverflow.com/questions/14381940/
