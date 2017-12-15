@@ -176,7 +176,7 @@ class Search(urwid.WidgetWrap):
         entry, pos = self.listbox.get_focus()
         # percentage = 100*float(pos+1)/self.lenitems if pos else 0
         self.ui.echo(
-            "%s/%s" % (pos+1 if pos else 0, self.lenitems) +\
+            "%s/%s" % (pos+1 if pos is not None else 0, self.lenitems) +\
             # "  %.0f%%" % (percentage) +\
             "  (" + papis.api.get_lib() + ")"
         )
