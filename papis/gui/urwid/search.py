@@ -162,7 +162,7 @@ class Search(urwid.WidgetWrap):
         self.ui.echo(entry.doc.dump())
 
     def print_bibtex(self, size, key):
-        """Print information"""
+        """Print bibtex"""
         entry, pos = self.listbox.get_focus()
         if not entry: return
         if pos + 1 >= self.lenitems: return
