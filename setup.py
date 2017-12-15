@@ -55,6 +55,7 @@ setup(
         "pyparser>=1.0",
         "python-magic>=0.4.13",
         "pylibgen>=1.3.0",
+        "urwid>=1.3.1",
     ],
     python_requires='>=3',
     classifiers=[

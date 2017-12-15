@@ -5,6 +5,43 @@ import papis.utils
 import papis.config
 import papis.bibtex
 
+import logging
+logger = logging.getLogger("document")
+
+def open_in_browser(document):
+    """Browse document's url whenever possible.
+
+    :document: Document object
+
+    """
+    global logger
+    url = None
+    if "url" in document.keys():
+        url = document["url"]
+    elif 'doi' in document.keys():
+        url = 'https://doi.org/' + document['doi']
+    elif papis.config.get('doc-url-key-name') in document.keys():
+        url = document[papis.config.get('doc-url-key-name')]
+    else:
+        from urllib.parse import urlencode
+        params = {
+            'q': papis.utils.format_doc(
+                papis.config.get('browse-query-format'),
+                document
+            )
+        }
+        url = papis.config.get('search-engine') + '/?' + urlencode(params)
+
+    if url is None:
+        logger.warning(
+            "No url for %s possible" % (document.get_main_folder_name())
+        )
+    else:
+        logger.debug("Opening url %s:" % url)
+        papis.utils.general_open(
+            url, "browser", wait=False
+        )
+
 
 class Document(object):
 
@@ -210,7 +247,9 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         bibtexString += "@%s{%s,\n" % (bibtexType, ref)
         for bibKey in papis.bibtex.bibtex_keys:
             if bibKey in self.keys():
-                bibtexString += "\t%s = { %s },\n" % (bibKey, self[bibKey])
+                bibtexString += "  %s = { %s },\n" % (
+                    bibKey, papis.bibtex.unicode_to_latex(str(self[bibKey]))
+                )
         bibtexString += "}\n"
         return bibtexString
 
