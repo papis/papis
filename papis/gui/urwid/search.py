@@ -109,7 +109,7 @@ class Search(urwid.WidgetWrap):
         'e': "edit",
         'u': "open_url",
         'p': "print_info",
-        'b': "view_bibtex",
+        'b': "print_bibtex",
         'ctrl f': "page_down",
         'z': "scroll_middle",
         'page down': "page_down",
@@ -160,6 +160,13 @@ class Search(urwid.WidgetWrap):
         if not entry: return
         if pos + 1 >= self.lenitems: return
         self.ui.echo(entry.doc.dump())
+
+    def print_bibtex(self, size, key):
+        """Print information"""
+        entry, pos = self.listbox.get_focus()
+        if not entry: return
+        if pos + 1 >= self.lenitems: return
+        self.ui.echo(entry.doc.to_bibtex())
 
     def update_prompt(self):
         """

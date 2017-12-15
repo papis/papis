@@ -210,7 +210,7 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         bibtexString += "@%s{%s,\n" % (bibtexType, ref)
         for bibKey in papis.bibtex.bibtex_keys:
             if bibKey in self.keys():
-                bibtexString += "\t%s = { %s },\n" % (bibKey, self[bibKey])
+                bibtexString += "  %s = { %s },\n" % (bibKey, self[bibKey])
         bibtexString += "}\n"
         return bibtexString
 
