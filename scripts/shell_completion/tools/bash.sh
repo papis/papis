@@ -4,8 +4,8 @@ source tools/lib.sh
 
 COMMANDS=($(get_papis_commands))
 
-mkdir -p dist
-out=dist/bash-completion.sh
+out=build/bash/papis
+mkdir -p build/bash
 
 echo > ${out}
 

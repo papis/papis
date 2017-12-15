@@ -108,6 +108,10 @@ setup(
             "README.md",
         ]),
 
+        ("etc/bash_completion.d/", [
+            "scripts/shell_completion/build/bash/papis",
+        ]),
+
         ("share/man/man1", [
             "doc/build/man/papis.1",
             "doc/build/man/papis-config.1",
