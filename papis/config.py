@@ -1,5 +1,4 @@
-"""
-General
+"""General
 *******
 
 .. papis-config:: local-config-file
@@ -88,6 +87,7 @@ General
     Some commands will issue git commands if this option is set to ``True``.
     For example in ``mv`` or ``rename``.
 
+
 .. papis-config:: add-confirm
 
     If set to ``True``, everytime you run ``papis add``
@@ -100,6 +100,11 @@ General
     Default name for newly added documents. For example, if you want
     your documents to be ``author-title`` then you should set it to
     the papis format: ``{doc[author]}-{doc[title]}``.
+
+.. papis-config:: file-name
+
+    Same as ``add-name``, but for files, not folders. Defaults to the
+    ``ref-format`` option, if it is not explicitly set.
 
 .. papis-config:: add-interactive
 
@@ -337,6 +342,7 @@ general_settings = {
 
     "add-confirm"     : False,
     "add-name"        : "",
+    "file-name"       : None,
     "add-interactive" : False,
     "add-edit"        : False,
     "add-open"        : False,

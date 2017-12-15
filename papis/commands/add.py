@@ -29,6 +29,7 @@ Examples
 
 """
 import papis
+from string import ascii_lowercase
 import os
 import sys
 import re
@@ -79,6 +80,12 @@ class Command(papis.commands.Command):
             "--name",
             help="Name for the document's folder (papis format)",
             default=papis.config.get('add-name'),
+            action="store"
+        )
+
+        self.parser.add_argument(
+            "--file-name",
+            help="File name for the document (papis format)",
             action="store"
         )
 
@@ -196,6 +203,18 @@ class Command(papis.commands.Command):
             action="store_true"
         )
 
+    def get_file_name(self, data):
+        """Generates file name for the paper
+
+        :data: Data parsed for the actual paper
+
+        """
+        if papis.config.get("file-name") is None:
+            filename = papis.utils.format_doc(papis.config.get("ref-format"), data)
+        else:
+            filename = papis.utils.format_doc(papis.config.get("file-name"), data)
+        return filename
+        
     def get_hash_folder(self, data, document_path):
         """Folder name where the document will be stored.
 
@@ -451,7 +470,7 @@ class Command(papis.commands.Command):
         self.logger.debug("Folder name = % s" % out_folder_name)
         self.logger.debug("Folder path = % s" % out_folder_path)
         self.logger.debug("File(s)     = % s" % in_documents_paths)
-
+        
         # Create folders if they do not exists.
         if not os.path.isdir(temp_dir):
             self.logger.debug("Creating directory '%s'" % temp_dir)
@@ -471,14 +490,31 @@ class Command(papis.commands.Command):
             data = document.to_dict()
 
         # First prepare everything in the temporary directory
+        g = papis.utils.create_identifier(ascii_lowercase)
+        string_append = ''
         for i in range(min(len(in_documents_paths), len(data["files"]))):
             in_doc_name = data["files"][i]
             in_file_path = in_documents_paths[i]
             assert(os.path.exists(in_file_path))
+
+            # Rename the file in the staging area per options or flags
+            if self.args.file_name: # Use args if set
+                new_filename = self.args.file_name
+            else:                   # if not use naming format
+                new_filename = self.get_file_name(data)
+
             endDocumentPath = os.path.join(
                 document.get_main_folder(),
-                in_doc_name
+                new_filename + string_append + '.pdf'
             )
+            string_append = next(g)
+            
+            # Check if the absolute file path is > 255 characters
+            print (os.path.abspath(endDocumentPath))
+            print (len(os.path.abspath(endDocumentPath)))
+            if len(os.path.abspath(endDocumentPath)) >= 255:
+                self.logger.warning('Length of absolute path is > 255 characters. This may cause some issues with some pdf viewers')
+                
             if os.path.exists(endDocumentPath):
                 self.logger.debug(
                     "%s already exists, ignoring..." % endDocumentPath
@@ -509,6 +545,7 @@ class Command(papis.commands.Command):
             )
             self.args.confirm = True
 
+            
         document.update(data, force=True)
         if self.get_args().open:
             for d_path in in_documents_paths:
@@ -533,3 +570,4 @@ class Command(papis.commands.Command):
             subprocess.call(
                 ["git", "-C", out_folder_path, "commit", "-m", "Add document"]
             )
+
