@@ -34,31 +34,4 @@ class Command(papis.commands.Command):
         )
         document = self.pick(documents)
         if not document: return 0
-
-        url = None
-        if "url" in document.keys():
-            url = document["url"]
-        elif 'doi' in document.keys():
-            url = 'https://doi.org/' + document['doi']
-        elif papis.config.get('doc-url-key-name') in document.keys():
-            url = document[papis.config.get('doc-url-key-name')]
-        else:
-            from urllib.parse import urlencode
-            params = {
-                'q': papis.utils.format_doc(
-                    papis.config.get('browse-query-format'),
-                    document
-                )
-            }
-            url = papis.config.get('search-engine') + '/?' + urlencode(params)
-
-
-        if url is None:
-            self.logger.warning(
-                "No url for %s possible" % (document.get_main_folder_name())
-            )
-        else:
-            self.logger.debug("Opening url %s:" % url)
-            papis.utils.general_open(
-                url, "browser", wait=False
-            )
+        papis.document.open_in_browser(document)

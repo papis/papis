@@ -107,7 +107,7 @@ class Search(urwid.WidgetWrap):
         'up': "prev_entry",
         'o': "open_file",
         'e': "edit",
-        'u': "open_url",
+        'u': "open_in_browser",
         'p': "print_info",
         'b': "print_bibtex",
         'ctrl f': "page_down",
@@ -240,17 +240,12 @@ class Search(urwid.WidgetWrap):
         self.ui.set_status('opening file: %s...' % path)
         papis.api.open_file(path)
 
-    def open_url(self, size, key):
+    def open_in_browser(self, size, key):
         """open document URL in browser"""
         entry = self.listbox.get_focus()[0]
         if not entry: return
-        urls = [entry.doc["url"]]
-        if not urls:
-            self.ui.echoerr('id:%s: no URLs found.' % entry.docid)
-            return
-        # FIXME: open all instead of just first?
-        url = urls[0]
-        self.ui.set_status('opening url: %s...' % url)
+        self.ui.set_status('Opening in browser...')
+        papis.document.open_in_browser(entry.doc)
 
     def view_bibtex(self, size, key):
         """view document bibtex"""
