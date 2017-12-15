@@ -219,7 +219,7 @@ def get_default_settings():
             "search-key": "/",
             "help-key": "?",
             "quit-key": "Q",
-            "redraw-key": "r",
+            "redraw-key": "ctrl l",
             "kill-buffer-key": "q",
             "show-fields": "title,author,year,abstract",
         },
