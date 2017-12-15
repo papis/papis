@@ -105,14 +105,15 @@ class Search(urwid.WidgetWrap):
         'down': "next_entry",
         'f': "filter",
         'up': "prev_entry",
-        'enter': "open_file",
+        'o': "open_file",
+        'e': "edit",
         'u': "open_url",
         'b': "view_bibtex",
-        'N': "page_down",
+        'ctrl f': "page_down",
+        'z': "scroll_middle",
         'page down': "page_down",
         ' ': "page_down",
-        'P': "page_up",
-        'page up': "page_up",
+        'ctrl b': "page_up",
     }
 
     def __init__(self, ui, query=None):
@@ -136,6 +137,13 @@ class Search(urwid.WidgetWrap):
         self.__super.__init__(w)
         self.update_prompt()
 
+
+    def scroll_middle(self, size, key):
+        """Scroll to middle"""
+        entry, pos = self.listbox.get_focus()
+        self.go_to_last(size, key)
+        self.listbox.set_focus(pos)
+        self.update_prompt()
 
     def next_entry(self, size, key):
         """next entry"""
@@ -189,6 +197,13 @@ class Search(urwid.WidgetWrap):
         if pos == 0: return
         self.listbox.set_focus(pos - 1)
         self.update_prompt()
+
+    def edit(self, size, key):
+        """edit document"""
+        entry = self.listbox.get_focus()[0]
+        if not entry: return
+        papis.api.edit_file(entry.doc.get_info_file())
+        # TODO: Update information drawn on screen
 
     def open_file(self, size, key):
         """open document file"""
