@@ -107,6 +107,8 @@ setup(
 
         ("share/doc/papis/", [
             "README.md",
+            "AUTHORS",
+            "LICENSE.txt",
         ]),
 
         ("etc/bash_completion.d/", [
