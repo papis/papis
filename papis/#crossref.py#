@@ -317,7 +317,7 @@ def get_cross_ref(doi):
 
     # OTHER INFO
     other = find_item_named(record, "journal_article")
-    res["title"] = data(find_item_named(other, "title")).replace("\n", "")
+    res["title"] = data(find_item_named(other, "title"))
     res["first_page"] = data(find_item_named(other, "first_page"))
     res["last_page"] = data(find_item_named(other, "last_page"))
     if res["first_page"] is not None and res["last_page"] is not None:
