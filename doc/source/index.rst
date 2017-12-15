@@ -25,6 +25,7 @@ command-line interface (*CLI*) is heavily tailored after
    git
    scihub
    importing
+   shell_completion
    faq
 
 
