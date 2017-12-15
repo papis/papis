@@ -108,6 +108,7 @@ class Search(urwid.WidgetWrap):
         'o': "open_file",
         'e': "edit",
         'u': "open_url",
+        'p': "print_info",
         'b': "view_bibtex",
         'ctrl f': "page_down",
         'z': "scroll_middle",
@@ -153,13 +154,25 @@ class Search(urwid.WidgetWrap):
         self.listbox.set_focus(pos + 1)
         self.update_prompt()
 
+    def print_info(self, size, key):
+        """Print information"""
+        entry, pos = self.listbox.get_focus()
+        if not entry: return
+        if pos + 1 >= self.lenitems: return
+        self.ui.echo(entry.doc.dump())
+
     def update_prompt(self):
         """
         Write a statusline in the prompt to get some extra information
         of the document one is at.
         """
         entry, pos = self.listbox.get_focus()
-        self.ui.echo("%s/%s" % (pos+1, self.lenitems))
+        # percentage = 100*float(pos+1)/self.lenitems if pos else 0
+        self.ui.echo(
+            "%s/%s" % (pos+1 if pos else 0, self.lenitems) +\
+            # "  %.0f%%" % (percentage) +\
+            "  (" + papis.api.get_lib() + ")"
+        )
 
     def filter(self, size, key):
         #TODO: get a live filtering of the documents
