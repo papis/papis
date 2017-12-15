@@ -1,6 +1,7 @@
 from subprocess import call
 import logging
 from itertools import count, product
+import itertools
 
 logger = logging.getLogger("utils")
 logger.debug("importing")
