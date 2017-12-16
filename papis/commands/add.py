@@ -204,18 +204,30 @@ class Command(papis.commands.Command):
             action="store_true"
         )
 
-    def get_file_name(self, data):
-        """Generates file name for the paper
+    def get_file_name(self, data, original_filename, suffix=""):
+        """Generates file name for the document
 
-        :data: Data parsed for the actual paper
+        :param data: Data parsed for the actual document
+        :type  data: dict
+        :param original_filename: The name of the original filename
+        :type  original_filename: str
+        :param suffix: Possible suffix to be appended to the file withouth
+            its extension.
+        :type  suffix: str
+        :returns: New file name
+        :rtype:  str
 
         """
         if papis.config.get("file-name") is None:
-            filename = papis.utils.format_doc(papis.config.get("ref-format"), data)
+            filename = original_filename
         else:
-            filename = papis.utils.format_doc(papis.config.get("file-name"), data)
+            filename = papis.utils.format_doc(
+                papis.config.get("file-name"), data
+            ) +\
+            ("-" + suffix if len(suffix) > 0 else "") +\
+            "." + papis.utils.guess_file_extension(original_filename)
         return filename
-        
+
     def get_hash_folder(self, data, document_path):
         """Folder name where the document will be stored.
 
@@ -489,17 +501,16 @@ class Command(papis.commands.Command):
             in_file_path = in_documents_paths[i]
             assert(os.path.exists(in_file_path))
 
-            # Rename the file in the staging area per options or flags
-            if self.args.file_name: # Use args if set
-                new_filename = papis.utils.clean_document_name(
-                    self.args.file_name
+            # Rename the file in the staging area
+            new_filename = papis.utils.clean_document_name(
+                self.get_file_name(
+                    data,
+                    in_doc_name,
+                    suffix=string_append
                 )
-            else:                   # if not use naming format
-                new_filename = papis.utils.clean_document_name(
-                    self.get_file_name(data) + string_append + '.pdf'
-                )
+            )
             new_file_list.append(new_filename)
-                
+
             endDocumentPath = os.path.join(
                 document.get_main_folder(),
                 new_filename
