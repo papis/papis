@@ -204,13 +204,13 @@ class Command(papis.commands.Command):
             action="store_true"
         )
 
-    def get_file_name(self, data, original_filename, suffix=""):
+    def get_file_name(self, data, original_filepath, suffix=""):
         """Generates file name for the document
 
         :param data: Data parsed for the actual document
         :type  data: dict
-        :param original_filename: The name of the original filename
-        :type  original_filename: str
+        :param original_filepath: The full path to the original file
+        :type  original_filepath: str
         :param suffix: Possible suffix to be appended to the file withouth
             its extension.
         :type  suffix: str
@@ -219,13 +219,13 @@ class Command(papis.commands.Command):
 
         """
         if papis.config.get("file-name") is None:
-            filename = original_filename
+            filename = os.path.basename(original_filepath)
         else:
             filename = papis.utils.format_doc(
                 papis.config.get("file-name"), data
             ) +\
             ("-" + suffix if len(suffix) > 0 else "") +\
-            "." + papis.utils.guess_file_extension(original_filename)
+            "." + papis.utils.guess_file_extension(original_filepath)
         return filename
 
     def get_hash_folder(self, data, document_path):
@@ -505,7 +505,7 @@ class Command(papis.commands.Command):
             new_filename = papis.utils.clean_document_name(
                 self.get_file_name(
                     data,
-                    in_doc_name,
+                    in_file_path,
                     suffix=string_append
                 )
             )
