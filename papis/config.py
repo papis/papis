@@ -103,8 +103,8 @@
 
 .. papis-config:: file-name
 
-    Same as ``add-name``, but for files, not folders. Defaults to the
-    ``ref-format`` option, if it is not explicitly set.
+    Same as ``add-name``, but for files, not folders. If it is not set,
+    the names of the files will be cleaned and taken `as-is`.
 
 .. papis-config:: add-interactive
 
@@ -322,6 +322,7 @@ def get_default_opener():
 general_settings = {
     "mode"            : "document",
     "local-config-file": ".papis.config",
+    "database-backend": "papis",
     "opentool"        : get_default_opener(),
     "dir-umask"       : 0o755,
     "browser"         : os.environ.get('BROWSER') or get_default_opener(),

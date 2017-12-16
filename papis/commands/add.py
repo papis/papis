@@ -86,7 +86,8 @@ class Command(papis.commands.Command):
         self.parser.add_argument(
             "--file-name",
             help="File name for the document (papis format)",
-            action="store"
+            action="store",
+            default=None
         )
 
         self.parser.add_argument(
@@ -203,18 +204,30 @@ class Command(papis.commands.Command):
             action="store_true"
         )
 
-    def get_file_name(self, data):
-        """Generates file name for the paper
+    def get_file_name(self, data, original_filename, suffix=""):
+        """Generates file name for the document
 
-        :data: Data parsed for the actual paper
+        :param data: Data parsed for the actual document
+        :type  data: dict
+        :param original_filename: The name of the original filename
+        :type  original_filename: str
+        :param suffix: Possible suffix to be appended to the file withouth
+            its extension.
+        :type  suffix: str
+        :returns: New file name
+        :rtype:  str
 
         """
         if papis.config.get("file-name") is None:
-            filename = papis.utils.format_doc(papis.config.get("ref-format"), data)
+            filename = original_filename
         else:
-            filename = papis.utils.format_doc(papis.config.get("file-name"), data)
+            filename = papis.utils.format_doc(
+                papis.config.get("file-name"), data
+            ) +\
+            ("-" + suffix if len(suffix) > 0 else "") +\
+            "." + papis.utils.guess_file_extension(original_filename)
         return filename
-        
+
     def get_hash_folder(self, data, document_path):
         """Folder name where the document will be stored.
 
@@ -476,39 +489,28 @@ class Command(papis.commands.Command):
             self.logger.debug("Creating directory '%s'" % temp_dir)
             os.makedirs(temp_dir, mode=papis.config.getint('dir-umask'))
 
-        # Check if the user wants to edit before submitting the doc
-        # to the library
-        if self.args.edit:
-            document.update(
-                data, force=True, interactive=self.args.interactive
-            )
-            document.save()
-            self.logger.debug("Editing file before adding it")
-            papis.api.edit_file(document.get_info_file(), wait=True)
-            self.logger.debug("Loading the changes made by editing")
-            document.load()
-            data = document.to_dict()
 
         # First prepare everything in the temporary directory
         g = papis.utils.create_identifier(ascii_lowercase)
         string_append = ''
+        if self.args.file_name is not None: # Use args if set
+            papis.config.set("file-name", self.args.file_name)
         new_file_list = []
         for i in range(min(len(in_documents_paths), len(data["files"]))):
             in_doc_name = data["files"][i]
             in_file_path = in_documents_paths[i]
             assert(os.path.exists(in_file_path))
 
-            # Rename the file in the staging area per options or flags
-            if self.args.file_name: # Use args if set
-                new_filename = papis.utils.clean_document_name(
-                    self.args.file_name
+            # Rename the file in the staging area
+            new_filename = papis.utils.clean_document_name(
+                self.get_file_name(
+                    data,
+                    in_doc_name,
+                    suffix=string_append
                 )
-            else:                   # if not use naming format
-                new_filename = papis.utils.clean_document_name(
-                    self.get_file_name(data) + string_append + '.pdf'
-                )
+            )
             new_file_list.append(new_filename)
-                
+
             endDocumentPath = os.path.join(
                 document.get_main_folder(),
                 new_filename
@@ -517,8 +519,11 @@ class Command(papis.commands.Command):
 
             # Check if the absolute file path is > 255 characters
             if len(os.path.abspath(endDocumentPath)) >= 255:
-                self.logger.warning('Length of absolute path is > 255 characters. This may cause some issues with some pdf viewers')
-                
+                self.logger.warning(
+                    'Length of absolute path is > 255 characters. '
+                    'This may cause some issues with some pdf viewers'
+                )
+
             if os.path.exists(endDocumentPath):
                 self.logger.debug(
                     "%s already exists, ignoring..." % endDocumentPath
@@ -532,7 +537,20 @@ class Command(papis.commands.Command):
                 shutil.copy(in_file_path, endDocumentPath)
 
         data['files'] = new_file_list
-                
+
+        # Check if the user wants to edit before submitting the doc
+        # to the library
+        if self.args.edit:
+            document.update(
+                data, force=True, interactive=self.args.interactive
+            )
+            document.save()
+            self.logger.debug("Editing file before adding it")
+            papis.api.edit_file(document.get_info_file(), wait=True)
+            self.logger.debug("Loading the changes made by editing")
+            document.load()
+            data = document.to_dict()
+
         # Duplication checking
         self.logger.debug("Check if the added document is already existing")
         found_document = papis.utils.locate_document(
@@ -551,7 +569,6 @@ class Command(papis.commands.Command):
             )
             self.args.confirm = True
 
-            
         document.update(data, force=True)
         if self.get_args().open:
             for d_path in in_documents_paths:

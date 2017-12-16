@@ -110,6 +110,12 @@ class Command(papis.commands.Command):
             action="store_true"
         )
 
+        self.parser.add_argument(
+            "--libraries",
+            help="List defined libraries",
+            action="store_true"
+        )
+
     def main(self):
         if self.args.template:
             if not os.path.exists(self.args.template):
@@ -120,10 +126,17 @@ class Command(papis.commands.Command):
             fd = open(self.args.template)
             self.args.format = fd.read()
             fd.close()
+
         if self.args.downloaders:
             for downloader in \
                papis.downloaders.utils.getAvailableDownloaders():
                 print(downloader)
+            return 0
+
+        if self.args.libraries:
+            for section in self.get_config():
+                if "dir" in self.get_config()[section]:
+                    print(section)
             return 0
 
         documents = papis.api.get_documents_in_lib(

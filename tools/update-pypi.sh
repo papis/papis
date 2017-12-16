@@ -4,6 +4,7 @@ DIST_DIR=dist
 
 echo "Updating man pages"
 make -C doc man
+make bash-autocomplete
 
 rm -rf ${DIST_DIR}
 python3 setup.py sdist
