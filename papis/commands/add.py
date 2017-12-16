@@ -483,7 +483,7 @@ class Command(papis.commands.Command):
         self.logger.debug("Folder name = % s" % out_folder_name)
         self.logger.debug("Folder path = % s" % out_folder_path)
         self.logger.debug("File(s)     = % s" % in_documents_paths)
-
+        
         # Create folders if they do not exists.
         if not os.path.isdir(temp_dir):
             self.logger.debug("Creating directory '%s'" % temp_dir)
@@ -568,7 +568,6 @@ class Command(papis.commands.Command):
                 " the info."
             )
             self.args.confirm = True
-
 
         document.update(data, force=True)
         if self.get_args().open:
