@@ -15,7 +15,7 @@ zip_name="${folder_name}.zip"
 mail_agent=mutt
 
 papis -l ${PAPIS_LIB} export --folder --out ${folder_name}
-if [[ ! -f ${folder_name} ]]; then
+if [[ ! -e ${folder_name} ]]; then
   echo "${folder_name} not created, exiting..."
   exit 1
 fi
