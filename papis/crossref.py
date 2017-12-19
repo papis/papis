@@ -151,13 +151,35 @@ latex_accents = {
   "\xa0": " ",     # Unprintable characters
 }
 
-def get_data(query=""):
+def crossref_data_to_papis_data(data):
+    if "author" in data.keys():
+        authors = []
+        for author in data["author"]:
+            if "given" in author.keys() and "family" in author.keys():
+                authors.append(
+                    dict(given_name=author["given"], surname=author["family"])
+                )
+        data["author_list"] = authors
+        data["author"] = ",".join(
+            ["{a[given_name]} {a[surname]}".format(a=a) for a in authors]
+        )
+    if 'title' in data.keys():
+        data["title"] = " ".join(data['title'])
+    if 'DOI' in data.keys():
+        data["doi"] = data["DOI"]
+        del data["DOI"]
+    if 'URL' in data.keys():
+        data["url"] = data["URL"]
+        del data["URL"]
+    return data
+
+def get_data(query="", max_results=20):
     import habanero
     cr = habanero.Crossref()
-    results = cr.works(query=query)
-    for r in results["message"]["items"]:
-        print(r)
-    return results["message"]["items"]
+    results = cr.works(query=query, limit=max_results)
+    return [
+        crossref_data_to_papis_data(d) for d in results["message"]["items"]
+    ]
 
 def replace_latex_accents(string):
     s = unicodedata.normalize('NFC', string)
