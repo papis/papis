@@ -60,6 +60,14 @@ class Command(papis.commands.Command):
             action="store"
         )
 
+        self.parser.add_argument(
+            "--cmd",
+            help="Issue a command on the retrieved document "
+                 "using papis format",
+            default=None,
+            action="store"
+        )
+
     def parse_search(self):
         key_vals = papis.utils.DocMatcher.parse(self.args.search)
         result = {'query': ""}
@@ -175,3 +183,11 @@ class Command(papis.commands.Command):
             print(doc.dump())
             if self.args.add:
                 self.add(doc)
+            elif self.args.cmd is not None:
+                from subprocess import call
+                command = papis.utils.format_doc(
+                    self.args.cmd,
+                    doc
+                )
+                self.logger.debug('Calling "%s"' % command)
+                call(command.split(" "))
