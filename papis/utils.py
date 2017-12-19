@@ -1,5 +1,7 @@
 from subprocess import call
 import logging
+from itertools import count, product
+import itertools
 
 logger = logging.getLogger("utils")
 logger.debug("importing")
@@ -103,6 +105,30 @@ def get_folders(folder):
             folders.append(root)
     return folders
 
+def create_identifier(input_list):
+    """This creates a generator object capable of iterating over lists to
+    create combinations of that list that result in unique strings.
+    Ideally for use in modifying an existing string to make it unique.
+
+    Example: 
+    >>> m = create_identifier(string.ascii_lowercase) 
+    >>> next(m)
+    'a'
+    >>> import itertools, string
+    >>> list(itertools.islice(create_identifier(string.ascii_uppercase),30))
+    ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
+
+    (`see <
+        https://stackoverflow.com/questions/14381940/
+        >`_)
+
+    :param input_list: list to iterate over
+    :type  input_list: list
+
+    """
+    for n in count(1):
+        for s in product(input_list, repeat=n):
+            yield ''.join(s)
 
 class DocMatcher(object):
     """This class implements the mini query language for papis.
@@ -533,17 +559,17 @@ def file_is(file_description, fmt):
     """
     import magic
     logger.debug("Checking filetype")
-    try:
+    if isinstance(file_description, str):
         # This means that the file_description is a string
-        file_description.decode('utf-8')
         result = re.match(
-            r".*%s.*" % fmt, magic.from_file(file_description, mime=True)
+            r".*%s.*" % fmt, magic.from_file(file_description, mime=True),
+            re.IGNORECASE
         )
         if result:
             logger.debug(
                 "File %s appears to be of type %s" % (file_description, fmt)
             )
-    except:
+    elif isinstance(file_description, bytes):
         # Suppose that file_description is a buffer
         result = re.match(
             r".*%s.*" % fmt, magic.from_buffer(file_description, mime=True)
@@ -569,3 +595,9 @@ def is_epub(file_description):
 
 def is_mobi(file_description):
     return file_is(file_description, 'mobi')
+
+def guess_file_extension(file_description):
+    for ext in ["pdf", "djvu", "epub", "mobi"]:
+        if eval("is_%s" % ext)(file_description):
+            return ext
+    return "txt"

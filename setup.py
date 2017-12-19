@@ -55,6 +55,7 @@ setup(
         "pyparser>=1.0",
         "python-magic>=0.4.13",
         "pylibgen>=1.3.0",
+        "urwid>=1.3.1",
     ],
     python_requires='>=3',
     classifiers=[
@@ -106,6 +107,12 @@ setup(
 
         ("share/doc/papis/", [
             "README.md",
+            "AUTHORS",
+            "LICENSE.txt",
+        ]),
+
+        ("etc/bash_completion.d/", [
+            "scripts/shell_completion/build/bash/papis",
         ]),
 
         ("share/man/man1", [
