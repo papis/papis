@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS-CONFIG" "1" "Dec 06, 2017" "0.4.9" "papis"
+.TH "PAPIS-CONFIG" "1" "Dec 23, 2017" "0.5.1" "papis"
 .SH NAME
 papis-config \- Papis Configuration
 .
@@ -123,8 +123,51 @@ vim\-gui\-header\-format = Title: %(header\-format)s
 .fi
 .UNINDENT
 .UNINDENT
+.SH LOCAL CONFIGURATION FILES
+.sp
+Papis also offers the possibility of creating local configuration files.
+The name of the local configuration file can be configured with the
+\fBlocal\-config\-file\fP setting.
+.sp
+The local configuration file can be found in the current directory of
+where you are issuing the papis command or in the directory of the
+library that you are considering in the papis command.
+.sp
+For instance let us suppose that you are in some project folder
+\fB~/Documents/myproject\fP and you have a local config file there
+with a definition of a new library. Then whenever you are
+in the \fB~/Documents/myproject\fP directory papis will also source the
+local configuration file found there.
+.sp
+On the other hand, also if you have a configuration file in the library folder
+for your papers, for instance in
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+~/Documents/papers/.papis.config
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+then everytime that you use this library also papis will source this
+configuration file.
 .SH DEFAULT SETTINGS
 .SS General
+.INDENT 0.0
+.TP
+\fBlocal\-config\-file\fP (\fI\%config\-settings\-local\-config\-file\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB\&.papis.config\fP
+.UNINDENT
+.UNINDENT
+.sp
+Name AND relative path of the local configuration file that papis
+will additionally read if the file is present in the current
+directory or in the base directory of a given library.
 .INDENT 0.0
 .TP
 \fBmode\fP (\fI\%config\-settings\-mode\fP)
@@ -273,7 +316,7 @@ for the given library.
 \fBcache\-dir\fP (\fI\%config\-settings\-cache\-dir\fP)
 .INDENT 7.0
 .IP \(bu 2
-\fBDefault\fP: \fB/home/ale/.cache/papis\fP
+\fBDefault\fP: \fB/home/gallo/.cache/papis\fP
 .UNINDENT
 .UNINDENT
 .INDENT 0.0
@@ -320,6 +363,17 @@ fave the contrary effect, i.e., it will not ask for confirmation.
 Default name for newly added documents. For example, if you want
 your documents to be \fBauthor\-title\fP then you should set it to
 the papis format: \fB{doc[author]}\-{doc[title]}\fP\&.
+.INDENT 0.0
+.TP
+\fBfile\-name\fP (\fI\%config\-settings\-file\-name\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBNone\fP
+.UNINDENT
+.UNINDENT
+.sp
+Same as \fBadd\-name\fP, but for files, not folders. If it is not set,
+the names of the files will be cleaned and taken \fIas\-is\fP\&.
 .INDENT 0.0
 .TP
 \fBadd\-interactive\fP (\fI\%config\-settings\-add\-interactive\fP)
@@ -681,6 +735,26 @@ in your info file or not. If it is set to false then a representation
 for the unicode characters will be written in its place.
 Since we should be living in an unicode world, it is set to \fBTrue\fP
 by default.
+.INDENT 0.0
+.TP
+\fBref\-format\fP (\fI\%config\-settings\-ref\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB{doc[doi]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+This flag is set to change the \fBref\fP flag in the info.yaml file
+when a document is imported. For example: I prefer the format
+FirstAuthorYear e.g. Plews2019. This would be achieved by the
+following:
+.INDENT 0.0
+.INDENT 3.5
+\fBref\-format = {doc[author_list][0][surname]}{doc[year]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+The default behaviour is to set the doi as the ref.
 .SS Vim gui
 .INDENT 0.0
 .TP

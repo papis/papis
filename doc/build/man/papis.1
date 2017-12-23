@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS" "1" "Dec 06, 2017" "0.4.9" "papis"
+.TH "PAPIS" "1" "Dec 23, 2017" "0.5.1" "papis"
 .SH NAME
 papis \- Papis Documentation
 .
@@ -481,8 +481,51 @@ vim\-gui\-header\-format = Title: %(header\-format)s
 .fi
 .UNINDENT
 .UNINDENT
+.SS Local configuration files
+.sp
+Papis also offers the possibility of creating local configuration files.
+The name of the local configuration file can be configured with the
+\fBlocal\-config\-file\fP setting.
+.sp
+The local configuration file can be found in the current directory of
+where you are issuing the papis command or in the directory of the
+library that you are considering in the papis command.
+.sp
+For instance let us suppose that you are in some project folder
+\fB~/Documents/myproject\fP and you have a local config file there
+with a definition of a new library. Then whenever you are
+in the \fB~/Documents/myproject\fP directory papis will also source the
+local configuration file found there.
+.sp
+On the other hand, also if you have a configuration file in the library folder
+for your papers, for instance in
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+~/Documents/papers/.papis.config
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+then everytime that you use this library also papis will source this
+configuration file.
 .SS Default settings
 .SS General
+.INDENT 0.0
+.TP
+\fBlocal\-config\-file\fP (\fI\%config\-settings\-local\-config\-file\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB\&.papis.config\fP
+.UNINDENT
+.UNINDENT
+.sp
+Name AND relative path of the local configuration file that papis
+will additionally read if the file is present in the current
+directory or in the base directory of a given library.
 .INDENT 0.0
 .TP
 \fBmode\fP (\fI\%config\-settings\-mode\fP)
@@ -631,7 +674,7 @@ for the given library.
 \fBcache\-dir\fP (\fI\%config\-settings\-cache\-dir\fP)
 .INDENT 7.0
 .IP \(bu 2
-\fBDefault\fP: \fB/home/ale/.cache/papis\fP
+\fBDefault\fP: \fB/home/gallo/.cache/papis\fP
 .UNINDENT
 .UNINDENT
 .INDENT 0.0
@@ -678,6 +721,17 @@ fave the contrary effect, i.e., it will not ask for confirmation.
 Default name for newly added documents. For example, if you want
 your documents to be \fBauthor\-title\fP then you should set it to
 the papis format: \fB{doc[author]}\-{doc[title]}\fP\&.
+.INDENT 0.0
+.TP
+\fBfile\-name\fP (\fI\%config\-settings\-file\-name\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBNone\fP
+.UNINDENT
+.UNINDENT
+.sp
+Same as \fBadd\-name\fP, but for files, not folders. If it is not set,
+the names of the files will be cleaned and taken \fIas\-is\fP\&.
 .INDENT 0.0
 .TP
 \fBadd\-interactive\fP (\fI\%config\-settings\-add\-interactive\fP)
@@ -1039,6 +1093,26 @@ in your info file or not. If it is set to false then a representation
 for the unicode characters will be written in its place.
 Since we should be living in an unicode world, it is set to \fBTrue\fP
 by default.
+.INDENT 0.0
+.TP
+\fBref\-format\fP (\fI\%config\-settings\-ref\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB{doc[doi]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+This flag is set to change the \fBref\fP flag in the info.yaml file
+when a document is imported. For example: I prefer the format
+FirstAuthorYear e.g. Plews2019. This would be achieved by the
+following:
+.INDENT 0.0
+.INDENT 3.5
+\fBref\-format = {doc[author_list][0][surname]}{doc[year]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+The default behaviour is to set the doi as the ref.
 .SS Vim gui
 .INDENT 0.0
 .TP
@@ -1813,6 +1887,20 @@ papis add ~/Documents/interesting.pdf \-\-from\-doi 10.10763/1.3237134
 .fi
 .UNINDENT
 .UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Add paper to a library named \fBmachine\-learning\fP from \fBarxiv.org\fP
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis \-l machine\-learning add \-\-from\-url https://arxiv.org/abs/1712.03134
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
 .UNINDENT
 .UNINDENT
 .INDENT 0.0
@@ -1820,8 +1908,8 @@ papis add ~/Documents/interesting.pdf \-\-from\-doi 10.10763/1.3237134
 .sp
 .nf
 .ft C
-usage: papis add [\-h] [\-d DIR] [\-i] [\-\-name NAME] [\-\-title TITLE]
-                 [\-\-author AUTHOR] [\-\-from\-bibtex FROM_BIBTEX]
+usage: papis add [\-h] [\-d DIR] [\-i] [\-\-name NAME] [\-\-file\-name FILE_NAME]
+                 [\-\-title TITLE] [\-\-author AUTHOR] [\-\-from\-bibtex FROM_BIBTEX]
                  [\-\-from\-yaml FROM_YAML] [\-\-from\-folder FROM_FOLDER]
                  [\-\-from\-url FROM_URL] [\-\-from\-doi FROM_DOI]
                  [\-\-from\-pmid FROM_PMID] [\-\-from\-lib FROM_LIB]
@@ -1857,6 +1945,9 @@ Default: False
 Name for the document’s folder (papis format)
 .sp
 Default: “”
+.TP
+.B\-\-file\-name
+File name for the document (papis format)
 .TP
 .B\-\-title
 Title for document
@@ -2251,8 +2342,8 @@ Default: False
 .sp
 .nf
 .ft C
-usage: papis explore [\-h] [\-\-isbnplus] [\-\-arxiv] [\-\-libgen] [\-\-add]
-                     [\-\-max MAX]
+usage: papis explore [\-h] [\-\-isbnplus] [\-\-arxiv] [\-\-libgen] [\-\-crossref]
+                     [\-\-add] [\-\-max MAX] [\-\-cmd CMD]
                      search
 .ft P
 .fi
@@ -2284,6 +2375,11 @@ Search on library genesis
 .sp
 Default: False
 .TP
+.B\-\-crossref
+Search on library genesis
+.sp
+Default: False
+.TP
 .B\-\-add
 Add document selected
 .sp
@@ -2293,6 +2389,9 @@ Default: False
 Maximum number of items
 .sp
 Default: 30
+.TP
+.B\-\-cmd
+Issue a command on the retrieved document using papis format
 .UNINDENT
 .SS Remove
 .INDENT 0.0
@@ -2332,7 +2431,7 @@ Default: False
 .sp
 .nf
 .ft C
-usage: papis gui [\-h] [\-\-tk] [\-\-rofi] [\-\-vim]
+usage: papis gui [\-h] [\-\-tk] [\-\-rofi] [\-\-urwid] [\-\-vim]
 .ft P
 .fi
 .UNINDENT
@@ -2347,6 +2446,11 @@ Default: False
 .TP
 .B\-\-rofi
 Rofi based UI
+.sp
+Default: False
+.TP
+.B\-\-urwid
+Urwid based UI
 .sp
 Default: False
 .TP
@@ -2420,7 +2524,7 @@ papis list \-\-template bibitem.template
 .nf
 .ft C
 usage: papis list [\-h] [\-i] [\-f] [\-d] [\-\-format FORMAT] [\-\-template TEMPLATE]
-                  [\-p] [\-\-downloaders]
+                  [\-p] [\-\-downloaders] [\-\-libraries]
                   [search]
 .ft P
 .fi
@@ -2465,6 +2569,11 @@ Default: False
 .TP
 .B\-\-downloaders
 List available downloaders
+.sp
+Default: False
+.TP
+.B\-\-libraries
+List defined libraries
 .sp
 Default: False
 .UNINDENT
@@ -3104,7 +3213,201 @@ args passed by the user.
 .UNINDENT
 .SH GIT
 .sp
-Papis is conceived to work well with the tool \fIgit\fP\&.
+Papis is conceived to work well with the tool \fIgit\fP, this would also work with
+\fI\%mercurial\fP
+or \fI\%subversion\fP\&.
+.sp
+Here you will find a description of a possible workflow using git with papis.
+This is not the only workflow, but it is the most obvious.
+.sp
+Let’s say you have a library named \fBbooks\fP in the directory
+\fB~/Documents/MyNiceBooks\fP\&. You could turn the \fBbooks\fP library into
+a \fIgit\fP repository, just doing for example
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis \-l books run git init
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+or just going to the library directory and running the command there:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+cd ~/Documents/MyNiceBooks
+git init
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Now you can add everything you have in the library with \fBgit add .\fP
+if you are in the library’s directory or
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis \-l books git add .
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+if you want to do it using the \fIpapis\fP’ \fBgit\fP command.
+.SS Interplay with other commands
+.sp
+Some papis commands give you the opportunity of using \fBgit\fP to manage
+changes. For instance if you are adding a new document, you could use
+the \fB\-\-commit\fP flag to also add a commit into your library, so if you do
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis add \-\-author "Pedrito" \-\-title "Super book" book.pdf \-\-commit
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+then also papis will do an automatic commit for the book, so that you can
+push your library afterwards to a remote repository.
+.sp
+You can imagine that papis command like \fBrename\fP and \fBmv\fP should also
+offer such functionality, and they indeed do through the \fB\-\-git\fP flag.
+Go to their documentation for more information.
+.SS Updating the libray
+.sp
+You can use the papis’ simple \fBgit\fP wrapper,
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis git pull
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS Usual workflow
+.sp
+Usually the workflow is like this:
+.sp
+When adding a document that you know for sure you want in your library:
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+Add the document and commit it, either by \fBgit add \-\-commit\fP
+or committing the document after adding it to the library.
+.IP \(bu 2
+Pull changes from the remote library, maybe you pushed something
+at work (reference changes etc..) and you do not have it yet there,
+you would do something like
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis git pull
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.IP \(bu 2
+Push what you just added
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis git push
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.IP \(bu 2
+Review the status of the library
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis git status
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.sp
+When editing a document’s info file:
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+Edit the file and then take a look at the \fBdiff\fP maybe
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis git diff
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.IP \(bu 2
+Add the changes
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis git add \-a
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.IP \(bu 2
+Commit
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis git commit
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.IP \(bu 2
+Pull/push:
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis git pull
+papis git push
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.sp
+Of course these workflows are just very basic examples, you can imagine
+that your workflow would look completely different.
 .SH SCIHUB SUPPORT
 .sp
 Papis has a script that uses the scihub platform to download scientific
@@ -3380,6 +3683,38 @@ You can check \fI\%issue #18\fP
 for more information.
 .UNINDENT
 .UNINDENT
+.SH SHELL AUTOCOMPLETION
+.sp
+Papis has a bash autocompletion script that comes installed
+when you install papis with \fBpip3\fP\&.
+.sp
+It should be installed in a relative path
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+PREFIX/etc/bash_completion.d/papis
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+normally the \fBPREFIX\fP part is \fB/usr/local/\fP, so you can add the
+following line to your \fB~/.bashrc\fP file
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+source /usr/local/etc/bash_completion.d/papis
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+or get the bash script from
+\fI\%here\fP\&.
 .SH FAQ
 .sp
 Here are some problems that users have come accross with often:
