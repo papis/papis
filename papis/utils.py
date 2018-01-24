@@ -534,11 +534,13 @@ def locate_document(document, documents):
     :returns: TODO
 
     """
+    # if these keys exist in the documents, then check those first
     for d in documents:
         for key in ['doi', 'ref', 'isbn', 'isbn10', 'url']:
-            if 'doi' in document.keys() and 'doi' in d.keys():
-                if document['doi'] == d['doi']:
+            if key in document.keys() and key in d.keys():
+                if document[key] == d[key]:
                     return d
+    # else, just try to match the usual way the documents
     docs = filter_documents(
         documents,
         search='author = "{doc[author]}" title = "{doc[title]}"'.format(
