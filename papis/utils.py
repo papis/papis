@@ -63,6 +63,14 @@ def format_doc(python_format, document, key=""):
     :type  document: papis.document.Document
     :returns: Formated string
     :rtype: str
+    >>> import papis.document
+    >>> document = papis.document.Document(\
+            data=dict(author='Fulano', title='Something') \
+        )
+    >>> format_doc('{doc[author]}{doc[title]}', document)
+    'FulanoSomething'
+    >>> format_doc('{doc[author]}{doc[title]}{doc[blahblah]}', document)
+    'FulanoSomething'
     """
     doc = key or papis.config.get("format-doc-name")
     return python_format.format(**{doc: document})
