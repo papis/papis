@@ -43,6 +43,17 @@ def open_in_browser(document):
         )
 
 
+def from_data(data):
+    """Construct a document object from a data dictionary.
+
+    :param data: Data to be copied to a new document
+    :type  data: dict
+    :returns: A papis document
+    :rtype:  papis.document.Document
+    """
+    return papis.document.Document(data=data)
+
+
 class Document(object):
 
     """Class implementing the entry abstraction of a document in a library.
