@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS" "1" "Dec 23, 2017" "0.5.1" "papis"
+.TH "PAPIS" "1" "Jan 31, 2018" "0.5.2" "papis"
 .SH NAME
 papis \- Papis Documentation
 .
@@ -48,7 +48,7 @@ should be familiar with opening a terminal window in your system.
 We will illustrate the process by creating a first library with a couple of
 \fB\(gapdf\(ga\fP documents in it. Papis can be highly configured using configuration
 files. Many programs use configuration files without you maybe being aware of
-it. Papis’ configuration files are stored together inside the folder
+it. Papis\(aq configuration files are stored together inside the folder
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -60,7 +60,7 @@ it. Papis’ configuration files are stored together inside the folder
 .UNINDENT
 .UNINDENT
 .sp
-Bear in mind that \fB~\fP means “Home Directory”. Inside this directory a
+Bear in mind that \fB~\fP means "Home Directory". Inside this directory a
 configuration file is found,
 .INDENT 0.0
 .INDENT 3.5
@@ -77,8 +77,8 @@ Right now we will open this file to edit and we will create a library.  In
 papis everything should be human\-readabale and human\-editable. So adding a
 library is as easy as adding two lines to this configuration file.
 .sp
-Say that you want to create a “papers” library, where you can finally order
-all those pdf’s hanging around in your computer. We can create this library
+Say that you want to create a "papers" library, where you can finally order
+all those pdf\(aqs hanging around in your computer. We can create this library
 by putting inside the config file the two lines:
 .INDENT 0.0
 .INDENT 3.5
@@ -103,7 +103,7 @@ So now add the two lines to the \fB~/.config/papis/config\fP file and save it, a
 proceed to add some documents.
 .SS Adding the first document
 .sp
-If you don’t have any special pdf lying around let me choose one for you:
+If you don\(aqt have any special pdf lying around let me choose one for you:
 \fI\%link\fP\&.
 You can download this document and we are going to add it into the \fBpapers\fP
 library.
@@ -122,13 +122,13 @@ papis add document.pdf \-\-author "Newton" \-\-title "Principia Mathematica"
 .UNINDENT
 .UNINDENT
 .sp
-And it’s done! We have added our first book to the library.
+And it\(aqs done! We have added our first book to the library.
 .sp
 Let us see how this works exactly. Papis consists of many commands, and one of
 these commands is \fBadd\fP\&. \fBAdd\fP itself has many flags, which are options for the
 given command. In the example above we have used the flags \fBauthor\fP and
-\fBtitle\fP to tell papis to use \fBNewton\fP as the author’s name and \fBPrincipia
-Mathematica\fP as the document’s title. You can see all the posible flags
+\fBtitle\fP to tell papis to use \fBNewton\fP as the author\(aqs name and \fBPrincipia
+Mathematica\fP as the document\(aqs title. You can see all the posible flags
 for the command \fBadd\fP if you use the \fBhelp\fP flag, i.e., if you issue the
 following command
 .INDENT 0.0
@@ -186,7 +186,7 @@ You can change the default pdf viewer in your configuration file
 .sp
 Now you can try to repeat the same process with another pdf file lying around.
 When you hit \fBpapis open\fP again, it will ask you which one you want.
-If you input parts of the title or the author’s name it will try to match
+If you input parts of the title or the author\(aqs name it will try to match
 what you typed with the paper you are looking for, so that you can get the
 paper that you are looking for very easily.
 .sp
@@ -323,7 +323,7 @@ python3 setup\&.py install
 .UNINDENT
 .UNINDENT
 .sp
-Again, if you want to install it locally because you don’t have administrative rights
+Again, if you want to install it locally because you don\(aqt have administrative rights
 in your computer you can just simply type
 .INDENT 0.0
 .INDENT 3.5
@@ -537,7 +537,7 @@ directory or in the base directory of a given library.
 .sp
 Papis is a modal program and it can be configured to support different
 operating modes. The default is considering that every papis document
-or entry is a ‘document’.
+or entry is a \(aqdocument\(aq.
 .INDENT 0.0
 .TP
 \fBopentool\fP (\fI\%config\-settings\-opentool\fP)
@@ -564,7 +564,7 @@ For mac users you might set this to \fBopen\fP\&.
 .UNINDENT
 .sp
 This is the default \fBumask\fP that will be used to create the new
-documents’ directories.
+documents\(aq directories.
 .INDENT 0.0
 .TP
 \fBbrowser\fP (\fI\%config\-settings\-browser\fP)
@@ -1030,7 +1030,7 @@ bookmarks:
 .UNINDENT
 .sp
 This is the name of the mark to be passed to the options
-\fBmark\-header\-format\fP etc… E.g. if you set \fBmark\-format\-name = m\fP
+\fBmark\-header\-format\fP etc... E.g. if you set \fBmark\-format\-name = m\fP
 then you could set \fBmark\-header\-format = {m[value]} \- {m[name]}\fP\&.
 .INDENT 0.0
 .TP
@@ -1770,7 +1770,7 @@ As an example let us consider the following library
 .sp
 The first thing that you might notice is that there are really many folders of
 course. Just to check that you undeerstand exactly what is a document, just
-please think about which of these pdfs is not a valid papis document… That’s
+please think about which of these pdfs is not a valid papis document... That\(aqs
 right!, \fBfolder1/paper.pdf\fP is not a valid document since the folder1 does not
 contain any \fBinfo.yaml\fP file. You see also that it does not matter how deep the
 folder structure is, you can have in your library a \fBphysics\fP folder, where you
@@ -1934,7 +1934,7 @@ Default: []
 .B\-d, \-\-dir
 Subfolder in the library
 .sp
-Default: “”
+Default: ""
 .TP
 .B\-i, \-\-interactive
 Do some of the actions interactively
@@ -1942,9 +1942,9 @@ Do some of the actions interactively
 Default: False
 .TP
 .B\-\-name
-Name for the document’s folder (papis format)
+Name for the document\(aqs folder (papis format)
 .sp
-Default: “”
+Default: ""
 .TP
 .B\-\-file\-name
 File name for the document (papis format)
@@ -1952,32 +1952,32 @@ File name for the document (papis format)
 .B\-\-title
 Title for document
 .sp
-Default: “”
+Default: ""
 .TP
 .B\-\-author
 Author(s) for document
 .sp
-Default: “”
+Default: ""
 .TP
 .B\-\-from\-bibtex
 Parse information from a bibtex file
 .sp
-Default: “”
+Default: ""
 .TP
 .B\-\-from\-yaml
 Parse information from a yaml file
 .sp
-Default: “”
+Default: ""
 .TP
 .B\-\-from\-folder
 Add document from folder being a valid papis document (containing info.yaml)
 .sp
-Default: “”
+Default: ""
 .TP
 .B\-\-from\-url
 Get document and information from agiven url, a parser must be implemented
 .sp
-Default: “”
+Default: ""
 .TP
 .B\-\-from\-doi
 Doi to try to get information from
@@ -1988,13 +1988,13 @@ PMID to try to get information from
 .B\-\-from\-lib
 Add document from another library
 .sp
-Default: “”
+Default: ""
 .TP
 .B\-\-from\-vcf
 Get contact information from a vcard (.vcf) file
 .TP
 .B\-\-to
-When –to is specified, the document will be added to the selected already existing document entry.
+When \-\-to is specified, the document will be added to the selected already existing document entry.
 .TP
 .B\-\-confirm
 Ask to confirm before adding to the collection
@@ -2038,7 +2038,7 @@ usage: papis open [\-h] [\-\-tool TOOL] [\-d] [\-\-all] [\-m] [search]
 .Bsearch
 Search query string
 .sp
-Default: “.”
+Default: "."
 .UNINDENT
 .SS Named Arguments
 .INDENT 0.0
@@ -2046,7 +2046,7 @@ Default: “.”
 .B\-\-tool
 Tool for opening the file (opentool)
 .sp
-Default: “”
+Default: ""
 .TP
 .B\-d, \-\-dir
 Open directory
@@ -2080,7 +2080,7 @@ usage: papis edit [\-h] [\-n] [search]
 .Bsearch
 Search query string
 .sp
-Default: “.”
+Default: "."
 .UNINDENT
 .SS Named Arguments
 .INDENT 0.0
@@ -2100,7 +2100,7 @@ Some examples of the usage are given below
 Update a document automatically and interactively
 .UNINDENT
 .sp
-(searching by \fBdoi\fP number in \fIcrossref\fP, or in other sources…)
+(searching by \fBdoi\fP number in \fIcrossref\fP, or in other sources...)
 .INDENT 0.0
 .INDENT 3.5
 .INDENT 0.0
@@ -2157,7 +2157,7 @@ usage: papis update [\-h] [\-i] [\-f] [\-d DOCUMENT]
 .Bsearch
 Search query string
 .sp
-Default: “.”
+Default: "."
 .UNINDENT
 .SS Named Arguments
 .INDENT 0.0
@@ -2281,7 +2281,7 @@ usage: papis export [\-h] [\-\-yaml] [\-\-bibtex] [\-\-json] [\-\-folder] [\-\-n
 .Bsearch
 Search query string
 .sp
-Default: “.”
+Default: "."
 .UNINDENT
 .SS Named Arguments
 .INDENT 0.0
@@ -2314,7 +2314,7 @@ Default: False
 .B\-o, \-\-out
 Outfile or outdir
 .sp
-Default: “”
+Default: ""
 .TP
 .B\-t, \-\-text
 Text formated reference
@@ -2355,7 +2355,7 @@ usage: papis explore [\-h] [\-\-isbnplus] [\-\-arxiv] [\-\-libgen] [\-\-crossref
 .Bsearch
 Search string
 .sp
-Default: “”
+Default: ""
 .UNINDENT
 .SS Named Arguments
 .INDENT 0.0
@@ -2410,7 +2410,7 @@ usage: papis rm [\-h] [\-\-file] [\-f] [search]
 .Bsearch
 Search query string
 .sp
-Default: “.”
+Default: "."
 .UNINDENT
 .SS Named Arguments
 .INDENT 0.0
@@ -2536,7 +2536,7 @@ usage: papis list [\-h] [\-i] [\-f] [\-d] [\-\-format FORMAT] [\-\-template TEMP
 .Bsearch
 Search query string
 .sp
-Default: “.”
+Default: "."
 .UNINDENT
 .SS Named Arguments
 .INDENT 0.0
@@ -2557,7 +2557,7 @@ Show the folder name associated with the document
 Default: False
 .TP
 .B\-\-format
-List entries using a custom papis format, e.g. ‘{doc[year] {doc[title]}
+List entries using a custom papis format, e.g. \(aq{doc[year] {doc[title]}
 .TP
 .B\-\-template
 Template file containing a papis format to list entries
@@ -2587,7 +2587,7 @@ to open it in a browser.  Also if it has a doc_url key, or a doi, it will try
 to compose urls out of these to open it.
 .sp
 If none of the above work, then it will try to use a search engine with the
-document’s information (using the \fBbrowse\-query\-format\fP).  You can select
+document\(aqs information (using the \fBbrowse\-query\-format\fP).  You can select
 wich search engine you want to use using the \fBsearch\-engine\fP setting.
 .INDENT 0.0
 .INDENT 3.5
@@ -2605,15 +2605,15 @@ usage: papis browse [\-h] [search]
 .Bsearch
 Search query string
 .sp
-Default: “.”
+Default: "."
 .UNINDENT
 .SS Config
 .sp
 The command config is a useful command because it allows you to check
-the configuration settings’ values that your current \fIpapis\fP session
+the configuration settings\(aq values that your current \fIpapis\fP session
 is using.
 .sp
-For example let’s say that you want to see which \fBdir\fP setting your
+For example let\(aqs say that you want to see which \fBdir\fP setting your
 current library is using (i.e., the directory or the dir that appears
 in the definition of the library in the configuration file), then you
 would simply do:
@@ -2673,7 +2673,7 @@ usage: papis config [\-h] option
 .Boption
 Variable to print
 .sp
-Default: “”
+Default: ""
 .UNINDENT
 .SS Run
 .sp
@@ -2728,7 +2728,7 @@ usage: papis run [\-h] ...
 .Brun_command
 Command name or command
 .sp
-Default: “”
+Default: ""
 .UNINDENT
 .SS Git
 .sp
@@ -2785,7 +2785,7 @@ usage: papis git [\-h] ...
 .Bcommands
 Commands
 .sp
-Default: “”
+Default: ""
 .UNINDENT
 .SS Sync
 .sp
@@ -2844,8 +2844,8 @@ of documents. To illustrate it here are some examples:
 .INDENT 3.5
 .INDENT 0.0
 .IP \(bu 2
-Open documents where the author key matches ‘albert’ (ignoring case),
-year matches ‘19’ (i.e., 1990, 2019, 1920):
+Open documents where the author key matches \(aqalbert\(aq (ignoring case),
+year matches \(aq19\(aq (i.e., 1990, 2019, 1920):
 .INDENT 2.0
 .INDENT 3.5
 .sp
@@ -2858,7 +2858,7 @@ papis open \(aqauthor = albert year = 05\(aq
 .UNINDENT
 .IP \(bu 2
 Add the restriction to the previous search that the usual matching matches
-the substring ‘licht’ in addition to the previously selected
+the substring \(aqlicht\(aq in addition to the previously selected
 .INDENT 2.0
 .INDENT 3.5
 .sp
@@ -2871,7 +2871,7 @@ papis open \(aqauthor = albert year = 05 licht\(aq
 .UNINDENT
 .sp
 This is not to be mixed with the restriction that the key \fIyear\fP matches
-\fI‘05 licht’\fP, which will not match any year, i.e.
+\fI\(aq05 licht\(aq\fP, which will not match any year, i.e.
 .INDENT 2.0
 .INDENT 3.5
 .sp
@@ -3010,7 +3010,7 @@ then the current library is used.
 .INDENT 7.0
 .TP
 .B Parameters
-\fBlib\fP (\fIstr\fP) – Library name.
+\fBlib\fP (\fIstr\fP) \-\- Library name.
 .UNINDENT
 .UNINDENT
 .INDENT 0.0
@@ -3023,9 +3023,9 @@ handle file_path.
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBfile_path\fP (\fIstr\fP) – File path to be handled.
+\fBfile_path\fP (\fIstr\fP) \-\- File path to be handled.
 .IP \(bu 2
-\fBwait\fP (\fIbool\fP) – Wait for the completion of the opener program to continue
+\fBwait\fP (\fIbool\fP) \-\- Wait for the completion of the opener program to continue
 .UNINDENT
 .UNINDENT
 .UNINDENT
@@ -3039,9 +3039,9 @@ string.
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBdirectory\fP (\fIstr\fP) – Folder path.
+\fBdirectory\fP (\fIstr\fP) \-\- Folder path.
 .IP \(bu 2
-\fBsearch\fP (\fIstr\fP) – Search string
+\fBsearch\fP (\fIstr\fP) \-\- Search string
 .UNINDENT
 .TP
 .B Returns
@@ -3069,9 +3069,9 @@ string.
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBlibrary\fP (\fIstr\fP) – Library name.
+\fBlibrary\fP (\fIstr\fP) \-\- Library name.
 .IP \(bu 2
-\fBsearch\fP (\fIstr\fP) – Search string
+\fBsearch\fP (\fIstr\fP) \-\- Search string
 .UNINDENT
 .TP
 .B Returns
@@ -3130,9 +3130,9 @@ open dir_path.
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBdir_path\fP (\fIstr\fP) – Folder path to be handled.
+\fBdir_path\fP (\fIstr\fP) \-\- Folder path to be handled.
 .IP \(bu 2
-\fBwait\fP (\fIbool\fP) – Wait for the completion of the opener program to continue
+\fBwait\fP (\fIbool\fP) \-\- Wait for the completion of the opener program to continue
 .UNINDENT
 .UNINDENT
 .UNINDENT
@@ -3146,9 +3146,9 @@ handle file_path.
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBfile_path\fP (\fIstr\fP) – File path to be handled.
+\fBfile_path\fP (\fIstr\fP) \-\- File path to be handled.
 .IP \(bu 2
-\fBwait\fP (\fIbool\fP) – Wait for the completion of the opener program to continue
+\fBwait\fP (\fIbool\fP) \-\- Wait for the completion of the opener program to continue
 .UNINDENT
 .UNINDENT
 .UNINDENT
@@ -3156,18 +3156,18 @@ handle file_path.
 .TP
 .B papis.api.pick(options, pick_config={})
 This is a wrapper for the various pickers that are supported.
-Depending on the configuration different selectors or ‘pickers’
+Depending on the configuration different selectors or \(aqpickers\(aq
 are used.
 .INDENT 7.0
 .TP
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBoptions\fP (\fIlist\fP) – List of different objects. The type of the objects within
+\fBoptions\fP (\fIlist\fP) \-\- List of different objects. The type of the objects within
 the list must be supported by the pickers. This is the reason why this
 function is difficult to generalize for external picker programs.
 .IP \(bu 2
-\fBpick_config\fP (\fIdict\fP) – Dictionary with additional configuration for the used
+\fBpick_config\fP (\fIdict\fP) \-\- Dictionary with additional configuration for the used
 picker. This depends on the picker.
 .UNINDENT
 .TP
@@ -3208,7 +3208,7 @@ args passed by the user.
 .INDENT 7.0
 .TP
 .B Parameters
-\fBlibrary\fP (\fIstr\fP) – Name of library or path to a given library
+\fBlibrary\fP (\fIstr\fP) \-\- Name of library or path to a given library
 .UNINDENT
 .UNINDENT
 .SH GIT
@@ -3220,7 +3220,7 @@ or \fI\%subversion\fP\&.
 Here you will find a description of a possible workflow using git with papis.
 This is not the only workflow, but it is the most obvious.
 .sp
-Let’s say you have a library named \fBbooks\fP in the directory
+Let\(aqs say you have a library named \fBbooks\fP in the directory
 \fB~/Documents/MyNiceBooks\fP\&. You could turn the \fBbooks\fP library into
 a \fIgit\fP repository, just doing for example
 .INDENT 0.0
@@ -3248,7 +3248,7 @@ git init
 .UNINDENT
 .sp
 Now you can add everything you have in the library with \fBgit add .\fP
-if you are in the library’s directory or
+if you are in the library\(aqs directory or
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -3260,7 +3260,7 @@ papis \-l books git add .
 .UNINDENT
 .UNINDENT
 .sp
-if you want to do it using the \fIpapis\fP’ \fBgit\fP command.
+if you want to do it using the \fIpapis\fP\(aq \fBgit\fP command.
 .SS Interplay with other commands
 .sp
 Some papis commands give you the opportunity of using \fBgit\fP to manage
@@ -3285,7 +3285,7 @@ offer such functionality, and they indeed do through the \fB\-\-git\fP flag.
 Go to their documentation for more information.
 .SS Updating the libray
 .sp
-You can use the papis’ simple \fBgit\fP wrapper,
+You can use the papis\(aq simple \fBgit\fP wrapper,
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -3349,7 +3349,7 @@ papis git status
 .UNINDENT
 .UNINDENT
 .sp
-When editing a document’s info file:
+When editing a document\(aqs info file:
 .INDENT 0.0
 .INDENT 3.5
 .INDENT 0.0
@@ -3517,7 +3517,7 @@ intended for \fBzotero\fP but that is general enought to work
 for other programs too.
 .sp
 To install this script you can copy the file \fBpapis\-zotero\fP in the
-repository’s example directory to your papis \fBconfig/scripts\fP directory.
+repository\(aqs example directory to your papis \fBconfig/scripts\fP directory.
 .sp
 You can do this automatically issuing the following commands
 .INDENT 0.0
@@ -3715,6 +3715,16 @@ source /usr/local/etc/bash_completion.d/papis
 .sp
 or get the bash script from
 \fI\%here\fP\&.
+.SH CLASSES
+.sp
+Here there is an overview of the main classes that
+exist in papis. Their inheritance relations if any
+are also drawn.
+.SS Document
+.SS Downloaders
+.SS Commands
+.sp
+An example of the add command class:
 .SH FAQ
 .sp
 Here are some problems that users have come accross with often:

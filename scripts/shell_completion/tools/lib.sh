@@ -2,7 +2,7 @@
 
 get_papis_commands(){
   local cmd=$1
-  papis ${cmd} -h                                 |
+  env XDG_CONFIG_HOME=/tmp papis ${cmd} -h        |
   awk '
     /positional arguments/,/optional arguments/ {
     print $1
