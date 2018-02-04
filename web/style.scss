@@ -1,0 +1,295 @@
+
+// sass -t compressed style.scss > style.min.css
+// sass style.scss > style.css
+
+$base-color: #086fbb;
+$year-color: #c3c3c3;
+$menu-bg: #34373a;
+$highlight: darken($base-color, 20%);
+// $gray:#e0e0e0;
+$dark-gray:#AFAFAF;
+$line-color:#D9D9D9;
+$top-height:36px;
+
+$tag-colors: #EB53BC, #5662D6, #007FD9, #E17076, #05B0A0, #FAA774, #E5CA77, #7BC862, #6EC9CB;
+
+
+
+html, body {
+  height:100%;
+  margin:0;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 100%;
+}
+
+
+@mixin box-sized{
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+  box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
+body{
+  margin:0;
+  padding:0;
+  height: 100%;
+
+  font-family: 'Open Sans', sans-serif;
+
+  //
+  nav{
+    background-color: $base-color;
+    height:$top-height;
+    display:flex;
+    display: -webkit-flex;
+    flex-direction: row;
+    -webkit-flex-direction: row;
+    -webkit-align-content: stretch;
+    align-content: stretch;
+    color: white;
+
+    a{
+      color:white;
+      font-size: 1rem;
+      text-decoration: none;
+    }
+
+    .logo{
+      width:200px;
+    }
+
+
+
+    .search{
+      width:50%;
+      padding:0;
+
+      .search-box{
+        // margin:4px 10px 4px 10px;
+        margin-top:calc((#{$top-height} - 20px) / 2 - 1px);
+        margin-bottom:calc((#{$top-height} - 20px) / 2);
+        margin-left: 2%;
+        margin-right: 2%;
+        // width:200px;
+        width:96%;
+        -webkit-transition: width 1s ease;  
+        -moz-transition: width 1s ease;  
+        -o-transition: width 1s ease;  
+        -ms-transition: width 1s ease;  
+        transition: width 1s ease; 
+        -webkit-border-radius: 5px; 
+        -moz-border-radius: 5px; 
+        border-radius: 5px; 
+        border: none;
+        height:20px;
+        // &:focus{
+        //   width:400px;
+        // }
+      }
+    }
+
+    .links{
+
+      margin:0;
+      width:50%;
+      padding-left: 2rem;
+      padding-right: 2rem;
+
+      ul{
+        margin:0;
+        padding:0;
+        width:100%;
+
+        li{
+
+          padding:0;
+          min-width:15%;
+          float: left;
+          height:$top-height;
+          cursor: pointer;
+          list-style-type: none;
+          line-height: $top-height;
+
+          display: block;
+          color: white;
+          text-align: center;
+          padding-left: 4px;
+          padding-right: 4px;
+          text-decoration: none;
+          
+          &:hover {
+            background-color: lighten($base-color, 10%);
+          }
+        }
+        
+      }
+    }
+  }
+  aside{
+    background-color:rgb(52, 55, 58);
+  }
+
+  .content{
+    min-height:calc(100% - #{$top-height} - 1px);
+    display:flex;
+    display: -webkit-flex;
+    flex-direction: row;
+    -webkit-flex-direction: row;
+    -webkit-align-content: stretch;
+    align-content: stretch;
+    // al - navbar
+    min-height: calc(100% - 36px - 1px);
+    .menu{
+      @include box-sized;
+      width:200px;
+      background-color:$menu-bg;
+      ul{
+      list-style-type: none;
+      line-height: 1rem;
+      margin:0;
+      padding:0;
+      margin-top:1rem;
+      color:#c5c5c5;
+      font-weight: bold;
+      li{
+        
+      }
+      .cat{
+        padding: 5px 1rem;
+        line-height: 2rem;
+      }
+      ul{
+        padding:0;
+        margin:0;
+        cursor: pointer;
+        // second child
+        font-weight: normal;
+        li{
+          margin:0;
+          padding: 5px 2rem;
+          &:hover{
+            background-color: lighten($menu-bg, 10%);
+          }
+
+        }
+      }
+
+    }
+    }
+    .paper-list{
+
+      background-color:#F2F2F2;
+      position:relative;
+      font-size: 0.8rem;
+      border-right: 1px solid $line-color;
+      letter-spacing: 0.5px;
+
+
+      @include box-sized;
+      position: relative;
+      width: 50%;
+
+
+
+      ul{
+        margin:0;
+        padding:0;
+        li{
+          cursor: pointer;
+          background-color:#ffffff;
+          list-style-type: none;
+          line-height: 1rem;
+          display: block;
+          margin:0;
+          padding:0;
+          padding: 10px 20px;
+          border-bottom: 1px solid $line-color;
+          p, span{
+            margin:0;
+            padding:0;
+          }
+          .fa{
+            padding-right: 1.5rem;
+            float:left;
+            font-size:1.5rem;
+            color:#999;
+            line-height: 3rem;
+          }
+
+          p{
+            span.title{
+              font-weight: bold;
+              // color:$highlight;
+              color:#12588c;
+              // font-size:1.0001rem;
+            }
+            
+
+            span.year{
+              font-weight:normal;
+              color:$year-color;
+              float: right;
+            }
+            
+            span.authors{
+              color:#444;
+            }
+            span.publisher{
+              float: right;
+              color:$dark-gray;
+            }
+
+          }
+          &:hover{
+            background-color:#F2F2F2;
+            
+          }
+        }
+        .paper_active, .paper_active:hover{
+          background-color:$base-color;
+          color:white;
+          .emph{
+            color:#fb5151 !important;
+          }
+          span.title, span.year, span.authors, span.publisher, .fa{
+            color:white;
+          }
+        }
+        .paper_active:hover{
+          background-color:darken($base-color, 2%);
+        }
+
+  }
+
+      .paper-title{
+
+      }
+    }
+    .paper-details{
+
+      padding: 2rem;
+      @include box-sized;
+      position: relative;
+      width: calc(100% - 200px - 1px);
+
+      article{
+      // h1{
+      //   font-size: 1.5rem;
+      // }
+      h1{margin:0.1em 0;}
+      p{line-height: 1.2rem;}
+      p.authors{color:$highlight; margin-bottom:0;}
+      p.journal{color:$dark-gray; margin-top:0;}
+      p.url{ 
+        margin-bottom:0; 
+        a{color:$dark-gray; font-size: 0.7rem; margin:0}}
+      .year{color:$year-color; margin:0;font-size: 0.9rem;}
+      div.abstract{
+        
+      }
+    }
+    }
+  }
+
+  
+}
