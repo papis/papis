@@ -285,6 +285,26 @@
 
     The default behaviour is to set the doi as the ref.
 
+.. papis-config:: multiple-authors-format
+
+    When retrieving automatic author information from services like
+    crossref.org, papis usually builds the ``author`` field for the
+    given document. The format how every single author name is built
+    is given by this setting, for instance you could customize it
+    by the following:
+
+        ``multiple-authors-format = {au[surname]} -- {au[given_name]}``
+
+    which would given in the case of Albert Einstein the string
+    ``Einstein -- Albert``.
+
+.. papis-config:: multiple-authors-separator
+
+    Similarly to ``multiple-authors-format``, this is the string that
+    separates single authors in the ``author`` field. If it is set to
+    `` and `` then you would have ``<author 1> and <author 2> and ....``
+    in the ``author`` field.
+
 """
 import logging
 
@@ -380,6 +400,8 @@ general_settings = {
 
     "info-allow-unicode": True,
     "ref-format"      : "{doc[doi]}",
+    "multiple-authors-separator": " and ",
+    "multiple-authors-format": "{au[surname]}, {au[given_name]}",
 }
 
 

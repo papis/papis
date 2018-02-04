@@ -253,8 +253,9 @@ def get_author_info_from_results(container):
         author[ 'given_name' ] = given_name
         authors_info['author_list'].append(author)
 
-    authors_info['author'] = ', '.join([
-        "{au[given_name]} {au[surname]}".format(au=author)
+    authors_info['author'] = papis.config.get('multiple-authors-separator')\
+    .join([
+        papis.config.get("multiple-authors-format").format(au=author)
         for author in authors_info['author_list']
     ])
 
