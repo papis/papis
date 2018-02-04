@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Compiled and minified CSS -->
+        <title>Papis Hero</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    </head>
+    <body>
+        <nav>
+            <div class="logo"><a href="#" class="brand-logo">Papis</a></div>
+            <div class="search">
+                <input type="text" class="search-box" id="search_id" value="" v-model="query-message" >
+            </div>
+            <div class="links">
+                <ul>
+                    <li>link a</li>
+                    <li>link b</li>
+                    <li>link c</li>
+                    <li>link d</li>
+                </ul>
+            </div>
+        </nav>
+        <div class="content">
+            <div class="menu">
+                <ul>
+                    <li><span class="cat">Test</span>
+                    <ul>
+                        <li>sub 1</li>
+                        <li>sub 2</li>
+                    </ul>
+                </li>
+                <li><span class="cat">Test</span></li>
+            </ul>
+        </div>
+        <div class="paper-list">
+            <ul>
+                <li  v-for="paper in papers">
+                    <p><span class="title">{{ paper.title }}</span></p>
+                    <p><span class="authors">{{ paper.author }}</span></p>
+                </li>
+            </ul>
+        </div>
+        <div class="paper-details">
+            <article>
+                <p class="url"><a target="_blank" href="{{url}}">{{url}}</a></p>
+                <h1>{{title}}</h1>
+                <p class="author">{{author}}</p>
+                <p class="year">({{year}})</p>
+                <p class="journal">{{publisher}}</p>
+            </article>
+        </div>
+    </div>
+    
+    
+</div>
+<script src="https://code.jquery.com/jquery-latest.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script type="text/javascript">
+
+var papers_obj = new Vue({
+    el: '.paper-list',
+
+    created: function () {
+        this.fetchData();
+    },
+
+    methods: {
+        fetchData: function () {
+            var self = this;
+            $.get( "http://localhost:8888/library/", function( data ) {
+                self.papers = data;
+            });
+        }
+    },
+    data:{
+        papers: []
+    }
+})
+
+</script>
+
+</body>
+</html>
