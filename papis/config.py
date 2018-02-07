@@ -44,6 +44,7 @@
         - papis.pick
         - rofi
         - vim
+        - dmenu
 
 .. papis-config:: mvtool
 
