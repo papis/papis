@@ -81,6 +81,9 @@ setup(
         # dependencies). You can install these using the following syntax,
         # for example:
         # $ pip install -e .[develop]
+        optional=[
+            'dmenu',
+        ],
         develop=[
             "sphinx",
             'sphinx-argparse',
