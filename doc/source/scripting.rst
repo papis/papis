@@ -94,6 +94,7 @@ Example: Define papis mode in i3wm
 This is an example of using papis with the window manager `i3`.
 
 ::
+
   # Enter papis mode
   bindsym $mod+Ctrl+p mode "papis"
 
