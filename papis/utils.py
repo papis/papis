@@ -278,32 +278,6 @@ def filter_documents(documents, search=""):
         return [d for d in result if d is not None]
 
 
-def get_documents(directory, search=""):
-    """Get documents from within a containing folder
-
-    :param directory: Folder to look for documents.
-    :type  directory: str
-    :param search: Valid papis search
-    :type  search: str
-    :returns: List of document objects.
-    :rtype: list
-    """
-    import papis.config
-    directory = os.path.expanduser(directory)
-
-    if papis.config.getboolean("use-cache"):
-        import papis.cache
-        folders = papis.cache.get_folders(directory)
-    else:
-        folders = get_folders()
-
-    logger.debug("Creating document objects")
-    documents = folders_to_documents(folders)
-    logger.debug("Done")
-
-    return filter_documents(documents, search)
-
-
 def folders_to_documents(folders):
     """Turn folders into documents, this is done in a multiprocessing way, this
     step is quite critical for performance.
