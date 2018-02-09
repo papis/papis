@@ -3,6 +3,13 @@
 If you want to contribute you might take one of these topics and
 start working on them.
 
+## Implement whoosh for papis
+
+Abstract away the database system of papis to
+allow for backends such as whoosh for the indexing and querying of
+documents. However the simple document structure of papis should
+be left intact.
+
 ## PDF or general document type content indexing
 
 A feature that many people want appears to be search-in-document
@@ -146,7 +153,13 @@ Papis should work in windows, however I am unable to test this.
 
 It would be somehow nice to have a logo.
 
-## Gtk or Qt based GUI.
+## GUI
+
+(
+There is a running project in
+[here](https://github.com/ParWie/papis-webfrontend)
+so before implementing a GUI yourself you might want to help out there?
+)
 
 It would be nice to have a GTK or QT based GUI, there is a branch with a gtk
 GUI however I'm in principle a little bit afraid of implementing a gui
@@ -165,4 +178,5 @@ and for brew in macOS.
   - [ ] Brew (MacOS)
   - [ ] Debian/Ubuntu
   - [ ] Archlinux
+  - [ ] Nixos
   - [ ] Other
