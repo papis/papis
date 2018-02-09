@@ -65,14 +65,12 @@ class Document(object):
 
     def __init__(self, folder=None, data=None):
         self._keys = []
-        self._folder = folder
+        self._folder = None
+
         if folder is not None:
-            self._infoFilePath = \
-                os.path.join(folder, papis.utils.get_info_file_name())
+            self.set_folder(folder)
             self.load()
-            self.subfolder = self.get_main_folder()\
-                                 .replace(os.environ["HOME"], "")\
-                                 .replace("/", " ")
+
         if data is not None:
             self.update(data)
 
@@ -112,6 +110,23 @@ class Document(object):
         :returns: Folder path
         """
         return self._folder
+
+    def set_folder(self, folder):
+        """Set document's folder. The info_file path will be accordingly set.
+
+        :param folder: Folder where the document will be stored, full path.
+        :type  folder: str
+        """
+        self._folder = folder
+        self._infoFilePath = os.path.join(
+            folder,
+            papis.utils.get_info_file_name()
+        )
+        self.subfolder = self.get_main_folder().replace(
+            os.environ["HOME"], ""
+        ).replace(
+            "/", " "
+        )
 
     def get_main_folder_name(self):
         """Get main folder name where the document and the information is
@@ -339,7 +354,7 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         # TODO: think about if it's better to raise an exception here
         # TODO: if no info file is found
         try:
-            fd = open(self._infoFilePath, "r")
+            fd = open(self.get_info_file(), "r")
         except:
             return False
         structure = yaml.load(fd)
