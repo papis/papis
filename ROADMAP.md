@@ -157,7 +157,7 @@ It would be somehow nice to have a logo.
 
 (
 There is a running project in
-[here](https://github.com/ParWie/papis-webfrontend)
+[here](https://github.com/PatWie/papis-webfrontend)
 so before implementing a GUI yourself you might want to help out there?
 )
 
