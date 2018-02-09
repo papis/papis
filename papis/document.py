@@ -122,6 +122,19 @@ def dump(document):
     return string
 
 
+def delete(document):
+    """This function deletes a document from disk and from the database,
+    effectively deleting completely the document.
+    :param document: Papis document
+    :type  document: papis.document.Document
+    """
+    import shutil
+    db = papis.database.get()
+    folder = document.get_main_folder()
+    shutil.rmtree(folder)
+    db.delete(document)
+
+
 class Document(object):
 
     """Class implementing the entry abstraction of a document in a library.

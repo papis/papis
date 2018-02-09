@@ -87,6 +87,16 @@ def clear_lib_cache(lib=None):
     clear(directory)
 
 
+def get_cache_file_path(directory):
+    """Get the full path to the cache file
+
+    :param directory: Folder to look for documents.
+    :type  directory: str
+    """
+    cache_name = get_name(directory)
+    return os.path.join(get_folder(), cache_name)
+
+
 def get_folders(directory):
     """Get folders from within a containing folder from cache
 
@@ -98,8 +108,7 @@ def get_folders(directory):
     :rtype: list
     """
     cache = get_folder()
-    cache_name = get_name(directory)
-    cache_path = os.path.join(cache, cache_name)
+    cache_path = get_cache_file_path(directory)
     folders = []
     logger.debug("Getting documents from dir %s" % directory)
     logger.debug("Cache path = %s" % cache_path)
@@ -137,6 +146,7 @@ def filter_documents(documents, search=""):
         # wrong or it is really like this.
         import multiprocessing
         import time
+        papis.docmatcher.DocMatcher.set_matcher(match_document)
         np = papis.api.get_arg("cores", multiprocessing.cpu_count())
         pool = multiprocessing.Pool(np)
         logger.debug(
@@ -147,7 +157,6 @@ def filter_documents(documents, search=""):
         )
         logger.debug("pool started")
         begin_t = time.time()
-        papis.docmatcher.DocMatcher.set_matcher(match_document)
         result = pool.map(
             papis.docmatcher.DocMatcher.return_if_match, documents
         )
@@ -217,21 +226,30 @@ class Database(papis.database.base.Database):
     def __init__(self, library=None):
         papis.database.base.Database.__init__(self, library)
         self.documents = []
+        self.folders = []
 
     def _query(self, query_string):
-        directory = self.get_dir()
-        directory = os.path.expanduser(directory)
+        directory = os.path.expanduser(self.get_dir())
 
         if papis.config.getboolean("use-cache"):
-            folders = get_folders(directory)
+            self.folders = get_folders(directory)
         else:
-            folders = papis.utils.get_folders()
+            self.folders = papis.utils.get_folders()
 
         logger.debug("Creating document objects")
-        documents = folders_to_documents(folders)
+        documents = folders_to_documents(self.folders)
         logger.debug("Done")
 
         return filter_documents(documents, query_string)
+
+    def add(self, document):
+        self.folders.append(document.get_main_folder())
+        self.save()
+
+    def delete(self, document):
+        if papis.config.getboolean("use-cache"):
+            self.folders.remove(document.get_main_folder())
+            self.save()
 
     def match(self, document, query_string):
         return match_document(document, query_string)
@@ -246,3 +264,5 @@ class Database(papis.database.base.Database):
             self.documents = self._query(query_string)
         return filter_documents(self.documents, query_string)
 
+    def save(self):
+        create(self.folders, get_cache_file_path(self.get_dir()))

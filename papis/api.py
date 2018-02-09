@@ -227,4 +227,4 @@ def clear_lib_cache(lib=None):
 
     """
     lib = papis.api.get_lib() if lib is None else lib
-    papis.database.get.Database(lib).clear()
+    papis.database.get(lib).clear()
