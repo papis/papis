@@ -10,7 +10,6 @@ logger.debug("importing")
 
 import os
 import re
-import papis.cache
 import papis.utils
 import papis.commands
 import papis.config
@@ -228,5 +227,4 @@ def clear_lib_cache(lib=None):
 
     """
     lib = papis.api.get_lib() if lib is None else lib
-    directory = papis.config.get("dir", section=lib)
-    papis.cache.clear(directory)
+    papis.database.get.Database(lib).clear()

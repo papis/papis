@@ -331,8 +331,8 @@ def locate_document(document, documents):
                     return d
     # else, just try to match the usual way the documents
     # TODO: put this into the databases
-    import papis.cache
-    docs = papis.cache.filter_documents(
+    import papis.database.cache
+    docs = papis.database.cache.filter_documents(
         documents,
         search='author = "{doc[author]}" title = "{doc[title]}"'.format(
             doc=document
