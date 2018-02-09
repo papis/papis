@@ -3,6 +3,7 @@ from papis.gui.tk import tk
 import papis.api
 import papis.config
 import papis.utils
+import papis.document
 
 
 class ListEntry(tk.Frame, PapisWidget):
@@ -273,7 +274,7 @@ class PapisList(tk.Frame, PapisWidget):
     def print_info(self, event=None):
         doc = self.get_selected_doc()
         self.master.prompt.echomsg(
-            doc.dump()
+            papis.document.dump(doc)
         )
 
     def edit(self, event=None):

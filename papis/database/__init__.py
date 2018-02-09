@@ -1,11 +1,11 @@
 
-import papis.config
 
-def get():
+def get(library=None):
+    import papis.config
     if papis.config.get("database-backend") == "papis":
-        import papis.cache
-        return papis.cache.Database()
+        from papis.cache import Database
+        return Database(library)
     elif papis.config.get("database-backend") == "whoosh":
         import papis.database.whoosh
-        return papis.database.whoosh.Databse()
+        return papis.database.whoosh.Database(library)
 

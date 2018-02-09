@@ -1,6 +1,7 @@
 import logging
 import os
 import papis.utils
+import papis.docmatcher
 import papis.config
 import papis.database.base
 
@@ -113,22 +114,110 @@ def get_folders(directory):
     return folders
 
 
+def filter_documents(documents, search=""):
+    """Filter documents. It can be done in a multi core way.
+
+    :param documents: List of papis documents.
+    :type  documents: papis.documents.Document
+    :param search: Valid papis search string.
+    :type  search: str
+    :returns: List of filtered documents
+    :rtype:  list
+
+    """
+    logger = logging.getLogger('filter')
+    papis.docmatcher.DocMatcher.set_search(search)
+    papis.docmatcher.DocMatcher.parse()
+    if search == "" or search == ".":
+        return documents
+    else:
+        # Doing this multiprocessing in filtering does not seem
+        # to help much, I don't know if it's because I'm doing something
+        # wrong or it is really like this.
+        import multiprocessing
+        import time
+        np = papis.api.get_arg("cores", multiprocessing.cpu_count())
+        pool = multiprocessing.Pool(np)
+        logger.debug(
+            "Filtering docs (search %s) using %s cores" % (
+                search,
+                np
+            )
+        )
+        logger.debug("pool started")
+        begin_t = time.time()
+        papis.docmatcher.DocMatcher.set_matcher(match_document)
+        result = pool.map(
+            papis.docmatcher.DocMatcher.return_if_match, documents
+        )
+        pool.close()
+        pool.join()
+        logger.debug("pool done (%s ms)" % (1000*time.time()-1000*begin_t))
+        return [d for d in result if d is not None]
+
+
+def folders_to_documents(folders):
+    """Turn folders into documents, this is done in a multiprocessing way, this
+    step is quite critical for performance.
+
+    :param folders: List of folder paths.
+    :type  folders: list
+    :returns: List of document objects.
+    :rtype:  list
+    """
+    import multiprocessing
+    import time
+    logger = logging.getLogger("dir2doc")
+    np = papis.api.get_arg("cores", multiprocessing.cpu_count())
+    logger.debug("Running in %s cores" % np)
+    pool = multiprocessing.Pool(np)
+    logger.debug("pool started")
+    begin_t = time.time()
+    result = pool.map(papis.document.Document, folders)
+    pool.close()
+    pool.join()
+    logger.debug("pool done (%s ms)" % (1000*time.time()-1000*begin_t))
+    return result
+
+
+def match_document(document, search, match_format=None):
+    """Main function to match document to a given search.
+
+    :param document: Papis document
+    :type  document: papis.document.Document
+    :param search: A valid search string
+    :type  search: str
+    :param match_format: Python-like format string.
+        (`see <
+            https://docs.python.org/2/library/string.html#format-string-syntax
+        >`_)
+    :type  match_format: str
+    :returns: Non false if matches, true-ish if it does match.
+    """
+    match_format = match_format or papis.config.get("match-format")
+    match_string = papis.utils.format_doc(match_format, document)
+    regex = get_regex_from_search(search)
+    return re.match(regex, match_string, re.IGNORECASE)
+
+
+def get_regex_from_search(search):
+    """Creates a default regex from a search string.
+
+    :param search: A valid search string
+    :type  search: str
+    :returns: Regular expression
+    :rtype: str
+    """
+    return r".*"+re.sub(r"\s+", ".*", search)
+
+
 class Database(papis.database.base.Database):
 
     def __init__(self, library=None):
-        Database.__init__(self, library)
+        papis.database.base.Database.__init__(self, library)
         self.documents = []
 
-    def get_documents():
-        """Get documents from within a containing folder
-
-        :param directory: Folder to look for documents.
-        :type  directory: str
-        :param search: Valid papis search
-        :type  search: str
-        :returns: List of document objects.
-        :rtype: list
-        """
+    def _query(self, query_string):
         directory = self.get_dir()
         directory = os.path.expanduser(directory)
 
@@ -141,16 +230,15 @@ class Database(papis.database.base.Database):
         documents = folders_to_documents(folders)
         logger.debug("Done")
 
-        return filter_documents(documents, search)
+        return filter_documents(documents, query_string)
+
+    def clear(self):
+        clear_lib_cache(self.lib)
 
     def query(self, query_string):
         """Search in the database using a simple query string
         """
         if len(self.documents) == 0:
-            directory = papis.config.get("dir", section=self.get_lib())
-            self.documents = papis.utils.get_documents(
-                directory, query_string
-            )
-        return papis.utils.filter_documents(self.documents, query_string)
-
+            self.documents = self._query(query_string)
+        return filter_documents(self.documents, query_string)
 

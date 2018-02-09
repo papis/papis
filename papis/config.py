@@ -687,6 +687,7 @@ def merge_configuration_from_path(path, configuration):
         configuration.read(path)
         configuration.handle_includes()
 
+
 def get_lib():
     """Get current library, it either retrieves the library from
     the environment PAPIS_LIB variable or from the command line

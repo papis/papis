@@ -133,7 +133,7 @@ class Command(papis.commands.Command):
                         self.logger.error(
                             "The following information could not be located"
                         )
-                        self.logger.error('\n'+doc.dump())
+                        self.logger.error('\n'+papis.document.dump(doc))
                     else:
                         located_doc.update(
                             bib_element,

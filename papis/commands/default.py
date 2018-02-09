@@ -92,6 +92,7 @@ class Command(papis.commands.Command):
         )
 
     def main(self):
+        import papis.commands
         self.set_args(papis.commands.get_args())
         log_format = '%(levelname)s:%(name)s:%(message)s'
         if self.args.verbose:
@@ -107,7 +108,8 @@ class Command(papis.commands.Command):
             return 0
 
         if self.args.set:
-            key_vals = papis.utils.DocMatcher.parse(self.args.set)
+            import papis.docmatcher
+            key_vals = papis.docmatcher.DocMatcher.parse(self.args.set)
             self.logger.debug('Parsed set %s' % key_vals)
             for pair in key_vals:
                 if len(pair) != 3:

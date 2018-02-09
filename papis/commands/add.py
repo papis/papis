@@ -421,7 +421,7 @@ class Command(papis.commands.Command):
                 interactive=self.args.interactive
             )
             document.save()
-            data = document.to_dict()
+            data = papis.document.to_dict(document)
             in_documents_paths = document.get_files() + in_documents_paths
             data["files"] = [os.path.basename(f) for f in in_documents_paths]
             # set out folder name the folder of the found document
@@ -549,7 +549,7 @@ class Command(papis.commands.Command):
             papis.api.edit_file(document.get_info_file(), wait=True)
             self.logger.debug("Loading the changes made by editing")
             document.load()
-            data = document.to_dict()
+            data = papis.document.to_dict(document)
 
         # Duplication checking
         self.logger.debug("Check if the added document is already existing")
@@ -557,7 +557,7 @@ class Command(papis.commands.Command):
             document, papis.api.get_documents_in_lib(papis.api.get_lib())
         )
         if found_document is not None:
-            self.logger.warning('\n' + found_document.dump())
+            self.logger.warning('\n' + papis.document.dump(found_document))
             print("\n\n")
             self.logger.warning("DUPLICATION WARNING")
             self.logger.warning(

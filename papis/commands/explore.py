@@ -69,7 +69,8 @@ class Command(papis.commands.Command):
         )
 
     def parse_search(self):
-        key_vals = papis.utils.DocMatcher.parse(self.args.search)
+        import papis.docmatcher
+        key_vals = papis.docmatcher.DocMatcher.parse(self.args.search)
         result = {'query': ""}
         self.logger.debug('Parsed set %s' % key_vals)
         for pair in key_vals:
@@ -183,7 +184,7 @@ class Command(papis.commands.Command):
             doc = self.arxiv(self.args.search)
 
         if doc:
-            print(doc.dump())
+            print(papis.document.dump(doc))
             if self.args.add:
                 self.add(doc)
             elif self.args.cmd is not None:

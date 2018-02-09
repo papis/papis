@@ -14,6 +14,7 @@ import papis.cache
 import papis.utils
 import papis.commands
 import papis.config
+import papis.database
 
 
 def get_lib():
@@ -215,9 +216,7 @@ def get_documents_in_lib(library=None, search=""):
     :rtype: list
 
     """
-    directory = library if os.path.exists(library) \
-        else papis.config.get("dir", section=library)
-    return papis.api.get_documents_in_dir(directory, search)
+    return papis.database.get().query(search)
 
 
 def clear_lib_cache(lib=None):
