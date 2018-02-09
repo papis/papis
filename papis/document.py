@@ -54,6 +54,74 @@ def from_data(data):
     return papis.document.Document(data=data)
 
 
+def to_bibtex(document):
+    """Create a bibtex string from document's information
+
+    :param document: Papis document
+    :type  document: Document
+    :returns: String containing bibtex formating
+    :rtype:  str
+    """
+    bibtexString = ""
+    bibtexType = ""
+    # First the type, article ....
+    if "type" in document.keys():
+        if document["type"] in papis.bibtex.bibtex_types:
+            bibtexType = document["type"]
+    if not bibtexType:
+        bibtexType = "article"
+    if not document["ref"]:
+        ref = os.path.basename(document.get_main_folder())
+    else:
+        ref = document["ref"]
+    bibtexString += "@%s{%s,\n" % (bibtexType, ref)
+    for bibKey in papis.bibtex.bibtex_keys:
+        if bibKey in document.keys():
+            bibtexString += "  %s = { %s },\n" % (
+                bibKey, papis.bibtex.unicode_to_latex(str(document[bibKey]))
+            )
+    bibtexString += "}\n"
+    return bibtexString
+
+
+def to_json(document):
+    """Export information into a json string
+    :param document: Papis document
+    :type  document: Document
+    :returns: Json formatted info file
+    :rtype:  str
+    """
+    import json
+    return json.dumps(to_dict(document))
+
+
+def to_dict(document):
+    """Gets a python dictionary with the information of the document
+    :param document: Papis document
+    :type  document: Document
+    :returns: Python dictionary
+    :rtype:  dict
+    """
+    result = dict()
+    for key in document.keys():
+        result[key] = document[key]
+    return result
+
+
+def dump(document):
+    """Return information string without any obvious format
+    :param document: Papis document
+    :type  document: Document
+    :returns: String with document's information
+    :rtype:  str
+
+    """
+    string = ""
+    for i in document.keys():
+        string += str(i)+":   "+str(document[i])+"\n"
+    return string
+
+
 class Document(object):
 
     """Class implementing the entry abstraction of a document in a library.
@@ -190,94 +258,6 @@ class Document(object):
         )
         fd.close()
 
-    def to_json(self):
-        """Export information into a json string
-        :returns: Json formatted info file
-        :rtype:  str
-        """
-        import json
-        return json.dumps(self.to_dict())
-
-    def to_dict(self):
-        """Gets a python dictionary with the information of the document
-        :returns: Python dictionary
-        :rtype:  dict
-        """
-        result = dict()
-        for key in self.keys():
-            result[key] = self[key]
-        return result
-
-    @classmethod
-    def get_vcf_template(cls):
-        return """\
-first_name: null
-last_name: null
-org:
-- null
-email:
-    work: null
-    home: null
-tel:
-    cell: null
-    work: null
-    home: null
-adress:
-    work: null
-    home: null"""
-
-    def to_vcf(self):
-        # TODO: Generalize using the doc variable.
-        if not papis.config.in_mode("contact"):
-            # self.logger.error("Not in contact mode")
-            sys.exit(1)
-        text = \
-            """\
-BEGIN:VCARD
-VERSION:4.0
-FN:{doc[first_name]} {doc[last_name]}
-N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
-        for contact_type in ["email", "tel"]:
-            text += "\n"
-            text += "\n".join([
-                "{contact_type};TYPE={type}:{tel}"\
-                .format(
-                    contact_type=contact_type.upper(),
-                    type=t.upper(),
-                    tel=self[contact_type][t]
-                    )
-                for t in self[contact_type].keys() \
-                if self[contact_type][t] is not None
-            ])
-        text += "\n"
-        text += "END:VCARD"
-        return text
-
-    def to_bibtex(self):
-        """Create a bibtex string from document's information
-        :returns: String containing bibtex formating
-        :rtype:  str
-        """
-        bibtexString = ""
-        bibtexType = ""
-        # First the type, article ....
-        if "type" in self.keys():
-            if self["type"] in papis.bibtex.bibtex_types:
-                bibtexType = self["type"]
-        if not bibtexType:
-            bibtexType = "article"
-        if not self["ref"]:
-            ref = os.path.basename(self.get_main_folder())
-        else:
-            ref = self["ref"]
-        bibtexString += "@%s{%s,\n" % (bibtexType, ref)
-        for bibKey in papis.bibtex.bibtex_keys:
-            if bibKey in self.keys():
-                bibtexString += "  %s = { %s },\n" % (
-                    bibKey, papis.bibtex.unicode_to_latex(str(self[bibKey]))
-                )
-        bibtexString += "}\n"
-        return bibtexString
 
     def update(self, data, force=False, interactive=False):
         """Update document's information from an info dictionary.
@@ -335,17 +315,6 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         :rtype:  list
         """
         return self._keys
-
-    def dump(self):
-        """Return information string without any obvious format
-        :returns: String with document's information
-        :rtype:  str
-
-        """
-        string = ""
-        for i in self.keys():
-            string += str(i)+":   "+str(self[i])+"\n"
-        return string
 
     def load(self):
         """Load information from info file
