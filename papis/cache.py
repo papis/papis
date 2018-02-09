@@ -2,6 +2,7 @@ import logging
 import os
 import papis.utils
 import papis.config
+import papis.database.base
 
 
 logger = logging.getLogger("cache")
@@ -110,3 +111,46 @@ def get_folders(directory):
         folders = papis.utils.get_folders(directory)
         create(folders, cache_path)
     return folders
+
+
+class Database(papis.database.base.Database):
+
+    def __init__(self, library=None):
+        Database.__init__(self, library)
+        self.documents = []
+
+    def get_documents():
+        """Get documents from within a containing folder
+
+        :param directory: Folder to look for documents.
+        :type  directory: str
+        :param search: Valid papis search
+        :type  search: str
+        :returns: List of document objects.
+        :rtype: list
+        """
+        directory = self.get_dir()
+        directory = os.path.expanduser(directory)
+
+        if papis.config.getboolean("use-cache"):
+            folders = get_folders(directory)
+        else:
+            folders = papis.utils.get_folders()
+
+        logger.debug("Creating document objects")
+        documents = folders_to_documents(folders)
+        logger.debug("Done")
+
+        return filter_documents(documents, search)
+
+    def query(self, query_string):
+        """Search in the database using a simple query string
+        """
+        if len(self.documents) == 0:
+            directory = papis.config.get("dir", section=self.get_lib())
+            self.documents = papis.utils.get_documents(
+                directory, query_string
+            )
+        return papis.utils.filter_documents(self.documents, query_string)
+
+
