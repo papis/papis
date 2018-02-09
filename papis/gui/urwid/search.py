@@ -122,7 +122,7 @@ class Search(urwid.WidgetWrap):
 
         self.ui.set_header("Search: " + query)
 
-        docs = self.ui.db.search(query)
+        docs = self.ui.db.query(query)
         if len(docs) == 0:
             self.ui.set_status('No documents found.')
 
