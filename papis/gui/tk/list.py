@@ -4,6 +4,7 @@ import papis.api
 import papis.config
 import papis.utils
 import papis.document
+import papis.database
 
 
 class ListEntry(tk.Frame, PapisWidget):
@@ -47,6 +48,7 @@ class PapisList(tk.Frame, PapisWidget):
         tk.Frame.__init__(self, master, *args, **kwargs)
         PapisWidget.__init__(self)
         self["bg"] = self.master["bg"]
+        self.db = papis.database.get()
 
     def set_bindings(self):
         self.logger.debug("Setting bindings")
@@ -84,7 +86,7 @@ class PapisList(tk.Frame, PapisWidget):
         match_format = self.get_config("match-format")
         indices = list()
         for i, doc in enumerate(self.documents):
-            if papis.utils.match_document(doc, command, match_format):
+            if self.db.match(doc, command):
                 indices.append(i)
         self.matched_indices = indices
         return indices

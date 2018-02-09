@@ -4,6 +4,7 @@ import papis.utils
 import papis.docmatcher
 import papis.config
 import papis.database.base
+import re
 
 
 logger = logging.getLogger("cache")
@@ -231,6 +232,9 @@ class Database(papis.database.base.Database):
         logger.debug("Done")
 
         return filter_documents(documents, query_string)
+
+    def match(self, document, query_string):
+        return match_document(document, query_string)
 
     def clear(self):
         clear_lib_cache(self.lib)

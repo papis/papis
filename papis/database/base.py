@@ -15,10 +15,24 @@ class Database(object):
         self.lib = library
 
     def get_lib(self):
+        """Get library name
+        """
         return self.lib
 
     def get_dir(self):
+        """Get directory of the library
+        """
         return papis.config.get('dir')
+
+    def match(self, document, query_string):
+        """Wether or not document matches query_string
+
+        :param document: Document to be matched
+        :type  document: papis.document.Document
+        :param query_string: Query string
+        :type  query_string: str
+        """
+        pass
 
     def clear(self):
         pass
