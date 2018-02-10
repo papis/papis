@@ -121,10 +121,7 @@ class Command(papis.commands.Command):
 
     def main(self):
 
-        documents = papis.api.get_documents_in_lib(
-            self.get_args().lib,
-            self.get_args().search
-        )
+        documents = self.get_db().query(self.args.search)
 
         if self.args.json and self.args.folder or \
            self.args.yaml and self.args.folder:

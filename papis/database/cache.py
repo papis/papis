@@ -310,6 +310,8 @@ class Database(papis.database.base.Database):
 
     def __init__(self, library=None):
         papis.database.base.Database.__init__(self, library)
+        self.logger = logging.getLogger('db:cache')
+        self.logger.debug('Initializing')
         self.documents = []
         self.folders = []
         self.get_documents()
@@ -322,19 +324,23 @@ class Database(papis.database.base.Database):
         else:
             self.folders = papis.utils.get_folders(directory)
 
-        logger.debug("Creating document objects")
+        self.logger.debug("Creating document objects")
         self.documents = folders_to_documents(self.folders)
-        logger.debug("Done")
+        self.logger.debug("Done")
 
     def add(self, document):
-        print('Add ing in the library')
-        print(len(self.folders))
+        self.logger.debug('Adding in the library')
+        self.logger.debug(len(self.folders))
         self.folders.append(document.get_main_folder())
-        print(len(self.folders))
+        self.logger.debug(len(self.folders))
         self.save()
+
+    def update(self, document):
+        self.logger.debug('Updating document')
 
     def delete(self, document):
         if papis.config.getboolean("use-cache"):
+            self.logger.debug('Deleting from folders')
             self.folders.remove(document.get_main_folder())
             self.save()
 
@@ -342,15 +348,15 @@ class Database(papis.database.base.Database):
         return match_document(document, query_string)
 
     def clear(self):
+        self.logger.debug('Clearing library')
         clear_lib_cache(self.get_lib())
 
     def query(self, query_string):
-        """Search in the database using a simple query string
-        """
+        self.logger.debug('Querying')
         if len(self.documents) == 0:
             self.get_documents()
         return filter_documents(self.documents, query_string)
 
     def save(self):
-        print('Saving in the library')
+        self.logger.debug('Saving in the library')
         create(self.folders, get_cache_file_path(self.get_dir()))

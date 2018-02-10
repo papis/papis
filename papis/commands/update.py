@@ -29,7 +29,6 @@ import shutil
 import papis.utils
 import papis.bibtex
 import papis.downloaders.utils
-import papis.api
 import papis.document
 
 
@@ -107,11 +106,7 @@ class Command(papis.commands.Command):
 
     def main(self):
         # TODO: Try to recycle some of this code with command add.
-        import papis.api
-        documents = papis.api.get_documents_in_lib(
-            self.get_args().lib,
-            self.get_args().search
-        )
+        documents = self.get_db().query(self.args.search)
         data = dict()
 
         if self.args.from_bibtex:
@@ -193,3 +188,4 @@ class Command(papis.commands.Command):
 
         document.update(data, self.args.force, self.args.interactive)
         document.save()
+        self.get_db().update(document)

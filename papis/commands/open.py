@@ -49,10 +49,7 @@ class Command(papis.commands.Command):
         if self.args.tool:
             papis.config.set("opentool", self.args.tool)
 
-        documents = papis.api.get_documents_in_lib(
-            self.get_args().lib,
-            self.args.search
-        )
+        documents = self.get_db().query(self.args.search)
         if not documents:
             print("No documents found with that name.")
             return 1
