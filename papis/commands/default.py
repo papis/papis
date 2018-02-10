@@ -133,6 +133,7 @@ class Command(papis.commands.Command):
             )
 
         papis.config.set_lib(self.args.lib)
+        self.set_db(papis.database.get(self.args.lib))
 
         # Now the library should be set, let us check if there is a
         # local configuration file there, and if there is one, then
@@ -156,4 +157,5 @@ class Command(papis.commands.Command):
         if self.args.command:
             if self.args.command in commands.keys():
                 commands[self.args.command].set_args(self.args)
+                commands[self.args.command].set_db(self.get_db())
                 commands[self.args.command].main()

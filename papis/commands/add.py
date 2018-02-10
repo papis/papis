@@ -588,7 +588,7 @@ class Command(papis.commands.Command):
         # Let us chmod it because it might come from a temp folder
         # and temp folders are per default 0o600
         os.chmod(out_folder_path, papis.config.getint('dir-umask'))
-        papis.api.clear_lib_cache()
+        self.get_db().add(document)
         if self.args.commit and papis.utils.lib_is_git_repo(self.args.lib):
             subprocess.call(["git", "-C", out_folder_path, "add", "."])
             subprocess.call(

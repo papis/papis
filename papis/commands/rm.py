@@ -54,3 +54,4 @@ class Command(papis.commands.Command):
                     return 0
             print("Removing ...")
             papis.document.delete(document)
+            self.get_db().delete(document)
