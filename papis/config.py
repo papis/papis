@@ -356,10 +356,7 @@ general_settings = {
     "sync-command"    : "git -C {lib[dir]} pull origin master",
     "notes-name"      : "notes.tex",
     "use-cache"       : True,
-    "cache-dir"       : \
-        os.path.join(os.environ.get('XDG_CACHE_HOME'), 'papis') if
-        os.environ.get('XDG_CACHE_HOME') else \
-        os.path.join(os.path.expanduser('~'), '.cache', 'papis'),
+    "cache-dir"       : None,
     "use-git"         : False,
 
     "add-confirm"     : False,

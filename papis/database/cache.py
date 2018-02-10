@@ -13,8 +13,35 @@ logger = logging.getLogger("cache")
 def get_folder():
     """Get folder where the cache files are stored, it retrieves the
     ``cache-dir`` configuration setting. It is ``XDG`` standard compatible.
+
+    :returns: Full path for cache main folder
+    :rtype:  str
+
+    >>> import os; os.environ["XDG_CACHE_HOME"] = '~/.cache'
+    >>> get_folder() == os.path.expanduser(\
+            os.path.join(os.environ["XDG_CACHE_HOME"], 'papis')\
+        )
+    True
+    >>> os.environ["XDG_CACHE_HOME"] = '/tmp/.cache'
+    >>> get_folder()
+    '/tmp/.cache/papis'
+    >>> del os.environ["XDG_CACHE_HOME"]
+    >>> get_folder() == os.path.expanduser(\
+            os.path.join('~/.cache', 'papis')\
+        )
+    True
     """
-    return os.path.expanduser(papis.config.get('cache-dir'))
+    user_defined = papis.config.get('cache-dir')
+    if user_defined is not None:
+        return os.path.expanduser(user_defined)
+    else:
+        return os.path.expanduser(
+            os.path.join(os.environ.get('XDG_CACHE_HOME'), 'papis')
+        ) if os.environ.get(
+            'XDG_CACHE_HOME'
+        ) else os.path.expanduser(
+            os.path.join('~', '.cache', 'papis')
+        )
 
 
 def get(path):
@@ -24,6 +51,10 @@ def get(path):
     :type  path: str
     :returns: Content of the cache file.
     :rtype: object
+
+    >>> create([1,2,3], '/tmp/test-pickle')
+    >>> get('/tmp/test-pickle')
+    [1, 2, 3]
     """
     import pickle
     logger.debug("Getting cache %s " % path)
@@ -53,11 +84,17 @@ def get_name(directory):
     :type  directory: str
     :returns: Name for the cache file.
     :rtype:  str
+
+    >>> get_name('path/to/my/lib')
+    'a8c689820a94babec20c5d6269c7d488-lib'
+    >>> get_name('papers')
+    'a566b2bebc62611dff4cdaceac1a7bbd-papers'
     """
     import hashlib
-    return hashlib\
-           .md5(directory.encode())\
-           .hexdigest()+"-"+os.path.basename(directory)
+    return "{}-{}".format(
+        hashlib.md5(directory.encode()).hexdigest(),
+        os.path.basename(directory)
+    )
 
 
 def clear(directory):
@@ -67,10 +104,17 @@ def clear(directory):
     :type  directory: str
     :returns: Nothing
     :rtype: None
+
+    >>> create([1,2,3], get_cache_file_path('some/other/papers'))
+    >>> clear('some/other/papers')
+    >>> import os; os.path.exists(get_cache_file_path('some/other/papers'))
+    False
+    >>> clear('non/existing/some/other/books')
+    >>> os.path.exists(get_cache_file_path('non/existing/some/other/books'))
+    False
     """
     directory = os.path.expanduser(directory)
-    cache_name = get_name(directory)
-    cache_path = os.path.join(get_folder(), cache_name)
+    cache_path = get_cache_file_path(directory)
     if os.path.exists(cache_path):
         logger.debug("Clearing cache %s " % cache_path)
         os.remove(cache_path)
@@ -82,6 +126,18 @@ def clear_lib_cache(lib=None):
 
     :param lib: Library name.
     :type  lib: str
+
+    >>> import os
+    >>> if not os.path.exists('/tmp/setlib-test'): os.makedirs(\
+            '/tmp/setlib-test'\
+        )
+    >>> papis.config.set_lib('/tmp/setlib-test')
+    >>> create([1,2,3], get_cache_file_path('/tmp/setlib-test'))
+    >>> os.path.exists(get_cache_file_path('/tmp/setlib-test'))
+    True
+    >>> clear_lib_cache('/tmp/setlib-test')
+    >>> os.path.exists(get_cache_file_path('/tmp/setlib-test'))
+    False
     """
     directory = papis.config.get("dir", section=lib)
     clear(directory)
@@ -90,11 +146,15 @@ def clear_lib_cache(lib=None):
 def get_cache_file_path(directory):
     """Get the full path to the cache file
 
-    :param directory: Folder to look for documents.
+    :param directory: Library folder
     :type  directory: str
+
+    >>> import os; os.environ["XDG_CACHE_HOME"] = '/tmp'
+    >>> get_cache_file_path('blah/papers')
+    '/tmp/papis/c39177eca0eaea2e21134b0bd06631b6-papers'
     """
     cache_name = get_name(directory)
-    return os.path.join(get_folder(), cache_name)
+    return os.path.expanduser(os.path.join(get_folder(), cache_name))
 
 
 def get_folders(directory):
