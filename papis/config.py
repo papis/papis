@@ -688,6 +688,40 @@ def merge_configuration_from_path(path, configuration):
         configuration.handle_includes()
 
 
+def set_lib(library):
+    """Set library, notice that in principle library can be a full path.
+
+    :param library: Library name or path to a papis library
+    :type  library: str
+
+    >>> import os
+    >>> if not os.path.exists('/tmp/setlib-test'): os.makedirs(\
+            '/tmp/setlib-test'\
+        )
+    >>> set_lib('/tmp/setlib-test')
+    >>> get_lib()
+    '/tmp/setlib-test'
+    >>> set_lib('non-existing-library')
+    1
+    """
+    config = get_configuration()
+    if library not in config.keys():
+        if os.path.exists(library):
+            # Check if the path exists, then use this path as a new library
+            logger.debug("Using library %s" % library)
+            config[library] = dict(dir=library)
+        else:
+            logger.error(
+                "Path or library '%s' does not seem to exist" % library
+            )
+            return 1
+    try:
+        args = papis.commands.get_args()
+        args.lib = library
+    except AttributeError:
+        os.environ["PAPIS_LIB"] = library
+
+
 def get_lib():
     """Get current library, it either retrieves the library from
     the environment PAPIS_LIB variable or from the command line
@@ -695,9 +729,9 @@ def get_lib():
 
     :param library: Name of library or path to a given library
     :type  library: str
-    >>> papis.api.set_lib('hello-world')
+    >>> set_lib('papers')
     >>> get_lib()
-    'hello-world'
+    'papers'
     """
     import papis.commands
     try:

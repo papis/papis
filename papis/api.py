@@ -42,11 +42,7 @@ def set_lib(library):
     :type  library: str
 
     """
-    try:
-        args = papis.commands.get_args()
-        args.lib = library
-    except AttributeError:
-        os.environ["PAPIS_LIB"] = library
+    return papis.config.set_lib(library)
 
 
 def get_arg(arg, default=None):
