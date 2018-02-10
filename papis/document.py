@@ -43,6 +43,17 @@ def open_in_browser(document):
         )
 
 
+def from_folder(folder_path):
+    """Construct a document object from a folder
+
+    :param folder_path: Full path to a valid papis folder
+    :type  folder_path: str
+    :returns: A papis document
+    :rtype:  papis.document.Document
+    """
+    return papis.document.Document(folder=folder_path)
+
+
 def from_data(data):
     """Construct a document object from a data dictionary.
 

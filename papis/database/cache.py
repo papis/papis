@@ -10,7 +10,7 @@ import re
 logger = logging.getLogger("cache")
 
 
-def get_folder():
+def get_cache_home():
     """Get folder where the cache files are stored, it retrieves the
     ``cache-dir`` configuration setting. It is ``XDG`` standard compatible.
 
@@ -18,15 +18,15 @@ def get_folder():
     :rtype:  str
 
     >>> import os; os.environ["XDG_CACHE_HOME"] = '~/.cache'
-    >>> get_folder() == os.path.expanduser(\
+    >>> get_cache_home() == os.path.expanduser(\
             os.path.join(os.environ["XDG_CACHE_HOME"], 'papis')\
         )
     True
     >>> os.environ["XDG_CACHE_HOME"] = '/tmp/.cache'
-    >>> get_folder()
+    >>> get_cache_home()
     '/tmp/.cache/papis'
     >>> del os.environ["XDG_CACHE_HOME"]
-    >>> get_folder() == os.path.expanduser(\
+    >>> get_cache_home() == os.path.expanduser(\
             os.path.join('~/.cache', 'papis')\
         )
     True
@@ -154,27 +154,32 @@ def get_cache_file_path(directory):
     '/tmp/papis/c39177eca0eaea2e21134b0bd06631b6-papers'
     """
     cache_name = get_name(directory)
-    return os.path.expanduser(os.path.join(get_folder(), cache_name))
+    return os.path.expanduser(os.path.join(get_cache_home(), cache_name))
 
 
 def get_folders(directory):
     """Get folders from within a containing folder from cache
 
-    :param directory: Folder to look for documents.
+    :param directory: Folder to look for documents (or library folder)
     :type  directory: str
     :param search: Valid papis search
     :type  search: str
     :returns: List of document objects.
     :rtype: list
+
+    >>> create(['/a', '/b'], get_cache_file_path('/asdf/papers'))
+    >>> get_folders('/asdf/papers')
+    ['/a', '/b']
+
     """
-    cache = get_folder()
+    cache_home = get_cache_home()
     cache_path = get_cache_file_path(directory)
     folders = []
     logger.debug("Getting documents from dir %s" % directory)
     logger.debug("Cache path = %s" % cache_path)
-    if not os.path.exists(cache):
-        logger.debug("Creating cache dir %s " % cache)
-        os.makedirs(cache, mode=papis.config.getint('dir-umask'))
+    if not os.path.exists(cache_home):
+        logger.debug("Creating cache dir %s " % cache_home)
+        os.makedirs(cache_home, mode=papis.config.getint('dir-umask'))
     if os.path.exists(cache_path):
         logger.debug("Loading folders from cache")
         folders = get(cache_path)
@@ -194,10 +199,19 @@ def filter_documents(documents, search=""):
     :returns: List of filtered documents
     :rtype:  list
 
+    >>> document = papis.document.from_data({'author': 'einstein'})
+    >>> len(filter_documents([document], search="einstein")) == 1
+    True
+    >>> len(filter_documents([document], search="author = ein")) == 1
+    True
+    >>> len(filter_documents([document], search="title = ein")) == 1
+    False
+
     """
     logger = logging.getLogger('filter')
     papis.docmatcher.DocMatcher.set_search(search)
     papis.docmatcher.DocMatcher.parse()
+    papis.docmatcher.DocMatcher.set_matcher(match_document)
     if search == "" or search == ".":
         return documents
     else:
@@ -206,7 +220,6 @@ def filter_documents(documents, search=""):
         # wrong or it is really like this.
         import multiprocessing
         import time
-        papis.docmatcher.DocMatcher.set_matcher(match_document)
         np = papis.api.get_arg("cores", multiprocessing.cpu_count())
         pool = multiprocessing.Pool(np)
         logger.debug(
@@ -243,7 +256,7 @@ def folders_to_documents(folders):
     pool = multiprocessing.Pool(np)
     logger.debug("pool started")
     begin_t = time.time()
-    result = pool.map(papis.document.Document, folders)
+    result = pool.map(papis.document.from_folder, folders)
     pool.close()
     pool.join()
     logger.debug("pool done (%s ms)" % (1000*time.time()-1000*begin_t))
@@ -263,6 +276,15 @@ def match_document(document, search, match_format=None):
         >`_)
     :type  match_format: str
     :returns: Non false if matches, true-ish if it does match.
+
+    >>> papis.config.set('match-format', '{doc[author]}')
+    >>> document = papis.document.from_data({'author': 'einstein'})
+    >>> match_document(document, 'e in') is None
+    False
+    >>> match_document(document, 'ee in') is None
+    True
+    >>> match_document(document, 'einstein', '{doc[title]}') is None
+    True
     """
     match_format = match_format or papis.config.get("match-format")
     match_string = papis.utils.format_doc(match_format, document)
@@ -277,6 +299,9 @@ def get_regex_from_search(search):
     :type  search: str
     :returns: Regular expression
     :rtype: str
+
+    >>> get_regex_from_search(' ein 192     photon')
+    '.*.*ein.*192.*photon'
     """
     return r".*"+re.sub(r"\s+", ".*", search)
 
@@ -287,23 +312,25 @@ class Database(papis.database.base.Database):
         papis.database.base.Database.__init__(self, library)
         self.documents = []
         self.folders = []
+        self.get_documents()
 
-    def _query(self, query_string):
+    def get_documents(self):
         directory = os.path.expanduser(self.get_dir())
 
         if papis.config.getboolean("use-cache"):
             self.folders = get_folders(directory)
         else:
-            self.folders = papis.utils.get_folders()
+            self.folders = papis.utils.get_folders(directory)
 
         logger.debug("Creating document objects")
-        documents = folders_to_documents(self.folders)
+        self.documents = folders_to_documents(self.folders)
         logger.debug("Done")
 
-        return filter_documents(documents, query_string)
-
     def add(self, document):
+        print('Add ing in the library')
+        print(len(self.folders))
         self.folders.append(document.get_main_folder())
+        print(len(self.folders))
         self.save()
 
     def delete(self, document):
@@ -315,14 +342,15 @@ class Database(papis.database.base.Database):
         return match_document(document, query_string)
 
     def clear(self):
-        clear_lib_cache(self.lib)
+        clear_lib_cache(self.get_lib())
 
     def query(self, query_string):
         """Search in the database using a simple query string
         """
         if len(self.documents) == 0:
-            self.documents = self._query(query_string)
+            self.get_documents()
         return filter_documents(self.documents, query_string)
 
     def save(self):
+        print('Saving in the library')
         create(self.folders, get_cache_file_path(self.get_dir()))
