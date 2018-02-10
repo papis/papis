@@ -418,20 +418,26 @@ def get_clean_doi(doi):
         )
     '10.1063/1.uniau12'
     >>> get_clean_doi(\
-            'http://physicstoday.scitation.org/doi/10.1063/1.uniau12/abstract'\
-            '/asdf/asdf/erqwe/whateveer/asdf/sdfasdf/adsf/aw43123/?as=234' \
+            'http://scitation.org/doi/10.1063/1.uniau12/abstract?as=234' \
         )
     '10.1063/1.uniau12'
     >>> get_clean_doi('http://physicstoday.scitation.org/doi/10.1063/1.881498')
     '10.1063/1.881498'
+    >>> get_clean_doi(\
+            'https://doi.org/10.1093/analys/anw053' \
+        )
+    '10.1093/analys/anw053'
     >>> get_clean_doi(\
             'http://physicstoday.scitation.org/doi/10.1063/1.881498?asdfwer' \
         )
     '10.1063/1.881498'
     """
     mdoi = re.match(
-        r'^([^?/&%$^]+)(/|%2F)([^?/&%$^]+).*',
-        re.sub(r'.*doi(.org)?/', '', doi)
+        r'^([^?/&%$^]+)(/|%2F)([^?&%$^]+).*',
+        re.sub(
+            r'.*doi(.org)?/', '',
+            doi.replace("/abstract", "")
+        )
     )
     if mdoi:
         return mdoi.group(1) + '/' + mdoi.group(3)
