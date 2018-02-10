@@ -1,6 +1,7 @@
 import whoosh
 import papis.config
 import papis.database.base
+import papis.database.cache
 
 class Database(papis.database.base.Database):
 
@@ -8,7 +9,7 @@ class Database(papis.database.base.Database):
     schema = None
 
     def __init__(self, library=None):
-        Database.__init__(self, library)
+        papis.database.base.Database.__init__(self, library)
 
     def clear(self):
         whoosh.index.create_in(self.get_index_dir())
@@ -22,9 +23,14 @@ class Database(papis.database.base.Database):
 
     def get_index_dir(self):
         return os.path.join(
-            os.path.expanduser(papis.config.get('cache-dir')),
+            papis.database.cache.get_cache_home(),
             'whoosh',
-            self.get_lib()
+            papis.database.cache.get_name(self.get_dir())
         )
 
+    def get_index_file(self):
+        return os.path.join(
+            self.get_index_dir(),
+            papis.database.cache.get_name(self.get_dir())
+        )
 
