@@ -405,18 +405,36 @@ def get_clean_doi(doi):
     :doi: String containing a doi
     :returns: The pure doi
 
+    >>> get_clean_doi('http://dx.doi.org/10.1063%2F1.881498')
+    '10.1063/1.881498'
     >>> get_clean_doi('http://dx.doi.org/10.1063/1.881498')
+    '10.1063/1.881498'
+    >>> get_clean_doi('10.1063%2F1.881498')
     '10.1063/1.881498'
     >>> get_clean_doi('10.1063/1.881498')
     '10.1063/1.881498'
+    >>> get_clean_doi(\
+            'http://physicstoday.scitation.org/doi/10.1063/1.uniau12/abstract'\
+        )
+    '10.1063/1.uniau12'
+    >>> get_clean_doi(\
+            'http://physicstoday.scitation.org/doi/10.1063/1.uniau12/abstract'\
+            '/asdf/asdf/erqwe/whateveer/asdf/sdfasdf/adsf/aw43123/?as=234' \
+        )
+    '10.1063/1.uniau12'
     >>> get_clean_doi('http://physicstoday.scitation.org/doi/10.1063/1.881498')
     '10.1063/1.881498'
-    >>> get_clean_doi('http://physicstoday.scitation.org/doi/10.1063/1.881498?asdfwer')
+    >>> get_clean_doi(\
+            'http://physicstoday.scitation.org/doi/10.1063/1.881498?asdfwer' \
+        )
     '10.1063/1.881498'
     """
-    mdoi = re.match(r'(.*doi(.org)?/)?(.*/[^?&%^$]*).*', doi)
+    mdoi = re.match(
+        r'^([^?/&%$^]+)(/|%2F)([^?/&%$^]+).*',
+        re.sub(r'.*doi(.org)?/', '', doi)
+    )
     if mdoi:
-        return mdoi.group(3)
+        return mdoi.group(1) + '/' + mdoi.group(3)
     else:
         return None
 
