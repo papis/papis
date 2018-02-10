@@ -295,7 +295,7 @@ def get_documents(directory, search=""):
         import papis.cache
         folders = papis.cache.get_folders(directory)
     else:
-        folders = get_folders()
+        folders = get_folders(directory)
 
     logger.debug("Creating document objects")
     documents = folders_to_documents(folders)
