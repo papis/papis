@@ -463,12 +463,22 @@ def get_config_home():
 
     :returns: Configuration base directory
     :rtype:  str
+    >>> import os; os.environ['XDG_CONFIG_HOME'] = '/tmp'
+    >>> get_config_home()
+    '/tmp'
     """
-    return os.environ.get('XDG_CONFIG_HOME') or \
-        os.path.join(os.path.expanduser('~'), '.config')
+    return os.environ.get('XDG_CONFIG_HOME') or os.path.join(
+        os.path.expanduser('~'), '.config'
+    )
 
 
 def get_config_dirs():
+    """
+    >>> import os; os.environ['XDG_CONFIG_DIRS'] = ''
+    >>> os.environ['XDG_CONFIG_HOME'] = '/tmp'
+    >>> get_config_dirs()
+    ['/tmp/papis', ...]
+    """
     dirs = []
     if os.environ.get('XDG_CONFIG_DIRS'):
         # get_config_home should also be included on top of XDG_CONFIG_DIRS
@@ -490,6 +500,12 @@ def get_config_folder():
     e.g. ``/home/user/.papis``. It is XDG compatible, which means that if the
     environment variable ``XDG_CONFIG_HOME`` is defined it will use the
     configuration folder ``XDG_CONFIG_HOME/papis`` instead.
+
+    >>> import os; os.environ['XDG_CONFIG_HOME'] = '/tmp'
+    >>> newpath = os.path.join(os.environ['XDG_CONFIG_HOME'], 'papis')
+    >>> if not os.path.exists(newpath): os.mkdir(newpath)
+    >>> get_config_folder()
+    '/tmp/papis'
     """
     config_dirs = get_config_dirs()
     for config_dir in config_dirs:
@@ -502,6 +518,12 @@ def get_config_folder():
 def get_config_file():
     """Get the path of the main configuration file,
     e.g. /home/user/.papis/config
+
+    >>> import os; os.environ['XDG_CONFIG_HOME'] = '/tmp'
+    >>> newpath = os.path.join(os.environ['XDG_CONFIG_HOME'], 'papis')
+    >>> if not os.path.exists(newpath): os.mkdir(newpath)
+    >>> get_config_file()
+    '/tmp/papis/config'
     """
     global OVERRIDE_VARS
     if OVERRIDE_VARS["file"] is not None:
