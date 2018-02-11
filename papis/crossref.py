@@ -23,7 +23,7 @@ import papis.utils
 # CrossRef documentation comes from here:
 # http://labs.crossref.org/site/quick_and_dirty_api_guide.html
 #
-# You need a CrossRef API key. 
+# You need a CrossRef API key.
 #
 CROSSREF_KEY = "fx.coudert@chimie-paristech.fr"
 CROSSREF_KEY = "a.gallo@fkf.mpg.de"
@@ -383,7 +383,7 @@ def get_cross_ref(doi):
                 continue            # It does? Keep checking.
             # If it doesn't...
             else:
-                # ...make this the new ref tag value 
+                # ...make this the new ref tag value
                 res['ref'] = str(res['ref'] + '{}').format(append_string)
                 break
 
