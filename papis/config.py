@@ -63,7 +63,7 @@
 .. papis-config:: xeditor
 
     Sometimes papis might use an editor that uses a windowing system
-    (GUI Editor), you can set this to your prefered gui based editor, e.g.:
+    (GUI Editor), you can set this to your preferred gui based editor, e.g.:
     ``gedit``, ``xemacs``, ``gvim`` to name a few.
 
 .. papis-config:: sync-command
@@ -184,7 +184,7 @@
 
 .. papis-config:: extra-bibtex-types
 
-    Allow non-standard bibtex types to be recognised, e.g,
+    Allow non-standard bibtex types to be recognized, e.g,
     ``extra-bibtex-types = wikipedia, video, song``.
     See `bibtex reference <http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`_.
 .. papis-config:: default-library
@@ -209,7 +209,7 @@
     Default format that is used to match a document against in order to select
     it. For example if the ``match-format`` is equal to
     ``{doc[year]} {doc[author]}`` then title of a document will not work
-    to match a document, onlye the year and author.
+    to match a document, only the year and author.
 
 .. papis-config:: header-format
 
@@ -284,7 +284,7 @@
 
         ``ref-format = {doc[author_list][0][surname]}{doc[year]}``
 
-    The default behaviour is to set the doi as the ref.
+    The default behavior is to set the doi as the ref.
 
 .. papis-config:: multiple-authors-format
 
@@ -551,7 +551,7 @@ def set(key, val, section=None):
 
 
 def general_get(key, section=None, data_type=None):
-    """General getter method that will be specialised for different modules.
+    """General getter method that will be specialized for different modules.
 
     :param data_type: The data type that should be expected for the value of
         the variable.
@@ -653,9 +653,9 @@ def in_mode(mode):
 
 
 def get_configuration():
-    """Get the configuratoin object, if no papis configuration has ever been
+    """Get the configuration object, if no papis configuration has ever been
     initialized, it initializes one. Only one configuration per process should
-    ever be configurated.
+    ever be configured.
 
     :returns: Configuration object
     :rtype:  papis.config.Configuration
@@ -706,7 +706,7 @@ def get_lib():
             lib = os.environ["PAPIS_LIB"]
         except KeyError:
             # Do not put papis.config.get because get is a special function
-            # that also needs the library to see if some key was overriden!
+            # that also needs the library to see if some key was overridden!
             lib = papis.config.get_default_settings(key="default-library")
     return lib
 
@@ -721,7 +721,7 @@ def reset_configuration():
     if CONFIGURATION is not None:
         logger.warning("Overwriting previous configuration")
     CONFIGURATION = None
-    logger.debug("Reseting configuration")
+    logger.debug("Resetting configuration")
     return get_configuration()
 
 

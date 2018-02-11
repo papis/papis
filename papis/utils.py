@@ -118,8 +118,8 @@ def create_identifier(input_list):
     create combinations of that list that result in unique strings.
     Ideally for use in modifying an existing string to make it unique.
 
-    Example: 
-    >>> m = create_identifier(string.ascii_lowercase) 
+    Example:
+    >>> m = create_identifier(string.ascii_lowercase)
     >>> next(m)
     'a'
     >>> import itertools, string
