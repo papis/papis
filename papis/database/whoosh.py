@@ -1,5 +1,12 @@
+import os
+import logging
+
 import whoosh
+import whoosh.index
+import whoosh.qparser
+
 import papis.config
+import papis.document
 import papis.database.base
 import papis.database.cache
 
@@ -15,7 +22,12 @@ class Database(papis.database.base.Database):
         whoosh.index.create_in(self.get_index_dir())
 
     def create_index(self):
-        pass
+        self.logger.debug('Creating index...')
+        index_dir = self.get_index_dir()
+        if not os.path.exists(index_dir):
+            self.logger.debug('Creating dir %s' % index_dir)
+            os.makedirs(index_dir)
+        whoosh.index.create_in(self.get_index_dir(), self.get_schema())
 
     def create_schema(self):
         from whoosh.fields import Schema, TEXT, KEYWORD, ID, STORED
