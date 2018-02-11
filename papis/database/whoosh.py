@@ -29,9 +29,8 @@ class Database(papis.database.base.Database):
             os.makedirs(index_dir)
         whoosh.index.create_in(self.get_index_dir(), self.get_schema())
 
-    def create_schema(self):
-        from whoosh.fields import Schema, TEXT, KEYWORD, ID, STORED
-        pass
+    def index_exists(self):
+        return whoosh.index.exists_in(self.get_index_dir())
 
     def get_index_dir(self):
         return os.path.join(
