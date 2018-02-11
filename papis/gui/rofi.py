@@ -4,6 +4,8 @@ import papis.api
 import papis.utils
 import papis.config
 
+import logging
+logger = logging.getLogger("rofi")
 
 def get_options():
     options = dict()
@@ -30,7 +32,7 @@ def pick(options, header_filter=None, body_filter=None, match_filter=None):
             papis.config.get('header-format', section='rofi-gui'), x
         )
     if len(options) == 1:
-        indices = 0
+        indices = [0]
     else:
         r = rofi.Rofi()
         indices, key = r.select(
@@ -45,8 +47,10 @@ def pick(options, header_filter=None, body_filter=None, match_filter=None):
         )
         r.close()
     # TODO: Support multiple choice
-    if not isinstance(indices, list):
-        indices = [indices]
+    if len(indices) == 0:
+        return []
+    elif len(indices) > 1:
+        logger.warning("Multiple choices is still not supported!")
     return options[indices[0]]
 
 
