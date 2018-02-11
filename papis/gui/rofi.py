@@ -36,7 +36,9 @@ def pick(options, header_filter=None, body_filter=None, match_filter=None):
         indices, key = r.select(
             "Select: ",
             [
-                header_filter(d) for d in
+                header_filter(d).replace(papis.config.get("sep",
+                                                          section="rofi-gui"),
+                                         '\n') for d in
                 options
             ],
             **get_options()
