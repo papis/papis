@@ -17,6 +17,8 @@ class Database(papis.database.base.Database):
 
     def __init__(self, library=None):
         papis.database.base.Database.__init__(self, library)
+        self.logger = logging.getLogger('db:whoosh')
+        self.initialize()
 
     def clear(self):
         whoosh.index.create_in(self.get_index_dir())
