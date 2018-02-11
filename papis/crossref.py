@@ -195,7 +195,7 @@ def validate_doi(doi):
     :type  doi: str
     """
     from urllib.request import urlopen, Request
-    handle_url = "http://dx.doi.org/" + doi
+    handle_url = "https://doi.org/" + doi
     logger.debug('handle url %s' % handle_url)
     try:
       handle = urlopen(handle_url)
@@ -204,7 +204,7 @@ def validate_doi(doi):
 
     resolvedURL = handle.geturl()
     logger.debug('resolved url %s' % resolvedURL)
-    if resolvedURL[0:18] == "http://dx.doi.org/":
+    if resolvedURL[0:16] == "https://doi.org/":
       return None
     else:
       return resolvedURL
