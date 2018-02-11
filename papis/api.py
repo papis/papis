@@ -189,12 +189,13 @@ def get_documents_in_dir(directory, search=""):
     :returns: List of filtered documents.
     :rtype: list
 
-    >>> docs = get_documents_in_dir('non/existent/path')
+    >>> docs = get_documents_in_dir('non/eexistent/path')
     >>> len(docs)
     0
 
     """
-    return papis.utils.get_documents(directory, search)
+    set_lib(directory)
+    return get_documents_in_lib(directory, search)
 
 
 def get_documents_in_lib(library=None, search=""):
