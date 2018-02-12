@@ -1,3 +1,44 @@
+"""This is the whoosh interface to papis. For future papis developers
+here are some considerations.
+
+Whoosh works with 3 main objects, the Index, the Writer and the Schema.
+The indices are stored in a folder which by default is in
+``$XDG_CACHE_HOME/papis/whoosh``. The name of the indices
+folders is similar to the cache files of the papis cache database.
+
+Once the index is created in the mentioned folder, a Schema is initialized,
+which is a declaration of the data prototype of the database, or the
+definition of the table in sql parlance. This is controlled by the
+papis configuration through the `whoosh-schema-prototype`. For instance
+if the database is supposed to only contain the key fields
+``author``, ``title``, ``year`` and ``tags``, then the
+``whoosh-schema-prototype`` STRING should look like the following:
+
+::
+
+        {
+            "author": TEXT(stored=True),
+            "title": TEXT(stored=True),
+            "year": TEXT(stored=True),
+            "tags": TEXT(stored=True),
+        }
+
+where all the fields are explained in the whoosh
+`documentation <https://whoosh.readthedocs.io/en/latest/schema.html/>`_.
+
+After this Schema is created, the folders of the library are recursed over
+and the documents are added to the database where only these
+properties are stored. This means, if ``publisher`` is not in the above list,
+you will not be able to parse the publisher through a search.
+
+.. note::
+
+    This is a point where maybe a great deal of discussion and optimization
+    should be made.
+
+
+
+"""
 import os
 import logging
 
