@@ -35,17 +35,17 @@ class Database(object):
         pass
 
     def clear(self):
-        pass
+        raise NotImplementedError('Clear not implemented')
 
     def add(self, document):
-        pass
+        raise NotImplementedError('Add not implemented')
 
     def update(self, document):
-        pass
+        raise NotImplementedError('Update not implemented')
 
     def delete(self, document):
-        pass
+        raise NotImplementedError('Delete not implemented')
 
     def query(self, query_string):
-        pass
+        raise NotImplementedError('Query not implemented')
 
