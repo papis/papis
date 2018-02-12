@@ -66,6 +66,19 @@ class Database(papis.database.base.Database):
         return self.get_index().writer()
 
     def get_schema(self):
+        """Gets current schema
+
+        :returns: Whoosch Schema
+        :rtype:  whoosh.fields.Schema
+        """
+        return self.get_index().schema
+
+    def create_schema(self):
+        """Creates and returns whoosh schema to be applied to the library
+
+        :returns: Whoosch Schema
+        :rtype:  whoosh.fields.Schema
+        """
         from whoosh.fields import Schema
         self.logger.debug('Creating schema')
         fields = self.get_schema_init_fields()
@@ -73,21 +86,15 @@ class Database(papis.database.base.Database):
         return schema
 
     def get_schema_init_fields(self):
+        """Returns the arguments to be passed to the whoosh schema
+        object instantiation found in the method `get_schema`.
+        """
         from whoosh.fields import TEXT, KEYWORD, ID, STORED
-        return {
-            'whoosh_id_': ID(stored=True),
-            'author': TEXT(stored=True),
-            'title': TEXT(stored=True),
-            'year': TEXT(stored=True),
-            'tags': TEXT(stored=True)
-        }
-
-    def query(self, query_string):
-        self.logger.debug('Query string %s' % query_string)
-        index = self.get_index()
-        qp = whoosh.qparser.QueryParser(
-            'title',
-            schema=index.schema
+        import json
+        # This part is non-negotiable
+        fields = { self.get_id_key(): ID(stored=True, unique=True) }
+        user_prototype = eval(
+            papis.config.get('whoosh-schema-prototype')
         )
         query = qp.parse(query_string)
         with index.searcher() as searcher:

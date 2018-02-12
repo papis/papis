@@ -306,6 +306,16 @@
     `` and `` then you would have ``<author 1> and <author 2> and ....``
     in the ``author`` field.
 
+Databases
+^^^^^^^^^
+
+.. papis-config:: whoosh-schema-prototype
+
+    This is the model for the whoosh schema, check
+    `the documentation <https://whoosh.readthedocs.io/en/latest/schema.html/>`_
+    for more information.
+
+
 """
 import logging
 
@@ -400,6 +410,15 @@ general_settings = {
     "ref-format"      : "{doc[doi]}",
     "multiple-authors-separator": " and ",
     "multiple-authors-format": "{au[surname]}, {au[given_name]}",
+
+    "whoosh-schema-prototype":
+        '{\n'
+            '"author": TEXT(stored=True),\n'
+            '"title": TEXT(stored=True),\n'
+            '"year": TEXT(stored=True),\n'
+            '"tags": TEXT(stored=True),\n'
+        '}',
+
 }
 
 
