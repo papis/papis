@@ -24,7 +24,7 @@ Learn more:
   [here](
   https://www.ostechnix.com/papis-command-line-based-document-bibliography-manager/
   ).
-  - A review in spanish is also available at [ubunlog](
+  - A review in Spanish is also available at [ubunlog](
     https://ubunlog.com/papis-administrador-documentos/
   ).
 
