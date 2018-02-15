@@ -66,14 +66,14 @@ sudo pip3 install papis
 Let us download a couple of documents
 ```
 wget http://www.gnu.org/s/libc/manual/pdf/libc.pdf
-wget http://www.ams.org/notices/201304/rnoti-p434.pdf 
+wget http://www.ams.org/notices/201304/rnoti-p434.pdf
 ```
 
 Now add them to the (defaultly created) library
 ```
 papis add libc.pdf --author "Sandra Loosemore" --title "GNU C reference manual" --confirm
 # Get paper information automatically via de DOI
-papis add --from-doi 10.1090/noti963 rnoti-p434.pdf 
+papis add --from-doi 10.1090/noti963 rnoti-p434.pdf
 ```
 
 Now open one for example
