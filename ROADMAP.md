@@ -178,5 +178,5 @@ and for brew in macOS.
   - [ ] Brew (MacOS)
   - [ ] Debian/Ubuntu
   - [ ] Archlinux
-  - [ ] Nixos
+  - [X] NixOS
   - [ ] Other
