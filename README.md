@@ -110,7 +110,7 @@ If you are running [NixOS](https://nixos.org/) or you have the [nix](https://nix
 nix-env -i papis
 ```
 
-If you run papis, just clone the repository
+If you like papis, just clone the repository
 ```
 git clone git@github.com:papis/papis.git
 cd papis
