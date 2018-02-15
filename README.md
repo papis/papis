@@ -24,7 +24,7 @@ Learn more:
   [here](
   https://www.ostechnix.com/papis-command-line-based-document-bibliography-manager/
   ).
-  - A review in spanish is also available at [ubunlog](
+  - A review in Spanish is also available at [ubunlog](
     https://ubunlog.com/papis-administrador-documentos/
   ).
 
@@ -66,14 +66,14 @@ sudo pip3 install papis
 Let us download a couple of documents
 ```
 wget http://www.gnu.org/s/libc/manual/pdf/libc.pdf
-wget http://www.ams.org/notices/201304/rnoti-p434.pdf 
+wget http://www.ams.org/notices/201304/rnoti-p434.pdf
 ```
 
 Now add them to the (defaultly created) library
 ```
 papis add libc.pdf --author "Sandra Loosemore" --title "GNU C reference manual" --confirm
 # Get paper information automatically via de DOI
-papis add --from-doi 10.1090/noti963 rnoti-p434.pdf 
+papis add --from-doi 10.1090/noti963 rnoti-p434.pdf
 ```
 
 Now open one for example
@@ -100,6 +100,28 @@ papis add -h
 
 [![asciicast](https://asciinema.org/a/48Dv1rfX44yjJD6Sbc71gpXGr.png)](https://asciinema.org/a/48Dv1rfX44yjJD6Sbc71gpXGr)
 AND MUCH, MUCH MORE!
+
+## Installing on Other Platforms
+
+### NixOS
+If you are running [NixOS](https://nixos.org/) or you have the [nix](https://nixos.org/nix/) package manager installed, you can install papis by running:
+
+```
+nix-env -i papis
+```
+
+If you run papis, just clone the repository
+```
+git clone git@github.com:papis/papis.git
+cd papis
+```
+
+and start hacking it with:
+
+```
+nix-shell --expr 'with import <nixpkgs> {}; papis.overrideDerivation (drv: { src = ./.; })'
+```
+This command will provide you a shell with all the dependencies required.
 
 ## Authors
 
