@@ -16,6 +16,9 @@ import papis.config
 
 logger = logging.getLogger("serve")
 
+connector_api_version = 2
+zotero_version = "5.0.25"
+
 class Command(papis.commands.Command):
 
     def init(self):
@@ -63,9 +66,6 @@ def papis_add(item):
 
 # HTTPRequestHandler class
 class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
-    def init(self):
-        self.connector_api_version = 2
-        self.zotero_version = "5.0.25"
 
     def log_message(self, format, *args):
         global logger
@@ -74,9 +74,9 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
     def set_zotero_headers(self):
         self.send_header("X-Zotero-Version",
-                         self.zotero_version)
+                         zotero_version)
         self.send_header("X-Zotero-Connector-API-Version",
-                         self.connector_api_version)
+                         connector_api_version)
         self.end_headers()
 
     def read_input(self):
@@ -86,8 +86,6 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     def pong(self, POST = True):
         global logger
         logger.debug("pong")
-
-        print("We have been pinged") # DEBUG
         # Pong must respond to ping on both GET and POST
         # It must accepts application/json and text/plain
         if not POST: # GET
@@ -137,18 +135,13 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
             papis_add(item)
 
         self.send_response(201) # Created
-        # print("Sleeping -- Simulating some work")
-        # time.sleep(3)   # Simulate some fetch work
         self.set_zotero_headers()
 
     def snapshot(self):
-        logger.warning("NOT IMPLEMENTED")
+        logger.warning("Snapshot not implemented")
         self.send_response(201) # Created
         self.set_zotero_headers()
         return
-        # print("Snapshotting")
-        # print(self.read_input())
-        # print("----------input end -----------")
 
     def do_POST(self):
         if self.path == "/connector/ping":
