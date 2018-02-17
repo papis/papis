@@ -19,8 +19,6 @@ logger = logging.getLogger("serve")
 class Command(papis.commands.Command):
 
     def init(self):
-        self.CONNECTOR_API_VERSION = 2
-
         self.parser = self.get_subparsers().add_parser(
             "serve",
             help="Start a zotero-connector server"
@@ -60,18 +58,25 @@ def papis_add(item):
     # This should just call a papis function that given a dict of
     # properties spit out the correct info.yaml and saves it.
     # I still have to figure out where PDFs are taken
+    print(item)
     print("PAPIS add NOT IMPLEMENTED.")
 
 # HTTPRequestHandler class
 class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
+    def init(self):
+        self.connector_api_version = 2
+        self.zotero_version = "5.0.25"
+
     def log_message(self, format, *args):
         global logger
         logger.debug(format % args)
         return
 
     def set_zotero_headers(self):
-        self.send_header("X-Zotero-Version","5.0.25")
-        self.send_header("X-Zotero-Connector-API-Version", 2)
+        self.send_header("X-Zotero-Version",
+                         self.zotero_version)
+        self.send_header("X-Zotero-Connector-API-Version",
+                         self.connector_api_version)
         self.end_headers()
 
     def read_input(self):
