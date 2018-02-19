@@ -33,7 +33,8 @@ class Command(papis.commands.Command):
             "--port",
             help="Port to listen to",
             action="store",
-            default=23119
+            default=23119,
+            type = int
         )
 
         self.parser.add_argument(
