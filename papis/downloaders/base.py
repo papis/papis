@@ -1,6 +1,7 @@
 import os
 import logging
 import urllib.request
+import http.cookiejar
 import papis.config
 import papis.utils
 
@@ -130,13 +131,12 @@ class Downloader(object):
         url = self.get_document_url()
         if not url:
             return False
-        request = urllib.request.Request(
-            url,
-            headers={
-                'User-Agent': papis.config.get('user-agent')
-            }
-        )
-        data = urllib.request.urlopen(request).read()
+        cookiejar = http.cookiejar.LWPCookieJar()
+        opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookiejar))
+        opener.addheaders = [('User-Agent', papis.config.get('user-agent'))]
+
+        u = opener.open(url)
+        data = u.read()
         self.document_data = data
 
     def set_url(self, url):
