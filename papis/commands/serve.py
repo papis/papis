@@ -9,10 +9,12 @@ https://raw.githubusercontent.com/zotero/zotero/master/chrome/content/zotero/xpc
 """
 
 import json
+import os
 import argparse
 import logging
 import http.server
 import papis.config
+import papis.document
 
 logger = logging.getLogger("serve")
 
@@ -61,8 +63,13 @@ def papis_add(item):
     # This should just call a papis function that given a dict of
     # properties spit out the correct info.yaml and saves it.
     # I still have to figure out where PDFs are taken
-    print(item)
-    print("PAPIS add NOT IMPLEMENTED.")
+    logger.debug("Adding the document to your library")
+    document = papis.document.from_data(item)
+    lib_dir = os.path.expanduser(papis.config.get('dir'))
+    outdir = os.path.join(lib_dir, papis.utils.clean_document_name(item["title"]))
+    os.makedirs(outdir)
+    document.set_folder(outdir)
+    document.save()
 
 # HTTPRequestHandler class
 class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
@@ -128,8 +135,6 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         data = json.loads(self.read_input())
         source_uri = data['uri'] # source page
         # debug info
-        print(data.keys())
-        print(len(data['items']))
         # Add all papers
         for item in data['items']:
             papis_add(item)
