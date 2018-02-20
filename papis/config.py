@@ -417,7 +417,7 @@ general_settings = {
     "multiple-authors-separator": " and ",
     "multiple-authors-format": "{au[surname]}, {au[given_name]}",
 
-    "snapshot": True
+    "snapshot": True,
 
     "whoosh-schema-prototype":
         '{\n'
