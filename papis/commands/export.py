@@ -38,7 +38,7 @@ import os
 import sys
 import shutil
 import papis.utils
-
+import papis.document
 
 class Command(papis.commands.Command):
     def init(self):
@@ -121,10 +121,7 @@ class Command(papis.commands.Command):
 
     def main(self):
 
-        documents = papis.api.get_documents_in_lib(
-            self.get_args().lib,
-            self.get_args().search
-        )
+        documents = self.get_db().query(self.args.search)
 
         if self.args.json and self.args.folder or \
            self.args.yaml and self.args.folder:
@@ -144,18 +141,28 @@ class Command(papis.commands.Command):
         if self.args.json and not self.args.folder:
             import json
             return self.args.out.write(
-                json.dumps([document.to_dict() for document in documents])
+                json.dumps(
+                    [
+                        papis.document.to_dict(document)
+                        for document in documents
+                    ]
+                )
             )
 
         if self.args.yaml and not self.args.folder:
             import yaml
             return self.args.out.write(
-                yaml.dump_all([document.to_dict() for document in documents])
+                yaml.dump_all(
+                    [
+                        papis.document.to_dict(document)
+                        for document in documents
+                    ]
+                )
             )
 
         for document in documents:
             if self.args.bibtex:
-                self.args.out.write(document.to_bibtex())
+                self.args.out.write(papis.document.to_bibtex(document))
             if self.args.text:
                 text_format = papis.config.get('export-text-format')
                 text = papis.utils.format_doc(text_format, document)
@@ -171,9 +178,9 @@ class Command(papis.commands.Command):
                     open(
                         os.path.join(outdir, "info.bib"),
                         "a+"
-                    ).write(document.to_bibtex())
+                    ).write(papis.document.to_bibtex(document))
             elif self.args.vcf:
-                self.args.out.write(document.to_vcf())
+                self.args.out.write(papis.document.to_vcf(document))
             elif self.args.file:
                 files = document.get_files()
                 file_to_open = papis.api.pick(

@@ -10,10 +10,10 @@ logger.debug("importing")
 
 import os
 import re
-import papis.cache
 import papis.utils
 import papis.commands
 import papis.config
+import papis.database
 
 
 def get_lib():
@@ -42,11 +42,7 @@ def set_lib(library):
     :type  library: str
 
     """
-    try:
-        args = papis.commands.get_args()
-        args.lib = library
-    except AttributeError:
-        os.environ["PAPIS_LIB"] = library
+    return papis.config.set_lib(library)
 
 
 def get_arg(arg, default=None):
@@ -193,12 +189,13 @@ def get_documents_in_dir(directory, search=""):
     :returns: List of filtered documents.
     :rtype: list
 
-    >>> docs = get_documents_in_dir('non/existent/path')
+    >>> docs = get_documents_in_dir('non/eexistent/path')
     >>> len(docs)
     0
 
     """
-    return papis.utils.get_documents(directory, search)
+    set_lib(directory)
+    return get_documents_in_lib(directory, search)
 
 
 def get_documents_in_lib(library=None, search=""):
@@ -215,9 +212,7 @@ def get_documents_in_lib(library=None, search=""):
     :rtype: list
 
     """
-    directory = library if os.path.exists(library) \
-        else papis.config.get("dir", section=library)
-    return papis.api.get_documents_in_dir(directory, search)
+    return papis.database.get().query(search)
 
 
 def clear_lib_cache(lib=None):
@@ -229,5 +224,4 @@ def clear_lib_cache(lib=None):
 
     """
     lib = papis.api.get_lib() if lib is None else lib
-    directory = papis.config.get("dir", section=lib)
-    papis.cache.clear(directory)
+    papis.database.get(lib).clear()

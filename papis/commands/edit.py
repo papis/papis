@@ -26,10 +26,7 @@ class Command(papis.commands.Command):
 
     def main(self):
 
-        documents = papis.api.get_documents_in_lib(
-            self.get_args().lib,
-            self.args.search
-        )
+        documents = self.get_db().query(self.args.search)
         document = self.pick(documents)
         if not document: return 0
 
@@ -52,3 +49,4 @@ class Command(papis.commands.Command):
             papis.api.edit_file(notesPath)
         else:
             papis.api.edit_file(document.get_info_file())
+            self.get_db().update(document)

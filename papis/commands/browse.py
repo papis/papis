@@ -28,10 +28,7 @@ class Command(papis.commands.Command):
         self.add_search_argument()
 
     def main(self):
-        documents = papis.api.get_documents_in_lib(
-            self.get_args().lib,
-            self.get_args().search
-        )
+        documents = self.get_db().query(self.args.search)
         document = self.pick(documents)
         if not document: return 0
         papis.document.open_in_browser(document)
