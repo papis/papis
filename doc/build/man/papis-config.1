@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS-CONFIG" "1" "Jan 31, 2018" "0.5.2" "papis"
+.TH "PAPIS-CONFIG" "1" "Feb 20, 2018" "0.5.3" "papis"
 .SH NAME
 papis-config \- Papis Configuration
 .
@@ -239,6 +239,8 @@ papis.pick
 rofi
 .IP \(bu 2
 vim
+.IP \(bu 2
+dmenu
 .UNINDENT
 .UNINDENT
 .INDENT 0.0
@@ -276,7 +278,7 @@ Otherwise the default editor in your system will be used.
 .UNINDENT
 .sp
 Sometimes papis might use an editor that uses a windowing system
-(GUI Editor), you can set this to your prefered gui based editor, e.g.:
+(GUI Editor), you can set this to your preferred gui based editor, e.g.:
 \fBgedit\fP, \fBxemacs\fP, \fBgvim\fP to name a few.
 .INDENT 0.0
 .TP
@@ -552,7 +554,7 @@ these here as comma separated values, for example
 .UNINDENT
 .UNINDENT
 .sp
-Allow non\-standard bibtex types to be recognised, e.g,
+Allow non\-standard bibtex types to be recognized, e.g,
 \fBextra\-bibtex\-types = wikipedia, video, song\fP\&.
 See \fI\%bibtex reference\fP\&.
 .INDENT 0.0
@@ -602,7 +604,7 @@ set this option to \fBvid\fP in order to set  the \fBheader\-format\fP to
 Default format that is used to match a document against in order to select
 it. For example if the \fBmatch\-format\fP is equal to
 \fB{doc[year]} {doc[author]}\fP then title of a document will not work
-to match a document, onlye the year and author.
+to match a document, only the year and author.
 .INDENT 0.0
 .TP
 \fBheader\-format\fP (\fI\%config\-settings\-header\-format\fP)
@@ -754,7 +756,42 @@ following:
 .UNINDENT
 .UNINDENT
 .sp
-The default behaviour is to set the doi as the ref.
+The default behavior is to set the doi as the ref.
+.INDENT 0.0
+.TP
+\fBmultiple\-authors\-format\fP (\fI\%config\-settings\-multiple\-authors\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB{au[surname]}, {au[given_name]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+When retrieving automatic author information from services like
+crossref.org, papis usually builds the \fBauthor\fP field for the
+given document. The format how every single author name is built
+is given by this setting, for instance you could customize it
+by the following:
+.INDENT 0.0
+.INDENT 3.5
+\fBmultiple\-authors\-format = {au[surname]} \-\- {au[given_name]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+which would given in the case of Albert Einstein the string
+\fBEinstein \-\- Albert\fP\&.
+.INDENT 0.0
+.TP
+\fBmultiple\-authors\-separator\fP (\fI\%config\-settings\-multiple\-authors\-separator\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \(ga\(ga and \(ga\(ga
+.UNINDENT
+.UNINDENT
+.sp
+Similarly to \fBmultiple\-authors\-format\fP, this is the string that
+separates single authors in the \fBauthor\fP field. If it is set to
+\(ga\(ga and \(ga\(ga then you would have \fB<author 1> and <author 2> and ....\fP
+in the \fBauthor\fP field.
 .SS Vim gui
 .INDENT 0.0
 .TP
@@ -1338,6 +1375,96 @@ Color of the background of an active entry
 .UNINDENT
 .UNINDENT
 .UNINDENT
+.SS dmenu gui
+.sp
+See \fI\%dmenu\fP and the python wrapper
+\fI\%here\fP for more information.
+You will need to install the latter to make use of this function,
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+pip3 install dmenu
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBlines\fP (\fI\%config\-dmenu\-gui\-lines\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB20\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBcase_insensitive\fP (\fI\%config\-dmenu\-gui\-case_insensitive\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBTrue\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBbottom\fP (\fI\%config\-dmenu\-gui\-bottom\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBTrue\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBfont\fP (\fI\%config\-dmenu\-gui\-font\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBmonospace\-14\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBbackground\fP (\fI\%config\-dmenu\-gui\-background\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB#000000\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBforeground\fP (\fI\%config\-dmenu\-gui\-foreground\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB#55ff55\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBbackground_selected\fP (\fI\%config\-dmenu\-gui\-background_selected\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB#005500\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBforeground_selected\fP (\fI\%config\-dmenu\-gui\-foreground_selected\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB#f0f0f0\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBheader\-format\fP (\fI\%config\-dmenu\-gui\-header\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBNone\fP
+.UNINDENT
+.UNINDENT
+.sp
+This is not set per default, and it will default to
+the general header\-format if not set.
 .SH AUTHOR
 Alejandro Gallo
 .SH COPYRIGHT
