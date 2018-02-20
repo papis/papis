@@ -75,9 +75,9 @@ def papis_add(item):
 # HTTPRequestHandler class
 class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
-    def log_message(self, format, *args):
+    def log_message(self, fmt, *args):
         global logger
-        logger.debug(format % args)
+        logger.debug(fmt % args)
         return
 
     def set_zotero_headers(self):
@@ -133,7 +133,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     def add(self):
         # Info or debug?
         logger.info("Adding paper from zotero connector")
-        data = json.loads(self.read_input())
+        rawinput = self.read_input()
+        data = json.loads(rawinput.decode('utf8'))
         source_uri = data['uri'] # source page
         # debug info
         # Add all papers
