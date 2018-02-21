@@ -44,6 +44,7 @@ import papis.bibtex
 import papis.document
 import papis.downloaders.utils
 
+
 class Command(papis.commands.Command):
 
     def init(self):
@@ -71,8 +72,8 @@ class Command(papis.commands.Command):
         self.parser.add_argument(
             "-i", "--interactive",
             help="Do some of the actions interactively",
-            action='store_false' if papis.config.get('add-interactive') \
-                else 'store_true'
+            action='store_false' if papis.config.get('add-interactive')
+            else 'store_true'
         )
 
         self.parser.add_argument(
@@ -128,7 +129,7 @@ class Command(papis.commands.Command):
         self.parser.add_argument(
             "--from-url",
             help="Get document and information from a"
-                "given url, a parser must be implemented",
+            "given url, a parser must be implemented",
             default="",
             action="store"
         )
@@ -164,7 +165,7 @@ class Command(papis.commands.Command):
         self.parser.add_argument(
             "--to",
             help="When --to is specified, the document will be added to the "
-                "selected already existing document entry.",
+            "selected already existing document entry.",
             nargs="?",
             action="store"
         )
@@ -172,22 +173,22 @@ class Command(papis.commands.Command):
         self.parser.add_argument(
             "--confirm",
             help="Ask to confirm before adding to the collection",
-            action='store_false' if papis.config.get('add-confirm') \
-                else 'store_true'
+            action='store_false' if papis.config.get('add-confirm')
+            else 'store_true'
         )
 
         self.parser.add_argument(
             "--open",
             help="Open file before adding document",
-            action='store_false' if papis.config.get('add-open') \
-                else 'store_true'
+            action='store_false' if papis.config.get('add-open')
+            else 'store_true'
         )
 
         self.parser.add_argument(
             "--edit",
             help="Edit info file before adding document",
-            action='store_false' if papis.config.get('add-edit') \
-                else 'store_true'
+            action='store_false' if papis.config.get('add-edit')
+            else 'store_true'
         )
 
         self.parser.add_argument(
@@ -222,8 +223,8 @@ class Command(papis.commands.Command):
             filename = papis.utils.format_doc(
                 papis.config.get("file-name"), papis.document.from_data(data)
             ) +\
-            ("-" + suffix if len(suffix) > 0 else "") +\
-            "." + papis.utils.guess_file_extension(original_filepath)
+                ("-" + suffix if len(suffix) > 0 else "") +\
+                "." + papis.utils.guess_file_extension(original_filepath)
         return filename
 
     def get_hash_folder(self, data, document_path):
@@ -262,14 +263,15 @@ class Command(papis.commands.Command):
         return None
 
     def get_default_title(self, data, document_path):
-        if "title" in data.keys(): return data["title"]
+        if "title" in data.keys():
+            return data["title"]
         extension = self.get_document_extension(document_path)
         title = self.get_meta_data("title", document_path)
         if not title:
             title = os.path.basename(document_path)\
-                            .replace("."+extension, "")\
-                            .replace("_", " ")\
-                            .replace("-", " ")
+                .replace("."+extension, "")\
+                .replace("_", " ")\
+                .replace("-", " ")
             if self.get_args().interactive:
                 title = papis.utils.input(
                     'Title?', title
@@ -277,7 +279,8 @@ class Command(papis.commands.Command):
         return title
 
     def get_default_author(self, data, document_path):
-        if "author" in data.keys(): return data["author"]
+        if "author" in data.keys():
+            return data["author"]
         author = self.get_meta_data("author", document_path)
         if not author:
             author = "Unknown"
@@ -334,7 +337,7 @@ class Command(papis.commands.Command):
             # If no data was retrieved and doi was found, try to get
             # information with the document's doi
             if not data and url_data["doi"] is not None and\
-                not self.args.from_doi:
+                    not self.args.from_doi:
                 self.logger.warning(
                     "I could not get any data from %s" % self.args.from_url
                 )
@@ -413,7 +416,8 @@ class Command(papis.commands.Command):
                 self.args.to
             )
             document = self.pick(documents)
-            if not document: return status.file_not_found
+            if not document:
+                return status.file_not_found
             document.update(
                 data,
                 interactive=self.args.interactive
@@ -490,11 +494,10 @@ class Command(papis.commands.Command):
             self.logger.debug("Creating directory '%s'" % temp_dir)
             os.makedirs(temp_dir, mode=papis.config.getint('dir-umask'))
 
-
         # First prepare everything in the temporary directory
         g = papis.utils.create_identifier(ascii_lowercase)
         string_append = ''
-        if self.args.file_name is not None: # Use args if set
+        if self.args.file_name is not None:  # Use args if set
             papis.config.set("file-name", self.args.file_name)
         new_file_list = []
         for i in range(min(len(in_documents_paths), len(data["files"]))):
@@ -570,7 +573,6 @@ class Command(papis.commands.Command):
                 " the info."
             )
             self.args.confirm = True
-
 
         document.update(data, force=True)
         if self.get_args().open:
