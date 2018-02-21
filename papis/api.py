@@ -13,10 +13,12 @@ import papis.utils
 import papis.commands
 import papis.config
 
+
 class status():
     success = 0
     generic_fail = 1
     file_not_found = 2
+
 
 def get_lib():
     """Get current library, it either retrieves the library from
