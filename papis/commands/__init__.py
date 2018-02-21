@@ -233,8 +233,7 @@ def main(input_args=[]):
     set_args(args)
     logger.debug(args)
     logger.debug("running main")
-    commands["default"].main()
-
+    return commands["default"].main()
 
 def init_and_return_parser():
     """This function is here for the automatic documentation of the

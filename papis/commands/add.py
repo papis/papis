@@ -593,3 +593,4 @@ class Command(papis.commands.Command):
             subprocess.call(
                 ["git", "-C", out_folder_path, "commit", "-m", "Add document"]
             )
+        return 0

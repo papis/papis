@@ -164,4 +164,6 @@ class Command(papis.commands.Command):
         if self.args.command:
             if self.args.command in commands.keys():
                 commands[self.args.command].set_args(self.args)
-                commands[self.args.command].main()
+                return commands[self.args.command].main()
+        else:
+            return 0
