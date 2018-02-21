@@ -19,7 +19,6 @@ import bs4
 import logging
 import urllib.request# urlopen, Request
 import urllib.parse# import urlencode
-import bs4
 import papis.config
 
 
