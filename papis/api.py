@@ -2,14 +2,12 @@
 create papis scripts.
 """
 
-from subprocess import call
 import logging
 
 logger = logging.getLogger("api")
 logger.debug("importing")
 
 import os
-import re
 import papis.cache
 import papis.utils
 import papis.commands
