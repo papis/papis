@@ -456,6 +456,9 @@ class Command(papis.commands.Command):
 
             if not self.args.name:
                 self.logger.debug("Getting an automatic name")
+                if not os.path.isfile(in_documents_paths[0]):
+                    return 1
+
                 out_folder_name = self.get_hash_folder(
                     data,
                     in_documents_paths[0]
