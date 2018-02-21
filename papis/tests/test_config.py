@@ -1,7 +1,6 @@
 import unittest
 import logging
 import papis.config
-import os
 
 
 logging.basicConfig(level=logging.DEBUG)
