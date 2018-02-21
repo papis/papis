@@ -11,8 +11,6 @@ wich search engine you want to use using the ``search-engine`` setting.
 
 """
 import papis
-import os
-import sys
 import papis.utils
 import papis.config
 
