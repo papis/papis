@@ -3,6 +3,7 @@ import sys
 import os
 import shutil
 import papis.api
+from papis.api import status
 import papis.utils
 
 
@@ -36,15 +37,15 @@ class Command(papis.commands.Command):
             self.get_args().search
         )
         document = self.pick(documents)
-        if not document: return 0
+        if not document: return status.file_not_found
         if self.get_args().file:
             filepath = papis.api.pick(
                 document.get_files()
             )
-            if not filepath: return 0
+            if not filepath: return status.file_not_found
             if not self.args.force:
                 if not papis.utils.confirm("Are you sure?"):
-                    return 0
+                    return status.success
             print("Removing %s..." % filepath)
             document.rm_file(filepath)
             document.save()
@@ -52,7 +53,8 @@ class Command(papis.commands.Command):
             folder = document.get_main_folder()
             if not self.args.force:
                 if not papis.utils.confirm("Are you sure?"):
-                    return 0
+                    return status.success
             print("Removing %s..." % folder)
             shutil.rmtree(folder)
             papis.api.clear_lib_cache()
+        return status.success

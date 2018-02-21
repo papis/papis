@@ -44,6 +44,7 @@ Examples
 """
 
 import papis
+from papis.api import status
 import os
 import sys
 import papis.utils
@@ -122,7 +123,7 @@ class Command(papis.commands.Command):
                 self.logger.error(
                     "Template file %s not found" % self.args.template
                 )
-                return 1
+                return status.file_not_found
             fd = open(self.args.template)
             self.args.format = fd.read()
             fd.close()
@@ -131,13 +132,13 @@ class Command(papis.commands.Command):
             for downloader in \
                papis.downloaders.utils.getAvailableDownloaders():
                 print(downloader)
-            return 0
+            return status.success
 
         if self.args.libraries:
             for section in self.get_config():
                 if "dir" in self.get_config()[section]:
                     print(section)
-            return 0
+            return status.success
 
         documents = papis.api.get_documents_in_lib(
             self.get_args().lib,

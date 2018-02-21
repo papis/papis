@@ -39,6 +39,7 @@ import shutil
 import string
 import subprocess
 import papis.api
+from papis.api import status
 import papis.utils
 import papis.config
 import papis.bibtex
@@ -414,7 +415,7 @@ class Command(papis.commands.Command):
                 self.args.to
             )
             document = self.pick(documents)
-            if not document: return 0
+            if not document: return status.file_not_found
             document.update(
                 data,
                 interactive=self.args.interactive
@@ -432,7 +433,7 @@ class Command(papis.commands.Command):
                 if len(in_documents_paths) == 0:
                     if not self.get_args().no_document:
                         self.logger.error("No documents to be added")
-                        return 1
+                        return status.file_not_found
                     else:
                         in_documents_paths = [document.get_info_file()]
                         # We need the names to add them in the file field
@@ -457,7 +458,7 @@ class Command(papis.commands.Command):
             if not self.args.name:
                 self.logger.debug("Getting an automatic name")
                 if not os.path.isfile(in_documents_paths[0]):
-                    return 1
+                    return status.file_not_found
 
                 out_folder_name = self.get_hash_folder(
                     data,
@@ -475,7 +476,7 @@ class Command(papis.commands.Command):
                 del temp_doc
             if len(out_folder_name) == 0:
                 self.logger.error('The output folder name is empty')
-                return 1
+                return status.file_not_found
 
             data["files"] = in_documents_names
             out_folder_path = os.path.join(
@@ -501,7 +502,8 @@ class Command(papis.commands.Command):
         for i in range(min(len(in_documents_paths), len(data["files"]))):
             in_doc_name = data["files"][i]
             in_file_path = in_documents_paths[i]
-            assert(os.path.exists(in_file_path))
+            if not os.path.exists(in_file_path):
+                return status.file_not_found
 
             # Rename the file in the staging area
             new_filename = papis.utils.clean_document_name(
@@ -578,10 +580,10 @@ class Command(papis.commands.Command):
                 papis.api.open_file(d_path)
         if self.args.confirm:
             if not papis.utils.confirm('Really add?'):
-                return 0
+                return status.success
         document.save()
         if self.args.to:
-            return 0
+            return status.success
         self.logger.debug(
             "[MV] '%s' to '%s'" %
             (document.get_main_folder(), out_folder_path)
@@ -596,4 +598,4 @@ class Command(papis.commands.Command):
             subprocess.call(
                 ["git", "-C", out_folder_path, "commit", "-m", "Add document"]
             )
-        return 0
+        return status.success
