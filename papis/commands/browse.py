@@ -13,6 +13,7 @@ wich search engine you want to use using the ``search-engine`` setting.
 import papis
 import papis.utils
 import papis.config
+from papis.api import status
 
 
 class Command(papis.commands.Command):
@@ -31,5 +32,6 @@ class Command(papis.commands.Command):
             self.get_args().search
         )
         document = self.pick(documents)
-        if not document: return 0
+        if not document:
+            return status.file_not_found
         papis.document.open_in_browser(document)
