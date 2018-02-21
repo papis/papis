@@ -31,12 +31,10 @@ Examples
 import papis
 from string import ascii_lowercase
 import os
-import sys
 import re
 import tempfile
 import hashlib
 import shutil
-import string
 import subprocess
 import papis.api
 from papis.api import status
