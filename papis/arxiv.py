@@ -38,7 +38,6 @@ def get_data(
     page=0,
     max_results=30
 ):
-    results = []
     dict_params = {
         "all": query,
         "ti": title,
