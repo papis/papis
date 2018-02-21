@@ -4,12 +4,13 @@ import papis.commands
 import papis.config
 from papis.api import status
 import os
-import tempfile # FIXME: still not used
 
 logging.basicConfig(level=logging.DEBUG)
 
 # FIXME: those can be moved to utils
-def filehash(f : str) -> str:
+
+
+def filehash(f: str) -> str:
     '''Return the sha256 hash of a the file `f`. File `f` must exists'''
     import hashlib
     m = hashlib.sha256()
@@ -19,7 +20,8 @@ def filehash(f : str) -> str:
         hs = m.hexdigest()
     return hs
 
-def files_are_equal(file_a : str, file_b : str) -> bool:
+
+def files_are_equal(file_a: str, file_b: str) -> bool:
     '''Helper function that checks that the `file_a` file hash is the same as
     the `file_b`. Returns `False` if one of the file does not exists
     or if hashes are different, else `True`'''
@@ -133,7 +135,6 @@ class TestAdd(CommandTest):
         output = papis.commands.main(args)
         self.assertTrue(output == status.success)
 
-
     def test_add_file_with_file_name(self):
         args = ("add", "--file-name", "new_name",
                 "--dir", "foldname",
@@ -142,8 +143,6 @@ class TestAdd(CommandTest):
                              "example_document.txt"))
 
         output = papis.commands.main(args)
-
-        lib_dir = os.path.expanduser(papis.config.get('dir'))
 
         # The command has the result we expect
         self.assertTrue(output == status.success)
