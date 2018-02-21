@@ -155,7 +155,6 @@ class Command(papis.commands.Command):
             action="store"
         )
 
-
         self.parser.add_argument(
             "--from-vcf",
             help="Get contact information from a vcard (.vcf) file",
@@ -594,4 +593,3 @@ class Command(papis.commands.Command):
             subprocess.call(
                 ["git", "-C", out_folder_path, "commit", "-m", "Add document"]
             )
-
