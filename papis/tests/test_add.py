@@ -66,3 +66,31 @@ class TestAdd(CommandTest):
             self.assertTrue(
                 self.command.get_document_extension(d[0]) == d[1]
             )
+
+    def test_add_file(self):
+        args = ("add",
+                os.path.join(os.path.dirname(__file__),
+                             "resources",
+                             "example_document.txt"))
+        output = papis.commands.main(args)
+
+        self.assertTrue(output == 0)
+
+    def test_add_file_with_dir(self):
+        args = ("add", "--dir", "subdir",
+                os.path.join(os.path.dirname(__file__),
+                             "resources",
+                             "example_document.txt"))
+        output = papis.commands.main(args)
+
+        self.assertTrue(output == 0)
+
+    def test_add_missing(self):
+        args = ("add",
+                os.path.join(os.path.dirname(__file__),
+                             "resources",
+                             "example_document_missing.txt"))
+        output = papis.commands.main(args)
+
+        # Must fail
+        self.assertTrue(output != 0)
