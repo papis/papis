@@ -14,7 +14,7 @@ Examples
         papis add ~/Documents/interesting.pdf --name interesting-paper-2021
 
     - Add a paper that you have locally in a file and get the paper
-      information through its ``doi`` identificator (in this case
+      information through its ``doi`` identifier (in this case
       ``10.10763/1.3237134`` as an example):
 
     .. code::
@@ -210,7 +210,7 @@ class Command(papis.commands.Command):
         :type  data: dict
         :param original_filepath: The full path to the original file
         :type  original_filepath: str
-        :param suffix: Possible suffix to be appended to the file withouth
+        :param suffix: Possible suffix to be appended to the file without
             its extension.
         :type  suffix: str
         :returns: New file name
@@ -293,7 +293,7 @@ class Command(papis.commands.Command):
     def init_contact_mode(self):
         """Initialize the contact mode
         """
-        self.logger.debug("Initialising contact mode")
+        self.logger.debug("Initializing contact mode")
         self.args.document = [papis.utils.get_info_file_name()]
         self.args.from_yaml = papis.utils.get_info_file_name()
         if os.path.exists(self.args.document[0]):
@@ -567,7 +567,7 @@ class Command(papis.commands.Command):
             print("\n\n")
             self.logger.warning("DUPLICATION WARNING")
             self.logger.warning(
-                "The document above seems to be already in your libray: \n\n"
+                "The document above seems to be already in your library: \n\n"
             )
             self.logger.warning(
                 "(Hint) Use the update command if you just want to update"
