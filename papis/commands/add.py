@@ -305,6 +305,7 @@ class Command(papis.commands.Command):
             fd.write(template)
 
     def main(self):
+        # FIXME: Why is it something special?
         if papis.config.in_mode("contact"):
             self.init_contact_mode()
         lib_dir = os.path.expanduser(papis.config.get('dir'))
