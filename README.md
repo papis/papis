@@ -102,28 +102,6 @@ papis add -h
 [![asciicast](https://asciinema.org/a/48Dv1rfX44yjJD6Sbc71gpXGr.png)](https://asciinema.org/a/48Dv1rfX44yjJD6Sbc71gpXGr)
 AND MUCH, MUCH MORE!
 
-## Installing on Other Platforms
-
-### NixOS
-If you are running [NixOS](https://nixos.org/) or you have the [nix](https://nixos.org/nix/) package manager installed, you can install papis by running:
-
-```
-nix-env -i papis
-```
-
-If you like papis, just clone the repository
-```
-git clone git@github.com:papis/papis.git
-cd papis
-```
-
-and start hacking it with:
-
-```
-nix-shell --expr 'with import <nixpkgs> {}; papis.overrideDerivation (drv: { src = ./.; })'
-```
-This command will provide you a shell with all the dependencies required.
-
 ## Authors
 
 See the ``AUTHORS`` list for a list of authored commits.
