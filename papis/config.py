@@ -262,10 +262,11 @@
     Due to the difficulty to generalize opening a general document
     at a given bookmark, the user should set this in whichever way
     it suits their needs. For example
-        - If you are using the pdf viewer ``evince`` and you want to open a
-          mark, you would use ``mark-opener-format = evince -p {mark[value]}``.
-        - If you are using ``zathura``, do ``mark-opener-format = zathura -P
-          {mark[value]}``.
+
+    - If you are using the pdf viewer ``evince`` and you want to open a
+      mark, you would use ``mark-opener-format = evince -p {mark[value]}``.
+    - If you are using ``zathura``, do ``mark-opener-format = zathura -P
+      {mark[value]}``.
 
 .. papis-config:: info-allow-unicode
 
@@ -282,7 +283,9 @@
     FirstAuthorYear e.g. Plews2019. This would be achieved by the
     following:
 
-        ``ref-format = {doc[author_list][0][surname]}{doc[year]}``
+    ::
+
+        ref-format = {doc[author_list][0][surname]}{doc[year]}
 
     The default behavior is to set the doi as the ref.
 
@@ -294,7 +297,9 @@
     is given by this setting, for instance you could customize it
     by the following:
 
-        ``multiple-authors-format = {au[surname]} -- {au[given_name]}``
+    ::
+
+        multiple-authors-format = {au[surname]} -- {au[given_name]}
 
     which would given in the case of Albert Einstein the string
     ``Einstein -- Albert``.
