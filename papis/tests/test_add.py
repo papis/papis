@@ -37,7 +37,7 @@ class CommandTest(unittest.TestCase):
     def setUpClass(self, args=[]):
         try:
             papis.commands.init()
-        except:
+        except RuntimeError:
             pass
 
 
