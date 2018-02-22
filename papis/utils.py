@@ -15,6 +15,7 @@ import papis.document
 import papis.crossref
 import papis.bibtex
 
+
 def general_open(fileName, key, default_opener="xdg-open", wait=True):
     try:
         opener = papis.config.get(key)
@@ -112,6 +113,7 @@ def get_folders(folder):
             folders.append(root)
     return folders
 
+
 def create_identifier(input_list):
     """This creates a generator object capable of iterating over lists to
     create combinations of that list that result in unique strings.
@@ -136,6 +138,7 @@ def create_identifier(input_list):
     for n in count(1):
         for s in product(input_list, repeat=n):
             yield ''.join(s)
+
 
 class DocMatcher(object):
     """This class implements the mini query language for papis.
@@ -174,7 +177,7 @@ class DocMatcher(object):
                 sformat = None
             elif len(parsed) == 3:
                 search = parsed[2]
-                sformat = cls.doc_format.replace('DOC_KEY',parsed[0])
+                sformat = cls.doc_format.replace('DOC_KEY', parsed[0])
             match = doc if papis.utils.match_document(
                 doc, search, match_format=sformat) else None
             if not match:
@@ -219,8 +222,8 @@ class DocMatcher(object):
             quoteChar="'", escChar='\\', escQuote='\\'
         ) ^ papis_key
         equal = pyparsing.ZeroOrMore(" ") + \
-                pyparsing.Literal('=')    + \
-                pyparsing.ZeroOrMore(" ")
+            pyparsing.Literal('=') + \
+            pyparsing.ZeroOrMore(" ")
 
         papis_query = pyparsing.ZeroOrMore(
             pyparsing.Group(
@@ -233,7 +236,6 @@ class DocMatcher(object):
         cls.logger.debug('Parsed search = %s' % parsed)
         cls.parsed_search = parsed
         return cls.parsed_search
-
 
 
 def filter_documents(documents, search=""):
@@ -499,7 +501,7 @@ def clean_document_name(doc_path):
     logger.debug("Cleaning document name %s " % base)
     trans_dict = dict.fromkeys(
         string.punctuation.translate(
-          str.maketrans(dict.fromkeys('.-_'))
+            str.maketrans(dict.fromkeys('.-_'))
         )
     )
     translation = str.maketrans(trans_dict)
@@ -604,6 +606,7 @@ def is_epub(file_description):
 
 def is_mobi(file_description):
     return file_is(file_description, 'mobi')
+
 
 def guess_file_extension(file_description):
     for ext in ["pdf", "djvu", "epub", "mobi"]:
