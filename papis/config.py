@@ -306,6 +306,16 @@
     `` and `` then you would have ``<author 1> and <author 2> and ....``
     in the ``author`` field.
 
+Databases
+^^^^^^^^^
+
+.. papis-config:: whoosh-schema-prototype
+
+    This is the model for the whoosh schema, check
+    `the documentation <https://whoosh.readthedocs.io/en/latest/schema.html/>`_
+    for more information.
+
+
 """
 import logging
 
@@ -356,10 +366,7 @@ general_settings = {
     "sync-command"    : "git -C {lib[dir]} pull origin master",
     "notes-name"      : "notes.tex",
     "use-cache"       : True,
-    "cache-dir"       : \
-        os.path.join(os.environ.get('XDG_CACHE_HOME'), 'papis') if
-        os.environ.get('XDG_CACHE_HOME') else \
-        os.path.join(os.path.expanduser('~'), '.cache', 'papis'),
+    "cache-dir"       : None,
     "use-git"         : False,
 
     "add-confirm"     : False,
@@ -403,6 +410,15 @@ general_settings = {
     "ref-format"      : "{doc[doi]}",
     "multiple-authors-separator": " and ",
     "multiple-authors-format": "{au[surname]}, {au[given_name]}",
+
+    "whoosh-schema-prototype":
+        '{\n'
+            '"author": TEXT(stored=True),\n'
+            '"title": TEXT(stored=True),\n'
+            '"year": TEXT(stored=True),\n'
+            '"tags": TEXT(stored=True),\n'
+        '}',
+
 }
 
 
@@ -466,12 +482,22 @@ def get_config_home():
 
     :returns: Configuration base directory
     :rtype:  str
+    >>> import os; os.environ['XDG_CONFIG_HOME'] = '/tmp'
+    >>> get_config_home()
+    '/tmp'
     """
-    return os.environ.get('XDG_CONFIG_HOME') or \
-        os.path.join(os.path.expanduser('~'), '.config')
+    return os.environ.get('XDG_CONFIG_HOME') or os.path.join(
+        os.path.expanduser('~'), '.config'
+    )
 
 
 def get_config_dirs():
+    """
+    >>> import os; os.environ['XDG_CONFIG_DIRS'] = ''
+    >>> os.environ['XDG_CONFIG_HOME'] = '/tmp'
+    >>> get_config_dirs()
+    ['/tmp/papis', ...]
+    """
     dirs = []
     if os.environ.get('XDG_CONFIG_DIRS'):
         # get_config_home should also be included on top of XDG_CONFIG_DIRS
@@ -493,6 +519,12 @@ def get_config_folder():
     e.g. ``/home/user/.papis``. It is XDG compatible, which means that if the
     environment variable ``XDG_CONFIG_HOME`` is defined it will use the
     configuration folder ``XDG_CONFIG_HOME/papis`` instead.
+
+    >>> import os; os.environ['XDG_CONFIG_HOME'] = '/tmp'
+    >>> newpath = os.path.join(os.environ['XDG_CONFIG_HOME'], 'papis')
+    >>> if not os.path.exists(newpath): os.mkdir(newpath)
+    >>> get_config_folder()
+    '/tmp/papis'
     """
     config_dirs = get_config_dirs()
     for config_dir in config_dirs:
@@ -505,6 +537,12 @@ def get_config_folder():
 def get_config_file():
     """Get the path of the main configuration file,
     e.g. /home/user/.papis/config
+
+    >>> import os; os.environ['XDG_CONFIG_HOME'] = '/tmp'
+    >>> newpath = os.path.join(os.environ['XDG_CONFIG_HOME'], 'papis')
+    >>> if not os.path.exists(newpath): os.mkdir(newpath)
+    >>> get_config_file()
+    '/tmp/papis/config'
     """
     global OVERRIDE_VARS
     if OVERRIDE_VARS["file"] is not None:
@@ -687,6 +725,41 @@ def merge_configuration_from_path(path, configuration):
         configuration.read(path)
         configuration.handle_includes()
 
+
+def set_lib(library):
+    """Set library, notice that in principle library can be a full path.
+
+    :param library: Library name or path to a papis library
+    :type  library: str
+
+    >>> import os
+    >>> if not os.path.exists('/tmp/setlib-test'): os.makedirs(\
+            '/tmp/setlib-test'\
+        )
+    >>> set_lib('/tmp/setlib-test')
+    >>> get_lib()
+    '/tmp/setlib-test'
+    >>> set_lib('non-existing-library')
+    1
+    """
+    config = get_configuration()
+    if library not in config.keys():
+        if os.path.exists(library):
+            # Check if the path exists, then use this path as a new library
+            logger.debug("Using library %s" % library)
+            config[library] = dict(dir=library)
+        else:
+            logger.error(
+                "Path or library '%s' does not seem to exist" % library
+            )
+            return 1
+    try:
+        args = papis.commands.get_args()
+        args.lib = library
+    except AttributeError:
+        os.environ["PAPIS_LIB"] = library
+
+
 def get_lib():
     """Get current library, it either retrieves the library from
     the environment PAPIS_LIB variable or from the command line
@@ -694,9 +767,9 @@ def get_lib():
 
     :param library: Name of library or path to a given library
     :type  library: str
-    >>> papis.api.set_lib('hello-world')
+    >>> set_lib('papers')
     >>> get_lib()
-    'hello-world'
+    'papers'
     """
     import papis.commands
     try:

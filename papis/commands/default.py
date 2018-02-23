@@ -92,6 +92,7 @@ class Command(papis.commands.Command):
         )
 
     def main(self):
+        import papis.commands
         self.set_args(papis.commands.get_args())
         log_format = '%(levelname)s:%(name)s:%(message)s'
         if self.args.verbose:
@@ -107,7 +108,8 @@ class Command(papis.commands.Command):
             return 0
 
         if self.args.set:
-            key_vals = papis.utils.DocMatcher.parse(self.args.set)
+            import papis.docmatcher
+            key_vals = papis.docmatcher.DocMatcher.parse(self.args.set)
             self.logger.debug('Parsed set %s' % key_vals)
             for pair in key_vals:
                 if len(pair) != 3:
@@ -130,17 +132,8 @@ class Command(papis.commands.Command):
                 pick_config=dict(header_filter=lambda x: x)
             )
 
-        if self.args.lib not in self.get_config().keys():
-            if os.path.exists(self.args.lib):
-                # Check if the path exists, then use this path as a new library
-                self.logger.debug("Using library %s" % self.args.lib)
-                self.get_config()[self.args.lib] = dict()
-                self.get_config()[self.args.lib]["dir"] = self.args.lib
-            else:
-                self.logger.error(
-                    "Library '%s' does not seem to exist" % self.args.lib
-                )
-                return 1
+        papis.config.set_lib(self.args.lib)
+        self.set_db(papis.database.get(self.args.lib))
 
         # Now the library should be set, let us check if there is a
         # local configuration file there, and if there is one, then
@@ -164,6 +157,7 @@ class Command(papis.commands.Command):
         if self.args.command:
             if self.args.command in commands.keys():
                 commands[self.args.command].set_args(self.args)
+                commands[self.args.command].set_db(self.get_db())
                 return commands[self.args.command].main()
         else:
             return 0

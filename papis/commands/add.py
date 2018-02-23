@@ -398,7 +398,7 @@ class Command(papis.commands.Command):
                 interactive=self.args.interactive
             )
             document.save()
-            data = document.to_dict()
+            data = papis.document.to_dict(document)
             in_documents_paths = document.get_files() + in_documents_paths
             data["files"] = [os.path.basename(f) for f in in_documents_paths]
             # set out folder name the folder of the found document
@@ -528,7 +528,7 @@ class Command(papis.commands.Command):
             papis.api.edit_file(document.get_info_file(), wait=True)
             self.logger.debug("Loading the changes made by editing")
             document.load()
-            data = document.to_dict()
+            data = papis.document.to_dict(document)
 
         # Duplication checking
         self.logger.debug("Check if the added document is already existing")
@@ -536,7 +536,7 @@ class Command(papis.commands.Command):
             document, papis.api.get_documents_in_lib(papis.api.get_lib())
         )
         if found_document is not None:
-            self.logger.warning('\n' + found_document.dump())
+            self.logger.warning('\n' + papis.document.dump(found_document))
             print("\n\n")
             self.logger.warning("DUPLICATION WARNING")
             self.logger.warning(
@@ -566,7 +566,8 @@ class Command(papis.commands.Command):
         # Let us chmod it because it might come from a temp folder
         # and temp folders are per default 0o600
         os.chmod(out_folder_path, papis.config.getint('dir-umask'))
-        papis.api.clear_lib_cache()
+        document.set_folder(out_folder_path)
+        self.get_db().add(document)
         if self.args.commit and papis.utils.lib_is_git_repo(self.args.lib):
             subprocess.call(["git", "-C", out_folder_path, "add", "."])
             subprocess.call(

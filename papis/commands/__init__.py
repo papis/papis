@@ -250,6 +250,7 @@ def init_and_return_parser():
 
 class Command(object):
 
+    db = None
     parser = None
     args = None
 
@@ -291,6 +292,12 @@ class Command(object):
             help=help,
             action=action
         )
+
+    def set_db(self, db):
+        self.db = db
+
+    def get_db(self):
+        return self.db
 
     def set_args(self, args):
         self.args = args

@@ -68,6 +68,7 @@ from papis.api import status
 import os
 import papis.utils
 import papis.config
+import papis.database
 import papis.downloaders.utils
 
 logger = logging.getLogger('list')
@@ -91,6 +92,7 @@ def run(
     :rtype:  list
     """
     config = papis.config.get_configuration()
+    db = papis.database.get(library)
     if template is not None:
         if not os.path.exists(template):
             logger.error(
@@ -111,7 +113,8 @@ def run(
             if 'dir' in config[section]
         ]
 
-    documents = papis.api.get_documents_in_lib(search=query, library=library)
+    #documents = papis.api.get_documents_in_lib(search=query, library=library)
+    documents = db.query(query)
 
     if pick:
         documents = [papis.api.pick_doc(documents)]

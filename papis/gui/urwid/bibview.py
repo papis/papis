@@ -1,4 +1,5 @@
 import urwid
+import papis.document
 
 
 class Bibview(urwid.WidgetWrap):
@@ -14,7 +15,7 @@ class Bibview(urwid.WidgetWrap):
 
         string = ''
         for doc in docs:
-            string = string + doc.to_bibtex() + '\n'
+            string = string + papis.document.to_bibtex(doc) + '\n'
 
         self.box = urwid.Filler(urwid.Text(string))
         w = self.box
