@@ -208,50 +208,6 @@ class Document(object):
             result[key] = self[key]
         return result
 
-    @classmethod
-    def get_vcf_template(cls):
-        return """\
-first_name: null
-last_name: null
-org:
-- null
-email:
-    work: null
-    home: null
-tel:
-    cell: null
-    work: null
-    home: null
-adress:
-    work: null
-    home: null"""
-
-    def to_vcf(self):
-        # TODO: Generalize using the doc variable.
-        if not papis.config.in_mode("contact"):
-            # self.logger.error("Not in contact mode")
-            sys.exit(1)
-        text = \
-            """\
-BEGIN:VCARD
-VERSION:4.0
-FN:{doc[first_name]} {doc[last_name]}
-N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
-        for contact_type in ["email", "tel"]:
-            text += "\n"
-            text += "\n".join([
-                "{contact_type};TYPE={type}:{tel}"\
-                .format(
-                    contact_type=contact_type.upper(),
-                    type=t.upper(),
-                    tel=self[contact_type][t]
-                    )
-                for t in self[contact_type].keys() \
-                if self[contact_type][t] is not None
-            ])
-        text += "\n"
-        text += "END:VCARD"
-        return text
 
     def to_bibtex(self):
         """Create a bibtex string from document's information
