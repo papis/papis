@@ -1,7 +1,8 @@
 """
 This command is useful to issue commands in the directory of your library.
 
-Here are some examples of its usage:
+CLI Examples
+^^^^^^^^^^^^
 
     - List files in your directory
 
@@ -14,12 +15,40 @@ Here are some examples of its usage:
     .. code::
 
         papis run find -name 'document.pdf'
+
+Python examples
+^^^^^^^^^^^^^^^
+
+.. code::python
+
+    from papis.commands.run import run
+
+    run(library='papers', command=["ls", "-a"])
+
 """
 import string
 import os
 import papis.config
 import papis.exceptions
 import argparse
+import logging
+
+logger = logging.getLogger('run')
+
+
+def run(library=None, command=[]):
+    config = papis.config.get_configuration()
+    lib_dir = os.path.expanduser(config[library]["dir"])
+    logger.debug("Changing directory into %s" % lib_dir)
+    os.chdir(lib_dir)
+    try:
+        commandstr = os.path.expanduser(
+            papis.config.get("".join(command))
+        )
+    except papis.exceptions.DefaultSettingValueMissing:
+        commandstr = " ".join(command)
+    logger.debug("Command = %s" % commandstr)
+    return os.system(commandstr)
 
 
 class Command(papis.commands.Command):
@@ -47,17 +76,4 @@ class Command(papis.commands.Command):
         self.args.run_command = commands
 
     def main(self):
-        lib_dir = os.path.expanduser(self.get_config()[self.args.lib]["dir"])
-        self.logger.debug("Changing directory into %s" % lib_dir)
-        os.chdir(lib_dir)
-        try:
-            command = os.path.expanduser(
-                papis.config.get("".join(self.args.run_command))
-            )
-        except papis.exceptions.DefaultSettingValueMissing:
-            command = " ".join(self.args.run_command)
-        self.logger.debug("Command = %s" % command)
-        command = string.Template(command).safe_substitute(
-            self.get_config()[self.args.lib]
-        )
-        os.system(command)
+        return run(library=self.args.lib, command=self.args.run_command)
