@@ -23,6 +23,11 @@ class Test(unittest.TestCase):
         assert(isinstance(docs, list))
         assert(len(docs) >= 1)
 
+    def test_list_docs_no_lib(self):
+        docs = run(query='')
+        assert(isinstance(docs, list))
+        assert(len(docs) >= 1)
+
     def test_list_libs(self):
         libs = run(libraries=True)
         assert(len(libs) >= 1)

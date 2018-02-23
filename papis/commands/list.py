@@ -75,7 +75,7 @@ logger = logging.getLogger('list')
 
 def run(
         query="",
-        library=None,
+        library=papis.config.get_lib(),
         libraries=False,
         downloaders=False,
         pick=False,

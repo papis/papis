@@ -36,7 +36,7 @@ import logging
 logger = logging.getLogger('run')
 
 
-def run(library=None, command=[]):
+def run(library=papis.config.get_lib(), command=[]):
     config = papis.config.get_configuration()
     lib_dir = os.path.expanduser(config[library]["dir"])
     logger.debug("Changing directory into %s" % lib_dir)
