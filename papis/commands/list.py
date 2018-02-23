@@ -43,12 +43,84 @@ Examples
 
 """
 
+import logging
 import papis
 from papis.api import status
 import os
-import sys
 import papis.utils
+import papis.config
 import papis.downloaders.utils
+
+logger = logging.getLogger('list')
+
+
+def run(
+        query="",
+        library=None,
+        libraries=False,
+        downloaders=False,
+        pick=False,
+        files=False,
+        folders=False,
+        info_files=False,
+        fmt="",
+        template=None
+        ):
+    """Main method to the list command
+
+    :returns: List different objects
+    :rtype:  list
+    """
+    config = papis.config.get_configuration()
+    if template is not None:
+        if not os.path.exists(template):
+            logger.error(
+                "Template file %s not found" % template
+            )
+            return status.file_not_found
+        fd = open(template)
+        fmt = fd.read()
+        fd.close()
+
+    if downloaders:
+        return papis.downloaders.utils.getAvailableDownloaders()
+
+    if libraries:
+        return [
+            config[section]['dir']
+            for section in config
+            if 'dir' in config[section]
+        ]
+
+    documents = papis.api.get_documents_in_lib(search=query, library=library)
+
+    if pick:
+        documents = [papis.api.pick_doc(documents)]
+
+    if files:
+        return [
+            doc_file for files in [
+                document.get_files() for document in documents
+            ] for doc_file in files
+        ]
+    elif info_files:
+        return [
+            os.path.join(
+                document.get_main_folder(),
+                document.get_info_file()
+            ) for document in documents
+        ]
+    elif fmt:
+        return [
+            papis.utils.format_doc(fmt, document)
+            for document in documents
+        ]
+    elif folders:
+        return [
+            document.get_main_folder() for document in documents
+        ]
+    else:
+        return documents
 
 
 class Command(papis.commands.Command):
@@ -86,7 +158,7 @@ class Command(papis.commands.Command):
         self.parser.add_argument(
             "--format",
             help="List entries using a custom papis format, e.g."
-                " '{doc[year] {doc[title]}",
+            " '{doc[year] {doc[title]}",
             default=None,
             action="store"
         )
@@ -118,49 +190,26 @@ class Command(papis.commands.Command):
         )
 
     def main(self):
-        if self.args.template:
-            if not os.path.exists(self.args.template):
-                self.logger.error(
-                    "Template file %s not found" % self.args.template
-                )
-                return status.file_not_found
-            fd = open(self.args.template)
-            self.args.format = fd.read()
-            fd.close()
 
-        if self.args.downloaders:
-            for downloader in \
-               papis.downloaders.utils.getAvailableDownloaders():
-                print(downloader)
-            return status.success
+        if not self.args.libraries and \
+            not self.args.downloaders and \
+            not self.args.file and \
+            not self.args.info and \
+                not self.args.dir:
+            self.args.dir = True
 
-        if self.args.libraries:
-            for section in self.get_config():
-                if "dir" in self.get_config()[section]:
-                    print(section)
-            return status.success
-
-        documents = papis.api.get_documents_in_lib(
-            self.get_args().lib,
-            self.get_args().search
+        objects = run(
+            query=self.args.search,
+            library=self.args.lib,
+            libraries=self.args.libraries,
+            downloaders=self.args.downloaders,
+            pick=self.args.pick,
+            files=self.args.file,
+            folders=self.args.dir,
+            info_files=self.args.info,
+            fmt=self.args.format,
+            template=self.args.template
         )
-
-        if self.args.pick:
-            documents = [self.pick(documents)]
-        for document in documents:
-            if self.args.file:
-                for f in document.get_files():
-                    print(f)
-            elif self.args.info:
-                print(
-                    os.path.join(
-                        document.get_main_folder(),
-                        document.get_info_file()
-                    )
-                )
-            elif self.args.format:
-                print(
-                    papis.utils.format_doc(self.args.format, document)
-                )
-            else:
-                print(document.get_main_folder())
+        for o in objects:
+            print(o)
+        return status.success
