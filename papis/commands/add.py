@@ -156,13 +156,6 @@ class Command(papis.commands.Command):
         )
 
         self.parser.add_argument(
-            "--from-vcf",
-            help="Get contact information from a vcard (.vcf) file",
-            default=None,
-            action="store"
-        )
-
-        self.parser.add_argument(
             "--to",
             help="When --to is specified, the document will be added to the "
             "selected already existing document entry.",
@@ -290,24 +283,8 @@ class Command(papis.commands.Command):
                 )
         return author
 
-    def init_contact_mode(self):
-        """Initialize the contact mode
-        """
-        self.logger.debug("Initializing contact mode")
-        self.args.document = [papis.utils.get_info_file_name()]
-        self.args.from_yaml = papis.utils.get_info_file_name()
-        if os.path.exists(self.args.document[0]):
-            return True
-        self.args.edit = True
-        self.args.confirm = True
-        template = papis.document.Document.get_vcf_template()
-        with open(self.args.document[0], "w+") as fd:
-            fd.write(template)
 
     def main(self):
-        # FIXME: Why is it something special?
-        if papis.config.in_mode("contact"):
-            self.init_contact_mode()
         lib_dir = os.path.expanduser(papis.config.get('dir'))
         data = dict()
         # The folder name of the new document that will be created
@@ -398,9 +375,6 @@ class Command(papis.commands.Command):
             self.logger.debug("Yaml input file = %s" % self.args.from_yaml)
             data.update(papis.utils.yaml_to_data(self.args.from_yaml))
 
-        if self.args.from_vcf:
-            data.update(papis.utils.vcf_to_data(self.args.from_vcf))
-
         in_documents_names = [
             papis.utils.clean_document_name(doc_path)
             for doc_path in in_documents_paths
@@ -432,31 +406,30 @@ class Command(papis.commands.Command):
             out_folder_path = document.get_main_folder()
         else:
             document = papis.document.Document(temp_dir)
-            if not papis.config.in_mode("contact"):
-                if len(in_documents_paths) == 0:
-                    if not self.get_args().no_document:
-                        self.logger.error("No documents to be added")
-                        return status.file_not_found
-                    else:
-                        in_documents_paths = [document.get_info_file()]
-                        # We need the names to add them in the file field
-                        # in the info file
-                        in_documents_names = [papis.utils.get_info_file_name()]
-                        # Save document to create the info file
-                        document.update(
-                            data, force=True, interactive=self.args.interactive
-                        )
-                        document.save()
-                data["title"] = self.args.title or self.get_default_title(
-                    data,
-                    in_documents_paths[0]
-                )
-                data["author"] = self.args.author or self.get_default_author(
-                    data,
-                    in_documents_paths[0]
-                )
-                self.logger.debug("Author = % s" % data["author"])
-                self.logger.debug("Title = % s" % data["title"])
+            if len(in_documents_paths) == 0:
+                if not self.get_args().no_document:
+                    self.logger.error("No documents to be added")
+                    return status.file_not_found
+                else:
+                    in_documents_paths = [document.get_info_file()]
+                    # We need the names to add them in the file field
+                    # in the info file
+                    in_documents_names = [papis.utils.get_info_file_name()]
+                    # Save document to create the info file
+                    document.update(
+                        data, force=True, interactive=self.args.interactive
+                    )
+                    document.save()
+            data["title"] = self.args.title or self.get_default_title(
+                data,
+                in_documents_paths[0]
+            )
+            data["author"] = self.args.author or self.get_default_author(
+                data,
+                in_documents_paths[0]
+            )
+            self.logger.debug("Author = % s" % data["author"])
+            self.logger.debug("Title = % s" % data["title"])
 
             if not self.args.name:
                 self.logger.debug("Getting an automatic name")

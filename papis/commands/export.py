@@ -107,12 +107,6 @@ class Command(papis.commands.Command):
         )
 
         self.parser.add_argument(
-            "--vcf",
-            help="Export contact to vcf format",
-            action="store_true"
-        )
-
-        self.parser.add_argument(
             "--file",
             help="Export (copy) pdf file to outfile",
             default=False,
@@ -172,8 +166,6 @@ class Command(papis.commands.Command):
                         os.path.join(outdir, "info.bib"),
                         "a+"
                     ).write(document.to_bibtex())
-            elif self.args.vcf:
-                self.args.out.write(document.to_vcf())
             elif self.args.file:
                 files = document.get_files()
                 file_to_open = papis.api.pick(
