@@ -1,8 +1,8 @@
 """
 This command is to list contents of a library.
 
-Examples
-^^^^^^^^
+CLI Examples
+^^^^^^^^^^^^
 
  - List all document files associated will all entries:
 
@@ -40,6 +40,25 @@ Examples
         <script type="text/javascript"
         src="https://asciinema.org/a/QZTBZ3tFfyk9WQuJ9WWB2UpSw.js"
         id="asciicast-QZTBZ3tFfyk9WQuJ9WWB2UpSw" async></script>
+
+Python examples
+^^^^^^^^^^^^^^^
+
+```
+# Import the run function from the list command
+
+from papis.commands.list import run as list
+
+documents = list(query='einstein', library='papis')
+
+for doc in documents:
+    print(doc["url"])
+
+# etc...
+info_files = list(query='einstein', library='papis', info_files=True)
+
+# do something with the info file paths...
+```
 
 """
 
