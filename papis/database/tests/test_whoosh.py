@@ -2,33 +2,57 @@ import os
 import sys
 import papis.config
 import papis.database.whoosh
+import papis.database
+import unittest
+import papis.tests
 
-papis.config.set('database-backend', 'whoosh')
-assert(papis.config.get('database-backend') == 'whoosh')
+class Test(unittest.TestCase):
 
-os.environ['XDG_CACHE_HOME'] = os.path.join(
-    os.path.abspath(os.sep),
-    'tmp',
-    'cache'
-)
+    @classmethod
+    def setUpClass(cls):
+        papis.config.set('database-backend', 'whoosh')
+        assert(papis.config.get('database-backend') == 'whoosh')
+        papis.tests.setup_test_library()
 
-libdir = os.path.join(
-    os.path.abspath(os.sep),
-    'tmp',
-    'test-whoosh'
-)
+        os.environ['XDG_CACHE_HOME'] = os.path.join(
+            os.path.abspath(os.sep),
+            'tmp',
+            'cache'
+        )
 
+        libdir = papis.config.get('dir')
+        assert(os.path.exists(libdir))
+        assert(papis.config.get_lib() == papis.tests.get_test_lib())
 
-if not os.path.exists(libdir):
-    os.mkdir(libdir, mode=0o777)
-assert(os.path.exists(libdir))
+        database = papis.database.get(papis.config.get_lib())
+        database.clear()
+        database.initialize()
+        assert(database is not None)
+        assert(database.get_lib() == papis.config.get_lib())
+        assert(database.get_dir() == libdir)
 
-papis.config.set_lib(libdir)
-assert(papis.config.get_lib() == libdir)
+    def test_check_database(self):
+        database = papis.database.get()
+        self.assertTrue(database is not None)
+        self.assertTrue(database.get_lib() == papis.tests.get_test_lib())
 
-database = papis.database.get(libdir)
-assert(database is not None)
-assert(database.get_lib() == libdir)
-assert(database.get_dir() == libdir)
+    def test_query(self):
+        # The database is existing right now, which means that the
+        # test library is in place and therefore we have some documents
+        database = papis.database.get()
+        docs = database.query('*')
+        self.assertTrue(len(docs) > 0)
 
-
+    def test_add(self):
+        database = papis.database.get()
+        docs = database.query('*')
+        N = len(docs)
+        docs = [
+            papis.document.from_data(data)
+            for data in papis.tests.test_data
+        ]
+        self.assertTrue(N > 0)
+        for doc in docs:
+            database.add(doc)
+        docs = database.query('*')
+        self.assertEqual(len(docs), N+2)
