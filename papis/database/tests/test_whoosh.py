@@ -5,6 +5,7 @@ import papis.database.whoosh
 import papis.database
 import unittest
 import papis.tests
+import tempfile
 
 class Test(unittest.TestCase):
 
@@ -14,11 +15,7 @@ class Test(unittest.TestCase):
         assert(papis.config.get('database-backend') == 'whoosh')
         papis.tests.setup_test_library()
 
-        os.environ['XDG_CACHE_HOME'] = os.path.join(
-            os.path.abspath(os.sep),
-            'tmp',
-            'cache'
-        )
+        os.environ['XDG_CACHE_HOME'] = tempfile.mkdtemp(prefix='whoosh-test')
 
         libdir = papis.config.get('dir')
         assert(os.path.exists(libdir))
