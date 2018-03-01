@@ -14,6 +14,9 @@ class Database(object):
     def __init__(self, library=papis.config.get_lib()):
         self.lib = library
 
+    def initialize(self):
+        pass
+
     def get_lib(self):
         """Get library name
         """

@@ -314,6 +314,9 @@ class Database(papis.database.base.Database):
         self.logger.debug('Initializing')
         self.documents = []
         self.folders = []
+        self.initialize()
+
+    def initialize(self):
         self.get_documents()
 
     def get_documents(self):
@@ -330,9 +333,7 @@ class Database(papis.database.base.Database):
 
     def add(self, document):
         self.logger.debug('Adding in the library')
-        self.logger.debug(len(self.folders))
         self.folders.append(document.get_main_folder())
-        self.logger.debug(len(self.folders))
         self.save()
 
     def update(self, document):
