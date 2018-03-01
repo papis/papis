@@ -8,6 +8,8 @@ DATABASES = dict()
 def get(library=None):
     import papis.config
     backend = papis.config.get('database-backend')
+    if library is None:
+        library = papis.config.get_lib()
     if DATABASES.get(library) is not None:
         return DATABASES.get(library)
     if backend == "papis":
