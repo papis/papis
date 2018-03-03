@@ -99,10 +99,11 @@ class Database(papis.database.base.Database):
     def query(self, query_string):
         self.logger.debug('Query string %s' % query_string)
         index = self.get_index()
-        qp = whoosh.qparser.QueryParser(
-            'title',
+        qp = whoosh.qparser.MultifieldParser(
+            ['title', 'author', 'tags'],
             schema=self.get_schema()
         )
+        qp.add_plugin(whoosh.qparser.FuzzyTermPlugin())
         query = qp.parse(query_string)
         with index.searcher() as searcher:
             results = searcher.search(query, limit=None)
