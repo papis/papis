@@ -93,3 +93,12 @@ class Test(unittest.TestCase):
             database.add(doc)
         docs = database.get_all_documents()
         self.assertEqual(len(docs), N+2)
+
+    def test_clear(self):
+        database = papis.database.get()
+        database.clear()
+        database.initialize()
+        self.test_get_all_documents()
+
+    def test_backend_name(self):
+        self.assertTrue(papis.database.get().get_backend_name() is not None)
