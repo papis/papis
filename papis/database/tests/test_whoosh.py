@@ -47,6 +47,17 @@ class Test(unittest.TestCase):
         self.assertTrue(doc is not None)
         self.assertTrue(doc['title'] == 'test_update test')
 
+    def test_delete(self):
+        database = papis.database.get()
+        docs = database.get_all_documents()
+        Ni = len(docs)
+        self.assertTrue(Ni > 1)
+        database.delete( docs[0] )
+        papis.document.delete( docs[0] )
+        docs = database.get_all_documents()
+        Nf = len(docs)
+        self.assertTrue(Ni - Nf > 0)
+
     def test_get_all_documents(self):
         database = papis.database.get()
         docs = database.get_all_documents()

@@ -348,6 +348,8 @@ class Database(papis.database.base.Database):
             self.logger.debug('Deleting from folders')
             self.folders.remove(document.get_main_folder())
             self.save()
+            # Also update the documents list
+            self.get_documents()
 
     def match(self, document, query_string):
         return match_document(document, query_string)
