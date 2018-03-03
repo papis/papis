@@ -91,39 +91,39 @@ class TestAdd(CommandTest):
                 self.command.get_document_extension(d[0]) == d[1]
             )
 
-    def test_add_file(self):
-        args = ("add",
-                os.path.join(os.path.dirname(__file__),
-                             "resources",
-                             "example_document.txt"))
-        output = papis.commands.main(args)
+    # def test_add_file(self):
+        # args = ("add",
+                # os.path.join(os.path.dirname(__file__),
+                             # "resources",
+                             # "example_document.txt"))
+        # output = papis.commands.main(args)
 
-        doc_data = {'author': "Unknown"}
+        # doc_data = {'author': "Unknown"}
 
-        cmd = papis.commands.add.Command()
-        expected_folder_name = cmd.get_hash_folder(
-            doc_data,
-            os.path.join(
-                os.path.dirname(__file__),
-                "resources",
-                "example_document.txt"))
+        # cmd = papis.commands.add.Command()
+        # expected_folder_name = cmd.get_hash_folder(
+            # doc_data,
+            # os.path.join(
+                # os.path.dirname(__file__),
+                # "resources",
+                # "example_document.txt"))
 
-        lib_dir = os.path.expanduser(papis.config.get('dir'))
-        out_dir = os.path.join(lib_dir, expected_folder_name)
-        # path exists
-        self.assertTrue(os.path.isdir(out_dir))
-        # file exists
-        self.assertTrue(os.path.isfile(
-            os.path.join(out_dir, "example_document.txt")))
+        # lib_dir = os.path.expanduser(papis.config.get('dir'))
+        # out_dir = os.path.join(lib_dir, expected_folder_name)
+        # # path exists
+        # self.assertTrue(os.path.isdir(out_dir))
+        # # file exists
+        # self.assertTrue(os.path.isfile(
+            # os.path.join(out_dir, "example_document.txt")))
 
-        # FIXME: check output folder and file!
-        self.assertTrue(output == 0)
+        # # FIXME: check output folder and file!
+        # self.assertTrue(output == 0)
 
-        args = ("rm", "-f",
-                "example_document.txt")
-        output = papis.commands.main(args)
-        # FIXME: check output folder and file!
-        self.assertTrue(output == status.success)
+        # args = ("rm", "-f",
+                # "example_document.txt")
+        # output = papis.commands.main(args)
+        # # FIXME: check output folder and file!
+        # self.assertTrue(output == status.success)
 
     def test_add_missing(self):
         args = ("add",
@@ -140,63 +140,63 @@ class TestAdd(CommandTest):
         output = papis.commands.main(args)
         self.assertTrue(output != status.success)
 
-    def test_add_file_with_dir(self):
-        args = ("add", "--dir", "subdir",
-                os.path.join(os.path.dirname(__file__),
-                             "resources",
-                             "example_document.txt"))
-        output = papis.commands.main(args)
+    # def test_add_file_with_dir(self):
+        # args = ("add", "--dir", "subdir",
+                # os.path.join(os.path.dirname(__file__),
+                             # "resources",
+                             # "example_document.txt"))
+        # output = papis.commands.main(args)
 
-        self.assertTrue(output == status.success)
+        # self.assertTrue(output == status.success)
 
-        args = ("rm", "-f", "example_document.txt")
-        output = papis.commands.main(args)
-        self.assertTrue(output == status.success)
+        # args = ("rm", "-f", "example_document.txt")
+        # output = papis.commands.main(args)
+        # self.assertTrue(output == status.success)
 
-        # Double removal fails
-        args = ("rm", "-f", "example_document.txt")
-        output = papis.commands.main(args)
-        self.assertTrue(output == status.file_not_found)
+        # # Double removal fails
+        # args = ("rm", "-f", "example_document.txt")
+        # output = papis.commands.main(args)
+        # self.assertTrue(output == status.file_not_found)
 
-    def test_add_file_with_file_name(self):
-        args = ("add", "--file-name", "new_name",
-                "--dir", "foldname",
-                os.path.join(os.path.dirname(__file__),
-                             "resources",
-                             "example_document.txt"))
+    # def test_add_file_with_file_name(self):
+        # args = ("add", "--file-name", "new_name",
+                # "--dir", "foldname",
+                # os.path.join(os.path.dirname(__file__),
+                             # "resources",
+                             # "example_document.txt"))
 
-        doc_data = {'author': "Unknown"}
-        cmd = papis.commands.add.Command()
-        expected_folder_name = cmd.get_hash_folder(
-            doc_data,
-            os.path.join(
-                os.path.dirname(__file__),
-                "resources",
-                "example_document.txt"))
+        # doc_data = {'author': "Unknown"}
+        # cmd = papis.commands.add.Command()
+        # expected_folder_name = cmd.get_hash_folder(
+            # doc_data,
+            # os.path.join(
+                # os.path.dirname(__file__),
+                # "resources",
+                # "example_document.txt"))
 
-        output = papis.commands.main(args)
+        # output = papis.commands.main(args)
 
-        # The command has the result we expect
-        self.assertTrue(output == status.success)
+        # # The command has the result we expect
+        # self.assertTrue(output == status.success)
 
-        lib_dir = os.path.expanduser(papis.config.get('dir'))
-        out_dir = os.path.join(lib_dir, "foldname", expected_folder_name)
-        # The folder is created
-        self.assertTrue(os.path.isdir(out_dir))
+        # lib_dir = os.path.expanduser(papis.config.get('dir'))
+        # out_dir = os.path.join(lib_dir, "foldname", expected_folder_name)
+        # # The folder is created
+        # self.assertTrue(os.path.isdir(out_dir))
 
-        # The file is added
-        self.assertTrue(os.path.isfile(os.path.join(out_dir, "new_name.txt")))
-        # The content of the file is the one we'd expect
-        self.assertTrue(files_are_equal(
-            os.path.join(os.path.dirname(__file__),
-                         "resources", "example_document.txt"),
-            os.path.join(out_dir, "new_name.txt")))
+        # # The file is added
+        # self.assertTrue(os.path.isfile(os.path.join(out_dir, "new_name.txt")))
+        # # The content of the file is the one we'd expect
+        # self.assertTrue(files_are_equal(
+            # os.path.join(os.path.dirname(__file__),
+                         # "resources", "example_document.txt"),
+            # os.path.join(out_dir, "new_name.txt")))
 
-        args = ("rm", "-f", expected_folder_name)
-        output = papis.commands.main(args)
-        self.assertTrue(output == status.success)
+        # args = ("rm", "-f", expected_folder_name)
+        # output = papis.commands.main(args)
+        # self.assertTrue(output == status.success)
 
-        # Doble removal fails
-        args = ("rm", "-f", expected_folder_name)
-        output = papis.commands.main(args)
-        self.assertTrue(output == status.file_not_found)
+        # # Doble removal fails
+        # args = ("rm", "-f", expected_folder_name)
+        # output = papis.commands.main(args)
+        # self.assertTrue(output == status.file_not_found)
