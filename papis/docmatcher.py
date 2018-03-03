@@ -75,31 +75,37 @@ class DocMatcher(object):
         >>> print(DocMatcher.parse('hello'))
         [['hello']]
         """
-        import pyparsing
-        cls.logger.debug('Parsing search')
         search = search or cls.search
-        papis_alphas = pyparsing.printables.replace('=', '')
-        papis_key = pyparsing.Word(pyparsing.alphanums + '-')
-        papis_value = pyparsing.QuotedString(
-            quoteChar='"', escChar='\\', escQuote='\\'
-        ) ^ pyparsing.QuotedString(
-            quoteChar="'", escChar='\\', escQuote='\\'
-        ) ^ papis_key
-        equal = pyparsing.ZeroOrMore(" ") + \
-                pyparsing.Literal('=')    + \
-                pyparsing.ZeroOrMore(" ")
-
-        papis_query = pyparsing.ZeroOrMore(
-            pyparsing.Group(
-                pyparsing.ZeroOrMore(
-                    papis_key + equal
-                ) + papis_value
-            )
-        )
-        parsed = papis_query.parseString(search)
-        cls.logger.debug('Parsed search = %s' % parsed)
-        cls.parsed_search = parsed
+        cls.parsed_search = parse_query(search)
         return cls.parsed_search
 
 
+def parse_query(query_string):
+    """
+    >>> print(parse_query('hello   author = einstein'))
+    [['hello'], ['author', '=', 'einstein']]
+    """
+    import pyparsing
+    logger = logging.getLogger('query_parser')
+    logger.debug('Parsing search')
+    papis_alphas = pyparsing.printables.replace('=', '')
+    papis_key = pyparsing.Word(pyparsing.alphanums + '-')
+    papis_value = pyparsing.QuotedString(
+        quoteChar='"', escChar='\\', escQuote='\\'
+    ) ^ pyparsing.QuotedString(
+        quoteChar="'", escChar='\\', escQuote='\\'
+    ) ^ papis_key
+    equal = pyparsing.ZeroOrMore(" ") + \
+            pyparsing.Literal('=')    + \
+            pyparsing.ZeroOrMore(" ")
 
+    papis_query = pyparsing.ZeroOrMore(
+        pyparsing.Group(
+            pyparsing.ZeroOrMore(
+                papis_key + equal
+            ) + papis_value
+        )
+    )
+    parsed = papis_query.parseString(query_string)
+    logger.debug('Parsed query = %s' % parsed)
+    return parsed

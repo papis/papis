@@ -109,7 +109,7 @@ class Command(papis.commands.Command):
 
         if self.args.set:
             import papis.docmatcher
-            key_vals = papis.docmatcher.DocMatcher.parse(self.args.set)
+            key_vals = papis.docmatcher.parse_query(self.args.set)
             self.logger.debug('Parsed set %s' % key_vals)
             for pair in key_vals:
                 if len(pair) != 3:

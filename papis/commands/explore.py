@@ -70,7 +70,7 @@ class Command(papis.commands.Command):
 
     def parse_search(self):
         import papis.docmatcher
-        key_vals = papis.docmatcher.DocMatcher.parse(self.args.search)
+        key_vals = papis.docmatcher.parse_query(self.args.search)
         result = {'query': ""}
         self.logger.debug('Parsed set %s' % key_vals)
         for pair in key_vals:
