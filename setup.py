@@ -83,6 +83,7 @@ setup(
         # $ pip install -e .[develop]
         optional=[
             'dmenu',
+            "Whoosh>=2.7.4",
         ],
         develop=[
             "sphinx",
