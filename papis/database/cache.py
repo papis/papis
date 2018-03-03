@@ -316,6 +316,9 @@ class Database(papis.database.base.Database):
         self.folders = []
         self.initialize()
 
+    def get_backend_name(self):
+        return 'papis'
+
     def initialize(self):
         self.get_documents()
 
@@ -352,6 +355,12 @@ class Database(papis.database.base.Database):
     def clear(self):
         self.logger.debug('Clearing library')
         clear_lib_cache(self.get_lib())
+
+    def query_dict(self, dictionary):
+        query_string = "AND".join(
+            ["{}=\"{}\" ".format(key, val) for key,val in dictionary.items()]
+        )
+        return self.query(query_string)
 
     def query(self, query_string):
         self.logger.debug('Querying')

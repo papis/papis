@@ -34,6 +34,19 @@ class Test(unittest.TestCase):
         self.assertTrue(database is not None)
         self.assertTrue(database.get_lib() == papis.tests.get_test_lib())
 
+    def test_update(self):
+        database = papis.database.get()
+        doc = database.get_all_documents()[0]
+        self.assertTrue(doc is not None)
+        doc['title'] = 'test_update test'
+        doc.save()
+        database.update(doc)
+        docs = database.query_dict({'title': 'test_update test'})
+        self.assertTrue(len(docs) == 1)
+        doc = docs[0]
+        self.assertTrue(doc is not None)
+        self.assertTrue(doc['title'] == 'test_update test')
+
     def test_get_all_documents(self):
         database = papis.database.get()
         docs = database.get_all_documents()
