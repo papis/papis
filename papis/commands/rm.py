@@ -4,7 +4,28 @@ import os
 import papis.api
 from papis.api import status
 import papis.utils
+import papis.config
 import papis.document
+
+
+def run(
+        document,
+        filepath=None
+        ):
+    """Main method to the rm command
+
+    :returns: List different objects
+    :rtype:  list
+    """
+    config = papis.config.get_configuration()
+    db = papis.database.get()
+    if filepath is not None:
+        document.rm_file(filepath)
+        document.save()
+    else:
+        papis.document.delete(document)
+        db.delete(document)
+    return status.success
 
 
 class Command(papis.commands.Command):
@@ -44,13 +65,13 @@ class Command(papis.commands.Command):
                 if not papis.utils.confirm("Are you sure?"):
                     return status.success
             print("Removing %s..." % filepath)
-            document.rm_file(filepath)
-            document.save()
+            return run(
+                document,
+                filepath=filepath
+            )
         else:
             if not self.args.force:
                 if not papis.utils.confirm("Are you sure?"):
                     return status.success
             print("Removing ...")
-            papis.document.delete(document)
-            self.get_db().delete(document)
-        return status.success
+            return run(document)
