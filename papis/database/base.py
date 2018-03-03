@@ -52,3 +52,5 @@ class Database(object):
     def query(self, query_string):
         raise NotImplementedError('Query not implemented')
 
+    def get_all_documents(self):
+        raise NotImplementedError('Get all docs not implemented')

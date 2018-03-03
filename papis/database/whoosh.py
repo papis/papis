@@ -114,6 +114,9 @@ class Database(papis.database.base.Database):
             ]
         return documents
 
+    def get_all_documents(self):
+        return self.query("*")
+
     def get_id_key(self):
         """Get the unique key identifier name of the documents in the database
 

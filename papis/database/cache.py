@@ -358,6 +358,9 @@ class Database(papis.database.base.Database):
             self.get_documents()
         return filter_documents(self.documents, query_string)
 
+    def get_all_documents(self):
+        return self.query(".")
+
     def save(self):
         self.logger.debug('Saving in the library')
         create(self.folders, get_cache_file_path(self.get_dir()))

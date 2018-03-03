@@ -33,6 +33,11 @@ class Test(unittest.TestCase):
         self.assertTrue(database is not None)
         self.assertTrue(database.get_lib() == papis.tests.get_test_lib())
 
+    def test_get_all_documents(self):
+        database = papis.database.get()
+        docs = database.get_all_documents()
+        self.assertTrue(len(docs) > 0)
+
     def test_query(self):
         # The database is existing right now, which means that the
         # test library is in place and therefore we have some documents
