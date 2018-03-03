@@ -134,16 +134,32 @@ def dump(document):
 
 
 def delete(document):
-    """This function deletes a document from disk and from the database,
-    effectively deleting completely the document.
+    """This function deletes a document from disk.
     :param document: Papis document
     :type  document: papis.document.Document
     """
     import shutil
-    db = papis.database.get()
     folder = document.get_main_folder()
     shutil.rmtree(folder)
-    db.delete(document)
+
+
+def move(document, path):
+    """This function moves a document to path, it supposes that
+    the document exists in the location ``document.get_main_folder()``.
+    Warning: This method will change the folder in the document object too.
+    :param document: Papis document
+    :type  document: papis.document.Document
+    :param path: Full path where the document will be moved to
+    :type  path: str
+    """
+    import shutil
+    if os.path.exists(path):
+        raise Exception("Path {} exists already".format(path))
+    shutil.move(document.get_main_folder(), path)
+    # Let us chmod it because it might come from a temp folder
+    # and temp folders are per default 0o600
+    os.chmod(path, papis.config.getint('dir-umask'))
+    document.set_folder(path)
 
 
 class Document(object):
