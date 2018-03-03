@@ -31,19 +31,5 @@ class Test(papis.database.tests.test_whoosh.Test):
     def test_query(self):
         database = papis.database.get()
         docs = database.query('.')
-        print(docs)
         self.assertTrue(len(docs) > 0)
 
-    def test_add(self):
-        database = papis.database.get()
-        docs = database.query('.')
-        N = len(docs)
-        self.assertTrue(N > 0)
-        docs = [
-            papis.document.from_data(data)
-            for data in papis.tests.test_data
-        ]
-        for doc in docs:
-            database.add(doc)
-        docs = database.query('.')
-        self.assertEqual(len(docs), N+2)

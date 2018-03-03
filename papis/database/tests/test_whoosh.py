@@ -1,6 +1,7 @@
 import os
 import sys
 import papis.config
+import papis.document
 import papis.database.whoosh
 import papis.database
 import unittest
@@ -47,14 +48,24 @@ class Test(unittest.TestCase):
 
     def test_add(self):
         database = papis.database.get()
-        docs = database.query('*')
+        docs = database.get_all_documents()
         N = len(docs)
-        docs = [
+        newdocs = [
             papis.document.from_data(data)
             for data in papis.tests.test_data
         ]
-        self.assertTrue(N > 0)
-        for doc in docs:
+        for j,doc in enumerate(newdocs):
+            doc.set_folder(tempfile.mkdtemp())
+            doc['tempfile'] = doc.get_main_folder()
+            doc.save()
+            folder = os.path.join(
+                database.get_dir(),
+                'new',
+                str(j+N)
+            )
+            papis.document.move(doc, folder)
+            print(doc)
+            print(doc.get_main_folder())
             database.add(doc)
-        docs = database.query('*')
+        docs = database.get_all_documents()
         self.assertEqual(len(docs), N+2)

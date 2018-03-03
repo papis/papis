@@ -334,6 +334,7 @@ class Database(papis.database.base.Database):
     def add(self, document):
         self.logger.debug('Adding in the library')
         self.folders.append(document.get_main_folder())
+        self.documents.append(document)
         self.save()
 
     def update(self, document):
