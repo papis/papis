@@ -211,14 +211,6 @@ class Command(papis.commands.Command):
         )
 
         self.parser.add_argument(
-            "--to",
-            help="When --to is specified, the document will be added to the "
-            "selected already existing document entry.",
-            nargs="?",
-            action="store"
-        )
-
-        self.parser.add_argument(
             "--confirm",
             help="Ask to confirm before adding to the collection",
             action='store_false' if papis.config.get('add-confirm')
@@ -372,84 +364,59 @@ class Command(papis.commands.Command):
             for doc_path in in_documents_paths
         ]
 
-        # Decide if we are adding the documents to an already existing document
-        # or it is a new document
-        if self.args.to:
-            self.logger.debug(
-                "Searching for the document where to add the files"
-            )
-            documents = papis.api.get_documents_in_dir(
-                lib_dir,
-                self.args.to
-            )
-            document = self.pick(documents)
-            if not document:
+        document = papis.document.Document(temp_dir)
+        if len(in_documents_paths) == 0:
+            if not self.get_args().no_document:
+                self.logger.error("No documents to be added")
                 return status.file_not_found
-            document.update(
-                data,
-                interactive=self.args.interactive
-            )
-            document.save()
-            data = papis.document.to_dict(document)
-            in_documents_paths = document.get_files() + in_documents_paths
-            data["files"] = [os.path.basename(f) for f in in_documents_paths]
-            # set out folder name the folder of the found document
-            out_folder_name = document.get_main_folder_name()
-            out_folder_path = document.get_main_folder()
-        else:
-            document = papis.document.Document(temp_dir)
-            if len(in_documents_paths) == 0:
-                if not self.get_args().no_document:
-                    self.logger.error("No documents to be added")
-                    return status.file_not_found
-                else:
-                    in_documents_paths = [document.get_info_file()]
-                    # We need the names to add them in the file field
-                    # in the info file
-                    in_documents_names = [papis.utils.get_info_file_name()]
-                    # Save document to create the info file
-                    document.update(
-                        data, force=True, interactive=self.args.interactive
-                    )
-                    document.save()
-            data["title"] = self.args.title or self.get_default_title(
-                data,
-                in_documents_paths[0]
-            )
-            data["author"] = self.args.author or self.get_default_author(
-                data,
-                in_documents_paths[0]
-            )
-            self.logger.debug("Author = % s" % data["author"])
-            self.logger.debug("Title = % s" % data["title"])
-
-            if not self.args.name:
-                self.logger.debug("Getting an automatic name")
-                if not os.path.isfile(in_documents_paths[0]):
-                    return status.file_not_found
-
-                out_folder_name = self.get_hash_folder(
-                    data,
-                    in_documents_paths[0]
-                )
             else:
-                temp_doc = papis.document.Document(data=data)
-                out_folder_name = papis.utils.format_doc(
-                    self.args.name,
-                    temp_doc
+                in_documents_paths = [document.get_info_file()]
+                # We need the names to add them in the file field
+                # in the info file
+                in_documents_names = [papis.utils.get_info_file_name()]
+                # Save document to create the info file
+                document.update(
+                    data, force=True, interactive=self.args.interactive
                 )
-                out_folder_name = papis.utils.clean_document_name(
-                    out_folder_name
-                )
-                del temp_doc
-            if len(out_folder_name) == 0:
-                self.logger.error('The output folder name is empty')
+                document.save()
+        data["title"] = self.args.title or self.get_default_title(
+            data,
+            in_documents_paths[0]
+        )
+        data["author"] = self.args.author or self.get_default_author(
+            data,
+            in_documents_paths[0]
+        )
+        self.logger.debug("Author = % s" % data["author"])
+        self.logger.debug("Title = % s" % data["title"])
+
+        if not self.args.name:
+            self.logger.debug("Getting an automatic name")
+            if not os.path.isfile(in_documents_paths[0]):
                 return status.file_not_found
 
-            data["files"] = in_documents_names
-            out_folder_path = os.path.join(
-                lib_dir, self.args.dir,  out_folder_name
+            out_folder_name = get_hash_folder(
+                data,
+                in_documents_paths[0]
             )
+        else:
+            temp_doc = papis.document.Document(data=data)
+            out_folder_name = papis.utils.format_doc(
+                self.args.name,
+                temp_doc
+            )
+            out_folder_name = papis.utils.clean_document_name(
+                out_folder_name
+            )
+            del temp_doc
+        if len(out_folder_name) == 0:
+            self.logger.error('The output folder name is empty')
+            return status.file_not_found
+
+        data["files"] = in_documents_names
+        out_folder_path = os.path.join(
+            lib_dir, self.args.dir,  out_folder_name
+        )
 
         self.logger.debug("Folder name = % s" % out_folder_name)
         self.logger.debug("Folder path = % s" % out_folder_path)
