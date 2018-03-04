@@ -113,7 +113,6 @@ def run(
             if 'dir' in config[section]
         ]
 
-    #documents = papis.api.get_documents_in_lib(search=query, library=library)
     documents = db.query(query)
 
     if pick:

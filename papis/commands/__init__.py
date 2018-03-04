@@ -10,6 +10,7 @@ import papis.config
 COMMAND_NAMES = [
     "default",
     "add",
+    "addto",
     "check",
     "config",
     "edit",

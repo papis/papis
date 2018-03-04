@@ -45,6 +45,67 @@ import papis.document
 import papis.downloaders.utils
 
 
+def get_file_name(data, original_filepath, suffix=""):
+    """Generates file name for the document
+
+    :param data: Data parsed for the actual document
+    :type  data: dict
+    :param original_filepath: The full path to the original file
+    :type  original_filepath: str
+    :param suffix: Possible suffix to be appended to the file without
+        its extension.
+    :type  suffix: str
+    :returns: New file name
+    :rtype:  str
+
+    """
+    if papis.config.get("file-name") is None:
+        filename = os.path.basename(original_filepath)
+    else:
+        filename = papis.utils.format_doc(
+            papis.config.get("file-name"), papis.document.from_data(data)
+        ) +\
+            ("-" + suffix if len(suffix) > 0 else "") +\
+            "." + papis.utils.guess_file_extension(original_filepath)
+    return filename
+
+
+def get_hash_folder(data, document_path):
+    """Folder name where the document will be stored.
+
+    :data: Data parsed for the actual document
+    :document_path: Path of the document
+
+    """
+    author = "-{:.20}".format(data["author"])\
+             if "author" in data.keys() else ""
+    with open(document_path, "rb") as fd:
+        md5 = hashlib.md5(fd.read(4096)).hexdigest()
+    result = md5 + author
+    result = papis.utils.clean_document_name(result)
+    return result
+
+
+def get_document_extension(documentPath):
+    """Get document extension
+
+    :document_path: Path of the document
+    :returns: Extension (string)
+
+    >>> get_document_extension('/path/to/file.pdf')
+    'pdf'
+    >>> get_document_extension('/path/to/file.ext')
+    'ext'
+    >>> get_document_extension('/path/to/file')
+    'txt'
+
+    """
+    # TODO: mimetype based (mimetype, rifle, ranger-fm ...?)
+    m = re.match(r"^(.*)\.([a-zA-Z0-9]*)$", os.path.basename(documentPath))
+    extension = m.group(2) if m else "txt"
+    return extension
+
+
 class Command(papis.commands.Command):
 
     def init(self):
@@ -294,7 +355,7 @@ class Command(papis.commands.Command):
         # The basenames of the documents to be added
         in_documents_names = []
         # The folder name of the temporary document to be created
-        temp_dir = tempfile.mkdtemp("-"+self.args.lib)
+        temp_dir = tempfile.mkdtemp()
 
         if self.args.from_lib:
             doc = self.pick(
@@ -556,8 +617,6 @@ class Command(papis.commands.Command):
             if not papis.utils.confirm('Really add?'):
                 return status.success
         document.save()
-        if self.args.to:
-            return status.success
         self.logger.debug(
             "[MV] '%s' to '%s'" %
             (document.get_main_folder(), out_folder_path)
