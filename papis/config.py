@@ -130,6 +130,20 @@
     will fave the contrary effect, i.e., it will not open the attached files
     before adding the document to the library.
 
+.. papis-config:: add-default-fields
+
+    This is the default values that are settable in the add command.
+    For instance if you would like to set ``title``, ``author`` and
+    ``year`` directly from the command line, you can set
+    ::
+
+        add-default-fields = ['title', 'author', 'year']
+
+    and you will be able to do
+    ::
+
+        papis add doc.pdf --author 'Bohm' --title 'Super book' --year 1928
+
 .. papis-config:: check-keys
 
     Comma separated key values to be checked by default by the command
@@ -375,6 +389,7 @@ general_settings = {
     "add-interactive" : False,
     "add-edit"        : False,
     "add-open"        : False,
+    "add-default-fields" : '["title", "author"]',
 
     "check-keys"      : 'files',
     "browse-query-format"   : "{doc[title]} {doc[author]}",

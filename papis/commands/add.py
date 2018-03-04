@@ -151,19 +151,13 @@ class Command(papis.commands.Command):
             default=None
         )
 
-        self.parser.add_argument(
-            "--title",
-            help="Title for document",
-            default="",
-            action="store"
-        )
-
-        self.parser.add_argument(
-            "--author",
-            help="Author(s) for document",
-            default="",
-            action="store"
-        )
+        for field in eval(papis.config.get('add-default-fields')):
+            self.parser.add_argument(
+                "--{}".format(field),
+                help="{} for document".format(field),
+                default="",
+                action="store"
+            )
 
         self.parser.add_argument(
             "--from-bibtex",
@@ -257,91 +251,28 @@ class Command(papis.commands.Command):
             action="store_true"
         )
 
-    def get_file_name(self, data, original_filepath, suffix=""):
-        """Generates file name for the document
-
-        :param data: Data parsed for the actual document
-        :type  data: dict
-        :param original_filepath: The full path to the original file
-        :type  original_filepath: str
-        :param suffix: Possible suffix to be appended to the file without
-            its extension.
-        :type  suffix: str
-        :returns: New file name
-        :rtype:  str
-
-        """
-        if papis.config.get("file-name") is None:
-            filename = os.path.basename(original_filepath)
-        else:
-            filename = papis.utils.format_doc(
-                papis.config.get("file-name"), papis.document.from_data(data)
-            ) +\
-                ("-" + suffix if len(suffix) > 0 else "") +\
-                "." + papis.utils.guess_file_extension(original_filepath)
-        return filename
-
-    def get_hash_folder(self, data, document_path):
-        """Folder name where the document will be stored.
-
-        :data: Data parsed for the actual document
-        :document_path: Path of the document
-
-        """
-        author = "-{:.20}".format(data["author"])\
-                 if "author" in data.keys() else ""
-        with open(document_path, "rb") as fd:
-            md5 = hashlib.md5(fd.read(4096)).hexdigest()
-        result = md5 + author
-        result = papis.utils.clean_document_name(result)
-        return result
-
-    def get_document_extension(self, documentPath):
-        """Get document extension
-
-        :document_path: Path of the document
-        :returns: Extension (string)
-
-        """
-        # TODO: mimetype based (mimetype, rifle, ranger-fm ...?)
-        m = re.match(r"^(.*)\.([a-zA-Z0-9]*)$", os.path.basename(documentPath))
-        extension = m.group(2) if m else "txt"
-        self.logger.debug("[ext] = %s" % extension)
-        return extension
-
-    def get_meta_data(self, key, document_path):
-        # TODO: Consistent a general way to get metadata from documents.
-        # TODO: pdfminer does not work very well
-        self.logger.debug("Retrieving %s meta data" % key)
-        extension = self.get_document_extension(document_path)
-        return None
-
     def get_default_title(self, data, document_path):
         if "title" in data.keys():
             return data["title"]
-        extension = self.get_document_extension(document_path)
-        title = self.get_meta_data("title", document_path)
-        if not title:
-            title = os.path.basename(document_path)\
-                .replace("."+extension, "")\
-                .replace("_", " ")\
-                .replace("-", " ")
-            if self.get_args().interactive:
-                title = papis.utils.input(
-                    'Title?', title
-                )
+        extension = get_document_extension(document_path)
+        title = os.path.basename(document_path)\
+            .replace("."+extension, "")\
+            .replace("_", " ")\
+            .replace("-", " ")
+        if self.get_args().interactive:
+            title = papis.utils.input(
+                'Title?', title
+            )
         return title
 
     def get_default_author(self, data, document_path):
         if "author" in data.keys():
             return data["author"]
-        author = self.get_meta_data("author", document_path)
-        if not author:
-            author = "Unknown"
-            if self.get_args().interactive:
-                author = papis.utils.input(
-                    'Author?', author
-                )
+        author = "Unknown"
+        if self.get_args().interactive:
+            author = papis.utils.input(
+                'Author?', author
+            )
         return author
 
 
@@ -543,7 +474,7 @@ class Command(papis.commands.Command):
 
             # Rename the file in the staging area
             new_filename = papis.utils.clean_document_name(
-                self.get_file_name(
+                get_file_name(
                     data,
                     in_file_path,
                     suffix=string_append
