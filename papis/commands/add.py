@@ -106,6 +106,44 @@ def get_document_extension(documentPath):
     return extension
 
 
+def get_default_title(data, document_path, interactive=False):
+    """
+    >>> get_default_title({'title': 'hello world'}, 'whatever.pdf')
+    'hello world'
+    >>> get_default_title(dict(), 'Luces-de-bohemia.pdf')
+    'Luces de bohemia'
+    """
+    if "title" in data.keys():
+        return data["title"]
+    extension = get_document_extension(document_path)
+    title = os.path.basename(document_path)\
+        .replace("."+extension, "")\
+        .replace("_", " ")\
+        .replace("-", " ")
+    if interactive:
+        title = papis.utils.input(
+            'Title?', title
+        )
+    return title
+
+
+def get_default_author(data, document_path, interactive=False):
+    """
+    >>> get_default_author({'author': 'Garcilaso de la vega'}, 'whatever.pdf')
+    'Garcilaso de la vega'
+    >>> get_default_author(dict(), 'Luces-de-bohemia.pdf')
+    'Unknown'
+    """
+    if "author" in data.keys():
+        return data["author"]
+    author = "Unknown"
+    if interactive:
+        author = papis.utils.input(
+            'Author?', author
+        )
+    return author
+
+
 class Command(papis.commands.Command):
 
     def init(self):
@@ -243,31 +281,6 @@ class Command(papis.commands.Command):
             action="store_true"
         )
 
-    def get_default_title(self, data, document_path):
-        if "title" in data.keys():
-            return data["title"]
-        extension = get_document_extension(document_path)
-        title = os.path.basename(document_path)\
-            .replace("."+extension, "")\
-            .replace("_", " ")\
-            .replace("-", " ")
-        if self.get_args().interactive:
-            title = papis.utils.input(
-                'Title?', title
-            )
-        return title
-
-    def get_default_author(self, data, document_path):
-        if "author" in data.keys():
-            return data["author"]
-        author = "Unknown"
-        if self.get_args().interactive:
-            author = papis.utils.input(
-                'Author?', author
-            )
-        return author
-
-
     def main(self):
         lib_dir = os.path.expanduser(papis.config.get('dir'))
         data = dict()
@@ -379,13 +392,15 @@ class Command(papis.commands.Command):
                     data, force=True, interactive=self.args.interactive
                 )
                 document.save()
-        data["title"] = self.args.title or self.get_default_title(
+        data["title"] = self.args.title or get_default_title(
             data,
-            in_documents_paths[0]
+            in_documents_paths[0],
+            self.args.interactive
         )
-        data["author"] = self.args.author or self.get_default_author(
+        data["author"] = self.args.author or get_default_author(
             data,
-            in_documents_paths[0]
+            in_documents_paths[0],
+            self.args.interactive
         )
         self.logger.debug("Author = % s" % data["author"])
         self.logger.debug("Title = % s" % data["title"])
