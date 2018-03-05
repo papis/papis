@@ -33,6 +33,13 @@ class Test(unittest.TestCase):
         data = json.loads(string)
         self.assertTrue(len(data) > 0)
 
+    def test_text(self):
+        docs = self.get_docs()
+        string = run(docs, text=True)
+        self.assertTrue(len(string) > 0)
+        data = string.split('\n')
+        self.assertTrue(len(data) > 0)
+
     def test_yaml(self):
         import io
         docs = self.get_docs()
