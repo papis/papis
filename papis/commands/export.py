@@ -40,6 +40,60 @@ import shutil
 import papis.utils
 import papis.document
 
+
+def run(
+    documents,
+    yaml=False,
+    bibtex=False,
+    json=False,
+    text=False
+):
+    """
+    Exports several documents into something else.
+
+    :param document: A ist of papis document
+    :type  document: [papis.document.Document]
+    :param yaml: Wether to return a yaml string
+    :type  yaml: bool
+    :param bibtex: Wether to return a bibtex string
+    :type  bibtex: bool
+    :param json: Wether to return a json string
+    :type  json: bool
+    :param text: Wether to return a text string representing the document
+    :type  text: bool
+    """
+    if json:
+        import json
+        return json.dumps(
+            [
+                papis.document.to_dict(document) for document in documents
+            ]
+        )
+
+    if yaml:
+        import yaml
+        return yaml.dump_all(
+            [
+                papis.document.to_dict(document) for document in documents
+            ],
+            allow_unicode=True
+        )
+
+    if bibtex:
+        return '\n'.join([
+            papis.document.to_bibtex(document) for document in documents
+        ])
+
+    if text:
+        text_format = papis.config.get('export-text-format')
+        return '\n'.join([
+            papis.utils.format_doc(text_format, document)
+            for document in documents
+        ])
+
+    return None
+
+
 class Command(papis.commands.Command):
     def init(self):
 
@@ -132,41 +186,26 @@ class Command(papis.commands.Command):
         if not self.args.out and not self.get_args().folder:
             self.args.out = sys.stdout
 
-        if self.args.json and not self.args.folder:
-            import json
-            return self.args.out.write(
-                json.dumps(
-                    [
-                        papis.document.to_dict(document)
-                        for document in documents
-                    ]
-                )
-            )
+        ret_string = run(
+            documents,
+            yaml=self.args.yaml,
+            bibtex=self.args.bibtex,
+            json=self.args.json,
+            text=self.args.text
+        )
 
-        if self.args.yaml and not self.args.folder:
-            import yaml
-            return self.args.out.write(
-                yaml.dump_all(
-                    [
-                        papis.document.to_dict(document)
-                        for document in documents
-                    ]
-                )
-            )
+        if ret_string is not None:
+            self.args.out.write(ret_string)
+            return 0
 
         for document in documents:
-            if self.args.bibtex:
-                self.args.out.write(papis.document.to_bibtex(document))
-            if self.args.text:
-                text_format = papis.config.get('export-text-format')
-                text = papis.utils.format_doc(text_format, document)
-                self.args.out.write(text)
-            elif self.args.folder:
+            if self.args.folder:
                 folder = document.get_main_folder()
                 outdir = self.args.out or document.get_main_folder_name()
                 if not len(documents) == 1:
                     outdir = os.path.join(
-                        outdir, document.get_main_folder_name())
+                        outdir, document.get_main_folder_name()
+                    )
                 shutil.copytree(folder, outdir)
                 if not self.args.no_bibtex:
                     open(
@@ -183,6 +222,4 @@ class Command(papis.commands.Command):
                         )
                     )
                 )
-                shutil.copyfile(file_to_open, self.args.out.name)
-            else:
-                pass
+                shutil.copyfile(file_to_open, self.args.out)
