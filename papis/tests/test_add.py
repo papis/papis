@@ -42,3 +42,36 @@ class Test(unittest.TestCase):
         doc = docs[0]
         self.assertTrue(doc is not None)
         self.assertTrue(len(doc.get_files()) == number_of_files)
+
+    def test_with_bibtex(self):
+        bibstring = """
+            @article{10.1002/andp.19053221004,
+              author = { A. Einstein },
+              doi = { 10.1002/andp.19053221004 },
+              issue = { 10 },
+              journal = { Ann. Phys. },
+              pages = { 891--921 },
+              title = { Zur Elektrodynamik bewegter K\"{o}rper },
+              type = { article },
+              volume = { 322 },
+              year = { 1905 },
+            }
+        """
+        bibfile = tempfile.mktemp()
+        with open(bibfile, 'w+') as fd:
+            fd.write(bibstring)
+        run(
+            [bibfile],
+            from_bibtex=bibfile
+        )
+        db = papis.database.get()
+        docs = db.query_dict(
+            dict(
+                author="einstein",
+                title="Zur Elektrodynamik bewegter K\"{o}rper"
+            )
+        )
+        self.assertTrue(len(docs) == 1)
+        doc = docs[0]
+        self.assertTrue(doc is not None)
+        self.assertTrue(len(doc.get_files()) == 1)
