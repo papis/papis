@@ -41,6 +41,7 @@ class Test(unittest.TestCase):
         self.assertTrue(len(data) > 0)
 
     def test_yaml(self):
+        #FIXME: The string gets created, but the loading does not work
         import io
         docs = self.get_docs()
         string = run(20*docs, yaml=True)

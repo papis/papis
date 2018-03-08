@@ -153,6 +153,7 @@ def move(document, path):
     :type  path: str
     """
     import shutil
+    path = os.path.expanduser(path)
     if os.path.exists(path):
         raise Exception("Path {} exists already".format(path))
     shutil.move(document.get_main_folder(), path)
