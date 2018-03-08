@@ -291,9 +291,9 @@ def run(
         return status.file_not_found
 
     data["files"] = in_documents_names
-    out_folder_path = os.path.join(
+    out_folder_path = os.path.expanduser(os.path.join(
         papis.config.get('dir'), subfolder or '',  out_folder_name
-    )
+    ))
 
     logger.debug("Folder name = % s" % out_folder_name)
     logger.debug("Folder path = % s" % out_folder_path)
