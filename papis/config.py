@@ -69,18 +69,141 @@
     is the default name of the notes file, which by default is supposed
     to be a TeX file.
 
-.. papis-config:: use-cache
-
-    Set to ``False`` if you do not want to use the ``cache``
-    for the given library.
-
-.. papis-config:: cache-dir
-
 .. papis-config:: use-git
 
     Some commands will issue git commands if this option is set to ``True``.
     For example in ``mv`` or ``rename``.
 
+.. papis-config:: check-keys
+
+    Comma separated key values to be checked by default by the command
+    ``check``. E.g: ``check-keys = author, doi``.
+
+.. papis-config:: browse-query-format
+
+    The query string that is to be searched for in the ``browse`` command
+    whenever a search engine is used.
+
+.. papis-config:: search-engine
+
+    Search engine to be used by some commands like ``browse``.
+
+.. papis-config:: user-agent
+
+    User agent used by papis whenever it obtains information from external
+    servers.
+
+.. papis-config:: default-gui
+
+    Default gui to be used by papis, it can have the values given
+    by ``papis gui --help``.
+
+.. papis-config:: scripts-short-help-regex
+
+    This is the format of the short help indicator in external papis
+    commands.
+
+.. papis-config:: info-name
+
+    The default name of the information files.
+
+.. papis-config:: doc-url-key-name
+
+    Some documents might have associated apart from an url also a file url,
+    the key name appearing in the information file is defined by
+    this setting.
+
+.. papis-config:: file-browser
+
+    File browser to be used when opening a directory, it defaults to the
+    default file browser in your system, however you can set it to different
+    file browsers such as ``dolphin``, ``thunar``, ``ranger`` to name a few.
+
+.. papis-config:: default-library
+
+    The name of the library that is to be searched when ``papis``
+    is run without library arguments.
+
+.. papis-config:: export-text-format
+
+    The default output papis format for ``papis export --text``.
+
+.. papis-config:: format-doc-name
+
+    This setting controls the name of the document in the papis format strings
+    like in format strings such as ``match-format`` or ``header-format``.
+    For instance, if you are managing videos, you might want to
+    set this option to ``vid`` in order to set  the ``header-format`` to
+    ``{doc[title]} - {doc[director]} - {doc[duration]}``.
+
+.. papis-config:: match-format
+
+    Default format that is used to match a document against in order to select
+    it. For example if the ``match-format`` is equal to
+    ``{doc[year]} {doc[author]}`` then title of a document will not work
+    to match a document, only the year and author.
+
+.. papis-config:: header-format
+
+    Default format that is used to show a document in order to select it.
+
+.. papis-config:: info-allow-unicode
+
+    This flag is to be set if you want to allow unicode characters
+    in your info file or not. If it is set to false then a representation
+    for the unicode characters will be written in its place.
+    Since we should be living in an unicode world, it is set to ``True``
+    by default.
+
+Bibtex options
+^^^^^^^^^^^^^^
+
+.. papis-config:: extra-bibtex-keys
+
+    When exporting documents in bibtex format, you might want to add
+    non-standard bibtex keys such as ``doc_url`` or ``tags``, you can add
+    these here as comma separated values, for example
+    ``extra-bibtex-keys = tags, doc_url``.
+
+.. papis-config:: extra-bibtex-types
+
+    Allow non-standard bibtex types to be recognized, e.g,
+    ``extra-bibtex-types = wikipedia, video, song``.
+    See `bibtex reference <http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`_.
+
+.. papis-config:: multiple-authors-format
+
+    When retrieving automatic author information from services like
+    crossref.org, papis usually builds the ``author`` field for the
+    given document. The format how every single author name is built
+    is given by this setting, for instance you could customize it
+    by the following:
+
+        ``multiple-authors-format = {au[surname]} -- {au[given_name]}``
+
+    which would given in the case of Albert Einstein the string
+    ``Einstein -- Albert``.
+
+.. papis-config:: multiple-authors-separator
+
+    Similarly to ``multiple-authors-format``, this is the string that
+    separates single authors in the ``author`` field. If it is set to
+    `` and `` then you would have ``<author 1> and <author 2> and ....``
+    in the ``author`` field.
+
+Add command options
+^^^^^^^^^^^^^^^^^^^
+
+.. papis-config:: ref-format
+
+    This flag is set to change the ``ref`` flag in the info.yaml file
+    when a document is imported. For example: I prefer the format
+    FirstAuthorYear e.g. Plews2019. This would be achieved by the
+    following:
+
+        ``ref-format = {doc[author_list][0][surname]}{doc[year]}``
+
+    The default behavior is to set the doi as the ref.
 
 .. papis-config:: add-confirm
 
@@ -137,90 +260,8 @@
 
         papis add doc.pdf --author 'Bohm' --title 'Super book' --year 1928
 
-.. papis-config:: check-keys
-
-    Comma separated key values to be checked by default by the command
-    ``check``. E.g: ``check-keys = author, doi``.
-
-.. papis-config:: browse-query-format
-
-    The query string that is to be searched for in the ``browse`` command
-    whenever a search engine is used.
-
-.. papis-config:: search-engine
-
-    Search engine to be used by some commands like ``browse``.
-
-.. papis-config:: user-agent
-
-    User agent used by papis whenever it obtains information from external
-    servers.
-
-.. papis-config:: default-gui
-
-    Default gui to be used by papis, it can have the values given
-    by ``papis gui --help``.
-
-.. papis-config:: scripts-short-help-regex
-
-    This is the format of the short help indicator in external papis
-    commands.
-
-.. papis-config:: info-name
-
-    The default name of the information files.
-
-.. papis-config:: doc-url-key-name
-
-    Some documents might have associated apart from an url also a file url,
-    the key name appearing in the information file is defined by
-    this setting.
-
-.. papis-config:: file-browser
-
-    File browser to be used when opening a directory, it defaults to the
-    default file browser in your system, however you can set it to different
-    file browsers such as ``dolphin``, ``thunar``, ``ranger`` to name a few.
-
-.. papis-config:: extra-bibtex-keys
-
-    When exporting documents in bibtex format, you might want to add
-    non-standard bibtex keys such as ``doc_url`` or ``tags``, you can add
-    these here as comma separated values, for example
-    ``extra-bibtex-keys = tags, doc_url``.
-
-.. papis-config:: extra-bibtex-types
-
-    Allow non-standard bibtex types to be recognized, e.g,
-    ``extra-bibtex-types = wikipedia, video, song``.
-    See `bibtex reference <http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`_.
-.. papis-config:: default-library
-
-    The name of the library that is to be searched when ``papis``
-    is run without library arguments.
-
-.. papis-config:: export-text-format
-
-    The default output papis format for ``papis export --text``.
-
-.. papis-config:: format-doc-name
-
-    This setting controls the name of the document in the papis format strings
-    like in format strings such as ``match-format`` or ``header-format``.
-    For instance, if you are managing videos, you might want to
-    set this option to ``vid`` in order to set  the ``header-format`` to
-    ``{doc[title]} - {doc[director]} - {doc[duration]}``.
-
-.. papis-config:: match-format
-
-    Default format that is used to match a document against in order to select
-    it. For example if the ``match-format`` is equal to
-    ``{doc[year]} {doc[author]}`` then title of a document will not work
-    to match a document, only the year and author.
-
-.. papis-config:: header-format
-
-    Default format that is used to show a document in order to select it.
+Marks
+^^^^^
 
 .. papis-config:: open-mark
 
@@ -274,47 +315,21 @@
         - If you are using ``zathura``, do ``mark-opener-format = zathura -P
           {mark[value]}``.
 
-.. papis-config:: info-allow-unicode
-
-    This flag is to be set if you want to allow unicode characters
-    in your info file or not. If it is set to false then a representation
-    for the unicode characters will be written in its place.
-    Since we should be living in an unicode world, it is set to ``True``
-    by default.
-
-.. papis-config:: ref-format
-
-    This flag is set to change the ``ref`` flag in the info.yaml file
-    when a document is imported. For example: I prefer the format
-    FirstAuthorYear e.g. Plews2019. This would be achieved by the
-    following:
-
-        ``ref-format = {doc[author_list][0][surname]}{doc[year]}``
-
-    The default behavior is to set the doi as the ref.
-
-.. papis-config:: multiple-authors-format
-
-    When retrieving automatic author information from services like
-    crossref.org, papis usually builds the ``author`` field for the
-    given document. The format how every single author name is built
-    is given by this setting, for instance you could customize it
-    by the following:
-
-        ``multiple-authors-format = {au[surname]} -- {au[given_name]}``
-
-    which would given in the case of Albert Einstein the string
-    ``Einstein -- Albert``.
-
-.. papis-config:: multiple-authors-separator
-
-    Similarly to ``multiple-authors-format``, this is the string that
-    separates single authors in the ``author`` field. If it is set to
-    `` and `` then you would have ``<author 1> and <author 2> and ....``
-    in the ``author`` field.
-
 Databases
 ^^^^^^^^^
+
+.. papis-config:: database-backend
+
+    The backend to use in the database. As for now papis supports
+    the own database system ``papis`` and
+    `whoosh <https://whoosh.readthedocs.io/en/latest/>`_.
+
+.. papis-config:: use-cache
+
+    Set to ``False`` if you do not want to use the ``cache``
+    for the given library.
+
+.. papis-config:: cache-dir
 
 .. papis-config:: whoosh-schema-prototype
 
