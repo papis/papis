@@ -76,8 +76,8 @@
 
 .. papis-config:: check-keys
 
-    Comma separated key values to be checked by default by the command
-    ``check``. E.g: ``check-keys = author, doi``.
+    Python list key values to be checked by default by the command
+    ``check``. E.g: ``check-keys = ["author", "doi"]``.
 
 .. papis-config:: browse-query-format
 
