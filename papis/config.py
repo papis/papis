@@ -7,13 +7,6 @@
     will additionally read if the file is present in the current
     directory or in the base directory of a given library.
 
-
-.. papis-config:: mode
-
-    Papis is a modal program and it can be configured to support different
-    operating modes. The default is considering that every papis document
-    or entry is a 'document'.
-
 .. papis-config:: opentool
 
     This is the general program that will be used to open documents.
@@ -365,7 +358,6 @@ def get_default_opener():
 
 
 general_settings = {
-    "mode"            : "document",
     "local-config-file": ".papis.config",
     "database-backend": "papis",
     "opentool"        : get_default_opener(),
@@ -394,8 +386,7 @@ general_settings = {
     "check-keys"      : 'files',
     "browse-query-format"   : "{doc[title]} {doc[author]}",
     "search-engine"   : "https://duckduckgo.com",
-    "user-agent"      : \
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)',
+    "user-agent"      : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)',
     "default-gui"     : "vim",
     "scripts-short-help-regex": ".*papis-short-help: *(.*)",
     "info-name"       : "info.yaml",
@@ -691,20 +682,6 @@ def getboolean(*args, **kwargs):
     return general_get(*args, data_type=bool, **kwargs)
 
 
-def in_mode(mode):
-    """Get mode of the library. In principle every library can have a mode,
-    and depending on the mode some extra options can be offered.
-
-    :param mode: Name of the mode used.
-    :type  mode: str
-    :returns: Return true if mode matches
-    :rtype: bool
-    """
-    current_mode = get("mode")
-    logger.debug("current_mode = %s" % current_mode)
-    return mode == current_mode
-
-
 def get_configuration():
     """Get the configuration object, if no papis configuration has ever been
     initialized, it initializes one. Only one configuration per process should
@@ -721,6 +698,7 @@ def get_configuration():
         local_config_file = papis.config.get("local-config-file")
         merge_configuration_from_path(local_config_file, CONFIGURATION)
     return CONFIGURATION
+
 
 def merge_configuration_from_path(path, configuration):
     """
