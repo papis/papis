@@ -351,7 +351,6 @@ import papis.exceptions
 
 CONFIGURATION = None #: Global configuration object variable.
 DEFAULT_SETTINGS = None #: Default settings for the whole papis.
-DEFAULT_MODE = "document" #: Default mode in the modal architecture.
 OVERRIDE_VARS = {
     "folder": None,
     "cache": None,

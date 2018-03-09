@@ -1,9 +1,22 @@
 import unittest
 import logging
 import papis.config
-
+from papis.commands.config import run
 
 logging.basicConfig(level=logging.DEBUG)
+
+
+class TestCommand(unittest.TestCase):
+
+    def test_simple(self):
+        val = run('editor')
+        self.assertTrue( run('editor') == papis.config.get('editor') )
+        self.assertTrue( run('xeditor') == papis.config.get('xeditor') )
+        self.assertTrue(run('settings.xeditor') == papis.config.get('xeditor'))
+        self.assertTrue(
+            run('dmenu-gui.lines') == \
+            papis.config.get('lines', section='dmenu-gui')
+        )
 
 
 class TestDefaultConfiguration(unittest.TestCase):
@@ -37,23 +50,6 @@ class TestDefaultConfiguration(unittest.TestCase):
 
         settings = papis.config.get_default_settings()
         self.assertTrue(settings)
-
-        self.assertTrue(
-            isinstance(
-                papis.config.get_default_settings(key="mode"),
-                str
-            )
-        )
-
-        self.assertTrue(
-            isinstance(
-                papis.config.get_default_settings(
-                    section=papis.config.get_general_settings_name(),
-                    key="mode"
-                ),
-                str
-            )
-        )
 
         self.assertTrue(isinstance(settings, dict))
         for section in ["settings", "vim-gui", "rofi-gui", "tk-gui"]:
