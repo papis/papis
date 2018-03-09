@@ -398,7 +398,7 @@ general_settings = {
     "add-open"        : False,
     "add-default-fields" : '["title", "author"]',
 
-    "check-keys"      : 'files',
+    "check-keys"      : '["files"]',
     "browse-query-format"   : "{doc[title]} {doc[author]}",
     "search-engine"   : "https://duckduckgo.com",
     "user-agent"      : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)',
