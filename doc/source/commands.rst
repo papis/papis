@@ -117,13 +117,3 @@ Git
     :func: init_and_return_parser
     :prog: papis
     :path: git
-
-Sync
-----
-.. automodule:: papis.commands.sync
-.. argparse::
-    :module: papis.commands
-    :func: init_and_return_parser
-    :prog: papis
-    :path: sync
-

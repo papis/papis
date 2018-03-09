@@ -26,7 +26,6 @@ COMMAND_NAMES = [
     "run",
     "git",
     "gui",
-    "sync"
 ]
 
 DEFAULT_PARSER = None
