@@ -12,6 +12,18 @@ class Test(unittest.TestCase):
     def setUpClass(self):
         papis.tests.setup_test_library()
 
+    def test_nofile_exception(self):
+        path = tempfile.mktemp()
+        self.assertTrue(not os.path.exists(path))
+        try:
+            run(
+                [path],
+                data=dict(author='Bohm', title='My effect')
+            )
+            self.assertTrue(False)
+        except IOError:
+            self.assertTrue(True)
+
     def test_add_with_data(self):
         data = {
             "journal": "International Journal of Quantum Chemistry",

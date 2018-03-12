@@ -246,6 +246,10 @@ def run(
         logger.debug("Yaml input file = %s" % from_yaml)
         data.update(papis.utils.yaml_to_data(from_yaml))
 
+    for p in in_documents_paths:
+        if not os.path.exists(p):
+            raise IOError('Document %s not found' % p)
+
     in_documents_names = [
         papis.utils.clean_document_name(doc_path)
         for doc_path in in_documents_paths
