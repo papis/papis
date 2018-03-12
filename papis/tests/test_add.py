@@ -80,7 +80,7 @@ class Test(unittest.TestCase):
         docs = db.query_dict(
             dict(
                 author="einstein",
-                title="Zur Elektrodynamik bewegter K\"{o}rper"
+                title="Elektrodynamik bewegter"
             )
         )
         self.assertTrue(len(docs) == 1)
