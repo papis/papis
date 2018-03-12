@@ -39,12 +39,6 @@
         - vim
         - dmenu
 
-.. papis-config:: mvtool
-
-    Tool used to in the ``papis mv`` command to move documents.
-    If you are using ``git`` to manage your documents, you might consider
-    setting it to ``mvtool = git mv``.
-
 .. papis-config:: editor
     :default: $EDITOR
 

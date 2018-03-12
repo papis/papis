@@ -69,8 +69,6 @@ class Command(papis.commands.Command):
             self.logger.info("Creating path %s" % new_folder)
             os.makedirs(new_folder, mode=papis.config.getint('dir-umask'))
 
-        mvtool = papis.config.get("mvtool")
-
         cmd = (['git', '-C', folder] if self.args.git else []) + \
             ['mv', folder, new_folder]
         self.logger.debug(cmd)

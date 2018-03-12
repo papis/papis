@@ -46,8 +46,6 @@ class Command(papis.commands.Command):
             self.logger.warning("Path %s already exists" % new_folder)
             return 1
 
-        mvtool = papis.config.get("mvtool")
-
         cmd = (['git', '-C', folder] if self.args.git else []) + \
             ['mv', folder, new_folder]
         self.logger.debug(cmd)
