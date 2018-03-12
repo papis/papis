@@ -359,7 +359,7 @@ class Database(papis.database.base.Database):
         clear_lib_cache(self.get_lib())
 
     def query_dict(self, dictionary):
-        query_string = "AND".join(
+        query_string = " ".join(
             ["{}=\"{}\" ".format(key, val) for key,val in dictionary.items()]
         )
         return self.query(query_string)

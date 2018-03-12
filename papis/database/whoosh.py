@@ -100,7 +100,7 @@ class Database(papis.database.base.Database):
         writer.commit()
 
     def query_dict(self, dictionary):
-        query_string = "AND".join(
+        query_string = " AND ".join(
             ["{}:\"{}\" ".format(key, val) for key,val in dictionary.items()]
         )
         return self.query(query_string)

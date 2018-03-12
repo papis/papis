@@ -53,6 +53,17 @@ class DatabaseTest(unittest.TestCase):
         self.assertTrue(doc is not None)
         self.assertTrue(doc['title'] == 'test_update test')
 
+    def test_query_dict(self):
+        database = papis.database.get()
+        doc = database.get_all_documents()[0]
+        doc['author'] = 'test_query_dict'
+        doc.save()
+        database.update(doc)
+        docs = database.query_dict(
+            {'title': doc['title'], 'author': doc['author']}
+        )
+        self.assertTrue(len(docs) == 1)
+
     def test_delete(self):
         database = papis.database.get()
         docs = database.get_all_documents()
