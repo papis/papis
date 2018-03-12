@@ -70,6 +70,6 @@ class Command(papis.commands.Command):
         )
 
     def main(self):
-        self.logger.debug(option)
-        print(run(option))
+        self.logger.debug(self.args.option)
+        print(run(self.args.option))
         return 0
