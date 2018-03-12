@@ -10,7 +10,11 @@ def get(library=None):
     backend = papis.config.get('database-backend')
     if library is None:
         library = papis.config.get_lib()
-    if DATABASES.get(library) is not None:
+    database = DATABASES.get(library)
+    # if there is already a database and the backend of the database
+    # is the same as the config backend, then return that library
+    # else we will (re)define the database in the dictionary DATABASES
+    if database is not None and database.get_backend_name() == backend:
         return DATABASES.get(library)
     if backend == "papis":
         import papis.database.cache

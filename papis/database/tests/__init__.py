@@ -2,7 +2,6 @@ import os
 import sys
 import papis.config
 import papis.document
-import papis.database.whoosh
 import papis.database
 import unittest
 import papis.tests
@@ -115,7 +114,7 @@ class DatabaseTest(unittest.TestCase):
         self.assertTrue(papis.database.get().get_backend_name() is not None)
 
     def test_backend(self):
-        self.assertTrue(
-            papis.config.get('database-backend') == \
+        self.assertEqual(
+            papis.config.get('database-backend'),
             papis.database.get().get_backend_name()
         )
