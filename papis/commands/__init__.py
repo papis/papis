@@ -276,7 +276,7 @@ class Command(object):
             "search",
             help="Search query string",
             nargs="?",
-            default=".",
+            default=papis.config.get("default-query-string"),
             action="store"
         )
 

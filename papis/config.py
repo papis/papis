@@ -313,6 +313,28 @@ Marks
 Databases
 ^^^^^^^^^
 
+.. papis-config:: default-query-string
+
+    This is the default query that a command will take if no
+    query string is typed in the command line. For example this is
+    the query that is passed to the command open whenever no search
+    string is typed:
+
+    ::
+
+        papis open
+
+    Imagine you want to have all your papers whenever you do not
+    specify an input query string, then you would set
+
+    ::
+
+        default-query-string = author="John Smith"
+
+    and whenever you typed ``papis open``, onlye the ``John Smith`` authored
+    papers would appear. Notice that the current example has been
+    done assuming the ``database-backend = papis``.
+
 .. papis-config:: database-backend
 
     The backend to use in the database. As for now papis supports
@@ -369,6 +391,8 @@ def get_default_opener():
 general_settings = {
     "local-config-file": ".papis.config",
     "database-backend": "papis",
+    "default-query-string": ".",
+
     "opentool": get_default_opener(),
     "dir-umask": 0o755,
     "browser": os.environ.get('BROWSER') or get_default_opener(),
