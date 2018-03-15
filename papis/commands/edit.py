@@ -1,11 +1,23 @@
+"""This command edits the information of the documents.
+The editor used is defined by the ``editor``
+
+
+"""
 import papis
 import os
 import sys
 import papis.api
 import papis.utils
-import papis.pick
 import papis.config
+import papis.database
 
+
+def run(document, editor=None, wait=True):
+    if editor is not None:
+        papis.config.set('editor', editor)
+    database = papis.database.get()
+    papis.utils.general_open(document.get_info_file(), "editor", wait=wait)
+    database.update(document)
 
 class Command(papis.commands.Command):
     def init(self):
@@ -20,33 +32,43 @@ class Command(papis.commands.Command):
         self.parser.add_argument(
             "-n",
             "--notes",
-            help="Open notes document",
+            help="Edit notes associated to the document",
+            action="store_true"
+        )
+
+        self.parser.add_argument(
+            "--all",
+            help="Edit all matching documents",
             action="store_true"
         )
 
     def main(self):
 
         documents = self.get_db().query(self.args.search)
-        document = self.pick(documents)
-        if not document: return 0
+        if not self.args.all:
+            document = self.pick(documents)
+            documents = [document] if document is not None else []
 
-        if self.args.notes:
-            self.logger.debug("Editing notes")
-            if not document.has("notes"):
-                self.logger.warning(
-                    "The document selected has no notes attached,"\
-                    " creating one..."
+        if len(documents) == 0:
+            return 0
+
+        for document in documents:
+            if self.args.notes:
+                self.logger.debug("Editing notes")
+                if not document.has("notes"):
+                    self.logger.warning(
+                        "The document selected has no notes attached,"\
+                        " creating one..."
+                    )
+                    document["notes"] = papis.config.get("notes-name")
+                    document.save()
+                notesPath = os.path.join(
+                    document.get_main_folder(),
+                    document["notes"]
                 )
-                document["notes"] = papis.config.get("notes-name")
-                document.save()
-            notesPath = os.path.join(
-                document.get_main_folder(),
-                document["notes"]
-            )
-            if not os.path.exists(notesPath):
-                self.logger.debug("Creating %s" % notesPath)
-                open(notesPath, "w+").close()
-            papis.api.edit_file(notesPath)
-        else:
-            papis.api.edit_file(document.get_info_file())
-            self.get_db().update(document)
+                if not os.path.exists(notesPath):
+                    self.logger.debug("Creating %s" % notesPath)
+                    open(notesPath, "w+").close()
+                papis.api.edit_file(notesPath)
+            else:
+                run(document)
