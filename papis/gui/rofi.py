@@ -1,17 +1,22 @@
 import rofi
-import webbrowser
 import papis.api
 import papis.utils
 import papis.config
+import papis.database
+from papis.commands.rm import run as rm
+from papis.commands.edit import run as edit
+from papis.commands.browse import run as browse
+from papis.commands.open import run as papis_open
 
 import logging
 logger = logging.getLogger("rofi")
+
 
 def get_options():
     options = dict()
 
     for key in ["fullscreen", "normal_window", "multi_select",
-            "case_sensitive", "markup_rows"]:
+                "case_sensitive", "markup_rows"]:
         options[key] = papis.config.getboolean(key, section="rofi-gui")
 
     for key in ["width", "eh", "lines", "fixed_lines"]:
@@ -25,20 +30,21 @@ def get_options():
 
 def pick(options, header_filter=None, body_filter=None, match_filter=None):
     if header_filter is None:
-        header_filter = lambda x: papis.utils.format_doc(
-            papis.config.get('header-format', section='rofi-gui'), x
-        )
+        def header_filter(x):
+            return papis.utils.format_doc(
+                papis.config.get('header-format', section='rofi-gui'), x
+            )
     if len(options) == 1:
         indices = [0]
     else:
         r = rofi.Rofi()
         indices, key = r.select(
-            "Select: ",
+            "Filter: ",
             [
-                header_filter(d).replace(papis.config.get("sep",
-                                                          section="rofi-gui"),
-                                         '\n') for d in
-                options
+                header_filter(d).replace(
+                    papis.config.get("sep", section="rofi-gui"),
+                    '\n'
+                ) for d in options
             ],
             **get_options()
         )
@@ -60,12 +66,14 @@ class Gui(object):
     delete_key = 3
     help_key = 4
     open_stay_key = 5
-    normal_widnow_key = 6
+    normal_window_key = 6
     browse_key = 7
     query_key = 8
     refresh_key = 9
 
     def __init__(self):
+        # Set default picker
+        papis.config.set('picktool', 'rofi')
         self.db = papis.database.get()
         self.documents = []
         self.help_message = ""
@@ -74,7 +82,7 @@ class Gui(object):
 
     def get_help(self):
         space = " "*10
-        message  = "Rofi based gui for papis\n"
+        message = "Rofi based gui for papis\n"
         message += "========================\n"
         for k in self.keys:
             message += "%s%s%s\n" % (self.keys[k][0], space, self.keys[k][1])
@@ -109,7 +117,7 @@ class Gui(object):
                 self.get_key('open-stay'),
                 'Open'
             ),
-            "key%s" % self.normal_widnow_key: (
+            "key%s" % self.normal_window_key: (
                 self.get_key('normal-window'),
                 'Normal Win'
             ),
@@ -128,24 +136,24 @@ class Gui(object):
         }
 
     def main(self, documents):
-        # Set default picker
         self.query_string = ''
         self.documents = documents
         key = None
         indices = None
         options = get_options()
         header_format = papis.config.get("header-format", section="rofi-gui")
-        header_filter = lambda x: papis.utils.format_doc(header_format, x)
+
+        def header_filter(x):
+            return papis.utils.format_doc(header_format, x)
+
         self.help_message = self.get_help()
         options.update(self.keys)
         # Initialize window
         self.window = rofi.Rofi()
         while not (key == self.quit_key or key == self.esc_key):
-            indices, key = self.window.select("Select: ",
-                [
-                    header_filter(d) for d in
-                    self.documents
-                ],
+            indices, key = self.window.select(
+                "Filter: ",
+                [header_filter(d) for d in self.documents],
                 select=indices,
                 **options
             )
@@ -153,11 +161,10 @@ class Gui(object):
                 indices = [indices]
             if key == self.edit_key:
                 for i in indices:
-                    self.edit(self.documents[i])
+                    edit(self.documents[i], editor=papis.config.get('xeditor'))
             elif key in [self.open_key, self.open_stay_key]:
                 for i in indices:
-                    self.open(self.documents[i])
-                options["normal_window"] ^= True
+                    papis_open(self.documents[i])
                 if key == self.open_key:
                     return 0
             elif key == self.delete_key:
@@ -167,18 +174,14 @@ class Gui(object):
                 self.window.error(self.help_message)
             elif key == self.browse_key:
                 for i in indices:
-                    self.browse(self.documents[i])
-            elif key == self.normal_widnow_key:
+                    browse(self.documents[i])
+            elif key == self.normal_window_key:
                 options["normal_window"] ^= True
             elif key == self.refresh_key:
-                if self.query_string:
-                    self.documents = self.db.query(self.query_string)
+                self.refresh()
             elif key == self.query_key:
-                self.query_string = self.window.text_entry(
-                    "Query: "
-                )
-                if self.query_string:
-                    self.documents = self.db.query(self.query_string)
+                self.query_string = self.window.text_entry("Query input: ")
+                self.set_docs_from_query()
 
     def delete(self, doc):
         answer = self.window.text_entry(
@@ -186,27 +189,11 @@ class Gui(object):
             message="<b>Be careful!</b>"
         )
         if answer and answer in "Yy":
-            doc.rm()
-            self.documents = papis.api.get_documents_in_lib()
+            rm(doc)
 
-    def open(self, doc):
-        papis.api.open_file(
-            doc.get_files()
-        )
+    def set_docs_from_query(self):
+        if self.query_string:
+            self.documents = self.db.query(self.query_string)
 
-    def browse(self, doc):
-        url = doc["url"]
-        if not url:
-            self.window.error("No url for document found")
-        else:
-            papis.utils.general_open(
-                doc["url"], "browser"
-            )
-
-    def edit(self, doc):
-        papis.utils.general_open(
-            doc.get_info_file(),
-            "xeditor",
-            wait=True
-        )
-        doc.load()
+    def refresh(self):
+        self.set_docs_from_query()
