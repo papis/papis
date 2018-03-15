@@ -5,6 +5,55 @@ import papis.api
 import papis.utils
 import papis.config
 import subprocess
+import logging
+
+
+def run(document, opener=None, folder=False, mark=False):
+    logger = logging.getLogger('open:run')
+    if opener is not None:
+        papis.config.set("opentool", opener)
+
+    if folder:
+        # Open directory
+        papis.api.open_dir(document.get_main_folder())
+    else:
+        if mark:
+            logger.debug("Getting document's marks")
+            marks = document[papis.config.get("mark-key-name")]
+            if marks:
+                logger.debug("Picking marks")
+                mark = papis.api.pick(
+                    marks,
+                    dict(
+                        header_filter=lambda x: papis.utils.format_doc(
+                            papis.config.get("mark-header-format"),
+                            x, key=papis.config.get("mark-format-name")
+                        ),
+                        match_filter=lambda x: papis.utils.format_doc(
+                            papis.config.get("mark-header-format"),
+                            x, key=papis.config.get("mark-format-name")
+                        )
+                    )
+                )
+                if mark:
+                    opener = papis.utils.format_doc(
+                        papis.config.get("mark-opener-format"),
+                        mark, key=papis.config.get("mark-format-name")
+                    )
+                    papis.config.set("opentool", opener)
+        files = document.get_files()
+        if len(files) == 0:
+            logger.error("The document chosen has no files attached")
+            return 1
+        file_to_open = papis.api.pick(
+            files,
+            pick_config=dict(
+                header_filter=lambda x: x.replace(
+                    document.get_main_folder(), ""
+                )
+            )
+        )
+        papis.api.open_file(file_to_open, wait=False)
 
 
 class Command(papis.commands.Command):
@@ -60,46 +109,8 @@ class Command(papis.commands.Command):
             if not len(documents): return 0
 
         for document in documents:
-            if self.args.dir:
-                # Open directory
-                papis.api.open_dir(document.get_main_folder())
-            else:
-                if self.args.mark:
-                    self.logger.debug("Getting document's marks")
-                    marks = document[papis.config.get("mark-key-name")]
-                    if marks:
-                        self.logger.debug("Picking marks")
-                        mark = papis.api.pick(
-                            marks,
-                            dict(
-                                header_filter=lambda x: papis.utils.format_doc(
-                                    papis.config.get("mark-header-format"),
-                                    x, key=papis.config.get("mark-format-name")
-                                ),
-                                match_filter=lambda x: papis.utils.format_doc(
-                                    papis.config.get("mark-header-format"),
-                                    x, key=papis.config.get("mark-format-name")
-                                )
-                            )
-                        )
-                        if mark:
-                            opener = papis.utils.format_doc(
-                                papis.config.get("mark-opener-format"),
-                                mark, key=papis.config.get("mark-format-name")
-                            )
-                            papis.config.set("opentool", opener)
-                files = document.get_files()
-                if len(files) == 0:
-                    self.logger.error(
-                        "The document chosen has no files attached"
-                    )
-                    return 1
-                file_to_open = papis.api.pick(
-                    files,
-                    pick_config=dict(
-                        header_filter=lambda x: x.replace(
-                            document.get_main_folder(), ""
-                        )
-                    )
-                )
-                papis.api.open_file(file_to_open, wait=False)
+            run(
+                document,
+                folder=self.args.dir,
+                mark=self.args.mark
+            )
