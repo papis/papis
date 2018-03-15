@@ -5,7 +5,6 @@ The editor used is defined by the ``editor``
 """
 import papis
 import os
-import sys
 import papis.api
 import papis.utils
 import papis.config
@@ -19,6 +18,7 @@ def run(document, editor=None, wait=True):
     papis.utils.general_open(document.get_info_file(), "editor", wait=wait)
     document.load()
     database.update(document)
+
 
 class Command(papis.commands.Command):
     def init(self):
@@ -58,7 +58,7 @@ class Command(papis.commands.Command):
                 self.logger.debug("Editing notes")
                 if not document.has("notes"):
                     self.logger.warning(
-                        "The document selected has no notes attached,"\
+                        "The document selected has no notes attached,"
                         " creating one..."
                     )
                     document["notes"] = papis.config.get("notes-name")

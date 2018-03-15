@@ -177,7 +177,8 @@ class Command(papis.commands.Command):
 
         if not self.args.all:
             document = self.pick(documents)
-            if not document: return 0
+            if not document:
+                return 0
             documents = [document]
 
         if self.args.out and not self.get_args().folder:

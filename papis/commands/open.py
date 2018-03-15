@@ -1,10 +1,7 @@
 import papis
-import os
-import sys
 import papis.api
 import papis.utils
 import papis.config
-import subprocess
 import logging
 
 
@@ -90,8 +87,8 @@ class Command(papis.commands.Command):
             "-m",
             "--mark",
             help="Open mark",
-            action='store_false' if papis.config.get('open-mark') \
-                else 'store_true'
+            action='store_false' if papis.config.get('open-mark')
+            else 'store_true'
         )
 
     def main(self):
@@ -106,7 +103,8 @@ class Command(papis.commands.Command):
         if not self.args.all:
             documents = [self.pick(documents)]
             documents = [d for d in documents if d]
-            if not len(documents): return 0
+            if not len(documents):
+                return 0
 
         for document in documents:
             run(

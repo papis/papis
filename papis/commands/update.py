@@ -23,11 +23,8 @@ Examples
 
 """
 import papis
-import os
 import urllib.error
 import logging
-import sys
-import shutil
 import papis.utils
 import papis.bibtex
 import papis.downloaders.utils
@@ -177,7 +174,8 @@ class Command(papis.commands.Command):
 
         # For the coming parts we need to pick a document
         document = self.pick(documents)
-        if not document: return 0
+        if not document:
+            return 0
 
         if self.args.auto:
             if 'url' in document.keys() and not self.args.from_url:
@@ -213,4 +211,3 @@ class Command(papis.commands.Command):
             from_url=self.args.from_url,
             from_doi=self.args.from_doi
         )
-

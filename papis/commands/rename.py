@@ -1,7 +1,5 @@
 import papis
-import sys
 import os
-import re
 import papis.api
 import papis.utils
 import subprocess
@@ -18,13 +16,13 @@ class Command(papis.commands.Command):
         self.add_search_argument()
         self.add_git_argument()
 
-
     def main(self):
 
         documents = self.get_db().query(self.args.search)
 
         document = self.pick(documents)
-        if not document: return 0
+        if not document:
+            return 0
 
         folder = document.get_main_folder()
         subfolder = os.path.dirname(folder)

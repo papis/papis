@@ -26,7 +26,6 @@ import papis.config
 def run(keys, documents):
     result = []
     for document in documents:
-        doc_ok = True
         for key in keys:
             if key not in document.keys():
                 result.append(
@@ -73,7 +72,7 @@ class Command(papis.commands.Command):
                 )
             )
 
-        if not len(troubled_docs) == 0 :
+        if not len(troubled_docs) == 0:
             print("Errors were detected, please fix the info files")
         else:
             print("No errors detected")

@@ -25,7 +25,7 @@ Examples
 
     .. code::
 
-        papis -l machine-learning add --from-url https://arxiv.org/abs/1712.03134
+        papis -l machinelearn add --from-url https://arxiv.org/abs/1712.03134
 
 """
 import logging
@@ -310,7 +310,6 @@ def run(
         papis.config.set("file-name", file_name)
     new_file_list = []
     for i in range(min(len(in_documents_paths), len(data["files"]))):
-        in_doc_name = data["files"][i]
         in_file_path = in_documents_paths[i]
         if not os.path.exists(in_file_path):
             return status.file_not_found
@@ -416,7 +415,7 @@ class Command(papis.commands.Command):
 
         self.parser.add_argument(
             "document",
-            help="Document file name",
+            help="Document file names",
             default=[],
             nargs="*",
             action="store"
@@ -557,7 +556,7 @@ class Command(papis.commands.Command):
             # Try getting title if title is an argument of add
             data["title"] = self.args.title or get_default_title(
                 data,
-                in_documents_paths[0],
+                self.args.document[0],
                 self.args.interactive
             )
             self.logger.debug("Title = % s" % data["title"])
@@ -568,13 +567,12 @@ class Command(papis.commands.Command):
             # Try getting author if author is an argument of add
             data["author"] = self.args.author or get_default_author(
                 data,
-                in_documents_paths[0],
+                self.args.document[0],
                 self.args.interactive
             )
             self.logger.debug("Author = % s" % data["author"])
         except:
             pass
-
 
         return run(
             self.args.document,

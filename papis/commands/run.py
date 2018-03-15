@@ -26,7 +26,6 @@ Python examples
     run(library='papers', command=["ls", "-a"])
 
 """
-import string
 import os
 import papis.config
 import papis.exceptions

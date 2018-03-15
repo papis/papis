@@ -85,7 +85,7 @@ class Command(papis.commands.Command):
 
     def add(self, doc):
         if self.args.libgen:
-            if not 'doc_url' in doc.keys():
+            if not doc.has('doc_url'):
                 self.logger.error('No doc_url data retrieved')
                 return 1
             self.logger.info('Downloading document')
@@ -99,7 +99,7 @@ class Command(papis.commands.Command):
                 ['add', '--from-url', doc['doc_url'], file_name]
             )
         elif self.args.arxiv:
-            if not 'url' in doc.keys():
+            if not doc.has('url'):
                 self.logger.error('No url data retrieved')
                 return 1
             papis.commands.main(

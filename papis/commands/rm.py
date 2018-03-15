@@ -1,6 +1,4 @@
 import papis
-import sys
-import os
 import papis.api
 from papis.api import status
 import papis.utils
@@ -17,7 +15,6 @@ def run(
     :returns: List different objects
     :rtype:  list
     """
-    config = papis.config.get_configuration()
     db = papis.database.get()
     if filepath is not None:
         document.rm_file(filepath)
@@ -55,12 +52,14 @@ class Command(papis.commands.Command):
     def main(self):
         documents = self.get_db().query(self.args.search)
         document = self.pick(documents)
-        if not document: return status.file_not_found
+        if not document:
+            return status.file_not_found
         if self.get_args().file:
             filepath = papis.api.pick(
                 document.get_files()
             )
-            if not filepath: return status.file_not_found
+            if not filepath:
+                return status.file_not_found
             if not self.args.force:
                 if not papis.utils.confirm("Are you sure?"):
                     return status.success

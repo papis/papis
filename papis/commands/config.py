@@ -32,10 +32,6 @@ You can find a list of all available settings in the configuration section.
 
 
 """
-import sys
-import os
-import re
-import configparser
 import papis.commands
 import logging
 

@@ -89,7 +89,6 @@ class Command(papis.commands.Command):
             default=None
         )
 
-
     def main(self):
         db = papis.database.get(self.args.lib)
         documents = db.query(self.args.search)
@@ -101,4 +100,3 @@ class Command(papis.commands.Command):
             papis.config.set("file-name", self.args.file_name)
 
         return run(document, self.args.files)
-

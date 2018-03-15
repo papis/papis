@@ -1,5 +1,4 @@
 import os
-import sys
 import papis
 import papis.api
 import papis.config
