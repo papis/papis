@@ -17,6 +17,7 @@ def run(document, editor=None, wait=True):
         papis.config.set('editor', editor)
     database = papis.database.get()
     papis.utils.general_open(document.get_info_file(), "editor", wait=wait)
+    document.load()
     database.update(document)
 
 class Command(papis.commands.Command):
