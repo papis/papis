@@ -1,6 +1,4 @@
 import os
-import re
-import textwrap
 import subprocess
 import tempfile
 import logging
@@ -39,7 +37,7 @@ def pick(
         fd.write(header+"\n")
     fd.write("# Put your cursor on a line and press enter to pick\n")
     fd.close()
-    process = subprocess.call(
+    subprocess.call(
         ["vim", "-S", pick_vim_path, temp_file]
     )
     fd = open(temp_file)
@@ -51,12 +49,10 @@ def pick(
 
 class Gui(object):
 
-
     def __init__(self):
         self.documents = []
         self.logger = logging.getLogger("gui:vim")
         self.main_vim_path = main_vim_path
-
 
     def export_variables(self, args):
         """Export variables so that vim can use some papis information
