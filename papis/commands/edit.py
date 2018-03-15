@@ -48,7 +48,7 @@ class Command(papis.commands.Command):
         documents = self.get_db().query(self.args.search)
         if not self.args.all:
             document = self.pick(documents)
-            documents = [document] if document is not None else []
+            documents = [document] if document else []
 
         if len(documents) == 0:
             return 0
