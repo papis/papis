@@ -156,6 +156,12 @@ Rofi gui
 .. papis-config:: key-quit
     :section: rofi-gui
 
+.. papis-config:: key-query
+    :section: rofi-gui
+
+.. papis-config:: key-refresh
+    :section: rofi-gui
+
 .. papis-config:: key-edit
     :section: rofi-gui
 
@@ -330,6 +336,8 @@ def get_default_settings():
         },
         "rofi-gui": {
             "key-quit"          : "Alt+q",
+            "key-query"         : "Alt+y",
+            "key-refresh"       : "Alt+r",
             "key-edit"          : "Alt+e",
             "key-delete"        : "Alt+d",
             "key-help"          : "Alt+h",

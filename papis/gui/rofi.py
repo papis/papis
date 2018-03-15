@@ -10,18 +10,15 @@ logger = logging.getLogger("rofi")
 def get_options():
     options = dict()
 
-    for key in ["fullscreen",
-            "normal_window", "multi_select", "case_sensitive", "markup_rows"]:
-        options[key] =\
-            papis.config.getboolean(key, section="rofi-gui")
+    for key in ["fullscreen", "normal_window", "multi_select",
+            "case_sensitive", "markup_rows"]:
+        options[key] = papis.config.getboolean(key, section="rofi-gui")
 
     for key in ["width", "eh", "lines", "fixed_lines"]:
-        options[key] =\
-            papis.config.getint(key, section="rofi-gui")
+        options[key] = papis.config.getint(key, section="rofi-gui")
 
     for key in ["sep"]:
-        options[key] =\
-            papis.config.get(key, section="rofi-gui")
+        options[key] = papis.config.get(key, section="rofi-gui")
 
     return options
 
@@ -65,8 +62,11 @@ class Gui(object):
     open_stay_key = 5
     normal_widnow_key = 6
     browse_key = 7
+    query_key = 8
+    refresh_key = 9
 
     def __init__(self):
+        self.db = papis.database.get()
         self.documents = []
         self.help_message = ""
         self.keys = self.get_keys()
@@ -74,9 +74,8 @@ class Gui(object):
 
     def get_help(self):
         space = " "*10
-        message = \
-"Rofi based gui for papis\n"\
-"========================\n".format(space)
+        message  = "Rofi based gui for papis\n"
+        message += "========================\n"
         for k in self.keys:
             message += "%s%s%s\n" % (self.keys[k][0], space, self.keys[k][1])
         return message
@@ -86,6 +85,10 @@ class Gui(object):
 
     def get_keys(self):
         return {
+            "key%s" % self.query_key: (
+                self.get_key('query'),
+                'Query'
+            ),
             "key%s" % self.quit_key: (
                 self.get_key('quit'),
                 'Quit'
@@ -114,6 +117,10 @@ class Gui(object):
                 self.get_key('open'),
                 'Open'
             ),
+            "key%s" % self.refresh_key: (
+                self.get_key('refresh'),
+                'Refresh'
+            ),
             "key%s" % self.browse_key: (
                 self.get_key('browse'),
                 'Browse'
@@ -122,6 +129,7 @@ class Gui(object):
 
     def main(self, documents):
         # Set default picker
+        self.query_string = ''
         self.documents = documents
         key = None
         indices = None
@@ -162,6 +170,15 @@ class Gui(object):
                     self.browse(self.documents[i])
             elif key == self.normal_widnow_key:
                 options["normal_window"] ^= True
+            elif key == self.refresh_key:
+                if self.query_string:
+                    self.documents = self.db.query(self.query_string)
+            elif key == self.query_key:
+                self.query_string = self.window.text_entry(
+                    "Query: "
+                )
+                if self.query_string:
+                    self.documents = self.db.query(self.query_string)
 
     def delete(self, doc):
         answer = self.window.text_entry(
