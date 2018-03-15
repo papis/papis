@@ -1,7 +1,4 @@
-import os
 import papis.bibtex
-import json
-import yaml
 import tempfile
 import unittest
 import papis.tests

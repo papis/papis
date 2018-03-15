@@ -9,12 +9,11 @@ logging.basicConfig(level=logging.DEBUG)
 class TestCommand(unittest.TestCase):
 
     def test_simple(self):
-        val = run('editor')
-        self.assertTrue( run('editor') == papis.config.get('editor') )
-        self.assertTrue( run('xeditor') == papis.config.get('xeditor') )
+        self.assertTrue(run('editor') == papis.config.get('editor'))
+        self.assertTrue(run('xeditor') == papis.config.get('xeditor'))
         self.assertTrue(run('settings.xeditor') == papis.config.get('xeditor'))
         self.assertTrue(
-            run('dmenu-gui.lines') == \
+            run('dmenu-gui.lines') ==
             papis.config.get('lines', section='dmenu-gui')
         )
 

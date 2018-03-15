@@ -163,7 +163,8 @@ Bibtex options
 
     Allow non-standard bibtex types to be recognized, e.g,
     ``extra-bibtex-types = wikipedia, video, song``.
-    See `bibtex reference <http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`_.
+    See `bibtex reference
+        <http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`_.
 
 .. papis-config:: multiple-authors-format
 
@@ -343,8 +344,8 @@ import configparser
 import papis.exceptions
 
 
-CONFIGURATION = None #: Global configuration object variable.
-DEFAULT_SETTINGS = None #: Default settings for the whole papis.
+CONFIGURATION = None  #: Global configuration object variable.
+DEFAULT_SETTINGS = None  #: Default settings for the whole papis.
 OVERRIDE_VARS = {
     "folder": None,
     "cache": None,
@@ -368,36 +369,36 @@ def get_default_opener():
 general_settings = {
     "local-config-file": ".papis.config",
     "database-backend": "papis",
-    "opentool"        : get_default_opener(),
-    "dir-umask"       : 0o755,
-    "browser"         : os.environ.get('BROWSER') or get_default_opener(),
-    "picktool"        : "papis.pick",
-    "mvtool"          : "mv",
-    "editor"          : os.environ.get('EDITOR')
+    "opentool": get_default_opener(),
+    "dir-umask": 0o755,
+    "browser": os.environ.get('BROWSER') or get_default_opener(),
+    "picktool": "papis.pick",
+    "mvtool": "mv",
+    "editor": os.environ.get('EDITOR')
                         or os.environ.get('VISUAL')
                         or get_default_opener(),
-    "xeditor"         : get_default_opener(),
-    "sync-command"    : "git -C {lib[dir]} pull origin master",
-    "notes-name"      : "notes.tex",
-    "use-cache"       : True,
-    "cache-dir"       : None,
-    "use-git"         : False,
+    "xeditor": get_default_opener(),
+    "sync-command": "git -C {lib[dir]} pull origin master",
+    "notes-name": "notes.tex",
+    "use-cache": True,
+    "cache-dir": None,
+    "use-git": False,
 
-    "add-confirm"     : False,
-    "add-name"        : "",
-    "file-name"       : None,
-    "add-interactive" : False,
-    "add-edit"        : False,
-    "add-open"        : False,
-    "add-default-fields" : '["title", "author"]',
+    "add-confirm": False,
+    "add-name": "",
+    "file-name": None,
+    "add-interactive": False,
+    "add-edit": False,
+    "add-open": False,
+    "add-default-fields": '["title", "author"]',
 
-    "check-keys"      : '["files"]',
-    "browse-query-format"   : "{doc[title]} {doc[author]}",
-    "search-engine"   : "https://duckduckgo.com",
-    "user-agent"      : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)',
-    "default-gui"     : "vim",
+    "check-keys": '["files"]',
+    "browse-query-format": "{doc[title]} {doc[author]}",
+    "search-engine": "https://duckduckgo.com",
+    "user-agent": 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)',
+    "default-gui": "vim",
     "scripts-short-help-regex": ".*papis-short-help: *(.*)",
-    "info-name"       : "info.yaml",
+    "info-name": "info.yaml",
     "doc-url-key-name": "doc_url",
 
     "open-mark": False,
@@ -407,31 +408,31 @@ general_settings = {
     "mark-match-format": "{mark[name]} - {mark[value]}",
     "mark-opener-format": get_default_opener(),
 
-    "file-browser"    : get_default_opener(),
-    "extra-bibtex-keys" : "",
-    "extra-bibtex-types" : "",
-    "default-library" : "papers",
-    "export-text-format" : \
+    "file-browser": get_default_opener(),
+    "extra-bibtex-keys": "",
+    "extra-bibtex-types": "",
+    "default-library": "papers",
+    "export-text-format":
         "{doc[author]}. {doc[title]}. {doc[journal]} {doc[pages]}"
         " {doc[month]} {doc[year]}",
-    "format-doc-name" : "doc",
-    "match-format"    : \
+    "format-doc-name": "doc",
+    "match-format":
         "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
-    "header-format"   : \
+    "header-format":
         "{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:-<4})",
 
     "info-allow-unicode": True,
-    "ref-format"      : "{doc[doi]}",
+    "ref-format": "{doc[doi]}",
     "multiple-authors-separator": " and ",
     "multiple-authors-format": "{au[surname]}, {au[given_name]}",
 
     "whoosh-schema-prototype":
-        '{\n'
-            '"author": TEXT(stored=True),\n'
-            '"title": TEXT(stored=True),\n'
-            '"year": TEXT(stored=True),\n'
-            '"tags": TEXT(stored=True),\n'
-        '}',
+    '{\n'
+    '"author": TEXT(stored=True),\n'
+    '"title": TEXT(stored=True),\n'
+    '"year": TEXT(stored=True),\n'
+    '"tags": TEXT(stored=True),\n'
+    '}',
 
 }
 
@@ -608,7 +609,8 @@ def general_get(key, section=None, data_type=None):
     :param data_type: The data type that should be expected for the value of
         the variable.
     :type  data_type: DataType, e.g. int, src ...
-    :param default: Default value for the configuration variable if it is not set.
+    :param default: Default value for the configuration variable if it is not
+        set.
     :type  default: It should be the same that ``data_type``
     :param extras: List of tuples containing section and prefixes
     """

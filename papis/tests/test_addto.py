@@ -1,4 +1,3 @@
-import os
 import tempfile
 import unittest
 import papis.tests
@@ -18,7 +17,7 @@ class Test(unittest.TestCase):
         doc = docs[0]
         N = 10
         # add 10 files
-        inputfiles = [ tempfile.mktemp() for i in range(N) ]
+        inputfiles = [tempfile.mktemp() for i in range(N)]
         for i in inputfiles:
             open(i, 'w+').close()
         self.assertTrue(len(doc.get_files()) == 1)

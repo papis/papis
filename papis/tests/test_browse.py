@@ -1,12 +1,9 @@
-import os
 import papis.bibtex
-import json
-import yaml
-import tempfile
 import unittest
 import papis.tests
 import papis.config
 from papis.commands.browse import run
+
 
 # TODO: Implement meaningful tests
 class Test(unittest.TestCase):
@@ -21,4 +18,3 @@ class Test(unittest.TestCase):
 
     def test_run_function_exists(self):
         self.assertTrue(run is not None)
-

@@ -1,4 +1,3 @@
-import os
 import unittest
 import papis.tests
 from papis.commands.run import run
@@ -25,6 +24,3 @@ class Test(unittest.TestCase):
     def test_run_nonexistent(self):
         status = run(library=papis.config.get_lib(), command=['nonexistent'])
         assert(not status == 1)
-
-
-
