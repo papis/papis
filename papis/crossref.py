@@ -174,10 +174,15 @@ def crossref_data_to_papis_data(data):
     return data
 
 
-def get_data(query="", max_results=20):
+def get_data(query="", author="", title="", max_results=20):
     import habanero
     cr = habanero.Crossref()
-    results = cr.works(query=query, limit=max_results)
+    results = cr.works(
+        query=query,
+        limit=max_results,
+        query_author=author,
+        query_title=title
+    )
     return [
         crossref_data_to_papis_data(d) for d in results["message"]["items"]
     ]

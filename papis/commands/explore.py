@@ -130,8 +130,11 @@ class Command(papis.commands.Command):
 
     def crossref(self, search):
         import papis.crossref
+        parsed = self.parse_search()
         data = papis.crossref.get_data(
-            query=search,
+            query=parsed.get('query'),
+            author=parsed.get('author'),
+            title=parsed.get('title'),
             max_results=self.args.max
         )
         documents = [papis.document.Document(data=d) for d in data]
