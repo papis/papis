@@ -79,17 +79,6 @@ class TestAdd(CommandTest):
         t.join()
         self.assertFalse(t.isAlive())
 
-    def test_extension(self):
-        docs = [
-            ["blahblah.pdf", "pdf"],
-            ["b.lahblah.pdf", "pdf"],
-            ["no/extension/blahblah", "txt"],
-            ["a/asdfsdf21/blahblah.epub", "epub"],
-        ]
-        for d in docs:
-            self.assertTrue(
-                self.command.get_document_extension(d[0]) == d[1]
-            )
 
     # def test_add_file(self):
         # args = ("add",
@@ -124,21 +113,6 @@ class TestAdd(CommandTest):
         # output = papis.commands.main(args)
         # # FIXME: check output folder and file!
         # self.assertTrue(output == status.success)
-
-    def test_add_missing(self):
-        args = ("add",
-                os.path.join(os.path.dirname(__file__),
-                             "resources",
-                             "example_document_missing.txt"))
-        output = papis.commands.main(args)
-
-        self.assertTrue(output == status.file_not_found)
-
-    def test_remove_missing(self):
-        args = ("rm", "-f",
-                "example_document_missing.txt")
-        output = papis.commands.main(args)
-        self.assertTrue(output != status.success)
 
     # def test_add_file_with_dir(self):
         # args = ("add", "--dir", "subdir",

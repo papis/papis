@@ -3,7 +3,7 @@ import tempfile
 import unittest
 import papis.tests
 import papis.config
-from papis.commands.add import run
+from papis.commands.add import run, get_document_extension
 
 
 class Test(unittest.TestCase):
@@ -87,3 +87,13 @@ class Test(unittest.TestCase):
         doc = docs[0]
         self.assertTrue(doc is not None)
         self.assertTrue(len(doc.get_files()) == 1)
+
+    def test_extension(self):
+        docs = [
+            ["blahblah.pdf", "pdf"],
+            ["b.lahblah.pdf", "pdf"],
+            ["no/extension/blahblah", "txt"],
+            ["a/asdfsdf21/blahblah.epub", "epub"],
+        ]
+        for d in docs:
+            self.assertTrue(get_document_extension(d[0]) == d[1])
