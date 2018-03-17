@@ -1,3 +1,5 @@
+import os
+import tempfile
 import papis.utils
 
 
@@ -17,3 +19,23 @@ def test_create_identifier():
     ]
     for i in range(30):
         assert(output[i] == expected[i])
+
+
+def test_general_open_with_spaces():
+    filename = tempfile.mktemp("File with at least a couple of spaces")
+
+    with open(filename, 'w+') as fd:
+        fd.write('Some content')
+
+    assert(os.path.exists(filename))
+
+    a = papis.utils.general_open(
+        filename,
+        'nonexistentoption',
+        default_opener="echo 'hello world' >> ",
+        wait=True
+    )
+
+    with open(filename) as fd:
+        content = fd.read()
+        assert(content == 'Some contenthello world\n')
