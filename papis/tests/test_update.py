@@ -39,7 +39,7 @@ class Test(unittest.TestCase):
           pages = { 891--921 },
           title = { La biblia en HD },
           type = { article },
-          volume = { 322 },
+          volume = {322},
           year = { 1905 },
         }
         """
