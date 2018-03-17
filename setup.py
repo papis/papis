@@ -136,6 +136,7 @@ setup(
         "papis.gui.tk",
         "papis.gui.vim",
         "papis.commands",
+        "papis.database",
         "papis.downloaders",
     ],
     test_suite="papis.tests",
