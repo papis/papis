@@ -379,8 +379,11 @@ class Database(papis.database.base.Database):
             self.get_documents()
         return filter_documents(self.documents, query_string)
 
+    def get_all_query_string(self):
+        return '.'
+
     def get_all_documents(self):
-        return self.query(".")
+        return self.query(self.get_all_query_string())
 
     def save(self):
         self.logger.debug(

@@ -5,7 +5,9 @@ logger = logging.getLogger('database')
 
 DATABASES = dict()
 
+
 def get(library=None):
+    global DATABASES
     import papis.config
     backend = papis.config.get('database-backend')
     if library is None:
@@ -27,3 +29,11 @@ def get(library=None):
     else:
         raise Exception('No valid database type: {}'.format(backend))
 
+
+def get_all_query_string():
+    return get().get_all_query_string()
+
+
+def clear_cached():
+    global DATABASES
+    DATABASES = dict()
