@@ -327,6 +327,11 @@ class Database(papis.database.base.Database):
 
         if papis.config.getboolean("use-cache"):
             self.folders = get_folders(directory)
+            self.logger.debug(
+                "Loaded folders from cache ({} documents)".format(
+                    len(self.folders)
+                )
+            )
         else:
             self.folders = papis.utils.get_folders(directory)
 
