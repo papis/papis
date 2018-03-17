@@ -24,8 +24,8 @@ def get_dirs(main):
 def run(document, new_folder_path, git=False):
     logger = logging.getLogger('mv:run')
     folder = document.get_main_folder()
-    cmd = (['git', '-C', folder] if git else []) + \
-        ['mv', folder, new_folder_path]
+    cmd  = ['git', '-C', folder] if git else []
+    cmd += ['mv', folder, new_folder_path]
     db = papis.database.get()
     logger.debug(cmd)
     subprocess.call(cmd)
