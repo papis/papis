@@ -57,4 +57,3 @@ class Test(unittest.TestCase):
         docs = db.query_dict(dict(title='elektrodynamik'))
         self.assertEqual(len(docs), 1)
         self.assertEqual(docs[0]["volume"], "322")
-        self.assertEqual(docs[0]["year"], " 1905 ")
