@@ -23,6 +23,8 @@ def general_open(fileName, key, default_opener="xdg-open", wait=True):
         opener = default_opener
     if isinstance(fileName, list):
         fileName = papis.api.pick(fileName)
+    # Take care of spaces in filenames
+    fileName = "\"{}\"".format(fileName)
     if isinstance(opener, str):
         if wait:
             return os.system(" ".join([opener, fileName]))
