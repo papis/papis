@@ -98,9 +98,11 @@
 
 .. papis-config:: add-name
 
-    Default name for newly added documents. For example, if you want
-    your documents to be ``author-title`` then you should set it to
+    Default name for the folder of newly added documents. For example, if you
+    the folder of your documents to be named after the format
+    ``author-title`` then you should set it to
     the papis format: ``{doc[author]}-{doc[title]}``.
+    Per default a hash followed by the author name is created.
 
 .. papis-config:: file-name
 
