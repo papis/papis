@@ -335,8 +335,10 @@ class Database(papis.database.base.Database):
         self.logger.debug("Done")
 
     def add(self, document):
-        self.logger.debug('Adding in the library')
+        self.logger.debug('Adding ...')
         self.folders.append(document.get_main_folder())
+        assert(self.folders[-1] == document.get_main_folder())
+        assert(os.path.exists(document.get_main_folder()))
         self.documents.append(document)
         self.save()
 
@@ -345,7 +347,9 @@ class Database(papis.database.base.Database):
 
     def delete(self, document):
         if papis.config.getboolean("use-cache"):
-            self.logger.debug('Deleting from folders')
+            self.logger.debug(
+                'Deleting ... ({} documents)'.format(len(self.folders))
+            )
             self.folders.remove(document.get_main_folder())
             self.save()
             # Also update the documents list
@@ -374,5 +378,7 @@ class Database(papis.database.base.Database):
         return self.query(".")
 
     def save(self):
-        self.logger.debug('Saving in the library')
+        self.logger.debug(
+            'Saving ... ({} documents)'.format(len(self.folders))
+        )
         create(self.folders, get_cache_file_path(self.get_dir()))

@@ -1,5 +1,5 @@
 """This command edits the information of the documents.
-The editor used is defined by the ``editor``
+The editor used is defined by the ``editor`` configuration setting.
 
 
 """

@@ -18,6 +18,7 @@ from papis.api import status
 
 def run(document):
     papis.document.open_in_browser(document)
+    return status.success
 
 
 class Command(papis.commands.Command):
@@ -35,4 +36,4 @@ class Command(papis.commands.Command):
         document = self.pick(documents)
         if not document:
             return status.file_not_found
-        run(document)
+        return run(document)
