@@ -15,18 +15,19 @@ import papis.commands
 import papis.document
 import papis.crossref
 import papis.bibtex
+import papis.exceptions
 
 def general_open(fileName, key, default_opener="xdg-open", wait=True):
     try:
         opener = papis.config.get(key)
-    except KeyError:
+    except papis.exceptions.DefaultSettingValueMissing:
         opener = default_opener
     if isinstance(fileName, list):
         fileName = papis.api.pick(fileName)
     # Take care of spaces in filenames
-    fileName = "\"{}\"".format(fileName)
     if isinstance(opener, str):
         if wait:
+            fileName = "\"{}\"".format(fileName)
             return os.system(" ".join([opener, fileName]))
         else:
             cmd = opener.split() + [fileName]
