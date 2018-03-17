@@ -766,8 +766,6 @@ def set_lib(library):
     >>> set_lib('/tmp/setlib-test')
     >>> get_lib()
     '/tmp/setlib-test'
-    >>> set_lib('non-existing-library')
-    1
     """
     config = get_configuration()
     if library not in config.keys():
@@ -776,10 +774,9 @@ def set_lib(library):
             logger.debug("Using library %s" % library)
             config[library] = dict(dir=library)
         else:
-            logger.error(
+            raise Exception(
                 "Path or library '%s' does not seem to exist" % library
             )
-            return 1
     try:
         args = papis.commands.get_args()
         args.lib = library

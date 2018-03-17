@@ -1,3 +1,4 @@
+import os
 import unittest
 import logging
 import papis.config
@@ -53,3 +54,13 @@ class TestDefaultConfiguration(unittest.TestCase):
         self.assertTrue(isinstance(settings, dict))
         for section in ["settings", "vim-gui", "rofi-gui", "tk-gui"]:
             self.assertTrue(section in settings.keys())
+
+    def test_set_lib(self):
+        try:
+            lib = 'non-existing-library'
+            self.assertFalse(os.path.exists(lib))
+            papis.config.set_lib(lib)
+        except:
+            self.assertTrue(True)
+        else:
+            self.assertTrue(False)

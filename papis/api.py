@@ -30,9 +30,6 @@ def get_lib():
 
     >>> get_lib() is not None
     True
-    >>> set_lib('books')
-    >>> get_lib()
-    'books'
     """
     return papis.config.get_lib()
 
