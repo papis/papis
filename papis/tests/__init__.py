@@ -23,6 +23,7 @@ def setup_test_library():
     config[lib] = dict()
     config[lib]['dir'] = tempfile.mkdtemp(prefix='papis')
     papis.api.set_lib('test-lib')
+    papis.database.clear_cached()
 
     for i, data in enumerate(test_data):
         doc = papis.document.from_data(data)

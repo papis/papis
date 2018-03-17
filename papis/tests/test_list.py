@@ -2,6 +2,7 @@ import os
 import unittest
 import papis.tests
 import papis.config
+import papis.database
 from papis.commands.list import run
 
 
@@ -19,12 +20,17 @@ class Test(unittest.TestCase):
         assert(papis.config.get_lib() == papis.tests.get_test_lib())
 
     def test_list_docs(self):
-        docs = run(query='', library=papis.config.get_lib())
+        docs = run(
+            query=papis.database.get_all_query_string(),
+            library=papis.config.get_lib()
+        )
         assert(isinstance(docs, list))
         assert(len(docs) >= 1)
 
     def test_list_docs_no_lib(self):
-        docs = run(query='')
+        docs = run(
+            query=papis.database.get_all_query_string()
+        )
         assert(isinstance(docs, list))
         assert(len(docs) >= 1)
 
@@ -34,7 +40,11 @@ class Test(unittest.TestCase):
         assert(papis.config.get('dir') in libs)
 
     def test_list_folders(self):
-        folders = run(query="", library=papis.config.get_lib(), folders=True)
+        folders = run(
+            query=papis.database.get_all_query_string(),
+            library=papis.config.get_lib(),
+            folders=True
+        )
         assert(len(folders) >= 1)
         assert(isinstance(folders, list))
         for f in folders:
