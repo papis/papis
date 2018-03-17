@@ -20,14 +20,15 @@ CLI Examples
 """
 import papis.commands
 import papis.commands.run
+import papis.config
 import argparse
 import logging
 
 logger = logging.getLogger('git')
 
 
-def run(library=None, command=[]):
-    return papis.commands.run.run(library=library, command=["git"] + command)
+def run(folder, command=[]):
+    return papis.commands.run.run(folder, command=["git"] + command)
 
 
 class Command(papis.commands.Command):
@@ -48,4 +49,4 @@ class Command(papis.commands.Command):
         )
 
     def main(self):
-        return run(library=self.args.lib, command=self.args.commands)
+        return run(papis.config.get("dir"), command=self.args.commands)

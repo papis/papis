@@ -35,11 +35,9 @@ import logging
 logger = logging.getLogger('run')
 
 
-def run(library=papis.config.get_lib(), command=[]):
-    config = papis.config.get_configuration()
-    lib_dir = os.path.expanduser(config[library]["dir"])
-    logger.debug("Changing directory into %s" % lib_dir)
-    os.chdir(lib_dir)
+def run(folder, command=[]):
+    logger.debug("Changing directory into %s" % folder)
+    os.chdir(os.path.expanduser(folder))
     try:
         commandstr = os.path.expanduser(
             papis.config.get("".join(command))
@@ -75,4 +73,5 @@ class Command(papis.commands.Command):
         self.args.run_command = commands
 
     def main(self):
-        return run(library=self.args.lib, command=self.args.run_command)
+        folder = papis.config.get("dir")
+        return run(folder, command=self.args.run_command)

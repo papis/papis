@@ -14,13 +14,9 @@ class Test(unittest.TestCase):
         pass
 
     def test_run_ls(self):
-        status = run(library=papis.config.get_lib(), command=['ls'])
-        assert(status == 0)
-
-    def test_run_ls_no_lib(self):
-        status = run(command=['ls'])
+        status = run(papis.config.get("dir"), command=['ls'])
         assert(status == 0)
 
     def test_run_nonexistent(self):
-        status = run(library=papis.config.get_lib(), command=['nonexistent'])
+        status = run(papis.config.get('dir'), command=['nonexistent'])
         assert(not status == 1)
