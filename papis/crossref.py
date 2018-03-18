@@ -174,13 +174,17 @@ def crossref_data_to_papis_data(data):
     return data
 
 
-def get_data(query="", author="", title="", max_results=20):
+def get_data(query="", author="", year="", title="", max_results=20):
     import habanero
     cr = habanero.Crossref()
     results = cr.works(
         query=query,
         limit=max_results,
         query_author=author,
+        #TODO: really figure out how to include year
+        query_bibliographic=str(year),
+        #filter={'from-pub-date': '{}-1-1'.format(year) if year else ''},
+        #sort='published',
         query_title=title
     )
     return [

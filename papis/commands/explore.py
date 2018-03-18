@@ -135,6 +135,7 @@ class Command(papis.commands.Command):
             query=parsed.get('query'),
             author=parsed.get('author'),
             title=parsed.get('title'),
+            year=parsed.get('year'),
             max_results=self.args.max
         )
         documents = [papis.document.Document(data=d) for d in data]
