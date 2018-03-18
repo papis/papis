@@ -348,6 +348,17 @@ Databases
 
 .. papis-config:: cache-dir
 
+.. papis-config:: whoosh-schema-fields
+
+    Python list with the ``TEXT`` fields that should be included in the
+    whoosh database schema. For instance say that you want to be able
+    to search for the ``doi`` and ``ref`` of the documents, then you could
+    include
+
+    ::
+
+        whoosh-schema-fields = ['doi', 'ref']
+
 .. papis-config:: whoosh-schema-prototype
 
     This is the model for the whoosh schema, check
@@ -450,6 +461,7 @@ general_settings = {
     "multiple-authors-separator": " and ",
     "multiple-authors-format": "{au[surname]}, {au[given_name]}",
 
+    "whoosh-schema-fields": "['doi']",
     "whoosh-schema-prototype":
     '{\n'
     '"author": TEXT(stored=True),\n'
