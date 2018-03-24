@@ -2,6 +2,9 @@
 The add command is one of the central commands of the papis command line
 interface. It is a very versatile command with a fair amount of options.
 
+There are also customization settings availabe for this command, check out
+the :ref:`configuration page <add-command-options>` for add.
+
 Examples
 ^^^^^^^^
 
@@ -25,7 +28,17 @@ Examples
 
     .. code::
 
-        papis -l machinelearn add --from-url https://arxiv.org/abs/1712.03134
+        papis -l machine-learning add \
+--from-url https://arxiv.org/abs/1712.03134
+
+
+Examples in python
+^^^^^^^^^^^^^^^^^^
+
+There is a python function in the add module that can be used to interact
+in a more effective way in python scripts,
+
+.. autofunction:: papis.commands.add.run
 
 """
 import logging
@@ -164,6 +177,49 @@ def run(
         commit=False,
         no_document=False
         ):
+    """
+    :param paths: Paths to the documents to be added
+    :type  paths: []
+    :param data: Data for the document to be added.
+        If more data is to be retrieved from other sources, the data dictionary
+        will be updated from these sources.
+    :type  data: dict
+    :param name: Name of the folder where the document will be stored
+    :type  name: str
+    :param file_name: File name of the document's files to be stored.
+    :type  file_name: str
+    :param subfolder: Folder within the library where the document's folder
+        should be stored.
+    :type  subfolder: str
+    :param interactive: Wether or not interactive functionality of this command
+        should be activated.
+    :type  interactive: bool
+    :param from_bibtex: Filepath where to find a file containing bibtex info.
+    :type  from_bibtex: str
+    :param from_yaml: Filepath where to find a file containing yaml info.
+    :type  from_yaml: str
+    :param from_folder: Filepath where to find a papis document (folder +
+        info file) to be added to the library.
+    :type  from_folder: str
+    :param from_url: Url to try to download information and files from.
+    :type  from_url: str
+    :param from_url: doi number to try to download information from.
+    :type  from_url: str
+    :param from_url: pmid number to try to download information from.
+    :type  from_url: str
+    :param confirm: Wether or not to ask user for confirmation before adding.
+    :type  confirm: bool
+    :param open_file: Wether or not to ask user for opening file before adding.
+    :type  open_file: bool
+    :param edit: Wether or not to ask user for editing the infor file
+        before adding.
+    :type  edit: bool
+    :param commit: Wether or not to ask user for committing before adding,
+        in the case of course that the library is a git repository.
+    :type  commit: bool
+    :param no_document: Wether or not the document has no files attached.
+    :type  no_document: bool
+    """
     logger = logging.getLogger('add:run')
     # The folder name of the new document that will be created
     out_folder_name = None

@@ -5,7 +5,7 @@ Examples
 ^^^^^^^^
 
 - Update a document automatically and interactively
-(searching by ``doi`` number in *crossref*, or in other sources...)
+  (searching by ``doi`` number in *crossref*, or in other sources...)
 
     .. code::
 
@@ -22,6 +22,7 @@ Examples
         papis update --from-bibtex libraryfile.bib -i
 
 """
+
 import papis
 import urllib.error
 import logging

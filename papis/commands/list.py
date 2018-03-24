@@ -4,7 +4,7 @@ This command is to list contents of a library.
 CLI Examples
 ^^^^^^^^^^^^
 
- - List all document files associated will all entries:
+- List all document files associated will all entries:
 
     .. code:: bash
 
@@ -16,7 +16,7 @@ CLI Examples
         src="https://asciinema.org/a/XwD0ZaUORoOonwDw4rXoQDkjZ.js"
         id="asciicast-XwD0ZaUORoOonwDw4rXoQDkjZ" async></script>
 
- - List all document year and title with custom formatting:
+- List all document year and title with custom formatting:
 
     .. code:: bash
 
@@ -28,8 +28,8 @@ CLI Examples
         src="https://asciinema.org/a/NZ8Ii1wWYPo477CIL4vZhUqOy.js"
         id="asciicast-NZ8Ii1wWYPo477CIL4vZhUqOy" async></script>
 
- - List all documents according to the bibitem formatting (stored in a template
-   file ``bibitem.template``):
+- List all documents according to the bibitem formatting (stored in a template
+  file ``bibitem.template``):
 
     .. code:: bash
 
@@ -44,21 +44,21 @@ CLI Examples
 Python examples
 ^^^^^^^^^^^^^^^
 
-```
-# Import the run function from the list command
+.. code:: python
 
-from papis.commands.list import run as list
+    # Import the run function from the list command
 
-documents = list(query='einstein', library='papis')
+    from papis.commands.list import run as papis_list
 
-for doc in documents:
-    print(doc["url"])
+    documents = papis_list(query='einstein', library='papis')
 
-# etc...
-info_files = list(query='einstein', library='papis', info_files=True)
+    for doc in documents:
+        print(doc["url"])
 
-# do something with the info file paths...
-```
+    # etc...
+    info_files = list(query='einstein', library='papis', info_files=True)
+
+    # do something with the info file paths...
 
 """
 

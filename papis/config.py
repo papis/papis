@@ -7,71 +7,37 @@
     will additionally read if the file is present in the current
     directory or in the base directory of a given library.
 
-.. papis-config:: opentool
+    This is useful for instance if you have a library somewhere
+    for which you want special configuration settings to be set
+    but you do not want these settings to cluster in your configuration
+    file. It is also useful if you're sharing a library with someone
+    else and you want them to have the same settings in that library as
+    you. Imagine you're sharing a library of datasheets with your friend
+    Fulano. You have your library at
 
-    This is the general program that will be used to open documents.
-    As for now papis is not intended to detect the type of document to be open
-    and decide upon it how to open the document. You should set this
-    to the right program for the tool. If you are in linux you might want
-    to take a look at `ranger <http://ranger.nongnu.org>`_ or let
-    the default handle it in your system.
-    For mac users you might set this to ``open``.
+    ::
+
+        ~/Documents/lib-with-fulano
+
+    and you've set a local configuration file there
+
+    ::
+
+        ~/Documents/lib-with-fulano/.papis.config
+
+    then whenever Fulano uses that library and the file is also present,
+    his papis program will also read the configuration settings at
+    the path above.
 
 .. papis-config:: dir-umask
 
     This is the default ``umask`` that will be used to create the new
     documents' directories.
 
-.. papis-config:: browser
-    :default: $BROWSER
-
-    Program to be used for opening websites, the default is the environment
-    variable ``$BROWSER``.
-
-.. papis-config:: picktool
-
-    This is the program used whenever papis asks you to pick a document
-    or options in general.
-
-    Possible options are:
-        - papis.pick
-        - rofi
-        - vim
-        - dmenu
-
-.. papis-config:: editor
-    :default: $EDITOR
-
-    Editor used to edit files in papis, for instance for the ``papis edit``
-    command. It defaults to the ``$EDITOR`` environment variable, if this is
-    not set then it will default to the ``$VISUAL`` environment variable.
-    Otherwise the default editor in your system will be used.
-
-.. papis-config:: xeditor
-
-    Sometimes papis might use an editor that uses a windowing system
-    (GUI Editor), you can set this to your preferred gui based editor, e.g.:
-    ``gedit``, ``xemacs``, ``gvim`` to name a few.
-
-.. papis-config:: sync-command
-
-    Command that is to be used when ``papis sync`` is run.
-
-.. papis-config:: notes-name
-
-    In ``papis edit`` you can edit notes about the document. ``notes-name``
-    is the default name of the notes file, which by default is supposed
-    to be a TeX file.
-
 .. papis-config:: use-git
 
     Some commands will issue git commands if this option is set to ``True``.
     For example in ``mv`` or ``rename``.
-
-.. papis-config:: check-keys
-
-    Python list key values to be checked by default by the command
-    ``check``. E.g: ``check-keys = ["author", "doi"]``.
 
 .. papis-config:: browse-query-format
 
@@ -106,12 +72,6 @@
     Some documents might have associated apart from an url also a file url,
     the key name appearing in the information file is defined by
     this setting.
-
-.. papis-config:: file-browser
-
-    File browser to be used when opening a directory, it defaults to the
-    default file browser in your system, however you can set it to different
-    file browsers such as ``dolphin``, ``thunar``, ``ranger`` to name a few.
 
 .. papis-config:: default-library
 
@@ -149,6 +109,62 @@
     Since we should be living in an unicode world, it is set to ``True``
     by default.
 
+.. papis-config:: sync-command
+
+    Command that is to be used when ``papis sync`` is run.
+
+Tools options
+^^^^^^^^^^^^^
+
+.. papis-config:: opentool
+
+    This is the general program that will be used to open documents.
+    As for now papis is not intended to detect the type of document to be open
+    and decide upon it how to open the document. You should set this
+    to the right program for the tool. If you are in linux you might want
+    to take a look at `ranger <http://ranger.nongnu.org>`_ or let
+    the default handle it in your system.
+    For mac users you might set this to ``open``.
+
+.. papis-config:: browser
+    :default: $BROWSER
+
+    Program to be used for opening websites, the default is the environment
+    variable ``$BROWSER``.
+
+.. papis-config:: picktool
+
+    This is the program used whenever papis asks you to pick a document
+    or options in general.
+
+    Possible options are:
+        - papis.pick
+        - rofi
+        - vim
+        - dmenu
+
+.. papis-config:: editor
+    :default: $EDITOR
+
+    Editor used to edit files in papis, for instance for the ``papis edit``
+    command. It defaults to the ``$EDITOR`` environment variable, if this is
+    not set then it will default to the ``$VISUAL`` environment variable.
+    Otherwise the default editor in your system will be used.
+
+.. papis-config:: xeditor
+
+    Sometimes papis might use an editor that uses a windowing system
+    (GUI Editor), you can set this to your preferred gui based editor, e.g.
+    ``gedit``, ``xemacs``, ``gvim`` to name a few.
+
+
+.. papis-config:: file-browser
+
+    File browser to be used when opening a directory, it defaults to the
+    default file browser in your system, however you can set it to different
+    file browsers such as ``dolphin``, ``thunar``, ``ranger`` to name a few.
+
+
 Bibtex options
 ^^^^^^^^^^^^^^
 
@@ -174,7 +190,9 @@ Bibtex options
     is given by this setting, for instance you could customize it
     by the following:
 
-        ``multiple-authors-format = {au[surname]} -- {au[given_name]}``
+    ::
+
+        multiple-authors-format = {au[surname]} -- {au[given_name]}
 
     which would given in the case of Albert Einstein the string
     ``Einstein -- Albert``.
@@ -186,6 +204,8 @@ Bibtex options
     `` and `` then you would have ``<author 1> and <author 2> and ....``
     in the ``author`` field.
 
+.. _add-command-options:
+
 Add command options
 ^^^^^^^^^^^^^^^^^^^
 
@@ -196,7 +216,9 @@ Add command options
     FirstAuthorYear e.g. Plews2019. This would be achieved by the
     following:
 
-        ``ref-format = {doc[author_list][0][surname]}{doc[year]}``
+    ::
+
+        ref-format = {doc[author_list][0][surname]}{doc[year]}
 
     The default behavior is to set the doi as the ref.
 
@@ -208,6 +230,7 @@ Add command options
     fave the contrary effect, i.e., it will not ask for confirmation.
 
 .. papis-config:: add-name
+    :default: empty string
 
     Default name for newly added documents. For example, if you want
     your documents to be ``author-title`` then you should set it to
@@ -254,6 +277,28 @@ Add command options
     ::
 
         papis add doc.pdf --author 'Bohm' --title 'Super book' --year 1928
+
+.. _check-command-options:
+
+Check command options
+^^^^^^^^^^^^^^^^^^^^^
+
+.. papis-config:: check-keys
+
+    Python list key values to be checked by default by the command
+    ``check``. E.g: ``check-keys = ["author", "doi"]``.
+    It is important that it is a valid python list.
+
+.. _edit-command-options:
+
+Edit command options
+^^^^^^^^^^^^^^^^^^^^
+
+.. papis-config:: notes-name
+
+    In ``papis edit`` you can edit notes about the document. ``notes-name``
+    is the default name of the notes file, which by default is supposed
+    to be a TeX file.
 
 Marks
 ^^^^^
@@ -305,13 +350,28 @@ Marks
     Due to the difficulty to generalize opening a general document
     at a given bookmark, the user should set this in whichever way
     it suits their needs. For example
-        - If you are using the pdf viewer ``evince`` and you want to open a
-          mark, you would use ``mark-opener-format = evince -p {mark[value]}``.
-        - If you are using ``zathura``, do ``mark-opener-format = zathura -P
-          {mark[value]}``.
+
+    - If you are using the pdf viewer ``evince`` and you want to open a
+      mark, you would use
+
+        ::
+
+            mark-opener-format = evince -p {mark[value]}
+
+    - If you are using ``okular`` you would use
+
+        ::
+
+            mark-opener-format = okular -p {mark[value]}
+
+    - If you are using ``zathura``, do
+
+        ::
+
+            mark-opener-format = zathura -P {mark[value]}
 
 Databases
-^^^^^^^^^
+=========
 
 .. papis-config:: default-query-string
 
