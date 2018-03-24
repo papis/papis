@@ -300,6 +300,8 @@ Edit command options
     is the default name of the notes file, which by default is supposed
     to be a TeX file.
 
+.. _marks-options:
+
 Marks
 ^^^^^
 
