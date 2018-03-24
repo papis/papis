@@ -113,11 +113,50 @@ Papis has also the possibility to use the blazing fast and pure python
 Its performance is orders of magnitude better than the crude cache based
 database.
 
+Of course, the performance comes at a cost. To achieve more performance
+a database backend should create an index with information about the documents.
+Parsing a user query means going to the index and matching the query to
+what is found in the index. This means that the index can not in general
+have all the information that the info file of the documents includes.
+
+In other words, the whoosh index will store only certain fields from the
+document's info files. The good news is that we can tell papis exactly
+which fields we want to index. These flags are
+
+- :ref:`whoosh-schema-fields <config-settings-whoosh-schema-fields>`
+- :ref:`whoosh-schema-prototype <config-settings-whoosh-schema-prototype>`
+
+The prototype is for advanced users. If you just want to say, include
+the publisher to the fields that you can search in, then you can put
+
+::
+
+  whoosh-schema-fields = ['publisher']
+
+and you will be able to find documents by their publisher.
+For example, without this line set for publisher, the query
+
+::
+
+  papis open publisher:*
+
+will not return anything, since the publisher field is not being stored.
+
+
 Query language
 ^^^^^^^^^^^^^^
 
 The whoosh database uses the whoosh query language which is much more
 advanced than the query language in the `Papis database`_.
+
+The whoosh query language supports both ``AND`` and ``OR``, for instance
+
+::
+
+  papis open '(author:einstein AND year:1905) OR title:einstein'
+
+will give papers of einstein in the year 1905 together with all papers
+where einstein appears in the title.
 
 You can read more about the whoosh query language
 `here <https://whoosh.readthedocs.io/en/latest/querylang.html>`_.
