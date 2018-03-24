@@ -406,7 +406,8 @@ Databases
 .. papis-config:: use-cache
 
     Set to ``False`` if you do not want to use the ``cache``
-    for the given library.
+    for the given library. This is only effective if you're using the
+    ``papis`` database-backend.
 
 .. papis-config:: cache-dir
 
