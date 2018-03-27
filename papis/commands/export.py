@@ -181,10 +181,12 @@ class Command(papis.commands.Command):
                 return 0
             documents = [document]
 
-        if self.args.out and not self.get_args().folder:
+        if self.args.out and not self.get_args().folder \
+        and not self.args.file:
             self.args.out = open(self.get_args().out, 'a+')
 
-        if not self.args.out and not self.get_args().folder:
+        if not self.args.out and not self.get_args().folder \
+        and not self.args.file:
             self.args.out = sys.stdout
 
         ret_string = run(
@@ -215,12 +217,20 @@ class Command(papis.commands.Command):
                     ).write(papis.document.to_bibtex(document))
             elif self.args.file:
                 files = document.get_files()
-                file_to_open = papis.api.pick(
-                    files,
-                    pick_config=dict(
-                        header_filter=lambda x: x.replace(
-                            document.get_main_folder(), ""
+                if self.args.all:
+                    files_to_open = files
+                else:
+                    files_to_open = [papis.api.pick(
+                        files,
+                        pick_config=dict(
+                            header_filter=lambda x: x.replace(
+                                document.get_main_folder(), ""
+                            )
                         )
+                    )]
+                for file_to_open in filter(lambda x: x, files_to_open):
+                    print(file_to_open)
+                    shutil.copyfile(
+                        file_to_open,
+                        self.args.out or os.path.basename(file_to_open)
                     )
-                )
-                shutil.copyfile(file_to_open, self.args.out)
