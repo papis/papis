@@ -12,6 +12,8 @@
   <img src="https://badge.fury.io/py/papis.svg" alt="PyPI version" height="18">
 </a>
 
+[![Packaging status](https://repology.org/badge/vertical-allrepos/papis.svg)](https://repology.org/metapackage/papis)
+
 ## Description
 
 Papis is a powerful and highly extensible command-line based document and
