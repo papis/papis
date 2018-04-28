@@ -25,6 +25,7 @@ COMMAND_NAMES = [
     "run",
     "git",
     "gui",
+    "serve",
     "sync"
 ]
 

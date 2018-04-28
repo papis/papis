@@ -313,6 +313,12 @@
     `` and `` then you would have ``<author 1> and <author 2> and ....``
     in the ``author`` field.
 
+.. papis-config:: snapshot
+
+    !NOT IMLEMENTED!
+    Save a snapshot of the a `webpage`. Actually used only by the
+    zotero connector.
+
 """
 import logging
 
@@ -410,6 +416,7 @@ general_settings = {
     "ref-format"      : "{doc[doi]}",
     "multiple-authors-separator": " and ",
     "multiple-authors-format": "{au[surname]}, {au[given_name]}",
+    "snapshot": True
 }
 
 
