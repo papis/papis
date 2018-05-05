@@ -86,3 +86,37 @@ of the ``papis export --file`` flag that moves the paper you choose to
 a temporary location (``/tmp/paper.pdf``). Mutt will then attach the
 paper to the email, which you can rename to be more descriptive with
 ``R``.
+
+
+Example: Define papis mode in i3wm
+----------------------------------
+
+This is an example of using papis with the window manager `i3`.
+
+::
+
+  # Enter papis mode
+  bindsym $mod+Ctrl+p mode "papis"
+
+  # Define papis mode
+  mode "papis" {
+
+    # open documents
+    bindsym $mod+o exec python3 -m papis.main \
+      --pick-lib --set picktool=dmenu open
+
+    # edit documents
+    bindsym $mod+e exec python3 -m papis.main \
+      --pick-lib --set "picktool=dmenu editor=gvim" edit
+
+    # open document's url
+    bindsym $mod+b exec python3 -m papis.main \
+      --pick-lib --set picktool=dmenu browse
+
+    # return to default mode
+    bindsym Ctrl+c mode "default"
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+  }
+
+

@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS-CONFIG" "1" "Dec 06, 2017" "0.4.9" "papis"
+.TH "PAPIS-CONFIG" "1" "Feb 20, 2018" "0.5.3" "papis"
 .SH NAME
 papis-config \- Papis Configuration
 .
@@ -123,8 +123,51 @@ vim\-gui\-header\-format = Title: %(header\-format)s
 .fi
 .UNINDENT
 .UNINDENT
+.SH LOCAL CONFIGURATION FILES
+.sp
+Papis also offers the possibility of creating local configuration files.
+The name of the local configuration file can be configured with the
+\fBlocal\-config\-file\fP setting.
+.sp
+The local configuration file can be found in the current directory of
+where you are issuing the papis command or in the directory of the
+library that you are considering in the papis command.
+.sp
+For instance let us suppose that you are in some project folder
+\fB~/Documents/myproject\fP and you have a local config file there
+with a definition of a new library. Then whenever you are
+in the \fB~/Documents/myproject\fP directory papis will also source the
+local configuration file found there.
+.sp
+On the other hand, also if you have a configuration file in the library folder
+for your papers, for instance in
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+~/Documents/papers/.papis.config
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+then everytime that you use this library also papis will source this
+configuration file.
 .SH DEFAULT SETTINGS
 .SS General
+.INDENT 0.0
+.TP
+\fBlocal\-config\-file\fP (\fI\%config\-settings\-local\-config\-file\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB\&.papis.config\fP
+.UNINDENT
+.UNINDENT
+.sp
+Name AND relative path of the local configuration file that papis
+will additionally read if the file is present in the current
+directory or in the base directory of a given library.
 .INDENT 0.0
 .TP
 \fBmode\fP (\fI\%config\-settings\-mode\fP)
@@ -136,7 +179,7 @@ vim\-gui\-header\-format = Title: %(header\-format)s
 .sp
 Papis is a modal program and it can be configured to support different
 operating modes. The default is considering that every papis document
-or entry is a ‘document’.
+or entry is a \(aqdocument\(aq.
 .INDENT 0.0
 .TP
 \fBopentool\fP (\fI\%config\-settings\-opentool\fP)
@@ -163,7 +206,7 @@ For mac users you might set this to \fBopen\fP\&.
 .UNINDENT
 .sp
 This is the default \fBumask\fP that will be used to create the new
-documents’ directories.
+documents\(aq directories.
 .INDENT 0.0
 .TP
 \fBbrowser\fP (\fI\%config\-settings\-browser\fP)
@@ -196,6 +239,8 @@ papis.pick
 rofi
 .IP \(bu 2
 vim
+.IP \(bu 2
+dmenu
 .UNINDENT
 .UNINDENT
 .INDENT 0.0
@@ -233,7 +278,7 @@ Otherwise the default editor in your system will be used.
 .UNINDENT
 .sp
 Sometimes papis might use an editor that uses a windowing system
-(GUI Editor), you can set this to your prefered gui based editor, e.g.:
+(GUI Editor), you can set this to your preferred gui based editor, e.g.:
 \fBgedit\fP, \fBxemacs\fP, \fBgvim\fP to name a few.
 .INDENT 0.0
 .TP
@@ -273,7 +318,7 @@ for the given library.
 \fBcache\-dir\fP (\fI\%config\-settings\-cache\-dir\fP)
 .INDENT 7.0
 .IP \(bu 2
-\fBDefault\fP: \fB/home/ale/.cache/papis\fP
+\fBDefault\fP: \fB/home/gallo/.cache/papis\fP
 .UNINDENT
 .UNINDENT
 .INDENT 0.0
@@ -320,6 +365,17 @@ fave the contrary effect, i.e., it will not ask for confirmation.
 Default name for newly added documents. For example, if you want
 your documents to be \fBauthor\-title\fP then you should set it to
 the papis format: \fB{doc[author]}\-{doc[title]}\fP\&.
+.INDENT 0.0
+.TP
+\fBfile\-name\fP (\fI\%config\-settings\-file\-name\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBNone\fP
+.UNINDENT
+.UNINDENT
+.sp
+Same as \fBadd\-name\fP, but for files, not folders. If it is not set,
+the names of the files will be cleaned and taken \fIas\-is\fP\&.
 .INDENT 0.0
 .TP
 \fBadd\-interactive\fP (\fI\%config\-settings\-add\-interactive\fP)
@@ -498,7 +554,7 @@ these here as comma separated values, for example
 .UNINDENT
 .UNINDENT
 .sp
-Allow non\-standard bibtex types to be recognised, e.g,
+Allow non\-standard bibtex types to be recognized, e.g,
 \fBextra\-bibtex\-types = wikipedia, video, song\fP\&.
 See \fI\%bibtex reference\fP\&.
 .INDENT 0.0
@@ -548,7 +604,7 @@ set this option to \fBvid\fP in order to set  the \fBheader\-format\fP to
 Default format that is used to match a document against in order to select
 it. For example if the \fBmatch\-format\fP is equal to
 \fB{doc[year]} {doc[author]}\fP then title of a document will not work
-to match a document, onlye the year and author.
+to match a document, only the year and author.
 .INDENT 0.0
 .TP
 \fBheader\-format\fP (\fI\%config\-settings\-header\-format\fP)
@@ -618,7 +674,7 @@ bookmarks:
 .UNINDENT
 .sp
 This is the name of the mark to be passed to the options
-\fBmark\-header\-format\fP etc… E.g. if you set \fBmark\-format\-name = m\fP
+\fBmark\-header\-format\fP etc... E.g. if you set \fBmark\-format\-name = m\fP
 then you could set \fBmark\-header\-format = {m[value]} \- {m[name]}\fP\&.
 .INDENT 0.0
 .TP
@@ -681,6 +737,61 @@ in your info file or not. If it is set to false then a representation
 for the unicode characters will be written in its place.
 Since we should be living in an unicode world, it is set to \fBTrue\fP
 by default.
+.INDENT 0.0
+.TP
+\fBref\-format\fP (\fI\%config\-settings\-ref\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB{doc[doi]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+This flag is set to change the \fBref\fP flag in the info.yaml file
+when a document is imported. For example: I prefer the format
+FirstAuthorYear e.g. Plews2019. This would be achieved by the
+following:
+.INDENT 0.0
+.INDENT 3.5
+\fBref\-format = {doc[author_list][0][surname]}{doc[year]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+The default behavior is to set the doi as the ref.
+.INDENT 0.0
+.TP
+\fBmultiple\-authors\-format\fP (\fI\%config\-settings\-multiple\-authors\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB{au[surname]}, {au[given_name]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+When retrieving automatic author information from services like
+crossref.org, papis usually builds the \fBauthor\fP field for the
+given document. The format how every single author name is built
+is given by this setting, for instance you could customize it
+by the following:
+.INDENT 0.0
+.INDENT 3.5
+\fBmultiple\-authors\-format = {au[surname]} \-\- {au[given_name]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+which would given in the case of Albert Einstein the string
+\fBEinstein \-\- Albert\fP\&.
+.INDENT 0.0
+.TP
+\fBmultiple\-authors\-separator\fP (\fI\%config\-settings\-multiple\-authors\-separator\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \(ga\(ga and \(ga\(ga
+.UNINDENT
+.UNINDENT
+.sp
+Similarly to \fBmultiple\-authors\-format\fP, this is the string that
+separates single authors in the \fBauthor\fP field. If it is set to
+\(ga\(ga and \(ga\(ga then you would have \fB<author 1> and <author 2> and ....\fP
+in the \fBauthor\fP field.
 .SS Vim gui
 .INDENT 0.0
 .TP
@@ -1264,6 +1375,96 @@ Color of the background of an active entry
 .UNINDENT
 .UNINDENT
 .UNINDENT
+.SS dmenu gui
+.sp
+See \fI\%dmenu\fP and the python wrapper
+\fI\%here\fP for more information.
+You will need to install the latter to make use of this function,
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+pip3 install dmenu
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBlines\fP (\fI\%config\-dmenu\-gui\-lines\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB20\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBcase_insensitive\fP (\fI\%config\-dmenu\-gui\-case_insensitive\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBTrue\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBbottom\fP (\fI\%config\-dmenu\-gui\-bottom\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBTrue\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBfont\fP (\fI\%config\-dmenu\-gui\-font\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBmonospace\-14\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBbackground\fP (\fI\%config\-dmenu\-gui\-background\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB#000000\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBforeground\fP (\fI\%config\-dmenu\-gui\-foreground\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB#55ff55\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBbackground_selected\fP (\fI\%config\-dmenu\-gui\-background_selected\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB#005500\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBforeground_selected\fP (\fI\%config\-dmenu\-gui\-foreground_selected\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB#f0f0f0\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBheader\-format\fP (\fI\%config\-dmenu\-gui\-header\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBNone\fP
+.UNINDENT
+.UNINDENT
+.sp
+This is not set per default, and it will default to
+the general header\-format if not set.
 .SH AUTHOR
 Alejandro Gallo
 .SH COPYRIGHT

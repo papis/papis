@@ -56,6 +56,7 @@ setup(
         "python-magic>=0.4.13",
         "pylibgen>=1.3.0",
         "urwid>=1.3.1",
+        "habanero>=0.6.0",
     ],
     python_requires='>=3',
     classifiers=[
@@ -80,6 +81,9 @@ setup(
         # dependencies). You can install these using the following syntax,
         # for example:
         # $ pip install -e .[develop]
+        optional=[
+            'dmenu',
+        ],
         develop=[
             "sphinx",
             'sphinx-argparse',

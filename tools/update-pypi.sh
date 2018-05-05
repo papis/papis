@@ -3,8 +3,8 @@
 DIST_DIR=dist
 
 echo "Updating man pages"
-make -C doc man
-make bash-autocomplete
+make -C doc man ENV=${ENV}
+make bash-autocomplete ENV=${ENV}
 
 rm -rf ${DIST_DIR}
 python3 setup.py sdist
