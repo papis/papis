@@ -9,6 +9,9 @@ import papis.commands
 class Command(papis.commands.Command):
 
     def init(self, path):
+
+        self._external = True
+
         self.script_path = path
 
         self.parser = self.get_subparsers().add_parser(
@@ -18,13 +21,9 @@ class Command(papis.commands.Command):
         )
 
         self.parser.add_argument(
-            "-h", "--help",
-            action="store_true"
-        )
-
-        self.parser.add_argument(
-            "args",
+            'args',
             help="Arguments",
+            default='',
             nargs=argparse.REMAINDER,
             action="store"
         )
@@ -54,7 +53,12 @@ class Command(papis.commands.Command):
         os.environ["PAPIS_VERBOSE"] = "-v" if self.args.verbose else ""
 
     def main(self):
-        if self.args.help:
-            self.args.args = ['-h'] + self.args.args
+        self.logger.debug("Exporting variables")
         self.export_variables()
-        subprocess.call([self.script_path] + self.args.args)
+        # We have to get from the first argument due to the limitation of
+        # argparse that REMAINDER needs a non-flag argument first to work.
+        # see papis.command.patch_external_input_args and
+        # https://stackoverflow.com/questions/43219022/using-argparse-remainder-at-beginning-of-parser-sub-parser
+        cmd = [self.script_path] + self.args.args[1:]
+        self.logger.debug("Calling {}".format(cmd))
+        subprocess.call(cmd)

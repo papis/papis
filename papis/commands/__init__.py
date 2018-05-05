@@ -3,6 +3,7 @@ import logging
 logger = logging.getLogger("commands")
 logger.debug("importing")
 
+import sys
 import os
 import papis.utils
 import papis.config
@@ -163,23 +164,45 @@ def init_internal_commands():
 
 
 def init_external_commands():
-    import glob
     from papis.commands.external import Command as External
     logger.debug("Initializing external commands")
     commands = dict()
+    for script in get_external_scripts():
+        cmd = External()
+        logger.debug(script)
+        cmd.init(script)
+        commands[cmd.get_command_name()] = cmd
+    logger.debug("Initializing external commands done")
+    return commands
+
+
+def get_external_scripts():
+    import glob
     paths = []
+    scripts = []
     paths.append(papis.config.get_scripts_folder())
     paths += os.environ["PATH"].split(":")
     for path in paths:
-        scripts = glob.glob(os.path.join(path, "papis-*"))
-        if len(scripts):
-            for script in scripts:
-                cmd = External()
-                logger.debug(script)
-                cmd.init(script)
-                commands[cmd.get_command_name()] = cmd
-    logger.debug("Initializing external commands done")
-    return commands
+        scripts += glob.glob(os.path.join(path, "papis-*"))
+    return scripts
+
+
+def patch_external_input_args(arguments):
+    """
+    We have to add as the first argument to any external script a whitespace
+    or something besides a flag, since in argparse that REMAINDER needs a
+    non-flag argument first to work. This is a ?BUG? of argparse
+    stackoverflow.com/questions/43219022/
+    using-argparse-remainder-at-beginning-of-parser-sub-parser
+    """
+    external_names = [
+        cmd.get_command_name() for cmd in get_commands().values()
+        if cmd.is_external()
+    ]
+    for j, arg in enumerate(arguments):
+        if arg in external_names:
+            logger.debug("Patching {} command for argparse".format(arg))
+            arguments.insert(j+1, " ")
 
 
 def init_commands():
@@ -192,20 +215,23 @@ def init_commands():
 
 
 def init():
-    import argcomplete
     if get_commands() is not None:
         raise RuntimeError("Commands are already initialised")
     init_commands()
     # autocompletion
-    argcomplete.autocomplete(get_default_parser())
+    # import argcomplete
+    # argcomplete.autocomplete(get_default_parser())
     return get_commands()
 
 
 def main(input_args=[]):
     commands = get_commands()
-    # Parse arguments
-    args = get_default_parser().parse_args(input_args or None)
+    logger.debug("Parsing cli arguments")
+    input_args = input_args or sys.argv[1:]
+    patch_external_input_args(input_args)
+    args = get_default_parser().parse_args(input_args)
     set_args(args)
+    logger.debug(args)
     logger.debug("running main")
     commands["default"].main()
 
@@ -232,12 +258,17 @@ class Command(object):
         self.default_parser = get_default_parser()
         self.subparsers = get_subparsers()
         self.logger = logging.getLogger(self.__class__.__name__)
+        # If this script is an external script
+        self._external = False
 
     def init(self):
         pass
 
     def main(self):
         pass
+
+    def is_external(self):
+        return self._external
 
     def add_search_argument(self):
         self.parser.add_argument(

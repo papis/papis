@@ -45,6 +45,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
+    'sphinx.ext.inheritance_diagram',
     'sphinxarg.ext',
 ]
 
@@ -56,7 +57,6 @@ except ImportError:
     from io import StringIO
 
 from docutils.parsers.rst import Directive
-import sphinx.util.compat
 import docutils
 
 class ExecDirective(Directive):

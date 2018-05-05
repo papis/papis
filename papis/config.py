@@ -44,6 +44,7 @@
         - papis.pick
         - rofi
         - vim
+        - dmenu
 
 .. papis-config:: mvtool
 
@@ -62,7 +63,7 @@
 .. papis-config:: xeditor
 
     Sometimes papis might use an editor that uses a windowing system
-    (GUI Editor), you can set this to your prefered gui based editor, e.g.:
+    (GUI Editor), you can set this to your preferred gui based editor, e.g.:
     ``gedit``, ``xemacs``, ``gvim`` to name a few.
 
 .. papis-config:: sync-command
@@ -97,9 +98,11 @@
 
 .. papis-config:: add-name
 
-    Default name for newly added documents. For example, if you want
-    your documents to be ``author-title`` then you should set it to
+    Default name for the folder of newly added documents. For example, if you
+    the folder of your documents to be named after the format
+    ``author-title`` then you should set it to
     the papis format: ``{doc[author]}-{doc[title]}``.
+    Per default a hash followed by the author name is created.
 
 .. papis-config:: file-name
 
@@ -183,7 +186,7 @@
 
 .. papis-config:: extra-bibtex-types
 
-    Allow non-standard bibtex types to be recognised, e.g,
+    Allow non-standard bibtex types to be recognized, e.g,
     ``extra-bibtex-types = wikipedia, video, song``.
     See `bibtex reference <http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`_.
 .. papis-config:: default-library
@@ -208,7 +211,7 @@
     Default format that is used to match a document against in order to select
     it. For example if the ``match-format`` is equal to
     ``{doc[year]} {doc[author]}`` then title of a document will not work
-    to match a document, onlye the year and author.
+    to match a document, only the year and author.
 
 .. papis-config:: header-format
 
@@ -261,10 +264,11 @@
     Due to the difficulty to generalize opening a general document
     at a given bookmark, the user should set this in whichever way
     it suits their needs. For example
-        - If you are using the pdf viewer ``evince`` and you want to open a
-          mark, you would use ``mark-opener-format = evince -p {mark[value]}``.
-        - If you are using ``zathura``, do ``mark-opener-format = zathura -P
-          {mark[value]}``.
+
+    - If you are using the pdf viewer ``evince`` and you want to open a
+      mark, you would use ``mark-opener-format = evince -p {mark[value]}``.
+    - If you are using ``zathura``, do ``mark-opener-format = zathura -P
+      {mark[value]}``.
 
 .. papis-config:: info-allow-unicode
 
@@ -281,9 +285,33 @@
     FirstAuthorYear e.g. Plews2019. This would be achieved by the
     following:
 
-        ``ref-format = {doc[author_list][0][surname]}{doc[year]}``
+    ::
 
-    The default behaviour is to set the doi as the ref.
+        ref-format = {doc[author_list][0][surname]}{doc[year]}
+
+    The default behavior is to set the doi as the ref.
+
+.. papis-config:: multiple-authors-format
+
+    When retrieving automatic author information from services like
+    crossref.org, papis usually builds the ``author`` field for the
+    given document. The format how every single author name is built
+    is given by this setting, for instance you could customize it
+    by the following:
+
+    ::
+
+        multiple-authors-format = {au[surname]} -- {au[given_name]}
+
+    which would given in the case of Albert Einstein the string
+    ``Einstein -- Albert``.
+
+.. papis-config:: multiple-authors-separator
+
+    Similarly to ``multiple-authors-format``, this is the string that
+    separates single authors in the ``author`` field. If it is set to
+    `` and `` then you would have ``<author 1> and <author 2> and ....``
+    in the ``author`` field.
 
 """
 import logging
@@ -380,6 +408,8 @@ general_settings = {
 
     "info-allow-unicode": True,
     "ref-format"      : "{doc[doi]}",
+    "multiple-authors-separator": " and ",
+    "multiple-authors-format": "{au[surname]}, {au[given_name]}",
 }
 
 
@@ -528,7 +558,7 @@ def set(key, val, section=None):
 
 
 def general_get(key, section=None, data_type=None):
-    """General getter method that will be specialised for different modules.
+    """General getter method that will be specialized for different modules.
 
     :param data_type: The data type that should be expected for the value of
         the variable.
@@ -630,9 +660,9 @@ def in_mode(mode):
 
 
 def get_configuration():
-    """Get the configuratoin object, if no papis configuration has ever been
+    """Get the configuration object, if no papis configuration has ever been
     initialized, it initializes one. Only one configuration per process should
-    ever be configurated.
+    ever be configured.
 
     :returns: Configuration object
     :rtype:  papis.config.Configuration
@@ -683,7 +713,7 @@ def get_lib():
             lib = os.environ["PAPIS_LIB"]
         except KeyError:
             # Do not put papis.config.get because get is a special function
-            # that also needs the library to see if some key was overriden!
+            # that also needs the library to see if some key was overridden!
             lib = papis.config.get_default_settings(key="default-library")
     return lib
 
@@ -698,7 +728,7 @@ def reset_configuration():
     if CONFIGURATION is not None:
         logger.warning("Overwriting previous configuration")
     CONFIGURATION = None
-    logger.debug("Reseting configuration")
+    logger.debug("Resetting configuration")
     return get_configuration()
 
 

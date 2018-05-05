@@ -13,17 +13,17 @@ case "$cur" in
   -*)
   COMPREPLY=( $( compgen -W " -c	 --cc	 --clear-cache	 --config	 --cores	 -h	 --help	 -j	 -l	 --lib	 --log	 --pick-lib	 --picktool	 --set	 -v	 -V	 --verbose	 --version" -- $cur ) );;
   * )
-  COMPREPLY=( $( compgen -W "add	check	config	edit	export	explore	list	rm	mv	rename	open	browse	update	run	git	gui	sync	add-from-mail	call	crawl	scihub	mail	mutt	doi	zotero	hubation	ga	update-scripts" -- $cur ) );;
+  COMPREPLY=( $( compgen -W "add	check	config	edit	export	explore	list	rm	mv	rename	open	browse	update	run	git	gui	sync" -- $cur ) );;
 esac
 
 case "$prev" in
 
   config)
-    COMPREPLY=( $( compgen -W " -h	 --help browser	check-keys	use-cache	info-name	editor	extra-bibtex-types	add-name	opentool	default-library	match-format	database-backend	user-agent	mark-opener-format	default-gui	ref-format	mark-format-name	header-format	notes-name	info-allow-unicode	file-browser	dir-umask	format-doc-name	mark-key-name	mark-header-format	local-config-file	add-confirm	scripts-short-help-regex	export-text-format	extra-bibtex-keys	add-interactive	mode	doc-url-key-name	cache-dir	open-mark	use-git	mvtool	search-engine	sync-command	xeditor	browse-query-format	add-edit	mark-match-format	add-open	picktool	urwid-gui-help-key	urwid-gui-kill-buffer-key	urwid-gui-redraw-key	urwid-gui-show-fields	urwid-gui-prompt-key	urwid-gui-search-key	urwid-gui-quit-key	rofi-gui-case_sensitive	rofi-gui-sep	rofi-gui-normal_window	rofi-gui-width	rofi-gui-multi_select	rofi-gui-key-browse	rofi-gui-header-format	rofi-gui-key-quit	rofi-gui-fullscreen	rofi-gui-markup_rows	rofi-gui-fixed_lines	rofi-gui-key-normal-window	rofi-gui-lines	rofi-gui-key-edit	rofi-gui-key-delete	rofi-gui-key-open-stay	rofi-gui-key-open	rofi-gui-key-help	rofi-gui-eh	vim-gui-help-key	vim-gui-next-search-key	vim-gui-edit-key	vim-gui-prev-search-key	vim-gui-search-key	vim-gui-header-format	vim-gui-delete-key	vim-gui-open-dir-key	vim-gui-open-key	tk-gui-window-bg	tk-gui-move_up	tk-gui-activebackground	tk-gui-activeforeground	tk-gui-move_down	tk-gui-borderwidth	tk-gui-focus_prompt	tk-gui-move_top	tk-gui-height	tk-gui-labels-per-page	tk-gui-clear	tk-gui-entry-bg-odd	tk-gui-prompt-bg	tk-gui-match-format	tk-gui-window-width	tk-gui-window-height	tk-gui-half_up	tk-gui-print_info	tk-gui-entry-fg	tk-gui-scroll_up	tk-gui-edit	tk-gui-move_bottom	tk-gui-entry-bg-pair	tk-gui-help	tk-gui-scroll_down	tk-gui-prompt-font-size	tk-gui-entry-font-size	tk-gui-header-format	tk-gui-cursor	tk-gui-entry-font-name	tk-gui-entry-lines	tk-gui-entry-bg-size	tk-gui-exit	tk-gui-insertbackground	tk-gui-prompt-fg	tk-gui-entry-font-style	tk-gui-open	tk-gui-half_down" -- $cur ) )
+    COMPREPLY=( $( compgen -W " -h	 --help opentool	match-format	use-git	notes-name	sync-command	mark-key-name	file-name	mode	open-mark	multiple-authors-separator	cache-dir	database-backend	export-text-format	mark-match-format	file-browser	dir-umask	mark-format-name	check-keys	extra-bibtex-types	info-allow-unicode	browser	browse-query-format	add-confirm	mark-header-format	default-library	multiple-authors-format	add-open	xeditor	scripts-short-help-regex	local-config-file	default-gui	add-name	ref-format	use-cache	user-agent	mark-opener-format	search-engine	add-edit	add-interactive	format-doc-name	editor	mvtool	header-format	info-name	picktool	doc-url-key-name	extra-bibtex-keys	vim-gui-edit-key	vim-gui-search-key	vim-gui-header-format	vim-gui-open-dir-key	vim-gui-delete-key	vim-gui-next-search-key	vim-gui-help-key	vim-gui-prev-search-key	vim-gui-open-key	rofi-gui-key-quit	rofi-gui-key-help	rofi-gui-normal_window	rofi-gui-key-normal-window	rofi-gui-fixed_lines	rofi-gui-multi_select	rofi-gui-eh	rofi-gui-key-open-stay	rofi-gui-sep	rofi-gui-width	rofi-gui-key-browse	rofi-gui-header-format	rofi-gui-markup_rows	rofi-gui-key-open	rofi-gui-key-delete	rofi-gui-key-edit	rofi-gui-lines	rofi-gui-fullscreen	rofi-gui-case_sensitive	tk-gui-entry-font-style	tk-gui-labels-per-page	tk-gui-move_down	tk-gui-entry-bg-pair	tk-gui-prompt-fg	tk-gui-focus_prompt	tk-gui-window-width	tk-gui-prompt-bg	tk-gui-half_down	tk-gui-scroll_up	tk-gui-move_bottom	tk-gui-activeforeground	tk-gui-window-height	tk-gui-match-format	tk-gui-edit	tk-gui-window-bg	tk-gui-clear	tk-gui-insertbackground	tk-gui-entry-font-size	tk-gui-entry-bg-size	tk-gui-cursor	tk-gui-move_up	tk-gui-print_info	tk-gui-exit	tk-gui-height	tk-gui-scroll_down	tk-gui-activebackground	tk-gui-borderwidth	tk-gui-entry-bg-odd	tk-gui-header-format	tk-gui-entry-fg	tk-gui-entry-font-name	tk-gui-half_up	tk-gui-open	tk-gui-prompt-font-size	tk-gui-help	tk-gui-entry-lines	tk-gui-move_top	dmenu-gui-foreground_selected	dmenu-gui-font	dmenu-gui-case_insensitive	dmenu-gui-header-format	dmenu-gui-foreground	dmenu-gui-bottom	dmenu-gui-lines	dmenu-gui-background_selected	dmenu-gui-background	urwid-gui-search-key	urwid-gui-prompt-key	urwid-gui-kill-buffer-key	urwid-gui-help-key	urwid-gui-redraw-key	urwid-gui-show-fields	urwid-gui-quit-key" -- $cur ) )
     ;;
 
   add)
-    COMPREPLY=( $( compgen -W " --author	 --commit	 --confirm	 -d	 --dir	 --edit	 --from-bibtex	 --from-doi	 --from-folder	 --from-lib	 --from-pmid	 --from-url	 --from-vcf	 --from-yaml	 -h	 --help	 -i	 --interactive	 --name	 --no-document	 --open	 --title	 --to" -- $cur ) )
+    COMPREPLY=( $( compgen -W " --author	 --commit	 --confirm	 -d	 --dir	 --edit	 --file-name	 --from-bibtex	 --from-doi	 --from-folder	 --from-lib	 --from-pmid	 --from-url	 --from-vcf	 --from-yaml	 -h	 --help	 -i	 --interactive	 --name	 --no-document	 --open	 --title	 --to" -- $cur ) )
     ;;
 
   check)
@@ -43,7 +43,7 @@ case "$prev" in
     ;;
 
   explore)
-    COMPREPLY=( $( compgen -W " --add	 --arxiv	 -h	 --help	 --isbnplus	 --libgen	 --max" -- $cur ) )
+    COMPREPLY=( $( compgen -W " --add	 --arxiv	 --cmd	 --crossref	 -h	 --help	 --isbnplus	 --libgen	 --max" -- $cur ) )
     ;;
 
   list)
@@ -90,50 +90,6 @@ case "$prev" in
     COMPREPLY=( $( compgen -W " -h	 --help" -- $cur ) )
     ;;
 
-  add-from-mail)
-    COMPREPLY=( $( compgen -W "" -- $cur ) )
-    ;;
-
-  call)
-    COMPREPLY=( $( compgen -W "" -- $cur ) )
-    ;;
-
-  crawl)
-    COMPREPLY=( $( compgen -W "" -- $cur ) )
-    ;;
-
-  scihub)
-    COMPREPLY=( $( compgen -W " -d	 --from-doi	 --name" -- $cur ) )
-    ;;
-
-  mail)
-    COMPREPLY=( $( compgen -W "" -- $cur ) )
-    ;;
-
-  mutt)
-    COMPREPLY=( $( compgen -W "" -- $cur ) )
-    ;;
-
-  doi)
-    COMPREPLY=( $( compgen -W "" -- $cur ) )
-    ;;
-
-  zotero)
-    COMPREPLY=( $( compgen -W "" -- $cur ) )
-    ;;
-
-  hubation)
-    COMPREPLY=( $( compgen -W "" -- $cur ) )
-    ;;
-
-  ga)
-    COMPREPLY=( $( compgen -W "" -- $cur ) )
-    ;;
-
-  update-scripts)
-    COMPREPLY=( $( compgen -W "" -- $cur ) )
-    ;;
-
 
   --picktool)
     COMPREPLY=( $( compgen -W "papis.pick vim rofi" -- $cur ) )
@@ -156,7 +112,7 @@ case "$prev" in
     ;;
 
   --set)
-    COMPREPLY=( $( compgen -W "add-confirm=	mark-opener-format=	add-name=	picktool=	ref-format=	open-mark=	editor=	mode=	check-keys=	user-agent=	browse-query-format=	notes-name=	use-cache=	info-name=	cache-dir=	sync-command=	file-browser=	add-edit=	info-allow-unicode=	extra-bibtex-types=	opentool=	default-library=	add-open=	match-format=	mark-header-format=	xeditor=	dir-umask=	add-interactive=	database-backend=	scripts-short-help-regex=	mark-key-name=	mark-match-format=	search-engine=	doc-url-key-name=	mvtool=	local-config-file=	extra-bibtex-keys=	header-format=	export-text-format=	format-doc-name=	default-gui=	use-git=	mark-format-name=	browser=	tk-gui-half_up=	tk-gui-cursor=	tk-gui-move_down=	tk-gui-entry-fg=	tk-gui-exit=	tk-gui-borderwidth=	tk-gui-open=	tk-gui-prompt-bg=	tk-gui-entry-font-style=	tk-gui-prompt-fg=	tk-gui-edit=	tk-gui-activebackground=	tk-gui-labels-per-page=	tk-gui-activeforeground=	tk-gui-window-bg=	tk-gui-focus_prompt=	tk-gui-print_info=	tk-gui-window-height=	tk-gui-clear=	tk-gui-scroll_up=	tk-gui-entry-bg-pair=	tk-gui-entry-font-size=	tk-gui-half_down=	tk-gui-help=	tk-gui-scroll_down=	tk-gui-header-format=	tk-gui-move_bottom=	tk-gui-entry-bg-odd=	tk-gui-prompt-font-size=	tk-gui-entry-bg-size=	tk-gui-entry-lines=	tk-gui-insertbackground=	tk-gui-move_top=	tk-gui-window-width=	tk-gui-height=	tk-gui-match-format=	tk-gui-move_up=	tk-gui-entry-font-name=	vim-gui-edit-key=	vim-gui-help-key=	vim-gui-next-search-key=	vim-gui-open-key=	vim-gui-prev-search-key=	vim-gui-search-key=	vim-gui-delete-key=	vim-gui-header-format=	vim-gui-open-dir-key=	rofi-gui-key-quit=	rofi-gui-key-edit=	rofi-gui-multi_select=	rofi-gui-key-open=	rofi-gui-key-normal-window=	rofi-gui-key-help=	rofi-gui-lines=	rofi-gui-case_sensitive=	rofi-gui-fullscreen=	rofi-gui-key-browse=	rofi-gui-key-open-stay=	rofi-gui-header-format=	rofi-gui-normal_window=	rofi-gui-markup_rows=	rofi-gui-sep=	rofi-gui-fixed_lines=	rofi-gui-eh=	rofi-gui-key-delete=	rofi-gui-width=	urwid-gui-show-fields=	urwid-gui-help-key=	urwid-gui-prompt-key=	urwid-gui-kill-buffer-key=	urwid-gui-quit-key=	urwid-gui-search-key=	urwid-gui-redraw-key=" -- $cur ) )
+    COMPREPLY=( $( compgen -W "editor=	use-cache=	mark-header-format=	add-interactive=	browse-query-format=	scripts-short-help-regex=	mvtool=	user-agent=	ref-format=	add-edit=	add-open=	mark-match-format=	mark-key-name=	mark-format-name=	add-name=	notes-name=	sync-command=	use-git=	dir-umask=	check-keys=	mark-opener-format=	extra-bibtex-keys=	format-doc-name=	multiple-authors-format=	export-text-format=	file-name=	opentool=	add-confirm=	search-engine=	multiple-authors-separator=	database-backend=	mode=	picktool=	browser=	xeditor=	file-browser=	info-name=	local-config-file=	match-format=	extra-bibtex-types=	doc-url-key-name=	open-mark=	cache-dir=	default-gui=	info-allow-unicode=	default-library=	header-format=	rofi-gui-key-open=	rofi-gui-key-quit=	rofi-gui-fullscreen=	rofi-gui-key-open-stay=	rofi-gui-sep=	rofi-gui-fixed_lines=	rofi-gui-multi_select=	rofi-gui-key-browse=	rofi-gui-key-normal-window=	rofi-gui-markup_rows=	rofi-gui-eh=	rofi-gui-key-edit=	rofi-gui-normal_window=	rofi-gui-case_sensitive=	rofi-gui-key-delete=	rofi-gui-width=	rofi-gui-key-help=	rofi-gui-header-format=	rofi-gui-lines=	dmenu-gui-foreground=	dmenu-gui-foreground_selected=	dmenu-gui-font=	dmenu-gui-lines=	dmenu-gui-background_selected=	dmenu-gui-background=	dmenu-gui-bottom=	dmenu-gui-header-format=	dmenu-gui-case_insensitive=	vim-gui-delete-key=	vim-gui-prev-search-key=	vim-gui-open-dir-key=	vim-gui-search-key=	vim-gui-open-key=	vim-gui-header-format=	vim-gui-help-key=	vim-gui-edit-key=	vim-gui-next-search-key=	urwid-gui-prompt-key=	urwid-gui-quit-key=	urwid-gui-redraw-key=	urwid-gui-show-fields=	urwid-gui-search-key=	urwid-gui-kill-buffer-key=	urwid-gui-help-key=	tk-gui-half_up=	tk-gui-entry-bg-size=	tk-gui-entry-font-size=	tk-gui-scroll_down=	tk-gui-activebackground=	tk-gui-edit=	tk-gui-match-format=	tk-gui-clear=	tk-gui-scroll_up=	tk-gui-labels-per-page=	tk-gui-move_down=	tk-gui-entry-fg=	tk-gui-prompt-bg=	tk-gui-height=	tk-gui-entry-font-name=	tk-gui-exit=	tk-gui-print_info=	tk-gui-entry-lines=	tk-gui-cursor=	tk-gui-insertbackground=	tk-gui-window-bg=	tk-gui-entry-bg-odd=	tk-gui-entry-bg-pair=	tk-gui-help=	tk-gui-open=	tk-gui-window-width=	tk-gui-entry-font-style=	tk-gui-window-height=	tk-gui-borderwidth=	tk-gui-prompt-font-size=	tk-gui-focus_prompt=	tk-gui-move_up=	tk-gui-half_down=	tk-gui-prompt-fg=	tk-gui-move_bottom=	tk-gui-activeforeground=	tk-gui-header-format=	tk-gui-move_top=" -- $cur ) )
     ;;
 
 esac

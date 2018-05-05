@@ -15,16 +15,19 @@ import papis.commands
 import papis.document
 import papis.crossref
 import papis.bibtex
+import papis.exceptions
 
 def general_open(fileName, key, default_opener="xdg-open", wait=True):
     try:
         opener = papis.config.get(key)
-    except KeyError:
+    except papis.exceptions.DefaultSettingValueMissing:
         opener = default_opener
     if isinstance(fileName, list):
         fileName = papis.api.pick(fileName)
+    # Take care of spaces in filenames
     if isinstance(opener, str):
         if wait:
+            fileName = "\"{}\"".format(fileName)
             return os.system(" ".join([opener, fileName]))
         else:
             cmd = opener.split() + [fileName]
@@ -63,6 +66,14 @@ def format_doc(python_format, document, key=""):
     :type  document: papis.document.Document
     :returns: Formated string
     :rtype: str
+    >>> import papis.document
+    >>> document = papis.document.Document(\
+            data=dict(author='Fulano', title='Something') \
+        )
+    >>> format_doc('{doc[author]}{doc[title]}', document)
+    'FulanoSomething'
+    >>> format_doc('{doc[author]}{doc[title]}{doc[blahblah]}', document)
+    'FulanoSomething'
     """
     doc = key or papis.config.get("format-doc-name")
     return python_format.format(**{doc: document})
@@ -110,8 +121,8 @@ def create_identifier(input_list):
     create combinations of that list that result in unique strings.
     Ideally for use in modifying an existing string to make it unique.
 
-    Example: 
-    >>> m = create_identifier(string.ascii_lowercase) 
+    Example:
+    >>> m = create_identifier(string.ascii_lowercase)
     >>> next(m)
     'a'
     >>> import itertools, string
@@ -287,7 +298,7 @@ def get_documents(directory, search=""):
         import papis.cache
         folders = papis.cache.get_folders(directory)
     else:
-        folders = get_folders()
+        folders = get_folders(directory)
 
     logger.debug("Creating document objects")
     documents = folders_to_documents(folders)
@@ -534,11 +545,13 @@ def locate_document(document, documents):
     :returns: TODO
 
     """
+    # if these keys exist in the documents, then check those first
     for d in documents:
         for key in ['doi', 'ref', 'isbn', 'isbn10', 'url']:
-            if 'doi' in document.keys() and 'doi' in d.keys():
-                if document['doi'] == d['doi']:
+            if key in document.keys() and key in d.keys():
+                if document[key] == d[key]:
                     return d
+    # else, just try to match the usual way the documents
     docs = filter_documents(
         documents,
         search='author = "{doc[author]}" title = "{doc[title]}"'.format(

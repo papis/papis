@@ -16,5 +16,6 @@ script:
 install:
   - pip install setuptools
   - pip install -e .[develop]
+  - pip install -e .[optional]
   - pip install pytest
   - make install

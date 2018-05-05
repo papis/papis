@@ -23,7 +23,7 @@ import papis.utils
 # CrossRef documentation comes from here:
 # http://labs.crossref.org/site/quick_and_dirty_api_guide.html
 #
-# You need a CrossRef API key. 
+# You need a CrossRef API key.
 #
 CROSSREF_KEY = "fx.coudert@chimie-paristech.fr"
 CROSSREF_KEY = "a.gallo@fkf.mpg.de"
@@ -151,6 +151,35 @@ latex_accents = {
   "\xa0": " ",     # Unprintable characters
 }
 
+def crossref_data_to_papis_data(data):
+    if "author" in data.keys():
+        authors = []
+        for author in data["author"]:
+            if "given" in author.keys() and "family" in author.keys():
+                authors.append(
+                    dict(given_name=author["given"], surname=author["family"])
+                )
+        data["author_list"] = authors
+        data["author"] = ",".join(
+            ["{a[given_name]} {a[surname]}".format(a=a) for a in authors]
+        )
+    if 'title' in data.keys():
+        data["title"] = " ".join(data['title'])
+    if 'DOI' in data.keys():
+        data["doi"] = data["DOI"]
+        del data["DOI"]
+    if 'URL' in data.keys():
+        data["url"] = data["URL"]
+        del data["URL"]
+    return data
+
+def get_data(query="", max_results=20):
+    import habanero
+    cr = habanero.Crossref()
+    results = cr.works(query=query, limit=max_results)
+    return [
+        crossref_data_to_papis_data(d) for d in results["message"]["items"]
+    ]
 
 def replace_latex_accents(string):
     s = unicodedata.normalize('NFC', string)
@@ -166,7 +195,7 @@ def validate_doi(doi):
     :type  doi: str
     """
     from urllib.request import urlopen, Request
-    handle_url = "http://dx.doi.org/" + doi
+    handle_url = "https://doi.org/" + doi
     logger.debug('handle url %s' % handle_url)
     try:
       handle = urlopen(handle_url)
@@ -175,7 +204,7 @@ def validate_doi(doi):
 
     resolvedURL = handle.geturl()
     logger.debug('resolved url %s' % resolvedURL)
-    if resolvedURL[0:18] == "http://dx.doi.org/":
+    if resolvedURL[0:16] == "https://doi.org/":
       return None
     else:
       return resolvedURL
@@ -224,8 +253,9 @@ def get_author_info_from_results(container):
         author[ 'given_name' ] = given_name
         authors_info['author_list'].append(author)
 
-    authors_info['author'] = ', '.join([
-        "{au[given_name]} {au[surname]}".format(au=author)
+    authors_info['author'] = papis.config.get('multiple-authors-separator')\
+    .join([
+        papis.config.get("multiple-authors-format").format(au=author)
         for author in authors_info['author_list']
     ])
 
@@ -353,7 +383,7 @@ def get_cross_ref(doi):
                 continue            # It does? Keep checking.
             # If it doesn't...
             else:
-                # ...make this the new ref tag value 
+                # ...make this the new ref tag value
                 res['ref'] = str(res['ref'] + '{}').format(append_string)
                 break
 
@@ -375,18 +405,42 @@ def get_clean_doi(doi):
     :doi: String containing a doi
     :returns: The pure doi
 
+    >>> get_clean_doi('http://dx.doi.org/10.1063%2F1.881498')
+    '10.1063/1.881498'
     >>> get_clean_doi('http://dx.doi.org/10.1063/1.881498')
+    '10.1063/1.881498'
+    >>> get_clean_doi('10.1063%2F1.881498')
     '10.1063/1.881498'
     >>> get_clean_doi('10.1063/1.881498')
     '10.1063/1.881498'
+    >>> get_clean_doi(\
+            'http://physicstoday.scitation.org/doi/10.1063/1.uniau12/abstract'\
+        )
+    '10.1063/1.uniau12'
+    >>> get_clean_doi(\
+            'http://scitation.org/doi/10.1063/1.uniau12/abstract?as=234' \
+        )
+    '10.1063/1.uniau12'
     >>> get_clean_doi('http://physicstoday.scitation.org/doi/10.1063/1.881498')
     '10.1063/1.881498'
-    >>> get_clean_doi('http://physicstoday.scitation.org/doi/10.1063/1.881498?asdfwer')
+    >>> get_clean_doi(\
+            'https://doi.org/10.1093/analys/anw053' \
+        )
+    '10.1093/analys/anw053'
+    >>> get_clean_doi(\
+            'http://physicstoday.scitation.org/doi/10.1063/1.881498?asdfwer' \
+        )
     '10.1063/1.881498'
     """
-    mdoi = re.match(r'(.*doi(.org)?/)?(.*/[^?&%^$]*).*', doi)
+    mdoi = re.match(
+        r'^([^?/&%$^]+)(/|%2F)([^?&%$^]+).*',
+        re.sub(
+            r'.*doi(.org)?/', '',
+            doi.replace("/abstract", "")
+        )
+    )
     if mdoi:
-        return mdoi.group(3)
+        return mdoi.group(1) + '/' + mdoi.group(3)
     else:
         return None
 

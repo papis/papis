@@ -222,7 +222,7 @@ class Command(papis.commands.Command):
             filename = os.path.basename(original_filepath)
         else:
             filename = papis.utils.format_doc(
-                papis.config.get("file-name"), data
+                papis.config.get("file-name"), papis.document.from_data(data)
             ) +\
             ("-" + suffix if len(suffix) > 0 else "") +\
             "." + papis.utils.guess_file_extension(original_filepath)

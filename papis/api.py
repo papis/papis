@@ -125,6 +125,10 @@ def pick(options, pick_config={}):
         import papis.gui.rofi
         logger.debug("Using rofi picker")
         return papis.gui.rofi.pick(options, **pick_config)
+    if picker == "dmenu":
+        import papis.gui.dmenu
+        logger.debug("Using dmenu picker")
+        return papis.gui.dmenu.pick(options, **pick_config)
     elif picker == "vim":
         import papis.gui.vim
         logger.debug("Using vim picker")

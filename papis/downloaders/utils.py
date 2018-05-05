@@ -11,6 +11,7 @@ def getAvailableDownloaders():
     import papis.downloaders.aps
     import papis.downloaders.acs
     import papis.downloaders.arxiv
+    import papis.downloaders.ieee
     import papis.downloaders.scitationaip
     import papis.downloaders.annualreviews
     import papis.downloaders.iopscience
@@ -20,6 +21,7 @@ def getAvailableDownloaders():
         papis.downloaders.aps.Downloader,
         papis.downloaders.acs.Downloader,
         papis.downloaders.arxiv.Downloader,
+        papis.downloaders.ieee.Downloader,
         papis.downloaders.scitationaip.Downloader,
         papis.downloaders.annualreviews.Downloader,
         papis.downloaders.iopscience.Downloader,

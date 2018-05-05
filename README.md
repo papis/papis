@@ -1,15 +1,18 @@
 
 # Papis
 
-[![Build Status](https://travis-ci.org/alejandrogallo/papis.svg?branch=master)](https://travis-ci.org/alejandrogallo/papis)
+[![Build Status](https://travis-ci.org/papis/papis.svg?branch=master)](https://travis-ci.org/papis/papis)
 
 <a href='http://papis.readthedocs.io/en/latest/?badge=latest'>
-    <img src='https://readthedocs.org/projects/papis/badge/?version=latest' alt='Documentation Status' />
+    <img src='https://readthedocs.org/projects/papis/badge/?version=latest'
+         alt='Documentation Status' />
 </a>
 
 <a href="https://badge.fury.io/py/papis">
   <img src="https://badge.fury.io/py/papis.svg" alt="PyPI version" height="18">
 </a>
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/papis.svg)](https://repology.org/metapackage/papis)
 
 ## Description
 
@@ -24,7 +27,7 @@ Learn more:
   [here](
   https://www.ostechnix.com/papis-command-line-based-document-bibliography-manager/
   ).
-  - A review in spanish is also available at [ubunlog](
+  - A review in Spanish is also available at [ubunlog](
     https://ubunlog.com/papis-administrador-documentos/
   ).
 
@@ -66,14 +69,14 @@ sudo pip3 install papis
 Let us download a couple of documents
 ```
 wget http://www.gnu.org/s/libc/manual/pdf/libc.pdf
-wget http://www.ams.org/notices/201304/rnoti-p434.pdf 
+wget http://www.ams.org/notices/201304/rnoti-p434.pdf
 ```
 
 Now add them to the (defaultly created) library
 ```
 papis add libc.pdf --author "Sandra Loosemore" --title "GNU C reference manual" --confirm
 # Get paper information automatically via de DOI
-papis add --from-doi 10.1090/noti963 rnoti-p434.pdf 
+papis add --from-doi 10.1090/noti963 rnoti-p434.pdf
 ```
 
 Now open one for example
