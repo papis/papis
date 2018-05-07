@@ -57,7 +57,6 @@ except ImportError:
     from io import StringIO
 
 from docutils.parsers.rst import Directive
-import sphinx.util.compat
 import docutils
 
 class ExecDirective(Directive):

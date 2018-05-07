@@ -29,6 +29,32 @@ You can also **update** papis with ``pip``
 
   pip3 install --upgrade papis
 
+NixOS
+-----
+
+If you are running `NixOS <https://nixos.org/>`_ or you have the
+`nix <https://nixos.org/nix/>`_ package manager installed, you can install
+papis by running:
+
+::
+
+  nix-env -i papis
+
+If you like papis, just clone the repository
+
+::
+
+  git clone git@github.com:papis/papis.git
+  cd papis
+
+and start hacking it with:
+
+::
+
+  nix-shell --expr 'with import <nixpkgs> {}; papis.overrideDerivation (drv: { src = ./.; })'
+
+This command will provide you a shell with all the dependencies required.
+
 
 From source
 -----------

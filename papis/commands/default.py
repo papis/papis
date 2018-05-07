@@ -1,5 +1,4 @@
 import os
-import sys
 import papis
 import papis.api
 import papis.config
@@ -109,7 +108,7 @@ class Command(papis.commands.Command):
 
         if self.args.set:
             import papis.docmatcher
-            key_vals = papis.docmatcher.DocMatcher.parse(self.args.set)
+            key_vals = papis.docmatcher.parse_query(self.args.set)
             self.logger.debug('Parsed set %s' % key_vals)
             for pair in key_vals:
                 if len(pair) != 3:
@@ -158,4 +157,6 @@ class Command(papis.commands.Command):
             if self.args.command in commands.keys():
                 commands[self.args.command].set_args(self.args)
                 commands[self.args.command].set_db(self.get_db())
-                commands[self.args.command].main()
+                return commands[self.args.command].main()
+        else:
+            return 0

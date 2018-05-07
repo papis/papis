@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS-CONFIG" "1" "Jan 31, 2018" "0.5.2" "papis"
+.TH "PAPIS-CONFIG" "1" "May 08, 2018" "0.6" "papis"
 .SH NAME
 papis-config \- Papis Configuration
 .
@@ -168,34 +168,40 @@ configuration file.
 Name AND relative path of the local configuration file that papis
 will additionally read if the file is present in the current
 directory or in the base directory of a given library.
+.sp
+This is useful for instance if you have a library somewhere
+for which you want special configuration settings to be set
+but you do not want these settings to cluster in your configuration
+file. It is also useful if you\(aqre sharing a library with someone
+else and you want them to have the same settings in that library as
+you. Imagine you\(aqre sharing a library of datasheets with your friend
+Fulano. You have your library at
 .INDENT 0.0
-.TP
-\fBmode\fP (\fI\%config\-settings\-mode\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBdocument\fP
+.INDENT 3.5
+.sp
+.nf
+.ft C
+~/Documents/lib\-with\-fulano
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
-Papis is a modal program and it can be configured to support different
-operating modes. The default is considering that every papis document
-or entry is a \(aqdocument\(aq.
+and you\(aqve set a local configuration file there
 .INDENT 0.0
-.TP
-\fBopentool\fP (\fI\%config\-settings\-opentool\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBxdg\-open\fP
+.INDENT 3.5
+.sp
+.nf
+.ft C
+~/Documents/lib\-with\-fulano/.papis.config
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
-This is the general program that will be used to open documents.
-As for now papis is not intended to detect the type of document to be open
-and decide upon it how to open the document. You should set this
-to the right program for the tool. If you are in linux you might want
-to take a look at \fI\%ranger\fP or let
-the default handle it in your system.
-For mac users you might set this to \fBopen\fP\&.
+then whenever Fulano uses that library and the file is also present,
+his papis program will also read the configuration settings at
+the path above.
 .INDENT 0.0
 .TP
 \fBdir\-umask\fP (\fI\%config\-settings\-dir\-umask\fP)
@@ -209,118 +215,6 @@ This is the default \fBumask\fP that will be used to create the new
 documents\(aq directories.
 .INDENT 0.0
 .TP
-\fBbrowser\fP (\fI\%config\-settings\-browser\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB$BROWSER\fP
-.UNINDENT
-.UNINDENT
-.sp
-Program to be used for opening websites, the default is the environment
-variable \fB$BROWSER\fP\&.
-.INDENT 0.0
-.TP
-\fBpicktool\fP (\fI\%config\-settings\-picktool\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBpapis.pick\fP
-.UNINDENT
-.UNINDENT
-.sp
-This is the program used whenever papis asks you to pick a document
-or options in general.
-.INDENT 0.0
-.TP
-.B Possible options are:
-.INDENT 7.0
-.IP \(bu 2
-papis.pick
-.IP \(bu 2
-rofi
-.IP \(bu 2
-vim
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBmvtool\fP (\fI\%config\-settings\-mvtool\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBmv\fP
-.UNINDENT
-.UNINDENT
-.sp
-Tool used to in the \fBpapis mv\fP command to move documents.
-If you are using \fBgit\fP to manage your documents, you might consider
-setting it to \fBmvtool = git mv\fP\&.
-.INDENT 0.0
-.TP
-\fBeditor\fP (\fI\%config\-settings\-editor\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB$EDITOR\fP
-.UNINDENT
-.UNINDENT
-.sp
-Editor used to edit files in papis, for instance for the \fBpapis edit\fP
-command. It defaults to the \fB$EDITOR\fP environment variable, if this is
-not set then it will default to the \fB$VISUAL\fP environment variable.
-Otherwise the default editor in your system will be used.
-.INDENT 0.0
-.TP
-\fBxeditor\fP (\fI\%config\-settings\-xeditor\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBxdg\-open\fP
-.UNINDENT
-.UNINDENT
-.sp
-Sometimes papis might use an editor that uses a windowing system
-(GUI Editor), you can set this to your prefered gui based editor, e.g.:
-\fBgedit\fP, \fBxemacs\fP, \fBgvim\fP to name a few.
-.INDENT 0.0
-.TP
-\fBsync\-command\fP (\fI\%config\-settings\-sync\-command\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBgit \-C {lib[dir]} pull origin master\fP
-.UNINDENT
-.UNINDENT
-.sp
-Command that is to be used when \fBpapis sync\fP is run.
-.INDENT 0.0
-.TP
-\fBnotes\-name\fP (\fI\%config\-settings\-notes\-name\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBnotes.tex\fP
-.UNINDENT
-.UNINDENT
-.sp
-In \fBpapis edit\fP you can edit notes about the document. \fBnotes\-name\fP
-is the default name of the notes file, which by default is supposed
-to be a TeX file.
-.INDENT 0.0
-.TP
-\fBuse\-cache\fP (\fI\%config\-settings\-use\-cache\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBTrue\fP
-.UNINDENT
-.UNINDENT
-.sp
-Set to \fBFalse\fP if you do not want to use the \fBcache\fP
-for the given library.
-.INDENT 0.0
-.TP
-\fBcache\-dir\fP (\fI\%config\-settings\-cache\-dir\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB/home/gallo/.cache/papis\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
 \fBuse\-git\fP (\fI\%config\-settings\-use\-git\fP)
 .INDENT 7.0
 .IP \(bu 2
@@ -330,102 +224,6 @@ for the given library.
 .sp
 Some commands will issue git commands if this option is set to \fBTrue\fP\&.
 For example in \fBmv\fP or \fBrename\fP\&.
-.INDENT 0.0
-.TP
-\fBadd\-confirm\fP (\fI\%config\-settings\-add\-confirm\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBFalse\fP
-.UNINDENT
-.UNINDENT
-.sp
-If set to \fBTrue\fP, everytime you run \fBpapis add\fP
-the flag \fB\-\-confirm\fP will be added automatically. If is set to \fBTrue\fP
-and you add it, i.e., you run \fBpapis add \-\-confirm\fP, then it will
-fave the contrary effect, i.e., it will not ask for confirmation.
-.INDENT 0.0
-.TP
-\fBadd\-name\fP (\fI\%config\-settings\-add\-name\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: 
-.nf
-\(ga\(ga
-.fi
-
-.nf
-\(ga\(ga
-.fi
-
-.UNINDENT
-.UNINDENT
-.sp
-Default name for newly added documents. For example, if you want
-your documents to be \fBauthor\-title\fP then you should set it to
-the papis format: \fB{doc[author]}\-{doc[title]}\fP\&.
-.INDENT 0.0
-.TP
-\fBfile\-name\fP (\fI\%config\-settings\-file\-name\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBNone\fP
-.UNINDENT
-.UNINDENT
-.sp
-Same as \fBadd\-name\fP, but for files, not folders. If it is not set,
-the names of the files will be cleaned and taken \fIas\-is\fP\&.
-.INDENT 0.0
-.TP
-\fBadd\-interactive\fP (\fI\%config\-settings\-add\-interactive\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBFalse\fP
-.UNINDENT
-.UNINDENT
-.sp
-If set to \fBTrue\fP, everytime you run \fBpapis add\fP
-the flag \fB\-\-interactive\fP will be added automatically. If is set to
-\fBTrue\fP and you add it, i.e., you run \fBpapis add \-\-interactive\fP, then it
-will fave the contrary effect, i.e., it will not run in interactive mode.
-.INDENT 0.0
-.TP
-\fBadd\-edit\fP (\fI\%config\-settings\-add\-edit\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBFalse\fP
-.UNINDENT
-.UNINDENT
-.sp
-If set to \fBTrue\fP, everytime you run \fBpapis add\fP
-the flag \fB\-\-edit\fP will be added automatically. If is set to
-\fBTrue\fP and you add it, i.e., you run \fBpapis add \-\-edit\fP, then it
-will fave the contrary effect, i.e., it will not prompt to edit the info
-file.
-.INDENT 0.0
-.TP
-\fBadd\-open\fP (\fI\%config\-settings\-add\-open\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBFalse\fP
-.UNINDENT
-.UNINDENT
-.sp
-If set to \fBTrue\fP, everytime you run \fBpapis add\fP
-the flag \fB\-\-open\fP will be added automatically. If is set to
-\fBTrue\fP and you add it, i.e., you run \fBpapis add \-\-open\fP, then it
-will fave the contrary effect, i.e., it will not open the attached files
-before adding the document to the library.
-.INDENT 0.0
-.TP
-\fBcheck\-keys\fP (\fI\%config\-settings\-check\-keys\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBfiles\fP
-.UNINDENT
-.UNINDENT
-.sp
-Comma separated key values to be checked by default by the command
-\fBcheck\fP\&. E.g: \fBcheck\-keys = author, doi\fP\&.
 .INDENT 0.0
 .TP
 \fBbrowse\-query\-format\fP (\fI\%config\-settings\-browse\-query\-format\fP)
@@ -504,59 +302,6 @@ the key name appearing in the information file is defined by
 this setting.
 .INDENT 0.0
 .TP
-\fBfile\-browser\fP (\fI\%config\-settings\-file\-browser\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBxdg\-open\fP
-.UNINDENT
-.UNINDENT
-.sp
-File browser to be used when opening a directory, it defaults to the
-default file browser in your system, however you can set it to different
-file browsers such as \fBdolphin\fP, \fBthunar\fP, \fBranger\fP to name a few.
-.INDENT 0.0
-.TP
-\fBextra\-bibtex\-keys\fP (\fI\%config\-settings\-extra\-bibtex\-keys\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: 
-.nf
-\(ga\(ga
-.fi
-
-.nf
-\(ga\(ga
-.fi
-
-.UNINDENT
-.UNINDENT
-.sp
-When exporting documents in bibtex format, you might want to add
-non\-standard bibtex keys such as \fBdoc_url\fP or \fBtags\fP, you can add
-these here as comma separated values, for example
-\fBextra\-bibtex\-keys = tags, doc_url\fP\&.
-.INDENT 0.0
-.TP
-\fBextra\-bibtex\-types\fP (\fI\%config\-settings\-extra\-bibtex\-types\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: 
-.nf
-\(ga\(ga
-.fi
-
-.nf
-\(ga\(ga
-.fi
-
-.UNINDENT
-.UNINDENT
-.sp
-Allow non\-standard bibtex types to be recognised, e.g,
-\fBextra\-bibtex\-types = wikipedia, video, song\fP\&.
-See \fI\%bibtex reference\fP\&.
-.INDENT 0.0
-.TP
 \fBdefault\-library\fP (\fI\%config\-settings\-default\-library\fP)
 .INDENT 7.0
 .IP \(bu 2
@@ -602,7 +347,7 @@ set this option to \fBvid\fP in order to set  the \fBheader\-format\fP to
 Default format that is used to match a document against in order to select
 it. For example if the \fBmatch\-format\fP is equal to
 \fB{doc[year]} {doc[author]}\fP then title of a document will not work
-to match a document, onlye the year and author.
+to match a document, only the year and author.
 .INDENT 0.0
 .TP
 \fBheader\-format\fP (\fI\%config\-settings\-header\-format\fP)
@@ -613,6 +358,377 @@ to match a document, onlye the year and author.
 .UNINDENT
 .sp
 Default format that is used to show a document in order to select it.
+.INDENT 0.0
+.TP
+\fBinfo\-allow\-unicode\fP (\fI\%config\-settings\-info\-allow\-unicode\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBTrue\fP
+.UNINDENT
+.UNINDENT
+.sp
+This flag is to be set if you want to allow unicode characters
+in your info file or not. If it is set to false then a representation
+for the unicode characters will be written in its place.
+Since we should be living in an unicode world, it is set to \fBTrue\fP
+by default.
+.INDENT 0.0
+.TP
+\fBsync\-command\fP (\fI\%config\-settings\-sync\-command\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBgit \-C {lib[dir]} pull origin master\fP
+.UNINDENT
+.UNINDENT
+.sp
+Command that is to be used when \fBpapis sync\fP is run.
+.SS Tools options
+.INDENT 0.0
+.TP
+\fBopentool\fP (\fI\%config\-settings\-opentool\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBxdg\-open\fP
+.UNINDENT
+.UNINDENT
+.sp
+This is the general program that will be used to open documents.
+As for now papis is not intended to detect the type of document to be open
+and decide upon it how to open the document. You should set this
+to the right program for the tool. If you are in linux you might want
+to take a look at \fI\%ranger\fP or let
+the default handle it in your system.
+For mac users you might set this to \fBopen\fP\&.
+.INDENT 0.0
+.TP
+\fBbrowser\fP (\fI\%config\-settings\-browser\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB$BROWSER\fP
+.UNINDENT
+.UNINDENT
+.sp
+Program to be used for opening websites, the default is the environment
+variable \fB$BROWSER\fP\&.
+.INDENT 0.0
+.TP
+\fBpicktool\fP (\fI\%config\-settings\-picktool\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBpapis.pick\fP
+.UNINDENT
+.UNINDENT
+.sp
+This is the program used whenever papis asks you to pick a document
+or options in general.
+.INDENT 0.0
+.TP
+.B Possible options are:
+.INDENT 7.0
+.IP \(bu 2
+papis.pick
+.IP \(bu 2
+rofi
+.IP \(bu 2
+vim
+.IP \(bu 2
+dmenu
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBeditor\fP (\fI\%config\-settings\-editor\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB$EDITOR\fP
+.UNINDENT
+.UNINDENT
+.sp
+Editor used to edit files in papis, for instance for the \fBpapis edit\fP
+command. It defaults to the \fB$EDITOR\fP environment variable, if this is
+not set then it will default to the \fB$VISUAL\fP environment variable.
+Otherwise the default editor in your system will be used.
+.INDENT 0.0
+.TP
+\fBxeditor\fP (\fI\%config\-settings\-xeditor\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBxdg\-open\fP
+.UNINDENT
+.UNINDENT
+.sp
+Sometimes papis might use an editor that uses a windowing system
+(GUI Editor), you can set this to your preferred gui based editor, e.g.
+\fBgedit\fP, \fBxemacs\fP, \fBgvim\fP to name a few.
+.INDENT 0.0
+.TP
+\fBfile\-browser\fP (\fI\%config\-settings\-file\-browser\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBxdg\-open\fP
+.UNINDENT
+.UNINDENT
+.sp
+File browser to be used when opening a directory, it defaults to the
+default file browser in your system, however you can set it to different
+file browsers such as \fBdolphin\fP, \fBthunar\fP, \fBranger\fP to name a few.
+.SS Bibtex options
+.INDENT 0.0
+.TP
+\fBextra\-bibtex\-keys\fP (\fI\%config\-settings\-extra\-bibtex\-keys\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: 
+.nf
+\(ga\(ga
+.fi
+
+.nf
+\(ga\(ga
+.fi
+
+.UNINDENT
+.UNINDENT
+.sp
+When exporting documents in bibtex format, you might want to add
+non\-standard bibtex keys such as \fBdoc_url\fP or \fBtags\fP, you can add
+these here as comma separated values, for example
+\fBextra\-bibtex\-keys = tags, doc_url\fP\&.
+.INDENT 0.0
+.TP
+\fBextra\-bibtex\-types\fP (\fI\%config\-settings\-extra\-bibtex\-types\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: 
+.nf
+\(ga\(ga
+.fi
+
+.nf
+\(ga\(ga
+.fi
+
+.UNINDENT
+.UNINDENT
+.sp
+Allow non\-standard bibtex types to be recognized, e.g,
+\fBextra\-bibtex\-types = wikipedia, video, song\fP\&.
+See 
+.nf
+\(ga
+.fi
+bibtex reference
+.INDENT 0.0
+.INDENT 3.5
+<\fI\%http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf\fP>\(ga_.
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBmultiple\-authors\-format\fP (\fI\%config\-settings\-multiple\-authors\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB{au[surname]}, {au[given_name]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+When retrieving automatic author information from services like
+crossref.org, papis usually builds the \fBauthor\fP field for the
+given document. The format how every single author name is built
+is given by this setting, for instance you could customize it
+by the following:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+multiple\-authors\-format = {au[surname]} \-\- {au[given_name]}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+which would given in the case of Albert Einstein the string
+\fBEinstein \-\- Albert\fP\&.
+.INDENT 0.0
+.TP
+\fBmultiple\-authors\-separator\fP (\fI\%config\-settings\-multiple\-authors\-separator\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \(ga\(ga and \(ga\(ga
+.UNINDENT
+.UNINDENT
+.sp
+Similarly to \fBmultiple\-authors\-format\fP, this is the string that
+separates single authors in the \fBauthor\fP field. If it is set to
+\(ga\(ga and \(ga\(ga then you would have \fB<author 1> and <author 2> and ....\fP
+in the \fBauthor\fP field.
+.SS Add command options
+.INDENT 0.0
+.TP
+\fBref\-format\fP (\fI\%config\-settings\-ref\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB{doc[doi]}\fP
+.UNINDENT
+.UNINDENT
+.sp
+This flag is set to change the \fBref\fP flag in the info.yaml file
+when a document is imported. For example: I prefer the format
+FirstAuthorYear e.g. Plews2019. This would be achieved by the
+following:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+ref\-format = {doc[author_list][0][surname]}{doc[year]}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+The default behavior is to set the doi as the ref.
+.INDENT 0.0
+.TP
+\fBadd\-confirm\fP (\fI\%config\-settings\-add\-confirm\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBFalse\fP
+.UNINDENT
+.UNINDENT
+.sp
+If set to \fBTrue\fP, everytime you run \fBpapis add\fP
+the flag \fB\-\-confirm\fP will be added automatically. If is set to \fBTrue\fP
+and you add it, i.e., you run \fBpapis add \-\-confirm\fP, then it will
+fave the contrary effect, i.e., it will not ask for confirmation.
+.INDENT 0.0
+.TP
+\fBadd\-name\fP (\fI\%config\-settings\-add\-name\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBempty string\fP
+.UNINDENT
+.UNINDENT
+.sp
+Default name for the folder of newly added documents. For example, if you
+the folder of your documents to be named after the format
+\fBauthor\-title\fP then you should set it to
+the papis format: \fB{doc[author]}\-{doc[title]}\fP\&.
+Per default a hash followed by the author name is created.
+.INDENT 0.0
+.TP
+\fBfile\-name\fP (\fI\%config\-settings\-file\-name\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBNone\fP
+.UNINDENT
+.UNINDENT
+.sp
+Same as \fBadd\-name\fP, but for files, not folders. If it is not set,
+the names of the files will be cleaned and taken \fIas\-is\fP\&.
+.INDENT 0.0
+.TP
+\fBadd\-interactive\fP (\fI\%config\-settings\-add\-interactive\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBFalse\fP
+.UNINDENT
+.UNINDENT
+.sp
+If set to \fBTrue\fP, everytime you run \fBpapis add\fP
+the flag \fB\-\-interactive\fP will be added automatically. If is set to
+\fBTrue\fP and you add it, i.e., you run \fBpapis add \-\-interactive\fP, then it
+will fave the contrary effect, i.e., it will not run in interactive mode.
+.INDENT 0.0
+.TP
+\fBadd\-edit\fP (\fI\%config\-settings\-add\-edit\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBFalse\fP
+.UNINDENT
+.UNINDENT
+.sp
+If set to \fBTrue\fP, everytime you run \fBpapis add\fP
+the flag \fB\-\-edit\fP will be added automatically. If is set to
+\fBTrue\fP and you add it, i.e., you run \fBpapis add \-\-edit\fP, then it
+will fave the contrary effect, i.e., it will not prompt to edit the info
+file.
+.INDENT 0.0
+.TP
+\fBadd\-open\fP (\fI\%config\-settings\-add\-open\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBFalse\fP
+.UNINDENT
+.UNINDENT
+.sp
+If set to \fBTrue\fP, everytime you run \fBpapis add\fP
+the flag \fB\-\-open\fP will be added automatically. If is set to
+\fBTrue\fP and you add it, i.e., you run \fBpapis add \-\-open\fP, then it
+will fave the contrary effect, i.e., it will not open the attached files
+before adding the document to the library.
+.INDENT 0.0
+.TP
+\fBadd\-default\-fields\fP (\fI\%config\-settings\-add\-default\-fields\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB["title", "author"]\fP
+.UNINDENT
+.UNINDENT
+.sp
+This is the default values that are settable in the add command.
+For instance if you would like to set \fBtitle\fP, \fBauthor\fP and
+\fByear\fP directly from the command line, you can set
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+add\-default\-fields = [\(aqtitle\(aq, \(aqauthor\(aq, \(aqyear\(aq]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+and you will be able to do
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis add doc.pdf \-\-author \(aqBohm\(aq \-\-title \(aqSuper book\(aq \-\-year 1928
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS Check command options
+.INDENT 0.0
+.TP
+\fBcheck\-keys\fP (\fI\%config\-settings\-check\-keys\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB["files"]\fP
+.UNINDENT
+.UNINDENT
+.sp
+Python list key values to be checked by default by the command
+\fBcheck\fP\&. E.g: \fBcheck\-keys = ["author", "doi"]\fP\&.
+It is important that it is a valid python list.
+.SS Edit command options
+.INDENT 0.0
+.TP
+\fBnotes\-name\fP (\fI\%config\-settings\-notes\-name\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBnotes.tex\fP
+.UNINDENT
+.UNINDENT
+.sp
+In \fBpapis edit\fP you can edit notes about the document. \fBnotes\-name\fP
+is the default name of the notes file, which by default is supposed
+to be a TeX file.
+.SS Marks
 .INDENT 0.0
 .TP
 \fBopen\-mark\fP (\fI\%config\-settings\-open\-mark\fP)
@@ -710,51 +826,182 @@ Due to the difficulty to generalize opening a general document
 at a given bookmark, the user should set this in whichever way
 it suits their needs. For example
 .INDENT 0.0
-.INDENT 3.5
-.INDENT 0.0
 .IP \(bu 2
 If you are using the pdf viewer \fBevince\fP and you want to open a
-mark, you would use \fBmark\-opener\-format = evince \-p {mark[value]}\fP\&.
+mark, you would use
+.INDENT 2.0
+.INDENT 3.5
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mark\-opener\-format = evince \-p {mark[value]}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
 .IP \(bu 2
-If you are using \fBzathura\fP, do \fBmark\-opener\-format = zathura \-P
-{mark[value]}\fP\&.
+If you are using \fBokular\fP you would use
+.INDENT 2.0
+.INDENT 3.5
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mark\-opener\-format = okular \-p {mark[value]}
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .UNINDENT
+.UNINDENT
+.IP \(bu 2
+If you are using \fBzathura\fP, do
+.INDENT 2.0
+.INDENT 3.5
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mark\-opener\-format = zathura \-P {mark[value]}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.SS Databases
 .INDENT 0.0
 .TP
-\fBinfo\-allow\-unicode\fP (\fI\%config\-settings\-info\-allow\-unicode\fP)
+\fBdefault\-query\-string\fP (\fI\%config\-settings\-default\-query\-string\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB\&.\fP
+.UNINDENT
+.UNINDENT
+.sp
+This is the default query that a command will take if no
+query string is typed in the command line. For example this is
+the query that is passed to the command open whenever no search
+string is typed:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis open
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Imagine you want to have all your papers whenever you do not
+specify an input query string, then you would set
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+default\-query\-string = author="John Smith"
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+and whenever you typed \fBpapis open\fP, onlye the \fBJohn Smith\fP authored
+papers would appear. Notice that the current example has been
+done assuming the \fBdatabase\-backend = papis\fP\&.
+.INDENT 0.0
+.TP
+\fBdatabase\-backend\fP (\fI\%config\-settings\-database\-backend\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBpapis\fP
+.UNINDENT
+.UNINDENT
+.sp
+The backend to use in the database. As for now papis supports
+the own database system \fBpapis\fP and
+\fI\%whoosh\fP\&.
+.INDENT 0.0
+.TP
+\fBuse\-cache\fP (\fI\%config\-settings\-use\-cache\fP)
 .INDENT 7.0
 .IP \(bu 2
 \fBDefault\fP: \fBTrue\fP
 .UNINDENT
 .UNINDENT
 .sp
-This flag is to be set if you want to allow unicode characters
-in your info file or not. If it is set to false then a representation
-for the unicode characters will be written in its place.
-Since we should be living in an unicode world, it is set to \fBTrue\fP
-by default.
+Set to \fBFalse\fP if you do not want to use the \fBcache\fP
+for the given library. This is only effective if you\(aqre using the
+\fBpapis\fP database\-backend.
 .INDENT 0.0
 .TP
-\fBref\-format\fP (\fI\%config\-settings\-ref\-format\fP)
+\fBcache\-dir\fP (\fI\%config\-settings\-cache\-dir\fP)
 .INDENT 7.0
 .IP \(bu 2
-\fBDefault\fP: \fB{doc[doi]}\fP
+\fBDefault\fP: \fBNone\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBwhoosh\-schema\-fields\fP (\fI\%config\-settings\-whoosh\-schema\-fields\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB[\(aqdoi\(aq]\fP
 .UNINDENT
 .UNINDENT
 .sp
-This flag is set to change the \fBref\fP flag in the info.yaml file
-when a document is imported. For example: I prefer the format
-FirstAuthorYear e.g. Plews2019. This would be achieved by the
-following:
+Python list with the \fBTEXT\fP fields that should be included in the
+whoosh database schema. For instance say that you want to be able
+to search for the \fBdoi\fP and \fBref\fP of the documents, then you could
+include
 .INDENT 0.0
 .INDENT 3.5
-\fBref\-format = {doc[author_list][0][surname]}{doc[year]}\fP
+.sp
+.nf
+.ft C
+whoosh\-schema\-fields = [\(aqdoi\(aq, \(aqref\(aq]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBwhoosh\-schema\-prototype\fP (\fI\%config\-settings\-whoosh\-schema\-prototype\fP)
+.INDENT 7.0
+.IP \(bu 2
+.INDENT 2.0
+.TP
+\fBDefault\fP: 
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+{
+"author": TEXT(stored=True),
+"title": TEXT(stored=True),
+"year": TEXT(stored=True),
+"tags": TEXT(stored=True),
+}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
 .UNINDENT
 .UNINDENT
 .sp
-The default behaviour is to set the doi as the ref.
+This is the model for the whoosh schema, check
+\fI\%the documentation\fP
+for more information.
 .SS Vim gui
 .INDENT 0.0
 .TP
@@ -1181,6 +1428,22 @@ Color of the background of an active entry
 .UNINDENT
 .INDENT 0.0
 .TP
+\fBkey\-query\fP (\fI\%config\-rofi\-gui\-key\-query\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBAlt+y\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBkey\-refresh\fP (\fI\%config\-rofi\-gui\-key\-refresh\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBAlt+r\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
 \fBkey\-edit\fP (\fI\%config\-rofi\-gui\-key\-edit\fP)
 .INDENT 7.0
 .IP \(bu 2
@@ -1338,6 +1601,96 @@ Color of the background of an active entry
 .UNINDENT
 .UNINDENT
 .UNINDENT
+.SS dmenu gui
+.sp
+See \fI\%dmenu\fP and the python wrapper
+\fI\%here\fP for more information.
+You will need to install the latter to make use of this function,
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+pip3 install dmenu
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBlines\fP (\fI\%config\-dmenu\-gui\-lines\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB20\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBcase_insensitive\fP (\fI\%config\-dmenu\-gui\-case_insensitive\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBTrue\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBbottom\fP (\fI\%config\-dmenu\-gui\-bottom\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBTrue\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBfont\fP (\fI\%config\-dmenu\-gui\-font\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBmonospace\-14\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBbackground\fP (\fI\%config\-dmenu\-gui\-background\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB#000000\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBforeground\fP (\fI\%config\-dmenu\-gui\-foreground\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB#55ff55\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBbackground_selected\fP (\fI\%config\-dmenu\-gui\-background_selected\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB#005500\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBforeground_selected\fP (\fI\%config\-dmenu\-gui\-foreground_selected\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB#f0f0f0\fP
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBheader\-format\fP (\fI\%config\-dmenu\-gui\-header\-format\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBNone\fP
+.UNINDENT
+.UNINDENT
+.sp
+This is not set per default, and it will default to
+the general header\-format if not set.
 .SH AUTHOR
 Alejandro Gallo
 .SH COPYRIGHT

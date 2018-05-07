@@ -17,9 +17,9 @@ command-line interface (*CLI*) is heavily tailored after
    install
    configuration
    info_file
+   library_structure
    database_structure
    commands
-   queries
    scripting
    api
    git

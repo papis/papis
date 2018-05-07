@@ -10,6 +10,8 @@ class Command(papis.commands.Command):
             help="Graphical user interface"
         )
 
+        self.add_search_argument()
+
         self.parser.add_argument(
             "--tk",
             help="Tk based UI",
@@ -34,9 +36,6 @@ class Command(papis.commands.Command):
             action="store_true"
         )
 
-    def fetch_documents(self):
-        return papis.api.get_documents_in_lib(self.args.lib)
-
     def urwid_main(self):
         import papis.gui.urwid
         return papis.gui.urwid.Gui().main()
@@ -54,7 +53,7 @@ class Command(papis.commands.Command):
         return papis.gui.vim.Gui().main(self.documents, self.args)
 
     def main(self):
-        self.documents = self.fetch_documents()
+        self.documents = self.get_db().query(self.args.search)
         if self.args.tk:
             return self.tk_main()
         if self.args.urwid:

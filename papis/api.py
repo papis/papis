@@ -2,18 +2,22 @@
 create papis scripts.
 """
 
-from subprocess import call
 import logging
 
 logger = logging.getLogger("api")
 logger.debug("importing")
 
 import os
-import re
 import papis.utils
 import papis.commands
 import papis.config
 import papis.database
+
+
+class status():
+    success = 0
+    generic_fail = 1
+    file_not_found = 2
 
 
 def get_lib():
@@ -24,11 +28,8 @@ def get_lib():
     :returns: Library name
     :rtype:  str
 
-    >>> get_lib() == papis.config.get_default_settings(key='default-library')
+    >>> get_lib() is not None
     True
-    >>> set_lib('books')
-    >>> get_lib()
-    'books'
     """
     return papis.config.get_lib()
 
@@ -189,7 +190,8 @@ def get_documents_in_dir(directory, search=""):
     :returns: List of filtered documents.
     :rtype: list
 
-    >>> docs = get_documents_in_dir('non/eexistent/path')
+    >>> import tempfile
+    >>> docs = get_documents_in_dir(tempfile.mkdtemp())
     >>> len(docs)
     0
 

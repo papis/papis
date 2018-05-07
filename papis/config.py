@@ -7,133 +7,37 @@
     will additionally read if the file is present in the current
     directory or in the base directory of a given library.
 
+    This is useful for instance if you have a library somewhere
+    for which you want special configuration settings to be set
+    but you do not want these settings to cluster in your configuration
+    file. It is also useful if you're sharing a library with someone
+    else and you want them to have the same settings in that library as
+    you. Imagine you're sharing a library of datasheets with your friend
+    Fulano. You have your library at
 
-.. papis-config:: mode
+    ::
 
-    Papis is a modal program and it can be configured to support different
-    operating modes. The default is considering that every papis document
-    or entry is a 'document'.
+        ~/Documents/lib-with-fulano
 
-.. papis-config:: opentool
+    and you've set a local configuration file there
 
-    This is the general program that will be used to open documents.
-    As for now papis is not intended to detect the type of document to be open
-    and decide upon it how to open the document. You should set this
-    to the right program for the tool. If you are in linux you might want
-    to take a look at `ranger <http://ranger.nongnu.org>`_ or let
-    the default handle it in your system.
-    For mac users you might set this to ``open``.
+    ::
+
+        ~/Documents/lib-with-fulano/.papis.config
+
+    then whenever Fulano uses that library and the file is also present,
+    his papis program will also read the configuration settings at
+    the path above.
 
 .. papis-config:: dir-umask
 
     This is the default ``umask`` that will be used to create the new
     documents' directories.
 
-.. papis-config:: browser
-    :default: $BROWSER
-
-    Program to be used for opening websites, the default is the environment
-    variable ``$BROWSER``.
-
-.. papis-config:: picktool
-
-    This is the program used whenever papis asks you to pick a document
-    or options in general.
-
-    Possible options are:
-        - papis.pick
-        - rofi
-        - vim
-        - dmenu
-
-.. papis-config:: mvtool
-
-    Tool used to in the ``papis mv`` command to move documents.
-    If you are using ``git`` to manage your documents, you might consider
-    setting it to ``mvtool = git mv``.
-
-.. papis-config:: editor
-    :default: $EDITOR
-
-    Editor used to edit files in papis, for instance for the ``papis edit``
-    command. It defaults to the ``$EDITOR`` environment variable, if this is
-    not set then it will default to the ``$VISUAL`` environment variable.
-    Otherwise the default editor in your system will be used.
-
-.. papis-config:: xeditor
-
-    Sometimes papis might use an editor that uses a windowing system
-    (GUI Editor), you can set this to your preferred gui based editor, e.g.:
-    ``gedit``, ``xemacs``, ``gvim`` to name a few.
-
-.. papis-config:: sync-command
-
-    Command that is to be used when ``papis sync`` is run.
-
-.. papis-config:: notes-name
-
-    In ``papis edit`` you can edit notes about the document. ``notes-name``
-    is the default name of the notes file, which by default is supposed
-    to be a TeX file.
-
-.. papis-config:: use-cache
-
-    Set to ``False`` if you do not want to use the ``cache``
-    for the given library.
-
-.. papis-config:: cache-dir
-
 .. papis-config:: use-git
 
     Some commands will issue git commands if this option is set to ``True``.
     For example in ``mv`` or ``rename``.
-
-
-.. papis-config:: add-confirm
-
-    If set to ``True``, everytime you run ``papis add``
-    the flag ``--confirm`` will be added automatically. If is set to ``True``
-    and you add it, i.e., you run ``papis add --confirm``, then it will
-    fave the contrary effect, i.e., it will not ask for confirmation.
-
-.. papis-config:: add-name
-
-    Default name for newly added documents. For example, if you want
-    your documents to be ``author-title`` then you should set it to
-    the papis format: ``{doc[author]}-{doc[title]}``.
-
-.. papis-config:: file-name
-
-    Same as ``add-name``, but for files, not folders. If it is not set,
-    the names of the files will be cleaned and taken `as-is`.
-
-.. papis-config:: add-interactive
-
-    If set to ``True``, everytime you run ``papis add``
-    the flag ``--interactive`` will be added automatically. If is set to
-    ``True`` and you add it, i.e., you run ``papis add --interactive``, then it
-    will fave the contrary effect, i.e., it will not run in interactive mode.
-
-.. papis-config:: add-edit
-
-    If set to ``True``, everytime you run ``papis add``
-    the flag ``--edit`` will be added automatically. If is set to
-    ``True`` and you add it, i.e., you run ``papis add --edit``, then it
-    will fave the contrary effect, i.e., it will not prompt to edit the info
-    file.
-
-.. papis-config:: add-open
-
-    If set to ``True``, everytime you run ``papis add``
-    the flag ``--open`` will be added automatically. If is set to
-    ``True`` and you add it, i.e., you run ``papis add --open``, then it
-    will fave the contrary effect, i.e., it will not open the attached files
-    before adding the document to the library.
-
-.. papis-config:: check-keys
-
-    Comma separated key values to be checked by default by the command
-    ``check``. E.g: ``check-keys = author, doi``.
 
 .. papis-config:: browse-query-format
 
@@ -169,24 +73,6 @@
     the key name appearing in the information file is defined by
     this setting.
 
-.. papis-config:: file-browser
-
-    File browser to be used when opening a directory, it defaults to the
-    default file browser in your system, however you can set it to different
-    file browsers such as ``dolphin``, ``thunar``, ``ranger`` to name a few.
-
-.. papis-config:: extra-bibtex-keys
-
-    When exporting documents in bibtex format, you might want to add
-    non-standard bibtex keys such as ``doc_url`` or ``tags``, you can add
-    these here as comma separated values, for example
-    ``extra-bibtex-keys = tags, doc_url``.
-
-.. papis-config:: extra-bibtex-types
-
-    Allow non-standard bibtex types to be recognized, e.g,
-    ``extra-bibtex-types = wikipedia, video, song``.
-    See `bibtex reference <http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`_.
 .. papis-config:: default-library
 
     The name of the library that is to be searched when ``papis``
@@ -214,6 +100,212 @@
 .. papis-config:: header-format
 
     Default format that is used to show a document in order to select it.
+
+.. papis-config:: info-allow-unicode
+
+    This flag is to be set if you want to allow unicode characters
+    in your info file or not. If it is set to false then a representation
+    for the unicode characters will be written in its place.
+    Since we should be living in an unicode world, it is set to ``True``
+    by default.
+
+.. papis-config:: sync-command
+
+    Command that is to be used when ``papis sync`` is run.
+
+Tools options
+^^^^^^^^^^^^^
+
+.. papis-config:: opentool
+
+    This is the general program that will be used to open documents.
+    As for now papis is not intended to detect the type of document to be open
+    and decide upon it how to open the document. You should set this
+    to the right program for the tool. If you are in linux you might want
+    to take a look at `ranger <http://ranger.nongnu.org>`_ or let
+    the default handle it in your system.
+    For mac users you might set this to ``open``.
+
+.. papis-config:: browser
+    :default: $BROWSER
+
+    Program to be used for opening websites, the default is the environment
+    variable ``$BROWSER``.
+
+.. papis-config:: picktool
+
+    This is the program used whenever papis asks you to pick a document
+    or options in general.
+
+    Possible options are:
+        - papis.pick
+        - rofi
+        - vim
+        - dmenu
+
+.. papis-config:: editor
+    :default: $EDITOR
+
+    Editor used to edit files in papis, for instance for the ``papis edit``
+    command. It defaults to the ``$EDITOR`` environment variable, if this is
+    not set then it will default to the ``$VISUAL`` environment variable.
+    Otherwise the default editor in your system will be used.
+
+.. papis-config:: xeditor
+
+    Sometimes papis might use an editor that uses a windowing system
+    (GUI Editor), you can set this to your preferred gui based editor, e.g.
+    ``gedit``, ``xemacs``, ``gvim`` to name a few.
+
+
+.. papis-config:: file-browser
+
+    File browser to be used when opening a directory, it defaults to the
+    default file browser in your system, however you can set it to different
+    file browsers such as ``dolphin``, ``thunar``, ``ranger`` to name a few.
+
+
+Bibtex options
+^^^^^^^^^^^^^^
+
+.. papis-config:: extra-bibtex-keys
+
+    When exporting documents in bibtex format, you might want to add
+    non-standard bibtex keys such as ``doc_url`` or ``tags``, you can add
+    these here as comma separated values, for example
+    ``extra-bibtex-keys = tags, doc_url``.
+
+.. papis-config:: extra-bibtex-types
+
+    Allow non-standard bibtex types to be recognized, e.g,
+    ``extra-bibtex-types = wikipedia, video, song``.
+    See `bibtex reference
+        <http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`_.
+
+.. papis-config:: multiple-authors-format
+
+    When retrieving automatic author information from services like
+    crossref.org, papis usually builds the ``author`` field for the
+    given document. The format how every single author name is built
+    is given by this setting, for instance you could customize it
+    by the following:
+
+    ::
+
+        multiple-authors-format = {au[surname]} -- {au[given_name]}
+
+    which would given in the case of Albert Einstein the string
+    ``Einstein -- Albert``.
+
+.. papis-config:: multiple-authors-separator
+
+    Similarly to ``multiple-authors-format``, this is the string that
+    separates single authors in the ``author`` field. If it is set to
+    `` and `` then you would have ``<author 1> and <author 2> and ....``
+    in the ``author`` field.
+
+.. _add-command-options:
+
+Add command options
+^^^^^^^^^^^^^^^^^^^
+
+.. papis-config:: ref-format
+
+    This flag is set to change the ``ref`` flag in the info.yaml file
+    when a document is imported. For example: I prefer the format
+    FirstAuthorYear e.g. Plews2019. This would be achieved by the
+    following:
+
+    ::
+
+        ref-format = {doc[author_list][0][surname]}{doc[year]}
+
+    The default behavior is to set the doi as the ref.
+
+.. papis-config:: add-confirm
+
+    If set to ``True``, everytime you run ``papis add``
+    the flag ``--confirm`` will be added automatically. If is set to ``True``
+    and you add it, i.e., you run ``papis add --confirm``, then it will
+    fave the contrary effect, i.e., it will not ask for confirmation.
+
+.. papis-config:: add-name
+    :default: empty string
+
+    Default name for the folder of newly added documents. For example, if you
+    the folder of your documents to be named after the format
+    ``author-title`` then you should set it to
+    the papis format: ``{doc[author]}-{doc[title]}``.
+    Per default a hash followed by the author name is created.
+
+.. papis-config:: file-name
+
+    Same as ``add-name``, but for files, not folders. If it is not set,
+    the names of the files will be cleaned and taken `as-is`.
+
+.. papis-config:: add-interactive
+
+    If set to ``True``, everytime you run ``papis add``
+    the flag ``--interactive`` will be added automatically. If is set to
+    ``True`` and you add it, i.e., you run ``papis add --interactive``, then it
+    will fave the contrary effect, i.e., it will not run in interactive mode.
+
+.. papis-config:: add-edit
+
+    If set to ``True``, everytime you run ``papis add``
+    the flag ``--edit`` will be added automatically. If is set to
+    ``True`` and you add it, i.e., you run ``papis add --edit``, then it
+    will fave the contrary effect, i.e., it will not prompt to edit the info
+    file.
+
+.. papis-config:: add-open
+
+    If set to ``True``, everytime you run ``papis add``
+    the flag ``--open`` will be added automatically. If is set to
+    ``True`` and you add it, i.e., you run ``papis add --open``, then it
+    will fave the contrary effect, i.e., it will not open the attached files
+    before adding the document to the library.
+
+.. papis-config:: add-default-fields
+
+    This is the default values that are settable in the add command.
+    For instance if you would like to set ``title``, ``author`` and
+    ``year`` directly from the command line, you can set
+    ::
+
+        add-default-fields = ['title', 'author', 'year']
+
+    and you will be able to do
+    ::
+
+        papis add doc.pdf --author 'Bohm' --title 'Super book' --year 1928
+
+.. _check-command-options:
+
+Check command options
+^^^^^^^^^^^^^^^^^^^^^
+
+.. papis-config:: check-keys
+
+    Python list key values to be checked by default by the command
+    ``check``. E.g: ``check-keys = ["author", "doi"]``.
+    It is important that it is a valid python list.
+
+.. _edit-command-options:
+
+Edit command options
+^^^^^^^^^^^^^^^^^^^^
+
+.. papis-config:: notes-name
+
+    In ``papis edit`` you can edit notes about the document. ``notes-name``
+    is the default name of the notes file, which by default is supposed
+    to be a TeX file.
+
+.. _marks-options:
+
+Marks
+^^^^^
 
 .. papis-config:: open-mark
 
@@ -262,58 +354,75 @@
     Due to the difficulty to generalize opening a general document
     at a given bookmark, the user should set this in whichever way
     it suits their needs. For example
-        - If you are using the pdf viewer ``evince`` and you want to open a
-          mark, you would use ``mark-opener-format = evince -p {mark[value]}``.
-        - If you are using ``zathura``, do ``mark-opener-format = zathura -P
-          {mark[value]}``.
 
-.. papis-config:: info-allow-unicode
+    - If you are using the pdf viewer ``evince`` and you want to open a
+      mark, you would use
 
-    This flag is to be set if you want to allow unicode characters
-    in your info file or not. If it is set to false then a representation
-    for the unicode characters will be written in its place.
-    Since we should be living in an unicode world, it is set to ``True``
-    by default.
+        ::
 
-.. papis-config:: ref-format
+            mark-opener-format = evince -p {mark[value]}
 
-    This flag is set to change the ``ref`` flag in the info.yaml file
-    when a document is imported. For example: I prefer the format
-    FirstAuthorYear e.g. Plews2019. This would be achieved by the
-    following:
+    - If you are using ``okular`` you would use
 
-        ``ref-format = {doc[author_list][0][surname]}{doc[year]}``
+        ::
 
-    The default behavior is to set the doi as the ref.
+            mark-opener-format = okular -p {mark[value]}
 
-.. papis-config:: multiple-authors-format
+    - If you are using ``zathura``, do
 
-    When retrieving automatic author information from services like
-    crossref.org, papis usually builds the ``author`` field for the
-    given document. The format how every single author name is built
-    is given by this setting, for instance you could customize it
-    by the following:
+        ::
 
-        ``multiple-authors-format = {au[surname]} -- {au[given_name]}``
-
-    which would given in the case of Albert Einstein the string
-    ``Einstein -- Albert``.
-
-.. papis-config:: multiple-authors-separator
-
-    Similarly to ``multiple-authors-format``, this is the string that
-    separates single authors in the ``author`` field. If it is set to
-    `` and `` then you would have ``<author 1> and <author 2> and ....``
-    in the ``author`` field.
-
-.. papis-config:: snapshot
-
-    !NOT IMLEMENTED!
-    Save a snapshot of the a `webpage`.
-    Actually used only by the zotero connector.
+            mark-opener-format = zathura -P {mark[value]}
 
 Databases
-^^^^^^^^^
+=========
+
+.. papis-config:: default-query-string
+
+    This is the default query that a command will take if no
+    query string is typed in the command line. For example this is
+    the query that is passed to the command open whenever no search
+    string is typed:
+
+    ::
+
+        papis open
+
+    Imagine you want to have all your papers whenever you do not
+    specify an input query string, then you would set
+
+    ::
+
+        default-query-string = author="John Smith"
+
+    and whenever you typed ``papis open``, onlye the ``John Smith`` authored
+    papers would appear. Notice that the current example has been
+    done assuming the ``database-backend = papis``.
+
+.. papis-config:: database-backend
+
+    The backend to use in the database. As for now papis supports
+    the own database system ``papis`` and
+    `whoosh <https://whoosh.readthedocs.io/en/latest/>`_.
+
+.. papis-config:: use-cache
+
+    Set to ``False`` if you do not want to use the ``cache``
+    for the given library. This is only effective if you're using the
+    ``papis`` database-backend.
+
+.. papis-config:: cache-dir
+
+.. papis-config:: whoosh-schema-fields
+
+    Python list with the ``TEXT`` fields that should be included in the
+    whoosh database schema. For instance say that you want to be able
+    to search for the ``doi`` and ``ref`` of the documents, then you could
+    include
+
+    ::
+
+        whoosh-schema-fields = ['doi', 'ref']
 
 .. papis-config:: whoosh-schema-prototype
 
@@ -333,9 +442,8 @@ import configparser
 import papis.exceptions
 
 
-CONFIGURATION = None #: Global configuration object variable.
-DEFAULT_SETTINGS = None #: Default settings for the whole papis.
-DEFAULT_MODE = "document" #: Default mode in the modal architecture.
+CONFIGURATION = None  #: Global configuration object variable.
+DEFAULT_SETTINGS = None  #: Default settings for the whole papis.
 OVERRIDE_VARS = {
     "folder": None,
     "cache": None,
@@ -357,39 +465,40 @@ def get_default_opener():
 
 
 general_settings = {
-    "mode"            : "document",
     "local-config-file": ".papis.config",
     "database-backend": "papis",
-    "opentool"        : get_default_opener(),
-    "dir-umask"       : 0o755,
-    "browser"         : os.environ.get('BROWSER') or get_default_opener(),
-    "picktool"        : "papis.pick",
-    "mvtool"          : "mv",
-    "editor"          : os.environ.get('EDITOR')
+    "default-query-string": ".",
+
+    "opentool": get_default_opener(),
+    "dir-umask": 0o755,
+    "browser": os.environ.get('BROWSER') or get_default_opener(),
+    "picktool": "papis.pick",
+    "mvtool": "mv",
+    "editor": os.environ.get('EDITOR')
                         or os.environ.get('VISUAL')
                         or get_default_opener(),
-    "xeditor"         : get_default_opener(),
-    "sync-command"    : "git -C {lib[dir]} pull origin master",
-    "notes-name"      : "notes.tex",
-    "use-cache"       : True,
-    "cache-dir"       : None,
-    "use-git"         : False,
+    "xeditor": get_default_opener(),
+    "sync-command": "git -C {lib[dir]} pull origin master",
+    "notes-name": "notes.tex",
+    "use-cache": True,
+    "cache-dir": None,
+    "use-git": False,
 
-    "add-confirm"     : False,
-    "add-name"        : "",
-    "file-name"       : None,
-    "add-interactive" : False,
-    "add-edit"        : False,
-    "add-open"        : False,
+    "add-confirm": False,
+    "add-name": "",
+    "file-name": None,
+    "add-interactive": False,
+    "add-edit": False,
+    "add-open": False,
+    "add-default-fields": '["title", "author"]',
 
-    "check-keys"      : 'files',
-    "browse-query-format"   : "{doc[title]} {doc[author]}",
-    "search-engine"   : "https://duckduckgo.com",
-    "user-agent"      : \
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)',
-    "default-gui"     : "vim",
+    "check-keys": '["files"]',
+    "browse-query-format": "{doc[title]} {doc[author]}",
+    "search-engine": "https://duckduckgo.com",
+    "user-agent": 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)',
+    "default-gui": "vim",
     "scripts-short-help-regex": ".*papis-short-help: *(.*)",
-    "info-name"       : "info.yaml",
+    "info-name": "info.yaml",
     "doc-url-key-name": "doc_url",
 
     "open-mark": False,
@@ -399,33 +508,34 @@ general_settings = {
     "mark-match-format": "{mark[name]} - {mark[value]}",
     "mark-opener-format": get_default_opener(),
 
-    "file-browser"    : get_default_opener(),
-    "extra-bibtex-keys" : "",
-    "extra-bibtex-types" : "",
-    "default-library" : "papers",
-    "export-text-format" : \
+    "file-browser": get_default_opener(),
+    "extra-bibtex-keys": "",
+    "extra-bibtex-types": "",
+    "default-library": "papers",
+    "export-text-format":
         "{doc[author]}. {doc[title]}. {doc[journal]} {doc[pages]}"
         " {doc[month]} {doc[year]}",
-    "format-doc-name" : "doc",
-    "match-format"    : \
+    "format-doc-name": "doc",
+    "match-format":
         "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
-    "header-format"   : \
+    "header-format":
         "{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:-<4})",
 
     "info-allow-unicode": True,
-    "ref-format"      : "{doc[doi]}",
+    "ref-format": "{doc[doi]}",
     "multiple-authors-separator": " and ",
     "multiple-authors-format": "{au[surname]}, {au[given_name]}",
 
     "snapshot": True,
 
+    "whoosh-schema-fields": "['doi']",
     "whoosh-schema-prototype":
-        '{\n'
-            '"author": TEXT(stored=True),\n'
-            '"title": TEXT(stored=True),\n'
-            '"year": TEXT(stored=True),\n'
-            '"tags": TEXT(stored=True),\n'
-        '}',
+    '{\n'
+    '"author": TEXT(stored=True),\n'
+    '"title": TEXT(stored=True),\n'
+    '"year": TEXT(stored=True),\n'
+    '"tags": TEXT(stored=True),\n'
+    '}',
 
 }
 
@@ -602,7 +712,8 @@ def general_get(key, section=None, data_type=None):
     :param data_type: The data type that should be expected for the value of
         the variable.
     :type  data_type: DataType, e.g. int, src ...
-    :param default: Default value for the configuration variable if it is not set.
+    :param default: Default value for the configuration variable if it is not
+        set.
     :type  default: It should be the same that ``data_type``
     :param extras: List of tuples containing section and prefixes
     """
@@ -684,20 +795,6 @@ def getboolean(*args, **kwargs):
     return general_get(*args, data_type=bool, **kwargs)
 
 
-def in_mode(mode):
-    """Get mode of the library. In principle every library can have a mode,
-    and depending on the mode some extra options can be offered.
-
-    :param mode: Name of the mode used.
-    :type  mode: str
-    :returns: Return true if mode matches
-    :rtype: bool
-    """
-    current_mode = get("mode")
-    logger.debug("current_mode = %s" % current_mode)
-    return mode == current_mode
-
-
 def get_configuration():
     """Get the configuration object, if no papis configuration has ever been
     initialized, it initializes one. Only one configuration per process should
@@ -714,6 +811,7 @@ def get_configuration():
         local_config_file = papis.config.get("local-config-file")
         merge_configuration_from_path(local_config_file, CONFIGURATION)
     return CONFIGURATION
+
 
 def merge_configuration_from_path(path, configuration):
     """
@@ -747,8 +845,6 @@ def set_lib(library):
     >>> set_lib('/tmp/setlib-test')
     >>> get_lib()
     '/tmp/setlib-test'
-    >>> set_lib('non-existing-library')
-    1
     """
     config = get_configuration()
     if library not in config.keys():
@@ -757,10 +853,9 @@ def set_lib(library):
             logger.debug("Using library %s" % library)
             config[library] = dict(dir=library)
         else:
-            logger.error(
+            raise Exception(
                 "Path or library '%s' does not seem to exist" % library
             )
-            return 1
     try:
         args = papis.commands.get_args()
         args.lib = library

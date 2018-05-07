@@ -58,6 +58,9 @@ class Database(papis.database.base.Database):
         self.logger = logging.getLogger('db:whoosh')
         self.initialize()
 
+    def get_backend_name(self):
+        return 'whoosh'
+
     def clear(self):
         import shutil
         if self.index_exists():
@@ -96,13 +99,20 @@ class Database(papis.database.base.Database):
         self.logger.debug("commiting deletion.." )
         writer.commit()
 
+    def query_dict(self, dictionary):
+        query_string = " AND ".join(
+            ["{}:\"{}\" ".format(key, val) for key,val in dictionary.items()]
+        )
+        return self.query(query_string)
+
     def query(self, query_string):
         self.logger.debug('Query string %s' % query_string)
         index = self.get_index()
-        qp = whoosh.qparser.QueryParser(
-            'title',
+        qp = whoosh.qparser.MultifieldParser(
+            ['title', 'author', 'tags'],
             schema=self.get_schema()
         )
+        qp.add_plugin(whoosh.qparser.FuzzyTermPlugin())
         query = qp.parse(query_string)
         with index.searcher() as searcher:
             results = searcher.search(query, limit=None)
@@ -112,6 +122,14 @@ class Database(papis.database.base.Database):
                 for r in results
             ]
         return documents
+
+
+    def get_all_query_string(self):
+        return '*'
+
+    def get_all_documents(self):
+        return self.query(self.get_all_query_string())
+
 
     def get_id_key(self):
         """Get the unique key identifier name of the documents in the database
@@ -250,6 +268,11 @@ class Database(papis.database.base.Database):
             papis.config.get('whoosh-schema-prototype')
         )
         fields.update(user_prototype)
+        fields_list = eval(papis.config.get('whoosh-schema-fields'))
+        if not isinstance(fields_list, list):
+            raise Exception('whoosh-schema-fields should be a python list')
+        for field in fields_list:
+            fields.update({field: TEXT(stored=True)})
         #self.logger.debug('Schema prototype: {}'.format(fields))
         return fields
 

@@ -14,6 +14,12 @@ class Database(object):
     def __init__(self, library=papis.config.get_lib()):
         self.lib = library
 
+    def initialize(self):
+        pass
+
+    def get_backend_name(self):
+        raise NotImplementedError('Get backend name not implemented')
+
     def get_lib(self):
         """Get library name
         """
@@ -32,7 +38,7 @@ class Database(object):
         :param query_string: Query string
         :type  query_string: str
         """
-        pass
+        raise NotImplementedError('Match not implemented')
 
     def clear(self):
         raise NotImplementedError('Clear not implemented')
@@ -49,3 +55,11 @@ class Database(object):
     def query(self, query_string):
         raise NotImplementedError('Query not implemented')
 
+    def query_dict(self, query_string):
+        raise NotImplementedError('Query dict not implemented')
+
+    def get_all_documents(self):
+        raise NotImplementedError('Get all docs not implemented')
+
+    def get_all_query_string(self):
+        raise NotImplementedError('Get all query string not implemented')
