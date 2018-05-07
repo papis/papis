@@ -83,6 +83,7 @@ setup(
         # $ pip install -e .[develop]
         optional=[
             'dmenu',
+            "Whoosh>=2.7.4",
         ],
         develop=[
             "sphinx",
@@ -135,6 +136,7 @@ setup(
         "papis.gui.tk",
         "papis.gui.vim",
         "papis.commands",
+        "papis.database",
         "papis.downloaders",
     ],
     test_suite="papis.tests",

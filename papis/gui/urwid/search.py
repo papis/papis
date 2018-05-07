@@ -1,4 +1,5 @@
 import papis.config
+import papis.document
 import os
 import subprocess
 import urwid
@@ -25,7 +26,7 @@ class DocListItem(urwid.WidgetWrap):
         self.doc = doc
         self.docid = self.doc["ref"]
 
-        data = self.doc.to_dict()
+        data = papis.document.to_dict(self.doc)
         # fill the default attributes for the fields
         show_fields = papis.config.get(
             "show-fields", section="urwid-gui"
@@ -122,7 +123,7 @@ class Search(urwid.WidgetWrap):
 
         self.ui.set_header("Search: " + query)
 
-        docs = self.ui.db.search(query)
+        docs = self.ui.db.query(query)
         if len(docs) == 0:
             self.ui.set_status('No documents found.')
 
@@ -159,7 +160,7 @@ class Search(urwid.WidgetWrap):
         entry, pos = self.listbox.get_focus()
         if not entry: return
         if pos + 1 >= self.lenitems: return
-        self.ui.echo(entry.doc.dump())
+        self.ui.echo(papis.document.dump(entry.doc))
 
     def print_bibtex(self, size, key):
         """Print bibtex"""

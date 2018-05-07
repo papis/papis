@@ -1,10 +1,22 @@
+import os
 import unittest
 import logging
 import papis.config
-import os
-
+from papis.commands.config import run
 
 logging.basicConfig(level=logging.DEBUG)
+
+
+class TestCommand(unittest.TestCase):
+
+    def test_simple(self):
+        self.assertTrue(run('editor') == papis.config.get('editor'))
+        self.assertTrue(run('xeditor') == papis.config.get('xeditor'))
+        self.assertTrue(run('settings.xeditor') == papis.config.get('xeditor'))
+        self.assertTrue(
+            run('dmenu-gui.lines') ==
+            papis.config.get('lines', section='dmenu-gui')
+        )
 
 
 class TestDefaultConfiguration(unittest.TestCase):
@@ -39,23 +51,16 @@ class TestDefaultConfiguration(unittest.TestCase):
         settings = papis.config.get_default_settings()
         self.assertTrue(settings)
 
-        self.assertTrue(
-            isinstance(
-                papis.config.get_default_settings(key="mode"),
-                str
-            )
-        )
-
-        self.assertTrue(
-            isinstance(
-                papis.config.get_default_settings(
-                    section=papis.config.get_general_settings_name(),
-                    key="mode"
-                ),
-                str
-            )
-        )
-
         self.assertTrue(isinstance(settings, dict))
         for section in ["settings", "vim-gui", "rofi-gui", "tk-gui"]:
             self.assertTrue(section in settings.keys())
+
+    def test_set_lib(self):
+        try:
+            lib = 'non-existing-library'
+            self.assertFalse(os.path.exists(lib))
+            papis.config.set_lib(lib)
+        except:
+            self.assertTrue(True)
+        else:
+            self.assertTrue(False)

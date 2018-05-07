@@ -1,9 +1,28 @@
 import papis
-import sys
-import os
-import shutil
 import papis.api
+from papis.api import status
 import papis.utils
+import papis.config
+import papis.document
+
+
+def run(
+        document,
+        filepath=None
+        ):
+    """Main method to the rm command
+
+    :returns: List different objects
+    :rtype:  list
+    """
+    db = papis.database.get()
+    if filepath is not None:
+        document.rm_file(filepath)
+        document.save()
+    else:
+        papis.document.delete(document)
+        db.delete(document)
+    return status.success
 
 
 class Command(papis.commands.Command):
@@ -31,28 +50,27 @@ class Command(papis.commands.Command):
         )
 
     def main(self):
-        documents = papis.api.get_documents_in_lib(
-            self.get_args().lib,
-            self.get_args().search
-        )
+        documents = self.get_db().query(self.args.search)
         document = self.pick(documents)
-        if not document: return 0
+        if not document:
+            return status.file_not_found
         if self.get_args().file:
             filepath = papis.api.pick(
                 document.get_files()
             )
-            if not filepath: return 0
+            if not filepath:
+                return status.file_not_found
             if not self.args.force:
                 if not papis.utils.confirm("Are you sure?"):
-                    return 0
+                    return status.success
             print("Removing %s..." % filepath)
-            document.rm_file(filepath)
-            document.save()
+            return run(
+                document,
+                filepath=filepath
+            )
         else:
-            folder = document.get_main_folder()
             if not self.args.force:
                 if not papis.utils.confirm("Are you sure?"):
-                    return 0
-            print("Removing %s..." % folder)
-            shutil.rmtree(folder)
-            papis.api.clear_lib_cache()
+                    return status.success
+            print("Removing ...")
+            return run(document)
