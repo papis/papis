@@ -95,4 +95,3 @@ ENV/
 .ropeproject
 changes
 *~
-scripts/shell_completion/build/bash/papis
