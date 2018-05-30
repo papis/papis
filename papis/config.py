@@ -313,6 +313,23 @@
     `` and `` then you would have ``<author 1> and <author 2> and ....``
     in the ``author`` field.
 
+.. papis-config:: hubation
+
+   This allows the operation after picking be set when using the
+   script papis-hubation. Running ``papis hubation`` provides a list
+   of citations, which once picked, can undergo the operation
+   'e.g. open, browse, scihub' that is set. Current tested options are
+   ``open``, ``browse``, ``export``, and ``scihub``.
+
+   Default behaviour is set to scihub.
+
+.. papis-config:: citation-string
+
+    string that can be displayed in header if the reference has a
+    citation
+
+    Default set to '*'
+
 """
 import logging
 
@@ -410,6 +427,8 @@ general_settings = {
     "ref-format"      : "{doc[doi]}",
     "multiple-authors-separator": " and ",
     "multiple-authors-format": "{au[surname]}, {au[given_name]}",
+    "hubation": "scihub",
+    "citation-string": "*"
 }
 
 

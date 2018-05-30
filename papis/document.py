@@ -336,6 +336,20 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         """
         return self._keys
 
+    @property
+    def has_citations(self):
+        """Returns string defined in config if keys contains citations
+        else returns None.
+
+        :returns: String or None
+        :rtype: str OR None
+        """
+
+        if 'citations' in self.keys():
+            return papis.config.get('citation-string')
+        else:
+            return ''
+
     def dump(self):
         """Return information string without any obvious format
         :returns: String with document's information
