@@ -1,0 +1,124 @@
+
+
+_papis (){
+local cur
+# Pointer to current completion word.
+# By convention, it's named "cur" but this isn't strictly necessary.
+
+COMPREPLY=()   # Array variable storing the possible completions.
+cur=${COMP_WORDS[COMP_CWORD]}
+prev=${COMP_WORDS[COMP_CWORD-1]}
+
+case "$cur" in
+  -*)
+  COMPREPLY=( $( compgen -W " -c	 --cc	 --clear-cache	 --config	 --cores	 -h	 --help	 -j	 -l	 --lib	 --log	 --pick-lib	 --picktool	 --set	 -v	 -V	 --verbose	 --version" -- $cur ) );;
+  * )
+  COMPREPLY=( $( compgen -W "add	addto	check	config	edit	export	explore	list	rm	mv	rename	open	browse	update	run	git	gui" -- $cur ) );;
+esac
+
+case "$prev" in
+
+  config)
+    COMPREPLY=( $( compgen -W " -h	 --help use-cache	database-backend	header-format	add-name	default-query-string	mark-key-name	notes-name	extra-bibtex-keys	doc-url-key-name	check-keys	multiple-authors-format	browse-query-format	default-library	info-allow-unicode	add-default-fields	ref-format	default-gui	mark-header-format	editor	whoosh-schema-prototype	opentool	add-edit	add-open	open-mark	file-browser	file-name	mark-format-name	extra-bibtex-types	format-doc-name	scripts-short-help-regex	dir-umask	picktool	sync-command	cache-dir	multiple-authors-separator	search-engine	xeditor	browser	info-name	mark-opener-format	mvtool	add-interactive	export-text-format	user-agent	add-confirm	whoosh-schema-fields	use-git	match-format	local-config-file	mark-match-format	tk-gui-entry-bg-odd	tk-gui-entry-font-size	tk-gui-edit	tk-gui-prompt-fg	tk-gui-prompt-font-size	tk-gui-header-format	tk-gui-move_top	tk-gui-move_bottom	tk-gui-insertbackground	tk-gui-activebackground	tk-gui-entry-bg-pair	tk-gui-window-height	tk-gui-entry-lines	tk-gui-prompt-bg	tk-gui-half_down	tk-gui-focus_prompt	tk-gui-print_info	tk-gui-height	tk-gui-cursor	tk-gui-exit	tk-gui-match-format	tk-gui-move_down	tk-gui-entry-bg-size	tk-gui-move_up	tk-gui-scroll_up	tk-gui-entry-fg	tk-gui-labels-per-page	tk-gui-clear	tk-gui-entry-font-style	tk-gui-borderwidth	tk-gui-window-bg	tk-gui-open	tk-gui-entry-font-name	tk-gui-help	tk-gui-half_up	tk-gui-window-width	tk-gui-scroll_down	tk-gui-activeforeground	rofi-gui-lines	rofi-gui-key-open	rofi-gui-key-normal-window	rofi-gui-fixed_lines	rofi-gui-key-delete	rofi-gui-eh	rofi-gui-normal_window	rofi-gui-case_sensitive	rofi-gui-key-quit	rofi-gui-header-format	rofi-gui-key-browse	rofi-gui-key-open-stay	rofi-gui-key-help	rofi-gui-key-query	rofi-gui-width	rofi-gui-key-refresh	rofi-gui-sep	rofi-gui-multi_select	rofi-gui-fullscreen	rofi-gui-markup_rows	rofi-gui-key-edit	dmenu-gui-lines	dmenu-gui-foreground_selected	dmenu-gui-case_insensitive	dmenu-gui-foreground	dmenu-gui-font	dmenu-gui-bottom	dmenu-gui-background_selected	dmenu-gui-header-format	dmenu-gui-background	vim-gui-delete-key	vim-gui-help-key	vim-gui-header-format	vim-gui-open-dir-key	vim-gui-next-search-key	vim-gui-open-key	vim-gui-prev-search-key	vim-gui-search-key	vim-gui-edit-key	urwid-gui-help-key	urwid-gui-quit-key	urwid-gui-redraw-key	urwid-gui-prompt-key	urwid-gui-search-key	urwid-gui-show-fields	urwid-gui-kill-buffer-key" -- $cur ) )
+    ;;
+
+  add)
+    COMPREPLY=( $( compgen -W " --author	 --commit	 --confirm	 -d	 --dir	 --edit	 --file-name	 --from-bibtex	 --from-doi	 --from-folder	 --from-lib	 --from-pmid	 --from-url	 --from-yaml	 -h	 --help	 -i	 --interactive	 --name	 --no-document	 --open	 --tags	 --title	 --year" -- $cur ) )
+    ;;
+
+  addto)
+    COMPREPLY=( $( compgen -W " -f	 --file-name	 --files	 -h	 --help" -- $cur ) )
+    ;;
+
+  check)
+    COMPREPLY=( $( compgen -W " -h	 --help	 -k	 --keys" -- $cur ) )
+    ;;
+
+  config)
+    COMPREPLY=( $( compgen -W " -h	 --help" -- $cur ) )
+    ;;
+
+  edit)
+    COMPREPLY=( $( compgen -W " --all	 -h	 --help	 -n	 --notes" -- $cur ) )
+    ;;
+
+  export)
+    COMPREPLY=( $( compgen -W " -a	 --all	 --bibtex	 --file	 --folder	 -h	 --help	 --json	 --no-bibtex	 -o	 --out	 -t	 --text	 --yaml" -- $cur ) )
+    ;;
+
+  explore)
+    COMPREPLY=( $( compgen -W " --add	 --arxiv	 --cmd	 --crossref	 -h	 --help	 --isbnplus	 --libgen	 --max" -- $cur ) )
+    ;;
+
+  list)
+    COMPREPLY=( $( compgen -W " -d	 --dir	 --downloaders	 -f	 --file	 --format	 -h	 --help	 -i	 --info	 --libraries	 -p	 --pick	 --template" -- $cur ) )
+    ;;
+
+  rm)
+    COMPREPLY=( $( compgen -W " -f	 --file	 --force	 -h	 --help" -- $cur ) )
+    ;;
+
+  mv)
+    COMPREPLY=( $( compgen -W " --git	 -h	 --help" -- $cur ) )
+    ;;
+
+  rename)
+    COMPREPLY=( $( compgen -W " --git	 -h	 --help" -- $cur ) )
+    ;;
+
+  open)
+    COMPREPLY=( $( compgen -W " --all	 -d	 --dir	 -h	 --help	 -m	 --mark	 --tool" -- $cur ) )
+    ;;
+
+  browse)
+    COMPREPLY=( $( compgen -W " -h	 --help" -- $cur ) )
+    ;;
+
+  update)
+    COMPREPLY=( $( compgen -W " --auto	 -d	 --document	 -f	 --force	 --from-bibtex	 --from-doi	 --from-isbnplus	 --from-url	 --from-yaml	 -h	 --help	 -i	 --interactive" -- $cur ) )
+    ;;
+
+  run)
+    COMPREPLY=( $( compgen -W " -h	 --help" -- $cur ) )
+    ;;
+
+  git)
+    COMPREPLY=( $( compgen -W " -h	 --help" -- $cur ) )
+    ;;
+
+  gui)
+    COMPREPLY=( $( compgen -W " -h	 --help	 --rofi	 --tk	 --urwid	 --vim" -- $cur ) )
+    ;;
+
+
+  --picktool)
+    COMPREPLY=( $( compgen -W "papis.pick vim rofi" -- $cur ) )
+    ;;
+
+  --log)
+    COMPREPLY=( $( compgen -W "INFO DEBUG WARNING ERROR CRITICAL" -- $cur ) )
+    ;;
+
+  --out|-o)
+    COMPREPLY=( $( compgen -f -- $cur ) )
+    ;;
+
+  --from-*)
+    COMPREPLY=( $( compgen -f -- $cur ) )
+    ;;
+
+  --lib|-l|--from-lib)
+    COMPREPLY=( $( compgen -f -W "$(papis list --libraries)" -- $cur ) )
+    ;;
+
+  --set)
+    COMPREPLY=( $( compgen -W "mark-opener-format=	mvtool=	format-doc-name=	user-agent=	mark-header-format=	add-confirm=	default-query-string=	ref-format=	add-interactive=	header-format=	whoosh-schema-fields=	whoosh-schema-prototype=	browser=	check-keys=	export-text-format=	extra-bibtex-keys=	xeditor=	mark-match-format=	mark-format-name=	browse-query-format=	use-git=	extra-bibtex-types=	editor=	multiple-authors-separator=	scripts-short-help-regex=	match-format=	database-backend=	add-open=	add-name=	picktool=	dir-umask=	file-browser=	default-gui=	info-name=	cache-dir=	local-config-file=	open-mark=	opentool=	multiple-authors-format=	add-default-fields=	notes-name=	search-engine=	sync-command=	info-allow-unicode=	default-library=	use-cache=	mark-key-name=	add-edit=	file-name=	doc-url-key-name=	rofi-gui-key-open-stay=	rofi-gui-multi_select=	rofi-gui-width=	rofi-gui-key-browse=	rofi-gui-key-refresh=	rofi-gui-eh=	rofi-gui-case_sensitive=	rofi-gui-markup_rows=	rofi-gui-key-delete=	rofi-gui-normal_window=	rofi-gui-key-help=	rofi-gui-key-edit=	rofi-gui-key-open=	rofi-gui-key-normal-window=	rofi-gui-fixed_lines=	rofi-gui-lines=	rofi-gui-header-format=	rofi-gui-fullscreen=	rofi-gui-sep=	rofi-gui-key-quit=	rofi-gui-key-query=	urwid-gui-search-key=	urwid-gui-quit-key=	urwid-gui-help-key=	urwid-gui-redraw-key=	urwid-gui-show-fields=	urwid-gui-prompt-key=	urwid-gui-kill-buffer-key=	dmenu-gui-background=	dmenu-gui-lines=	dmenu-gui-foreground=	dmenu-gui-background_selected=	dmenu-gui-bottom=	dmenu-gui-case_insensitive=	dmenu-gui-header-format=	dmenu-gui-font=	dmenu-gui-foreground_selected=	vim-gui-search-key=	vim-gui-prev-search-key=	vim-gui-header-format=	vim-gui-edit-key=	vim-gui-delete-key=	vim-gui-open-dir-key=	vim-gui-help-key=	vim-gui-next-search-key=	vim-gui-open-key=	tk-gui-entry-lines=	tk-gui-match-format=	tk-gui-prompt-fg=	tk-gui-help=	tk-gui-entry-font-name=	tk-gui-entry-bg-size=	tk-gui-clear=	tk-gui-window-bg=	tk-gui-focus_prompt=	tk-gui-labels-per-page=	tk-gui-half_down=	tk-gui-prompt-font-size=	tk-gui-window-width=	tk-gui-move_up=	tk-gui-header-format=	tk-gui-exit=	tk-gui-move_bottom=	tk-gui-activeforeground=	tk-gui-entry-font-size=	tk-gui-move_top=	tk-gui-edit=	tk-gui-borderwidth=	tk-gui-window-height=	tk-gui-entry-fg=	tk-gui-scroll_down=	tk-gui-height=	tk-gui-entry-bg-pair=	tk-gui-scroll_up=	tk-gui-entry-bg-odd=	tk-gui-insertbackground=	tk-gui-activebackground=	tk-gui-move_down=	tk-gui-prompt-bg=	tk-gui-print_info=	tk-gui-half_up=	tk-gui-open=	tk-gui-entry-font-style=	tk-gui-cursor=" -- $cur ) )
+    ;;
+
+esac
+
+return 0
+}
+
+
+complete -F _papis papis

@@ -53,8 +53,8 @@ def get_name(directory):
     """
     import hashlib
     return hashlib\
-           .md5(directory.encode())\
-           .hexdigest()+"-"+os.path.basename(directory)
+        .md5(directory.encode())\
+        .hexdigest()+"-"+os.path.basename(directory)
 
 
 def clear(directory):

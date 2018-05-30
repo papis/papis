@@ -52,7 +52,7 @@ class TestBibtex(unittest.TestCase):
 
   numpages  = {4},
   year      = {2010},
-  month     = {Jul},
+  month     = "Jul",
   publisher = {American Physical Society},
   doi       = {10.1103/PhysRevLett.105.040504},
   url       = {http://link.aps.org/doi/10.1103/PhysRevLett.105.040504}

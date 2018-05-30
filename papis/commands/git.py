@@ -3,7 +3,8 @@ This command is useful if your library is itself a git repository.
 You can use this command to issue git commands in your library
 repository without having to change your current directory.
 
-Here are some examples of its usage:
+CLI Examples
+^^^^^^^^^^^^
 
     - Check the status of the library repository:
 
@@ -18,7 +19,16 @@ Here are some examples of its usage:
         papis git commit -a
 """
 import papis.commands
+import papis.commands.run
+import papis.config
 import argparse
+import logging
+
+logger = logging.getLogger('git')
+
+
+def run(folder, command=[]):
+    return papis.commands.run.run(folder, command=["git"] + command)
 
 
 class Command(papis.commands.Command):
@@ -39,7 +49,4 @@ class Command(papis.commands.Command):
         )
 
     def main(self):
-        run = papis.commands.get_commands("run")
-        run.set_args(self.get_args())
-        run.set_commands(["git"] + self.args.commands)
-        run.main()
+        return run(papis.config.get("dir"), command=self.args.commands)

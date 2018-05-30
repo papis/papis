@@ -21,7 +21,7 @@ logger.debug("Imported commands")
 
 def main():
     try:
-        papis.commands.main()
+        sys.exit(papis.commands.main())
     except KeyboardInterrupt:
         print('Getting you out of here...')
 

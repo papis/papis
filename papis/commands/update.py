@@ -5,7 +5,7 @@ Examples
 ^^^^^^^^
 
 - Update a document automatically and interactively
-(searching by ``doi`` number in *crossref*, or in other sources...)
+  (searching by ``doi`` number in *crossref*, or in other sources...)
 
     .. code::
 
@@ -22,15 +22,49 @@ Examples
         papis update --from-bibtex libraryfile.bib -i
 
 """
+
 import papis
-import os
-import sys
-import shutil
+import urllib.error
+import logging
 import papis.utils
 import papis.bibtex
 import papis.downloaders.utils
-import papis.api
 import papis.document
+import papis.database
+
+
+def run(
+    document,
+    data=dict(),
+    interactive=False,
+    force=False,
+    from_yaml=False,
+    from_bibtex=False,
+    from_url=False,
+    from_doi=False
+        ):
+    logger = logging.getLogger('update:run')
+
+    if from_yaml:
+        import yaml
+        data.update(yaml.load(open(from_yaml)))
+
+    if from_bibtex:
+        bib_data = papis.bibtex.bibtex_to_dict(from_bibtex)
+        data.update(bib_data[0])
+
+    if from_url:
+        url_data = papis.downloaders.utils.get(from_url)
+        data.update(url_data["data"])
+
+    if from_doi:
+        logger.debug("Try using doi %s" % from_doi)
+        data.update(papis.utils.doi_to_data(from_doi))
+
+    document.update(data, force, interactive)
+    document.save()
+    papis.database.get().update(document)
+    return 0
 
 
 class Command(papis.commands.Command):
@@ -107,11 +141,7 @@ class Command(papis.commands.Command):
 
     def main(self):
         # TODO: Try to recycle some of this code with command add.
-        import papis.api
-        documents = papis.api.get_documents_in_lib(
-            self.get_args().lib,
-            self.get_args().search
-        )
+        documents = self.get_db().query(self.args.search)
         data = dict()
 
         if self.args.from_bibtex:
@@ -133,26 +163,24 @@ class Command(papis.commands.Command):
                         self.logger.error(
                             "The following information could not be located"
                         )
-                        self.logger.error('\n'+doc.dump())
+                        self.logger.error('\n'+papis.document.dump(doc))
                     else:
-                        located_doc.update(
-                            bib_element,
-                            self.args.force,
-                            self.args.interactive
+                        run(
+                            located_doc,
+                            data=bib_element,
+                            force=self.args.force,
+                            interactive=self.args.interactive
                         )
-                        located_doc.save()
                 return 0
-            data.update(bib_data[0])
-
-        if self.args.from_yaml:
-            import yaml
-            data.update(yaml.load(open(self.args.from_yaml)))
 
         # For the coming parts we need to pick a document
         document = self.pick(documents)
-        if not document: return 0
+        if not document:
+            return 0
 
         if self.args.auto:
+            if 'url' in document.keys() and not self.args.from_url:
+                self.args.from_url = document['url']
             if 'doi' in document.keys() and not self.args.from_doi:
                 self.args.from_doi = document['doi']
             if 'title' in document.keys() and not self.args.from_isbnplus:
@@ -160,36 +188,27 @@ class Command(papis.commands.Command):
 
         if self.args.from_isbnplus:
             import papis.isbn
-            doc = self.pick(
-                [
-                    papis.document.Document(data=d)
-                    for d in papis.isbn.get_data(
-                        query=self.args.from_isbnplus
-                    )
-                ]
-            )
-            if doc:
-                data.update(doc.to_dict())
+            try:
+                doc = self.pick(
+                    [
+                        papis.document.Document(data=d)
+                        for d in papis.isbn.get_data(
+                            query=self.args.from_isbnplus
+                        )
+                    ]
+                )
+                if doc:
+                    data.update(doc.to_dict())
+            except urllib.error.HTTPError:
+                self.logger.error('urllib failed to download')
 
-        if self.args.from_url:
-            url_data = papis.downloaders.utils.get(self.args.from_url)
-            data.update(url_data["data"])
-            document_paths = url_data["documents_paths"]
-            if not len(document_paths) == 0:
-                document_path = document_paths[0]
-                old_doc = self.pick(document["files"])
-                if papis.utils.confirm("Really replace document %s?" % old_doc):
-                    new_path = os.path.join(
-                        document.get_main_folder(), old_doc
-                    )
-                    self.logger.debug(
-                        "Moving %s to %s" %(document_path, new_path)
-                    )
-                    shutil.move(document_path, new_path)
-
-        if self.args.from_doi:
-            self.logger.debug("Try using doi %s" % self.args.from_doi)
-            data.update(papis.utils.doi_to_data(self.args.from_doi))
-
-        document.update(data, self.args.force, self.args.interactive)
-        document.save()
+        return run(
+            document,
+            data=data,
+            interactive=self.args.interactive,
+            force=self.args.force,
+            from_yaml=self.args.from_yaml,
+            from_bibtex=self.args.from_bibtex,
+            from_url=self.args.from_url,
+            from_doi=self.args.from_doi
+        )

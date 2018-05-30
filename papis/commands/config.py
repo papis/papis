@@ -32,11 +32,22 @@ You can find a list of all available settings in the configuration section.
 
 
 """
-import sys
-import os
-import re
-import configparser
 import papis.commands
+import logging
+
+
+def run(option_string):
+    logger = logging.getLogger('config:run')
+    option = option_string.split(".")
+    if len(option) == 1:
+        key = option[0]
+        section = None
+    elif len(option) == 2:
+        section = option[0]
+        key = option[1]
+    logger.debug("key = %s, sec = %s" % (key, section))
+    val = papis.config.get(key, section=section)
+    return val
 
 
 class Command(papis.commands.Command):
@@ -55,14 +66,6 @@ class Command(papis.commands.Command):
         )
 
     def main(self):
-        option = self.args.option.split(".")
-        self.logger.debug(option)
-        if len(option) == 1:
-            key = option[0]
-            section = None
-        elif len(option) == 2:
-            section = option[0]
-            key = option[1]
-        self.logger.debug("key = %s, sec = %s" % (key, section))
-        val = papis.config.get(key, section=section)
-        print(val)
+        self.logger.debug(self.args.option)
+        print(run(self.args.option))
+        return 0

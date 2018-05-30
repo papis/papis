@@ -48,7 +48,7 @@ class UI():
     }
 
     def __init__(self, db=None, cmd=None):
-        self.db = papis.database.Database()
+        self.db = papis.database.get()
 
         self.header_string = "Papis"
         self.status_string = "q: quit buffer, Q: quit Papis, ?: help"

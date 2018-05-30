@@ -1,5 +1,5 @@
-"""
- The following table lists the field prefixes for all the fields that can be searched.
+"""The following table lists the field prefixes for all the fields
+ that can be searched.
 
  Table:          search_query field prefixes
 ============================================
@@ -17,14 +17,13 @@
 """
 import bs4
 import logging
-import urllib.request# urlopen, Request
-import urllib.parse# import urlencode
-import bs4
+import urllib.request  # urlopen, Request
+import urllib.parse  # import urlencode
 import papis.config
-import logging
 
 
 logger = logging.getLogger('arxiv')
+
 
 def get_data(
     query="",
@@ -38,8 +37,7 @@ def get_data(
     id_list="",
     page=0,
     max_results=30
-    ):
-    results = []
+):
     dict_params = {
         "all": query,
         "ti": title,
@@ -52,7 +50,7 @@ def get_data(
         "rn": report_number
     }
     result = []
-    clean_params = {x:dict_params[x] for x in dict_params if dict_params[x]}
+    clean_params = {x: dict_params[x] for x in dict_params if dict_params[x]}
     search_query = '+AND+'.join(
         [key+':'+str(clean_params[key]) for key in clean_params]
     )

@@ -55,9 +55,8 @@ An example of sucessful returns:
     </book>
     ...
 """
-import xml.dom.minidom
-import urllib.request# urlopen, Request
-import urllib.parse# import urlencode
+import urllib.parse
+import urllib.request  # import urlencode
 import bs4
 import papis.config
 import logging
@@ -69,6 +68,7 @@ ISBNPLUS_APPID = "4846a7d1"
 ISBNPLUS_BASEURL = "https://api-2445581351187.apicast.io:443/"
 ISBNPLUS_BASEURL = "https://api-2445581351187.apicast.io/"
 
+
 def get_data(
     query="",
     page=1,
@@ -79,7 +79,7 @@ def get_data(
     order="isbn",
     app_id=ISBNPLUS_APPID,
     app_key=ISBNPLUS_KEY
-    ):
+):
     results = []
     dict_params = {
         "q": query,
@@ -93,7 +93,7 @@ def get_data(
         "app_key": app_key
     }
     params = urllib.parse.urlencode(
-        {x:dict_params[x] for x in dict_params if dict_params[x]}
+        {x: dict_params[x] for x in dict_params if dict_params[x]}
     )
     req_url = ISBNPLUS_BASEURL + "search?" + params
     logger.debug("url = " + req_url)
