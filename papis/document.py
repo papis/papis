@@ -16,12 +16,18 @@ def open_in_browser(document):
     """
     global logger
     url = None
-    if "url" in document.keys():
+    key = papis.config.get("browse-key")
+
+    if "url" in key:
         url = document["url"]
-    elif 'doi' in document.keys():
+    elif "doc-url" in key:
+        url = document["doc-url"]
+    elif "doi" in key:
         url = 'https://doi.org/' + document['doi']
-    elif papis.config.get('doc-url-key-name') in document.keys():
-        url = document[papis.config.get('doc-url-key-name')]
+    elif "isbn" in key:
+        url = 'https://isbnsearch.org/isbn/' + document['isbn']
+    elif key in document.keys():
+        url = document[key]
     else:
         from urllib.parse import urlencode
         params = {
