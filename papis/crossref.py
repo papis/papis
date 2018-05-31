@@ -150,6 +150,15 @@ latex_accents = {
     "\xa0": " ",     # Unprintable characters
 }
 
+def collapse_whitespace(s):
+    """Removes whitespace from string and returns the result. Useful
+    when whitespace causes errors (e.g. Bibtex)
+
+    :param s: string
+    :type s: str
+    """
+    logger.debug("Removing whitespace...")
+    return s.replace(" ","")
 
 def crossref_data_to_papis_data(data):
     if "author" in data.keys():
