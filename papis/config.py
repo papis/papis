@@ -280,6 +280,22 @@ Add command options
 
         papis add doc.pdf --author 'Bohm' --title 'Super book' --year 1928
 
+Browse command options
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. papis-config:: browse-key
+
+    This command provides the key that is used to generate the
+    url. For users that ``papis add --from-doi``, setting browse-key
+    to ``doi`` constructs the url from dx.doi.org/DOI, providing a
+    much more accurate url.
+
+    Default value is set to ``url``. If the user needs functionality
+    with the ``search-engine`` option, set the option to an empty
+    string e.g.  ::
+
+        browse-key = ''
+
 .. _check-command-options:
 
 Check command options
@@ -430,7 +446,6 @@ Databases
     `the documentation <https://whoosh.readthedocs.io/en/latest/schema.html/>`_
     for more information.
 
-
 """
 import logging
 
@@ -493,6 +508,7 @@ general_settings = {
     "add-default-fields": '["title", "author"]',
 
     "check-keys": '["files"]',
+    "browse-key": '"url"',
     "browse-query-format": "{doc[title]} {doc[author]}",
     "search-engine": "https://duckduckgo.com",
     "user-agent": 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)',
