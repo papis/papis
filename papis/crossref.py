@@ -379,7 +379,7 @@ def get_cross_ref(doi):
     res.update(get_citation_info_from_results(record))
 
     # REFERENCE BUILDING
-    res['ref'] = papis.utils.format_doc(papis.config.get("ref-format"), res)
+    res['ref'] = collapse_whitespace(papis.utils.format_doc(papis.config.get("ref-format"), res))
 
     # Check if reference field with the same tag already exists
     documents = papis.api.get_documents_in_lib(
