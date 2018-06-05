@@ -94,9 +94,33 @@ def to_bibtex(document):
     bibtexString += "@%s{%s,\n" % (bibtexType, ref)
     for bibKey in papis.bibtex.bibtex_keys:
         if bibKey in document.keys():
-            bibtexString += "  %s = { %s },\n" % (
-                bibKey, papis.bibtex.unicode_to_latex(str(document[bibKey]))
-            )
+            if bibKey == 'journal' and papis.config.get('bibtex-journal-key') in document.keys():
+                bibtexString += "  %s = { %s },\n" % (
+                    'journal',
+                    papis.bibtex.unicode_to_latex(
+                        str(document[papis.config.get('bibtex-journal-key')])
+                    )
+                )
+            elif bibKey == 'journal' and papis.config.get('bibtex-journal-key') not in document.keys():
+                logger.warning(
+                    "Key '%s' is not present for ref=%s" % (
+                        papis.config.get('bibtex-journal-key'),
+                        document["ref"]
+                    )
+                )
+                bibtexString += "  %s = { %s },\n" % (
+                    'journal',
+                    papis.bibtex.unicode_to_latex(
+                        str(document['journal'])
+                    )
+                )
+            else:
+                bibtexString += "  %s = { %s },\n" % (
+                    bibKey,
+                    papis.bibtex.unicode_to_latex(
+                        str(document[bibKey])
+                    )
+                )
     bibtexString += "}\n"
     return bibtexString
 
