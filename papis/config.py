@@ -455,6 +455,9 @@ Databases
     `the documentation <https://whoosh.readthedocs.io/en/latest/schema.html/>`_
     for more information.
 
+Other
+=====
+
 .. papis-config:: hubation
 
    This allows the operation after picking be set when using the
