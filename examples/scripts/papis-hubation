@@ -43,15 +43,19 @@ if 'citations' not in doc.keys():
 dois = [d.get('doi') for d in doc['citations']]
 
 print("%s citations found" % len(dois))
-print("Fetching citations' information online")
+print("Fetching citations'")
 dois_with_data = []
 for j,doi in enumerate(dois):
     progress = "%s/%s (doi: %s)" % (j+1, len(dois), doi)
     sys.stdout.write(progress)
     sys.stdout.flush()
-    dois_with_data.append(
-        papis.crossref.doi_to_data(doi)
-    )
+    citation = papis.api.get_documents_in_lib(papis.api.get_lib(),search='doi = "%s"' % doi)
+    if citation:
+        dois_with_data.append(papis.api.pick_doc(citation))
+    else:
+        dois_with_data.append(
+            papis.crossref.doi_to_data(doi)
+        )
     sys.stdout.write("\b" * (len(progress)))
     sys.stdout.write(" " * (len(progress)))
     sys.stdout.flush()
@@ -65,9 +69,32 @@ doi or sys.exit(0)
 
 print('DOI %s selected' % doi)
 
-papis.commands.main(
-    [
-        'scihub', doi
-    ] + add_flags
-)
+# set citation as the doc if it's already in the library
+citation = papis.api.get_documents_in_lib(papis.api.get_lib(),search='doi = "%s"' % doi)
 
+# get hubation options
+config_options = papis.config.get('hubation')
+
+# if open in config_options...
+if 'open' in config_options:
+    # Check if the citation is already in your library
+    if citation:
+        # and open the associated file
+        papis.commands.main(
+            [
+                'open', "ref=%s" % doc['ref']
+            ]
+        )
+    else:
+        # if it isn't, open in a browser
+        papis.document.open_in_browser(doc)
+
+elif 'browse' in config_options:
+    papis.document.open_in_browser(doc)
+
+else:
+    papis.commands.main(
+        [
+            papis.config.get('hubation'), "ref=%s" % doc['ref']
+        ] + add_flags
+    )
