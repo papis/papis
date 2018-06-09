@@ -168,6 +168,15 @@ Tools options
 Bibtex options
 ^^^^^^^^^^^^^^
 
+.. papis-config:: bibtex-journal-key
+
+    Journal publishers may request abbreviated journal titles. This
+    option allows the user to set the key for the journal entry when using
+    ``papis export --bibtex``.
+
+    Set as ``full_journal_title`` or ``abbrev_journal_title`` for
+    whichever style required. Default is ``journal``.
+
 .. papis-config:: extra-bibtex-keys
 
     When exporting documents in bibtex format, you might want to add
@@ -542,6 +551,7 @@ general_settings = {
     "mark-opener-format": get_default_opener(),
 
     "file-browser": get_default_opener(),
+    "bibtex-journal-key": 'journal',
     "extra-bibtex-keys": "",
     "extra-bibtex-types": "",
     "default-library": "papers",
