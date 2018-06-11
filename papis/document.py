@@ -16,12 +16,18 @@ def open_in_browser(document):
     """
     global logger
     url = None
-    if "url" in document.keys():
+    key = papis.config.get("browse-key")
+
+    if "url" in key:
         url = document["url"]
-    elif 'doi' in document.keys():
+    elif "doc-url" in key:
+        url = document["doc-url"]
+    elif "doi" in key:
         url = 'https://doi.org/' + document['doi']
-    elif papis.config.get('doc-url-key-name') in document.keys():
-        url = document[papis.config.get('doc-url-key-name')]
+    elif "isbn" in key:
+        url = 'https://isbnsearch.org/isbn/' + document['isbn']
+    elif key in document.keys():
+        url = document[key]
     else:
         from urllib.parse import urlencode
         params = {
@@ -88,9 +94,33 @@ def to_bibtex(document):
     bibtexString += "@%s{%s,\n" % (bibtexType, ref)
     for bibKey in papis.bibtex.bibtex_keys:
         if bibKey in document.keys():
-            bibtexString += "  %s = { %s },\n" % (
-                bibKey, papis.bibtex.unicode_to_latex(str(document[bibKey]))
-            )
+            if bibKey == 'journal' and papis.config.get('bibtex-journal-key') in document.keys():
+                bibtexString += "  %s = { %s },\n" % (
+                    'journal',
+                    papis.bibtex.unicode_to_latex(
+                        str(document[papis.config.get('bibtex-journal-key')])
+                    )
+                )
+            elif bibKey == 'journal' and papis.config.get('bibtex-journal-key') not in document.keys():
+                logger.warning(
+                    "Key '%s' is not present for ref=%s" % (
+                        papis.config.get('bibtex-journal-key'),
+                        document["ref"]
+                    )
+                )
+                bibtexString += "  %s = { %s },\n" % (
+                    'journal',
+                    papis.bibtex.unicode_to_latex(
+                        str(document['journal'])
+                    )
+                )
+            else:
+                bibtexString += "  %s = { %s },\n" % (
+                    bibKey,
+                    papis.bibtex.unicode_to_latex(
+                        str(document[bibKey])
+                    )
+                )
     bibtexString += "}\n"
     return bibtexString
 
@@ -355,6 +385,31 @@ class Document(object):
         :rtype:  list
         """
         return self._keys
+
+    @property
+    def has_citations(self):
+        """Returns string defined in config if keys contains citations
+        else returns None.
+
+        :returns: String or None
+        :rtype: str OR None
+        """
+
+        if 'citations' in self.keys():
+            return papis.config.get('citation-string')
+        else:
+            return ''
+
+    def dump(self):
+        """Return information string without any obvious format
+        :returns: String with document's information
+        :rtype:  str
+
+        """
+        string = ""
+        for i in self.keys():
+            string += str(i)+":   "+str(self[i])+"\n"
+        return string
 
     def load(self):
         """Load information from info file

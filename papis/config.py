@@ -168,6 +168,15 @@ Tools options
 Bibtex options
 ^^^^^^^^^^^^^^
 
+.. papis-config:: bibtex-journal-key
+
+    Journal publishers may request abbreviated journal titles. This
+    option allows the user to set the key for the journal entry when using
+    ``papis export --bibtex``.
+
+    Set as ``full_journal_title`` or ``abbrev_journal_title`` for
+    whichever style required. Default is ``journal``.
+
 .. papis-config:: extra-bibtex-keys
 
     When exporting documents in bibtex format, you might want to add
@@ -279,6 +288,22 @@ Add command options
     ::
 
         papis add doc.pdf --author 'Bohm' --title 'Super book' --year 1928
+
+Browse command options
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. papis-config:: browse-key
+
+    This command provides the key that is used to generate the
+    url. For users that ``papis add --from-doi``, setting browse-key
+    to ``doi`` constructs the url from dx.doi.org/DOI, providing a
+    much more accurate url.
+
+    Default value is set to ``url``. If the user needs functionality
+    with the ``search-engine`` option, set the option to an empty
+    string e.g.  ::
+
+        browse-key = ''
 
 .. _check-command-options:
 
@@ -430,6 +455,25 @@ Databases
     `the documentation <https://whoosh.readthedocs.io/en/latest/schema.html/>`_
     for more information.
 
+Other
+=====
+
+.. papis-config:: hubation
+
+   This allows the operation after picking be set when using the
+   script papis-hubation. Running ``papis hubation`` provides a list
+   of citations, which once picked, can undergo the operation
+   'e.g. open, browse, scihub' that is set. Current tested options are
+   ``open``, ``browse``, ``export``, and ``scihub``.
+
+   Default behaviour is set to scihub.
+
+.. papis-config:: citation-string
+
+    string that can be displayed in header if the reference has a
+    citation
+
+    Default set to '*'
 
 """
 import logging
@@ -493,6 +537,7 @@ general_settings = {
     "add-default-fields": '["title", "author"]',
 
     "check-keys": '["files"]',
+    "browse-key": '"url"',
     "browse-query-format": "{doc[title]} {doc[author]}",
     "search-engine": "https://duckduckgo.com",
     "user-agent": 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)',
@@ -509,6 +554,7 @@ general_settings = {
     "mark-opener-format": get_default_opener(),
 
     "file-browser": get_default_opener(),
+    "bibtex-journal-key": 'journal',
     "extra-bibtex-keys": "",
     "extra-bibtex-types": "",
     "default-library": "papers",
@@ -537,6 +583,8 @@ general_settings = {
     '"tags": TEXT(stored=True),\n'
     '}',
 
+    "hubation": "scihub",
+    "citation-string": "*"
 }
 
 

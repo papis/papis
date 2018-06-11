@@ -150,6 +150,15 @@ latex_accents = {
     "\xa0": " ",     # Unprintable characters
 }
 
+def collapse_whitespace(s):
+    """Removes whitespace from string and returns the result. Useful
+    when whitespace causes errors (e.g. Bibtex)
+
+    :param s: string
+    :type s: str
+    """
+    logger.debug("Removing whitespace...")
+    return s.replace(" ","")
 
 def crossref_data_to_papis_data(data):
     if "author" in data.keys():
@@ -379,7 +388,7 @@ def get_cross_ref(doi):
     res.update(get_citation_info_from_results(record))
 
     # REFERENCE BUILDING
-    res['ref'] = papis.utils.format_doc(papis.config.get("ref-format"), res)
+    res['ref'] = collapse_whitespace(papis.utils.format_doc(papis.config.get("ref-format"), res))
 
     # Check if reference field with the same tag already exists
     documents = papis.api.get_documents_in_lib(
