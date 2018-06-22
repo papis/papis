@@ -69,6 +69,9 @@ def run(
         logger.debug("Try using doi %s" % from_doi)
         data.update(papis.utils.doi_to_data(from_doi))
 
+    # Keep the ref the same, otherwise issues can be caused when
+    # writing LaTeX documents and all the ref's change
+    data['ref'] = document['ref']
     document.update(data, force, interactive)
     document.save()
     papis.database.get().update(document)
