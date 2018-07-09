@@ -31,7 +31,8 @@ import papis.bibtex
 import papis.downloaders.utils
 import papis.document
 import papis.database
-
+import papis.isbn
+import papis.api
 
 def run(
     document,
@@ -41,7 +42,8 @@ def run(
     from_yaml=False,
     from_bibtex=False,
     from_url=False,
-    from_doi=False
+    from_doi=False,
+    args=False
         ):
     logger = logging.getLogger('update:run')
 
@@ -49,22 +51,32 @@ def run(
         import yaml
         data.update(yaml.load(open(from_yaml)))
 
-    if from_bibtex:
-        bib_data = papis.bibtex.bibtex_to_dict(from_bibtex)
-        data.update(bib_data[0])
-
-    if from_url:
-        url_data = papis.downloaders.utils.get(from_url)
-        data.update(url_data["data"])
-
-    if from_doi:
+    elif from_bibtex:
+        try:
+            bib_data = papis.bibtex.bibtex_to_dict(from_bibtex)
+            data.update(bib_data[0])
+        except Exception:
+            pass
+        
+    elif from_url:
+        try:
+            url_data = papis.downloaders.utils.get(from_url)
+            data.update(url_data["data"])
+        except Exception:
+            pass
+            
+    elif from_doi:
         logger.debug("Try using doi %s" % from_doi)
         data.update(papis.utils.doi_to_data(from_doi))
 
+    # Keep the ref the same, otherwise issues can be caused when
+    # writing LaTeX documents and all the ref's change
+    data['ref'] = document['ref']
     document.update(data, force, interactive)
     document.save()
     papis.database.get().update(document)
-    return 0
+    # if not args.all:
+    #     return 0
 
 
 class Command(papis.commands.Command):
@@ -104,6 +116,7 @@ class Command(papis.commands.Command):
         self.parser.add_argument(
             "--from-isbnplus",
             help="Update info from isbnplus.org",
+            default=None,
             action="store"
         )
 
@@ -136,6 +149,12 @@ class Command(papis.commands.Command):
         self.parser.add_argument(
             "--auto",
             help="Try to parse information from different sources",
+            action="store_true"
+        )
+
+        self.parser.add_argument(
+            "--all",
+            help="Update all entries in library",
             action="store_true"
         )
 
@@ -174,41 +193,51 @@ class Command(papis.commands.Command):
                 return 0
 
         # For the coming parts we need to pick a document
-        document = self.pick(documents)
-        if not document:
-            return 0
+        if not self.args.all:
+            document = [self.pick(documents)]
+            if not document:
+                return 0
+        else:
+            document = documents
 
-        if self.args.auto:
-            if 'url' in document.keys() and not self.args.from_url:
-                self.args.from_url = document['url']
-            if 'doi' in document.keys() and not self.args.from_doi:
-                self.args.from_doi = document['doi']
-            if 'title' in document.keys() and not self.args.from_isbnplus:
-                self.args.from_isbnplus = document['title']
+        for docs in document:
+            if self.args.all:
+                data = dict()
+                self.args.from_url = None
+                self.args.from_doi = None
+                self.args.from_isbnplus = None
+            if self.args.auto:
+                if 'doi' in docs.keys() and not self.args.from_doi:
+                    self.args.from_doi = docs['doi']
+                elif 'url' in docs.keys() and not self.args.from_url:
+                    self.args.from_url = docs['url']
+                elif 'title' in docs.keys() and not self.args.from_isbnplus:
+                    self.args.from_isbnplus = docs['title']
 
-        if self.args.from_isbnplus:
-            import papis.isbn
-            try:
-                doc = self.pick(
-                    [
-                        papis.document.Document(data=d)
-                        for d in papis.isbn.get_data(
-                            query=self.args.from_isbnplus
-                        )
-                    ]
-                )
-                if doc:
-                    data.update(doc.to_dict())
-            except urllib.error.HTTPError:
-                self.logger.error('urllib failed to download')
+                    
+            if self.args.from_isbnplus:
+                try:
+                    doc = self.pick(
+                        [
+                            papis.docs.Document(data=d)
+                            for d in papis.isbn.get_data(
+                                query=self.args.from_isbnplus
+                            )
+                        ]
+                    )
+                    if doc:
+                        data.update(doc.to_dict())
+                except urllib.error.HTTPError:
+                    self.logger.error('urllib failed to download')
 
-        return run(
-            document,
-            data=data,
-            interactive=self.args.interactive,
-            force=self.args.force,
-            from_yaml=self.args.from_yaml,
-            from_bibtex=self.args.from_bibtex,
-            from_url=self.args.from_url,
-            from_doi=self.args.from_doi
-        )
+            run(
+                docs,
+                data=data,
+                interactive=self.args.interactive,
+                force=self.args.force,
+                from_yaml=self.args.from_yaml,
+                from_bibtex=self.args.from_bibtex,
+                from_url=self.args.from_url,
+                from_doi=self.args.from_doi,
+                args = self.args
+            )
