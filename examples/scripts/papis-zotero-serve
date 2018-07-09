@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
 """Start a web server listening on port 23119. This server is
 compatible with the `zotero connector`. This means that if zotero is
 *not* running, you can have items from your web browser added directly
@@ -15,17 +17,62 @@ import logging
 import http.server
 import papis.config
 import papis.document
+import papis.commands.add
+import papis.crossref
 
-logger = logging.getLogger("serve")
+logger = logging.getLogger("zotero-serve")
 
 connector_api_version = 2
 zotero_version = "5.0.25"
+zotero_port = 23119
+
+def zotero_data_to_papis_data(item):
+    # {'itemType': 'book',
+    # 'language': 'en',
+    # 'shortTitle': 'Nuclear Collective Motion',
+    # 'DOI': '10.1142/6721',
+    # 'accessDate': '2018-07-09T22:57:55Z',
+    # 'extra': 'DOI: 10.1142/6721',
+    # 'creators': [{'creatorType': 'author',
+        # 'firstName': 'David J',
+        # 'lastName': 'Rowe'}],
+    # 'publisher': 'WORLD SCIENTIFIC',
+    # 'ISBN': '9789812790644 9789812790668',
+    # 'url': 'http://www.worldscientific.com/worldscibooks/10.1142/6721',
+    # 'notes': [],
+    # 'seeAlso': [],
+    # 'attachments': [],
+    # 'tags': [],
+    # 'date': '05/2010',
+    # 'libraryCatalog': 'Crossref',
+    # 'title': 'Nuclear Collective Motion: Models and Theory',
+    # 'id': 'SL2sa7hx'}
+
+    data = item
+
+    if data.get('id'):
+        data['id']
+        del data['id']
+
+    if data.get('DOI'):
+        data['doi'] = data['DOI']
+        data.update(papis.crossref.doi_to_data(data['doi']))
+        del data['DOI']
+
+    if data.get('itemType'):
+        data['type'] = data.get('itemType')
+
+    if data.get('tags') and isinstance(data.get('tags'), list):
+        data['tags'] = " ".join(data['tags'])
+
+    return data
+
 
 class Command(papis.commands.Command):
 
     def init(self):
         self.parser = self.get_subparsers().add_parser(
-            "serve",
+            "",
             help="Start a zotero-connector server"
         )
 
@@ -33,8 +80,8 @@ class Command(papis.commands.Command):
             "--port",
             help="Port to listen to",
             action="store",
-            default=23119,
-            type = int
+            default=zotero_port,
+            type=int
         )
 
         self.parser.add_argument(
@@ -53,31 +100,33 @@ class Command(papis.commands.Command):
         # )
 
     def main(self):
-        server_address = (self.args.address, self.args.port)
-        httpd = http.server.HTTPServer(server_address,
-                                       PapisRequestHandler)
         global logger
-        logger.info("Starting server")
+        server_address = (self.args.address, self.args.port)
+        httpd = http.server.HTTPServer(
+            server_address,
+            PapisRequestHandler
+        )
+        print("Starting server")
         httpd.serve_forever()
 
-def papis_add(item):
-    # This should just call a papis function that given a dict of
-    # properties spit out the correct info.yaml and saves it.
-    # I still have to figure out where PDFs are taken
-    logger.debug("Adding the document to your library")
-    document = papis.document.from_data(item)
-    lib_dir = os.path.expanduser(papis.config.get('dir'))
-    outdir = os.path.join(lib_dir, papis.utils.clean_document_name(item["title"]))
-    os.makedirs(outdir)
-    document.set_folder(outdir)
-    document.save()
+# def papis_add(item):
+    # # This should just call a papis function that given a dict of
+    # # properties spit out the correct info.yaml and saves it.
+    # # I still have to figure out where PDFs are taken
+    # print("Adding the document to your library")
+    # document = papis.document.from_data(item)
+    # lib_dir = os.path.expanduser(papis.config.get('dir'))
+    # outdir = os.path.join(lib_dir, papis.utils.clean_document_name(item["title"]))
+    # os.makedirs(outdir)
+    # document.set_folder(outdir)
+    # document.save()
 
 # HTTPRequestHandler class
 class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
     def log_message(self, fmt, *args):
         global logger
-        logger.debug(fmt % args)
+        print(fmt % args)
         return
 
     def set_zotero_headers(self):
@@ -93,11 +142,11 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
     def pong(self, POST = True):
         global logger
-        logger.debug("pong")
+        print("pong")
         # Pong must respond to ping on both GET and POST
         # It must accepts application/json and text/plain
         if not POST: # GET
-            logger.debug("GET request")
+            print("GET request")
             self.send_response(200)
             self.send_header("Content-Type", "text/html")
             self.set_zotero_headers()
@@ -105,7 +154,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                        '<title>Zotero Connector Server is Available</title></head>'+\
 	               '<body>Zotero Connector Server is Available</body></html>'
         else: # POST
-            logger.debug("POST request")
+            print("POST request")
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.set_zotero_headers()
@@ -116,7 +165,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(bytes(response, "utf8"))
 
     def papis_collection(self):
-        logger.debug("Getting library name")
+        print("Getting library name")
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.set_zotero_headers()
@@ -132,15 +181,21 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
     def add(self):
         # Info or debug?
-        logger.info("Adding paper from zotero connector")
+        print("Adding paper from zotero connector")
         rawinput = self.read_input()
         data = json.loads(rawinput.decode('utf8'))
         source_uri = data['uri'] # source page
         # debug info
         # Add all papers
         for item in data['items']:
-            papis_add(item)
-
+            print(item)
+            papis_item = zotero_data_to_papis_data(item)
+            print('item', papis_item)
+            # papis.commands.add.run(
+                # [],
+                # data=item
+            # )
+            #papis_add(item)
         self.send_response(201) # Created
         self.set_zotero_headers()
 
@@ -164,3 +219,9 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/connector/ping":
             self.pong(POST = False)
+
+if __name__ == "__main__":
+    cmd = Command()
+    cmd.init()
+    cmd.args = cmd.parser.parse_args()
+    cmd.main()
