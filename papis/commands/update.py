@@ -241,5 +241,3 @@ class Command(papis.commands.Command):
                 from_doi=self.args.from_doi,
                 args = self.args
             )
-
-            # papis.api.clear_lib_cache()
