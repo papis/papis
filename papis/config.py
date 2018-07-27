@@ -640,6 +640,53 @@ def get_default_settings(section="", key=""):
         return DEFAULT_SETTINGS[section][key]
 
 
+def register_default_settings(settings_dictionary):
+    """Register configuration settings into the global configuration registry.
+
+    Notice that you can define sections or global options. For instance,
+    let us suppose that a script called ``hubation`` defines some
+    configuration options. In the script there could be the following defined
+
+    ::
+
+        import papis.config
+        options = {'hubation': { 'command': 'open'}}
+        papis.config.register_default_settings(options)
+
+    and later on the script can use these options as:
+
+    ::
+
+        papis.config.get('command', section='hubation')
+
+    :param settings_dictionary: A dictionary with settings
+    :type  settings_dictionary: dict
+    >>> papis.config.register_default_settings(\
+            {'scihub': { 'command': 'open'}}\
+        )
+    >>> papis.config.get('command', section='scihub')
+    'open'
+    >>> options = {'settings': { 'hubhub': 42, 'default-library': 'mag' }}
+    >>> papis.config.register_default_settings(options)
+    >>> papis.config.get('hubhub')
+    42
+    >>> papis.config.get('info-name') is not None
+    True
+    >>> not papis.config.get('default-library') == 'mag'
+    True
+    >>> papis.config.get_default_settings(key='default-library') == 'mag'
+    True
+    """
+    default_settings = get_default_settings()
+    # we do a for loop because apparently the OrderedDict removes all
+    # key-val fields after updating, so we have to do it by hand
+    for section in settings_dictionary.keys():
+        if section in default_settings.keys():
+            default_settings[section].update(settings_dictionary[section])
+        else:
+            default_settings[section] = settings_dictionary[section]
+
+
 def get_config_home():
     """Returns the base directory relative to which user specific configuration
     files should be stored.
