@@ -46,7 +46,7 @@ doc = papis.api.pick_doc(
         documents
     )
 
-if 'citations' not in doc.keys():
+if 'citations' not in doc.keys() or doc['citations'] == []:
     print_no_citations_and_exit()
 
 dois = [d.get('doi') for d in doc['citations']]
