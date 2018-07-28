@@ -33,8 +33,6 @@ documents = papis.api.get_documents_in_lib(
 
 ref_num = 0
 
-print(sys.argv)
-
 for i in sys.argv:
     if i.isdigit():
         ref_num = int(i)
