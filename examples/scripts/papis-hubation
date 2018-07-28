@@ -25,17 +25,26 @@ else:
     if search in ['-h', '--help']:
         usage()
         sys.exit(0)
-
-add_flags = sys.argv[2:]
-
+    
 documents = papis.api.get_documents_in_lib(
     papis.api.get_lib(),
     search=search
 )
 
+ref_num = 0
+
+print(sys.argv)
+
+for i in sys.argv:
+    if i.isdigit():
+        ref_num = int(i)
+        sys.argv.remove(i)
+
+add_flags = sys.argv[2:]
+
 doc = papis.api.pick_doc(
-    documents
-)
+        documents
+    )
 
 if 'citations' not in doc.keys():
     print_no_citations_and_exit()
@@ -60,6 +69,15 @@ for j,doi in enumerate(dois):
     sys.stdout.write(" " * (len(progress)))
     sys.stdout.flush()
     sys.stdout.write("\b" * (len(progress)))
+    if j == int(ref_num)-1:
+        if citation:
+            dois_with_data = [papis.api.pick_doc(citation)]
+        else:
+            dois_with_data = [
+                papis.crossref.doi_to_data(doi)
+            ]
+        break
+    
 documents = [papis.document.Document(data=d) for d in dois_with_data]
 doc = papis.api.pick_doc(documents)
 doc or sys.exit(0)
@@ -88,7 +106,7 @@ if 'open' in config_options:
     else:
         # if it isn't, open in a browser
         papis.document.open_in_browser(doc)
-
+        
 elif 'browse' in config_options:
     papis.document.open_in_browser(doc)
 
