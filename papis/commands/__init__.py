@@ -81,28 +81,6 @@ def get_commands(command=None):
         return COMMANDS[command]
 
 
-def list_commands():
-    """List all available commands
-    :returns: List containing the names of the commands
-    :rtype:  list
-
-    >>> len(list_commands()) > 0
-    True
-    >>> type(list_commands()) is list
-    True
-    >>> 'add' in list_commands() and 'open' in list_commands()
-    True
-    >>> 'default' in list_commands()
-    False
-    >>> 'external' in list_commands()
-    False
-    """
-    return [
-        cmd for cmd in get_commands().keys()
-        if cmd not in ['default', 'external']
-    ]
-
-
 def get_args():
     """
     Get general command line arguments.
