@@ -6,7 +6,7 @@ import papis.config
 import papis.commands
 
 
-class Command(papis.commands.Command):
+class Command:
 
     def init(self, path):
 
