@@ -14,26 +14,24 @@ import papis
 import papis.utils
 import papis.config
 from papis.api import status
+import papis.cli
+import click
+import papis.database
 
 
 def run(document):
+    """Open document's url in a browser"""
     papis.document.open_in_browser(document)
     return status.success
 
 
-class Command(papis.commands.Command):
-    def init(self):
-
-        self.parser = self.get_subparsers().add_parser(
-            "browse",
-            help="Open document's url in a browser"
-        )
-
-        self.add_search_argument()
-
-    def main(self):
-        documents = self.get_db().query(self.args.search)
-        document = self.pick(documents)
-        if not document:
-            return status.file_not_found
-        return run(document)
+@click.command()
+@click.help_option('--help', '-h')
+@papis.cli.query_option()
+def cli(query):
+    """Open document's url in a browser"""
+    documents = papis.database.get().query(query)
+    document = papis.cli.pick(documents)
+    if not document:
+        return status.file_not_found
+    return run(document)
