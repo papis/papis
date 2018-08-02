@@ -8,6 +8,7 @@ import tempfile
 import papis.cli
 import click
 import logging
+import papis.commands.add
 
 
 logger = logging.getLogger('explore')
@@ -28,7 +29,8 @@ def parse_search(query):
             result['query'] += ' ' + val
     return result
 
-def add(doc, libgen=False, arxiv=False):
+
+def do_add(doc, libgen=False, arxiv=False):
     if libgen:
         if not doc.has('doc_url'):
             logger.error('No doc_url data retrieved')
@@ -40,18 +42,15 @@ def add(doc, libgen=False, arxiv=False):
         file_name = tempfile.mktemp()
         with open(file_name, 'wb+') as fd:
             fd.write(doc_data)
-        papis.commands.main(
-            ['add', '--from-url', doc['doc_url'], file_name]
-        )
+        papis.commands.add.run([file_name], from_url=doc['doc_url'])
     elif arxiv:
         if not doc.has('url'):
             error('No url data retrieved')
             return 1
-        papis.commands.main(
-            ['add', '--from-url', doc['url']]
-        )
+        papis.commands.add.run([], from_url=doc['doc_url'], no_document=True)
 
-def libgen(query):
+
+def explore_libgen(query):
     from pylibgen import Library
     parsed = parse_search(query)
     lg = Library()
@@ -73,7 +72,8 @@ def libgen(query):
         doc['doc_url'] = lg.get_download_url(doc['md5'])
     return doc
 
-def crossref(search, max_results):
+
+def explore_crossref(search, max_results):
     import papis.crossref
     parsed = parse_search(query)
     data = papis.crossref.get_data(
@@ -89,7 +89,8 @@ def crossref(search, max_results):
     )
     return doc
 
-def isbnplus(query):
+
+def explore_isbnplus(query):
     import papis.isbn
     data = papis.isbn.get_data(query=query)
     doc = papis.cli.pick(
@@ -97,7 +98,8 @@ def isbnplus(query):
     )
     return doc
 
-def arxiv(query, max_results):
+
+def explore_arxiv(query, max_results):
     import papis.arxiv
     parsed = parse_search(query)
     data = papis.arxiv.get_data(
@@ -117,7 +119,6 @@ def arxiv(query, max_results):
         [papis.document.Document(data=d) for d in data]
     )
     return doc
-
 
 
 @click.command()
@@ -182,32 +183,29 @@ def cli(
         crossref,
         add,
         max,
-        cmd,
+        cmd
     ):
     """Explore on the internet"""
     doc = None
-    if self.args.arxiv:
-        doc = self.arxiv(self.args.search)
-    elif self.args.isbnplus:
-        doc = self.isbnplus(self.args.search)
-    elif self.args.crossref:
-        doc = self.crossref(self.args.search)
-    elif self.args.libgen:
-        doc = self.libgen(self.args.search)
+    if arxiv:
+        doc = explore_arxiv(query, max)
+    elif isbnplus:
+        doc = explore_isbnplus(query)
+    elif crossref:
+        doc = explore_crossref(query, max)
+    elif libgen:
+        doc = explore_libgen(query)
     else:
-        self.args.arxiv = True
-        doc = self.arxiv(self.args.search)
+        arxiv = True
+        doc = explore_arxiv(query, max)
 
     if doc:
         print(papis.document.dump(doc))
-        if self.args.add:
-            self.add(doc)
-        elif self.args.cmd is not None:
+        if add:
+            do_add(doc, libgen, arxiv)
+        elif cmd is not None:
             from subprocess import call
-            command = papis.utils.format_doc(
-                self.args.cmd,
-                doc
-            )
-            self.logger.debug('Calling "%s"' % command)
+            command = papis.utils.format_doc(cmd, doc)
+            logger.debug('Calling "%s"' % command)
             call(command.split(" "))
 
