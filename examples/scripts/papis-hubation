@@ -1,116 +1,135 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-# papis-short-help: Download citation using scihub.org
+# papis-short-help: Look-up citations of documents
 # Copyright © 2017 Alejandro Gallo. GPLv3
 # Last modified: 2017-11-19
-import sys
+"""
+.. papis-config:: hubation
+
+   This allows the operation after picking be set when using the
+   script papis-hubation. Running ``papis hubation`` provides a list
+   of citations, which once picked, can undergo the operation
+   'e.g. open, browse, scihub' that is set. Current tested options are
+   ``open``, ``browse``, ``export``, and ``scihub``.
+
+   Default behaviour is set to scihub.
+"""
 import papis.api
-import papis.commands
+import papis.utils
 import papis.crossref
 import papis.document
+import click
+import papis.cli
+import papis.database
+import sys
+import papis.config
 
+options = {
+    'hubation': {
+        'command': 'papis scihub {doc[doi]}'
+    }
+}
+papis.config.register_default_settings(options)
 
-def usage():
-    print("Usage: papis hubation <papis-search> <add-flags>")
 
 def print_no_citations_and_exit():
-    print('The document does not have any citation information')
+    click.echo('The document does not have any citation information')
     sys.exit(1)
 
 
-if len(sys.argv) < 2:
-    search = ""
-else:
-    search = sys.argv[1]
-    if search in ['-h', '--help']:
-        usage()
-        sys.exit(0)
-    
-documents = papis.api.get_documents_in_lib(
-    papis.api.get_lib(),
-    search=search
-)
+@click.command(context_settings=dict(ignore_unknown_options=True))
+@click.help_option('--help', '-h')
+@papis.cli.query_option()
+@click.option("--ref-num", default=0, help='Number of references')
+@click.option("--cmd", default=None, help='What command to do')
+@click.argument('add_flags', nargs=-1)
+def cli(cmd, ref_num, query, add_flags):
+    """Look-up citations of documents"""
+    import papis.api
 
-ref_num = 0
-
-for i in sys.argv:
-    if i.isdigit():
-        ref_num = int(i)
-        sys.argv.remove(i)
-
-add_flags = sys.argv[2:]
-
-doc = papis.api.pick_doc(
-        documents
+    documents = papis.api.get_documents_in_lib(
+        papis.api.get_lib(),
+        search=query
     )
 
-if 'citations' not in doc.keys() or doc['citations'] == []:
-    print_no_citations_and_exit()
+    doc = papis.api.pick_doc(documents)
+    db = papis.database.get()
 
-dois = [d.get('doi') for d in doc['citations']]
+    if 'citations' not in doc.keys() or doc['citations'] == []:
+        print_no_citations_and_exit()
 
-print("%s citations found" % len(dois))
-print("Fetching citations'")
-dois_with_data = []
-for j,doi in enumerate(dois):
-    progress = "%s/%s (doi: %s)" % (j+1, len(dois), doi)
-    sys.stdout.write(progress)
-    sys.stdout.flush()
-    citation = papis.api.get_documents_in_lib(papis.api.get_lib(),search='doi = "%s"' % doi)
-    if citation:
-        dois_with_data.append(papis.api.pick_doc(citation))
-    else:
-        dois_with_data.append(
-            papis.crossref.doi_to_data(doi)
-        )
-    sys.stdout.write("\b" * (len(progress)))
-    sys.stdout.write(" " * (len(progress)))
-    sys.stdout.flush()
-    sys.stdout.write("\b" * (len(progress)))
-    if j == int(ref_num)-1:
+    dois = [d.get('doi') for d in doc['citations']]
+
+    click.echo("%s citations found" % len(dois))
+    click.echo("Fetching citations'")
+    dois_with_data = []
+
+    for j, doi in enumerate(dois):
+
+        progress = "%s/%s (doi: %s)" % (j+1, len(dois), doi)
+        sys.stdout.write(progress)
+        sys.stdout.flush()
+
+        citation = db.query_dict(dict(doi=doi))
         if citation:
-            dois_with_data = [papis.api.pick_doc(citation)]
+            dois_with_data.append(papis.api.pick_doc(citation))
         else:
-            dois_with_data = [
+            dois_with_data.append(
                 papis.crossref.doi_to_data(doi)
-            ]
-        break
-    
-documents = [papis.document.Document(data=d) for d in dois_with_data]
-doc = papis.api.pick_doc(documents)
-doc or sys.exit(0)
-doi = doc["doi"]
+            )
 
-doi or sys.exit(0)
+        sys.stdout.write("\b" * (len(progress)))
+        sys.stdout.write(" " * (len(progress)))
+        sys.stdout.flush()
+        sys.stdout.write("\b" * (len(progress)))
 
-print('DOI %s selected' % doi)
+        if j == int(ref_num)-1:
+            if citation:
+                dois_with_data = [papis.api.pick_doc(citation)]
+            else:
+                dois_with_data = [
+                    papis.crossref.doi_to_data(doi)
+                ]
+            break
 
-# set citation as the doc if it's already in the library
-citation = papis.api.get_documents_in_lib(papis.api.get_lib(),search='doi = "%s"' % doi)
+    documents = [papis.document.Document(data=d) for d in dois_with_data]
+    doc = papis.api.pick_doc(documents)
+    doc or sys.exit(0)
+    doi = doc["doi"]
 
-# get hubation options
-config_options = papis.config.get('hubation')
+    doi or sys.exit(0)
 
-# if open in config_options...
-if 'open' in config_options:
-    # Check if the citation is already in your library
-    if citation:
-        # and open the associated file
-        papis.commands.main(
-            [
-                'open', "ref=%s" % doc['ref']
-            ]
-        )
-    else:
-        # if it isn't, open in a browser
+    click.echo('DOI %s selected' % doi)
+
+    # set citation as the doc if it's already in the library
+    citation = db.query_dict(dict(doi=doi))
+
+    if cmd is not None:
+        papis.config.set('command', cmd, section='hubation')
+
+    # get hubation options
+    cmd = papis.config.get('command', section='hubation')
+
+    # if open in config_options...
+    if 'open' in cmd:
+        # Check if the citation is already in your library
+        if citation:
+            # and open the associated file
+            import papis.command.open
+            papis.command.open.run(doc)
+        else:
+            # if it isn't, open in a browser
+            papis.document.open_in_browser(doc)
+
+    elif 'browse' in cmd:
         papis.document.open_in_browser(doc)
-        
-elif 'browse' in config_options:
-    papis.document.open_in_browser(doc)
 
-else:
-    papis.commands.main(
-        [
-            papis.config.get('hubation'), "ref=%s" % doc['ref']
-        ] + add_flags
-    )
+    else:
+        from subprocess import call
+        command = papis.utils.format_doc(cmd, doc)
+        click.echo('Calling "%s"' % command)
+        call(command.split(" "))
+
+
+if __name__ == "__main__":
+    cli()
