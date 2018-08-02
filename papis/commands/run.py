@@ -31,6 +31,7 @@ import papis.config
 import papis.exceptions
 import argparse
 import logging
+import click
 
 logger = logging.getLogger('run')
 
@@ -48,30 +49,10 @@ def run(folder, command=[]):
     return os.system(commandstr)
 
 
-class Command(papis.commands.Command):
-
-    def init(self):
-
-        self.parser = self.get_subparsers().add_parser(
-            "run",
-            help="Run a command in the library folder"
-        )
-
-        self.parser.add_argument(
-            "run_command",
-            help="Command name or command",
-            default="",
-            nargs=argparse.REMAINDER,
-            action="store"
-        )
-
-    def set_commands(self, commands):
-        """Set commands to be run.
-        :param commands: List of commands
-        :type  commands: list
-        """
-        self.args.run_command = commands
-
-    def main(self):
-        folder = papis.config.get("dir")
-        return run(folder, command=self.args.run_command)
+@click.command(context_settings=dict(ignore_unknown_options=True))
+@click.help_option('--help', '-h')
+@click.argument("run_command", nargs=-1)
+def cli(run_command):
+    """Run an arbitrary shell command in the library folder"""
+    folder = papis.config.get("dir")
+    return run(folder, command=run_command)

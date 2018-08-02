@@ -23,6 +23,7 @@ import papis.commands.run
 import papis.config
 import argparse
 import logging
+import click
 
 logger = logging.getLogger('git')
 
@@ -31,22 +32,9 @@ def run(folder, command=[]):
     return papis.commands.run.run(folder, command=["git"] + command)
 
 
-class Command(papis.commands.Command):
-
-    def init(self):
-
-        self.parser = self.get_subparsers().add_parser(
-            "git",
-            help="Run a git command in the library folder"
-        )
-
-        self.parser.add_argument(
-            "commands",
-            help="Commands",
-            default="",
-            nargs=argparse.REMAINDER,
-            action="store"
-        )
-
-    def main(self):
-        return run(papis.config.get("dir"), command=self.args.commands)
+@click.command(context_settings=dict(ignore_unknown_options=True))
+@click.help_option('--help', '-h')
+@click.argument("command", nargs=-1)
+def cli(command):
+    "Run a git command in the library folder"
+    return run(papis.config.get("dir"), command=list(command))
