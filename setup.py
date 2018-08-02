@@ -86,6 +86,7 @@ setup(
             'sphinx-argparse',
             'sphinx_rtd_theme',
             'pytest',
+            'pytest-cov',
         ]
     ),
     description='Powerful and highly extensible command-line based document '

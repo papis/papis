@@ -11,11 +11,16 @@ python:
 
 script:
   - make test
+  - coverage run
 
 install:
   - pip install setuptools
+  - pip install codecov
   - pip install -e .[develop]
   - pip install -e .[optional]
   - make install
   - sudo apt-get update -qq
   - sudo apt-get install -y git
+
+after_success:
+  - codecov
