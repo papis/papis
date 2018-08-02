@@ -124,57 +124,48 @@ def explore_arxiv(query, max_results):
 @click.command()
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
-
 @click.option(
     "--isbnplus",
     help="Search through isbnplus.org",
     default=False,
     is_flag=True
 )
-
 @click.option(
     "--arxiv",
     help="Search on the arxiv",
     default=False,
     is_flag=True
 )
-
 @click.option(
     "--libgen",
     help="Search on library genesis",
     default=False,
     is_flag=True
 )
-
 @click.option(
     "--crossref",
     help="Search on library genesis",
     default=False,
     is_flag=True
 )
-
 @click.option(
     "--add",
     help="Add document selected",
     default=False,
     is_flag=True
 )
-
 @click.option(
     "--max",
     help="Maximum number of items",
     default=30,
     type=int
 )
-
 @click.option(
     "--cmd",
     help="Issue a command on the retrieved document "
          "using papis format",
     default=None
 )
-
-
 def cli(
         query,
         isbnplus,
@@ -208,4 +199,3 @@ def cli(
             command = papis.utils.format_doc(cmd, doc)
             logger.debug('Calling "%s"' % command)
             call(command.split(" "))
-

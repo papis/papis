@@ -4,6 +4,7 @@ import papis.api
 import papis.utils
 import papis.document
 import os
+import unittest
 
 
 test_data = [
@@ -20,6 +21,7 @@ def get_test_lib():
 def setup_test_library():
     lib = get_test_lib()
     config = papis.config.get_configuration()
+    config[papis.config.get_general_settings_name()] = dict()
     config[lib] = dict()
     config[lib]['dir'] = tempfile.mkdtemp(prefix='papis')
     papis.api.set_lib('test-lib')

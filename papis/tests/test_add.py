@@ -2,8 +2,9 @@ import os
 import tempfile
 import unittest
 import papis.tests
+import papis.tests.cli
 import papis.config
-from papis.commands.add import run, get_document_extension
+from papis.commands.add import run, get_document_extension, cli
 
 
 class Test(unittest.TestCase):
@@ -97,3 +98,19 @@ class Test(unittest.TestCase):
         ]
         for d in docs:
             self.assertTrue(get_document_extension(d[0]) == d[1])
+
+
+class TestCli(papis.tests.cli.TestCli):
+
+    cli = cli
+
+    def test_set(self):
+        result = self.invoke([
+            '--no-document',
+            '-s', 'author', 'Bertrand Russell',
+            '--set', 'title', 'Principia'
+        ])
+        self.assertTrue(result.exit_code == 0)
+        db = papis.database.get()
+        docs = db.query_dict(dict(author="Bertrand Russell"))
+        self.assertTrue(len(docs) == 1)
