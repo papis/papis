@@ -23,6 +23,7 @@ import papis.cli
 import papis.database
 import sys
 import papis.config
+from prompt_toolkit.shortcuts import ProgressBar
 
 options = {
     'hubation': {
@@ -40,10 +41,17 @@ def print_no_citations_and_exit():
 @click.command(context_settings=dict(ignore_unknown_options=True))
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
-@click.option("--ref-num", default=0, help='Number of references')
-@click.option("--cmd", default=None, help='What command to do')
+@click.option(
+    "--max-citations", "-m", default=-1,
+    help='Number of citations to be retrieved'
+)
+@click.option(
+    "--cmd",
+    default=lambda: papis.config.get('command', section='hubation'),
+    help='What command to do'
+)
 @click.argument('add_flags', nargs=-1)
-def cli(cmd, ref_num, query, add_flags):
+def cli(cmd, max_citations, query, add_flags):
     """Look-up citations of documents"""
     import papis.api
 
@@ -59,38 +67,24 @@ def cli(cmd, ref_num, query, add_flags):
         print_no_citations_and_exit()
 
     dois = [d.get('doi') for d in doc['citations']]
+    if max_citations < 0:
+        max_citations = len(dois)
+    dois = dois[0:min(max_citations, len(dois))]
 
     click.echo("%s citations found" % len(dois))
-    click.echo("Fetching citations'")
+    click.echo("Fetching {} citations'".format(max_citations))
     dois_with_data = []
 
-    for j, doi in enumerate(dois):
+    with ProgressBar() as progress:
+        for j, doi in progress(enumerate(dois), total=len(dois)):
+            citation = db.query_dict(dict(doi=doi))
 
-        progress = "%s/%s (doi: %s)" % (j+1, len(dois), doi)
-        sys.stdout.write(progress)
-        sys.stdout.flush()
-
-        citation = db.query_dict(dict(doi=doi))
-        if citation:
-            dois_with_data.append(papis.api.pick_doc(citation))
-        else:
-            dois_with_data.append(
-                papis.crossref.doi_to_data(doi)
-            )
-
-        sys.stdout.write("\b" * (len(progress)))
-        sys.stdout.write(" " * (len(progress)))
-        sys.stdout.flush()
-        sys.stdout.write("\b" * (len(progress)))
-
-        if j == int(ref_num)-1:
             if citation:
-                dois_with_data = [papis.api.pick_doc(citation)]
+                dois_with_data.append(papis.api.pick_doc(citation))
             else:
-                dois_with_data = [
+                dois_with_data.append(
                     papis.crossref.doi_to_data(doi)
-                ]
-            break
+                )
 
     documents = [papis.document.Document(data=d) for d in dois_with_data]
     doc = papis.api.pick_doc(documents)
