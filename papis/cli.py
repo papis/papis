@@ -1,30 +1,68 @@
 import click
 import click.decorators
 import os
+import papis.config
+import glob
+import re
 
-plugin_folder = os.path.join(os.path.dirname(__file__), 'commands')
+
+default_commands_path = os.path.join(os.path.dirname(__file__), 'commands')
+
+
+def get_external_scripts():
+    paths = []
+    scripts = []
+    paths.append(papis.config.get_scripts_folder())
+    paths += os.environ["PATH"].split(":")
+    for path in paths:
+        scripts += glob.glob(os.path.join(path, "papis-*"))
+    return scripts
+
+
+def script_paths_to_dict(paths):
+    scripts_dict = dict()
+    for path in paths:
+        command_name = \
+            os.path.basename(path).replace('papis-','').replace('.py', '')
+        scripts_dict[command_name] = dict(
+            command_name=command_name,
+            path=path,
+            python=path.endswith(".py")
+        )
+    return scripts_dict
 
 
 class MultiCommand(click.MultiCommand):
 
+    scripts = script_paths_to_dict(
+        list(filter(
+            lambda path: not re.match(r'.*__init__.py$', path),
+            glob.glob(os.path.join(default_commands_path, '*.py'))
+        )) +
+        get_external_scripts()
+    )
+
     def list_commands(self, ctx):
-        rv = []
-        for filename in os.listdir(plugin_folder):
-            if filename.endswith('.py'):
-                rv.append(filename[:-3])
+        rv = [s for s in self.scripts.keys()]
         rv.sort()
         return rv
 
     def get_command(self, ctx, name):
         namespace = {}
-        fn = os.path.join(plugin_folder, name + '.py')
-        with open(fn) as f:
-            code = compile(f.read(), fn, 'exec')
-            eval(code, namespace, namespace)
-        if 'cli' in namespace.keys():
-            return namespace['cli']
-        else:
-            return None
+        script = self.scripts[name]
+        if script['python']:
+            with open(script['path']) as f:
+                code = compile(f.read(), script['path'], 'exec')
+                eval(code, namespace, namespace)
+            if 'cli' in namespace.keys():
+                return namespace['cli']
+        # If it gets here, it means that it is an external script
+        from papis.commands.external import external_cli as cli
+        from papis.commands.external import get_command_help
+        cli.context_settings['obj'] = script
+        cli.help = get_command_help(script['path'])
+        cli.short_help = cli.help
+        return cli
 
 
 def query_option(**attrs):

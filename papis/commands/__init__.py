@@ -9,17 +9,6 @@ import papis.utils
 import papis.config
 
 
-def get_external_scripts():
-    import glob
-    paths = []
-    scripts = []
-    paths.append(papis.config.get_scripts_folder())
-    paths += os.environ["PATH"].split(":")
-    for path in paths:
-        scripts += glob.glob(os.path.join(path, "papis-*"))
-    return scripts
-
-
 def patch_external_input_args(arguments):
     """
     We have to add as the first argument to any external script a whitespace
