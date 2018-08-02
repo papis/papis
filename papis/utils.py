@@ -176,55 +176,6 @@ def yaml_to_data(yaml_path):
     return yaml.load(open(yaml_path))
 
 
-def vcf_to_data(vcard_path):
-    """Convert a vcf file into a dictionary using the vobject module.
-
-    :param vcf_path: Path to a vcf file
-    :type  vcf_path: str
-    :returns: Dictionary containing the info of the vcf file
-    :rtype:  dict
-    """
-    import vobject
-    import yaml
-    import papis.document.Document
-    data = yaml.load(papis.document.Document.get_vcf_template())
-    logger.debug("Reading in %s " % vcard_path)
-    text = open(vcard_path).read()
-    vcard = vobject.readOne(text)
-    try:
-        data["first_name"] = vcard.n.value.given
-        logger.debug("First name = %s" % data["first_name"])
-    except:
-        data["first_name"] = None
-    try:
-        data["last_name"] = vcard.n.value.family
-        logger.debug("Last name = %s" % data["last_name"])
-    except:
-        data["last_name"] = None
-    try:
-        if not isinstance(vcard.org.value[0], list):
-            data["org"] = vcard.org.value
-        else:
-            data["org"] = vcard.org.value
-        logger.debug("Org = %s" % data["org"])
-    except:
-        data["org"] = []
-    for ctype in ["tel", "email"]:
-        try:
-            vcard_asset = getattr(vcard, ctype)
-            logger.debug("Parsing %s" % ctype)
-        except:
-            pass
-        else:
-            try:
-                param_type = getattr(vcard_asset, "type_param")
-            except:
-                param_type = "home"
-            data[ctype][param_type.lower()] = getattr(vcard_asset, "value")
-    logger.debug("Read in data = %s" % data)
-    return data
-
-
 def confirm(prompt, yes=True):
     """Confirm with user input
 
