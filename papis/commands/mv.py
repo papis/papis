@@ -48,7 +48,7 @@ def cli(query, git):
     """Move a document into some other path"""
     # Leave this imports here for performance
     import prompt_toolkit
-    import prompt_toolkit.contrib.completers
+    import prompt_toolkit.completion
 
     logger = logging.getLogger('cli:mv')
 
@@ -62,7 +62,7 @@ def cli(query, git):
 
     directories = get_dirs(lib_dir)
 
-    completer = prompt_toolkit.contrib.completers.WordCompleter(
+    completer = prompt_toolkit.completion.WordCompleter(
         directories
     )
 
@@ -72,7 +72,8 @@ def cli(query, git):
             prompt_toolkit.prompt(
                 "Enter directory: (Tab completion enabled)\n"
                 ">  ",
-                completer=completer
+                completer=completer,
+                complete_while_typing=True
             )
         )
     except:
