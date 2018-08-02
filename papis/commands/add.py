@@ -57,6 +57,8 @@ import papis.config
 import papis.bibtex
 import papis.document
 import papis.downloaders.utils
+import papis.cli
+import click
 
 
 def get_file_name(data, original_filepath, suffix=""):
@@ -460,192 +462,172 @@ def run(
     return status.success
 
 
-class Command(papis.commands.Command):
+@click.command()
+@click.help_option('--help', '-h')
+@click.argument("files", type=click.Path(exists=True), nargs=-1)
+@click.option(
+    "-s", "--set",
+    help="Set some information before",
+    multiple=True,
+    type=(str,str)
+)
+@click.option(
+    "-d", "--dir",
+    help="Subfolder in the library",
+    default=""
+)
+@click.option(
+    "-i", "--interactive/--no-interactive",
+    help="Do some of the actions interactively",
+    default=lambda: True if papis.config.get('add-interactive') else False
+)
+@click.option(
+    "--name",
+    help="Name for the document's folder (papis format)",
+    default=lambda: papis.config.get('add-name')
+)
+@click.option(
+    "--file-name",
+    help="File name for the document (papis format)",
+    default=None
+)
+@click.option(
+    "--from-bibtex",
+    help="Parse information from a bibtex file",
+    default=""
+)
+@click.option(
+    "--from-yaml",
+    help="Parse information from a yaml file",
+    default=""
+)
+@click.option(
+    "--from-folder",
+    help="Add document from folder being a valid papis document"
+         " (containing info.yaml)",
+    default=""
+)
+@click.option(
+    "--from-url",
+    help="Get document and information from a"
+    "given url, a parser must be implemented",
+    default=""
+)
+@click.option(
+    "--from-doi",
+    help="Doi to try to get information from",
+    default=None
+)
+@click.option(
+    "--from-pmid",
+    help="PMID to try to get information from",
+    default=None
+)
+@click.option(
+    "--from-lib",
+    help="Add document from another library",
+    default=""
+)
+@click.option(
+    "--confirm/--no-confirm",
+    help="Ask to confirm before adding to the collection",
+    default=lambda: True if papis.config.get('add-confirm') else False
+)
+@click.option(
+    "--open/--no-open",
+    help="Open file before adding document",
+    default=lambda: True if papis.config.get('add-open') else False
+)
+@click.option(
+    "--edit/--no-edit",
+    help="Edit info file before adding document",
+    default=lambda: True if papis.config.get('add-edit') else False
+)
+@click.option(
+    "--commit/--no-commit",
+    help="Commit document if library is a git repository",
+    default=False
+)
+@click.option(
+    "--no-document",
+    default=False,
+    is_flag=True,
+    help="Add entry without a document related to it"
+)
+def cli(
+        files,
+        set,
+        dir,
+        interactive,
+        name,
+        file_name,
+        from_bibtex,
+        from_yaml,
+        from_folder,
+        from_url,
+        from_doi,
+        from_pmid,
+        from_lib,
+        confirm,
+        open,
+        edit,
+        commit,
+        no_document
+    ):
+    """Add a document into a given library
+    """
+    data = dict()
 
-    def init(self):
+    for data_set in set:
+        data[data_set[0]] = data_set[1]
 
-        self.parser = self.get_subparsers().add_parser(
-            "add",
-            help="Add a document into a given library"
+    logger = logging.getLogger('cli:add')
+
+    if from_lib:
+        doc = papis.cli.pick(
+            papis.api.get_documents_in_lib(from_lib)
         )
+        if doc:
+            from_folder = doc.get_main_folder()
 
-        self.parser.add_argument(
-            "document",
-            help="Document file names",
-            default=[],
-            nargs="*",
-            action="store"
+    try:
+        # Try getting title if title is an argument of add
+        data["title"] = data.get('title') or get_default_title(
+            data,
+            files[0],
+            interactive
         )
+        logger.debug("Title = % s" % data["title"])
+    except:
+        pass
 
-        self.parser.add_argument(
-            "-d", "--dir",
-            help="Subfolder in the library",
-            default="",
-            action="store"
+    try:
+        # Try getting author if author is an argument of add
+        data["author"] = data.get('author') or get_default_author(
+            data,
+            files[0],
+            interactive
         )
+        logger.debug("Author = % s" % data["author"])
+    except:
+        pass
 
-        self.parser.add_argument(
-            "-i", "--interactive",
-            help="Do some of the actions interactively",
-            action='store_false' if papis.config.get('add-interactive')
-            else 'store_true'
-        )
-
-        self.parser.add_argument(
-            "--name",
-            help="Name for the document's folder (papis format)",
-            default=papis.config.get('add-name'),
-            action="store"
-        )
-
-        self.parser.add_argument(
-            "--file-name",
-            help="File name for the document (papis format)",
-            action="store",
-            default=None
-        )
-
-        for field in eval(papis.config.get('add-default-fields')):
-            self.parser.add_argument(
-                "--{}".format(field),
-                help="{} for document".format(field.capitalize()),
-                default="",
-                action="store"
-            )
-
-        self.parser.add_argument(
-            "--from-bibtex",
-            help="Parse information from a bibtex file",
-            default="",
-            action="store"
-        )
-
-        self.parser.add_argument(
-            "--from-yaml",
-            help="Parse information from a yaml file",
-            default="",
-            action="store"
-        )
-
-        self.parser.add_argument(
-            "--from-folder",
-            help="Add document from folder being a valid papis document"
-                 " (containing info.yaml)",
-            default="",
-            action="store"
-        )
-
-        self.parser.add_argument(
-            "--from-url",
-            help="Get document and information from a"
-            "given url, a parser must be implemented",
-            default="",
-            action="store"
-        )
-
-        self.parser.add_argument(
-            "--from-doi",
-            help="Doi to try to get information from",
-            default=None,
-            action="store"
-        )
-
-        self.parser.add_argument(
-            "--from-pmid",
-            help="PMID to try to get information from",
-            default=None,
-            action="store"
-        )
-
-        self.parser.add_argument(
-            "--from-lib",
-            help="Add document from another library",
-            default="",
-            action="store"
-        )
-
-        self.parser.add_argument(
-            "--confirm",
-            help="Ask to confirm before adding to the collection",
-            action='store_false' if papis.config.get('add-confirm')
-            else 'store_true'
-        )
-
-        self.parser.add_argument(
-            "--open",
-            help="Open file before adding document",
-            action='store_false' if papis.config.get('add-open')
-            else 'store_true'
-        )
-
-        self.parser.add_argument(
-            "--edit",
-            help="Edit info file before adding document",
-            action='store_false' if papis.config.get('add-edit')
-            else 'store_true'
-        )
-
-        self.parser.add_argument(
-            "--commit",
-            help="Commit document if library is a git repository",
-            action="store_true"
-        )
-
-        self.parser.add_argument(
-            "--no-document",
-            help="Add entry without a document related to it",
-            action="store_true"
-        )
-
-    def main(self):
-
-        data = dict()
-
-        if self.args.from_lib:
-            doc = self.pick(
-                papis.api.get_documents_in_lib(self.get_args().from_lib)
-            )
-            if doc:
-                self.args.from_folder = doc.get_main_folder()
-
-        try:
-            # Try getting title if title is an argument of add
-            data["title"] = self.args.title or get_default_title(
-                data,
-                self.args.document[0],
-                self.args.interactive
-            )
-            self.logger.debug("Title = % s" % data["title"])
-        except:
-            pass
-
-        try:
-            # Try getting author if author is an argument of add
-            data["author"] = self.args.author or get_default_author(
-                data,
-                self.args.document[0],
-                self.args.interactive
-            )
-            self.logger.debug("Author = % s" % data["author"])
-        except:
-            pass
-
-        return run(
-            self.args.document,
-            data=data,
-            name=self.args.name,
-            file_name=self.args.file_name,
-            subfolder=self.args.dir,
-            interactive=self.args.interactive,
-            from_bibtex=self.args.from_bibtex,
-            from_yaml=self.args.from_yaml,
-            from_folder=self.args.from_folder,
-            from_url=self.args.from_url,
-            from_doi=self.args.from_doi,
-            from_pmid=self.args.from_pmid,
-            confirm=self.args.confirm,
-            open_file=self.args.open,
-            edit=self.args.edit,
-            commit=self.args.commit,
-            no_document=self.args.no_document
-        )
+    return run(
+        files,
+        data=data,
+        name=name,
+        file_name=file_name,
+        subfolder=dir,
+        interactive=interactive,
+        from_bibtex=from_bibtex,
+        from_yaml=from_yaml,
+        from_folder=from_folder,
+        from_url=from_url,
+        from_doi=from_doi,
+        from_pmid=from_pmid,
+        confirm=confirm,
+        open_file=open,
+        edit=edit,
+        commit=commit,
+        no_document=no_document
+    )
