@@ -71,6 +71,9 @@ import papis
 import papis.api
 import papis.utils
 import papis.config
+import papis.cli
+import papis.database
+import click
 import logging
 
 
@@ -122,62 +125,52 @@ def run(document, opener=None, folder=False, mark=False):
         papis.api.open_file(file_to_open, wait=False)
 
 
-class Command(papis.commands.Command):
-    def init(self):
+@click.command()
+@click.help_option('-h', '--help')
+@papis.cli.query_option()
+@click.option(
+    "--tool",
+    help="Tool for opening the file (opentool)",
+    default=""
+)
+@click.option(
+    "-d",
+    "--dir",
+    help="Open directory",
+    default=False,
+    is_flag=True
+)
+@click.option(
+    "--all",
+    help="Open all matching documents",
+    default=False,
+    is_flag=True
+)
+@click.option(
+    "-m",
+    "--mark/--no-mark",
+    help="Open mark",
+    default=lambda: True if papis.config.get('open-mark') else False
+)
+def cli(query, tool, dir, all, mark):
+    """Open document from a given library"""
+    if tool:
+        papis.config.set("opentool", tool)
 
-        self.parser = self.get_subparsers().add_parser(
-            "open",
-            help="Open document from a given library"
+    documents = papis.database.get().query(query)
+    if not documents:
+        click.echo("No documents found with that name.")
+        return 1
+
+    if not all:
+        documents = [papis.cli.pick(documents)]
+        documents = [d for d in documents if d]
+        if not len(documents):
+            return 0
+
+    for document in documents:
+        run(
+            document,
+            folder=dir,
+            mark=mark
         )
-
-        self.add_search_argument()
-
-        self.parser.add_argument(
-            "--tool",
-            help="Tool for opening the file (opentool)",
-            default="",
-            action="store"
-        )
-
-        self.parser.add_argument(
-            "-d",
-            "--dir",
-            help="Open directory",
-            action="store_true"
-        )
-
-        self.parser.add_argument(
-            "--all",
-            help="Open all matching documents",
-            action="store_true"
-        )
-
-        self.parser.add_argument(
-            "-m",
-            "--mark",
-            help="Open mark",
-            action='store_false' if papis.config.get('open-mark')
-            else 'store_true'
-        )
-
-    def main(self):
-        if self.args.tool:
-            papis.config.set("opentool", self.args.tool)
-
-        documents = self.get_db().query(self.args.search)
-        if not documents:
-            print("No documents found with that name.")
-            return 1
-
-        if not self.args.all:
-            documents = [self.pick(documents)]
-            documents = [d for d in documents if d]
-            if not len(documents):
-                return 0
-
-        for document in documents:
-            run(
-                document,
-                folder=self.args.dir,
-                mark=self.args.mark
-            )
