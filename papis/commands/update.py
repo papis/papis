@@ -57,14 +57,14 @@ def run(
             data.update(bib_data[0])
         except Exception:
             pass
-        
+
     elif from_url:
         try:
             url_data = papis.downloaders.utils.get(from_url)
             data.update(url_data["data"])
         except Exception:
             pass
-            
+
     elif from_doi:
         logger.debug("Try using doi %s" % from_doi)
         data.update(papis.utils.doi_to_data(from_doi))
@@ -214,7 +214,7 @@ class Command(papis.commands.Command):
                 elif 'title' in docs.keys() and not self.args.from_isbnplus:
                     self.args.from_isbnplus = docs['title']
 
-                    
+
             if self.args.from_isbnplus:
                 try:
                     doc = self.pick(
