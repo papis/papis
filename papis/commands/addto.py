@@ -1,3 +1,17 @@
+"""
+This command adds files to existing papis documents in some library.
+
+For instance imagine you have two pdf files, ``a.pdf`` and ``b.pdf``
+that you want to add to a document that matches with the query string
+``einstein photon definition``, then you would use
+
+::
+
+    papis addto 'einstein photon definition' -f a.pdf -f b.pdf
+
+notice that we repeat two times the flag ``-f``, this is important.
+
+"""
 from string import ascii_lowercase
 import os
 import shutil
@@ -8,7 +22,8 @@ import papis.document
 import papis.config
 import papis.commands.add
 import logging
-
+import papis.cli
+import click
 
 def run(document, filepaths):
     logger = logging.getLogger('addto')
@@ -63,40 +78,28 @@ def run(document, filepaths):
     return status.success
 
 
-class Command(papis.commands.Command):
+@click.command()
+@click.help_option('--help', '-h')
+@papis.cli.query_option()
+@click.option(
+    "-f", "--files",
+    help="File fullpaths to documents",
+    multiple=True,
+    type=click.Path(exists=True)
+)
+@click.option(
+    "--file-name",
+    help="File name for the document (papis format)",
+    default=None
+)
+def cli(query, files, file_name):
+    """Add files to an existing document"""
+    documents = papis.database.get().query(query)
+    document = papis.api.pick_doc(documents)
+    if not document:
+        return status.file_not_found
 
-    def init(self):
+    if file_name is not None:  # Use args if set
+        papis.config.set("file-name", file_name)
 
-        self.parser = self.get_subparsers().add_parser(
-            "addto",
-            help="Add files to an existing document"
-        )
-
-        self.add_search_argument()
-
-        self.parser.add_argument(
-            "-f", "--files",
-            help="File fullpaths to documents",
-            default=[],
-            nargs="*",
-            action="store"
-        )
-
-        self.parser.add_argument(
-            "--file-name",
-            help="File name for the document (papis format)",
-            action="store",
-            default=None
-        )
-
-    def main(self):
-        db = papis.database.get(self.args.lib)
-        documents = db.query(self.args.search)
-        document = papis.api.pick_doc(documents)
-        if not document:
-            return status.file_not_found
-
-        if self.args.file_name is not None:  # Use args if set
-            papis.config.set("file-name", self.args.file_name)
-
-        return run(document, self.args.files)
+    return run(document, files)
