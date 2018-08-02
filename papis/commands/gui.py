@@ -1,66 +1,58 @@
 import papis.utils
 import papis.config
+import papis.database
+import papis.cli
+import click
 
 
-class Command(papis.commands.Command):
-    def init(self):
+@click.command()
+@click.help_option('--help', '-h')
+@papis.cli.query_option()
+@click.option(
+    "--tk",
+    help="Tk based UI",
+    default=False,
+    is_flag=True
+)
+@click.option(
+    "--rofi",
+    help="Rofi based UI",
+    default=False,
+    is_flag=True
+)
+@click.option(
+    "--urwid",
+    help="Urwid based UI",
+    default=False,
+    is_flag=True
+)
+@click.option(
+    "--vim",
+    help="Vim based UI",
+    default=False,
+    is_flag=True
+)
+def cli(query, tk, rofi, urwid, vim):
+    """Graphical/Text user interface"""
+    import papis.database
 
-        self.parser = self.get_subparsers().add_parser(
-            "gui",
-            help="Graphical user interface"
-        )
+    documents = papis.database.get().query(query)
+    default_gui = papis.config.get('default-gui')
+    if not tk and not urwid and not vim and not rofi:
+        if default_gui == 'tk': tk = True
+        elif default_gui == 'urwid': urwid = True
+        elif default_gui == 'vim': vim = True
+        elif default_gui == 'rofi': rofi = True
 
-        self.add_search_argument()
-
-        self.parser.add_argument(
-            "--tk",
-            help="Tk based UI",
-            action="store_true"
-        )
-
-        self.parser.add_argument(
-            "--rofi",
-            help="Rofi based UI",
-            action="store_true"
-        )
-
-        self.parser.add_argument(
-            "--urwid",
-            help="Urwid based UI",
-            action="store_true"
-        )
-
-        self.parser.add_argument(
-            "--vim",
-            help="Vim based UI",
-            action="store_true"
-        )
-
-    def urwid_main(self):
+    if tk:
+        import papis.gui.tk
+        return papis.gui.tk.Gui().main(documents)
+    if urwid:
         import papis.gui.urwid
         return papis.gui.urwid.Gui().main()
-
-    def rofi_main(self):
-        import papis.gui.rofi
-        return papis.gui.rofi.Gui().main(self.documents)
-
-    def tk_main(self):
-        import papis.gui.tk
-        return papis.gui.tk.Gui().main(self.documents)
-
-    def vim_main(self):
+    if vim:
         import papis.gui.vim
-        return papis.gui.vim.Gui().main(self.documents, self.args)
-
-    def main(self):
-        self.documents = self.get_db().query(self.args.search)
-        if self.args.tk:
-            return self.tk_main()
-        if self.args.urwid:
-            return self.urwid_main()
-        if self.args.vim:
-            return self.vim_main()
-        if self.args.rofi:
-            return self.rofi_main()
-        default = papis.config.get("default-gui")
-        return exec("self.%s_main()" % default)
+        return papis.gui.vim.Gui().main(documents, None)
+    if rofi:
+        import papis.gui.rofi
+        return papis.gui.rofi.Gui().main(documents)
