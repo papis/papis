@@ -14,22 +14,92 @@ if "--debug" in sys.argv:
     logger.debug("DEBUG MODE FOR DEVELOPERS ON")
 
 
-import papis.commands
-import papis.api
+import papis.commands.default
 logger.debug("Imported commands")
 
+import click
+import papis.cli
 
-def main():
-    try:
-        sys.exit(papis.commands.main())
-    except KeyboardInterrupt:
-        print('Getting you out of here...')
-
-
-if sys.version_info < (3, 2):
-    raise Exception("This program must use python 3.2 or greater")
-
-if __name__ == "__main__":
-    main()
-
-# vim:set et sw=4 ts=4 ft=python:
+@click.group(
+    cls=papis.cli.MultiCommand,
+    invoke_without_command=True
+)
+@click.help_option('--help', '-h')
+@click.version_option(version=papis.__version__)
+@click.option(
+    "-v",
+    "--verbose",
+    help="Make the output verbose (equivalent to --log DEBUG)",
+    default=False,
+    is_flag=True
+)
+@click.option(
+    "-l",
+    "--lib",
+    help="Choose a library name or library path (unamed library)",
+    default=lambda: papis.config.get("default-library")
+)
+@click.option(
+    "-c",
+    "--config",
+    help="Configuration file to use",
+    default=None,
+)
+@click.option(
+    "--log",
+    help="Logging level",
+    type=click.Choice([ "INFO", "DEBUG", "WARNING", "ERROR", "CRITICAL" ]),
+    default="INFO"
+)
+@click.option(
+    "--picktool",
+    help="Override picktool",
+    default=""
+)
+@click.option(
+    "--pick-lib",
+    help="Pick library to use",
+    default=False,
+    is_flag=True
+)
+@click.option(
+    "--clear-cache", "--cc",
+    help="Clear cache of the library used",
+    default=False,
+    is_flag=True
+)
+@click.option(
+    "-j", "--cores",
+    help="Number of cores to run some multicore functionality",
+    type=int,
+    default=__import__("multiprocessing").cpu_count(),
+)
+@click.option(
+    "--set",
+    type=(str,str),
+    multiple=True,
+    help="Set key value, e.g., "
+         "--set info-name information.yaml  --set opentool evince",
+)
+def main(
+        verbose,
+        config,
+        lib,
+        log,
+        picktool,
+        pick_lib,
+        cc,
+        cores,
+        set
+    ):
+    papis.commands.default.run(
+        verbose,
+        config,
+        lib,
+        log,
+        picktool,
+        pick_lib,
+        cc,
+        cores,
+        set
+    )
