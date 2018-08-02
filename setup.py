@@ -7,11 +7,7 @@
 
 import sys
 
-main_dependencies = [
-    "setuptools",
-    "curses"
-]
-
+main_dependencies = [ "setuptools", "curses" ]
 for dep in main_dependencies:
     try:
         __import__(dep)
@@ -24,10 +20,11 @@ for dep in main_dependencies:
         )
         sys.exit(1)
 
-
 from setuptools import setup
 import papis
 
+with open('README.rst') as fd:
+    long_description = fd.read()
 
 setup(
     name='papis',
@@ -37,7 +34,7 @@ setup(
     author=papis.__author__,
     author_email=papis.__email__,
     license=papis.__license__,
-    url='https://github.com/alejandrogallo/papis',
+    url='https://github.com/papis/papis',
     install_requires=[
         "click>=6.7",
         "papis-python-rofi>=1.0.1",
@@ -93,7 +90,7 @@ setup(
     ),
     description='Powerful and highly extensible command-line based document '
                 'and bibliography manager',
-    long_description='',
+    long_description=long_description,
     keywords=[
         'document',
         'books',
@@ -110,7 +107,7 @@ setup(
     data_files=[
 
         ("share/doc/papis/", [
-            "README.md",
+            "README.rst",
             "AUTHORS",
             "LICENSE.txt",
         ]),
@@ -133,6 +130,7 @@ setup(
         "papis",
         "papis.gui",
         "papis.gui.tk",
+        "papis.gui.urwid",
         "papis.gui.vim",
         "papis.commands",
         "papis.database",
