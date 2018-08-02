@@ -11,13 +11,11 @@ python:
 
 script:
   - make test
-  - make test-non-pythonic
 
 install:
   - pip install setuptools
   - pip install -e .[develop]
   - pip install -e .[optional]
-  - pip install pytest
   - make install
   - sudo apt-get update -qq
   - sudo apt-get install -y git
