@@ -14,7 +14,9 @@ class Test(unittest.TestCase):
 
     def get_docs(self):
         db = papis.database.get()
-        return db.get_all_documents()
+        docs = db.get_all_documents()
+        self.assertTrue(len(docs) > 0)
+        return docs
 
     def test_run_function_exists(self):
         self.assertTrue(run is not None)
