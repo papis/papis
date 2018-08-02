@@ -70,6 +70,8 @@ import papis.utils
 import papis.config
 import papis.database
 import papis.downloaders.utils
+import papis.cli
+import click
 
 logger = logging.getLogger('list')
 
@@ -144,93 +146,104 @@ def run(
         return documents
 
 
-class Command(papis.commands.Command):
-    def init(self):
 
-        self.parser = self.get_subparsers().add_parser(
-            "list",
-            help="List documents from a given library"
-        )
+@click.command()
+@click.help_option('--help', '-h')
+@papis.cli.query_option()
 
-        self.add_search_argument()
+@click.option(
+    "-i",
+    "--info",
+    help="Show the info file name associated with the document",
+    default=False,
+    is_flag=True
+)
 
-        self.parser.add_argument(
-            "-i",
-            "--info",
-            help="Show the info file name associated with the document",
-            default=False,
-            action="store_true"
-        )
+@click.option(
+    "-f",
+    "--file",
+    help="Show the file name associated with the document",
+    default=False,
+    is_flag=True
+)
 
-        self.parser.add_argument(
-            "-f",
-            "--file",
-            help="Show the file name associated with the document",
-            action="store_true"
-        )
+@click.option(
+    "-d",
+    "--dir",
+    help="Show the folder name associated with the document",
+    default=False,
+    is_flag=True
+)
 
-        self.parser.add_argument(
-            "-d",
-            "--dir",
-            help="Show the folder name associated with the document",
-            action="store_true"
-        )
+@click.option(
+    "--format",
+    help="List entries using a custom papis format, e.g."
+    " '{doc[year] {doc[title]}",
+    default=None
+)
 
-        self.parser.add_argument(
-            "--format",
-            help="List entries using a custom papis format, e.g."
-            " '{doc[year] {doc[title]}",
-            default=None,
-            action="store"
-        )
+@click.option(
+    "--template",
+    help="Template file containing a papis format to list entries",
+    default=None
+)
 
-        self.parser.add_argument(
-            "--template",
-            help="Template file containing a papis format to list entries",
-            default=None,
-            action="store"
-        )
+@click.option(
+    "-p",
+    "--pick",
+    help="Pick the document instead of listing everything",
+    default=False,
+    is_flag=True
+)
 
-        self.parser.add_argument(
-            "-p",
-            "--pick",
-            help="Pick the document instead of listing everything",
-            action="store_true"
-        )
+@click.option(
+    "--downloaders",
+    help="List available downloaders",
+    default=False,
+    is_flag=True
+)
 
-        self.parser.add_argument(
-            "--downloaders",
-            help="List available downloaders",
-            action="store_true"
-        )
+@click.option(
+    "--libraries",
+    help="List defined libraries",
+    default=False,
+    is_flag=True
+)
 
-        self.parser.add_argument(
-            "--libraries",
-            help="List defined libraries",
-            action="store_true"
-        )
+def cli(
+        query,
+        info,
+        file,
+        dir,
+        format,
+        template,
+        pick,
+        downloaders,
+        libraries
+    ):
+    """List documents' properties"""
 
-    def main(self):
+    if not libraries and \
+        not downloaders and \
+        not file and \
+        not info and \
+            not dir:
+        dir = True
 
-        if not self.args.libraries and \
-            not self.args.downloaders and \
-            not self.args.file and \
-            not self.args.info and \
-                not self.args.dir:
-            self.args.dir = True
+    lib=papis.config.get_lib()
 
-        objects = run(
-            query=self.args.search,
-            library=self.args.lib,
-            libraries=self.args.libraries,
-            downloaders=self.args.downloaders,
-            pick=self.args.pick,
-            files=self.args.file,
-            folders=self.args.dir,
-            info_files=self.args.info,
-            fmt=self.args.format,
-            template=self.args.template
-        )
-        for o in objects:
-            print(o)
-        return status.success
+    objects = run(
+        query=query,
+        library=lib,
+        libraries=libraries,
+        downloaders=downloaders,
+        pick=pick,
+        files=file,
+        folders=dir,
+        info_files=info,
+        fmt=format,
+        template=template
+    )
+    for o in objects:
+        click.echo(o)
+    return status.success
