@@ -458,16 +458,6 @@ Databases
 Other
 =====
 
-.. papis-config:: hubation
-
-   This allows the operation after picking be set when using the
-   script papis-hubation. Running ``papis hubation`` provides a list
-   of citations, which once picked, can undergo the operation
-   'e.g. open, browse, scihub' that is set. Current tested options are
-   ``open``, ``browse``, ``export``, and ``scihub``.
-
-   Default behaviour is set to scihub.
-
 .. papis-config:: citation-string
 
     string that can be displayed in header if the reference has a
@@ -581,7 +571,6 @@ general_settings = {
     '"tags": TEXT(stored=True),\n'
     '}',
 
-    "hubation": "scihub",
     "citation-string": "*"
 }
 
