@@ -9,6 +9,9 @@ import papis.api
 import papis.utils
 import papis.config
 import papis.database
+import papis.cli
+import click
+import logging
 
 
 def run(document, editor=None, wait=True):
@@ -20,56 +23,58 @@ def run(document, editor=None, wait=True):
     database.update(document)
 
 
-class Command(papis.commands.Command):
-    def init(self):
+@click.command()
+@click.help_option('-h', '--help')
+@papis.cli.query_option()
 
-        self.parser = self.get_subparsers().add_parser(
-            "edit",
-            help="Edit document information from a given library"
-        )
+@click.option(
+    "-n",
+    "--notes",
+    help="Edit notes associated to the document",
+    default=False,
+    is_flag=True
+)
 
-        self.add_search_argument()
+@click.option(
+    "--all",
+    help="Edit all matching documents",
+    default=False,
+    is_flag=True
+)
 
-        self.parser.add_argument(
-            "-n",
-            "--notes",
-            help="Edit notes associated to the document",
-            action="store_true"
-        )
+def cli(
+        query,
+        notes,
+        all
+    ):
+    """Edit document information from a given library"""
 
-        self.parser.add_argument(
-            "--all",
-            help="Edit all matching documents",
-            action="store_true"
-        )
+    logger = logging.getLogger('cli:edit')
+    documents = papis.database.get().query(query)
+    if not all:
+        document = papis.cli.pick(documents)
+        documents = [document] if document else []
 
-    def main(self):
+    if len(documents) == 0:
+        return 0
 
-        documents = self.get_db().query(self.args.search)
-        if not self.args.all:
-            document = self.pick(documents)
-            documents = [document] if document else []
-
-        if len(documents) == 0:
-            return 0
-
-        for document in documents:
-            if self.args.notes:
-                self.logger.debug("Editing notes")
-                if not document.has("notes"):
-                    self.logger.warning(
-                        "The document selected has no notes attached,"
-                        " creating one..."
-                    )
-                    document["notes"] = papis.config.get("notes-name")
-                    document.save()
-                notesPath = os.path.join(
-                    document.get_main_folder(),
-                    document["notes"]
+    for document in documents:
+        if notes:
+            logger.debug("Editing notes")
+            if not document.has("notes"):
+                logger.warning(
+                    "The document selected has no notes attached,"
+                    " creating one..."
                 )
-                if not os.path.exists(notesPath):
-                    self.logger.debug("Creating %s" % notesPath)
-                    open(notesPath, "w+").close()
-                papis.api.edit_file(notesPath)
-            else:
-                run(document)
+                document["notes"] = papis.config.get("notes-name")
+                document.save()
+            notesPath = os.path.join(
+                document.get_main_folder(),
+                document["notes"]
+            )
+            if not os.path.exists(notesPath):
+                logger.debug("Creating %s" % notesPath)
+                open(notesPath, "w+").close()
+            papis.api.edit_file(notesPath)
+        else:
+            run(document)
