@@ -12,7 +12,7 @@ class Test(unittest.TestCase):
     def setUpClass(self):
         papis.tests.setup_test_library()
 
-    def get_docs(self):
+    def test_get_docs(self):
         db = papis.database.get()
         docs = db.get_all_documents()
         self.assertTrue(len(docs) > 0)
