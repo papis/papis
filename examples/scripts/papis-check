@@ -1,3 +1,7 @@
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
+# papis-short-help: Look-up citations of documents
+# Copyright © 2018 Alejandro Gallo. GPLv3
 """
 This command checks for several attributes in every document.
 
@@ -17,12 +21,58 @@ every document has files, a valid author and title you would just hit
 ::
 
     papis check --key files --key author --key title
+
+.. _check-command-options:
+
+Check command options
+^^^^^^^^^^^^^^^^^^^^^
+
+.. papis-config:: check-keys
+
+    Python list key values to be checked by default by the command
+    ``check``. E.g: ``check-keys = ["author", "doi"]``.
+    It is important that it is a valid python list.
+
 """
 import papis.api
 import papis.config
 import papis.cli
 import click
 import logging
+
+
+options = {
+    'check': {
+        "keys": '["files"]',
+    }
+}
+papis.config.register_default_settings(options)
+
+
+def check_files(document):
+    """Check for the exsitence of the document's files
+    :returns: False if some file does not exist, True otherwise
+    :rtype:  bool
+
+    >>> from papis.document import from_data
+    >>> doc = from_data({'title': 'Hello World'})
+    >>> doc['files'] = ['nonexistent.pdf']
+    >>> import tempfile; doc.set_folder(tempfile.mkdtemp())
+    >>> check_files(doc)
+    ** Error: .../nonexistent.pdf not found in ...
+    False
+    """
+    for f in document.get_files():
+        # document.logger.debug(f)
+        if not os.path.exists(f):
+            print(
+                "** Error: %s not found in %s" % (
+                f,
+                document.get_main_folder())
+            )
+            return False
+        else:
+            return True
 
 
 def run(keys, documents):
@@ -38,12 +88,11 @@ def run(keys, documents):
                     dict(doc=document, key=key, msg='ill defined')
                 )
             elif key == 'files':
-                if not document.check_files():
+                if not check_files(document):
                     result.append(
                         dict(doc=document, key=key, msg='problem with files')
                     )
     return result
-
 
 
 @click.command()
@@ -54,7 +103,7 @@ def run(keys, documents):
     help="Space separated fields to check against",
     type=str,
     multiple=True,
-    default=lambda: eval(papis.config.get('check-keys'))
+    default=lambda: eval(papis.config.get('keys', section='keys'))
 )
 def cli(query, key):
     """Check document from a given library"""
@@ -73,3 +122,7 @@ def cli(query, key):
         print("Errors were detected, please fix the info files")
     else:
         print("No errors detected")
+
+
+if __name__ == "__main__":
+    cli()
