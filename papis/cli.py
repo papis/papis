@@ -49,7 +49,10 @@ class MultiCommand(click.MultiCommand):
 
     def get_command(self, ctx, name):
         namespace = {}
-        script = self.scripts[name]
+        try:
+            script = self.scripts[name]
+        except KeyError:
+            return None
         if script['python']:
             with open(script['path']) as f:
                 code = compile(f.read(), script['path'], 'exec')
