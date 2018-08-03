@@ -613,7 +613,7 @@ def cli(
         pass
 
     return run(
-        files,
+        list(files),
         data=data,
         name=name,
         file_name=file_name,
