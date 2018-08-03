@@ -10,7 +10,7 @@ python:
   - "3.6"
 
 script:
-  - pytest papis --cov=./
+  - python -m pytest papis --cov=./
 
 install:
   - pip install setuptools
