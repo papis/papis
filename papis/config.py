@@ -305,17 +305,6 @@ Browse command options
 
         browse-key = ''
 
-.. _check-command-options:
-
-Check command options
-^^^^^^^^^^^^^^^^^^^^^
-
-.. papis-config:: check-keys
-
-    Python list key values to be checked by default by the command
-    ``check``. E.g: ``check-keys = ["author", "doi"]``.
-    It is important that it is a valid python list.
-
 .. _edit-command-options:
 
 Edit command options
@@ -526,7 +515,6 @@ general_settings = {
     "add-open": False,
     "add-default-fields": '["title", "author"]',
 
-    "check-keys": '["files"]',
     "browse-key": '"url"',
     "browse-query-format": "{doc[title]} {doc[author]}",
     "search-engine": "https://duckduckgo.com",

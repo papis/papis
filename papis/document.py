@@ -131,6 +131,10 @@ def to_json(document):
     :type  document: Document
     :returns: Json formatted info file
     :rtype:  str
+
+    >>> doc = from_data({'title': 'Hello World'})
+    >>> to_json(doc)
+    '{"title": "Hello World"}'
     """
     import json
     return json.dumps(to_dict(document))
@@ -156,6 +160,9 @@ def dump(document):
     :returns: String with document's information
     :rtype:  str
 
+    >>> doc = from_data({'title': 'Hello World'})
+    >>> dump(doc)
+    'title:   Hello World\\n'
     """
     string = ""
     for i in document.keys():
@@ -282,20 +289,6 @@ class Document(object):
         """
         return key in self.keys()
 
-    def check_files(self):
-        """Check for the exsitence of the document's files
-        :returns: False if some file does not exist, True otherwise
-        :rtype:  bool
-        """
-        for f in self.get_files():
-            # self.logger.debug(f)
-            if not os.path.exists(f):
-                print("** Error: %s not found in %s" % (
-                    f, self.get_main_folder()))
-                return False
-            else:
-                return True
-
     def rm_file(self, filepath):
         """Remove file from document, it also removes the entry in `files`
 
@@ -405,11 +398,11 @@ class Document(object):
         :returns: String with document's information
         :rtype:  str
 
+        >>> doc = from_data({'title': 'Hello World'})
+        >>> doc.dump()
+        'title:   Hello World\\n'
         """
-        string = ""
-        for i in self.keys():
-            string += str(i)+":   "+str(self[i])+"\n"
-        return string
+        return dump(self)
 
     def load(self):
         """Load information from info file
