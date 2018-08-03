@@ -2,7 +2,7 @@ Papis
 =====
 
 |Build Status|
-
+|Coveralls|
 |Packaging status|
 
 Description
@@ -104,6 +104,8 @@ Authors
 
 See the ``AUTHORS`` list for a list of authored commits.
 
+.. |Coveralls| image:: https://coveralls.io/repos/github/papis/papis/badge.svg?branch=master
+   :target: https://coveralls.io/github/papis/papis?branch=master
 .. |Build Status| image:: https://travis-ci.org/papis/papis.svg?branch=master
    :target: https://travis-ci.org/papis/papis
 .. |Packaging status| image:: https://repology.org/badge/vertical-allrepos/papis.svg
