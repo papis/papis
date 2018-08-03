@@ -11,7 +11,9 @@ class DatabaseTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        papis.tests.setup_test_library()
+        papis.tests.setup_test_library(
+            save_settings_fileds=['database-backend']
+        )
 
         os.environ['XDG_CACHE_HOME'] = tempfile.mkdtemp(prefix='papisdb-test-')
 

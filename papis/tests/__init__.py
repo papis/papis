@@ -18,10 +18,21 @@ def get_test_lib():
     return 'test-lib'
 
 
-def setup_test_library():
+def setup_test_library(save_settings_fileds=[]):
+    """Set-up a test library for tests
+
+    :param save_settings_fileds: The papis configuration will be initialized
+        to some default. This argument should contain a list of keys that
+        are to be kept in the configuration and not wiped out.
+    :type  save_settings_fileds: list
+    """
     lib = get_test_lib()
     config = papis.config.get_configuration()
-    config[papis.config.get_general_settings_name()] = dict()
+    settings = papis.config.get_general_settings_name()
+    settings_conf = {
+        key: config['settings'][key] for key in save_settings_fileds
+    }
+    config[settings] = settings_conf
     config[lib] = dict()
     config[lib]['dir'] = tempfile.mkdtemp(prefix='papis')
     papis.api.set_lib('test-lib')
