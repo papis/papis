@@ -32,11 +32,8 @@ def setup_test_library():
         folder = os.path.join(
             papis.config.get('dir'), str(i)
         )
-        if os.path.exists(folder):
-            continue
-        else:
-            os.makedirs(folder)
-            doc.set_folder(folder)
-            doc.save()
+        os.makedirs(folder)
+        doc.set_folder(folder)
+        doc.save()
 
 
