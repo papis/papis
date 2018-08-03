@@ -14,7 +14,7 @@ script:
 
 install:
   - pip install setuptools
-  - pip install codecov
+  - pip install python-coveralls
   - pip install -e .[develop]
   - pip install -e .[optional]
   - make install
@@ -22,4 +22,4 @@ install:
   - sudo apt-get install -y git
 
 after_success:
-  - codecov
+  - coveralls
