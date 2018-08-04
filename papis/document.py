@@ -78,6 +78,16 @@ def to_bibtex(document):
     :type  document: Document
     :returns: String containing bibtex formating
     :rtype:  str
+
+    >>> import papis.config
+    >>> papis.config.set('bibtex-journal-key', 'journal_abbrev')
+    >>> doc = from_data({'title': 'Hello', 'type': 'book', 'journal': 'jcp'})
+    >>> import tempfile; doc.set_folder('path/to/superfolder')
+    >>> to_bibtex(doc)
+    '@book{superfolder,\\n  journal = { jcp },\\n  title = { Hello },\\n  type = { book },\\n}\\n'
+    >>> doc['journal_abbrev'] = 'j'
+    >>> to_bibtex(doc)
+    '@book{superfolder,\\n  journal = { j },\\n  title = { Hello },\\n  type = { book },\\n}\\n'
     """
     bibtexString = ""
     bibtexType = ""
@@ -94,26 +104,28 @@ def to_bibtex(document):
     bibtexString += "@%s{%s,\n" % (bibtexType, ref)
     for bibKey in papis.bibtex.bibtex_keys:
         if bibKey in document.keys():
-            if bibKey == 'journal' and papis.config.get('bibtex-journal-key') in document.keys():
-                bibtexString += "  %s = { %s },\n" % (
-                    'journal',
-                    papis.bibtex.unicode_to_latex(
+            if bibKey == 'journal':
+                bibtex_journal_key = papis.config.get('bibtex-journal-key')
+                if bibtex_journal_key in document.keys():
+                    bibtexString += "  %s = { %s },\n" % (
+                        'journal',
+                        papis.bibtex.unicode_to_latex(
                         str(document[papis.config.get('bibtex-journal-key')])
+                        )
                     )
-                )
-            elif bibKey == 'journal' and papis.config.get('bibtex-journal-key') not in document.keys():
-                logger.warning(
-                    "Key '%s' is not present for ref=%s" % (
-                        papis.config.get('bibtex-journal-key'),
-                        document["ref"]
+                elif bibtex_journal_key not in document.keys():
+                    logger.warning(
+                        "Key '%s' is not present for ref=%s" % (
+                            papis.config.get('bibtex-journal-key'),
+                            document["ref"]
+                        )
                     )
-                )
-                bibtexString += "  %s = { %s },\n" % (
-                    'journal',
-                    papis.bibtex.unicode_to_latex(
-                        str(document['journal'])
+                    bibtexString += "  %s = { %s },\n" % (
+                        'journal',
+                        papis.bibtex.unicode_to_latex(
+                            str(document['journal'])
+                        )
                     )
-                )
             else:
                 bibtexString += "  %s = { %s },\n" % (
                     bibKey,
@@ -188,6 +200,14 @@ def move(document, path):
     :type  document: papis.document.Document
     :param path: Full path where the document will be moved to
     :type  path: str
+
+    >>> doc = from_data({'title': 'Hello World'})
+    >>> doc.set_folder('path/to/folder')
+    >>> import tempfile; newfolder = tempfile.mkdtemp()
+    >>> move(doc, newfolder)
+    Traceback (most recent call last):
+    ...
+    Exception: Path ... exists already
     """
     import shutil
     path = os.path.expanduser(path)
@@ -224,6 +244,11 @@ class Document(object):
         """Deletes property from document, e.g. ``del doc['url']``.
         :param key: Name of the property.
         :type  key: str
+
+        >>> doc = from_data({'title': 'Hello', 'type': 'book'})
+        >>> del doc['title']
+        >>> doc.has('title')
+        False
         """
         self._keys.pop(self._keys.index(key))
         delattr(self, key)
@@ -286,6 +311,12 @@ class Document(object):
 
         :param key: Key name to be checked
         :returns: True/False
+
+        >>> doc = from_data({'title': 'Hello World'})
+        >>> doc.has('title')
+        True
+        >>> doc.has('author')
+        False
         """
         return key in self.keys()
 
@@ -293,6 +324,12 @@ class Document(object):
         """Remove file from document, it also removes the entry in `files`
 
         :filepath: Full file path for file
+
+        >>> doc = from_data({'title': 'Hello', 'files': ['a.pdf']})
+        >>> doc.rm_file('b.pdf')
+        Traceback (most recent call last):
+        ...
+        Exception: File b.pdf not tracked by document
         """
         basename = os.path.basename(filepath)
         if basename not in self['files']:
@@ -302,6 +339,10 @@ class Document(object):
 
     def rm(self):
         """Removes document's folder, effectively removing it from the library.
+
+        >>> doc = from_data({'title': 'Hello World'})
+        >>> import tempfile; doc.set_folder(tempfile.mkdtemp())
+        >>> doc.rm()
         """
         shutil.rmtree(self.get_main_folder())
 
