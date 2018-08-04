@@ -57,21 +57,6 @@ def get_downloader(url, downloader=False):
     return False
 
 
-def download_document_from_doi(doi):
-    """Download a document knowing the doi number
-
-    :param doi: Doi number
-    :type  doi: string
-    :returns: Path to downloaded local document
-
-    """
-    tempf = tempfile.mktemp()
-    external_downloader = papis.config.get(
-        "doc-doi-downloader"
-    )
-
-
-
 def get(url, data_format="bibtex", expected_doc_format=None):
     logger.debug("Attempting to retrieve from url")
     result = {
