@@ -25,6 +25,10 @@ Python examples
 
     run(library='papers', command=["ls", "-a"])
 
+Cli
+^^^
+.. click:: papis.commands.run:cli
+    :prog: papis run
 """
 import os
 import papis.config

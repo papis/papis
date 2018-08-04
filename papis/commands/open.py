@@ -66,6 +66,10 @@ Examples
         papis open --marks bohm
 
 
+Cli
+^^^
+.. click:: papis.commands.open:cli
+    :prog: papis open
 """
 import papis
 import papis.api

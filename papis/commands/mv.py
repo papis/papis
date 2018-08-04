@@ -1,3 +1,10 @@
+"""
+
+Cli
+^^^
+.. click:: papis.commands.mv:cli
+    :prog: papis mv
+"""
 import papis
 import os
 import re

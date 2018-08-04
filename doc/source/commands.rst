@@ -1,128 +1,67 @@
 Commands
 ========
 
+Main
+----
+.. automodule:: papis.commands.default
+
 Add
 ---
 .. automodule:: papis.commands.add
-.. argparse::
-    :module: papis.commands
-    :func: init_and_return_parser
-    :prog: papis
-    :path: add
-
-Open
-----
-.. automodule:: papis.commands.open
-.. argparse::
-    :module: papis.commands
-    :func: init_and_return_parser
-    :prog: papis
-    :path: open
-
-Edit
-----
-.. automodule:: papis.commands.edit
-.. argparse::
-    :module: papis.commands
-    :func: init_and_return_parser
-    :prog: papis
-    :path: edit
-
-Update
-------
-.. automodule:: papis.commands.update
-.. argparse::
-    :module: papis.commands
-    :func: init_and_return_parser
-    :prog: papis
-    :path: update
-
-Export
-------
-.. automodule:: papis.commands.export
-.. argparse::
-    :module: papis.commands
-    :func: init_and_return_parser
-    :prog: papis
-    :path: export
 
 Addto
 -----
 .. automodule:: papis.commands.addto
-.. argparse::
-    :module: papis.commands
-    :func: init_and_return_parser
-    :prog: papis
-    :path: addto
-
-Explore
--------
-.. automodule:: papis.commands.explore
-.. argparse::
-    :module: papis.commands
-    :func: init_and_return_parser
-    :prog: papis
-    :path: explore
-
-Remove
-------
-.. automodule:: papis.commands.rm
-.. argparse::
-    :module: papis.commands
-    :func: init_and_return_parser
-    :prog: papis
-    :path: rm
-
-Gui
----
-.. automodule:: papis.commands.gui
-.. argparse::
-    :module: papis.commands
-    :func: init_and_return_parser
-    :prog: papis
-    :path: gui
-
-List
-----
-.. automodule:: papis.commands.list
-.. argparse::
-    :module: papis.commands
-    :func: init_and_return_parser
-    :prog: papis
-    :path: list
 
 Browse
 ------
 .. automodule:: papis.commands.browse
-.. argparse::
-    :module: papis.commands
-    :func: init_and_return_parser
-    :prog: papis
-    :path: browse
 
 Config
 ------
 .. automodule:: papis.commands.config
-.. argparse::
-    :module: papis.commands
-    :func: init_and_return_parser
-    :prog: papis
-    :path: config
 
-Run
----
-.. automodule:: papis.commands.run
-.. argparse::
-    :module: papis.commands
-    :func: init_and_return_parser
-    :prog: papis
-    :path: run
+Edit
+----
+.. automodule:: papis.commands.edit
+
+Explore
+-------
+.. automodule:: papis.commands.explore
+
+Export
+------
+.. automodule:: papis.commands.export
 
 Git
 ---
 .. automodule:: papis.commands.git
-.. argparse::
-    :module: papis.commands
-    :func: init_and_return_parser
-    :prog: papis
-    :path: git
+
+List
+----
+.. automodule:: papis.commands.list
+
+Mv
+--
+.. automodule:: papis.commands.mv
+
+Open
+----
+.. automodule:: papis.commands.open
+
+Rename
+------
+.. automodule:: papis.commands.rename
+
+Rm
+--
+.. automodule:: papis.commands.rm
+
+Run
+---
+.. automodule:: papis.commands.run
+
+Update
+------
+.. automodule:: papis.commands.update
+

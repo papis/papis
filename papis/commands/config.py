@@ -30,7 +30,10 @@ it with
 
 You can find a list of all available settings in the configuration section.
 
-
+Cli
+^^^
+.. click:: papis.commands.config:cli
+    :prog: papis config
 """
 import papis.commands
 import logging

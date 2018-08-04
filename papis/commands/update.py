@@ -21,6 +21,10 @@ Examples
 
         papis update --from-bibtex libraryfile.bib -i
 
+Cli
+^^^
+.. click:: papis.commands.update:cli
+    :prog: papis update
 """
 
 import papis

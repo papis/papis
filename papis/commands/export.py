@@ -32,6 +32,10 @@ Some examples of its usage are:
     ``info.yaml`` file, the linked documents and a ``bibtex`` file for
     sharing with other people.
 
+Cli
+^^^
+.. click:: papis.commands.export:cli
+    :prog: papis export
 """
 import papis
 import os

@@ -11,6 +11,10 @@ that you want to add to a document that matches with the query string
 
 notice that we repeat two times the flag ``-f``, this is important.
 
+Cli
+^^^
+.. click:: papis.commands.addto:cli
+    :prog: papis addto
 """
 from string import ascii_lowercase
 import os

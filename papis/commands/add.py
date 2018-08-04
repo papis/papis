@@ -40,6 +40,11 @@ in a more effective way in python scripts,
 
 .. autofunction:: papis.commands.add.run
 
+Cli
+^^^
+.. click:: papis.commands.add:cli
+    :prog: papis add
+
 """
 import logging
 import papis

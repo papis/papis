@@ -9,6 +9,10 @@ If none of the above work, then it will try to use a search engine with the
 document's information (using the ``browse-query-format``).  You can select
 wich search engine you want to use using the ``search-engine`` setting.
 
+Cli
+^^^
+.. click:: papis.commands.browse:cli
+    :prog: papis browse
 """
 import papis
 import papis.utils

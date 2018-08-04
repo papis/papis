@@ -1,3 +1,10 @@
+"""
+
+Cli
+^^^
+.. click:: papis.commands.rm:cli
+    :prog: papis rm
+"""
 import papis
 import papis.api
 from papis.api import status

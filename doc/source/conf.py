@@ -46,7 +46,7 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.inheritance_diagram',
-    'sphinxarg.ext',
+    'sphinx_click.ext',
 ]
 
 # Exec directive {{{ #

@@ -1,3 +1,12 @@
+"""
+
+Cli
+^^^
+.. click:: papis.commands.default:run
+    :prog: papis
+    :commands: []
+
+"""
 import os
 import papis
 import papis.api

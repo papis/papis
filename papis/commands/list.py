@@ -60,6 +60,10 @@ Python examples
 
     # do something with the info file paths...
 
+Cli
+^^^
+.. click:: papis.commands.list:cli
+    :prog: papis list
 """
 
 import logging

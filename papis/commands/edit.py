@@ -2,6 +2,10 @@
 The editor used is defined by the ``editor`` configuration setting.
 
 
+Cli
+^^^
+.. click:: papis.commands.edit:cli
+    :prog: papis edit
 """
 import papis
 import os

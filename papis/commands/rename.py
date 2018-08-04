@@ -1,3 +1,10 @@
+"""
+
+Cli
+^^^
+.. click:: papis.commands.rename:cli
+    :prog: papis rename
+"""
 import papis
 import os
 import papis.api

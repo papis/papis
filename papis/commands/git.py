@@ -17,6 +17,8 @@ CLI Examples
     .. code::
 
         papis git commit -a
+
+
 """
 import papis.commands
 import papis.commands.run

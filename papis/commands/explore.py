@@ -1,3 +1,10 @@
+"""
+
+Cli
+^^^
+.. click:: papis.commands.explore:cli
+    :prog: papis explore
+"""
 import papis.utils
 import papis.commands
 import papis.document

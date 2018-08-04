@@ -83,7 +83,7 @@ setup(
         ],
         develop=[
             "sphinx",
-            'sphinx-argparse',
+            'sphinx-click',
             'sphinx_rtd_theme',
             'pytest',
             'pytest-cov',
