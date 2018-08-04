@@ -4,7 +4,53 @@ import unittest
 import papis.tests
 import papis.tests.cli
 import papis.config
-from papis.commands.add import run, get_document_extension, cli
+from papis.commands.add import (
+    run, get_document_extension, cli,
+    get_file_name,
+    get_hash_folder
+)
+import re
+
+
+def test_get_hash_folder():
+    path = tempfile.mktemp(prefix='papis-get_name-')
+    open(path, 'w+').close()
+    data = dict(author='Don Quijote de la Mancha')
+
+    hh = get_hash_folder(data, path)
+    assert re.match(r'.*-Don-Quijote-de-la-Ma$', hh) is not None
+
+    data = dict()
+    hh = get_hash_folder(data, path)
+    assert re.match(r'.*-Don-Quijote-de-la-Ma$', hh) is None
+
+    path = tempfile.mktemp(prefix='papis-get_name-')
+    open(path, 'w+').close()
+    newhh = get_hash_folder(data, path)
+    assert not hh == newhh
+
+    newnewhh = get_hash_folder(data, path)
+    assert not newnewhh == newhh
+
+
+class TestGetFileName(unittest.TestCase):
+    def setUp(self):
+        papis.tests.setup_test_library()
+
+    def test_get_file_name(self):
+        path = tempfile.mktemp(prefix='papis-get_name-')
+        open(path, 'w+').close()
+
+        assert papis.config.get('file-name') == None
+        filename = get_file_name(dict(title='blah'), path, suffix='3')
+        assert re.match(r'^papis-get_name-.*\.txt$', filename) is not None
+
+        papis.config.set('file-name', '{doc[title]} {doc[author]} {doc[yeary]}')
+        filename = get_file_name(dict(title='blah'), path, suffix='2')
+        assert filename == 'blah--2.txt'
+
+        filename = get_file_name(dict(title='b'*200), path, suffix='2')
+        assert filename == 'b' * 130+'-2.txt'
 
 
 class Test(unittest.TestCase):

@@ -61,6 +61,9 @@ import papis.cli
 import click
 
 
+logger = logging.getLogger('add')
+
+
 def get_file_name(data, original_filepath, suffix=""):
     """Generates file name for the document
 
@@ -75,14 +78,37 @@ def get_file_name(data, original_filepath, suffix=""):
     :rtype:  str
 
     """
-    if papis.config.get("file-name") is None:
-        filename = os.path.basename(original_filepath)
-    else:
-        filename = papis.utils.format_doc(
-            papis.config.get("file-name"), papis.document.from_data(data)
-        ) +\
-            ("-" + suffix if len(suffix) > 0 else "") +\
-            "." + papis.utils.guess_file_extension(original_filepath)
+    basename_limit = 130
+    file_name_opt = papis.config.get('file-name')
+
+    if file_name_opt is None:
+        file_name_opt = os.path.basename(original_filepath)
+
+    file_name_base = papis.utils.format_doc(
+        file_name_opt,
+        papis.document.from_data(data)
+    )
+
+    if len(file_name_base) > basename_limit:
+        logger.warning(
+            'Shortening the documents\' {} name for portability'.format(
+                original_filepath
+            )
+        )
+        file_name_base = file_name_base[0:basename_limit]
+
+    filename_basename = papis.utils.clean_document_name(
+        "{}{}".format(
+            file_name_base,
+            "-" + suffix if len(suffix) > 0 else ""
+        )
+    )
+
+    filename = "{}.{}".format(
+        filename_basename,
+        papis.utils.guess_file_extension(original_filepath)
+    )
+
     return filename
 
 
@@ -93,10 +119,16 @@ def get_hash_folder(data, document_path):
     :document_path: Path of the document
 
     """
+    import random
     author = "-{:.20}".format(data["author"])\
              if "author" in data.keys() else ""
     with open(document_path, "rb") as fd:
-        md5 = hashlib.md5(fd.read(4096)).hexdigest()
+        md5 = hashlib.md5(
+            document_path.encode() +
+            str(data).encode() +
+            str(random.random()).encode() +
+            fd.read(4096)
+        ).hexdigest()
     result = md5 + author
     result = papis.utils.clean_document_name(result)
     return result
