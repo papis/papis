@@ -4,31 +4,43 @@ import shutil
 import papis.utils
 import papis.config
 import papis.bibtex
-
 import logging
+
+
 logger = logging.getLogger("document")
+
 
 def open_in_browser(document):
     """Browse document's url whenever possible.
 
     :document: Document object
+    :returns: Returns the url that is composed from the document
+    :rtype:  str
 
+    >>> import papis.config; papis.config.set('browser', 'echo')
+    >>> papis.config.set('browse-key', 'url')
+    >>> open_in_browser( from_data({'url': 'hello.com'}) )
+    'hello.com'
+    >>> papis.config.set('browse-key', 'doi')
+    >>> open_in_browser( from_data({'doi': '12312/1231'}) )
+    'https://doi.org/12312/1231'
+    >>> papis.config.set('browse-key', 'nonexistentkey')
+    >>> open_in_browser( from_data({'title': 'blih', 'author': 'me'}) )
+    'https://duckduckgo.com/?q=blih+me'
     """
     global logger
     url = None
     key = papis.config.get("browse-key")
 
-    if "url" in key:
-        url = document["url"]
-    elif "doc-url" in key:
-        url = document["doc-url"]
-    elif "doi" in key:
-        url = 'https://doi.org/' + document['doi']
-    elif "isbn" in key:
-        url = 'https://isbnsearch.org/isbn/' + document['isbn']
-    elif key in document.keys():
-        url = document[key]
-    else:
+    if document.has(key):
+        if "doi" == key:
+            url = 'https://doi.org/{}'.format(document['doi'])
+        elif "isbn" == key:
+            url = 'https://isbnsearch.org/isbn/{}'.format(document['isbn'])
+        else:
+            url = document[key]
+
+    if url is None or key == 'search-engine':
         from urllib.parse import urlencode
         params = {
             'q': papis.utils.format_doc(
@@ -38,16 +50,11 @@ def open_in_browser(document):
         }
         url = papis.config.get('search-engine') + '/?' + urlencode(params)
 
-    if url is None:
-        logger.warning(
-            "No url for %s possible" % (document.get_main_folder_name())
-        )
-    else:
-        logger.debug("Opening url %s:" % url)
-        papis.utils.general_open(
-            url, "browser", wait=False
-        )
-
+    logger.debug("Opening url %s:" % url)
+    papis.utils.general_open(
+        url, "browser", wait=False
+    )
+    return url
 
 def from_folder(folder_path):
     """Construct a document object from a folder
@@ -88,6 +95,10 @@ def to_bibtex(document):
     >>> doc['journal_abbrev'] = 'j'
     >>> to_bibtex(doc)
     '@book{superfolder,\\n  journal = { j },\\n  title = { Hello },\\n  type = { book },\\n}\\n'
+    >>> del doc['title']
+    >>> doc['ref'] = 'hello1992'
+    >>> to_bibtex(doc)
+    '@book{hello1992,\\n  journal = { j },\\n  type = { book },\\n}\\n'
     """
     bibtexString = ""
     bibtexType = ""
@@ -381,12 +392,11 @@ class Document(object):
                 if force:
                     self[key] = data[key]
                 elif interactive:
-                    confirmation = \
-                        papis.utils.confirm(
-                            "(%s conflict) Replace '%s' by '%s'?" % (
-                                key, self[key], data[key]
-                            )
+                    confirmation = papis.utils.confirm(
+                        "(%s conflict) Replace '%s' by '%s'?" % (
+                            key, self[key], data[key]
                         )
+                    )
                     if confirmation:
                         self[key] = data[key]
                 elif self[key] is None or self[key] == '':
@@ -427,6 +437,14 @@ class Document(object):
 
         :returns: String or None
         :rtype: str OR None
+
+        >>> import papis.config
+        >>> doc = from_data({'title': 'Hello World'})
+        >>> doc.has_citations
+        ''
+        >>> doc.update(dict(citations=[]))
+        >>> doc.has_citations == papis.config.get('citation-string')
+        True
         """
 
         if 'citations' in self.keys():
