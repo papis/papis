@@ -1,6 +1,7 @@
 import click
 import click.decorators
 import os
+import sys
 import papis.config
 import glob
 import re
@@ -43,11 +44,26 @@ class MultiCommand(click.MultiCommand):
     )
 
     def list_commands(self, ctx):
+        """List all matched commands in the command folder and in path
+
+        >>> mc = MultiCommand()
+        >>> rv = mc.list_commands(None)
+        >>> len(rv) > 0
+        True
+        """
         rv = [s for s in self.scripts.keys()]
         rv.sort()
         return rv
 
     def get_command(self, ctx, name):
+        """Get the command to be run
+
+        >>> mc = MultiCommand()
+        >>> cmd = mc.get_command(None, 'add')
+        >>> cmd.name, cmd.__doc__
+        ('cli', 'Add...')
+        >>> mc.get_command(None, 'this command does not exist')
+        """
         namespace = {}
         try:
             script = self.scripts[name]
