@@ -52,7 +52,7 @@ def cli(query, git):
     """Rename entry"""
 
     documents = papis.database.get().query(query)
-    document = papis.cli.pick(documents)
+    document = papis.api.pick_doc(documents)
     if not document:
         return 0
 

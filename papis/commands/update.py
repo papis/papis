@@ -204,7 +204,7 @@ def cli(
 
     # For the coming parts we need to pick a document
     if not all:
-        document = [papis.cli.pick(documents)]
+        document = [papis.api.pick_doc(documents)]
         if not document:
             return 0
     else:
@@ -227,7 +227,7 @@ def cli(
 
         if from_isbnplus:
             try:
-                doc = papis.cli.pick(
+                doc = papis.api.pick_doc(
                     [
                         papis.docs.Document(data=d)
                         for d in papis.isbn.get_data(

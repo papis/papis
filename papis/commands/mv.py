@@ -14,6 +14,7 @@ import papis.database
 import subprocess
 import logging
 import papis.cli
+import papis.api
 import click
 
 
@@ -61,7 +62,7 @@ def cli(query, git):
 
     documents = papis.database.get().query(query)
 
-    document = papis.cli.pick(documents)
+    document = papis.api.pick_doc(documents)
     if not document:
         return 0
 

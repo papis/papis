@@ -91,24 +91,3 @@ def git_option(**attrs):
         attrs.setdefault('help', 'Add git interoperability')
         return click.decorators.option('--git/--no-git', **attrs)(f)
     return decorator
-
-
-def pick(options, pick_config={}):
-    import papis.api
-    import papis.config
-    import papis.utils
-    if len(options) == 0:
-        return None
-    if not pick_config:
-        header_format = papis.config.get("header-format")
-        match_format = papis.config.get("match-format")
-        pick_config = dict(
-            header_filter=lambda x: papis.utils.format_doc(
-                header_format, x
-            ),
-            match_filter=lambda x: papis.utils.format_doc(match_format, x)
-        )
-    return papis.api.pick(
-        options,
-        pick_config
-    )

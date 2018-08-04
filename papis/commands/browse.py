@@ -19,6 +19,7 @@ import papis.utils
 import papis.config
 from papis.api import status
 import papis.cli
+import papis.api
 import click
 import papis.database
 
@@ -35,7 +36,7 @@ def run(document):
 def cli(query):
     """Open document's url in a browser"""
     documents = papis.database.get().query(query)
-    document = papis.cli.pick(documents)
+    document = papis.api.pick_doc(documents)
     if not document:
         return status.file_not_found
     return run(document)

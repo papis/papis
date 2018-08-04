@@ -58,7 +58,7 @@ def cli(
     ):
     """Delete command for several objects"""
     documents = papis.database.get().query(query)
-    document = papis.cli.pick(documents)
+    document = papis.api.pick_doc(documents)
     if not document:
         return status.file_not_found
     if file:

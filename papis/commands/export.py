@@ -45,6 +45,7 @@ import papis.utils
 import papis.document
 import click
 import papis.cli
+import papis.api
 import papis.database
 import logging
 
@@ -193,7 +194,7 @@ def cli(
         logger.warning("Only --folder flag will be considered")
 
     if not all:
-        document = papis.cli.pick(documents)
+        document = papis.api.pick_doc(documents)
         if not document:
             return 0
         documents = [document]

@@ -621,7 +621,7 @@ def cli(
     logger = logging.getLogger('cli:add')
 
     if from_lib:
-        doc = papis.cli.pick(
+        doc = papis.api.pick_doc(
             papis.api.get_documents_in_lib(from_lib)
         )
         if doc:

@@ -16,6 +16,7 @@ import papis.cli
 import click
 import logging
 import papis.commands.add
+import papis.api
 
 
 logger = logging.getLogger('explore')
@@ -72,7 +73,7 @@ def explore_libgen(query):
     else:
         logger.error("No documents found")
         return None
-    doc = papis.cli.pick(
+    doc = papis.api.pick_doc(
         [papis.document.Document(data=d) for d in data]
     )
     if doc:
@@ -91,7 +92,7 @@ def explore_crossref(search, max_results):
         max_results=max_results
     )
     documents = [papis.document.Document(data=d) for d in data]
-    doc = papis.cli.pick(
+    doc = papis.api.pick_doc(
         documents
     )
     return doc
@@ -100,7 +101,7 @@ def explore_crossref(search, max_results):
 def explore_isbnplus(query):
     import papis.isbn
     data = papis.isbn.get_data(query=query)
-    doc = papis.cli.pick(
+    doc = papis.api.pick_doc(
         [papis.document.Document(data=d) for d in data]
     )
     return doc
@@ -122,7 +123,7 @@ def explore_arxiv(query, max_results):
         page=parsed.get('page') or 0,
         max_results=max_results
     )
-    doc = papis.cli.pick(
+    doc = papis.api.pick_doc(
         [papis.document.Document(data=d) for d in data]
     )
     return doc

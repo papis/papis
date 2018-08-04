@@ -56,7 +56,7 @@ def cli(
     logger = logging.getLogger('cli:edit')
     documents = papis.database.get().query(query)
     if not all:
-        document = papis.cli.pick(documents)
+        document = papis.api.pick_doc(documents)
         documents = [document] if document else []
 
     if len(documents) == 0:
