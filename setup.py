@@ -47,7 +47,7 @@ setup(
         "beautifulsoup4>=4.4.1",
         "prompt-toolkit>=2.0.0",
         "bibtexparser>=0.6.2",
-        "Unidecode>=0.4.21",
+        "python-slugify==1.2.5",
         "pyparser>=1.0",
         "python-magic>=0.4.13",
         "pylibgen>=1.3.0",

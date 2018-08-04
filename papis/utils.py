@@ -206,31 +206,25 @@ def input(prompt, default=""):
 def clean_document_name(doc_path):
     """Get a file path and return the basename of the path cleaned.
 
+    It will also turn chinese, french, russian etc into ascii characters.
+
     :param doc_path: Path of a document.
     :type  doc_path: str
     :returns: Basename of the path cleaned
     :rtype:  str
 
     >>> clean_document_name('{{] __ }}albert )(*& $ß $+_ einstein (*]')
-    'albert-ss-_-einstein'
+    'albert-ss-einstein'
     >>> clean_document_name('/ashfd/df/  #$%@#$ }{_+"[ ]hello öworld--- .pdf')
-    'hello-oworld----.pdf'
+    'hello-oworld-.pdf'
     """
-    import unidecode
-    base = os.path.basename(doc_path)
-    logger.debug("Cleaning document name %s " % base)
-    trans_dict = dict.fromkeys(
-        string.punctuation.translate(
-            str.maketrans(dict.fromkeys('.-_'))
-        )
+    from slugify import slugify
+    regex_pattern = r'[^a-z0-9.]+'
+    return slugify(
+        os.path.basename(doc_path),
+        word_boundary=True,
+        regex_pattern=regex_pattern
     )
-    translation = str.maketrans(trans_dict)
-    cleaned = base.translate(translation)
-    cleaned = cleaned.strip(string.whitespace+string.punctuation)
-    cleaned = cleaned.strip()
-    cleaned = re.sub(r"\s+", "-", cleaned)
-    cleaned = unidecode.unidecode(cleaned)
-    return cleaned
 
 
 def git_commit(path="", message=""):
