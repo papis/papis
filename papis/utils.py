@@ -17,10 +17,30 @@ import papis.bibtex
 import papis.exceptions
 
 
-def general_open(fileName, key, default_opener="xdg-open", wait=True):
+def general_open(fileName, key, default_opener=None, wait=True):
+    """Wraper for openers
+
+
+    >>> import tempfile; path = tempfile.mktemp()
+    >>> general_open(path, 'nonexistent-key', wait=False).stdin == None
+    True
+    >>> general_open(path, 'nonexistent-key') > 0
+    True
+    >>> general_open([path], 'nonexistent-key', default_opener=lambda path: 42)
+    42
+    >>> general_open([path], 'nonexistent-key', default_opener=tempfile)
+    Traceback (most recent call last):
+    ...
+    Warning: How should I use the opener ...?
+    >>> papis.config.set('editor', 'echo')
+    >>> general_open([path], 'editor', wait=False)
+    <subprocess.Popen...>
+    """
     try:
         opener = papis.config.get(key)
     except papis.exceptions.DefaultSettingValueMissing:
+        if default_opener == None:
+            default_opener = papis.config.get_default_opener()
         opener = default_opener
     if isinstance(fileName, list):
         fileName = papis.api.pick(fileName)
