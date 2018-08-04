@@ -64,6 +64,9 @@ def get_libraries():
     :returns: List of library names
     :rtype: list
 
+    >>> len(get_libraries()) >= 1
+    True
+
     """
     libs = []
     config = papis.config.get_configuration()
@@ -73,11 +76,16 @@ def get_libraries():
     return libs
 
 
-def pick_doc(documents):
+def pick_doc(documents: list):
     """Pick a document from documents with the correct formatting
 
     :documents: List of documents
     :returns: Document
+
+    >>> from papis.document import from_data
+    >>> doc = from_data({'title': 'Hello World'})
+    >>> pick_doc([doc]).dump()
+    'title:   Hello World\\n'
 
     """
     header_format = papis.config.get("header-format")
@@ -92,7 +100,7 @@ def pick_doc(documents):
     )
 
 
-def pick(options, pick_config={}):
+def pick(options: list, pick_config={}):
     """This is a wrapper for the various pickers that are supported.
     Depending on the configuration different selectors or 'pickers'
     are used.
@@ -112,6 +120,12 @@ def pick(options, pick_config={}):
     >>> papis.config.set('picktool', 'papis.pick')
     >>> pick(['something'])
     'something'
+    >>> papis.config.set('picktool', 'nonexistent')
+    >>> pick(['something'])
+    Traceback (most recent call last):
+    ...
+    Exception: I don\'t know how to use the picker \'nonexistent\'
+    >>> papis.config.set('picktool', 'papis.pick')
 
     """
     # Leave this import here
@@ -223,6 +237,8 @@ def clear_lib_cache(lib=None):
 
     :param lib: Library name.
     :type  lib: str
+
+    >>> clear_lib_cache()
 
     """
     lib = papis.api.get_lib() if lib is None else lib
