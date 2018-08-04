@@ -15,14 +15,14 @@ import re
 def test_get_hash_folder():
     path = tempfile.mktemp(prefix='papis-get_name-')
     open(path, 'w+').close()
-    data = dict(author='Don Quijote de la Mancha')
+    data = dict(author='don quijote de la mancha')
 
     hh = get_hash_folder(data, path)
-    assert re.match(r'.*-Don-Quijote-de-la-Ma$', hh) is not None
+    assert re.match(r'.*-don-quijote-de-la-ma$', hh) is not None
 
     data = dict()
     hh = get_hash_folder(data, path)
-    assert re.match(r'.*-Don-Quijote-de-la-Ma$', hh) is None
+    assert re.match(r'.*-don-quijote-de-la-ma$', hh) is None
 
     path = tempfile.mktemp(prefix='papis-get_name-')
     open(path, 'w+').close()
@@ -43,11 +43,11 @@ class TestGetFileName(unittest.TestCase):
 
         assert papis.config.get('file-name') == None
         filename = get_file_name(dict(title='blah'), path, suffix='3')
-        assert re.match(r'^papis-get_name-.*\.txt$', filename) is not None
+        assert re.match(r'^papis-get-name-.*\.txt$', filename) is not None
 
         papis.config.set('file-name', '{doc[title]} {doc[author]} {doc[yeary]}')
         filename = get_file_name(dict(title='blah'), path, suffix='2')
-        assert filename == 'blah--2.txt'
+        assert filename == 'blah-2.txt'
 
         filename = get_file_name(dict(title='b'*200), path, suffix='2')
         assert filename == 'b' * 130+'-2.txt'
