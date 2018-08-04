@@ -454,7 +454,7 @@ def run(
     )
     papis.document.move(document, out_folder_path)
     papis.database.get().add(document)
-    if commit and papis.utils.lib_is_git_repo(papis.config.get_lib()):
+    if commit:
         subprocess.call(["git", "-C", out_folder_path, "add", "."])
         subprocess.call(
             ["git", "-C", out_folder_path, "commit", "-m", "Add document"]

@@ -110,38 +110,6 @@ def create_identifier(input_list):
         for s in product(input_list, repeat=n):
             yield ''.join(s)
 
-def folder_is_git_repo(folder):
-    """Check if folder is a git repository
-
-    :folder: Folder to check
-    :returns: Wether is git repo or not
-    :rtype:  bool
-
-    """
-    import subprocess
-    logger.debug("Check if %s is a git repo" % folder)
-    try:
-        subprocess.check_call(
-            ' '.join(['git', '-C', folder, 'status']),
-            stdout=None,
-            shell=True
-        )
-        logger.debug("Detected git repo in %s" % folder)
-        return True
-    except:
-        return False
-
-
-def lib_is_git_repo(library):
-    """Check if library is a git repository
-
-    :library: Library to check
-    :returns: Wether is git repo or not
-    :rtype:  bool
-    """
-    config = papis.config.get_configuration()
-    return folder_is_git_repo(config.get(library, "dir"))
-
 
 def get_info_file_name():
     """Get the name of the general info file for any document
