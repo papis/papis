@@ -14,11 +14,3 @@ Downloaders
 -----------
 
 .. inheritance-diagram:: papis.downloaders.acs
-
-Commands
---------
-
-An example of the add command class:
-
-.. inheritance-diagram:: papis.commands.add
-
