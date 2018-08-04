@@ -3,6 +3,8 @@ Papis
 
 |Build Status|
 |Coveralls|
+|RTD|
+|Pypi|
 |Packaging status|
 
 Description
@@ -104,6 +106,10 @@ Authors
 
 See the ``AUTHORS`` list for a list of authored commits.
 
+.. |Pypi| image:: https://badge.fury.io/py/papis.svg
+   :target: https://badge.fury.io/py/papis
+.. |RTD| image:: https://readthedocs.org/projects/papis/badge/?version=latest
+   :target: http://papis.readthedocs.io/en/latest/?badge=latest
 .. |Coveralls| image:: https://coveralls.io/repos/github/papis/papis/badge.svg?branch=master
    :target: https://coveralls.io/github/papis/papis?branch=master
 .. |Build Status| image:: https://travis-ci.org/papis/papis.svg?branch=master
