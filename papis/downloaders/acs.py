@@ -52,5 +52,3 @@ class Downloader(papis.downloaders.base.Downloader):
               "?format=bibtex&cookieSet=1&doi=%s" % self.get_doi()
         self.logger.debug("[bibtex url] = %s" % url)
         return url
-
-# vim-run: python3 -m doctest %

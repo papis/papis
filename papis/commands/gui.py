@@ -39,10 +39,14 @@ def cli(query, tk, rofi, urwid, vim):
     documents = papis.database.get().query(query)
     default_gui = papis.config.get('default-gui')
     if not tk and not urwid and not vim and not rofi:
-        if default_gui == 'tk': tk = True
-        elif default_gui == 'urwid': urwid = True
-        elif default_gui == 'vim': vim = True
-        elif default_gui == 'rofi': rofi = True
+        if default_gui == 'tk':
+            tk = True
+        elif default_gui == 'urwid':
+            urwid = True
+        elif default_gui == 'vim':
+            vim = True
+        elif default_gui == 'rofi':
+            rofi = True
 
     if tk:
         import papis.gui.tk

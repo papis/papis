@@ -4,7 +4,6 @@ import papis.api
 import papis.utils
 import papis.document
 import os
-import unittest
 
 
 test_data = [
@@ -46,5 +45,3 @@ def setup_test_library(save_settings_fileds=[]):
         os.makedirs(folder)
         doc.set_folder(folder)
         doc.save()
-
-

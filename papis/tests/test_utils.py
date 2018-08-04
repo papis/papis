@@ -29,7 +29,7 @@ def test_general_open_with_spaces():
 
     assert(os.path.exists(filename))
 
-    a = papis.utils.general_open(
+    papis.utils.general_open(
         filename,
         'nonexistentoption',
         default_opener="echo 'hello world' >> ",

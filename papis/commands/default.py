@@ -45,7 +45,7 @@ import papis.cli
 @click.option(
     "--log",
     help="Logging level",
-    type=click.Choice([ "INFO", "DEBUG", "WARNING", "ERROR", "CRITICAL" ]),
+    type=click.Choice(["INFO", "DEBUG", "WARNING", "ERROR", "CRITICAL"]),
     default="INFO"
 )
 @click.option(
@@ -73,7 +73,7 @@ import papis.cli
 )
 @click.option(
     "--set",
-    type=(str,str),
+    type=(str, str),
     multiple=True,
     help="Set key value, e.g., "
          "--set info-name information.yaml  --set opentool evince",
@@ -88,7 +88,7 @@ def run(
         cc,
         cores,
         set
-    ):
+        ):
     log_format = '%(levelname)s:%(name)s:%(message)s'
     if verbose:
         log = "DEBUG"

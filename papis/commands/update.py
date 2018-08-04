@@ -40,6 +40,7 @@ import papis.api
 import papis.cli
 import click
 
+
 def run(
     document,
     data=dict(),
@@ -82,11 +83,9 @@ def run(
     papis.database.get().update(document)
 
 
-
 @click.command()
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
-
 @click.option(
     "-i",
     "--interactive",
@@ -94,7 +93,6 @@ def run(
     default=False,
     is_flag=True
 )
-
 @click.option(
     "-f",
     "--force",
@@ -102,58 +100,49 @@ def run(
     default=False,
     is_flag=True
 )
-
 @click.option(
     "-d",
     "--document",
     help="Overwrite an existing document",
     default=None
 )
-
 @click.option(
     "--from-isbnplus",
     help="Update info from isbnplus.org",
     default=None
 )
-
 @click.option(
     "--from-yaml",
     help="Update info from yaml file",
     default=None
 )
-
 @click.option(
     "--from-bibtex",
     help="Update info from bibtex file",
     default=None
 )
-
 @click.option(
     "--from-url",
     help="Get document or information from url",
     default=None
 )
-
 @click.option(
     "--from-doi",
     help="Doi to try to get information from",
     default=None
 )
-
 @click.option(
     "--auto",
     help="Try to parse information from different sources",
     default=False,
     is_flag=True
 )
-
 @click.option(
     "--all",
     help="Update all entries in library",
     default=False,
     is_flag=True
 )
-
 def cli(
         query,
         interactive,
@@ -224,7 +213,6 @@ def cli(
             elif 'title' in docs.keys() and not from_isbnplus:
                 from_isbnplus = docs['title']
 
-
         if from_isbnplus:
             try:
                 doc = papis.api.pick_doc(
@@ -250,4 +238,3 @@ def cli(
             from_url=from_url,
             from_doi=from_doi
         )
-

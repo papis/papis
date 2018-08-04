@@ -7,7 +7,6 @@ logger.debug("importing")
 
 import os
 import re
-import string
 import papis.api
 import papis.config
 import papis.commands
@@ -39,7 +38,7 @@ def general_open(fileName, key, default_opener=None, wait=True):
     try:
         opener = papis.config.get(key)
     except papis.exceptions.DefaultSettingValueMissing:
-        if default_opener == None:
+        if default_opener is None:
             default_opener = papis.config.get_default_opener()
         opener = default_opener
     if isinstance(fileName, list):
@@ -61,8 +60,6 @@ def general_open(fileName, key, default_opener=None, wait=True):
         return opener(fileName)
     else:
         raise Warning("How should I use the opener %s?" % opener)
-
-
 
 
 def format_doc(python_format, document, key=""):
@@ -114,6 +111,7 @@ def create_identifier(input_list):
     Ideally for use in modifying an existing string to make it unique.
 
     Example:
+    >>> import string
     >>> m = create_identifier(string.ascii_lowercase)
     >>> next(m)
     'a'

@@ -1,6 +1,7 @@
 import papis.config
 import logging
 
+
 class DocMatcher(object):
     """This class implements the mini query language for papis.
     All its methods are static, it could be also implemented as a separate
@@ -38,7 +39,7 @@ class DocMatcher(object):
                 sformat = None
             elif len(parsed) == 3:
                 search = parsed[2]
-                sformat = cls.doc_format.replace('DOC_KEY',parsed[0])
+                sformat = cls.doc_format.replace('DOC_KEY', parsed[0])
             match = doc if cls.matcher(doc, search, sformat) else None
             if not match:
                 break
@@ -88,7 +89,6 @@ def parse_query(query_string):
     import pyparsing
     logger = logging.getLogger('query_parser')
     logger.debug('Parsing search')
-    papis_alphas = pyparsing.printables.replace('=', '')
     papis_key = pyparsing.Word(pyparsing.alphanums + '-')
     papis_value = pyparsing.QuotedString(
         quoteChar='"', escChar='\\', escQuote='\\'
@@ -96,8 +96,8 @@ def parse_query(query_string):
         quoteChar="'", escChar='\\', escQuote='\\'
     ) ^ papis_key
     equal = pyparsing.ZeroOrMore(" ") + \
-            pyparsing.Literal('=')    + \
-            pyparsing.ZeroOrMore(" ")
+        pyparsing.Literal('=') + \
+        pyparsing.ZeroOrMore(" ")
 
     papis_query = pyparsing.ZeroOrMore(
         pyparsing.Group(

@@ -30,7 +30,6 @@ def run(document, editor=None, wait=True):
 @click.command()
 @click.help_option('-h', '--help')
 @papis.cli.query_option()
-
 @click.option(
     "-n",
     "--notes",
@@ -38,19 +37,17 @@ def run(document, editor=None, wait=True):
     default=False,
     is_flag=True
 )
-
 @click.option(
     "--all",
     help="Edit all matching documents",
     default=False,
     is_flag=True
 )
-
 def cli(
         query,
         notes,
         all
-    ):
+        ):
     """Edit document information from a given library"""
 
     logger = logging.getLogger('cli:edit')

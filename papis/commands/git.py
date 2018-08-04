@@ -23,7 +23,6 @@ CLI Examples
 import papis.commands
 import papis.commands.run
 import papis.config
-import argparse
 import logging
 import click
 

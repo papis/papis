@@ -3,6 +3,7 @@
 
 import sys
 import logging
+import papis.commands.default
 
 
 logger = logging.getLogger("papis")
@@ -14,7 +15,6 @@ if "--debug" in sys.argv:
     logger.debug("DEBUG MODE FOR DEVELOPERS ON")
 
 
-import papis.commands.default
 logger.debug("Imported commands")
 
 

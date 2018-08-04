@@ -150,6 +150,7 @@ latex_accents = {
     "\xa0": " ",     # Unprintable characters
 }
 
+
 def collapse_whitespace(s):
     """Removes whitespace from string and returns the result. Useful
     when whitespace causes errors (e.g. Bibtex)
@@ -158,7 +159,8 @@ def collapse_whitespace(s):
     :type s: str
     """
     logger.debug("Removing whitespace...")
-    return s.replace(" ","")
+    return s.replace(" ", "")
+
 
 def crossref_data_to_papis_data(data):
     if "author" in data.keys():
@@ -190,10 +192,10 @@ def get_data(query="", author="", year="", title="", max_results=20):
         query=query,
         limit=max_results,
         query_author=author,
-        #TODO: really figure out how to include year
+        # TODO: really figure out how to include year
         query_bibliographic=str(year),
-        #filter={'from-pub-date': '{}-1-1'.format(year) if year else ''},
-        #sort='published',
+        # filter={'from-pub-date': '{}-1-1'.format(year) if year else ''},
+        # sort='published',
         query_title=title
     )
     return [
@@ -388,7 +390,9 @@ def get_cross_ref(doi):
     res.update(get_citation_info_from_results(record))
 
     # REFERENCE BUILDING
-    res['ref'] = collapse_whitespace(papis.utils.format_doc(papis.config.get("ref-format"), res))
+    res['ref'] = collapse_whitespace(
+        papis.utils.format_doc(papis.config.get("ref-format"), res)
+    )
 
     # Check if reference field with the same tag already exists
     documents = papis.api.get_documents_in_lib(

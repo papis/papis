@@ -41,11 +41,14 @@ class TestGetFileName(unittest.TestCase):
         path = tempfile.mktemp(prefix='papis-get_name-')
         open(path, 'w+').close()
 
-        assert papis.config.get('file-name') == None
+        assert papis.config.get('file-name') is None
         filename = get_file_name(dict(title='blah'), path, suffix='3')
         assert re.match(r'^papis-get-name-.*\.txt$', filename) is not None
 
-        papis.config.set('file-name', '{doc[title]} {doc[author]} {doc[yeary]}')
+        papis.config.set(
+            'file-name',
+            '{doc[title]} {doc[author]} {doc[yeary]}'
+        )
         filename = get_file_name(dict(title='blah'), path, suffix='2')
         assert filename == 'blah-2.txt'
 

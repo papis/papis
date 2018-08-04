@@ -1,5 +1,4 @@
 import os
-import sys
 import shutil
 import papis.utils
 import papis.config
@@ -55,6 +54,7 @@ def open_in_browser(document):
         url, "browser", wait=False
     )
     return url
+
 
 def from_folder(folder_path):
     """Construct a document object from a folder
@@ -121,7 +121,9 @@ def to_bibtex(document):
                     bibtexString += "  %s = { %s },\n" % (
                         'journal',
                         papis.bibtex.unicode_to_latex(
-                        str(document[papis.config.get('bibtex-journal-key')])
+                            str(
+                              document[papis.config.get('bibtex-journal-key')]
+                            )
                         )
                     )
                 elif bibtex_journal_key not in document.keys():

@@ -369,7 +369,7 @@ class Database(papis.database.base.Database):
 
     def query_dict(self, dictionary):
         query_string = " ".join(
-            ["{}=\"{}\" ".format(key, val) for key,val in dictionary.items()]
+            ["{}=\"{}\" ".format(key, val) for key, val in dictionary.items()]
         )
         return self.query(query_string)
 

@@ -51,6 +51,7 @@ import papis.document
 import papis.database.base
 import papis.database.cache
 
+
 class Database(papis.database.base.Database):
 
     def __init__(self, library=None):
@@ -71,16 +72,16 @@ class Database(papis.database.base.Database):
                 'Trying to clear database, but no database found'
             )
 
-    #TODO
+#   TODO
     def match(self, document, query_string):
         pass
 
     def add(self, document):
         schema_keys = self.get_schema_init_fields().keys()
-        self.logger.debug("adding document" )
+        self.logger.debug("adding document")
         writer = self.get_writer()
         self.add_document_with_writer(document, writer, schema_keys)
-        self.logger.debug("commiting document.." )
+        self.logger.debug("commiting document..")
         writer.commit()
 
     def update(self, document):
@@ -91,17 +92,17 @@ class Database(papis.database.base.Database):
 
     def delete(self, document):
         writer = self.get_writer()
-        self.logger.debug("deleting document.." )
+        self.logger.debug("deleting document..")
         writer.delete_by_term(
             self.get_id_key(),
             self.get_id_value(document)
         )
-        self.logger.debug("commiting deletion.." )
+        self.logger.debug("commiting deletion..")
         writer.commit()
 
     def query_dict(self, dictionary):
         query_string = " AND ".join(
-            ["{}:\"{}\" ".format(key, val) for key,val in dictionary.items()]
+            ["{}:\"{}\" ".format(key, val) for key, val in dictionary.items()]
         )
         return self.query(query_string)
 
@@ -123,13 +124,11 @@ class Database(papis.database.base.Database):
             ]
         return documents
 
-
     def get_all_query_string(self):
         return '*'
 
     def get_all_documents(self):
         return self.query(self.get_all_query_string())
-
 
     def get_id_key(self):
         """Get the unique key identifier name of the documents in the database
@@ -260,10 +259,9 @@ class Database(papis.database.base.Database):
         """Returns the arguments to be passed to the whoosh schema
         object instantiation found in the method `get_schema`.
         """
-        from whoosh.fields import TEXT, KEYWORD, ID, STORED
-        import json
+        from whoosh.fields import TEXT, ID, KEYWORD, STORED
         # This part is non-negotiable
-        fields = { self.get_id_key(): ID(stored=True, unique=True) }
+        fields = {self.get_id_key(): ID(stored=True, unique=True)}
         user_prototype = eval(
             papis.config.get('whoosh-schema-prototype')
         )
@@ -273,7 +271,7 @@ class Database(papis.database.base.Database):
             raise Exception('whoosh-schema-fields should be a python list')
         for field in fields_list:
             fields.update({field: TEXT(stored=True)})
-        #self.logger.debug('Schema prototype: {}'.format(fields))
+        # self.logger.debug('Schema prototype: {}'.format(fields))
         return fields
 
     def get_cache_dir(self):
@@ -286,7 +284,7 @@ class Database(papis.database.base.Database):
             papis.database.cache.get_cache_home(),
             'whoosh'
         )
-        #self.logger.debug('Cache dir %s' % path)
+        # self.logger.debug('Cache dir %s' % path)
         return path
 
     def get_index_dir(self):
@@ -300,6 +298,5 @@ class Database(papis.database.base.Database):
                 papis.database.cache.get_name(self.get_dir())
             )
         )
-        #self.logger.debug('Index dir %s' % path)
+        # self.logger.debug('Index dir %s' % path)
         return path
-

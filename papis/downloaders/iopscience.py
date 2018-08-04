@@ -60,10 +60,15 @@ class Downloader(papis.downloaders.base.Downloader):
         return articleId
 
     def get_bibtex_url(self):
-        # http://iopscience.iop.org/export?articleId=0305-4470/24/2/004&exportFormat=iopexport_bib&exportType=abs&navsubmit=Export%2Babstract
+        # http://iopscience.iop.org/export?
+        # articleId=0305-4470/24/2/004&exportFormat=
+        # iopexport_bib&exportType=abs&navsubmit=Export%2Babstract
         articleId = self.getAritcleId()
-        url = "http://iopscience.iop.org/export?articleId=%s&exportFormat=iopexport_bib&exportType=abs&navsubmit=Export%%2Babstract" % articleId
+        url = "{}{}{}".format(
+            "http://iopscience.iop.org/export?articleId=",
+            articleId,
+            "&exportFormat=iopexport_bib&exportType=abs"
+            "&navsubmit=Export%2Babstract"
+        )
         self.logger.debug("[bibtex url] = %s" % url)
         return url
-
-# vim-run: python3 %

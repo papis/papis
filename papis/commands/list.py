@@ -150,11 +150,9 @@ def run(
         return documents
 
 
-
 @click.command()
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
-
 @click.option(
     "-i",
     "--info",
@@ -162,7 +160,6 @@ def run(
     default=False,
     is_flag=True
 )
-
 @click.option(
     "-f",
     "--file",
@@ -170,7 +167,6 @@ def run(
     default=False,
     is_flag=True
 )
-
 @click.option(
     "-d",
     "--dir",
@@ -178,20 +174,17 @@ def run(
     default=False,
     is_flag=True
 )
-
 @click.option(
     "--format",
     help="List entries using a custom papis format, e.g."
     " '{doc[year] {doc[title]}",
     default=None
 )
-
 @click.option(
     "--template",
     help="Template file containing a papis format to list entries",
     default=None
 )
-
 @click.option(
     "-p",
     "--pick",
@@ -199,21 +192,18 @@ def run(
     default=False,
     is_flag=True
 )
-
 @click.option(
     "--downloaders",
     help="List available downloaders",
     default=False,
     is_flag=True
 )
-
 @click.option(
     "--libraries",
     help="List defined libraries",
     default=False,
     is_flag=True
 )
-
 def cli(
         query,
         info,
@@ -224,17 +214,13 @@ def cli(
         pick,
         downloaders,
         libraries
-    ):
+        ):
     """List documents' properties"""
 
-    if not libraries and \
-        not downloaders and \
-        not file and \
-        not info and \
-            not dir:
+    if not libraries and not downloaders and not file and not info and not dir:
         dir = True
 
-    lib=papis.config.get_lib()
+    lib = papis.config.get_lib()
 
     objects = run(
         query=query,

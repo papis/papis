@@ -28,7 +28,7 @@ def run(document, new_name, git=False):
         logger.warning("Path %s already exists" % new_folder_path)
         return 1
 
-    cmd  = ['git', '-C', folder] if git else []
+    cmd = ['git', '-C', folder] if git else []
     cmd += ['mv', folder, new_folder_path]
 
     logger.debug(cmd)

@@ -29,6 +29,7 @@ import logging
 import papis.cli
 import click
 
+
 def run(document, filepaths):
     logger = logging.getLogger('addto')
     g = papis.utils.create_identifier(ascii_lowercase)

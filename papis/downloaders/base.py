@@ -132,7 +132,9 @@ class Downloader(object):
         if not url:
             return False
         cookiejar = http.cookiejar.LWPCookieJar()
-        opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookiejar))
+        opener = urllib.request.build_opener(
+            urllib.request.HTTPCookieProcessor(cookiejar)
+        )
         opener.addheaders = [('User-Agent', papis.config.get('user-agent'))]
 
         u = opener.open(url)

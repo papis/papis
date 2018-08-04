@@ -37,7 +37,8 @@ An example of sucessful returns:
     <isbn13>9780415887229</isbn13>
     <isbn10>0415887224</isbn10>
     <title>
-    International News In The Digital Age: East-West Perceptions Of A New World Order
+    International News In The Digital Age: East-West Perceptions Of A New World
+    Order
     </title>
     <author>Judith Clarke; Michael Bromley</author>
     <published_place>New York</published_place>
@@ -50,7 +51,10 @@ An example of sucessful returns:
     <series>Routledge research in journalism ( Volume 4 )</series>
     <reisbn>0</reisbn>
     <category>
-    Journalism > International Cooperation; Citizen Journalism > Political Aspects; Communication, International > Political Aspects; Online Journalism; Mass Media And International Relations; Foreign News > Political Aspects;
+    Journalism > International Cooperation; Citizen Journalism > Political
+    Aspects; Communication, International > Political Aspects; Online
+    Journalism; Mass Media And International Relations; Foreign News >
+    Political Aspects;
     </category>
     </book>
     ...

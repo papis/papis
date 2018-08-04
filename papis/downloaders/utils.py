@@ -74,10 +74,6 @@ def get(url, data_format="bibtex", expected_doc_format=None):
     if downloader.expected_document_format is None and \
             expected_doc_format is not None:
         downloader.expected_document_format = expected_doc_format
-    try:
-        doi = downloader.get_doi()
-    except:
-        logger.debug("Doi not found from url...")
     if data_format == "bibtex":
         try:
             bibtex_data = downloader.get_bibtex_data()

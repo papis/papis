@@ -1,5 +1,3 @@
-import papis.config
-import papis.exceptions
 import logging
 logger = logging.getLogger('database')
 

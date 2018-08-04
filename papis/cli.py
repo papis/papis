@@ -1,7 +1,6 @@
 import click
 import click.decorators
 import os
-import sys
 import papis.config
 import glob
 import re
@@ -24,7 +23,7 @@ def script_paths_to_dict(paths):
     scripts_dict = dict()
     for path in paths:
         command_name = \
-            os.path.basename(path).replace('papis-','').replace('.py', '')
+            os.path.basename(path).replace('papis-', '').replace('.py', '')
         scripts_dict[command_name] = dict(
             command_name=command_name,
             path=path,

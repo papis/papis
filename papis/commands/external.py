@@ -1,6 +1,5 @@
 import os
 import re
-import argparse
 import subprocess
 import papis.config
 import papis.commands
@@ -30,7 +29,6 @@ def export_variables():
     os.environ["PAPIS_CONFIG_PATH"] = papis.config.get_config_folder()
     os.environ["PAPIS_CONFIG_FILE"] = papis.config.get_config_file()
     os.environ["PAPIS_SCRIPTS_PATH"] = papis.config.get_scripts_folder()
-    #os.environ["PAPIS_VERBOSE"] = "-v" if self.args.verbose else ""
 
 
 @click.command(

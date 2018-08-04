@@ -1,4 +1,3 @@
-import os
 import papis.bibtex
 import json
 import yaml
@@ -41,8 +40,7 @@ class Test(unittest.TestCase):
         self.assertTrue(len(data) > 0)
 
     def test_yaml(self):
-        #FIXME: The string gets created, but the loading does not work
-        import io
+        # FIXME: The string gets created, but the loading does not work
         docs = self.get_docs()
         string = run(docs, yaml=True)
         self.assertTrue(len(string) > 0)
@@ -51,4 +49,4 @@ class Test(unittest.TestCase):
         data = yaml.load_all(yamlfile)
         self.assertTrue(data is not None)
         # FIXME: THIS DOES NOT WORK, WHY?
-        #self.assertTrue(len(list(data)) > 0)
+        # self.assertTrue(len(list(data)) > 0)

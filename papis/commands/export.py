@@ -103,46 +103,39 @@ def run(
     return None
 
 
-
 @click.command()
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
-
 @click.option(
     "--yaml",
     help="Export into yaml",
     default=False,
     is_flag=True
 )
-
 @click.option(
     "--bibtex",
     help="Export into bibtex",
     default=False,
     is_flag=True
 )
-
 @click.option(
     "--json",
     help="Export into json",
     default=False,
     is_flag=True
 )
-
 @click.option(
     "--folder",
     help="Export document folder to share",
     default=False,
     is_flag=True
 )
-
 @click.option(
     "--no-bibtex",
     help="When exporting to a folder, do not include the bibtex",
     default=False,
     is_flag=True
 )
-
 @click.option(
     "-o",
     "--out",
@@ -150,7 +143,6 @@ def run(
     default=False,
     is_flag=True
 )
-
 @click.option(
     "-t",
     "--text",
@@ -158,21 +150,18 @@ def run(
     default=False,
     is_flag=True
 )
-
 @click.option(
     "-a", "--all",
     help="Export all without picking",
     default=False,
     is_flag=True
 )
-
 @click.option(
     "--file",
     help="Export a copy of a file",
     default=False,
     is_flag=True
 )
-
 def cli(
         query,
         yaml,
@@ -184,7 +173,7 @@ def cli(
         text,
         all,
         file
-    ):
+        ):
     """Export a document from a given library"""
 
     logger = logging.getLogger('cli:export')

@@ -506,7 +506,7 @@ def run(
     "-s", "--set",
     help="Set some information before",
     multiple=True,
-    type=(str,str)
+    type=(str, str)
 )
 @click.option(
     "-d", "--dir",
@@ -610,7 +610,7 @@ def cli(
         edit,
         commit,
         no_document
-    ):
+        ):
     """Add a document into a given library
     """
     data = dict()

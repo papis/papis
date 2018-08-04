@@ -1,7 +1,7 @@
+"""
 import unittest
 import papis.tests
 import papis.config
-"""
 from papis.commands.check import run
 
 

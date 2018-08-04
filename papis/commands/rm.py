@@ -35,7 +35,6 @@ def run(
     return status.success
 
 
-
 @click.command()
 @click.help_option('-h', '--help')
 @papis.cli.query_option()
@@ -55,7 +54,7 @@ def cli(
         query,
         file,
         force
-    ):
+        ):
     """Delete command for several objects"""
     documents = papis.database.get().query(query)
     document = papis.api.pick_doc(documents)

@@ -60,5 +60,3 @@ class Downloader(papis.downloaders.base.Downloader):
             .read()\
             .decode('utf-8')
         self.bibtex_data = data
-
-# vim-run: python3 -m doctest %

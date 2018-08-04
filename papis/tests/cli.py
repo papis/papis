@@ -2,6 +2,7 @@ import papis.tests
 import unittest
 import papis.config
 
+
 class TestCli(unittest.TestCase):
 
     runner = None
@@ -26,5 +27,3 @@ class TestCli(unittest.TestCase):
         for flag in ['-h', '--help']:
             result = self.invoke([flag])
             self.assertFalse(len(result.output) == 0)
-
-

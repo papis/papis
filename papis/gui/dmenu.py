@@ -35,14 +35,15 @@ def pick(options, header_filter=None, body_filter=None, match_filter=None):
         fmt = papis.config.get('header-format', section='dmenu-gui')
         if fmt is None:
             fmt = papis.config.get('header-format')
-        header_filter = lambda x: papis.utils.format_doc(
-            fmt, x
-        )
+
+        def header_filter(x):
+            return papis.utils.format_doc(fmt, x)
     if len(options) == 1:
         index = 0
     else:
         headers = [header_filter(o) for o in options]
         header = _dmenu_pick(headers)
-        if not header: return None
+        if not header:
+            return None
         index = headers.index(header)
     return options[index]

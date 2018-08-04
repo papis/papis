@@ -1,5 +1,6 @@
 import unittest
 
+
 class TestTk(unittest.TestCase):
 
     def setUp(self):
@@ -13,3 +14,5 @@ class TestTk(unittest.TestCase):
             import papis.gui.tk
         except:
             self.assertFalse(True)
+        else:
+            self.assertTrue(True)

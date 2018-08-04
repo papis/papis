@@ -69,5 +69,3 @@ class Downloader(papis.downloaders.base.Downloader):
         pdf_url = "https://arxiv.org/pdf/"+identifier+".pdf"
         self.logger.debug("[pdf url] = %s" % pdf_url)
         return pdf_url
-
-# vim-run: python3 -m doctest %

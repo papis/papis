@@ -53,7 +53,7 @@ def do_add(doc, libgen=False, arxiv=False):
         papis.commands.add.run([file_name], from_url=doc['doc_url'])
     elif arxiv:
         if not doc.has('url'):
-            error('No url data retrieved')
+            logger.error('No url data retrieved')
             return 1
         papis.commands.add.run([], from_url=doc['doc_url'], no_document=True)
 
@@ -81,7 +81,7 @@ def explore_libgen(query):
     return doc
 
 
-def explore_crossref(search, max_results):
+def explore_crossref(query, max_results):
     import papis.crossref
     parsed = parse_search(query)
     data = papis.crossref.get_data(
@@ -183,7 +183,7 @@ def cli(
         add,
         max,
         cmd
-    ):
+        ):
     """Explore on the internet"""
     doc = None
     if arxiv:

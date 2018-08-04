@@ -33,7 +33,6 @@ Cli
 import os
 import papis.config
 import papis.exceptions
-import argparse
 import logging
 import click
 
