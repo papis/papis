@@ -1,5 +1,24 @@
 """
 
+Examples
+^^^^^^^^
+
+- To override some configuration options, you can use the flag ``--set``, for
+  instance, if you want to override the editor used and the opentool to open
+  documents, you can just type
+
+    .. code:: shell
+
+        papis --set editor gedit --set opentool firefox edit
+        papis --set editor gedit --set opentool firefox open
+
+- If you want to list the libraries and pick one before sending a database
+  query to papis, use ``--pick-lib`` as such
+
+    .. code:: shell
+
+        papis --pick-lib open 'einstein relativity'
+
 Cli
 ^^^
 .. click:: papis.commands.default:run
@@ -49,11 +68,6 @@ import papis.cli
     default="INFO"
 )
 @click.option(
-    "--picktool",
-    help="Override picktool",
-    default=""
-)
-@click.option(
     "--pick-lib",
     help="Pick library to use",
     default=False,
@@ -83,7 +97,6 @@ def run(
         config,
         lib,
         log,
-        picktool,
         pick_lib,
         cc,
         cores,
@@ -104,9 +117,6 @@ def run(
     if config:
         papis.config.set_config_file(config)
         papis.config.reset_configuration()
-
-    if picktool:
-        papis.config.set("picktool", picktool)
 
     if pick_lib:
         lib = papis.api.pick(

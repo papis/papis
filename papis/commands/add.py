@@ -8,28 +8,38 @@ the :ref:`configuration page <add-command-options>` for add.
 Examples
 ^^^^^^^^
 
-    - Add a document located in ``~/Documents/interesting.pdf``
-      and name the folder where it will be stored in the database
-      ``interesting-paper-2021``
+- Add a document located in ``~/Documents/interesting.pdf`` and name the
+  folder where it will be stored in the database ``interesting-paper-2021``
 
     .. code::
 
         papis add ~/Documents/interesting.pdf --name interesting-paper-2021
 
-    - Add a paper that you have locally in a file and get the paper
-      information through its ``doi`` identifier (in this case
-      ``10.10763/1.3237134`` as an example):
+  if you want to add directly some key values, like ``author``, ``title``
+  and ``tags``, you can also run the following:
+
+    .. code::
+
+        papis add ~/Documents/interesting.pdf \\
+            --name interesting-paper-2021 \\
+            --set author 'John Smith' \\
+            --set title 'The interesting life of bees' \\
+            --set year 1985 \\
+            --set tags 'biology interesting bees'
+
+- Add a paper that you have locally in a file and get the paper information
+  through its ``doi`` identifier (in this case ``10.10763/1.3237134`` as an
+  example):
 
     .. code::
 
         papis add ~/Documents/interesting.pdf --from-doi 10.10763/1.3237134
 
-    - Add paper to a library named ``machine-learning`` from ``arxiv.org``
+- Add paper to a library named ``machine-learning`` from ``arxiv.org``
 
     .. code::
 
-        papis -l machine-learning add \
---from-url https://arxiv.org/abs/1712.03134
+        papis -l machine-learning add --from-url https://arxiv.org/abs/1712.03134
 
 
 Examples in python
