@@ -73,7 +73,7 @@ Now add them to the (defaultly created) library
 
 ::
 
-    papis add libc.pdf --author "Sandra Loosemore" --title "GNU C reference manual" --confirm
+    papis add libc.pdf --set author "Sandra Loosemore" --set title "GNU C reference manual" --confirm
     # Get paper information automatically via de DOI
     papis add --from-doi 10.1090/noti963 rnoti-p434.pdf
 

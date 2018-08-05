@@ -67,7 +67,7 @@ library:
 
 .. code:: bash
 
-  papis add document.pdf --author "Newton" --title "Principia Mathematica"
+  papis add document.pdf --set author "Newton" --set title "Principia Mathematica"
 
 And it's done! We have added our first book to the library.
 
