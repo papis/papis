@@ -1,26 +1,18 @@
 import os
 import re
 from prompt_toolkit.formatted_text import HTML
-from prompt_toolkit.formatted_text import FormattedText
-from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.application import (
     Application as PromptToolkitApplication,
 )
-from prompt_toolkit.filters import Condition
 from prompt_toolkit.history import FileHistory
-from prompt_toolkit.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.enums import EditingMode
-from prompt_toolkit.filters import Condition
-from prompt_toolkit.history import FileHistory
-from prompt_toolkit.key_binding.vi_state import InputMode
-from prompt_toolkit.styles import DynamicStyle
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout.containers import HSplit, Window
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.widgets import (
-    HorizontalLine, SystemToolbar
+    HorizontalLine
 )
 import papis.config
 
@@ -54,18 +46,18 @@ def create_keybindings(picker):
 
     @kb.add('c-n')
     @kb.add('down')
-    def _(event):
+    def down_(event):
         picker.move_down()
         picker.update()
 
     @kb.add('c-p')
     @kb.add('up')
-    def _(event):
+    def up_(event):
         picker.move_up()
         picker.update()
 
     @kb.add('enter')
-    def _(event):
+    def enter_(event):
         event.app.exit()
 
     return kb
@@ -132,7 +124,6 @@ class Picker(object):
             Window(height=1, content=BufferControl(buffer=self.search_buffer)),
             HorizontalLine(),
             self.content_window,
-            #HorizontalLine(),
             Window(height=1, content=BufferControl(buffer=self.prompt_buffer)),
         ])
 
@@ -144,8 +135,10 @@ class Picker(object):
     def process_options(self):
         self.options_headers = [
             HTML(
-                re.sub(r'^', ' ' * self.entries_left_offset,
-                    re.sub(r'\n', '\n' + ' ' * self.entries_left_offset,
+                re.sub(
+                    r'^', ' ' * self.entries_left_offset,
+                    re.sub(
+                        r'\n', '\n' + ' ' * self.entries_left_offset,
                         self.header_filter(o)
                     )
                 ) + '\n'
@@ -189,13 +182,10 @@ class Picker(object):
             input=None,
             output=None,
             editing_mode=EditingMode.EMACS
-                if papis.config.get('tui-editmode') == 'emacs'
-                else EditingMode.VI,
+            if papis.config.get('tui-editmode') == 'emacs'
+            else EditingMode.VI,
             layout=self.layout,
             key_bindings=create_keybindings(self),
-            #get_title=lambda: get_terminal_title(self),
-            #style=DynamicStyle(lambda: self.current_style),
-            #paste_mode=Condition(lambda: self.paste_mode),
             include_default_pygments_style=False,
             full_screen=True,
             enable_page_navigation_bindings=True
@@ -208,12 +198,12 @@ class Picker(object):
     def refresh(self):
         i = self.current_index
         oldtuple = self.options_headers[i][0]
-        self.options_headers[i][0]  = (
+        self.options_headers[i][0] = (
             oldtuple[0],
             '>' + re.sub(r'^ ', '', oldtuple[1]),
         )
         self.content.text = sum(
-            [self.options_headers[i] for i in self.indices ],
+            [self.options_headers[i] for i in self.indices],
             []
         )
         self.options_headers[i][0] = oldtuple
