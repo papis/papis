@@ -139,7 +139,6 @@ Tools options
 
     Possible options are:
         - papis.pick
-        - rofi
         - vim
         - dmenu
 

@@ -37,7 +37,6 @@ setup(
     url='https://github.com/papis/papis',
     install_requires=[
         "click>=6.7",
-        "papis-python-rofi>=1.0.1",
         "requests>=2.11.1",
         "pyparsing>=2.2.0",
         "configparser>=3.0.0",

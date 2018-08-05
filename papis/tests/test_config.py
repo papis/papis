@@ -40,7 +40,7 @@ class TestDefaultConfiguration(unittest.TestCase):
         self.assertTrue(settings)
 
         self.assertTrue(isinstance(settings, dict))
-        for section in ["vim-gui", "rofi-gui"]:
+        for section in ["vim-gui"]:
             self.assertTrue(section in settings.keys())
 
     def test_default_config(self):
@@ -52,7 +52,7 @@ class TestDefaultConfiguration(unittest.TestCase):
         self.assertTrue(settings)
 
         self.assertTrue(isinstance(settings, dict))
-        for section in ["settings", "vim-gui", "rofi-gui"]:
+        for section in ["settings", "vim-gui"]:
             self.assertTrue(section in settings.keys())
 
     def test_set_lib(self):
