@@ -259,6 +259,12 @@ def pick(
         ):
     """Construct and start a :class:`Picker <Picker>`.
     """
+
+    if len(options) == 0:
+        return ""
+    if len(options) == 1:
+        return options[0]
+
     picker = Picker(
                 options,
                 title,
