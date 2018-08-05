@@ -33,10 +33,17 @@ def run(document):
 @click.command()
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
-def cli(query):
+@click.option(
+    '-k', '--key', default='',
+    help='Use the value of the document\'s key to open in the browser, e.g.'
+         'doi, url, doc_url ...'
+)
+def cli(query, key):
     """Open document's url in a browser"""
     documents = papis.database.get().query(query)
     document = papis.api.pick_doc(documents)
+    if len(key):
+        papis.config.set('browse-key', key)
     if not document:
         return status.file_not_found
     return run(document)
