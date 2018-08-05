@@ -215,7 +215,7 @@ class Picker(object):
         self.filter_options()
         self.refresh()
         self.prompt_echo(
-            "{}/{}".format(self.current_index, len(self.options))
+            "{}/{}".format(int(self.current_index) + 1, len(self.options))
         )
 
     def move_up(self):
