@@ -768,8 +768,8 @@ def get_scripts_folder():
 def set(key, val, section=None):
     """Set a key to val in some section and make these changes available
     everywhere.
-    >>> set('picktool', 'rofi')
-    >>> get('picktool')
+    >>> set('nonexistenkey', 'rofi')
+    >>> get('nonexistenkey')
     'rofi'
     """
     config = get_configuration()
