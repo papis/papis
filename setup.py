@@ -129,7 +129,6 @@ setup(
     packages=[
         "papis",
         "papis.gui",
-        "papis.gui.tk",
         "papis.gui.urwid",
         "papis.gui.vim",
         "papis.commands",
