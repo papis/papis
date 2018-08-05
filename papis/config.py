@@ -542,8 +542,10 @@ general_settings = {
     "format-doc-name": "doc",
     "match-format":
         "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
-    "header-format":
-        "{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:-<4})",
+    "header-format": \
+        "<red>{doc[title]}</red>\n"\
+        " <green>{doc[author]}</green>\n"
+        "  <b>({doc[author]})</b> [<blue>{doc[tags]}</blue>]",
 
     "info-allow-unicode": True,
     "ref-format": "{doc[doi]}",
@@ -559,7 +561,10 @@ general_settings = {
     '"tags": TEXT(stored=True),\n'
     '}',
 
-    "citation-string": "*"
+    "citation-string": "*",
+
+    "tui-editmode": "emacs",
+
 }
 
 

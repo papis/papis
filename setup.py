@@ -7,7 +7,7 @@
 
 import sys
 
-main_dependencies = [ "setuptools", "curses" ]
+main_dependencies = [ "setuptools" ]
 for dep in main_dependencies:
     try:
         __import__(dep)
