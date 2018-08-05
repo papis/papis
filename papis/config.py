@@ -545,7 +545,7 @@ general_settings = {
     "header-format": \
         "<red>{doc[title]}</red>\n"\
         " <green>{doc[author]}</green>\n"
-        "  <b>({doc[author]})</b> [<blue>{doc[tags]}</blue>]",
+        "  <b>({doc[year]})</b> [<blue>{doc[tags]}</blue>]",
 
     "info-allow-unicode": True,
     "ref-format": "{doc[doi]}",
