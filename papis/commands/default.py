@@ -98,9 +98,8 @@ def run(
         format=log_format
     )
 
-    if len(set) == 0:
-        for pair in set:
-            papis.config.set(pair[0], pair[1])
+    for pair in set:
+        papis.config.set(pair[0], pair[1])
 
     if config:
         papis.config.set_config_file(config)
