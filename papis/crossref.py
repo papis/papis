@@ -196,7 +196,7 @@ def get_data(query="", author="", title="", max_results=20):
         query_title=title, limit=max_results
     )
     kwargs = {key: data[key] for key in data.keys() if data[key]}
-    results = cr.works(**kwargs, sort='relevance')
+    results = cr.works(sort='relevance', **kwargs)
     logger.debug("Retrieved {} documents".format(len(results)))
     return [
         crossref_data_to_papis_data(d) for d in results["message"]["items"]
