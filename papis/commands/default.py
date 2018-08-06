@@ -86,7 +86,7 @@ import papis.cli
     default=__import__("multiprocessing").cpu_count(),
 )
 @click.option(
-    "--set",
+    "-s", "--set",
     type=(str, str),
     multiple=True,
     help="Set key value, e.g., "
