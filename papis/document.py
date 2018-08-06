@@ -233,6 +233,24 @@ def move(document, path):
     document.set_folder(path)
 
 
+class DocHtmlEscaped(dict):
+    """
+    Small helper class to escape html elements.
+
+    >>> DocHtmlEscaped(from_data(dict(title='> >< int & "" "')))['title']
+    '&gt; &gt;&lt; int &amp; &quot;&quot; &quot;'
+    """
+
+    def __init__(self, doc):
+        self.doc = doc
+
+    def __getitem__(self, key):
+        return str(self.doc[key]).replace('&', '&amp;')\
+                                .replace('<', '&lt;')\
+                                .replace('>', '&gt;')\
+                                .replace('"', '&quot;')
+
+
 class Document(object):
 
     """Class implementing the entry abstraction of a document in a library.
@@ -287,6 +305,10 @@ class Document(object):
         :rtype:  str,int,float,list
         """
         return getattr(self, key) if hasattr(self, key) else ""
+
+    @property
+    def html_escape(self):
+        return DocHtmlEscaped(self)
 
     def get_main_folder(self):
         """Get full path for the folder where the document and the information

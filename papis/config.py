@@ -542,9 +542,10 @@ general_settings = {
     "match-format":
         "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
     "header-format": \
-        "<red>{doc[title]}</red>\n"\
-        " <green>{doc[author]}</green>\n"
-        "  <b>({doc[year]})</b> [<blue>{doc[tags]}</blue>]",
+        "<red>{doc.html_escape[title]}</red>\n"\
+        " <green>{doc.html_escape[author]}</green>\n"
+        "  <b>({doc.html_escape[year]})</b> "
+        "[<blue>{doc.html_escape[tags]}</blue>]",
 
     "info-allow-unicode": True,
     "ref-format": "{doc[doi]}",
