@@ -126,6 +126,8 @@ setup(
     ],
     packages=[
         "papis",
+        "papis.gui",
+        "papis.gui.vim",
         "papis.commands",
         "papis.database",
         "papis.downloaders",
