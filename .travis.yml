@@ -2,6 +2,7 @@ language: python
 
 os:
   - linux
+  - osx
 
 python:
   - "3.3"
@@ -10,7 +11,7 @@ python:
   - "3.6"
 
 script:
-  - python -m pytest papis --cov=./
+  - python -m pytest papis --cov=papis
 
 install:
   - pip install setuptools
@@ -18,8 +19,8 @@ install:
   - pip install -e .[develop]
   - pip install -e .[optional]
   - make install
-  - sudo apt-get update -qq
-  - sudo apt-get install -y git
+  #- sudo apt-get update -qq
+  #- sudo apt-get install -y git
 
 after_success:
   - coveralls
