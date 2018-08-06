@@ -36,6 +36,7 @@ import papis.downloaders.utils
 import papis.document
 import papis.database
 import papis.isbn
+import papis.crossref
 import papis.api
 import papis.cli
 import click
@@ -88,10 +89,9 @@ def run(
 @papis.cli.query_option()
 @click.option(
     "-i",
-    "--interactive",
+    "--interactive/--no-interactive",
     help="Interactively update",
-    default=False,
-    is_flag=True
+    default=True
 )
 @click.option(
     "-f",
@@ -104,6 +104,11 @@ def run(
     "-d",
     "--document",
     help="Overwrite an existing document",
+    default=None
+)
+@click.option(
+    "--from-crossref",
+    help="Update info from crossref.org",
     default=None
 )
 @click.option(
@@ -148,6 +153,7 @@ def cli(
         interactive,
         force,
         document,
+        from_crossref,
         from_isbnplus,
         from_yaml,
         from_bibtex,
@@ -175,7 +181,7 @@ def cli(
                 'documents appearing inside the bibtex file.'
             )
             for bib_element in bib_data:
-                doc = papis.document.Document(data=bib_element)
+                doc = papis.document.from_data(data)
                 located_doc = papis.utils.locate_document(doc, documents)
                 if located_doc is None:
                     logger.error(
@@ -189,6 +195,7 @@ def cli(
                         force=force,
                         interactive=interactive
                     )
+            logger.info('Exiting now')
             return 0
 
     # For the coming parts we need to pick a document
@@ -205,26 +212,52 @@ def cli(
             from_url = None
             from_doi = None
             from_isbnplus = None
+
         if auto:
             if 'doi' in docs.keys() and not from_doi:
+                logger.info('Trying using the doi {}'.format(docs['doi']))
                 from_doi = docs['doi']
-            elif 'url' in docs.keys() and not from_url:
+            if 'url' in docs.keys() and not from_url:
+                logger.info('Trying using the url {}'.format(docs['url']))
                 from_url = docs['url']
-            elif 'title' in docs.keys() and not from_isbnplus:
+            if 'title' in docs.keys() and not from_isbnplus:
+                logger.info('Trying using the title {}'.format(docs['title']))
                 from_isbnplus = docs['title']
+            if from_crossref is None and from_doi is None:
+                from_crossref = True
+
+        if from_crossref:
+            if from_crossref is True:
+                from_crossref = ''
+            try:
+                doc = papis.api.pick_doc([
+                        papis.document.from_data(d)
+                        for d in papis.crossref.get_data(
+                            query=from_crossref,
+                            author=docs['author'],
+                            title=docs['title']
+                        )
+                ])
+                if doc:
+                    data.update(papis.document.to_dict(doc))
+                    if 'doi' in docs.keys() and not from_doi and auto:
+                        from_doi = doc['doi']
+
+            except Exception as e:
+                logger.error(e)
 
         if from_isbnplus:
             try:
                 doc = papis.api.pick_doc(
                     [
-                        papis.docs.Document(data=d)
+                        papis.document.from_data(d)
                         for d in papis.isbn.get_data(
                             query=from_isbnplus
                         )
                     ]
                 )
                 if doc:
-                    data.update(doc.to_dict())
+                    data.update(papis.document.to_dict(doc))
             except urllib.error.HTTPError:
                 logger.error('urllib failed to download')
 
