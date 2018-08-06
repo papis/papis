@@ -76,15 +76,6 @@ You will need to install the latter to make use of this function,
 
 def get_default_settings():
     return {
-        "urwid-gui": {
-            "prompt-key": ":",
-            "search-key": "/",
-            "help-key": "?",
-            "quit-key": "Q",
-            "redraw-key": "ctrl l",
-            "kill-buffer-key": "q",
-            "show-fields": "title,author,year,abstract",
-        },
         "vim-gui": {
             "help-key": "h",
             "open-key": "o",

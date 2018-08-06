@@ -50,7 +50,6 @@ setup(
         "pyparser>=1.0",
         "python-magic>=0.4.13",
         "pylibgen>=1.3.0",
-        "urwid>=1.3.1",
         "habanero>=0.6.0",
     ],
     python_requires='>=3',
@@ -127,9 +126,6 @@ setup(
     ],
     packages=[
         "papis",
-        "papis.gui",
-        "papis.gui.urwid",
-        "papis.gui.vim",
         "papis.commands",
         "papis.database",
         "papis.downloaders",
