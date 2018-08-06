@@ -208,6 +208,12 @@ class Picker(object):
         )
         self.options_headers[i][0] = oldtuple
 
+    @property
+    def displayed_lines(self):
+        info = self.content_window.render_info
+        if info:
+            return info.displayed_lines
+
     def prompt_echo(self, text):
         self.prompt_buffer.text = text
 
