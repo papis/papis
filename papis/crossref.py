@@ -163,6 +163,7 @@ def collapse_whitespace(s):
 
 
 def crossref_data_to_papis_data(data):
+    new_data = dict()
     if "author" in data.keys():
         authors = []
         for author in data["author"]:
@@ -170,34 +171,33 @@ def crossref_data_to_papis_data(data):
                 authors.append(
                     dict(given_name=author["given"], surname=author["family"])
                 )
-        data["author_list"] = authors
-        data["author"] = ",".join(
+        new_data["author_list"] = authors
+        new_data["author"] = ",".join(
             ["{a[given_name]} {a[surname]}".format(a=a) for a in authors]
         )
     if 'title' in data.keys():
-        data["title"] = " ".join(data['title'])
+        new_data["title"] = " ".join(data['title'])
+    if 'doi' in data.keys():
+        new_data["doi"] = data["DOI"]
     if 'DOI' in data.keys():
-        data["doi"] = data["DOI"]
-        del data["DOI"]
+        new_data["doi"] = data["DOI"]
+    if 'url' in data.keys():
+        new_data["url"] = data["url"]
     if 'URL' in data.keys():
-        data["url"] = data["URL"]
-        del data["URL"]
-    return data
+        new_data["url"] = data["URL"]
+    return new_data
 
 
-def get_data(query="", author="", year="", title="", max_results=20):
+def get_data(query="", author="", title="", max_results=20):
     import habanero
     cr = habanero.Crossref()
-    results = cr.works(
-        query=query,
-        limit=max_results,
-        query_author=author,
-        # TODO: really figure out how to include year
-        query_bibliographic=str(year),
-        # filter={'from-pub-date': '{}-1-1'.format(year) if year else ''},
-        # sort='published',
-        query_title=title
+    data = dict(
+        query=query, query_author=author,
+        query_title=title, limit=max_results
     )
+    kwargs = {key: data[key] for key in data.keys() if data[key]}
+    results = cr.works(**kwargs, sort='relevance')
+    logger.debug("Retrieved {} documents".format(len(results)))
     return [
         crossref_data_to_papis_data(d) for d in results["message"]["items"]
     ]

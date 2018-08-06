@@ -88,7 +88,6 @@ def explore_crossref(query, max_results):
         query=parsed.get('query'),
         author=parsed.get('author'),
         title=parsed.get('title'),
-        year=parsed.get('year'),
         max_results=max_results
     )
     documents = [papis.document.Document(data=d) for d in data]
