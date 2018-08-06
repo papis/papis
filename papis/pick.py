@@ -78,11 +78,6 @@ class OptionsListControl:
         self.entries_left_offset = 2
 
         self.process_options()
-        self.cursor = Point(0,0)
-        self.y=0
-        def get_cursor_position():
-            self.y += 1
-            return Point(0, self.y)
 
         self.content = FormattedTextControl(
             key_bindings=None,
@@ -97,7 +92,12 @@ class OptionsListControl:
 
     def index_to_point(self):
         try:
-            return Point(0, self.indices.index(self.current_index) * 3)
+            index = self.indices.index(self.current_index)
+            line = sum(
+                self.options_headers_linecount[i]
+                for i in self.indices[0:index]
+            )
+            return Point(0, line)
         except:
             return Point(0,0)
 
@@ -168,6 +168,10 @@ class OptionsListControl:
         self.options_headers[i][0] = oldtuple
 
     def process_options(self):
+        self.options_headers_linecount = [
+            len(self.header_filter(o).split('\n'))
+            for o in self.options
+        ]
         self.options_headers = [
             HTML(
                 re.sub(
