@@ -109,10 +109,6 @@
     Since we should be living in an unicode world, it is set to ``True``
     by default.
 
-.. papis-config:: sync-command
-
-    Command that is to be used when ``papis sync`` is run.
-
 Tools options
 ^^^^^^^^^^^^^
 
@@ -500,7 +496,6 @@ general_settings = {
                         or os.environ.get('VISUAL')
                         or get_default_opener(),
     "xeditor": get_default_opener(),
-    "sync-command": "git -C {lib[dir]} pull origin master",
     "notes-name": "notes.tex",
     "use-cache": True,
     "cache-dir": None,
