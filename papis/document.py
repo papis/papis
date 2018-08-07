@@ -102,16 +102,24 @@ def to_bibtex(document):
     """
     bibtexString = ""
     bibtexType = ""
+
     # First the type, article ....
     if "type" in document.keys():
         if document["type"] in papis.bibtex.bibtex_types:
             bibtexType = document["type"]
     if not bibtexType:
         bibtexType = "article"
-    if not document["ref"]:
-        ref = os.path.basename(document.get_main_folder())
-    else:
-        ref = document["ref"]
+
+    ref = document["ref"]
+    if not ref:
+        try:
+            ref = os.path.basename(document.get_main_folder())
+        except:
+            if document.has('doi'):
+                ref = document['doi']
+            else:
+                ref = 'noreference'
+
     bibtexString += "@%s{%s,\n" % (bibtexType, ref)
     for bibKey in papis.bibtex.bibtex_keys:
         if bibKey in document.keys():
