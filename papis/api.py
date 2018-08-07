@@ -187,6 +187,26 @@ def edit_file(file_path, wait=True):
     papis.utils.general_open(file_path, "editor", wait=wait)
 
 
+def get_all_documents_in_lib(library=None):
+    """Get ALL documents contained in the given library with possibly.
+
+    :param library: Library name.
+    :type  library: str
+
+    :returns: List of all documents.
+    :rtype: list
+
+    >>> import tempfile
+    >>> folder = tempfile.mkdtemp()
+    >>> set_lib(folder)
+    >>> docs = get_all_documents_in_lib(folder)
+    >>> len(docs)
+    0
+
+    """
+    return papis.database.get(library=library).get_all_documents()
+
+
 def get_documents_in_dir(directory, search=""):
     """Get documents contained in the given folder with possibly a search
     string.
