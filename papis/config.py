@@ -53,11 +53,6 @@
     User agent used by papis whenever it obtains information from external
     servers.
 
-.. papis-config:: default-gui
-
-    Default gui to be used by papis, it can have the values given
-    by ``papis gui --help``.
-
 .. papis-config:: scripts-short-help-regex
 
     This is the format of the short help indicator in external papis
@@ -269,20 +264,6 @@ Add command options
     ``True`` and you add it, i.e., you run ``papis add --open``, then it
     will fave the contrary effect, i.e., it will not open the attached files
     before adding the document to the library.
-
-.. papis-config:: add-default-fields
-
-    This is the default values that are settable in the add command.
-    For instance if you would like to set ``title``, ``author`` and
-    ``year`` directly from the command line, you can set
-    ::
-
-        add-default-fields = ['title', 'author', 'year']
-
-    and you will be able to do
-    ::
-
-        papis add doc.pdf --author 'Bohm' --title 'Super book' --year 1928
 
 Browse command options
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -507,13 +488,11 @@ general_settings = {
     "add-interactive": False,
     "add-edit": False,
     "add-open": False,
-    "add-default-fields": '["title", "author"]',
 
     "browse-key": 'url',
     "browse-query-format": "{doc[title]} {doc[author]}",
     "search-engine": "https://duckduckgo.com",
     "user-agent": 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)',
-    "default-gui": "vim",
     "scripts-short-help-regex": ".*papis-short-help: *(.*)",
     "info-name": "info.yaml",
     "doc-url-key-name": "doc_url",
