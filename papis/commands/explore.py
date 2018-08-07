@@ -1,4 +1,83 @@
 """
+This command is in an experimental stage but it might be useful for many
+people.
+
+Imagine you want to search for some papers online, but you don't want to
+go into a browser and look for it. Explore gives you way to do this,
+using several services available online, more should be coming on the way.
+
+An excellent such resource is `crossref <https://crossref.org/>`_,
+which you can use by using the subcommand crossref:
+
+::
+
+    papis explore crossref --author 'Freeman Dyson'
+
+If you issue this command, you will see some text but basically nothing
+will happen. This is because ``explore`` is conceived in such a way
+as to concatenate commands, doing a simple
+
+::
+
+    papis explore crossref -h
+
+will tell you which commands are available.
+Let us suppose that you want to look for some documents on crossref,
+say some papers of Schroedinger, and you want to store them into a bibtex
+file called ``lib.bib``, then you could concatenate the commands
+``crossref`` and ``export --bibtex`` as such
+
+::
+
+    papis explore crossref -a 'Schrodinger' export --bibtex lib.bib
+
+This will store everything that you got from crossref in the file ``lib.bib``
+and store in bibtex format. ``explore`` is much more flexible than that,
+you can also pick just one document to store, for instance let's assume that
+you don't want to store all retrieved documents but only one that you pick,
+the ``pick`` command will take care of it
+
+::
+
+    papis explore crossref -a 'Schrodinger' pick export --bibtex lib.bib
+
+notice how the ``pick`` command is situated before the ``export``.
+More generally you could write something like
+
+::
+
+    papis explore \\
+        crossref -a Schroedinger \\
+        crossref -a Einstein \\
+        arxiv -a 'Felix Hummel' \\
+        export --yaml docs.yaml \\
+        pick  \\
+        export --bibtex specially-picked-document.bib
+
+The upper command will look in crossref for documents authored by Schrodinger,
+then also by Einstein, and will look on the arxiv for papers authored by Felix
+Hummel. At the end, all these documents will be stored in the ``docs.yaml``.
+After that we pick one document from them and store the information in
+the file ``specially-picked-document.bib``, and we could go on and on.
+
+If you want to follow-up on these documents and get them again to pick one,
+you could use the ``yaml`` command to read in document information from a yaml
+file, i.e., the previously created ``docs.yaml``
+
+::
+
+    papis explore \\
+        yaml docs.yaml \\
+        pick \\
+        cmd 'papis scihub {doc[doi]}' \\
+        cmd 'firefox {doc[url]}'
+
+In this last example, we read the documents' information from ``docs.yaml`` and
+pick a document, which then feed into the ``explore cmd`` command, that accepts
+a papis formatting string to issue a general shell command.  In this case, the
+picked document gets fed into the ``papis scihub`` command which tries to
+download the document using ``scihub``, and also this very document is tried to
+be opened by firefox (in case the document does have a ``url``).
 
 Cli
 ^^^
@@ -24,32 +103,12 @@ import papis.api
 logger = logging.getLogger('explore')
 
 
-# def do_add(doc, libgen=False, arxiv=False):
-    # if libgen:
-        # if not doc.has('doc_url'):
-            # logger.error('No doc_url data retrieved')
-            # return 1
-        # logger.info('Downloading document')
-        # doc_data = urllib.request.urlopen(
-            # doc['doc_url']
-        # ).read()
-        # file_name = tempfile.mktemp()
-        # with open(file_name, 'wb+') as fd:
-            # fd.write(doc_data)
-        # papis.commands.add.run([file_name], from_url=doc['doc_url'])
-    # elif arxiv:
-        # if not doc.has('url'):
-            # logger.error('No url data retrieved')
-            # return 1
-        # papis.commands.add.run([], from_url=doc['doc_url'], no_document=True)
-
-
 @click.group(invoke_without_command=False, chain=True)
 @click.help_option('--help', '-h')
 @click.pass_context
 def cli(ctx):
     """
-    Explore documents using a variety of resources
+    Explore new documents using a variety of resources
     """
     docs = []
     logger = logging.getLogger('explore:cli')
