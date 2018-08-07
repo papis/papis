@@ -82,7 +82,7 @@ logger = logging.getLogger('list')
 
 def run(
         query="",
-        library=papis.config.get_lib(),
+        library=None,
         libraries=False,
         downloaders=False,
         pick=False,
@@ -97,6 +97,8 @@ def run(
     :returns: List different objects
     :rtype:  list
     """
+    if library is None:
+        library = papis.config.get_lib()
     config = papis.config.get_configuration()
     db = papis.database.get(library)
     if template is not None:
