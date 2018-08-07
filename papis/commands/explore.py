@@ -231,7 +231,9 @@ def crossref(ctx, query, author, title, max):
 @click.pass_context
 @click.help_option('--help', '-h')
 @click.option('--query', '-q', default=None)
-def isbnplus(ctx, query):
+@click.option('--author', '-a', default=None)
+@click.option('--title', '-t', default=None)
+def isbnplus(ctx, query, author, title):
     """
     Look for documents on isbnplus.com
 
@@ -244,7 +246,11 @@ def isbnplus(ctx, query):
     logger = logging.getLogger('explore:isbnplus')
     logger.info('Looking up...')
     try:
-        data = papis.isbn.get_data(query=query)
+        data = papis.isbn.get_data(
+            query=query,
+            author=author,
+            title=title
+        )
     except:
         data = []
     docs = [papis.document.from_data(data=d) for d in data]
