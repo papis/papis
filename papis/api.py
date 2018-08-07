@@ -244,7 +244,7 @@ def get_documents_in_lib(library=None, search=""):
     :rtype: list
 
     """
-    return papis.database.get().query(search)
+    return papis.database.get(library=library).query(search)
 
 
 def clear_lib_cache(lib=None):
