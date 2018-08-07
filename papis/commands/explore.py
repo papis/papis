@@ -16,6 +16,7 @@ import papis.cli
 import click
 import logging
 import papis.commands.add
+import papis.commands.export
 import papis.api
 
 
@@ -73,12 +74,10 @@ def explore_libgen(query):
     else:
         logger.error("No documents found")
         return None
-    doc = papis.api.pick_doc(
-        [papis.document.Document(data=d) for d in data]
-    )
-    if doc:
+    docs = [papis.document.from_data(data=d) for d in data]
+    for doc in docs:
         doc['doc_url'] = lg.get_download_url(doc['md5'])
-    return doc
+    return docs
 
 
 def explore_crossref(query, max_results):
@@ -90,20 +89,13 @@ def explore_crossref(query, max_results):
         title=parsed.get('title'),
         max_results=max_results
     )
-    documents = [papis.document.Document(data=d) for d in data]
-    doc = papis.api.pick_doc(
-        documents
-    )
-    return doc
+    return [papis.document.from_data(data=d) for d in data]
 
 
 def explore_isbnplus(query):
     import papis.isbn
     data = papis.isbn.get_data(query=query)
-    doc = papis.api.pick_doc(
-        [papis.document.Document(data=d) for d in data]
-    )
-    return doc
+    return [papis.document.from_data(data=d) for d in data]
 
 
 def explore_arxiv(query, max_results):
@@ -122,10 +114,7 @@ def explore_arxiv(query, max_results):
         page=parsed.get('page') or 0,
         max_results=max_results
     )
-    doc = papis.api.pick_doc(
-        [papis.document.Document(data=d) for d in data]
-    )
-    return doc
+    return [papis.document.from_data(data=d) for d in data]
 
 
 @click.command()
@@ -173,6 +162,28 @@ def explore_arxiv(query, max_results):
          "using papis format",
     default=None
 )
+@click.option(
+    "--from-bibtex",
+    help="Import document list a bibtex file",
+    type=click.Path(exists=True),
+    default=None
+)
+@click.option(
+    "--export-bibtex",
+    help="Export list of documents retrieved to a bibtex file",
+    default=None
+)
+@click.option(
+    "--from-yaml",
+    help="Import document list a yaml file",
+    type=click.Path(exists=True),
+    default=None
+)
+@click.option(
+    "--export-yaml",
+    help="Export list of documents retrieved to a yaml file",
+    default=None
+)
 def cli(
         query,
         isbnplus,
@@ -181,24 +192,62 @@ def cli(
         crossref,
         add,
         max,
-        cmd
+        cmd,
+        from_bibtex,
+        export_bibtex,
+        from_yaml,
+        export_yaml
         ):
     """Explore on the internet"""
-    doc = None
+    docs = []
+    logger = logging.getLogger('explore:cli')
+
     if arxiv:
-        doc = explore_arxiv(query, max)
+        docs = explore_arxiv(query, max)
     elif isbnplus:
-        doc = explore_isbnplus(query)
+        docs = explore_isbnplus(query)
     elif crossref:
-        doc = explore_crossref(query, max)
+        docs = explore_crossref(query, max)
     elif libgen:
-        doc = explore_libgen(query)
+        docs = explore_libgen(query)
+    elif from_bibtex:
+        logger.info('Reading in bibtex file {}'.format(from_yaml))
+        docs = [
+            papis.document.from_data(d)
+            for d in papis.bibtex.bibtex_to_dict(from_bibtex)
+        ]
+    elif from_yaml:
+        import yaml
+        logger.info('Reading in yaml file {}'.format(from_yaml))
+        docs = [
+            papis.document.from_data(d) for d in yaml.load_all(open(from_yaml))
+        ]
     else:
         arxiv = True
-        doc = explore_arxiv(query, max)
+        docs = explore_arxiv(query, max)
+
+    logger.info('{} documents found'.format(len(docs)))
+    if len(docs) == 0:
+        return 0
+
+    if export_yaml:
+        with open(export_yaml, 'a+') as fd:
+            logger.error("Writing documents' yaml into {}".format(export_yaml))
+            yamldata = papis.commands.export.run(docs, yaml=True)
+            fd.write(yamldata)
+
+    if export_bibtex:
+        with open(export_bibtex, 'a+') as fd:
+            logger.error(
+                "Writing documents' bibtex into {}".format(export_bibtex)
+            )
+            bibtexdata = papis.commands.export.run(docs, bibtex=True)
+            fd.write(bibtexdata)
+
+    doc = papis.api.pick_doc(docs)
 
     if doc:
-        print(papis.document.dump(doc))
+        click.echo(papis.document.dump(doc))
         if add:
             do_add(doc, libgen, arxiv)
         elif cmd is not None:
