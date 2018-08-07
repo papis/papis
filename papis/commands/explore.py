@@ -257,7 +257,7 @@ def isbnplus(ctx, query):
 @click.help_option('--help', '-h')
 def pick(ctx):
     """
-    Pick from the retrieved documents
+    Pick a document from the retrieved documents
 
     Examples of its usage are
 
@@ -274,7 +274,7 @@ def pick(ctx):
 @click.help_option('--help', '-h')
 def bibtex(ctx, bibfile):
     """
-    Import documents based on a bibtex file
+    Import documents from a bibtex file
 
     Examples of its usage are
 
@@ -297,7 +297,7 @@ def bibtex(ctx, bibfile):
 @click.help_option('--help', '-h')
 def yaml(ctx, yamlfile):
     """
-    Import documents based on a yaml file
+    Import documents from a yaml file
 
     Examples of its usage are
 
@@ -331,7 +331,7 @@ def yaml(ctx, yamlfile):
 )
 def export(ctx, bibtex, yaml):
     """
-    Import documents based on a yaml file
+    Export retrieved documents into various formats for later use
 
     Examples of its usage are
 
