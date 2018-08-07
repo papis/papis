@@ -4,6 +4,7 @@ Cli
 ^^^
 .. click:: papis.commands.explore:cli
     :prog: papis explore
+    :show-nested:
 """
 import papis.utils
 import papis.commands
