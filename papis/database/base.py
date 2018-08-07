@@ -28,7 +28,7 @@ class Database(object):
     def get_dir(self):
         """Get directory of the library
         """
-        return os.path.expanduser(papis.config.get('dir'))
+        return os.path.expanduser(papis.config.get('dir', section=self.lib))
 
     def match(self, document, query_string):
         """Wether or not document matches query_string
