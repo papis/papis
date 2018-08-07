@@ -152,14 +152,14 @@ def explore_arxiv(query, max_results):
 )
 @click.option(
     "--max",
-    help="Maximum number of items",
+    help="Maximum number of items to be retrieved",
     default=30,
     type=int
 )
 @click.option(
     "--cmd",
     help="Issue a command on the retrieved document "
-         "using papis format",
+         "using papis format (e.g. --cmd 'papis scihub {doc[doi]}')",
     default=None
 )
 @click.option(
@@ -171,6 +171,7 @@ def explore_arxiv(query, max_results):
 @click.option(
     "--export-bibtex",
     help="Export list of documents retrieved to a bibtex file",
+    type=click.Path(),
     default=None
 )
 @click.option(
@@ -182,6 +183,7 @@ def explore_arxiv(query, max_results):
 @click.option(
     "--export-yaml",
     help="Export list of documents retrieved to a yaml file",
+    type=click.Path(),
     default=None
 )
 def cli(
