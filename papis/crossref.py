@@ -1,21 +1,11 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-# Heavily adapted for papis from
-#   author: François-Xavier Coudert
-#   license: MIT License
-#   src: https://github.com/fxcoudert/tools/blob/master/doi2bib
-#
 from __future__ import unicode_literals
 import logging
-logger = logging.getLogger("crossref")
-logger.debug("importing")
-
-import unicodedata
 import re
 from string import ascii_lowercase
 import papis.config
 import papis.utils
+logger = logging.getLogger("crossref")
+logger.debug("importing")
 
 # CrossRef queries
 #
@@ -26,129 +16,6 @@ import papis.utils
 #
 CROSSREF_KEY = "fx.coudert@chimie-paristech.fr"
 CROSSREF_KEY = "a.gallo@fkf.mpg.de"
-#
-# Using Google allows one to find other API keys:
-# zter:zter321
-# ourl_rdmpage:peacrab
-# egon@spenglr.com
-# s_allannz@yahoo.com
-# dollar10boy@hotmail.com
-
-# LaTeX accents replacement
-latex_accents = {
-    "à": "\\`a",  # Grave accent
-    "è": "\\`e",
-    "ì": "\\`{\\i}",
-    "ò": "\\`o",
-    "ù": "\\`u",
-    "ỳ": "\\`y",
-    "À": "\\`A",
-    "È": "\\`E",
-    "Ì": "\\`{\\I}",
-    "Ò": "\\`O",
-    "Ù": "\\`U",
-    "Ỳ": "\\`Y",
-    "á": "\\'a",  # Acute accent
-    "ć": "\\'c",
-    "é": "\\'e",
-    "í": "\\'{\\i}",
-    "ó": "\\'o",
-    "ú": "\\'u",
-    "ý": "\\'y",
-    "Á": "\\'A",
-    "É": "\\'E",
-    "Í": "\\'{\\I}",
-    "Ó": "\\'O",
-    "Ú": "\\'U",
-    "Ý": "\\'Y",
-    "â": "\\^a",  # Circumflex
-    "ê": "\\^e",
-    "î": "\\^{\\i}",
-    "ô": "\\^o",
-    "û": "\\^u",
-    "ŷ": "\\^y",
-    "Â": "\\^A",
-    "Ê": "\\^E",
-    "Î": "\\^{\\I}",
-    "Ô": "\\^O",
-    "Û": "\\^U",
-    "Ŷ": "\\^Y",
-    "ä": "\\\"a",  # Umlaut or dieresis
-    "ë": "\\\"e",
-    "ï": "\\\"{\\i}",
-    "ö": "\\\"o",
-    "ü": "\\\"u",
-    "ÿ": "\\\"y",
-    "Ä": "\\\"A",
-    "Ë": "\\\"E",
-    "Ï": "\\\"{\\I}",
-    "Ö": "\\\"O",
-    "Ü": "\\\"U",
-    "Ÿ": "\\\"Y",
-    "ã": "\\~{a}",  # Tilde
-    "ñ": "\\~{n}",
-    "ă": "\\u{a}",  # Breve
-    "ĕ": "\\u{e}",
-    "ŏ": "\\u{o}",
-    "š": "\\v{s}",  # Caron
-    "č": "\\v{c}",
-    "ç": "\\c{c}",  # Cedilla
-    "Ç": "\\c{C}",
-    "œ": "{\\oe}",  # Ligatures
-    "Œ": "{\\OE}",
-    "æ": "{\\ae}",
-    "Æ": "{\\AE}",
-    "å": "{\\aa}",
-    "Å": "{\\AA}",
-    "–": "--",  # Dashes
-    "—": "---",
-    "−": "--",
-    "ø": "{\\o}",  # Misc latin-1 letters
-    "Ø": "{\\O}",
-    "ß": "{\\ss}",
-    "¡": "{!`}",
-    "¿": "{?`}",
-    "\\": "\\\\",  # Characters that should be quoted
-    "~": "\\~",
-    "&": "\\&",
-    "$": "\\$",
-    "{": "\\{",
-    "}": "\\}",
-    "%": "\\%",
-    "#": "\\#",
-    "_": "\\_",
-    "≥": "$\\ge$",  # Math operators
-    "≤": "$\\le$",
-    "≠": "$\\neq$",
-    "©": "\copyright",  # Misc
-    "ı": "{\\i}",
-    "α": "$\\alpha$",
-    "β": "$\\beta$",
-    "γ": "$\\gamma$",
-    "δ": "$\\delta$",
-    "ε": "$\\epsilon$",
-    "η": "$\\eta$",
-    "θ": "$\\theta$",
-    "λ": "$\\lambda$",
-    "µ": "$\\mu$",
-    "ν": "$\\nu$",
-    "π": "$\\pi$",
-    "σ": "$\\sigma$",
-    "τ": "$\\tau$",
-    "φ": "$\\phi$",
-    "χ": "$\\chi$",
-    "ψ": "$\\psi$",
-    "ω": "$\\omega$",
-    "°": "$\\deg$",
-    "‘": "`",  # Quotes
-    "’": "'",
-    "′": "$^\\prime$",
-    "“": "``",
-    "”": "''",
-    "‚": ",",
-    "„": ",,",
-    "\xa0": " ",     # Unprintable characters
-}
 
 
 def collapse_whitespace(s):
@@ -201,11 +68,6 @@ def get_data(query="", author="", title="", max_results=20):
     return [
         crossref_data_to_papis_data(d) for d in results["message"]["items"]
     ]
-
-
-def replace_latex_accents(string):
-    s = unicodedata.normalize('NFC', string)
-    return "".join([latex_accents[c] if c in latex_accents else c for c in s])
 
 
 def validate_doi(doi):
