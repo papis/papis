@@ -1,8 +1,8 @@
 import os
 import tempfile
 import unittest
-import papis.tests
-import papis.tests.cli
+import tests
+import tests.cli
 import papis.config
 from papis.commands.add import (
     run, get_document_extension, cli,
@@ -35,7 +35,7 @@ def test_get_hash_folder():
 
 class TestGetFileName(unittest.TestCase):
     def setUp(self):
-        papis.tests.setup_test_library()
+        tests.setup_test_library()
 
     def test_get_file_name(self):
         path = tempfile.mktemp(prefix='papis-get_name-')
@@ -60,7 +60,7 @@ class Test(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        papis.tests.setup_test_library()
+        tests.setup_test_library()
 
     def test_nofile_exception(self):
         path = tempfile.mktemp()
@@ -149,9 +149,13 @@ class Test(unittest.TestCase):
             self.assertTrue(get_document_extension(d[0]) == d[1])
 
 
-class TestCli(papis.tests.cli.TestCli):
+class TestCli(tests.cli.TestCli):
 
     cli = cli
+
+    def test_main(self):
+        self.do_test_cli_function_exists()
+        self.do_test_help()
 
     def test_set(self):
         result = self.invoke([

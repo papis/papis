@@ -1,13 +1,14 @@
 import unittest
-import papis.tests
+import tests
 from papis.commands.run import run
+import papis.config
 
 
 class Test(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        papis.tests.setup_test_library()
+        tests.setup_test_library()
 
     @classmethod
     def tearDownClass(self):

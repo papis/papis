@@ -1,6 +1,6 @@
 import os
 import unittest
-import papis.tests
+import tests
 import papis.config
 from papis.commands.rm import run
 
@@ -9,7 +9,7 @@ class Test(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        papis.tests.setup_test_library()
+        tests.setup_test_library()
 
     def test_rm_document(self):
         db = papis.database.get()

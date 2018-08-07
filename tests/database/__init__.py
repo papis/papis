@@ -4,22 +4,22 @@ import papis.config
 import papis.document
 import papis.database
 import unittest
-import papis.tests
+import tests
 import tempfile
 
 class DatabaseTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        papis.tests.setup_test_library(
-            save_settings_fileds=['database-backend']
-        )
+        backend = papis.config.get('database-backend')
+        tests.setup_test_library()
+        papis.config.set('database-backend', backend)
 
         os.environ['XDG_CACHE_HOME'] = tempfile.mkdtemp(prefix='papisdb-test-')
 
         libdir = papis.config.get('dir')
         assert(os.path.exists(libdir))
-        assert(papis.config.get_lib() == papis.tests.get_test_lib())
+        assert(papis.config.get_lib() == tests.get_test_lib())
 
         database = papis.database.get(papis.config.get_lib())
         database.clear()
@@ -39,7 +39,7 @@ class DatabaseTest(unittest.TestCase):
     def test_check_database(self):
         database = papis.database.get()
         self.assertTrue(database is not None)
-        self.assertTrue(database.get_lib() == papis.tests.get_test_lib())
+        self.assertTrue(database.get_lib() == tests.get_test_lib())
 
     def test_update(self):
         database = papis.database.get()
@@ -81,14 +81,13 @@ class DatabaseTest(unittest.TestCase):
         docs = database.get_all_documents()
         self.assertTrue(len(docs) > 0)
 
-
     def test_add(self):
         database = papis.database.get()
         docs = database.get_all_documents()
         N = len(docs)
         newdocs = [
             papis.document.from_data(data)
-            for data in papis.tests.test_data
+            for data in tests.test_data
         ]
         for j,doc in enumerate(newdocs):
             doc.set_folder(tempfile.mkdtemp())

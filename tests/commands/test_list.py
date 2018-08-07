@@ -1,6 +1,6 @@
 import os
 import unittest
-import papis.tests
+import tests
 import papis.config
 import papis.database
 from papis.commands.list import run
@@ -10,14 +10,14 @@ class Test(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        papis.tests.setup_test_library()
+        tests.setup_test_library()
 
     @classmethod
     def tearDownClass(self):
         pass
 
     def test_lib_is_correct(self):
-        assert(papis.config.get_lib() == papis.tests.get_test_lib())
+        assert(papis.config.get_lib() == tests.get_test_lib())
 
     def test_list_docs(self):
         docs = run(

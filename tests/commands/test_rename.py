@@ -1,14 +1,15 @@
 import os
 import unittest
-import papis.tests
+import tests
 from papis.commands.rename import run
+import papis.database
 
 
 class Test(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        papis.tests.setup_test_library()
+        tests.setup_test_library()
 
     def get_docs(self):
         db = papis.database.get()

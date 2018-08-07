@@ -1,11 +1,16 @@
-import papis.database.tests
+import tests.database
+import papis.config
+import papis.database
 
-class Test(papis.database.tests.DatabaseTest):
+class Test(tests.database.DatabaseTest):
 
     @classmethod
     def setUpClass(cls):
         papis.config.set('database-backend', 'papis')
-        papis.database.tests.DatabaseTest.setUpClass()
+        tests.database.DatabaseTest.setUpClass()
+
+    def test_backend_name(self):
+        self.assertTrue(papis.config.get('database-backend') == 'papis')
 
     def test_query(self):
         database = papis.database.get()
