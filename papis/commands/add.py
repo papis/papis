@@ -632,7 +632,7 @@ def cli(
 
     if from_lib:
         doc = papis.api.pick_doc(
-            papis.api.get_documents_in_lib(from_lib)
+            papis.api.get_all_documents_in_lib(from_lib)
         )
         if doc:
             from_folder = doc.get_main_folder()
