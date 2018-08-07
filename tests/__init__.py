@@ -17,7 +17,7 @@ def get_test_lib():
     return 'test-lib'
 
 
-def setup_test_library(save_settings_fileds=[]):
+def setup_test_library():
     """Set-up a test library for tests
 
     :param save_settings_fileds: The papis configuration will be initialized
@@ -27,14 +27,10 @@ def setup_test_library(save_settings_fileds=[]):
     """
     lib = get_test_lib()
     config = papis.config.get_configuration()
-    settings = papis.config.get_general_settings_name()
-    settings_conf = {
-        key: config['settings'][key] for key in save_settings_fileds
-    }
-    config[settings] = settings_conf
+    config['settings'] = dict()
     config[lib] = dict()
     config[lib]['dir'] = tempfile.mkdtemp(prefix='papis')
-    papis.api.set_lib('test-lib')
+    papis.api.set_lib(lib)
     papis.database.clear_cached()
 
     for i, data in enumerate(test_data):
