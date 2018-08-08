@@ -628,7 +628,7 @@ def register_default_settings(settings_dictionary):
     42
     >>> papis.config.get('info-name') is not None
     True
-    >>> papis.config.get('default-library') == 'mag'
+    >>> not papis.config.get('default-library') == 'mag'
     True
     >>> papis.config.get_default_settings(key='default-library') == 'mag'
     True
