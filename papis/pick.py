@@ -41,16 +41,16 @@ def create_keybindings(picker):
         picker.options_list.move_up()
         picker.update()
 
-    @kb.add('/')
-    def up_(event):
-        picker.layout.focus(picker.search_buffer)
+    # @kb.add('/')
+    # def up_(event):
+        # picker.layout.focus(picker.search_buffer)
 
-    @kb.add('c-f')
-    def up_(event):
-        if picker.layout.has_focus(picker.content_window):
-            picker.layout.focus(picker.search_buffer)
-        else:
-            picker.layout.focus(picker.content_window)
+    # @kb.add('c-f')
+    # def up_(event):
+        # if picker.layout.has_focus(picker.content_window):
+            # picker.layout.focus(picker.search_buffer)
+        # else:
+            # picker.layout.focus(picker.content_window)
 
     @kb.add('enter')
     def enter_(event):
