@@ -516,7 +516,7 @@ general_settings = {
     "match-format":
         "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
     "header-format": \
-        "<red>{doc.html_escape[title]}</red>\n"\
+        "<span color='#ff0000'>{doc.html_escape[title]}</span>\n"\
         " <green>{doc.html_escape[author]}</green>\n"
         "  <b>({doc.html_escape[year]})</b> "
         "[<blue>{doc.html_escape[tags]}</blue>]",
