@@ -258,6 +258,29 @@ def isbnplus(ctx, query, author, title):
     logger.info('{} documents found'.format(len(docs)))
 
 
+@cli.command('dissemin')
+@click.pass_context
+@click.help_option('--help', '-h')
+@click.option('--query', '-q', default=None)
+def isbnplus(ctx, query):
+    """
+    Look for documents on dissem.in
+
+    Examples of its usage are
+
+    papis explore dissemin -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
+
+    """
+    import papis.dissemin
+    logger = logging.getLogger('explore:dissemin')
+    logger.info('Looking up...')
+    data = papis.dissemin.get_data(query=query)
+    docs = [papis.document.from_data(data=d) for d in data]
+    ctx.obj['documents'] += docs
+    logger.info('{} documents found'.format(len(docs)))
+
+
+
 @cli.command('pick')
 @click.pass_context
 @click.help_option('--help', '-h')
