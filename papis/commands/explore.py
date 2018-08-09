@@ -343,6 +343,30 @@ def yaml(ctx, yamlfile):
     logger.info('{} documents found'.format(len(docs)))
 
 
+@cli.command('json')
+@click.pass_context
+@click.argument('jsonfile', type=click.Path(exists=True))
+@click.help_option('--help', '-h')
+def json(ctx, jsonfile):
+    """
+    Import documents from a json file
+
+    Examples of its usage are
+
+    papis explore json lib.json pick
+
+    """
+    import json
+    logger = logging.getLogger('explore:json')
+    logger.info('Reading in json file {}'.format(jsonfile))
+    docs = [
+        papis.document.from_data(d) for d in json.load(open(jsonfile))
+    ]
+    ctx.obj['documents'] += docs
+    logger.info('{} documents found'.format(len(docs)))
+
+
+
 @cli.command('export')
 @click.pass_context
 @click.help_option('--help', '-h')
@@ -358,7 +382,13 @@ def yaml(ctx, yamlfile):
     type=click.Path(),
     default=None
 )
-def export(ctx, bibtex, yaml):
+@click.option(
+    "--json",
+    help="Export list of documents retrieved to a json file",
+    type=click.Path(),
+    default=None
+)
+def export(ctx, bibtex, yaml, json):
     """
     Export retrieved documents into various formats for later use
 
@@ -391,6 +421,17 @@ def export(ctx, bibtex, yaml):
             )
             bibtexdata = papis.commands.export.run(docs, bibtex=True)
             fd.write(bibtexdata)
+
+    if json:
+        with open(json, 'a+') as fd:
+            logger.info(
+                "Writing {} documents' json into {}".format(
+                    len(docs),
+                    json
+                )
+            )
+            jsondata = papis.commands.export.run(docs, json=True)
+            fd.write(jsondata)
 
 
 @cli.command('cmd')
