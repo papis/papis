@@ -33,13 +33,13 @@ def create_keybindings(picker):
     @kb.add('down')
     def down_(event):
         picker.options_list.move_down()
-        picker.update()
+        picker.options_list.refresh()
 
     @kb.add('c-p')
     @kb.add('up')
     def up_(event):
         picker.options_list.move_up()
-        picker.update()
+        picker.options_list.refresh()
 
     # @kb.add('/')
     # def up_(event):
