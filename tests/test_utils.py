@@ -76,3 +76,12 @@ def test_locate_document():
     doc = from_data(dict(title='Hello world'))
     found_doc = papis.utils.locate_document(doc, docs)
     assert found_doc is None
+
+
+def test_guess_file_extension():
+    from papis.utils import guess_file_extension
+    assert 'pdf' == guess_file_extension('path/to/123adqfdsf/file.pdf')
+    assert 'txt' == guess_file_extension('path/to/123adqfdsf/file')
+    assert 'epub' == guess_file_extension('path/to/123adqfdsf/file.epub')
+    assert 'djvu' == guess_file_extension('path/to/123adqfdsf/file.djvu')
+    assert 'mobi' == guess_file_extension('path/to/123adqfdsf/file.mobi')

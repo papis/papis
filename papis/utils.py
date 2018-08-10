@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from subprocess import call
 import logging
 from itertools import count, product
@@ -292,55 +293,8 @@ def locate_document(document, documents):
                     return d
 
 
-def file_is(file_description, fmt):
-    """Get if file stored in `file_path` is a `fmt` document.
-
-    :file_path: Full path for a `fmt` file or a buffer containing `fmt` data.
-    :returns: True if is `fmt` and False otherwise
-
-    """
-    import magic
-    logger.debug("Checking filetype")
-    if isinstance(file_description, str):
-        # This means that the file_description is a string
-        result = re.match(
-            r".*%s.*" % fmt, magic.from_file(file_description, mime=True),
-            re.IGNORECASE
-        )
-        if result:
-            logger.debug(
-                "File %s appears to be of type %s" % (file_description, fmt)
-            )
-    elif isinstance(file_description, bytes):
-        # Suppose that file_description is a buffer
-        result = re.match(
-            r".*%s.*" % fmt, magic.from_buffer(file_description, mime=True)
-        )
-        if result:
-            logger.debug(
-                "Buffer appears to be of type %s" % (fmt)
-            )
-    return True if result else False
-
-
-def is_pdf(file_description):
-    return file_is(file_description, 'pdf')
-
-
-def is_djvu(file_description):
-    return file_is(file_description, 'djvu')
-
-
-def is_epub(file_description):
-    return file_is(file_description, 'epub')
-
-
-def is_mobi(file_description):
-    return file_is(file_description, 'mobi')
-
-
-def guess_file_extension(file_description):
+def guess_file_extension(filename):
     for ext in ["pdf", "djvu", "epub", "mobi"]:
-        if eval("is_%s" % ext)(file_description):
+        if re.match(r".*\.{0}$".format(ext), filename):
             return ext
     return "txt"
