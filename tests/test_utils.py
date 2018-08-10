@@ -5,7 +5,7 @@ import papis.config
 import tests
 import papis.commands.add
 import papis.database
-import papis.document
+from papis.document import from_data
 
 
 def test_create_identifier():
@@ -47,11 +47,32 @@ def test_general_open_with_spaces():
 
 
 def test_locate_document():
-    tests.setup_test_library()
-    assert papis.config.get_lib() == tests.get_test_lib()
+
     db = papis.database.get()
-    docs = db.get_all_documents()
-    assert len(docs) >= 2
-    doc = papis.document.from_data(dict(doi='10.1021/ct5004252'))
+
+    docs = [
+        from_data(dict(doi='10.1021/ct5004252', title='Hello world')),
+        from_data(
+            dict(
+                doi='10.123/12afad12',
+                author='noone really',
+                title='Hello world'
+            )
+        ),
+    ]
+
+    doc = from_data(dict(doi='10.1021/CT5004252'))
     found_doc = papis.utils.locate_document(doc, docs)
     assert found_doc is not None
+
+    doc = from_data(dict(doi='CT5004252'))
+    found_doc = papis.utils.locate_document(doc, docs)
+    assert found_doc is None
+
+    doc = from_data(dict(author='noone really'))
+    found_doc = papis.utils.locate_document(doc, docs)
+    assert found_doc is None
+
+    doc = from_data(dict(title='Hello world'))
+    found_doc = papis.utils.locate_document(doc, docs)
+    assert found_doc is None

@@ -277,27 +277,19 @@ def locate_document(document, documents):
     :type  document: papis.document.Document
     :param documents: Documents to search in
     :type  documents: list
-    :returns: TODO
+    :returns: papis document if it is found
 
     """
     # if these keys exist in the documents, then check those first
+    # TODO: find a way to really match well titles and author
+    comparing_keys = [
+        'doi', 'ref', 'isbn', 'isbn10', 'url', 'doc_url'
+    ]
     for d in documents:
-        for key in ['doi', 'ref', 'isbn', 'isbn10', 'url']:
+        for key in comparing_keys:
             if key in document.keys() and key in d.keys():
-                if document[key] == d[key]:
+                if re.match(document[key], d[key], re.I):
                     return d
-    # else, just try to match the usual way the documents
-    # TODO: put this into the databases
-    import papis.database.cache
-    docs = papis.database.cache.filter_documents(
-        documents,
-        search='author = "{doc[author]}" title = "{doc[title]}"'.format(
-            doc=document
-        )
-    )
-    if len(docs) == 1:
-        return docs[0]
-    return None
 
 
 def file_is(file_description, fmt):
