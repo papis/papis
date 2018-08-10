@@ -441,9 +441,9 @@ import configparser
 import papis.exceptions
 
 
-CONFIGURATION = None  #: Global configuration object variable.
-DEFAULT_SETTINGS = None  #: Default settings for the whole papis.
-OVERRIDE_VARS = {
+_CONFIGURATION = None  #: Global configuration object variable.
+_DEFAULT_SETTINGS = None  #: Default settings for the whole papis.
+_OVERRIDE_VARS = {
     "folder": None,
     "cache": None,
     "file": None,
@@ -572,28 +572,30 @@ def get_default_settings(section="", key=""):
     True
     >>> get_default_settings(key='mvtool')
     'mv'
+    >>> get_default_settings(key='mvtool', section='settings')
+    'mv'
     >>> get_default_settings(key='help-key', section='vim-gui')
     'h'
     """
-    global DEFAULT_SETTINGS
+    global _DEFAULT_SETTINGS
     import papis.gui
     # We use an OrderedDict so that the first entry will always be the general
     # settings, also good for automatic documentation
     from collections import OrderedDict
-    if DEFAULT_SETTINGS is None:
-        DEFAULT_SETTINGS = OrderedDict()
-        DEFAULT_SETTINGS.update({
+    if _DEFAULT_SETTINGS is None:
+        _DEFAULT_SETTINGS = OrderedDict()
+        _DEFAULT_SETTINGS.update({
             get_general_settings_name(): general_settings,
         })
-        DEFAULT_SETTINGS.update(
+        _DEFAULT_SETTINGS.update(
             papis.gui.get_default_settings()
         )
     if not section and not key:
-        return DEFAULT_SETTINGS
+        return _DEFAULT_SETTINGS
     elif not section:
-        return DEFAULT_SETTINGS[get_general_settings_name()][key]
+        return _DEFAULT_SETTINGS[get_general_settings_name()][key]
     else:
-        return DEFAULT_SETTINGS[section][key]
+        return _DEFAULT_SETTINGS[section][key]
 
 
 def register_default_settings(settings_dictionary):
@@ -649,21 +651,17 @@ def get_config_home():
 
     :returns: Configuration base directory
     :rtype:  str
-    >>> import os; os.environ['XDG_CONFIG_HOME'] = '/tmp'
-    >>> get_config_home()
-    '/tmp'
     """
-    return os.environ.get('XDG_CONFIG_HOME') or os.path.join(
-        os.path.expanduser('~'), '.config'
-    )
+    xdg_home = os.environ.get('XDG_CONFIG_HOME')
+    if xdg_home:
+        return os.path.expanduser(xdg_home)
+    else:
+        return os.path.join(os.path.expanduser('~'), '.config')
 
 
 def get_config_dirs():
-    """
-    >>> import os; os.environ['XDG_CONFIG_DIRS'] = ''
-    >>> os.environ['XDG_CONFIG_HOME'] = '/tmp'
-    >>> get_config_dirs()
-    ['/tmp/papis', ...]
+    """Get papis configuration directories where the configuration
+    files might be stored
     """
     dirs = []
     if os.environ.get('XDG_CONFIG_DIRS'):
@@ -687,11 +685,6 @@ def get_config_folder():
     environment variable ``XDG_CONFIG_HOME`` is defined it will use the
     configuration folder ``XDG_CONFIG_HOME/papis`` instead.
 
-    >>> import os; os.environ['XDG_CONFIG_HOME'] = '/tmp'
-    >>> newpath = os.path.join(os.environ['XDG_CONFIG_HOME'], 'papis')
-    >>> if not os.path.exists(newpath): os.mkdir(newpath)
-    >>> get_config_folder()
-    '/tmp/papis'
     """
     config_dirs = get_config_dirs()
     for config_dir in config_dirs:
@@ -704,16 +697,10 @@ def get_config_folder():
 def get_config_file():
     """Get the path of the main configuration file,
     e.g. /home/user/.papis/config
-
-    >>> import os; os.environ['XDG_CONFIG_HOME'] = '/tmp'
-    >>> newpath = os.path.join(os.environ['XDG_CONFIG_HOME'], 'papis')
-    >>> if not os.path.exists(newpath): os.mkdir(newpath)
-    >>> get_config_file()
-    '/tmp/papis/config'
     """
-    global OVERRIDE_VARS
-    if OVERRIDE_VARS["file"] is not None:
-        config_file = OVERRIDE_VARS["file"]
+    global _OVERRIDE_VARS
+    if _OVERRIDE_VARS["file"] is not None:
+        config_file = _OVERRIDE_VARS["file"]
     else:
         config_file = os.path.join(
             get_config_folder(), "config"
@@ -725,10 +712,9 @@ def get_config_file():
 def set_config_file(filepath):
     """Override the main configuration file path
     """
-    global OVERRIDE_VARS
-    if filepath is not None:
-        logger.debug("Setting config file to %s" % filepath)
-        OVERRIDE_VARS["file"] = filepath
+    global _OVERRIDE_VARS
+    logger.debug("Setting config file to %s" % filepath)
+    _OVERRIDE_VARS["file"] = filepath
 
 
 def get_scripts_folder():
@@ -743,15 +729,13 @@ def get_scripts_folder():
 def set(key, val, section=None):
     """Set a key to val in some section and make these changes available
     everywhere.
-    >>> set('nonexistenkey', 'rofi')
-    >>> get('nonexistenkey')
-    'rofi'
     """
     config = get_configuration()
     if not config.has_section(section or "settings"):
         config.add_section(section or "settings")
     # FIXME: Right now we can only save val in string form
     # FIXME: It would be nice to be able to save also int and booleans
+    # FIXME: configparser seems to be able to only store string values
     config.set(section or get_general_settings_name(), key, str(val))
 
 
@@ -852,33 +836,29 @@ def get_configuration():
     :returns: Configuration object
     :rtype:  papis.config.Configuration
     """
-    global CONFIGURATION
-    if CONFIGURATION is None:
+    global _CONFIGURATION
+    if _CONFIGURATION is None:
         logger.debug("Creating configuration")
-        CONFIGURATION = Configuration()
+        _CONFIGURATION = Configuration()
         # Handle local configuration file, and merge it if it exists
         local_config_file = papis.config.get("local-config-file")
-        merge_configuration_from_path(local_config_file, CONFIGURATION)
-    return CONFIGURATION
+        merge_configuration_from_path(local_config_file, _CONFIGURATION)
+    return _CONFIGURATION
 
 
 def merge_configuration_from_path(path, configuration):
     """
     Merge information of a configuration file found in `path`
     to the information of the configuration object stored in `configuration`.
-    The function checks for the existence of path.
 
     :param path: Path to the configuration file
     :type  path: str
     :param configuration: Configuration object
     :type  configuration: papis.config.Configuration
     """
-    if os.path.exists(path):
-        logger.debug(
-            "Merging configuration from " + path
-        )
-        configuration.read(path)
-        configuration.handle_includes()
+    logger.debug("Merging configuration from " + path)
+    configuration.read(path)
+    configuration.handle_includes()
 
 
 def set_lib(library):
@@ -887,13 +867,6 @@ def set_lib(library):
     :param library: Library name or path to a papis library
     :type  library: str
 
-    >>> import os
-    >>> if not os.path.exists('/tmp/setlib-test'): os.makedirs(\
-            '/tmp/setlib-test'\
-        )
-    >>> set_lib('/tmp/setlib-test')
-    >>> get_lib()
-    '/tmp/setlib-test'
     """
     config = get_configuration()
     if library not in config.keys():
@@ -905,11 +878,8 @@ def set_lib(library):
             raise Exception(
                 "Path or library '%s' does not seem to exist" % library
             )
-    try:
-        args = papis.commands.get_args()
-        args.lib = library
-    except AttributeError:
-        os.environ["PAPIS_LIB"] = library
+    os.environ["PAPIS_LIB"] = library
+    os.environ["PAPIS_LIB_DIR"] = get('dir')
 
 
 def get_lib():
@@ -919,20 +889,13 @@ def get_lib():
 
     :param library: Name of library or path to a given library
     :type  library: str
-    >>> set_lib('papers')
-    >>> get_lib()
-    'papers'
     """
-    import papis.commands
     try:
-        lib = papis.commands.get_args().lib
-    except AttributeError:
-        try:
-            lib = os.environ["PAPIS_LIB"]
-        except KeyError:
-            # Do not put papis.config.get because get is a special function
-            # that also needs the library to see if some key was overridden!
-            lib = papis.config.get_default_settings(key="default-library")
+        lib = os.environ["PAPIS_LIB"]
+    except KeyError:
+        # Do not put papis.config.get because get is a special function
+        # that also needs the library to see if some key was overridden!
+        lib = papis.config.get_default_settings(key="default-library")
     return lib
 
 
@@ -942,10 +905,10 @@ def reset_configuration():
     :returns: Configuration object
     :rtype:  papis.config.Configuration
     """
-    global CONFIGURATION
-    if CONFIGURATION is not None:
+    global _CONFIGURATION
+    if _CONFIGURATION is not None:
         logger.warning("Overwriting previous configuration")
-    CONFIGURATION = None
+    _CONFIGURATION = None
     logger.debug("Resetting configuration")
     return get_configuration()
 
