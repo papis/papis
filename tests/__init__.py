@@ -9,7 +9,8 @@ import os
 test_data = [
     {"author": 'J. Krishnamurti', "title": 'Freedom from the known',
         "year": '2009'},
-    {"author": 'K. Popper', "title": 'The open society', "volume": 'I'},
+    {"author": 'K. Popper', 'doi':'10.1021/ct5004252',
+        "title": 'The open society', "volume": 'I'},
 ]
 
 

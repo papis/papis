@@ -1,6 +1,11 @@
 import os
 import tempfile
 import papis.utils
+import papis.config
+import tests
+import papis.commands.add
+import papis.database
+import papis.document
 
 
 def test_create_identifier():
@@ -39,3 +44,14 @@ def test_general_open_with_spaces():
     with open(filename) as fd:
         content = fd.read()
         assert(content == 'Some contenthello world\n')
+
+
+def test_locate_document():
+    tests.setup_test_library()
+    assert papis.config.get_lib() == tests.get_test_lib()
+    db = papis.database.get()
+    docs = db.get_all_documents()
+    assert len(docs) >= 2
+    doc = papis.document.from_data(dict(doi='10.1021/ct5004252'))
+    found_doc = papis.utils.locate_document(doc, docs)
+    assert found_doc is not None
