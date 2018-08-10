@@ -83,14 +83,14 @@ Now open one for example
 
     papis open
 
-|asciicast| Or edit them and export them to bibtex
+|asciicast_open| Or edit them and export them to bibtex
 
 ::
 
     papis edit
     papis export --all --bibtex > mylib.bib
 
-|asciicast|
+|asciicast_edit|
 
 find help messages in all commands:
 
@@ -99,7 +99,7 @@ find help messages in all commands:
     papis -h
     papis add -h
 
-|asciicast| AND MUCH, MUCH MORE!
+|asciicast_help| AND MUCH, MUCH MORE!
 
 Authors
 -------
@@ -116,9 +116,9 @@ See the ``AUTHORS`` list for a list of authored commits.
    :target: https://travis-ci.org/papis/papis
 .. |Packaging status| image:: https://repology.org/badge/vertical-allrepos/papis.svg
    :target: https://repology.org/metapackage/papis
-.. |asciicast| image:: https://asciinema.org/a/oEHU9oPlGrKPOQzGMxvqkh5Fe.png
-   :target: https://asciinema.org/a/oEHU9oPlGrKPOQzGMxvqkh5Fe
-.. |asciicast| image:: https://asciinema.org/a/QrUntd87K97hoKowxkAb4AYZ0.png
+.. |asciicast_help| image:: https://asciinema.org/a/Qwtmxj9VLem7M6dUEqduYqOCk.png
+   :target: https://asciinema.org/a/Qwtmxj9VLem7M6dUEqduYqOCk
+.. |asciicast_edit| image:: https://asciinema.org/a/QrUntd87K97hoKowxkAb4AYZ0.png
    :target: https://asciinema.org/a/QrUntd87K97hoKowxkAb4AYZ0
-.. |asciicast| image:: https://asciinema.org/a/48Dv1rfX44yjJD6Sbc71gpXGr.png
-   :target: https://asciinema.org/a/48Dv1rfX44yjJD6Sbc71gpXGr
+.. |asciicast_open| image:: https://asciinema.org/a/oEHU9oPlGrKPOQzGMxvqkh5Fe.png
+   :target: https://asciinema.org/a/oEHU9oPlGrKPOQzGMxvqkh5Fe
