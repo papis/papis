@@ -67,7 +67,8 @@ def cli(
         if not filepath:
             return status.file_not_found
         if not force:
-            if not papis.utils.confirm("Are you sure?"):
+            toolbar = 'The file {0} would be removed'.format(filepath)
+            if not papis.utils.confirm("Are you sure?", bottom_toolbar=toolbar):
                 return status.success
         click.echo("Removing %s..." % filepath)
         return run(
@@ -76,7 +77,10 @@ def cli(
         )
     else:
         if not force:
-            if not papis.utils.confirm("Are you sure?"):
+            toolbar = 'The folder {0} would be removed'.format(
+                document.get_main_folder()
+            )
+            if not papis.utils.confirm("Are you sure?", bottom_toolbar=toolbar):
                 return status.success
         click.echo("Removing ...")
         return run(document)

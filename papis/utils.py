@@ -162,7 +162,7 @@ def yaml_to_data(yaml_path):
     return yaml.load(open(yaml_path))
 
 
-def confirm(prompt, yes=True):
+def confirm(prompt, yes=True, bottom_toolbar=None):
     """Confirm with user input
 
     :param prompt: Question or text that the user gets.
@@ -173,17 +173,21 @@ def confirm(prompt, yes=True):
     :rtype:  bool
 
     """
-    import prompt_toolkit
-    result = prompt_toolkit.prompt(
-        prompt + ' (%s): ' % ('Y/n' if yes else 'y/N')
+    result = papis.utils.input(
+        prompt,
+        bottom_toolbar=bottom_toolbar,
+        default='Y/n' if yes else 'y/N',
+        validator_function=lambda x: x in 'YyNn',
+        dirty_message='Please, write either "y" or "n" to confirm'
     )
     if yes:
-        return result not in ['N', 'n']
+        return result not in 'Nn'
     else:
-        return result not in ['Y', 'y']
+        return result not in 'Yy'
 
 
-def input(prompt, default=""):
+def input(prompt, default="", bottom_toolbar=None, multiline=False, 
+        validator_function=None, dirty_message=""):
     """Prompt user for input
 
     :param prompt: Question or text that the user gets.
@@ -195,9 +199,30 @@ def input(prompt, default=""):
 
     """
     import prompt_toolkit
+    from prompt_toolkit.validation import Validator
+    if validator_function is not None:
+        validator = Validator.from_callable(
+            validator_function,
+            error_message=dirty_message,
+            move_cursor_to_end=True
+        )
+    else:
+        validator = None
+
+    fragments = [
+        ('', prompt),
+        ('fg:red', ' ({0})'.format(default)),
+        ('', ': '),
+    ]
+
     result = prompt_toolkit.prompt(
-        prompt + ' (%s): ' % (default)
+        fragments,
+        validator=validator,
+        multiline=multiline,
+        bottom_toolbar=bottom_toolbar,
+        validate_while_typing=True
     )
+
     return result if result else default
 
 
