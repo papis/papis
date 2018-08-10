@@ -116,8 +116,8 @@ See the ``AUTHORS`` list for a list of authored commits.
    :target: https://travis-ci.org/papis/papis
 .. |Packaging status| image:: https://repology.org/badge/vertical-allrepos/papis.svg
    :target: https://repology.org/metapackage/papis
-.. |asciicast_help| image:: https://asciinema.org/a/Qwtmxj9VLem7M6dUEqduYqOCk.png
-   :target: https://asciinema.org/a/Qwtmxj9VLem7M6dUEqduYqOCk
+.. |asciicast_help| image:: https://asciinema.org/a/3otatlbqXIsI102uAywMhT4fP.png
+   :target: https://asciinema.org/a/3otatlbqXIsI102uAywMhT4fP
 .. |asciicast_edit| image:: https://asciinema.org/a/QrUntd87K97hoKowxkAb4AYZ0.png
    :target: https://asciinema.org/a/QrUntd87K97hoKowxkAb4AYZ0
 .. |asciicast_open| image:: https://asciinema.org/a/oEHU9oPlGrKPOQzGMxvqkh5Fe.png
