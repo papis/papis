@@ -88,7 +88,12 @@ def pick_doc(documents: list):
     'title:   Hello World\\n'
 
     """
-    header_format = papis.config.get("header-format")
+    header_format_path = papis.config.get('header-format-file')
+    if header_format_path is not None:
+        with open(os.path.expanduser(header_format_path)) as fd:
+            header_format = fd.read()
+    else:
+        header_format = papis.config.get("header-format")
     match_format = papis.config.get("match-format")
     pick_config = dict(
         header_filter=lambda x: papis.utils.format_doc(header_format, x),

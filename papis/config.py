@@ -515,6 +515,8 @@ general_settings = {
     "format-doc-name": "doc",
     "match-format":
         "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
+    "format-jinja2-enable": False,
+    "header-format-file": None,
     "header-format": \
         "<span color='#ff0000'>{doc.html_escape[title]}</span>\n"\
         " <green>{doc.html_escape[author]}</green>\n"
