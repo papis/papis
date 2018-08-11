@@ -96,6 +96,41 @@
 
     Default format that is used to show a document in order to select it.
 
+.. papis-config:: format-jinja2-enable
+
+    This setting is to enable the `jinja2 <http://jinja.pocoo.org//>`_ template
+    engine to render the papis templates being used, as ``header-format``,
+    ``match-format`` etc...
+
+    For instance you could set the option ``header-format`` to
+
+    .. code:: html
+
+        <span color='#ff00ff'>{{doc.html_escape["title"]}}</span>
+        <span color='#00ff00'>  {{doc.html_escape["author"]}}</span>
+        <span color='#00ffaa'>   ({{doc.html_escape["year"]}}) </span>
+        {%- if doc.has('tags') %}<span>[<yellow>{{doc['tags']}}</yellow>] </span>{%- endif %}
+        {%- if doc.has('citations') %}<red>{{doc['citations']|length}}</red>{%- endif %}
+        {%- if doc.has('url') %}
+        <span>    {{doc.html_escape["url"]}}</span>
+        {%- endif %}
+
+    To use it, just install jinja2.
+
+.. papis-config:: header-format-file
+
+    This option should have the path of a file with the ``header-format``
+    template. Sometimes templates can get big so this is a way
+    of not cluttering the config file with text.
+
+    As an example you would set
+
+    .. code:: ini
+
+        [papers]
+
+        header-format-file = ~/.papis/config/styles/header.txt
+
 .. papis-config:: info-allow-unicode
 
     This flag is to be set if you want to allow unicode characters
