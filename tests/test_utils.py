@@ -48,8 +48,6 @@ def test_general_open_with_spaces():
 
 def test_locate_document():
 
-    db = papis.database.get()
-
     docs = [
         from_data(dict(doi='10.1021/ct5004252', title='Hello world')),
         from_data(
@@ -85,3 +83,25 @@ def test_guess_file_extension():
     assert 'epub' == guess_file_extension('path/to/123adqfdsf/file.epub')
     assert 'djvu' == guess_file_extension('path/to/123adqfdsf/file.djvu')
     assert 'mobi' == guess_file_extension('path/to/123adqfdsf/file.mobi')
+
+
+def test_format_doc():
+    import papis.document
+    from papis.utils import format_doc
+    import tests
+    tests.setup_test_library()
+    document = from_data(dict(author='Fulano', title='Something'))
+
+    papis.config.set('format-jinja2-enable', True)
+    assert format_doc('{{doc["author"]}}{{doc["title"]}}', document) == \
+        'FulanoSomething'
+    assert format_doc(
+        '{{doc["author"]}}{{doc["title"]}}{{doc["blahblah"]}}', document
+    ) == 'FulanoSomething'
+
+    papis.config.set('format-jinja2-enable', False)
+    assert format_doc('{doc[author]}{doc[title]}', document) == \
+        'FulanoSomething'
+    assert format_doc('{doc[author]}{doc[title]}{doc[blahblah]}', document) ==\
+        'FulanoSomething'
+

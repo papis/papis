@@ -75,6 +75,7 @@ setup(
         # $ pip install -e .[develop]
         optional=[
             'dmenu',
+            'jinja2',
             "Whoosh>=2.7.4",
         ],
         develop=[
