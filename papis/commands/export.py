@@ -3,34 +3,41 @@ The export command is useful to work with other programs such as bibtex.
 
 Some examples of its usage are:
 
-    - Export one of the documents matching the author with einstein to bibtex:
+- Export one of the documents matching the author with einstein to bibtex:
 
-    .. code::
+.. code::
 
-        papis export --bibtex 'author = einstein'
+    papis export --bibtex 'author = einstein'
 
-    or export all of them
+or export all of them
 
-    .. code::
+.. code::
 
-        papis export --bibtex --all 'author = einstein'
+    papis export --bibtex --all 'author = einstein'
 
-    - Export all documents to bibtex and save them into a ``lib.bib`` file
+- Export all documents to bibtex and save them into a ``lib.bib`` file
 
-    .. code::
+.. code::
 
-        papis export --all --bibtex --out lib.bib
+    papis export --all --bibtex --out lib.bib
 
-    - Export a folder of one of the documents matching the word ``krebs``
-      into a folder named, ``interesting-document``
+- Export a folder of one of the documents matching the word ``krebs``
+  into a folder named, ``interesting-document``
 
-    .. code::
+.. code::
 
-        papis export --folder --out interesting-document krebs
+    papis export --folder --out interesting-document krebs
 
-    this will create the folder ``interesting-document`` containing the
-    ``info.yaml`` file, the linked documents and a ``bibtex`` file for
-    sharing with other people.
+  this will create the folder ``interesting-document`` containing the
+  ``info.yaml`` file, the linked documents and a ``bibtex`` file for
+  sharing with other people.
+
+  You can also just export its associated document:
+
+.. code::
+
+    papis export --file krebs
+
 
 Cli
 ^^^
@@ -189,9 +196,11 @@ def cli(
         documents = [document]
 
     if out and not folder and not file:
+        logger.info("Dumping to {0}".format(out))
         out = open(out, 'a+')
 
     if not out and not folder and not file:
+        logger.info("Dumping to stdout")
         out = sys.stdout
 
     ret_string = run(
@@ -221,21 +230,22 @@ def cli(
                     "a+"
                 ).write(papis.document.to_bibtex(document))
         elif file:
+            logger.info("Exporting file")
             files = document.get_files()
-            if all:
-                files_to_open = files
-            else:
-                files_to_open = [papis.api.pick(
-                    files,
-                    pick_config=dict(
-                        header_filter=lambda x: x.replace(
-                            document.get_main_folder(), ""
-                        )
+            files_to_open = [papis.api.pick(
+                files,
+                pick_config=dict(
+                    header_filter=lambda x: x.replace(
+                        document.get_main_folder(), ""
                     )
-                )]
+                )
+            )]
             for file_to_open in filter(lambda x: x, files_to_open):
-                click.echo(file_to_open)
+                logger.info("copy {0} to {1}".format(
+                    file_to_open,
+                    os.path.basename(file_to_open)
+                ))
                 shutil.copyfile(
                     file_to_open,
-                    out or os.path.basename(file_to_open)
+                    os.path.basename(file_to_open)
                 )
