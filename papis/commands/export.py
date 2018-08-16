@@ -32,6 +32,13 @@ or export all of them
   ``info.yaml`` file, the linked documents and a ``bibtex`` file for
   sharing with other people.
 
+  You can also just export its associated document:
+
+.. code::
+
+    papis export --file krebs
+
+
 Cli
 ^^^
 .. click:: papis.commands.export:cli
