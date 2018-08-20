@@ -63,7 +63,7 @@ Examples
 
     ::
 
-        papis open --marks bohm
+        papis open --mark bohm
 
 
 Cli

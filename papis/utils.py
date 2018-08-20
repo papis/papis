@@ -44,15 +44,16 @@ def general_open(fileName, key, default_opener=None, wait=True):
         opener = default_opener
     if isinstance(fileName, list):
         fileName = papis.api.pick(fileName)
-    # Take care of spaces in filenames
     if isinstance(opener, str):
+        import subprocess
+        import shlex
+        cmd = shlex.split("{0} '{1}'".format(opener, fileName))
+        logger.debug("cmd:  %s" % cmd)
         if wait:
-            fileName = "\"{}\"".format(fileName)
-            return os.system(" ".join([opener, fileName]))
+            logger.debug("Waiting for process to finsih")
+            return subprocess.call(cmd)
         else:
-            cmd = opener.split() + [fileName]
-            logger.debug("Open cmd %s" % cmd)
-            import subprocess
+            logger.debug("Not waiting for process to finish")
             return subprocess.Popen(
                 cmd, shell=False,
                 stdin=None, stdout=None, stderr=None, close_fds=True

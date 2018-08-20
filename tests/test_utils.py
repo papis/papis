@@ -37,13 +37,13 @@ def test_general_open_with_spaces():
     papis.utils.general_open(
         filename,
         'nonexistentoption',
-        default_opener="echo 'hello world' >> ",
+        default_opener="sed -i s/o/u/g",
         wait=True
     )
 
     with open(filename) as fd:
         content = fd.read()
-        assert(content == 'Some contenthello world\n')
+        assert(content == 'Sume cuntent')
 
 
 def test_locate_document():
