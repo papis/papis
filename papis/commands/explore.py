@@ -90,8 +90,6 @@ import papis.commands
 import papis.document
 import papis.config
 import papis.bibtex
-import urllib.request
-import tempfile
 import papis.cli
 import click
 import logging
@@ -110,8 +108,6 @@ def cli(ctx):
     """
     Explore new documents using a variety of resources
     """
-    docs = []
-    logger = logging.getLogger('explore:cli')
     ctx.obj = {'documents': []}
 
 
@@ -130,7 +126,7 @@ def cli(ctx):
 @click.option('--page', default=None)
 @click.option('--max', '-m', default=20)
 def arxiv(ctx, query, author, title, abstract, comment,
-        journal, report_number, category, id_list, page, max):
+          journal, report_number, category, id_list, page, max):
     """
     Look for documents on ArXiV.org.
 
@@ -262,7 +258,7 @@ def isbnplus(ctx, query, author, title):
 @click.pass_context
 @click.help_option('--help', '-h')
 @click.option('--query', '-q', default=None)
-def isbnplus(ctx, query):
+def dissemin(ctx, query):
     """
     Look for documents on dissem.in
 
@@ -278,7 +274,6 @@ def isbnplus(ctx, query):
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj['documents'] += docs
     logger.info('{} documents found'.format(len(docs)))
-
 
 
 @cli.command('pick')
@@ -366,7 +361,6 @@ def json(ctx, jsonfile):
     logger.info('{} documents found'.format(len(docs)))
 
 
-
 @cli.command('export')
 @click.pass_context
 @click.help_option('--help', '-h')
@@ -438,7 +432,7 @@ def export(ctx, bibtex, yaml, json):
 @click.pass_context
 @click.help_option('--help', '-h')
 @click.argument('command', type=str)
-def export(ctx, command):
+def cmd(ctx, command):
     """
     Import documents based on a yaml file
 
