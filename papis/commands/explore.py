@@ -289,7 +289,10 @@ def pick(ctx):
 
     """
     docs = ctx.obj['documents']
-    ctx.obj['documents'] = [papis.api.pick_doc(docs)]
+    ctx.obj['documents'] = filter(
+        lambda x: x is not None,
+        [papis.api.pick_doc(docs)]
+    )
 
 
 @cli.command('bibtex')
