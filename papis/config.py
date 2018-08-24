@@ -553,7 +553,7 @@ general_settings = {
     "format-jinja2-enable": False,
     "header-format-file": None,
     "header-format": \
-        "<span color='#ff00ff'>{doc.html_escape[title]}</span>\n"\
+        "<red>{doc.html_escape[title]}</red>\n"\
         " <span color='#00ff00'>{doc.html_escape[author]}</span>\n"
         "  <span color='#00ffaa'>({doc.html_escape[year]})</span> "
         "[<yellow>{doc.html_escape[tags]}</yellow>]",
