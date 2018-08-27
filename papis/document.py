@@ -505,7 +505,14 @@ class Document(object):
             fd = open(self.get_info_file(), "r")
         except:
             return False
-        structure = yaml.load(fd)
-        fd.close()
-        for key in structure:
-            self[key] = structure[key]
+        try:
+            structure = yaml.load(fd)
+            for key in structure:
+                self[key] = structure[key]
+            fd.close()
+        except Exception as e:
+            logging.error(
+                'Error reading yaml file in {0}'.format(self.get_info_file()) +
+                '\nPlease check it!\n\n{0}'.format(str(e))
+            )
+            fd.close()
