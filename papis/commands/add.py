@@ -41,6 +41,20 @@ Examples
 
         papis -l machine-learning add --from-url https://arxiv.org/abs/1712.03134
 
+- If you do not want copy the original pdfs into the library, you can
+  also tell papis to just create a link to them, for example
+
+    .. code::
+
+        papis add --link ~/Documents/interesting.pdf --from-doi 10.10763/1.3237134
+
+  will add an entry into the papis library, but the pdf document will remain
+  at ``~/Documents/interesting.pdf``, and in the document's folder
+  there will be a link to ``~/Documents/interesting.pdf`` instead of the
+  file itself. Of course you always have to be sure that the
+  document at ``~/Documents/interesting.pdf`` does not disappear, otherwise
+  you will end up without a document to open.
+
 
 Examples in python
 ^^^^^^^^^^^^^^^^^^
@@ -224,6 +238,7 @@ def run(
         open_file=False,
         edit=False,
         commit=False,
+        link=False,
         no_document=False
         ):
     """
@@ -448,11 +463,19 @@ def run(
             )
             continue
         if not no_document:
-            logger.debug(
-                "[CP] '%s' to '%s'" %
-                (in_file_path, endDocumentPath)
-            )
-            shutil.copy(in_file_path, endDocumentPath)
+            if link:
+                in_file_abspath = os.path.abspath(in_file_path)
+                logger.debug(
+                    "[SYMLINK] '%s' to '%s'" %
+                    (in_file_abspath, endDocumentPath)
+                )
+                os.symlink(in_file_abspath, endDocumentPath)
+            else:
+                logger.debug(
+                    "[CP] '%s' to '%s'" %
+                    (in_file_path, endDocumentPath)
+                )
+                shutil.copy(in_file_path, endDocumentPath)
 
     data['files'] = new_file_list
 
@@ -596,6 +619,12 @@ def run(
     default=False
 )
 @click.option(
+    "--link/--no-link",
+    help="Instead of copying the file to the library, create a link to"
+         "its original location",
+    default=False
+)
+@click.option(
     "--no-document",
     default=False,
     is_flag=True,
@@ -619,6 +648,7 @@ def cli(
         open,
         edit,
         commit,
+        link,
         no_document
         ):
     """Add a document into a given library
@@ -676,5 +706,6 @@ def cli(
         open_file=open,
         edit=edit,
         commit=commit,
+        link=link,
         no_document=no_document
     )
