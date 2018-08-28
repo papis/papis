@@ -465,6 +465,19 @@ Other
 
     Default set to '*'
 
+.. papis-config:: unique-document-keys
+
+    Whenever you add a new document, papis tries to figure out if
+    you have already added this document before. This is partially done
+    checking for some special keys, and checking if they match.
+    Which keys are checked against is decided by this option, which
+    should be formatted as a python list, just as in the default value.
+
+    For instance, if you add a paper with a given ``doi``, and then you
+    add another document with the same ``doi``, then papis will notify
+    you that there is already another document with this ``doi`` because
+    the ``doi`` key is part of the ``unique-document-keys`` option.
+
 """
 import logging
 
@@ -573,6 +586,7 @@ general_settings = {
     '}',
 
     "citation-string": "*",
+    'unique-document-keys': "['doi','ref','isbn','isbn10','url','doc_url']",
 
     "tui-editmode": "emacs",
 

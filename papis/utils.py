@@ -289,9 +289,7 @@ def locate_document(document, documents):
     """
     # if these keys exist in the documents, then check those first
     # TODO: find a way to really match well titles and author
-    comparing_keys = [
-        'doi', 'ref', 'isbn', 'isbn10', 'url', 'doc_url'
-    ]
+    comparing_keys = eval(papis.config.get('unique-document-keys'))
     for d in documents:
         for key in comparing_keys:
             if key in document.keys() and key in d.keys():
