@@ -318,6 +318,66 @@ def bibtex(ctx, bibfile):
     logger.info('{} documents found'.format(len(docs)))
 
 
+@cli.command('citations')
+@click.pass_context
+@papis.cli.query_option()
+@click.help_option('--help', '-h')
+@click.option(
+    "--max-citations", "-m", default=-1,
+    help='Number of citations to be retrieved'
+)
+def citations(ctx, query, max_citations):
+    """
+    Query the citations of a paper
+
+    Example:
+
+    Go through the citations of a paper and export it in a yaml file
+
+        papis explore citations 'einstein' export --yaml einstein.yaml
+
+    """
+    from prompt_toolkit.shortcuts import ProgressBar
+    import papis.crossref
+    logger = logging.getLogger('explore:citations')
+
+    documents = papis.api.get_documents_in_lib(
+        papis.api.get_lib(),
+        search=query
+    )
+
+    doc = papis.api.pick_doc(documents)
+    db = papis.database.get()
+
+    if not doc.has('citations') or doc['citations'] == []:
+        logger.warning('No citations found')
+        return
+
+    dois = [d.get('doi') for d in doc['citations']]
+    if max_citations < 0:
+        max_citations = len(dois)
+    dois = dois[0:min(max_citations, len(dois))]
+
+    click.echo("%s citations found" % len(dois))
+    click.echo("Fetching {} citations'".format(max_citations))
+    dois_with_data = []
+
+    with ProgressBar() as progress:
+        for j, doi in progress(enumerate(dois), total=len(dois)):
+            citation = db.query_dict(dict(doi=doi))
+
+            if citation:
+                dois_with_data.append(papis.api.pick_doc(citation))
+            else:
+                dois_with_data.append(
+                    papis.crossref.doi_to_data(doi)
+                )
+
+    docs = [papis.document.Document(data=d) for d in dois_with_data]
+    ctx.obj['documents'] += docs
+
+
+
 @cli.command('yaml')
 @click.pass_context
 @click.argument('yamlfile', type=click.Path(exists=True))
