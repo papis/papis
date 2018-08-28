@@ -16,6 +16,8 @@ from prompt_toolkit.widgets import (
     HorizontalLine
 )
 import papis.config
+import logging
+logger = logging.getLogger('pick')
 
 __all__ = ['Picker', 'pick']
 
@@ -33,13 +35,54 @@ def create_keybindings(picker):
     @kb.add('down')
     def down_(event):
         picker.options_list.move_down()
-        picker.options_list.refresh()
+        picker.refresh()
 
     @kb.add('c-p')
     @kb.add('up')
     def up_(event):
         picker.options_list.move_up()
-        picker.options_list.refresh()
+        picker.refresh()
+
+    @kb.add('end')
+    def up_(event):
+        picker.options_list.go_bottom()
+        picker.refresh()
+
+    @kb.add('c-g')
+    @kb.add('home')
+    def up_(event):
+        picker.options_list.go_top()
+        picker.refresh()
+
+    @kb.add('c-y')
+    @kb.add('c-up')
+    @kb.add('s-up')
+    def up_(event):
+        picker.scroll_up()
+        picker.refresh_prompt()
+
+    @kb.add('c-e')
+    @kb.add('c-down')
+    @kb.add('s-down')
+    def up_(event):
+        picker.scroll_down()
+        picker.refresh_prompt()
+
+    @kb.add('f1')
+    def help(event):
+        picker.options_list.content.text = """
+Bindings:
+
+Ctrl-e, Ctrl-down, Shift-down : Scroll Down
+Ctrl-y, Ctrl-up,   Shift-up   : Scroll up
+Ctrl-n, down                  : Next item
+Ctrl-p, up                    : Previous item
+Ctrl-q, Ctrl-c                : Quit
+Home                          : First item
+End                           : Last item
+
+"""
+        picker.refresh_prompt()
 
     # @kb.add('/')
     # def up_(event):
@@ -81,10 +124,12 @@ class OptionsListControl:
 
         self.content = FormattedTextControl(
             key_bindings=None,
-            get_cursor_position=self.index_to_point,
+            #get_cursor_position=self.index_to_point,
+            get_cursor_position=lambda: self.cursor,
             show_cursor=True,
             text=''
         )
+        self.cursor = Point(0,0)
 
     def set_options(self, options):
         self.options = options
@@ -97,9 +142,9 @@ class OptionsListControl:
                 self.options_headers_linecount[i]
                 for i in self.indices[0:index]
             )
-            return Point(0, line)
-        except:
-            return Point(0,0)
+            self.cursor = Point(0, line)
+        except Exception as e:
+            self.cursor = Point(0,0)
 
     def move_up(self):
         try:
@@ -155,6 +200,7 @@ class OptionsListControl:
             return self.options[self.current_index]
 
     def refresh(self):
+        self.index_to_point()
         i = self.current_index
         oldtuple = self.options_headers[i][0]
         self.options_headers[i][0] = (
@@ -168,10 +214,12 @@ class OptionsListControl:
         self.options_headers[i][0] = oldtuple
 
     def process_options(self):
+        logger.debug('processing options')
         self.options_headers_linecount = [
             len(self.header_filter(o).split('\n'))
             for o in self.options
         ]
+        logger.debug('processing headers')
         self.options_headers = [
             HTML(
                 re.sub(
@@ -183,8 +231,10 @@ class OptionsListControl:
                 ) + '\n'
             ).formatted_text for o in self.options
         ]
+        logger.debug('processing matchers')
         self.options_matchers = [self.match_filter(o) for o in self.options]
         self.indices = range(len(self.options))
+        logger.debug('options processed')
 
 
 class Picker(object):
@@ -271,14 +321,60 @@ class Picker(object):
             enable_page_navigation_bindings=True
         )
 
-    def update(self, *args):
-        self.options_list.update()
+    def refresh_prompt(self):
         self.prompt_echo(
-            "{}/{}".format(
+            "{0}/{1}  F1:help".format(
                 int(self.options_list.current_index) + 1,
-                len(self.options_list.options)
+                len(self.options_list.options),
             )
         )
+
+        # self.prompt_echo(
+            # "{0}/{1} ={2}-{3} +{4} -{5}  <{6},{7}>".format(
+                # int(self.options_list.current_index) + 1,
+                # len(self.options_list.options),
+                # self.displayed_lines[0] if self.displayed_lines is not None \
+                    # else '',
+                # self.displayed_lines[-1] if self.displayed_lines is not None \
+                    # else '',
+                # self.options_list.cursor,
+                # self.content_height,
+                # self.first_visible_line,
+                # self.last_visible_line,
+            # )
+        # )
+
+    def scroll_down(self):
+        lvl = self.last_visible_line
+        ll = self.content_height
+        if ll and lvl:
+            if lvl + 1 < ll:
+                new = lvl + 1
+            else:
+                new = lvl
+            self.options_list.cursor = Point(0, new)
+
+    def scroll_up(self):
+        fvl = self.first_visible_line
+        if fvl:
+            if fvl >= 0:
+                new = fvl - 1
+            else:
+                new = 0
+            self.options_list.cursor = Point(0, new)
+
+    def scroll_up(self):
+        dp = self.displayed_lines
+        if len(dp):
+            self.options_list.cursor = Point(0, dp[0] - 1)
+
+    def refresh(self, *args):
+        self.options_list.refresh()
+        self.refresh_prompt()
+
+    def update(self, *args):
+        self.options_list.update()
+        self.refresh_prompt()
 
     @property
     def screen_height(self):
@@ -289,6 +385,24 @@ class Picker(object):
         info = self.content_window.render_info
         if info:
             return info.displayed_lines
+
+    @property
+    def first_visible_line(self):
+        info = self.content_window.render_info
+        if info:
+            return info.first_visible_line()
+
+    @property
+    def last_visible_line(self):
+        info = self.content_window.render_info
+        if info:
+            return info.last_visible_line()
+
+    @property
+    def content_height(self):
+        info = self.content_window.render_info
+        if info:
+            return info.content_height
 
     def prompt_echo(self, text):
         self.prompt_buffer.text = text
