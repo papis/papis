@@ -13,6 +13,8 @@ Description
 Papis is a powerful and highly extensible command-line based document
 and bibliography manager.
 
+|quickstartsvg|
+
 Learn more:
 
 - Take a look at the `documentation <http://papis.readthedocs.io/en/latest/>`__!
@@ -106,6 +108,7 @@ Authors
 
 See the ``AUTHORS`` list for a list of authored commits.
 
+.. |quickstartsvg| image:: https://papis.github.io/images/quick.svg
 .. |Pypi| image:: https://badge.fury.io/py/papis.svg
    :target: https://badge.fury.io/py/papis
 .. |RTD| image:: https://readthedocs.org/projects/papis/badge/?version=latest
