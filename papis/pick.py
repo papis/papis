@@ -168,6 +168,14 @@ class OptionsListControl:
         except ValueError:
             pass
 
+    def go_top(self):
+        if len(self.indices) > 0:
+            self.current_index = self.indices[0]
+
+    def go_bottom(self):
+        if len(self.indices) > 0:
+            self.current_index = self.indices[-1]
+
     def get_search_regex(self):
         cleaned_search = self.search_buffer.text.replace('(', '\\(')\
                                        .replace(')', '\\)')\
