@@ -124,6 +124,7 @@ paper that you are looking for very easily.
 .. raw:: html
 
   <script type="text/javascript"
-  src="https://asciinema.org/a/U7e5yHvpf3kKqH8kHSh6MEa4o.js"
-  id="asciicast-U7e5yHvpf3kKqH8kHSh6MEa4o" async></script>
+    src="https://asciinema.org/a/hrNaFMh4XwqVpWsGWDi5SASUC.js"
+    id="asciicast-hrNaFMh4XwqVpWsGWDi5SASUC" async>
+  </script>
 
