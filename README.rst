@@ -6,6 +6,7 @@ Papis
 |RTD|
 |Pypi|
 |Packaging status|
+|zenodo_badge|
 
 Description
 -----------
@@ -111,6 +112,8 @@ Authors
 
 See the ``AUTHORS`` list for a list of authored commits.
 
+.. |zenodo_badge| image:: https://zenodo.org/badge/82691622.svg
+   :target: https://zenodo.org/badge/latestdoi/82691622
 .. |superquickstartsvg1| image:: https://papis.github.io/images/superquickstart1.svg
 .. |superquickstartsvg2| image:: https://papis.github.io/images/superquickstart2.svg
 .. |quickstartsvg| image:: https://papis.github.io/images/quick.svg
