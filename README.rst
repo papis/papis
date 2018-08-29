@@ -71,28 +71,31 @@ Let us download a couple of documents
     wget http://www.gnu.org/s/libc/manual/pdf/libc.pdf
     wget http://www.ams.org/notices/201304/rnoti-p434.pdf
 
-Now add them to the (defaultly created) library
+Now add them to the (defaultly created) library, you can set
+any keyword you like already when adding documents, for instance
+you can set the year `--set year 2018` or tags for organizing
+`--set tags programming`,
 
 ::
 
-    papis add libc.pdf --set author "Sandra Loosemore" --set title "GNU C reference manual" --confirm
+    papis add libc.pdf --set author "Sandra Loosemore" --set title "GNU C reference manual" --set year 2018 --set tags programming --confirm
     # Get paper information automatically via de DOI
-    papis add --from-doi 10.1090/noti963 rnoti-p434.pdf
+    papis add --from-doi 10.1090/noti963 --set tags programming rnoti-p434.pdf
 
-Now open one for example
+Now open one for example, or edit them
 
 ::
 
     papis open
+    papis edit
 
-|asciicast_open| Or edit them and export them to bibtex
+|superquickstartsvg1| Or edit them and export them to bibtex
 
 ::
 
-    papis edit
     papis export --all --bibtex > mylib.bib
 
-|asciicast_edit|
+|superquickstartsvg2|
 
 find help messages in all commands:
 
@@ -108,6 +111,8 @@ Authors
 
 See the ``AUTHORS`` list for a list of authored commits.
 
+.. |superquickstartsvg1| image:: https://papis.github.io/images/superquickstart1.svg
+.. |superquickstartsvg2| image:: https://papis.github.io/images/superquickstart2.svg
 .. |quickstartsvg| image:: https://papis.github.io/images/quick.svg
 .. |Pypi| image:: https://badge.fury.io/py/papis.svg
    :target: https://badge.fury.io/py/papis
@@ -121,7 +126,3 @@ See the ``AUTHORS`` list for a list of authored commits.
    :target: https://repology.org/metapackage/papis
 .. |asciicast_help| image:: https://asciinema.org/a/3otatlbqXIsI102uAywMhT4fP.png
    :target: https://asciinema.org/a/3otatlbqXIsI102uAywMhT4fP
-.. |asciicast_edit| image:: https://asciinema.org/a/QrUntd87K97hoKowxkAb4AYZ0.png
-   :target: https://asciinema.org/a/QrUntd87K97hoKowxkAb4AYZ0
-.. |asciicast_open| image:: https://asciinema.org/a/oEHU9oPlGrKPOQzGMxvqkh5Fe.png
-   :target: https://asciinema.org/a/oEHU9oPlGrKPOQzGMxvqkh5Fe
