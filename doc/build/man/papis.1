@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS" "1" "May 08, 2018" "0.6" "papis"
+.TH "PAPIS" "1" "Aug 29, 2018" "0.7" "papis"
 .SH NAME
 papis \- Papis Documentation
 .
@@ -116,7 +116,7 @@ library:
 .sp
 .nf
 .ft C
-papis add document.pdf \-\-author "Newton" \-\-title "Principia Mathematica"
+papis add document.pdf \-\-set author "Newton" \-\-set title "Principia Mathematica"
 .ft P
 .fi
 .UNINDENT
@@ -419,7 +419,6 @@ system \fBpython3\fP distribution
 .sp
 .nf
 .ft C
-python3\-ncurses
 python3\-setuptools
 .ft P
 .fi
@@ -477,16 +476,12 @@ add\-open = True
 
 # Define custom default match and header formats
 match\-format = {doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}
-header\-format = > {doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:\-<4})
 
-# Commands that will be run when one does papis run ...
-# e.g., papis run gagp will run the command below in the library folder
-gagp = git commit \-a && git push origin master
-gs = git status
-gm = git commit
-gp = git push
-gu = git pull
-gma = git commit \-a
+# Define header format with colors and multiline support
+header\-format = <red>{doc.html_escape[title]}</red>
+  <span color=\(aq#ff00ff\(aq>  {doc.html_escape[author]}</span>
+  <yellow>   ({doc.html_escape[year]})</yellow>
+
 
 # Define a lib
 [papers]
@@ -495,6 +490,7 @@ dir = ~/Documents/papers
 # Define a lib for books
 [books]
 dir = ~/Documents/books
+database\-backend = whoosh
 
 # Define a lib for Videos
 [videos]
@@ -504,11 +500,13 @@ dir = ~/Videos/courses
 # To make it work you just have to define some default settings
 [contacts]
 dir = ~/contacts/general
+database\-backend = papis
 mode = contact
 header\-format = {doc[first_name]} {doc[last_name]}
 match\-format = {doc[org]} {doc[first_name]} {doc[last_name]}
 browse\-query\-format = {doc[first_name]} {doc[last_name]}
 add\-open = False
+
 rofi\-gui\-gui\-eh = 2
 rofi\-gui\-header\-format = %(header\-format)s
                      {doc[tel][cell]}
@@ -656,17 +654,6 @@ User agent used by papis whenever it obtains information from external
 servers.
 .INDENT 0.0
 .TP
-\fBdefault\-gui\fP (\fI\%config\-settings\-default\-gui\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBvim\fP
-.UNINDENT
-.UNINDENT
-.sp
-Default gui to be used by papis, it can have the values given
-by \fBpapis gui \-\-help\fP\&.
-.INDENT 0.0
-.TP
 \fBscripts\-short\-help\-regex\fP (\fI\%config\-settings\-scripts\-short\-help\-regex\fP)
 .INDENT 7.0
 .IP \(bu 2
@@ -751,11 +738,85 @@ to match a document, only the year and author.
 \fBheader\-format\fP (\fI\%config\-settings\-header\-format\fP)
 .INDENT 7.0
 .IP \(bu 2
-\fBDefault\fP: \fB{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:\-<4})\fP
+.INDENT 2.0
+.TP
+\fBDefault\fP: 
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+<red>{doc.html_escape[title]}</red>
+ <span color=\(aq#00ff00\(aq>{doc.html_escape[author]}</span>
+  <span color=\(aq#00ffaa\(aq>({doc.html_escape[year]})</span> [<yellow>{doc.html_escape[tags]}</yellow>]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
 .UNINDENT
 .UNINDENT
 .sp
 Default format that is used to show a document in order to select it.
+.INDENT 0.0
+.TP
+\fBformat\-jinja2\-enable\fP (\fI\%config\-settings\-format\-jinja2\-enable\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBFalse\fP
+.UNINDENT
+.UNINDENT
+.sp
+This setting is to enable the \fI\%jinja2\fP template
+engine to render the papis templates being used, as \fBheader\-format\fP,
+\fBmatch\-format\fP etc...
+.sp
+For instance you could set the option \fBheader\-format\fP to
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+<span color=\(aq#ff00ff\(aq>{{doc.html_escape["title"]}}</span>
+<span color=\(aq#00ff00\(aq>  {{doc.html_escape["author"]}}</span>
+<span color=\(aq#00ffaa\(aq>   ({{doc.html_escape["year"]}}) </span>
+{%\- if doc.has(\(aqtags\(aq) %}<span>[<yellow>{{doc[\(aqtags\(aq]}}</yellow>] </span>{%\- endif %}
+{%\- if doc.has(\(aqcitations\(aq) %}<red>{{doc[\(aqcitations\(aq]|length}}</red>{%\- endif %}
+{%\- if doc.has(\(aqurl\(aq) %}
+<span>    {{doc.html_escape["url"]}}</span>
+{%\- endif %}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+To use it, just install jinja2.
+.INDENT 0.0
+.TP
+\fBheader\-format\-file\fP (\fI\%config\-settings\-header\-format\-file\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBNone\fP
+.UNINDENT
+.UNINDENT
+.sp
+This option should have the path of a file with the \fBheader\-format\fP
+template. Sometimes templates can get big so this is a way
+of not cluttering the config file with text.
+.sp
+As an example you would set
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[papers]
+
+header\-format\-file = ~/.papis/config/styles/header.txt
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
 .INDENT 0.0
 .TP
 \fBinfo\-allow\-unicode\fP (\fI\%config\-settings\-info\-allow\-unicode\fP)
@@ -770,16 +831,6 @@ in your info file or not. If it is set to false then a representation
 for the unicode characters will be written in its place.
 Since we should be living in an unicode world, it is set to \fBTrue\fP
 by default.
-.INDENT 0.0
-.TP
-\fBsync\-command\fP (\fI\%config\-settings\-sync\-command\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBgit \-C {lib[dir]} pull origin master\fP
-.UNINDENT
-.UNINDENT
-.sp
-Command that is to be used when \fBpapis sync\fP is run.
 .SS Tools options
 .INDENT 0.0
 .TP
@@ -826,8 +877,6 @@ or options in general.
 .IP \(bu 2
 papis.pick
 .IP \(bu 2
-rofi
-.IP \(bu 2
 vim
 .IP \(bu 2
 dmenu
@@ -871,6 +920,21 @@ File browser to be used when opening a directory, it defaults to the
 default file browser in your system, however you can set it to different
 file browsers such as \fBdolphin\fP, \fBthunar\fP, \fBranger\fP to name a few.
 .SS Bibtex options
+.INDENT 0.0
+.TP
+\fBbibtex\-journal\-key\fP (\fI\%config\-settings\-bibtex\-journal\-key\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBjournal\fP
+.UNINDENT
+.UNINDENT
+.sp
+Journal publishers may request abbreviated journal titles. This
+option allows the user to set the key for the journal entry when using
+\fBpapis export \-\-bibtex\fP\&.
+.sp
+Set as \fBfull_journal_title\fP or \fBabbrev_journal_title\fP for
+whichever style required. Default is \fBjournal\fP\&.
 .INDENT 0.0
 .TP
 \fBextra\-bibtex\-keys\fP (\fI\%config\-settings\-extra\-bibtex\-keys\fP)
@@ -1066,53 +1130,34 @@ the flag \fB\-\-open\fP will be added automatically. If is set to
 \fBTrue\fP and you add it, i.e., you run \fBpapis add \-\-open\fP, then it
 will fave the contrary effect, i.e., it will not open the attached files
 before adding the document to the library.
+.SS Browse command options
 .INDENT 0.0
 .TP
-\fBadd\-default\-fields\fP (\fI\%config\-settings\-add\-default\-fields\fP)
+\fBbrowse\-key\fP (\fI\%config\-settings\-browse\-key\fP)
 .INDENT 7.0
 .IP \(bu 2
-\fBDefault\fP: \fB["title", "author"]\fP
+\fBDefault\fP: \fBurl\fP
 .UNINDENT
 .UNINDENT
 .sp
-This is the default values that are settable in the add command.
-For instance if you would like to set \fBtitle\fP, \fBauthor\fP and
-\fByear\fP directly from the command line, you can set
+This command provides the key that is used to generate the
+url. For users that \fBpapis add \-\-from\-doi\fP, setting browse\-key
+to \fBdoi\fP constructs the url from dx.doi.org/DOI, providing a
+much more accurate url.
+.sp
+Default value is set to \fBurl\fP\&. If the user needs functionality
+with the \fBsearch\-engine\fP option, set the option to an empty
+string e.g.
 .INDENT 0.0
 .INDENT 3.5
 .sp
 .nf
 .ft C
-add\-default\-fields = [\(aqtitle\(aq, \(aqauthor\(aq, \(aqyear\(aq]
+browse\-key = \(aq\(aq
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
-.sp
-and you will be able to do
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-papis add doc.pdf \-\-author \(aqBohm\(aq \-\-title \(aqSuper book\(aq \-\-year 1928
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.SS Check command options
-.INDENT 0.0
-.TP
-\fBcheck\-keys\fP (\fI\%config\-settings\-check\-keys\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB["files"]\fP
-.UNINDENT
-.UNINDENT
-.sp
-Python list key values to be checked by default by the command
-\fBcheck\fP\&. E.g: \fBcheck\-keys = ["author", "doi"]\fP\&.
-It is important that it is a valid python list.
 .SS Edit command options
 .INDENT 0.0
 .TP
@@ -1400,6 +1445,39 @@ whoosh\-schema\-fields = [\(aqdoi\(aq, \(aqref\(aq]
 This is the model for the whoosh schema, check
 \fI\%the documentation\fP
 for more information.
+.SS Other
+.INDENT 0.0
+.TP
+\fBcitation\-string\fP (\fI\%config\-settings\-citation\-string\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB*\fP
+.UNINDENT
+.UNINDENT
+.sp
+string that can be displayed in header if the reference has a
+citation
+.sp
+Default set to \(aq*\(aq
+.INDENT 0.0
+.TP
+\fBunique\-document\-keys\fP (\fI\%config\-settings\-unique\-document\-keys\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fB[\(aqdoi\(aq,\(aqref\(aq,\(aqisbn\(aq,\(aqisbn10\(aq,\(aqurl\(aq,\(aqdoc_url\(aq]\fP
+.UNINDENT
+.UNINDENT
+.sp
+Whenever you add a new document, papis tries to figure out if
+you have already added this document before. This is partially done
+checking for some special keys, and checking if they match.
+Which keys are checked against is decided by this option, which
+should be formatted as a python list, just as in the default value.
+.sp
+For instance, if you add a paper with a given \fBdoi\fP, and then you
+add another document with the same \fBdoi\fP, then papis will notify
+you that there is already another document with this \fBdoi\fP because
+the \fBdoi\fP key is part of the \fBunique\-document\-keys\fP option.
 .SS Vim gui
 .INDENT 0.0
 .TP
@@ -1482,516 +1560,6 @@ Title : {doc[title]}
 Author: {doc[author]}
 Year  : {doc[year]}
 \-\-\-\-\-\-\-
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.SS Tk gui
-.INDENT 0.0
-.TP
-\fBopen\fP (\fI\%config\-tk\-gui\-open\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBo\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBedit\fP (\fI\%config\-tk\-gui\-edit\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBe\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBexit\fP (\fI\%config\-tk\-gui\-exit\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB<Control\-q>\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBclear\fP (\fI\%config\-tk\-gui\-clear\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBq\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBhelp\fP (\fI\%config\-tk\-gui\-help\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBh\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBfocus_prompt\fP (\fI\%config\-tk\-gui\-focus_prompt\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB:\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBmove_down\fP (\fI\%config\-tk\-gui\-move_down\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBj\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBmove_up\fP (\fI\%config\-tk\-gui\-move_up\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBk\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBmove_top\fP (\fI\%config\-tk\-gui\-move_top\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBg\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBmove_bottom\fP (\fI\%config\-tk\-gui\-move_bottom\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB<Shift\-G>\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBprint_info\fP (\fI\%config\-tk\-gui\-print_info\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBi\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBhalf_down\fP (\fI\%config\-tk\-gui\-half_down\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB<Control\-d>\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBhalf_up\fP (\fI\%config\-tk\-gui\-half_up\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB<Control\-u>\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBscroll_down\fP (\fI\%config\-tk\-gui\-scroll_down\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB<Control\-e>\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBscroll_up\fP (\fI\%config\-tk\-gui\-scroll_up\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB<Control\-y>\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBprompt\-fg\fP (\fI\%config\-tk\-gui\-prompt\-fg\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBlightgreen\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBprompt\-bg\fP (\fI\%config\-tk\-gui\-prompt\-bg\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBblack\fP
-.UNINDENT
-.UNINDENT
-.sp
-Color of the foreground of an entry
-.INDENT 0.0
-.TP
-\fBentry\-fg\fP (\fI\%config\-tk\-gui\-entry\-fg\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBgrey77\fP
-.UNINDENT
-.UNINDENT
-.sp
-Color of the foreground of an active entry
-.INDENT 0.0
-.TP
-\fBactiveforeground\fP (\fI\%config\-tk\-gui\-activeforeground\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBgray99\fP
-.UNINDENT
-.UNINDENT
-.sp
-Color of the background of an active entry
-.INDENT 0.0
-.TP
-\fBactivebackground\fP (\fI\%config\-tk\-gui\-activebackground\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB#394249\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBinsertbackground\fP (\fI\%config\-tk\-gui\-insertbackground\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBred\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBprompt\-font\-size\fP (\fI\%config\-tk\-gui\-prompt\-font\-size\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB14\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBentry\-bg\-size\fP (\fI\%config\-tk\-gui\-entry\-bg\-size\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB14\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBentry\-font\-size\fP (\fI\%config\-tk\-gui\-entry\-font\-size\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB14\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBentry\-font\-name\fP (\fI\%config\-tk\-gui\-entry\-font\-name\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBTimes\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBentry\-font\-style\fP (\fI\%config\-tk\-gui\-entry\-font\-style\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBnormal\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBentry\-lines\fP (\fI\%config\-tk\-gui\-entry\-lines\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB3\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBentry\-bg\-odd\fP (\fI\%config\-tk\-gui\-entry\-bg\-odd\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB#273238\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBentry\-bg\-pair\fP (\fI\%config\-tk\-gui\-entry\-bg\-pair\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB#273238\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBcursor\fP (\fI\%config\-tk\-gui\-cursor\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBxterm\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBheight\fP (\fI\%config\-tk\-gui\-height\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB1\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBlabels\-per\-page\fP (\fI\%config\-tk\-gui\-labels\-per\-page\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB6\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBborderwidth\fP (\fI\%config\-tk\-gui\-borderwidth\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB\-1\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBwindow\-width\fP (\fI\%config\-tk\-gui\-window\-width\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB1200\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBwindow\-bg\fP (\fI\%config\-tk\-gui\-window\-bg\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB#273238\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBwindow\-height\fP (\fI\%config\-tk\-gui\-window\-height\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB700\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBmatch\-format\fP (\fI\%config\-tk\-gui\-match\-format\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBheader\-format\fP (\fI\%config\-tk\-gui\-header\-format\fP)
-.INDENT 7.0
-.IP \(bu 2
-.INDENT 2.0
-.TP
-\fBDefault\fP: 
-.INDENT 7.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-{doc[title]}
-{doc[empty]}   {doc[author]}
-({doc[year]:\->4})
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.SS Rofi gui
-.INDENT 0.0
-.TP
-\fBkey\-quit\fP (\fI\%config\-rofi\-gui\-key\-quit\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBAlt+q\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBkey\-query\fP (\fI\%config\-rofi\-gui\-key\-query\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBAlt+y\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBkey\-refresh\fP (\fI\%config\-rofi\-gui\-key\-refresh\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBAlt+r\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBkey\-edit\fP (\fI\%config\-rofi\-gui\-key\-edit\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBAlt+e\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBkey\-delete\fP (\fI\%config\-rofi\-gui\-key\-delete\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBAlt+d\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBkey\-help\fP (\fI\%config\-rofi\-gui\-key\-help\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBAlt+h\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBkey\-open\-stay\fP (\fI\%config\-rofi\-gui\-key\-open\-stay\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBAlt+o\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBkey\-normal\-window\fP (\fI\%config\-rofi\-gui\-key\-normal\-window\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBAlt+w\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBkey\-browse\fP (\fI\%config\-rofi\-gui\-key\-browse\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBAlt+u\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBkey\-open\fP (\fI\%config\-rofi\-gui\-key\-open\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBEnter\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBeh\fP (\fI\%config\-rofi\-gui\-eh\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB3\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBsep\fP (\fI\%config\-rofi\-gui\-sep\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB|\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBwidth\fP (\fI\%config\-rofi\-gui\-width\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB80\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBlines\fP (\fI\%config\-rofi\-gui\-lines\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB10\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBfullscreen\fP (\fI\%config\-rofi\-gui\-fullscreen\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBFalse\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBnormal_window\fP (\fI\%config\-rofi\-gui\-normal_window\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBFalse\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBfixed_lines\fP (\fI\%config\-rofi\-gui\-fixed_lines\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fB20\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBmarkup_rows\fP (\fI\%config\-rofi\-gui\-markup_rows\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBTrue\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBmulti_select\fP (\fI\%config\-rofi\-gui\-multi_select\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBTrue\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBcase_sensitive\fP (\fI\%config\-rofi\-gui\-case_sensitive\fP)
-.INDENT 7.0
-.IP \(bu 2
-\fBDefault\fP: \fBFalse\fP
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.TP
-\fBheader\-format\fP (\fI\%config\-rofi\-gui\-header\-format\fP)
-.INDENT 7.0
-.IP \(bu 2
-.INDENT 2.0
-.TP
-\fBDefault\fP: 
-.INDENT 7.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-<b>{doc[title]}</b>
-{doc[empty]}  <i>{doc[author]}</i>
-{doc[empty]}  <span foreground="red">({doc[year]:\->4})</span><span foreground="green">{doc[tags]}</span>
 .ft P
 .fi
 .UNINDENT
@@ -2397,6 +1965,108 @@ where einstein appears in the title.
 You can read more about the whoosh query language
 \fI\%here\fP\&.
 .SH COMMANDS
+.SS Main
+.SS Examples
+.INDENT 0.0
+.IP \(bu 2
+To override some configuration options, you can use the flag \fB\-\-set\fP, for
+instance, if you want to override the editor used and the opentool to open
+documents, you can just type
+.INDENT 2.0
+.INDENT 3.5
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis \-\-set editor gedit \-\-set opentool firefox edit
+papis \-\-set editor gedit \-\-set opentool firefox open
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.IP \(bu 2
+If you want to list the libraries and pick one before sending a database
+query to papis, use \fB\-\-pick\-lib\fP as such
+.INDENT 2.0
+.INDENT 3.5
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis \-\-pick\-lib open \(aqeinstein relativity\(aq
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.SS Cli
+.SS papis
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis [OPTIONS] COMMAND [ARGS]...
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-version
+Show the version and exit.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-v, \-\-verbose
+Make the output verbose (equivalent to \-\-log DEBUG)
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-l, \-\-lib <lib>
+Choose a library name or library path (unamed library)
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-c, \-\-config <config>
+Configuration file to use
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-log <log>
+Logging level
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-pick\-lib
+Pick library to use
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-clear\-cache, \-\-cc
+Clear cache of the library used
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-j, \-\-cores <cores>
+Number of cores to run some multicore functionality
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-s, \-\-set <set>
+Set key value, e.g., \-\-set info\-name information.yaml  \-\-set opentool evince
+.UNINDENT
 .SS Add
 .sp
 The add command is one of the central commands of the papis command line
@@ -2406,13 +2076,11 @@ There are also customization settings availabe for this command, check out
 the configuration page for add.
 .SS Examples
 .INDENT 0.0
-.INDENT 3.5
-.INDENT 0.0
 .IP \(bu 2
-Add a document located in \fB~/Documents/interesting.pdf\fP
-and name the folder where it will be stored in the database
-\fBinteresting\-paper\-2021\fP
-.UNINDENT
+Add a document located in \fB~/Documents/interesting.pdf\fP and name the
+folder where it will be stored in the database \fBinteresting\-paper\-2021\fP
+.INDENT 2.0
+.INDENT 3.5
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -2423,12 +2091,36 @@ papis add ~/Documents/interesting.pdf \-\-name interesting\-paper\-2021
 .fi
 .UNINDENT
 .UNINDENT
-.INDENT 0.0
-.IP \(bu 2
-Add a paper that you have locally in a file and get the paper
-information through its \fBdoi\fP identifier (in this case
-\fB10.10763/1.3237134\fP as an example):
 .UNINDENT
+.UNINDENT
+.sp
+if you want to add directly some key values, like \fBauthor\fP, \fBtitle\fP
+and \fBtags\fP, you can also run the following:
+.INDENT 2.0
+.INDENT 3.5
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis add ~/Documents/interesting.pdf \e
+    \-\-name interesting\-paper\-2021 \e
+    \-\-set author \(aqJohn Smith\(aq \e
+    \-\-set title \(aqThe interesting life of bees\(aq \e
+    \-\-set year 1985 \e
+    \-\-set tags \(aqbiology interesting bees\(aq
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.IP \(bu 2
+Add a paper that you have locally in a file and get the paper information
+through its \fBdoi\fP identifier (in this case \fB10.10763/1.3237134\fP as an
+example):
+.INDENT 2.0
+.INDENT 3.5
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -2439,10 +2131,12 @@ papis add ~/Documents/interesting.pdf \-\-from\-doi 10.10763/1.3237134
 .fi
 .UNINDENT
 .UNINDENT
-.INDENT 0.0
+.UNINDENT
+.UNINDENT
 .IP \(bu 2
 Add paper to a library named \fBmachine\-learning\fP from \fBarxiv.org\fP
-.UNINDENT
+.INDENT 2.0
+.INDENT 3.5
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -2455,19 +2149,44 @@ papis \-l machine\-learning add \-\-from\-url https://arxiv.org/abs/1712.03134
 .UNINDENT
 .UNINDENT
 .UNINDENT
+.IP \(bu 2
+If you do not want copy the original pdfs into the library, you can
+also tell papis to just create a link to them, for example
+.INDENT 2.0
+.INDENT 3.5
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis add \-\-link ~/Documents/interesting.pdf \-\-from\-doi 10.10763/1.3237134
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.sp
+will add an entry into the papis library, but the pdf document will remain
+at \fB~/Documents/interesting.pdf\fP, and in the document\(aqs folder
+there will be a link to \fB~/Documents/interesting.pdf\fP instead of the
+file itself. Of course you always have to be sure that the
+document at \fB~/Documents/interesting.pdf\fP does not disappear, otherwise
+you will end up without a document to open.
+.UNINDENT
 .SS Examples in python
 .sp
 There is a python function in the add module that can be used to interact
 in a more effective way in python scripts,
 .INDENT 0.0
 .TP
-.B papis.commands.add.run(paths, data={}, name=None, file_name=None, subfolder=None, interactive=False, from_bibtex=None, from_yaml=None, from_folder=None, from_url=None, from_doi=None, from_pmid=None, confirm=False, open_file=False, edit=False, commit=False, no_document=False)
+.B papis.commands.add.run(paths, data={}, name=None, file_name=None, subfolder=None, interactive=False, from_bibtex=None, from_yaml=None, from_folder=None, from_url=None, from_doi=None, from_pmid=None, confirm=False, open_file=False, edit=False, commit=False, link=False, no_document=False)
 .INDENT 7.0
 .TP
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBpaths\fP (\fI[]\fP) \-\- Paths to the documents to be added
+\fBpaths\fP (\fI[\fP\fI]\fP) \-\- Paths to the documents to be added
 .IP \(bu 2
 \fBdata\fP (\fIdict\fP) \-\- Data for the document to be added.
 If more data is to be retrieved from other sources, the data dictionary
@@ -2510,127 +2229,1220 @@ in the case of course that the library is a git repository.
 .UNINDENT
 .UNINDENT
 .UNINDENT
+.SS Cli
+.SS papis add
+.sp
+Add a document into a given library
 .INDENT 0.0
 .INDENT 3.5
 .sp
 .nf
 .ft C
-usage: papis add [\-h] [\-d DIR] [\-i] [\-\-name NAME] [\-\-file\-name FILE_NAME]
-                 [\-\-title TITLE] [\-\-author AUTHOR] [\-\-year YEAR] [\-\-tags TAGS]
-                 [\-\-from\-bibtex FROM_BIBTEX] [\-\-from\-yaml FROM_YAML]
-                 [\-\-from\-folder FROM_FOLDER] [\-\-from\-url FROM_URL]
-                 [\-\-from\-doi FROM_DOI] [\-\-from\-pmid FROM_PMID]
-                 [\-\-from\-lib FROM_LIB] [\-\-confirm] [\-\-open] [\-\-edit]
-                 [\-\-commit] [\-\-no\-document]
-                 [document [document ...]]
+papis add [OPTIONS] [FILES]...
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
-.SS Positional Arguments
-.INDENT 0.0
+Options.INDENT 0.0
 .TP
-.Bdocument
-Document file names
-.sp
-Default: []
+.B \-h, \-\-help
+Show this message and exit.
 .UNINDENT
-.SS Named Arguments
 .INDENT 0.0
 .TP
-.B\-d, \-\-dir
+.B \-s, \-\-set <set>
+Set some information before
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-d, \-\-dir <dir>
 Subfolder in the library
-.sp
-Default: ""
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-i, \-\-interactive
+.B \-i, \-\-interactive, \-\-no\-interactive
 Do some of the actions interactively
-.sp
-Default: False
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-name
+.B \-\-name <name>
 Name for the document\(aqs folder (papis format)
-.sp
-Default: ""
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-file\-name
+.B \-\-file\-name <file_name>
 File name for the document (papis format)
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-title
-Title for document
-.sp
-Default: ""
-.TP
-.B\-\-author
-Author for document
-.sp
-Default: ""
-.TP
-.B\-\-year
-Year for document
-.sp
-Default: ""
-.TP
-.B\-\-tags
-Tags for document
-.sp
-Default: ""
-.TP
-.B\-\-from\-bibtex
+.B \-\-from\-bibtex <from_bibtex>
 Parse information from a bibtex file
-.sp
-Default: ""
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-from\-yaml
+.B \-\-from\-yaml <from_yaml>
 Parse information from a yaml file
-.sp
-Default: ""
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-from\-folder
+.B \-\-from\-folder <from_folder>
 Add document from folder being a valid papis document (containing info.yaml)
-.sp
-Default: ""
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-from\-url
+.B \-\-from\-url <from_url>
 Get document and information from agiven url, a parser must be implemented
-.sp
-Default: ""
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-from\-doi
+.B \-\-from\-doi <from_doi>
 Doi to try to get information from
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-from\-pmid
+.B \-\-from\-pmid <from_pmid>
 PMID to try to get information from
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-from\-lib
+.B \-\-from\-lib <from_lib>
 Add document from another library
-.sp
-Default: ""
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-confirm
+.B \-\-confirm, \-\-no\-confirm
 Ask to confirm before adding to the collection
-.sp
-Default: True
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-open
+.B \-\-open, \-\-no\-open
 Open file before adding document
-.sp
-Default: True
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-edit
+.B \-\-edit, \-\-no\-edit
 Edit info file before adding document
-.sp
-Default: True
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-commit
+.B \-\-commit, \-\-no\-commit
 Commit document if library is a git repository
-.sp
-Default: False
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-no\-document
+.B \-\-link, \-\-no\-link
+Instead of copying the file to the library, create a link toits original location
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-no\-document
 Add entry without a document related to it
+.UNINDENT
+Arguments.INDENT 0.0
+.TP
+.B FILES
+Optional argument(s)
+.UNINDENT
+.SS Addto
 .sp
-Default: False
+This command adds files to existing papis documents in some library.
+.sp
+For instance imagine you have two pdf files, \fBa.pdf\fP and \fBb.pdf\fP
+that you want to add to a document that matches with the query string
+\fBeinstein photon definition\fP, then you would use
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis addto \(aqeinstein photon definition\(aq \-f a.pdf \-f b.pdf
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+notice that we repeat two times the flag \fB\-f\fP, this is important.
+.SS Cli
+.SS papis addto
+.sp
+Add files to an existing document
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis addto [OPTIONS] [QUERY]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-f, \-\-files <files>
+File fullpaths to documents
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-file\-name <file_name>
+File name for the document (papis format)
+.UNINDENT
+Arguments.INDENT 0.0
+.TP
+.B QUERY
+Optional argument
+.UNINDENT
+.SS Browse
+.sp
+This command will try its best to find a source in the internet for the
+document at hand.
+.sp
+Of course if the document has an url key in its info file, it will use this url
+to open it in a browser.  Also if it has a doc_url key, or a doi, it will try
+to compose urls out of these to open it.
+.sp
+If none of the above work, then it will try to use a search engine with the
+document\(aqs information (using the \fBbrowse\-query\-format\fP).  You can select
+wich search engine you want to use using the \fBsearch\-engine\fP setting.
+.SS Cli
+.SS papis browse
+.sp
+Open document\(aqs url in a browser
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis browse [OPTIONS] [QUERY]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-k, \-\-key <key>
+Use the value of the document\(aqs key to open in the browser, e.g.doi, url, doc_url ...
+.UNINDENT
+Arguments.INDENT 0.0
+.TP
+.B QUERY
+Optional argument
+.UNINDENT
+.SS Config
+.sp
+The command config is a useful command because it allows you to check
+the configuration settings\(aq values that your current \fIpapis\fP session
+is using.
+.sp
+For example let\(aqs say that you want to see which \fBdir\fP setting your
+current library is using (i.e., the directory or the dir that appears
+in the definition of the library in the configuration file), then you
+would simply do:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis config dir
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+If you wanted to see which \fBdir\fP the library \fBbooks\fP has, for example
+then you would do
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis \-l books config dir
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+This works as well for default settings, i.e., settings that you have not
+customized, for example the setting \fBmatch\-format\fP, you would check
+it with
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis config match\-format
+> {doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+You can find a list of all available settings in the configuration section.
+.SS Cli
+.SS papis config
+.sp
+Print configuration values
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis config [OPTIONS] OPTION
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+Arguments.INDENT 0.0
+.TP
+.B OPTION
+Required argument
+.UNINDENT
+.SS Edit
+.sp
+This command edits the information of the documents.
+The editor used is defined by the \fBeditor\fP configuration setting.
+.SS Cli
+.SS papis edit
+.sp
+Edit document information from a given library
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis edit [OPTIONS] [QUERY]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-n, \-\-notes
+Edit notes associated to the document
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-all
+Edit all matching documents
+.UNINDENT
+Arguments.INDENT 0.0
+.TP
+.B QUERY
+Optional argument
+.UNINDENT
+.SS Explore
+.sp
+This command is in an experimental stage but it might be useful for many
+people.
+.sp
+Imagine you want to search for some papers online, but you don\(aqt want to
+go into a browser and look for it. Explore gives you way to do this,
+using several services available online, more should be coming on the way.
+.sp
+An excellent such resource is \fI\%crossref\fP,
+which you can use by using the subcommand crossref:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore crossref \-\-author \(aqFreeman Dyson\(aq
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+If you issue this command, you will see some text but basically nothing
+will happen. This is because \fBexplore\fP is conceived in such a way
+as to concatenate commands, doing a simple
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore crossref \-h
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+will tell you which commands are available.
+Let us suppose that you want to look for some documents on crossref,
+say some papers of Schroedinger, and you want to store them into a bibtex
+file called \fBlib.bib\fP, then you could concatenate the commands
+\fBcrossref\fP and \fBexport \-\-bibtex\fP as such
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore crossref \-a \(aqSchrodinger\(aq export \-\-bibtex lib.bib
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+This will store everything that you got from crossref in the file \fBlib.bib\fP
+and store in bibtex format. \fBexplore\fP is much more flexible than that,
+you can also pick just one document to store, for instance let\(aqs assume that
+you don\(aqt want to store all retrieved documents but only one that you pick,
+the \fBpick\fP command will take care of it
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore crossref \-a \(aqSchrodinger\(aq pick export \-\-bibtex lib.bib
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+notice how the \fBpick\fP command is situated before the \fBexport\fP\&.
+More generally you could write something like
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore \e
+    crossref \-a Schroedinger \e
+    crossref \-a Einstein \e
+    arxiv \-a \(aqFelix Hummel\(aq \e
+    export \-\-yaml docs.yaml \e
+    pick  \e
+    export \-\-bibtex specially\-picked\-document.bib
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+The upper command will look in crossref for documents authored by Schrodinger,
+then also by Einstein, and will look on the arxiv for papers authored by Felix
+Hummel. At the end, all these documents will be stored in the \fBdocs.yaml\fP\&.
+After that we pick one document from them and store the information in
+the file \fBspecially\-picked\-document.bib\fP, and we could go on and on.
+.sp
+If you want to follow\-up on these documents and get them again to pick one,
+you could use the \fByaml\fP command to read in document information from a yaml
+file, i.e., the previously created \fBdocs.yaml\fP
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore \e
+    yaml docs.yaml \e
+    pick \e
+    cmd \(aqpapis scihub {doc[doi]}\(aq \e
+    cmd \(aqfirefox {doc[url]}\(aq
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+In this last example, we read the documents\(aq information from \fBdocs.yaml\fP and
+pick a document, which then feed into the \fBexplore cmd\fP command, that accepts
+a papis formatting string to issue a general shell command.  In this case, the
+picked document gets fed into the \fBpapis scihub\fP command which tries to
+download the document using \fBscihub\fP, and also this very document is tried to
+be opened by firefox (in case the document does have a \fBurl\fP).
+.SS Cli
+.SS papis explore
+.sp
+Explore new documents using a variety of resources
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore [OPTIONS] COMMAND1 [ARGS]... [COMMAND2 [ARGS]...]...
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+.SS arxiv
+.sp
+Look for documents on ArXiV.org.
+.sp
+Examples of its usage are
+.sp
+papis explore arxiv \-a \(aqHummel\(aq \-m 100 arxiv \-a \(aqGarnet Chan\(aq pick
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore arxiv [OPTIONS]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-q, \-\-query <query>
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-a, \-\-author <author>
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-t, \-\-title <title>
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-abstract <abstract>
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-comment <comment>
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-journal <journal>
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-report\-number <report_number>
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-category <category>
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-id\-list <id_list>
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-page <page>
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-m, \-\-max <max>
+.UNINDENT
+.SS bibtex
+.sp
+Import documents from a bibtex file
+.sp
+Examples of its usage are
+.sp
+papis explore bibtex lib.bib pick
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore bibtex [OPTIONS] BIBFILE
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+Arguments.INDENT 0.0
+.TP
+.B BIBFILE
+Required argument
+.UNINDENT
+.SS citations
+.sp
+Query the citations of a paper
+.sp
+Example:
+.sp
+Go through the citations of a paper and export it in a yaml file
+.INDENT 0.0
+.INDENT 3.5
+papis explore citations \(aqeinstein\(aq export \-\-yaml einstein.yaml
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore citations [OPTIONS] [QUERY]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-m, \-\-max\-citations <max_citations>
+Number of citations to be retrieved
+.UNINDENT
+Arguments.INDENT 0.0
+.TP
+.B QUERY
+Optional argument
+.UNINDENT
+.SS cmd
+.sp
+Import documents based on a yaml file
+.sp
+Examples of its usage are:
+.sp
+Look for 200 Schroedinger papers, pick one, and add it via papis\-scihub
+.sp
+papis explore crossref \-m 200 \-a \(aqSchrodinger\(aq pick cmd \(aqpapis scihub {doc[doi]}\(aq
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore cmd [OPTIONS] COMMAND
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+Arguments.INDENT 0.0
+.TP
+.B COMMAND
+Required argument
+.UNINDENT
+.SS crossref
+.sp
+Look for documents on crossref.org.
+.sp
+Examples of its usage are
+.sp
+papis explore crossref \-a \(aqAlbert einstein\(aq pick export \-\-bibtex lib.bib
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore crossref [OPTIONS]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-q, \-\-query <query>
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-a, \-\-author <author>
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-t, \-\-title <title>
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-m, \-\-max <max>
+.UNINDENT
+.SS dissemin
+.sp
+Look for documents on dissem.in
+.sp
+Examples of its usage are
+.sp
+papis explore dissemin \-q \(aqAlbert einstein\(aq pick cmd \(aqfirefox {doc[url]}\(aq
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore dissemin [OPTIONS]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-q, \-\-query <query>
+.UNINDENT
+.SS export
+.sp
+Export retrieved documents into various formats for later use
+.sp
+Examples of its usage are
+.sp
+papis explore crossref \-m 200 \-a \(aqSchrodinger\(aq export \-\-yaml lib.yaml
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore export [OPTIONS]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-bibtex <bibtex>
+Export list of documents retrieved to a bibtex file
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-yaml <yaml>
+Export list of documents retrieved to a yaml file
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-json <json>
+Export list of documents retrieved to a json file
+.UNINDENT
+.SS isbnplus
+.sp
+Look for documents on isbnplus.com
+.sp
+Examples of its usage are
+.sp
+papis explore isbnplus \-q \(aqAlbert einstein\(aq pick cmd \(aqfirefox {doc[url]}\(aq
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore isbnplus [OPTIONS]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-q, \-\-query <query>
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-a, \-\-author <author>
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-t, \-\-title <title>
+.UNINDENT
+.SS json
+.sp
+Import documents from a json file
+.sp
+Examples of its usage are
+.sp
+papis explore json lib.json pick
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore json [OPTIONS] JSONFILE
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+Arguments.INDENT 0.0
+.TP
+.B JSONFILE
+Required argument
+.UNINDENT
+.SS libgen
+.sp
+Look for documents on library genesis
+.sp
+Examples of its usage are
+.sp
+papis explore libgen \-a \(aqAlbert einstein\(aq export \-\-yaml einstein.yaml
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore libgen [OPTIONS]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-a, \-\-author <author>
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-t, \-\-title <title>
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-i, \-\-isbn <isbn>
+.UNINDENT
+.SS pick
+.sp
+Pick a document from the retrieved documents
+.sp
+Examples of its usage are
+.sp
+papis explore bibtex lib.bib pick
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore pick [OPTIONS]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+.SS yaml
+.sp
+Import documents from a yaml file
+.sp
+Examples of its usage are
+.sp
+papis explore yaml lib.yaml pick
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis explore yaml [OPTIONS] YAMLFILE
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+Arguments.INDENT 0.0
+.TP
+.B YAMLFILE
+Required argument
+.UNINDENT
+.SS Export
+.sp
+The export command is useful to work with other programs such as bibtex.
+.sp
+Some examples of its usage are:
+.INDENT 0.0
+.IP \(bu 2
+Export one of the documents matching the author with einstein to bibtex:
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis export \-\-bibtex \(aqauthor = einstein\(aq
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+or export all of them
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis export \-\-bibtex \-\-all \(aqauthor = einstein\(aq
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Export all documents to bibtex and save them into a \fBlib.bib\fP file
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis export \-\-all \-\-bibtex \-\-out lib.bib
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Export a folder of one of the documents matching the word \fBkrebs\fP
+into a folder named, \fBinteresting\-document\fP
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+  papis export \-\-folder \-\-out interesting\-document krebs
+
+this will create the folder \(ga\(gainteresting\-document\(ga\(ga containing the
+\(ga\(gainfo.yaml\(ga\(ga file, the linked documents and a \(ga\(gabibtex\(ga\(ga file for
+sharing with other people.
+
+You can also just export its associated document:
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis export \-\-file krebs
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS Cli
+.SS papis export
+.sp
+Export a document from a given library
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis export [OPTIONS] [QUERY]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-yaml
+Export into yaml
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-bibtex
+Export into bibtex
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-json
+Export into json
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-folder
+Export document folder to share
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-no\-bibtex
+When exporting to a folder, do not include the bibtex
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-o, \-\-out
+Outfile or outdir
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-t, \-\-text
+Text formated reference
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-a, \-\-all
+Export all without picking
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-file
+Export a copy of a file
+.UNINDENT
+Arguments.INDENT 0.0
+.TP
+.B QUERY
+Optional argument
+.UNINDENT
+.SS Git
+.sp
+This command is useful if your library is itself a git repository.
+You can use this command to issue git commands in your library
+repository without having to change your current directory.
+.SS CLI Examples
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+Check the status of the library repository:
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis git status
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Commit all changes:
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis git commit \-a
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.SS List
+.sp
+This command is to list contents of a library.
+.SS CLI Examples
+.INDENT 0.0
+.IP \(bu 2
+List all document files associated will all entries:
+.INDENT 2.0
+.INDENT 3.5
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis list \-\-file
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.IP \(bu 2
+List all document year and title with custom formatting:
+.INDENT 2.0
+.INDENT 3.5
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis list \-\-format \(aq{doc[year]} {doc[title]}\(aq
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.IP \(bu 2
+List all documents according to the bibitem formatting (stored in a template
+file \fBbibitem.template\fP):
+.INDENT 2.0
+.INDENT 3.5
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis list \-\-template bibitem.template
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.SS Python examples
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+# Import the run function from the list command
+
+from papis.commands.list import run as papis_list
+
+documents = papis_list(query=\(aqeinstein\(aq, library=\(aqpapis\(aq)
+
+for doc in documents:
+    print(doc["url"])
+
+# etc...
+info_files = list(query=\(aqeinstein\(aq, library=\(aqpapis\(aq, info_files=True)
+
+# do something with the info file paths...
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS Cli
+.SS papis list
+.sp
+List documents\(aq properties
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis list [OPTIONS] [QUERY]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-i, \-\-info
+Show the info file name associated with the document
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-f, \-\-file
+Show the file name associated with the document
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-d, \-\-dir
+Show the folder name associated with the document
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-format <format>
+List entries using a custom papis format, e.g. \(aq{doc[year] {doc[title]}
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-template <template>
+Template file containing a papis format to list entries
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-p, \-\-pick
+Pick the document instead of listing everything
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-downloaders
+List available downloaders
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-libraries
+List defined libraries
+.UNINDENT
+Arguments.INDENT 0.0
+.TP
+.B QUERY
+Optional argument
+.UNINDENT
+.SS Mv
+.SS Cli
+.SS papis mv
+.sp
+Move a document into some other path
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis mv [OPTIONS] [QUERY]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-git, \-\-no\-git
+Add git interoperability
+.UNINDENT
+Arguments.INDENT 0.0
+.TP
+.B QUERY
+Optional argument
 .UNINDENT
 .SS Open
 .sp
@@ -2725,7 +3537,7 @@ Open a mark defined in the info file
 .sp
 .nf
 .ft C
-papis open \-\-marks bohm
+papis open \-\-mark bohm
 .ft P
 .fi
 .UNINDENT
@@ -2733,81 +3545,175 @@ papis open \-\-marks bohm
 .UNINDENT
 .UNINDENT
 .UNINDENT
+.SS Cli
+.SS papis open
+.sp
+Open document from a given library
 .INDENT 0.0
 .INDENT 3.5
 .sp
 .nf
 .ft C
-usage: papis open [\-h] [\-\-tool TOOL] [\-d] [\-\-all] [\-m] [search]
+papis open [OPTIONS] [QUERY]
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
-.SS Positional Arguments
-.INDENT 0.0
+Options.INDENT 0.0
 .TP
-.Bsearch
-Search query string
-.sp
-Default: "."
+.B \-h, \-\-help
+Show this message and exit.
 .UNINDENT
-.SS Named Arguments
 .INDENT 0.0
 .TP
-.B\-\-tool
+.B \-\-tool <tool>
 Tool for opening the file (opentool)
-.sp
-Default: ""
-.TP
-.B\-d, \-\-dir
-Open directory
-.sp
-Default: False
-.TP
-.B\-\-all
-Open all matching documents
-.sp
-Default: False
-.TP
-.B\-m, \-\-mark
-Open mark
-.sp
-Default: True
 .UNINDENT
-.SS Edit
+.INDENT 0.0
+.TP
+.B \-d, \-\-dir
+Open directory
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-all
+Open all matching documents
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-m, \-\-mark, \-\-no\-mark
+Open mark
+.UNINDENT
+Arguments.INDENT 0.0
+.TP
+.B QUERY
+Optional argument
+.UNINDENT
+.SS Rename
+.SS Cli
+.SS papis rename
 .sp
-This command edits the information of the documents.
-The editor used is defined by the \fBeditor\fP configuration setting.
+Rename entry
 .INDENT 0.0
 .INDENT 3.5
 .sp
 .nf
 .ft C
-usage: papis edit [\-h] [\-n] [\-\-all] [search]
+papis rename [OPTIONS] [QUERY]
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
-.SS Positional Arguments
-.INDENT 0.0
+Options.INDENT 0.0
 .TP
-.Bsearch
-Search query string
-.sp
-Default: "."
+.B \-h, \-\-help
+Show this message and exit.
 .UNINDENT
-.SS Named Arguments
 .INDENT 0.0
 .TP
-.B\-n, \-\-notes
-Edit notes associated to the document
-.sp
-Default: False
+.B \-\-git, \-\-no\-git
+Add git interoperability
+.UNINDENT
+Arguments.INDENT 0.0
 .TP
-.B\-\-all
-Edit all matching documents
+.B QUERY
+Optional argument
+.UNINDENT
+.SS Rm
+.SS Cli
+.SS papis rm
 .sp
-Default: False
+Delete command for several objects
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis rm [OPTIONS] [QUERY]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-file
+Remove files from a document instead of the whole folder
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-f, \-\-force
+Do not confirm removal
+.UNINDENT
+Arguments.INDENT 0.0
+.TP
+.B QUERY
+Optional argument
+.UNINDENT
+.SS Run
+.sp
+This command is useful to issue commands in the directory of your library.
+.SS CLI Examples
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+List files in your directory
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis run ls
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Find a file in your directory using the \fBfind\fP command
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis run find \-name \(aqdocument.pdf\(aq
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.SS Python examples
+.SS Cli
+.SS papis run
+.sp
+Run an arbitrary shell command in the library folder
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+papis run [OPTIONS] [RUN_COMMAND]...
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+Options.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Show this message and exit.
+.UNINDENT
+Arguments.INDENT 0.0
+.TP
+.B RUN_COMMAND
+Optional argument(s)
 .UNINDENT
 .SS Update
 .sp
@@ -2853,707 +3759,84 @@ papis update \-\-from\-bibtex libraryfile.bib \-i
 .UNINDENT
 .UNINDENT
 .UNINDENT
+.SS Cli
+.SS papis update
+.sp
+Update a document from a given library
 .INDENT 0.0
 .INDENT 3.5
 .sp
 .nf
 .ft C
-usage: papis update [\-h] [\-i] [\-f] [\-d DOCUMENT]
-                    [\-\-from\-isbnplus FROM_ISBNPLUS] [\-\-from\-yaml FROM_YAML]
-                    [\-\-from\-bibtex FROM_BIBTEX] [\-\-from\-url FROM_URL]
-                    [\-\-from\-doi FROM_DOI] [\-\-auto]
-                    [search]
+papis update [OPTIONS] [QUERY]
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
-.SS Positional Arguments
-.INDENT 0.0
+Options.INDENT 0.0
 .TP
-.Bsearch
-Search query string
-.sp
-Default: "."
+.B \-h, \-\-help
+Show this message and exit.
 .UNINDENT
-.SS Named Arguments
 .INDENT 0.0
 .TP
-.B\-i, \-\-interactive
+.B \-i, \-\-interactive, \-\-no\-interactive
 Interactively update
-.sp
-Default: False
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-f, \-\-force
+.B \-f, \-\-force
 Force update, overwrite conflicting information
-.sp
-Default: False
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-d, \-\-document
+.B \-d, \-\-document <document>
 Overwrite an existing document
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-from\-isbnplus
+.B \-\-from\-crossref <from_crossref>
+Update info from crossref.org
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-from\-isbnplus <from_isbnplus>
 Update info from isbnplus.org
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-from\-yaml
+.B \-\-from\-yaml <from_yaml>
 Update info from yaml file
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-from\-bibtex
+.B \-\-from\-bibtex <from_bibtex>
 Update info from bibtex file
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-from\-url
+.B \-\-from\-url <from_url>
 Get document or information from url
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-from\-doi
+.B \-\-from\-doi <from_doi>
 Doi to try to get information from
+.UNINDENT
+.INDENT 0.0
 .TP
-.B\-\-auto
+.B \-\-auto
 Try to parse information from different sources
-.sp
-Default: False
 .UNINDENT
-.SS Export
-.sp
-The export command is useful to work with other programs such as bibtex.
-.sp
-Some examples of its usage are:
-.INDENT 0.0
-.INDENT 3.5
-.INDENT 0.0
-.IP \(bu 2
-Export one of the documents matching the author with einstein to bibtex:
-.UNINDENT
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-papis export \-\-bibtex \(aqauthor = einstein\(aq
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.sp
-or export all of them
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-papis export \-\-bibtex \-\-all \(aqauthor = einstein\(aq
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.IP \(bu 2
-Export all documents to bibtex and save them into a \fBlib.bib\fP file
-.UNINDENT
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-papis export \-\-all \-\-bibtex \-\-out lib.bib
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.IP \(bu 2
-Export a folder of one of the documents matching the word \fBkrebs\fP
-into a folder named, \fBinteresting\-document\fP
-.UNINDENT
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-papis export \-\-folder \-\-out interesting\-document krebs
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.sp
-this will create the folder \fBinteresting\-document\fP containing the
-\fBinfo.yaml\fP file, the linked documents and a \fBbibtex\fP file for
-sharing with other people.
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-usage: papis export [\-h] [\-\-yaml] [\-\-bibtex] [\-\-json] [\-\-folder] [\-\-no\-bibtex]
-                    [\-o OUT] [\-t] [\-a] [\-\-file]
-                    [search]
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.SS Positional Arguments
 .INDENT 0.0
 .TP
-.Bsearch
-Search query string
-.sp
-Default: "."
+.B \-\-all
+Update all entries in library
 .UNINDENT
-.SS Named Arguments
-.INDENT 0.0
+Arguments.INDENT 0.0
 .TP
-.B\-\-yaml
-Export into yaml
-.sp
-Default: False
-.TP
-.B\-\-bibtex
-Export into bibtex
-.sp
-Default: False
-.TP
-.B\-\-json
-Export into json
-.sp
-Default: False
-.TP
-.B\-\-folder
-Export document folder to share
-.sp
-Default: False
-.TP
-.B\-\-no\-bibtex
-When exporting to a folder, do not include the bibtex
-.sp
-Default: False
-.TP
-.B\-o, \-\-out
-Outfile or outdir
-.sp
-Default: ""
-.TP
-.B\-t, \-\-text
-Text formated reference
-.sp
-Default: False
-.TP
-.B\-a, \-\-all
-Export all without picking
-.sp
-Default: False
-.TP
-.B\-\-file
-Export (copy) pdf file to outfile
-.sp
-Default: False
-.UNINDENT
-.SS Addto
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-usage: papis addto [\-h] [\-f [FILES [FILES ...]]] [\-\-file\-name FILE_NAME]
-                   [search]
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.SS Positional Arguments
-.INDENT 0.0
-.TP
-.Bsearch
-Search query string
-.sp
-Default: "."
-.UNINDENT
-.SS Named Arguments
-.INDENT 0.0
-.TP
-.B\-f, \-\-files
-File fullpaths to documents
-.sp
-Default: []
-.TP
-.B\-\-file\-name
-File name for the document (papis format)
-.UNINDENT
-.SS Explore
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-usage: papis explore [\-h] [\-\-isbnplus] [\-\-arxiv] [\-\-libgen] [\-\-crossref]
-                     [\-\-add] [\-\-max MAX] [\-\-cmd CMD]
-                     search
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.SS Positional Arguments
-.INDENT 0.0
-.TP
-.Bsearch
-Search string
-.sp
-Default: ""
-.UNINDENT
-.SS Named Arguments
-.INDENT 0.0
-.TP
-.B\-\-isbnplus
-Search through isbnplus.org
-.sp
-Default: False
-.TP
-.B\-\-arxiv
-Search on the arxiv
-.sp
-Default: False
-.TP
-.B\-\-libgen
-Search on library genesis
-.sp
-Default: False
-.TP
-.B\-\-crossref
-Search on library genesis
-.sp
-Default: False
-.TP
-.B\-\-add
-Add document selected
-.sp
-Default: False
-.TP
-.B\-\-max
-Maximum number of items
-.sp
-Default: 30
-.TP
-.B\-\-cmd
-Issue a command on the retrieved document using papis format
-.UNINDENT
-.SS Remove
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-usage: papis rm [\-h] [\-\-file] [\-f] [search]
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.SS Positional Arguments
-.INDENT 0.0
-.TP
-.Bsearch
-Search query string
-.sp
-Default: "."
-.UNINDENT
-.SS Named Arguments
-.INDENT 0.0
-.TP
-.B\-\-file
-Remove files from a document instead of the whole folder
-.sp
-Default: False
-.TP
-.B\-f, \-\-force
-Do not confirm removal
-.sp
-Default: False
-.UNINDENT
-.SS Gui
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-usage: papis gui [\-h] [\-\-tk] [\-\-rofi] [\-\-urwid] [\-\-vim] [search]
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.SS Positional Arguments
-.INDENT 0.0
-.TP
-.Bsearch
-Search query string
-.sp
-Default: "."
-.UNINDENT
-.SS Named Arguments
-.INDENT 0.0
-.TP
-.B\-\-tk
-Tk based UI
-.sp
-Default: False
-.TP
-.B\-\-rofi
-Rofi based UI
-.sp
-Default: False
-.TP
-.B\-\-urwid
-Urwid based UI
-.sp
-Default: False
-.TP
-.B\-\-vim
-Vim based UI
-.sp
-Default: False
-.UNINDENT
-.SS List
-.sp
-This command is to list contents of a library.
-.SS CLI Examples
-.INDENT 0.0
-.IP \(bu 2
-List all document files associated will all entries:
-.INDENT 2.0
-.INDENT 3.5
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-papis list \-\-file
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.IP \(bu 2
-List all document year and title with custom formatting:
-.INDENT 2.0
-.INDENT 3.5
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-papis list \-\-format \(aq{doc[year]} {doc[title]}\(aq
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.IP \(bu 2
-List all documents according to the bibitem formatting (stored in a template
-file \fBbibitem.template\fP):
-.INDENT 2.0
-.INDENT 3.5
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-papis list \-\-template bibitem.template
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.SS Python examples
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-# Import the run function from the list command
-
-from papis.commands.list import run as papis_list
-
-documents = papis_list(query=\(aqeinstein\(aq, library=\(aqpapis\(aq)
-
-for doc in documents:
-    print(doc["url"])
-
-# etc...
-info_files = list(query=\(aqeinstein\(aq, library=\(aqpapis\(aq, info_files=True)
-
-# do something with the info file paths...
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-usage: papis list [\-h] [\-i] [\-f] [\-d] [\-\-format FORMAT] [\-\-template TEMPLATE]
-                  [\-p] [\-\-downloaders] [\-\-libraries]
-                  [search]
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.SS Positional Arguments
-.INDENT 0.0
-.TP
-.Bsearch
-Search query string
-.sp
-Default: "."
-.UNINDENT
-.SS Named Arguments
-.INDENT 0.0
-.TP
-.B\-i, \-\-info
-Show the info file name associated with the document
-.sp
-Default: False
-.TP
-.B\-f, \-\-file
-Show the file name associated with the document
-.sp
-Default: False
-.TP
-.B\-d, \-\-dir
-Show the folder name associated with the document
-.sp
-Default: False
-.TP
-.B\-\-format
-List entries using a custom papis format, e.g. \(aq{doc[year] {doc[title]}
-.TP
-.B\-\-template
-Template file containing a papis format to list entries
-.TP
-.B\-p, \-\-pick
-Pick the document instead of listing everything
-.sp
-Default: False
-.TP
-.B\-\-downloaders
-List available downloaders
-.sp
-Default: False
-.TP
-.B\-\-libraries
-List defined libraries
-.sp
-Default: False
-.UNINDENT
-.SS Browse
-.sp
-This command will try its best to find a source in the internet for the
-document at hand.
-.sp
-Of course if the document has an url key in its info file, it will use this url
-to open it in a browser.  Also if it has a doc_url key, or a doi, it will try
-to compose urls out of these to open it.
-.sp
-If none of the above work, then it will try to use a search engine with the
-document\(aqs information (using the \fBbrowse\-query\-format\fP).  You can select
-wich search engine you want to use using the \fBsearch\-engine\fP setting.
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-usage: papis browse [\-h] [search]
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.SS Positional Arguments
-.INDENT 0.0
-.TP
-.Bsearch
-Search query string
-.sp
-Default: "."
-.UNINDENT
-.SS Config
-.sp
-The command config is a useful command because it allows you to check
-the configuration settings\(aq values that your current \fIpapis\fP session
-is using.
-.sp
-For example let\(aqs say that you want to see which \fBdir\fP setting your
-current library is using (i.e., the directory or the dir that appears
-in the definition of the library in the configuration file), then you
-would simply do:
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-papis config dir
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.sp
-If you wanted to see which \fBdir\fP the library \fBbooks\fP has, for example
-then you would do
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-papis \-l books config dir
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.sp
-This works as well for default settings, i.e., settings that you have not
-customized, for example the setting \fBmatch\-format\fP, you would check
-it with
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-papis config match\-format
-> {doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.sp
-You can find a list of all available settings in the configuration section.
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-usage: papis config [\-h] option
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.SS Positional Arguments
-.INDENT 0.0
-.TP
-.Boption
-Variable to print
-.sp
-Default: ""
-.UNINDENT
-.SS Run
-.sp
-This command is useful to issue commands in the directory of your library.
-.SS CLI Examples
-.INDENT 0.0
-.INDENT 3.5
-.INDENT 0.0
-.IP \(bu 2
-List files in your directory
-.UNINDENT
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-papis run ls
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.IP \(bu 2
-Find a file in your directory using the \fBfind\fP command
-.UNINDENT
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-papis run find \-name \(aqdocument.pdf\(aq
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.SS Python examples
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-usage: papis run [\-h] ...
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.SS Positional Arguments
-.INDENT 0.0
-.TP
-.Brun_command
-Command name or command
-.sp
-Default: ""
-.UNINDENT
-.SS Git
-.sp
-This command is useful if your library is itself a git repository.
-You can use this command to issue git commands in your library
-repository without having to change your current directory.
-.SS CLI Examples
-.INDENT 0.0
-.INDENT 3.5
-.INDENT 0.0
-.IP \(bu 2
-Check the status of the library repository:
-.UNINDENT
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-papis git status
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.IP \(bu 2
-Commit all changes:
-.UNINDENT
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-papis git commit \-a
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-usage: papis git [\-h] ...
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.SS Positional Arguments
-.INDENT 0.0
-.TP
-.Bcommands
-Commands
-.sp
-Default: ""
+.B QUERY
+Optional argument
 .UNINDENT
 .SH CUSTOM SCRIPTS
 .sp
@@ -3684,15 +3967,15 @@ mode "papis" {
 
   # open documents
   bindsym $mod+o exec python3 \-m papis.main \e
-    \-\-pick\-lib \-\-set picktool=dmenu open
+    \-\-pick\-lib \-\-set picktool dmenu open
 
   # edit documents
   bindsym $mod+e exec python3 \-m papis.main \e
-    \-\-pick\-lib \-\-set "picktool=dmenu editor=gvim" edit
+    \-\-pick\-lib \-\-set picktool dmenu \-\-set editor gvim edit
 
   # open document\(aqs url
   bindsym $mod+b exec python3 \-m papis.main \e
-    \-\-pick\-lib \-\-set picktool=dmenu browse
+    \-\-pick\-lib \-\-set picktool dmenu browse
 
   # return to default mode
   bindsym Ctrl+c mode "default"
@@ -3717,6 +4000,12 @@ then the current library is used.
 .B Parameters
 \fBlib\fP (\fIstr\fP) \-\- Library name.
 .UNINDENT
+.sp
+.nf
+.ft C
+>>> clear_lib_cache()
+.ft P
+.fi
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -3733,6 +4022,33 @@ handle file_path.
 \fBwait\fP (\fIbool\fP) \-\- Wait for the completion of the opener program to continue
 .UNINDENT
 .UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B papis.api.get_all_documents_in_lib(library=None)
+Get ALL documents contained in the given library with possibly.
+.INDENT 7.0
+.TP
+.B Parameters
+\fBlibrary\fP (\fIstr\fP) \-\- Library name.
+.TP
+.B Returns
+List of all documents.
+.TP
+.B Return type
+list
+.UNINDENT
+.sp
+.nf
+.ft C
+>>> import tempfile
+>>> folder = tempfile.mkdtemp()
+>>> set_lib(folder)
+>>> docs = get_all_documents_in_lib(folder)
+>>> len(docs)
+0
+.ft P
+.fi
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -3822,6 +4138,13 @@ List of library names
 .B Return type
 list
 .UNINDENT
+.sp
+.nf
+.ft C
+>>> len(get_libraries()) >= 1
+True
+.ft P
+.fi
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -3857,7 +4180,7 @@ handle file_path.
 .UNINDENT
 .INDENT 0.0
 .TP
-.B papis.api.pick(options, pick_config={})
+.B papis.api.pick(options: list, pick_config={})
 This is a wrapper for the various pickers that are supported.
 Depending on the configuration different selectors or \(aqpickers\(aq
 are used.
@@ -3886,12 +4209,18 @@ Element(s) of \fBoptions\fP
 >>> papis.config.set(\(aqpicktool\(aq, \(aqpapis.pick\(aq)
 >>> pick([\(aqsomething\(aq])
 \(aqsomething\(aq
+>>> papis.config.set(\(aqpicktool\(aq, \(aqnonexistent\(aq)
+>>> pick([\(aqsomething\(aq])
+Traceback (most recent call last):
+\&...
+Exception: I don\(aqt know how to use the picker \(aqnonexistent\(aq
+>>> papis.config.set(\(aqpicktool\(aq, \(aqpapis.pick\(aq)
 .ft P
 .fi
 .UNINDENT
 .INDENT 0.0
 .TP
-.B papis.api.pick_doc(documents)
+.B papis.api.pick_doc(documents: list)
 Pick a document from documents with the correct formatting
 .INDENT 7.0
 .TP
@@ -3901,6 +4230,15 @@ List of documents
 .B Returns
 Document
 .UNINDENT
+.sp
+.nf
+.ft C
+>>> from papis.document import from_data
+>>> doc = from_data({\(aqtitle\(aq: \(aqHello World\(aq})
+>>> pick_doc([doc]).dump()
+\(aqtitle:   Hello World\en\(aq
+.ft P
+.fi
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -3974,7 +4312,7 @@ the \fB\-\-commit\fP flag to also add a commit into your library, so if you do
 .sp
 .nf
 .ft C
-papis add \-\-author "Pedrito" \-\-title "Super book" book.pdf \-\-commit
+papis add \-\-set author "Pedrito" \-\-set title "Super book" book.pdf \-\-commit
 .ft P
 .fi
 .UNINDENT
@@ -4418,16 +4756,6 @@ source /usr/local/etc/bash_completion.d/papis
 .sp
 or get the bash script from
 \fI\%here\fP\&.
-.SH CLASSES
-.sp
-Here there is an overview of the main classes that
-exist in papis. Their inheritance relations if any
-are also drawn.
-.SS Document
-.SS Downloaders
-.SS Commands
-.sp
-An example of the add command class:
 .SH FAQ
 .sp
 Here are some problems that users have come accross with often:

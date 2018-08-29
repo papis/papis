@@ -110,9 +110,9 @@ setup(
             "LICENSE.txt",
         ]),
 
-        ("etc/bash_completion.d/", [
-            "scripts/shell_completion/build/bash/papis",
-        ]),
+        # ("etc/bash_completion.d/", [
+            # "scripts/shell_completion/build/bash/papis",
+        # ]),
 
         ("share/man/man1", [
             "doc/build/man/papis.1",
@@ -132,7 +132,6 @@ setup(
         "papis.database",
         "papis.downloaders",
     ],
-    test_suite="papis.tests",
     entry_points=dict(
         console_scripts=[
             'papis=papis.main:main'
