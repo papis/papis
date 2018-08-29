@@ -1,6 +1,6 @@
 import os
 import re
-from prompt_toolkit.formatted_text import HTML
+from prompt_toolkit.formatted_text.html import HTML, html_escape
 from prompt_toolkit.application import (
     Application as PromptToolkitApplication,
 )
@@ -228,17 +228,23 @@ class OptionsListControl:
             for o in self.options
         ]
         logger.debug('processing headers')
-        self.options_headers = [
-            HTML(
+        self.options_headers = []
+        for o in self.options:
+            prestring = re.sub(
+                r'^', ' ' * self.entries_left_offset,
                 re.sub(
-                    r'^', ' ' * self.entries_left_offset,
-                    re.sub(
-                        r'\n', '\n' + ' ' * self.entries_left_offset,
-                        self.header_filter(o)
-                    )
-                ) + '\n'
-            ).formatted_text for o in self.options
-        ]
+                    r'\n', '\n' + ' ' * self.entries_left_offset,
+                    self.header_filter(o)
+                )
+            ) + '\n'
+            try:
+                htmlobject = HTML(prestring).formatted_text
+            except:
+                logger.error(
+                    'Error processing html for \n {0}'.format(prestring)
+                )
+                htmlobject = HTML(html_escape(prestring)).formatted_text
+            self.options_headers += [htmlobject]
         logger.debug('processing matchers')
         self.options_matchers = [self.match_filter(o) for o in self.options]
         self.indices = range(len(self.options))

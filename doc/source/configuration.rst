@@ -43,16 +43,12 @@ A more complete example of a configuration file is the following
 
   # Define custom default match and header formats
   match-format = {doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}
-  header-format = > {doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:-<4})
 
-  # Commands that will be run when one does papis run ...
-  # e.g., papis run gagp will run the command below in the library folder
-  gagp = git commit -a && git push origin master
-  gs = git status
-  gm = git commit
-  gp = git push
-  gu = git pull
-  gma = git commit -a
+  # Define header format with colors and multiline support
+  header-format = <red>{doc.html_escape[title]}</red>
+    <span color='#ff00ff'>  {doc.html_escape[author]}</span>
+    <yellow>   ({doc.html_escape[year]})</yellow>
+
 
   # Define a lib
   [papers]
@@ -61,6 +57,7 @@ A more complete example of a configuration file is the following
   # Define a lib for books
   [books]
   dir = ~/Documents/books
+  database-backend = whoosh
 
   # Define a lib for Videos
   [videos]
@@ -70,11 +67,13 @@ A more complete example of a configuration file is the following
   # To make it work you just have to define some default settings
   [contacts]
   dir = ~/contacts/general
+  database-backend = papis
   mode = contact
   header-format = {doc[first_name]} {doc[last_name]}
   match-format = {doc[org]} {doc[first_name]} {doc[last_name]}
   browse-query-format = {doc[first_name]} {doc[last_name]}
   add-open = False
+
   rofi-gui-gui-eh = 2
   rofi-gui-header-format = %(header-format)s
                        {doc[tel][cell]}
