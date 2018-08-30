@@ -104,7 +104,7 @@ setup(
     ),
     data_files=[
 
-        ("share/doc/papis/", [
+        ("share/doc/papis", [
             "README.rst",
             "AUTHORS",
             "LICENSE.txt",
