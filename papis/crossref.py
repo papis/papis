@@ -31,6 +31,14 @@ def collapse_whitespace(s):
 
 def crossref_data_to_papis_data(data):
     new_data = dict()
+    if "journal-title" in data.keys():
+        new_data["journal"] = data["journal-title"]
+    if "year" in data.keys():
+        new_data["year"] = data["year"]
+    if "page" in data.keys():
+        new_data["page"] = data["page"]
+    if "volume" in data.keys():
+        new_data["volume"] = data["volume"]
     if "author" in data.keys():
         authors = []
         for author in data["author"]:
