@@ -1,12 +1,7 @@
-Papis
+Papis |Build Status| |Coveralls| |RTD| |Pypi| |zenodo_badge|
 =====
 
-|Build Status|
-|Coveralls|
-|RTD|
-|Pypi|
 |Packaging status|
-|zenodo_badge|
 
 Description
 -----------
