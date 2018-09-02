@@ -4,21 +4,15 @@ import papis.bibtex
 
 
 def test_match():
-    assert(
-        Downloader.match(
-            'blah://pubs.aps.org/doi/abs/10.1021/acs.jchemed.6b00559'
-        )
-    )
-    assert(
-        Downloader.match(
-            'blah://pubs.aps.org/!@#!@$!%!@%!$che.6b00559'
-        )
-    )
-    assert(
-        Downloader.match(
-            'aps.com/!@#!@$!%!@%!$chemed.6b00559'
-        ) is False
-    )
+    assert(Downloader.match(
+        'blah://pubs.aps.org/doi/abs/10.1021/acs.jchemed.6b00559'
+    ))
+    assert(Downloader.match(
+        'blah://pubs.aps.org/!@#!@$!%!@%!$che.6b00559'
+    ))
+    assert(Downloader.match(
+        'aps.com/!@#!@$!%!@%!$chemed.6b00559'
+    ) is False)
 
 
 def test_downloader_getter():
@@ -26,7 +20,7 @@ def test_downloader_getter():
     aps = papis.downloaders.utils.get_downloader(
         "http://journals.aps.org/prb/abstract/10.1103/PhysRevB.95.085434"
     )
-
+    assert(aps.expected_document_extension == 'pdf')
     assert(len(aps.get_bibtex_url()) > 0)
     assert(len(aps.get_bibtex_data()) > 0)
     bibs = papis.bibtex.bibtex_to_dict(aps.get_bibtex_data())

@@ -31,6 +31,7 @@ class Downloader(object):
                 'http': proxy,
                 'https': proxy,
             }
+        self.cookies = {}
 
     def __repr__(self):
         return self.name
@@ -90,7 +91,7 @@ class Downloader(object):
         url = self.get_bibtex_url()
         if not url:
             return False
-        res = self.session.get(url)
+        res = self.session.get(url, cookies=self.cookies)
         content_type = res.headers['Content-Type']
         self.logger.debug('bibtex content type "{0}"'.format(content_type))
         if not re.match('text/html', content_type):
@@ -146,7 +147,7 @@ class Downloader(object):
         url = self.get_document_url()
         if not url:
             return False
-        res = self.session.get(url)
+        res = self.session.get(url, cookies=self.cookies)
         content_type = res.headers['Content-Type']
         self.logger.debug('bibtex content type "{0}"'.format(content_type))
         self.document_data = res.content
