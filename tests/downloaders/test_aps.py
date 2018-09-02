@@ -1,4 +1,3 @@
-import papis.downloaders
 import papis.downloaders.utils
 from papis.downloaders.aps import Downloader
 import papis.bibtex
