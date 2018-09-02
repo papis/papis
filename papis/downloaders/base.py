@@ -1,7 +1,6 @@
 import os
 import logging
-import urllib.request
-import http.cookiejar
+import requests
 import papis.config
 import papis.utils
 import filetype
@@ -20,6 +19,17 @@ class Downloader(object):
         self.document_data = None
         self.logger.debug("[url] = %s" % url)
         self.expected_document_extension = None
+
+        self.session = requests.Session()
+        self.session.headers = {
+            'User-Agent': papis.config.get('user-agent')
+        }
+        proxy = papis.config.get('downloader-proxy'):
+        if proxy:
+            self.session.proxies = {
+                'http': proxy,
+                'https': proxy,
+            }
 
     def __repr__(self):
         return self.name
@@ -79,7 +89,13 @@ class Downloader(object):
         url = self.get_bibtex_url()
         if not url:
             return False
-        self.bibtex_data = urllib.request.urlopen(url).read().decode('utf-8')
+        res = self.session.get(url)
+        content_type = res.headers['Content-Type']
+        self.logger.debug('bibtex content type "{0}"'.format(content_type))
+        if content_type != 'text/html':
+            self.bibtex_data = res.content
+        else:
+            self.logger.error('It seems no bibtex data could be retrieved')
 
     def get_document_url(self):
         """It returns the urls that is to be access to download
@@ -129,14 +145,10 @@ class Downloader(object):
         url = self.get_document_url()
         if not url:
             return False
-        cookiejar = http.cookiejar.LWPCookieJar()
-        opener = urllib.request.build_opener(
-            urllib.request.HTTPCookieProcessor(cookiejar)
-        )
-        opener.addheaders = [('User-Agent', papis.config.get('user-agent'))]
-        u = opener.open(url)
-        data = u.read()
-        self.document_data = data
+        res = self.session.get(url)
+        content_type = res.headers['Content-Type']
+        self.logger.debug('bibtex content type "{0}"'.format(content_type))
+        self.document_data = res.content
 
     def get_url(self):
         """Url getter for Downloader

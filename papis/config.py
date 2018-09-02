@@ -399,6 +399,15 @@ Marks
 
             mark-opener-format = zathura -P {mark[value]}
 
+Downloaders
+===========
+
+.. papis-config:: downloader-proxy
+
+    There is the possibility of download papers using a proxy.
+    To know more you can checkout this
+    `link <http://docs.python-requests.org/en/master/user/advanced/#proxies>`_.
+
 Databases
 =========
 
@@ -589,6 +598,7 @@ general_settings = {
     'unique-document-keys': "['doi','ref','isbn','isbn10','url','doc_url']",
 
     "tui-editmode": "emacs",
+    "downloader-proxy": None,
 
 }
 
