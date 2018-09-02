@@ -87,6 +87,11 @@ def get(url, data_format="bibtex", expected_doc_format=None):
     except NotImplementedError:
         doc_data = None
 
+    try:
+        result['doi'] = downloader.get_doi()
+    except NotImplementedError:
+        pass
+
     if doc_data is not None:
         if downloader.check_document_format():
             result["documents_paths"].append(tempfile.mktemp())
