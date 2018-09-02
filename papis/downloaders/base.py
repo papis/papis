@@ -1,3 +1,4 @@
+import re
 import os
 import logging
 import requests
@@ -24,8 +25,8 @@ class Downloader(object):
         self.session.headers = {
             'User-Agent': papis.config.get('user-agent')
         }
-        proxy = papis.config.get('downloader-proxy'):
-        if proxy:
+        proxy = papis.config.get('downloader-proxy')
+        if proxy is not None:
             self.session.proxies = {
                 'http': proxy,
                 'https': proxy,
@@ -92,8 +93,8 @@ class Downloader(object):
         res = self.session.get(url)
         content_type = res.headers['Content-Type']
         self.logger.debug('bibtex content type "{0}"'.format(content_type))
-        if content_type != 'text/html':
-            self.bibtex_data = res.content
+        if not re.match('text/html', content_type):
+            self.bibtex_data = res.content.decode()
         else:
             self.logger.error('It seems no bibtex data could be retrieved')
 
@@ -166,10 +167,21 @@ class Downloader(object):
         :returns: True if it is of the right type, else otherwise
         :rtype:  bool
         """
+        def print_warning():
+            self.logger.error(
+                "The downloaded data does not seem to be of"
+                "the correct type (%s)" % self.expected_document_extension
+            )
+
         if self.expected_document_extension is None:
             return True
 
         kind = filetype.guess(self.get_document_data())
+
+        if kind is None:
+            print_warning()
+            return False
+
         expected_kind = filetype.get_type(ext=self.expected_document_extension)
         if expected_kind is None:
             raise Exception(
@@ -181,9 +193,6 @@ class Downloader(object):
         result = kind.mime == expected_kind.mime
 
         if not result:
-            self.logger.warning(
-                "The downloaded data does not seem to be of"
-                "the correct type (%s)" % self.expected_document_extension
-            )
+            print_warning()
 
         return result

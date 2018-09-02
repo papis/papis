@@ -11,20 +11,6 @@ class Downloader(papis.downloaders.base.Downloader):
 
     @classmethod
     def match(cls, url):
-        """
-        >>> Downloader.match(\
-                'blah://pubs.aps.org/doi/abs/10.1021/acs.jchemed.6b00559'\
-            ) is False
-        False
-        >>> Downloader.match(\
-                'blah://pubs.aps.org/!@#!@$!%!@%!$che.6b00559'\
-            ) is False
-        False
-        >>> Downloader.match(\
-                'aps.com/!@#!@$!%!@%!$chemed.6b00559'\
-            ) is False
-        True
-        """
         if re.match(r".*aps.org.*", url):
             return Downloader(url)
         else:

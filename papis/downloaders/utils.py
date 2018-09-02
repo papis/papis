@@ -51,22 +51,25 @@ def get_downloader(url, downloader=False):
 
 
 def get(url, data_format="bibtex", expected_doc_format=None):
-    logger.debug("Attempting to retrieve from url")
+
     result = {
         "data": dict(),
         "doi": None,
         "documents_paths": []
     }
+
     downloader = get_downloader(url)
     if not downloader:
         logger.warning(
-            "No matching Downloader for the url %s found" % url
+            "No matching downloader found (%s)" % url
         )
         return result
-    logger.debug("Using downloader %s" % downloader)
+
+    logger.info("Using downloader '%s'" % downloader)
     if downloader.expected_document_extension is None and \
             expected_doc_format is not None:
         downloader.expected_document_extension = expected_doc_format
+
     if data_format == "bibtex":
         try:
             bibtex_data = downloader.get_bibtex_data()
@@ -78,16 +81,19 @@ def get(url, data_format="bibtex", expected_doc_format=None):
                     if len(result["data"]) > 0 else dict()
         except NotImplementedError:
             pass
+
     try:
         doc_data = downloader.get_document_data()
     except NotImplementedError:
-        doc_data = False
-    if doc_data:
+        doc_data = None
+
+    if doc_data is not None:
         if downloader.check_document_format():
             result["documents_paths"].append(tempfile.mktemp())
-            logger.debug(
+            logger.info(
                 "Saving downloaded data in %s" % result["documents_paths"][-1]
             )
             with open(result["documents_paths"][-1], "wb+") as fd:
                 fd.write(doc_data)
+
     return result

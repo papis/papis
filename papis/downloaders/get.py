@@ -17,8 +17,11 @@ class Downloader(papis.downloaders.base.Downloader):
         True
         """
         endings = "pdf|djvu|epub|mobi|jpg|png|md"
-        if re.match(r"^http.*\.(%s)$" % endings, url, re.IGNORECASE):
-            return Downloader(url)
+        m = re.match(r"^http.*\.(%s)$" % endings, url, re.IGNORECASE)
+        if m:
+            d = Downloader(url)
+            d.expected_document_extension = m.group(1)
+            return d
         else:
             return False
 

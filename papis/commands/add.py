@@ -300,6 +300,7 @@ def run(
         in_documents_paths = original_document.get_files()
 
     if from_url:
+        logger.info("Attempting to retrieve from url")
         url_data = papis.downloaders.utils.get(from_url)
         data.update(url_data["data"])
         in_documents_paths.extend(url_data["documents_paths"])
@@ -342,7 +343,7 @@ def run(
             )
 
     if from_doi:
-        logger.debug("I'll try using doi %s" % from_doi)
+        logger.info("I'll try using doi %s" % from_doi)
         data.update(papis.utils.doi_to_data(from_doi))
         if len(paths) == 0 and \
                 papis.config.get('doc-url-key-name') in data.keys():
