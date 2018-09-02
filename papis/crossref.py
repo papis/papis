@@ -18,17 +18,6 @@ CROSSREF_KEY = "fx.coudert@chimie-paristech.fr"
 CROSSREF_KEY = "a.gallo@fkf.mpg.de"
 
 
-def collapse_whitespace(s):
-    """Removes whitespace from string and returns the result. Useful
-    when whitespace causes errors (e.g. Bibtex)
-
-    :param s: string
-    :type s: str
-    """
-    logger.debug("Removing whitespace...")
-    return s.replace(" ", "")
-
-
 def crossref_data_to_papis_data(data):
     new_data = dict()
     if "journal-title" in data.keys():
@@ -260,9 +249,9 @@ def get_cross_ref(doi):
     res.update(get_citation_info_from_results(record))
 
     # REFERENCE BUILDING
-    res['ref'] = collapse_whitespace(
-        papis.utils.format_doc(papis.config.get("ref-format"), res)
-    )
+    res['ref'] = papis.utils.format_doc(
+        papis.config.get("ref-format"), res
+    ).replace(" ", "")
 
     # Check if reference field with the same tag already exists
     documents = papis.api.get_documents_in_lib(
@@ -301,32 +290,6 @@ def get_clean_doi(doi):
     :doi: String containing a doi
     :returns: The pure doi
 
-    >>> get_clean_doi('http://dx.doi.org/10.1063%2F1.881498')
-    '10.1063/1.881498'
-    >>> get_clean_doi('http://dx.doi.org/10.1063/1.881498')
-    '10.1063/1.881498'
-    >>> get_clean_doi('10.1063%2F1.881498')
-    '10.1063/1.881498'
-    >>> get_clean_doi('10.1063/1.881498')
-    '10.1063/1.881498'
-    >>> get_clean_doi(\
-            'http://physicstoday.scitation.org/doi/10.1063/1.uniau12/abstract'\
-        )
-    '10.1063/1.uniau12'
-    >>> get_clean_doi(\
-            'http://scitation.org/doi/10.1063/1.uniau12/abstract?as=234' \
-        )
-    '10.1063/1.uniau12'
-    >>> get_clean_doi('http://physicstoday.scitation.org/doi/10.1063/1.881498')
-    '10.1063/1.881498'
-    >>> get_clean_doi(\
-            'https://doi.org/10.1093/analys/anw053' \
-        )
-    '10.1093/analys/anw053'
-    >>> get_clean_doi(\
-            'http://physicstoday.scitation.org/doi/10.1063/1.881498?asdfwer' \
-        )
-    '10.1063/1.881498'
     """
     mdoi = re.match(
         r'^([^?/&%$^]+)(/|%2F)([^?&%$^]+).*',
