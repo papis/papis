@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS" "1" "Aug 29, 2018" "0.7" "papis"
+.TH "PAPIS" "1" "Sep 02, 2018" "0.7" "papis"
 .SH NAME
 papis \- Papis Documentation
 .
@@ -2675,7 +2675,8 @@ Explore new documents using a variety of resources
 .sp
 .nf
 .ft C
-papis explore [OPTIONS] COMMAND1 [ARGS]... [COMMAND2 [ARGS]...]...
+papis explore [OPTIONS] COMMAND1 [ARGS]... [COMMAND2
+              [ARGS]...]...
 .ft P
 .fi
 .UNINDENT
@@ -4450,43 +4451,23 @@ papis git push
 Of course these workflows are just very basic examples, you can imagine
 that your workflow would look completely different.
 .SH SCIHUB SUPPORT
+\fI\%\fP
 .sp
 Papis has a script that uses the scihub platform to download scientific
 papers. Due to legal caution the script is not included directly
-as a papis command, and it is written \fBbash\fP\&.
+as a papis command, and it has its own PyPi repository.
 .sp
-If you want to use it, you can download it from
-\fI\%here\fP
-and copy it into your papis script folder.
-.sp
-Usuar locations for your script folder are
-.INDENT 0.0
-.INDENT 3.5
-.INDENT 0.0
-.IP \(bu 2
-\fB~/.config/papis/scripts\fP
-.IP \(bu 2
-\fB~/.papis/scripts\fP
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.sp
-Therefore, if you decide to have the script folder in the first option,
-you can install the script by doing:
+To install it, just type
 .INDENT 0.0
 .INDENT 3.5
 .sp
 .nf
 .ft C
-wget \-O ~/.config/papis/scripts/papis\-scihub https://raw.githubusercontent.com/alejandrogallo/papis/master/examples/scripts/papis\-scihub
-chmod +x ~/.config/papis/scripts/papis\-scihub
+pip3 install papis\-scihub
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
-.sp
-The \fBchmod +x\fP command is necessary to make the \fBpapis\-scihub\fP file
-executable.
 .sp
 Now you can type
 .INDENT 0.0
@@ -4513,7 +4494,7 @@ Download via the doi number:
 .sp
 .nf
 .ft C
-papis scihub 10\&.1002/andp.19053220607 \-d einstein_papers \-\-name photon_definition
+papis scihub 10\&.1002/andp.19053220607 add \-d einstein_papers \-\-name photon_definition
 .ft P
 .fi
 .UNINDENT
@@ -4525,7 +4506,7 @@ Download via a url that contains the doi number in the format \fB\&.*/doi/<doinu
 .sp
 .nf
 .ft C
-papis scihub http://physicstoday.scitation.org/doi/10.1063/1.881498 \-\-name important_paper
+papis scihub http://physicstoday.scitation.org/doi/10.1063/1.881498 add \-\-name important_paper
 .ft P
 .fi
 .UNINDENT
@@ -4537,7 +4518,7 @@ Download via the \fBdoi.org\fP url:
 .sp
 .nf
 .ft C
-papis scihub https://doi.org/10.1016/j.physrep.2016.12.002
+papis scihub https://doi.org/10.1016/j.physrep.2016.12.002 add
 .ft P
 .fi
 .UNINDENT
