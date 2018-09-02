@@ -8,7 +8,7 @@ class Downloader(papis.downloaders.base.Downloader):
         papis.downloaders.base.Downloader.__init__(
             self, url, name="iopscience"
         )
-        self.expected_document_format = 'pdf'
+        self.expected_document_extension = 'pdf'
 
     @classmethod
     def match(cls, url):

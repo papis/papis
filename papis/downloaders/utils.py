@@ -36,8 +36,10 @@ def get_downloader(url, downloader=False):
 
     :param url: Url of the document
     :type  url: str
-    :param downloader: Name of the downloader, if any.
+    :param downloader: Name of a downloader
     :type  downloader: str
+    :returns: A Downloader if found or none
+    :rtype:  papis.downloader.base.Downloader
 
     """
     if not downloader:
@@ -54,7 +56,6 @@ def get_downloader(url, downloader=False):
             return getattr(mod, 'Downloader')(url)
         except ImportError:
             logger.error("No downloader named %s" % downloader)
-    return False
 
 
 def get(url, data_format="bibtex", expected_doc_format=None):
@@ -71,9 +72,9 @@ def get(url, data_format="bibtex", expected_doc_format=None):
         )
         return result
     logger.debug("Using downloader %s" % downloader)
-    if downloader.expected_document_format is None and \
+    if downloader.expected_document_extension is None and \
             expected_doc_format is not None:
-        downloader.expected_document_format = expected_doc_format
+        downloader.expected_document_extension = expected_doc_format
     if data_format == "bibtex":
         try:
             bibtex_data = downloader.get_bibtex_data()

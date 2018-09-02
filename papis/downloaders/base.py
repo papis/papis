@@ -4,6 +4,7 @@ import urllib.request
 import http.cookiejar
 import papis.config
 import papis.utils
+import filetype
 
 
 class Downloader(object):
@@ -18,10 +19,10 @@ class Downloader(object):
         self.bibtex_data = None
         self.document_data = None
         self.logger.debug("[url] = %s" % url)
-        self.expected_document_format = None
+        self.expected_document_extension = None
 
     def __repr__(self):
-        return self.get_name()
+        return self.name
 
     @classmethod
     def match(url):
@@ -78,10 +79,7 @@ class Downloader(object):
         url = self.get_bibtex_url()
         if not url:
             return False
-        data = urllib.request.urlopen(url)\
-            .read()\
-            .decode('utf-8')
-        self.bibtex_data = data
+        self.bibtex_data = urllib.request.urlopen(url).read().decode('utf-8')
 
     def get_document_url(self):
         """It returns the urls that is to be access to download
@@ -136,20 +134,9 @@ class Downloader(object):
             urllib.request.HTTPCookieProcessor(cookiejar)
         )
         opener.addheaders = [('User-Agent', papis.config.get('user-agent'))]
-
         u = opener.open(url)
         data = u.read()
         self.document_data = data
-
-    def set_url(self, url):
-        """Url setter for Downloader
-
-        :param url: String containing a valid url
-        :type  url: str
-        :returns: Downloader object
-        """
-        self.url = url
-        return self
 
     def get_url(self):
         """Url getter for Downloader
@@ -167,22 +154,24 @@ class Downloader(object):
         :returns: True if it is of the right type, else otherwise
         :rtype:  bool
         """
-        if self.expected_document_format is None:
+        if self.expected_document_extension is None:
             return True
-        result = papis.utils.file_is(
-            self.get_document_data(),
-            self.expected_document_format
-        )
+
+        kind = filetype.guess(self.get_document_data())
+        expected_kind = filetype.get_type(ext=self.expected_document_extension)
+        if expected_kind is None:
+            raise Exception(
+                "I can't understand the expected extension {0}".format(
+                    self.expected_document_extension
+                )
+            )
+
+        result = kind.mime == expected_kind.mime
+
         if not result:
             self.logger.warning(
                 "The downloaded data does not seem to be of"
-                "the correct type (%s)" % self.expected_document_format
+                "the correct type (%s)" % self.expected_document_extension
             )
+
         return result
-
-    def get_name(self):
-        """Get name of the downloader
-        :returns: Name
-
-        """
-        return self.name
