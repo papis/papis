@@ -13,7 +13,11 @@ def test_match():
     assert(Downloader.match(
         'arxiv.com/!@#!@$!%!@%!$chemed.6b00559'
     )) is False
-    assert(Downloader.match('arXiv:1701.08223v2'))
+
+    down = Downloader.match('arXiv:1701.08223v2')
+    assert(down)
+    assert(down.get_url() == 'https://arxiv.org/abs/1701.08223v2')
+    assert(down.get_identifier() == '1701.08223v2')
 
 
 def test_downloader_getter():
