@@ -31,11 +31,7 @@ class Downloader(papis.downloaders.base.Downloader):
 
     def get_document_url(self):
         # http://pubs.acs.org/doi/pdf/10.1021/acs.jchemed.6b00559
-        durl = "http://pubs.acs.org/doi/pdf/" + self.get_doi()
-        self.logger.debug("[doc url] = %s" % durl)
-        self.logger.error("Retrieving urls does not work for acs yet")
-        raise Exception
-        return durl
+        return "http://pubs.acs.org/doi/pdf/" + self.get_doi()
 
     def get_bibtex_url(self):
         url = "http://pubs.acs.org/action/downloadCitation"\

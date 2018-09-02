@@ -21,11 +21,11 @@ def test_downloader_getter():
     assert(down.get_doi() == '10.1021/ed044p128')
     assert(len(down.get_bibtex_url()) > 0)
     assert(len(down.get_bibtex_data()) > 0)
-    # bibs = papis.bibtex.bibtex_to_dict(down.get_bibtex_data())
-    # assert(len(bibs) == 1)
-    # doc = down.get_document_data()
-    # assert(doc is not None)
-    # assert(not down.check_document_format())
+    bibs = papis.bibtex.bibtex_to_dict(down.get_bibtex_data())
+    assert(len(bibs) == 1)
+    doc = down.get_document_data()
+    assert(doc is not None)
+    assert(not down.check_document_format())
 
     # # this is an open access paper, so it should work
     # down = papis.downloaders.utils.get(
