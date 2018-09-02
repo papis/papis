@@ -4,6 +4,7 @@ import papis.utils
 import papis.config
 import papis.bibtex
 import logging
+import re
 
 
 logger = logging.getLogger("document")
@@ -119,6 +120,8 @@ def to_bibtex(document):
                 ref = document['doi']
             else:
                 ref = 'noreference'
+
+    ref = re.sub(r'[;,()\/{}\[\]]', '', ref)
 
     bibtexString += "@%s{%s,\n" % (bibtexType, ref)
     for bibKey in papis.bibtex.bibtex_keys:
