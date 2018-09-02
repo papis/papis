@@ -12,27 +12,6 @@ class Downloader(papis.downloaders.base.Downloader):
 
     @classmethod
     def match(cls, url):
-        """
-        >>> Downloader.match(\
-                'blah://pubs.arxiv.org/doi/abs/10.1021/acs.jchemed.6b00559'\
-            ) is False
-        False
-        >>> Downloader.match(\
-                'blah://pubs.arxiv.org/!@#!@$!%!@%!$che.6b00559'\
-            ) is False
-        False
-        >>> Downloader.match(\
-                'arxiv.com/!@#!@$!%!@%!$chemed.6b00559'\
-            ) is False
-        True
-        >>> Downloader.match('arXiv:1701.08223v2') is False
-        False
-        >>> import re; re.match(\
-                r".*\.pdf\.pdf$",\
-                Downloader.match('https://arxiv.org/pdf/1707.09820.pdf').get_document_url()\
-            ) is None
-        True
-        """
         m = re.match(r"^arxiv:(.*)", url, re.IGNORECASE)
         if m:
             url = "https://arxiv.org/abs/{m}".format(m=m.group(1))
