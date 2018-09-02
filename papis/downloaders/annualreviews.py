@@ -24,8 +24,6 @@ class Downloader(papis.downloaders.base.Downloader):
             doi = mdoi.group(1).replace("abs/", "").replace("full/", "")
             self.logger.debug("[doi] = %s" % doi)
             return doi
-        else:
-            self.logger.error("Doi not found!!")
 
     def get_document_url(self):
         # http://annualreviews.org/doi/pdf/10.1146/annurev-conmatphys-031214-014726
