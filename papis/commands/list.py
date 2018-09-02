@@ -112,7 +112,7 @@ def run(
         fd.close()
 
     if downloaders:
-        return papis.downloaders.utils.getAvailableDownloaders()
+        return papis.downloaders.utils.get_available_downloaders()
 
     if libraries:
         return [

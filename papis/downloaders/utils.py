@@ -7,27 +7,19 @@ import papis.config
 logger = logging.getLogger("downloader")
 
 
-def getAvailableDownloaders():
-    import papis.downloaders.aps
-    import papis.downloaders.acs
-    import papis.downloaders.arxiv
-    import papis.downloaders.ieee
-    import papis.downloaders.scitationaip
-    import papis.downloaders.annualreviews
-    import papis.downloaders.iopscience
-    import papis.downloaders.libgen
-    import papis.downloaders.get
-    return [
-        papis.downloaders.aps.Downloader,
-        papis.downloaders.acs.Downloader,
-        papis.downloaders.arxiv.Downloader,
-        papis.downloaders.ieee.Downloader,
-        papis.downloaders.scitationaip.Downloader,
-        papis.downloaders.annualreviews.Downloader,
-        papis.downloaders.iopscience.Downloader,
-        papis.downloaders.libgen.Downloader,
-        papis.downloaders.get.Downloader,
+def get_available_downloaders():
+    names = [
+        "aps", "acs", "arxiv", "ieee", "scitationaip", "annualreviews",
+        "iopscience", "libgen", "get",
     ]
+    downloaders = []
+    for name in names:
+        mod = __import__(
+            'papis.downloaders.' + name,
+            fromlist=['Downloader']
+        )
+        downloaders.append(getattr(mod, 'Downloader'))
+    return downloaders
 
 
 def get_downloader(url, downloader=False):
@@ -43,7 +35,7 @@ def get_downloader(url, downloader=False):
 
     """
     if not downloader:
-        for downloader in getAvailableDownloaders():
+        for downloader in get_available_downloaders():
             result = downloader.match(url)
             if result:
                 return result
