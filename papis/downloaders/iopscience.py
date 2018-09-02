@@ -12,59 +12,44 @@ class Downloader(papis.downloaders.base.Downloader):
 
     @classmethod
     def match(cls, url):
-        """
-        >>> Downloader.match(\
-                'http://iopscience.iop.org/article/10.1088/0305-4470/24/2/004'\
-            ) is False
-        False
-        >>> Downloader.match(\
-                'blah://iop.org/!@#!@$!%!@%!$che.6b00559'\
-            ) is False
-        True
-        >>> Downloader.match(\
-                'iopscience.iop.com/!@#!@$!%!@%!$chemed.6b00559'\
-            ) is False
-        True
-        """
+        url = re.sub(r'/pdf', '', url)
         if re.match(r".*iopscience.iop.org.*", url):
             return Downloader(url)
         else:
             return False
 
     def get_doi(self):
-        mdoi = re.match(r'.*annualreviews.org/doi/(.*)', self.get_url())
+        # http://iopscience.iop.org/article/10.1088/0305-4470/24/2/004?blah=1
+        mdoi = re.match(r'.*\.org/[^/]+/([^?]*)', self.get_url())
         if mdoi:
             doi = mdoi.group(1).replace("abs/", "").replace("full/", "")
             self.logger.debug("[doi] = %s" % doi)
             return doi
-        else:
-            self.logger.error("Doi not found!!")
 
     def get_document_url(self):
         # http://iopscience.iop.org/article/10.1088/0305-4470/24/2/004/pdf
-        durl = self.get_url()+"/pdf"
+        durl = 'https://iopscience.iop.org/article/{0}/pdf'.format(
+            self.get_doi()
+        )
         self.logger.debug("[doc url] = %s" % durl)
         return durl
 
-    def getAritcleId(self):
+    def _get_article_id(self):
         """Get article's id for IOP
         :returns: Article id
         """
-        url = self.get_url()
-        m = re.match(r"^.*iop.org/[^/]+/[^/]+/(.*)$", url)
-        if not m:
-            self.logger.error("Could not retrieve articleId from url")
-            return None
-        articleId = m.group(1)
-        self.logger.debug("[doc articleId] = %s" % articleId)
-        return articleId
+        doi = self.get_doi()
+        if doi:
+            articleId = doi.replace('10.1088/', '')
+            self.logger.debug("[doc articleId] = %s" % articleId)
+            return articleId
 
     def get_bibtex_url(self):
         # http://iopscience.iop.org/export?
         # articleId=0305-4470/24/2/004&exportFormat=
         # iopexport_bib&exportType=abs&navsubmit=Export%2Babstract
-        articleId = self.getAritcleId()
-        url = "{}{}{}".format(
+        articleId = self._get_article_id()
+        url = "{0}{1}{2}".format(
             "http://iopscience.iop.org/export?articleId=",
             articleId,
             "&exportFormat=iopexport_bib&exportType=abs"
