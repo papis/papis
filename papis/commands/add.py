@@ -90,7 +90,7 @@ import papis.document
 import papis.downloaders.utils
 import papis.cli
 import click
-
+import builtins
 
 logger = logging.getLogger('add')
 
@@ -620,18 +620,27 @@ def cli(
         data.update(papis.utils.doi_to_data(from_doi))
         if len(files) == 0 and \
                 papis.config.get('doc-url-key-name') in data.keys():
+
             doc_url = data[papis.config.get('doc-url-key-name')]
+            logger.info(
+                'You did not provide any files, but I found a possible '
+                'url where the file might be'
+            )
             logger.info(
                 'I am trying to download the document from %s' % doc_url
             )
             down = papis.downloaders.utils.get_downloader(doc_url, 'get')
-            file_name = tempfile.mktemp()
-            with open(file_name, 'wb+') as fd:
+            assert(down is not None)
+            tmp_filepath = tempfile.mktemp()
+            logger.debug("Saving in %s" % tmp_filepath)
+
+            with builtins.open(tmp_filepath, 'wb+') as fd:
                 fd.write(down.get_document_data())
+
             logger.info('Opening the file')
-            papis.api.open_file(file_name)
+            papis.api.open_file(tmp_filepath)
             if papis.utils.confirm('Do you want to use this file?'):
-                files.append(file_name)
+                files.append(tmp_filepath)
 
     if from_yaml:
         logger.info("Reading yaml input file = %s" % from_yaml)
