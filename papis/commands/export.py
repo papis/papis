@@ -147,8 +147,7 @@ def run(
     "-o",
     "--out",
     help="Outfile or outdir",
-    default=False,
-    is_flag=True
+    default=None
 )
 @click.option(
     "-t",
@@ -195,11 +194,11 @@ def cli(
             return 0
         documents = [document]
 
-    if out and not folder and not file:
+    if out is not None and not folder and not file:
         logger.info("Dumping to {0}".format(out))
         out = open(out, 'a+')
 
-    if not out and not folder and not file:
+    if out is None and not folder and not file:
         logger.info("Dumping to stdout")
         out = sys.stdout
 
@@ -240,12 +239,19 @@ def cli(
                     )
                 )
             )]
-            for file_to_open in filter(lambda x: x, files_to_open):
+            files_to_copy = list(filter(lambda x: x, files_to_open))
+            for file_to_open in files_to_copy:
+
+                if out is not None and len(files_to_open) == 1:
+                    out_file = out
+                else:
+                    out_file = os.path.basename(file_to_open)
+
                 logger.info("copy {0} to {1}".format(
                     file_to_open,
-                    os.path.basename(file_to_open)
+                    out_file
                 ))
                 shutil.copyfile(
                     file_to_open,
-                    os.path.basename(file_to_open)
+                    out_file
                 )
