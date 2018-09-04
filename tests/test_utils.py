@@ -6,6 +6,9 @@ import tests
 import papis.commands.add
 import papis.database
 from papis.document import from_data
+from papis.utils import (
+    get_document_extension
+)
 
 
 def test_create_identifier():
@@ -76,15 +79,6 @@ def test_locate_document():
     assert found_doc is None
 
 
-def test_guess_file_extension():
-    from papis.utils import guess_file_extension
-    assert 'pdf' == guess_file_extension('path/to/123adqfdsf/file.pdf')
-    assert 'txt' == guess_file_extension('path/to/123adqfdsf/file')
-    assert 'epub' == guess_file_extension('path/to/123adqfdsf/file.epub')
-    assert 'djvu' == guess_file_extension('path/to/123adqfdsf/file.djvu')
-    assert 'mobi' == guess_file_extension('path/to/123adqfdsf/file.mobi')
-
-
 def test_format_doc():
     import papis.document
     from papis.utils import format_doc
@@ -105,3 +99,42 @@ def test_format_doc():
     assert format_doc('{doc[author]}{doc[title]}{doc[blahblah]}', document) ==\
         'FulanoSomething'
 
+
+def create_random_pdf(suffix='', prefix=''):
+    tempf = tempfile.mktemp(suffix=suffix, prefix=prefix)
+    with open(tempf, 'wb+') as fd:
+        fd.write('%PDF-1.5%\n'.encode())
+    return tempf
+
+
+def create_random_epub(suffix='', prefix=''):
+    tempf = tempfile.mktemp(suffix=suffix, prefix=prefix)
+    buf = [0x50, 0x4B, 0x3, 0x4]
+    buf += [0x00 for i in range(26)]
+    buf += [0x6D, 0x69, 0x6D, 0x65, 0x74, 0x79, 0x70, 0x65, 0x61, 0x70,
+            0x70, 0x6C, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6F, 0x6E, 0x2F,
+            0x65, 0x70, 0x75, 0x62, 0x2B, 0x7A, 0x69, 0x70]
+    buf += [0x00 for i in range(1)]
+    with open(tempf, 'wb+') as fd:
+        fd.write(bytearray(buf))
+    return tempf
+
+
+def create_random_file(suffix='', prefix=''):
+    tempf = tempfile.mktemp(suffix=suffix, prefix=prefix)
+    with open(tempf, 'wb+') as fd:
+        fd.write('hello'.encode())
+    return tempf
+
+
+def test_extension():
+    docs = [
+        [create_random_pdf(), "pdf"],
+        [create_random_pdf(), "pdf"],
+        [create_random_file(), "data"],
+        [create_random_epub(), "epub"],
+        [create_random_file(suffix='.yaml'), "yaml"],
+        [create_random_file(suffix='.text'), "text"],
+    ]
+    for d in docs:
+        assert(get_document_extension(d[0]) == d[1])

@@ -39,14 +39,16 @@ Examples
 
     .. code::
 
-        papis -l machine-learning add --from-url https://arxiv.org/abs/1712.03134
+        papis -l machine-learning add \\
+            --from-url https://arxiv.org/abs/1712.03134
 
 - If you do not want copy the original pdfs into the library, you can
   also tell papis to just create a link to them, for example
 
     .. code::
 
-        papis add --link ~/Documents/interesting.pdf --from-doi 10.10763/1.3237134
+        papis add --link ~/Documents/interesting.pdf \\
+            --from-doi 10.10763/1.3237134
 
   will add an entry into the papis library, but the pdf document will remain
   at ``~/Documents/interesting.pdf``, and in the document's folder
@@ -107,7 +109,8 @@ def get_file_name(data, original_filepath, suffix=""):
     :rtype:  str
 
     """
-    basename_limit = 130
+
+    basename_limit = 150
     file_name_opt = papis.config.get('file-name')
 
     if file_name_opt is None:
@@ -135,58 +138,63 @@ def get_file_name(data, original_filepath, suffix=""):
 
     filename = "{}.{}".format(
         filename_basename,
-        papis.utils.guess_file_extension(original_filepath)
+        papis.utils.get_document_extension(original_filepath)
     )
 
     return filename
 
 
-def get_hash_folder(data, document_path):
+def get_hash_folder(data, document_paths):
     """Folder name where the document will be stored.
 
     :data: Data parsed for the actual document
-    :document_path: Path of the document
+    :document_paths: Path of the document
 
     """
     import random
     author = "-{:.20}".format(data["author"])\
              if "author" in data.keys() else ""
-    with open(document_path, "rb") as fd:
-        md5 = hashlib.md5(
-            document_path.encode() +
-            str(data).encode() +
-            str(random.random()).encode() +
-            fd.read(4096)
-        ).hexdigest()
+
+    document_strings = b''
+    for docpath in document_paths:
+        with open(docpath, 'rb+') as fd:
+            document_strings += fd.read(2000)
+
+    md5 = hashlib.md5(
+        ''.join(document_paths).encode() +
+        str(data).encode() +
+        str(random.random()).encode() +
+        document_strings
+    ).hexdigest()
+
     result = md5 + author
     result = papis.utils.clean_document_name(result)
+
     return result
 
 
-def get_document_extension(documentPath):
+def get_document_extension(document_path):
     """Get document extension
 
     :document_path: Path of the document
     :returns: Extension (string)
 
-    >>> get_document_extension('/path/to/file.pdf')
-    'pdf'
-    >>> get_document_extension('/path/to/file.ext')
-    'ext'
-    >>> get_document_extension('/path/to/file')
-    'txt'
-
     """
-    # TODO: mimetype based (mimetype, rifle, ranger-fm ...?)
-    m = re.match(r"^(.*)\.([a-zA-Z0-9]*)$", os.path.basename(documentPath))
-    extension = m.group(2) if m else "txt"
-    return extension
+    import filetype
+    filetype.guess(document_path)
+    kind = filetype.guess(document_path)
+    if kind is None:
+        m = re.match(r"^.*\.([^.]+)$", os.path.basename(document_path))
+        return m.group(1) if m else 'data'
+    else:
+        return kind.extension
 
 
 def get_default_title(data, document_path, interactive=False):
     """
     >>> get_default_title({'title': 'hello world'}, 'whatever.pdf')
     'hello world'
+    >>> open('Luces-de-bohemia.pdf', 'w+').close()
     >>> get_default_title(dict(), 'Luces-de-bohemia.pdf')
     'Luces de bohemia'
     """
@@ -228,18 +236,11 @@ def run(
         file_name=None,
         subfolder=None,
         interactive=False,
-        from_bibtex=None,
-        from_yaml=None,
-        from_folder=None,
-        from_url=None,
-        from_doi=None,
-        from_pmid=None,
         confirm=False,
         open_file=False,
         edit=False,
         commit=False,
-        link=False,
-        no_document=False
+        link=False
         ):
     """
     :param paths: Paths to the documents to be added
@@ -258,19 +259,6 @@ def run(
     :param interactive: Wether or not interactive functionality of this command
         should be activated.
     :type  interactive: bool
-    :param from_bibtex: Filepath where to find a file containing bibtex info.
-    :type  from_bibtex: str
-    :param from_yaml: Filepath where to find a file containing yaml info.
-    :type  from_yaml: str
-    :param from_folder: Filepath where to find a papis document (folder +
-        info file) to be added to the library.
-    :type  from_folder: str
-    :param from_url: Url to try to download information and files from.
-    :type  from_url: str
-    :param from_url: doi number to try to download information from.
-    :type  from_url: str
-    :param from_url: pmid number to try to download information from.
-    :type  from_url: str
     :param confirm: Wether or not to ask user for confirmation before adding.
     :type  confirm: bool
     :param open_file: Wether or not to ask user for opening file before adding.
@@ -281,9 +269,8 @@ def run(
     :param commit: Wether or not to ask user for committing before adding,
         in the case of course that the library is a git repository.
     :type  commit: bool
-    :param no_document: Wether or not the document has no files attached.
-    :type  no_document: bool
     """
+
     logger = logging.getLogger('add:run')
     # The folder name of the new document that will be created
     out_folder_name = None
@@ -294,79 +281,6 @@ def run(
     # The folder name of the temporary document to be created
     temp_dir = tempfile.mkdtemp()
 
-    if from_folder:
-        original_document = papis.document.Document(from_folder)
-        from_yaml = original_document.get_info_file()
-        in_documents_paths = original_document.get_files()
-
-    if from_url:
-        logger.info("Attempting to retrieve from url")
-        url_data = papis.downloaders.utils.get(from_url)
-        data.update(url_data["data"])
-        in_documents_paths.extend(url_data["documents_paths"])
-        # If no data was retrieved and doi was found, try to get
-        # information with the document's doi
-        if not data and url_data["doi"] is not None and\
-                not from_doi:
-            logger.warning(
-                "I could not get any data from %s" % from_url
-            )
-            from_doi = url_data["doi"]
-
-    if from_bibtex:
-        bib_data = papis.bibtex.bibtex_to_dict(from_bibtex)
-        if len(bib_data) > 1:
-            logger.warning(
-                'Your bibtex file contains more than one entry,'
-                ' I will be taking the first entry'
-            )
-        data.update(bib_data[0])
-
-    if from_pmid:
-        logger.debug(
-            "I'll try using PMID %s via HubMed" % from_pmid
-        )
-        hubmed_url = "http://pubmed.macropus.org/articles/"\
-                     "?format=text%%2Fbibtex&id=%s" % from_pmid
-        bibtex_data = papis.downloaders.utils.get_downloader(
-            hubmed_url,
-            "get"
-        ).get_document_data().decode("utf-8")
-        bibtex_data = papis.bibtex.bibtex_to_dict(bibtex_data)
-        if len(bibtex_data):
-            data.update(bibtex_data[0])
-            if "doi" in data and not from_doi:
-                from_doi = data["doi"]
-        else:
-            logger.error(
-                "PMID %s not found or invalid" % from_pmid
-            )
-
-    if from_doi:
-        logger.info("I'll try using doi %s" % from_doi)
-        data.update(papis.utils.doi_to_data(from_doi))
-        if len(paths) == 0 and \
-                papis.config.get('doc-url-key-name') in data.keys():
-            doc_url = data[papis.config.get('doc-url-key-name')]
-            logger.info(
-                'I am trying to download the document from %s' % doc_url
-            )
-            down = papis.downloaders.utils.get_downloader(
-                doc_url,
-                'get'
-            )
-            file_name = tempfile.mktemp()
-            with open(file_name, 'wb+') as fd:
-                fd.write(down.get_document_data())
-            logger.info('Opening the file')
-            papis.api.open_file(file_name)
-            if papis.utils.confirm('Do you want to use this file?'):
-                paths.append(file_name)
-
-    if from_yaml:
-        logger.debug("Yaml input file = %s" % from_yaml)
-        data.update(papis.utils.yaml_to_data(from_yaml))
-
     for p in in_documents_paths:
         if not os.path.exists(p):
             raise IOError('Document %s not found' % p)
@@ -376,44 +290,16 @@ def run(
         for doc_path in in_documents_paths
     ]
 
-    document = papis.document.Document(temp_dir)
-    if len(in_documents_paths) == 0:
-        if not no_document:
-            logger.error("No documents to be added")
-            return status.file_not_found
-        else:
-            in_documents_paths = [document.get_info_file()]
-            # We need the names to add them in the file field
-            # in the info file
-            in_documents_names = [papis.utils.get_info_file_name()]
-            # Save document to create the info file
-            document.update(
-                data, force=True, interactive=interactive
-            )
-            document.save()
+    tmp_document = papis.document.Document(temp_dir)
 
     if not name:
-        logger.debug("Getting an automatic name")
-        if not os.path.isfile(in_documents_paths[0]):
-            return status.file_not_found
-
-        out_folder_name = get_hash_folder(
-            data,
-            in_documents_paths[0]
-        )
+        logger.info("Getting an automatic name")
+        out_folder_name = get_hash_folder(data, in_documents_paths)
     else:
         temp_doc = papis.document.Document(data=data)
-        out_folder_name = papis.utils.format_doc(
-            name,
-            temp_doc
-        )
-        out_folder_name = papis.utils.clean_document_name(
-            out_folder_name
-        )
+        out_folder_name = papis.utils.format_doc(name, temp_doc)
+        out_folder_name = papis.utils.clean_document_name(out_folder_name)
         del temp_doc
-    if len(out_folder_name) == 0:
-        logger.error('The output folder name is empty')
-        return status.file_not_found
 
     data["files"] = in_documents_names
     out_folder_path = os.path.expanduser(os.path.join(
@@ -430,10 +316,8 @@ def run(
     if file_name is not None:  # Use args if set
         papis.config.set("file-name", file_name)
     new_file_list = []
-    for i in range(min(len(in_documents_paths), len(data["files"]))):
-        in_file_path = in_documents_paths[i]
-        if not os.path.exists(in_file_path):
-            return status.file_not_found
+
+    for in_file_path in in_documents_paths:
 
         # Rename the file in the staging area
         new_filename = papis.utils.clean_document_name(
@@ -445,58 +329,43 @@ def run(
         )
         new_file_list.append(new_filename)
 
-        endDocumentPath = os.path.join(
-            document.get_main_folder(),
+        tmp_end_filepath = os.path.join(
+            tmp_document.get_main_folder(),
             new_filename
         )
         string_append = next(g)
 
-        # Check if the absolute file path is > 255 characters
-        if len(os.path.abspath(endDocumentPath)) >= 255:
-            logger.warning(
-                'Length of absolute path is > 255 characters. '
-                'This may cause some issues with some pdf viewers'
-            )
-
-        if os.path.exists(endDocumentPath):
+        if link:
+            in_file_abspath = os.path.abspath(in_file_path)
             logger.debug(
-                "%s already exists, ignoring..." % endDocumentPath
+                "[SYMLINK] '%s' to '%s'" %
+                (in_file_abspath, tmp_end_filepath)
             )
-            continue
-        if not no_document:
-            if link:
-                in_file_abspath = os.path.abspath(in_file_path)
-                logger.debug(
-                    "[SYMLINK] '%s' to '%s'" %
-                    (in_file_abspath, endDocumentPath)
-                )
-                os.symlink(in_file_abspath, endDocumentPath)
-            else:
-                logger.debug(
-                    "[CP] '%s' to '%s'" %
-                    (in_file_path, endDocumentPath)
-                )
-                shutil.copy(in_file_path, endDocumentPath)
+            os.symlink(in_file_abspath, tmp_end_filepath)
+        else:
+            logger.debug(
+                "[CP] '%s' to '%s'" %
+                (in_file_path, tmp_end_filepath)
+            )
+            shutil.copy(in_file_path, tmp_end_filepath)
 
     data['files'] = new_file_list
 
     # Check if the user wants to edit before submitting the doc
     # to the library
     if edit:
-        document.update(
-            data, force=True, interactive=interactive
-        )
-        document.save()
-        logger.debug("Editing file before adding it")
-        papis.api.edit_file(document.get_info_file(), wait=True)
-        logger.debug("Loading the changes made by editing")
-        document.load()
-        data = papis.document.to_dict(document)
+        tmp_document.update(data, force=True)
+        tmp_document.save()
+        logger.info("Editing file before adding it")
+        papis.api.edit_file(tmp_document.get_info_file(), wait=True)
+        logger.info("Loading the changes made by editing")
+        tmp_document.load()
+        data = papis.document.to_dict(tmp_document)
 
     # Duplication checking
-    logger.debug("Check if the added document is already existing")
+    logger.info("Check if the added document is already existing")
     found_document = papis.utils.locate_document(
-        document, papis.api.get_documents_in_lib(papis.api.get_lib())
+        tmp_document, papis.api.get_documents_in_lib(papis.api.get_lib())
     )
     if found_document is not None:
         logger.warning('\n' + papis.document.dump(found_document))
@@ -511,20 +380,22 @@ def run(
         )
         confirm = True
 
-    document.update(data, force=True)
+    tmp_document.update(data, force=True)
+    tmp_document.save()
     if open_file:
-        for d_path in in_documents_paths:
+        for d_path in tmp_document.get_files():
             papis.api.open_file(d_path)
     if confirm:
         if not papis.utils.confirm('Really add?'):
             return status.success
-    document.save()
-    logger.debug(
+
+    logger.info(
         "[MV] '%s' to '%s'" %
-        (document.get_main_folder(), out_folder_path)
+        (tmp_document.get_main_folder(), out_folder_path)
     )
-    papis.document.move(document, out_folder_path)
-    papis.database.get().add(document)
+    # This also sets the folder of tmp_document
+    papis.document.move(tmp_document, out_folder_path)
+    papis.database.get().add(tmp_document)
     if commit:
         subprocess.call(["git", "-C", out_folder_path, "add", "."])
         subprocess.call(
@@ -533,7 +404,9 @@ def run(
     return status.success
 
 
-@click.command()
+@click.command(
+    help="Add a document into a given library"
+)
 @click.help_option('--help', '-h')
 @click.argument("files", type=click.Path(exists=True), nargs=-1)
 @click.option(
@@ -626,10 +499,12 @@ def run(
     default=False
 )
 @click.option(
+    #TODO: REMOVE IT AT SOME POINT
     "--no-document",
     default=False,
     is_flag=True,
-    help="Add entry without a document related to it"
+    help="DEPRECATION NOTICE: This option is no longer valid, "
+         "it will be removed in future releases"
 )
 def cli(
         files,
@@ -652,9 +527,24 @@ def cli(
         link,
         no_document
         ):
-    """Add a document into a given library
+    """
+    :param from_folder: Filepath where to find a papis document (folder +
+        info file) to be added to the library.
+    :type  from_folder: str
+    :param from_doi: doi number to try to download information from.
+    :type  from_doi: str
+    :param from_pmid: pmid number to try to download information from.
+    :type  from_pmid: str
+    :param from_url: Url to try to download information and files from.
+    :type  from_url: str
+    :param from_bibtex: Filepath where to find a file containing bibtex info.
+    :type  from_bibtex: str
+    :param from_yaml: Filepath where to find a file containing yaml info.
+    :type  from_yaml: str
     """
     data = dict()
+    assert(isinstance(files, tuple))
+    files = list(files)
 
     for data_set in set:
         data[data_set[0]] = data_set[1]
@@ -690,6 +580,75 @@ def cli(
     except:
         pass
 
+    if from_folder:
+        original_document = papis.document.Document(from_folder)
+        from_yaml = original_document.get_info_file()
+        files.extend(original_document.get_files())
+
+    if from_url:
+        logger.info("Attempting to retrieve from url")
+        url_data = papis.downloaders.utils.get(from_url)
+        data.update(url_data["data"])
+        files.extend(url_data["documents_paths"])
+        # If no data was retrieved and doi was found, try to get
+        # information with the document's doi
+        if not data and url_data["doi"] is not None and\
+                not from_doi:
+            logger.warning(
+                "I could not get any data from %s" % from_url
+            )
+            from_doi = url_data["doi"]
+
+    if from_pmid:
+        logger.info("Using PMID %s via HubMed" % from_pmid)
+        hubmed_url = "http://pubmed.macropus.org/articles/"\
+                     "?format=text%%2Fbibtex&id=%s" % from_pmid
+        bibtex_data = papis.downloaders.utils.get_downloader(
+            hubmed_url,
+            "get"
+        ).get_document_data().decode("utf-8")
+        bibtex_data = papis.bibtex.bibtex_to_dict(bibtex_data)
+        if len(bibtex_data):
+            data.update(bibtex_data[0])
+            if "doi" in data and not from_doi:
+                from_doi = data["doi"]
+        else:
+            logger.error("PMID %s not found or invalid" % from_pmid)
+
+    if from_doi:
+        logger.info("I'll try using doi %s" % from_doi)
+        data.update(papis.utils.doi_to_data(from_doi))
+        if len(files) == 0 and \
+                papis.config.get('doc-url-key-name') in data.keys():
+            doc_url = data[papis.config.get('doc-url-key-name')]
+            logger.info(
+                'I am trying to download the document from %s' % doc_url
+            )
+            down = papis.downloaders.utils.get_downloader(doc_url, 'get')
+            file_name = tempfile.mktemp()
+            with open(file_name, 'wb+') as fd:
+                fd.write(down.get_document_data())
+            logger.info('Opening the file')
+            papis.api.open_file(file_name)
+            if papis.utils.confirm('Do you want to use this file?'):
+                files.append(file_name)
+
+    if from_yaml:
+        logger.info("Reading yaml input file = %s" % from_yaml)
+        data.update(papis.utils.yaml_to_data(from_yaml))
+
+    if from_bibtex:
+        logger.info("Reading bibtex input file = %s" % from_bibtex)
+        bib_data = papis.bibtex.bibtex_to_dict(from_bibtex)
+        if len(bib_data) > 1:
+            logger.warning(
+                'Your bibtex file contains more than one entry,'
+                ' I will be taking the first entry'
+            )
+        data.update(bib_data[0])
+
+    assert(isinstance(data, dict))
+
     return run(
         list(files),
         data=data,
@@ -697,16 +656,9 @@ def cli(
         file_name=file_name,
         subfolder=dir,
         interactive=interactive,
-        from_bibtex=from_bibtex,
-        from_yaml=from_yaml,
-        from_folder=from_folder,
-        from_url=from_url,
-        from_doi=from_doi,
-        from_pmid=from_pmid,
         confirm=confirm,
         open_file=open,
         edit=edit,
         commit=commit,
-        link=link,
-        no_document=no_document
+        link=link
     )

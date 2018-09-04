@@ -59,7 +59,7 @@ class MultiCommand(click.MultiCommand):
 
         >>> mc = MultiCommand()
         >>> cmd = mc.get_command(None, 'add')
-        >>> cmd.name, cmd.__doc__
+        >>> cmd.name, cmd.help
         ('cli', 'Add...')
         >>> mc.get_command(None, 'this command does not exist')
         """

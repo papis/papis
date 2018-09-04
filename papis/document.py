@@ -231,12 +231,17 @@ def move(document, path):
     >>> move(doc, newfolder)
     Traceback (most recent call last):
     ...
-    Exception: Path ... exists already
+    Exception: There is already...
     """
     import shutil
     path = os.path.expanduser(path)
     if os.path.exists(path):
-        raise Exception("Path {} exists already".format(path))
+        raise Exception(
+            "There is already a document in {0}, please check it,\n"
+            "a temporary papis document has been stored in {1}".format(
+                path, document.get_main_folder()
+            )
+        )
     shutil.move(document.get_main_folder(), path)
     # Let us chmod it because it might come from a temp folder
     # and temp folders are per default 0o600

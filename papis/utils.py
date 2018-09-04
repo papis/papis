@@ -297,8 +297,18 @@ def locate_document(document, documents):
                     return d
 
 
-def guess_file_extension(filename):
-    for ext in ["pdf", "djvu", "epub", "mobi"]:
-        if re.match(r".*\.{0}$".format(ext), filename):
-            return ext
-    return "txt"
+def get_document_extension(document_path):
+    """Get document extension
+
+    :document_path: Path of the document
+    :returns: Extension (string)
+
+    """
+    import filetype
+    filetype.guess(document_path)
+    kind = filetype.guess(document_path)
+    if kind is None:
+        m = re.match(r"^.*\.([^.]+)$", os.path.basename(document_path))
+        return m.group(1) if m else 'data'
+    else:
+        return kind.extension
