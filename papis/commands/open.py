@@ -169,8 +169,6 @@ def cli(query, tool, dir, all, mark):
     if not all:
         documents = [papis.api.pick_doc(documents)]
         documents = [d for d in documents if d]
-        if not len(documents):
-            return 0
 
     for document in documents:
         run(
