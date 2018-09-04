@@ -103,7 +103,7 @@ class DatabaseTest(unittest.TestCase):
             print(doc.get_main_folder())
             database.add(doc)
         docs = database.get_all_documents()
-        self.assertEqual(len(docs), N+2)
+        self.assertEqual(len(docs), N*2)
 
     def test_clear(self):
         database = papis.database.get()

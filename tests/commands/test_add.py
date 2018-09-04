@@ -10,7 +10,7 @@ from papis.commands.add import (
     get_file_name,
     get_hash_folder
 )
-from tests.test_utils import (
+from tests import (
     create_random_pdf, create_random_file, create_random_epub
 )
 from papis.utils import get_document_extension

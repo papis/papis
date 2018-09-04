@@ -4,11 +4,15 @@ import yaml
 import tempfile
 import unittest
 import tests
+import tests.cli
 import papis.config
-from papis.commands.export import run
+import papis.document
+from papis.commands.export import run, cli
+import re
+import os
 
 
-class Test(unittest.TestCase):
+class TestRun(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
@@ -40,13 +44,109 @@ class Test(unittest.TestCase):
         self.assertTrue(len(data) > 0)
 
     def test_yaml(self):
-        # FIXME: The string gets created, but the loading does not work
         docs = self.get_docs()
         string = run(docs, yaml=True)
         self.assertTrue(len(string) > 0)
-        yamlfile = open(tempfile.mktemp(), 'w+')
-        yamlfile.write(string)
-        data = yaml.load_all(yamlfile)
+        yamlfile = tempfile.mktemp()
+        with open(yamlfile, 'w+') as fd:
+            fd.write(string)
+        with open(yamlfile) as fd:
+            data = list(yaml.load_all(fd))
         self.assertTrue(data is not None)
-        # FIXME: THIS DOES NOT WORK, WHY?
-        # self.assertTrue(len(list(data)) > 0)
+        self.assertTrue(len(list(data)) > 0)
+
+
+class TestCli(tests.cli.TestCli):
+
+    cli = cli
+
+    def test_main(self):
+        self.do_test_cli_function_exists()
+        self.do_test_help()
+
+    def test_json(self):
+
+        # output stdout
+        result = self.invoke([
+            'krishnamurti', '--json'
+        ])
+        self.assertTrue(result.exit_code == 0)
+        data = json.loads(result.output_bytes.decode())
+        assert(isinstance(data, list))
+        assert(len(data) == 1)
+        assert(re.match(r'.*Krishnamurti.*', data[0]['author']) is not None)
+
+        # output stdout
+        outfile = tempfile.mktemp()
+        self.assertTrue(not os.path.exists(outfile))
+        result = self.invoke([
+            'Krishnamurti', '--json', '--out', outfile
+        ])
+        self.assertTrue(result.exit_code == 0)
+        self.assertTrue(os.path.exists(outfile))
+
+        with open(outfile) as fd:
+            data = json.load(fd)
+            assert(isinstance(data, list))
+            assert(len(data) == 1)
+            assert(re.match(r'.*Krishnamurti.*', data[0]['author']) is not None)
+
+    def test_yaml(self):
+
+        # output stdout
+        result = self.invoke([
+            'krishnamurti', '--yaml'
+        ])
+        self.assertTrue(result.exit_code == 0)
+        data = yaml.load(result.output_bytes)
+        assert(re.match(r'.*Krishnamurti.*', data['author']) is not None)
+
+        # output stdout
+        outfile = tempfile.mktemp()
+        self.assertTrue(not os.path.exists(outfile))
+        result = self.invoke([
+            'Krishnamurti', '--yaml', '--out', outfile
+        ])
+        self.assertTrue(result.exit_code == 0)
+        self.assertTrue(os.path.exists(outfile))
+
+        with open(outfile) as fd:
+            data = yaml.load(fd.read())
+            assert(data is not None)
+            assert(re.match(r'.*Krishnamurti.*', data['author']) is not None)
+
+    def test_folder(self):
+
+        outdir = tempfile.mktemp()
+        self.assertTrue(not os.path.exists(outdir))
+        # output stdout
+        result = self.invoke([
+            'krishnamurti', '--folder', '--out', outdir
+        ])
+        self.assertTrue(os.path.exists(outdir))
+        self.assertTrue(os.path.isdir(outdir))
+        self.assertTrue(result.exit_code == 0)
+        self.assertTrue(result.output_bytes == b'')
+        doc = papis.document.from_folder(outdir)
+        self.assertTrue(doc is not None)
+        assert(re.match(r'.*Krishnamurti.*', doc['author']) is not None)
+
+    def test_file(self):
+        outfile = tempfile.mktemp()
+        self.assertTrue(not os.path.exists(outfile))
+        # output stdout
+        result = self.invoke([
+            'krishnamurti', '--file', '--out', outfile
+        ])
+        self.assertTrue(result.exit_code == 0)
+        self.assertTrue(result.output_bytes == b'')
+        self.assertTrue(os.path.exists(outfile))
+
+        outfile = tempfile.mktemp()
+        self.assertTrue(not os.path.exists(outfile))
+        result = self.invoke([
+            '"doc without files"', '--file', '--out', outfile
+        ])
+        self.assertTrue(result.exit_code == 0)
+        self.assertTrue(result.output_bytes == b'')
+        self.assertTrue(not os.path.exists(outfile))

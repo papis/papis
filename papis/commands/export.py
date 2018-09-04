@@ -138,12 +138,6 @@ def run(
     is_flag=True
 )
 @click.option(
-    "--no-bibtex",
-    help="When exporting to a folder, do not include the bibtex",
-    default=False,
-    is_flag=True
-)
-@click.option(
     "-o",
     "--out",
     help="Outfile or outdir",
@@ -174,7 +168,6 @@ def cli(
         bibtex,
         json,
         folder,
-        no_bibtex,
         out,
         text,
         all,
@@ -194,14 +187,6 @@ def cli(
             return 0
         documents = [document]
 
-    if out is not None and not folder and not file:
-        logger.info("Dumping to {0}".format(out))
-        out = open(out, 'a+')
-
-    if out is None and not folder and not file:
-        logger.info("Dumping to stdout")
-        out = sys.stdout
-
     ret_string = run(
         documents,
         yaml=yaml,
@@ -211,7 +196,13 @@ def cli(
     )
 
     if ret_string is not None:
-        out.write(ret_string)
+        if out is not None:
+            logger.info("Dumping to {0}".format(out))
+            with open(out, 'w+') as fd:
+                fd.write(ret_string)
+        else:
+            logger.info("Dumping to stdout")
+            print(ret_string)
         return 0
 
     for document in documents:
@@ -223,14 +214,15 @@ def cli(
                     outdir, document.get_main_folder_name()
                 )
             shutil.copytree(folder, outdir)
-            if not no_bibtex:
-                open(
-                    os.path.join(outdir, "info.bib"),
-                    "a+"
-                ).write(papis.document.to_bibtex(document))
         elif file:
             logger.info("Exporting file")
             files = document.get_files()
+            assert(isinstance(files, list))
+            if not files:
+                logger.error('No files found for doc in {0}'.format(
+                    document.get_main_folder()
+                ))
+                continue
             files_to_open = [papis.api.pick(
                 files,
                 pick_config=dict(
