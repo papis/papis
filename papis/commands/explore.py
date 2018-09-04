@@ -132,7 +132,13 @@ def arxiv(ctx, query, author, title, abstract, comment,
 
     Examples of its usage are
 
-    papis explore arxiv -a 'Hummel' -m 100 arxiv -a 'Garnet Chan' pick
+        papis explore arxiv -a 'Hummel' -m 100 arxiv -a 'Garnet Chan' pick
+
+    If you want to search for the exact author name 'John Smith', you should
+    enclose it in extra quotes, as in the example below
+
+        papis explore arxiv -a '"John Smith"' pick
+
     """
     import papis.arxiv
     logger = logging.getLogger('explore:arxiv')
