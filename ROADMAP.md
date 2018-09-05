@@ -3,7 +3,7 @@
 If you want to contribute you might take one of these topics and
 start working on them.
 
-## Implement whoosh for papis
+## Implement whoosh for papis [X]
 
 Abstract away the database system of papis to
 allow for backends such as whoosh for the indexing and querying of
@@ -84,7 +84,7 @@ autocompletion, which in my opinion for papis is suboptimal.
 Therefore is someone is skilled in bash or zsh autocompletion, she
 can contribute one.
 
-## Use [habanero](https://github.com/sckott/habanero) for ``crossref``
+## Use [habanero](https://github.com/sckott/habanero) for ``crossref`` [X]
 
 Right now papis is parsing crossref with a hand-made module.
 However I think in order to maintain less code and profit from better
@@ -114,7 +114,7 @@ papis.downloaders.libgen.Crawler
 
 or the like.
 
-## Improve the unit testing infrastructure.
+## Improve the unit testing infrastructure. [X]
 
 Right now one of the main things that papis needs is a thorough unit testing.
 We have to find good ways of testing all command line behaviour a beginning
@@ -137,7 +137,7 @@ the BeautifulSoup package can parse them using the existing code
 If someone has experience with youtube, it would be nice to have a review
 in youtube explaining the main uses of papis and of her workflow.
 
-## Implement proxy to download papers.
+## Implement proxy to download papers. [X]
 
 The downloaders implemented should be downloading the documents
 via a normal http connection. If the users have an account at some university
@@ -177,6 +177,6 @@ and for brew in macOS.
 
   - [ ] Brew (MacOS)
   - [ ] Debian/Ubuntu
-  - [ ] Archlinux
+  - [X] Archlinux
   - [X] NixOS
   - [ ] Other
