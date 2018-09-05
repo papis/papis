@@ -157,7 +157,7 @@ def get_hash_folder(data, document_paths):
 
     document_strings = b''
     for docpath in document_paths:
-        with open(docpath, 'rb+') as fd:
+        with open(docpath, 'rb') as fd:
             document_strings += fd.read(2000)
 
     md5 = hashlib.md5(
