@@ -44,7 +44,7 @@ class Downloader(papis.downloaders.base.Downloader):
         ))
 
         if not a:
-            self.logger.erro('No document url in theses.fr')
+            self.logger.error('No document url in theses.fr')
             return None
 
         second_url = a[0]['href']
@@ -56,7 +56,7 @@ class Downloader(papis.downloaders.base.Downloader):
         ))
 
         if not a:
-            self.logger.erro('No document url in {0}'.format(second_url))
+            self.logger.error('No document url in {0}'.format(second_url))
             return None
 
         return a[0]['href']
