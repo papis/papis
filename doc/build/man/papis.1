@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "PAPIS" "1" "Sep 02, 2018" "0.7" "papis"
+.TH "PAPIS" "1" "Sep 10, 2018" "0.7.2" "papis"
 .SH NAME
 papis \- Papis Documentation
 .
@@ -190,7 +190,7 @@ If you input parts of the title or the author\(aqs name it will try to match
 what you typed with the paper you are looking for, so that you can get the
 paper that you are looking for very easily.
 .SH INSTALLATION
-.SS Using pip
+\fI\%\fP\fI\%\fP.SS Using pip
 .sp
 The easiest way of installing papis is using the \fBPyPi\fP repositories and
 the package manager \fBpip3\fP, just open a terminal and type in
@@ -240,6 +240,10 @@ pip3 install \-\-upgrade papis
 .fi
 .UNINDENT
 .UNINDENT
+.SS Archlinux
+.sp
+The package \fIpapis\fP is also found in the archlinux repositories
+\fI\%here\fP\&.
 .SS NixOS
 .sp
 If you are running \fI\%NixOS\fP or you have the
@@ -296,7 +300,8 @@ git clone https://github.com/alejandrogallo/papis.git
 .UNINDENT
 .UNINDENT
 .sp
-or download the \fI\%zip file\fP\&.
+or download the
+\fI\%zip file\fP\&.
 .sp
 Go inside of the \fBpapis\fP source folder and you can either use the \fBMakefile\fP
 or install it with \fBpython3\fP\&.
@@ -363,8 +368,8 @@ python3 setup\&.py install
 .UNINDENT
 .UNINDENT
 .sp
-Again, if you want to install it locally because you don\(aqt have administrative rights
-in your computer you can just simply type
+Again, if you want to install it locally because you don\(aqt have administrative
+rights in your computer you can just simply type
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -425,7 +430,8 @@ python3\-setuptools
 .UNINDENT
 .UNINDENT
 .sp
-However if you have a general enough python distribution they should be installed.
+However if you have a general enough python distribution they should be
+installed.
 .SH CONFIGURATION FILE
 .sp
 Papis uses a configuration file in \fIINI\fP format. You can then have
@@ -1319,6 +1325,19 @@ mark\-opener\-format = zathura \-P {mark[value]}
 .UNINDENT
 .UNINDENT
 .UNINDENT
+.SS Downloaders
+.INDENT 0.0
+.TP
+\fBdownloader\-proxy\fP (\fI\%config\-settings\-downloader\-proxy\fP)
+.INDENT 7.0
+.IP \(bu 2
+\fBDefault\fP: \fBNone\fP
+.UNINDENT
+.UNINDENT
+.sp
+There is the possibility of download papers using a proxy.
+To know more you can checkout this
+\fI\%link\fP\&.
 .SS Databases
 .INDENT 0.0
 .TP
@@ -2142,7 +2161,8 @@ Add paper to a library named \fBmachine\-learning\fP from \fBarxiv.org\fP
 .sp
 .nf
 .ft C
-papis \-l machine\-learning add \-\-from\-url https://arxiv.org/abs/1712.03134
+papis \-l machine\-learning add \e
+    \-\-from\-url https://arxiv.org/abs/1712.03134
 .ft P
 .fi
 .UNINDENT
@@ -2159,7 +2179,8 @@ also tell papis to just create a link to them, for example
 .sp
 .nf
 .ft C
-papis add \-\-link ~/Documents/interesting.pdf \-\-from\-doi 10.10763/1.3237134
+papis add \-\-link ~/Documents/interesting.pdf \e
+    \-\-from\-doi 10.10763/1.3237134
 .ft P
 .fi
 .UNINDENT
@@ -2180,7 +2201,7 @@ There is a python function in the add module that can be used to interact
 in a more effective way in python scripts,
 .INDENT 0.0
 .TP
-.B papis.commands.add.run(paths, data={}, name=None, file_name=None, subfolder=None, interactive=False, from_bibtex=None, from_yaml=None, from_folder=None, from_url=None, from_doi=None, from_pmid=None, confirm=False, open_file=False, edit=False, commit=False, link=False, no_document=False)
+.B papis.commands.add.run(paths, data={}, name=None, file_name=None, subfolder=None, interactive=False, confirm=False, open_file=False, edit=False, commit=False, link=False)
 .INDENT 7.0
 .TP
 .B Parameters
@@ -2202,19 +2223,6 @@ should be stored.
 \fBinteractive\fP (\fIbool\fP) \-\- Wether or not interactive functionality of this command
 should be activated.
 .IP \(bu 2
-\fBfrom_bibtex\fP (\fIstr\fP) \-\- Filepath where to find a file containing bibtex info.
-.IP \(bu 2
-\fBfrom_yaml\fP (\fIstr\fP) \-\- Filepath where to find a file containing yaml info.
-.IP \(bu 2
-\fBfrom_folder\fP (\fIstr\fP) \-\- Filepath where to find a papis document (folder +
-info file) to be added to the library.
-.IP \(bu 2
-\fBfrom_url\fP (\fIstr\fP) \-\- Url to try to download information and files from.
-.IP \(bu 2
-\fBfrom_url\fP \-\- doi number to try to download information from.
-.IP \(bu 2
-\fBfrom_url\fP \-\- pmid number to try to download information from.
-.IP \(bu 2
 \fBconfirm\fP (\fIbool\fP) \-\- Wether or not to ask user for confirmation before adding.
 .IP \(bu 2
 \fBopen_file\fP (\fIbool\fP) \-\- Wether or not to ask user for opening file before adding.
@@ -2224,8 +2232,6 @@ before adding.
 .IP \(bu 2
 \fBcommit\fP (\fIbool\fP) \-\- Wether or not to ask user for committing before adding,
 in the case of course that the library is a git repository.
-.IP \(bu 2
-\fBno_document\fP (\fIbool\fP) \-\- Wether or not the document has no files attached.
 .UNINDENT
 .UNINDENT
 .UNINDENT
@@ -2336,7 +2342,7 @@ Instead of copying the file to the library, create a link toits original locatio
 .INDENT 0.0
 .TP
 .B \-\-no\-document
-Add entry without a document related to it
+DEPRECATION NOTICE: This option is no longer valid, it will be removed in future releases
 .UNINDENT
 Arguments.INDENT 0.0
 .TP
@@ -2675,8 +2681,7 @@ Explore new documents using a variety of resources
 .sp
 .nf
 .ft C
-papis explore [OPTIONS] COMMAND1 [ARGS]... [COMMAND2
-              [ARGS]...]...
+papis explore [OPTIONS] COMMAND1 [ARGS]... [COMMAND2 [ARGS]...]...
 .ft P
 .fi
 .UNINDENT
@@ -2691,8 +2696,19 @@ Show this message and exit.
 Look for documents on ArXiV.org.
 .sp
 Examples of its usage are
-.sp
+.INDENT 0.0
+.INDENT 3.5
 papis explore arxiv \-a \(aqHummel\(aq \-m 100 arxiv \-a \(aqGarnet Chan\(aq pick
+.UNINDENT
+.UNINDENT
+.sp
+If you want to search for the exact author name \(aqJohn Smith\(aq, you should
+enclose it in extra quotes, as in the example below
+.INDENT 0.0
+.INDENT 3.5
+papis explore arxiv \-a \(aq"John Smith"\(aq pick
+.UNINDENT
+.UNINDENT
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -3207,12 +3223,7 @@ Export document folder to share
 .UNINDENT
 .INDENT 0.0
 .TP
-.B \-\-no\-bibtex
-When exporting to a folder, do not include the bibtex
-.UNINDENT
-.INDENT 0.0
-.TP
-.B \-o, \-\-out
+.B \-o, \-\-out <out>
 Outfile or outdir
 .UNINDENT
 .INDENT 0.0
