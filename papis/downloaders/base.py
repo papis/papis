@@ -177,21 +177,28 @@ class Downloader(object):
         if self.expected_document_extension is None:
             return True
 
+        result = None
         kind = filetype.guess(self.get_document_data())
 
         if kind is None:
             print_warning()
             return False
 
-        expected_kind = filetype.get_type(ext=self.expected_document_extension)
-        if expected_kind is None:
-            raise Exception(
-                "I can't understand the expected extension {0}".format(
-                    self.expected_document_extension
-                )
-            )
+        if not isinstance(self.expected_document_extension, list):
+            self.expected_document_extension = [
+                self.expected_document_extension]
 
-        result = kind.mime == expected_kind.mime
+        for expected_document_extension in self.expected_document_extension:
+
+            expected_kind = filetype.get_type(ext=expected_document_extension)
+            if expected_kind is None:
+                raise Exception(
+                    "I can't understand the expected extension {0}".format(
+                        self.expected_document_extension
+                    )
+                )
+
+            result = kind.mime == expected_kind.mime
 
         if not result:
             print_warning()
