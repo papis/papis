@@ -149,7 +149,7 @@ class Downloader(object):
             return False
         res = self.session.get(url, cookies=self.cookies)
         content_type = res.headers['Content-Type']
-        self.logger.debug('bibtex content type "{0}"'.format(content_type))
+        self.logger.debug('document content type "{0}"'.format(content_type))
         self.document_data = res.content
 
     def get_url(self):
@@ -194,7 +194,7 @@ class Downloader(object):
             if expected_kind is None:
                 raise Exception(
                     "I can't understand the expected extension {0}".format(
-                        self.expected_document_extension
+                        expected_document_extension
                     )
                 )
 
