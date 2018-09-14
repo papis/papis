@@ -1,7 +1,7 @@
-Papis |Build Status| |Coveralls| |RTD| |Pypi| |zenodo_badge|
+Papis |Build_Status| |Coveralls| |RTD| |Pypi| |Code_Quality| |zenodo_badge|
 =====
 
-|Packaging status|
+|Packaging_status|
 
 Description
 -----------
@@ -118,9 +118,11 @@ See the ``AUTHORS`` list for a list of authored commits.
    :target: http://papis.readthedocs.io/en/latest/?badge=latest
 .. |Coveralls| image:: https://coveralls.io/repos/github/papis/papis/badge.svg?branch=master
    :target: https://coveralls.io/github/papis/papis?branch=master
-.. |Build Status| image:: https://travis-ci.org/papis/papis.svg?branch=master
+.. |Build_Status| image:: https://travis-ci.org/papis/papis.svg?branch=master
    :target: https://travis-ci.org/papis/papis
-.. |Packaging status| image:: https://repology.org/badge/vertical-allrepos/papis.svg
+.. |Packaging_status| image:: https://repology.org/badge/vertical-allrepos/papis.svg
    :target: https://repology.org/metapackage/papis
 .. |asciicast_help| image:: https://asciinema.org/a/3otatlbqXIsI102uAywMhT4fP.png
    :target: https://asciinema.org/a/3otatlbqXIsI102uAywMhT4fP
+.. |Code_Quality| image:: https://img.shields.io/lgtm/grade/python/g/papis/papis.svg?logo=lgtm&logoWidth=18
+   :target: https://lgtm.com/projects/g/papis/papis/context:python
