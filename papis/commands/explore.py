@@ -285,7 +285,13 @@ def dissemin(ctx, query):
 @cli.command('pick')
 @click.pass_context
 @click.help_option('--help', '-h')
-def pick(ctx):
+@click.option(
+    '--number', '-n',
+    type=int,
+    default=None,
+    help='Pick automatically the n-th document'
+)
+def pick(ctx, number):
     """
     Pick a document from the retrieved documents
 
@@ -295,6 +301,8 @@ def pick(ctx):
 
     """
     docs = ctx.obj['documents']
+    if number is not None:
+        docs = [docs[number - 1]]
     ctx.obj['documents'] = list(filter(
         lambda x: x is not None,
         [papis.api.pick_doc(docs)]
