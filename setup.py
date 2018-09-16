@@ -51,6 +51,7 @@ setup(
         "pyparser>=1.0",
         "pylibgen>=1.3.0",
         "habanero>=0.6.0",
+        "isbnlib>=3.9.1,<4.0.0",
     ],
     python_requires='>=3',
     classifiers=[
