@@ -282,6 +282,28 @@ def dissemin(ctx, query):
     logger.info('{} documents found'.format(len(docs)))
 
 
+@cli.command('lib')
+@click.pass_context
+@click.help_option('--help', '-h')
+@papis.cli.query_option()
+@click.option('--library', '-l', default=None, help='Papis library to look')
+def lib(ctx, query, library):
+    """
+    Query for documents in your library
+
+    Examples of its usage are
+
+        papis lib -l books einstein pick
+
+    """
+    logger = logging.getLogger('explore:lib')
+    db = papis.database.get(library=library)
+    docs = db.query(query)
+    logger.info('{} documents found'.format(len(docs)))
+    ctx.obj['documents'] = docs
+    assert(isinstance(ctx.obj['documents'], list))
+
+
 @cli.command('pick')
 @click.pass_context
 @click.help_option('--help', '-h')
