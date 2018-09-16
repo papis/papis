@@ -36,6 +36,7 @@ import papis.downloaders.utils
 import papis.document
 import papis.database
 import papis.isbnplus
+import papis.isbn
 import papis.crossref
 import papis.api
 import papis.cli
@@ -72,6 +73,11 @@ def run(document, data=dict(), interactive=False, force=False):
 @click.option(
     "--from-crossref",
     help="Update info from crossref.org",
+    default=None
+)
+@click.option(
+    "--from-isbn",
+    help="Update info from isbn",
     default=None
 )
 @click.option(
@@ -123,6 +129,7 @@ def cli(
         force,
         from_crossref,
         from_isbnplus,
+        from_isbn,
         from_yaml,
         from_bibtex,
         from_url,
@@ -146,6 +153,7 @@ def cli(
             from_url = None
             from_doi = None
             from_isbnplus = None
+            from_isbnplus = None
 
         if set:
             data.update({s[0]: s[1] for s in set})
@@ -157,11 +165,12 @@ def cli(
             if 'url' in document.keys() and not from_url:
                 logger.info('Trying using the url {}'.format(document['url']))
                 from_url = document['url']
-            if 'title' in document.keys() and not from_isbnplus:
+            if 'title' in document.keys() and not from_isbn:
                 logger.info(
                     'Trying using the title {}'.format(document['title'])
                 )
-                from_isbnplus = document['title']
+                from_isbn = '{d[title]} {d[author]}'.format(d=document)
+                from_isbnplus = from_isbn
             if from_crossref is None and from_doi is None:
                 from_crossref = True
 
@@ -199,6 +208,22 @@ def cli(
                     data.update(papis.document.to_dict(doc))
             except urllib.error.HTTPError:
                 logger.error('urllib failed to download')
+
+        if from_isbn:
+            try:
+                doc = papis.api.pick_doc(
+                    [
+                        papis.document.from_data(d)
+                        for d in papis.isbn.get_data(
+                            query=from_isbn
+                        )
+                    ]
+                )
+                if doc:
+                    data.update(papis.document.to_dict(doc))
+            except Exception as e:
+                logger.error('Isbnlib had an error retrieving information')
+                logger.error(e)
 
         if from_yaml:
             with open(from_yaml) as fd:

@@ -260,6 +260,37 @@ def isbnplus(ctx, query, author, title):
     logger.info('{} documents found'.format(len(docs)))
 
 
+@cli.command('isbn')
+@click.pass_context
+@click.help_option('--help', '-h')
+@click.option('--query', '-q', default=None)
+@click.option(
+    '--service',
+    '-s',
+    default='goob',
+    type=click.Choice(['wcat', 'goob', 'openl'])
+)
+def isbn(ctx, query, service):
+    """
+    Look for documents using isbnlib
+
+    Examples of its usage are
+
+    papis explore isbn -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
+
+    """
+    from papis.isbn import get_data
+    logger = logging.getLogger('explore:isbn')
+    logger.info('Looking up...')
+    data = get_data(
+        query=query,
+        service=service,
+    )
+    docs = [papis.document.from_data(data=d) for d in data]
+    logger.info('{} documents found'.format(len(docs)))
+    ctx.obj['documents'] += docs
+
+
 @cli.command('dissemin')
 @click.pass_context
 @click.help_option('--help', '-h')
