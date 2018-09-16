@@ -414,7 +414,6 @@ def citations(ctx, query, max_citations):
     ctx.obj['documents'] += docs
 
 
-
 @cli.command('yaml')
 @click.pass_context
 @click.argument('yamlfile', type=click.Path(exists=True))
@@ -540,7 +539,8 @@ def cmd(ctx, command):
 
     Look for 200 Schroedinger papers, pick one, and add it via papis-scihub
 
-    papis explore crossref -m 200 -a 'Schrodinger' pick cmd 'papis scihub {doc[doi]}'
+    papis explore crossref -m 200 -a 'Schrodinger' \\
+        pick cmd 'papis scihub {doc[doi]}'
 
     """
     from subprocess import call
