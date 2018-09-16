@@ -3,7 +3,9 @@ import tempfile
 import unittest
 import tests
 import papis.config
-from papis.commands.update import run
+from papis.commands.update import run, cli
+import os
+import re
 
 
 class Test(unittest.TestCase):
@@ -16,44 +18,92 @@ class Test(unittest.TestCase):
         db = papis.database.get()
         return db.get_all_documents()
 
-    def test_bibtex(self):
+    def test_data(self):
         db = papis.database.get()
-        bibstring = """
-        @article{10.1002/andp.19053221004,
-          author = { A. Einstein },
-          doi = { 10.1002/andp.19053221004 },
-          issue = { 10 },
-          journal = { Ann. Phys. },
-          pages = { 891--921 },
-          title = { Zur Elektrodynamik bewegter K\"{o}rper },
-          type = { article },
-          volume = {322},
-          year = { 1905 },
-        }
-
-        @article{10.1002/andp.19053221004,
-          author = { Perico de los palotes },
-          doi = { 10.1002/andp.19053221004 },
-          issue = { 10 },
-          journal = { Ann. Phys. },
-          pages = { 891--921 },
-          title = { La biblia en HD },
-          type = { article },
-          volume = {322},
-          year = { 1905 },
-        }
-        """
-        bibfile = tempfile.mktemp()
-        with open(bibfile, 'w+') as fd:
-            fd.write(bibstring)
-
         docs = self.get_docs()
-        run(docs[0], from_bibtex=bibfile)
-        docs = db.query_dict(dict(title='elektrodynamik'))
-        self.assertTrue(len(docs) == 0)
+        self.assertTrue(docs)
+        doc = docs[0]
+        data = dict()
+        data['tags'] = 'test_data'
+        run(doc, data=data, force=True)
+        docs = db.query_dict(dict(tags='test_data'))
+        self.assertTrue(docs)
 
-        docs = self.get_docs()
-        run(docs[0], force=True, from_bibtex=bibfile)
-        docs = db.query_dict(dict(title='elektrodynamik'))
-        self.assertEqual(len(docs), 1)
-        self.assertEqual(docs[0]["volume"], "322")
+
+class TestCli(tests.cli.TestCli):
+
+    cli = cli
+
+    def test_main(self):
+        self.do_test_cli_function_exists()
+        self.do_test_help()
+
+    def test_set(self):
+        db = papis.database.get()
+        result = self.invoke([
+            'krishnamurti', '--set', 'editor', 'ls', '-b', '-f'
+        ])
+        self.assertTrue(result.exit_code == 0)
+        docs = db.query_dict(dict(author='krishnamurti'))
+        self.assertTrue(docs)
+        # TODO: if I don't load, it fails, why?
+        docs[0].load()
+        self.assertEqual(docs[0]['editor'], 'ls')
+
+    def test_yaml(self):
+        yamlpath = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            'data', 'ken.yaml'
+        )
+        self.assertTrue(os.path.exists(yamlpath))
+
+        result = self.invoke([
+            'krishnamurti', '--from-yaml', yamlpath, '-b'
+        ])
+        db = papis.database.get()
+        docs = db.query_dict(dict(author='krishnamurti'))
+        self.assertTrue(docs)
+        # TODO: if I don't load, it fails, why?
+        docs[0].load()
+        self.assertEqual('10.1143/JPSJ.44.1627', docs[0]['doi'])
+
+    def test_bibtex_no_force_and_force(self):
+        bibpath = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            'data', 'lib1.bib'
+        )
+        self.assertTrue(os.path.exists(bibpath))
+
+        result = self.invoke([
+            'krishnamurti', '--from-bibtex', bibpath, '-b'
+        ])
+        db = papis.database.get()
+        docs = db.query_dict(dict(author='krishnamurti'))
+        self.assertTrue(docs)
+        # TODO: if I don't load, it fails, why?
+        docs[0].load()
+        self.assertTrue(
+            re.match(r' *10.1002/andp.19053221004 *', docs[0]['doi'])
+        )
+        self.assertTrue(
+            re.match(r'.*Krishnamurti.*', docs[0]['author'])
+        )
+
+        result = self.invoke([
+            'krishnamurti', '--from-bibtex', bibpath, '-bf', '--all'
+        ])
+        db = papis.database.get()
+        docs = db.query_dict(dict(author='krishnamurti'))
+        self.assertTrue(docs)
+        # TODO: if I don't load, it fails, why?
+        docs[0].load()
+        self.assertTrue(
+            re.match(r' *10.1002/andp.19053221004 *', docs[0]['doi'])
+        )
+        self.assertTrue(
+            re.match(r'.*Krishnamurti.*', docs[0]['author']) is None
+        )
+        self.assertEqual(
+            r' Zur Elektrodynamik bewegter K\"{o}rper ',
+            docs[0]['title']
+        )
