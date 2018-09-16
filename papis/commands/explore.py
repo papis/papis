@@ -244,11 +244,11 @@ def isbnplus(ctx, query, author, title):
     papis explore isbnplus -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
 
     """
-    import papis.isbn
+    from papis.isbnplus import get_data
     logger = logging.getLogger('explore:isbnplus')
     logger.info('Looking up...')
     try:
-        data = papis.isbn.get_data(
+        data = get_data(
             query=query,
             author=author,
             title=title

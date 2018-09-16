@@ -35,7 +35,7 @@ import papis.bibtex
 import papis.downloaders.utils
 import papis.document
 import papis.database
-import papis.isbn
+import papis.isbnplus
 import papis.crossref
 import papis.api
 import papis.cli
@@ -190,7 +190,7 @@ def cli(
                 doc = papis.api.pick_doc(
                     [
                         papis.document.from_data(d)
-                        for d in papis.isbn.get_data(
+                        for d in papis.isbnplus.get_data(
                             query=from_isbnplus
                         )
                     ]
