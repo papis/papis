@@ -18,9 +18,7 @@ import click
 import logging
 
 
-def run(document, editor=None, wait=True):
-    if editor is not None:
-        papis.config.set('editor', editor)
+def run(document, wait=True):
     database = papis.database.get()
     papis.utils.general_open(document.get_info_file(), "editor", wait=wait)
     document.load()
@@ -43,15 +41,26 @@ def run(document, editor=None, wait=True):
     default=False,
     is_flag=True
 )
+@click.option(
+    "-e",
+    "--editor",
+    help="Editor to be used",
+    default=None
+)
 def cli(
         query,
         notes,
-        all
+        all,
+        editor
         ):
     """Edit document information from a given library"""
 
     logger = logging.getLogger('cli:edit')
     documents = papis.database.get().query(query)
+
+    if editor is not None:
+        papis.config.set('editor', editor)
+
     if not all:
         document = papis.api.pick_doc(documents)
         documents = [document] if document else []
@@ -64,8 +73,8 @@ def cli(
             logger.debug("Editing notes")
             if not document.has("notes"):
                 logger.warning(
-                    "The document selected has no notes attached,"
-                    " creating one..."
+                    "The document selected has no notes attached, \n"
+                    "creating a notes files"
                 )
                 document["notes"] = papis.config.get("notes-name")
                 document.save()
@@ -73,9 +82,11 @@ def cli(
                 document.get_main_folder(),
                 document["notes"]
             )
+
             if not os.path.exists(notesPath):
                 logger.debug("Creating %s" % notesPath)
                 open(notesPath, "w+").close()
+
             papis.api.edit_file(notesPath)
         else:
             run(document)
