@@ -277,6 +277,30 @@ def git_commit(path="", message=""):
     call(cmd)
 
 
+def locate_document_in_lib(document, library=None):
+    """Try to figure out if a document is already in a library
+
+    :param document: Document to be searched for
+    :type  document: papis.document.Document
+    :param library: Name of a valid papis library
+    :type  library: str
+    :returns: Document in library if found
+    :rtype:  papis.document.Document
+    :raises IndexError: Whenever document is not found in the library
+    """
+    db = papis.database.get(library=library)
+    comparing_keys = eval(papis.config.get('unique-document-keys'))
+
+    for k in comparing_keys:
+        if not document.has(k):
+            continue
+        docs = db.query_dict({k: document[k]})
+        if docs:
+            return docs[0]
+
+    raise IndexError("Document not found in library")
+
+
 def locate_document(document, documents):
     """Try to figure out if a document is already within a list of documents.
 

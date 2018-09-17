@@ -364,15 +364,21 @@ def run(
 
     # Duplication checking
     logger.info("Check if the added document is already existing")
-    found_document = papis.utils.locate_document(
-        tmp_document, papis.api.get_documents_in_lib(papis.api.get_lib())
-    )
-    if found_document is not None:
-        logger.warning('\n' + papis.document.dump(found_document))
-        print("\n\n")
+    try:
+        found_document = papis.utils.locate_document_in_lib(tmp_document)
+    except IndexError:
+        logger.info("Document not found in library")
+    else:
+        logger.warning(
+            '\n\n\n\n{0}\n\n\n\n'.format(papis.document.dump(found_document))
+        )
         logger.warning("DUPLICATION WARNING")
         logger.warning(
-            "The document above seems to be already in your library: \n\n"
+            "The document above is in your library and it seems to match"
+        )
+        logger.warning(
+            "the one that you're trying to add, "
+            "I will prompt you for confirmation"
         )
         logger.warning(
             "(Hint) Use the update command if you just want to update"
