@@ -575,9 +575,11 @@ def cmd(ctx, command):
 
     """
     from subprocess import call
+    import shlex
     logger = logging.getLogger('explore:cmd')
     docs = ctx.obj['documents']
     for doc in docs:
         fcommand = papis.utils.format_doc(command, doc)
-        logger.info('Calling "%s"' % fcommand)
-        call(fcommand.split(" "))
+        splitted_command = shlex.split(fcommand)
+        logger.info('Calling %s' % splitted_command)
+        call(splitted_command)
