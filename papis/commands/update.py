@@ -21,6 +21,18 @@ Examples
 
         papis update --from-bibtex libraryfile.bib -i
 
+- Tag all einstein papers with the tag classics
+
+    .. code::
+
+        papis update --all --set tags classics einstein
+
+and add the tag of ``physics`` to all papers tagged as ``classics``
+
+    .. code::
+
+        papis update --all --set tags '{doc[tags]} physics' einstein
+
 Cli
 ^^^
 .. click:: papis.commands.update:cli
@@ -119,7 +131,8 @@ def run(document, data=dict(), interactive=False, force=False):
 )
 @click.option(
     "-s", "--set",
-    help="Update document's information with key value",
+    help="Update document's information with key value."
+         "The value can be a papis format.",
     multiple=True,
     type=(str, str),
 )
@@ -156,7 +169,9 @@ def cli(
             from_isbnplus = None
 
         if set:
-            data.update({s[0]: s[1] for s in set})
+            data.update(
+                {s[0]: papis.utils.format_doc(s[1], document) for s in set}
+            )
 
         if auto:
             if 'doi' in document.keys() and not from_doi:
