@@ -20,6 +20,7 @@ for dep in main_dependencies:
         )
         sys.exit(1)
 
+import glob
 from setuptools import setup
 import papis
 
@@ -116,11 +117,7 @@ setup(
             # "scripts/shell_completion/build/bash/papis",
         # ]),
 
-        ("share/man/man1", [
-            "doc/build/man/papis.1",
-            "doc/build/man/papis-config.1",
-            #TODO: write the individual commands here too
-        ]),
+        ("share/man/man1", glob.glob("doc/build/man/*")),
 
         ("share/applications", [
             "contrib/papis.desktop",
