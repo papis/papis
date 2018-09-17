@@ -119,6 +119,7 @@ setup(
         ("share/man/man1", [
             "doc/build/man/papis.1",
             "doc/build/man/papis-config.1",
+            #TODO: write the individual commands here too
         ]),
 
         ("share/applications", [
