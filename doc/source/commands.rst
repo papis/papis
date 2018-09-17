@@ -1,67 +1,20 @@
 Commands
 ========
 
-Main
-----
-.. automodule:: papis.commands.default
-
-Add
----
-.. automodule:: papis.commands.add
-
-Addto
------
-.. automodule:: papis.commands.addto
-
-Browse
-------
-.. automodule:: papis.commands.browse
-
-Config
-------
-.. automodule:: papis.commands.config
-
-Edit
-----
-.. automodule:: papis.commands.edit
-
-Explore
--------
-.. automodule:: papis.commands.explore
-
-Export
-------
-.. automodule:: papis.commands.export
-
-Git
----
-.. automodule:: papis.commands.git
-
-List
-----
-.. automodule:: papis.commands.list
-
-Mv
---
-.. automodule:: papis.commands.mv
-
-Open
-----
-.. automodule:: papis.commands.open
-
-Rename
-------
-.. automodule:: papis.commands.rename
-
-Rm
---
-.. automodule:: papis.commands.rm
-
-Run
----
-.. automodule:: papis.commands.run
-
-Update
-------
-.. automodule:: papis.commands.update
-
+.. include:: commands/add.rst
+.. include:: commands/addto.rst
+.. include:: commands/browse.rst
+.. include:: commands/commands.rst
+.. include:: commands/config.rst
+.. include:: commands/default.rst
+.. include:: commands/edit.rst
+.. include:: commands/explore.rst
+.. include:: commands/export.rst
+.. include:: commands/git.rst
+.. include:: commands/list.rst
+.. include:: commands/mv.rst
+.. include:: commands/open.rst
+.. include:: commands/rename.rst
+.. include:: commands/rm.rst
+.. include:: commands/run.rst
+.. include:: commands/update.rst
