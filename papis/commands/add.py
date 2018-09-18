@@ -549,7 +549,6 @@ def cli(
     :type  from_yaml: str
     """
     data = dict()
-    assert(isinstance(files, tuple))
     files = list(files)
 
     for data_set in set:
