@@ -124,7 +124,7 @@ def run(
     documents = db.query(query)
 
     if pick:
-        documents = [papis.api.pick_doc(documents)]
+        documents = filter(lambda x: x, [papis.api.pick_doc(documents)])
 
     if files:
         return [
