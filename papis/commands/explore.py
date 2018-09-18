@@ -85,6 +85,7 @@ Cli
     :prog: papis explore
     :show-nested:
 """
+import os
 import papis.utils
 import papis.commands
 import papis.document
@@ -391,10 +392,22 @@ def bibtex(ctx, bibfile):
 @papis.cli.query_option()
 @click.help_option('--help', '-h')
 @click.option(
+    "--save", "-s",
+    is_flag=True,
+    default=False,
+    help="Store the citations in the document's folder for later use"
+)
+@click.option(
+    "--rmfile",
+    is_flag=True,
+    default=False,
+    help="Remove the stored citations file"
+)
+@click.option(
     "--max-citations", "-m", default=-1,
     help='Number of citations to be retrieved'
 )
-def citations(ctx, query, max_citations):
+def citations(ctx, query, max_citations, save, rmfile):
     """
     Query the citations of a paper
 
@@ -416,6 +429,17 @@ def citations(ctx, query, max_citations):
 
     doc = papis.api.pick_doc(documents)
     db = papis.database.get()
+    citations_file = os.path.join(doc.get_main_folder(), 'citations.yaml')
+
+    if os.path.exists(citations_file):
+        if rmfile:
+            logger.info('Removing {0}'.format(citations_file))
+            os.remove(citations_file)
+        else:
+            click.echo('A citations file exists in {0}'.format(citations_file))
+            if papis.utils.confirm('Do you want to use it?'):
+                yaml.callback(citations_file)
+                return
 
     if not doc.has('citations') or doc['citations'] == []:
         logger.warning('No citations found')
@@ -442,6 +466,17 @@ def citations(ctx, query, max_citations):
                 )
 
     docs = [papis.document.Document(data=d) for d in dois_with_data]
+    if save:
+        logger.info('Storing citations in "{0}"'.format(citations_file))
+        with open(citations_file, 'a+') as fd:
+            logger.info(
+                "Writing {} documents' yaml into {}".format(
+                    len(docs),
+                    citations_file
+                )
+            )
+            yamldata = papis.commands.export.run(docs, yaml=True)
+            fd.write(yamldata)
     ctx.obj['documents'] += docs
 
 
