@@ -255,10 +255,10 @@ def get_cross_ref(doi):
 
     # Check if reference field with the same tag already exists
     documents = papis.api.get_documents_in_lib(
-        'papers',
+        papis.api.get_lib(),
     )
     ref_list = [doc['ref'] for doc in documents]
-
+    
     if res['ref'] in ref_list:
         m = papis.utils.create_identifier(ascii_lowercase)
         while True:
