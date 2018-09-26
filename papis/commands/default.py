@@ -80,12 +80,6 @@ import papis.cli
     is_flag=True
 )
 @click.option(
-    "-j", "--cores",
-    help="Number of cores to run some multicore functionality",
-    type=int,
-    default=__import__("multiprocessing").cpu_count(),
-)
-@click.option(
     "-s", "--set",
     type=(str, str),
     multiple=True,
@@ -99,7 +93,6 @@ def run(
         log,
         pick_lib,
         cc,
-        cores,
         set
         ):
     log_format = '%(levelname)s:%(name)s:%(message)s'
