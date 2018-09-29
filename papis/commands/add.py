@@ -416,13 +416,13 @@ def run(
 @click.help_option('--help', '-h')
 @click.argument("files", type=click.Path(exists=True), nargs=-1)
 @click.option(
-    "-s", "--set",
+    "-s", "--set", "set_list",
     help="Set some information before",
     multiple=True,
     type=(str, str)
 )
 @click.option(
-    "-d", "--dir",
+    "-d", "--dir", "directory",
     help="Subfolder in the library",
     default=""
 )
@@ -484,7 +484,7 @@ def run(
     default=lambda: True if papis.config.get('add-confirm') else False
 )
 @click.option(
-    "--open/--no-open",
+    "--open/--no-open", "open_file",
     help="Open file before adding document",
     default=lambda: True if papis.config.get('add-open') else False
 )
@@ -514,8 +514,8 @@ def run(
 )
 def cli(
         files,
-        set,
-        dir,
+        set_list,
+        directory,
         interactive,
         name,
         file_name,
@@ -527,7 +527,7 @@ def cli(
         from_pmid,
         from_lib,
         confirm,
-        open,
+        open_file,
         edit,
         commit,
         link,
@@ -551,7 +551,7 @@ def cli(
     data = dict()
     files = list(files)
 
-    for data_set in set:
+    for data_set in set_list:
         data[data_set[0]] = data_set[1]
 
     logger = logging.getLogger('cli:add')
@@ -668,10 +668,10 @@ def cli(
         data=data,
         name=name,
         file_name=file_name,
-        subfolder=dir,
+        subfolder=directory,
         interactive=interactive,
         confirm=confirm,
-        open_file=open,
+        open_file=open_file,
         edit=edit,
         commit=commit,
         link=link

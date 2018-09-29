@@ -74,13 +74,13 @@ import papis.cli
     is_flag=True
 )
 @click.option(
-    "--clear-cache", "--cc",
+    "--cc", "--clear-cache", "clear_cache",
     help="Clear cache of the library used",
     default=False,
     is_flag=True
 )
 @click.option(
-    "-s", "--set",
+    "-s", "--set", "set_list",
     type=(str, str),
     multiple=True,
     help="Set key value, e.g., "
@@ -92,8 +92,8 @@ def run(
         lib,
         log,
         pick_lib,
-        cc,
-        set
+        clear_cache,
+        set_list
         ):
     log_format = '%(levelname)s:%(name)s:%(message)s'
     if verbose:
@@ -103,8 +103,10 @@ def run(
         level=getattr(logging, log),
         format=log_format
     )
+    logger = logging.getLogger('default')
 
-    for pair in set:
+    for pair in set_list:
+        logger.debug('Setting "{0}" to "{1}"'.format(*pair))
         papis.config.set(pair[0], pair[1])
 
     if config:
@@ -133,5 +135,5 @@ def run(
         papis.config.get_configuration()
     )
 
-    if cc:
+    if clear_cache:
         papis.api.clear_lib_cache(lib)
