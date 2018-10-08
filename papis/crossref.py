@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 import logging
 import re
-from string import ascii_lowercase
 import papis.config
 import papis.utils
 logger = logging.getLogger("crossref")
@@ -252,25 +251,6 @@ def get_cross_ref(doi):
     res['ref'] = papis.utils.format_doc(
         papis.config.get("ref-format"), res
     ).replace(" ", "")
-
-    # Check if reference field with the same tag already exists
-    documents = papis.api.get_documents_in_lib(
-        papis.api.get_lib(),
-    )
-    ref_list = [doc['ref'] for doc in documents]
-
-    if res['ref'] in ref_list:
-        m = papis.utils.create_identifier(ascii_lowercase)
-        while True:
-            append_string = next(m)
-            # Check if appended tag already exists
-            if str(res['ref'] + '{}').format(append_string) in ref_list:
-                continue            # It does? Keep checking.
-            # If it doesn't...
-            else:
-                # ...make this the new ref tag value
-                res['ref'] = str(res['ref'] + '{}').format(append_string)
-                break
 
     # Journal checking
     # If the key journal does not exist check for abbrev_journal_title
