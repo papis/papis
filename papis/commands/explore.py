@@ -97,6 +97,7 @@ import logging
 import papis.commands.add
 import papis.commands.export
 import papis.api
+import papis.ads
 
 
 logger = logging.getLogger('explore')
@@ -312,6 +313,83 @@ def dissemin(ctx, query):
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj['documents'] += docs
     logger.info('{} documents found'.format(len(docs)))
+
+
+@cli.command('ads')
+@click.pass_context
+@click.help_option('--help', '-h')
+@click.option('-q', '--query', default=None)
+@click.option("--abstract",
+    help="The abstract of the record")
+@click.option("--ack",
+    help="The acknowledgements section of an article")
+@click.option("--aff",
+    help="An array of the authors' affiliations")
+@click.option("--arxiv_class",
+    help="The arXiv class the pre-print was submitted to")
+@click.option("--author",
+    help="An array of the author names associated with the record")
+@click.option("--bibgroup",
+    help="The bibliographic groups that the bibcode has been associated with")
+@click.option("--bibstem",
+    help="The abbreviated name of the journal or publication, e.g., ApJ.")
+@click.option("--body",
+    help="The full text content of the article")
+@click.option("--citation_count",
+    help="Number of citations the item has received")
+@click.option("--database",
+    help="Database the record is associated with (astronomy, physics, or general). By default, all three databases are searched")
+@click.option("--doi",
+    help="Digital object identifier of the article")
+@click.option("--first_author",
+    help="The first author of the article")
+@click.option("--identifier",
+    help="An array of alternative identifiers for the record. May contain alternate bibcodes, DOIs and/or arxiv ids.")
+@click.option("--issue",
+    help="Issue the record appeared in")
+@click.option("--keyword",
+    help="An array of normalized and un-normalized keyword values associated with the record")
+@click.option("--lang",
+    help="The language of the article's title")
+@click.option("--page",
+    help="Starting page")
+@click.option("--read_count",
+    help="Number of times the record has been viewed within in a 90-day windows (ads and arxiv)")
+@click.option("--title",
+    help="The title of the record")
+@click.option("--volume",
+    help="Volume the record appeared in")
+@click.option("--year",
+    help="The year the article was published")
+@click.option(
+    '-s', '--sort', default=None,
+    type=click.Choice(papis.ads.fields)
+)
+@click.option(
+    "--max-citations", "-m", default=-1,
+    help='Number of citations to be retrieved'
+)
+def adds(ctx, query, sort, max_citations, **kwargs):
+    """
+    Look for documents on dissem.in
+
+    Examples of its usage are
+
+    papis explore ads -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
+
+    """
+    logger = logging.getLogger('explore:ads')
+    logger.info('Looking up...')
+    data = papis.ads.get_data(
+        query=query,
+        sort=sort,
+        max_results=max_citations,
+        **kwargs
+    )
+    docs = [papis.document.from_data(data=d) for d in data]
+    ctx.obj['documents'] += docs
+    logger.info('{} documents found'.format(len(docs)))
+
 
 
 @cli.command('lib')
