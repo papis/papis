@@ -10,7 +10,7 @@ logger = logging.getLogger("downloader")
 def get_available_downloaders():
     names = [
         "aps", "acs", "arxiv", "ieee", "scitationaip", "annualreviews",
-        "iopscience", "libgen", "get", "thesesfr",
+        "iopscience", "libgen", "get", "thesesfr", "worldscientific",
     ]
     downloaders = []
     for name in names:
