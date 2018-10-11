@@ -164,11 +164,13 @@ def get_cross_ref(doi):
         }
     )
     doc = urlopen(url).read()
+
     logger.debug("Request url: %s" % req_url)
 
     # Parse it
     doc = xml.dom.minidom.parseString(doc)
     records = doc.getElementsByTagName("journal")
+    records += doc.getElementsByTagName("conference")
 
     # No results. Is it a valid DOI?
     if len(records) == 0:
@@ -206,12 +208,22 @@ def get_cross_ref(doi):
             find_item_named(journal, "full_title"))
         res["abbrev_journal_title"] = data(
             find_item_named(journal, "abbrev_title"))
+        res["type"] = "article"
+    conference = find_item_named(record, "proceedings_metadata")
+    if conference:
+        res["booktitle"] = data(
+            find_item_named(conference, "proceedings_title"))
+        res["year"] = data(find_item_named(conference, "year"))
+        res["month"] = data(find_item_named(conference, "month"))
+        res["type"] = "inproceedings"
 
     # VOLUME INFO
     issue = find_item_named(record, "journal_issue")
-    res["issue"] = data(find_item_named(issue, "issue"))
-    res["volume"] = data(find_item_named(issue, "volume"))
-    res["year"] = data(find_item_named(issue, "year"))
+    if issue:
+        res["issue"] = data(find_item_named(issue, "issue"))
+        res["volume"] = data(find_item_named(issue, "volume"))
+        res["year"] = data(find_item_named(issue, "year"))
+        res["month"] = data(find_item_named(issue, "month"))
 
     # URLS INFO
     doi_resources = record\
@@ -229,6 +241,8 @@ def get_cross_ref(doi):
 
     # OTHER INFO
     other = find_item_named(record, "journal_article")
+    if not other:
+        other = find_item_named(record, "conference_paper")
     res["title"] = data(find_item_named(other, "title")).replace("\n", "")
     res["first_page"] = data(find_item_named(other, "first_page"))
     res["last_page"] = data(find_item_named(other, "last_page"))
@@ -240,6 +254,8 @@ def get_cross_ref(doi):
     res["doi"] = data(find_item_named(other, "doi"))
     if res["year"] is None:
         res["year"] = data(find_item_named(other, "year"))
+    if res["month"] is None:
+        res["month"] = data(find_item_named(other, "month"))
 
     # AUTHOR INFO
     res.update(get_author_info_from_results(record))
