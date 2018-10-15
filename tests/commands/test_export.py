@@ -149,9 +149,6 @@ class TestCli(tests.cli.TestCli):
         ])
         self.assertTrue(result.exit_code == 0)
         self.assertTrue(
-            re.match(
-                r'No files found for doc in ',
-                result.output_bytes.decode()
-            )
+            result.output_bytes.decode() == ''
         )
         self.assertTrue(not os.path.exists(outfile))
