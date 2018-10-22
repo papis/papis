@@ -21,12 +21,19 @@ class Downloader(papis.downloaders.base.Downloader):
             return False
 
     def get_doi(self):
-        mdoi = re.match(r'.*/doi/(.*/[^?&%^$]*).*', self.get_url())
+        url = self.get_url()
+        self.logger.info('Parsing doi from {0}'.format(url))
+        mdoi = re.match(r'.*/doi/(.*/[^?&%^$]*).*', url)
         if mdoi:
             doi = mdoi.group(1).replace("abs/", "").replace("full/", "")
             return doi
-        else:
-            return None
+
+        mdoi = re.match(r'.*/worldscibooks/(.*/[^?&%^$]*).*', url)
+        if mdoi:
+            doi = mdoi.group(1).replace("abs/", "").replace("full/", "")
+            return doi
+
+        return None
 
     def get_document_url(self):
         durl = "https://www.worldscientific.com/doi/pdf/%s" % self.get_doi()
