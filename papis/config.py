@@ -988,7 +988,7 @@ class Configuration(configparser.ConfigParser):
     logger = logging.getLogger("Configuration")
 
     def __init__(self):
-        configparser.ConfigParser.__init__(self)
+        configparser.ConfigParser.__init__(self, interpolation=configparser.ExtendedInterpolation())
         self.dir_location = get_config_folder()
         self.scripts_location = get_scripts_folder()
         self.file_location = get_config_file()
