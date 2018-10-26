@@ -108,6 +108,8 @@ def to_bibtex(document):
     if "type" in document.keys():
         if document["type"] in papis.bibtex.bibtex_types:
             bibtexType = document["type"]
+        elif document["type"] in papis.bibtex.bibtex_type_converter.keys():
+            bibtexType = papis.bibtex.bibtex_type_converter[document["type"]]
     if not bibtexType:
         bibtexType = "article"
 
@@ -124,8 +126,16 @@ def to_bibtex(document):
     ref = re.sub(r'[;,()\/{}\[\]]', '', ref)
 
     bibtexString += "@%s{%s,\n" % (bibtexType, ref)
-    for bibKey in papis.bibtex.bibtex_keys:
-        if bibKey in document.keys():
+    for bibKey in document.keys():
+        logger.debug('%s : %s' % (bibKey, document[bibKey]))
+        if bibKey in papis.bibtex.bibtex_key_converter:
+            newBibKey = papis.bibtex.bibtex_key_converter[bibKey]
+            document[newBibKey] = document[bibKey]
+            continue
+        if bibKey in papis.bibtex.bibtex_keys:
+            value = str(document[bibKey])
+            if not papis.config.get('bibtex-unicode'):
+                value = papis.bibtex.unicode_to_latex(value)
             if bibKey == 'journal':
                 bibtex_journal_key = papis.config.get('bibtex-journal-key')
                 if bibtex_journal_key in document.keys():
@@ -146,16 +156,12 @@ def to_bibtex(document):
                     )
                     bibtexString += "  %s = { %s },\n" % (
                         'journal',
-                        papis.bibtex.unicode_to_latex(
-                            str(document['journal'])
-                        )
+                        value
                     )
             else:
                 bibtexString += "  %s = { %s },\n" % (
                     bibKey,
-                    papis.bibtex.unicode_to_latex(
-                        str(document[bibKey])
-                    )
+                    value
                 )
     bibtexString += "}\n"
     return bibtexString

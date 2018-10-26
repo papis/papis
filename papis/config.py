@@ -599,6 +599,7 @@ general_settings = {
 
     "tui-editmode": "emacs",
     "downloader-proxy": None,
+    "bibtex-unicode": False,
 
 }
 

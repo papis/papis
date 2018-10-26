@@ -24,6 +24,12 @@ bibtex_types = [
   "unpublished"
 ] + re.sub(r" *", "", papis.config.get('extra-bibtex-types')).split(',')
 
+bibtex_type_converter = {
+  "conferencePaper" : "inproceedings",
+  "journalArticle" : "article",
+  "journal" : "article"
+}
+
 bibtex_keys = [
     "addendum",
     "address",
@@ -86,9 +92,9 @@ bibtex_keys = [
     "series",
     "subtitle",
     "title",
-    "titleaddon",
     "translator",
     "type",
+    "titleaddon",
     "url",
     "urldate",
     "venue",
@@ -98,6 +104,14 @@ bibtex_keys = [
     "year",
   ] + re.sub(r" *", "", papis.config.get('extra-bibtex-keys')).split(',')
 
+bibtex_key_converter = {
+    "abstractNote" : "abstract",
+    "university" : "school",
+    "conferenceName" : "eventtitle",
+    "place" : "location",
+    "publicationTitle" : "journal",
+    "proceedingsTitle" : "booktitle"
+}
 
 def bibtexparser_entry_to_papis(entry):
     """Convert keys of a bib entry in bibtexparser format to papis compatible
