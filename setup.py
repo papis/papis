@@ -103,6 +103,7 @@ setup(
     package_data=dict(
         papis=[
             'gui/vim/main.vim',
+            'gui/vim/pick.vim',
         ],
     ),
     data_files=[
