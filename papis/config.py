@@ -238,6 +238,11 @@ Bibtex options
     `` and `` then you would have ``<author 1> and <author 2> and ....``
     in the ``author`` field.
 
+.. papis-config:: bibtex-unicode
+
+    Wether or not to allow direct unicode characters in the document
+    fields to be exported into the bibtex text.
+
 .. _add-command-options:
 
 Add command options
