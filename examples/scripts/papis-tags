@@ -65,7 +65,7 @@ doc_to_open = papis.api.pick_doc(
 )
 
 files = doc_to_open.get_files()
-print(files)
+
 if len(files) == 0:
     logger.error("The document chosen has no files attached")
 
