@@ -1,75 +1,60 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Last modified: 11-13-2018
+# Last modified: 2018-11-14
 import sys, os
 import papis.api
-import papis.commands
-import papis.crossref
-import papis.document
-
-def usage():
-    print("Usage: papis tags <papis-search>")
-
-def print_no_tags_and_exit():
-    print('The library does not have any tags set')
-    sys.exit(1)
+import papis.cli
+from papis.commands.open import run as papis_open
+import papis.database
+import click
 
 
-if len(sys.argv) < 2:
-    search = ""
-else:
-    search = sys.argv[1]
-    if search in ['-h', '--help']:
-        usage()
-        sys.exit(0)
+@click.command()
+@click.help_option('-h', '--help')
+@papis.cli.query_option()
+def main(query):
+    """
+    Search tags of the library and open a document
+    """
+    documents = papis.api.get_documents_in_lib(
+        papis.api.get_lib(),
+        search=query
+    )
 
-documents = papis.api.get_documents_in_lib(
-    papis.api.get_lib(),
-    search=search
-)
+    # Create an empty tag list
+    tag_list = []
+    for item in documents:
+        if 'tags' in item.keys():
+            for tag in list([item['tags']]):
+                # if tag contains a comma, split it to a list
+                if tag.split(','):
+                    tag = tag.split(',')
+                else:
+                    continue
+                tag_list.append(tag)
 
-# Create an empty tag list
-tag_list = []
-for item in documents:
-    if 'tags' in item.keys():
-        for tag in list([item['tags']]):
-            # if tag contains a comma, split it to a list
-            if tag.split(','):
-                tag = tag.split(',')
-            else:
-                continue
-            tag_list.append(tag)
+    # if no tags are found, exit gracefully
+    if tag_list == []:
+        print('The library does not have any tags set')
+        return
 
-# if no tags are found, exit gracefully
-if tag_list == []:
-    print_no_tags_and_exit()
-            
-# flatten the list, which may be a list of lists
-# also make it lower case and strip out any preceding spaces. The list
-# set, is then sorted to alphanumeric order.
-flat_list = sorted(set([y.strip(' ').lower() for x in tag_list for y in x]))
+    # flatten the list, which may be a list of lists
+    # also make it lower case and strip out any preceding spaces. The list
+    # set, is then sorted to alphanumeric order.
+    flat_list = sorted(set([y.strip(' ').lower() for x in tag_list for y in x]))
 
-# Allow the list set (no duplicates) )to be sorted into alphabetical
-# order and picked from
-picked_tag = papis.api.pick(
-    flat_list
-)
+    # Allow the list set (no duplicates) )to be sorted into alphabetical
+    # order and picked from
+    picked_tag = papis.api.pick(flat_list)
 
-docs = papis.api.get_documents_in_lib(
-    papis.api.get_lib(),
-    search='tags={0}'.format(picked_tag)
-)
+    docs = papis.database.get().query_dict(dict(tags=picked_tag))
 
-doc_to_open = papis.api.pick_doc(
-    docs
-)
+    doc = papis.api.pick_doc(docs)
+    if not doc:
+        return
 
-files = doc_to_open.get_files()
+    papis_open(doc)
 
-if len(files) == 0:
-    logger.error("The document chosen has no files attached")
 
-file_to_open = papis.api.pick(
-    files,
-)
-papis.api.open_file(file_to_open, wait=False)
+if __name__ == "__main__":
+    main()
