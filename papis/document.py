@@ -126,7 +126,7 @@ def to_bibtex(document):
     ref = re.sub(r'[;,()\/{}\[\]]', '', ref)
 
     bibtexString += "@%s{%s,\n" % (bibtexType, ref)
-    for bibKey in document.keys():
+    for bibKey in sorted(document.keys()):
         logger.debug('%s : %s' % (bibKey, document[bibKey]))
         if bibKey in papis.bibtex.bibtex_key_converter:
             newBibKey = papis.bibtex.bibtex_key_converter[bibKey]

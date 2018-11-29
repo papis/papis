@@ -38,14 +38,15 @@ class TestCli(tests.cli.TestCli):
         with open(path) as fd:
             bibtex = fd.read()
         expected_bibtex = (
-            '@article{1,\n'
-            '  author = { J. Krishnamurti },\n'
-            '  title = { Freedom from the known },\n'
-            '  year = { 2009 },\n'
-            '}\n'
+            '@article{1,',
+            '  year = { 2009 },',
+            '  title = { Freedom from the known },',
+            '  author = { J. Krishnamurti },',
+            '}'
         )
 
-        self.assertEqual(bibtex, expected_bibtex)
+        for chunk in expected_bibtex:
+            self.assertTrue(chunk in bibtex.split('\n'))
 
     def test_export_yaml(self):
         path = tempfile.mktemp()
