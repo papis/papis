@@ -71,7 +71,7 @@ class TestCli(tests.cli.TestCli):
             'krishnamurti', '--json'
         ])
         self.assertTrue(result.exit_code == 0)
-        data = json.loads(result.output_bytes.decode())
+        data = json.loads(result.stdout_bytes.decode())
         assert(isinstance(data, list))
         assert(len(data) == 1)
         assert(re.match(r'.*Krishnamurti.*', data[0]['author']) is not None)
@@ -98,7 +98,7 @@ class TestCli(tests.cli.TestCli):
             'krishnamurti', '--yaml'
         ])
         self.assertTrue(result.exit_code == 0)
-        data = yaml.load(result.output_bytes)
+        data = yaml.load(result.stdout_bytes)
         assert(re.match(r'.*Krishnamurti.*', data['author']) is not None)
 
         # output stdout
@@ -126,7 +126,7 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(os.path.exists(outdir))
         self.assertTrue(os.path.isdir(outdir))
         self.assertTrue(result.exit_code == 0)
-        self.assertTrue(result.output_bytes == b'')
+        self.assertTrue(result.stdout_bytes == b'')
         doc = papis.document.from_folder(outdir)
         self.assertTrue(doc is not None)
         assert(re.match(r'.*Krishnamurti.*', doc['author']) is not None)
@@ -139,7 +139,7 @@ class TestCli(tests.cli.TestCli):
             'krishnamurti', '--file', '--out', outfile
         ])
         self.assertTrue(result.exit_code == 0)
-        self.assertTrue(result.output_bytes == b'')
+        self.assertTrue(result.stdout_bytes == b'')
         self.assertTrue(os.path.exists(outfile))
 
         outfile = tempfile.mktemp()
@@ -149,6 +149,6 @@ class TestCli(tests.cli.TestCli):
         ])
         self.assertTrue(result.exit_code == 0)
         self.assertTrue(
-            result.output_bytes.decode() == ''
+            result.stdout_bytes.decode() == ''
         )
         self.assertTrue(not os.path.exists(outfile))
