@@ -166,7 +166,6 @@ Tools options
     Possible options are:
         - papis.pick
         - vim
-        - dmenu
 
 .. papis-config:: editor
     :default: $EDITOR

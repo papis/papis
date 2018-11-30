@@ -14,8 +14,8 @@ class TestCommand(unittest.TestCase):
         self.assertTrue(run('xeditor') == papis.config.get('xeditor'))
         self.assertTrue(run('settings.xeditor') == papis.config.get('xeditor'))
         self.assertTrue(
-            run('dmenu-gui.lines') ==
-            papis.config.get('lines', section='dmenu-gui')
+            run('papers.dir') ==
+            papis.config.get('dir', section='papers')
         )
 
 
