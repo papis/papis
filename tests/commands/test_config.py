@@ -11,8 +11,7 @@ class TestCommand(unittest.TestCase):
 
     def test_simple(self):
         self.assertTrue(run('editor') == papis.config.get('editor'))
-        self.assertTrue(run('xeditor') == papis.config.get('xeditor'))
-        self.assertTrue(run('settings.xeditor') == papis.config.get('xeditor'))
+        self.assertTrue(run('settings.editor') == papis.config.get('editor'))
         self.assertTrue(
             run('papers.dir') ==
             papis.config.get('dir', section='papers')

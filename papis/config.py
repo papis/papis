@@ -174,13 +174,6 @@ Tools options
     not set then it will default to the ``$VISUAL`` environment variable.
     Otherwise the default editor in your system will be used.
 
-.. papis-config:: xeditor
-
-    Sometimes papis might use an editor that uses a windowing system
-    (GUI Editor), you can set this to your preferred gui based editor, e.g.
-    ``gedit``, ``xemacs``, ``gvim`` to name a few.
-
-
 .. papis-config:: file-browser
 
     File browser to be used when opening a directory, it defaults to the
@@ -537,7 +530,6 @@ general_settings = {
     "editor": os.environ.get('EDITOR')
                         or os.environ.get('VISUAL')
                         or get_default_opener(),
-    "xeditor": get_default_opener(),
     "notes-name": "notes.tex",
     "use-cache": True,
     "cache-dir": None,
