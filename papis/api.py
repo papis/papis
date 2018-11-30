@@ -138,11 +138,7 @@ def pick(options: list, pick_config={}):
     logger.debug("Parsing picktool")
     external_picker = papis.config.get_external_picker()
     picker = external_picker or papis.config.get("picktool")
-    if picker == "vim":
-        import papis.gui.vim
-        logger.debug("Using vim picker")
-        return papis.gui.vim.pick(options, **pick_config)
-    elif picker == "papis.pick":
+    if picker == "papis.pick":
         import papis.pick
         logger.debug("Using papis.pick picker")
         return papis.pick.pick(options, **pick_config)

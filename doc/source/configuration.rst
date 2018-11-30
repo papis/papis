@@ -114,6 +114,5 @@ Default settings
 ----------------
 
 .. automodule:: papis.config
-.. automodule:: papis.gui
 
 

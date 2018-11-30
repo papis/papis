@@ -165,7 +165,6 @@ Tools options
 
     Possible options are:
         - papis.pick
-        - vim
 
 .. papis-config:: editor
     :default: $EDITOR
@@ -641,11 +640,8 @@ def get_default_settings(section="", key=""):
     'mv'
     >>> get_default_settings(key='mvtool', section='settings')
     'mv'
-    >>> get_default_settings(key='help-key', section='vim-gui')
-    'h'
     """
     global _DEFAULT_SETTINGS
-    import papis.gui
     # We use an OrderedDict so that the first entry will always be the general
     # settings, also good for automatic documentation
     from collections import OrderedDict
@@ -654,9 +650,6 @@ def get_default_settings(section="", key=""):
         _DEFAULT_SETTINGS.update({
             get_general_settings_name(): general_settings,
         })
-        _DEFAULT_SETTINGS.update(
-            papis.gui.get_default_settings()
-        )
     if not section and not key:
         return _DEFAULT_SETTINGS
     elif not section:
