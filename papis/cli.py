@@ -106,3 +106,38 @@ def git_option(**attrs):
         attrs.setdefault('help', 'Add git interoperability')
         return click.decorators.option('--git/--no-git', **attrs)(f)
     return decorator
+
+
+def bypass(group, command, command_name):
+    """
+    This function is specially important for people developing scripts in papis.
+
+    Suppose you're writing a plugin that uses the ``add`` command as seen
+    in the command line in papis. However you don't want exactly the ``add``
+    command and you want to add some behavior before calling it, and you
+    don't want to write your own ``add`` function from scratch.
+
+    You can then use the following snippet
+
+    .. code::python
+
+        import click
+        import papis.cli
+        import papis.commands.add
+
+        @click.group()
+        def main():
+            \"\"\"Your main app\"\"\"
+            pass
+
+        @papis.cli.bypass(main, papis.commands.add.cli, "add")
+        def add(**kwargs):
+            # do some logic here...
+            # and call the original add command line function by
+            papis.commands.add.cli.bypassed(**kwargs)
+    """
+    group.add_command(command, command_name)
+    def decorator(new_callback):
+        setattr(command, "bypassed", command.callback)
+        command.callback = new_callback
+    return decorator
