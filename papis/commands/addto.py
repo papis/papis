@@ -78,7 +78,7 @@ def run(document, filepaths):
         )
         shutil.copy(in_file_path, endDocumentPath)
 
-    document['files'] = document.get_files() + new_file_list
+    document['files'] += new_file_list
     document.save()
     return status.success
 
