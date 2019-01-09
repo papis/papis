@@ -136,19 +136,14 @@ def pick(options: list, pick_config={}):
     # Leave this import here
     import papis.config
     logger.debug("Parsing picktool")
-    picker = papis.config.get("picktool")
-    if picker == "dmenu":
-        import papis.gui.dmenu
-        logger.debug("Using dmenu picker")
-        return papis.gui.dmenu.pick(options, **pick_config)
-    elif picker == "vim":
-        import papis.gui.vim
-        logger.debug("Using vim picker")
-        return papis.gui.vim.pick(options, **pick_config)
-    elif picker == "papis.pick":
+    external_picker = papis.config.get_external_picker()
+    picker = external_picker or papis.config.get("picktool")
+    if picker == "papis.pick":
         import papis.pick
         logger.debug("Using papis.pick picker")
         return papis.pick.pick(options, **pick_config)
+    elif papis.config.get_external_picker() is not None:
+        return papis.config.get_external_picker()(options, **pick_config)
     else:
         raise Exception("I don't know how to use the picker '%s'" % picker)
 

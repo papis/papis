@@ -165,8 +165,6 @@ Tools options
 
     Possible options are:
         - papis.pick
-        - vim
-        - dmenu
 
 .. papis-config:: editor
     :default: $EDITOR
@@ -175,13 +173,6 @@ Tools options
     command. It defaults to the ``$EDITOR`` environment variable, if this is
     not set then it will default to the ``$VISUAL`` environment variable.
     Otherwise the default editor in your system will be used.
-
-.. papis-config:: xeditor
-
-    Sometimes papis might use an editor that uses a windowing system
-    (GUI Editor), you can set this to your preferred gui based editor, e.g.
-    ``gedit``, ``xemacs``, ``gvim`` to name a few.
-
 
 .. papis-config:: file-browser
 
@@ -503,6 +494,7 @@ import configparser
 import papis.exceptions
 
 
+_EXTERNAL_PICKER = None  #: Picker to set externally
 _CONFIGURATION = None  #: Global configuration object variable.
 _DEFAULT_SETTINGS = None  #: Default settings for the whole papis.
 _OVERRIDE_VARS = {
@@ -538,7 +530,6 @@ general_settings = {
     "editor": os.environ.get('EDITOR')
                         or os.environ.get('VISUAL')
                         or get_default_opener(),
-    "xeditor": get_default_opener(),
     "notes-name": "notes.tex",
     "use-cache": True,
     "cache-dir": None,
@@ -641,11 +632,8 @@ def get_default_settings(section="", key=""):
     'mv'
     >>> get_default_settings(key='mvtool', section='settings')
     'mv'
-    >>> get_default_settings(key='help-key', section='vim-gui')
-    'h'
     """
     global _DEFAULT_SETTINGS
-    import papis.gui
     # We use an OrderedDict so that the first entry will always be the general
     # settings, also good for automatic documentation
     from collections import OrderedDict
@@ -654,9 +642,6 @@ def get_default_settings(section="", key=""):
         _DEFAULT_SETTINGS.update({
             get_general_settings_name(): general_settings,
         })
-        _DEFAULT_SETTINGS.update(
-            papis.gui.get_default_settings()
-        )
     if not section and not key:
         return _DEFAULT_SETTINGS
     elif not section:
@@ -782,6 +767,16 @@ def set_config_file(filepath):
     global _OVERRIDE_VARS
     logger.debug("Setting config file to %s" % filepath)
     _OVERRIDE_VARS["file"] = filepath
+
+
+def set_external_picker(picker):
+    global _EXTERNAL_PICKER
+    _EXTERNAL_PICKER = picker
+
+
+def get_external_picker():
+    global _EXTERNAL_PICKER
+    return _EXTERNAL_PICKER
 
 
 def get_scripts_folder():

@@ -77,7 +77,6 @@ setup(
         # for example:
         # $ pip install -e .[develop]
         optional=[
-            'dmenu',
             "Jinja2>=2.10",
             "Whoosh>=2.7.4",
         ],
@@ -102,8 +101,6 @@ setup(
     ],
     package_data=dict(
         papis=[
-            'gui/vim/main.vim',
-            'gui/vim/pick.vim',
         ],
     ),
     data_files=[
@@ -127,8 +124,6 @@ setup(
     ],
     packages=[
         "papis",
-        "papis.gui",
-        "papis.gui.vim",
         "papis.commands",
         "papis.database",
         "papis.downloaders",
