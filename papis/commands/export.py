@@ -198,7 +198,7 @@ def cli(
     if ret_string is not None:
         if out is not None:
             logger.info("Dumping to {0}".format(out))
-            with open(out, 'w+') as fd:
+            with open(out, 'a+') as fd:
                 fd.write(ret_string)
         else:
             logger.info("Dumping to stdout")
