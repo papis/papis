@@ -599,7 +599,7 @@ def export(ctx, bibtex, yaml, json):
 @click.argument('command', type=str)
 def cmd(ctx, command):
     """
-    Import documents based on a yaml file
+    Run a general command on the document list
 
     Examples of its usage are:
 
