@@ -139,7 +139,7 @@ def to_bibtex(document):
             if bibKey == 'journal':
                 bibtex_journal_key = papis.config.get('bibtex-journal-key')
                 if bibtex_journal_key in document.keys():
-                    bibtexString += "  %s = { %s },\n" % (
+                    bibtexString += "  %s = {%s},\n" % (
                         'journal',
                         papis.bibtex.unicode_to_latex(
                             str(
@@ -154,12 +154,12 @@ def to_bibtex(document):
                             document["ref"]
                         )
                     )
-                    bibtexString += "  %s = { %s },\n" % (
+                    bibtexString += "  %s = {%s},\n" % (
                         'journal',
                         value
                     )
             else:
-                bibtexString += "  %s = { %s },\n" % (
+                bibtexString += "  %s = {%s},\n" % (
                     bibKey,
                     value
                 )
