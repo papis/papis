@@ -92,14 +92,14 @@ def to_bibtex(document):
     >>> doc = from_data({'title': 'Hello', 'type': 'book', 'journal': 'jcp'})
     >>> import tempfile; doc.set_folder('path/to/superfolder')
     >>> to_bibtex(doc)
-    '@book{superfolder,\\n  journal = { jcp },\\n  title = { Hello },\\n  type = { book },\\n}\\n'
+    '@book{superfolder,\\n  journal = {jcp},\\n  title = {Hello},\\n  type = {book},\\n}\\n'
     >>> doc['journal_abbrev'] = 'j'
     >>> to_bibtex(doc)
-    '@book{superfolder,\\n  journal = { j },\\n  title = { Hello },\\n  type = { book },\\n}\\n'
+    '@book{superfolder,\\n  journal = {j},\\n  title = {Hello},\\n  type = {book},\\n}\\n'
     >>> del doc['title']
     >>> doc['ref'] = 'hello1992'
     >>> to_bibtex(doc)
-    '@book{hello1992,\\n  journal = { j },\\n  type = { book },\\n}\\n'
+    '@book{hello1992,\\n  journal = {j},\\n  type = {book},\\n}\\n'
     """
     bibtexString = ""
     bibtexType = ""
