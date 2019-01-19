@@ -20,6 +20,7 @@ command-line interface (*CLI*) is heavily tailored after
    library_structure
    database_structure
    commands
+   gui
    scripting
    api
    git

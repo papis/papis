@@ -28,8 +28,6 @@ A more complete example of a configuration file is the following
   [settings]
   # Open file with rifle, a nice python program
   opentool = rifle
-  # Use gvim as a graphical editor
-  xeditor = gvim
   # Use ranger as a file browser, too a  nice python package
   file-browser = ranger
   # Ask for confirmation when doing papis add ...
