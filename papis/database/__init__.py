@@ -24,6 +24,10 @@ def get(library=None):
         import papis.database.whoosh
         DATABASES[library] = papis.database.whoosh.Database(library)
         return DATABASES.get(library)
+    elif backend == "xapian":
+        import papis.database.xapian
+        DATABASES[library] = papis.database.xapian.Database(library)
+        return DATABASES.get(library)
     else:
         raise Exception('No valid database type: {}'.format(backend))
 
