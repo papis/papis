@@ -285,7 +285,6 @@ def get_clean_doi(doi):
 
     :doi: String containing a doi
     :returns: The pure doi
-
     """
     mdoi = re.match(
         r'^([^?/&%$^]+)(/|%2F)([^?&%$^]+).*',
