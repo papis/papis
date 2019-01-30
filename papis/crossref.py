@@ -405,9 +405,9 @@ def get_clean_doi(doi):
     :doi: String containing a doi
     :returns: The pure doi
 
-    >>> get_clean_doi('http://dx.doi.org/10.1063%2F1.881498')
+    >>> get_clean_doi('https://doi.org/10.1063%2F1.881498')
     '10.1063/1.881498'
-    >>> get_clean_doi('http://dx.doi.org/10.1063/1.881498')
+    >>> get_clean_doi('https://doi.org/10.1063/1.881498')
     '10.1063/1.881498'
     >>> get_clean_doi('10.1063%2F1.881498')
     '10.1063/1.881498'
