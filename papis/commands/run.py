@@ -1,7 +1,8 @@
 """
 This command is useful to issue commands in the directory of your library.
 
-Here are some examples of its usage:
+CLI Examples
+^^^^^^^^^^^^
 
     - List files in your directory
 
@@ -14,50 +15,47 @@ Here are some examples of its usage:
     .. code::
 
         papis run find -name 'document.pdf'
+
+Python examples
+^^^^^^^^^^^^^^^
+
+.. code::python
+
+    from papis.commands.run import run
+
+    run(library='papers', command=["ls", "-a"])
+
+Cli
+^^^
+.. click:: papis.commands.run:cli
+    :prog: papis run
 """
-import string
 import os
 import papis.config
 import papis.exceptions
-import argparse
+import logging
+import click
+
+logger = logging.getLogger('run')
 
 
-class Command(papis.commands.Command):
-
-    def init(self):
-
-        self.parser = self.get_subparsers().add_parser(
-            "run",
-            help="Run a command in the library folder"
+def run(folder, command=[]):
+    logger.debug("Changing directory into %s" % folder)
+    os.chdir(os.path.expanduser(folder))
+    try:
+        commandstr = os.path.expanduser(
+            papis.config.get("".join(command))
         )
+    except papis.exceptions.DefaultSettingValueMissing:
+        commandstr = " ".join(command)
+    logger.debug("Command = %s" % commandstr)
+    return os.system(commandstr)
 
-        self.parser.add_argument(
-            "run_command",
-            help="Command name or command",
-            default="",
-            nargs=argparse.REMAINDER,
-            action="store"
-        )
 
-    def set_commands(self, commands):
-        """Set commands to be run.
-        :param commands: List of commands
-        :type  commands: list
-        """
-        self.args.run_command = commands
-
-    def main(self):
-        lib_dir = os.path.expanduser(self.get_config()[self.args.lib]["dir"])
-        self.logger.debug("Changing directory into %s" % lib_dir)
-        os.chdir(lib_dir)
-        try:
-            command = os.path.expanduser(
-                papis.config.get("".join(self.args.run_command))
-            )
-        except papis.exceptions.DefaultSettingValueMissing:
-            command = " ".join(self.args.run_command)
-        self.logger.debug("Command = %s" % command)
-        command = string.Template(command).safe_substitute(
-            self.get_config()[self.args.lib]
-        )
-        os.system(command)
+@click.command(context_settings=dict(ignore_unknown_options=True))
+@click.help_option('--help', '-h')
+@click.argument("run_command", nargs=-1)
+def cli(run_command):
+    """Run an arbitrary shell command in the library folder"""
+    folder = papis.config.get("dir")
+    return run(folder, command=run_command)

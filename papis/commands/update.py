@@ -5,7 +5,7 @@ Examples
 ^^^^^^^^
 
 - Update a document automatically and interactively
-(searching by ``doi`` number in *crossref*, or in other sources...)
+  (searching by ``doi`` number in *crossref*, or in other sources...)
 
     .. code::
 
@@ -21,175 +21,250 @@ Examples
 
         papis update --from-bibtex libraryfile.bib -i
 
+- Tag all einstein papers with the tag classics
+
+    .. code::
+
+        papis update --all --set tags classics einstein
+
+and add the tag of ``physics`` to all papers tagged as ``classics``
+
+    .. code::
+
+        papis update --all --set tags '{doc[tags]} physics' einstein
+
+Cli
+^^^
+.. click:: papis.commands.update:cli
+    :prog: papis update
 """
+
 import papis
-import os
-import sys
-import shutil
+import urllib.error
+import logging
 import papis.utils
 import papis.bibtex
 import papis.downloaders.utils
-import papis.api
 import papis.document
+import papis.database
+import papis.isbnplus
+import papis.isbn
+import papis.crossref
+import papis.api
+import papis.cli
+import click
+import yaml
 
 
-class Command(papis.commands.Command):
-    def init(self):
+def run(document, data=dict(), interactive=False, force=False):
+    # Keep the ref the same, otherwise issues can be caused when
+    # writing LaTeX documents and all the ref's change
+    data['ref'] = document['ref']
 
-        self.parser = self.get_subparsers().add_parser(
-            "update",
-            help="Update a document from a given library"
-        )
+    document.update(data, force, interactive)
+    document.save()
+    papis.database.get().update(document)
 
-        self.add_search_argument()
 
-        self.parser.add_argument(
-            "-i",
-            "--interactive",
-            help="Interactively update",
-            default=False,
-            action="store_true"
-        )
+@click.command()
+@click.help_option('--help', '-h')
+@papis.cli.query_option()
+@click.option(
+    "-i/-b",
+    "--interactive/--no-interactive",
+    help="Interactively update",
+    default=True
+)
+@click.option(
+    "-f",
+    "--force",
+    help="Force update, overwrite conflicting information",
+    default=False,
+    is_flag=True
+)
+@click.option(
+    "--from-crossref",
+    help="Update info from crossref.org",
+    default=None
+)
+@click.option(
+    "--from-isbn",
+    help="Update info from isbn",
+    default=None
+)
+@click.option(
+    "--from-isbnplus",
+    help="Update info from isbnplus.org",
+    default=None
+)
+@click.option(
+    "--from-yaml",
+    help="Update info from yaml file",
+    default=None
+)
+@click.option(
+    "--from-bibtex",
+    help="Update info from bibtex file",
+    default=None
+)
+@click.option(
+    "--from-url",
+    help="Get document or information from url",
+    default=None
+)
+@click.option(
+    "--from-doi",
+    help="Doi to try to get information from",
+    default=None
+)
+@click.option(
+    "--auto",
+    help="Try to parse information from different sources",
+    default=False,
+    is_flag=True
+)
+@click.option(
+    "--all",
+    help="Update all entries in library",
+    default=False,
+    is_flag=True
+)
+@click.option(
+    "-s", "--set",
+    help="Update document's information with key value."
+         "The value can be a papis format.",
+    multiple=True,
+    type=(str, str),
+)
+def cli(
+        query,
+        interactive,
+        force,
+        from_crossref,
+        from_isbnplus,
+        from_isbn,
+        from_yaml,
+        from_bibtex,
+        from_url,
+        from_doi,
+        auto,
+        all,
+        set
+        ):
+    """Update a document from a given library"""
 
-        self.parser.add_argument(
-            "-f",
-            "--force",
-            help="Force update, overwrite conflicting information",
-            default=False,
-            action="store_true"
-        )
+    documents = papis.database.get().query(query)
+    data = dict()
+    logger = logging.getLogger('cli:update')
 
-        self.parser.add_argument(
-            "-d",
-            "--document",
-            help="Overwrite an existing document",
-            default=None,
-            action="store"
-        )
+    if not all:
+        documents = [papis.api.pick_doc(documents)]
 
-        self.parser.add_argument(
-            "--from-isbnplus",
-            help="Update info from isbnplus.org",
-            action="store"
-        )
+    for document in documents:
+        if all:
+            data = dict()
+            from_url = None
+            from_doi = None
+            from_isbnplus = None
+            from_isbnplus = None
 
-        self.parser.add_argument(
-            "--from-yaml",
-            help="Update info from yaml file",
-            action="store"
-        )
-
-        self.parser.add_argument(
-            "--from-bibtex",
-            help="Update info from bibtex file",
-            action="store"
-        )
-
-        self.parser.add_argument(
-            "--from-url",
-            help="Get document or information from url",
-            default=None,
-            action="store"
-        )
-
-        self.parser.add_argument(
-            "--from-doi",
-            help="Doi to try to get information from",
-            default=None,
-            action="store"
-        )
-
-        self.parser.add_argument(
-            "--auto",
-            help="Try to parse information from different sources",
-            action="store_true"
-        )
-
-    def main(self):
-        # TODO: Try to recycle some of this code with command add.
-        import papis.api
-        documents = papis.api.get_documents_in_lib(
-            self.get_args().lib,
-            self.get_args().search
-        )
-        data = dict()
-
-        if self.args.from_bibtex:
-            bib_data = papis.bibtex.bibtex_to_dict(self.args.from_bibtex)
-            # Then it means that the user wants to update all the information
-            # appearing in the bibtex file
-            if len(bib_data) > 1:
-                self.logger.warning(
-                    'Your bibtex file contains more than one entry,'
-                )
-                self.logger.warning(
-                    'It is supposed that you want to update all the'
-                    'documents appearing inside the bibtex file.'
-                )
-                for bib_element in bib_data:
-                    doc = papis.document.Document(data=bib_element)
-                    located_doc = papis.utils.locate_document(doc, documents)
-                    if located_doc is None:
-                        self.logger.error(
-                            "The following information could not be located"
-                        )
-                        self.logger.error('\n'+doc.dump())
-                    else:
-                        located_doc.update(
-                            bib_element,
-                            self.args.force,
-                            self.args.interactive
-                        )
-                        located_doc.save()
-                return 0
-            data.update(bib_data[0])
-
-        if self.args.from_yaml:
-            import yaml
-            data.update(yaml.load(open(self.args.from_yaml)))
-
-        # For the coming parts we need to pick a document
-        document = self.pick(documents)
-        if not document: return 0
-
-        if self.args.auto:
-            if 'doi' in document.keys() and not self.args.from_doi:
-                self.args.from_doi = document['doi']
-            if 'title' in document.keys() and not self.args.from_isbnplus:
-                self.args.from_isbnplus = document['title']
-
-        if self.args.from_isbnplus:
-            import papis.isbn
-            doc = self.pick(
-                [
-                    papis.document.Document(data=d)
-                    for d in papis.isbn.get_data(
-                        query=self.args.from_isbnplus
-                    )
-                ]
+        if set:
+            data.update(
+                {s[0]: papis.utils.format_doc(s[1], document) for s in set}
             )
-            if doc:
-                data.update(doc.to_dict())
 
-        if self.args.from_url:
-            url_data = papis.downloaders.utils.get(self.args.from_url)
-            data.update(url_data["data"])
-            document_paths = url_data["documents_paths"]
-            if not len(document_paths) == 0:
-                document_path = document_paths[0]
-                old_doc = self.pick(document["files"])
-                if papis.utils.confirm("Really replace document %s?" % old_doc):
-                    new_path = os.path.join(
-                        document.get_main_folder(), old_doc
-                    )
-                    self.logger.debug(
-                        "Moving %s to %s" %(document_path, new_path)
-                    )
-                    shutil.move(document_path, new_path)
+        if auto:
+            if 'doi' in document.keys() and not from_doi:
+                logger.info('Trying using the doi {}'.format(document['doi']))
+                from_doi = document['doi']
+            if 'url' in document.keys() and not from_url:
+                logger.info('Trying using the url {}'.format(document['url']))
+                from_url = document['url']
+            if 'title' in document.keys() and not from_isbn:
+                logger.info(
+                    'Trying using the title {}'.format(document['title'])
+                )
+                from_isbn = '{d[title]} {d[author]}'.format(d=document)
+                from_isbnplus = from_isbn
+            if from_crossref is None and from_doi is None:
+                from_crossref = True
 
-        if self.args.from_doi:
-            self.logger.debug("Try using doi %s" % self.args.from_doi)
-            data.update(papis.utils.doi_to_data(self.args.from_doi))
+        if from_crossref:
+            if from_crossref is True:
+                from_crossref = ''
+            try:
+                doc = papis.api.pick_doc([
+                        papis.document.from_data(d)
+                        for d in papis.crossref.get_data(
+                            query=from_crossref,
+                            author=document['author'],
+                            title=document['title']
+                        )
+                ])
+                if doc:
+                    data.update(papis.document.to_dict(doc))
+                    if 'doi' in document.keys() and not from_doi and auto:
+                        from_doi = doc['doi']
 
-        document.update(data, self.args.force, self.args.interactive)
-        document.save()
+            except Exception as e:
+                logger.error(e)
+
+        if from_isbnplus:
+            try:
+                doc = papis.api.pick_doc(
+                    [
+                        papis.document.from_data(d)
+                        for d in papis.isbnplus.get_data(
+                            query=from_isbnplus
+                        )
+                    ]
+                )
+                if doc:
+                    data.update(papis.document.to_dict(doc))
+            except urllib.error.HTTPError:
+                logger.error('urllib failed to download')
+
+        if from_isbn:
+            try:
+                doc = papis.api.pick_doc(
+                    [
+                        papis.document.from_data(d)
+                        for d in papis.isbn.get_data(
+                            query=from_isbn
+                        )
+                    ]
+                )
+                if doc:
+                    data.update(papis.document.to_dict(doc))
+            except Exception as e:
+                logger.error('Isbnlib had an error retrieving information')
+                logger.error(e)
+
+        if from_yaml:
+            with open(from_yaml) as fd:
+                data.update(yaml.load(fd))
+
+        if from_doi:
+            logger.debug("Try using doi %s" % from_doi)
+            data.update(papis.utils.doi_to_data(from_doi))
+
+        if from_bibtex:
+            try:
+                bib_data = papis.bibtex.bibtex_to_dict(from_bibtex)
+                data.update(bib_data[0])
+            except Exception:
+                pass
+
+        if from_url:
+            try:
+                url_data = papis.downloaders.utils.get(from_url)
+                data.update(url_data["data"])
+            except Exception:
+                pass
+
+        run(
+            document,
+            data=data,
+            interactive=interactive,
+            force=force,
+        )

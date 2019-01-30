@@ -3,6 +3,7 @@
 
 import sys
 import logging
+import papis.commands.default
 
 
 logger = logging.getLogger("papis")
@@ -14,22 +15,8 @@ if "--debug" in sys.argv:
     logger.debug("DEBUG MODE FOR DEVELOPERS ON")
 
 
-import papis.commands
-import papis.api
 logger.debug("Imported commands")
 
 
 def main():
-    try:
-        papis.commands.main()
-    except KeyboardInterrupt:
-        print('Getting you out of here...')
-
-
-if sys.version_info < (3, 2):
-    raise Exception("This program must use python 3.2 or greater")
-
-if __name__ == "__main__":
-    main()
-
-# vim:set et sw=4 ts=4 ft=python:
+    papis.commands.default.run()

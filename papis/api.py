@@ -2,18 +2,22 @@
 create papis scripts.
 """
 
-from subprocess import call
 import logging
 
 logger = logging.getLogger("api")
 logger.debug("importing")
 
 import os
-import re
-import papis.cache
 import papis.utils
 import papis.commands
 import papis.config
+import papis.database
+
+
+class status():
+    success = 0
+    generic_fail = 1
+    file_not_found = 2
 
 
 def get_lib():
@@ -24,11 +28,8 @@ def get_lib():
     :returns: Library name
     :rtype:  str
 
-    >>> get_lib() == papis.config.get_default_settings(key='default-library')
+    >>> get_lib() is not None
     True
-    >>> set_lib('books')
-    >>> get_lib()
-    'books'
     """
     return papis.config.get_lib()
 
@@ -42,11 +43,7 @@ def set_lib(library):
     :type  library: str
 
     """
-    try:
-        args = papis.commands.get_args()
-        args.lib = library
-    except AttributeError:
-        os.environ["PAPIS_LIB"] = library
+    return papis.config.set_lib(library)
 
 
 def get_arg(arg, default=None):
@@ -67,6 +64,9 @@ def get_libraries():
     :returns: List of library names
     :rtype: list
 
+    >>> len(get_libraries()) >= 1
+    True
+
     """
     libs = []
     config = papis.config.get_configuration()
@@ -76,14 +76,24 @@ def get_libraries():
     return libs
 
 
-def pick_doc(documents):
+def pick_doc(documents: list):
     """Pick a document from documents with the correct formatting
 
     :documents: List of documents
     :returns: Document
 
+    >>> from papis.document import from_data
+    >>> doc = from_data({'title': 'Hello World'})
+    >>> pick_doc([doc]).dump()
+    'title:   Hello World\\n'
+
     """
-    header_format = papis.config.get("header-format")
+    header_format_path = papis.config.get('header-format-file')
+    if header_format_path is not None:
+        with open(os.path.expanduser(header_format_path)) as fd:
+            header_format = fd.read()
+    else:
+        header_format = papis.config.get("header-format")
     match_format = papis.config.get("match-format")
     pick_config = dict(
         header_filter=lambda x: papis.utils.format_doc(header_format, x),
@@ -95,7 +105,7 @@ def pick_doc(documents):
     )
 
 
-def pick(options, pick_config={}):
+def pick(options: list, pick_config={}):
     """This is a wrapper for the various pickers that are supported.
     Depending on the configuration different selectors or 'pickers'
     are used.
@@ -115,28 +125,25 @@ def pick(options, pick_config={}):
     >>> papis.config.set('picktool', 'papis.pick')
     >>> pick(['something'])
     'something'
+    >>> papis.config.set('picktool', 'nonexistent')
+    >>> pick(['something'])
+    Traceback (most recent call last):
+    ...
+    Exception: I don\'t know how to use the picker \'nonexistent\'
+    >>> papis.config.set('picktool', 'papis.pick')
 
     """
     # Leave this import here
     import papis.config
     logger.debug("Parsing picktool")
-    picker = papis.config.get("picktool")
-    if picker == "rofi":
-        import papis.gui.rofi
-        logger.debug("Using rofi picker")
-        return papis.gui.rofi.pick(options, **pick_config)
-    if picker == "dmenu":
-        import papis.gui.dmenu
-        logger.debug("Using dmenu picker")
-        return papis.gui.dmenu.pick(options, **pick_config)
-    elif picker == "vim":
-        import papis.gui.vim
-        logger.debug("Using vim picker")
-        return papis.gui.vim.pick(options, **pick_config)
-    elif picker == "papis.pick":
+    external_picker = papis.config.get_external_picker()
+    picker = external_picker or papis.config.get("picktool")
+    if picker == "papis.pick":
         import papis.pick
         logger.debug("Using papis.pick picker")
         return papis.pick.pick(options, **pick_config)
+    elif papis.config.get_external_picker() is not None:
+        return papis.config.get_external_picker()(options, **pick_config)
     else:
         raise Exception("I don't know how to use the picker '%s'" % picker)
 
@@ -180,6 +187,26 @@ def edit_file(file_path, wait=True):
     papis.utils.general_open(file_path, "editor", wait=wait)
 
 
+def get_all_documents_in_lib(library=None):
+    """Get ALL documents contained in the given library with possibly.
+
+    :param library: Library name.
+    :type  library: str
+
+    :returns: List of all documents.
+    :rtype: list
+
+    >>> import tempfile
+    >>> folder = tempfile.mkdtemp()
+    >>> set_lib(folder)
+    >>> docs = get_all_documents_in_lib(folder)
+    >>> len(docs)
+    0
+
+    """
+    return papis.database.get(library=library).get_all_documents()
+
+
 def get_documents_in_dir(directory, search=""):
     """Get documents contained in the given folder with possibly a search
     string.
@@ -193,12 +220,14 @@ def get_documents_in_dir(directory, search=""):
     :returns: List of filtered documents.
     :rtype: list
 
-    >>> docs = get_documents_in_dir('non/existent/path')
+    >>> import tempfile
+    >>> docs = get_documents_in_dir(tempfile.mkdtemp())
     >>> len(docs)
     0
 
     """
-    return papis.utils.get_documents(directory, search)
+    set_lib(directory)
+    return get_documents_in_lib(directory, search)
 
 
 def get_documents_in_lib(library=None, search=""):
@@ -215,9 +244,7 @@ def get_documents_in_lib(library=None, search=""):
     :rtype: list
 
     """
-    directory = library if os.path.exists(library) \
-        else papis.config.get("dir", section=library)
-    return papis.api.get_documents_in_dir(directory, search)
+    return papis.database.get(library=library).query(search)
 
 
 def clear_lib_cache(lib=None):
@@ -227,7 +254,8 @@ def clear_lib_cache(lib=None):
     :param lib: Library name.
     :type  lib: str
 
+    >>> clear_lib_cache()
+
     """
     lib = papis.api.get_lib() if lib is None else lib
-    directory = papis.config.get("dir", section=lib)
-    papis.cache.clear(directory)
+    papis.database.get(lib).clear()

@@ -1,6 +1,11 @@
 Installation
 ============
 
+.. image:: https://badge.fury.io/py/papis.svg
+   :target: https://badge.fury.io/py/papis
+.. image:: https://repology.org/badge/vertical-allrepos/papis.svg
+   :target: https://repology.org/metapackage/papis
+
 Using pip
 ---------
 
@@ -28,6 +33,13 @@ You can also **update** papis with ``pip``
 ::
 
   pip3 install --upgrade papis
+
+
+Archlinux
+---------
+
+The package `papis` is also found in the archlinux repositories
+`here <https://aur.archlinux.org/packages/papis/>`_.
 
 NixOS
 -----
@@ -65,7 +77,8 @@ First of all you have to get the code, open a terminal and hit
 
   git clone https://github.com/alejandrogallo/papis.git
 
-or download the `zip file <https://github.com/alejandrogallo/papis/archive/master.zip>`_.
+or download the
+`zip file <https://github.com/alejandrogallo/papis/archive/master.zip>`_.
 
 
 Go inside of the ``papis`` source folder and you can either use the ``Makefile``
@@ -108,8 +121,8 @@ The general command that you have to hit is by using the ``setup.py`` script:
   python3 setup.py install
 
 
-Again, if you want to install it locally because you don't have administrative rights
-in your computer you can just simply type
+Again, if you want to install it locally because you don't have administrative
+rights in your computer you can just simply type
 
 .. code:: python
 
@@ -144,7 +157,7 @@ system ``python3`` distribution
 
 ::
 
-    python3-ncurses
     python3-setuptools
 
-However if you have a general enough python distribution they should be installed.
+However if you have a general enough python distribution they should be
+installed.

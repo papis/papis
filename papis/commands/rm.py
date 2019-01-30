@@ -1,58 +1,86 @@
+"""
+
+Cli
+^^^
+.. click:: papis.commands.rm:cli
+    :prog: papis rm
+"""
 import papis
-import sys
-import os
-import shutil
 import papis.api
+from papis.api import status
 import papis.utils
+import papis.config
+import papis.document
+import papis.cli
+import papis.database
+import click
 
 
-class Command(papis.commands.Command):
-    def init(self):
+def run(
+        document,
+        filepath=None
+        ):
+    """Main method to the rm command
 
-        self.parser = self.get_subparsers().add_parser(
-            "rm",
-            help="Delete entry"
+    :returns: List different objects
+    :rtype:  list
+    """
+    db = papis.database.get()
+    if filepath is not None:
+        document.rm_file(filepath)
+        document.save()
+    else:
+        papis.document.delete(document)
+        db.delete(document)
+    return status.success
+
+
+@click.command()
+@click.help_option('-h', '--help')
+@papis.cli.query_option()
+@click.option(
+    "--file",
+    help="Remove files from a document instead of the whole folder",
+    is_flag=True,
+    default=False
+)
+@click.option(
+    "-f", "--force",
+    help="Do not confirm removal",
+    is_flag=True,
+    default=False
+)
+def cli(
+        query,
+        file,
+        force
+        ):
+    """Delete command for several objects"""
+    documents = papis.database.get().query(query)
+    document = papis.api.pick_doc(documents)
+    if not document:
+        return status.file_not_found
+    if file:
+        filepath = papis.api.pick(
+            document.get_files()
         )
-
-        self.add_search_argument()
-
-        self.parser.add_argument(
-            "--file",
-            help="Remove files from a document instead of the whole folder",
-            default=False,
-            action="store_true"
+        if not filepath:
+            return status.file_not_found
+        if not force:
+            toolbar = 'The file {0} would be removed'.format(filepath)
+            if not papis.utils.confirm("Are you sure?", bottom_toolbar=toolbar):
+                return status.success
+        click.echo("Removing %s..." % filepath)
+        return run(
+            document,
+            filepath=filepath
         )
-
-        self.parser.add_argument(
-            "-f", "--force",
-            help="Do not confirm removal",
-            default=False,
-            action="store_true"
-        )
-
-    def main(self):
-        documents = papis.api.get_documents_in_lib(
-            self.get_args().lib,
-            self.get_args().search
-        )
-        document = self.pick(documents)
-        if not document: return 0
-        if self.get_args().file:
-            filepath = papis.api.pick(
-                document.get_files()
+    else:
+        if not force:
+            toolbar = 'The folder {0} would be removed'.format(
+                document.get_main_folder()
             )
-            if not filepath: return 0
-            if not self.args.force:
-                if not papis.utils.confirm("Are you sure?"):
-                    return 0
-            print("Removing %s..." % filepath)
-            document.rm_file(filepath)
-            document.save()
-        else:
-            folder = document.get_main_folder()
-            if not self.args.force:
-                if not papis.utils.confirm("Are you sure?"):
-                    return 0
-            print("Removing %s..." % folder)
-            shutil.rmtree(folder)
-            papis.api.clear_lib_cache()
+            if not papis.utils.confirm("Are you sure?", bottom_toolbar=toolbar):
+                return status.success
+        click.echo("Removing ...")
+        return run(document)

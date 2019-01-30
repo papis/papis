@@ -41,7 +41,7 @@ the ``--commit`` flag to also add a commit into your library, so if you do
 
 ::
 
-  papis add --author "Pedrito" --title "Super book" book.pdf --commit
+  papis add --set author "Pedrito" --set title "Super book" book.pdf --commit
 
 then also papis will do an automatic commit for the book, so that you can
 push your library afterwards to a remote repository.

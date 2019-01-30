@@ -1,0 +1,60 @@
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
+# Last modified: 2018-11-14
+import sys, os
+import papis.api
+import papis.cli
+from papis.commands.open import run as papis_open
+import papis.database
+import click
+
+
+@click.command()
+@click.help_option('-h', '--help')
+@papis.cli.query_option()
+def main(query):
+    """
+    Search tags of the library and open a document
+    """
+    documents = papis.api.get_documents_in_lib(
+        papis.api.get_lib(),
+        search=query
+    )
+
+    # Create an empty tag list
+    tag_list = []
+    for item in documents:
+        if 'tags' in item.keys():
+            for tag in list([item['tags']]):
+                # if tag contains a comma, split it to a list
+                if tag.split(','):
+                    tag = tag.split(',')
+                else:
+                    continue
+                tag_list.append(tag)
+
+    # if no tags are found, exit gracefully
+    if tag_list == []:
+        print('The library does not have any tags set')
+        return
+
+    # flatten the list, which may be a list of lists
+    # also make it lower case and strip out any preceding spaces. The list
+    # set, is then sorted to alphanumeric order.
+    flat_list = sorted(set([y.strip(' ').lower() for x in tag_list for y in x]))
+
+    # Allow the list set (no duplicates) )to be sorted into alphabetical
+    # order and picked from
+    picked_tag = papis.api.pick(flat_list)
+
+    docs = papis.database.get().query_dict(dict(tags=picked_tag))
+
+    doc = papis.api.pick_doc(docs)
+    if not doc:
+        return
+
+    papis_open(doc)
+
+
+if __name__ == "__main__":
+    main()

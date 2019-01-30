@@ -7,12 +7,140 @@
     will additionally read if the file is present in the current
     directory or in the base directory of a given library.
 
+    This is useful for instance if you have a library somewhere
+    for which you want special configuration settings to be set
+    but you do not want these settings to cluster in your configuration
+    file. It is also useful if you're sharing a library with someone
+    else and you want them to have the same settings in that library as
+    you. Imagine you're sharing a library of datasheets with your friend
+    Fulano. You have your library at
 
-.. papis-config:: mode
+    ::
 
-    Papis is a modal program and it can be configured to support different
-    operating modes. The default is considering that every papis document
-    or entry is a 'document'.
+        ~/Documents/lib-with-fulano
+
+    and you've set a local configuration file there
+
+    ::
+
+        ~/Documents/lib-with-fulano/.papis.config
+
+    then whenever Fulano uses that library and the file is also present,
+    his papis program will also read the configuration settings at
+    the path above.
+
+.. papis-config:: dir-umask
+
+    This is the default ``umask`` that will be used to create the new
+    documents' directories.
+
+.. papis-config:: use-git
+
+    Some commands will issue git commands if this option is set to ``True``.
+    For example in ``mv`` or ``rename``.
+
+.. papis-config:: browse-query-format
+
+    The query string that is to be searched for in the ``browse`` command
+    whenever a search engine is used.
+
+.. papis-config:: search-engine
+
+    Search engine to be used by some commands like ``browse``.
+
+.. papis-config:: user-agent
+
+    User agent used by papis whenever it obtains information from external
+    servers.
+
+.. papis-config:: scripts-short-help-regex
+
+    This is the format of the short help indicator in external papis
+    commands.
+
+.. papis-config:: info-name
+
+    The default name of the information files.
+
+.. papis-config:: doc-url-key-name
+
+    Some documents might have associated apart from an url also a file url,
+    the key name appearing in the information file is defined by
+    this setting.
+
+.. papis-config:: default-library
+
+    The name of the library that is to be searched when ``papis``
+    is run without library arguments.
+
+.. papis-config:: export-text-format
+
+    The default output papis format for ``papis export --text``.
+
+.. papis-config:: format-doc-name
+
+    This setting controls the name of the document in the papis format strings
+    like in format strings such as ``match-format`` or ``header-format``.
+    For instance, if you are managing videos, you might want to
+    set this option to ``vid`` in order to set  the ``header-format`` to
+    ``{doc[title]} - {doc[director]} - {doc[duration]}``.
+
+.. papis-config:: match-format
+
+    Default format that is used to match a document against in order to select
+    it. For example if the ``match-format`` is equal to
+    ``{doc[year]} {doc[author]}`` then title of a document will not work
+    to match a document, only the year and author.
+
+.. papis-config:: header-format
+
+    Default format that is used to show a document in order to select it.
+
+.. papis-config:: format-jinja2-enable
+
+    This setting is to enable the `jinja2 <http://jinja.pocoo.org//>`_ template
+    engine to render the papis templates being used, as ``header-format``,
+    ``match-format`` etc...
+
+    For instance you could set the option ``header-format`` to
+
+    .. code:: html
+
+        <span color='#ff00ff'>{{doc.html_escape["title"]}}</span>
+        <span color='#00ff00'>  {{doc.html_escape["author"]}}</span>
+        <span color='#00ffaa'>   ({{doc.html_escape["year"]}}) </span>
+        {%- if doc.has('tags') %}<span>[<yellow>{{doc['tags']}}</yellow>] </span>{%- endif %}
+        {%- if doc.has('citations') %}<red>{{doc['citations']|length}}</red>{%- endif %}
+        {%- if doc.has('url') %}
+        <span>    {{doc.html_escape["url"]}}</span>
+        {%- endif %}
+
+    To use it, just install jinja2.
+
+.. papis-config:: header-format-file
+
+    This option should have the path of a file with the ``header-format``
+    template. Sometimes templates can get big so this is a way
+    of not cluttering the config file with text.
+
+    As an example you would set
+
+    .. code:: ini
+
+        [papers]
+
+        header-format-file = ~/.papis/config/styles/header.txt
+
+.. papis-config:: info-allow-unicode
+
+    This flag is to be set if you want to allow unicode characters
+    in your info file or not. If it is set to false then a representation
+    for the unicode characters will be written in its place.
+    Since we should be living in an unicode world, it is set to ``True``
+    by default.
+
+Tools options
+^^^^^^^^^^^^^
 
 .. papis-config:: opentool
 
@@ -23,11 +151,6 @@
     to take a look at `ranger <http://ranger.nongnu.org>`_ or let
     the default handle it in your system.
     For mac users you might set this to ``open``.
-
-.. papis-config:: dir-umask
-
-    This is the default ``umask`` that will be used to create the new
-    documents' directories.
 
 .. papis-config:: browser
     :default: $BROWSER
@@ -42,15 +165,6 @@
 
     Possible options are:
         - papis.pick
-        - rofi
-        - vim
-        - dmenu
-
-.. papis-config:: mvtool
-
-    Tool used to in the ``papis mv`` command to move documents.
-    If you are using ``git`` to manage your documents, you might consider
-    setting it to ``mvtool = git mv``.
 
 .. papis-config:: editor
     :default: $EDITOR
@@ -60,34 +174,83 @@
     not set then it will default to the ``$VISUAL`` environment variable.
     Otherwise the default editor in your system will be used.
 
-.. papis-config:: xeditor
+.. papis-config:: file-browser
 
-    Sometimes papis might use an editor that uses a windowing system
-    (GUI Editor), you can set this to your preferred gui based editor, e.g.:
-    ``gedit``, ``xemacs``, ``gvim`` to name a few.
+    File browser to be used when opening a directory, it defaults to the
+    default file browser in your system, however you can set it to different
+    file browsers such as ``dolphin``, ``thunar``, ``ranger`` to name a few.
 
-.. papis-config:: sync-command
 
-    Command that is to be used when ``papis sync`` is run.
+Bibtex options
+^^^^^^^^^^^^^^
 
-.. papis-config:: notes-name
+.. papis-config:: bibtex-journal-key
 
-    In ``papis edit`` you can edit notes about the document. ``notes-name``
-    is the default name of the notes file, which by default is supposed
-    to be a TeX file.
+    Journal publishers may request abbreviated journal titles. This
+    option allows the user to set the key for the journal entry when using
+    ``papis export --bibtex``.
 
-.. papis-config:: use-cache
+    Set as ``full_journal_title`` or ``abbrev_journal_title`` for
+    whichever style required. Default is ``journal``.
 
-    Set to ``False`` if you do not want to use the ``cache``
-    for the given library.
+.. papis-config:: extra-bibtex-keys
 
-.. papis-config:: cache-dir
+    When exporting documents in bibtex format, you might want to add
+    non-standard bibtex keys such as ``doc_url`` or ``tags``, you can add
+    these here as comma separated values, for example
+    ``extra-bibtex-keys = tags, doc_url``.
 
-.. papis-config:: use-git
+.. papis-config:: extra-bibtex-types
 
-    Some commands will issue git commands if this option is set to ``True``.
-    For example in ``mv`` or ``rename``.
+    Allow non-standard bibtex types to be recognized, e.g,
+    ``extra-bibtex-types = wikipedia, video, song``.
+    See `bibtex reference
+        <http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`_.
 
+.. papis-config:: multiple-authors-format
+
+    When retrieving automatic author information from services like
+    crossref.org, papis usually builds the ``author`` field for the
+    given document. The format how every single author name is built
+    is given by this setting, for instance you could customize it
+    by the following:
+
+    ::
+
+        multiple-authors-format = {au[surname]} -- {au[given_name]}
+
+    which would given in the case of Albert Einstein the string
+    ``Einstein -- Albert``.
+
+.. papis-config:: multiple-authors-separator
+
+    Similarly to ``multiple-authors-format``, this is the string that
+    separates single authors in the ``author`` field. If it is set to
+    `` and `` then you would have ``<author 1> and <author 2> and ....``
+    in the ``author`` field.
+
+.. papis-config:: bibtex-unicode
+
+    Wether or not to allow direct unicode characters in the document
+    fields to be exported into the bibtex text.
+
+.. _add-command-options:
+
+Add command options
+^^^^^^^^^^^^^^^^^^^
+
+.. papis-config:: ref-format
+
+    This flag is set to change the ``ref`` flag in the info.yaml file
+    when a document is imported. For example: I prefer the format
+    FirstAuthorYear e.g. Plews2019. This would be achieved by the
+    following:
+
+    ::
+
+        ref-format = {doc[author_list][0][surname]}{doc[year]}
+
+    The default behavior is to set the doi as the ref.
 
 .. papis-config:: add-confirm
 
@@ -97,10 +260,13 @@
     fave the contrary effect, i.e., it will not ask for confirmation.
 
 .. papis-config:: add-name
+    :default: empty string
 
-    Default name for newly added documents. For example, if you want
-    your documents to be ``author-title`` then you should set it to
+    Default name for the folder of newly added documents. For example, if you
+    the folder of your documents to be named after the format
+    ``author-title`` then you should set it to
     the papis format: ``{doc[author]}-{doc[title]}``.
+    Per default a hash followed by the author name is created.
 
 .. papis-config:: file-name
 
@@ -130,90 +296,37 @@
     will fave the contrary effect, i.e., it will not open the attached files
     before adding the document to the library.
 
-.. papis-config:: check-keys
+Browse command options
+^^^^^^^^^^^^^^^^^^^^^^
 
-    Comma separated key values to be checked by default by the command
-    ``check``. E.g: ``check-keys = author, doi``.
+.. papis-config:: browse-key
 
-.. papis-config:: browse-query-format
+    This command provides the key that is used to generate the
+    url. For users that ``papis add --from-doi``, setting browse-key
+    to ``doi`` constructs the url from dx.doi.org/DOI, providing a
+    much more accurate url.
 
-    The query string that is to be searched for in the ``browse`` command
-    whenever a search engine is used.
+    Default value is set to ``url``. If the user needs functionality
+    with the ``search-engine`` option, set the option to an empty
+    string e.g.  ::
 
-.. papis-config:: search-engine
+        browse-key = ''
 
-    Search engine to be used by some commands like ``browse``.
+.. _edit-command-options:
 
-.. papis-config:: user-agent
+Edit command options
+^^^^^^^^^^^^^^^^^^^^
 
-    User agent used by papis whenever it obtains information from external
-    servers.
+.. papis-config:: notes-name
 
-.. papis-config:: default-gui
+    In ``papis edit`` you can edit notes about the document. ``notes-name``
+    is the default name of the notes file, which by default is supposed
+    to be a TeX file.
 
-    Default gui to be used by papis, it can have the values given
-    by ``papis gui --help``.
+.. _marks-options:
 
-.. papis-config:: scripts-short-help-regex
-
-    This is the format of the short help indicator in external papis
-    commands.
-
-.. papis-config:: info-name
-
-    The default name of the information files.
-
-.. papis-config:: doc-url-key-name
-
-    Some documents might have associated apart from an url also a file url,
-    the key name appearing in the information file is defined by
-    this setting.
-
-.. papis-config:: file-browser
-
-    File browser to be used when opening a directory, it defaults to the
-    default file browser in your system, however you can set it to different
-    file browsers such as ``dolphin``, ``thunar``, ``ranger`` to name a few.
-
-.. papis-config:: extra-bibtex-keys
-
-    When exporting documents in bibtex format, you might want to add
-    non-standard bibtex keys such as ``doc_url`` or ``tags``, you can add
-    these here as comma separated values, for example
-    ``extra-bibtex-keys = tags, doc_url``.
-
-.. papis-config:: extra-bibtex-types
-
-    Allow non-standard bibtex types to be recognized, e.g,
-    ``extra-bibtex-types = wikipedia, video, song``.
-    See `bibtex reference <http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`_.
-.. papis-config:: default-library
-
-    The name of the library that is to be searched when ``papis``
-    is run without library arguments.
-
-.. papis-config:: export-text-format
-
-    The default output papis format for ``papis export --text``.
-
-.. papis-config:: format-doc-name
-
-    This setting controls the name of the document in the papis format strings
-    like in format strings such as ``match-format`` or ``header-format``.
-    For instance, if you are managing videos, you might want to
-    set this option to ``vid`` in order to set  the ``header-format`` to
-    ``{doc[title]} - {doc[director]} - {doc[duration]}``.
-
-.. papis-config:: match-format
-
-    Default format that is used to match a document against in order to select
-    it. For example if the ``match-format`` is equal to
-    ``{doc[year]} {doc[author]}`` then title of a document will not work
-    to match a document, only the year and author.
-
-.. papis-config:: header-format
-
-    Default format that is used to show a document in order to select it.
+Marks
+^^^^^
 
 .. papis-config:: open-mark
 
@@ -264,52 +377,111 @@
     it suits their needs. For example
 
     - If you are using the pdf viewer ``evince`` and you want to open a
-      mark, you would use ``mark-opener-format = evince -p {mark[value]}``.
-    - If you are using ``zathura``, do ``mark-opener-format = zathura -P
-      {mark[value]}``.
+      mark, you would use
 
-.. papis-config:: info-allow-unicode
+        ::
 
-    This flag is to be set if you want to allow unicode characters
-    in your info file or not. If it is set to false then a representation
-    for the unicode characters will be written in its place.
-    Since we should be living in an unicode world, it is set to ``True``
-    by default.
+            mark-opener-format = evince -p {mark[value]}
 
-.. papis-config:: ref-format
+    - If you are using ``okular`` you would use
 
-    This flag is set to change the ``ref`` flag in the info.yaml file
-    when a document is imported. For example: I prefer the format
-    FirstAuthorYear e.g. Plews2019. This would be achieved by the
-    following:
+        ::
+
+            mark-opener-format = okular -p {mark[value]}
+
+    - If you are using ``zathura``, do
+
+        ::
+
+            mark-opener-format = zathura -P {mark[value]}
+
+Downloaders
+===========
+
+.. papis-config:: downloader-proxy
+
+    There is the possibility of download papers using a proxy.
+    To know more you can checkout this
+    `link <http://docs.python-requests.org/en/master/user/advanced/#proxies>`_.
+
+Databases
+=========
+
+.. papis-config:: default-query-string
+
+    This is the default query that a command will take if no
+    query string is typed in the command line. For example this is
+    the query that is passed to the command open whenever no search
+    string is typed:
 
     ::
 
-        ref-format = {doc[author_list][0][surname]}{doc[year]}
+        papis open
 
-    The default behavior is to set the doi as the ref.
-
-.. papis-config:: multiple-authors-format
-
-    When retrieving automatic author information from services like
-    crossref.org, papis usually builds the ``author`` field for the
-    given document. The format how every single author name is built
-    is given by this setting, for instance you could customize it
-    by the following:
+    Imagine you want to have all your papers whenever you do not
+    specify an input query string, then you would set
 
     ::
 
-        multiple-authors-format = {au[surname]} -- {au[given_name]}
+        default-query-string = author="John Smith"
 
-    which would given in the case of Albert Einstein the string
-    ``Einstein -- Albert``.
+    and whenever you typed ``papis open``, onlye the ``John Smith`` authored
+    papers would appear. Notice that the current example has been
+    done assuming the ``database-backend = papis``.
 
-.. papis-config:: multiple-authors-separator
+.. papis-config:: database-backend
 
-    Similarly to ``multiple-authors-format``, this is the string that
-    separates single authors in the ``author`` field. If it is set to
-    `` and `` then you would have ``<author 1> and <author 2> and ....``
-    in the ``author`` field.
+    The backend to use in the database. As for now papis supports
+    the own database system ``papis`` and
+    `whoosh <https://whoosh.readthedocs.io/en/latest/>`_.
+
+.. papis-config:: use-cache
+
+    Set to ``False`` if you do not want to use the ``cache``
+    for the given library. This is only effective if you're using the
+    ``papis`` database-backend.
+
+.. papis-config:: cache-dir
+
+.. papis-config:: whoosh-schema-fields
+
+    Python list with the ``TEXT`` fields that should be included in the
+    whoosh database schema. For instance say that you want to be able
+    to search for the ``doi`` and ``ref`` of the documents, then you could
+    include
+
+    ::
+
+        whoosh-schema-fields = ['doi', 'ref']
+
+.. papis-config:: whoosh-schema-prototype
+
+    This is the model for the whoosh schema, check
+    `the documentation <https://whoosh.readthedocs.io/en/latest/schema.html/>`_
+    for more information.
+
+Other
+=====
+
+.. papis-config:: citation-string
+
+    string that can be displayed in header if the reference has a
+    citation
+
+    Default set to '*'
+
+.. papis-config:: unique-document-keys
+
+    Whenever you add a new document, papis tries to figure out if
+    you have already added this document before. This is partially done
+    checking for some special keys, and checking if they match.
+    Which keys are checked against is decided by this option, which
+    should be formatted as a python list, just as in the default value.
+
+    For instance, if you add a paper with a given ``doi``, and then you
+    add another document with the same ``doi``, then papis will notify
+    you that there is already another document with this ``doi`` because
+    the ``doi`` key is part of the ``unique-document-keys`` option.
 
 """
 import logging
@@ -322,10 +494,10 @@ import configparser
 import papis.exceptions
 
 
-CONFIGURATION = None #: Global configuration object variable.
-DEFAULT_SETTINGS = None #: Default settings for the whole papis.
-DEFAULT_MODE = "document" #: Default mode in the modal architecture.
-OVERRIDE_VARS = {
+_EXTERNAL_PICKER = None  #: Picker to set externally
+_CONFIGURATION = None  #: Global configuration object variable.
+_DEFAULT_SETTINGS = None  #: Default settings for the whole papis.
+_OVERRIDE_VARS = {
     "folder": None,
     "cache": None,
     "file": None,
@@ -346,42 +518,36 @@ def get_default_opener():
 
 
 general_settings = {
-    "mode"            : "document",
     "local-config-file": ".papis.config",
     "database-backend": "papis",
-    "opentool"        : get_default_opener(),
-    "dir-umask"       : 0o755,
-    "browser"         : os.environ.get('BROWSER') or get_default_opener(),
-    "picktool"        : "papis.pick",
-    "mvtool"          : "mv",
-    "editor"          : os.environ.get('EDITOR')
+    "default-query-string": ".",
+
+    "opentool": get_default_opener(),
+    "dir-umask": 0o755,
+    "browser": os.environ.get('BROWSER') or get_default_opener(),
+    "picktool": "papis.pick",
+    "mvtool": "mv",
+    "editor": os.environ.get('EDITOR')
                         or os.environ.get('VISUAL')
                         or get_default_opener(),
-    "xeditor"         : get_default_opener(),
-    "sync-command"    : "git -C {lib[dir]} pull origin master",
-    "notes-name"      : "notes.tex",
-    "use-cache"       : True,
-    "cache-dir"       : \
-        os.path.join(os.environ.get('XDG_CACHE_HOME'), 'papis') if
-        os.environ.get('XDG_CACHE_HOME') else \
-        os.path.join(os.path.expanduser('~'), '.cache', 'papis'),
-    "use-git"         : False,
+    "notes-name": "notes.tex",
+    "use-cache": True,
+    "cache-dir": None,
+    "use-git": False,
 
-    "add-confirm"     : False,
-    "add-name"        : "",
-    "file-name"       : None,
-    "add-interactive" : False,
-    "add-edit"        : False,
-    "add-open"        : False,
+    "add-confirm": False,
+    "add-name": "",
+    "file-name": None,
+    "add-interactive": False,
+    "add-edit": False,
+    "add-open": False,
 
-    "check-keys"      : 'files',
-    "browse-query-format"   : "{doc[title]} {doc[author]}",
-    "search-engine"   : "https://duckduckgo.com",
-    "user-agent"      : \
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)',
-    "default-gui"     : "vim",
+    "browse-key": 'url',
+    "browse-query-format": "{doc[title]} {doc[author]}",
+    "search-engine": "https://duckduckgo.com",
+    "user-agent": 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)',
     "scripts-short-help-regex": ".*papis-short-help: *(.*)",
-    "info-name"       : "info.yaml",
+    "info-name": "info.yaml",
     "doc-url-key-name": "doc_url",
 
     "open-mark": False,
@@ -391,23 +557,46 @@ general_settings = {
     "mark-match-format": "{mark[name]} - {mark[value]}",
     "mark-opener-format": get_default_opener(),
 
-    "file-browser"    : get_default_opener(),
-    "extra-bibtex-keys" : "",
-    "extra-bibtex-types" : "",
-    "default-library" : "papers",
-    "export-text-format" : \
+    "file-browser": get_default_opener(),
+    "bibtex-journal-key": 'journal',
+    "extra-bibtex-keys": "",
+    "extra-bibtex-types": "",
+    "default-library": "papers",
+    "export-text-format":
         "{doc[author]}. {doc[title]}. {doc[journal]} {doc[pages]}"
         " {doc[month]} {doc[year]}",
-    "format-doc-name" : "doc",
-    "match-format"    : \
+    "format-doc-name": "doc",
+    "match-format":
         "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
-    "header-format"   : \
-        "{doc[title]:<70.70}|{doc[author]:<20.20} ({doc[year]:-<4})",
+    "format-jinja2-enable": False,
+    "header-format-file": None,
+    "header-format": \
+        "<red>{doc.html_escape[title]}</red>\n"\
+        " <span color='#00ff00'>{doc.html_escape[author]}</span>\n"
+        "  <span color='#00ffaa'>({doc.html_escape[year]})</span> "
+        "[<yellow>{doc.html_escape[tags]}</yellow>]",
 
     "info-allow-unicode": True,
-    "ref-format"      : "{doc[doi]}",
+    "ref-format": "{doc[doi]}",
     "multiple-authors-separator": " and ",
     "multiple-authors-format": "{au[surname]}, {au[given_name]}",
+
+    "whoosh-schema-fields": "['doi']",
+    "whoosh-schema-prototype":
+    '{\n'
+    '"author": TEXT(stored=True),\n'
+    '"title": TEXT(stored=True),\n'
+    '"year": TEXT(stored=True),\n'
+    '"tags": TEXT(stored=True),\n'
+    '}',
+
+    "citation-string": "*",
+    'unique-document-keys': "['doi','ref','isbn','isbn10','url','doc_url']",
+
+    "tui-editmode": "emacs",
+    "downloader-proxy": None,
+    "bibtex-unicode": False,
+
 }
 
 
@@ -441,28 +630,71 @@ def get_default_settings(section="", key=""):
     True
     >>> get_default_settings(key='mvtool')
     'mv'
-    >>> get_default_settings(key='help-key', section='vim-gui')
-    'h'
+    >>> get_default_settings(key='mvtool', section='settings')
+    'mv'
     """
-    global DEFAULT_SETTINGS
-    import papis.gui
+    global _DEFAULT_SETTINGS
     # We use an OrderedDict so that the first entry will always be the general
     # settings, also good for automatic documentation
     from collections import OrderedDict
-    if DEFAULT_SETTINGS is None:
-        DEFAULT_SETTINGS = OrderedDict()
-        DEFAULT_SETTINGS.update({
+    if _DEFAULT_SETTINGS is None:
+        _DEFAULT_SETTINGS = OrderedDict()
+        _DEFAULT_SETTINGS.update({
             get_general_settings_name(): general_settings,
         })
-        DEFAULT_SETTINGS.update(
-            papis.gui.get_default_settings()
-        )
     if not section and not key:
-        return DEFAULT_SETTINGS
+        return _DEFAULT_SETTINGS
     elif not section:
-        return DEFAULT_SETTINGS[get_general_settings_name()][key]
+        return _DEFAULT_SETTINGS[get_general_settings_name()][key]
     else:
-        return DEFAULT_SETTINGS[section][key]
+        return _DEFAULT_SETTINGS[section][key]
+
+
+def register_default_settings(settings_dictionary):
+    """Register configuration settings into the global configuration registry.
+
+    Notice that you can define sections or global options. For instance,
+    let us suppose that a script called ``hubation`` defines some
+    configuration options. In the script there could be the following defined
+
+    ::
+
+        import papis.config
+        options = {'hubation': { 'command': 'open'}}
+        papis.config.register_default_settings(options)
+
+    and later on the script can use these options as:
+
+    ::
+
+        papis.config.get('command', section='hubation')
+
+    :param settings_dictionary: A dictionary with settings
+    :type  settings_dictionary: dict
+    >>> papis.config.register_default_settings(\
+            {'scihub': { 'command': 'open'}}\
+        )
+    >>> papis.config.get('command', section='scihub')
+    'open'
+    >>> options = {'settings': { 'hubhub': 42, 'default-library': 'mag' }}
+    >>> papis.config.register_default_settings(options)
+    >>> papis.config.get('hubhub')
+    42
+    >>> papis.config.get('info-name') is not None
+    True
+    >>> not papis.config.get('default-library') == 'mag'
+    True
+    >>> papis.config.get_default_settings(key='default-library') == 'mag'
+    True
+    """
+    default_settings = get_default_settings()
+    # we do a for loop because apparently the OrderedDict removes all
+    # key-val fields after updating, so we have to do it by hand
+    for section in settings_dictionary.keys():
+        if section in default_settings.keys():
+            default_settings[section].update(settings_dictionary[section])
+        else:
+            default_settings[section] = settings_dictionary[section]
 
 
 def get_config_home():
@@ -472,11 +704,17 @@ def get_config_home():
     :returns: Configuration base directory
     :rtype:  str
     """
-    return os.environ.get('XDG_CONFIG_HOME') or \
-        os.path.join(os.path.expanduser('~'), '.config')
+    xdg_home = os.environ.get('XDG_CONFIG_HOME')
+    if xdg_home:
+        return os.path.expanduser(xdg_home)
+    else:
+        return os.path.join(os.path.expanduser('~'), '.config')
 
 
 def get_config_dirs():
+    """Get papis configuration directories where the configuration
+    files might be stored
+    """
     dirs = []
     if os.environ.get('XDG_CONFIG_DIRS'):
         # get_config_home should also be included on top of XDG_CONFIG_DIRS
@@ -498,6 +736,7 @@ def get_config_folder():
     e.g. ``/home/user/.papis``. It is XDG compatible, which means that if the
     environment variable ``XDG_CONFIG_HOME`` is defined it will use the
     configuration folder ``XDG_CONFIG_HOME/papis`` instead.
+
     """
     config_dirs = get_config_dirs()
     for config_dir in config_dirs:
@@ -511,9 +750,9 @@ def get_config_file():
     """Get the path of the main configuration file,
     e.g. /home/user/.papis/config
     """
-    global OVERRIDE_VARS
-    if OVERRIDE_VARS["file"] is not None:
-        config_file = OVERRIDE_VARS["file"]
+    global _OVERRIDE_VARS
+    if _OVERRIDE_VARS["file"] is not None:
+        config_file = _OVERRIDE_VARS["file"]
     else:
         config_file = os.path.join(
             get_config_folder(), "config"
@@ -525,10 +764,19 @@ def get_config_file():
 def set_config_file(filepath):
     """Override the main configuration file path
     """
-    global OVERRIDE_VARS
-    if filepath is not None:
-        logger.debug("Setting config file to %s" % filepath)
-        OVERRIDE_VARS["file"] = filepath
+    global _OVERRIDE_VARS
+    logger.debug("Setting config file to %s" % filepath)
+    _OVERRIDE_VARS["file"] = filepath
+
+
+def set_external_picker(picker):
+    global _EXTERNAL_PICKER
+    _EXTERNAL_PICKER = picker
+
+
+def get_external_picker():
+    global _EXTERNAL_PICKER
+    return _EXTERNAL_PICKER
 
 
 def get_scripts_folder():
@@ -543,15 +791,13 @@ def get_scripts_folder():
 def set(key, val, section=None):
     """Set a key to val in some section and make these changes available
     everywhere.
-    >>> set('picktool', 'rofi')
-    >>> get('picktool')
-    'rofi'
     """
     config = get_configuration()
     if not config.has_section(section or "settings"):
         config.add_section(section or "settings")
     # FIXME: Right now we can only save val in string form
     # FIXME: It would be nice to be able to save also int and booleans
+    # FIXME: configparser seems to be able to only store string values
     config.set(section or get_general_settings_name(), key, str(val))
 
 
@@ -561,7 +807,8 @@ def general_get(key, section=None, data_type=None):
     :param data_type: The data type that should be expected for the value of
         the variable.
     :type  data_type: DataType, e.g. int, src ...
-    :param default: Default value for the configuration variable if it is not set.
+    :param default: Default value for the configuration variable if it is not
+        set.
     :type  default: It should be the same that ``data_type``
     :param extras: List of tuples containing section and prefixes
     """
@@ -643,20 +890,6 @@ def getboolean(*args, **kwargs):
     return general_get(*args, data_type=bool, **kwargs)
 
 
-def in_mode(mode):
-    """Get mode of the library. In principle every library can have a mode,
-    and depending on the mode some extra options can be offered.
-
-    :param mode: Name of the mode used.
-    :type  mode: str
-    :returns: Return true if mode matches
-    :rtype: bool
-    """
-    current_mode = get("mode")
-    logger.debug("current_mode = %s" % current_mode)
-    return mode == current_mode
-
-
 def get_configuration():
     """Get the configuration object, if no papis configuration has ever been
     initialized, it initializes one. Only one configuration per process should
@@ -665,32 +898,51 @@ def get_configuration():
     :returns: Configuration object
     :rtype:  papis.config.Configuration
     """
-    global CONFIGURATION
-    if CONFIGURATION is None:
+    global _CONFIGURATION
+    if _CONFIGURATION is None:
         logger.debug("Creating configuration")
-        CONFIGURATION = Configuration()
+        _CONFIGURATION = Configuration()
         # Handle local configuration file, and merge it if it exists
         local_config_file = papis.config.get("local-config-file")
-        merge_configuration_from_path(local_config_file, CONFIGURATION)
-    return CONFIGURATION
+        merge_configuration_from_path(local_config_file, _CONFIGURATION)
+    return _CONFIGURATION
+
 
 def merge_configuration_from_path(path, configuration):
     """
     Merge information of a configuration file found in `path`
     to the information of the configuration object stored in `configuration`.
-    The function checks for the existence of path.
 
     :param path: Path to the configuration file
     :type  path: str
     :param configuration: Configuration object
     :type  configuration: papis.config.Configuration
     """
-    if os.path.exists(path):
-        logger.debug(
-            "Merging configuration from " + path
-        )
-        configuration.read(path)
-        configuration.handle_includes()
+    logger.debug("Merging configuration from " + path)
+    configuration.read(path)
+    configuration.handle_includes()
+
+
+def set_lib(library):
+    """Set library, notice that in principle library can be a full path.
+
+    :param library: Library name or path to a papis library
+    :type  library: str
+
+    """
+    config = get_configuration()
+    if library not in config.keys():
+        if os.path.exists(library):
+            # Check if the path exists, then use this path as a new library
+            logger.debug("Using library %s" % library)
+            config[library] = dict(dir=library)
+        else:
+            raise Exception(
+                "Path or library '%s' does not seem to exist" % library
+            )
+    os.environ["PAPIS_LIB"] = library
+    os.environ["PAPIS_LIB_DIR"] = get('dir')
+
 
 def get_lib():
     """Get current library, it either retrieves the library from
@@ -699,20 +951,13 @@ def get_lib():
 
     :param library: Name of library or path to a given library
     :type  library: str
-    >>> papis.api.set_lib('hello-world')
-    >>> get_lib()
-    'hello-world'
     """
-    import papis.commands
     try:
-        lib = papis.commands.get_args().lib
-    except AttributeError:
-        try:
-            lib = os.environ["PAPIS_LIB"]
-        except KeyError:
-            # Do not put papis.config.get because get is a special function
-            # that also needs the library to see if some key was overridden!
-            lib = papis.config.get_default_settings(key="default-library")
+        lib = os.environ["PAPIS_LIB"]
+    except KeyError:
+        # Do not put papis.config.get because get is a special function
+        # that also needs the library to see if some key was overridden!
+        lib = papis.config.get_default_settings(key="default-library")
     return lib
 
 
@@ -722,10 +967,10 @@ def reset_configuration():
     :returns: Configuration object
     :rtype:  papis.config.Configuration
     """
-    global CONFIGURATION
-    if CONFIGURATION is not None:
+    global _CONFIGURATION
+    if _CONFIGURATION is not None:
         logger.warning("Overwriting previous configuration")
-    CONFIGURATION = None
+    _CONFIGURATION = None
     logger.debug("Resetting configuration")
     return get_configuration()
 

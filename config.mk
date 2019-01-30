@@ -1,9 +1,6 @@
 PYTHON = python3
 PIP = pip3
-TEST_COMMAND = $(PYTHON) -m pytest papis
-
-test-non-pythonic:
-	(cd tests/ ; ./run.sh)
+TEST_COMMAND = $(PYTHON) -m pytest papis tests --cov=papis
 
 bash-autocomplete:
 	make -C scripts/shell_completion/

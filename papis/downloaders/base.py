@@ -1,9 +1,10 @@
+import re
 import os
 import logging
-import urllib.request
-import http.cookiejar
+import requests
 import papis.config
 import papis.utils
+import filetype
 
 
 class Downloader(object):
@@ -18,10 +19,22 @@ class Downloader(object):
         self.bibtex_data = None
         self.document_data = None
         self.logger.debug("[url] = %s" % url)
-        self.expected_document_format = None
+        self.expected_document_extension = None
+
+        self.session = requests.Session()
+        self.session.headers = {
+            'User-Agent': papis.config.get('user-agent')
+        }
+        proxy = papis.config.get('downloader-proxy')
+        if proxy is not None:
+            self.session.proxies = {
+                'http': proxy,
+                'https': proxy,
+            }
+        self.cookies = {}
 
     def __repr__(self):
-        return self.get_name()
+        return self.name
 
     @classmethod
     def match(url):
@@ -78,10 +91,13 @@ class Downloader(object):
         url = self.get_bibtex_url()
         if not url:
             return False
-        data = urllib.request.urlopen(url)\
-            .read()\
-            .decode('utf-8')
-        self.bibtex_data = data
+        res = self.session.get(url, cookies=self.cookies)
+        content_type = res.headers['Content-Type']
+        self.logger.debug('bibtex content type "{0}"'.format(content_type))
+        if not re.match('text/html', content_type):
+            self.bibtex_data = res.content.decode()
+        else:
+            self.logger.error('It seems no bibtex data could be retrieved')
 
     def get_document_url(self):
         """It returns the urls that is to be access to download
@@ -131,23 +147,10 @@ class Downloader(object):
         url = self.get_document_url()
         if not url:
             return False
-        cookiejar = http.cookiejar.LWPCookieJar()
-        opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookiejar))
-        opener.addheaders = [('User-Agent', papis.config.get('user-agent'))]
-
-        u = opener.open(url)
-        data = u.read()
-        self.document_data = data
-
-    def set_url(self, url):
-        """Url setter for Downloader
-
-        :param url: String containing a valid url
-        :type  url: str
-        :returns: Downloader object
-        """
-        self.url = url
-        return self
+        res = self.session.get(url, cookies=self.cookies)
+        content_type = res.headers['Content-Type']
+        self.logger.debug('document content type "{0}"'.format(content_type))
+        self.document_data = res.content
 
     def get_url(self):
         """Url getter for Downloader
@@ -165,22 +168,39 @@ class Downloader(object):
         :returns: True if it is of the right type, else otherwise
         :rtype:  bool
         """
-        if self.expected_document_format is None:
-            return True
-        result = papis.utils.file_is(
-            self.get_document_data(),
-            self.expected_document_format
-        )
-        if not result:
-            self.logger.warning(
+        def print_warning():
+            self.logger.error(
                 "The downloaded data does not seem to be of"
-                "the correct type (%s)" % self.expected_document_format
+                "the correct type (%s)" % self.expected_document_extension
             )
+
+        if self.expected_document_extension is None:
+            return True
+
+        result = None
+        kind = filetype.guess(self.get_document_data())
+
+        if kind is None:
+            print_warning()
+            return False
+
+        if not isinstance(self.expected_document_extension, list):
+            self.expected_document_extension = [
+                self.expected_document_extension]
+
+        for expected_document_extension in self.expected_document_extension:
+
+            expected_kind = filetype.get_type(ext=expected_document_extension)
+            if expected_kind is None:
+                raise Exception(
+                    "I can't understand the expected extension {0}".format(
+                        expected_document_extension
+                    )
+                )
+
+            result = kind.mime == expected_kind.mime
+
+        if not result:
+            print_warning()
+
         return result
-
-    def get_name(self):
-        """Get name of the downloader
-        :returns: Name
-
-        """
-        return self.name

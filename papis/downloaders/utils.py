@@ -7,27 +7,20 @@ import papis.config
 logger = logging.getLogger("downloader")
 
 
-def getAvailableDownloaders():
-    import papis.downloaders.aps
-    import papis.downloaders.acs
-    import papis.downloaders.arxiv
-    import papis.downloaders.ieee
-    import papis.downloaders.scitationaip
-    import papis.downloaders.annualreviews
-    import papis.downloaders.iopscience
-    import papis.downloaders.libgen
-    import papis.downloaders.get
-    return [
-        papis.downloaders.aps.Downloader,
-        papis.downloaders.acs.Downloader,
-        papis.downloaders.arxiv.Downloader,
-        papis.downloaders.ieee.Downloader,
-        papis.downloaders.scitationaip.Downloader,
-        papis.downloaders.annualreviews.Downloader,
-        papis.downloaders.iopscience.Downloader,
-        papis.downloaders.libgen.Downloader,
-        papis.downloaders.get.Downloader,
+def get_available_downloaders():
+    names = [
+        "aps", "acs", "arxiv", "ieee", "scitationaip", "annualreviews",
+        "iopscience", "libgen", "get", "thesesfr", "hal", "frontiersin",
+        "worldscientific",
     ]
+    downloaders = []
+    for name in names:
+        mod = __import__(
+            'papis.downloaders.' + name,
+            fromlist=['Downloader']
+        )
+        downloaders.append(getattr(mod, 'Downloader'))
+    return downloaders
 
 
 def get_downloader(url, downloader=False):
@@ -36,12 +29,14 @@ def get_downloader(url, downloader=False):
 
     :param url: Url of the document
     :type  url: str
-    :param downloader: Name of the downloader, if any.
+    :param downloader: Name of a downloader
     :type  downloader: str
+    :returns: A Downloader if found or none
+    :rtype:  papis.downloader.base.Downloader
 
     """
     if not downloader:
-        for downloader in getAvailableDownloaders():
+        for downloader in get_available_downloaders():
             result = downloader.match(url)
             if result:
                 return result
@@ -54,45 +49,28 @@ def get_downloader(url, downloader=False):
             return getattr(mod, 'Downloader')(url)
         except ImportError:
             logger.error("No downloader named %s" % downloader)
-    return False
-
-
-def download_document_from_doi(doi):
-    """Download a document knowing the doi number
-
-    :param doi: Doi number
-    :type  doi: string
-    :returns: Path to downloaded local document
-
-    """
-    tempf = tempfile.mktemp()
-    external_downloader = papis.config.get(
-        "doc-doi-downloader"
-    )
-
 
 
 def get(url, data_format="bibtex", expected_doc_format=None):
-    logger.debug("Attempting to retrieve from url")
+
     result = {
         "data": dict(),
         "doi": None,
         "documents_paths": []
     }
+
     downloader = get_downloader(url)
     if not downloader:
         logger.warning(
-            "No matching Downloader for the url %s found" % url
+            "No matching downloader found (%s)" % url
         )
         return result
-    logger.debug("Using downloader %s" % downloader)
-    if downloader.expected_document_format is None and \
+
+    logger.info("Using downloader '%s'" % downloader)
+    if downloader.expected_document_extension is None and \
             expected_doc_format is not None:
-        downloader.expected_document_format = expected_doc_format
-    try:
-        doi = downloader.get_doi()
-    except:
-        logger.debug("Doi not found from url...")
+        downloader.expected_document_extension = expected_doc_format
+
     if data_format == "bibtex":
         try:
             bibtex_data = downloader.get_bibtex_data()
@@ -104,16 +82,24 @@ def get(url, data_format="bibtex", expected_doc_format=None):
                     if len(result["data"]) > 0 else dict()
         except NotImplementedError:
             pass
+
     try:
         doc_data = downloader.get_document_data()
     except NotImplementedError:
-        doc_data = False
-    if doc_data:
+        doc_data = None
+
+    try:
+        result['doi'] = downloader.get_doi()
+    except NotImplementedError:
+        pass
+
+    if doc_data is not None:
         if downloader.check_document_format():
             result["documents_paths"].append(tempfile.mktemp())
-            logger.debug(
+            logger.info(
                 "Saving downloaded data in %s" % result["documents_paths"][-1]
             )
             with open(result["documents_paths"][-1], "wb+") as fd:
                 fd.write(doc_data)
+
     return result

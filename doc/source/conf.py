@@ -46,7 +46,7 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.inheritance_diagram',
-    'sphinxarg.ext',
+    'sphinx_click.ext',
 ]
 
 # Exec directive {{{ #
@@ -57,7 +57,6 @@ except ImportError:
     from io import StringIO
 
 from docutils.parsers.rst import Directive
-import sphinx.util.compat
 import docutils
 
 class ExecDirective(Directive):
@@ -361,7 +360,39 @@ man_pages = [
     ('index', 'papis', u'Papis Documentation',
      [u'Alejandro Gallo'], 1),
     ('configuration', 'papis-config', u'Papis Configuration',
-     [u'Alejandro Gallo'], 1)
+     [u'Alejandro Gallo'], 1),
+    ('commands/add', 'papis-add', u'add command',
+        ['Alejandro Gallo'], 1),
+    ('commands/addto', 'papis-addto', u'addto command',
+        ['Alejandro Gallo'], 1),
+    ('commands/browse', 'papis-browse', u'browse command',
+        ['Alejandro Gallo'], 1),
+    ('commands/config', 'papis-config', u'config command',
+        ['Alejandro Gallo'], 1),
+    ('commands/default', 'papis-default', u'default command',
+        ['Alejandro Gallo'], 1),
+    ('commands/edit', 'papis-edit', u'edit command',
+        ['Alejandro Gallo'], 1),
+    ('commands/explore', 'papis-explore', u'explore command',
+        ['Alejandro Gallo'], 1),
+    ('commands/export', 'papis-export', u'export command',
+        ['Alejandro Gallo'], 1),
+    ('commands/git', 'papis-git', u'git command',
+        ['Alejandro Gallo'], 1),
+    ('commands/list', 'papis-list', u'list command',
+        ['Alejandro Gallo'], 1),
+    ('commands/mv', 'papis-mv', u'mv command',
+        ['Alejandro Gallo'], 1),
+    ('commands/open', 'papis-open', u'open command',
+        ['Alejandro Gallo'], 1),
+    ('commands/rename', 'papis-rename', u'rename command',
+        ['Alejandro Gallo'], 1),
+    ('commands/rm', 'papis-rm', u'rm command',
+        ['Alejandro Gallo'], 1),
+    ('commands/run', 'papis-run', u'run command',
+        ['Alejandro Gallo'], 1),
+    ('commands/update', 'papis-update', u'update command',
+        ['Alejandro Gallo'], 1),
 ]
 
 # If true, show URL addresses after external links.

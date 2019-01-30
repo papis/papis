@@ -1,167 +1,139 @@
+"""
+
+Examples
+^^^^^^^^
+
+- To override some configuration options, you can use the flag ``--set``, for
+  instance, if you want to override the editor used and the opentool to open
+  documents, you can just type
+
+    .. code:: shell
+
+        papis --set editor gedit --set opentool firefox edit
+        papis --set editor gedit --set opentool firefox open
+
+- If you want to list the libraries and pick one before sending a database
+  query to papis, use ``--pick-lib`` as such
+
+    .. code:: shell
+
+        papis --pick-lib open 'einstein relativity'
+
+Cli
+^^^
+.. click:: papis.commands.default:run
+    :prog: papis
+    :commands: []
+
+"""
 import os
-import sys
 import papis
 import papis.api
 import papis.config
 import papis.commands
 import logging
+import click
+import papis.cli
 
 
-class Command(papis.commands.Command):
+@click.group(
+    cls=papis.cli.MultiCommand,
+    invoke_without_command=True
+)
+@click.help_option('--help', '-h')
+@click.version_option(version=papis.__version__)
+@click.option(
+    "-v",
+    "--verbose",
+    help="Make the output verbose (equivalent to --log DEBUG)",
+    default=False,
+    is_flag=True
+)
+@click.option(
+    "-l",
+    "--lib",
+    help="Choose a library name or library path (unamed library)",
+    default=lambda: papis.config.get("default-library")
+)
+@click.option(
+    "-c",
+    "--config",
+    help="Configuration file to use",
+    default=None,
+)
+@click.option(
+    "--log",
+    help="Logging level",
+    type=click.Choice(["INFO", "DEBUG", "WARNING", "ERROR", "CRITICAL"]),
+    default="INFO"
+)
+@click.option(
+    "--pick-lib",
+    help="Pick library to use",
+    default=False,
+    is_flag=True
+)
+@click.option(
+    "--cc", "--clear-cache", "clear_cache",
+    help="Clear cache of the library used",
+    default=False,
+    is_flag=True
+)
+@click.option(
+    "-s", "--set", "set_list",
+    type=(str, str),
+    multiple=True,
+    help="Set key value, e.g., "
+         "--set info-name information.yaml  --set opentool evince",
+)
+def run(
+        verbose,
+        config,
+        lib,
+        log,
+        pick_lib,
+        clear_cache,
+        set_list
+        ):
+    log_format = '%(levelname)s:%(name)s:%(message)s'
+    if verbose:
+        log = "DEBUG"
+        log_format = '%(relativeCreated)d-'+log_format
+    logging.basicConfig(
+        level=getattr(logging, log),
+        format=log_format
+    )
+    logger = logging.getLogger('default')
 
-    def init(self):
+    for pair in set_list:
+        logger.debug('Setting "{0}" to "{1}"'.format(*pair))
+        papis.config.set(pair[0], pair[1])
 
-        self.default_parser.add_argument(
-            "-v",
-            "--verbose",
-            help="Make the output verbose (equivalent to --log DEBUG)",
-            default=False,
-            action="store_true"
+    if config:
+        papis.config.set_config_file(config)
+        papis.config.reset_configuration()
+
+    if pick_lib:
+        lib = papis.api.pick(
+            papis.api.get_libraries(),
+            pick_config=dict(header_filter=lambda x: x)
         )
 
-        self.default_parser.add_argument(
-            "-V",
-            "--version",
-            help="Show version number",
-            default=False,
-            action="store_true"
+    papis.config.set_lib(lib)
+
+    # Now the library should be set, let us check if there is a
+    # local configuration file there, and if there is one, then
+    # merge its contents
+    local_config_file = os.path.expanduser(
+        os.path.join(
+            papis.config.get("dir"),
+            papis.config.get("local-config-file")
         )
+    )
+    papis.config.merge_configuration_from_path(
+        local_config_file,
+        papis.config.get_configuration()
+    )
 
-        self.default_parser.add_argument(
-            "-l",
-            "--lib",
-            help="Choose a library name or library path (unamed library)",
-            default=papis.config.get("default-library"),
-            action="store"
-        )
-
-        self.default_parser.add_argument(
-            "-c",
-            "--config",
-            help="Configuration file to use",
-            default=None,
-            action="store"
-        )
-
-        self.default_parser.add_argument(
-            "--log",
-            help="Logging level",
-            choices=[
-                "INFO",
-                "DEBUG",
-                "WARNING",
-                "ERROR",
-                "CRITICAL"
-                ],
-            action="store",
-            default="INFO"
-        )
-
-        self.default_parser.add_argument(
-            "--picktool",
-            help="Override picktool",
-            action="store",
-            default=""
-        )
-
-        self.default_parser.add_argument(
-            "--pick-lib",
-            help="Pick library to use",
-            action="store_true"
-        )
-
-        self.default_parser.add_argument(
-            "--clear-cache", "--cc",
-            help="Clear cache of the library used",
-            action="store_true"
-        )
-
-        self.default_parser.add_argument(
-            "-j", "--cores",
-            help="Number of cores to run some multicore functionality",
-            type=int,
-            default=__import__("multiprocessing").cpu_count(),
-            action="store"
-        )
-
-        self.default_parser.add_argument(
-            "--set",
-            help="Set key value, e.g., "
-                 "--set 'info-name = \"information.yaml\"  opentool = evince'",
-            action="store"
-        )
-
-    def main(self):
-        self.set_args(papis.commands.get_args())
-        log_format = '%(levelname)s:%(name)s:%(message)s'
-        if self.args.verbose:
-            self.args.log = "DEBUG"
-            log_format = '%(relativeCreated)d-'+log_format
-        logging.basicConfig(
-            level=getattr(logging, self.args.log),
-            format=log_format
-        )
-
-        if self.args.version:
-            print('Papis - %s' % papis.__version__)
-            return 0
-
-        if self.args.set:
-            key_vals = papis.utils.DocMatcher.parse(self.args.set)
-            self.logger.debug('Parsed set %s' % key_vals)
-            for pair in key_vals:
-                if len(pair) != 3:
-                    continue
-                key = pair[0]
-                val = pair[2]
-                papis.config.set(key, val)
-
-        if self.args.config:
-            papis.config.set_config_file(self.args.config)
-            papis.config.reset_configuration()
-            papis.commands.Command.config = papis.config.get_configuration()
-
-        if self.args.picktool:
-            papis.config.set("picktool", self.args.picktool)
-
-        if self.args.pick_lib:
-            self.args.lib = papis.api.pick(
-                papis.api.get_libraries(),
-                pick_config=dict(header_filter=lambda x: x)
-            )
-
-        if self.args.lib not in self.get_config().keys():
-            if os.path.exists(self.args.lib):
-                # Check if the path exists, then use this path as a new library
-                self.logger.debug("Using library %s" % self.args.lib)
-                self.get_config()[self.args.lib] = dict()
-                self.get_config()[self.args.lib]["dir"] = self.args.lib
-            else:
-                self.logger.error(
-                    "Library '%s' does not seem to exist" % self.args.lib
-                )
-                return 1
-
-        # Now the library should be set, let us check if there is a
-        # local configuration file there, and if there is one, then
-        # merge its contents
-        local_config_file = os.path.expanduser(
-            os.path.join(
-                papis.config.get("dir"),
-                papis.config.get("local-config-file")
-            )
-        )
-        papis.config.merge_configuration_from_path(
-            local_config_file,
-            self.get_config()
-        )
-
-        if self.args.clear_cache:
-            papis.api.clear_lib_cache(self.args.lib)
-
-        commands = papis.commands.get_commands()
-
-        if self.args.command:
-            if self.args.command in commands.keys():
-                commands[self.args.command].set_args(self.args)
-                commands[self.args.command].main()
+    if clear_cache:
+        papis.api.clear_lib_cache(lib)

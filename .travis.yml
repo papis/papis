@@ -10,12 +10,14 @@ python:
   - "3.6"
 
 script:
-  - make test
-  - make test-non-pythonic
+  - python -m pytest papis tests --cov=papis
 
 install:
   - pip install setuptools
+  - pip install python-coveralls
   - pip install -e .[develop]
   - pip install -e .[optional]
-  - pip install pytest
   - make install
+
+after_success:
+  - coveralls

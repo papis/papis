@@ -1,28 +1,46 @@
 import os
-import sys
 import shutil
 import papis.utils
 import papis.config
 import papis.bibtex
-
 import logging
+import re
+
+
 logger = logging.getLogger("document")
+
 
 def open_in_browser(document):
     """Browse document's url whenever possible.
 
     :document: Document object
+    :returns: Returns the url that is composed from the document
+    :rtype:  str
 
+    >>> import papis.config; papis.config.set('browser', 'echo')
+    >>> papis.config.set('browse-key', 'url')
+    >>> open_in_browser( from_data({'url': 'hello.com'}) )
+    'hello.com'
+    >>> papis.config.set('browse-key', 'doi')
+    >>> open_in_browser( from_data({'doi': '12312/1231'}) )
+    'https://doi.org/12312/1231'
+    >>> papis.config.set('browse-key', 'nonexistentkey')
+    >>> open_in_browser( from_data({'title': 'blih', 'author': 'me'}) )
+    'https://duckduckgo.com/?q=blih+me'
     """
     global logger
     url = None
-    if "url" in document.keys():
-        url = document["url"]
-    elif 'doi' in document.keys():
-        url = 'https://doi.org/' + document['doi']
-    elif papis.config.get('doc-url-key-name') in document.keys():
-        url = document[papis.config.get('doc-url-key-name')]
-    else:
+    key = papis.config.get("browse-key")
+
+    if document.has(key):
+        if "doi" == key:
+            url = 'https://doi.org/{}'.format(document['doi'])
+        elif "isbn" == key:
+            url = 'https://isbnsearch.org/isbn/{}'.format(document['isbn'])
+        else:
+            url = document[key]
+
+    if url is None or key == 'search-engine':
         from urllib.parse import urlencode
         params = {
             'q': papis.utils.format_doc(
@@ -32,15 +50,22 @@ def open_in_browser(document):
         }
         url = papis.config.get('search-engine') + '/?' + urlencode(params)
 
-    if url is None:
-        logger.warning(
-            "No url for %s possible" % (document.get_main_folder_name())
-        )
-    else:
-        logger.debug("Opening url %s:" % url)
-        papis.utils.general_open(
-            url, "browser", wait=False
-        )
+    logger.debug("Opening url %s:" % url)
+    papis.utils.general_open(
+        url, "browser", wait=False
+    )
+    return url
+
+
+def from_folder(folder_path):
+    """Construct a document object from a folder
+
+    :param folder_path: Full path to a valid papis folder
+    :type  folder_path: str
+    :returns: A papis document
+    :rtype:  papis.document.Document
+    """
+    return papis.document.Document(folder=folder_path)
 
 
 def from_data(data):
@@ -52,6 +77,200 @@ def from_data(data):
     :rtype:  papis.document.Document
     """
     return papis.document.Document(data=data)
+
+
+def to_bibtex(document):
+    """Create a bibtex string from document's information
+
+    :param document: Papis document
+    :type  document: Document
+    :returns: String containing bibtex formating
+    :rtype:  str
+
+    >>> import papis.config
+    >>> papis.config.set('bibtex-journal-key', 'journal_abbrev')
+    >>> doc = from_data({'title': 'Hello', 'type': 'book', 'journal': 'jcp'})
+    >>> import tempfile; doc.set_folder('path/to/superfolder')
+    >>> to_bibtex(doc)
+    '@book{superfolder,\\n  journal = {jcp},\\n  title = {Hello},\\n  type = {book},\\n}\\n'
+    >>> doc['journal_abbrev'] = 'j'
+    >>> to_bibtex(doc)
+    '@book{superfolder,\\n  journal = {j},\\n  title = {Hello},\\n  type = {book},\\n}\\n'
+    >>> del doc['title']
+    >>> doc['ref'] = 'hello1992'
+    >>> to_bibtex(doc)
+    '@book{hello1992,\\n  journal = {j},\\n  type = {book},\\n}\\n'
+    """
+    bibtexString = ""
+    bibtexType = ""
+
+    # First the type, article ....
+    if "type" in document.keys():
+        if document["type"] in papis.bibtex.bibtex_types:
+            bibtexType = document["type"]
+        elif document["type"] in papis.bibtex.bibtex_type_converter.keys():
+            bibtexType = papis.bibtex.bibtex_type_converter[document["type"]]
+    if not bibtexType:
+        bibtexType = "article"
+
+    ref = document["ref"]
+    if not ref:
+        try:
+            ref = os.path.basename(document.get_main_folder())
+        except:
+            if document.has('doi'):
+                ref = document['doi']
+            else:
+                ref = 'noreference'
+
+    ref = re.sub(r'[;,()\/{}\[\]]', '', ref)
+
+    bibtexString += "@%s{%s,\n" % (bibtexType, ref)
+    for bibKey in sorted(document.keys()):
+        logger.debug('%s : %s' % (bibKey, document[bibKey]))
+        if bibKey in papis.bibtex.bibtex_key_converter:
+            newBibKey = papis.bibtex.bibtex_key_converter[bibKey]
+            document[newBibKey] = document[bibKey]
+            continue
+        if bibKey in papis.bibtex.bibtex_keys:
+            value = str(document[bibKey])
+            if not papis.config.get('bibtex-unicode'):
+                value = papis.bibtex.unicode_to_latex(value)
+            if bibKey == 'journal':
+                bibtex_journal_key = papis.config.get('bibtex-journal-key')
+                if bibtex_journal_key in document.keys():
+                    bibtexString += "  %s = {%s},\n" % (
+                        'journal',
+                        papis.bibtex.unicode_to_latex(
+                            str(
+                              document[papis.config.get('bibtex-journal-key')]
+                            )
+                        )
+                    )
+                elif bibtex_journal_key not in document.keys():
+                    logger.warning(
+                        "Key '%s' is not present for ref=%s" % (
+                            papis.config.get('bibtex-journal-key'),
+                            document["ref"]
+                        )
+                    )
+                    bibtexString += "  %s = {%s},\n" % (
+                        'journal',
+                        value
+                    )
+            else:
+                bibtexString += "  %s = {%s},\n" % (
+                    bibKey,
+                    value
+                )
+    bibtexString += "}\n"
+    return bibtexString
+
+
+def to_json(document):
+    """Export information into a json string
+    :param document: Papis document
+    :type  document: Document
+    :returns: Json formatted info file
+    :rtype:  str
+
+    >>> doc = from_data({'title': 'Hello World'})
+    >>> to_json(doc)
+    '{"title": "Hello World"}'
+    """
+    import json
+    return json.dumps(to_dict(document))
+
+
+def to_dict(document):
+    """Gets a python dictionary with the information of the document
+    :param document: Papis document
+    :type  document: Document
+    :returns: Python dictionary
+    :rtype:  dict
+    """
+    result = dict()
+    for key in document.keys():
+        result[key] = document[key]
+    return result
+
+
+def dump(document):
+    """Return information string without any obvious format
+    :param document: Papis document
+    :type  document: Document
+    :returns: String with document's information
+    :rtype:  str
+
+    >>> doc = from_data({'title': 'Hello World'})
+    >>> dump(doc)
+    'title:   Hello World\\n'
+    """
+    string = ""
+    for i in document.keys():
+        string += str(i)+":   "+str(document[i])+"\n"
+    return string
+
+
+def delete(document):
+    """This function deletes a document from disk.
+    :param document: Papis document
+    :type  document: papis.document.Document
+    """
+    import shutil
+    folder = document.get_main_folder()
+    shutil.rmtree(folder)
+
+
+def move(document, path):
+    """This function moves a document to path, it supposes that
+    the document exists in the location ``document.get_main_folder()``.
+    Warning: This method will change the folder in the document object too.
+    :param document: Papis document
+    :type  document: papis.document.Document
+    :param path: Full path where the document will be moved to
+    :type  path: str
+
+    >>> doc = from_data({'title': 'Hello World'})
+    >>> doc.set_folder('path/to/folder')
+    >>> import tempfile; newfolder = tempfile.mkdtemp()
+    >>> move(doc, newfolder)
+    Traceback (most recent call last):
+    ...
+    Exception: There is already...
+    """
+    import shutil
+    path = os.path.expanduser(path)
+    if os.path.exists(path):
+        raise Exception(
+            "There is already a document in {0}, please check it,\n"
+            "a temporary papis document has been stored in {1}".format(
+                path, document.get_main_folder()
+            )
+        )
+    shutil.move(document.get_main_folder(), path)
+    # Let us chmod it because it might come from a temp folder
+    # and temp folders are per default 0o600
+    os.chmod(path, papis.config.getint('dir-umask'))
+    document.set_folder(path)
+
+
+class DocHtmlEscaped(dict):
+    """
+    Small helper class to escape html elements.
+
+    >>> DocHtmlEscaped(from_data(dict(title='> >< int & "" "')))['title']
+    '&gt; &gt;&lt; int &amp; &quot;&quot; &quot;'
+    """
+
+    def __init__(self, doc):
+        self.doc = doc
+
+    def __getitem__(self, key):
+        return str(self.doc[key]).replace('&', '&amp;')\
+                                .replace('<', '&lt;')\
+                                .replace('>', '&gt;')\
+                                .replace('"', '&quot;')
 
 
 class Document(object):
@@ -78,6 +297,11 @@ class Document(object):
         """Deletes property from document, e.g. ``del doc['url']``.
         :param key: Name of the property.
         :type  key: str
+
+        >>> doc = from_data({'title': 'Hello', 'type': 'book'})
+        >>> del doc['title']
+        >>> doc.has('title')
+        False
         """
         self._keys.pop(self._keys.index(key))
         delattr(self, key)
@@ -103,6 +327,10 @@ class Document(object):
         :rtype:  str,int,float,list
         """
         return getattr(self, key) if hasattr(self, key) else ""
+
+    @property
+    def html_escape(self):
+        return DocHtmlEscaped(self)
 
     def get_main_folder(self):
         """Get full path for the folder where the document and the information
@@ -140,27 +368,25 @@ class Document(object):
 
         :param key: Key name to be checked
         :returns: True/False
+
+        >>> doc = from_data({'title': 'Hello World'})
+        >>> doc.has('title')
+        True
+        >>> doc.has('author')
+        False
         """
         return key in self.keys()
-
-    def check_files(self):
-        """Check for the exsitence of the document's files
-        :returns: False if some file does not exist, True otherwise
-        :rtype:  bool
-        """
-        for f in self.get_files():
-            # self.logger.debug(f)
-            if not os.path.exists(f):
-                print("** Error: %s not found in %s" % (
-                    f, self.get_main_folder()))
-                return False
-            else:
-                return True
 
     def rm_file(self, filepath):
         """Remove file from document, it also removes the entry in `files`
 
         :filepath: Full file path for file
+
+        >>> doc = from_data({'title': 'Hello', 'files': ['a.pdf']})
+        >>> doc.rm_file('b.pdf')
+        Traceback (most recent call last):
+        ...
+        Exception: File b.pdf not tracked by document
         """
         basename = os.path.basename(filepath)
         if basename not in self['files']:
@@ -170,6 +396,10 @@ class Document(object):
 
     def rm(self):
         """Removes document's folder, effectively removing it from the library.
+
+        >>> doc = from_data({'title': 'Hello World'})
+        >>> import tempfile; doc.set_folder(tempfile.mkdtemp())
+        >>> doc.rm()
         """
         shutil.rmtree(self.get_main_folder())
 
@@ -190,95 +420,6 @@ class Document(object):
         )
         fd.close()
 
-    def to_json(self):
-        """Export information into a json string
-        :returns: Json formatted info file
-        :rtype:  str
-        """
-        import json
-        return json.dumps(self.to_dict())
-
-    def to_dict(self):
-        """Gets a python dictionary with the information of the document
-        :returns: Python dictionary
-        :rtype:  dict
-        """
-        result = dict()
-        for key in self.keys():
-            result[key] = self[key]
-        return result
-
-    @classmethod
-    def get_vcf_template(cls):
-        return """\
-first_name: null
-last_name: null
-org:
-- null
-email:
-    work: null
-    home: null
-tel:
-    cell: null
-    work: null
-    home: null
-adress:
-    work: null
-    home: null"""
-
-    def to_vcf(self):
-        # TODO: Generalize using the doc variable.
-        if not papis.config.in_mode("contact"):
-            # self.logger.error("Not in contact mode")
-            sys.exit(1)
-        text = \
-            """\
-BEGIN:VCARD
-VERSION:4.0
-FN:{doc[first_name]} {doc[last_name]}
-N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
-        for contact_type in ["email", "tel"]:
-            text += "\n"
-            text += "\n".join([
-                "{contact_type};TYPE={type}:{tel}"\
-                .format(
-                    contact_type=contact_type.upper(),
-                    type=t.upper(),
-                    tel=self[contact_type][t]
-                    )
-                for t in self[contact_type].keys() \
-                if self[contact_type][t] is not None
-            ])
-        text += "\n"
-        text += "END:VCARD"
-        return text
-
-    def to_bibtex(self):
-        """Create a bibtex string from document's information
-        :returns: String containing bibtex formating
-        :rtype:  str
-        """
-        bibtexString = ""
-        bibtexType = ""
-        # First the type, article ....
-        if "type" in self.keys():
-            if self["type"] in papis.bibtex.bibtex_types:
-                bibtexType = self["type"]
-        if not bibtexType:
-            bibtexType = "article"
-        if not self["ref"]:
-            ref = os.path.basename(self.get_main_folder())
-        else:
-            ref = self["ref"]
-        bibtexString += "@%s{%s,\n" % (bibtexType, ref)
-        for bibKey in papis.bibtex.bibtex_keys:
-            if bibKey in self.keys():
-                bibtexString += "  %s = { %s },\n" % (
-                    bibKey, papis.bibtex.unicode_to_latex(str(self[bibKey]))
-                )
-        bibtexString += "}\n"
-        return bibtexString
-
     def update(self, data, force=False, interactive=False):
         """Update document's information from an info dictionary.
 
@@ -297,12 +438,11 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
                 if force:
                     self[key] = data[key]
                 elif interactive:
-                    confirmation = \
-                        papis.utils.confirm(
-                            "(%s conflict) Replace '%s' by '%s'?" % (
-                                key, self[key], data[key]
-                            )
+                    confirmation = papis.utils.confirm(
+                        "(%s conflict) Replace '%s' by '%s'?" % (
+                            key, self[key], data[key]
                         )
+                    )
                     if confirmation:
                         self[key] = data[key]
                 elif self[key] is None or self[key] == '':
@@ -336,16 +476,38 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
         """
         return self._keys
 
+    @property
+    def has_citations(self):
+        """Returns string defined in config if keys contains citations
+        else returns None.
+
+        :returns: String or None
+        :rtype: str OR None
+
+        >>> import papis.config
+        >>> doc = from_data({'title': 'Hello World'})
+        >>> doc.has_citations
+        ''
+        >>> doc.update(dict(citations=[]))
+        >>> doc.has_citations == papis.config.get('citation-string')
+        True
+        """
+
+        if 'citations' in self.keys():
+            return papis.config.get('citation-string')
+        else:
+            return ''
+
     def dump(self):
         """Return information string without any obvious format
         :returns: String with document's information
         :rtype:  str
 
+        >>> doc = from_data({'title': 'Hello World'})
+        >>> doc.dump()
+        'title:   Hello World\\n'
         """
-        string = ""
-        for i in self.keys():
-            string += str(i)+":   "+str(self[i])+"\n"
-        return string
+        return dump(self)
 
     def load(self):
         """Load information from info file
@@ -357,7 +519,14 @@ N:{doc[last_name]};{doc[first_name]};;;""".format(doc=self)
             fd = open(self.get_info_file(), "r")
         except:
             return False
-        structure = yaml.load(fd)
-        fd.close()
-        for key in structure:
-            self[key] = structure[key]
+        try:
+            structure = yaml.load(fd)
+            for key in structure:
+                self[key] = structure[key]
+            fd.close()
+        except Exception as e:
+            logging.error(
+                'Error reading yaml file in {0}'.format(self.get_info_file()) +
+                '\nPlease check it!\n\n{0}'.format(str(e))
+            )
+            fd.close()

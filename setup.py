@@ -7,11 +7,7 @@
 
 import sys
 
-main_dependencies = [
-    "setuptools",
-    "curses"
-]
-
+main_dependencies = [ "setuptools" ]
 for dep in main_dependencies:
     try:
         __import__(dep)
@@ -24,10 +20,12 @@ for dep in main_dependencies:
         )
         sys.exit(1)
 
-
+import glob
 from setuptools import setup
 import papis
 
+with open('README.rst') as fd:
+    long_description = fd.read()
 
 setup(
     name='papis',
@@ -37,32 +35,29 @@ setup(
     author=papis.__author__,
     author_email=papis.__email__,
     license=papis.__license__,
-    url='https://github.com/alejandrogallo/papis',
+    url='https://github.com/papis/papis',
     install_requires=[
-        "papis-python-rofi>=1.0.1",
+        "click>=7.0.0",
         "requests>=2.11.1",
-        "argcomplete>=1.8.2",
+        "filetype>=1.0.1",
         "pyparsing>=2.2.0",
         "configparser>=3.0.0",
         "arxiv2bib>=1.0.7",
         "PyYAML>=3.12",
         "chardet>=3.0.2",
         "beautifulsoup4>=4.4.1",
-        "vobject>=0.9.4.1",
-        "prompt-toolkit>=1.0.0",
+        "prompt-toolkit>=2.0.0",
         "bibtexparser>=0.6.2",
-        "Unidecode>=0.4.21",
+        "python-slugify>=2.0.0",
         "pyparser>=1.0",
-        "python-magic>=0.4.13",
         "pylibgen>=1.3.0",
-        "urwid>=1.3.1",
         "habanero>=0.6.0",
+        "isbnlib>=3.9.1,<4.0.0",
     ],
     python_requires='>=3',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
-        'Environment :: Console :: Curses',
         'Intended Audience :: Developers',
         'Intended Audience :: End Users/Desktop',
         'Intended Audience :: System Administrators',
@@ -82,18 +77,20 @@ setup(
         # for example:
         # $ pip install -e .[develop]
         optional=[
-            'dmenu',
+            "Jinja2>=2.10",
+            "Whoosh>=2.7.4",
         ],
         develop=[
             "sphinx",
-            'sphinx-argparse',
+            'sphinx-click',
             'sphinx_rtd_theme',
             'pytest',
+            'pytest-cov',
         ]
     ),
     description='Powerful and highly extensible command-line based document '
                 'and bibliography manager',
-    long_description='',
+    long_description=long_description,
     keywords=[
         'document',
         'books',
@@ -104,25 +101,21 @@ setup(
     ],
     package_data=dict(
         papis=[
-            'gui/vim/main.vim',
         ],
     ),
     data_files=[
 
-        ("share/doc/papis/", [
-            "README.md",
+        ("share/doc/papis", [
+            "README.rst",
             "AUTHORS",
             "LICENSE.txt",
         ]),
 
-        ("etc/bash_completion.d/", [
-            "scripts/shell_completion/build/bash/papis",
-        ]),
+        # ("etc/bash_completion.d/", [
+            # "scripts/shell_completion/build/bash/papis",
+        # ]),
 
-        ("share/man/man1", [
-            "doc/build/man/papis.1",
-            "doc/build/man/papis-config.1",
-        ]),
+        ("share/man/man1", glob.glob("doc/build/man/*")),
 
         ("share/applications", [
             "contrib/papis.desktop",
@@ -131,13 +124,10 @@ setup(
     ],
     packages=[
         "papis",
-        "papis.gui",
-        "papis.gui.tk",
-        "papis.gui.vim",
         "papis.commands",
+        "papis.database",
         "papis.downloaders",
     ],
-    test_suite="papis.tests",
     entry_points=dict(
         console_scripts=[
             'papis=papis.main:main'

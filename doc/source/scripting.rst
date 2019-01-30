@@ -103,15 +103,15 @@ This is an example of using papis with the window manager `i3`.
 
     # open documents
     bindsym $mod+o exec python3 -m papis.main \
-      --pick-lib --set picktool=dmenu open
+      --pick-lib --set picktool dmenu open
 
     # edit documents
     bindsym $mod+e exec python3 -m papis.main \
-      --pick-lib --set "picktool=dmenu editor=gvim" edit
+      --pick-lib --set picktool dmenu --set editor gvim edit
 
     # open document's url
     bindsym $mod+b exec python3 -m papis.main \
-      --pick-lib --set picktool=dmenu browse
+      --pick-lib --set picktool dmenu browse
 
     # return to default mode
     bindsym Ctrl+c mode "default"

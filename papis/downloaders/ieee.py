@@ -1,5 +1,4 @@
 import re
-import os
 import urllib.parse
 import urllib.request
 import papis.downloaders.base
@@ -9,13 +8,15 @@ class Downloader(papis.downloaders.base.Downloader):
 
     def __init__(self, url):
         papis.downloaders.base.Downloader.__init__(self, url, name="ieee")
-        self.expected_document_format = 'pdf'
+        self.expected_document_extension = 'pdf'
 
     @classmethod
     def match(cls, url):
         m = re.match(r"^ieee:(.*)", url, re.IGNORECASE)
         if m:
-            url = "http://ieeexplore.ieee.org/document/{m}".format(m=m.group(1))
+            url = "http://ieeexplore.ieee.org/document/{m}".format(
+                m=m.group(1)
+            )
         if re.match(r".*ieee.org.*", url):
             # http://http://ieeexplore.ieee.org/document/7989161/
             url = re.sub(r"\.pdf.*$", "", url)
@@ -29,13 +30,16 @@ class Downloader(papis.downloaders.base.Downloader):
 
     def get_bibtex_url(self):
         identifier = self.get_identifier()
-        bibtex_url = 'http://ieeexplore.ieee.org/xpl/downloadCitations?reload=true'
-        data = {'recordIds' : identifier,
-                'citations-format' : 'citation-and-abstract',
-                'download-format' : 'download-bibtex',
-                'x' : '0',
-                'y' : '0'}
-        return bibtex_url, data 
+        bibtex_url = \
+            'http://ieeexplore.ieee.org/xpl/downloadCitations?reload=true'
+        data = {
+            'recordIds': identifier,
+            'citations-format': 'citation-and-abstract',
+            'download-format': 'download-bibtex',
+            'x': '0',
+            'y': '0'
+        }
+        return bibtex_url, data
 
     def download_bibtex(self):
         bib_url, values = self.get_bibtex_url()
@@ -54,8 +58,10 @@ class Downloader(papis.downloaders.base.Downloader):
     def get_document_url(self):
         identifier = self.get_identifier()
         self.logger.debug("[paper id] = %s" % identifier)
-        pdf_url = "http://ieeexplore.ieee.org/stampPDF/getPDF.jsp?tp=&isnumber=&arnumber="+identifier+""
+        pdf_url = "{}{}".format(
+            "http://ieeexplore.ieee.org/"
+            "stampPDF/getPDF.jsp?tp=&isnumber=&arnumber=",
+            identifier
+        )
         self.logger.debug("[pdf url] = %s" % pdf_url)
         return pdf_url
-
-# vim-run: python3 -m doctest %

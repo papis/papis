@@ -30,7 +30,7 @@ configuration file is found,
     ~/.config/papis/config
 
 Right now we will open this file to edit and we will create a library.  In
-papis everything should be human-readabale and human-editable. So adding a
+papis everything should be human-readable and human-editable. So adding a
 library is as easy as adding two lines to this configuration file.
 
 Say that you want to create a "papers" library, where you can finally order
@@ -67,7 +67,7 @@ library:
 
 .. code:: bash
 
-  papis add document.pdf --author "Newton" --title "Principia Mathematica"
+  papis add document.pdf --set author "Newton" --set title "Principia Mathematica"
 
 And it's done! We have added our first book to the library.
 
@@ -75,7 +75,7 @@ Let us see how this works exactly. Papis consists of many commands, and one of
 these commands is ``add``. ``Add`` itself has many flags, which are options for the
 given command. In the example above we have used the flags ``author`` and
 ``title`` to tell papis to use ``Newton`` as the author's name and ``Principia
-Mathematica`` as the document's title. You can see all the posible flags
+Mathematica`` as the document's title. You can see all the possible flags
 for the command ``add`` if you use the ``help`` flag, i.e., if you issue the
 following command
 
@@ -124,8 +124,7 @@ paper that you are looking for very easily.
 .. raw:: html
 
   <script type="text/javascript"
-  src="https://asciinema.org/a/U7e5yHvpf3kKqH8kHSh6MEa4o.js"
-  id="asciicast-U7e5yHvpf3kKqH8kHSh6MEa4o" async></script>
-
-Nice Reading!!
+    src="https://asciinema.org/a/hrNaFMh4XwqVpWsGWDi5SASUC.js"
+    id="asciicast-hrNaFMh4XwqVpWsGWDi5SASUC" async>
+  </script>
 

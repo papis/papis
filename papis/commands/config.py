@@ -30,39 +30,36 @@ it with
 
 You can find a list of all available settings in the configuration section.
 
-
+Cli
+^^^
+.. click:: papis.commands.config:cli
+    :prog: papis config
 """
-import sys
-import os
-import re
-import configparser
 import papis.commands
+import logging
+import click
 
 
-class Command(papis.commands.Command):
-    def init(self):
+def run(option_string):
+    logger = logging.getLogger('config:run')
+    option = option_string.split(".")
+    if len(option) == 1:
+        key = option[0]
+        section = None
+    elif len(option) == 2:
+        section = option[0]
+        key = option[1]
+    logger.debug("key = %s, sec = %s" % (key, section))
+    val = papis.config.get(key, section=section)
+    return val
 
-        self.parser = self.get_subparsers().add_parser(
-            "config",
-            help="Print configuration values"
-        )
 
-        self.parser.add_argument(
-            "option",
-            help="Variable to print",
-            default="",
-            action="store"
-        )
-
-    def main(self):
-        option = self.args.option.split(".")
-        self.logger.debug(option)
-        if len(option) == 1:
-            key = option[0]
-            section = None
-        elif len(option) == 2:
-            section = option[0]
-            key = option[1]
-        self.logger.debug("key = %s, sec = %s" % (key, section))
-        val = papis.config.get(key, section=section)
-        print(val)
+@click.command()
+@click.help_option('--help', '-h')
+@click.argument("option")
+def cli(option):
+    """Print configuration values"""
+    logger = logging.getLogger('cli:config')
+    logger.debug(option)
+    click.echo(run(option))
+    return 0

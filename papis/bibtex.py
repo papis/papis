@@ -24,6 +24,12 @@ bibtex_types = [
   "unpublished"
 ] + re.sub(r" *", "", papis.config.get('extra-bibtex-types')).split(',')
 
+bibtex_type_converter = {
+  "conferencePaper" : "inproceedings",
+  "journalArticle" : "article",
+  "journal" : "article"
+}
+
 bibtex_keys = [
     "addendum",
     "address",
@@ -86,9 +92,9 @@ bibtex_keys = [
     "series",
     "subtitle",
     "title",
-    "titleaddon",
     "translator",
     "type",
+    "titleaddon",
     "url",
     "urldate",
     "venue",
@@ -98,6 +104,14 @@ bibtex_keys = [
     "year",
   ] + re.sub(r" *", "", papis.config.get('extra-bibtex-keys')).split(',')
 
+bibtex_key_converter = {
+    "abstractNote" : "abstract",
+    "university" : "school",
+    "conferenceName" : "eventtitle",
+    "place" : "location",
+    "publicationTitle" : "journal",
+    "proceedingsTitle" : "booktitle"
+}
 
 def bibtexparser_entry_to_papis(entry):
     """Convert keys of a bib entry in bibtexparser format to papis compatible
@@ -139,7 +153,6 @@ def bibtex_to_dict(bibtex):
     # bibtexparser has too many debug messages to be useful
     logging.getLogger("bibtexparser.bparser").setLevel(logging.WARNING)
     global logger
-    result = dict()
     if os.path.exists(bibtex):
         with open(bibtex) as fd:
             logger.debug("Reading in file %s" % bibtex)
@@ -161,10 +174,11 @@ def unicode_to_latex(text):
 
     Provides unicode_to_latex(u) and unicode_to_latex_string(u).
 
-    unicode_to_latex returns ASCII bytes that can be fed to LaTeX to reproduce the
-    Unicode string 'u' as closely as possible.
+    unicode_to_latex returns ASCII bytes that can be fed to LaTeX to reproduce
+    the Unicode string 'u' as closely as possible.
 
-    unicode_to_latex_string returns a Unicode string rather than bytes. That is,
+    unicode_to_latex_string returns a Unicode string rather than bytes. That
+    is,
 
        unicode_to_latex(u) = unicode_to_latex_string(u).encode('ascii').
 
@@ -237,31 +251,36 @@ def unicode_to_latex(text):
         u"\u00C1": r"\'{A}",
         u"\u00C2": r"\^{A}",
         u"\u00C3": r"\~{A}",
-        u"\u00C4": r'\"{A}', # note single-quoted string
+        # note single-quoted string
+        u"\u00C4": r'\"{A}',
         u"\u00C5": r"\AA{}",
         u"\u00C6": r"\AE{}",
         u"\u00C7": r"\c{C}",
         u"\u00C8": r"\`{E}",
         u"\u00C9": r"\'{E}",
         u"\u00CA": r"\^{E}",
-        u"\u00CB": r'\"{E}', # note single-quoted string
+        # note single-quoted string
+        u"\u00CB": r'\"{E}',
         u"\u00CC": r"\`{I}",
         u"\u00CD": r"\'{I}",
         u"\u00CE": r"\^{I}",
-        u"\u00CF": r'\"{I}', # note single-quoted string
+        # note single-quoted string
+        u"\u00CF": r'\"{I}',
         u"\u00D0": r"\DH{}",
         u"\u00D1": r"\~{N}",
         u"\u00D2": r"\`{O}",
         u"\u00D3": r"\'{O}",
         u"\u00D4": r"\^{O}",
         u"\u00D5": r"\~{O}",
-        u"\u00D6": r'\"{O}', # note single-quoted string
+        # note single-quoted string
+        u"\u00D6": r'\"{O}',
         u"\u00D7": r"\texttimes{}",
         u"\u00D8": r"\O{}",
         u"\u00D9": r"\`{U}",
         u"\u00DA": r"\'{U}",
         u"\u00DB": r"\^{U}",
-        u"\u00DC": r'\"{U}', # note single-quoted string
+        # note single-quoted string
+        u"\u00DC": r'\"{U}',
         u"\u00DD": r"\'{Y}",
         u"\u00DE": r"\TH{}",
         u"\u00DF": r"\ss{}",
@@ -269,38 +288,46 @@ def unicode_to_latex(text):
         u"\u00E1": r"\'{a}",
         u"\u00E2": r"\^{a}",
         u"\u00E3": r"\~{a}",
-        u"\u00E4": r'\"{a}', # note single-quoted string
+        # note single-quoted string
+        u"\u00E4": r'\"{a}',
         u"\u00E5": r"\aa{}",
         u"\u00E6": r"\ae{}",
         u"\u00E7": r"\c{c}",
         u"\u00E8": r"\`{e}",
         u"\u00E9": r"\'{e}",
         u"\u00EA": r"\^{e}",
-        u"\u00EB": r'\"{e}', # note single-quoted string
+        # note single-quoted string
+        u"\u00EB": r'\"{e}',
         u"\u00EC": r"\`{\i}",
         u"\u00ED": r"\'{\i}",
         u"\u00EE": r"\^{\i}",
-        u"\u00EF": r'\"{\i}', # note single-quoted string
+        # note single-quoted string
+        u"\u00EF": r'\"{\i}',
         u"\u00F0": r"\dh{}",
         u"\u00F1": r"\~{n}",
         u"\u00F2": r"\`{o}",
         u"\u00F3": r"\'{o}",
         u"\u00F4": r"\^{o}",
         u"\u00F5": r"\~{o}",
-        u"\u00F6": r'\"{o}', # note single-quoted string
+        # note single-quoted string
+        u"\u00F6": r'\"{o}',
         u"\u00F7": r"\div{}",
         u"\u00F8": r"\o{}",
         u"\u00F9": r"\`{u}",
         u"\u00FA": r"\'{u}",
         u"\u00FB": r"\^{u}",
-        u"\u00FC": r'\"{u}', # note single-quoted string
+        # note single-quoted string
+        u"\u00FC": r'\"{u}',
         u"\u00FD": r"\'{y}",
         u"\u00FE": r"\th{}",
-        u"\u00FF": r'\"{y}', # note single-quoted string
+        # note single-quoted string
+        u"\u00FF": r'\"{y}',
         u"\u0100": r"\={A}",
         u"\u0101": r"\={a}",
-        u"\u0102": "\\u{A}", # note non-raw string (\u confuses Python)
-        u"\u0103": "\\u{a}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u0102": "\\u{A}",
+        # note non-raw string (\u confuses Python)
+        u"\u0103": "\\u{a}",
         u"\u0104": r"\k{A}",
         u"\u0105": r"\k{a}",
         u"\u0106": r"\'{C}",
@@ -317,8 +344,10 @@ def unicode_to_latex(text):
         u"\u0111": r"\dj{}",
         u"\u0112": r"\={E}",
         u"\u0113": r"\={e}",
-        u"\u0114": "\\u{E}", # note non-raw string (\u confuses Python)
-        u"\u0115": "\\u{e}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u0114": "\\u{E}",
+        # note non-raw string (\u confuses Python)
+        u"\u0115": "\\u{e}",
         u"\u0116": r"\.{E}",
         u"\u0117": r"\.{e}",
         u"\u0118": r"\k{E}",
@@ -327,8 +356,10 @@ def unicode_to_latex(text):
         u"\u011B": r"\v{e}",
         u"\u011C": r"\^{G}",
         u"\u011D": r"\^{g}",
-        u"\u011E": "\\u{G}", # note non-raw string (\u confuses Python)
-        u"\u011F": "\\u{g}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u011E": "\\u{G}",
+        # note non-raw string (\u confuses Python)
+        u"\u011F": "\\u{g}",
         u"\u0120": r"\.{G}",
         u"\u0121": r"\.{g}",
         u"\u0122": r"\c{G}",
@@ -341,8 +372,10 @@ def unicode_to_latex(text):
         u"\u0129": r"\~{\i}",
         u"\u012A": r"\={I}",
         u"\u012B": r"\={\i}",
-        u"\u012C": "\\u{I}", # note non-raw string (\u confuses Python)
-        u"\u012D": "\\u{\\i}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u012C": "\\u{I}",
+        # note non-raw string (\u confuses Python)
+        u"\u012D": "\\u{\\i}",
         u"\u012E": r"\k{I}",
         u"\u012F": r"\k{i}",
         u"\u0130": r"\.{I}",
@@ -375,8 +408,10 @@ def unicode_to_latex(text):
         u"\u014B": r"\ng{}",
         u"\u014C": r"\={O}",
         u"\u014D": r"\={o}",
-        u"\u014E": "\\u{O}", # note non-raw string (\u confuses Python)
-        u"\u014F": "\\u{o}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u014E": "\\u{O}",
+        # note non-raw string (\u confuses Python)
+        u"\u014F": "\\u{o}",
         u"\u0150": r"\H{O}",
         u"\u0151": r"\H{o}",
         u"\u0152": r"\OE{}",
@@ -405,8 +440,10 @@ def unicode_to_latex(text):
         u"\u0169": r"\~{u}",
         u"\u016A": r"\={U}",
         u"\u016B": r"\={u}",
-        u"\u016C": "\\u{U}", # note non-raw string (\u confuses Python)
-        u"\u016D": "\\u{u}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u016C": "\\u{U}",
+        # note non-raw string (\u confuses Python)
+        u"\u016D": "\\u{u}",
         u"\u016E": r"\r{U}",
         u"\u016F": r"\r{u}",
         u"\u0170": r"\H{U}",
@@ -417,7 +454,8 @@ def unicode_to_latex(text):
         u"\u0175": r"\^{w}",
         u"\u0176": r"\^{Y}",
         u"\u0177": r"\^{y}",
-        u"\u0178": r'\"{Y}', # note single-quoted string
+        # note single-quoted string
+        u"\u0178": r'\"{Y}',
         u"\u0179": r"\'{Z}",
         u"\u017A": r"\'{z}",
         u"\u017B": r"\.{Z}",
@@ -498,9 +536,11 @@ def unicode_to_latex(text):
         u"\u0302": r"\^",
         u"\u0303": r"\~",
         u"\u0304": r"\=",
-        u"\u0306": "\\u", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u0306": "\\u",
         u"\u0307": r"\.",
-        u"\u0308": r'\"', # note single-quoted string
+        # note single-quoted string
+        u"\u0308": r'\"',
         u"\u030A": r"\r",
         u"\u030B": r"\H",
         u"\u030C": r"\v",
@@ -548,7 +588,8 @@ def unicode_to_latex(text):
         u"\u03A1": r"\ensuremath{\Rho}",
         u"\u03A3": r"\ensuremath{\Sigma}",
         u"\u03A4": r"\ensuremath{\Tau}",
-        u"\u03A5": "\\ensuremath{\\Upsilon}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u03A5": "\\ensuremath{\\Upsilon}",
         u"\u03A6": r"\ensuremath{\Phi}",
         u"\u03A7": r"\ensuremath{\Chi}",
         u"\u03A8": r"\ensuremath{\Psi}",
@@ -559,7 +600,8 @@ def unicode_to_latex(text):
         u"\u03AD": r"\acute{\epsilon}",
         u"\u03AE": r"\acute{\eta}",
         u"\u03AF": r"\acute{\iota}",
-        u"\u03B0": "\\acute{\\ddot{\\upsilon}}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u03B0": "\\acute{\\ddot{\\upsilon}}",
         u"\u03B1": r"\ensuremath{\alpha}",
         u"\u03B2": r"\ensuremath{\beta}",
         u"\u03B3": r"\ensuremath{\gamma}",
@@ -579,19 +621,23 @@ def unicode_to_latex(text):
         u"\u03C2": r"\ensuremath{\varsigma}",
         u"\u03C3": r"\ensuremath{\sigma}",
         u"\u03C4": r"\ensuremath{\tau}",
-        u"\u03C5": "\\ensuremath{\\upsilon}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u03C5": "\\ensuremath{\\upsilon}",
         u"\u03C6": r"\ensuremath{\varphi}",
         u"\u03C7": r"\ensuremath{\chi}",
         u"\u03C8": r"\ensuremath{\psi}",
         u"\u03C9": r"\ensuremath{\omega}",
         u"\u03CA": r"\ensuremath{\ddot{\iota}}",
-        u"\u03CB": "\\ensuremath{\\ddot{\\upsilon}}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u03CB": "\\ensuremath{\\ddot{\\upsilon}}",
         u"\u03CC": r"\'{o}",
-        u"\u03CD": "\\acute{\\upsilon}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u03CD": "\\acute{\\upsilon}",
         u"\u03CE": r"\acute{\omega}",
         u"\u03D0": r"\Pisymbol{ppi022}{87}",
         u"\u03D1": r"\textvartheta{}",
-        u"\u03D2": "\\ensuremath{\\Upsilon}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u03D2": "\\ensuremath{\\Upsilon}",
         u"\u03D5": r"\ensuremath{\phi}",
         u"\u03D6": r"\ensuremath{\varpi}",
         u"\u03DA": r"\Stigma{}",
@@ -883,11 +929,13 @@ def unicode_to_latex(text):
         u"\u215D": r"\textfrac{5}{8}",
         u"\u215E": r"\textfrac{7}{8}",
         u"\u2190": r"\leftarrow{}",
-        u"\u2191": "\\uparrow{}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u2191": "\\uparrow{}",
         u"\u2192": r"\rightarrow{}",
         u"\u2193": r"\downarrow{}",
         u"\u2194": r"\leftrightarrow{}",
-        u"\u2195": "\\updownarrow{}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u2195": "\\updownarrow{}",
         u"\u2196": r"\nwarrow{}",
         u"\u2197": r"\nearrow{}",
         u"\u2198": r"\searrow{}",
@@ -916,8 +964,10 @@ def unicode_to_latex(text):
         u"\u21BB": r"\circlearrowright{}",
         u"\u21BC": r"\leftharpoonup{}",
         u"\u21BD": r"\leftharpoondown{}",
-        u"\u21BE": "\\upharpoonright{}", # note non-raw string (\u confuses Python)
-        u"\u21BF": "\\upharpoonleft{}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u21BE": "\\upharpoonright{}",
+        # note non-raw string (\u confuses Python)
+        u"\u21BF": "\\upharpoonleft{}",
         u"\u21C0": r"\rightharpoonup{}",
         u"\u21C1": r"\rightharpoondown{}",
         u"\u21C2": r"\downharpoonright{}",
@@ -926,7 +976,8 @@ def unicode_to_latex(text):
         u"\u21C5": r"\dblarrowupdown{}",
         u"\u21C6": r"\leftrightarrows{}",
         u"\u21C7": r"\leftleftarrows{}",
-        u"\u21C8": "\\upuparrows{}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u21C8": "\\upuparrows{}",
         u"\u21C9": r"\rightrightarrows{}",
         u"\u21CA": r"\downdownarrows{}",
         u"\u21CB": r"\leftrightharpoons{}",
@@ -935,11 +986,13 @@ def unicode_to_latex(text):
         u"\u21CE": r"\nLeftrightarrow{}",
         u"\u21CF": r"\nRightarrow{}",
         u"\u21D0": r"\Leftarrow{}",
-        u"\u21D1": "\\uparrow{}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u21D1": "\\uparrow{}",
         u"\u21D2": r"\Rightarrow{}",
         u"\u21D3": r"\Downarrow{}",
         u"\u21D4": r"\Leftrightarrow{}",
-        u"\u21D5": "\\updownarrow{}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u21D5": "\\updownarrow{}",
         u"\u21DA": r"\Lleftarrow{}",
         u"\u21DB": r"\Rrightarrow{}",
         u"\u21DD": r"\rightsquigarrow{}",
@@ -1069,7 +1122,8 @@ def unicode_to_latex(text):
         u"\u2289": r"\not\supseteq{}",
         u"\u228A": r"\subsetneq{}",
         u"\u228B": r"\supsetneq{}",
-        u"\u228E": "\\uplus{}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u228E": "\\uplus{}",
         u"\u228F": r"\sqsubset{}",
         u"\u2290": r"\sqsupset{}",
         u"\u2291": r"\sqsubseteq{}",
@@ -1154,7 +1208,8 @@ def unicode_to_latex(text):
         u"\u22ED": r"\ntrianglerighteq{}",
         u"\u22EE": r"\vdots{}",
         u"\u22EF": r"\cdots{}",
-        u"\u22F0": "\\upslopeellipsis{}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u22F0": "\\upslopeellipsis{}",
         u"\u22F1": r"\downslopeellipsis{}",
         u"\u2305": r"\barwedge{}",
         u"\u2306": r"\perspcorrespond{}",
@@ -1163,9 +1218,12 @@ def unicode_to_latex(text):
         u"\u230A": r"\lfloor{}",
         u"\u230B": r"\rfloor{}",
         u"\u2315": r"\recorder{}",
-        u"\u2316": r'\mathchar"2208', # note single-quoted string
-        u"\u231C": "\\ulcorner{}", # note non-raw string (\u confuses Python)
-        u"\u231D": "\\urcorner{}", # note non-raw string (\u confuses Python)
+        # note single-quoted string
+        u"\u2316": r'\mathchar"2208',
+        # note non-raw string (\u confuses Python)
+        u"\u231C": "\\ulcorner{}",
+        # note non-raw string (\u confuses Python)
+        u"\u231D": "\\urcorner{}",
         u"\u231E": r"\llcorner{}",
         u"\u231F": r"\lrcorner{}",
         u"\u2322": r"\frown{}",
@@ -1233,7 +1291,8 @@ def unicode_to_latex(text):
         u"\u2642": r"\male{}",
         u"\u2643": r"\jupiter{}",
         u"\u2644": r"\saturn{}",
-        u"\u2645": "\\uranus{}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u2645": "\\uranus{}",
         u"\u2646": r"\neptune{}",
         u"\u2647": r"\pluto{}",
         u"\u2648": r"\aries{}",
@@ -1427,7 +1486,8 @@ def unicode_to_latex(text):
         u"\u27FC": r"\longmapsto{}",
         u"\u27FF": r"\sim\joinrel\leadsto",
         u"\u2905": r"\ElsevierGlyph{E212}",
-        u"\u2912": "\\UpArrowBar{}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u2912": "\\UpArrowBar{}",
         u"\u2913": r"\DownArrowBar{}",
         u"\u2923": r"\ElsevierGlyph{E20C}",
         u"\u2924": r"\ElsevierGlyph{E20D}",
@@ -1465,7 +1525,8 @@ def unicode_to_latex(text):
         u"\u295F": r"\DownRightTeeVector{}",
         u"\u2960": r"\LeftUpTeeVector{}",
         u"\u2961": r"\LeftDownTeeVector{}",
-        u"\u296E": "\\UpEquilibrium{}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\u296E": "\\UpEquilibrium{}",
         u"\u296F": r"\ReverseUpEquilibrium{}",
         u"\u2970": r"\RoundImplies{}",
         u"\u297C": r"\ElsevierGlyph{E214}",
@@ -2225,7 +2286,8 @@ def unicode_to_latex(text):
         u"\uD6B9": r"\mathbf{\vartheta}",
         u"\uD6BA": r"\mathbf{\Sigma}",
         u"\uD6BB": r"\mathbf{\Tau}",
-        u"\uD6BC": "\\mathbf{\\Upsilon}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\uD6BC": "\\mathbf{\\Upsilon}",
         u"\uD6BD": r"\mathbf{\Phi}",
         u"\uD6BE": r"\mathbf{\Chi}",
         u"\uD6BF": r"\mathbf{\Psi}",
@@ -2248,7 +2310,8 @@ def unicode_to_latex(text):
         u"\uD6D3": r"\mathbf{\varsigma}",
         u"\uD6D4": r"\mathbf{\Sigma}",
         u"\uD6D5": r"\mathbf{\Tau}",
-        u"\uD6D6": "\\mathbf{\\Upsilon}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\uD6D6": "\\mathbf{\\Upsilon}",
         u"\uD6D7": r"\mathbf{\Phi}",
         u"\uD6D8": r"\mathbf{\Chi}",
         u"\uD6D9": r"\mathbf{\Psi}",
@@ -2277,7 +2340,8 @@ def unicode_to_latex(text):
         u"\uD6F3": r"\mathsl{\vartheta}",
         u"\uD6F4": r"\mathsl{\Sigma}",
         u"\uD6F5": r"\mathsl{\Tau}",
-        u"\uD6F6": "\mathsl{\\Upsilon}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\uD6F6": "\mathsl{\\Upsilon}",
         u"\uD6F7": r"\mathsl{\Phi}",
         u"\uD6F8": r"\mathsl{\Chi}",
         u"\uD6F9": r"\mathsl{\Psi}",
@@ -2300,7 +2364,8 @@ def unicode_to_latex(text):
         u"\uD70D": r"\mathsl{\varsigma}",
         u"\uD70E": r"\mathsl{\Sigma}",
         u"\uD70F": r"\mathsl{\Tau}",
-        u"\uD710": "\\mathsl{\\Upsilon}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\uD710": "\\mathsl{\\Upsilon}",
         u"\uD711": r"\mathsl{\Phi}",
         u"\uD712": r"\mathsl{\Chi}",
         u"\uD713": r"\mathsl{\Psi}",
@@ -2329,7 +2394,8 @@ def unicode_to_latex(text):
         u"\uD72D": r"\mathbit{O}",
         u"\uD72E": r"\mathbit{\Sigma}",
         u"\uD72F": r"\mathbit{\Tau}",
-        u"\uD730": "\\mathbit{\\Upsilon}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\uD730": "\\mathbit{\\Upsilon}",
         u"\uD731": r"\mathbit{\Phi}",
         u"\uD732": r"\mathbit{\Chi}",
         u"\uD733": r"\mathbit{\Psi}",
@@ -2352,7 +2418,8 @@ def unicode_to_latex(text):
         u"\uD747": r"\mathbit{\varsigma}",
         u"\uD748": r"\mathbit{\Sigma}",
         u"\uD749": r"\mathbit{\Tau}",
-        u"\uD74A": "\\mathbit{\\Upsilon}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\uD74A": "\\mathbit{\\Upsilon}",
         u"\uD74B": r"\mathbit{\Phi}",
         u"\uD74C": r"\mathbit{\Chi}",
         u"\uD74D": r"\mathbit{\Psi}",
@@ -2381,7 +2448,8 @@ def unicode_to_latex(text):
         u"\uD767": r"\mathsfbf{\vartheta}",
         u"\uD768": r"\mathsfbf{\Sigma}",
         u"\uD769": r"\mathsfbf{\Tau}",
-        u"\uD76A": "\\mathsfbf{\\Upsilon}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\uD76A": "\\mathsfbf{\\Upsilon}",
         u"\uD76B": r"\mathsfbf{\Phi}",
         u"\uD76C": r"\mathsfbf{\Chi}",
         u"\uD76D": r"\mathsfbf{\Psi}",
@@ -2404,7 +2472,8 @@ def unicode_to_latex(text):
         u"\uD781": r"\mathsfbf{\varsigma}",
         u"\uD782": r"\mathsfbf{\Sigma}",
         u"\uD783": r"\mathsfbf{\Tau}",
-        u"\uD784": "\\mathsfbf{\\Upsilon}",  # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\uD784": "\\mathsfbf{\\Upsilon}",
         u"\uD785": r"\mathsfbf{\Phi}",
         u"\uD786": r"\mathsfbf{\Chi}",
         u"\uD787": r"\mathsfbf{\Psi}",
@@ -2433,7 +2502,8 @@ def unicode_to_latex(text):
         u"\uD7A1": r"\mathsfbfsl{\vartheta}",
         u"\uD7A2": r"\mathsfbfsl{\Sigma}",
         u"\uD7A3": r"\mathsfbfsl{\Tau}",
-        u"\uD7A4": "\\mathsfbfsl{\\Upsilon}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\uD7A4": "\\mathsfbfsl{\\Upsilon}",
         u"\uD7A5": r"\mathsfbfsl{\Phi}",
         u"\uD7A6": r"\mathsfbfsl{\Chi}",
         u"\uD7A7": r"\mathsfbfsl{\Psi}",
@@ -2456,7 +2526,8 @@ def unicode_to_latex(text):
         u"\uD7BB": r"\mathsfbfsl{\varsigma}",
         u"\uD7BC": r"\mathsfbfsl{\Sigma}",
         u"\uD7BD": r"\mathsfbfsl{\Tau}",
-        u"\uD7BE": "\\mathsfbfsl{\\Upsilon}", # note non-raw string (\u confuses Python)
+        # note non-raw string (\u confuses Python)
+        u"\uD7BE": "\\mathsfbfsl{\\Upsilon}",
         u"\uD7BF": r"\mathsfbfsl{\Phi}",
         u"\uD7C0": r"\mathsfbfsl{\Chi}",
         u"\uD7C1": r"\mathsfbfsl{\Psi}",
@@ -2555,6 +2626,4 @@ def unicode_to_latex(text):
         (ord(k), v)
         for k, v in unicode_to_latex_table_base.items()
     )
-    # unicode_to_latex_string = lambda u: u.translate (unicode_to_latex_table)
-    # unicode_to_latex = lambda u: u.translate (unicode_to_latex_table).encode ('ascii')
     return text.translate(unicode_to_latex_table)

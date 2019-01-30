@@ -1,29 +1,254 @@
-# -*-coding:utf-8-*-
-# adapted from
-# https://github.com/wong2/pick
-
-import curses
+import os
 import re
-import string
-
+from prompt_toolkit.formatted_text.html import HTML, html_escape
+from prompt_toolkit.application import (
+    Application as PromptToolkitApplication,
+)
+from prompt_toolkit.history import FileHistory
+from prompt_toolkit.buffer import Buffer
+from prompt_toolkit.enums import EditingMode
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.layout.screen import Point
+from prompt_toolkit.layout.containers import HSplit, Window
+from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
+from prompt_toolkit.layout.layout import Layout
+from prompt_toolkit.widgets import (
+    HorizontalLine
+)
+import papis.config
+import logging
+logger = logging.getLogger('pick')
 
 __all__ = ['Picker', 'pick']
 
-CTRL_P = 16
-CTRL_N = 14
-CTRL_H = 8
-CTRL_C = 3
-CTRL_D = 4
-CTRL_U = 21
-CTRL_W = 23
-KEYS_ENTER = [curses.KEY_ENTER, ord('\n'), ord('\r')]
-KEYS_UP = [curses.KEY_UP, CTRL_P]
-KEYS_DOWN = [curses.KEY_DOWN, CTRL_N]
-KEYS_ERASE = [curses.KEY_BACKSPACE, CTRL_H, 127]
-KEYS_QUIT = (CTRL_C, curses.KEY_EXIT, 27)
-KEYS_HALF_DOWN = [CTRL_D]
-KEYS_HALF_UP = [CTRL_U]
-KEYS_DEL_WORD = [CTRL_W]
+
+def create_keybindings(picker):
+    kb = KeyBindings()
+
+    @kb.add('c-q')
+    @kb.add('c-c')
+    def exit_(event):
+        picker.deselect()
+        event.app.exit()
+
+    @kb.add('c-n')
+    @kb.add('down')
+    def down_(event):
+        picker.options_list.move_down()
+        picker.refresh()
+
+    @kb.add('c-p')
+    @kb.add('up')
+    def up_(event):
+        picker.options_list.move_up()
+        picker.refresh()
+
+    @kb.add('end')
+    def up_(event):
+        picker.options_list.go_bottom()
+        picker.refresh()
+
+    @kb.add('c-g')
+    @kb.add('home')
+    def up_(event):
+        picker.options_list.go_top()
+        picker.refresh()
+
+    @kb.add('c-y')
+    @kb.add('c-up')
+    @kb.add('s-up')
+    def up_(event):
+        picker.scroll_up()
+        picker.refresh_prompt()
+
+    @kb.add('c-e')
+    @kb.add('c-down')
+    @kb.add('s-down')
+    def up_(event):
+        picker.scroll_down()
+        picker.refresh_prompt()
+
+    @kb.add('f1')
+    def help(event):
+        picker.options_list.content.text = """
+Bindings:
+
+Ctrl-e, Ctrl-down, Shift-down : Scroll Down
+Ctrl-y, Ctrl-up,   Shift-up   : Scroll up
+Ctrl-n, down                  : Next item
+Ctrl-p, up                    : Previous item
+Ctrl-q, Ctrl-c                : Quit
+Home                          : First item
+End                           : Last item
+
+"""
+        picker.refresh_prompt()
+
+    # @kb.add('/')
+    # def up_(event):
+        # picker.layout.focus(picker.search_buffer)
+
+    # @kb.add('c-f')
+    # def up_(event):
+        # if picker.layout.has_focus(picker.content_window):
+            # picker.layout.focus(picker.search_buffer)
+        # else:
+            # picker.layout.focus(picker.content_window)
+
+    @kb.add('enter')
+    def enter_(event):
+        event.app.exit()
+
+    return kb
+
+
+class OptionsListControl:
+
+    def __init__(
+            self,
+            options,
+            search_buffer,
+            default_index=0,
+            header_filter=None,
+            match_filter=None
+            ):
+
+        self.options = options
+        self.search_buffer = search_buffer
+        self.header_filter = header_filter
+        self.match_filter = match_filter
+        self.current_index = default_index
+        self.entries_left_offset = 2
+
+        self.process_options()
+
+        self.content = FormattedTextControl(
+            key_bindings=None,
+            #get_cursor_position=self.index_to_point,
+            get_cursor_position=lambda: self.cursor,
+            show_cursor=True,
+            text=''
+        )
+        self.cursor = Point(0,0)
+
+    def set_options(self, options):
+        self.options = options
+        self.process_options()
+
+    def index_to_point(self):
+        try:
+            index = self.indices.index(self.current_index)
+            line = sum(
+                self.options_headers_linecount[i]
+                for i in self.indices[0:index]
+            )
+            self.cursor = Point(0, line)
+        except Exception as e:
+            self.cursor = Point(0,0)
+
+    def move_up(self):
+        try:
+            index = self.indices.index(self.current_index)
+            index -= 1
+            if index < 0:
+                self.current_index = self.indices[-1]
+            else:
+                self.current_index = self.indices[index]
+        except ValueError:
+            pass
+
+    def move_down(self):
+        try:
+            index = self.indices.index(self.current_index)
+            index += 1
+            if index >= len(self.indices):
+                self.current_index = self.indices[0]
+            else:
+                self.current_index = self.indices[index]
+        except ValueError:
+            pass
+
+    def go_top(self):
+        if len(self.indices) > 0:
+            self.current_index = self.indices[0]
+
+    def go_bottom(self):
+        if len(self.indices) > 0:
+            self.current_index = self.indices[-1]
+
+    def get_search_regex(self):
+        cleaned_search = self.search_buffer.text.replace('(', '\\(')\
+                                       .replace(')', '\\)')\
+                                       .replace('+', '\\+')\
+                                       .replace('[', '\\[')\
+                                       .replace(']', '\\]')
+        return r".*"+re.sub(r"\s+", ".*", cleaned_search)
+
+    def update(self, *args):
+        self.filter_options()
+        self.refresh()
+
+    def filter_options(self, *args):
+        indices = []
+        regex = self.get_search_regex()
+        for index, option in enumerate(list(self.options)):
+            if re.match(regex, self.options_matchers[index], re.I):
+                indices += [index]
+        self.indices = indices
+        if len(self.indices) and self.current_index not in self.indices:
+            if self.current_index < min(self.indices):
+                self.current_index = self.indices[0]
+            elif self.current_index > max(self.indices):
+                self.current_index = max(self.indices)
+            else:
+                self.current_index = self.indices[0]
+
+    def get_selection(self):
+        if len(self.indices) and self.current_index is not None:
+            return self.options[self.current_index]
+
+    def refresh(self):
+        self.index_to_point()
+        i = self.current_index
+        oldtuple = self.options_headers[i][0]
+        self.options_headers[i][0] = (
+            oldtuple[0],
+            '>' + re.sub(r'^ ', '', oldtuple[1]),
+        )
+        self.content.text = sum(
+            [self.options_headers[i] for i in self.indices],
+            []
+        )
+        self.options_headers[i][0] = oldtuple
+
+    def process_options(self):
+        logger.debug('processing options')
+        self.options_headers_linecount = [
+            len(self.header_filter(o).split('\n'))
+            for o in self.options
+        ]
+        logger.debug('processing headers')
+        self.options_headers = []
+        for o in self.options:
+            prestring = re.sub(
+                r'^', ' ' * self.entries_left_offset,
+                re.sub(
+                    r'\n', '\n' + ' ' * self.entries_left_offset,
+                    self.header_filter(o)
+                )
+            ) + '\n'
+            try:
+                htmlobject = HTML(prestring).formatted_text
+            except:
+                logger.error(
+                    'Error processing html for \n {0}'.format(prestring)
+                )
+                htmlobject = HTML(html_escape(prestring)).formatted_text
+            self.options_headers += [htmlobject]
+        logger.debug('processing matchers')
+        self.options_matchers = [self.match_filter(o) for o in self.options]
+        self.indices = range(len(self.options))
+        logger.debug('options processed')
 
 
 class Picker(object):
@@ -43,192 +268,165 @@ class Picker(object):
             indicator='*',
             default_index=0,
             header_filter=lambda x: x,
-            body_filter=None,
             match_filter=lambda x: x
             ):
 
-        self.options = options
         self.title = title
         self.indicator = indicator
         self.search = ""
-        self.header_filter = header_filter
-        self.body_filter = body_filter
-        self.match_filter = match_filter
 
-        if default_index >= len(options):
-            raise ValueError(
-                'default_index should be less than the length of options'
+        search_buffer_history = FileHistory(
+            os.path.join('.', 'search_history')
+        )
+
+        self.search_buffer = Buffer(
+            history=search_buffer_history,
+            enable_history_search=True,
+            multiline=False
+        )
+
+        self.prompt_buffer = Buffer(multiline=False)
+
+
+        self.options_list = OptionsListControl(
+            options,
+            self.search_buffer,
+            default_index,
+            header_filter,
+            match_filter
+        )
+
+        self.search_buffer.on_text_changed += self.update
+
+        self.content_window = Window(
+            content=self.options_list.content,
+            height=None,
+            wrap_lines=False,
+            ignore_content_height=True,
+            always_hide_cursor=True,
+            allow_scroll_beyond_bottom=True,
+        )
+        root_container = HSplit([
+            Window(height=1, content=BufferControl(buffer=self.search_buffer)),
+            HorizontalLine(),
+            self.content_window,
+            Window(height=1, content=BufferControl(buffer=self.prompt_buffer)),
+        ])
+
+        self.layout = Layout(root_container)
+
+        self.application = self._create_application()
+        self.update()
+
+    def deselect(self):
+        self.options_list.current_index = None
+
+    def _create_application(self):
+        return PromptToolkitApplication(
+            input=None,
+            output=None,
+            editing_mode=EditingMode.EMACS
+            if papis.config.get('tui-editmode') == 'emacs'
+            else EditingMode.VI,
+            layout=self.layout,
+            key_bindings=create_keybindings(self),
+            include_default_pygments_style=False,
+            full_screen=True,
+            enable_page_navigation_bindings=True
+        )
+
+    def refresh_prompt(self):
+        self.prompt_echo(
+            "{0}/{1}  F1:help".format(
+                int(self.options_list.current_index) + 1,
+                len(self.options_list.options),
             )
+        )
 
-        self.index = default_index
-        self.custom_handlers = {}
+        # self.prompt_echo(
+            # "{0}/{1} ={2}-{3} +{4} -{5}  <{6},{7}>".format(
+                # int(self.options_list.current_index) + 1,
+                # len(self.options_list.options),
+                # self.displayed_lines[0] if self.displayed_lines is not None \
+                    # else '',
+                # self.displayed_lines[-1] if self.displayed_lines is not None \
+                    # else '',
+                # self.options_list.cursor,
+                # self.content_height,
+                # self.first_visible_line,
+                # self.last_visible_line,
+            # )
+        # )
 
-    def move_up(self):
-        self.index -= 1
-        if self.index < 0:
-            self.index = len(self.options) - 1
-
-    def move_down(self):
-        self.index += 1
-        if self.index >= len(self.options):
-            self.index = 0
-
-    def get_selected(self):
-        """return the current selected option
-        """
-        return self.get_filtered_options()[self.index]
-
-    def get_title_lines(self):
-        """Return the main row of the picker, which is normally the search and
-        the prompt text.
-        """
-        return [self.title+self.search]
-
-    def get_option_lines(self):
-        headers = []
-        index_found = False
-        last_index = -1
-        for index, option in enumerate(self.get_filtered_options()):
-            last_index += 1
-            if index == self.index:
-                index_found = True
-                prefix = self.indicator
+    def scroll_down(self):
+        lvl = self.last_visible_line
+        ll = self.content_height
+        if ll and lvl:
+            if lvl + 1 < ll:
+                new = lvl + 1
             else:
-                prefix = len(self.indicator) * ' '
-            line = '{0} {1}'.format(prefix, self.header_filter(option))
-            headers.append(line)
-        if not index_found:
-            self.index = last_index
-            if len(headers):
-                headers[-1] = "{0} {1}"\
-                        .format(self.indicator, headers[-1].strip(" "))
+                new = lvl
+            self.options_list.cursor = Point(0, new)
 
-        return headers
+    def scroll_up(self):
+        fvl = self.first_visible_line
+        if fvl:
+            if fvl >= 0:
+                new = fvl - 1
+            else:
+                new = 0
+            self.options_list.cursor = Point(0, new)
 
-    def get_search_regex(self):
-        """TODO: Docstring for get_search_regex.
-        :returns: TODO
+    def scroll_up(self):
+        dp = self.displayed_lines
+        if len(dp):
+            self.options_list.cursor = Point(0, dp[0] - 1)
 
-        """
-        cleaned_search = self.search
-        # Clean up ( and )
-        cleaned_search = cleaned_search.replace('(', '\\(')\
-                                       .replace(')', '\\)')\
-                                       .replace('+', '\\+')\
-                                       .replace('[', '\\[')\
-                                       .replace(']', '\\]')
-        return r".*"+re.sub(r"\s+", ".*", cleaned_search)
+    def refresh(self, *args):
+        self.options_list.refresh()
+        self.refresh_prompt()
 
-    def get_filtered_options(self):
-        """TODO: Docstring for get_filtered_options.
-        :returns: TODO
+    def update(self, *args):
+        self.options_list.update()
+        self.refresh_prompt()
 
-        """
-        new_options = []
-        regex = self.get_search_regex()
-        for option in self.options:
-            if re.match(regex, self.match_filter(option), re.I):
-                new_options += [option]
-        return new_options
+    @property
+    def screen_height(self):
+        return self.options_list.content.preferred_height(None, None, None)
 
-    def get_lines(self):
-        """TODO: Docstring for get_filtered_lines.
-        :returns: TODO
+    @property
+    def displayed_lines(self):
+        info = self.content_window.render_info
+        if info:
+            return info.displayed_lines
 
-        """
-        title_lines = self.get_title_lines()
-        option_lines = self.get_option_lines()
-        lines = title_lines + option_lines
-        current_line = self.index + len(title_lines) + 1
-        return lines, current_line
+    @property
+    def first_visible_line(self):
+        info = self.content_window.render_info
+        if info:
+            return info.first_visible_line()
 
-    def draw(self):
-        """draw the curses ui on the screen, handle scroll if needed"""
-        self.screen.clear()
+    @property
+    def last_visible_line(self):
+        info = self.content_window.render_info
+        if info:
+            return info.last_visible_line()
 
-        x, y = 1, 0  # start point
-        max_y, max_x = self.screen.getmaxyx()
-        max_rows = max_y - y  # the max rows we can draw
+    @property
+    def content_height(self):
+        info = self.content_window.render_info
+        if info:
+            return info.content_height
 
-        lines, current_line = self.get_lines()
+    def prompt_echo(self, text):
+        self.prompt_buffer.text = text
 
-        # calculate how many lines we should scroll, relative to the top
-        scroll_top = getattr(self, 'scroll_top', 0)
-        if current_line <= scroll_top:
-            scroll_top = 0
-        elif current_line - scroll_top > max_rows:
-            scroll_top = current_line - max_rows
-        self.scroll_top = scroll_top
-
-        lines_to_draw = lines[scroll_top:scroll_top+max_rows]
-
-        for line in lines_to_draw:
-            self.screen.addnstr(y, x, line, max_x-2)
-            y += 1
-
-        self.screen.refresh()
-
-    def editSearch(self, c):
-        """TODO: Docstring for editSearch.
-
-        :c: TODO
-        :returns: TODO
-
-        """
-        if c in KEYS_ERASE:
-            self.search = self.search[0:-1]
-        elif c in KEYS_DEL_WORD:
-            self.search = re.sub(r"\s*$", "", self.search)
-            self.search = re.sub(r"\s*\b[^ ]+$", "", self.search)
-            self.draw()
-        else:
-            self.search += chr(c)
-
-    def run_loop(self):
-        while True:
-            self.draw()
-            c = self.screen.getch()
-            if c in KEYS_UP:
-                self.move_up()
-            elif c in KEYS_DOWN:
-                self.move_down()
-            elif c in KEYS_ENTER:
-                return self.get_selected()
-            elif c in KEYS_QUIT:
-                curses.endwin()
-                return ""
-            elif c in KEYS_HALF_UP:
-                max_y, max_x = self.screen.getmaxyx()
-                new_index = self.index - int(max_y/4)
-                if new_index < 0:
-                    new_index = 0
-                self.index = new_index
-            elif c in KEYS_HALF_DOWN:
-                max_y, max_x = self.screen.getmaxyx()
-                new_index = self.index + int(max_y/4)
-                if new_index >= max_y:
-                    new_index = max_y
-                self.index = new_index
-            elif chr(c) in string.printable or c in KEYS_ERASE + KEYS_DEL_WORD:
-                self.editSearch(c)
-
-    def config_curses(self):
-        # use the default colors of the terminal
-        curses.use_default_colors()
-        # hide the cursor
-        curses.curs_set(0)
-
-    def _start(self, screen):
-        self.screen = screen
-        self.config_curses()
-        return self.run_loop()
-
-    def start(self):
-        if len(self.options) == 0:
+    def run(self):
+        if len(self.options_list.options) == 0:
             return ""
-        if len(self.options) == 1:
-            return self.options[0]
-        return curses.wrapper(self._start)
+        if len(self.options_list.options) == 1:
+            return self.options_list.options[0]
+        return self.application.run()
 
 
 def pick(
@@ -237,18 +435,23 @@ def pick(
         indicator='>',
         default_index=0,
         header_filter=lambda x: x,
-        body_filter=None,
         match_filter=lambda x: x
         ):
     """Construct and start a :class:`Picker <Picker>`.
     """
+
+    if len(options) == 0:
+        return ""
+    if len(options) == 1:
+        return options[0]
+
     picker = Picker(
                 options,
                 title,
                 indicator,
                 default_index,
                 header_filter,
-                body_filter,
                 match_filter
                 )
-    return picker.start()
+    picker.run()
+    return picker.options_list.get_selection()
