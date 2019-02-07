@@ -50,6 +50,7 @@ import papis.database
 import papis.isbnplus
 import papis.isbn
 import papis.crossref
+import papis.base
 import papis.api
 import papis.cli
 import click
@@ -98,6 +99,11 @@ def run(document, data=dict(), interactive=False, force=False):
     default=None
 )
 @click.option(
+    "--from-base",
+    help="Update info from Bielefeld Academic Search Engine",
+    default=None
+)
+@click.option(
     "--from-yaml",
     help="Update info from yaml file",
     default=None
@@ -141,6 +147,7 @@ def cli(
         interactive,
         force,
         from_crossref,
+        from_base,
         from_isbnplus,
         from_isbn,
         from_yaml,
@@ -181,15 +188,18 @@ def cli(
                 logger.info('Trying using the url {}'.format(document['url']))
                 from_url = document['url']
             if 'title' in document.keys() and not from_isbn:
-                logger.info(
-                    'Trying using the title {}'.format(document['title'])
-                )
                 from_isbn = '{d[title]} {d[author]}'.format(d=document)
                 from_isbnplus = from_isbn
+                from_base = from_isbn
+                logger.info(
+                    'Trying with `from_isbn`, `from_isbnplus` and `from_base` '
+                    'with the text "{0}"'.format(from_isbn)
+                )
             if from_crossref is None and from_doi is None:
                 from_crossref = True
 
         if from_crossref:
+            logger.info('Trying with crossref')
             if from_crossref is True:
                 from_crossref = ''
             try:
@@ -209,12 +219,13 @@ def cli(
             except Exception as e:
                 logger.error(e)
 
-        if from_isbnplus:
+        if from_base:
+            logger.info('Trying with base')
             try:
                 doc = papis.api.pick_doc(
                     [
                         papis.document.from_data(d)
-                        for d in papis.isbnplus.get_data(
+                        for d in papis.base.get_data(
                             query=from_isbnplus
                         )
                     ]
@@ -224,7 +235,25 @@ def cli(
             except urllib.error.HTTPError:
                 logger.error('urllib failed to download')
 
+        if from_isbnplus:
+            logger.info('Trying with isbnplus')
+            logger.warning('Isbnplus does not work... Not my fault')
+            # try:
+                # doc = papis.api.pick_doc(
+                    # [
+                        # papis.document.from_data(d)
+                        # for d in papis.isbnplus.get_data(
+                            # query=from_isbnplus
+                        # )
+                    # ]
+                # )
+                # if doc:
+                    # data.update(papis.document.to_dict(doc))
+            # except urllib.error.HTTPError:
+                # logger.error('urllib failed to download')
+
         if from_isbn:
+            logger.info('Trying with isbn')
             try:
                 doc = papis.api.pick_doc(
                     [
@@ -256,6 +285,7 @@ def cli(
                 pass
 
         if from_url:
+            logger.info('Trying url {0}'.format(from_url))
             try:
                 url_data = papis.downloaders.utils.get(from_url)
                 data.update(url_data["data"])

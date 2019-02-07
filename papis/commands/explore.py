@@ -314,6 +314,28 @@ def dissemin(ctx, query):
     logger.info('{} documents found'.format(len(docs)))
 
 
+@cli.command('base')
+@click.pass_context
+@click.help_option('--help', '-h')
+@click.option('--query', '-q', default=None)
+def base(ctx, query):
+    """
+    Look for documents on the BielefeldAcademicSearchEngine
+
+    Examples of its usage are
+
+    papis explore base -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
+
+    """
+    import papis.base
+    logger = logging.getLogger('explore:base')
+    logger.info('Looking up...')
+    data = papis.base.get_data(query=query)
+    docs = [papis.document.from_data(data=d) for d in data]
+    ctx.obj['documents'] += docs
+    logger.info('{} documents found'.format(len(docs)))
+
+
 @cli.command('lib')
 @click.pass_context
 @click.help_option('--help', '-h')
