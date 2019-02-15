@@ -10,7 +10,8 @@ python:
   - "3.6"
 
 script:
-  - pytest tests/
+  # for py3.3
+  - python -m pytest tests/
 
 install:
   - pip install setuptools
