@@ -87,6 +87,15 @@ or install it with ``python3``.
 Using the Makefile
 ^^^^^^^^^^^^^^^^^^
 
+Now you have to initialise the submodules, just type
+
+::
+
+  make submodules
+
+check the file `config.mk` for more information about the submodule
+initialization.
+
 If you want to install it globally, just hit
 
 ::
