@@ -10,7 +10,7 @@ python:
   - "3.6"
 
 script:
-  - python -m pytest papis tests --cov=papis
+  - pytest tests/ --cov=papis
 
 install:
   - pip install setuptools
@@ -18,7 +18,6 @@ install:
   - pip install -e .[develop]
   - pip install -e .[optional]
   - make submodules
-  - make install
 
 after_success:
   - coveralls
