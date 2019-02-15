@@ -205,8 +205,8 @@ def input(prompt, default="", bottom_toolbar=None, multiline=False,
     :rtype:  bool
 
     """
-    import papis.prompt_toolkit as prompt_toolkit
-    from prompt_toolkit.validation import Validator
+    import papis.prompt_toolkit
+    from papis.prompt_toolkit.validation import Validator
     if validator_function is not None:
         validator = Validator.from_callable(
             validator_function,
@@ -222,7 +222,7 @@ def input(prompt, default="", bottom_toolbar=None, multiline=False,
         ('', ': '),
     ]
 
-    result = prompt_toolkit.prompt(
+    result = papis.prompt_toolkit.prompt(
         fragments,
         validator=validator,
         multiline=multiline,
