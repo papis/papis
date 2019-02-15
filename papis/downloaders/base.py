@@ -92,12 +92,7 @@ class Downloader(object):
         if not url:
             return False
         res = self.session.get(url, cookies=self.cookies)
-        content_type = res.headers['Content-Type']
-        self.logger.debug('bibtex content type "{0}"'.format(content_type))
-        if not re.match('text/html', content_type):
-            self.bibtex_data = res.content.decode()
-        else:
-            self.logger.error('It seems no bibtex data could be retrieved')
+        self.bibtex_data = res.content.decode()
 
     def get_document_url(self):
         """It returns the urls that is to be access to download
@@ -148,8 +143,6 @@ class Downloader(object):
         if not url:
             return False
         res = self.session.get(url, cookies=self.cookies)
-        content_type = res.headers['Content-Type']
-        self.logger.debug('document content type "{0}"'.format(content_type))
         self.document_data = res.content
 
     def get_url(self):
