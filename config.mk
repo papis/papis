@@ -10,3 +10,12 @@ update-authors:
 		sed -e "s/\t/  /" | \
 		sed -e "s/^\s*//" > \
 		AUTHORS
+
+.PHONY: submodules
+
+submodules: papis/colorama/
+
+papis/colorama: submodules/colorama/
+	git submodule update -i
+	mkdir -p $@
+	cp -v submodules/colorama/colorama/* $@

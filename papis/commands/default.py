@@ -31,6 +31,7 @@ import papis
 import papis.api
 import papis.config
 import papis.commands
+import papis.colorama
 import logging
 import click
 import papis.cli
@@ -86,6 +87,12 @@ import papis.cli
     help="Set key value, e.g., "
          "--set info-name information.yaml  --set opentool evince",
 )
+@click.option(
+    "--nc", "--no-color", "no_color",
+    default=False,
+    is_flag=True,
+    help="Prevent the output from having color"
+)
 def run(
         verbose,
         config,
@@ -93,9 +100,26 @@ def run(
         log,
         pick_lib,
         clear_cache,
-        set_list
+        set_list,
+        no_color
         ):
-    log_format = '%(levelname)s:%(name)s:%(message)s'
+
+    if no_color:
+        # Turn off colorama (strip escape sequences from the output)
+        papis.colorama.init(strip=True)
+    else:
+        papis.colorama.init()
+
+    log_format = (
+        papis.colorama.Fore.YELLOW +
+        '%(levelname)s' +
+        ':' +
+        papis.colorama.Fore.GREEN +
+        '%(name)s' +
+        papis.colorama.Style.RESET_ALL +
+        ':' +
+        '%(message)s'
+    )
     if verbose:
         log = "DEBUG"
         log_format = '%(relativeCreated)d-'+log_format

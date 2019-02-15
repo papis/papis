@@ -127,6 +127,7 @@ setup(
         "papis.commands",
         "papis.database",
         "papis.downloaders",
+        "papis.colorama",
     ],
     entry_points=dict(
         console_scripts=[
