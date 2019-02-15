@@ -94,7 +94,7 @@ def run(document, opener=None, folder=False, mark=False):
             logger.debug("Getting document's marks")
             marks = document[papis.config.get("mark-key-name")]
             if marks:
-                logger.debug("Picking marks")
+                logger.info("Picking marks")
                 mark = papis.api.pick(
                     marks,
                     dict(
@@ -140,6 +140,7 @@ def run(document, opener=None, folder=False, mark=False):
 @click.option(
     "-d",
     "--dir",
+    "folder",
     help="Open directory",
     default=False,
     is_flag=True
@@ -156,7 +157,7 @@ def run(document, opener=None, folder=False, mark=False):
     help="Open mark",
     default=lambda: True if papis.config.get('open-mark') else False
 )
-def cli(query, tool, dir, all, mark):
+def cli(query, tool, folder, all, mark):
     """Open document from a given library"""
     if tool:
         papis.config.set("opentool", tool)
@@ -171,8 +172,4 @@ def cli(query, tool, dir, all, mark):
         documents = [d for d in documents if d]
 
     for document in documents:
-        run(
-            document,
-            folder=dir,
-            mark=mark
-        )
+        run(document, folder=folder, mark=mark)
