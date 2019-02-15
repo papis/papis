@@ -17,6 +17,7 @@ install:
   - pip install python-coveralls
   - pip install -e .[develop]
   - pip install -e .[optional]
+  - make submodules
   - make install
 
 after_success:
