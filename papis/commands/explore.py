@@ -440,7 +440,7 @@ def citations(ctx, query, max_citations, save, rmfile):
         papis explore citations 'einstein' export --yaml einstein.yaml
 
     """
-    from prompt_toolkit.shortcuts import ProgressBar
+    from papis.prompt_toolkit.shortcuts import ProgressBar
     import papis.crossref
     logger = logging.getLogger('explore:citations')
 
