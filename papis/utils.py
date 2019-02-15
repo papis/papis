@@ -205,7 +205,7 @@ def input(prompt, default="", bottom_toolbar=None, multiline=False,
     :rtype:  bool
 
     """
-    import prompt_toolkit
+    import papis.prompt_toolkit as prompt_toolkit
     from prompt_toolkit.validation import Validator
     if validator_function is not None:
         validator = Validator.from_callable(

@@ -21,11 +21,13 @@ for dep in main_dependencies:
         sys.exit(1)
 
 import glob
-from setuptools import setup
+from setuptools import setup, find_packages
 import papis
 
 with open('README.rst') as fd:
     long_description = fd.read()
+
+included_packages = ['papis'] + ['papis.' + p for p in find_packages('papis')]
 
 setup(
     name='papis',
@@ -46,13 +48,15 @@ setup(
         "PyYAML>=3.12",
         "chardet>=3.0.2",
         "beautifulsoup4>=4.4.1",
-        "prompt-toolkit>=2.0.0",
         "bibtexparser>=0.6.2",
         "python-slugify>=2.0.0",
         "pyparser>=1.0",
         "pylibgen>=1.3.0",
         "habanero>=0.6.0",
         "isbnlib>=3.9.1,<4.0.0",
+        # Prompt toolkit dependencies
+        'six>=1.9.0',
+        'wcwidth',
     ],
     python_requires='>=3',
     classifiers=[
@@ -122,13 +126,7 @@ setup(
         ]),
 
     ],
-    packages=[
-        "papis",
-        "papis.commands",
-        "papis.database",
-        "papis.downloaders",
-        "papis.colorama",
-    ],
+    packages=included_packages, 
     entry_points=dict(
         console_scripts=[
             'papis=papis.main:main'

@@ -13,9 +13,16 @@ update-authors:
 
 .PHONY: submodules
 
-submodules: papis/colorama/
+submodules: papis/colorama/ papis/prompt_toolkit
 
 papis/colorama: submodules/colorama/
-	git submodule update -i
+	git submodule update -i $<
 	mkdir -p $@
 	cp -v submodules/colorama/colorama/* $@
+
+papis/prompt_toolkit: submodules/prompt-toolkit/
+	git submodule update -i $<
+	mkdir -p $@
+	cp -rv submodules/prompt-toolkit/prompt_toolkit/* $@
+	sed -i "s/from prompt_toolkit/from papis.prompt_toolkit/g" \
+		$$(find $@ -name '*.py')

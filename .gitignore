@@ -1,4 +1,5 @@
 papis/colorama/
+papis/prompt_toolkit/
 
 doc/build/
 #Vim swap files
