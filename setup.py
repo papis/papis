@@ -39,18 +39,18 @@ setup(
     license=papis.__license__,
     url='https://github.com/papis/papis',
     install_requires=[
-        "click>=7.0.0",
+        "click>=7.0.0", # TODO: Can be added as a submodule
         "requests>=2.11.1",
-        "filetype>=1.0.1",
-        "pyparsing>=2.2.0",
+        "filetype>=1.0.1", # TODO: Can be added as a submodule
+        "pyparsing>=2.2.0", # TODO: Can be added as a submodule (one file)
         "configparser>=3.0.0",
-        "arxiv2bib>=1.0.7",
+        "arxiv2bib>=1.0.7", # TODO: Can be added as a submodule
         "PyYAML>=3.12",
         "chardet>=3.0.2",
         "beautifulsoup4>=4.4.1",
         "bibtexparser>=0.6.2",
-        "python-slugify>=2.0.0",
-        "pyparser>=1.0",
+        "python-slugify>=2.0.0", # TODO: Can be added as a submodule with
+                                 # Unidecode as a requirement
         "pylibgen>=1.3.0",
         "habanero>=0.6.0",
         "isbnlib>=3.9.1,<4.0.0",
@@ -96,12 +96,11 @@ setup(
                 'and bibliography manager',
     long_description=long_description,
     keywords=[
-        'document',
-        'books',
-        'bibtex',
-        'management',
-        'cli',
-        'biliography'
+        'document', 'crossref', 'libgen', 'scihub', 'physics', 'mathematics',
+        'books', 'papers', 'science', 'research',
+        'bibtex', 'latex', 'command-line', 'tui', 'biblatex', 'pubmed', 'ieee',
+        'reference manager', 'mendeley', 'zotero', 'elsevier',
+        'cli', 'biliography', 'datasheets'
     ],
     package_data=dict(
         papis=[
