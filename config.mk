@@ -18,7 +18,7 @@ submodules: papis/colorama/ papis/prompt_toolkit
 papis/colorama: submodules/colorama/
 	git submodule update -i $<
 	mkdir -p $@
-	cp -v submodules/colorama/colorama/* $@
+	cp -v submodules/colorama/colorama/*.py $@
 
 papis/prompt_toolkit: submodules/prompt-toolkit/
 	git submodule update -i $<
