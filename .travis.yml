@@ -10,12 +10,11 @@ python:
   - "3.6"
 
 script:
-  # for py3.3
-  - python -m pytest tests/
+  - python -m pytest tests/ --cov=papis
 
 install:
   - pip install setuptools
-  #- pip install python-coveralls
+  - pip install python-coveralls
   - pip install -e .[develop]
   - pip install -e .[optional]
   - make submodules

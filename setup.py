@@ -86,7 +86,7 @@ setup(
             'sphinx-click',
             'sphinx_rtd_theme',
             'pytest',
-            #'pytest-cov',
+            'pytest-cov==2.5.0',
         ]
     ),
     description='Powerful and highly extensible command-line based document '
