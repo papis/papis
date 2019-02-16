@@ -18,7 +18,12 @@ submodules: \
 	papis/deps/prompt_toolkit \
 	papis/deps/click \
 	papis/deps/filetype \
+	papis/deps/arxiv2bib.py \
 
+
+papis/deps/arxiv2bib.py: submodules/arxiv2bib
+	git submodule update -i $<
+	cp -v submodules/arxiv2bib/arxiv2bib.py $@
 
 papis/deps/filetype: submodules/filetype.py
 	git submodule init $<
