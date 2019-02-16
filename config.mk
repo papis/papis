@@ -17,19 +17,25 @@ submodules: \
 	papis/colorama \
 	papis/prompt_toolkit \
 	papis/deps/click \
+	papis/deps/filetype \
 
 
-papis/colorama: submodules/colorama/
+papis/deps/filetype: submodules/filetype.py
+	git submodule update -i $<
+	mkdir -p $@
+	cp -rv submodules/filetype.py/filetype/* $@
+
+papis/colorama: submodules/colorama
 	git submodule update -i $<
 	mkdir -p $@
 	cp -v submodules/colorama/colorama/*.py $@
 
-papis/deps/click: submodules/click/
+papis/deps/click: submodules/click
 	git submodule update -i $<
 	mkdir -p $@
 	cp -v submodules/click/click/*.py $@
 
-papis/prompt_toolkit: submodules/prompt-toolkit/
+papis/prompt_toolkit: submodules/prompt-toolkit
 	git submodule update -i $<
 	mkdir -p $@
 	cp -rv submodules/prompt-toolkit/prompt_toolkit/* $@

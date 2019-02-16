@@ -40,7 +40,6 @@ setup(
     url='https://github.com/papis/papis',
     install_requires=[
         "requests>=2.11.1",
-        "filetype>=1.0.1", # TODO: Can be added as a submodule
         "pyparsing>=2.2.0", # TODO: Can be added as a submodule (one file)
         "configparser>=3.0.0",
         "arxiv2bib>=1.0.7", # TODO: Can be added as a submodule
