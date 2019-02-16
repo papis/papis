@@ -248,9 +248,9 @@ def clean_document_name(doc_path):
     >>> clean_document_name('/ashfd/df/  #$%@#$ }{_+"[ ]hello öworld--- .pdf')
     'hello-oworld-.pdf'
     """
-    from slugify import slugify
+    import papis.deps.slugify as slugify
     regex_pattern = r'[^a-z0-9.]+'
-    return slugify(
+    return slugify.slugify(
         os.path.basename(doc_path),
         word_boundary=True,
         regex_pattern=regex_pattern

@@ -13,3 +13,6 @@
 [submodule "submodules/arxiv2bib"]
 	path = submodules/arxiv2bib
 	url = https://github.com/papis/arxiv2bib
+[submodule "submodules/python-slugify"]
+	path = submodules/python-slugify
+	url = https://github.com/papis/python-slugify
