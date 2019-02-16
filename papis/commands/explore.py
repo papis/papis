@@ -92,7 +92,7 @@ import papis.document
 import papis.config
 import papis.bibtex
 import papis.cli
-import click
+import papis.deps.click as click
 import logging
 import papis.commands.add
 import papis.commands.export

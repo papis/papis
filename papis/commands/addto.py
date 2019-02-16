@@ -27,7 +27,7 @@ import papis.config
 import papis.commands.add
 import logging
 import papis.cli
-import click
+import papis.deps.click as click
 
 
 def run(document, filepaths):

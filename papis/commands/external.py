@@ -3,7 +3,7 @@ import re
 import subprocess
 import papis.config
 import papis.commands
-import click
+import papis.deps.click as click
 import logging
 
 

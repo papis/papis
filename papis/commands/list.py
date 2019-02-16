@@ -75,7 +75,7 @@ import papis.config
 import papis.database
 import papis.downloaders.utils
 import papis.cli
-import click
+import papis.deps.click as click
 
 logger = logging.getLogger('list')
 

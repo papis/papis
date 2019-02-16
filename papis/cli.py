@@ -1,5 +1,4 @@
-import click
-import click.decorators
+import papis.deps.click as click
 import os
 import papis.config
 import glob

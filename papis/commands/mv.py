@@ -15,7 +15,7 @@ import subprocess
 import logging
 import papis.cli
 import papis.api
-import click
+import papis.deps.click as click
 
 
 def get_dirs(main):

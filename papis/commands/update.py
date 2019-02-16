@@ -53,7 +53,7 @@ import papis.crossref
 import papis.base
 import papis.api
 import papis.cli
-import click
+import papis.deps.click as click
 import yaml
 
 

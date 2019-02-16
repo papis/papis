@@ -4,3 +4,6 @@
 [submodule "submodules/prompt-toolkit"]
 	path = submodules/prompt-toolkit
 	url = https://github.com/prompt-toolkit/python-prompt-toolkit
+[submodule "submodules/click"]
+	path = submodules/click
+	url = https://github.com/papis/click

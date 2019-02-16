@@ -11,7 +11,7 @@ import papis.api
 import papis.utils
 import subprocess
 import logging
-import click
+import papis.deps.click as click
 import papis.cli
 import papis.database
 

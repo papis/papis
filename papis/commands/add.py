@@ -89,7 +89,7 @@ import papis.bibtex
 import papis.document
 import papis.downloaders.utils
 import papis.cli
-import click
+import papis.deps.click as click
 import builtins
 
 logger = logging.getLogger('add')

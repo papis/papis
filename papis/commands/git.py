@@ -24,7 +24,7 @@ import papis.commands
 import papis.commands.run
 import papis.config
 import logging
-import click
+import papis.deps.click as click
 
 logger = logging.getLogger('git')
 
