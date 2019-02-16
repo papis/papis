@@ -31,7 +31,7 @@ import papis
 import papis.api
 import papis.config
 import papis.commands
-import papis.colorama
+import papis.deps.colorama as colorama
 import logging
 import papis.deps.click as click
 import papis.cli
@@ -106,17 +106,17 @@ def run(
 
     if no_color:
         # Turn off colorama (strip escape sequences from the output)
-        papis.colorama.init(strip=True)
+        colorama.init(strip=True)
     else:
-        papis.colorama.init()
+        colorama.init()
 
     log_format = (
-        papis.colorama.Fore.YELLOW +
+        colorama.Fore.YELLOW +
         '%(levelname)s' +
         ':' +
-        papis.colorama.Fore.GREEN +
+        colorama.Fore.GREEN +
         '%(name)s' +
-        papis.colorama.Style.RESET_ALL +
+        colorama.Style.RESET_ALL +
         ':' +
         '%(message)s'
     )

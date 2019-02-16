@@ -14,8 +14,8 @@ update-authors:
 .PHONY: submodules
 
 submodules: \
-	papis/colorama \
-	papis/prompt_toolkit \
+	papis/deps/colorama \
+	papis/deps/prompt_toolkit \
 	papis/deps/click \
 	papis/deps/filetype \
 
@@ -25,7 +25,7 @@ papis/deps/filetype: submodules/filetype.py
 	mkdir -p $@
 	cp -rv submodules/filetype.py/filetype/* $@
 
-papis/colorama: submodules/colorama
+papis/deps/colorama: submodules/colorama
 	git submodule update -i $<
 	mkdir -p $@
 	cp -v submodules/colorama/colorama/*.py $@
