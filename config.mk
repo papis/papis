@@ -35,9 +35,9 @@ papis/deps/click: submodules/click
 	mkdir -p $@
 	cp -v submodules/click/click/*.py $@
 
-papis/prompt_toolkit: submodules/prompt-toolkit
+papis/deps/prompt_toolkit: submodules/prompt-toolkit
 	git submodule update -i $<
 	mkdir -p $@
 	cp -rv submodules/prompt-toolkit/prompt_toolkit/* $@
-	sed -i "s/from prompt_toolkit/from papis.prompt_toolkit/g" \
+	sed -i "s/from prompt_toolkit/from papis.deps.prompt_toolkit/g" \
 		$$(find $@ -name '*.py')
