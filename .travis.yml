@@ -21,3 +21,15 @@ install:
 
 after_success:
   - coveralls
+  - python setup.py sdist
+
+deploy:
+  provider: releases
+  api_key:
+    secure: Qj5/MFmlanG5C3iaq5y26tfsoVZqiQrjXQ389Ca8FNy4UCKvaxkcjRQOG3Uuv1QTnsMSnuOsCRFXVqa2dc9bHY7QM/yZk/Co3vA4JdGcLOaUVa3xedMp4H0ZlUWj4jWvPFGczxkhW+8PrMHqAKj8B3dPcqyl8jsXIwB/xuUWzDkExhUz3JAOvU8SK1GTKunMnfG57lgtt7KIF+X5mwt+RMO+GqY/6YT4jqNtl7tb/4vtK/c0YOkXbJrKr1JOMFEq0tYheHJG8Dz0VdbqTo0jnCVLjMoHOjYpkipgHBtA1xinJHbrYnDWEJ1kTPaJ0RtNOMEwpp/c7MnZLmclMrKn0mIv0jmZfPh+KtzwYHHUS8PRv1KUqP5O/2egiEW28NtGcC0PJuc4c7BtrXbLSEYUVc7p8AdREhtCoca2nm/AlbhZXntw4driM7auyIb7IVq+8yHJpUrpqeKyK9ReCO+Y+WS7k42IO4zGdPCqbFIORzjQPeuFiBMo1em92oSoo3jttK3V/bvTcowe3Jvu74T6fdVBZd8ttdbXmi87rrISLUax9kGbYjA/ChyIqDx8HtR512dUmZ2+l5VNS0eZyTdED78WZYt8QZzAuhIMcLv/b67OsTkIcCS4jsmHpAUaUYUR5twesQkrDH2865lmtfgPrvNaqw2CZgikcOA31oNuA6E=
+  file:
+  - dist/*
+  - CHANGELOG.md
+  skip_cleanup: true
+  on:
+    repo: papis/papis
