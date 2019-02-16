@@ -13,7 +13,7 @@ class TestCli(unittest.TestCase):
         tests.setup_test_library()
 
     def setUp(self):
-        from click.testing import CliRunner
+        from papis.deps.click.testing import CliRunner
         self.runner = CliRunner()
         self.assertTrue(papis.config.get_lib() == tests.get_test_lib())
 
