@@ -21,7 +21,8 @@ submodules: \
 
 
 papis/deps/filetype: submodules/filetype.py
-	git submodule update -i $<
+	git submodule init $<
+	git submodule update $<
 	mkdir -p $@
 	cp -rv submodules/filetype.py/filetype/* $@
 
