@@ -107,13 +107,14 @@ setup(
 
         ("share/doc/papis", [
             "README.rst",
+            "CHANGELOG.md",
             "AUTHORS",
             "LICENSE.txt",
         ]),
 
-        # ("etc/bash_completion.d/", [
-            # "scripts/shell_completion/build/bash/papis",
-        # ]),
+        ("etc/bash_completion.d/", [
+            "scripts/shell_completion/click/papis.sh",
+        ]),
 
         ("share/man/man1", glob.glob("doc/build/man/*")),
 
