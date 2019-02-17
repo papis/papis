@@ -28,13 +28,14 @@ added into the main source and is installed with it.
 - Fix help string in commands
 - `papis export -o` now appends and does not overwrite
 - Fix existing paths in command `addto`
-- Add @papis.cli.bypass decorator for scripts
-- Remove xeditor config parameter
+- Add `@papis.cli.bypass` decorator for scripts
+- Remove `xeditor` config parameter
 - Add external picker in api
 
 - Erase all guis from papis main repository, they should be used in external
   scripts or projects, [docs](https://papis.readthedocs.io/en/latest/gui.html).
 
 - Fix downloader testing framework.
-- Add downloader for `frontiersin.org`
-- Add downloader for `hal.fr`
+- Add downloader for:
+  - `frontiersin.org`
+  - `hal.fr`
