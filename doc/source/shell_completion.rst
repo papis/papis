@@ -18,4 +18,17 @@ following line to your ``~/.bashrc`` file
   source /usr/local/etc/bash_completion.d/papis
 
 or get the bash script from
-`here <https://raw.githubusercontent.com/alejandrogallo/papis/master/scripts/shell_completion/build/bash/papis/>`_.
+`here <https://raw.githubusercontent.com/alejandrogallo/papis/master/scripts/shell_completion/click/papis.sh/>`_.
+
+
+Zsh
+---
+
+There is also a way for ``zsh`` users to autocomplete. Either downloading the
+script
+`here <https://raw.githubusercontent.com/alejandrogallo/papis/master/scripts/shell_completion/click/papis.zsh/>`_.
+or adding the following line int the ``.zshrc`` configuration file
+
+::
+
+  eval "$(_PAPIS_COMPLETE=source_zsh papis)"
