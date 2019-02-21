@@ -1,21 +1,21 @@
 import os
 import re
-from papis.deps.prompt_toolkit.formatted_text.html import HTML, html_escape
-from papis.deps.prompt_toolkit.application import (
+from prompt_toolkit.formatted_text.html import HTML, html_escape
+from prompt_toolkit.application import (
     Application as PromptToolkitApplication,
 )
-from papis.deps.prompt_toolkit.history import FileHistory
-from papis.deps.prompt_toolkit.buffer import Buffer
-from papis.deps.prompt_toolkit.enums import EditingMode
-from papis.deps.prompt_toolkit.key_binding import KeyBindings
-from papis.deps.prompt_toolkit.layout.screen import Point
-from papis.deps.prompt_toolkit.layout.containers import HSplit, Window
-from papis.deps.prompt_toolkit.layout.controls import (
+from prompt_toolkit.history import FileHistory
+from prompt_toolkit.buffer import Buffer
+from prompt_toolkit.enums import EditingMode
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.layout.screen import Point
+from prompt_toolkit.layout.containers import HSplit, Window
+from prompt_toolkit.layout.controls import (
     BufferControl,
     FormattedTextControl
 )
-from papis.deps.prompt_toolkit.layout.layout import Layout
-from papis.deps.prompt_toolkit.widgets import (
+from prompt_toolkit.layout.layout import Layout
+from prompt_toolkit.widgets import (
     HorizontalLine
 )
 import papis.config

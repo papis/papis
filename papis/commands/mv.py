@@ -55,8 +55,8 @@ def run(document, new_folder_path, git=False):
 def cli(query, git):
     """Move a document into some other path"""
     # Leave this imports here for performance
-    import papis.deps.prompt_toolkit
-    import papis.deps.prompt_toolkit.completion
+    import prompt_toolkit
+    import prompt_toolkit.completion
 
     logger = logging.getLogger('cli:mv')
 
@@ -70,14 +70,14 @@ def cli(query, git):
 
     directories = get_dirs(lib_dir)
 
-    completer = papis.deps.prompt_toolkit.completion.WordCompleter(
+    completer = prompt_toolkit.completion.WordCompleter(
         directories
     )
 
     try:
         new_folder = os.path.join(
             lib_dir,
-            papis.deps.prompt_toolkit.prompt(
+            prompt_toolkit.prompt(
                 "Enter directory: (Tab completion enabled)\n"
                 ">  ",
                 completer=completer,
