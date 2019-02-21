@@ -117,9 +117,8 @@ def parse_query(query_string):
     logger = logging.getLogger('query_parser')
     logger.debug('Parsing search')
 
-    papis_key = pyparsing.Word(pyparsing.alphanums + '-._')
+    papis_key = pyparsing.Word(pyparsing.alphanums + '-._/')
 
-    print('asdf')
     papis_value = pyparsing.QuotedString(
         quoteChar='"', escChar='\\', escQuote='\\'
     ) ^ pyparsing.QuotedString(
