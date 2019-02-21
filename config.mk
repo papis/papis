@@ -17,7 +17,6 @@ submodules: \
 	papis/deps/colorama \
 	papis/deps/prompt_toolkit \
 	papis/deps/click \
-	papis/deps/filetype \
 	papis/deps/arxiv2bib.py \
 	papis/deps/slugify \
 
@@ -31,18 +30,12 @@ papis/deps/arxiv2bib.py: submodules/arxiv2bib
 	git submodule update -i $<
 	cp -v submodules/arxiv2bib/arxiv2bib.py $@
 
-papis/deps/filetype: submodules/filetype.py
-	git submodule init $<
-	git submodule update $<
-	mkdir -p $@
-	cp -rv submodules/filetype.py/filetype/* $@
-
-papis/deps/colorama: submodules/colorama
+papis/deps/colorama: submodules/colorama/
 	git submodule update -i $<
 	mkdir -p $@
 	cp -v submodules/colorama/colorama/*.py $@
 
-papis/deps/click: submodules/click
+papis/deps/click: submodules/click/
 	git submodule update -i $<
 	mkdir -p $@
 	cp -v submodules/click/click/*.py $@

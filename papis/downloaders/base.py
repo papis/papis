@@ -4,7 +4,7 @@ import logging
 import requests
 import papis.config
 import papis.utils
-import papis.deps.filetype as filetype
+import filetype
 
 
 class Downloader(object):

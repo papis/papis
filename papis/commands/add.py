@@ -180,7 +180,7 @@ def get_document_extension(document_path):
     :returns: Extension (string)
 
     """
-    import papis.deps.filetype as filetype
+    import filetype
     filetype.guess(document_path)
     kind = filetype.guess(document_path)
     if kind is None:

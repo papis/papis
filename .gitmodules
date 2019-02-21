@@ -7,9 +7,6 @@
 [submodule "submodules/click"]
 	path = submodules/click
 	url = https://github.com/papis/click
-[submodule "submodules/filetype.py"]
-	path = submodules/filetype.py
-	url = https://github.com/papis/filetype.py
 [submodule "submodules/arxiv2bib"]
 	path = submodules/arxiv2bib
 	url = https://github.com/papis/arxiv2bib
