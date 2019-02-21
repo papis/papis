@@ -1,4 +1,4 @@
-import papis.deps.click as click
+import click
 import os
 import papis.config
 import glob

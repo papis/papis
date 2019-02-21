@@ -1,9 +1,0 @@
-[submodule "submodules/prompt-toolkit"]
-	path = submodules/prompt-toolkit
-	url = https://github.com/prompt-toolkit/python-prompt-toolkit
-[submodule "submodules/click"]
-	path = submodules/click
-	url = https://github.com/papis/click
-[submodule "submodules/python-slugify"]
-	path = submodules/python-slugify
-	url = https://github.com/papis/python-slugify

@@ -10,28 +10,3 @@ update-authors:
 		sed -e "s/\t/  /" | \
 		sed -e "s/^\s*//" > \
 		AUTHORS
-
-.PHONY: submodules
-
-submodules: \
-	papis/deps/prompt_toolkit \
-	papis/deps/click \
-	papis/deps/slugify \
-
-
-papis/deps/slugify: submodules/python-slugify
-	git submodule update -i $<
-	mkdir -p $@
-	cp -rv submodules/python-slugify/slugify/*.py $@
-
-papis/deps/click: submodules/click/
-	git submodule update -i $<
-	mkdir -p $@
-	cp -v submodules/click/click/*.py $@
-
-papis/deps/prompt_toolkit: submodules/prompt-toolkit
-	git submodule update -i $<
-	mkdir -p $@
-	cp -rv submodules/prompt-toolkit/prompt_toolkit/* $@
-	sed -i "s/from prompt_toolkit/from papis.deps.prompt_toolkit/g" \
-		$$(find $@ -name '*.py')

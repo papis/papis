@@ -34,7 +34,7 @@ import os
 import papis.config
 import papis.exceptions
 import logging
-import papis.deps.click as click
+import click
 
 logger = logging.getLogger('run')
 

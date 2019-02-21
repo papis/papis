@@ -33,7 +33,7 @@ import papis.config
 import papis.commands
 import colorama
 import logging
-import papis.deps.click as click
+import click
 import papis.cli
 
 

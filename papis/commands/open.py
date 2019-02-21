@@ -77,7 +77,7 @@ import papis.utils
 import papis.config
 import papis.cli
 import papis.database
-import papis.deps.click as click
+import click
 import logging
 
 

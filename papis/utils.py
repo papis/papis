@@ -205,8 +205,8 @@ def input(prompt, default="", bottom_toolbar=None, multiline=False,
     :rtype:  bool
 
     """
-    import papis.deps.prompt_toolkit
-    from papis.deps.prompt_toolkit.validation import Validator
+    import prompt_toolkit
+    from prompt_toolkit.validation import Validator
     if validator_function is not None:
         validator = Validator.from_callable(
             validator_function,
@@ -222,7 +222,7 @@ def input(prompt, default="", bottom_toolbar=None, multiline=False,
         ('', ': '),
     ]
 
-    result = papis.deps.prompt_toolkit.prompt(
+    result = prompt_toolkit.prompt(
         fragments,
         validator=validator,
         multiline=multiline,
@@ -248,7 +248,7 @@ def clean_document_name(doc_path):
     >>> clean_document_name('/ashfd/df/  #$%@#$ }{_+"[ ]hello öworld--- .pdf')
     'hello-oworld-.pdf'
     """
-    import papis.deps.slugify as slugify
+    import slugify
     regex_pattern = r'[^a-z0-9.]+'
     return slugify.slugify(
         os.path.basename(doc_path),

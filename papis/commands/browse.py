@@ -20,7 +20,7 @@ import papis.config
 from papis.api import status
 import papis.cli
 import papis.api
-import papis.deps.click as click
+import click
 import papis.database
 
 

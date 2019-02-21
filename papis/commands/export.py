@@ -50,7 +50,7 @@ import sys
 import shutil
 import papis.utils
 import papis.document
-import papis.deps.click as click
+import click
 import papis.cli
 import papis.api
 import papis.database

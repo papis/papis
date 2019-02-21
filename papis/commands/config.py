@@ -37,7 +37,7 @@ Cli
 """
 import papis.commands
 import logging
-import papis.deps.click as click
+import click
 
 
 def run(option_string):

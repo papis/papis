@@ -89,8 +89,9 @@ import papis.bibtex
 import papis.document
 import papis.downloaders.utils
 import papis.cli
-import papis.deps.click as click
+import click
 import builtins
+import colorama
 
 logger = logging.getLogger('add')
 

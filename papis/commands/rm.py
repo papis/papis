@@ -13,7 +13,7 @@ import papis.config
 import papis.document
 import papis.cli
 import papis.database
-import papis.deps.click as click
+import click
 
 
 def run(
