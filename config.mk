@@ -16,7 +16,6 @@ update-authors:
 submodules: \
 	papis/deps/prompt_toolkit \
 	papis/deps/click \
-	papis/deps/arxiv2bib.py \
 	papis/deps/slugify \
 
 
@@ -24,10 +23,6 @@ papis/deps/slugify: submodules/python-slugify
 	git submodule update -i $<
 	mkdir -p $@
 	cp -rv submodules/python-slugify/slugify/*.py $@
-
-papis/deps/arxiv2bib.py: submodules/arxiv2bib
-	git submodule update -i $<
-	cp -v submodules/arxiv2bib/arxiv2bib.py $@
 
 papis/deps/click: submodules/click/
 	git submodule update -i $<

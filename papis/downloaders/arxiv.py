@@ -1,7 +1,7 @@
 import re
 import os
 import papis.downloaders.base
-import papis.deps.arxiv2bib as arxiv2bib
+import arxiv2bib
 
 
 class Downloader(papis.downloaders.base.Downloader):

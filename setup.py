@@ -43,6 +43,7 @@ setup(
         "filetype>=1.0.1",
         "pyparsing>=2.2.0",
         "configparser>=3.0.0",
+        "arxiv2bib>=1.0.7", # TODO: Can be added as a submodule
         "PyYAML>=3.12",
         "chardet>=3.0.2",
         "beautifulsoup4>=4.4.1",
