@@ -371,11 +371,12 @@ def run(
         logger.info("Document not found in library")
     else:
         logger.warning(
-            '\n\n\n\n{0}\n\n\n\n'.format(papis.document.dump(found_document))
+            colorama.Fore.RED +
+            "DUPLICATION WARNING" +
+            colorama.Style.RESET_ALL
         )
-        logger.warning("DUPLICATION WARNING")
         logger.warning(
-            "The document above is in your library and it seems to match"
+            "The document beneath is in your library and it seems to match"
         )
         logger.warning(
             "the one that you're trying to add, "
@@ -384,6 +385,12 @@ def run(
         logger.warning(
             "(Hint) Use the update command if you just want to update"
             " the info."
+        )
+        papis.utils.text_area(
+            'The following document is already in your library',
+            papis.document.dump(found_document),
+            lexer_name='yaml',
+            height=10
         )
         confirm = True
 

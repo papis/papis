@@ -193,6 +193,85 @@ def confirm(prompt, yes=True, bottom_toolbar=None):
         return result not in 'Yy'
 
 
+def text_area(title, text, lexer_name="", height=10, full_screen=False):
+    from prompt_toolkit import Application
+    from prompt_toolkit.buffer import Buffer
+    from prompt_toolkit.layout.containers import HSplit, Window
+    from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
+    from prompt_toolkit.layout.layout import Layout
+    from prompt_toolkit.layout import Dimension
+    from prompt_toolkit.key_binding import KeyBindings
+    from prompt_toolkit.lexers import PygmentsLexer
+    from prompt_toolkit.formatted_text import HTML
+    from pygments.lexers import find_lexer_class_by_name
+    from pygments.lexers import PythonLexer
+
+    kb = KeyBindings()
+
+    @kb.add('q')
+    @kb.add('c-c')
+    @kb.add('c-q')
+    def exit_(event):
+        event.app.exit()
+
+    text_height = Dimension(min=0, max=height) if height is not None else None
+
+    pygment_lexer = find_lexer_class_by_name(lexer_name)
+    lexer = PygmentsLexer(pygment_lexer)
+    buffer1 = Buffer()
+    buffer1.text = text
+    text_window = Window(
+        height=text_height,
+        content=BufferControl(buffer=buffer1, lexer=lexer)
+    )
+
+    root_container = HSplit([
+        Window(
+            content=FormattedTextControl(
+                text=HTML(
+                    "<style bg='white' fg='black'>{0}</style>".format(title)
+                )
+            ),
+            always_hide_cursor=True
+        ),
+
+        text_window,
+
+        Window(
+            content=FormattedTextControl(
+                text=HTML("<style bg='white' fg='black'>Quit [q]</style>")
+            )
+        ),
+        ])
+
+    layout = Layout(root_container)
+
+    layout.focus(text_window)
+
+    app = Application(layout=layout, key_bindings=kb, full_screen=full_screen)
+    app.run() # You won't be able to Exit this app
+
+
+
+def yes_no_dialog(title, text):
+    from prompt_toolkit.formatted_text import HTML
+    from prompt_toolkit.shortcuts import yes_no_dialog
+    from prompt_toolkit.styles import Style
+
+    example_style = Style.from_dict({
+        'dialog': 'bg:#88ff88',
+        'dialog frame-label': 'bg:#ffffff #000000',
+        'dialog.body': 'bg:#000000 #00ff00',
+        'dialog shadow': 'bg:#00aa00',
+    })
+
+    return yes_no_dialog(
+        title=title,
+        text=text,
+        style=example_style
+    )
+
+
 def input(prompt, default="", bottom_toolbar=None, multiline=False, 
         validator_function=None, dirty_message=""):
     """Prompt user for input
