@@ -1,5 +1,3 @@
-papis/colorama/
-papis/prompt_toolkit/
 papis/deps/*
 
 doc/build/

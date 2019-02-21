@@ -1,6 +1,3 @@
-[submodule "submodules/colorama"]
-	path = submodules/colorama
-	url = https://github.com/tartley/colorama
 [submodule "submodules/prompt-toolkit"]
 	path = submodules/prompt-toolkit
 	url = https://github.com/prompt-toolkit/python-prompt-toolkit

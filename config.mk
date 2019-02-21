@@ -14,7 +14,6 @@ update-authors:
 .PHONY: submodules
 
 submodules: \
-	papis/deps/colorama \
 	papis/deps/prompt_toolkit \
 	papis/deps/click \
 	papis/deps/arxiv2bib.py \
@@ -29,11 +28,6 @@ papis/deps/slugify: submodules/python-slugify
 papis/deps/arxiv2bib.py: submodules/arxiv2bib
 	git submodule update -i $<
 	cp -v submodules/arxiv2bib/arxiv2bib.py $@
-
-papis/deps/colorama: submodules/colorama/
-	git submodule update -i $<
-	mkdir -p $@
-	cp -v submodules/colorama/colorama/*.py $@
 
 papis/deps/click: submodules/click/
 	git submodule update -i $<
