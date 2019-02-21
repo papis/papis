@@ -50,13 +50,12 @@ setup(
         "colorama>=0.4.1",
         "bibtexparser>=0.6.2",
         "pylibgen>=1.3.0",
+        "click>=7.0.0",
+        "python-slugify>=2.0.1",
         "habanero>=0.6.0",
         "isbnlib>=3.9.1,<4.0.0",
-        # Prompt toolkit dependencies
-        'six>=1.9.0',
-        'wcwidth',
-        # python-slugify dependencies
-        "Unidecode>=0.04.16",
+        "prompt_toolkit>=2.0.0",
+        "pygments>=2.3.1",
     ],
     python_requires='>=3',
     classifiers=[
