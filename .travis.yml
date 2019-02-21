@@ -13,7 +13,6 @@ install:
 - pip install python-coveralls
 - pip install -e .[develop]
 - pip install -e .[optional]
-- make submodules
 after_success:
 - coveralls
 - python setup.py sdist --formats zip,gztar
