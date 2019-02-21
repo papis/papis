@@ -223,7 +223,8 @@ def filter_documents(documents, search=""):
         np = papis.api.get_arg("cores", multiprocessing.cpu_count())
         pool = multiprocessing.Pool(np)
         logger.debug(
-            "Filtering docs (search %s) using %s cores" % (
+            "Filtering {} docs (search {}) using {} cores".format(
+                len(documents),
                 search,
                 np
             )
@@ -235,8 +236,13 @@ def filter_documents(documents, search=""):
         )
         pool.close()
         pool.join()
-        logger.debug("pool done (%s ms)" % (1000*time.time()-1000*begin_t))
-        return [d for d in result if d is not None]
+        filtered_docs =  [d for d in result if d is not None]
+        logger.debug(
+            "done ({} ms) ({} docs)".format(
+                1000*time.time()-1000*begin_t,
+                len(filtered_docs))
+        )
+        return filtered_docs
 
 
 def folders_to_documents(folders):
