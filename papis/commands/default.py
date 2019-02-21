@@ -87,6 +87,12 @@ import papis.cli
     help="Set key value, e.g., "
          "--set info-name information.yaml  --set opentool evince",
 )
+@click.option(
+    "--nc", "--no-color", "no_color",
+    default=False,
+    is_flag=True,
+    help="Prevent the output from having color"
+)
 def run(
         verbose,
         config,
@@ -94,7 +100,8 @@ def run(
         log,
         pick_lib,
         clear_cache,
-        set_list
+        set_list,
+        no_color
         ):
 
     if no_color:
