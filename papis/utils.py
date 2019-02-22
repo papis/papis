@@ -195,6 +195,7 @@ def confirm(prompt, yes=True, bottom_toolbar=None):
 
 def text_area(title, text, lexer_name="", height=10, full_screen=False):
     from prompt_toolkit import Application
+    from prompt_toolkit.enums import EditingMode
     from prompt_toolkit.buffer import Buffer
     from prompt_toolkit.layout.containers import HSplit, Window
     from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
@@ -247,8 +248,15 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
 
     layout.focus(text_window)
 
-    app = Application(layout=layout, key_bindings=kb, full_screen=full_screen)
+    app = Application(
+        editing_mode=(
+            EditingMode.EMACS
+            if papis.config.get('tui-editmode') == 'emacs'
+            else EditingMode.VI
+        ), layout=layout, key_bindings=kb, full_screen=full_screen
+    )
     app.run() # You won't be able to Exit this app
+    return buffer1.text
 
 
 
