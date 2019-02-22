@@ -124,3 +124,5 @@ def test_slugify():
         ==
         'hello-oworld-.pdf'
     )
+    assert(clean_document_name('масса и енергиа.pdf') == 'massa-i-energia.pdf')
+    assert(clean_document_name('الامير الصغير.pdf') == 'lmyr-lsgyr.pdf')
