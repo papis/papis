@@ -1,4 +1,5 @@
-"""General
+"""
+General
 *******
 
 .. papis-config:: local-config-file
@@ -204,8 +205,9 @@ Bibtex options
 
     Allow non-standard bibtex types to be recognized, e.g,
     ``extra-bibtex-types = wikipedia, video, song``.
-    See `bibtex reference
-        <http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`_.
+    See
+    `bibtex
+    reference <http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`_.
 
 .. papis-config:: multiple-authors-format
 
