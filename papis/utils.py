@@ -194,6 +194,21 @@ def confirm(prompt, yes=True, bottom_toolbar=None):
 
 
 def text_area(title, text, lexer_name="", height=10, full_screen=False):
+    """
+    Small implementation of an editor/pager for small pieces of text.
+
+    :param title: Title of the text_area
+    :type  title: str
+    :param text: Editable text
+    :type  text: str
+    :param lexer_name: If the editable text should be highlighted with
+        some kind of grammar, examples are ``yaml``, ``python`` ...
+    :type  lexer_name: str
+    :param height: Max height of the text area
+    :type  height: int
+    :param full_screen: Wether or not the text area should be full screen.
+    :type  full_screen: bool
+    """
     from prompt_toolkit import Application
     from prompt_toolkit.enums import EditingMode
     from prompt_toolkit.buffer import Buffer
@@ -205,21 +220,31 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
     from prompt_toolkit.lexers import PygmentsLexer
     from prompt_toolkit.formatted_text import HTML
     from pygments.lexers import find_lexer_class_by_name
+    assert(type(title) == str)
+    assert(type(text) == str)
+    assert(type(lexer_name) == str)
+    assert(type(height) == int)
+    assert(type(full_screen) == bool)
 
     kb = KeyBindings()
+    buffer1 = Buffer()
+    buffer1.text = text
 
-    @kb.add('q')
-    @kb.add('c-c')
     @kb.add('c-q')
     def exit_(event):
-        event.app.exit()
+        event.app.exit(0)
+
+    @kb.add('c-s')
+    def save_(event):
+        event.app.return_text = buffer1.text
+
+    class App(Application):
+        return_text = None
 
     text_height = Dimension(min=0, max=height) if height is not None else None
 
     pygment_lexer = find_lexer_class_by_name(lexer_name)
     lexer = PygmentsLexer(pygment_lexer)
-    buffer1 = Buffer()
-    buffer1.text = text
     text_window = Window(
         height=text_height,
         content=BufferControl(buffer=buffer1, lexer=lexer)
@@ -239,25 +264,30 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
 
         Window(
             content=FormattedTextControl(
-                text=HTML("<style bg='white' fg='black'>Quit [q]</style>")
+                text=HTML(
+                "<style bg='white' fg='black'>"
+                "Quit [Ctrl-q]"
+                " "
+                "Save [Ctrl-s]"
+                "</style>"
+                )
             )
         ),
-        ])
+    ])
 
     layout = Layout(root_container)
 
     layout.focus(text_window)
 
-    app = Application(
+    app = App(
         editing_mode=(
             EditingMode.EMACS
             if papis.config.get('tui-editmode') == 'emacs'
             else EditingMode.VI
         ), layout=layout, key_bindings=kb, full_screen=full_screen
     )
-    app.run() # You won't be able to Exit this app
-    return buffer1.text
-
+    app.run()
+    return app.return_text
 
 
 def yes_no_dialog(title, text):
