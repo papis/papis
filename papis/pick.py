@@ -180,11 +180,14 @@ class OptionsListControl:
             self.current_index = self.indices[-1]
 
     def get_search_regex(self):
-        cleaned_search = self.search_buffer.text.replace('(', '\\(')\
-                                       .replace(')', '\\)')\
-                                       .replace('+', '\\+')\
-                                       .replace('[', '\\[')\
-                                       .replace(']', '\\]')
+        cleaned_search = (
+            self.search_buffer.text
+            .replace('(', '\\(')
+            .replace(')', '\\)')
+            .replace('+', '\\+')
+            .replace('[', '\\[')
+            .replace(']', '\\]')
+        )
         return r".*"+re.sub(r"\s+", ".*", cleaned_search)
 
     def update(self, *args):
@@ -449,12 +452,12 @@ def pick(
         return options[0]
 
     picker = Picker(
-                options,
-                title,
-                indicator,
-                default_index,
-                header_filter,
-                match_filter
-                )
+        options,
+        title,
+        indicator,
+        default_index,
+        header_filter,
+        match_filter
+    )
     picker.run()
     return picker.options_list.get_selection()
