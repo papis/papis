@@ -47,7 +47,7 @@ setup(
         "PyYAML>=3.12",
         "chardet>=3.0.2",
         "beautifulsoup4>=4.4.1",
-        "colorama>=0.4.1",
+        "colorama>=0.2",
         "bibtexparser>=0.6.2",
         "pylibgen>=1.3.0",
         "click>=7.0.0",
