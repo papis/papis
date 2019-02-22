@@ -212,7 +212,7 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
     from prompt_toolkit import Application
     from prompt_toolkit.enums import EditingMode
     from prompt_toolkit.buffer import Buffer
-    from prompt_toolkit.layout.containers import HSplit, Window
+    from prompt_toolkit.layout.containers import HSplit, Window, WindowAlign
     from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
     from prompt_toolkit.layout.layout import Layout
     from prompt_toolkit.layout import Dimension
@@ -252,6 +252,9 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
 
     root_container = HSplit([
         Window(
+            char='-',
+            align=WindowAlign.CENTER,
+            height=1,
             content=FormattedTextControl(
                 text=HTML(
                     "<style bg='white' fg='black'>{0}</style>".format(title)
@@ -263,6 +266,9 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
         text_window,
 
         Window(
+            height=1,
+            align=WindowAlign.CENTER,
+            char='-',
             content=FormattedTextControl(
                 text=HTML(
                 "<style bg='white' fg='black'>"
