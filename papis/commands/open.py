@@ -129,7 +129,7 @@ def run(document, opener=None, folder=False, mark=False):
         papis.api.open_file(file_to_open, wait=False)
 
 
-@click.command()
+@click.command("open")
 @click.help_option('-h', '--help')
 @papis.cli.query_option()
 @click.option(

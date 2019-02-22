@@ -67,7 +67,7 @@ def run(document, data=dict(), interactive=False, force=False):
     papis.database.get().update(document)
 
 
-@click.command()
+@click.command("update")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @click.option(

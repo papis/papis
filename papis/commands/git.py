@@ -33,7 +33,7 @@ def run(folder, command=[]):
     return papis.commands.run.run(folder, command=["git"] + command)
 
 
-@click.command(context_settings=dict(ignore_unknown_options=True))
+@click.command("git", context_settings=dict(ignore_unknown_options=True))
 @click.help_option('--help', '-h')
 @click.argument("command", nargs=-1)
 def cli(command):

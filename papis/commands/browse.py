@@ -30,7 +30,7 @@ def run(document):
     return status.success
 
 
-@click.command()
+@click.command("browse")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @click.option(

@@ -21,8 +21,11 @@ def get_external_scripts():
 def script_paths_to_dict(paths):
     scripts_dict = dict()
     for path in paths:
-        command_name = \
-            os.path.basename(path).replace('papis-', '').replace('.py', '')
+        command_name = (
+            os.path.basename(path)
+            .replace('papis-', '')
+            .replace('.py', '')
+        )
         scripts_dict[command_name] = dict(
             command_name=command_name,
             path=path,
@@ -78,6 +81,7 @@ class MultiCommand(click.MultiCommand):
         from papis.commands.external import get_command_help
         cli.context_settings['obj'] = script
         cli.help = get_command_help(script['path'])
+        cli.name = script["command_name"]
         cli.short_help = cli.help
         return cli
 

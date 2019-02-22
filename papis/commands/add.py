@@ -419,6 +419,7 @@ def run(
 
 
 @click.command(
+    "add",
     help="Add a document into a given library"
 )
 @click.help_option('--help', '-h')

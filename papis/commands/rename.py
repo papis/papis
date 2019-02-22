@@ -44,7 +44,7 @@ def run(document, new_name, git=False):
     return 0
 
 
-@click.command()
+@click.command("rename")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @papis.cli.git_option()

@@ -35,7 +35,7 @@ def run(
     return status.success
 
 
-@click.command()
+@click.command("rm")
 @click.help_option('-h', '--help')
 @papis.cli.query_option()
 @click.option(

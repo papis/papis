@@ -48,7 +48,7 @@ def run(document, new_folder_path, git=False):
     db.add(document)
 
 
-@click.command()
+@click.command("mv")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @papis.cli.git_option()

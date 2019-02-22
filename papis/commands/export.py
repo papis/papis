@@ -110,7 +110,7 @@ def run(
     return None
 
 
-@click.command()
+@click.command("export")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @click.option(

@@ -25,7 +25,7 @@ def run(document, wait=True):
     database.update(document)
 
 
-@click.command()
+@click.command("edit")
 @click.help_option('-h', '--help')
 @papis.cli.query_option()
 @click.option(
