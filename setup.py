@@ -51,7 +51,7 @@ setup(
         "bibtexparser>=0.6.2",
         "pylibgen>=1.3.0",
         "click>=7.0.0",
-        "python-slugify>=2.0.1",
+        "python-slugify>=1.2.6",
         "habanero>=0.6.0",
         "isbnlib>=3.9.1,<4.0.0",
         "prompt_toolkit>=2.0.0",

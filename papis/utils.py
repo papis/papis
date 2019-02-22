@@ -329,10 +329,6 @@ def clean_document_name(doc_path):
     :returns: Basename of the path cleaned
     :rtype:  str
 
-    >>> clean_document_name('{{] __ }}albert )(*& $ß $+_ einstein (*]')
-    'albert-ss-einstein'
-    >>> clean_document_name('/ashfd/df/  #$%@#$ }{_+"[ ]hello öworld--- .pdf')
-    'hello-oworld-.pdf'
     """
     import slugify
     regex_pattern = r'[^a-z0-9.]+'

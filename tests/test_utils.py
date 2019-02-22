@@ -7,7 +7,8 @@ import papis.commands.add
 import papis.database
 from papis.document import from_data
 from papis.utils import (
-    get_document_extension
+    get_document_extension,
+    clean_document_name
 )
 
 
@@ -111,3 +112,15 @@ def test_extension():
     ]
     for d in docs:
         assert(get_document_extension(d[0]) == d[1])
+
+
+def test_slugify():
+    assert(
+        clean_document_name('{{] __ }}albert )(*& $ß $+_ einstein (*]') ==
+        'albert-ss-einstein'
+    )
+    assert(
+        clean_document_name('/ashfd/df/  #$%@#$ }{_+"[ ]hello öworld--- .pdf')
+        ==
+        'hello-oworld-.pdf'
+    )
