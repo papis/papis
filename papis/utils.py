@@ -204,7 +204,6 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
     from prompt_toolkit.lexers import PygmentsLexer
     from prompt_toolkit.formatted_text import HTML
     from pygments.lexers import find_lexer_class_by_name
-    from pygments.lexers import PythonLexer
 
     kb = KeyBindings()
 
