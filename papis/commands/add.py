@@ -351,12 +351,12 @@ def run(
             shutil.copy(in_file_path, tmp_end_filepath)
 
     data['files'] = new_file_list
+    tmp_document.update(data, force=True)
+    tmp_document.save()
 
     # Check if the user wants to edit before submitting the doc
     # to the library
     if edit:
-        tmp_document.update(data, force=True)
-        tmp_document.save()
         logger.info("Editing file before adding it")
         papis.api.edit_file(tmp_document.get_info_file(), wait=True)
         logger.info("Loading the changes made by editing")
@@ -390,12 +390,10 @@ def run(
             'The following document is already in your library',
             papis.document.dump(found_document),
             lexer_name='yaml',
-            height=10
+            height=20
         )
         confirm = True
 
-    tmp_document.update(data, force=True)
-    tmp_document.save()
     if open_file:
         for d_path in tmp_document.get_files():
             papis.api.open_file(d_path)
