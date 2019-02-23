@@ -42,40 +42,50 @@ def create_keybindings(picker):
         picker.deselect()
         event.app.exit()
 
-    @kb.add('c-n')
-    @kb.add('down')
+    @kb.add('c-n', filter=~InfoWindow.is_shown)
+    @kb.add('down', filter=~InfoWindow.is_shown)
     def down_(event):
         picker.options_list.move_down()
         picker.refresh()
 
-    @kb.add('c-p')
-    @kb.add('up')
+    @kb.add('c-n', filter=InfoWindow.is_shown)
+    def down_info(event):
+        down_(event)
+        update_info_window()
+
+    @kb.add('c-p', filter=~InfoWindow.is_shown)
+    @kb.add('up', filter=~InfoWindow.is_shown)
     def up_(event):
         picker.options_list.move_up()
         picker.refresh()
 
+    @kb.add('c-p', filter=InfoWindow.is_shown)
+    def up_info(event):
+        up_(event)
+        update_info_window()
+
     @kb.add('end')
-    def up_(event):
+    def go_end_(event):
         picker.options_list.go_bottom()
         picker.refresh()
 
     @kb.add('c-g')
     @kb.add('home')
-    def up_(event):
+    def go_top_(event):
         picker.options_list.go_top()
         picker.refresh()
 
     @kb.add('c-y')
     @kb.add('c-up')
     @kb.add('s-up')
-    def up_(event):
+    def scroll_up_(event):
         picker.scroll_up()
         picker.refresh_prompt()
 
     @kb.add('c-e')
     @kb.add('c-down')
     @kb.add('s-down')
-    def up_(event):
+    def scroll_down_(event):
         picker.scroll_down()
         picker.refresh_prompt()
 
@@ -84,17 +94,19 @@ def create_keybindings(picker):
         HelpWindow.shown ^= True
         OptionsListControl.shown ^= True
 
-    @kb.add('c-i')
-    def _info(event):
+    def update_info_window():
         doc = picker.options_list.get_selection()
         picker.info_window.set_text(doc.dump())
+
+    @kb.add('c-i')
+    def _info(event):
+        update_info_window()
         if picker.layout.has_focus(picker.info_window.window):
             InfoWindow.shown = False
             picker.layout.focus(picker.search_buffer)
         else:
             InfoWindow.shown = True
             picker.layout.focus(picker.info_window.window)
-        #OptionsListControl.shown ^= True
 
     @kb.add('enter')
     def enter_(event):
@@ -273,32 +285,10 @@ class InfoWindow:
                 HorizontalLine(),
                 Window(
                 content=BufferControl(
-                    key_bindings=self._create_kb(),
                     buffer=self.buf, lexer=self.lexer)
             )], height=None),
             filter=InfoWindow.is_shown
         )
-
-    def _create_kb(self):
-        kb = KeyBindings()
-
-        @kb.add('c-n')
-        def next(event):
-            picker = get_picker()
-            picker.options_list.move_down()
-            picker.refresh()
-            doc = picker.options_list.get_selection()
-            picker.info_window.set_text(doc.dump())
-
-        @kb.add('c-p')
-        def next(event):
-            picker = get_picker()
-            picker.options_list.move_up()
-            picker.refresh()
-            doc = picker.options_list.get_selection()
-            picker.info_window.set_text(doc.dump())
-
-        return kb
 
     def set_text(self, text):
         self.buf.text = text
