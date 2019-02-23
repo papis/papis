@@ -1,15 +1,21 @@
 import os
 import re
+from prompt_toolkit.widgets.toolbars import (
+    FormattedTextToolbar, SystemToolbar
+)
 from prompt_toolkit.formatted_text.html import HTML, html_escape
+from prompt_toolkit.filters import Condition, Filter, has_focus
 from prompt_toolkit.application import (
-    Application as PromptToolkitApplication,
+    Application as PromptToolkitApplication, get_app
 )
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout.screen import Point
-from prompt_toolkit.layout.containers import HSplit, Window
+from prompt_toolkit.layout.containers import (
+    HSplit, Window, WindowAlign, ConditionalContainer
+)
 from prompt_toolkit.layout.controls import (
     BufferControl,
     FormattedTextControl
@@ -18,6 +24,8 @@ from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.widgets import (
     HorizontalLine
 )
+from prompt_toolkit.lexers import PygmentsLexer
+from pygments.lexers import find_lexer_class_by_name
 import papis.config
 import logging
 logger = logging.getLogger('pick')
@@ -72,31 +80,21 @@ def create_keybindings(picker):
         picker.refresh_prompt()
 
     @kb.add('f1')
-    def help(event):
-        picker.options_list.content.text = """
-Bindings:
+    def _help(event):
+        HelpWindow.shown ^= True
+        OptionsListControl.shown ^= True
 
-Ctrl-e, Ctrl-down, Shift-down : Scroll Down
-Ctrl-y, Ctrl-up,   Shift-up   : Scroll up
-Ctrl-n, down                  : Next item
-Ctrl-p, up                    : Previous item
-Ctrl-q, Ctrl-c                : Quit
-Home                          : First item
-End                           : Last item
-
-"""
-        picker.refresh_prompt()
-
-    # @kb.add('/')
-    # def up_(event):
-        # picker.layout.focus(picker.search_buffer)
-
-    # @kb.add('c-f')
-    # def up_(event):
-        # if picker.layout.has_focus(picker.content_window):
-            # picker.layout.focus(picker.search_buffer)
-        # else:
-            # picker.layout.focus(picker.content_window)
+    @kb.add('c-i')
+    def _info(event):
+        doc = picker.options_list.get_selection()
+        picker.info_window.set_text(doc.dump())
+        if picker.layout.has_focus(picker.info_window.window):
+            InfoWindow.shown = False
+            picker.layout.focus(picker.search_buffer)
+        else:
+            InfoWindow.shown = True
+            picker.layout.focus(picker.info_window.window)
+        #OptionsListControl.shown ^= True
 
     @kb.add('enter')
     def enter_(event):
@@ -106,6 +104,8 @@ End                           : Last item
 
 
 class OptionsListControl:
+
+    shown = True
 
     def __init__(
             self,
@@ -133,6 +133,10 @@ class OptionsListControl:
             text=''
         )
         self.cursor = Point(0,0)
+
+    @Condition
+    def is_shown():
+        return OptionsListControl.shown
 
     def set_options(self, options):
         self.options = options
@@ -257,6 +261,95 @@ class OptionsListControl:
         logger.debug('options processed')
 
 
+class InfoWindow:
+    shown = False
+
+    def __init__(self):
+        self.buf = Buffer()
+        self.buf.text = ''
+        self.lexer = PygmentsLexer(find_lexer_class_by_name('yaml'))
+        self.window = ConditionalContainer(
+            content=HSplit([
+                HorizontalLine(),
+                Window(
+                content=BufferControl(
+                    key_bindings=self._create_kb(),
+                    buffer=self.buf, lexer=self.lexer)
+            )], height=None),
+            filter=InfoWindow.is_shown
+        )
+
+    def _create_kb(self):
+        kb = KeyBindings()
+
+        @kb.add('c-n')
+        def next(event):
+            picker = get_picker()
+            picker.options_list.move_down()
+            picker.refresh()
+            doc = picker.options_list.get_selection()
+            picker.info_window.set_text(doc.dump())
+
+        @kb.add('c-p')
+        def next(event):
+            picker = get_picker()
+            picker.options_list.move_up()
+            picker.refresh()
+            doc = picker.options_list.get_selection()
+            picker.info_window.set_text(doc.dump())
+
+        return kb
+
+    def set_text(self, text):
+        self.buf.text = text
+
+    def get_text(self):
+        return self.buf.text
+
+    @Condition
+    def is_shown():
+        return InfoWindow.shown
+
+class HelpWindow:
+    shown = False
+    text ="""
+    <span fg='ansired'> Bindings: </span>
+
+----------------------------------------------------
+/   Ctrl-e, Ctrl-down, Shift-down : Scroll Down     /
+/   Ctrl-y, Ctrl-up,   Shift-up   : Scroll up       /
+/   Ctrl-n, down                  : Next item       /
+/   Ctrl-p, up                    : Previous item   /
+/   Ctrl-q, Ctrl-c                : Quit            /
+/   Home                          : First item      /
+/   End                           : Last item       /
+----------------------------------------------------
+
+    """
+    def __init__(self):
+        self.format_text_control = FormattedTextControl(
+            key_bindings=None,
+            show_cursor=False,
+            focusable=False,
+            text=HTML(self.text)
+        )
+        self.window = ConditionalContainer(
+            content=Window(
+                content=self.format_text_control,
+                align=WindowAlign.CENTER
+            ),
+            filter=HelpWindow.is_shown
+        )
+
+    @Condition
+    def is_shown():
+        return HelpWindow.shown
+
+
+def get_picker():
+    return Picker._actual_picker
+
+
 class Picker(object):
     """The :class:`Picker <Picker>` object
 
@@ -267,6 +360,8 @@ class Picker(object):
         selected option is not the first one
     """
 
+    _actual_picker = None
+
     def __init__(
             self,
             options,
@@ -276,6 +371,8 @@ class Picker(object):
             header_filter=lambda x: x,
             match_filter=lambda x: x
             ):
+
+        Picker._actual_picker = self
 
         self.title = title
         self.indicator = indicator
@@ -312,11 +409,28 @@ class Picker(object):
             always_hide_cursor=True,
             allow_scroll_beyond_bottom=True,
         )
+
+        self.info_window = InfoWindow()
+        self.help_window = HelpWindow()
+        self.system_toolbar = SystemToolbar()
+
         root_container = HSplit([
             Window(height=1, content=BufferControl(buffer=self.search_buffer)),
             HorizontalLine(),
-            self.content_window,
-            Window(height=1, content=BufferControl(buffer=self.prompt_buffer)),
+            HSplit([
+                ConditionalContainer(
+                    content=self.content_window,
+                    filter=OptionsListControl.is_shown
+                ),
+                self.info_window.window,
+            ]),
+            self.help_window.window,
+            self.system_toolbar,
+            Window(
+                height=1,
+                style='reverse',
+                content=BufferControl(buffer=self.prompt_buffer)
+            ),
         ])
 
         self.layout = Layout(root_container)
