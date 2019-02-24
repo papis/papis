@@ -22,7 +22,7 @@ import papis.config
 import logging
 
 from .widgets import (
-    InfoWindow, CommandWindow, HelpWindow, OptionsListControl
+    InfoWindow, CommandLinePrompt, HelpWindow, OptionsListControl
 )
 
 logger = logging.getLogger('pick')
@@ -107,15 +107,14 @@ def create_keybindings(picker):
             InfoWindow.shown = True
             picker.layout.focus(picker.info_window.window)
 
-    @kb.add('enter', filter=~has_focus(CommandWindow.instance))
+    @kb.add('enter', filter=~has_focus(CommandLinePrompt.instance))
     def enter_(event):
         event.app.exit()
 
-    @kb.add('enter', filter=has_focus(CommandWindow.instance))
+    @kb.add('enter', filter=has_focus(CommandLinePrompt.instance))
     def _enter_(event):
         # command = picker.command_window.buf.text
         picker.layout.focus(picker.search_buffer)
-        CommandWindow.focus ^= True
 
     return kb
 
@@ -185,7 +184,7 @@ class Picker(object):
 
         self.info_window = InfoWindow()
         self.help_window = HelpWindow()
-        self.command_window = CommandWindow()
+        self.command_window = CommandLinePrompt()
 
         root_container = HSplit([
             Window(height=1, content=BufferControl(buffer=self.search_buffer)),
@@ -198,15 +197,12 @@ class Picker(object):
                 self.info_window.window,
             ]),
             self.help_window.window,
-            self.command_window.window,
-            ConditionalContainer(
-                content=Window(
-                    height=1,
-                    style='reverse',
-                    content=BufferControl(buffer=self.prompt_buffer)
-                ),
-                filter=~has_focus(CommandWindow.instance)
+            Window(
+                height=1,
+                style='reverse',
+                content=BufferControl(buffer=self.prompt_buffer)
             ),
+            self.command_window.window,
         ])
 
         self.layout = Layout(root_container)

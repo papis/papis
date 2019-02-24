@@ -22,11 +22,14 @@ from .list import OptionsListControl
 logger = logging.getLogger('pick')
 
 
-class CommandWindow(ConditionalContainer):
-    focus = False
+class CommandLinePrompt(ConditionalContainer):
+    """
+    A vim-like command line prompt widget.
+    It's supposed to be instantiated only once.
+    """
     instance = None
     def __init__(self):
-        CommandWindow.instance = self
+        CommandLinePrompt.instance = self
         self.buf = Buffer()
         self.buf.text = ''
         self.window = Window(
@@ -36,9 +39,9 @@ class CommandWindow(ConditionalContainer):
             ),
             height=1
         )
-        super(CommandWindow, self).__init__(
+        super(CommandLinePrompt, self).__init__(
             content=self.window,
-            filter=has_focus(CommandWindow.instance)
+            filter=has_focus(CommandLinePrompt.instance)
         )
 
 
