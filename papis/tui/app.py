@@ -7,6 +7,7 @@ from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout.screen import Point
+from prompt_toolkit.filters import has_focus
 from prompt_toolkit.layout.containers import (
     HSplit, Window, ConditionalContainer
 )
@@ -90,7 +91,6 @@ def create_keybindings(picker):
 
     @kb.add(':')
     def _command_window(event):
-        CommandWindow.shown ^= True
         picker.layout.focus(picker.command_window.window)
 
     def update_info_window():
@@ -107,15 +107,15 @@ def create_keybindings(picker):
             InfoWindow.shown = True
             picker.layout.focus(picker.info_window.window)
 
-    @kb.add('enter', filter=~CommandWindow.is_shown)
+    @kb.add('enter', filter=~has_focus(CommandWindow.instance))
     def enter_(event):
         event.app.exit()
 
-    @kb.add('enter', filter=CommandWindow.is_shown)
+    @kb.add('enter', filter=has_focus(CommandWindow.instance))
     def _enter_(event):
         # command = picker.command_window.buf.text
         picker.layout.focus(picker.search_buffer)
-        CommandWindow.shown ^= True
+        CommandWindow.focus ^= True
 
     return kb
 
@@ -205,7 +205,7 @@ class Picker(object):
                     style='reverse',
                     content=BufferControl(buffer=self.prompt_buffer)
                 ),
-                filter=~CommandWindow.is_shown
+                filter=~has_focus(CommandWindow.instance)
             ),
         ])
 

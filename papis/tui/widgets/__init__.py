@@ -1,6 +1,8 @@
 from prompt_toolkit.formatted_text.html import HTML
-from prompt_toolkit.filters import Condition
+from prompt_toolkit.layout.processors import BeforeInput
+from prompt_toolkit.filters import has_focus, Condition
 from prompt_toolkit.buffer import Buffer
+from prompt_toolkit.layout.containers import ConditionalContainer
 from prompt_toolkit.layout.containers import (
     HSplit, Window, WindowAlign, ConditionalContainer
 )
@@ -20,19 +22,23 @@ from .list import OptionsListControl
 logger = logging.getLogger('pick')
 
 
-class CommandWindow:
-    shown = False
-
-    @Condition
-    def is_shown():
-        return CommandWindow.shown
-
+class CommandWindow(ConditionalContainer):
+    focus = False
+    instance = None
     def __init__(self):
+        CommandWindow.instance = self
         self.buf = Buffer()
         self.buf.text = ''
-        self.window = ConditionalContainer(
-            content=Window(content=BufferControl(buffer=self.buf), height=1),
-            filter=CommandWindow.is_shown
+        self.window = Window(
+            content=BufferControl(
+                buffer=self.buf,
+                input_processors=[BeforeInput(':')]
+            ),
+            height=1
+        )
+        super(CommandWindow, self).__init__(
+            content=self.window,
+            filter=has_focus(CommandWindow.instance)
         )
 
 

@@ -5,6 +5,7 @@ from prompt_toolkit.layout.screen import Point
 from prompt_toolkit.layout.controls import (
     FormattedTextControl
 )
+
 import logging
 
 logger = logging.getLogger('widget:list')
