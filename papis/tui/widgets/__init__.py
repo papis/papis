@@ -45,26 +45,24 @@ class CommandLinePrompt(ConditionalContainer):
         )
 
 
-class InfoWindow:
-    shown = False
+class InfoWindow(ConditionalContainer):
 
-    @Condition
-    def is_shown():
-        return InfoWindow.shown
-
+    instance = None
     def __init__(self):
+        InfoWindow.instance = self
         self.buf = Buffer()
         self.buf.text = ''
         self.lexer = PygmentsLexer(find_lexer_class_by_name('yaml'))
-        self.window = ConditionalContainer(
-            content=HSplit([
-                HorizontalLine(),
-                Window(
-                    content=BufferControl(
-                        buffer=self.buf, lexer=self.lexer)
-                )
-            ], height=None),
-            filter=InfoWindow.is_shown
+        self.window = HSplit([
+            HorizontalLine(),
+            Window(
+                content=BufferControl(
+                    buffer=self.buf, lexer=self.lexer)
+            )
+        ], height=20)
+        super(InfoWindow, self).__init__(
+            content=self.window,
+            filter=has_focus(InfoWindow.instance)
         )
 
     def set_text(self, text):

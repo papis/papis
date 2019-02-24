@@ -37,24 +37,24 @@ def create_keybindings(picker):
         picker.deselect()
         event.app.exit()
 
-    @kb.add('c-n', filter=~InfoWindow.is_shown)
-    @kb.add('down', filter=~InfoWindow.is_shown)
+    @kb.add('c-n', filter=~has_focus(InfoWindow.instance))
+    @kb.add('down', filter=~has_focus(InfoWindow.instance))
     def down_(event):
         picker.options_list.move_down()
         picker.refresh()
 
-    @kb.add('c-n', filter=InfoWindow.is_shown)
+    @kb.add('c-n', filter=has_focus(InfoWindow.instance))
     def down_info(event):
         down_(event)
         update_info_window()
 
-    @kb.add('c-p', filter=~InfoWindow.is_shown)
-    @kb.add('up', filter=~InfoWindow.is_shown)
+    @kb.add('c-p', filter=~has_focus(InfoWindow.instance))
+    @kb.add('up', filter=~has_focus(InfoWindow.instance))
     def up_(event):
         picker.options_list.move_up()
         picker.refresh()
 
-    @kb.add('c-p', filter=InfoWindow.is_shown)
+    @kb.add('c-p', filter=has_focus(InfoWindow.instance))
     def up_info(event):
         up_(event)
         update_info_window()
@@ -91,21 +91,20 @@ def create_keybindings(picker):
 
     @kb.add(':')
     def _command_window(event):
-        picker.layout.focus(picker.command_window.window)
+        picker.layout.focus(CommandLinePrompt.instance.window)
 
     def update_info_window():
         doc = picker.options_list.get_selection()
         picker.info_window.set_text(doc.dump())
 
-    @kb.add('c-i')
+    @kb.add('c-i', filter=has_focus(InfoWindow.instance))
     def _info(event):
+        picker.layout.focus(picker.search_buffer)
+
+    @kb.add('c-i', filter=~has_focus(InfoWindow.instance))
+    def _info_no_focus(event):
         update_info_window()
-        if picker.layout.has_focus(picker.info_window.window):
-            InfoWindow.shown = False
-            picker.layout.focus(picker.search_buffer)
-        else:
-            InfoWindow.shown = True
-            picker.layout.focus(picker.info_window.window)
+        picker.layout.focus(InfoWindow.instance.window)
 
     @kb.add('enter', filter=~has_focus(CommandLinePrompt.instance))
     def enter_(event):
@@ -194,7 +193,7 @@ class Picker(object):
                     content=self.content_window,
                     filter=OptionsListControl.is_shown
                 ),
-                self.info_window.window,
+                self.info_window,
             ]),
             self.help_window.window,
             Window(
