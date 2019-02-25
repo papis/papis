@@ -2,11 +2,6 @@ from prompt_toolkit.layout.containers import to_container
 from papis.tui.widgets.command_line_prompt import *
 from papis.tui.widgets import *
 
-# def test_info_window():
-    # i = InfoWindow()
-    # i.__pt_container__()
-    # #to_container(i)
-
 
 def test_simple_command():
     cmd = Command('test', lambda c: 1+1)
