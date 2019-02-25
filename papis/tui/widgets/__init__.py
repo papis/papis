@@ -35,7 +35,7 @@ class MessageToolbar(ConditionalContainer):
                 style="bg:#bbee88 fg:#000000", content=self.text_control,
                 height=1
             ),
-            filter=Condition(lambda: MessageToolbar.message is not None)
+            filter=Condition(lambda: MessageToolbar.message)
         )
 
     @property

@@ -144,8 +144,8 @@ def get_commands():
         get_picker().deselect()
         cmd.app.exit()
 
-    def _echo(cmd, text):
-        MessageToolbar.instance.text = text
+    def _echo(cmd, *args):
+        MessageToolbar.instance.text = ' '.join(args)
 
     return [
         Command("open", run=_open, aliases=["op"]),
