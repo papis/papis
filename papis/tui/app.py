@@ -36,14 +36,14 @@ def create_keybindings(picker):
     @kb.add('c-q')
     @kb.add('c-c')
     def exit_(event):
-        picker.deselect()
+        event.app.deselect()
         event.app.exit()
 
     @kb.add('c-n', filter=~has_focus(InfoWindow.instance))
     @kb.add('down', filter=~has_focus(InfoWindow.instance))
     def down_(event):
-        picker.options_list.move_down()
-        picker.refresh()
+        event.app.options_list.move_down()
+        event.app.refresh()
 
     @kb.add('c-n', filter=has_focus(InfoWindow.instance))
     def down_info(event):
@@ -53,8 +53,8 @@ def create_keybindings(picker):
     @kb.add('c-p', filter=~has_focus(InfoWindow.instance))
     @kb.add('up', filter=~has_focus(InfoWindow.instance))
     def up_(event):
-        picker.options_list.move_up()
-        picker.refresh()
+        event.app.options_list.move_up()
+        event.app.refresh()
 
     @kb.add('c-p', filter=has_focus(InfoWindow.instance))
     def up_info(event):
@@ -63,28 +63,28 @@ def create_keybindings(picker):
 
     @kb.add('end')
     def go_end_(event):
-        picker.options_list.go_bottom()
-        picker.refresh()
+        event.app.options_list.go_bottom()
+        event.app.refresh()
 
     @kb.add('c-g')
     @kb.add('home')
     def go_top_(event):
-        picker.options_list.go_top()
-        picker.refresh()
+        event.app.options_list.go_top()
+        event.app.refresh()
 
     @kb.add('c-y')
     @kb.add('c-up')
     @kb.add('s-up')
     def scroll_up_(event):
-        picker.scroll_up()
-        picker.refresh_prompt()
+        event.app.scroll_up()
+        event.app.refresh_prompt()
 
     @kb.add('c-e')
     @kb.add('c-down')
     @kb.add('s-down')
     def scroll_down_(event):
-        picker.scroll_down()
-        picker.refresh_prompt()
+        event.app.scroll_down()
+        event.app.refresh_prompt()
 
     @kb.add('f1')
     def _help(event):
@@ -93,7 +93,7 @@ def create_keybindings(picker):
 
     @kb.add(':')
     def _command_window(event):
-        picker.layout.focus(CommandLinePrompt.instance.window)
+        event.app.layout.focus(CommandLinePrompt.instance.window)
 
     def update_info_window():
         doc = picker.options_list.get_selection()
@@ -101,12 +101,12 @@ def create_keybindings(picker):
 
     # @kb.add('c-i', filter=has_focus(InfoWindow.instance))
     # def _info(event):
-        # picker.layout.focus(picker.search_buffer)
+        # event.app.layout.focus(event.app.search_buffer)
 
     # @kb.add('c-i', filter=~has_focus(InfoWindow.instance))
     # def _info_no_focus(event):
         # update_info_window()
-        # picker.layout.focus(InfoWindow.instance.window)
+        # event.app.layout.focus(InfoWindow.instance.window)
 
     @kb.add('enter', filter=~has_focus(CommandLinePrompt.instance))
     def enter_(event):
@@ -114,13 +114,13 @@ def create_keybindings(picker):
 
     @kb.add('enter', filter=has_focus(CommandLinePrompt.instance))
     def _enter_(event):
-        # command = picker.command_window.buf.text
+        # command = event.app.command_window.buf.text
         try:
-            picker.command_window.trigger()
+            event.app.command_window.trigger()
         except Exception as e:
             MessageToolbar.instance.text = str(e)
-        picker.command_window.clear()
-        picker.layout.focus(picker.search_buffer)
+        event.app.command_window.clear()
+        event.app.layout.focus(event.app.search_buffer)
 
     return kb
 
@@ -129,19 +129,17 @@ def get_commands():
 
     def _open(cmd):
         from papis.commands.open import run
-        picker = get_picker()
-        doc = picker.get_selection()
+        doc = cmd.app.get_selection()
         run(doc)
 
     def _edit(cmd):
         from papis.commands.edit import run
-        picker = get_picker()
-        doc = picker.get_selection()
+        doc = cmd.app.get_selection()
         run(doc)
         cmd.app.invalidate()
 
     def _quit(cmd):
-        get_picker().deselect()
+        cmd.app.deselect()
         cmd.app.exit()
 
     def _echo(cmd, *args):
@@ -156,36 +154,25 @@ def get_commands():
     ]
 
 
-def get_picker():
-    return Picker._actual_picker
-
-
-class Picker(object):
+class Picker(Application):
     """The :class:`Picker <Picker>` object
 
     :param options: a list of options to choose from
     :param title: (optional) a title above options list
-    :param indicator: (optional) custom the selection indicator
     :param default_index: (optional) set this if the default
         selected option is not the first one
     """
-
-    _actual_picker = None
 
     def __init__(
             self,
             options,
             title=None,
-            indicator='*',
             default_index=0,
             header_filter=lambda x: x,
             match_filter=lambda x: x
             ):
 
-        Picker._actual_picker = self
-
         self.title = title
-        self.indicator = indicator
         self.search = ""
 
         search_buffer_history = FileHistory(
@@ -245,14 +232,7 @@ class Picker(object):
 
         self.layout = Layout(root_container)
 
-        self.application = self._create_application()
-        self.update()
-
-    def deselect(self):
-        self.options_list.current_index = None
-
-    def _create_application(self):
-        return Application(
+        super(Picker, self).__init__(
             input=None,
             output=None,
             editing_mode=EditingMode.EMACS
@@ -264,6 +244,10 @@ class Picker(object):
             full_screen=True,
             enable_page_navigation_bindings=True
         )
+        self.update()
+
+    def deselect(self):
+        self.options_list.current_index = None
 
     def refresh_prompt(self):
         self.prompt_echo(
@@ -338,6 +322,3 @@ class Picker(object):
 
     def get_selection(self):
         return self.options_list.get_selection()
-
-    def run(self):
-        return self.application.run()

@@ -3,7 +3,6 @@ from papis.tui import Picker
 def pick(
         options,
         title="Pick: ",
-        indicator='>',
         default_index=0,
         header_filter=lambda x: x,
         match_filter=lambda x: x
@@ -19,7 +18,6 @@ def pick(
     picker = Picker(
         options,
         title,
-        indicator,
         default_index,
         header_filter,
         match_filter

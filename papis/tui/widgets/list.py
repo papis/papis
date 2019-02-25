@@ -1,6 +1,7 @@
 import re
 from prompt_toolkit.formatted_text.html import HTML, html_escape
 from prompt_toolkit.filters import Condition
+from prompt_toolkit.layout.containers import ConditionalContainer
 from prompt_toolkit.layout.screen import Point
 from prompt_toolkit.layout.controls import (
     FormattedTextControl
@@ -8,7 +9,7 @@ from prompt_toolkit.layout.controls import (
 
 import logging
 
-logger = logging.getLogger('widget:list')
+logger = logging.getLogger('tui:widget:list')
 
 
 class OptionsListControl:
