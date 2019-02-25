@@ -18,6 +18,6 @@ def test_commandlineprompt():
         prompt.text = 'est'
         e = prompt.trigger()
     except Exception as e:
-        assert(str(e) == 'No command found')
+        assert(str(e) == 'No command found (est)')
     else:
         assert(False)
