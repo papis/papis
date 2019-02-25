@@ -2,7 +2,6 @@ from prompt_toolkit.formatted_text.html import HTML
 from prompt_toolkit.layout.processors import BeforeInput
 from prompt_toolkit.filters import has_focus, Condition
 from prompt_toolkit.buffer import Buffer
-from prompt_toolkit.layout.containers import ConditionalContainer
 from prompt_toolkit.layout.containers import (
     HSplit, Window, WindowAlign, ConditionalContainer
 )
@@ -18,31 +17,11 @@ from pygments.lexers import find_lexer_class_by_name
 import logging
 
 from .list import OptionsListControl
+from .command_line_prompt import CommandLinePrompt
 
 logger = logging.getLogger('pick')
 
 
-class CommandLinePrompt(ConditionalContainer):
-    """
-    A vim-like command line prompt widget.
-    It's supposed to be instantiated only once.
-    """
-    instance = None
-    def __init__(self):
-        CommandLinePrompt.instance = self
-        self.buf = Buffer()
-        self.buf.text = ''
-        self.window = Window(
-            content=BufferControl(
-                buffer=self.buf,
-                input_processors=[BeforeInput(':')]
-            ),
-            height=1
-        )
-        super(CommandLinePrompt, self).__init__(
-            content=self.window,
-            filter=has_focus(CommandLinePrompt.instance)
-        )
 
 
 class InfoWindow(ConditionalContainer):

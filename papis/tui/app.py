@@ -21,6 +21,7 @@ from prompt_toolkit.widgets import (
 import papis.config
 import logging
 
+from .widgets.command_line_prompt import Command
 from .widgets import (
     InfoWindow, CommandLinePrompt, HelpWindow, OptionsListControl
 )
@@ -113,9 +114,25 @@ def create_keybindings(picker):
     @kb.add('enter', filter=has_focus(CommandLinePrompt.instance))
     def _enter_(event):
         # command = picker.command_window.buf.text
+        try:
+            picker.command_window.trigger()
+        except Exception as e:
+            print(e)
+        picker.command_window.clear()
         picker.layout.focus(picker.search_buffer)
 
     return kb
+
+
+def get_commands():
+
+    def _open(cmd):
+        from papis.commands.open import run
+        picker = get_picker()
+        doc = picker.options_list.get_selection()
+        run(doc)
+
+    return [Command("open", run=_open)]
 
 
 def get_picker():
@@ -183,7 +200,7 @@ class Picker(object):
 
         self.info_window = InfoWindow()
         self.help_window = HelpWindow()
-        self.command_window = CommandLinePrompt()
+        self.command_window = CommandLinePrompt(commands=get_commands())
 
         root_container = HSplit([
             Window(height=1, content=BufferControl(buffer=self.search_buffer)),
@@ -297,9 +314,7 @@ class Picker(object):
     def prompt_echo(self, text):
         self.prompt_buffer.text = text
 
+    #def get
+
     def run(self):
-        if len(self.options_list.options) == 0:
-            return ""
-        if len(self.options_list.options) == 1:
-            return self.options_list.options[0]
         return self.application.run()
