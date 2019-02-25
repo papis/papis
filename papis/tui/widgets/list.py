@@ -9,9 +9,10 @@ from prompt_toolkit.layout.controls import (
 )
 from prompt_toolkit.widgets import HorizontalLine
 from prompt_toolkit.layout.containers import (
-    HSplit, Window, ConditionalContainer
+    HSplit, Window, ConditionalContainer, WindowAlign
 )
 from prompt_toolkit.filters import has_focus
+from prompt_toolkit.layout import NumberedMargin
 
 import logging
 
@@ -26,7 +27,8 @@ class OptionsList(ConditionalContainer):
             default_index=0,
             header_filter=lambda x: x,
             match_filter=lambda x: x,
-            custom_filter=None
+            custom_filter=None,
+            search_buffer=Buffer(multiline=False)
             ):
 
         assert(isinstance(options, list))
@@ -34,13 +36,13 @@ class OptionsList(ConditionalContainer):
         assert(callable(match_filter))
         assert(isinstance(default_index, int))
 
-        self.search_buffer = Buffer(multiline=False)
+        self.search_buffer = search_buffer
         self.search_buffer.on_text_changed += self.update
 
         self.header_filter = header_filter
         self.match_filter = match_filter
         self.current_index = default_index
-        self.entries_left_offset = 2
+        self.entries_left_offset = 0
 
         self._options = []
         # Options are processed here also through the setter
@@ -48,34 +50,53 @@ class OptionsList(ConditionalContainer):
         self.cursor = Point(0, 0)
 
         self.content = FormattedTextControl(
-            text='',
+            text=self.get_tokens,
             focusable=False,
             key_bindings=None,
             get_cursor_position=lambda: self.cursor,
         )
         self.content_window = Window(
             content=self.content,
+            wrap_lines=False,
+            allow_scroll_beyond_bottom=True,
+            cursorline=False,
+            cursorcolumn=False,
+            #right_margins=[NumberedMargin()],
+            #left_margins=[NumberedMargin()],
+            align=WindowAlign.LEFT,
             height=None,
+            get_line_prefix=self.get_line_prefix
+            #get_line_prefix=lambda line, b: [('bg:red', '  ')]
         )
-        self.window = HSplit([
-            Window(
-                height=1,
-                content=BufferControl(buffer=self.search_buffer)
-            ),
-            HorizontalLine(),
-            self.content_window
-        ])
 
         self.update()
 
         super(OptionsList, self).__init__(
-            content=self.window,
+            content=self.content_window,
             filter=(
                 custom_filter
                 if custom_filter is not None
                 else has_focus(self.search_buffer)
             )
         )
+
+    def get_line_prefix(self, line, blih):
+        try:
+            index = self.indices.index(self.current_index)
+            cline = sum(
+                self.options_headers_linecount[i]
+                for i in self.indices[0:index]
+            )
+            cline = sum(
+                self.options_headers_linecount[i]
+                for i in self.indices[0:index]
+            )
+            if line == cline:
+                return [('class:options_list.selected_margin', '>')]
+            else:
+                return [('class:options_list.unselected_margin', ' ')]
+        except:
+            return
 
     @property
     def options(self):
@@ -143,7 +164,6 @@ class OptionsList(ConditionalContainer):
 
     def update(self, *args):
         self.filter_options()
-        self.refresh()
 
     def filter_options(self, *args):
         indices = []
@@ -164,27 +184,24 @@ class OptionsList(ConditionalContainer):
         if len(self.indices) and self.current_index is not None:
             return self.options[self.current_index]
 
-    def refresh(self):
+    def get_tokens(self):
         self.update_cursor()
-        i = self.current_index
-        oldtuple = self.options_headers[i][0]
-        self.options_headers[i][0] = (
-            oldtuple[0],
-            '>' + re.sub(r'^ ', '', oldtuple[1]),
-        )
-        self.content.text = sum(
+        result = sum(
             [self.options_headers[i] for i in self.indices],
             []
         )
-        self.options_headers[i][0] = oldtuple
         try:
-            get_app().message_toolbar.text = "{0} {1} {3} {2}".format(
+            get_app().message_toolbar.text = "{4} {5} {0} {1} {3} {2}".format(
                 self.get_search_regex(), self.cursor,
                 self.options_headers[i],
-                i
+                i,
+                self.indices,
+                id(self.content.text)
             )
+            #self.content.text = ''
         except:
             pass
+        return result
 
     def process_options(self):
         logger.debug('processing {0} options'.format(len(self.options)))
@@ -263,4 +280,3 @@ class OptionsList(ConditionalContainer):
             else:
                 new = 0
             self.cursor = Point(0, new)
-

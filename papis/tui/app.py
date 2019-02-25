@@ -2,9 +2,11 @@ import os
 from prompt_toolkit.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.enums import EditingMode
+from prompt_toolkit.layout.processors import BeforeInput
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout.screen import Point
 from prompt_toolkit.filters import has_focus
+from prompt_toolkit.styles import Style
 from prompt_toolkit.layout.containers import (
     HSplit, Window, ConditionalContainer
 )
@@ -57,12 +59,13 @@ def create_keybindings(app):
         up_(event)
         event.app.update_info_window()
 
+    @kb.add('c-g', 'G')
     @kb.add('end')
     def go_end_(event):
         event.app.options_list.go_bottom()
         event.app.refresh()
 
-    @kb.add('c-g')
+    @kb.add('c-g', 'g')
     @kb.add('home')
     def go_top_(event):
         event.app.options_list.go_top()
@@ -193,6 +196,12 @@ class Picker(Application):
 
         _root_container = HSplit([
             HSplit([
+                Window(
+                    content=BufferControl(
+                        input_processors=[BeforeInput('> ')],
+                        buffer=self.options_list.search_buffer
+                    )
+                ),
                 self.options_list,
                 self.info_window,
             ]),
@@ -212,6 +221,10 @@ class Picker(Application):
             if papis.config.get('tui-editmode') == 'emacs'
             else EditingMode.VI,
             layout=self.layout,
+            style=Style.from_dict({
+                'options_list.selected_margin': 'bg:#0000ff',
+                'options_list.unselected_margin': 'bg:grey',
+            }),
             key_bindings=create_keybindings(self),
             include_default_pygments_style=False,
             full_screen=True,
@@ -229,7 +242,6 @@ class Picker(Application):
         )
 
     def refresh(self, *args):
-        self.options_list.refresh()
         self.refresh_status_line()
 
     def update(self, *args):
