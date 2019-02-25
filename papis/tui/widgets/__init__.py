@@ -16,7 +16,7 @@ from prompt_toolkit.lexers import PygmentsLexer
 from pygments.lexers import find_lexer_class_by_name
 import logging
 
-from .list import OptionsListControl
+from .list import OptionsList
 from .command_line_prompt import CommandLinePrompt
 
 logger = logging.getLogger('pick')

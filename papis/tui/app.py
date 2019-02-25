@@ -17,7 +17,7 @@ import logging
 
 from .widgets.command_line_prompt import Command
 from .widgets import (
-    InfoWindow, CommandLinePrompt, HelpWindow, OptionsListControl,
+    InfoWindow, CommandLinePrompt, HelpWindow, OptionsList,
     MessageToolbar
 )
 
@@ -172,7 +172,7 @@ class Picker(Application):
             match_filter=lambda x: x
             ):
 
-        self.options_list = OptionsListControl(
+        self.options_list = OptionsList(
             options,
             default_index,
             header_filter,

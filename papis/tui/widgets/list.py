@@ -18,7 +18,7 @@ import logging
 logger = logging.getLogger('tui:widget:list')
 
 
-class OptionsListControl(ConditionalContainer):
+class OptionsList(ConditionalContainer):
 
     def __init__(
             self,
@@ -67,7 +67,7 @@ class OptionsListControl(ConditionalContainer):
 
         self.update()
 
-        super(OptionsListControl, self).__init__(
+        super(OptionsList, self).__init__(
             content=self.window,
             filter=has_focus(self.search_buffer)
         )
