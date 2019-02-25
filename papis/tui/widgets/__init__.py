@@ -46,10 +46,10 @@ class MessageToolbar(ConditionalContainer):
 
 class InfoWindow(ConditionalContainer):
 
-    def __init__(self):
+    def __init__(self, lexer_name='yaml'):
         self.buf = Buffer()
         self.buf.text = ''
-        self.lexer = PygmentsLexer(find_lexer_class_by_name('yaml'))
+        self.lexer = PygmentsLexer(find_lexer_class_by_name(lexer_name))
         self.window = HSplit([
             HorizontalLine(),
             Window(

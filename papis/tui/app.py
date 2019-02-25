@@ -43,7 +43,7 @@ def create_keybindings(app):
     @kb.add('c-n', filter=has_focus(app.info_window))
     def down_info(event):
         down_(event)
-        update_info_window()
+        event.app.update_info_window()
 
     @kb.add('c-p', filter=~has_focus(app.info_window))
     @kb.add('up', filter=~has_focus(app.info_window))
@@ -55,7 +55,7 @@ def create_keybindings(app):
     @kb.add('c-p', filter=has_focus(app.info_window))
     def up_info(event):
         up_(event)
-        update_info_window()
+        event.app.update_info_window()
 
     @kb.add('end')
     def go_end_(event):
@@ -98,18 +98,14 @@ def create_keybindings(app):
     def _command_window(event):
         event.app.layout.focus(app.command_line_prompt.window)
 
-    def update_info_window():
-        doc = picker.options_list.get_selection()
-        picker.info_window.set_text(doc.dump())
+    @kb.add('c-i', filter=has_focus(app.info_window))
+    def _info(event):
+        event.app.layout.focus(event.app.options_list.search_buffer)
 
-    # @kb.add('c-i', filter=has_focus(app.info_window))
-    # def _info(event):
-        # event.app.layout.focus(event.app.search_buffer)
-
-    # @kb.add('c-i', filter=~has_focus(app.info_window))
-    # def _info_no_focus(event):
-        # update_info_window()
-        # event.app.layout.focus(app.info_window)
+    @kb.add('c-i', filter=~has_focus(app.info_window))
+    def _info_no_focus(event):
+        event.app.update_info_window()
+        event.app.layout.focus(app.info_window.window)
 
     @kb.add('enter', filter=~has_focus(app.command_line_prompt))
     def enter_(event):
@@ -147,12 +143,19 @@ def get_commands():
     def _echo(cmd, *args):
         cmd.app.message_toolbar.text = ' '.join(args)
 
+    def _info(cmd):
+        cmd.app.update_info_window()
+        cmd.app.layout.focus(cmd.app.info_window.window)
+
     return [
         Command("open", run=_open, aliases=["op"]),
         Command("edit", run=_edit, aliases=["e"]),
         Command("exit", run=_quit, aliases=["quit", "q"]),
+        Command("info", run=_info, aliases=["i"]),
         Command("echo", run=_echo),
-        Command("help", run=lambda c: _echo(c, "To Be Implemented")),
+        Command("help",
+            run=lambda c: c.app.layout.focus(c.app.help_window.window)
+        ),
     ]
 
 
@@ -235,3 +238,7 @@ class Picker(Application):
 
     def get_selection(self):
         return self.options_list.get_selection()
+
+    def update_info_window(self):
+        doc = self.options_list.get_selection()
+        self.info_window.set_text(doc.dump())
