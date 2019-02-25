@@ -88,6 +88,14 @@ def create_keybindings(app):
     @kb.add('f1', filter=~has_focus(app.help_window))
     def _help(event):
         event.app.layout.focus(app.help_window.window)
+        event.app.message_toolbar.text = 'Press q to quit'
+        OptionsListControl.shown ^= True
+
+    @kb.add('q', filter=has_focus(app.help_window))
+    def _help(event):
+        event.app.layout.focus(app.help_window.window)
+        event.app.layout.focus(app.command_line_prompt.window)
+        event.app.message_toolbar.text = None
         OptionsListControl.shown ^= True
 
     @kb.add(':')
@@ -207,7 +215,7 @@ class Picker(Application):
                 ),
                 self.info_window,
             ]),
-            self.help_window.window,
+            self.help_window,
             self.message_toolbar,
             self.status_line,
             self.command_line_prompt.window,

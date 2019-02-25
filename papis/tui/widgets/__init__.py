@@ -86,9 +86,6 @@ class HelpWindow(ConditionalContainer):
 
     def __init__(self):
         self.format_text_control = FormattedTextControl(
-            key_bindings=None,
-            show_cursor=False,
-            focusable=False,
             text=HTML(self.text)
         )
         self.window = Window(
@@ -97,5 +94,5 @@ class HelpWindow(ConditionalContainer):
         )
         super(HelpWindow, self).__init__(
             content=self.window,
-            filter=has_focus(self)
+            filter=has_focus(self.window)
         )
