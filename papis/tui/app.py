@@ -172,12 +172,6 @@ class Picker(Application):
             match_filter=lambda x: x
             ):
 
-        self.options_list = OptionsList(
-            options,
-            default_index,
-            header_filter,
-            match_filter
-        )
 
         self.info_window = InfoWindow()
         self.help_window = HelpWindow()
@@ -185,6 +179,14 @@ class Picker(Application):
         self.message_toolbar = MessageToolbar(style="bg:#bbee88 fg:#000000")
         self.error_toolbar = MessageToolbar(style="bg:#ff0022 fg:#000000")
         self.status_line = MessageToolbar(style="bg:#ffffff fg:#000000")
+
+        self.options_list = OptionsList(
+            options,
+            default_index,
+            header_filter,
+            match_filter,
+            custom_filter=~has_focus(self.help_window)
+        )
 
         _root_container = HSplit([
             HSplit([

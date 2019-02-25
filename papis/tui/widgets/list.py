@@ -25,7 +25,8 @@ class OptionsList(ConditionalContainer):
             options,
             default_index=0,
             header_filter=lambda x: x,
-            match_filter=lambda x: x
+            match_filter=lambda x: x,
+            custom_filter=None
             ):
 
         assert(isinstance(options, list))
@@ -69,7 +70,11 @@ class OptionsList(ConditionalContainer):
 
         super(OptionsList, self).__init__(
             content=self.window,
-            filter=has_focus(self.search_buffer)
+            filter=(
+                custom_filter
+                if custom_filter is not None
+                else has_focus(self.search_buffer)
+            )
         )
 
     @property
