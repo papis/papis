@@ -1,7 +1,5 @@
 import os
-from prompt_toolkit.application import (
-    Application
-)
+from prompt_toolkit.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding import KeyBindings
@@ -14,9 +12,6 @@ from prompt_toolkit.layout.controls import (
     BufferControl,
 )
 from prompt_toolkit.layout.layout import Layout
-from prompt_toolkit.widgets import (
-    HorizontalLine
-)
 import papis.config
 import logging
 
@@ -43,6 +38,7 @@ def create_keybindings(app):
     def down_(event):
         event.app.options_list.move_down()
         event.app.refresh()
+        event.app.update()
 
     @kb.add('c-n', filter=has_focus(app.info_window))
     def down_info(event):
@@ -54,6 +50,7 @@ def create_keybindings(app):
     def up_(event):
         event.app.options_list.move_up()
         event.app.refresh()
+        event.app.update()
 
     @kb.add('c-p', filter=has_focus(app.info_window))
     def up_info(event):
@@ -75,28 +72,27 @@ def create_keybindings(app):
     @kb.add('c-up')
     @kb.add('s-up')
     def scroll_up_(event):
-        event.app.scroll_up()
-        event.app.refresh_prompt()
+        event.app.options_list.scroll_up()
+        event.app.refresh_status_line()
 
     @kb.add('c-e')
     @kb.add('c-down')
     @kb.add('s-down')
     def scroll_down_(event):
-        event.app.scroll_down()
-        event.app.refresh_prompt()
+        event.app.options_list.scroll_down()
+        event.app.refresh_status_line()
 
     @kb.add('f1', filter=~has_focus(app.help_window))
     def _help(event):
         event.app.layout.focus(app.help_window.window)
         event.app.message_toolbar.text = 'Press q to quit'
-        OptionsListControl.shown ^= True
 
     @kb.add('q', filter=has_focus(app.help_window))
     def _help(event):
         event.app.layout.focus(app.help_window.window)
         event.app.layout.focus(app.command_line_prompt.window)
         event.app.message_toolbar.text = None
-        OptionsListControl.shown ^= True
+        event.app.layout.focus(event.app.options_list.search_buffer)
 
     @kb.add(':')
     def _command_window(event):
@@ -126,7 +122,7 @@ def create_keybindings(app):
         except Exception as e:
             MessageToolbar.instance.text = str(e)
         event.app.command_line_prompt.clear()
-        event.app.layout.focus(event.app.search_buffer)
+        event.app.layout.focus(event.app.options_list.search_buffer)
 
     return kb
 
@@ -176,27 +172,11 @@ class Picker(Application):
             match_filter=lambda x: x
             ):
 
-        self.search = ""
-
-        self.search_buffer = Buffer(multiline=False)
-
         self.options_list = OptionsListControl(
             options,
-            self.search_buffer,
             default_index,
             header_filter,
             match_filter
-        )
-
-        self.search_buffer.on_text_changed += self.update
-
-        self.content_window = Window(
-            content=self.options_list.content,
-            height=None,
-            wrap_lines=False,
-            ignore_content_height=True,
-            always_hide_cursor=True,
-            allow_scroll_beyond_bottom=True,
         )
 
         self.info_window = InfoWindow()
@@ -206,13 +186,8 @@ class Picker(Application):
         self.status_line = MessageToolbar(style="bg:#ffffff fg:#000000")
 
         _root_container = HSplit([
-            Window(height=1, content=BufferControl(buffer=self.search_buffer)),
-            HorizontalLine(),
             HSplit([
-                ConditionalContainer(
-                    content=self.content_window,
-                    filter=OptionsListControl.is_shown
-                ),
+                self.options_list,
                 self.info_window,
             ]),
             self.help_window,
@@ -240,76 +215,19 @@ class Picker(Application):
     def deselect(self):
         self.options_list.current_index = None
 
-    def refresh_prompt(self):
-        self.prompt_echo(
-            "{0}/{1}  F1:help".format(
-                int(self.options_list.current_index) + 1,
-                len(self.options_list.options),
-            )
+    def refresh_status_line(self):
+        self.status_line.text = "{0}/{1}  F1:help".format(
+            int(self.options_list.current_index) + 1,
+            len(self.options_list.options),
         )
-
-    def scroll_down(self):
-        lvl = self.last_visible_line
-        ll = self.content_height
-        if ll and lvl:
-            if lvl + 1 < ll:
-                new = lvl + 1
-            else:
-                new = lvl
-            self.options_list.cursor = Point(0, new)
-
-    def scroll_up(self):
-        fvl = self.first_visible_line
-        if fvl:
-            if fvl >= 0:
-                new = fvl - 1
-            else:
-                new = 0
-            self.options_list.cursor = Point(0, new)
-
-    # def scroll_up(self):
-        # dp = self.displayed_lines
-        # if len(dp):
-            # self.options_list.cursor = Point(0, dp[0] - 1)
 
     def refresh(self, *args):
         self.options_list.refresh()
-        self.refresh_prompt()
+        self.refresh_status_line()
 
     def update(self, *args):
         self.options_list.update()
-        self.refresh_prompt()
-
-    @property
-    def screen_height(self):
-        return self.options_list.content.preferred_height(None, None, None)
-
-    @property
-    def displayed_lines(self):
-        info = self.content_window.render_info
-        if info:
-            return info.displayed_lines
-
-    @property
-    def first_visible_line(self):
-        info = self.content_window.render_info
-        if info:
-            return info.first_visible_line()
-
-    @property
-    def last_visible_line(self):
-        info = self.content_window.render_info
-        if info:
-            return info.last_visible_line()
-
-    @property
-    def content_height(self):
-        info = self.content_window.render_info
-        if info:
-            return info.content_height
-
-    def prompt_echo(self, text):
-        self.status_line.text = text
+        self.refresh_status_line()
 
     def get_selection(self):
         return self.options_list.get_selection()
