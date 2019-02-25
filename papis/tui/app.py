@@ -23,7 +23,8 @@ import logging
 
 from .widgets.command_line_prompt import Command
 from .widgets import (
-    InfoWindow, CommandLinePrompt, HelpWindow, OptionsListControl
+    InfoWindow, CommandLinePrompt, HelpWindow, OptionsListControl,
+    MessageToolbar
 )
 
 logger = logging.getLogger('pick')
@@ -117,7 +118,7 @@ def create_keybindings(picker):
         try:
             picker.command_window.trigger()
         except Exception as e:
-            print(e)
+            MessageToolbar.instance.text = str(e)
         picker.command_window.clear()
         picker.layout.focus(picker.search_buffer)
 
@@ -129,10 +130,29 @@ def get_commands():
     def _open(cmd):
         from papis.commands.open import run
         picker = get_picker()
-        doc = picker.options_list.get_selection()
-        run(doc)
+        doc = picker.get_selection()
+        run([doc])
 
-    return [Command("open", run=_open)]
+    def _edit(cmd):
+        from papis.commands.edit import run
+        picker = get_picker()
+        doc = picker.get_selection()
+        run(doc)
+        cmd.app.invalidate()
+
+    def _quit(cmd):
+        get_picker().deselect()
+        cmd.app.exit()
+
+    def _echo(cmd, text):
+        MessageToolbar.instance.text = text
+
+    return [
+        Command("open", run=_open, aliases=["op"]),
+        Command("edit", run=_edit, aliases=["e"]),
+        Command("exit", run=_quit, aliases=["quit", "q"]),
+        Command("echo", run=_echo),
+    ]
 
 
 def get_picker():
@@ -213,6 +233,7 @@ class Picker(object):
                 self.info_window,
             ]),
             self.help_window.window,
+            MessageToolbar(),
             Window(
                 height=1,
                 style='reverse',
@@ -314,7 +335,8 @@ class Picker(object):
     def prompt_echo(self, text):
         self.prompt_buffer.text = text
 
-    #def get
+    def get_selection(self):
+        return self.options_list.get_selection()
 
     def run(self):
         return self.application.run()

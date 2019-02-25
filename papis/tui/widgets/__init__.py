@@ -22,6 +22,30 @@ from .command_line_prompt import CommandLinePrompt
 logger = logging.getLogger('pick')
 
 
+class MessageToolbar(ConditionalContainer):
+
+    instance = None
+    message = None
+
+    def __init__(self):
+        MessageToolbar.instance = self
+        self.text_control = FormattedTextControl(text="")
+        super(MessageToolbar, self).__init__(
+            content=Window(
+                style="bg:#bbee88 fg:#000000", content=self.text_control,
+                height=1
+            ),
+            filter=Condition(lambda: MessageToolbar.message is not None)
+        )
+
+    @property
+    def text(self):
+        return MessageToolbar.message
+
+    @text.setter
+    def text(self, value):
+        MessageToolbar.message = value
+        self.text_control.text = value
 
 
 class InfoWindow(ConditionalContainer):
