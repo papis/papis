@@ -99,14 +99,14 @@ def create_keybindings(picker):
         doc = picker.options_list.get_selection()
         picker.info_window.set_text(doc.dump())
 
-    @kb.add('c-i', filter=has_focus(InfoWindow.instance))
-    def _info(event):
-        picker.layout.focus(picker.search_buffer)
+    # @kb.add('c-i', filter=has_focus(InfoWindow.instance))
+    # def _info(event):
+        # picker.layout.focus(picker.search_buffer)
 
-    @kb.add('c-i', filter=~has_focus(InfoWindow.instance))
-    def _info_no_focus(event):
-        update_info_window()
-        picker.layout.focus(InfoWindow.instance.window)
+    # @kb.add('c-i', filter=~has_focus(InfoWindow.instance))
+    # def _info_no_focus(event):
+        # update_info_window()
+        # picker.layout.focus(InfoWindow.instance.window)
 
     @kb.add('enter', filter=~has_focus(CommandLinePrompt.instance))
     def enter_(event):
@@ -131,7 +131,7 @@ def get_commands():
         from papis.commands.open import run
         picker = get_picker()
         doc = picker.get_selection()
-        run([doc])
+        run(doc)
 
     def _edit(cmd):
         from papis.commands.edit import run
@@ -152,6 +152,7 @@ def get_commands():
         Command("edit", run=_edit, aliases=["e"]),
         Command("exit", run=_quit, aliases=["quit", "q"]),
         Command("echo", run=_echo),
+        Command("help", run=lambda c: _echo(c, "To Be Implemented")),
     ]
 
 
