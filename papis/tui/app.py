@@ -101,14 +101,14 @@ def create_keybindings(app):
     def _command_window(event):
         event.app.layout.focus(app.command_line_prompt.window)
 
-    @kb.add('c-i', filter=has_focus(app.info_window))
-    def _info(event):
-        event.app.layout.focus(event.app.options_list.search_buffer)
+    # @kb.add('c-i', filter=has_focus(app.info_window))
+    # def _info(event):
+        # event.app.layout.focus(event.app.options_list.search_buffer)
 
-    @kb.add('c-i', filter=~has_focus(app.info_window))
-    def _info_no_focus(event):
-        event.app.update_info_window()
-        event.app.layout.focus(app.info_window.window)
+    # @kb.add('c-i', filter=~has_focus(app.info_window))
+    # def _info_no_focus(event):
+        # event.app.update_info_window()
+        # event.app.layout.focus(app.info_window.window)
 
     @kb.add('enter', filter=~has_focus(app.command_line_prompt))
     def enter_(event):
@@ -155,6 +155,10 @@ def get_commands():
         Command("edit", run=_edit, aliases=["e"]),
         Command("exit", run=_quit, aliases=["quit", "q"]),
         Command("info", run=_info, aliases=["i"]),
+        Command("go_top", run=lambda c: c.app.options_list.go_top()),
+        Command("go_bottom", run=lambda c: c.app.options_list.go_bottom()),
+        Command("move_down", run=lambda c: c.app.options_list.move_down()),
+        Command("move_up", run=lambda c: c.app.options_list.move_up()),
         Command("echo", run=_echo),
         Command("help",
             run=lambda c: c.app.layout.focus(c.app.help_window.window)
@@ -182,9 +186,9 @@ class Picker(Application):
         self.info_window = InfoWindow()
         self.help_window = HelpWindow()
         self.command_line_prompt = CommandLinePrompt(commands=get_commands())
-        self.message_toolbar = MessageToolbar(style="bg:#bbee88 fg:#000000")
-        self.error_toolbar = MessageToolbar(style="bg:#ff0022 fg:#000000")
-        self.status_line = MessageToolbar(style="bg:#ffffff fg:#000000")
+        self.message_toolbar = MessageToolbar(style="class:message_toolbar")
+        self.error_toolbar = MessageToolbar(style="class:error_toolbar")
+        self.status_line = MessageToolbar(style="class:status_line")
 
         self.options_list = OptionsList(
             options,
@@ -222,8 +226,11 @@ class Picker(Application):
             else EditingMode.VI,
             layout=self.layout,
             style=Style.from_dict({
-                'options_list.selected_margin': 'bg:#0000ff',
-                'options_list.unselected_margin': 'bg:grey',
+                'options_list.selected_margin': 'bg:ansiblack fg:ansigreen',
+                'options_list.unselected_margin': 'bg:ansiwhite',
+                'error_toolbar': 'bg:ansired fg:ansiblack',
+                'message_toolbar': 'bg:ansiyellow fg:ansiblack',
+                'status_line': 'bg:ansiwhite fg:ansiblack',
             }),
             key_bindings=create_keybindings(self),
             include_default_pygments_style=False,
