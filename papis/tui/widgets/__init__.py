@@ -24,35 +24,29 @@ logger = logging.getLogger('pick')
 
 class MessageToolbar(ConditionalContainer):
 
-    instance = None
-    message = None
-
-    def __init__(self):
-        MessageToolbar.instance = self
+    def __init__(self, style=""):
+        self.message = None
         self.text_control = FormattedTextControl(text="")
         super(MessageToolbar, self).__init__(
             content=Window(
-                style="bg:#bbee88 fg:#000000", content=self.text_control,
+                style=style, content=self.text_control,
                 height=1
             ),
-            filter=Condition(lambda: MessageToolbar.message)
+            filter=Condition(lambda: self.text)
         )
 
     @property
     def text(self):
-        return MessageToolbar.message
+        return self.text_control.text
 
     @text.setter
     def text(self, value):
-        MessageToolbar.message = value
         self.text_control.text = value
 
 
 class InfoWindow(ConditionalContainer):
 
-    instance = None
     def __init__(self):
-        InfoWindow.instance = self
         self.buf = Buffer()
         self.buf.text = ''
         self.lexer = PygmentsLexer(find_lexer_class_by_name('yaml'))
@@ -65,7 +59,7 @@ class InfoWindow(ConditionalContainer):
         ], height=20)
         super(InfoWindow, self).__init__(
             content=self.window,
-            filter=has_focus(InfoWindow.instance)
+            filter=has_focus(self)
         )
 
     def set_text(self, text):
@@ -75,8 +69,7 @@ class InfoWindow(ConditionalContainer):
         return self.buf.text
 
 
-class HelpWindow:
-    shown = False
+class HelpWindow(ConditionalContainer):
     text = """
     <span fg='ansired'> Bindings: </span>
 
@@ -91,10 +84,6 @@ class HelpWindow:
 ----------------------------------------------------
     """
 
-    @Condition
-    def is_shown():
-        return HelpWindow.shown
-
     def __init__(self):
         self.format_text_control = FormattedTextControl(
             key_bindings=None,
@@ -102,10 +91,11 @@ class HelpWindow:
             focusable=False,
             text=HTML(self.text)
         )
-        self.window = ConditionalContainer(
-            content=Window(
-                content=self.format_text_control,
-                align=WindowAlign.CENTER
-            ),
-            filter=HelpWindow.is_shown
+        self.window = Window(
+            content=self.format_text_control,
+            align=WindowAlign.CENTER
+        )
+        super(HelpWindow, self).__init__(
+            content=self.window,
+            filter=has_focus(self)
         )

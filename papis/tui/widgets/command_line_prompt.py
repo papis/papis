@@ -45,9 +45,7 @@ class CommandLinePrompt(ConditionalContainer):
     A vim-like command line prompt widget.
     It's supposed to be instantiated only once.
     """
-    instance = None
     def __init__(self, commands=[]):
-        CommandLinePrompt.instance = self
         assert(isinstance(commands, list))
         for c in commands:
             assert(isinstance(c, Command))
@@ -66,7 +64,7 @@ class CommandLinePrompt(ConditionalContainer):
         )
         super(CommandLinePrompt, self).__init__(
             content=self.window,
-            filter=has_focus(CommandLinePrompt.instance)
+            filter=has_focus(self.window)
         )
 
     def trigger(self):

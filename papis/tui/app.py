@@ -2,7 +2,6 @@ import os
 from prompt_toolkit.application import (
     Application
 )
-from prompt_toolkit.history import FileHistory
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding import KeyBindings
@@ -30,7 +29,7 @@ from .widgets import (
 logger = logging.getLogger('pick')
 
 
-def create_keybindings(picker):
+def create_keybindings(app):
     kb = KeyBindings()
 
     @kb.add('c-q')
@@ -39,24 +38,24 @@ def create_keybindings(picker):
         event.app.deselect()
         event.app.exit()
 
-    @kb.add('c-n', filter=~has_focus(InfoWindow.instance))
-    @kb.add('down', filter=~has_focus(InfoWindow.instance))
+    @kb.add('c-n', filter=~has_focus(app.info_window))
+    @kb.add('down', filter=~has_focus(app.info_window))
     def down_(event):
         event.app.options_list.move_down()
         event.app.refresh()
 
-    @kb.add('c-n', filter=has_focus(InfoWindow.instance))
+    @kb.add('c-n', filter=has_focus(app.info_window))
     def down_info(event):
         down_(event)
         update_info_window()
 
-    @kb.add('c-p', filter=~has_focus(InfoWindow.instance))
-    @kb.add('up', filter=~has_focus(InfoWindow.instance))
+    @kb.add('c-p', filter=~has_focus(app.info_window))
+    @kb.add('up', filter=~has_focus(app.info_window))
     def up_(event):
         event.app.options_list.move_up()
         event.app.refresh()
 
-    @kb.add('c-p', filter=has_focus(InfoWindow.instance))
+    @kb.add('c-p', filter=has_focus(app.info_window))
     def up_info(event):
         up_(event)
         update_info_window()
@@ -86,40 +85,39 @@ def create_keybindings(picker):
         event.app.scroll_down()
         event.app.refresh_prompt()
 
-    @kb.add('f1')
+    @kb.add('f1', filter=~has_focus(app.help_window))
     def _help(event):
-        HelpWindow.shown ^= True
+        event.app.layout.focus(app.help_window.window)
         OptionsListControl.shown ^= True
 
     @kb.add(':')
     def _command_window(event):
-        event.app.layout.focus(CommandLinePrompt.instance.window)
+        event.app.layout.focus(app.command_line_prompt.window)
 
     def update_info_window():
         doc = picker.options_list.get_selection()
         picker.info_window.set_text(doc.dump())
 
-    # @kb.add('c-i', filter=has_focus(InfoWindow.instance))
+    # @kb.add('c-i', filter=has_focus(app.info_window))
     # def _info(event):
         # event.app.layout.focus(event.app.search_buffer)
 
-    # @kb.add('c-i', filter=~has_focus(InfoWindow.instance))
+    # @kb.add('c-i', filter=~has_focus(app.info_window))
     # def _info_no_focus(event):
         # update_info_window()
-        # event.app.layout.focus(InfoWindow.instance.window)
+        # event.app.layout.focus(app.info_window)
 
-    @kb.add('enter', filter=~has_focus(CommandLinePrompt.instance))
+    @kb.add('enter', filter=~has_focus(app.command_line_prompt))
     def enter_(event):
         event.app.exit()
 
-    @kb.add('enter', filter=has_focus(CommandLinePrompt.instance))
+    @kb.add('enter', filter=has_focus(app.command_line_prompt))
     def _enter_(event):
-        # command = event.app.command_window.buf.text
         try:
-            event.app.command_window.trigger()
+            event.app.command_line_prompt.trigger()
         except Exception as e:
             MessageToolbar.instance.text = str(e)
-        event.app.command_window.clear()
+        event.app.command_line_prompt.clear()
         event.app.layout.focus(event.app.search_buffer)
 
     return kb
@@ -143,7 +141,7 @@ def get_commands():
         cmd.app.exit()
 
     def _echo(cmd, *args):
-        MessageToolbar.instance.text = ' '.join(args)
+        cmd.app.message_toolbar.text = ' '.join(args)
 
     return [
         Command("open", run=_open, aliases=["op"]),
@@ -158,7 +156,6 @@ class Picker(Application):
     """The :class:`Picker <Picker>` object
 
     :param options: a list of options to choose from
-    :param title: (optional) a title above options list
     :param default_index: (optional) set this if the default
         selected option is not the first one
     """
@@ -166,26 +163,14 @@ class Picker(Application):
     def __init__(
             self,
             options,
-            title=None,
             default_index=0,
             header_filter=lambda x: x,
             match_filter=lambda x: x
             ):
 
-        self.title = title
         self.search = ""
 
-        search_buffer_history = FileHistory(
-            os.path.join('.', 'search_history')
-        )
-
-        self.search_buffer = Buffer(
-            history=search_buffer_history,
-            enable_history_search=True,
-            multiline=False
-        )
-
-        self.prompt_buffer = Buffer(multiline=False)
+        self.search_buffer = Buffer(multiline=False)
 
         self.options_list = OptionsListControl(
             options,
@@ -208,9 +193,11 @@ class Picker(Application):
 
         self.info_window = InfoWindow()
         self.help_window = HelpWindow()
-        self.command_window = CommandLinePrompt(commands=get_commands())
+        self.command_line_prompt = CommandLinePrompt(commands=get_commands())
+        self.message_toolbar = MessageToolbar(style="bg:#bbee88 fg:#000000")
+        self.status_line = MessageToolbar(style="bg:#ffffff fg:#000000")
 
-        root_container = HSplit([
+        _root_container = HSplit([
             Window(height=1, content=BufferControl(buffer=self.search_buffer)),
             HorizontalLine(),
             HSplit([
@@ -221,16 +208,12 @@ class Picker(Application):
                 self.info_window,
             ]),
             self.help_window.window,
-            MessageToolbar(),
-            Window(
-                height=1,
-                style='reverse',
-                content=BufferControl(buffer=self.prompt_buffer)
-            ),
-            self.command_window.window,
+            self.message_toolbar,
+            self.status_line,
+            self.command_line_prompt.window,
         ])
 
-        self.layout = Layout(root_container)
+        self.layout = Layout(_root_container)
 
         super(Picker, self).__init__(
             input=None,
@@ -318,7 +301,7 @@ class Picker(Application):
             return info.content_height
 
     def prompt_echo(self, text):
-        self.prompt_buffer.text = text
+        self.status_line.text = text
 
     def get_selection(self):
         return self.options_list.get_selection()

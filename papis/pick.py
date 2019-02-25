@@ -2,7 +2,6 @@ from papis.tui import Picker
 
 def pick(
         options,
-        title="Pick: ",
         default_index=0,
         header_filter=lambda x: x,
         match_filter=lambda x: x
@@ -17,7 +16,6 @@ def pick(
 
     picker = Picker(
         options,
-        title,
         default_index,
         header_filter,
         match_filter
