@@ -90,6 +90,7 @@ class HelpWindow(ConditionalContainer):
         )
         self.window = Window(
             content=self.format_text_control,
+            always_hide_cursor=True,
             align=WindowAlign.CENTER
         )
         super(HelpWindow, self).__init__(

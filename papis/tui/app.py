@@ -120,7 +120,7 @@ def create_keybindings(app):
         try:
             event.app.command_line_prompt.trigger()
         except Exception as e:
-            MessageToolbar.instance.text = str(e)
+            event.app.error_toolbar.text = str(e)
         event.app.command_line_prompt.clear()
         event.app.layout.focus(event.app.options_list.search_buffer)
 
@@ -183,6 +183,7 @@ class Picker(Application):
         self.help_window = HelpWindow()
         self.command_line_prompt = CommandLinePrompt(commands=get_commands())
         self.message_toolbar = MessageToolbar(style="bg:#bbee88 fg:#000000")
+        self.error_toolbar = MessageToolbar(style="bg:#ff0022 fg:#000000")
         self.status_line = MessageToolbar(style="bg:#ffffff fg:#000000")
 
         _root_container = HSplit([
@@ -191,6 +192,7 @@ class Picker(Application):
                 self.info_window,
             ]),
             self.help_window,
+            self.error_toolbar,
             self.message_toolbar,
             self.status_line,
             self.command_line_prompt.window,
