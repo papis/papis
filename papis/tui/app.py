@@ -71,12 +71,13 @@ def create_keybindings(app):
         event.app.layout.focus(event.app.options_list.search_buffer)
 
     @kb.add('q', filter=has_focus(app.info_window))
+    @kb.add('s-tab', filter=has_focus(app.info_window))
     @kb.add('escape', filter=has_focus(app.info_window))
     def _info(event):
         event.app.layout.focus(event.app.options_list.search_buffer)
         event.app.message_toolbar.text = None
 
-    @kb.add('c-x', filter=~has_focus(app.command_line_prompt))
+    @kb.add('tab', filter=~has_focus(app.command_line_prompt))
     def _command_window(event):
         event.app.layout.focus(app.command_line_prompt.window)
 
@@ -135,11 +136,10 @@ def get_commands(app):
     def _echo(cmd, *args):
         cmd.app.message_toolbar.text = ' '.join(args)
 
-    @kb.add('c-i', filter=~has_focus(app.info_window))
+    @kb.add('s-tab', filter=~has_focus(app.info_window))
     def info(cmd):
         cmd.app.update_info_window()
         cmd.app.layout.focus(cmd.app.info_window.window)
-        cmd.app.message_toolbar.text = 'Press q to quit'
 
     @kb.add('c-g', 'g')
     @kb.add('home')
