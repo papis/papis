@@ -9,7 +9,7 @@ from prompt_toolkit.layout.controls import (
 )
 from prompt_toolkit.widgets import HorizontalLine
 from prompt_toolkit.layout.containers import (
-    HSplit, Window, ConditionalContainer, WindowAlign
+    HSplit, Window, ConditionalContainer, WindowAlign, ScrollOffsets
 )
 from prompt_toolkit.filters import has_focus
 from prompt_toolkit.layout import NumberedMargin
@@ -45,6 +45,7 @@ class OptionsList(ConditionalContainer):
         self.entries_left_offset = 0
 
         self._options = []
+        self.max_entry_height = 1
         # Options are processed here also through the setter
         self.options = options
         self.cursor = Point(0, 0)
@@ -59,6 +60,7 @@ class OptionsList(ConditionalContainer):
             content=self.content,
             wrap_lines=False,
             allow_scroll_beyond_bottom=True,
+            scroll_offsets=ScrollOffsets(bottom=self.max_entry_height),
             cursorline=False,
             cursorcolumn=False,
             #right_margins=[NumberedMargin()],
@@ -209,17 +211,11 @@ class OptionsList(ConditionalContainer):
             len(self.header_filter(o).split('\n'))
             for o in self.options
         ]
+        self.max_entry_height = max(self.options_headers_linecount)
         logger.debug('processing headers')
-        self.offsets = [' ' * self.entries_left_offset for l in self.options]
         self.options_headers = []
         for o in self.options:
-            prestring = re.sub(
-                r'^', ' ' * self.entries_left_offset,
-                re.sub(
-                    r'\n', '\n' + ' ' * self.entries_left_offset,
-                    self.header_filter(o)
-                )
-            ) + '\n'
+            prestring = self.header_filter(o) + '\n'
             try:
                 htmlobject = HTML(prestring).formatted_text
             except:
@@ -246,7 +242,7 @@ class OptionsList(ConditionalContainer):
 
     @property
     def first_visible_line(self):
-        info = self.content_window.render_info
+        info = self.content.render_info
         if info:
             return info.first_visible_line()
 
