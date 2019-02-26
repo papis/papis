@@ -1,4 +1,5 @@
 import os
+import re
 from prompt_toolkit.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.enums import EditingMode
@@ -107,7 +108,6 @@ def create_keybindings(app):
         event.app.layout.focus(event.app.options_list.search_buffer)
         event.app.command_line_prompt.clear()
 
-
     return kb
 
 
@@ -117,7 +117,7 @@ def get_commands(app):
 
     @kb.add('c-q')
     @kb.add('c-c')
-    def _quit(event):
+    def exit(event):
         event.app.deselect()
         event.app.exit()
 
@@ -125,24 +125,24 @@ def get_commands(app):
         'enter',
         filter=has_focus(app.options_list.search_buffer)
     )
-    def _select_and_quit(event):
+    def select(event):
         event.app.exit()
 
     @kb.add('c-o', filter=has_focus(app.options_list.search_buffer))
-    def _open(cmd):
+    def open(cmd):
         from papis.commands.open import run
         doc = cmd.app.get_selection()
         run(doc)
 
     @kb.add('c-e', filter=has_focus(app.options_list.search_buffer))
-    def _edit(cmd):
+    def edit(cmd):
         from papis.commands.edit import run
         doc = cmd.app.get_selection()
         run(doc)
         cmd.app.renderer.clear()
 
     @kb.add('f1', filter=~has_focus(app.help_window))
-    def _help(event):
+    def help(event):
         event.app.layout.focus(app.help_window.window)
         event.app.message_toolbar.text = 'Press q to quit'
 
@@ -150,35 +150,35 @@ def get_commands(app):
         cmd.app.message_toolbar.text = ' '.join(args)
 
     @kb.add('c-i', filter=~has_focus(app.info_window))
-    def _info(cmd):
+    def info(cmd):
         cmd.app.update_info_window()
         cmd.app.layout.focus(cmd.app.info_window.window)
         cmd.app.message_toolbar.text = 'Press q to quit'
 
     @kb.add('c-g', 'g')
     @kb.add('home')
-    def go_top_(event):
+    def go_top(event):
         event.app.options_list.go_top()
         event.app.refresh()
 
     @kb.add('c-g', 'G')
     @kb.add('end')
-    def go_end_(event):
+    def go_end(event):
         event.app.options_list.go_bottom()
         event.app.refresh()
 
     return ([
-        Command("open", run=_open, aliases=["op"]),
-        Command("edit", run=_edit, aliases=["e"]),
-        Command("select", run=_select_and_quit, aliases=["e"]),
-        Command("exit", run=_quit, aliases=["quit", "q"]),
-        Command("info", run=_info, aliases=["i"]),
-        Command("go_top", run=go_top_),
-        Command("go_bottom", run=go_end_),
+        Command("open", run=open, aliases=["op"]),
+        Command("edit", run=edit, aliases=["e"]),
+        Command("select", run=select, aliases=["e"]),
+        Command("exit", run=exit, aliases=["quit", "q"]),
+        Command("info", run=info, aliases=["i"]),
+        Command("go_top", run=go_top),
+        Command("go_bottom", run=go_end),
         Command("move_down", run=lambda c: c.app.options_list.move_down()),
         Command("move_up", run=lambda c: c.app.options_list.move_up()),
         Command("echo", run=_echo),
-        Command("help", run=_help),
+        Command("help", run=help),
     ], kb)
 
 
@@ -234,6 +234,19 @@ class Picker(Application):
             self.command_line_prompt.window,
         ])
 
+        regex = re.compile(r'.*\.([^ ]+) +at.*')
+        kb_info = {}
+
+        # TODO: use kb_info
+        kb = merge_key_bindings([create_keybindings(self), commands_kb])
+        for binding in kb.bindings:
+            k = ' + '.join(binding.keys)
+            fn_name = regex.sub(r'\1', str(binding.handler))
+            if fn_name in kb_info.keys():
+                kb_info[fn_name].append(k)
+            else:
+                kb_info[fn_name] = [k]
+
         self.layout = Layout(_root_container)
 
         super(Picker, self).__init__(
@@ -250,9 +263,7 @@ class Picker(Application):
                 'message_toolbar': 'bg:ansiyellow fg:ansiblack',
                 'status_line': 'bg:ansiwhite fg:ansiblack',
             }),
-            key_bindings=merge_key_bindings([
-                create_keybindings(self), commands_kb
-            ]),
+            key_bindings=kb,
             include_default_pygments_style=False,
             full_screen=True,
             enable_page_navigation_bindings=True

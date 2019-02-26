@@ -71,7 +71,7 @@ class InfoWindow(ConditionalContainer):
 
 
 class HelpWindow(ConditionalContainer):
-    text = """
+    help_text = """
     <span fg='ansired'> Bindings: </span>
 
 ----------------------------------------------------
@@ -86,11 +86,11 @@ class HelpWindow(ConditionalContainer):
     """
 
     def __init__(self):
-        self.format_text_control = FormattedTextControl(
-            text=HTML(self.text)
+        self.text_control = FormattedTextControl(
+            text=HTML(self.help_text)
         )
         self.window = Window(
-            content=self.format_text_control,
+            content=self.text_control,
             always_hide_cursor=True,
             align=WindowAlign.CENTER
         )
@@ -98,3 +98,11 @@ class HelpWindow(ConditionalContainer):
             content=self.window,
             filter=has_focus(self.window)
         )
+
+    @property
+    def text(self):
+        return self.text_control.text
+
+    @text.setter
+    def text(self, value):
+        self.text_control.text = value
