@@ -109,20 +109,6 @@ class OptionsList(ConditionalContainer):
         self._options = new_options
         self.process_options()
 
-    def update_cursor(self):
-        """This function updates the cursor according to the current index
-        in the list.
-        """
-        try:
-            index = self.indices.index(self.current_index)
-            line = sum(
-                self.options_headers_linecount[i]
-                for i in self.indices[0:index]
-            )
-            self.cursor = Point(0, line)
-        except Exception as e:
-            self.cursor = Point(0, 0)
-
     def move_up(self):
         try:
             index = self.indices.index(self.current_index)
@@ -153,7 +139,8 @@ class OptionsList(ConditionalContainer):
         if len(self.indices) > 0:
             self.current_index = self.indices[-1]
 
-    def get_search_regex(self):
+    @property
+    def search_regex(self):
         cleaned_search = (
             self.search_buffer.text
             .replace('(', '\\(')
@@ -162,17 +149,19 @@ class OptionsList(ConditionalContainer):
             .replace('[', '\\[')
             .replace(']', '\\]')
         )
-        return r".*"+re.sub(r"\s+", ".*", cleaned_search)
+        return re.compile(r".*"+re.sub(r"\s+", ".*", cleaned_search))
 
     def update(self, *args):
         self.filter_options()
 
     def filter_options(self, *args):
         indices = []
-        regex = self.get_search_regex()
+        regex = self.search_regex
+
         for index, option in enumerate(list(self.options)):
-            if re.match(regex, self.options_matchers[index], re.I):
+            if regex.match(self.options_matchers[index], re.I):
                 indices += [index]
+
         self.indices = indices
         if len(self.indices) and self.current_index not in self.indices:
             if self.current_index < min(self.indices):
@@ -186,23 +175,26 @@ class OptionsList(ConditionalContainer):
         if len(self.indices) and self.current_index is not None:
             return self.options[self.current_index]
 
+    def update_cursor(self):
+        """This function updates the cursor according to the current index
+        in the list.
+        """
+        try:
+            index = self.indices.index(self.current_index)
+            line = sum(
+                self.options_headers_linecount[i]
+                for i in self.indices[0:index]
+            )
+            self.cursor = Point(0, line)
+        except Exception as e:
+            self.cursor = Point(0, 0)
+
     def get_tokens(self):
         self.update_cursor()
         result = sum(
             [self.options_headers[i] for i in self.indices],
             []
         )
-        try:
-            get_app().message_toolbar.text = "{4} {5} {0} {1} {3} {2}".format(
-                self.get_search_regex(), self.cursor,
-                self.options_headers[i],
-                i,
-                self.indices,
-                id(self.content.text)
-            )
-            #self.content.text = ''
-        except:
-            pass
         return result
 
     def process_options(self):
@@ -229,50 +221,3 @@ class OptionsList(ConditionalContainer):
         self.options_matchers = [self.match_filter(o) for o in self.options]
         self.indices = range(len(self.options))
         logger.debug('got {0} matchers'.format(len(self.options_matchers)))
-
-    @property
-    def screen_height(self):
-        return self.content.preferred_height(None, None, None)
-
-    @property
-    def displayed_lines(self):
-        info = self.content_window.render_info
-        if info:
-            return info.displayed_lines
-
-    @property
-    def first_visible_line(self):
-        info = self.content.render_info
-        if info:
-            return info.first_visible_line()
-
-    @property
-    def last_visible_line(self):
-        info = self.content_window.render_info
-        if info:
-            return info.last_visible_line()
-
-    @property
-    def content_height(self):
-        info = self.content_window.render_info
-        if info:
-            return info.content_height
-
-    def scroll_down(self):
-        lvl = self.last_visible_line
-        ll = self.content_height
-        if ll and lvl:
-            if lvl + 1 < ll:
-                new = lvl + 1
-            else:
-                new = lvl
-            self.cursor = Point(0, new)
-
-    def scroll_up(self):
-        fvl = self.first_visible_line
-        if fvl:
-            if fvl >= 0:
-                new = fvl - 1
-            else:
-                new = 0
-            self.cursor = Point(0, new)

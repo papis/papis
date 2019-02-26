@@ -62,20 +62,6 @@ def create_keybindings(app):
         up_(event)
         event.app.update_info_window()
 
-    @kb.add('c-y')
-    @kb.add('c-up')
-    @kb.add('s-up')
-    def scroll_up_(event):
-        event.app.options_list.scroll_up()
-        event.app.refresh_status_line()
-
-    @kb.add('c-e')
-    @kb.add('c-down')
-    @kb.add('s-down')
-    def scroll_down_(event):
-        event.app.options_list.scroll_down()
-        event.app.refresh_status_line()
-
     @kb.add('q', filter=has_focus(app.help_window))
     @kb.add('escape', filter=has_focus(app.help_window))
     def _help_quit(event):
