@@ -80,6 +80,9 @@ def cli(
             toolbar = 'The folder {0} would be removed'.format(
                 document.get_main_folder()
             )
+            papis.utils.text_area(
+                title=toolbar, text=document.dump(), lexer_name='yaml'
+            )
             if not papis.utils.confirm("Are you sure?", bottom_toolbar=toolbar):
                 return status.success
         click.echo("Removing ...")
