@@ -71,19 +71,20 @@ class InfoWindow(ConditionalContainer):
 
 
 class HelpWindow(ConditionalContainer):
-    help_text = """
-    <span fg='ansired'> Bindings: </span>
+    help_text = ''
+    # help_text = """
+    # <span fg='ansired'> Bindings: </span>
 
-----------------------------------------------------
-/   Ctrl-e, Ctrl-down, Shift-down : Scroll Down     /
-/   Ctrl-y, Ctrl-up,   Shift-up   : Scroll up       /
-/   Ctrl-n, down                  : Next item       /
-/   Ctrl-p, up                    : Previous item   /
-/   Ctrl-q, Ctrl-c                : Quit            /
-/   Home                          : First item      /
-/   End                           : Last item       /
-----------------------------------------------------
-    """
+# ----------------------------------------------------
+# /   Ctrl-e, Ctrl-down, Shift-down : Scroll Down     /
+# /   Ctrl-y, Ctrl-up,   Shift-up   : Scroll up       /
+# /   Ctrl-n, down                  : Next item       /
+# /   Ctrl-p, up                    : Previous item   /
+# /   Ctrl-q, Ctrl-c                : Quit            /
+# /   Home                          : First item      /
+# /   End                           : Last item       /
+# ----------------------------------------------------
+    # """
 
     def __init__(self):
         self.text_control = FormattedTextControl(

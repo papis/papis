@@ -236,6 +236,14 @@ class Picker(Application):
             else:
                 kb_info[fn_name] = [k]
 
+        help_text = ""
+        for k,v in kb_info.items():
+            help_text += (
+                "{command}: {keys}\n".format(command=k, keys=', '.join(v))
+            )
+
+        self.help_window.text = help_text
+
         self.layout = Layout(_root_container)
 
         super(Picker, self).__init__(
