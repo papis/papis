@@ -10,10 +10,11 @@ from prompt_toolkit.layout.controls import (
     FormattedTextControl
 )
 from prompt_toolkit.application.current import get_app
+from prompt_toolkit.utils import Event
 import shlex
 
 
-class Command:
+class Command(Event):
     """
     :param name: Name of the command
     :type  name: parameter_type

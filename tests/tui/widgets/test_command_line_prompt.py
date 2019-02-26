@@ -1,4 +1,6 @@
 from prompt_toolkit.layout.containers import to_container
+from prompt_toolkit.key_binding import KeyBindings
+
 from papis.tui.widgets.command_line_prompt import *
 from papis.tui.widgets import *
 
@@ -8,6 +10,7 @@ def test_simple_command():
     assert(cmd.app is not None)
     r = cmd()
     assert(r == 2)
+
 
 
 def test_commandlineprompt():

@@ -5,6 +5,7 @@ from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.containers import (
     HSplit, Window, WindowAlign, ConditionalContainer
 )
+from prompt_toolkit.layout import Dimension
 from prompt_toolkit.layout.controls import (
     BufferControl,
     FormattedTextControl
@@ -56,7 +57,7 @@ class InfoWindow(ConditionalContainer):
                 content=BufferControl(
                     buffer=self.buf, lexer=self.lexer)
             )
-        ], height=20)
+        ], height=Dimension(min=5, max=20, weight=1))
         super(InfoWindow, self).__init__(
             content=self.window,
             filter=has_focus(self)

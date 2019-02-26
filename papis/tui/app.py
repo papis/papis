@@ -3,9 +3,9 @@ from prompt_toolkit.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.layout.processors import BeforeInput
-from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.key_binding import KeyBindings, merge_key_bindings
 from prompt_toolkit.layout.screen import Point
-from prompt_toolkit.filters import has_focus
+from prompt_toolkit.filters import has_focus, Condition
 from prompt_toolkit.styles import Style
 from prompt_toolkit.layout.containers import (
     HSplit, Window, ConditionalContainer
@@ -29,11 +29,13 @@ logger = logging.getLogger('pick')
 def create_keybindings(app):
     kb = KeyBindings()
 
-    @kb.add('c-q')
-    @kb.add('c-c')
-    def exit_(event):
-        event.app.deselect()
-        event.app.exit()
+    @kb.add('escape', filter=Condition(lambda: app.message_toolbar.text))
+    def _(event):
+        event.app.message_toolbar.text = None
+
+    @kb.add('escape', filter=Condition(lambda: app.error_toolbar.text))
+    def _(event):
+        event.app.error_toolbar.text = None
 
     @kb.add('c-n', filter=~has_focus(app.info_window))
     @kb.add('down', filter=~has_focus(app.info_window))
@@ -59,18 +61,6 @@ def create_keybindings(app):
         up_(event)
         event.app.update_info_window()
 
-    @kb.add('c-g', 'G')
-    @kb.add('end')
-    def go_end_(event):
-        event.app.options_list.go_bottom()
-        event.app.refresh()
-
-    @kb.add('c-g', 'g')
-    @kb.add('home')
-    def go_top_(event):
-        event.app.options_list.go_top()
-        event.app.refresh()
-
     @kb.add('c-y')
     @kb.add('c-up')
     @kb.add('s-up')
@@ -85,85 +75,111 @@ def create_keybindings(app):
         event.app.options_list.scroll_down()
         event.app.refresh_status_line()
 
-    @kb.add('f1', filter=~has_focus(app.help_window))
-    def _help(event):
-        event.app.layout.focus(app.help_window.window)
-        event.app.message_toolbar.text = 'Press q to quit'
-
     @kb.add('q', filter=has_focus(app.help_window))
-    def _help(event):
+    @kb.add('escape', filter=has_focus(app.help_window))
+    def _help_quit(event):
         event.app.layout.focus(app.help_window.window)
         event.app.layout.focus(app.command_line_prompt.window)
         event.app.message_toolbar.text = None
         event.app.layout.focus(event.app.options_list.search_buffer)
 
-    @kb.add(':')
+    @kb.add('q', filter=has_focus(app.info_window))
+    @kb.add('escape', filter=has_focus(app.info_window))
+    def _info(event):
+        event.app.layout.focus(event.app.options_list.search_buffer)
+        event.app.message_toolbar.text = None
+
+    @kb.add('c-x', filter=~has_focus(app.command_line_prompt))
     def _command_window(event):
         event.app.layout.focus(app.command_line_prompt.window)
 
-    # @kb.add('c-i', filter=has_focus(app.info_window))
-    # def _info(event):
-        # event.app.layout.focus(event.app.options_list.search_buffer)
-
-    # @kb.add('c-i', filter=~has_focus(app.info_window))
-    # def _info_no_focus(event):
-        # event.app.update_info_window()
-        # event.app.layout.focus(app.info_window.window)
-
-    @kb.add('enter', filter=~has_focus(app.command_line_prompt))
-    def enter_(event):
-        event.app.exit()
-
     @kb.add('enter', filter=has_focus(app.command_line_prompt))
     def _enter_(event):
+        event.app.layout.focus(event.app.options_list.search_buffer)
         try:
             event.app.command_line_prompt.trigger()
         except Exception as e:
             event.app.error_toolbar.text = str(e)
         event.app.command_line_prompt.clear()
+
+    @kb.add('escape', filter=has_focus(app.command_line_prompt))
+    def _(event):
         event.app.layout.focus(event.app.options_list.search_buffer)
+        event.app.command_line_prompt.clear()
+
 
     return kb
 
 
-def get_commands():
+def get_commands(app):
 
+    kb = KeyBindings()
+
+    @kb.add('c-q')
+    @kb.add('c-c')
+    def _quit(event):
+        event.app.deselect()
+        event.app.exit()
+
+    @kb.add(
+        'enter',
+        filter=has_focus(app.options_list.search_buffer)
+    )
+    def _select_and_quit(event):
+        event.app.exit()
+
+    @kb.add('c-o', filter=has_focus(app.options_list.search_buffer))
     def _open(cmd):
         from papis.commands.open import run
         doc = cmd.app.get_selection()
         run(doc)
 
+    @kb.add('c-e', filter=has_focus(app.options_list.search_buffer))
     def _edit(cmd):
         from papis.commands.edit import run
         doc = cmd.app.get_selection()
         run(doc)
-        cmd.app.invalidate()
+        cmd.app.renderer.clear()
 
-    def _quit(cmd):
-        cmd.app.deselect()
-        cmd.app.exit()
+    @kb.add('f1', filter=~has_focus(app.help_window))
+    def _help(event):
+        event.app.layout.focus(app.help_window.window)
+        event.app.message_toolbar.text = 'Press q to quit'
 
     def _echo(cmd, *args):
         cmd.app.message_toolbar.text = ' '.join(args)
 
+    @kb.add('c-i', filter=~has_focus(app.info_window))
     def _info(cmd):
         cmd.app.update_info_window()
         cmd.app.layout.focus(cmd.app.info_window.window)
+        cmd.app.message_toolbar.text = 'Press q to quit'
 
-    return [
+    @kb.add('c-g', 'g')
+    @kb.add('home')
+    def go_top_(event):
+        event.app.options_list.go_top()
+        event.app.refresh()
+
+    @kb.add('c-g', 'G')
+    @kb.add('end')
+    def go_end_(event):
+        event.app.options_list.go_bottom()
+        event.app.refresh()
+
+    return ([
         Command("open", run=_open, aliases=["op"]),
         Command("edit", run=_edit, aliases=["e"]),
+        Command("select", run=_select_and_quit, aliases=["e"]),
         Command("exit", run=_quit, aliases=["quit", "q"]),
         Command("info", run=_info, aliases=["i"]),
-        Command("go_top", run=lambda c: c.app.options_list.go_top()),
-        Command("go_bottom", run=lambda c: c.app.options_list.go_bottom()),
+        Command("go_top", run=go_top_),
+        Command("go_bottom", run=go_end_),
         Command("move_down", run=lambda c: c.app.options_list.move_down()),
         Command("move_up", run=lambda c: c.app.options_list.move_up()),
         Command("echo", run=_echo),
-        Command("help",
-            run=lambda c: c.app.layout.focus(c.app.help_window.window)
-        ),
-    ]
+        Command("help", run=_help),
+    ], kb)
 
 
 class Picker(Application):
@@ -185,7 +201,6 @@ class Picker(Application):
 
         self.info_window = InfoWindow()
         self.help_window = HelpWindow()
-        self.command_line_prompt = CommandLinePrompt(commands=get_commands())
         self.message_toolbar = MessageToolbar(style="class:message_toolbar")
         self.error_toolbar = MessageToolbar(style="class:error_toolbar")
         self.status_line = MessageToolbar(style="class:status_line")
@@ -197,6 +212,9 @@ class Picker(Application):
             match_filter,
             custom_filter=~has_focus(self.help_window)
         )
+
+        commands, commands_kb = get_commands(self)
+        self.command_line_prompt = CommandLinePrompt(commands=commands)
 
         _root_container = HSplit([
             HSplit([
@@ -232,7 +250,9 @@ class Picker(Application):
                 'message_toolbar': 'bg:ansiyellow fg:ansiblack',
                 'status_line': 'bg:ansiwhite fg:ansiblack',
             }),
-            key_bindings=create_keybindings(self),
+            key_bindings=merge_key_bindings([
+                create_keybindings(self), commands_kb
+            ]),
             include_default_pygments_style=False,
             full_screen=True,
             enable_page_navigation_bindings=True
@@ -243,7 +263,12 @@ class Picker(Application):
         self.options_list.current_index = None
 
     def refresh_status_line(self):
-        self.status_line.text = "{0}/{1}  F1:help".format(
+        self.status_line.text = (
+            "{0}/{1}  "
+            "F1:help  "
+            "Ctrl-l:redraw  "
+            "c-x:execute command"
+        ).format(
             int(self.options_list.current_index) + 1,
             len(self.options_list.options),
         )
