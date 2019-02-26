@@ -682,10 +682,10 @@ general_settings = {
     "format-jinja2-enable": False,
     "header-format-file": None,
     "header-format": \
-        "<red>{doc.html_escape[title]}</red>\n"\
-        " <span color='#00ff00'>{doc.html_escape[author]}</span>\n"
-        "  <span color='#00ffaa'>({doc.html_escape[year]})</span> "
-        "[<yellow>{doc.html_escape[tags]}</yellow>]",
+        "<ansired>{doc.html_escape[title]}</ansired>\n"\
+        " <ansigreen>{doc.html_escape[author]}</ansigreen>\n"
+        "  <blue>({doc.html_escape[year]})</blue> "
+        "[<ansiyellow>{doc.html_escape[tags]}</ansiyellow>]",
 
     "info-allow-unicode": True,
     "ref-format": "{doc[doi]}",
