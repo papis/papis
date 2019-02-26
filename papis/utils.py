@@ -218,7 +218,6 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
     from prompt_toolkit.layout import Dimension
     from prompt_toolkit.key_binding import KeyBindings
     from prompt_toolkit.lexers import PygmentsLexer
-    from prompt_toolkit.formatted_text import HTML
     from pygments.lexers import find_lexer_class_by_name
     assert(type(title) == str)
     assert(type(text) == str)
@@ -256,9 +255,7 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
             align=WindowAlign.CENTER,
             height=1,
             content=FormattedTextControl(
-                text=HTML(
-                    "<style bg='white' fg='black'>{0}</style>".format(title)
-                )
+                text=[('fg:ansiblack bg:ansiwhite', title)]
             ),
             always_hide_cursor=True
         ),
@@ -267,16 +264,14 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
 
         Window(
             height=1,
+            width=None,
             align=WindowAlign.CENTER,
             char='-',
             content=FormattedTextControl(
-                text=HTML(
-                "<style bg='white' fg='black'>"
-                "Quit [Ctrl-q]"
-                " "
-                "Save [Ctrl-s]"
-                "</style>"
-                )
+                text=[(
+                    'fg:ansiblack bg:ansiwhite',
+                    "Quit [Ctrl-q]  Save [Ctrl-s]"
+                )]
             )
         ),
     ])
