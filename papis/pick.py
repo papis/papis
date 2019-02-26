@@ -1,4 +1,5 @@
-from papis.tui import Picker
+from papis.tui.app import Picker
+
 
 def pick(
         options,

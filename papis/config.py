@@ -536,6 +536,41 @@ or inside the library sections prepending a ``tui-``,
     ``emacs`` like keybindings or ``vi``. If this does not tell you
     anything, you can just leave it as is.
 
+
+.. papis-config:: move_down_key
+    :section: tui
+
+.. papis-config:: move_up_key
+    :section: tui
+
+.. papis-config:: move_down_while_info_window_active_key
+    :section: tui
+
+.. papis-config:: move_up_while_info_window_active_key
+    :section: tui
+
+.. papis-config:: focus_command_line_key
+    :section: tui
+
+.. papis-config:: edit_document_key
+    :section: tui
+
+.. papis-config:: open_document_key
+    :section: tui
+
+.. papis-config:: show_help_key
+    :section: tui
+
+.. papis-config:: show_info_key
+    :section: tui
+
+.. papis-config:: go_top_key
+    :section: tui
+
+.. papis-config:: go_bottom_key
+    :section: tui
+
+
 Other
 ^^^^^
 
@@ -711,13 +746,13 @@ def get_default_settings(section="", key=""):
     global _DEFAULT_SETTINGS
     # We use an OrderedDict so that the first entry will always be the general
     # settings, also good for automatic documentation
-    import papis.tui
     from collections import OrderedDict
     if _DEFAULT_SETTINGS is None:
         _DEFAULT_SETTINGS = OrderedDict()
         _DEFAULT_SETTINGS.update({
             get_general_settings_name(): general_settings,
         })
+        import papis.tui
         _DEFAULT_SETTINGS.update(papis.tui.get_default_settings())
     if not section and not key:
         return _DEFAULT_SETTINGS

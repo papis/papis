@@ -1,6 +1,7 @@
 import os
 import re
 from prompt_toolkit.application import Application
+from prompt_toolkit.formatted_text.html import HTML
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.layout.processors import BeforeInput
@@ -15,7 +16,7 @@ from prompt_toolkit.layout.controls import (
     BufferControl,
 )
 from prompt_toolkit.layout.layout import Layout
-import papis.config
+import papis.config as config
 import logging
 
 from .widgets.command_line_prompt import Command
@@ -26,8 +27,61 @@ from .widgets import (
 
 logger = logging.getLogger('pick')
 
+_keys_info = None
+def get_keys_info():
+    global _keys_info
+    if not _keys_info:
+        _keys_info = {
+            "move_down_key": {
+                'key': config.get('move_down_key', section='tui'),
+                'help': 'Move cursor down in the list',
+            },
+            "move_up_key": {
+                'key': config.get('move_up_key', section='tui'),
+                'help': 'Move cursor up in the list',
+            },
+            "move_down_while_info_window_active_key": {
+                'key': config.get('move_down_while_info_window_active_key', section='tui'),
+                'help': 'Move cursor down while info window is active',
+            },
+            "move_up_while_info_window_active_key": {
+                'key': config.get('move_up_while_info_window_active_key', section='tui'),
+                'help': 'Move cursor up while info window is active',
+            },
+            "focus_command_line_key": {
+                'key': config.get('focus_command_line_key', section='tui'),
+                'help': 'Focus command line prompt',
+            },
+            "edit_document_key": {
+                'key': config.get('edit_document_key', section='tui'),
+                'help': 'Edit currently selected document',
+            },
+            "open_document_key": {
+                'key': config.get('open_document_key', section='tui'),
+                'help': 'Open currently selected document',
+            },
+            "show_help_key": {
+                'key': config.get('show_help_key', section='tui'),
+                'help': 'Show help',
+            },
+            "show_info_key": {
+                'key': config.get('show_info_key', section='tui'),
+                'help': 'Show the yaml information of the current document',
+            },
+            "go_top_key": {
+                'key': config.get('go_top_key', section='tui'),
+                'help': 'Go to the top of the list',
+            },
+            "go_bottom_key": {
+                'key': config.get('go_bottom_key', section='tui'),
+                'help': 'Go to the bottom of the list',
+            },
+        }
+    return _keys_info
+
 
 def create_keybindings(app):
+    keys_info = get_keys_info()
     kb = KeyBindings()
 
     @kb.add('escape', filter=Condition(lambda: app.message_toolbar.text))
@@ -39,25 +93,31 @@ def create_keybindings(app):
         event.app.error_toolbar.text = None
 
     @kb.add('c-n', filter=~has_focus(app.info_window))
-    @kb.add('down', filter=~has_focus(app.info_window))
+    @kb.add(keys_info["move_down_key"]["key"], filter=~has_focus(app.info_window))
     def down_(event):
         event.app.options_list.move_down()
         event.app.refresh()
         event.app.update()
 
-    @kb.add('c-n', filter=has_focus(app.info_window))
+    @kb.add(
+        keys_info["move_down_while_info_window_active_key"]["key"],
+        filter=has_focus(app.info_window)
+    )
     def down_info(event):
         down_(event)
         event.app.update_info_window()
 
     @kb.add('c-p', filter=~has_focus(app.info_window))
-    @kb.add('up', filter=~has_focus(app.info_window))
+    @kb.add(keys_info["move_up_key"]["key"], filter=~has_focus(app.info_window))
     def up_(event):
         event.app.options_list.move_up()
         event.app.refresh()
         event.app.update()
 
-    @kb.add('c-p', filter=has_focus(app.info_window))
+    @kb.add(
+        keys_info["move_up_while_info_window_active_key"]["key"],
+        filter=has_focus(app.info_window)
+    )
     def up_info(event):
         up_(event)
         event.app.update_info_window()
@@ -77,7 +137,10 @@ def create_keybindings(app):
         event.app.layout.focus(event.app.options_list.search_buffer)
         event.app.message_toolbar.text = None
 
-    @kb.add('tab', filter=~has_focus(app.command_line_prompt))
+    @kb.add(
+        keys_info["focus_command_line_key"]["key"],
+        filter=~has_focus(app.command_line_prompt)
+    )
     def _command_window(event):
         event.app.layout.focus(app.command_line_prompt.window)
 
@@ -101,6 +164,7 @@ def create_keybindings(app):
 def get_commands(app):
 
     kb = KeyBindings()
+    keys_info = get_keys_info()
 
     @kb.add('c-q')
     @kb.add('c-c')
@@ -115,20 +179,29 @@ def get_commands(app):
     def select(event):
         event.app.exit()
 
-    @kb.add('c-o', filter=has_focus(app.options_list.search_buffer))
+    @kb.add(
+        keys_info["open_document_key"]["key"],
+        filter=has_focus(app.options_list.search_buffer)
+    )
     def open(cmd):
         from papis.commands.open import run
         doc = cmd.app.get_selection()
         run(doc)
 
-    @kb.add('c-e', filter=has_focus(app.options_list.search_buffer))
+    @kb.add(
+        keys_info["edit_document_key"]["key"],
+        filter=has_focus(app.options_list.search_buffer)
+    )
     def edit(cmd):
         from papis.commands.edit import run
         doc = cmd.app.get_selection()
         run(doc)
         cmd.app.renderer.clear()
 
-    @kb.add('f1', filter=~has_focus(app.help_window))
+    @kb.add(
+        keys_info["show_help_key"]["key"],
+        filter=~has_focus(app.help_window)
+    )
     def help(event):
         event.app.layout.focus(app.help_window.window)
         event.app.message_toolbar.text = 'Press q to quit'
@@ -136,19 +209,22 @@ def get_commands(app):
     def _echo(cmd, *args):
         cmd.app.message_toolbar.text = ' '.join(args)
 
-    @kb.add('s-tab', filter=~has_focus(app.info_window))
+    @kb.add(
+        keys_info["show_info_key"]["key"],
+        filter=~has_focus(app.info_window)
+    )
     def info(cmd):
         cmd.app.update_info_window()
         cmd.app.layout.focus(cmd.app.info_window.window)
 
     @kb.add('c-g', 'g')
-    @kb.add('home')
+    @kb.add(keys_info["go_top_key"]["key"])
     def go_top(event):
         event.app.options_list.go_top()
         event.app.refresh()
 
     @kb.add('c-g', 'G')
-    @kb.add('end')
+    @kb.add(keys_info["go_bottom_key"]["key"])
     def go_end(event):
         event.app.options_list.go_bottom()
         event.app.refresh()
@@ -190,7 +266,7 @@ class Picker(Application):
         self.message_toolbar = MessageToolbar(style="class:message_toolbar")
         self.error_toolbar = MessageToolbar(style="class:error_toolbar")
         self.status_line = MessageToolbar(style="class:status_line")
-        self.status_line_format = papis.config.get(
+        self.status_line_format = config.get(
             'status_line_format', section="tui"
         )
 
@@ -204,6 +280,7 @@ class Picker(Application):
 
         commands, commands_kb = get_commands(self)
         self.command_line_prompt = CommandLinePrompt(commands=commands)
+        kb = merge_key_bindings([create_keybindings(self), commands_kb])
 
         _root_container = HSplit([
             HSplit([
@@ -224,25 +301,16 @@ class Picker(Application):
         ])
 
         regex = re.compile(r'.*\.([^ ]+) +at.*')
-        kb_info = {}
-
-        # TODO: use kb_info
-        kb = merge_key_bindings([create_keybindings(self), commands_kb])
-        for binding in kb.bindings:
-            k = ' + '.join(binding.keys)
-            fn_name = regex.sub(r'\1', str(binding.handler))
-            if fn_name in kb_info.keys():
-                kb_info[fn_name].append(k)
-            else:
-                kb_info[fn_name] = [k]
 
         help_text = ""
-        for k,v in kb_info.items():
+        keys_info = get_keys_info()
+        for k in keys_info:
             help_text += (
-                "{command}: {keys}\n".format(command=k, keys=', '.join(v))
+                "<ansired>{k[key]}</ansired>: {k[help]}\n".format(
+                    k=keys_info[k]
+                )
             )
-
-        self.help_window.text = help_text
+        self.help_window.text = HTML(help_text)
 
         self.layout = Layout(_root_container)
 
@@ -250,23 +318,23 @@ class Picker(Application):
             input=None,
             output=None,
             editing_mode=EditingMode.EMACS
-            if papis.config.get('editmode', section='tui') == 'emacs'
+            if config.get('editmode', section='tui') == 'emacs'
             else EditingMode.VI,
             layout=self.layout,
             style=Style.from_dict({
-                'options_list.selected_margin': papis.config.get(
+                'options_list.selected_margin': config.get(
                     'options_list.selected_margin_style', section='tui'
                 ),
-                'options_list.unselected_margin': papis.config.get(
+                'options_list.unselected_margin': config.get(
                     'options_list.unselected_margin_style', section='tui'
                 ),
-                'error_toolbar': papis.config.get(
+                'error_toolbar': config.get(
                     'error_toolbar_style', section='tui'
                 ),
-                'message_toolbar': papis.config.get(
+                'message_toolbar': config.get(
                     'message_toolbar_style', section='tui'
                 ),
-                'status_line': papis.config.get(
+                'status_line': config.get(
                     'status_line_style', section='tui'
                 ),
             }),
