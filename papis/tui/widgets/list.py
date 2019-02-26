@@ -13,6 +13,7 @@ from prompt_toolkit.layout.containers import (
 )
 from prompt_toolkit.filters import has_focus
 from prompt_toolkit.layout import NumberedMargin
+import multiprocessing
 
 import logging
 
@@ -43,6 +44,7 @@ class OptionsList(ConditionalContainer):
         self.match_filter = match_filter
         self.current_index = default_index
         self.entries_left_offset = 0
+        self.pool = multiprocessing.Pool(multiprocessing.cpu_count())
 
         self._options = []
         self.max_entry_height = 1
@@ -81,6 +83,11 @@ class OptionsList(ConditionalContainer):
                 else has_focus(self.search_buffer)
             )
         )
+
+    def __del__(self):
+        # Clean initialized pool upon deleting of the object
+        self.pool.close()
+        self.pool.join()
 
     def get_line_prefix(self, line, blih):
         try:
@@ -149,7 +156,11 @@ class OptionsList(ConditionalContainer):
             .replace('[', '\\[')
             .replace(']', '\\]')
         )
-        return re.compile(r".*"+re.sub(r"\s+", ".*", cleaned_search))
+        return re.compile(r".*"+re.sub(r"\s+", ".*", cleaned_search), re.I)
+
+    @staticmethod
+    def match_against_regex(regex, line, index):
+        return index if regex.match(line, re.I) else None
 
     def update(self, *args):
         self.filter_options()
@@ -158,9 +169,14 @@ class OptionsList(ConditionalContainer):
         indices = []
         regex = self.search_regex
 
-        for index, option in enumerate(list(self.options)):
-            if regex.match(self.options_matchers[index], re.I):
-                indices += [index]
+        result = [
+            self.pool.apply_async(
+                OptionsList.match_against_regex,
+                args=(regex, opt, i,)
+            ) for i, opt in enumerate(self.options_matchers)
+        ]
+
+        indices =  [d.get() for d in result if d.get() is not None]
 
         self.indices = indices
         if len(self.indices) and self.current_index not in self.indices:
