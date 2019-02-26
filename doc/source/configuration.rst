@@ -47,10 +47,19 @@ A more complete example of a configuration file is the following
     <span color='#ff00ff'>  {doc.html_escape[author]}</span>
     <yellow>   ({doc.html_escape[year]})</yellow>
 
+  [tui]
+  editmode = vi
+  options_list.selected_margin_style = bg:ansigreen fg:ansired
+  options_list.unselected_margin_style =
+
+
 
   # Define a lib
   [papers]
   dir = ~/Documents/papers
+
+  tui-editmode = emacs
+  tui-options_list.unselected_margin_style = bg:blue
 
   # Define a lib for books
   [books]

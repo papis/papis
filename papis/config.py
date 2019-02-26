@@ -1,7 +1,4 @@
 """
-General
-*******
-
 .. papis-config:: local-config-file
 
     Name AND relative path of the local configuration file that papis
@@ -238,8 +235,8 @@ Bibtex options
 
 .. _add-command-options:
 
-Add command options
-^^^^^^^^^^^^^^^^^^^
+``papis add`` options
+^^^^^^^^^^^^^^^^^^^^^
 
 .. papis-config:: ref-format
 
@@ -298,8 +295,8 @@ Add command options
     will fave the contrary effect, i.e., it will not open the attached files
     before adding the document to the library.
 
-Browse command options
-^^^^^^^^^^^^^^^^^^^^^^
+``papis browse`` options
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. papis-config:: browse-key
 
@@ -316,8 +313,8 @@ Browse command options
 
 .. _edit-command-options:
 
-Edit command options
-^^^^^^^^^^^^^^^^^^^^
+``papis edit`` options
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. papis-config:: notes-name
 
@@ -398,7 +395,7 @@ Marks
             mark-opener-format = zathura -P {mark[value]}
 
 Downloaders
-===========
+^^^^^^^^^^^
 
 .. papis-config:: downloader-proxy
 
@@ -407,7 +404,7 @@ Downloaders
     `link <http://docs.python-requests.org/en/master/user/advanced/#proxies>`_.
 
 Databases
-=========
+^^^^^^^^^
 
 .. papis-config:: default-query-string
 
@@ -462,8 +459,85 @@ Databases
     `the documentation <https://whoosh.readthedocs.io/en/latest/schema.html/>`_
     for more information.
 
+Terminal user interface (picker)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+These options are for the terminal user interface (tui).
+They are defined in the section ``tui`` which means that you can set them
+in your configuration file globaly like
+
+.. code:: ini
+
+    [tui]
+    status_line_format = "F1: Help"
+    ...
+
+or inside the library sections prepending a ``tui-``,
+
+.. code:: ini
+
+    [papers]
+    tui-status_line_format = "Library papers"
+    ...
+
+.. papis-config:: status_line_format
+    :section: tui
+
+    This is the format of the string that appears on the bottom line in the
+    status line.
+    Right now there are only two variables defined:
+
+    - ``selected_index``
+    - ``number_of_documents``
+
+    Which are self-explanatory.
+
+.. papis-config:: status_line_style
+    :section: tui
+
+    The style the status line should have.
+    Examples are ``fg:#ff00aa bg:black`` etc...
+    More information can be found
+    `here
+    <https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/styling.html/>`_
+    .
+
+.. papis-config:: message_toolbar_style
+    :section: tui
+
+    The style of the message toolbar, this toolbar is the one
+    where messages of the ``echo`` command are rendered for instance.
+
+.. papis-config:: options_list.selected_margin_style
+    :section: tui
+
+    Style of the margin of the selected document in the picker.
+
+.. papis-config:: options_list.unselected_margin_style
+    :section: tui
+
+    Style of the margin of the unselected documents in the picker.
+    If you don't want any coloring for them you can just set this setting
+    to the empty string as such
+
+    ::
+
+        tui-options_list.unselected_margin_style =
+
+.. papis-config:: error_toolbar_style
+    :section: tui
+
+    The style for the error messages.
+
+.. papis-config:: editmode
+    :section: tui
+
+    Whenever the user is typing text, one can use either
+    ``emacs`` like keybindings or ``vi``. If this does not tell you
+    anything, you can just leave it as is.
+
 Other
-=====
+^^^^^
 
 .. papis-config:: citation-string
 
@@ -595,7 +669,6 @@ general_settings = {
     "citation-string": "*",
     'unique-document-keys': "['doi','ref','isbn','isbn10','url','doc_url']",
 
-    "tui-editmode": "emacs",
     "downloader-proxy": None,
     "bibtex-unicode": False,
 
@@ -638,12 +711,14 @@ def get_default_settings(section="", key=""):
     global _DEFAULT_SETTINGS
     # We use an OrderedDict so that the first entry will always be the general
     # settings, also good for automatic documentation
+    import papis.tui
     from collections import OrderedDict
     if _DEFAULT_SETTINGS is None:
         _DEFAULT_SETTINGS = OrderedDict()
         _DEFAULT_SETTINGS.update({
             get_general_settings_name(): general_settings,
         })
+        _DEFAULT_SETTINGS.update(papis.tui.get_default_settings())
     if not section and not key:
         return _DEFAULT_SETTINGS
     elif not section:

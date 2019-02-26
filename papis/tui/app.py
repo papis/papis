@@ -204,6 +204,9 @@ class Picker(Application):
         self.message_toolbar = MessageToolbar(style="class:message_toolbar")
         self.error_toolbar = MessageToolbar(style="class:error_toolbar")
         self.status_line = MessageToolbar(style="class:status_line")
+        self.status_line_format = papis.config.get(
+            'status_line_format', section="tui"
+        )
 
         self.options_list = OptionsList(
             options,
@@ -253,15 +256,25 @@ class Picker(Application):
             input=None,
             output=None,
             editing_mode=EditingMode.EMACS
-            if papis.config.get('tui-editmode') == 'emacs'
+            if papis.config.get('editmode', section='tui') == 'emacs'
             else EditingMode.VI,
             layout=self.layout,
             style=Style.from_dict({
-                'options_list.selected_margin': 'bg:ansiblack fg:ansigreen',
-                'options_list.unselected_margin': 'bg:ansiwhite',
-                'error_toolbar': 'bg:ansired fg:ansiblack',
-                'message_toolbar': 'bg:ansiyellow fg:ansiblack',
-                'status_line': 'bg:ansiwhite fg:ansiblack',
+                'options_list.selected_margin': papis.config.get(
+                    'options_list.selected_margin_style', section='tui'
+                ),
+                'options_list.unselected_margin': papis.config.get(
+                    'options_list.unselected_margin_style', section='tui'
+                ),
+                'error_toolbar': papis.config.get(
+                    'error_toolbar_style', section='tui'
+                ),
+                'message_toolbar': papis.config.get(
+                    'message_toolbar_style', section='tui'
+                ),
+                'status_line': papis.config.get(
+                    'status_line_style', section='tui'
+                ),
             }),
             key_bindings=kb,
             include_default_pygments_style=False,
@@ -274,14 +287,9 @@ class Picker(Application):
         self.options_list.current_index = None
 
     def refresh_status_line(self):
-        self.status_line.text = (
-            "{0}/{1}  "
-            "F1:help  "
-            "Ctrl-l:redraw  "
-            "c-x:execute command"
-        ).format(
-            int(self.options_list.current_index) + 1,
-            len(self.options_list.options),
+        self.status_line.text = self.status_line_format.format(
+            selected_index=int(self.options_list.current_index) + 1,
+            number_of_documents=len(self.options_list.options),
         )
 
     def refresh(self, *args):
