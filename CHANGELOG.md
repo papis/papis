@@ -5,14 +5,8 @@ One of the main developments for version `0.8` is to make `papis` less
 dependent on `PyPi`, for which some important dependencies have been
 added into the main source and is installed with it.
 
-- Embed the following libraries in papis:
-  - [`Click`](https://github.com/papis/click) version `7.0.0`
-  - [`prompt_toolkit`](https://github.com/prompt-toolkit/python-prompt-toolkit)
-    (solves issue #99)
-  - [`colorama`](https://github.com/tartley/colorama)
-  - [`filetype`](https://github.com/papis/filetype.py)
-  - [`arxiv2bib`](https://github.com/papis/arxiv2bib)
-  - [`python-slugify`](https://github.com/papis/python-slugify)
+- Redesign of the picker and `tui`.
+- Add `text_area` widget for duplication warnings and `papis rm`
 
 - Add color to the logs and potentially throughout the project.
 - Add rudimentary [BASE](https://www.base-search.net/about/en/) parser
