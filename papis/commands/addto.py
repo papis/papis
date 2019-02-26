@@ -83,7 +83,7 @@ def run(document, filepaths):
     return status.success
 
 
-@click.command()
+@click.command("addto")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @click.option(

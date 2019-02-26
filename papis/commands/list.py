@@ -152,7 +152,7 @@ def run(
         return documents
 
 
-@click.command()
+@click.command("list")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @click.option(

@@ -102,7 +102,7 @@ import papis.api
 logger = logging.getLogger('explore')
 
 
-@click.group(invoke_without_command=False, chain=True)
+@click.group("explore", invoke_without_command=False, chain=True)
 @click.help_option('--help', '-h')
 @click.pass_context
 def cli(ctx):
