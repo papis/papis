@@ -54,7 +54,7 @@ setup(
         "python-slugify>=1.2.6",
         "habanero>=0.6.0",
         "isbnlib>=3.9.1,<4.0.0",
-        "prompt_toolkit>=2.0.0",
+        "prompt_toolkit>=2.0.5",
         "pygments>=2.2.0",
     ],
     python_requires='>=3',
