@@ -1,9 +1,11 @@
 # Makefile for Sphinx documentation
 #
 
+ENV ?= env
+
 # You can set these variables from the command line.
 SPHINXOPTS    =
-SPHINXBUILD   = ../env/bin/sphinx-build
+SPHINXBUILD   = ../$(ENV)/bin/sphinx-build
 PAPER         =
 BUILDDIR      = build
 

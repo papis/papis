@@ -1,3 +1,9 @@
+VERSION v0.8.1
+==============
+
+- Change default colors for `header_formater`.
+- Update `prompt_toolkit` version to `2.0.5`.
+
 VERSION v0.8
 ============
 
