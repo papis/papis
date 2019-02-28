@@ -458,7 +458,7 @@ def citations(ctx, query, max_citations, save, rmfile):
             logger.info('Removing {0}'.format(citations_file))
             os.remove(citations_file)
         else:
-            click.echo('A citations file exists in {0}'.format(citations_file))
+            logger.info('A citations file exists in {0}'.format(citations_file))
             if papis.utils.confirm('Do you want to use it?'):
                 yaml.callback(citations_file)
                 return
@@ -472,8 +472,8 @@ def citations(ctx, query, max_citations, save, rmfile):
         max_citations = len(dois)
     dois = dois[0:min(max_citations, len(dois))]
 
-    click.echo("%s citations found" % len(dois))
-    click.echo("Fetching {} citations'".format(max_citations))
+    logger.info("%s citations found" % len(dois))
+    logger.info("Fetching {} citations'".format(max_citations))
     dois_with_data = []
 
     with ProgressBar() as progress:
