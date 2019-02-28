@@ -89,6 +89,7 @@ import os
 import papis.utils
 import papis.commands
 import papis.document
+from papis.document import from_folder
 import papis.config
 import papis.bibtex
 import papis.cli
@@ -340,8 +341,9 @@ def base(ctx, query):
 @click.pass_context
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
+@papis.cli.doc_folder_option()
 @click.option('--library', '-l', default=None, help='Papis library to look')
-def lib(ctx, query, library):
+def lib(ctx, query, doc_folder, library):
     """
     Query for documents in your library
 
@@ -351,10 +353,12 @@ def lib(ctx, query, library):
 
     """
     logger = logging.getLogger('explore:lib')
+    if doc_folder:
+        ctx.obj['documents'] += [from_folder(doc_folder)]
     db = papis.database.get(library=library)
     docs = db.query(query)
     logger.info('{} documents found'.format(len(docs)))
-    ctx.obj['documents'] = docs
+    ctx.obj['documents'] += docs
     assert(isinstance(ctx.obj['documents'], list))
 
 
@@ -412,6 +416,7 @@ def bibtex(ctx, bibfile):
 @cli.command('citations')
 @click.pass_context
 @papis.cli.query_option()
+@papis.cli.doc_folder_option()
 @click.help_option('--help', '-h')
 @click.option(
     "--save", "-s",
@@ -429,7 +434,7 @@ def bibtex(ctx, bibfile):
     "--max-citations", "-m", default=-1,
     help='Number of citations to be retrieved'
 )
-def citations(ctx, query, max_citations, save, rmfile):
+def citations(ctx, query, doc_folder, max_citations, save, rmfile):
     """
     Query the citations of a paper
 
@@ -444,10 +449,13 @@ def citations(ctx, query, max_citations, save, rmfile):
     import papis.crossref
     logger = logging.getLogger('explore:citations')
 
-    documents = papis.api.get_documents_in_lib(
-        papis.api.get_lib(),
-        search=query
-    )
+    if doc_folder is not None:
+         documents = [from_folder(doc_folder)]
+    else:
+        documents = papis.api.get_documents_in_lib(
+            papis.api.get_lib(),
+            search=query
+        )
 
     doc = papis.api.pick_doc(documents)
     db = papis.database.get()

@@ -79,6 +79,7 @@ import papis.cli
 import papis.database
 import click
 import logging
+from papis.document import from_folder
 
 
 def run(document, opener=None, folder=False, mark=False):
@@ -132,6 +133,7 @@ def run(document, opener=None, folder=False, mark=False):
 @click.command("open")
 @click.help_option('-h', '--help')
 @papis.cli.query_option()
+@papis.cli.doc_folder_option()
 @click.option(
     "--tool",
     help="Tool for opening the file (opentool)",
@@ -157,12 +159,16 @@ def run(document, opener=None, folder=False, mark=False):
     help="Open mark",
     default=lambda: True if papis.config.get('open-mark') else False
 )
-def cli(query, tool, folder, all, mark):
+def cli(query, doc_folder, tool, folder, all, mark):
     """Open document from a given library"""
     if tool:
         papis.config.set("opentool", tool)
 
     documents = papis.database.get().query(query)
+
+    if doc_folder:
+        documents = [from_folder(doc_folder)]
+
     if not documents:
         click.echo("No documents found with that name.")
         return 1

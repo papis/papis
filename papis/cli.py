@@ -98,6 +98,15 @@ def query_option(**attrs):
     return decorator
 
 
+def doc_folder_option(**attrs):
+    """Adds a ``query`` argument as a decorator"""
+    def decorator(f):
+        attrs.setdefault('default', None)
+        attrs.setdefault('help', 'Apply action to a document path')
+        return click.decorators.option('--doc-folder', **attrs)(f)
+    return decorator
+
+
 def git_option(**attrs):
     """Adds a ``git`` option as a decorator"""
     def decorator(f):

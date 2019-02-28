@@ -46,6 +46,7 @@ import papis.utils
 import papis.bibtex
 import papis.downloaders.utils
 import papis.document
+from papis.document import from_folder
 import papis.database
 import papis.isbnplus
 import papis.isbn
@@ -70,6 +71,7 @@ def run(document, data=dict(), interactive=False, force=False):
 @click.command("update")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
+@papis.cli.doc_folder_option()
 @click.option(
     "-i/-b",
     "--interactive/--no-interactive",
@@ -144,6 +146,7 @@ def run(document, data=dict(), interactive=False, force=False):
 )
 def cli(
         query,
+        doc_folder,
         interactive,
         force,
         from_crossref,
@@ -163,6 +166,9 @@ def cli(
     documents = papis.database.get().query(query)
     data = dict()
     logger = logging.getLogger('cli:update')
+
+    if doc_folder:
+        documents = [from_folder(doc_folder)]
 
     if not all:
         documents = [papis.api.pick_doc(documents)]

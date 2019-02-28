@@ -22,7 +22,7 @@ class Downloader(papis.downloaders.base.Downloader):
 
     def get_doi(self):
         url = self.get_url()
-        self.logger.info('Parsing doi from {0}'.format(url))
+        self.logger.debug('Parsing doi from {0}'.format(url))
         mdoi = re.match(r'.*/doi/(.*/[^?&%^$]*).*', url)
         if mdoi:
             doi = mdoi.group(1).replace("abs/", "").replace("full/", "")
