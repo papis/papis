@@ -174,23 +174,6 @@ def get_hash_folder(data, document_paths):
     return result
 
 
-def get_document_extension(document_path):
-    """Get document extension
-
-    :document_path: Path of the document
-    :returns: Extension (string)
-
-    """
-    import filetype
-    filetype.guess(document_path)
-    kind = filetype.guess(document_path)
-    if kind is None:
-        m = re.match(r"^.*\.([^.]+)$", os.path.basename(document_path))
-        return m.group(1) if m else 'data'
-    else:
-        return kind.extension
-
-
 def get_default_title(data, document_path, interactive=False):
     """
     >>> get_default_title({'title': 'hello world'}, 'whatever.pdf')
@@ -201,11 +184,12 @@ def get_default_title(data, document_path, interactive=False):
     """
     if "title" in data.keys():
         return data["title"]
-    extension = get_document_extension(document_path)
-    title = os.path.basename(document_path)\
-        .replace("."+extension, "")\
-        .replace("_", " ")\
+    extension = papis.utils.get_document_extension(document_path)
+    title = (os.path.basename(document_path)
+        .replace("."+extension, "")
+        .replace("_", " ")
         .replace("-", " ")
+    )
     if interactive:
         title = papis.utils.input(
             'Title?', title
@@ -307,9 +291,9 @@ def run(
         papis.config.get('dir'), subfolder or '',  out_folder_name
     ))
 
-    logger.debug("Folder name = % s" % out_folder_name)
-    logger.debug("Folder path = % s" % out_folder_path)
-    logger.debug("File(s)     = % s" % in_documents_paths)
+    logger.info("The document will be saved in {0}".format(out_folder_name))
+    logger.debug("Folder path: {0}".format(out_folder_path))
+    logger.debug("File(s): {0}".format(in_documents_paths))
 
     # First prepare everything in the temporary directory
     g = papis.utils.create_identifier(ascii_lowercase)
@@ -577,7 +561,7 @@ def cli(
             files[0],
             interactive
         )
-        logger.debug("Title = % s" % data["title"])
+        logger.info("Title = % s" % data["title"])
     except:
         pass
 
@@ -588,7 +572,7 @@ def cli(
             files[0],
             interactive
         )
-        logger.debug("Author = % s" % data["author"])
+        logger.info("Author = % s" % data["author"])
     except:
         pass
 
@@ -604,12 +588,16 @@ def cli(
         files.extend(url_data["documents_paths"])
         # If no data was retrieved and doi was found, try to get
         # information with the document's doi
-        if not data and url_data["doi"] is not None and\
-                not from_doi:
+        if not data and url_data["doi"] is not None and not from_doi:
             logger.warning(
-                "I could not get any data from %s" % from_url
+                "I could not get any data from {0}".format(from_url)
             )
             from_doi = url_data["doi"]
+            logger.info(
+                "But I found a doi ({0}), I'll try my luck there".format(
+                    from_doi
+                )
+            )
 
     if from_pmid:
         logger.info("Using PMID %s via HubMed" % from_pmid)
@@ -628,7 +616,7 @@ def cli(
             logger.error("PMID %s not found or invalid" % from_pmid)
 
     if from_doi:
-        logger.info("I'll try using doi %s" % from_doi)
+        logger.info("using doi {0}".format(from_doi))
         data.update(papis.utils.doi_to_data(from_doi))
         if len(files) == 0 and \
                 papis.config.get('doc-url-key-name') in data.keys():
