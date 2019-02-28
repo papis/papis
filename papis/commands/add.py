@@ -348,11 +348,11 @@ def run(
         data = papis.document.to_dict(tmp_document)
 
     # Duplication checking
-    logger.info("Check if the added document is already existing")
+    logger.info("Checking if this document is already in the library")
     try:
         found_document = papis.utils.locate_document_in_lib(tmp_document)
     except IndexError:
-        logger.info("Document not found in library")
+        logger.info("I did not found anything matching")
     else:
         logger.warning(
             colorama.Fore.RED +

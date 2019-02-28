@@ -283,7 +283,7 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
     app = App(
         editing_mode=(
             EditingMode.EMACS
-            if papis.config.get('tui-editmode') == 'emacs'
+            if papis.config.get('editmode', section='tui') == 'emacs'
             else EditingMode.VI
         ), layout=layout, key_bindings=kb, full_screen=full_screen
     )
