@@ -33,7 +33,8 @@ class OptionsList(ConditionalContainer):
             header_filter=lambda x: x,
             match_filter=lambda x: x,
             custom_filter=None,
-            search_buffer=Buffer(multiline=False)
+            search_buffer=Buffer(multiline=False),
+            cpu_count=multiprocessing.cpu_count()
             ):
 
         assert(isinstance(options, list))
@@ -48,7 +49,7 @@ class OptionsList(ConditionalContainer):
         self.match_filter = match_filter
         self.current_index = default_index
         self.entries_left_offset = 0
-        self.pool = multiprocessing.Pool(multiprocessing.cpu_count())
+        self.pool = multiprocessing.Pool(cpu_count)
 
         self.options_headers_linecount = []
         self.indices_to_lines = []
