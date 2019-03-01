@@ -20,6 +20,10 @@ import logging
 logger = logging.getLogger('tui:widget:list')
 
 
+def match_against_regex(regex, line, index):
+    return index if regex.match(line, re.I) else None
+
+
 class OptionsList(ConditionalContainer):
 
     def __init__(
@@ -167,9 +171,6 @@ class OptionsList(ConditionalContainer):
         )
         return re.compile(r".*"+re.sub(r"\s+", ".*", cleaned_search), re.I)
 
-    @staticmethod
-    def match_against_regex(regex, line, index):
-        return index if regex.match(line, re.I) else None
 
     def update(self, *args):
         self.filter_options()
@@ -180,7 +181,7 @@ class OptionsList(ConditionalContainer):
 
         result = [
             self.pool.apply_async(
-                OptionsList.match_against_regex,
+                match_against_regex,
                 args=(regex, opt, i,)
             ) for i, opt in enumerate(self.options_matchers)
         ]
