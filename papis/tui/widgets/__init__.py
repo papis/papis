@@ -54,8 +54,7 @@ class InfoWindow(ConditionalContainer):
         self.window = HSplit([
             HorizontalLine(),
             Window(
-                content=BufferControl(
-                    buffer=self.buf, lexer=self.lexer)
+                content=BufferControl(buffer=self.buf, lexer=self.lexer)
             )
         ], height=Dimension(min=5, max=20, weight=1))
         super(InfoWindow, self).__init__(
@@ -63,32 +62,20 @@ class InfoWindow(ConditionalContainer):
             filter=has_focus(self)
         )
 
-    def set_text(self, text):
-        self.buf.text = text
-
-    def get_text(self):
+    @property
+    def text(self):
         return self.buf.text
+
+    @text.setter
+    def text(self, text):
+        self.buf.text = text
 
 
 class HelpWindow(ConditionalContainer):
-    help_text = ''
-    # help_text = """
-    # <span fg='ansired'> Bindings: </span>
-
-# ----------------------------------------------------
-# /   Ctrl-e, Ctrl-down, Shift-down : Scroll Down     /
-# /   Ctrl-y, Ctrl-up,   Shift-up   : Scroll up       /
-# /   Ctrl-n, down                  : Next item       /
-# /   Ctrl-p, up                    : Previous item   /
-# /   Ctrl-q, Ctrl-c                : Quit            /
-# /   Home                          : First item      /
-# /   End                           : Last item       /
-# ----------------------------------------------------
-    # """
 
     def __init__(self):
         self.text_control = FormattedTextControl(
-            text=HTML(self.help_text)
+            text=HTML('')
         )
         self.window = Window(
             content=self.text_control,
