@@ -371,4 +371,4 @@ class Picker(Application):
 
     def update_info_window(self):
         doc = self.options_list.get_selection()
-        self.info_window.set_text(doc.dump())
+        self.info_window.text = doc.dump()
