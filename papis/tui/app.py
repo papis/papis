@@ -18,6 +18,7 @@ from prompt_toolkit.layout.controls import (
 from prompt_toolkit.layout.layout import Layout
 import papis.config as config
 import logging
+import subprocess
 
 from .widgets.command_line_prompt import Command
 from .widgets import (
@@ -157,6 +158,10 @@ def create_keybindings(app):
     def _(event):
         event.app.layout.focus(event.app.options_list.search_buffer)
         event.app.command_line_prompt.clear()
+
+    @kb.add('c-t')
+    def _(event):
+        event.app.options_list.toggle_mark_current_selection()
 
     return kb
 

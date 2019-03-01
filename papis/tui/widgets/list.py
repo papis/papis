@@ -46,7 +46,11 @@ class OptionsList(ConditionalContainer):
         self.entries_left_offset = 0
         self.pool = multiprocessing.Pool(multiprocessing.cpu_count())
 
+        self.options_headers_linecount = []
+        self.indices_to_lines = []
+
         self._options = []
+        self.marks = []
         self.max_entry_height = 1
         # Options are processed here also through the setter
         self.options = options
@@ -91,21 +95,26 @@ class OptionsList(ConditionalContainer):
 
     def get_line_prefix(self, line, blih):
         try:
-            index = self.indices.index(self.current_index)
-            cline = sum(
-                self.options_headers_linecount[i]
-                for i in self.indices[0:index]
-            )
-            cline = sum(
-                self.options_headers_linecount[i]
-                for i in self.indices[0:index]
-            )
-            if line == cline:
+            current_line = self.indices_to_lines[self.current_index]
+            if line == current_line:
                 return [('class:options_list.selected_margin', '>')]
             else:
-                return [('class:options_list.unselected_margin', ' ')]
+                marked_clines = [self.indices_to_lines[i] for i in self.marks]
+                if line in marked_clines:
+                    return [('class:options_list.marked_margin', '#')]
+                else:
+                    return [('class:options_list.unselected_margin', ' ')]
         except:
             return
+
+    def toggle_mark_current_selection(self):
+        if self.current_index in self.marks:
+            self.marks.pop(self.marks.index(self.current_index))
+        else:
+            self.mark_current_selection()
+
+    def mark_current_selection(self):
+        self.marks.append(self.current_index)
 
     @property
     def options(self):
@@ -218,6 +227,10 @@ class OptionsList(ConditionalContainer):
         self.options_headers_linecount = [
             len(self.header_filter(o).split('\n'))
             for o in self.options
+        ]
+        self.indices_to_lines = [
+            sum(self.options_headers_linecount[0:i])
+            for i in range(len(self.options_headers_linecount))
         ]
         self.max_entry_height = max(self.options_headers_linecount)
         logger.debug('processing headers')
