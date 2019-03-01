@@ -224,6 +224,7 @@ class OptionsList(ConditionalContainer):
 
     def process_options(self):
         logger.debug('processing {0} options'.format(len(self.options)))
+        self.marks = []
         self.options_headers_linecount = [
             len(self.header_filter(o).split('\n'))
             for o in self.options
