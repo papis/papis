@@ -21,7 +21,7 @@ logger = logging.getLogger('tui:widget:list')
 
 
 def match_against_regex(regex, line, index):
-    return index if regex.match(line, re.I) else None
+    return index if regex.match(line) else None
 
 
 class OptionsList(ConditionalContainer):

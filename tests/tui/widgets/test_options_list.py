@@ -1,4 +1,6 @@
 from papis.tui.widgets.list import *
+from prompt_toolkit.layout.screen import Point
+import re
 
 
 def test_basic():
@@ -39,14 +41,28 @@ def test_basic():
     ol.search_buffer.text = 'l  '
     assert(ol.search_regex == re.compile('.*l.*', re.I))
     assert(ol.indices == [0, 1])
+    assert(len(ol.options) == 3)
 
 
     ol.options = [str(i) for i in range(1000)]
     assert(len(ol.marks) == 0)
     assert(len(ol.indices) == 1000)
-    ol.go_bottom()
-    assert(ol.get_selection() == '999')
     ol.go_top()
     assert(ol.get_selection() == '0')
+    ol.move_up()
+    assert(ol.get_selection() == '999')
+    ol.move_down()
+    assert(ol.get_selection() == '0')
+    ol.go_bottom()
+    assert(ol.get_selection() == '999')
+    ol.search_buffer.text = 'asdfadsf'
+    assert(ol.indices == [])
+    ol.update_cursor()
+    assert(ol.cursor == Point(0, 0))
 
     del ol
+
+
+def test_match_against_regex():
+    assert(match_against_regex(re.compile(r'.*he.*'), 'he', 2) == 2)
+    assert(match_against_regex(re.compile(r'hes'), 'he', 2) is None)
