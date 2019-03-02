@@ -4,7 +4,7 @@ import re
 
 
 def test_basic():
-    ol = OptionsList(['hello', 'world', 'bye'])
+    ol = OptionsList(['hello', 'world', '<bye'])
     assert(ol.get_selection() == 'hello')
     assert(len(ol.marks) == 0)
     assert(len(ol.indices) == 3)
@@ -20,7 +20,11 @@ def test_basic():
     assert(ol.marks == [0, 2])
     ol.toggle_mark_current_selection()
     assert(ol.marks == [0])
-    assert(ol.get_tokens() == [('', 'hello\n'), ('', 'world\n'), ('', 'bye\n')])
+    # fg:red because it failed
+    assert(
+        ol.get_tokens() ==
+        [('', 'hello\n'), ('', 'world\n'), ('fg:red', '<bye\n')]
+    )
     assert(
         ol.get_line_prefix(2, None) ==
         [('class:options_list.selected_margin', '>')]
