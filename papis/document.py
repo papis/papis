@@ -17,16 +17,6 @@ def open_in_browser(document):
     :returns: Returns the url that is composed from the document
     :rtype:  str
 
-    >>> import papis.config; papis.config.set('browser', 'echo')
-    >>> papis.config.set('browse-key', 'url')
-    >>> open_in_browser( from_data({'url': 'hello.com'}) )
-    'hello.com'
-    >>> papis.config.set('browse-key', 'doi')
-    >>> open_in_browser( from_data({'doi': '12312/1231'}) )
-    'https://doi.org/12312/1231'
-    >>> papis.config.set('browse-key', 'nonexistentkey')
-    >>> open_in_browser( from_data({'title': 'blih', 'author': 'me'}) )
-    'https://duckduckgo.com/?q=blih+me'
     """
     global logger
     url = None
@@ -87,19 +77,6 @@ def to_bibtex(document):
     :returns: String containing bibtex formating
     :rtype:  str
 
-    >>> import papis.config
-    >>> papis.config.set('bibtex-journal-key', 'journal_abbrev')
-    >>> doc = from_data({'title': 'Hello', 'type': 'book', 'journal': 'jcp'})
-    >>> import tempfile; doc.set_folder('path/to/superfolder')
-    >>> to_bibtex(doc)
-    '@book{superfolder,\\n  journal = {jcp},\\n  title = {Hello},\\n  type = {book},\\n}\\n'
-    >>> doc['journal_abbrev'] = 'j'
-    >>> to_bibtex(doc)
-    '@book{superfolder,\\n  journal = {j},\\n  title = {Hello},\\n  type = {book},\\n}\\n'
-    >>> del doc['title']
-    >>> doc['ref'] = 'hello1992'
-    >>> to_bibtex(doc)
-    '@book{hello1992,\\n  journal = {j},\\n  type = {book},\\n}\\n'
     """
     bibtexString = ""
     bibtexType = ""
@@ -174,9 +151,6 @@ def to_json(document):
     :returns: Json formatted info file
     :rtype:  str
 
-    >>> doc = from_data({'title': 'Hello World'})
-    >>> to_json(doc)
-    '{"title": "Hello World"}'
     """
     import json
     return json.dumps(to_dict(document))
@@ -267,10 +241,13 @@ class DocHtmlEscaped(dict):
         self.doc = doc
 
     def __getitem__(self, key):
-        return str(self.doc[key]).replace('&', '&amp;')\
-                                .replace('<', '&lt;')\
-                                .replace('>', '&gt;')\
-                                .replace('"', '&quot;')
+        return (
+            str(self.doc[key])
+            .replace('&', '&amp;')
+            .replace('<', '&lt;')
+            .replace('>', '&gt;')
+            .replace('"', '&quot;')
+        )
 
 
 class Document(object):
