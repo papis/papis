@@ -128,7 +128,7 @@ setup(
     packages=included_packages,
     entry_points=dict(
         console_scripts=[
-            'papis=papis.main:main'
+            'papis=papis.commands.default:run'
         ]
     ),
     platforms=['linux', 'osx'],
