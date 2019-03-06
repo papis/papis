@@ -1,18 +1,12 @@
 import re
-from prompt_toolkit.application.current import get_app
-from prompt_toolkit.formatted_text.html import HTML, html_escape
-from prompt_toolkit.filters import Condition
+from prompt_toolkit.formatted_text.html import HTML
 from prompt_toolkit.layout.screen import Point
 from prompt_toolkit.buffer import Buffer
-from prompt_toolkit.layout.controls import (
-    FormattedTextControl, BufferControl
-)
-from prompt_toolkit.widgets import HorizontalLine
+from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.containers import (
-    HSplit, Window, ConditionalContainer, WindowAlign, ScrollOffsets
+    Window, ConditionalContainer, WindowAlign, ScrollOffsets
 )
 from prompt_toolkit.filters import has_focus
-from prompt_toolkit.layout import NumberedMargin
 import multiprocessing
 
 import logging
@@ -52,7 +46,7 @@ class OptionsList(ConditionalContainer):
         self.pool = multiprocessing.Pool(cpu_count)
 
         self.options_headers_linecount = []
-        self.indices_to_lines = []
+        self._indices_to_lines = []
 
         self._options = []
         self.marks = []
@@ -74,12 +68,12 @@ class OptionsList(ConditionalContainer):
             scroll_offsets=ScrollOffsets(bottom=self.max_entry_height),
             cursorline=False,
             cursorcolumn=False,
-            #right_margins=[NumberedMargin()],
-            #left_margins=[NumberedMargin()],
+            # right_margins=[NumberedMargin()],
+            # left_margins=[NumberedMargin()],
             align=WindowAlign.LEFT,
             height=None,
             get_line_prefix=self.get_line_prefix
-            #get_line_prefix=lambda line, b: [('bg:red', '  ')]
+            # get_line_prefix=lambda line, b: [('bg:red', '  ')]
         )
 
         self.update()
@@ -99,18 +93,18 @@ class OptionsList(ConditionalContainer):
         self.pool.join()
 
     def get_line_prefix(self, line, blih):
-        try:
-            current_line = self.indices_to_lines[self.current_index]
-            if line == current_line:
-                return [('class:options_list.selected_margin', '>')]
-            else:
-                marked_clines = [self.indices_to_lines[i] for i in self.marks]
-                if line in marked_clines:
-                    return [('class:options_list.marked_margin', '#')]
-                else:
-                    return [('class:options_list.unselected_margin', ' ')]
-        except:
+        if self.current_index is None:
             return
+        current_line = self.index_to_line(self.current_index)
+        if (0 <= line - current_line
+            < self.options_headers_linecount[self.current_index]):
+            return [('class:options_list.selected_margin', '|')]
+        else:
+            marked_clines = [self.index_to_line(i) for i in self.marks]
+            if line in marked_clines:
+                return [('class:options_list.marked_margin', '#')]
+            else:
+                return [('class:options_list.unselected_margin', ' ')]
 
     def toggle_mark_current_selection(self):
         if self.current_index in self.marks:
@@ -156,6 +150,9 @@ class OptionsList(ConditionalContainer):
         if len(self.indices) > 0:
             self.current_index = self.indices[0]
 
+    def deselect(self):
+        self.current_index = None
+
     def go_bottom(self):
         if len(self.indices) > 0:
             self.current_index = self.indices[-1]
@@ -172,9 +169,9 @@ class OptionsList(ConditionalContainer):
         )
         return re.compile(r".*"+re.sub(r"\s+", ".*", cleaned_search), re.I)
 
-
     def update(self, *args):
         self.filter_options()
+        self._indices_to_lines = []
 
     def filter_options(self, *args):
         indices = []
@@ -187,13 +184,11 @@ class OptionsList(ConditionalContainer):
             ) for i, opt in enumerate(self.options_matchers)
         ]
 
-        indices =  [d.get() for d in result if d.get() is not None]
+        indices = [d.get() for d in result if d.get() is not None]
 
         self.indices = indices
         if len(self.indices) and self.current_index not in self.indices:
-            if self.current_index < min(self.indices):
-                self.current_index = self.indices[0]
-            elif self.current_index > max(self.indices):
+            if self.current_index > max(self.indices):
                 self.current_index = max(self.indices)
             else:
                 self.current_index = self.indices[0]
@@ -224,16 +219,24 @@ class OptionsList(ConditionalContainer):
         )
         return result
 
+    def index_to_line(self, index):
+        if not self._indices_to_lines:
+            options_headers_linecount = [
+                self.options_headers_linecount[i] if i in self.indices else 0
+                for i in range(len(self.options_headers_linecount))
+            ]
+            self._indices_to_lines = [
+                sum(options_headers_linecount[0:i])
+                for i in range(len(options_headers_linecount))
+            ]
+        return self._indices_to_lines[index]
+
     def process_options(self):
         logger.debug('processing {0} options'.format(len(self.options)))
         self.marks = []
         self.options_headers_linecount = [
             len(self.header_filter(o).split('\n'))
             for o in self.options
-        ]
-        self.indices_to_lines = [
-            sum(self.options_headers_linecount[0:i])
-            for i in range(len(self.options_headers_linecount))
         ]
         self.max_entry_height = max(self.options_headers_linecount)
         logger.debug('processing headers')
@@ -246,7 +249,7 @@ class OptionsList(ConditionalContainer):
                 logger.error(
                     'Error processing html for \n {0}'.format(prestring)
                 )
-                htmlobject = [ ('fg:red', prestring) ]
+                htmlobject = [('fg:red', prestring)]
             self.options_headers += [htmlobject]
         logger.debug('got {0} headers'.format(len(self.options_headers)))
         logger.debug('processing matchers')

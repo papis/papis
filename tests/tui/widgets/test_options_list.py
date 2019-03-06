@@ -27,7 +27,7 @@ def test_basic():
     )
     assert(
         ol.get_line_prefix(2, None) ==
-        [('class:options_list.selected_margin', '>')]
+        [('class:options_list.selected_margin', '|')]
     )
     assert(
         ol.get_line_prefix(1, None) ==
@@ -46,6 +46,8 @@ def test_basic():
     assert(ol.search_regex == re.compile('.*l.*', re.I))
     assert(ol.indices == [0, 1])
     assert(len(ol.options) == 3)
+    ol.deselect()
+    assert(ol.current_index is None)
 
 
     ol.options = [str(i) for i in range(1000)]
@@ -63,6 +65,19 @@ def test_basic():
     assert(ol.indices == [])
     ol.update_cursor()
     assert(ol.cursor == Point(0, 0))
+    # when there is nothing selected and appearing it's ok to
+    # move up and down
+    ol.move_down()
+    ol.move_up()
+
+    ol.go_top()
+    ol.search_buffer.text = '99'
+    assert(len(ol.indices) == 19)
+    ol.update()
+    # assert(
+        # ol.get_line_prefix(0, None) ==
+        # [('class:options_list.selected_margin', '|')]
+    # )
 
     del ol
 

@@ -351,7 +351,7 @@ class Picker(Application):
         self.update()
 
     def deselect(self):
-        self.options_list.current_index = None
+        self.options_list.deselect()
 
     def refresh_status_line(self):
         self.status_line.text = self.status_line_format.format(
