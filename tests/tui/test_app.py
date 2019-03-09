@@ -22,3 +22,5 @@ def test_settings():
     config.get('go_top_key', section='tui')
     config.get('go_bottom_key', section='tui')
     config.get("editmode", section='tui')
+
+    ki = get_keys_info()
