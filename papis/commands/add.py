@@ -278,8 +278,8 @@ def run(
     tmp_document = papis.document.Document(temp_dir)
 
     if not name:
-        logger.info("Getting an automatic name")
         out_folder_name = get_hash_folder(data, in_documents_paths)
+        logger.info("Got an automatic folder name")
     else:
         temp_doc = papis.document.Document(data=data)
         out_folder_name = papis.utils.format_doc(name, temp_doc)
@@ -291,7 +291,7 @@ def run(
         papis.config.get('dir'), subfolder or '',  out_folder_name
     ))
 
-    logger.info("The document will be saved in {0}".format(out_folder_name))
+    logger.info("The folder name is {0}".format(out_folder_name))
     logger.debug("Folder path: {0}".format(out_folder_path))
     logger.debug("File(s): {0}".format(in_documents_paths))
 
@@ -352,7 +352,7 @@ def run(
     try:
         found_document = papis.utils.locate_document_in_lib(tmp_document)
     except IndexError:
-        logger.info("I did not found anything matching")
+        logger.info("No document matching found already in the library")
     else:
         logger.warning(
             colorama.Fore.RED +
