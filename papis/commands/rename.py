@@ -14,6 +14,7 @@ import logging
 import click
 import papis.cli
 import papis.database
+import papis.strings
 
 
 def run(document, new_name, git=False):
@@ -52,6 +53,10 @@ def cli(query, git):
     """Rename entry"""
 
     documents = papis.database.get().query(query)
+    logger = logging.getLogger('cli:rename')
+
+    if not documents:
+        logger.warning(papis.strings.no_documents_retrieved_message)
     document = papis.api.pick_doc(documents)
     if not document:
         return 0

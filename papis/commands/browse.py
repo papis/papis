@@ -22,6 +22,8 @@ import papis.cli
 import papis.api
 import click
 import papis.database
+import papis.strings
+import logging
 
 
 def run(document):
@@ -41,6 +43,12 @@ def run(document):
 def cli(query, key):
     """Open document's url in a browser"""
     documents = papis.database.get().query(query)
+    logger = logging.getLogger('cli:browse')
+
+    if len(documents) == 0:
+        logger.warning(papis.strings.no_documents_retrieved_message)
+        return 0
+
     document = papis.api.pick_doc(documents)
     if len(key):
         papis.config.set('browse-key', key)

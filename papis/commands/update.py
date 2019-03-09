@@ -43,6 +43,7 @@ import papis
 import urllib.error
 import logging
 import papis.utils
+import papis.strings
 import papis.bibtex
 import papis.downloaders.utils
 import papis.document
@@ -166,12 +167,17 @@ def cli(
     documents = papis.database.get().query(query)
     data = dict()
     logger = logging.getLogger('cli:update')
+    if not documents:
+        logger.warning(papis.strings.no_documents_retrieved_message)
 
     if doc_folder:
         documents = [from_folder(doc_folder)]
 
     if not all:
-        documents = [papis.api.pick_doc(documents)]
+        documents = filter(
+            lambda d: d,
+            [papis.api.pick_doc(documents)]
+        )
 
     for document in documents:
         if all:

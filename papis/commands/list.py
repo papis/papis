@@ -71,6 +71,7 @@ import papis
 from papis.api import status
 import os
 import papis.utils
+import papis.strings
 import papis.config
 import papis.database
 import papis.downloaders.utils
@@ -100,6 +101,7 @@ def run(
     if library is None:
         library = papis.config.get_lib()
     config = papis.config.get_configuration()
+    logger = logging.getLogger('cli:list')
     db = papis.database.get(library)
     if template is not None:
         if not os.path.exists(template):
@@ -122,6 +124,8 @@ def run(
         ]
 
     documents = db.query(query)
+    if not documents:
+        logger.warning(papis.strings.no_documents_retrieved_message)
 
     if pick:
         documents = filter(lambda x: x, [papis.api.pick_doc(documents)])

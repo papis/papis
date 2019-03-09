@@ -54,6 +54,7 @@ import click
 import papis.cli
 import papis.api
 import papis.database
+import papis.strings
 import logging
 
 
@@ -180,6 +181,10 @@ def cli(
 
     if json and folder or yaml and folder:
         logger.warning("Only --folder flag will be considered")
+
+    if not documents:
+        logger.warning(papis.strings.no_documents_retrieved_message)
+        return
 
     if not all:
         document = papis.api.pick_doc(documents)

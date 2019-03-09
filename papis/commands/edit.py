@@ -16,6 +16,7 @@ import papis.database
 import papis.cli
 import click
 import logging
+import papis.strings
 
 
 def run(document, wait=True):
@@ -66,6 +67,7 @@ def cli(
         documents = [document] if document else []
 
     if len(documents) == 0:
+        logger.warning(papis.strings.no_documents_retrieved_message)
         return 0
 
     for document in documents:

@@ -15,6 +15,7 @@ import subprocess
 import logging
 import papis.cli
 import papis.api
+import papis.strings
 import click
 
 
@@ -61,6 +62,9 @@ def cli(query, git):
     logger = logging.getLogger('cli:mv')
 
     documents = papis.database.get().query(query)
+    if not documents:
+        logger.warning(papis.strings.no_documents_retrieved_message)
+        return
 
     document = papis.api.pick_doc(documents)
     if not document:

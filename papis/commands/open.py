@@ -80,6 +80,7 @@ import papis.database
 import click
 import logging
 from papis.document import from_folder
+import papis.strings
 
 
 def run(document, opener=None, folder=False, mark=False):
@@ -170,8 +171,8 @@ def cli(query, doc_folder, tool, folder, all, mark):
         documents = [from_folder(doc_folder)]
 
     if not documents:
-        click.echo("No documents found with that name.")
-        return 1
+        logger.warning(papis.strings.no_documents_retrieved_message)
+        return 0
 
     if not all:
         documents = [papis.api.pick_doc(documents)]

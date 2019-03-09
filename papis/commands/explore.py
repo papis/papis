@@ -92,6 +92,7 @@ import papis.document
 from papis.document import from_folder
 import papis.config
 import papis.bibtex
+import papis.strings
 import papis.cli
 import click
 import logging
@@ -456,6 +457,10 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
             papis.api.get_lib(),
             search=query
         )
+
+    if not documents:
+        logger.warning(papis.strings.no_documents_retrieved_message)
+        return
 
     doc = papis.api.pick_doc(documents)
     db = papis.database.get()

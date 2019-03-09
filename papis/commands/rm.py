@@ -12,8 +12,10 @@ import papis.utils
 import papis.config
 import papis.document
 import papis.cli
+import papis.strings
 import papis.database
 import click
+import logging
 
 
 def run(
@@ -57,6 +59,12 @@ def cli(
         ):
     """Delete command for several objects"""
     documents = papis.database.get().query(query)
+    logger = logging.getLogger('cli:rm')
+
+    if not documents:
+        logger.warning(papis.strings.no_documents_retrieved_message)
+        return 0
+
     document = papis.api.pick_doc(documents)
     if not document:
         return status.file_not_found
@@ -80,6 +88,7 @@ def cli(
             toolbar = 'The folder {0} would be removed'.format(
                 document.get_main_folder()
             )
+            logger.warning("This document will be removed, check it")
             papis.utils.text_area(
                 title=toolbar, text=document.dump(), lexer_name='yaml'
             )

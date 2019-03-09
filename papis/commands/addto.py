@@ -28,6 +28,7 @@ import papis.commands.add
 import logging
 import papis.cli
 import click
+import papis.strings
 
 
 def run(document, filepaths):
@@ -100,6 +101,10 @@ def run(document, filepaths):
 def cli(query, files, file_name):
     """Add files to an existing document"""
     documents = papis.database.get().query(query)
+    logger = logging.getLogger('cli:addto')
+    if not documents:
+        logger.warning(papis.strings.no_documents_retrieved_message)
+        return
     document = papis.api.pick_doc(documents)
     if not document:
         return status.file_not_found
