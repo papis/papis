@@ -164,6 +164,7 @@ def cli(query, doc_folder, tool, folder, all, mark):
     """Open document from a given library"""
     if tool:
         papis.config.set("opentool", tool)
+    logger = logging.getLogger('cli:run')
 
     documents = papis.database.get().query(query)
 
