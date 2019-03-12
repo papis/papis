@@ -287,7 +287,10 @@ def cli(
 
         if from_doi:
             logger.debug("Try using doi %s" % from_doi)
-            data.update(papis.utils.doi_to_data(from_doi))
+            try:
+                data.update(papis.utils.doi_to_data(from_doi))
+            except ValueError as e:
+                logger.error(e)
 
         if from_bibtex:
             try:

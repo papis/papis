@@ -488,17 +488,44 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
     logger.info("%s citations found" % len(dois))
     logger.info("Fetching {} citations'".format(max_citations))
     dois_with_data = []
+    failed_dois = []
 
     with ProgressBar() as progress:
+        progress.bottom_toolbar = (
+            'Getting {0} doi information'.format(len(dois))
+        )
         for j, doi in progress(enumerate(dois), total=len(dois)):
             citation = db.query_dict(dict(doi=doi))
 
             if citation:
-                dois_with_data.append(papis.api.pick_doc(citation))
+                progress.bottom_toolbar = [
+                    ('fg:green', 'Found in library'),
+                    ('', ' doi: {doi}'.format(doi=doi))
+                ]
+                dois_with_data.append(citation[0])
             else:
-                dois_with_data.append(
-                    papis.crossref.doi_to_data(doi)
-                )
+                try:
+                    dois_with_data.append(
+                        papis.crossref.doi_to_data(doi)
+                    )
+                except ValueError as e:
+                    progress.bottom_toolbar = [
+                        ('fg:ansired', 'Error resolving doi'),
+                        ('', ' doi: {doi}'.format(doi=doi))
+                    ]
+                    failed_dois.append(doi)
+                except Exception as e:
+                    progress.bottom_toolbar = [
+                        ('fg:ansired', str(e)),
+                        ('', ' doi: {doi}'.format(doi=doi))
+                    ]
+                else:
+                    progress.bottom_toolbar = 'doi: {doi}'.format(doi=doi)
+
+    if failed_dois:
+        logger.error('Dois not found:')
+        for doi in failed_dois:
+            logger.error(doi)
 
     docs = [papis.document.Document(data=d) for d in dois_with_data]
     if save:

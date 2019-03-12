@@ -305,6 +305,7 @@ def doi_to_data(doi):
     :param doi: Doi identificator
     :type  doi: str
     :returns: Dictionary containing the data
+    :raises ValueError: If no data could be retrieved for the doi
 
     """
     global logger
@@ -312,9 +313,8 @@ def doi_to_data(doi):
     try:
         data = get_cross_ref(doi)
     except Exception as e:
-        logger.error(
-            "Couldn't resolve DOI '" + doi +
-            "' through CrossRef: " + str(e) + "\n"
+        raise ValueError(
+            "Couldn't resolve doi " + doi
         )
         return dict()
     else:
