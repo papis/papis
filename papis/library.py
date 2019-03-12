@@ -1,0 +1,18 @@
+import os
+
+
+class Library:
+
+    def __init__(self, name, paths):
+        assert(isinstance(name, str)), '`name` must be a string'
+        assert(isinstance(paths, list)), '`paths` must be a list'
+        self.name = name
+        self.paths = [os.path.expanduser(p) for p in paths]
+
+    def path_format(self):
+        return ":".join(self.paths)
+
+
+def from_paths(paths):
+    name = ":".join(paths)
+    return Library(name, paths)

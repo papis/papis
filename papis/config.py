@@ -601,10 +601,13 @@ logger = logging.getLogger("config")
 logger.debug("importing")
 
 import os
+from os.path import expanduser
 import configparser
 import papis.exceptions
+import papis.library
 
 
+_CURRENT_LIBRARY = None  #: Current library in use
 _EXTERNAL_PICKER = None  #: Picker to set externally
 _CONFIGURATION = None  #: Global configuration object variable.
 _DEFAULT_SETTINGS = None  #: Default settings for the whole papis.
@@ -818,9 +821,9 @@ def get_config_home():
     """
     xdg_home = os.environ.get('XDG_CONFIG_HOME')
     if xdg_home:
-        return os.path.expanduser(xdg_home)
+        return expanduser(xdg_home)
     else:
-        return os.path.join(os.path.expanduser('~'), '.config')
+        return os.path.join(expanduser('~'), '.config')
 
 
 def get_config_dirs():
@@ -838,7 +841,7 @@ def get_config_dirs():
     # compatibility
     dirs += [
         os.path.join(get_config_home(), 'papis'),
-        os.path.join(os.path.expanduser('~'), '.papis')
+        os.path.join(expanduser('~'), '.papis')
     ]
     return dirs
 
@@ -1030,6 +1033,8 @@ def merge_configuration_from_path(path, configuration):
     :param configuration: Configuration object
     :type  configuration: papis.config.Configuration
     """
+    if not os.path.exists(path):
+        return
     logger.debug("Merging configuration from " + path)
     configuration.read(path)
     configuration.handle_includes()
@@ -1042,35 +1047,57 @@ def set_lib(library):
     :type  library: str
 
     """
+    global _CURRENT_LIBRARY
+    assert(isinstance(library, str))
     config = get_configuration()
     if library not in config.keys():
         if os.path.exists(library):
             # Check if the path exists, then use this path as a new library
-            logger.debug("Using library %s" % library)
-            config[library] = dict(dir=library)
+            logger.warning(
+                "Since {0} exists, interpreting it as a library".format(
+                    library
+                )
+            )
+            library_obj = papis.library.from_paths([library])
+            name = library_obj.path_format()
+            config[name] = dict(dirs=library.paths)
         else:
             raise Exception(
                 "Path or library '%s' does not seem to exist" % library
             )
-    os.environ["PAPIS_LIB"] = library
-    os.environ["PAPIS_LIB_DIR"] = get('dir')
+    else:
+        name = library
+        if name not in config.keys():
+            raise Exception('Library {0} not defined'.format(library))
+        try:
+            paths = [expanduser(config[name].get('dir'))]
+        except:
+            try:
+                paths = eval(expanduser(config[name].get('dirs')))
+            except:
+                raise Exception(
+                    "To initialize a library you have to set either dir or dirs"
+                    " in the configuration file."
+                )
+        library_obj = papis.library.Library(library, paths)
+        name = library
+    _CURRENT_LIBRARY  = library_obj
 
 
 def get_lib():
-    """Get current library, it either retrieves the library from
-    the environment PAPIS_LIB variable or from the command line
-    args passed by the user.
+    """Get current library, if there is no library set before,
+    the default library will be retrieved.
 
-    :param library: Name of library or path to a given library
-    :type  library: str
+    :returns: Current library
+    :rtype:  papis.library.Library
     """
-    try:
-        lib = os.environ["PAPIS_LIB"]
-    except KeyError:
+    global _CURRENT_LIBRARY
+    if _CURRENT_LIBRARY is None:
         # Do not put papis.config.get because get is a special function
         # that also needs the library to see if some key was overridden!
         lib = papis.config.get_default_settings(key="default-library")
-    return lib
+        set_lib(lib)
+    return _CURRENT_LIBRARY
 
 
 def reset_configuration():
@@ -1111,7 +1138,7 @@ class Configuration(configparser.ConfigParser):
         if "include" in self.keys():
             for name in self["include"]:
                 self.logger.debug("including %s" % name)
-                self.read(os.path.expanduser(self.get("include", name)))
+                self.read(expanduser(self.get("include", name)))
 
     def initialize(self):
         if not os.path.exists(self.dir_location):

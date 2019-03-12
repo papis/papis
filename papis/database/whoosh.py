@@ -200,7 +200,7 @@ class Database(papis.database.base.Database):
         at the time of building a brand new index.
         """
         self.logger.debug('Indexing the library, this might take a while...')
-        folders = papis.utils.get_folders(self.get_dir())
+        folders = sum([papis.utils.get_folders(d) for d in self.get_dirs()], [])
         documents = papis.database.cache.folders_to_documents(folders)
         schema_keys = self.get_schema_init_fields().keys()
         writer = self.get_writer()
@@ -295,7 +295,7 @@ class Database(papis.database.base.Database):
         path = os.path.expanduser(
             os.path.join(
                 self.get_cache_dir(),
-                papis.database.cache.get_name(self.get_dir())
+                papis.database.cache.get_name(self.lib.path_format())
             )
         )
         # self.logger.debug('Index dir %s' % path)

@@ -144,20 +144,22 @@ def run(
         )
 
     papis.config.set_lib(lib)
+    library = papis.config.get_lib()
 
-    # Now the library should be set, let us check if there is a
-    # local configuration file there, and if there is one, then
-    # merge its contents
-    local_config_file = os.path.expanduser(
-        os.path.join(
-            papis.config.get("dir"),
-            papis.config.get("local-config-file")
+    for path in library.paths:
+        # Now the library should be set, let us check if there is a
+        # local configuration file there, and if there is one, then
+        # merge its contents
+        local_config_file = os.path.expanduser(
+            os.path.join(
+                path,
+                papis.config.get("local-config-file")
+            )
         )
-    )
-    papis.config.merge_configuration_from_path(
-        local_config_file,
-        papis.config.get_configuration()
-    )
+        papis.config.merge_configuration_from_path(
+            local_config_file,
+            papis.config.get_configuration()
+        )
 
     if clear_cache:
         papis.api.clear_lib_cache(lib)
