@@ -113,7 +113,17 @@ def to_bibtex(document):
     if not bibtexType:
         bibtexType = "article"
 
-    ref = document["ref"]
+    # REFERENCE BUILDING
+    print("Using ref-format = %s" % papis.config.get("ref-format"))
+    print("on %r" % document)
+    ref = papis.utils.format_doc(
+        papis.config.get("ref-format"), 
+        # "toto",
+        document
+    ).replace(" ", "")
+
+    print("generated ref=%s" % ref)
+    # ref = document["ref"]
     if not ref:
         try:
             ref = os.path.basename(document.get_main_folder())
@@ -124,6 +134,7 @@ def to_bibtex(document):
                 ref = 'noreference'
 
     ref = re.sub(r'[;,()\/{}\[\]]', '', ref)
+    print("Used ref=%s" % ref)
 
     bibtexString += "@%s{%s,\n" % (bibtexType, ref)
     for bibKey in sorted(document.keys()):
