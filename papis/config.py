@@ -977,6 +977,31 @@ def getboolean(*args, **kwargs):
     return general_get(*args, data_type=bool, **kwargs)
 
 
+def getlist(key, **kwargs):
+    """Bool getter
+
+    :returns: A python list
+    :rtype:  list
+    :raises SyntaxError: Whenever the parsed syntax is either not a valid
+        python object or a valid python list.
+    """
+    rawvalue = general_get(key, **kwargs)
+    if isinstance(rawvalue, list):
+        return rawvalue
+    try:
+        value = eval(rawvalue)
+    except Exception as e:
+        raise SyntaxError(
+            "The key '{0}' must be a valid python object\n\t{1}".format(key, e)
+        )
+    else:
+        if not isinstance(value, list):
+            raise SyntaxError(
+                "The key '{0}' must be a valid python list".format(key)
+            )
+        return value
+
+
 def get_configuration():
     """Get the configuration object, if no papis configuration has ever been
     initialized, it initializes one. Only one configuration per process should

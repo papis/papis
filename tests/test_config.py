@@ -183,3 +183,74 @@ def test_reset_configuration():
         assert True
     else:
         assert False
+
+
+def test_get_default_settings():
+    import collections
+    assert(type(get_default_settings()) is collections.OrderedDict)
+    assert(get_default_settings(key='mvtool') == 'mv')
+    assert(get_default_settings(key='mvtool', section='settings') == 'mv')
+
+
+def test_register_default_settings():
+    papis.config.register_default_settings(
+        {'scihub': { 'command': 'open'}}
+    )
+    assert(papis.config.get('command', section='scihub') == 'open')
+
+    papis.config.set('scihub-command', 'edit')
+    assert(papis.config.get('command', section='scihub') == 'edit')
+
+    options = {'settings': { 'hubhub': 42, 'default-library': 'mag' }}
+    papis.config.register_default_settings(options)
+
+    assert(papis.config.get('hubhub') == 42)
+    assert(papis.config.get('info-name') is not None)
+    assert(not papis.config.get('default-library') == 'mag')
+    assert(papis.config.get_default_settings(key='default-library') == 'mag')
+
+
+def test_get_list():
+    papis.config.set('super-key-list', [1,2,3,4])
+    assert(papis.config.get('super-key-list') == '[1, 2, 3, 4]')
+    assert(papis.config.getlist('super-key-list') == [1,2,3,4])
+
+    papis.config.set('super-key-list', ['asdf',2,3,4])
+    assert(papis.config.get('super-key-list') == "['asdf', 2, 3, 4]")
+    assert(papis.config.getlist('super-key-list') == ['asdf',2,3,4])
+
+    papis.config.set('super-key-list', ['asdf',2,3,4])
+    assert(papis.config.get('super-key-list') == "['asdf', 2, 3, 4]")
+    assert(papis.config.getlist('super-key-list') == ['asdf',2,3,4])
+
+    papis.config.set('super-key-list', "['asdf',2,3,4]")
+    assert(papis.config.get('super-key-list') == "['asdf',2,3,4]")
+    assert(papis.config.getlist('super-key-list') == ['asdf',2,3,4])
+
+    papis.config.set('super-key-list', "[asdf,2,3,4]")
+    assert(papis.config.get('super-key-list') == "[asdf,2,3,4]")
+    try:
+        papis.config.getlist('super-key-list') == "[asdf,2,3,4]"
+    except SyntaxError as e:
+        assert(
+            str(e) == (
+            "The key 'super-key-list' must be a valid python "
+            "object\n\tname 'asdf' is not defined"
+            )
+        )
+    else:
+        assert(False)
+
+    papis.config.set('super-key-list', "2")
+    assert(papis.config.get('super-key-list') == "2")
+    assert(papis.config.getint('super-key-list') == 2)
+    try:
+        papis.config.getlist('super-key-list') == "[asdf,2,3,4]"
+    except SyntaxError as e:
+        assert(
+            str(e) == (
+            "The key 'super-key-list' must be a valid python list"
+            )
+        )
+    else:
+        assert(False)
