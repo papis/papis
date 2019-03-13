@@ -735,13 +735,6 @@ def get_default_settings(section="", key=""):
     :param key: Setting's name to be queried for.
     :type  key: str
 
-    >>> import collections
-    >>> type(get_default_settings()) is collections.OrderedDict
-    True
-    >>> get_default_settings(key='mvtool')
-    'mv'
-    >>> get_default_settings(key='mvtool', section='settings')
-    'mv'
     """
     global _DEFAULT_SETTINGS
     # We use an OrderedDict so that the first entry will always be the general
@@ -783,21 +776,6 @@ def register_default_settings(settings_dictionary):
 
     :param settings_dictionary: A dictionary with settings
     :type  settings_dictionary: dict
-    >>> papis.config.register_default_settings(\
-            {'scihub': { 'command': 'open'}}\
-        )
-    >>> papis.config.get('command', section='scihub')
-    'open'
-    >>> options = {'settings': { 'hubhub': 42, 'default-library': 'mag' }}
-    >>> papis.config.register_default_settings(options)
-    >>> papis.config.get('hubhub')
-    42
-    >>> papis.config.get('info-name') is not None
-    True
-    >>> not papis.config.get('default-library') == 'mag'
-    True
-    >>> papis.config.get_default_settings(key='default-library') == 'mag'
-    True
     """
     default_settings = get_default_settings()
     # we do a for loop because apparently the OrderedDict removes all
@@ -907,10 +885,7 @@ def set(key, val, section=None):
     config = get_configuration()
     if not config.has_section(section or "settings"):
         config.add_section(section or "settings")
-    # FIXME: Right now we can only save val in string form
-    # FIXME: It would be nice to be able to save also int and booleans
-    # FIXME: configparser seems to be able to only store string values
-    config.set(section or get_general_settings_name(), key, str(val))
+    config[section or get_general_settings_name()][key] = str(val)
 
 
 def general_get(key, section=None, data_type=None):

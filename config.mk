@@ -10,3 +10,6 @@ update-authors:
 		sed -e "s/\t/  /" | \
 		sed -e "s/^\s*//" > \
 		AUTHORS
+
+tags:
+	ctags -V -R --language-force=python papis env
