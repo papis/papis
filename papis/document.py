@@ -116,11 +116,16 @@ def to_bibtex(document):
     # REFERENCE BUILDING
     print("Using ref-format = %s" % papis.config.get("ref-format"))
     print("on %r" % document)
-    ref = papis.utils.format_doc(
-        papis.config.get("ref-format"), 
-        # "toto",
-        document
-    ).replace(" ", "")
+    try:
+        ref = papis.utils.format_doc(
+            papis.config.get("ref-format"), 
+            # "toto",
+            document
+        ).replace(" ", "")
+    except Exception as e:
+        print(e)
+        ref = "unknown"
+
 
     print("generated ref=%s" % ref)
     # ref = document["ref"]
