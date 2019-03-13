@@ -250,19 +250,6 @@ def cli(
         if from_isbnplus:
             logger.info('Trying with isbnplus')
             logger.warning('Isbnplus does not work... Not my fault')
-            # try:
-                # doc = papis.api.pick_doc(
-                    # [
-                        # papis.document.from_data(d)
-                        # for d in papis.isbnplus.get_data(
-                            # query=from_isbnplus
-                        # )
-                    # ]
-                # )
-                # if doc:
-                    # data.update(papis.document.to_dict(doc))
-            # except urllib.error.HTTPError:
-                # logger.error('urllib failed to download')
 
         if from_isbn:
             logger.info('Trying with isbn')

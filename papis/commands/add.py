@@ -76,7 +76,6 @@ import logging
 import papis
 from string import ascii_lowercase
 import os
-import re
 import tempfile
 import hashlib
 import shutil
@@ -185,7 +184,8 @@ def get_default_title(data, document_path, interactive=False):
     if "title" in data.keys():
         return data["title"]
     extension = papis.utils.get_document_extension(document_path)
-    title = (os.path.basename(document_path)
+    title = (
+        os.path.basename(document_path)
         .replace("."+extension, "")
         .replace("_", " ")
         .replace("-", " ")
@@ -496,7 +496,7 @@ def run(
     default=False
 )
 @click.option(
-    #TODO: REMOVE IT AT SOME POINT
+    # TODO: REMOVE IT AT SOME POINT
     "--no-document",
     default=False,
     is_flag=True,

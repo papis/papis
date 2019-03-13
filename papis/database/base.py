@@ -7,6 +7,7 @@ import papis.utils
 import papis.config
 import logging
 
+
 class Database(object):
     """Abstract class for the database backends
     """

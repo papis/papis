@@ -8,7 +8,7 @@ Cli
 import papis
 import papis.api
 from papis.api import status
-import papis.utils
+from papis.utils import confirm, text_area
 import papis.config
 import papis.document
 import papis.cli
@@ -76,7 +76,7 @@ def cli(
             return status.file_not_found
         if not force:
             toolbar = 'The file {0} would be removed'.format(filepath)
-            if not papis.utils.confirm("Are you sure?", bottom_toolbar=toolbar):
+            if not confirm("Are you sure?", bottom_toolbar=toolbar):
                 return status.success
         click.echo("Removing %s..." % filepath)
         return run(
@@ -89,10 +89,10 @@ def cli(
                 document.get_main_folder()
             )
             logger.warning("This document will be removed, check it")
-            papis.utils.text_area(
+            text_area(
                 title=toolbar, text=document.dump(), lexer_name='yaml'
             )
-            if not papis.utils.confirm("Are you sure?", bottom_toolbar=toolbar):
+            if not confirm("Are you sure?", bottom_toolbar=toolbar):
                 return status.success
         click.echo("Removing ...")
         return run(document)

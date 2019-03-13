@@ -13,7 +13,7 @@ def dissemin_authors_to_papis_authors(data):
     if 'authors' in data.keys():
         authors = []
         for author in data['authors']:
-            keys = ('first', 'last')
+            # keys = ('first', 'last')
             authors.append(
                 dict(
                     given_name=author['name']['first'],
@@ -51,9 +51,7 @@ def get_data(query=None):
     Get data using the dissemin API
     https://dissem.in/api/search/?q=pregroup
     """
-    dict_params = { "q": query, }
-    result = []
-    clean_params = {x: dict_params[x] for x in dict_params if dict_params[x]}
+    dict_params = {"q": query}
     params = urllib.parse.urlencode(dict_params)
     main_url = "https://dissem.in/api/search/?"
     req_url = main_url + params
@@ -66,5 +64,4 @@ def get_data(query=None):
     )
     jsondoc = urllib.request.urlopen(url).read().decode()
     paperlist = json.loads(jsondoc)
-    docs = sum([dissemindoc_to_papis(d) for d in paperlist['papers']], [])
-    return docs
+    return sum([dissemindoc_to_papis(d) for d in paperlist['papers']], [])

@@ -236,7 +236,7 @@ def filter_documents(documents, search=""):
         )
         pool.close()
         pool.join()
-        filtered_docs =  [d for d in result if d is not None]
+        filtered_docs = [d for d in result if d is not None]
         logger.debug(
             "done ({} ms) ({} docs)".format(
                 1000*time.time()-1000*begin_t,

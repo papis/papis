@@ -7,13 +7,16 @@ https://www.base-search.net/about/download/base_interface.pdf
 """
 import urllib.parse
 import urllib.request  # import urlencode
-import papis.config
 import logging
 import json
 
 logger = logging.getLogger('base')
 
-BASE_BASEURL = "https://api.base-search.net/cgi-bin/BaseHttpSearchInterface.fcgi/"
+BASE_BASEURL = (
+    "https://api.base-search.net/"
+    "cgi-bin/BaseHttpSearchInterface.fcgi/"
+)
+
 
 def get_data(query="", max=20):
 
@@ -23,7 +26,6 @@ def get_data(query="", max=20):
         logger.error('BASE only allows a maximum of 125 hits')
         max = 125
 
-    results = []
     dict_params = {
         "func": "PerformSearch",
         "query": query,

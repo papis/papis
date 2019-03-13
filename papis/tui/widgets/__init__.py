@@ -1,5 +1,4 @@
 from prompt_toolkit.formatted_text.html import HTML
-from prompt_toolkit.layout.processors import BeforeInput
 from prompt_toolkit.filters import has_focus, Condition
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.containers import (

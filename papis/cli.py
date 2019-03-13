@@ -123,7 +123,8 @@ def git_option(**attrs):
 
 def bypass(group, command, command_name):
     """
-    This function is specially important for people developing scripts in papis.
+    This function is specially important for people developing scripts in
+    papis.
 
     Suppose you're writing a plugin that uses the ``add`` command as seen
     in the command line in papis. However you don't want exactly the ``add``
@@ -150,6 +151,7 @@ def bypass(group, command, command_name):
             papis.commands.add.cli.bypassed(**kwargs)
     """
     group.add_command(command, command_name)
+
     def decorator(new_callback):
         setattr(command, "bypassed", command.callback)
         command.callback = new_callback

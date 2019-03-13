@@ -1,6 +1,5 @@
 import re
 import papis.downloaders.base
-import bs4
 
 
 class Downloader(papis.downloaders.base.Downloader):
@@ -30,7 +29,7 @@ class Downloader(papis.downloaders.base.Downloader):
 
     def get_document_url(self):
         """
-        >>> d = Downloader("https://hal.archives-ouvertes.fr/jpa-00205888?asf=")
+        >>> d = Downloader("https://hal.archives-ouvertes.fr/jpa-0205888?asf=")
         >>> d.get_document_url()
         'https://hal.archives-ouvertes.fr/jpa-00205888/document'
         """
@@ -39,7 +38,7 @@ class Downloader(papis.downloaders.base.Downloader):
 
     def get_bibtex_url(self):
         """
-        >>> d = Downloader("https://hal.archives-ouvertes.fr/jpa-00205888?asf=")
+        >>> d = Downloader("https://hal.archives-ouvertes.fr/jpa-0020588?asf=")
         >>> d.get_bibtex_url()
         'https://hal.archives-ouvertes.fr/jpa-00205888/bibtex'
         """

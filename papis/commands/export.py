@@ -46,7 +46,6 @@ Cli
 """
 import papis
 import os
-import sys
 import shutil
 import papis.utils
 import papis.document

@@ -451,7 +451,7 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
     logger = logging.getLogger('explore:citations')
 
     if doc_folder is not None:
-         documents = [from_folder(doc_folder)]
+        documents = [from_folder(doc_folder)]
     else:
         documents = papis.api.get_documents_in_lib(
             papis.api.get_lib(),
@@ -471,7 +471,9 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
             logger.info('Removing {0}'.format(citations_file))
             os.remove(citations_file)
         else:
-            logger.info('A citations file exists in {0}'.format(citations_file))
+            logger.info(
+                'A citations file exists in {0}'.format(citations_file)
+            )
             if papis.utils.confirm('Do you want to use it?'):
                 yaml.callback(citations_file)
                 return
@@ -508,7 +510,7 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
                     dois_with_data.append(
                         papis.crossref.doi_to_data(doi)
                     )
-                except ValueError as e:
+                except ValueError:
                     progress.bottom_toolbar = [
                         ('fg:ansired', 'Error resolving doi'),
                         ('', ' doi: {doi}'.format(doi=doi))

@@ -595,14 +595,13 @@ Other
     the ``doi`` key is part of the ``unique-document-keys`` option.
 
 """
+import os
+import configparser
+import papis.exceptions
 import logging
 
 logger = logging.getLogger("config")
 logger.debug("importing")
-
-import os
-import configparser
-import papis.exceptions
 
 
 _EXTERNAL_PICKER = None  #: Picker to set externally
@@ -681,11 +680,12 @@ general_settings = {
         "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
     "format-jinja2-enable": False,
     "header-format-file": None,
-    "header-format": \
-        "<ansired>{doc.html_escape[title]}</ansired>\n"\
+    "header-format": (
+        "<ansired>{doc.html_escape[title]}</ansired>\n"
         " <ansigreen>{doc.html_escape[author]}</ansigreen>\n"
         "  <blue>({doc.html_escape[year]})</blue> "
-        "[<ansiyellow>{doc.html_escape[tags]}</ansiyellow>]",
+        "[<ansiyellow>{doc.html_escape[tags]}</ansiyellow>]"
+    ),
 
     "info-allow-unicode": True,
     "ref-format": "{doc[doi]}",
@@ -962,7 +962,7 @@ def general_get(key, section=None, data_type=None):
             ][
                 specialized_key if section is None else key
             ]
-        except KeyError as e:
+        except KeyError:
             raise papis.exceptions.DefaultSettingValueMissing(key)
         else:
             return default

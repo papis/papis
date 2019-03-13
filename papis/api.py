@@ -3,15 +3,14 @@ create papis scripts.
 """
 
 import logging
-
-logger = logging.getLogger("api")
-logger.debug("importing")
-
 import os
 import papis.utils
 import papis.commands
 import papis.config
 import papis.database
+
+logger = logging.getLogger("api")
+logger.debug("importing")
 
 
 class status():
