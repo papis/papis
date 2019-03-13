@@ -102,6 +102,7 @@ def doc_folder_option(**attrs):
     """Adds a ``query`` argument as a decorator"""
     def decorator(f):
         attrs.setdefault('default', None)
+        attrs.setdefault('type', click.Path(exists=True))
         attrs.setdefault('help', 'Apply action to a document path')
         return click.decorators.option('--doc-folder', **attrs)(f)
     return decorator

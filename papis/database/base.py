@@ -5,7 +5,7 @@ Here the database abstraction for the libraries is defined.
 import os
 import papis.utils
 import papis.config
-
+import logging
 
 class Database(object):
     """Abstract class for the database backends
@@ -13,6 +13,10 @@ class Database(object):
 
     def __init__(self, library=papis.config.get_lib()):
         self.lib = library
+        self.logger = logging.getLogger('db:base')
+        lib_dir = self.get_dir()
+        if not os.path.exists(lib_dir):
+            self.logger.warn("Library folder '%s' does not exist" % lib_dir)
 
     def initialize(self):
         pass

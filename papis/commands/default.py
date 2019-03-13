@@ -27,6 +27,7 @@ Cli
 
 """
 import os
+import sys
 import papis
 import papis.api
 import papis.config
@@ -88,9 +89,9 @@ import papis.cli
          "--set info-name information.yaml  --set opentool evince",
 )
 @click.option(
-    "--nc", "--no-color", "no_color",
-    default=False,
-    is_flag=True,
+    "--color",
+    type=click.Choice(["always", "auto", "no"]),
+    default="auto",
     help="Prevent the output from having color"
 )
 def run(
@@ -101,10 +102,10 @@ def run(
         pick_lib,
         clear_cache,
         set_list,
-        no_color
+        color
         ):
 
-    if no_color:
+    if color == "no" or (color == "auto" and not sys.stdout.isatty()):
         # Turn off colorama (strip escape sequences from the output)
         colorama.init(strip=True)
     else:
