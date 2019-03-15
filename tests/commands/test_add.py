@@ -2,6 +2,7 @@ import re
 import os
 import tempfile
 import unittest
+from unittest.mock import patch
 import tests
 import tests.cli
 import papis.config
@@ -275,3 +276,28 @@ class TestCli(tests.cli.TestCli):
         # and it should still be an epub
         self.assertTrue(get_document_extension(epub) == 'epub')
         self.assertTrue(get_document_extension(doc.get_files()[0]) == 'epub')
+
+    @patch(
+        'papis.utils.doi_to_data',
+        lambda x: {"author": "Turing", "doc_url": "https://nourl"}
+    )
+    @patch(
+        'papis.downloaders.utils.get_downloader',
+        lambda url, downloader:
+            tests.MockDownloader(bibtex_data=' ', document_data='%PDF-1.5%\n'.encode())
+    )
+    @patch('papis.api.open_file', lambda x: None)
+    @patch('papis.utils.confirm', lambda x: True)
+    def test_from_doi(self):
+        result = self.invoke([
+            '--from-doi', '10.1112/plms/s2-42.1.230'
+        ])
+        self.assertTrue(result.exit_code == 0)
+        db = papis.database.get()
+        docs = db.query_dict({"author": "Turing"})
+        self.assertTrue(len(docs) == 1)
+        doc = docs[0]
+        # one file at least was retrieved
+        self.assertTrue(len(doc.get_files()) == 1)
+        # it has the pdf ending
+        self.assertTrue(len(re.split('.pdf', doc.get_files()[0])) == 2)
