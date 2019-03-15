@@ -190,7 +190,7 @@ def confirm(prompt, yes=True, bottom_toolbar=None):
     if yes:
         return result not in 'Nn'
     else:
-        return result not in 'Yy'
+        return result in 'Yy'
 
 
 def text_area(title, text, lexer_name="", height=10, full_screen=False):
