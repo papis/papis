@@ -76,6 +76,7 @@ import logging
 import papis
 from string import ascii_lowercase
 import os
+import re
 import tempfile
 import hashlib
 import shutil
