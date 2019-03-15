@@ -1098,20 +1098,27 @@ class Configuration(configparser.ConfigParser):
       }
     }
 
-    logger = logging.getLogger("Configuration")
-
     def __init__(self):
         configparser.ConfigParser.__init__(self)
         self.dir_location = get_config_folder()
         self.scripts_location = get_scripts_folder()
         self.file_location = get_config_file()
+        self.logger = logging.getLogger("Configuration")
         self.initialize()
 
     def handle_includes(self):
         if "include" in self.keys():
             for name in self["include"]:
                 self.logger.debug("including %s" % name)
-                self.read(os.path.expanduser(self.get("include", name)))
+                fullpath = os.path.expanduser(self.get("include", name))
+                if os.path.exists(fullpath):
+                    self.read(fullpath)
+                else:
+                    self.logger.warn(
+                        "{0} not included because it does not exist".format(
+                            fullpath
+                        )
+                    )
 
     def initialize(self):
         if not os.path.exists(self.dir_location):
@@ -1122,6 +1129,9 @@ class Configuration(configparser.ConfigParser):
         if not os.path.exists(self.scripts_location):
             os.makedirs(self.scripts_location)
         if os.path.exists(self.file_location):
+            self.logger.debug(
+                'Reading configuration from {0}'.format(self.file_location)
+            )
             self.read(self.file_location)
             self.handle_includes()
         else:
