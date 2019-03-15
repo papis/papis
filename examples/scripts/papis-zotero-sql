@@ -8,6 +8,7 @@ import os
 import shutil
 import glob
 import dateutil.parser
+import argparse
 
 # path to zotero SQLite database "zoter.sqlite" and "storage" to be imported
 inputPath = "."
@@ -210,6 +211,16 @@ def cleanItem(item):
 
 ###############################################################################
 
+parser = argparse.ArgumentParser(
+    description='Converto zotero.sqlite into papis database.'
+)
+parser.add_argument('zotero_dir', type=str, default=".",
+    help="Path to zotero's documents directory")
+
+args, unknown = parser.parse_known_args()
+
+inputPath = args.zotero_dir
+
 connection = sqlite3.connect(os.path.join(inputPath, "zotero.sqlite"))
 cursor = connection.cursor()
 
@@ -263,12 +274,25 @@ for row in cursor:
   path = os.path.join(outputPath, itemKey)
   if not os.path.exists(path): os.makedirs(path)
 
-  item = {"ref":itemKey, "type":itemType}
-  item.update(getFields(connection, itemId))
+  # Get mendeley keys
+  fields = getFields(connection, itemId)
+  extra = fields.get("extra", None)
+  ref = itemKey
+  if extra:
+      # try to convert
+      import re
+      matches = re.search(r'.*Citation Key: (\w+)', extra)
+      if matches:
+        ref = matches.group(1)
+  print("exporting under ref %s" % ref)
+  item = {"ref": ref, "type":itemType}
+  item.update(fields)
   item.update(getCreators(connection, itemId))
   item.update(getTags(connection, itemId))
   item.update(getCollections(connection, itemId))
   item.update(getFiles(connection, itemId, itemKey))
+
+  item.update({"ref": ref})
   cleanItem(item)
 
   itemFile = open(os.path.join(path, "info.yaml"), "w+")

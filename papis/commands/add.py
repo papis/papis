@@ -112,10 +112,12 @@ def get_file_name(data, original_filepath, suffix=""):
 
     basename_limit = 150
     file_name_opt = papis.config.get('file-name')
+    ext = papis.utils.get_document_extension(original_filepath)
 
     if file_name_opt is None:
         file_name_opt = os.path.basename(original_filepath)
 
+    # Get a file name from the format `file-name`
     file_name_base = papis.utils.format_doc(
         file_name_opt,
         papis.document.from_data(data)
@@ -123,12 +125,18 @@ def get_file_name(data, original_filepath, suffix=""):
 
     if len(file_name_base) > basename_limit:
         logger.warning(
-            'Shortening the documents\' {} name for portability'.format(
-                original_filepath
-            )
+            "Shortening the name {0} for portability".format(file_name_base)
         )
         file_name_base = file_name_base[0:basename_limit]
 
+    # Remove extension from file_name_base, if any
+    file_name_base = re.sub(
+        r"([.]{0})?$".format(ext),
+        '',
+        file_name_base
+    )
+
+    # Adding some extra suffixes, if any, and cleaning up document name
     filename_basename = papis.utils.clean_document_name(
         "{}{}".format(
             file_name_base,
@@ -136,10 +144,8 @@ def get_file_name(data, original_filepath, suffix=""):
         )
     )
 
-    filename = "{}.{}".format(
-        filename_basename,
-        papis.utils.get_document_extension(original_filepath)
-    )
+    # Adding the recognised extension
+    filename = filename_basename + '.' + ext
 
     return filename
 

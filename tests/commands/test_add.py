@@ -51,12 +51,18 @@ class TestGetFileName(unittest.TestCase):
         tests.setup_test_library()
 
     def test_get_file_name(self):
-        path = tempfile.mktemp(prefix='papis-get_name-')
-        open(path, 'w+').close()
+        pdf = create_random_pdf(suffix='.pdf')
+        path = create_random_file(prefix='papis-get_name-')
 
         assert(papis.config.get('file-name') is None)
         filename = get_file_name(dict(title='blah'), path, suffix='3')
         assert(re.match(r'^papis-get-name-.*\.data$', filename) is not None)
+        # With suffix
+        filename = get_file_name(dict(title='blah'), pdf, suffix='3')
+        assert(len(re.split('[.]pdf', filename)) == 2)
+        # Without suffix
+        filename = get_file_name(dict(title='blah'), pdf)
+        assert(len(re.split('[.]pdf', filename)) == 2)
 
         papis.config.set(
             'file-name',
@@ -179,7 +185,7 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(os.path.islink(doc.get_files()[0]))
 
     def test_name_and_from_folder(self):
-        pdf = create_random_pdf()
+        pdf = create_random_pdf(suffix='.pdf')
         result = self.invoke([
             '-s', 'author', 'Aristoteles',
             '--set', 'title', '"The apology of socrates"',
@@ -191,6 +197,10 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(len(docs) == 1)
         doc = docs[0]
         assert(os.path.basename(doc.get_main_folder()) == 'the-apology')
+        assert(len(doc.get_files()) == 1)
+        gotpdf = doc.get_files()[0]
+        assert(len(re.split(r'[.]pdf', pdf)) == 2)
+        assert(len(re.split(r'[.]pdf', gotpdf)) == 2)
 
         result = self.invoke([
             '--from-folder', doc.get_main_folder()
