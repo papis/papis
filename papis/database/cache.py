@@ -256,16 +256,15 @@ def folders_to_documents(folders):
     """
     import multiprocessing
     import time
-    logger = logging.getLogger("dir2doc")
+    logger = logging.getLogger("db:cache:dir2doc")
     np = papis.api.get_arg("cores", multiprocessing.cpu_count())
-    logger.debug("Running in %s cores" % np)
+    logger.debug("converting folder into documents on {0} cores".format(np))
     pool = multiprocessing.Pool(np)
-    logger.debug("pool started")
     begin_t = time.time()
     result = pool.map(papis.document.from_folder, folders)
     pool.close()
     pool.join()
-    logger.debug("pool done (%s ms)" % (1000*time.time()-1000*begin_t))
+    logger.debug("done in %.1f ms" % (1000*time.time()-1000*begin_t))
     return result
 
 

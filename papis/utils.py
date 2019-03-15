@@ -108,6 +108,7 @@ def get_folders(folder):
     for root, dirnames, filenames in os.walk(folder):
         if os.path.exists(os.path.join(root, get_info_file_name())):
             folders.append(root)
+    logger.debug("{0} valid folders retrieved".format(len(folders)))
     return folders
 
 

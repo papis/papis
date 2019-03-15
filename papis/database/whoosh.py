@@ -199,7 +199,7 @@ class Database(papis.database.base.Database):
         expensive and will be called only if no index is present, so
         at the time of building a brand new index.
         """
-        self.logger.debug('Indexing the library, this might take a while...')
+        self.logger.info('Indexing the library, this might take a while...')
         folders = papis.utils.get_folders(self.get_dir())
         documents = papis.database.cache.folders_to_documents(folders)
         schema_keys = self.get_schema_init_fields().keys()
