@@ -180,7 +180,7 @@ def get_hash_folder(data, document_paths):
     return result
 
 
-def get_default_title(data, document_path, interactive=False):
+def get_default_title(data, document_path):
     """
     >>> get_default_title({'title': 'hello world'}, 'whatever.pdf')
     'hello world'
@@ -196,14 +196,10 @@ def get_default_title(data, document_path, interactive=False):
         .replace("_", " ")
         .replace("-", " ")
     )
-    if interactive:
-        title = papis.utils.input(
-            'Title?', title
-        )
     return title
 
 
-def get_default_author(data, document_path, interactive=False):
+def get_default_author(data, document_path):
     """
     >>> get_default_author({'author': 'Garcilaso de la vega'}, 'whatever.pdf')
     'Garcilaso de la vega'
@@ -213,10 +209,6 @@ def get_default_author(data, document_path, interactive=False):
     if "author" in data.keys():
         return data["author"]
     author = "Unknown"
-    if interactive:
-        author = papis.utils.input(
-            'Author?', author
-        )
     return author
 
 
@@ -226,7 +218,6 @@ def run(
         name=None,
         file_name=None,
         subfolder=None,
-        interactive=False,
         confirm=False,
         open_file=False,
         edit=False,
@@ -247,9 +238,6 @@ def run(
     :param subfolder: Folder within the library where the document's folder
         should be stored.
     :type  subfolder: str
-    :param interactive: Wether or not interactive functionality of this command
-        should be activated.
-    :type  interactive: bool
     :param confirm: Wether or not to ask user for confirmation before adding.
     :type  confirm: bool
     :param open_file: Wether or not to ask user for opening file before adding.
@@ -424,11 +412,6 @@ def run(
     default=""
 )
 @click.option(
-    "-i", "--interactive/--no-interactive",
-    help="Do some of the actions interactively",
-    default=lambda: True if papis.config.get('add-interactive') else False
-)
-@click.option(
     "--name",
     help="Name for the document's folder (papis format)",
     default=lambda: papis.config.get('add-name')
@@ -513,7 +496,6 @@ def cli(
         files,
         set_list,
         directory,
-        interactive,
         name,
         file_name,
         from_bibtex,
@@ -565,7 +547,6 @@ def cli(
         data["title"] = data.get('title') or get_default_title(
             data,
             files[0],
-            interactive
         )
         logger.info("Title = % s" % data["title"])
     except:
@@ -576,7 +557,6 @@ def cli(
         data["author"] = data.get('author') or get_default_author(
             data,
             files[0],
-            interactive
         )
         logger.info("Author = % s" % data["author"])
     except:
@@ -670,7 +650,6 @@ def cli(
         name=name,
         file_name=file_name,
         subfolder=directory,
-        interactive=interactive,
         confirm=confirm,
         open_file=open_file,
         edit=edit,
