@@ -31,14 +31,14 @@ class Downloader(papis.downloaders.base.Downloader):
         """
         >>> d = Downloader("https://hal.archives-ouvertes.fr/jpa-0205888?asf=")
         >>> d.get_document_url()
-        'https://hal.archives-ouvertes.fr/jpa-00205888/document'
+        'https://hal.archives-ouvertes.fr/jpa-0205888/document'
         """
         url = re.sub(r'\?.*', '', self.get_url()) + '/document'
         return url
 
     def get_bibtex_url(self):
         """
-        >>> d = Downloader("https://hal.archives-ouvertes.fr/jpa-0020588?asf=")
+        >>> d = Downloader("https://hal.archives-ouvertes.fr/jpa-00205888?asf=")
         >>> d.get_bibtex_url()
         'https://hal.archives-ouvertes.fr/jpa-00205888/bibtex'
         """
