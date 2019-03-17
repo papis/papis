@@ -454,6 +454,7 @@ Databases
     ``papis`` database-backend.
 
 .. papis-config:: cache-dir
+  :default: $XDG_CACHE_HOME
 
 .. papis-config:: whoosh-schema-fields
 
