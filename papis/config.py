@@ -1,7 +1,9 @@
+import sys
 import os
 import configparser
 import papis.exceptions
 import logging
+from collections import OrderedDict
 
 logger = logging.getLogger("config")
 logger.debug("importing")
@@ -21,7 +23,6 @@ _OVERRIDE_VARS = {
 def get_default_opener():
     """Get the default file opener for the current system
     """
-    import sys
     if sys.platform.startswith('darwin'):
         return "open"
     elif os.name == 'nt':
@@ -142,7 +143,6 @@ def get_default_settings(section="", key=""):
     global _DEFAULT_SETTINGS
     # We use an OrderedDict so that the first entry will always be the general
     # settings, also good for automatic documentation
-    from collections import OrderedDict
     if _DEFAULT_SETTINGS is None:
         _DEFAULT_SETTINGS = OrderedDict()
         _DEFAULT_SETTINGS.update({
