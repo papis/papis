@@ -72,8 +72,8 @@ general_settings = {
 
     "file-browser": get_default_opener(),
     "bibtex-journal-key": 'journal',
-    "extra-bibtex-keys": "",
-    "extra-bibtex-types": "",
+    "extra-bibtex-keys": "[]",
+    "extra-bibtex-types": "[]",
     "default-library": "papers",
     "export-text-format":
         "{doc[author]}. {doc[title]}. {doc[journal]} {doc[pages]}"

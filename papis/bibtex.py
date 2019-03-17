@@ -22,7 +22,7 @@ bibtex_types = [
   "proceedings",
   "techreport",
   "unpublished"
-] + re.sub(r" *", "", papis.config.get('extra-bibtex-types')).split(',')
+] + papis.config.getlist('extra-bibtex-types')
 
 bibtex_type_converter = {
   "conferencePaper": "inproceedings",
@@ -102,7 +102,7 @@ bibtex_keys = [
     "volume",
     "volumes",
     "year",
-  ] + re.sub(r" *", "", papis.config.get('extra-bibtex-keys')).split(',')
+] + papis.config.getlist('extra-bibtex-keys')
 
 bibtex_key_converter = {
     "abstractNote": "abstract",

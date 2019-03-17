@@ -186,27 +186,38 @@ Bibtex options
 
 .. papis-config:: bibtex-journal-key
 
-    Journal publishers may request abbreviated journal titles. This
-    option allows the user to set the key for the journal entry when using
-    ``papis export --bibtex``.
+  Journal publishers may request abbreviated journal titles. This
+  option allows the user to set the key for the journal entry when using
+  ``papis export --bibtex``.
 
-    Set as ``full_journal_title`` or ``abbrev_journal_title`` for
-    whichever style required. Default is ``journal``.
+  Set as ``full_journal_title`` or ``abbrev_journal_title`` for
+  whichever style required. Default is ``journal``.
 
 .. papis-config:: extra-bibtex-keys
+  :default: []
 
-    When exporting documents in bibtex format, you might want to add
-    non-standard bibtex keys such as ``doc_url`` or ``tags``, you can add
-    these here as comma separated values, for example
-    ``extra-bibtex-keys = tags, doc_url``.
+  When exporting documents in bibtex format, you might want to add
+  non-standard bibtex keys such as ``doc_url`` or ``tags``, you can add
+  these as a valid python list of strings, for instance:
+
+  .. code:: ini
+
+    [mylib]
+    extra-bibtex-keys = ["tags", "doc_url"]
 
 .. papis-config:: extra-bibtex-types
+  :default: []
 
-    Allow non-standard bibtex types to be recognized, e.g,
-    ``extra-bibtex-types = wikipedia, video, song``.
-    See
-    `bibtex
-    reference <http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`_.
+  Allow non-standard bibtex types to be recognized, e.g,
+
+  .. code:: ini
+
+    [mylib]
+    extra-bibtex-types = ["wikipedia", "video", "song"]
+
+  See
+  `bibtex
+  reference <http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`_.
 
 .. papis-config:: multiple-authors-format
 
@@ -486,8 +497,7 @@ or inside the library sections prepending a ``tui-``,
     :section: tui
 
     This is the format of the string that appears on the bottom line in the
-    status line.
-    Right now there are only two variables defined:
+    status line.  Right now there are only two variables defined:
 
     - ``selected_index``
     - ``number_of_documents``
