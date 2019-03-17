@@ -293,7 +293,7 @@ class Database(papis.database.base.Database):
         path = os.path.expanduser(
             os.path.join(
                 self.get_cache_dir(),
-                papis.database.cache.get_name(self.get_dir())
+                papis.database.cache.get_cache_file_name(self.get_dir())
             )
         )
         # self.logger.debug('Index dir %s' % path)

@@ -77,7 +77,7 @@ def create(obj, path):
     pickle.dump(obj, open(path, "wb+"))
 
 
-def get_name(directory):
+def get_cache_file_name(directory):
     """Create a cache file name out of the path of a given directory.
 
     :param directory: Folder name to be used as a seed for the cache name.
@@ -85,9 +85,9 @@ def get_name(directory):
     :returns: Name for the cache file.
     :rtype:  str
 
-    >>> get_name('path/to/my/lib')
+    >>> get_cache_file_name('path/to/my/lib')
     'a8c689820a94babec20c5d6269c7d488-lib'
-    >>> get_name('papers')
+    >>> get_cache_file_name('papers')
     'a566b2bebc62611dff4cdaceac1a7bbd-papers'
     """
     import hashlib
@@ -153,7 +153,7 @@ def get_cache_file_path(directory):
     >>> get_cache_file_path('blah/papers')
     '/tmp/papis/c39177eca0eaea2e21134b0bd06631b6-papers'
     """
-    cache_name = get_name(directory)
+    cache_name = get_cache_file_name(directory)
     return os.path.expanduser(os.path.join(get_cache_home(), cache_name))
 
 
