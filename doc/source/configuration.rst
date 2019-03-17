@@ -116,10 +116,4 @@ for your papers, for instance in
 then everytime that you use this library also papis will source this
 configuration file.
 
-
-Default settings
-----------------
-
-.. automodule:: papis.config
-
-
+.. include:: default-settings.rst
