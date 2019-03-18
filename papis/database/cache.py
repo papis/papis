@@ -206,26 +206,28 @@ class Database(papis.database.base.Database):
     def __init__(self, library=None):
         papis.database.base.Database.__init__(self, library)
         self.logger = logging.getLogger('db:cache')
-        self.logger.debug('Initializing')
-        self.documents = []
+        self.documents = None
         self.initialize()
 
     def get_backend_name(self):
         return 'papis'
 
     def initialize(self):
-        self.get_documents()
+        pass
 
     def get_documents(self):
+        if self.documents is not None:
+            return self.documents
         use_cache = papis.config.getboolean("use-cache")
         cache_path = self._get_cache_file_path()
         if use_cache and os.path.exists(cache_path):
-            logger.debug(
+            self.logger.debug(
                 "Getting documents from cache in {0}".format(cache_path)
             )
             with open(cache_path, 'rb') as fd:
                 self.documents = pickle.load(fd)
         else:
+            self.logger.info('Indexing library, this might take a while')
             folders = sum([
                 papis.utils.get_folders(d) for d in self.get_dirs()
             ], [])
@@ -237,12 +239,14 @@ class Database(papis.database.base.Database):
                 len(self.documents)
             )
         )
+        return self.documents
 
     def add(self, document):
+        docs = self.get_documents()
         self.logger.debug('adding ...')
-        self.documents.append(document)
+        docs.append(document)
         assert(
-            self.documents[-1].get_main_folder() == document.get_main_folder()
+            docs[-1].get_main_folder() == document.get_main_folder()
         )
         assert(os.path.exists(document.get_main_folder()))
         self.save()
@@ -250,6 +254,7 @@ class Database(papis.database.base.Database):
     def update(self, document):
         if not papis.config.getboolean("use-cache"):
             return
+        docs = self.get_documents()
         self.logger.debug('updating document')
         result = self._locate_document(document)
         if len(result) == 0:
@@ -257,12 +262,13 @@ class Database(papis.database.base.Database):
                 'The document passed could not be found in the library'
             )
         index = result[0][0]
-        self.documents[index] = document
+        docs[index] = document
         self.save()
 
     def delete(self, document):
         if not papis.config.getboolean("use-cache"):
             return
+        docs = self.get_documents()
         self.logger.debug('deleting document')
         result = self._locate_document(document)
         if len(result) == 0:
@@ -270,7 +276,7 @@ class Database(papis.database.base.Database):
                 'The document passed could not be found in the library'
             )
         index = result[0][0]
-        self.documents.pop(index)
+        docs.pop(index)
         self.save()
 
     def match(self, document, query_string):
@@ -290,9 +296,8 @@ class Database(papis.database.base.Database):
 
     def query(self, query_string):
         self.logger.debug('Querying')
-        if len(self.documents) == 0:
-            self.get_documents()
-        return filter_documents(self.documents, query_string)
+        docs = self.get_documents()
+        return filter_documents(docs, query_string)
 
     def get_all_query_string(self):
         return '.'
@@ -306,12 +311,13 @@ class Database(papis.database.base.Database):
             self.logger.debug("Creating cache dir %s " % cache_home)
             os.makedirs(cache_home, mode=papis.config.getint('dir-umask'))
 
+        docs = self.get_documents()
         self.logger.debug(
-            'Saving ... ({} documents)'.format(len(self.documents))
+            'Saving ... ({} documents)'.format(len(docs))
         )
         path = self._get_cache_file_path()
         with open(path, "wb+") as fd:
-            pickle.dump(self.documents, fd)
+            pickle.dump(docs, fd)
 
     def _get_cache_file_path(self):
         return get_cache_file_path(self.lib.path_format())
@@ -320,6 +326,6 @@ class Database(papis.database.base.Database):
         assert(isinstance(document, papis.document.Document))
         result = filter(
             lambda d: d[1].get_main_folder() == document.get_main_folder(),
-            enumerate(self.documents)
+            enumerate(self.get_documents())
         )
         return list(result)
