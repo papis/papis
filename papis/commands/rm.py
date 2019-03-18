@@ -16,20 +16,16 @@ import papis.strings
 import papis.database
 import click
 import logging
+import os
 
 
-def run(
-        document,
-        filepath=None
-        ):
+def run(document, filepath=None):
     """Main method to the rm command
-
-    :returns: List different objects
-    :rtype:  list
     """
     db = papis.database.get()
     if filepath is not None:
-        document.rm_file(filepath)
+        os.remove(filepath)
+        document['files'].remove(os.path.basename(filepath))
         document.save()
     else:
         papis.document.delete(document)
