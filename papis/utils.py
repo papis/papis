@@ -337,12 +337,14 @@ def input(
         )
     else:
         validator = None
-
-    fragments = [
-        ('', prompt),
-        ('fg:red', ' ({0})'.format(default)),
-        ('', ': '),
-    ]
+    if isinstance(prompt, str):
+        fragments = [
+            ('', prompt),
+            ('fg:red', ' ({0})'.format(default)),
+            ('', ': '),
+        ]
+    else:
+        fragments = prompt
 
     result = prompt_toolkit.prompt(
         fragments,
