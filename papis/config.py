@@ -16,7 +16,6 @@ _CONFIGURATION = None  #: Global configuration object variable.
 _DEFAULT_SETTINGS = None  #: Default settings for the whole papis.
 _OVERRIDE_VARS = {
     "folder": None,
-    "cache": None,
     "file": None,
     "scripts": None
 }
@@ -308,12 +307,12 @@ def general_get(key, section=None, data_type=None):
     method = None
     value = None
     config = get_configuration()
-    lib = get_lib()
+    libname = get_lib().name
     global_section = get_general_settings_name()
     specialized_key = section + "-" + key if section is not None else key
     extras = [(section, key)] if section is not None else []
     sections = [(global_section, specialized_key)] +\
-        extras + [(lib, specialized_key)]
+        extras + [(libname, specialized_key)]
     default_settings = get_default_settings()
 
     # Check data type for setting getter method
@@ -462,7 +461,7 @@ def set_lib(library):
             )
             library_obj = papis.library.from_paths([library])
             name = library_obj.path_format()
-            config[name] = dict(dirs=library.paths)
+            config[name] = dict(dirs=library_obj.paths)
         else:
             raise Exception(
                 "Path or library '%s' does not seem to exist" % library
@@ -484,6 +483,15 @@ def set_lib(library):
         library_obj = papis.library.Library(library, paths)
         name = library
     _CURRENT_LIBRARY  = library_obj
+
+
+def get_lib_dirs():
+    """Get the directories of the current library
+
+    :returns: A list of paths
+    :rtype:  list
+    """
+    return get_lib().paths
 
 
 def get_lib():
