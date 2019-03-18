@@ -58,7 +58,7 @@ def get_arg(arg, default=None):
 
 def get_libraries():
     """Get all libraries declared in the configuration. A library is discovered
-    if the ``dir`` key defined in the library section.
+    if the ``dir`` or ``dirs`` key defined in the library section.
 
     :returns: List of library names
     :rtype: list
@@ -70,7 +70,7 @@ def get_libraries():
     libs = []
     config = papis.config.get_configuration()
     for key in config.keys():
-        if "dir" in config[key]:
+        if "dir" in config[key] or "dirs" in config[key]:
             libs.append(key)
     return libs
 
@@ -256,5 +256,4 @@ def clear_lib_cache(lib=None):
     >>> clear_lib_cache()
 
     """
-    lib = papis.api.get_lib() if lib is None else lib
     papis.database.get(lib).clear()
