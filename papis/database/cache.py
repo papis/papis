@@ -3,6 +3,7 @@ import logging
 import os
 import papis.utils
 import papis.docmatcher
+import papis.document
 import papis.config
 import papis.database.base
 import re
@@ -207,7 +208,6 @@ class Database(papis.database.base.Database):
         self.logger = logging.getLogger('db:cache')
         self.logger.debug('Initializing')
         self.documents = []
-        self.folders = []
         self.initialize()
 
     def get_backend_name(self):
@@ -217,37 +217,61 @@ class Database(papis.database.base.Database):
         self.get_documents()
 
     def get_documents(self):
-        directory = os.path.expanduser(self.get_dirs()[0])
         use_cache = papis.config.getboolean("use-cache")
-        self.folders = self._get_paths(use_cache=use_cache)
+        cache_path = self._get_cache_file_path()
+        if use_cache and os.path.exists(cache_path):
+            logger.debug(
+                "Getting documents from cache in {0}".format(cache_path)
+            )
+            with open(cache_path, 'rb') as fd:
+                self.documents = pickle.load(fd)
+        else:
+            folders = sum([
+                papis.utils.get_folders(d) for d in self.get_dirs()
+            ], [])
+            self.documents = folders_to_documents(folders)
+            if use_cache:
+                self.save()
         self.logger.debug(
-            "Loaded folders ({} documents)".format(
-                len(self.folders)
+            "Loaded documents ({} documents)".format(
+                len(self.documents)
             )
         )
 
-        self.documents = folders_to_documents(self.folders)
-
     def add(self, document):
-        self.logger.debug('Adding ...')
-        self.folders.append(document.get_main_folder())
-        assert(self.folders[-1] == document.get_main_folder())
-        assert(os.path.exists(document.get_main_folder()))
+        self.logger.debug('adding ...')
         self.documents.append(document)
+        assert(
+            self.documents[-1].get_main_folder() == document.get_main_folder()
+        )
+        assert(os.path.exists(document.get_main_folder()))
         self.save()
 
     def update(self, document):
-        self.logger.debug('Updating document')
+        if not papis.config.getboolean("use-cache"):
+            return
+        self.logger.debug('updating document')
+        result = self._locate_document(document)
+        if len(result) == 0:
+            raise Exception(
+                'The document passed could not be found in the library'
+            )
+        index = result[0][0]
+        self.documents[index] = document
+        self.save()
 
     def delete(self, document):
-        if papis.config.getboolean("use-cache"):
-            self.logger.debug(
-                'Deleting ... ({} documents)'.format(len(self.folders))
+        if not papis.config.getboolean("use-cache"):
+            return
+        self.logger.debug('deleting document')
+        result = self._locate_document(document)
+        if len(result) == 0:
+            raise Exception(
+                'The document passed could not be found in the library'
             )
-            self.folders.remove(document.get_main_folder())
-            self.save()
-            # Also update the documents list
-            self.get_documents()
+        index = result[0][0]
+        self.documents.pop(index)
+        self.save()
 
     def match(self, document, query_string):
         return match_document(document, query_string)
@@ -257,7 +281,6 @@ class Database(papis.database.base.Database):
         self.logger.warning("clearing cache %s " % cache_path)
         if os.path.exists(cache_path):
             os.remove(cache_path)
-
 
     def query_dict(self, dictionary):
         query_string = " ".join(
@@ -278,31 +301,25 @@ class Database(papis.database.base.Database):
         return self.query(self.get_all_query_string())
 
     def save(self):
-
         cache_home = get_cache_home()
         if not os.path.exists(cache_home):
             self.logger.debug("Creating cache dir %s " % cache_home)
             os.makedirs(cache_home, mode=papis.config.getint('dir-umask'))
 
         self.logger.debug(
-            'Saving ... ({} documents)'.format(len(self.folders))
+            'Saving ... ({} documents)'.format(len(self.documents))
         )
         path = self._get_cache_file_path()
         with open(path, "wb+") as fd:
-            pickle.dump(self.folders, fd)
+            pickle.dump(self.documents, fd)
 
     def _get_cache_file_path(self):
         return get_cache_file_path(self.lib.path_format())
 
-    def _get_paths(self, use_cache=True):
-        cache_path = self._get_cache_file_path()
-        folders = []
-        if use_cache and os.path.exists(cache_path):
-            logger.debug("Loading folders from cache")
-            with open(cache_path, 'rb') as fd:
-                return pickle.load(fd)
-        else:
-            return sum([
-                papis.utils.get_folders(d) for d in self.get_dirs()
-            ], [])
-
+    def _locate_document(self, document):
+        assert(isinstance(document, papis.document.Document))
+        result = filter(
+            lambda d: d[1].get_main_folder() == document.get_main_folder(),
+            enumerate(self.documents)
+        )
+        return list(result)
