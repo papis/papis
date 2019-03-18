@@ -330,7 +330,7 @@ def run(
             shutil.copy(in_file_path, tmp_end_filepath)
 
     data['files'] = new_file_list
-    tmp_document.update(data, force=True)
+    tmp_document.update(data)
     tmp_document.save()
 
     # Check if the user wants to edit before submitting the doc

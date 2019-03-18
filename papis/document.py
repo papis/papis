@@ -371,34 +371,6 @@ class Document(object):
         )
         fd.close()
 
-    def update(self, data, force=False, interactive=False):
-        """Update document's information from an info dictionary.
-
-        :param data: Dictionary with key and values to be updated
-        :type  data: dict
-        :param force: If True, the update turns into a replace, i.e., it
-            replaces the old value by the new value stored in data.
-        :type  force: bool
-        :param interactive: If True, it will ask for user's input every time
-            that the values differ.
-        :type  interactive: bool
-
-        """
-        for key in data.keys():
-            if self[key] != data[key]:
-                if force:
-                    self[key] = data[key]
-                elif interactive:
-                    confirmation = papis.utils.confirm(
-                        "(%s conflict) Replace '%s' by '%s'?" % (
-                            key, self[key], data[key]
-                        )
-                    )
-                    if confirmation:
-                        self[key] = data[key]
-                elif self[key] is None or self[key] == '':
-                    self[key] = data[key]
-
     def get_info_file(self):
         """Get full path for the info file
         :returns: Full path for the info file
@@ -418,6 +390,16 @@ class Document(object):
         for f in files:
             result.append(os.path.join(self.get_main_folder(), f))
         return result
+
+    def update(self, data):
+        """Update document's information from an info dictionary.
+
+        :param data: Dictionary with key and values to be updated
+        :type  data: dict
+
+        """
+        for key in data.keys():
+            self[key] = data[key]
 
     def keys(self):
         """Returns the keys defined for the document.
