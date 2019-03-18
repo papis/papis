@@ -270,7 +270,7 @@ def cli(
 
         if from_yaml:
             with open(from_yaml) as fd:
-                data.update(yaml.load(fd))
+                data.update(yaml.safe_load(fd))
 
         if from_doi:
             logger.debug("Try using doi %s" % from_doi)

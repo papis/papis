@@ -98,7 +98,7 @@ class TestCli(tests.cli.TestCli):
             'krishnamurti', '--yaml'
         ])
         self.assertTrue(result.exit_code == 0)
-        data = yaml.load(result.stdout_bytes)
+        data = yaml.safe_load(result.stdout_bytes)
         assert(re.match(r'.*Krishnamurti.*', data['author']) is not None)
 
         # output stdout
@@ -111,7 +111,7 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(os.path.exists(outfile))
 
         with open(outfile) as fd:
-            data = yaml.load(fd.read())
+            data = yaml.safe_load(fd.read())
             assert(data is not None)
             assert(re.match(r'.*Krishnamurti.*', data['author']) is not None)
 

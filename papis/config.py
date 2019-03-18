@@ -5,6 +5,7 @@ import configparser
 import papis.exceptions
 import papis.library
 from collections import OrderedDict
+import logging
 
 logger = logging.getLogger("config")
 logger.debug("importing")

@@ -166,7 +166,8 @@ def yaml_to_data(yaml_path):
     :rtype:  dict
     """
     import yaml
-    return yaml.load(open(yaml_path))
+    with open(yaml_path) as fd:
+        return yaml.safe_load(fd)
 
 
 def confirm(prompt, yes=True, bottom_toolbar=None):

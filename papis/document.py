@@ -471,7 +471,7 @@ class Document(object):
         except:
             return False
         try:
-            structure = yaml.load(fd)
+            structure = yaml.safe_load(fd)
             for key in structure:
                 self[key] = structure[key]
             fd.close()
