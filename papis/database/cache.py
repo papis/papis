@@ -2,6 +2,7 @@ import pickle
 import logging
 import os
 import papis.utils
+from papis.utils import get_cache_home, folders_to_documents
 import papis.docmatcher
 import papis.document
 import papis.config
@@ -12,40 +13,6 @@ import time
 
 
 logger = logging.getLogger("cache")
-
-
-def get_cache_home():
-    """Get folder where the cache files are stored, it retrieves the
-    ``cache-dir`` configuration setting. It is ``XDG`` standard compatible.
-
-    :returns: Full path for cache main folder
-    :rtype:  str
-
-    >>> import os; os.environ["XDG_CACHE_HOME"] = '~/.cache'
-    >>> get_cache_home() == os.path.expanduser(\
-            os.path.join(os.environ["XDG_CACHE_HOME"], 'papis')\
-        )
-    True
-    >>> os.environ["XDG_CACHE_HOME"] = '/tmp/.cache'
-    >>> get_cache_home()
-    '/tmp/.cache/papis'
-    >>> del os.environ["XDG_CACHE_HOME"]
-    >>> get_cache_home() == os.path.expanduser(\
-            os.path.join('~/.cache', 'papis')\
-        )
-    True
-    """
-    user_defined = papis.config.get('cache-dir')
-    if user_defined is not None:
-        return os.path.expanduser(user_defined)
-    else:
-        return os.path.expanduser(
-            os.path.join(os.environ.get('XDG_CACHE_HOME'), 'papis')
-        ) if os.environ.get(
-            'XDG_CACHE_HOME'
-        ) else os.path.expanduser(
-            os.path.join('~', '.cache', 'papis')
-        )
 
 
 def get_cache_file_name(directory):
@@ -136,26 +103,6 @@ def filter_documents(documents, search=""):
         )
         return filtered_docs
 
-
-def folders_to_documents(folders):
-    """Turn folders into documents, this is done in a multiprocessing way, this
-    step is quite critical for performance.
-
-    :param folders: List of folder paths.
-    :type  folders: list
-    :returns: List of document objects.
-    :rtype:  list
-    """
-    logger = logging.getLogger("db:cache:dir2doc")
-    np = papis.api.get_arg("cores", multiprocessing.cpu_count())
-    logger.debug("converting folder into documents on {0} cores".format(np))
-    pool = multiprocessing.Pool(np)
-    begin_t = time.time()
-    result = pool.map(papis.document.from_folder, folders)
-    pool.close()
-    pool.join()
-    logger.debug("done in %.1f ms" % (1000*time.time()-1000*begin_t))
-    return result
 
 
 def match_document(document, search, match_format=None):

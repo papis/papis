@@ -50,6 +50,7 @@ import papis.config
 import papis.document
 import papis.database.base
 import papis.database.cache
+from papis.utils import get_cache_home, get_folders, folders_to_documents
 
 
 class Database(papis.database.base.Database):
@@ -200,8 +201,8 @@ class Database(papis.database.base.Database):
         at the time of building a brand new index.
         """
         self.logger.debug('Indexing the library, this might take a while...')
-        folders = sum([papis.utils.get_folders(d) for d in self.get_dirs()], [])
-        documents = papis.database.cache.folders_to_documents(folders)
+        folders = sum([get_folders(d) for d in self.get_dirs()], [])
+        documents = folders_to_documents(folders)
         schema_keys = self.get_schema_init_fields().keys()
         writer = self.get_writer()
         for doc in documents:
@@ -279,7 +280,7 @@ class Database(papis.database.base.Database):
         :rtype:  str
         """
         path = os.path.join(
-            papis.database.cache.get_cache_home(),
+            get_cache_home(),
             'whoosh'
         )
         # self.logger.debug('Cache dir %s' % path)

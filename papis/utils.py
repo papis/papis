@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from subprocess import call
+import multiprocessing
+import time
 from itertools import count, product
 import os
 import re
@@ -385,6 +387,7 @@ def git_commit(path="", message=""):
 
     """
     logger.debug('Commiting...')
+    dirs = get_lib_dirs()
     path = path or os.path.expanduser(papis.config.get('dir'))
     message = '-m "%s"' % message if len(message) > 0 else ''
     cmd = ['git', '-C', path, 'commit', message]
@@ -452,3 +455,58 @@ def get_document_extension(document_path):
         return m.group(1) if m else 'data'
     else:
         return kind.extension
+
+
+def folders_to_documents(folders):
+    """Turn folders into documents, this is done in a multiprocessing way, this
+    step is quite critical for performance.
+
+    :param folders: List of folder paths.
+    :type  folders: list
+    :returns: List of document objects.
+    :rtype:  list
+    """
+    logger = logging.getLogger("utils:dir2doc")
+    np = papis.api.get_arg("cores", multiprocessing.cpu_count())
+    logger.debug("converting folder into documents on {0} cores".format(np))
+    pool = multiprocessing.Pool(np)
+    begin_t = time.time()
+    result = pool.map(papis.document.from_folder, folders)
+    pool.close()
+    pool.join()
+    logger.debug("done in %.1f ms" % (1000*time.time()-1000*begin_t))
+    return result
+
+
+def get_cache_home():
+    """Get folder where the cache files are stored, it retrieves the
+    ``cache-dir`` configuration setting. It is ``XDG`` standard compatible.
+
+    :returns: Full path for cache main folder
+    :rtype:  str
+
+    >>> import os; os.environ["XDG_CACHE_HOME"] = '~/.cache'
+    >>> get_cache_home() == os.path.expanduser(\
+            os.path.join(os.environ["XDG_CACHE_HOME"], 'papis')\
+        )
+    True
+    >>> os.environ["XDG_CACHE_HOME"] = '/tmp/.cache'
+    >>> get_cache_home()
+    '/tmp/.cache/papis'
+    >>> del os.environ["XDG_CACHE_HOME"]
+    >>> get_cache_home() == os.path.expanduser(\
+            os.path.join('~/.cache', 'papis')\
+        )
+    True
+    """
+    user_defined = papis.config.get('cache-dir')
+    if user_defined is not None:
+        return os.path.expanduser(user_defined)
+    else:
+        return os.path.expanduser(
+            os.path.join(os.environ.get('XDG_CACHE_HOME'), 'papis')
+        ) if os.environ.get(
+            'XDG_CACHE_HOME'
+        ) else os.path.expanduser(
+            os.path.join('~', '.cache', 'papis')
+        )
