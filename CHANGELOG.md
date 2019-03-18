@@ -1,3 +1,15 @@
+
+VERSION v0.9
+============
+
+- The default `papis` database is now caching the document objects instead
+  of only the paths, which means that no yaml parsing is necessary every
+  time, which makes it around `10x` faster than in version `v0.8`.
+  For a library of 1200 documents, the speed of the `papis` database backend
+  is comparable with the `whoosh` backend.
+- Libraries can have multiple directories defined.
+
+
 VERSION v0.8.1
 ==============
 
