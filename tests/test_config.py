@@ -83,9 +83,9 @@ def test_get():
     assert get('test_get') == 'value1'
     assert get('test_get', section=settings) == 'value1'
 
-    set('test_get', 'value42', section=get_lib())
+    set('test_get', 'value42', section=get_lib().name)
     assert 'value42' == get('test_get')
-    assert 'value42' == get('test_get', section=get_lib())
+    assert 'value42' == get('test_get', section=get_lib().name)
     assert 'value1' == get('test_get', section=settings)
 
     set('test_getint', '42')
@@ -156,9 +156,7 @@ def test_set_lib_from_path():
     lib = tempfile.mkdtemp()
     assert os.path.exists(lib)
     set_lib(lib)
-    assert os.environ['PAPIS_LIB'] == lib
-    assert os.environ['PAPIS_LIB_DIR'] == lib
-    assert get_lib() == lib
+    assert get_lib().name == lib
 
 
 def test_set_lib_from_real_lib():
@@ -167,9 +165,7 @@ def test_set_lib_from_real_lib():
     set('dir', libdir, section=libname)
     assert os.path.exists(libdir)
     set_lib(libname)
-    assert os.environ['PAPIS_LIB'] == libname
-    assert os.environ['PAPIS_LIB_DIR'] == libdir
-    assert get_lib() == libname
+    assert get_lib().name == libname
 
 
 def test_reset_configuration():
