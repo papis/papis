@@ -103,7 +103,7 @@ def get_folders(folder):
     :returns: List of folders containing an info file.
     :rtype: list
     """
-    logger.debug("Indexing folders")
+    logger.debug("Indexing folders in '{0}'".format(folder))
     folders = list()
     for root, dirnames, filenames in os.walk(folder):
         if os.path.exists(os.path.join(root, get_info_file_name())):
