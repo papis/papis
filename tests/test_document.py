@@ -1,6 +1,7 @@
 from papis.document import *
 import tempfile
-import papis.config 
+import papis.config
+import pickle
 
 
 def test_open_in_browser():
@@ -48,3 +49,19 @@ def test_to_json():
         to_json(doc) ==
         '{"title": "Hello World"}'
     )
+
+
+def test_pickle():
+    docs = [
+        from_data({'title': 'Hello World'}),
+        from_data({'author': 'Turing'}),
+    ]
+    filepath = tempfile.mktemp()
+    with open(filepath, 'wb+') as fd:
+        pickle.dump(docs, fd)
+
+    with open(filepath, 'rb') as fd:
+        gotdocs = pickle.load(fd)
+
+    assert(gotdocs[0].title == docs[0].title)
+    assert(gotdocs[1].author == docs[1].author)
