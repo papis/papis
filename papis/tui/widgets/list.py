@@ -97,7 +97,7 @@ class OptionsList(ConditionalContainer):
             return
         current_line = self.index_to_line(self.current_index)
         if (0 <= line - current_line
-            < self.options_headers_linecount[self.current_index]):
+                < self.options_headers_linecount[self.current_index]):
             return [('class:options_list.selected_margin', '|')]
         else:
             marked_clines = [self.index_to_line(i) for i in self.marks]
@@ -208,7 +208,7 @@ class OptionsList(ConditionalContainer):
                 for i in self.indices[0:index]
             )
             self.cursor = Point(0, line)
-        except Exception as e:
+        except Exception:
             self.cursor = Point(0, 0)
 
     def get_tokens(self):

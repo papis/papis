@@ -1,15 +1,14 @@
-from prompt_toolkit.filters import has_focus, Condition
 from prompt_toolkit.layout.processors import BeforeInput
 from prompt_toolkit.buffer import Buffer
-from prompt_toolkit.completion import WordCompleter, Completer, Completion
+from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.layout.containers import (
-    HSplit, Window, WindowAlign, ConditionalContainer
+    Window, ConditionalContainer
 )
 from prompt_toolkit.layout.controls import (
     BufferControl,
-    FormattedTextControl
 )
 from prompt_toolkit.application.current import get_app
+from prompt_toolkit.filters import has_focus
 from prompt_toolkit.utils import Event
 import shlex
 
@@ -93,4 +92,3 @@ class CommandLinePrompt(ConditionalContainer):
     @text.setter
     def text(self, text):
         self.buf.text = text
-

@@ -354,32 +354,6 @@ class Document(object):
         """
         return key in self.keys()
 
-    def rm_file(self, filepath):
-        """Remove file from document, it also removes the entry in `files`
-
-        :filepath: Full file path for file
-
-        >>> doc = from_data({'title': 'Hello', 'files': ['a.pdf']})
-        >>> doc.rm_file('b.pdf')
-        Traceback (most recent call last):
-        ...
-        Exception: File b.pdf not tracked by document
-        """
-        basename = os.path.basename(filepath)
-        if basename not in self['files']:
-            raise Exception("File %s not tracked by document" % basename)
-        os.remove(filepath)
-        self['files'].pop(self['files'].index(basename))
-
-    def rm(self):
-        """Removes document's folder, effectively removing it from the library.
-
-        >>> doc = from_data({'title': 'Hello World'})
-        >>> import tempfile; doc.set_folder(tempfile.mkdtemp())
-        >>> doc.rm()
-        """
-        shutil.rmtree(self.get_main_folder())
-
     def save(self):
         """Saves the current document's information into the info file.
         """

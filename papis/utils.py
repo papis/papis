@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 from subprocess import call
-import logging
 from itertools import count, product
-
-logger = logging.getLogger("utils")
-logger.debug("importing")
-
 import os
 import re
 import papis.api
@@ -15,6 +10,10 @@ import papis.document
 import papis.crossref
 import papis.bibtex
 import papis.exceptions
+import logging
+
+logger = logging.getLogger("utils")
+logger.debug("importing")
 
 
 def general_open(fileName, key, default_opener=None, wait=True):
@@ -109,6 +108,7 @@ def get_folders(folder):
     for root, dirnames, filenames in os.walk(folder):
         if os.path.exists(os.path.join(root, get_info_file_name())):
             folders.append(root)
+    logger.debug("{0} valid folders retrieved".format(len(folders)))
     return folders
 
 
@@ -190,7 +190,7 @@ def confirm(prompt, yes=True, bottom_toolbar=None):
     if yes:
         return result not in 'Nn'
     else:
-        return result not in 'Yy'
+        return result in 'Yy'
 
 
 def text_area(title, text, lexer_name="", height=10, full_screen=False):
@@ -213,7 +213,9 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
     from prompt_toolkit.enums import EditingMode
     from prompt_toolkit.buffer import Buffer
     from prompt_toolkit.layout.containers import HSplit, Window, WindowAlign
-    from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
+    from prompt_toolkit.layout.controls import (
+        BufferControl, FormattedTextControl
+    )
     from prompt_toolkit.layout.layout import Layout
     from prompt_toolkit.layout import Dimension
     from prompt_toolkit.key_binding import KeyBindings
@@ -292,7 +294,6 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
 
 
 def yes_no_dialog(title, text):
-    from prompt_toolkit.formatted_text import HTML
     from prompt_toolkit.shortcuts import yes_no_dialog
     from prompt_toolkit.styles import Style
 
@@ -310,7 +311,8 @@ def yes_no_dialog(title, text):
     )
 
 
-def input(prompt, default="", bottom_toolbar=None, multiline=False, 
+def input(
+        prompt, default="", bottom_toolbar=None, multiline=False,
         validator_function=None, dirty_message=""):
     """Prompt user for input
 

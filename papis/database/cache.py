@@ -77,7 +77,7 @@ def create(obj, path):
     pickle.dump(obj, open(path, "wb+"))
 
 
-def get_name(directory):
+def get_cache_file_name(directory):
     """Create a cache file name out of the path of a given directory.
 
     :param directory: Folder name to be used as a seed for the cache name.
@@ -85,9 +85,9 @@ def get_name(directory):
     :returns: Name for the cache file.
     :rtype:  str
 
-    >>> get_name('path/to/my/lib')
+    >>> get_cache_file_name('path/to/my/lib')
     'a8c689820a94babec20c5d6269c7d488-lib'
-    >>> get_name('papers')
+    >>> get_cache_file_name('papers')
     'a566b2bebc62611dff4cdaceac1a7bbd-papers'
     """
     import hashlib
@@ -153,7 +153,7 @@ def get_cache_file_path(directory):
     >>> get_cache_file_path('blah/papers')
     '/tmp/papis/c39177eca0eaea2e21134b0bd06631b6-papers'
     """
-    cache_name = get_name(directory)
+    cache_name = get_cache_file_name(directory)
     return os.path.expanduser(os.path.join(get_cache_home(), cache_name))
 
 
@@ -236,7 +236,7 @@ def filter_documents(documents, search=""):
         )
         pool.close()
         pool.join()
-        filtered_docs =  [d for d in result if d is not None]
+        filtered_docs = [d for d in result if d is not None]
         logger.debug(
             "done ({} ms) ({} docs)".format(
                 1000*time.time()-1000*begin_t,
@@ -256,16 +256,15 @@ def folders_to_documents(folders):
     """
     import multiprocessing
     import time
-    logger = logging.getLogger("dir2doc")
+    logger = logging.getLogger("db:cache:dir2doc")
     np = papis.api.get_arg("cores", multiprocessing.cpu_count())
-    logger.debug("Running in %s cores" % np)
+    logger.debug("converting folder into documents on {0} cores".format(np))
     pool = multiprocessing.Pool(np)
-    logger.debug("pool started")
     begin_t = time.time()
     result = pool.map(papis.document.from_folder, folders)
     pool.close()
     pool.join()
-    logger.debug("pool done (%s ms)" % (1000*time.time()-1000*begin_t))
+    logger.debug("done in %.1f ms" % (1000*time.time()-1000*begin_t))
     return result
 
 

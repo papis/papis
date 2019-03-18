@@ -113,10 +113,12 @@ def get_file_name(data, original_filepath, suffix=""):
 
     basename_limit = 150
     file_name_opt = papis.config.get('file-name')
+    ext = papis.utils.get_document_extension(original_filepath)
 
     if file_name_opt is None:
         file_name_opt = os.path.basename(original_filepath)
 
+    # Get a file name from the format `file-name`
     file_name_base = papis.utils.format_doc(
         file_name_opt,
         papis.document.from_data(data)
@@ -124,12 +126,18 @@ def get_file_name(data, original_filepath, suffix=""):
 
     if len(file_name_base) > basename_limit:
         logger.warning(
-            'Shortening the documents\' {} name for portability'.format(
-                original_filepath
-            )
+            "Shortening the name {0} for portability".format(file_name_base)
         )
         file_name_base = file_name_base[0:basename_limit]
 
+    # Remove extension from file_name_base, if any
+    file_name_base = re.sub(
+        r"([.]{0})?$".format(ext),
+        '',
+        file_name_base
+    )
+
+    # Adding some extra suffixes, if any, and cleaning up document name
     filename_basename = papis.utils.clean_document_name(
         "{}{}".format(
             file_name_base,
@@ -137,10 +145,8 @@ def get_file_name(data, original_filepath, suffix=""):
         )
     )
 
-    filename = "{}.{}".format(
-        filename_basename,
-        papis.utils.get_document_extension(original_filepath)
-    )
+    # Adding the recognised extension
+    filename = filename_basename + '.' + ext
 
     return filename
 
@@ -174,7 +180,7 @@ def get_hash_folder(data, document_paths):
     return result
 
 
-def get_default_title(data, document_path, interactive=False):
+def get_default_title(data, document_path):
     """
     >>> get_default_title({'title': 'hello world'}, 'whatever.pdf')
     'hello world'
@@ -185,19 +191,16 @@ def get_default_title(data, document_path, interactive=False):
     if "title" in data.keys():
         return data["title"]
     extension = papis.utils.get_document_extension(document_path)
-    title = (os.path.basename(document_path)
+    title = (
+        os.path.basename(document_path)
         .replace("."+extension, "")
         .replace("_", " ")
         .replace("-", " ")
     )
-    if interactive:
-        title = papis.utils.input(
-            'Title?', title
-        )
     return title
 
 
-def get_default_author(data, document_path, interactive=False):
+def get_default_author(data, document_path):
     """
     >>> get_default_author({'author': 'Garcilaso de la vega'}, 'whatever.pdf')
     'Garcilaso de la vega'
@@ -207,10 +210,6 @@ def get_default_author(data, document_path, interactive=False):
     if "author" in data.keys():
         return data["author"]
     author = "Unknown"
-    if interactive:
-        author = papis.utils.input(
-            'Author?', author
-        )
     return author
 
 
@@ -220,7 +219,6 @@ def run(
         name=None,
         file_name=None,
         subfolder=None,
-        interactive=False,
         confirm=False,
         open_file=False,
         edit=False,
@@ -241,9 +239,6 @@ def run(
     :param subfolder: Folder within the library where the document's folder
         should be stored.
     :type  subfolder: str
-    :param interactive: Wether or not interactive functionality of this command
-        should be activated.
-    :type  interactive: bool
     :param confirm: Wether or not to ask user for confirmation before adding.
     :type  confirm: bool
     :param open_file: Wether or not to ask user for opening file before adding.
@@ -418,11 +413,6 @@ def run(
     default=""
 )
 @click.option(
-    "-i", "--interactive/--no-interactive",
-    help="Do some of the actions interactively",
-    default=lambda: True if papis.config.get('add-interactive') else False
-)
-@click.option(
     "--name",
     help="Name for the document's folder (papis format)",
     default=lambda: papis.config.get('add-name')
@@ -496,7 +486,7 @@ def run(
     default=False
 )
 @click.option(
-    #TODO: REMOVE IT AT SOME POINT
+    # TODO: REMOVE IT AT SOME POINT
     "--no-document",
     default=False,
     is_flag=True,
@@ -507,7 +497,6 @@ def cli(
         files,
         set_list,
         directory,
-        interactive,
         name,
         file_name,
         from_bibtex,
@@ -559,7 +548,6 @@ def cli(
         data["title"] = data.get('title') or get_default_title(
             data,
             files[0],
-            interactive
         )
         logger.info("Title = % s" % data["title"])
     except:
@@ -570,7 +558,6 @@ def cli(
         data["author"] = data.get('author') or get_default_author(
             data,
             files[0],
-            interactive
         )
         logger.info("Author = % s" % data["author"])
     except:
@@ -667,7 +654,6 @@ def cli(
         name=name,
         file_name=file_name,
         subfolder=directory,
-        interactive=interactive,
         confirm=confirm,
         open_file=open_file,
         edit=edit,

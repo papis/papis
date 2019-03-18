@@ -312,7 +312,7 @@ def doi_to_data(doi):
     doi = get_clean_doi(doi)
     try:
         data = get_cross_ref(doi)
-    except Exception as e:
+    except Exception:
         raise ValueError(
             "Couldn't resolve doi " + doi
         )

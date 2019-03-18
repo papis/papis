@@ -1,16 +1,12 @@
-import os
-import re
 from prompt_toolkit.application import Application
 from prompt_toolkit.formatted_text.html import HTML
-from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.layout.processors import BeforeInput
 from prompt_toolkit.key_binding import KeyBindings, merge_key_bindings
-from prompt_toolkit.layout.screen import Point
 from prompt_toolkit.filters import has_focus, Condition
 from prompt_toolkit.styles import Style
 from prompt_toolkit.layout.containers import (
-    HSplit, Window, ConditionalContainer
+    HSplit, Window
 )
 from prompt_toolkit.layout.controls import (
     BufferControl,
@@ -18,7 +14,6 @@ from prompt_toolkit.layout.controls import (
 from prompt_toolkit.layout.layout import Layout
 import papis.config as config
 import logging
-import subprocess
 
 from .widgets.command_line_prompt import Command
 from .widgets import (
@@ -29,6 +24,8 @@ from .widgets import (
 logger = logging.getLogger('pick')
 
 _keys_info = None
+
+
 def get_keys_info():
     global _keys_info
     if not _keys_info:
@@ -42,11 +39,15 @@ def get_keys_info():
                 'help': 'Move cursor up in the list',
             },
             "move_down_while_info_window_active_key": {
-                'key': config.get('move_down_while_info_window_active_key', section='tui'),
+                'key': config.get(
+                    'move_down_while_info_window_active_key', section='tui'
+                ),
                 'help': 'Move cursor down while info window is active',
             },
             "move_up_while_info_window_active_key": {
-                'key': config.get('move_up_while_info_window_active_key', section='tui'),
+                'key': config.get(
+                    'move_up_while_info_window_active_key', section='tui'
+                ),
                 'help': 'Move cursor up while info window is active',
             },
             "focus_command_line_key": {
@@ -94,7 +95,9 @@ def create_keybindings(app):
         event.app.error_toolbar.text = None
 
     @kb.add('c-n', filter=~has_focus(app.info_window))
-    @kb.add(keys_info["move_down_key"]["key"], filter=~has_focus(app.info_window))
+    @kb.add(
+        keys_info["move_down_key"]["key"], filter=~has_focus(app.info_window)
+    )
     def down_(event):
         event.app.options_list.move_down()
         event.app.refresh()
@@ -109,7 +112,9 @@ def create_keybindings(app):
         event.app.update_info_window()
 
     @kb.add('c-p', filter=~has_focus(app.info_window))
-    @kb.add(keys_info["move_up_key"]["key"], filter=~has_focus(app.info_window))
+    @kb.add(
+        keys_info["move_up_key"]["key"], filter=~has_focus(app.info_window)
+    )
     def up_(event):
         event.app.options_list.move_up()
         event.app.refresh()
@@ -265,7 +270,6 @@ class Picker(Application):
             match_filter=lambda x: x
             ):
 
-
         self.info_window = InfoWindow()
         self.help_window = HelpWindow()
         self.message_toolbar = MessageToolbar(style="class:message_toolbar")
@@ -304,8 +308,6 @@ class Picker(Application):
             self.status_line,
             self.command_line_prompt.window,
         ])
-
-        regex = re.compile(r'.*\.([^ ]+) +at.*')
 
         help_text = ""
         keys_info = get_keys_info()

@@ -3,8 +3,16 @@ import papis.config
 import papis.api
 import papis.utils
 import papis.document
+from papis.downloaders.base import Downloader
 import os
 import shutil
+
+
+class MockDownloader(Downloader):
+    def __init__(self, url="", name="", bibtex_data=None, document_data=None):
+        #Downloader.__init__(self, url, name)
+        self.bibtex_data = bibtex_data
+        self.document_data = document_data
 
 
 def create_random_pdf(suffix='', prefix=''):
