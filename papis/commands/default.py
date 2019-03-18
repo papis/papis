@@ -32,6 +32,7 @@ import papis
 import papis.api
 import papis.config
 import papis.commands
+import papis.database
 import colorama
 import logging
 import click
@@ -139,7 +140,7 @@ def run(
         papis.config.reset_configuration()
 
     if pick_lib:
-        lib = papis.api.pick(
+        lib = papis.pick.pick(
             papis.api.get_libraries(),
             pick_config=dict(header_filter=lambda x: x)
         )
@@ -163,4 +164,4 @@ def run(
         )
 
     if clear_cache:
-        papis.api.clear_lib_cache(lib)
+        papis.database.get().clear()
