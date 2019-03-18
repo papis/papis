@@ -176,7 +176,10 @@ def cli(
     """Export a document from a given library"""
 
     logger = logging.getLogger('cli:export')
-    documents = papis.database.get().query(query)
+    if all:
+        documents = papis.database.get().get_all_documents()
+    else:
+        documents = papis.database.get().query(query)
 
     if json and folder or yaml and folder:
         logger.warning("Only --folder flag will be considered")
