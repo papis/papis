@@ -1,3 +1,4 @@
+import pickle
 import logging
 import os
 import papis.utils
@@ -5,6 +6,8 @@ import papis.docmatcher
 import papis.config
 import papis.database.base
 import re
+import multiprocessing
+import time
 
 
 logger = logging.getLogger("cache")
@@ -44,39 +47,6 @@ def get_cache_home():
         )
 
 
-def get(path):
-    """Get contents stored in a cache file ``path`` in pickle binary format.
-
-    :param path: Path to the cache file.
-    :type  path: str
-    :returns: Content of the cache file.
-    :rtype: object
-
-    >>> create([1,2,3], '/tmp/test-pickle')
-    >>> get('/tmp/test-pickle')
-    [1, 2, 3]
-    """
-    import pickle
-    logger.debug("Getting cache %s " % path)
-    return pickle.load(open(path, "rb"))
-
-
-def create(obj, path):
-    """Create a cache file in ``path`` with obj as its content using pickle
-    binary format.
-
-    :param obj: Any seriazable object.
-    :type  obj: object
-    :param path: Path to the cache file.
-    :type  path: str
-    :returns: Nothing
-    :rtype: None
-    """
-    import pickle
-    logger.debug("Saving in cache %s " % path)
-    pickle.dump(obj, open(path, "wb+"))
-
-
 def get_cache_file_name(directory):
     """Create a cache file name out of the path of a given directory.
 
@@ -97,52 +67,6 @@ def get_cache_file_name(directory):
     )
 
 
-def clear(directory):
-    """Clear cache associated with a directory
-
-    :param directory: Folder name that was used as a seed for the cache name.
-    :type  directory: str
-    :returns: Nothing
-    :rtype: None
-
-    >>> create([1,2,3], get_cache_file_path('some/other/papers'))
-    >>> clear('some/other/papers')
-    >>> import os; os.path.exists(get_cache_file_path('some/other/papers'))
-    False
-    >>> clear('non/existing/some/other/books')
-    >>> os.path.exists(get_cache_file_path('non/existing/some/other/books'))
-    False
-    """
-    directory = os.path.expanduser(directory)
-    cache_path = get_cache_file_path(directory)
-    if os.path.exists(cache_path):
-        logger.debug("Clearing cache %s " % cache_path)
-        os.remove(cache_path)
-
-
-def clear_lib_cache(lib=None):
-    """Clear cache associated with a library. If no library is given
-    then the current library is used.
-
-    :param lib: Library name.
-    :type  lib: str
-
-    >>> import os
-    >>> if not os.path.exists('/tmp/setlib-test'): os.makedirs(\
-            '/tmp/setlib-test'\
-        )
-    >>> papis.config.set_lib('/tmp/setlib-test')
-    >>> create([1,2,3], get_cache_file_path('/tmp/setlib-test'))
-    >>> os.path.exists(get_cache_file_path('/tmp/setlib-test'))
-    True
-    >>> clear_lib_cache('/tmp/setlib-test')
-    >>> os.path.exists(get_cache_file_path('/tmp/setlib-test'))
-    False
-    """
-    directory = papis.config.get("dir", section=lib)
-    clear(directory)
-
-
 def get_cache_file_path(directory):
     """Get the full path to the cache file
 
@@ -156,37 +80,6 @@ def get_cache_file_path(directory):
     cache_name = get_cache_file_name(directory)
     return os.path.expanduser(os.path.join(get_cache_home(), cache_name))
 
-
-def get_folders(directory):
-    """Get folders from within a containing folder from cache
-
-    :param directory: Folder to look for documents (or library folder)
-    :type  directory: str
-    :param search: Valid papis search
-    :type  search: str
-    :returns: List of document objects.
-    :rtype: list
-
-    >>> create(['/a', '/b'], get_cache_file_path('/asdf/papers'))
-    >>> get_folders('/asdf/papers')
-    ['/a', '/b']
-
-    """
-    cache_home = get_cache_home()
-    cache_path = get_cache_file_path(directory)
-    folders = []
-    logger.debug("Getting documents from dir %s" % directory)
-    logger.debug("Cache path = %s" % cache_path)
-    if not os.path.exists(cache_home):
-        logger.debug("Creating cache dir %s " % cache_home)
-        os.makedirs(cache_home, mode=papis.config.getint('dir-umask'))
-    if os.path.exists(cache_path):
-        logger.debug("Loading folders from cache")
-        folders = get(cache_path)
-    else:
-        folders = papis.utils.get_folders(directory)
-        create(folders, cache_path)
-    return folders
 
 
 def filter_documents(documents, search=""):
@@ -218,8 +111,6 @@ def filter_documents(documents, search=""):
         # Doing this multiprocessing in filtering does not seem
         # to help much, I don't know if it's because I'm doing something
         # wrong or it is really like this.
-        import multiprocessing
-        import time
         np = papis.api.get_arg("cores", multiprocessing.cpu_count())
         pool = multiprocessing.Pool(np)
         logger.debug(
@@ -254,8 +145,6 @@ def folders_to_documents(folders):
     :returns: List of document objects.
     :rtype:  list
     """
-    import multiprocessing
-    import time
     logger = logging.getLogger("db:cache:dir2doc")
     np = papis.api.get_arg("cores", multiprocessing.cpu_count())
     logger.debug("converting folder into documents on {0} cores".format(np))
@@ -328,21 +217,16 @@ class Database(papis.database.base.Database):
         self.get_documents()
 
     def get_documents(self):
-        directory = os.path.expanduser(self.get_dir())
-
-        if papis.config.getboolean("use-cache"):
-            self.folders = get_folders(directory)
-            self.logger.debug(
-                "Loaded folders from cache ({} documents)".format(
-                    len(self.folders)
-                )
+        directory = os.path.expanduser(self.get_dirs()[0])
+        use_cache = papis.config.getboolean("use-cache")
+        self.folders = self._get_paths(use_cache=use_cache)
+        self.logger.debug(
+            "Loaded folders ({} documents)".format(
+                len(self.folders)
             )
-        else:
-            self.folders = papis.utils.get_folders(directory)
+        )
 
-        self.logger.debug("Creating document objects")
         self.documents = folders_to_documents(self.folders)
-        self.logger.debug("Done")
 
     def add(self, document):
         self.logger.debug('Adding ...')
@@ -369,8 +253,11 @@ class Database(papis.database.base.Database):
         return match_document(document, query_string)
 
     def clear(self):
-        self.logger.debug('Clearing library')
-        clear_lib_cache(self.get_lib())
+        cache_path = self._get_cache_file_path()
+        self.logger.warning("clearing cache %s " % cache_path)
+        if os.path.exists(cache_path):
+            os.remove(cache_path)
+
 
     def query_dict(self, dictionary):
         query_string = " ".join(
@@ -391,7 +278,31 @@ class Database(papis.database.base.Database):
         return self.query(self.get_all_query_string())
 
     def save(self):
+
+        cache_home = get_cache_home()
+        if not os.path.exists(cache_home):
+            self.logger.debug("Creating cache dir %s " % cache_home)
+            os.makedirs(cache_home, mode=papis.config.getint('dir-umask'))
+
         self.logger.debug(
             'Saving ... ({} documents)'.format(len(self.folders))
         )
-        create(self.folders, get_cache_file_path(self.get_dir()))
+        path = self._get_cache_file_path()
+        with open(path, "wb+") as fd:
+            pickle.dump(self.folders, fd)
+
+    def _get_cache_file_path(self):
+        return get_cache_file_path(self.lib.path_format())
+
+    def _get_paths(self, use_cache=True):
+        cache_path = self._get_cache_file_path()
+        folders = []
+        if use_cache and os.path.exists(cache_path):
+            logger.debug("Loading folders from cache")
+            with open(cache_path, 'rb') as fd:
+                return pickle.load(fd)
+        else:
+            return sum([
+                papis.utils.get_folders(d) for d in self.get_dirs()
+            ], [])
+
