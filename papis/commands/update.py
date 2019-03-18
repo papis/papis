@@ -59,12 +59,47 @@ import click
 import yaml
 
 
+def update_document(document, data, force=False, interactive=False):
+    """Update document's information from an info dictionary.
+
+    :param data: Dictionary with key and values to be updated
+    :type  data: dict
+    :param force: If True, the update turns into a replace, i.e., it
+        replaces the old value by the new value stored in data.
+    :type  force: bool
+    :param interactive: If True, it will ask for user's input every time
+        that the values differ.
+    :type  interactive: bool
+
+    """
+    for key in data.keys():
+        if document[key] == data[key]:
+            continue
+        if force:
+            document[key] = data[key]
+        elif interactive:
+            confirmation = papis.utils.confirm([
+                ('bg:ansiblack fg:ansiyellow', "({key} conflict)".format(key=key)),
+                ('bg:ansired', "\n"),
+                ('', 'Replace "'),
+                ('bg:ansiblack fg:ansired bold', '{val}'.format(val=document[key])),
+                ('', '" by "'),
+                ('bg:ansiblack fg:green bold', '{val}'.format(val=data[key])),
+                ('bg:ansiblack bold', '"? (Y/n) '),
+                ]
+            )
+            if confirmation:
+                document[key] = data[key]
+        elif document[key] is None or document[key] == '':
+            document[key] = data[key]
+
+
 def run(document, data=dict(), interactive=False, force=False):
     # Keep the ref the same, otherwise issues can be caused when
     # writing LaTeX documents and all the ref's change
     data['ref'] = document['ref']
 
-    document.update(data, force, interactive)
+    update_document(document, data, force, interactive)
     document.save()
     papis.database.get().update(document)
 
@@ -249,10 +284,10 @@ def cli(
 
         if from_isbnplus:
             logger.info('Trying with isbnplus')
-            logger.warning('Isbnplus does not work... Not my fault')
+            logger.warning('Isbnplus support is does not work... Not my fault')
 
         if from_isbn:
-            logger.info('Trying with isbn')
+            logger.info('Trying with isbn ({0:20})'.format(from_isbn))
             try:
                 doc = papis.api.pick_doc(
                     [
@@ -273,7 +308,7 @@ def cli(
                 data.update(yaml.safe_load(fd))
 
         if from_doi:
-            logger.debug("Try using doi %s" % from_doi)
+            logger.info("Try using doi %s" % from_doi)
             try:
                 data.update(papis.utils.doi_to_data(from_doi))
             except ValueError as e:
