@@ -45,17 +45,6 @@ def set_lib(library):
     return papis.config.set_lib(library)
 
 
-def get_arg(arg, default=None):
-    try:
-        val = getattr(papis.commands.get_args(), arg)
-    except AttributeError:
-        try:
-            val = os.environ["PAPIS_"+arg.upper()]
-        except KeyError:
-            val = default
-    return val
-
-
 def get_libraries():
     """Get all libraries declared in the configuration. A library is discovered
     if the ``dir`` or ``dirs`` key defined in the library section.

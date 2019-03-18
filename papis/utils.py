@@ -6,6 +6,7 @@ from itertools import count, product
 import os
 import re
 import papis.api
+import papis.pick
 import papis.config
 import papis.commands
 import papis.document
@@ -44,7 +45,7 @@ def general_open(fileName, key, default_opener=None, wait=True):
             default_opener = papis.config.get_default_opener()
         opener = default_opener
     if isinstance(fileName, list):
-        fileName = papis.api.pick(fileName)
+        fileName = papis.pick.pick(fileName)
     if isinstance(opener, str):
         import subprocess
         import shlex
@@ -467,7 +468,7 @@ def folders_to_documents(folders):
     :rtype:  list
     """
     logger = logging.getLogger("utils:dir2doc")
-    np = papis.api.get_arg("cores", multiprocessing.cpu_count())
+    np = multiprocessing.cpu_count()
     logger.debug("converting folder into documents on {0} cores".format(np))
     pool = multiprocessing.Pool(np)
     begin_t = time.time()

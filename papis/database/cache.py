@@ -79,7 +79,7 @@ def filter_documents(documents, search=""):
         # Doing this multiprocessing in filtering does not seem
         # to help much, I don't know if it's because I'm doing something
         # wrong or it is really like this.
-        np = papis.api.get_arg("cores", multiprocessing.cpu_count())
+        np = multiprocessing.cpu_count()
         pool = multiprocessing.Pool(np)
         logger.debug(
             "Filtering {} docs (search {}) using {} cores".format(
