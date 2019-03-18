@@ -296,5 +296,5 @@ class Database(papis.database.base.Database):
                 papis.database.cache.get_cache_file_name(self.lib.path_format())
             )
         )
-        # self.logger.debug('Index dir %s' % path)
+        self.logger.debug('Index dir %s' % path)
         return path
