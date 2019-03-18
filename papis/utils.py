@@ -5,7 +5,6 @@ import time
 from itertools import count, product
 import os
 import re
-import papis.api
 import papis.pick
 import papis.config
 import papis.commands
