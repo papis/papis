@@ -182,11 +182,23 @@ class OptionsList(ConditionalContainer):
         indices = []
         regex = self.search_regex
 
+        if self.query_text == self.last_query_text:
+            return
+
+        if self.query_text.startswith(self.last_query_text):
+            search_indices = self.indices
+        else:
+            search_indices = range(len(self.options_matchers))
+
+        self.last_query_text = self.query_text
+
         result = [
             self.pool.apply_async(
                 match_against_regex,
                 args=(regex, opt, i,)
-            ) for i, opt in enumerate(self.options_matchers)
+            )
+            for i, opt in enumerate(self.options_matchers)
+            if i in search_indices
         ]
 
         indices = [d.get() for d in result if d.get() is not None]
