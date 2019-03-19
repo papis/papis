@@ -254,6 +254,14 @@ def get_config_file():
     return config_file
 
 
+def get_configpy_file():
+    """Get the path of the main python configuration file,
+    e.g. /home/user/config/.papis/config.py
+    """
+    return os.path.join(get_config_folder(), "config.py")
+
+
+
 def set_config_file(filepath):
     """Override the main configuration file path
     """
@@ -567,3 +575,8 @@ class Configuration(configparser.ConfigParser):
                     self[section][field] = self.default_info[section][field]
             with open(self.file_location, "w") as configfile:
                 self.write(configfile)
+        configpy = get_configpy_file()
+        if os.path.exists(configpy):
+            self.logger.debug('Executing {0}'.format(configpy))
+            with open(configpy) as fd:
+                exec(fd.read())

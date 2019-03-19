@@ -56,6 +56,12 @@ def test_get_config_file():
     configpath = os.path.join(get_config_folder(), 'config')
     assert configpath == get_config_file()
 
+def test_get_configpy_file():
+    os.environ['XDG_CONFIG_HOME'] = tempfile.mkdtemp()
+    configpath = os.path.join(get_config_folder(), 'config.py')
+    assert configpath == get_configpy_file()
+    assert(os.environ['XDG_CONFIG_HOME'] in configpath)
+
 
 def test_set_config_file():
     configfile = tempfile.mktemp()
