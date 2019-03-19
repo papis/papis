@@ -114,28 +114,28 @@ def to_bibtex(document):
         bibtexType = "article"
 
     # REFERENCE BUILDING
-    print("Using ref-format = %s" % papis.config.get("ref-format"))
-    print("on %r" % document)
-    try:
-        ref = papis.utils.format_doc(
-            papis.config.get("ref-format"), 
-            # "toto",
-            document
-        ).replace(" ", "")
-    except Exception as e:
-        print(e)
-        ref = "unknown"
-
+    # print("Using ref-format = %s" % papis.config.get("ref-format"))
+    # print("on %r" % document)
+    if document.has("ref"):
+        ref = document["ref"]
+    elif papis.config.get('ref-format'):
+        try:
+            ref = papis.utils.format_doc(
+                papis.config.get("ref-format"),
+                document
+            ).replace(" ", "")
+        except Exception as e:
+            print(e)
+            ref = None
 
     print("generated ref=%s" % ref)
-    # ref = document["ref"]
     if not ref:
-        try:
-            ref = os.path.basename(document.get_main_folder())
-        except:
-            if document.has('doi'):
-                ref = document['doi']
-            else:
+        if document.has('doi'):
+            ref = document['doi']
+        else:
+            try:
+                ref = os.path.basename(document.get_main_folder())
+            except:
                 ref = 'noreference'
 
     ref = re.sub(r'[;,()\/{}\[\]]', '', ref)
