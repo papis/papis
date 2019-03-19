@@ -90,17 +90,33 @@ def to_bibtex(document):
     if not bibtexType:
         bibtexType = "article"
 
-    ref = document["ref"]
-    if not ref:
+    # REFERENCE BUILDING
+    # print("Using ref-format = %s" % papis.config.get("ref-format"))
+    # print("on %r" % document)
+    if document.has("ref"):
+        ref = document["ref"]
+    elif papis.config.get('ref-format'):
         try:
-            ref = os.path.basename(document.get_main_folder())
-        except:
-            if document.has('doi'):
-                ref = document['doi']
-            else:
+            ref = papis.utils.format_doc(
+                papis.config.get("ref-format"),
+                document
+            ).replace(" ", "")
+        except Exception as e:
+            print(e)
+            ref = None
+
+    print("generated ref=%s" % ref)
+    if not ref:
+        if document.has('doi'):
+            ref = document['doi']
+        else:
+            try:
+                ref = os.path.basename(document.get_main_folder())
+            except:
                 ref = 'noreference'
 
     ref = re.sub(r'[;,()\/{}\[\]]', '', ref)
+    print("Used ref=%s" % ref)
 
     bibtexString += "@%s{%s,\n" % (bibtexType, ref)
     for bibKey in sorted(document.keys()):

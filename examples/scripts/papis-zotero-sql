@@ -96,7 +96,7 @@ def getCreators(connection, itemId):
   creatorCursor.execute(
     itemCreatorQuery.format(itemID=itemId)
   )
-  creators = {}
+  creators = {} # type: ignore
 
   for creatorRow in creatorCursor:
     creatorName = creatorRow[0]
@@ -217,9 +217,14 @@ parser = argparse.ArgumentParser(
 parser.add_argument('zotero_dir', type=str, default=".",
     help="Path to zotero's documents directory")
 
+parser.add_argument('papis_lib_dir', type=str, default="Documents",
+    help="Path towards papis' library directory")
+
+
 args, unknown = parser.parse_known_args()
 
 inputPath = args.zotero_dir
+outputPath = args.papis_lib_dir
 
 connection = sqlite3.connect(os.path.join(inputPath, "zotero.sqlite"))
 cursor = connection.cursor()
