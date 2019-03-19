@@ -64,7 +64,7 @@ def get_libraries():
     return libs
 
 
-def pick_doc(documents: list):
+def pick_doc(documents):
     """Pick a document from documents with the correct formatting
 
     :documents: List of documents
@@ -93,7 +93,7 @@ def pick_doc(documents: list):
     )
 
 
-def pick(options: list, pick_config={}):
+def pick(options, pick_config={}):
     """This is a wrapper for the various pickers that are supported.
     Depending on the configuration different selectors or 'pickers'
     are used.
