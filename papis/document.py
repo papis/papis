@@ -78,6 +78,7 @@ def to_bibtex(document):
     :rtype:  str
 
     """
+    logger = logging.getLogger("document:bibtex")
     bibtexString = ""
     bibtexType = ""
 
@@ -91,8 +92,6 @@ def to_bibtex(document):
         bibtexType = "article"
 
     # REFERENCE BUILDING
-    # print("Using ref-format = %s" % papis.config.get("ref-format"))
-    # print("on %r" % document)
     if document.has("ref"):
         ref = document["ref"]
     elif papis.config.get('ref-format'):
@@ -102,10 +101,10 @@ def to_bibtex(document):
                 document
             ).replace(" ", "")
         except Exception as e:
-            print(e)
+            logger.error(e)
             ref = None
 
-    print("generated ref=%s" % ref)
+    logger.debug("generated ref=%s" % ref)
     if not ref:
         if document.has('doi'):
             ref = document['doi']
@@ -116,9 +115,9 @@ def to_bibtex(document):
                 ref = 'noreference'
 
     ref = re.sub(r'[;,()\/{}\[\]]', '', ref)
-    print("Used ref=%s" % ref)
+    logger.debug("Used ref=%s" % ref)
 
-    bibtexString += "@%s{%s,\n" % (bibtexType, ref)
+    bibtexString += "@{type}{{{ref},\n".format(type=bibtexType, ref=ref)
     for bibKey in sorted(document.keys()):
         logger.debug('%s : %s' % (bibKey, document[bibKey]))
         if bibKey in papis.bibtex.bibtex_key_converter:
