@@ -286,6 +286,7 @@ class Picker(Application):
             match_filter,
             custom_filter=~has_focus(self.help_window)
         )
+        self.options_list.search_buffer.on_text_changed += self.update
 
         commands, commands_kb = get_commands(self)
         self.command_line_prompt = CommandLinePrompt(commands=commands)
