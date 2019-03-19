@@ -48,11 +48,15 @@ def pick(
         ):
     """Construct and start a :class:`Picker <Picker>`.
     """
+    global _PICKERS
     name = papis.config.get("picktool")
     try:
         picker = get_picker(name)
     except KeyError:
         logger.exception("I don't know how to use the picker '%s'" % name)
+        logger.exception(
+            "Registered pickers are: {0}".format(", ".join(_PICKERS.keys()))
+        )
     else:
         return picker(
             options,
