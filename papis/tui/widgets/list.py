@@ -37,6 +37,7 @@ class OptionsList(ConditionalContainer):
         assert(isinstance(default_index, int))
 
         self.search_buffer = search_buffer
+        self.last_query_text = ''
         self.search_buffer.on_text_changed += self.update
 
         self.header_filter = header_filter
@@ -158,9 +159,13 @@ class OptionsList(ConditionalContainer):
             self.current_index = self.indices[-1]
 
     @property
+    def query_text(self):
+        return self.search_buffer.text
+
+    @property
     def search_regex(self):
         cleaned_search = (
-            self.search_buffer.text
+            self.query_text
             .replace('(', '\\(')
             .replace(')', '\\)')
             .replace('+', '\\+')
