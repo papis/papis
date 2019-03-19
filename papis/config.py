@@ -11,7 +11,6 @@ logger = logging.getLogger("config")
 logger.debug("importing")
 
 _CURRENT_LIBRARY = None  #: Current library in use
-_EXTERNAL_PICKER = None  #: Picker to set externally
 _CONFIGURATION = None  #: Global configuration object variable.
 _DEFAULT_SETTINGS = None  #: Default settings for the whole papis.
 _OVERRIDE_VARS = {
@@ -261,16 +260,6 @@ def set_config_file(filepath):
     global _OVERRIDE_VARS
     logger.debug("Setting config file to %s" % filepath)
     _OVERRIDE_VARS["file"] = filepath
-
-
-def set_external_picker(picker):
-    global _EXTERNAL_PICKER
-    _EXTERNAL_PICKER = picker
-
-
-def get_external_picker():
-    global _EXTERNAL_PICKER
-    return _EXTERNAL_PICKER
 
 
 def get_scripts_folder():

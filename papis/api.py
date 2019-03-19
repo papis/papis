@@ -121,20 +121,7 @@ def pick(options: list, pick_config={}):
     >>> papis.config.set('picktool', 'papis.pick')
 
     """
-    # Leave this import here
-    import papis.config
-    logger.debug("Parsing picktool")
-    external_picker = papis.config.get_external_picker()
-    picker = external_picker or papis.config.get("picktool")
-    if picker == "papis.pick":
-        import papis.pick
-        logger.debug("Using papis.pick picker")
-        return papis.pick.pick(options, **pick_config)
-    elif papis.config.get_external_picker() is not None:
-        return papis.config.get_external_picker()(options, **pick_config)
-    else:
-        raise Exception("I don't know how to use the picker '%s'" % picker)
-
+    return papis.pick.pick(options, **pick_config)
 
 def open_file(file_path, wait=True):
     """Open file using the ``opentool`` key value as a program to
