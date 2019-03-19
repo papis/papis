@@ -8,6 +8,9 @@ VERSION v0.9
   For a library of 1200 documents, the speed of the `papis` database backend
   is comparable with the `whoosh` backend.
 - Libraries can have multiple directories defined.
+- A `~/.config/papis/config.py` python file has been added which is
+  sourced after the `~/.config/papis/config` file has been processed.
+  This should enable some users to have more granularity in the customization.
 
 
 VERSION v0.8.1
