@@ -161,7 +161,7 @@ some-other-setting = mandragora
 def test_set_lib_from_path():
     lib = tempfile.mkdtemp()
     assert os.path.exists(lib)
-    set_lib(lib)
+    set_lib_from_name(lib)
     assert get_lib_name() == lib
 
 
@@ -170,7 +170,7 @@ def test_set_lib_from_real_lib():
     libname = 'test-set-lib'
     set('dir', libdir, section=libname)
     assert os.path.exists(libdir)
-    set_lib(libname)
+    set_lib_from_name(libname)
     assert get_lib_name() == libname
 
 
