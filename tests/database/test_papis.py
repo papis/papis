@@ -1,6 +1,7 @@
 import tests.database
 import papis.config
 import papis.database
+import os
 
 class Test(tests.database.DatabaseTest):
 
@@ -17,3 +18,6 @@ class Test(tests.database.DatabaseTest):
         docs = database.query('.')
         self.assertTrue(len(docs) > 0)
 
+    def test_cache_path(self):
+        database = papis.database.get()
+        assert(os.path.exists(database._get_cache_file_path()))

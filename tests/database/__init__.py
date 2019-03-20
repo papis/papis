@@ -16,8 +16,6 @@ class DatabaseTest(unittest.TestCase):
         tests.setup_test_library()
         papis.config.set('database-backend', backend)
 
-        os.environ['XDG_CACHE_HOME'] = tempfile.mkdtemp(prefix='papisdb-test-')
-
         libdir = papis.config.get_lib().paths[0]
         assert(os.path.exists(libdir))
         assert(papis.config.get_lib_name() == tests.get_test_lib_name())
@@ -72,10 +70,9 @@ class DatabaseTest(unittest.TestCase):
         Ni = len(docs)
         self.assertTrue(Ni > 1)
         database.delete( docs[0] )
-        papis.document.delete( docs[0] )
         docs = database.get_all_documents()
         Nf = len(docs)
-        self.assertTrue(Ni - Nf > 0)
+        self.assertTrue(Ni - Nf == 1)
 
     def test_get_all_documents(self):
         database = papis.database.get()
@@ -92,7 +89,7 @@ class DatabaseTest(unittest.TestCase):
         ]
         for j,doc in enumerate(newdocs):
             doc.set_folder(tempfile.mkdtemp())
-            doc['tempfile'] = doc.get_main_folder()
+            doc['title'] = 'lorem ipsum ' + str(j)
             doc.save()
             folder = os.path.join(
                 database.get_dirs()[0],
@@ -100,8 +97,7 @@ class DatabaseTest(unittest.TestCase):
                 str(j+N)
             )
             papis.document.move(doc, folder)
-            print(doc)
-            print(doc.get_main_folder())
+            assert(os.path.exists(doc.get_main_folder()))
             database.add(doc)
         docs = database.get_all_documents()
         self.assertEqual(len(docs), N*2)

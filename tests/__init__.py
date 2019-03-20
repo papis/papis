@@ -75,11 +75,14 @@ def setup_test_library():
     """
     config = papis.config.get_configuration()
     config['settings'] = dict()
-    folder = tempfile.mkdtemp(prefix='papis')
+    folder = tempfile.mkdtemp(prefix='papis-test-library-')
     libname = get_test_lib_name()
     lib = papis.library.Library(libname, [folder])
     papis.config.set_lib(lib)
     papis.database.clear_cached()
+    os.environ['XDG_CACHE_HOME'] = tempfile.mkdtemp(
+        prefix='papis-test-cache-home-'
+    )
 
     for i, data in enumerate(test_data):
         data['files'] = [
@@ -97,3 +100,5 @@ def setup_test_library():
                 f,
                 doc.get_main_folder()
             )
+        assert(os.path.exists(doc.get_main_folder()))
+        assert(os.path.exists(doc.get_info_file()))
