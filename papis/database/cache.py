@@ -207,10 +207,6 @@ class Database(papis.database.base.Database):
         docs = self.get_documents()
         self.logger.debug('updating document')
         result = self._locate_document(document)
-        if len(result) == 0:
-            raise Exception(
-                'The document passed could not be found in the library'
-            )
         index = result[0][0]
         docs[index] = document
         self.save()
@@ -221,10 +217,6 @@ class Database(papis.database.base.Database):
         docs = self.get_documents()
         self.logger.debug('deleting document')
         result = self._locate_document(document)
-        if len(result) == 0:
-            raise Exception(
-                'The document passed could not be found in the library'
-            )
         index = result[0][0]
         docs.pop(index)
         self.save()
@@ -274,8 +266,12 @@ class Database(papis.database.base.Database):
 
     def _locate_document(self, document):
         assert(isinstance(document, papis.document.Document))
-        result = filter(
+        result = list(filter(
             lambda d: d[1].get_main_folder() == document.get_main_folder(),
             enumerate(self.get_documents())
-        )
-        return list(result)
+        ))
+        if len(result) == 0:
+            raise Exception(
+                'The document passed could not be found in the library'
+            )
+        return result
