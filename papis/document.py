@@ -422,28 +422,6 @@ class Document(object):
         """
         return self._keys
 
-    @property
-    def has_citations(self):
-        """Returns string defined in config if keys contains citations
-        else returns None.
-
-        :returns: String or None
-        :rtype: str OR None
-
-        >>> import papis.config
-        >>> doc = from_data({'title': 'Hello World'})
-        >>> doc.has_citations
-        ''
-        >>> doc.update(dict(citations=[]))
-        >>> doc.has_citations == papis.config.get('citation-string')
-        True
-        """
-
-        if 'citations' in self.keys():
-            return papis.config.get('citation-string')
-        else:
-            return ''
-
     def dump(self):
         """Return information string without any obvious format
         :returns: String with document's information

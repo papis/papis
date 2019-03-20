@@ -587,13 +587,6 @@ or inside the library sections prepending a ``tui-``,
 Other
 -----
 
-.. papis-config:: citation-string
-
-    string that can be displayed in header if the reference has a
-    citation
-
-    Default set to '*'
-
 .. papis-config:: unique-document-keys
 
     Whenever you add a new document, papis tries to figure out if

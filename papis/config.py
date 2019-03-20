@@ -105,7 +105,6 @@ general_settings = {
     '"tags": TEXT(stored=True),\n'
     '}',
 
-    "citation-string": "*",
     'unique-document-keys': "['doi','ref','isbn','isbn10','url','doc_url']",
 
     "downloader-proxy": None,
