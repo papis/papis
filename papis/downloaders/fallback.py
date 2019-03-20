@@ -29,7 +29,7 @@ class Downloader(papis.downloaders.base.Downloader):
                 m = next(miter)
                 if m:
                     doi = m.group(1)
-                    print(m)
+                    self.logger.debug('match ({0})'.format(m.group(0)))
                     self.logger.info('got doi {0}'.format(doi))
                     return doi
             except StopIteration:
