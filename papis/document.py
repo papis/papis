@@ -272,7 +272,7 @@ class Document(object):
     """
 
     subfolder = ""
-    _infoFilePath = ""
+    _info_file_path = ""
 
     def __init__(self, folder=None, data=None):
         self._keys = []
@@ -338,7 +338,7 @@ class Document(object):
         :type  folder: str
         """
         self._folder = folder
-        self._infoFilePath = os.path.join(
+        self._info_file_path = os.path.join(
             folder,
             papis.utils.get_info_file_name()
         )
@@ -373,7 +373,7 @@ class Document(object):
         """Saves the current document's information into the info file.
         """
         import yaml
-        with open(self._infoFilePath, "w+") as fd:
+        with open(self.get_info_file(), "w+") as fd:
             structure = dict()
             for key in self.keys():
                 structure[key] = self[key]
@@ -389,7 +389,7 @@ class Document(object):
         :returns: Full path for the info file
         :rtype: str
         """
-        return self._infoFilePath
+        return self._info_file_path
 
     def get_files(self):
         """Get the files linked to the document, if any.

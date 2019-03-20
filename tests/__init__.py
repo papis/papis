@@ -86,10 +86,9 @@ def setup_test_library():
             create_random_pdf() for i in range(data.get('_test_files'))
         ]
         doc = papis.document.from_data(data)
-        folder = os.path.join(
-            papis.config.get_lib().paths[0], str(i)
-        )
+        folder = os.path.join(papis.config.get_lib().paths[0], str(i))
         os.makedirs(folder)
+        assert(os.path.exists(folder))
         doc.set_folder(folder)
         doc['files'] = [os.path.basename(f) for f in data['files']]
         doc.save()
