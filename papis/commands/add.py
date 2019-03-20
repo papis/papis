@@ -283,7 +283,7 @@ def run(
 
     data["files"] = in_documents_names
     out_folder_path = os.path.expanduser(os.path.join(
-        papis.config.get('dir'), subfolder or '',  out_folder_name
+        papis.config.get_lib_dirs()[0], subfolder or '',  out_folder_name
     ))
 
     logger.info("The folder name is {0}".format(out_folder_name))

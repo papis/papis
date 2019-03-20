@@ -390,7 +390,7 @@ def git_commit(path="", message=""):
     """
     logger.debug('Commiting...')
     dirs = get_lib_dirs()
-    path = path or os.path.expanduser(papis.config.get('dir'))
+    path = path or os.path.expanduser(dirs[0])
     message = '-m "%s"' % message if len(message) > 0 else ''
     cmd = ['git', '-C', path, 'commit', message]
     logger.debug(cmd)

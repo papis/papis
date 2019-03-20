@@ -37,7 +37,7 @@ class Test(unittest.TestCase):
     def test_list_libs(self):
         libs = run(libraries=True)
         assert(len(libs) >= 1)
-        assert(papis.config.get('dir') in libs)
+        assert(papis.config.get_lib().paths[0] in libs)
 
     def test_list_folders(self):
         folders = run(

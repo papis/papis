@@ -3,6 +3,7 @@ import papis.config
 import papis.api
 import papis.utils
 import papis.document
+import papis.library
 from papis.downloaders.base import Downloader
 import os
 import shutil
@@ -72,14 +73,13 @@ def get_test_lib_name():
 def setup_test_library():
     """Set-up a test library for tests
     """
-    lib = get_test_lib_name()
     config = papis.config.get_configuration()
     config['settings'] = dict()
-    config[lib] = dict()
-    config[lib]['dir'] = tempfile.mkdtemp(prefix='papis')
-    papis.api.set_lib_from_name(lib)
+    folder = tempfile.mkdtemp(prefix='papis')
+    libname = get_test_lib_name()
+    lib = papis.library.Library(libname, [folder])
+    papis.config.set_lib(lib)
     papis.database.clear_cached()
-
 
     for i, data in enumerate(test_data):
         data['files'] = [
@@ -87,7 +87,7 @@ def setup_test_library():
         ]
         doc = papis.document.from_data(data)
         folder = os.path.join(
-            papis.config.get('dir'), str(i)
+            papis.config.get_lib().paths[0], str(i)
         )
         os.makedirs(folder)
         doc.set_folder(folder)

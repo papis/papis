@@ -38,4 +38,5 @@ def run(folder, command=[]):
 @click.argument("command", nargs=-1)
 def cli(command):
     "Run a git command in the library folder"
-    return run(papis.config.get("dir"), command=list(command))
+    for d in papis.config.get_lib_dirs():
+        run(d, command=list(command))

@@ -1,5 +1,6 @@
 import os
 import sys
+import papis.api
 import papis.config
 import papis.document
 import papis.database
@@ -17,7 +18,7 @@ class DatabaseTest(unittest.TestCase):
 
         os.environ['XDG_CACHE_HOME'] = tempfile.mkdtemp(prefix='papisdb-test-')
 
-        libdir = papis.config.get('dir')
+        libdir = papis.config.get_lib().paths[0]
         assert(os.path.exists(libdir))
         assert(papis.config.get_lib_name() == tests.get_test_lib_name())
 
@@ -33,7 +34,7 @@ class DatabaseTest(unittest.TestCase):
     def test_get_dir(self):
         database = papis.database.get()
         self.assertTrue(
-            database.get_dirs()[0] == papis.config.get('dir')
+            database.get_dirs() == papis.config.get_lib_dirs()
         )
 
     def test_check_database(self):
@@ -94,7 +95,7 @@ class DatabaseTest(unittest.TestCase):
             doc['tempfile'] = doc.get_main_folder()
             doc.save()
             folder = os.path.join(
-                database.get_dir(),
+                database.get_dirs()[0],
                 'new',
                 str(j+N)
             )

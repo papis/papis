@@ -70,7 +70,7 @@ def cli(query, git):
     if not document:
         return 0
 
-    lib_dir = os.path.expanduser(papis.config.get('dir'))
+    lib_dir = os.path.expanduser(papis.config.get_lib_dirs()[0])
 
     directories = get_dirs(lib_dir)
 

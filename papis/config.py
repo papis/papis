@@ -447,6 +447,9 @@ def set_lib(library):
     """
     global _CURRENT_LIBRARY
     assert(isinstance(library, papis.library.Library))
+    config = get_configuration()
+    if not library.name in config.keys():
+        config[library.name] = dict(dirs=library.paths)
     _CURRENT_LIBRARY = library
 
 
