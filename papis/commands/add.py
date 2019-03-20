@@ -571,6 +571,7 @@ def cli(
         doi = papis.utils.pdf_to_doi(files[0])
         if doi:
             logger.info("Parsed doi {0}".format(doi))
+            logger.warning("There is no guarantee that this doi is the one")
             from_doi = doi
 
     if from_folder:
