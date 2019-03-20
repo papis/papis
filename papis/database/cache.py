@@ -239,13 +239,18 @@ class Database(papis.database.base.Database):
     def query(self, query_string):
         self.logger.debug('Querying')
         docs = self.get_documents()
-        return filter_documents(docs, query_string)
+        # This makes it faster, if it's the all query string, return everything
+        # without filtering
+        if query_string == self.get_all_query_string():
+            return docs
+        else:
+            return filter_documents(docs, query_string)
 
     def get_all_query_string(self):
         return '.'
 
     def get_all_documents(self):
-        return self.query(self.get_all_query_string())
+        return self.get_documents()
 
     def save(self):
         cache_home = get_cache_home()
