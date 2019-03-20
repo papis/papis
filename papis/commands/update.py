@@ -180,6 +180,12 @@ def run(document, data=dict(), interactive=False, force=False):
     multiple=True,
     type=(str, str),
 )
+@click.option(
+    "-d", "--delete",
+    help="Delete document's key",
+    multiple=True,
+    type=str,
+)
 def cli(
         query,
         doc_folder,
@@ -195,7 +201,8 @@ def cli(
         from_doi,
         auto,
         all,
-        set
+        set,
+        delete
         ):
     """Update a document from a given library"""
 
@@ -226,6 +233,23 @@ def cli(
             data.update(
                 {s[0]: papis.utils.format_doc(s[1], document) for s in set}
             )
+
+        if delete:
+            for key in delete:
+                _delete_key = False
+                if (interactive and
+                        not force and
+                        papis.utils.confirm("Delete {key}?".format(key=key))):
+                    _delete_key = True
+                elif not interactive:
+                    _delete_key = True
+                elif force:
+                    _delete_key = True
+                else:
+                    _delete_key = False
+                if _delete_key:
+                    del document[key]
+                    document.save()
 
         if auto:
             if 'doi' in document.keys() and not from_doi:
