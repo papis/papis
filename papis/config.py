@@ -304,7 +304,7 @@ def general_get(key, section=None, data_type=None):
     method = None
     value = None
     config = get_configuration()
-    libname = get_lib().name
+    libname = get_lib_name()
     global_section = get_general_settings_name()
     specialized_key = section + "-" + key if section is not None else key
     extras = [(section, key)] if section is not None else []
@@ -441,32 +441,41 @@ def merge_configuration_from_path(path, configuration):
 def set_lib(library):
     """Set library, notice that in principle library can be a full path.
 
-    :param library: Library name or path to a papis library
-    :type  library: str
+    :param library: Library object
+    :type  library: papis.library.Library
 
     """
     global _CURRENT_LIBRARY
-    assert(isinstance(library, str))
+    assert(isinstance(library, papis.library.Library))
+    _CURRENT_LIBRARY = library
+
+
+def set_lib_from_name(libname):
+    set_lib(get_lib_from_name(libname))
+
+
+def get_lib_from_name(libname):
+    assert(isinstance(libname, str))
     config = get_configuration()
-    if library not in config.keys():
-        if os.path.exists(library):
+    if libname not in config.keys():
+        if os.path.exists(libname):
             # Check if the path exists, then use this path as a new library
             logger.warning(
                 "Since {0} exists, interpreting it as a library".format(
-                    library
+                    libname
                 )
             )
-            library_obj = papis.library.from_paths([library])
+            library_obj = papis.library.from_paths([libname])
             name = library_obj.path_format()
             config[name] = dict(dirs=library_obj.paths)
         else:
             raise Exception(
-                "Path or library '%s' does not seem to exist" % library
+                "Path or library '%s' does not seem to exist" % libname
             )
     else:
-        name = library
+        name = libname
         if name not in config.keys():
-            raise Exception('Library {0} not defined'.format(library))
+            raise Exception('Library {0} not defined'.format(libname))
         try:
             paths = [expanduser(config[name].get('dir'))]
         except:
@@ -477,9 +486,9 @@ def set_lib(library):
                     "To initialize a library you have to set either dir or dirs"
                     " in the configuration file."
                 )
-        library_obj = papis.library.Library(library, paths)
-        name = library
-    _CURRENT_LIBRARY  = library_obj
+        library_obj = papis.library.Library(libname, paths)
+        name = libname
+    return library_obj
 
 
 def get_lib_dirs():
@@ -489,6 +498,10 @@ def get_lib_dirs():
     :rtype:  list
     """
     return get_lib().paths
+
+
+def get_lib_name():
+    return get_lib().name
 
 
 def get_lib():
@@ -503,7 +516,8 @@ def get_lib():
         # Do not put papis.config.get because get is a special function
         # that also needs the library to see if some key was overridden!
         lib = papis.config.get_default_settings(key="default-library")
-        set_lib(lib)
+        set_lib_from_name(lib)
+    assert(isinstance(_CURRENT_LIBRARY, papis.library.Library))
     return _CURRENT_LIBRARY
 
 
