@@ -454,7 +454,7 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
         documents = [from_folder(doc_folder)]
     else:
         documents = papis.api.get_documents_in_lib(
-            papis.api.get_lib(),
+            papis.config.get_lib_name(),
             search=query
         )
 

@@ -17,12 +17,12 @@ class Test(unittest.TestCase):
         pass
 
     def test_lib_is_correct(self):
-        assert(papis.config.get_lib() == tests.get_test_lib())
+        assert(papis.config.get_lib_name() == tests.get_test_lib())
 
     def test_list_docs(self):
         docs = run(
             query=papis.database.get_all_query_string(),
-            library=papis.config.get_lib()
+            library=papis.config.get_lib_name()
         )
         assert(isinstance(docs, list))
         assert(len(docs) >= 1)
@@ -42,7 +42,7 @@ class Test(unittest.TestCase):
     def test_list_folders(self):
         folders = run(
             query=papis.database.get_all_query_string(),
-            library=papis.config.get_lib(),
+            library=papis.config.get_lib_name(),
             folders=True
         )
         assert(len(folders) >= 1)

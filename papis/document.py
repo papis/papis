@@ -373,18 +373,16 @@ class Document(object):
         """Saves the current document's information into the info file.
         """
         import yaml
-        fd = open(self._infoFilePath, "w+")
-        structure = dict()
-        for key in self.keys():
-            structure[key] = self[key]
-        # self.logger.debug("Saving %s " % self.get_info_file())
-        yaml.dump(
-            structure,
-            fd,
-            allow_unicode=papis.config.getboolean("info-allow-unicode"),
-            default_flow_style=False
-        )
-        fd.close()
+        with open(self._infoFilePath, "w+") as fd:
+            structure = dict()
+            for key in self.keys():
+                structure[key] = self[key]
+            yaml.dump(
+                structure,
+                fd,
+                allow_unicode=papis.config.getboolean("info-allow-unicode"),
+                default_flow_style=False
+            )
 
     def get_info_file(self):
         """Get full path for the info file

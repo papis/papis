@@ -19,7 +19,7 @@ class DatabaseTest(unittest.TestCase):
 
         libdir = papis.config.get('dir')
         assert(os.path.exists(libdir))
-        assert(papis.config.get_lib() == tests.get_test_lib())
+        assert(papis.config.get_lib_name() == tests.get_test_lib())
 
         database = papis.database.get(papis.config.get_lib())
         database.clear()

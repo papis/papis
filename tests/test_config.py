@@ -89,9 +89,9 @@ def test_get():
     assert get('test_get') == 'value1'
     assert get('test_get', section=settings) == 'value1'
 
-    set('test_get', 'value42', section=get_lib().name)
+    set('test_get', 'value42', section=get_lib_name())
     assert 'value42' == get('test_get')
-    assert 'value42' == get('test_get', section=get_lib().name)
+    assert 'value42' == get('test_get', section=get_lib_name())
     assert 'value1' == get('test_get', section=settings)
 
     set('test_getint', '42')
@@ -162,7 +162,7 @@ def test_set_lib_from_path():
     lib = tempfile.mkdtemp()
     assert os.path.exists(lib)
     set_lib(lib)
-    assert get_lib().name == lib
+    assert get_lib_name() == lib
 
 
 def test_set_lib_from_real_lib():
@@ -171,7 +171,7 @@ def test_set_lib_from_real_lib():
     set('dir', libdir, section=libname)
     assert os.path.exists(libdir)
     set_lib(libname)
-    assert get_lib().name == libname
+    assert get_lib_name() == libname
 
 
 def test_reset_configuration():

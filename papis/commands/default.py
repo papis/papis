@@ -145,7 +145,7 @@ def run(
             pick_config=dict(header_filter=lambda x: x)
         )
 
-    papis.config.set_lib(lib)
+    papis.config.set_lib_from_name(lib)
     library = papis.config.get_lib()
 
     for path in library.paths:
