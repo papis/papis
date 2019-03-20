@@ -24,10 +24,10 @@ def get_lib_name():
     >>> get_lib() is not None
     True
     """
-    return papis.config.get_lib()
+    return papis.config.get_lib_name()
 
 
-def set_lib(library):
+def set_lib_from_name(library):
     """Set current library, it either sets the library in
     the environment PAPIS_LIB variable or in the command line
     args passed by the user.
@@ -36,7 +36,7 @@ def set_lib(library):
     :type  library: str
 
     """
-    return papis.config.set_lib(library)
+    return papis.config.set_lib_from_name(library)
 
 
 def get_libraries():
@@ -116,6 +116,7 @@ def pick(options, pick_config={}):
 
     """
     return papis.pick.pick(options, **pick_config)
+
 
 def open_file(file_path, wait=True):
     """Open file using the ``opentool`` key value as a program to

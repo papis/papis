@@ -17,7 +17,7 @@ def main(query):
     Search tags of the library and open a document
     """
     documents = papis.api.get_documents_in_lib(
-        papis.api.get_lib(),
+        papis.api.get_lib_name(),
         search=query
     )
 

@@ -42,7 +42,7 @@ def add(entry, pdf_file=None):
     fd.close()
     papis.commands.main(
         [
-            '-l', papis.api.get_lib(),
+            '-l', papis.api.get_lib_name(),
             'add', pdf_file or '--no-document', '--from-yaml', temp
         ] + add_flags
     )
