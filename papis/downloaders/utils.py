@@ -12,6 +12,7 @@ def get_available_downloaders():
         "aps", "acs", "arxiv", "ieee", "scitationaip", "annualreviews",
         "iopscience", "libgen", "get", "thesesfr", "hal", "frontiersin",
         "worldscientific",
+        "fallback",
     ]
     downloaders = []
     for name in names:
