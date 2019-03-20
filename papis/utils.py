@@ -512,3 +512,24 @@ def get_cache_home():
         ) else os.path.expanduser(
             os.path.join('~', '.cache', 'papis')
         )
+
+
+def pdf_to_doi(filepath):
+    """Try to get doi from a filepath, it looks for a regex in the binary
+    data and returns the first doi found, in the hopes that this doi
+    is the correct one.
+
+    :param filepath: Path to the pdf file
+    :type  filepath: str
+    :returns: DOI or None
+    :rtype:  str or None
+    """
+    regex = re.compile(r'doi.org/([^)]+)', re.I)
+    doi = None
+    with open(filepath, 'rb') as fd:
+        for line in fd:
+            m = regex.findall(line.decode('ascii', errors='ignore'))
+            if m:
+                doi = m[0]
+                break
+    return doi

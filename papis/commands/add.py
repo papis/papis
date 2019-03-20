@@ -563,6 +563,16 @@ def cli(
     except:
         pass
 
+    if (not from_doi and
+        not from_bibtex and
+        files and
+            papis.utils.get_document_extension(files[0]) == 'pdf'):
+        logger.info("Trying to parse doi from document {0}".format(files[0]))
+        doi = papis.utils.pdf_to_doi(files[0])
+        if doi:
+            logger.info("Parsed doi {0}".format(doi))
+            from_doi = doi
+
     if from_folder:
         original_document = papis.document.Document(from_folder)
         from_yaml = original_document.get_info_file()
