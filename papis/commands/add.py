@@ -86,6 +86,7 @@ from papis.api import status
 import papis.utils
 import papis.config
 import papis.bibtex
+import papis.crossref
 import papis.document
 import papis.downloaders.utils
 import papis.cli
@@ -450,6 +451,11 @@ def run(
     default=None
 )
 @click.option(
+    "--from-crossref",
+    help="Try to get information from a crossref query",
+    default=None
+)
+@click.option(
     "--from-pmid",
     help="PMID to try to get information from",
     default=None
@@ -504,6 +510,7 @@ def cli(
         from_folder,
         from_url,
         from_doi,
+        from_crossref,
         from_pmid,
         from_lib,
         confirm,
@@ -519,6 +526,8 @@ def cli(
     :type  from_folder: str
     :param from_doi: doi number to try to download information from.
     :type  from_doi: str
+    :param from_crossref: Crossref query to get doi
+    :type  from_crossref: str
     :param from_pmid: pmid number to try to download information from.
     :type  from_pmid: str
     :param from_url: Url to try to download information and files from.
@@ -549,7 +558,14 @@ def cli(
             data,
             files[0],
         )
-        logger.info("Title = % s" % data["title"])
+        logger.info("Set an automatic title {0}".format(data["title"]))
+        if (not from_bibtex and
+                not from_doi and
+                not from_folder and
+                not from_pmid and
+                not from_crossref):
+            logger.info("I will try with crossref with this title")
+            from_crossref = data["title"]
     except:
         pass
 
@@ -563,11 +579,24 @@ def cli(
     except:
         pass
 
+    if from_crossref:
+        logger.info("Querying crossref.org")
+        docs = [
+            papis.document.from_data(d)
+            for d in papis.crossref.get_data(query=from_crossref)
+        ]
+        if docs:
+            logger.info("got {0} matches, picking...".format(len(docs)))
+            doc = papis.api.pick_doc(docs)
+            if doc and not from_doi and doc.has('doi'):
+                from_doi = doc['doi']
+
     if (not from_doi and
-        not from_bibtex and
-        files and
+            not from_bibtex and
+            not from_folder and
+            files and
             papis.utils.get_document_extension(files[0]) == 'pdf'):
-        logger.info("Trying to parse doi from document {0}".format(files[0]))
+        logger.info("Trying to parse doi from file {0}".format(files[0]))
         doi = papis.utils.pdf_to_doi(files[0])
         if doi:
             logger.info("Parsed doi {0}".format(doi))
