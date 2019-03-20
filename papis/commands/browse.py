@@ -17,7 +17,6 @@ Cli
 import papis
 import papis.utils
 import papis.config
-from papis.api import status
 import papis.cli
 import papis.api
 import click
@@ -29,7 +28,7 @@ import logging
 def run(document):
     """Open document's url in a browser"""
     papis.document.open_in_browser(document)
-    return status.success
+    return
 
 
 @click.command("browse")
@@ -53,5 +52,5 @@ def cli(query, key):
     if len(key):
         papis.config.set('browse-key', key)
     if not document:
-        return status.file_not_found
+        return
     return run(document)

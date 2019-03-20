@@ -82,7 +82,6 @@ import hashlib
 import shutil
 import subprocess
 import papis.api
-from papis.api import status
 import papis.utils
 import papis.config
 import papis.bibtex
@@ -379,7 +378,7 @@ def run(
             papis.api.open_file(d_path)
     if confirm:
         if not papis.utils.confirm('Really add?'):
-            return status.success
+            return
 
     logger.info(
         "[MV] '%s' to '%s'" %
@@ -393,7 +392,7 @@ def run(
         subprocess.call(
             ["git", "-C", out_folder_path, "commit", "-m", "Add document"]
         )
-    return status.success
+    return
 
 
 @click.command(

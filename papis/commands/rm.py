@@ -7,7 +7,6 @@ Cli
 """
 import papis
 import papis.api
-from papis.api import status
 from papis.utils import confirm, text_area
 import papis.config
 import papis.document
@@ -30,7 +29,7 @@ def run(document, filepath=None):
     else:
         papis.document.delete(document)
         db.delete(document)
-    return status.success
+    return
 
 
 @click.command("rm")
@@ -63,17 +62,17 @@ def cli(
 
     document = papis.api.pick_doc(documents)
     if not document:
-        return status.file_not_found
+        return
     if file:
         filepath = papis.api.pick(
             document.get_files()
         )
         if not filepath:
-            return status.file_not_found
+            return
         if not force:
             toolbar = 'The file {0} would be removed'.format(filepath)
             if not confirm("Are you sure?", bottom_toolbar=toolbar):
-                return status.success
+                return
         click.echo("Removing %s..." % filepath)
         return run(
             document,
@@ -89,6 +88,6 @@ def cli(
                 title=toolbar, text=document.dump(), lexer_name='yaml'
             )
             if not confirm("Are you sure?", bottom_toolbar=toolbar):
-                return status.success
+                return
         click.echo("Removing ...")
         return run(document)

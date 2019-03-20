@@ -68,7 +68,6 @@ Cli
 
 import logging
 import papis
-from papis.api import status
 import os
 import papis.utils
 import papis.strings
@@ -108,7 +107,7 @@ def run(
             logger.error(
                 "Template file %s not found" % template
             )
-            return status.file_not_found
+            return
         fd = open(template)
         fmt = fd.read()
         fd.close()
@@ -242,4 +241,4 @@ def cli(
     )
     for o in objects:
         click.echo(o)
-    return status.success
+    return

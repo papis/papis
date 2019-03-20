@@ -13,13 +13,7 @@ logger = logging.getLogger("api")
 logger.debug("importing")
 
 
-class status():
-    success = 0
-    generic_fail = 1
-    file_not_found = 2
-
-
-def get_lib():
+def get_lib_name():
     """Get current library, it either retrieves the library from
     the environment PAPIS_LIB variable or from the command line
     args passed by the user.

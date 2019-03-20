@@ -20,7 +20,6 @@ from string import ascii_lowercase
 import os
 import shutil
 import papis.api
-from papis.api import status
 import papis.utils
 import papis.document
 import papis.config
@@ -81,7 +80,6 @@ def run(document, filepaths):
 
     document['files'] += new_file_list
     document.save()
-    return status.success
 
 
 @click.command("addto")
@@ -107,7 +105,7 @@ def cli(query, files, file_name):
         return
     document = papis.api.pick_doc(documents)
     if not document:
-        return status.file_not_found
+        return
 
     if file_name is not None:  # Use args if set
         papis.config.set("file-name", file_name)
