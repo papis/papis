@@ -17,7 +17,7 @@ class Test(unittest.TestCase):
         pass
 
     def test_lib_is_correct(self):
-        assert(papis.config.get_lib_name() == tests.get_test_lib())
+        assert(papis.config.get_lib_name() == tests.get_test_lib_name())
 
     def test_list_docs(self):
         docs = run(

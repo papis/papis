@@ -19,7 +19,7 @@ class DatabaseTest(unittest.TestCase):
 
         libdir = papis.config.get('dir')
         assert(os.path.exists(libdir))
-        assert(papis.config.get_lib_name() == tests.get_test_lib())
+        assert(papis.config.get_lib_name() == tests.get_test_lib_name())
 
         database = papis.database.get(papis.config.get_lib())
         database.clear()
@@ -28,18 +28,18 @@ class DatabaseTest(unittest.TestCase):
 
     def test_get_lib(self):
         database = papis.database.get()
-        self.assertTrue(database.get_lib() == papis.config.get_lib())
+        self.assertTrue(database.get_lib() == papis.config.get_lib_name())
 
     def test_get_dir(self):
         database = papis.database.get()
         self.assertTrue(
-            database.get_dir() == papis.config.get('dir')
+            database.get_dirs()[0] == papis.config.get('dir')
         )
 
     def test_check_database(self):
         database = papis.database.get()
         self.assertTrue(database is not None)
-        self.assertTrue(database.get_lib() == tests.get_test_lib())
+        self.assertTrue(database.get_lib() == tests.get_test_lib_name())
 
     def test_update(self):
         database = papis.database.get()

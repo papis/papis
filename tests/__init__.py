@@ -65,14 +65,14 @@ test_data = [
 ]
 
 
-def get_test_lib():
+def get_test_lib_name():
     return 'test-lib'
 
 
 def setup_test_library():
     """Set-up a test library for tests
     """
-    lib = get_test_lib()
+    lib = get_test_lib_name()
     config = papis.config.get_configuration()
     config['settings'] = dict()
     config[lib] = dict()
