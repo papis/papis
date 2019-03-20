@@ -67,7 +67,7 @@ class Database(papis.database.base.Database):
         import shutil
         if self.index_exists():
             self.logger.warning('Clearing the database')
-            shutil.rmtree(self.get_index_dir())
+            shutil.rmtree(self._get_index_dir())
         else:
             self.logger.warning(
                 'Trying to clear database, but no database found'
@@ -156,16 +156,16 @@ class Database(papis.database.base.Database):
         exists it will delete it and create a new one.
         """
         self.logger.debug('Creating index...')
-        index_dir = self.get_index_dir()
+        index_dir = self._get_index_dir()
         if not os.path.exists(index_dir):
             self.logger.debug('Creating dir %s' % index_dir)
             os.makedirs(index_dir)
-        whoosh.index.create_in(self.get_index_dir(), self.create_schema())
+        whoosh.index.create_in(self._get_index_dir(), self.create_schema())
 
     def index_exists(self):
-        """Check if index already exists in get_index_dir()
+        """Check if index already exists in _get_index_dir()
         """
-        return whoosh.index.exists_in(self.get_index_dir())
+        return whoosh.index.exists_in(self._get_index_dir())
 
     def add_document_with_writer(self, document, writer, schema_keys):
         """Helper function that takes a writer and a dictionary
@@ -226,7 +226,7 @@ class Database(papis.database.base.Database):
         :returns: Index
         :rtype:  whoosh.index
         """
-        return whoosh.index.open_dir(self.get_index_dir())
+        return whoosh.index.open_dir(self._get_index_dir())
 
     def get_writer(self):
         """Gets the writer for the current library
@@ -273,27 +273,22 @@ class Database(papis.database.base.Database):
         # self.logger.debug('Schema prototype: {}'.format(fields))
         return fields
 
-    def get_cache_dir(self):
+    def _get_cache_dir(self):
         """Get general directory to store whoosh indexes.
 
         :returns: Full path to whoosh cache home directory
         :rtype:  str
         """
-        path = os.path.join(
-            get_cache_home(),
-            'whoosh'
-        )
-        # self.logger.debug('Cache dir %s' % path)
-        return path
+        return os.path.join(get_cache_home(), 'database', 'whoosh')
 
-    def get_index_dir(self):
-        """Get the directory inside `get_cache_dir` to store the index.
+    def _get_index_dir(self):
+        """Get the directory inside `_get_cache_dir` to store the index.
         :returns: Full path to index dir
         :rtype:  str
         """
         path = os.path.expanduser(
             os.path.join(
-                self.get_cache_dir(),
+                self._get_cache_dir(),
                 papis.database.cache.get_cache_file_name(self.lib.path_format())
             )
         )

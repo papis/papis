@@ -43,10 +43,13 @@ def get_cache_file_path(directory):
 
     >>> import os; os.environ["XDG_CACHE_HOME"] = '/tmp'
     >>> get_cache_file_path('blah/papers')
-    '/tmp/papis/c39177eca0eaea2e21134b0bd06631b6-papers'
+    '/tmp/papis/database/c39177eca0eaea2e21134b0bd06631b6-papers'
     """
     cache_name = get_cache_file_name(directory)
-    return os.path.expanduser(os.path.join(get_cache_home(), cache_name))
+    folder = os.path.expanduser(os.path.join(get_cache_home(), 'database'))
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+    return os.path.join(folder, cache_name)
 
 
 
