@@ -68,10 +68,6 @@ class Database(papis.database.base.Database):
         if self.index_exists():
             self.logger.warning('Clearing the database')
             shutil.rmtree(self._get_index_dir())
-        else:
-            self.logger.warning(
-                'Trying to clear database, but no database found'
-            )
 
 #   TODO
     def match(self, document, query_string):

@@ -76,35 +76,32 @@ def filter_documents(documents, search=""):
     papis.docmatcher.DocMatcher.set_search(search)
     papis.docmatcher.DocMatcher.parse()
     papis.docmatcher.DocMatcher.set_matcher(match_document)
-    if search == "" or search == ".":
-        return documents
-    else:
-        # Doing this multiprocessing in filtering does not seem
-        # to help much, I don't know if it's because I'm doing something
-        # wrong or it is really like this.
-        np = multiprocessing.cpu_count()
-        pool = multiprocessing.Pool(np)
-        logger.debug(
-            "Filtering {} docs (search {}) using {} cores".format(
-                len(documents),
-                search,
-                np
-            )
+    # Doing this multiprocessing in filtering does not seem
+    # to help much, I don't know if it's because I'm doing something
+    # wrong or it is really like this.
+    np = multiprocessing.cpu_count()
+    pool = multiprocessing.Pool(np)
+    logger.debug(
+        "Filtering {} docs (search {}) using {} cores".format(
+            len(documents),
+            search,
+            np
         )
-        logger.debug("pool started")
-        begin_t = time.time()
-        result = pool.map(
-            papis.docmatcher.DocMatcher.return_if_match, documents
-        )
-        pool.close()
-        pool.join()
-        filtered_docs = [d for d in result if d is not None]
-        logger.debug(
-            "done ({} ms) ({} docs)".format(
-                1000*time.time()-1000*begin_t,
-                len(filtered_docs))
-        )
-        return filtered_docs
+    )
+    logger.debug("pool started")
+    begin_t = time.time()
+    result = pool.map(
+        papis.docmatcher.DocMatcher.return_if_match, documents
+    )
+    pool.close()
+    pool.join()
+    filtered_docs = [d for d in result if d is not None]
+    logger.debug(
+        "done ({} ms) ({} docs)".format(
+            1000*time.time()-1000*begin_t,
+            len(filtered_docs))
+    )
+    return filtered_docs
 
 
 
@@ -254,10 +251,6 @@ class Database(papis.database.base.Database):
 
     def save(self):
         cache_home = get_cache_home()
-        if not os.path.exists(cache_home):
-            self.logger.debug("Creating cache dir %s " % cache_home)
-            os.makedirs(cache_home, mode=papis.config.getint('dir-umask'))
-
         docs = self.get_documents()
         self.logger.debug(
             'Saving ... ({} documents)'.format(len(docs))
