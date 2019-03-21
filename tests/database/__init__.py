@@ -8,6 +8,7 @@ import unittest
 import tests
 import tempfile
 
+
 class DatabaseTest(unittest.TestCase):
 
     @classmethod
@@ -107,6 +108,13 @@ class DatabaseTest(unittest.TestCase):
         database.clear()
         database.initialize()
         self.test_get_all_documents()
+
+    def test_all_query_string(self):
+        database = papis.database.get()
+        self.assertEqual(
+            papis.database.get_all_query_string(),
+            database.get_all_query_string()
+        )
 
     def test_backend_name(self):
         self.assertTrue(papis.database.get().get_backend_name() is not None)

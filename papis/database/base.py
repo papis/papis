@@ -17,7 +17,7 @@ class Database(object):
         assert(isinstance(self.lib, papis.library.Library))
 
     def initialize(self):
-        pass
+        raise NotImplementedError('Initialize not implemented')
 
     def get_backend_name(self):
         raise NotImplementedError('Get backend name not implemented')
