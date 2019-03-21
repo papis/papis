@@ -465,6 +465,11 @@ def run(
     default=""
 )
 @click.option(
+    "-b", "--batch",
+    help="Batch mode, do not prompt or otherwise",
+    default=False, is_flag=True
+)
+@click.option(
     "--confirm/--no-confirm",
     help="Ask to confirm before adding to the collection",
     default=lambda: True if papis.config.get('add-confirm') else False
@@ -483,6 +488,11 @@ def run(
     "--commit/--no-commit",
     help="Commit document if library is a git repository",
     default=False
+)
+@click.option(
+    "--smart",
+    help="Try to do smart things to get information from documents",
+    default=False, is_flag=True
 )
 @click.option(
     "--link/--no-link",
@@ -512,10 +522,12 @@ def cli(
         from_crossref,
         from_pmid,
         from_lib,
+        batch,
         confirm,
         open_file,
         edit,
         commit,
+        smart,
         link,
         no_document
         ):
@@ -544,6 +556,11 @@ def cli(
 
     logger = logging.getLogger('cli:add')
 
+    if batch:
+        edit = False
+        confirm = False
+        open_file = False
+
     if from_lib:
         doc = papis.api.pick_doc(
             papis.api.get_all_documents_in_lib(from_lib)
@@ -559,6 +576,8 @@ def cli(
         )
         logger.info("Set an automatic title {0}".format(data["title"]))
         if (not from_bibtex and
+                smart and
+                not batch and
                 not from_doi and
                 not from_folder and
                 not from_pmid and
@@ -586,7 +605,7 @@ def cli(
         ]
         if docs:
             logger.info("got {0} matches, picking...".format(len(docs)))
-            doc = papis.api.pick_doc(docs)
+            doc = papis.api.pick_doc(docs) if not batch else docs[0]
             if doc and not from_doi and doc.has('doi'):
                 from_doi = doc['doi']
 
@@ -647,8 +666,8 @@ def cli(
             data.update(papis.utils.doi_to_data(from_doi))
         except ValueError as e:
             logger.error(e)
-        if len(files) == 0 and \
-                papis.config.get('doc-url-key-name') in data.keys():
+        if (len(files) == 0 and
+                papis.config.get('doc-url-key-name') in data.keys()):
 
             doc_url = data[papis.config.get('doc-url-key-name')]
             logger.info(
@@ -683,7 +702,8 @@ def cli(
                 'Your bibtex file contains more than one entry,'
                 ' I will be taking the first entry'
             )
-        data.update(bib_data[0])
+        if bib_data:
+            data.update(bib_data[0])
 
     assert(isinstance(data, dict))
 

@@ -495,8 +495,8 @@ def get_cache_home():
     >>> os.environ["XDG_CACHE_HOME"] = '/tmp/.cache'
     >>> get_cache_home()
     '/tmp/.cache/papis'
-    >>> assert(os.path.exists(get_cache_home()))
-    '/tmp/.cache/papis'
+    >>> os.path.exists(get_cache_home())
+    True
     >>> del os.environ["XDG_CACHE_HOME"]
     >>> get_cache_home() == os.path.expanduser(\
             os.path.join('~/.cache', 'papis')\
