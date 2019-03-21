@@ -21,7 +21,7 @@ def get_lib_name():
     :returns: Library name
     :rtype:  str
 
-    >>> get_lib() is not None
+    >>> get_lib_name() is not None
     True
     """
     return papis.config.get_lib_name()
@@ -104,16 +104,6 @@ def pick(options, pick_config={}):
     :returns: Returns elements of ``options``.
     :rtype: Element(s) of ``options``
 
-    >>> papis.config.set('picktool', 'papis.pick')
-    >>> pick(['something'])
-    'something'
-    >>> papis.config.set('picktool', 'nonexistent')
-    >>> pick(['something'])
-    Traceback (most recent call last):
-    ...
-    Exception: I don\'t know how to use the picker \'nonexistent\'
-    >>> papis.config.set('picktool', 'papis.pick')
-
     """
     return papis.pick.pick(options, **pick_config)
 
@@ -168,7 +158,7 @@ def get_all_documents_in_lib(library=None):
 
     >>> import tempfile
     >>> folder = tempfile.mkdtemp()
-    >>> set_lib(folder)
+    >>> set_lib_from_name(folder)
     >>> docs = get_all_documents_in_lib(folder)
     >>> len(docs)
     0
@@ -196,7 +186,7 @@ def get_documents_in_dir(directory, search=""):
     0
 
     """
-    set_lib(directory)
+    set_lib_from_name(directory)
     return get_documents_in_lib(directory, search)
 
 
