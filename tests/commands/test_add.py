@@ -162,6 +162,7 @@ class TestCli(tests.cli.TestCli):
     def test_set(self):
         result = self.invoke([
             '-s', 'author', 'Bertrand Russell',
+            '-b',
             '--set', 'title', 'Principia'
         ])
         self.assertTrue(result.exit_code == 0)
@@ -175,6 +176,7 @@ class TestCli(tests.cli.TestCli):
         result = self.invoke([
             '-s', 'author', 'Plato',
             '--set', 'title', 'Republic',
+            '-b',
             '--link', pdf
         ])
         #self.assertTrue(result.exit_code == 0)
@@ -190,6 +192,7 @@ class TestCli(tests.cli.TestCli):
         result = self.invoke([
             '-s', 'author', 'Aristoteles',
             '--set', 'title', '"The apology of socrates"',
+            '-b',
             '--name', 'the_apology', pdf
         ])
         self.assertTrue(result.exit_code == 0)

@@ -75,7 +75,9 @@ def update_document(document, data, force=False, interactive=False):
     for key in data.keys():
         if document[key] == data[key]:
             continue
-        if force:
+        if (force or
+                document[key] is None or
+                document[key] == ''):
             document[key] = data[key]
         elif interactive:
             confirmation = papis.utils.confirm([
@@ -90,8 +92,6 @@ def update_document(document, data, force=False, interactive=False):
             )
             if confirmation:
                 document[key] = data[key]
-        elif document[key] is None or document[key] == '':
-            document[key] = data[key]
 
 
 def run(document, data=dict(), interactive=False, force=False):
@@ -109,9 +109,9 @@ def run(document, data=dict(), interactive=False, force=False):
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
 @click.option(
-    "-i/-b",
+    "-i/-b,--batch",
     "--interactive/--no-interactive",
-    help="Interactively update",
+    help="Interactive or batch mode",
     default=True
 )
 @click.option(
