@@ -75,6 +75,10 @@ class DatabaseTest(unittest.TestCase):
         Nf = len(docs)
         self.assertTrue(Ni - Nf == 1)
 
+    def test_initialize(self):
+        # trying to initialize again should do nothing
+        papis.database.get().initialize()
+
     def test_get_all_documents(self):
         database = papis.database.get()
         docs = database.get_all_documents()

@@ -495,6 +495,8 @@ def get_cache_home():
     >>> os.environ["XDG_CACHE_HOME"] = '/tmp/.cache'
     >>> get_cache_home()
     '/tmp/.cache/papis'
+    >>> assert(os.path.exists(get_cache_home()))
+    '/tmp/.cache/papis'
     >>> del os.environ["XDG_CACHE_HOME"]
     >>> get_cache_home() == os.path.expanduser(\
             os.path.join('~/.cache', 'papis')\
@@ -503,15 +505,19 @@ def get_cache_home():
     """
     user_defined = papis.config.get('cache-dir')
     if user_defined is not None:
-        return os.path.expanduser(user_defined)
+        path = os.path.expanduser(user_defined)
     else:
-        return os.path.expanduser(
+        path = os.path.expanduser(
             os.path.join(os.environ.get('XDG_CACHE_HOME'), 'papis')
         ) if os.environ.get(
             'XDG_CACHE_HOME'
         ) else os.path.expanduser(
             os.path.join('~', '.cache', 'papis')
         )
+    if not os.path.exists(path):
+        os.makedirs(path)
+    return path
+
 
 
 def pdf_to_doi(filepath):
