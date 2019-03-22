@@ -137,10 +137,10 @@ class Downloader(object):
         :returns: Nothing
         :rtype:  None
         """
-        self.logger.debug("Downloading document")
         url = self.get_document_url()
         if not url:
             return False
+        self.logger.info("Downloading file")
         res = self.session.get(url, cookies=self.cookies)
         self.document_data = res.content
 

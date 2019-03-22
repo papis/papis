@@ -250,14 +250,18 @@ def get_cross_ref(doi):
 def doi_to_data(doi):
     """Search through crossref and get a dictionary containing the data
 
-    :param doi: Doi identificator
+    :param doi: Doi identificator or an url with some doi
     :type  doi: str
     :returns: Dictionary containing the data
     :raises ValueError: If no data could be retrieved for the doi
 
     """
     global logger
-    doi = papis.doi.get_clean_doi(doi)
+    cleandoi = papis.doi.find_doi_in_text(doi)
+    if cleandoi:
+        doi = cleandoi
+    else:
+        doi = papis.doi.get_clean_doi(doi)
     try:
         data = get_cross_ref(doi)
     except Exception:

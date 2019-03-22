@@ -98,7 +98,7 @@ def get(url, data_format="bibtex", expected_doc_format=None):
         if downloader.check_document_format():
             result["documents_paths"].append(tempfile.mktemp())
             logger.info(
-                "Saving downloaded data in %s" % result["documents_paths"][-1]
+                "Saving downloaded file in %s" % result["documents_paths"][-1]
             )
             with open(result["documents_paths"][-1], "wb+") as fd:
                 fd.write(doc_data)

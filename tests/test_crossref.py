@@ -1,5 +1,5 @@
 from papis.crossref import (
-    get_data, get_clean_doi, doi_to_data
+    get_data, doi_to_data
 )
 
 

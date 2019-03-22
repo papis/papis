@@ -2,6 +2,7 @@ import re
 import os
 import papis.downloaders.base
 import arxiv2bib
+import papis.arxiv
 
 
 class Downloader(papis.downloaders.base.Downloader):
@@ -9,16 +10,16 @@ class Downloader(papis.downloaders.base.Downloader):
     def __init__(self, url):
         papis.downloaders.base.Downloader.__init__(self, url, name="arxiv")
         self.expected_document_extension = 'pdf'
+        arxivid = None
 
     @classmethod
     def match(cls, url):
-        m = re.match(r"^arxiv:(.*)", url, re.IGNORECASE)
-        if m:
-            url = "https://arxiv.org/abs/{m}".format(m=m.group(1))
-        if re.match(r".*arxiv.org.*", url):
-            # https://arxiv.org/pdf/1707.09820|.pdf?blahslas=sdfad|
-            url = re.sub(r"\.pdf.*$", "", url)
-            return Downloader(url)
+        arxivid = papis.arxiv.find_arxivid_in_text(url)
+        if arxivid:
+            url = "https://arxiv.org/abs/{0}".format(arxivid)
+            down = Downloader(url)
+            down.arxivid = arxivid
+            return down
         else:
             return False
 
@@ -26,8 +27,9 @@ class Downloader(papis.downloaders.base.Downloader):
         """Get arxiv identifier
         :returns: Identifier
         """
-        url = self.get_url()
-        return re.sub(r'^.*arxiv.org/(abs|pdf)/(.*)\/?$', r'\2', url)
+        if not self.arxivid:
+            self.arxivid = papis.arxiv.find_arxivid_in_text(self.get_url())
+        return self.arxivid
 
     def get_bibtex_url(self):
         identifier = self.get_identifier()
@@ -38,13 +40,13 @@ class Downloader(papis.downloaders.base.Downloader):
         bibtexCli = arxiv2bib.Cli([bib_url])
         bibtexCli.run()
         self.logger.debug("[bibtex url] = %s" % bib_url)
-        data = os.linesep.join(bibtexCli.output)
+        data = ''.join(bibtexCli.output).replace('\n', ' ')
         self.bibtex_data = data
 
     def get_document_url(self):
         # https://arxiv.org/pdf/1702.01590
-        identifier = self.get_identifier()
-        self.logger.debug("[paper id] = %s" % identifier)
-        pdf_url = "https://arxiv.org/pdf/"+identifier+".pdf"
+        arxivid = self.get_identifier()
+        self.logger.debug("arxivid %s" % arxivid)
+        pdf_url = "https://arxiv.org/pdf/{arxivid}.pdf".format(arxivid=arxivid)
         self.logger.debug("[pdf url] = %s" % pdf_url)
         return pdf_url
