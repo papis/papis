@@ -87,6 +87,7 @@ import papis.config
 import papis.bibtex
 import papis.crossref
 import papis.doi
+import papis.arxiv
 import papis.document
 import papis.downloaders.utils
 import papis.cli
@@ -599,18 +600,40 @@ def cli(
     except:
         pass
 
+    # GET INFORMATION FROM PDF
     if (not from_doi and
             not from_bibtex and
             not from_url and
             not from_folder and
             files and
             papis.utils.get_document_extension(files[0]) == 'pdf'):
+
         logger.info("Trying to parse doi from file {0}".format(files[0]))
         doi = papis.doi.pdf_to_doi(files[0])
         if doi:
             logger.info("Parsed doi {0}".format(doi))
             logger.warning("There is no guarantee that this doi is the one")
+        if (doi and
+                not batch and
+                confirm and
+                papis.utils.confirm(
+                    'Do you want to use the doi {0}'.format(doi)
+                )):
             from_doi = doi
+
+        arxivid = papis.arxiv.pdf_to_arxivid(files[0])
+        if arxivid:
+            logger.info("Parsed arxivid {0}".format(arxivid))
+            logger.warning(
+                "There is no guarantee that this arxivid is the one"
+            )
+        if (arxivid and
+                not batch and
+                confirm and
+                papis.utils.confirm(
+                    'Do you want to use the arxivid {0}'.format(arxivid)
+                )):
+            from_url = "https://arxiv.org/abs/{0}".format(arxivid)
 
     if from_crossref:
         logger.info("Querying crossref.org")
@@ -633,7 +656,8 @@ def cli(
         logger.info("Attempting to retrieve from url")
         url_data = papis.downloaders.utils.get(from_url)
         data.update(url_data["data"])
-        files.extend(url_data["documents_paths"])
+        if not files:
+            files.extend(url_data["documents_paths"])
         # If no data was retrieved and doi was found, try to get
         # information with the document's doi
         if not data and url_data["doi"] is not None and not from_doi:

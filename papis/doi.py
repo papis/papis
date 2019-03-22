@@ -73,6 +73,7 @@ def get_clean_doi(doi):
     doi = re.sub(r'\)>', ' ', doi)
     doi = re.sub(r'\)/S/URI', ' ', doi)
     doi = re.sub(r'(/abstract)', '', doi)
+    doi = re.sub(r'\)$', '', doi)
     return doi
 
 
@@ -100,7 +101,7 @@ def find_doi_in_text(text):
             m = next(miter)
             if m:
                 doi = m.group('doi')
-                return doi
+                return get_clean_doi(doi)
         except StopIteration:
             pass
     return None

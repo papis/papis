@@ -20,6 +20,7 @@ import logging
 import urllib.request  # urlopen, Request
 import urllib.parse  # import urlencode
 import papis.config
+import re
 
 
 logger = logging.getLogger('arxiv')
@@ -92,3 +93,51 @@ def get_data(
         )
         result.append(data)
     return result
+
+
+def pdf_to_arxivid(filepath):
+    """Try to get arxivid from a filepath, it looks for a regex in the binary
+    data and returns the first arxivid found, in the hopes that this arxivid
+    is the correct one.
+
+    :param filepath: Path to the pdf file
+    :type  filepath: str
+    :returns: arxivid or None
+    :rtype:  str or None
+    """
+    regex = re.compile(r'arxiv.org/([^)]+)', re.I)
+    arxivid = None
+    with open(filepath, 'rb') as fd:
+        for line in fd:
+            arxivid = find_arxivid_in_text(line.decode('ascii', errors='ignore'))
+            if arxivid:
+                break
+    return arxivid
+
+
+def find_arxivid_in_text(text):
+    """
+    Try to find a arxivid in a text
+    """
+    forbidden_arxivid_characters = r'"\(\)\s%$^\'<>@,;:#?&'
+    # Sometimes it is in the javascript defined
+    regex = re.compile(
+        r'arxiv(.org/)?'
+        r'(abs|pdf)?'
+        r'\s*(=|:|/|\()\s*'
+        r'("|\')?'
+        r'(?P<arxivid>[^{fc}]+)'
+        r'("|\'|\))?'
+        .format(
+            fc=forbidden_arxivid_characters
+        ), re.I
+    )
+    miter = regex.finditer(text)
+    try:
+        m = next(miter)
+        if m:
+            arxivid = m.group('arxivid')
+            return arxivid
+    except StopIteration:
+        pass
+    return None
