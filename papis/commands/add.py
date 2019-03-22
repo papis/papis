@@ -89,6 +89,7 @@ import papis.crossref
 import papis.document
 import papis.downloaders.utils
 import papis.cli
+import papis.yaml
 import click
 import builtins
 import colorama
@@ -692,7 +693,7 @@ def cli(
 
     if from_yaml:
         logger.info("Reading yaml input file = %s" % from_yaml)
-        data.update(papis.utils.yaml_to_data(from_yaml))
+        data.update(papis.yaml.yaml_to_data(from_yaml))
 
     if from_bibtex:
         logger.info("Reading bibtex input file = %s" % from_bibtex)

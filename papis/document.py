@@ -372,17 +372,11 @@ class Document(object):
     def save(self):
         """Saves the current document's information into the info file.
         """
-        import yaml
-        with open(self.get_info_file(), "w+") as fd:
-            structure = dict()
-            for key in self.keys():
-                structure[key] = self[key]
-            yaml.dump(
-                structure,
-                fd,
-                allow_unicode=papis.config.getboolean("info-allow-unicode"),
-                default_flow_style=False
-            )
+        import papis.yaml
+        papis.yaml.data_to_yaml(
+            self.get_info_file(),
+            {key: self[key] for key in self.keys()}
+        )
 
     def get_info_file(self):
         """Get full path for the info file
@@ -436,21 +430,9 @@ class Document(object):
     def load(self):
         """Load information from info file
         """
-        import yaml
-        # TODO: think about if it's better to raise an exception here
-        # TODO: if no info file is found
-        try:
-            fd = open(self.get_info_file(), "r")
-        except:
-            return False
-        try:
-            structure = yaml.safe_load(fd)
-            for key in structure:
-                self[key] = structure[key]
-            fd.close()
-        except Exception as e:
-            logging.error(
-                'Error reading yaml file in {0}'.format(self.get_info_file()) +
-                '\nPlease check it!\n\n{0}'.format(str(e))
-            )
-            fd.close()
+        import papis.yaml
+        if not os.path.exists(self.get_info_file()):
+            return
+        data = papis.yaml.yaml_to_data(self.get_info_file())
+        for key in data:
+            self[key] = data[key]

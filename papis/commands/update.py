@@ -55,8 +55,8 @@ import papis.crossref
 import papis.base
 import papis.api
 import papis.cli
+import papis.yaml
 import click
-import yaml
 
 
 def update_document(document, data, force=False, interactive=False):
@@ -328,8 +328,7 @@ def cli(
                 logger.error(e)
 
         if from_yaml:
-            with open(from_yaml) as fd:
-                data.update(yaml.safe_load(fd))
+            data.update(papis.yaml.yaml_to_data(from_yaml))
 
         if from_doi:
             logger.info("Try using doi %s" % from_doi)

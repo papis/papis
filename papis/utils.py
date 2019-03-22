@@ -150,19 +150,6 @@ def doi_to_data(doi):
     return papis.crossref.doi_to_data(doi)
 
 
-def yaml_to_data(yaml_path):
-    """Convert a yaml file into a dictionary using the yaml module.
-
-    :param yaml_path: Path to a yaml file
-    :type  yaml_path: str
-    :returns: Dictionary containing the info of the yaml file
-    :rtype:  dict
-    """
-    import yaml
-    with open(yaml_path) as fd:
-        return yaml.safe_load(fd)
-
-
 def confirm(prompt, yes=True, bottom_toolbar=None):
     """Confirm with user input
 
