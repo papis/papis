@@ -30,7 +30,7 @@ if __name__ == "__main__":
             sys.exit(0)
 
     documents = papis.api.get_documents_in_lib(
-        papis.api.get_lib(),
+        papis.api.get_lib_name(),
         search=search
     )
 
