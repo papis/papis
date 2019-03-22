@@ -108,7 +108,7 @@ def get_folders(folder):
     logger.debug("Indexing folders in '{0}'".format(folder))
     folders = list()
     for root, dirnames, filenames in os.walk(folder):
-        if os.path.exists(os.path.join(root, get_info_file_name())):
+        if os.path.exists(os.path.join(root, papis.config.get('info-name'))):
             folders.append(root)
     logger.debug("{0} valid folders retrieved".format(len(folders)))
     return folders
@@ -136,15 +136,6 @@ def create_identifier(input_list):
     for n in count(1):
         for s in product(input_list, repeat=n):
             yield ''.join(s)
-
-
-def get_info_file_name():
-    """Get the name of the general info file for any document
-
-    :returns: Name of the file.
-    :rtype: str
-    """
-    return papis.config.get("info-name")
 
 
 def doi_to_data(doi):
