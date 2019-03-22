@@ -86,6 +86,7 @@ import papis.utils
 import papis.config
 import papis.bibtex
 import papis.crossref
+import papis.doi
 import papis.document
 import papis.downloaders.utils
 import papis.cli
@@ -616,7 +617,7 @@ def cli(
             files and
             papis.utils.get_document_extension(files[0]) == 'pdf'):
         logger.info("Trying to parse doi from file {0}".format(files[0]))
-        doi = papis.utils.pdf_to_doi(files[0])
+        doi = papis.doi.pdf_to_doi(files[0])
         if doi:
             logger.info("Parsed doi {0}".format(doi))
             logger.warning("There is no guarantee that this doi is the one")
@@ -664,7 +665,7 @@ def cli(
     if from_doi:
         logger.info("using doi {0}".format(from_doi))
         try:
-            data.update(papis.utils.doi_to_data(from_doi))
+            data.update(papis.crossref.doi_to_data(from_doi))
         except ValueError as e:
             logger.error(e)
         if (len(files) == 0 and

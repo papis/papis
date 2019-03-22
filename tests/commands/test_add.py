@@ -281,7 +281,7 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(get_document_extension(doc.get_files()[0]) == 'epub')
 
     @patch(
-        'papis.utils.doi_to_data',
+        'papis.crossref.doi_to_data',
         lambda x: {"author": "Turing", "doc_url": "https://nourl"}
     )
     @patch(

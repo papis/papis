@@ -81,7 +81,7 @@ class TestCli(tests.cli.TestCli):
         docs = db.query_dict(dict(author='krishnamurti'))
         self.assertTrue(docs)
         # TODO: if I don't load, it fails, why?
-        docs[0].load()
+        #docs[0].load()
         self.assertTrue(
             re.match(r' *10.1002/andp.19053221004 *', docs[0]['doi'])
         )

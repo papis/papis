@@ -333,7 +333,7 @@ def cli(
         if from_doi:
             logger.info("Try using doi %s" % from_doi)
             try:
-                data.update(papis.utils.doi_to_data(from_doi))
+                data.update(papis.crossref.doi_to_data(from_doi))
             except ValueError as e:
                 logger.error(e)
 

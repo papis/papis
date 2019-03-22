@@ -218,3 +218,16 @@ def clear_lib_cache(lib=None):
 
     """
     papis.database.get(lib).clear()
+
+
+def doi_to_data(doi):
+    """Try to get from a DOI expression a dictionary with the document's data
+    using the crossref module.
+
+    :param doi: DOI expression.
+    :type  doi: str
+    :returns: Document's data
+    :rtype: dict
+    """
+    return papis.crossref.doi_to_data(doi)
+

@@ -1,13 +1,10 @@
-from __future__ import unicode_literals
 import logging
-import re
 import papis.config
 import papis.utils
+import papis.doi
 logger = logging.getLogger("crossref")
 logger.debug("importing")
 
-# CrossRef queries
-#
 # CrossRef documentation comes from here:
 # http://labs.crossref.org/site/quick_and_dirty_api_guide.html
 #
@@ -64,30 +61,6 @@ def get_data(query="", author="", title="", max_results=20):
     return [
         crossref_data_to_papis_data(d) for d in results["message"]["items"]
     ]
-
-
-def validate_doi(doi):
-    """We check that the DOI can be resolved by official means.  If so, we
-    return the resolved URL, otherwise, we return None (which means the DOI is
-    invalid).
-
-    :param doi: Doi identificator
-    :type  doi: str
-    """
-    from urllib.request import urlopen
-    handle_url = "https://doi.org/" + doi
-    logger.debug('handle url %s' % handle_url)
-    try:
-        handle = urlopen(handle_url)
-    except:  # What exception are we catching?
-        return None
-
-    resolvedURL = handle.geturl()
-    logger.debug('resolved url %s' % resolvedURL)
-    if resolvedURL[0:16] == "https://doi.org/":
-        return None
-    else:
-        return resolvedURL
 
 
 def get_citation_info_from_results(container):
@@ -150,6 +123,9 @@ def get_cross_ref(doi):
     import xml.dom.minidom
     from urllib.parse import urlencode
     from urllib.request import urlopen, Request
+
+    papis.doi.validate_doi(doi)
+
     params = urlencode({
         "id": "doi:" + doi,
         "noredirect": "true",
@@ -171,14 +147,6 @@ def get_cross_ref(doi):
     doc = xml.dom.minidom.parseString(doc)
     records = doc.getElementsByTagName("journal")
     records += doc.getElementsByTagName("conference")
-
-    # No results. Is it a valid DOI?
-    if len(records) == 0:
-        res = validate_doi(doi)
-        if res is None:
-            raise Exception("Invalid DOI")
-        else:
-            raise Exception("Can't locate metadata")
 
     if (len(records) != 1):
         raise Exception("CrossRef returned more than one record")
@@ -279,26 +247,6 @@ def get_cross_ref(doi):
     return res
 
 
-def get_clean_doi(doi):
-    """Check if doi is actually a url and in that case just get
-    the exact doi.
-
-    :doi: String containing a doi
-    :returns: The pure doi
-    """
-    mdoi = re.match(
-        r'^([^?/&%$^]+)(/|%2F)([^?&%$^]+).*',
-        re.sub(
-            r'.*doi(.org)?/', '',
-            doi.replace("/abstract", "")
-        )
-    )
-    if mdoi:
-        return mdoi.group(1) + '/' + mdoi.group(3)
-    else:
-        return None
-
-
 def doi_to_data(doi):
     """Search through crossref and get a dictionary containing the data
 
@@ -309,7 +257,7 @@ def doi_to_data(doi):
 
     """
     global logger
-    doi = get_clean_doi(doi)
+    doi = papis.doi.get_clean_doi(doi)
     try:
         data = get_cross_ref(doi)
     except Exception:
