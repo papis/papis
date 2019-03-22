@@ -6,6 +6,7 @@ import re
 import tempfile
 import papis.exceptions
 
+
 def test_default_opener():
     plat = sys.platform
     sys.platform = 'darwin v01'

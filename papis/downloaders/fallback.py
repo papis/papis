@@ -1,4 +1,3 @@
-import re
 import papis.downloaders.base
 import papis.doi
 

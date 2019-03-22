@@ -230,4 +230,3 @@ def doi_to_data(doi):
     :rtype: dict
     """
     return papis.crossref.doi_to_data(doi)
-

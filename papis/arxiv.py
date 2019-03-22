@@ -105,11 +105,12 @@ def pdf_to_arxivid(filepath):
     :returns: arxivid or None
     :rtype:  str or None
     """
-    regex = re.compile(r'arxiv.org/([^)]+)', re.I)
     arxivid = None
     with open(filepath, 'rb') as fd:
         for line in fd:
-            arxivid = find_arxivid_in_text(line.decode('ascii', errors='ignore'))
+            arxivid = find_arxivid_in_text(
+                line.decode('ascii', errors='ignore')
+            )
             if arxivid:
                 break
     return arxivid

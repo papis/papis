@@ -7,7 +7,6 @@ Cli
 """
 import papis
 import os
-import re
 import papis.config
 import papis.utils
 import papis.database

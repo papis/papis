@@ -52,7 +52,6 @@ def get_cache_file_path(directory):
     return os.path.join(folder, cache_name)
 
 
-
 def filter_documents(documents, search=""):
     """Filter documents. It can be done in a multi core way.
 
@@ -102,7 +101,6 @@ def filter_documents(documents, search=""):
             len(filtered_docs))
     )
     return filtered_docs
-
 
 
 def match_document(document, search, match_format=None):
@@ -250,7 +248,6 @@ class Database(papis.database.base.Database):
         return self.get_documents()
 
     def save(self):
-        cache_home = get_cache_home()
         docs = self.get_documents()
         self.logger.debug(
             'Saving ... ({} documents)'.format(len(docs))

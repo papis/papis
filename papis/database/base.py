@@ -2,7 +2,6 @@
 Here the database abstraction for the libraries is defined.
 """
 
-import os
 import papis.utils
 import papis.config
 import papis.library

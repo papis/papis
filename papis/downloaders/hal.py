@@ -38,7 +38,7 @@ class Downloader(papis.downloaders.base.Downloader):
 
     def get_bibtex_url(self):
         """
-        >>> d = Downloader("https://hal.archives-ouvertes.fr/jpa-00205888?asf=")
+        >>> d = Downloader("https://hal.archives-ouvertes.fr/jpa-00205888?sf=")
         >>> d.get_bibtex_url()
         'https://hal.archives-ouvertes.fr/jpa-00205888/bibtex'
         """

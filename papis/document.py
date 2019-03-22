@@ -1,10 +1,10 @@
 import os
-import shutil
 import papis.utils
 import papis.config
 import papis.bibtex
 import logging
 import re
+import shutil
 
 
 logger = logging.getLogger("document")
@@ -206,7 +206,6 @@ def delete(document):
     :param document: Papis document
     :type  document: papis.document.Document
     """
-    import shutil
     folder = document.get_main_folder()
     shutil.rmtree(folder)
 
@@ -228,7 +227,6 @@ def move(document, path):
     ...
     Exception: There is already...
     """
-    import shutil
     path = os.path.expanduser(path)
     if os.path.exists(path):
         raise Exception(

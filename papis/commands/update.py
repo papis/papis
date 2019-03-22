@@ -81,10 +81,12 @@ def update_document(document, data, force=False, interactive=False):
             document[key] = data[key]
         elif interactive:
             confirmation = papis.utils.confirm([
-                ('bg:ansiblack fg:ansiyellow', "({key} conflict)".format(key=key)),
+                ('bg:ansiblack fg:ansiyellow',
+                    "({key} conflict)".format(key=key)),
                 ('bg:ansired', "\n"),
                 ('', 'Replace "'),
-                ('bg:ansiblack fg:ansired bold', '{val}'.format(val=document[key])),
+                ('bg:ansiblack fg:ansired bold',
+                    '{val}'.format(val=document[key])),
                 ('', '" by "'),
                 ('bg:ansiblack fg:green bold', '{val}'.format(val=data[key])),
                 ('bg:ansiblack bold', '"? (Y/n) '),

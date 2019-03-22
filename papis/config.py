@@ -260,7 +260,6 @@ def get_configpy_file():
     return os.path.join(get_config_folder(), "config.py")
 
 
-
 def set_config_file(filepath):
     """Override the main configuration file path
     """
@@ -447,7 +446,7 @@ def set_lib(library):
     global _CURRENT_LIBRARY
     assert(isinstance(library, papis.library.Library))
     config = get_configuration()
-    if not library.name in config.keys():
+    if library.name not in config.keys():
         config[library.name] = dict(dirs=library.paths)
     _CURRENT_LIBRARY = library
 
@@ -485,7 +484,7 @@ def get_lib_from_name(libname):
                 paths = eval(expanduser(config[name].get('dirs')))
             except:
                 raise Exception(
-                    "To initialize a library you have to set either dir or dirs"
+                    "To define a library you have to set either dir or dirs"
                     " in the configuration file."
                 )
         library_obj = papis.library.Library(libname, paths)

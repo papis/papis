@@ -11,7 +11,6 @@ import shutil
 
 class MockDownloader(Downloader):
     def __init__(self, url="", name="", bibtex_data=None, document_data=None):
-        #Downloader.__init__(self, url, name)
         self.bibtex_data = bibtex_data
         self.document_data = document_data
 
@@ -58,7 +57,7 @@ test_data = [
     },
     {
         "author": 'K. Popper',
-        'doi':'10.1021/ct5004252',
+        'doi': '10.1021/ct5004252',
         "title": 'The open society',
         "volume": 'I',
         "_test_files": 0,

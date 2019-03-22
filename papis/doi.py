@@ -14,7 +14,6 @@ def pdf_to_doi(filepath):
     :returns: DOI or None
     :rtype:  str or None
     """
-    regex = re.compile(r'doi.org/([^)]+)', re.I)
     doi = None
     with open(filepath, 'rb') as fd:
         for line in fd:
