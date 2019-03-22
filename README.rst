@@ -34,9 +34,8 @@ Main features
    add them to your library with all the relevant information, in a
    matter of seconds, also you can check the documentation
    `here <http://papis.readthedocs.io/en/latest/scihub.html>`__.
--  Import from Zotero and other managers using the script in
-   ``examples/scripts/papis-zotero``
-   (`doc <http://papis.readthedocs.io/en/latest/importing.html>`__).
+-  Import from Zotero and other managers using
+    `papis-zotero <https://github.com/papis/papis-zotero>__`.
 -  Create custom scripts to help you achieve great tasks easily
    (`doc <http://papis.readthedocs.io/en/latest/scripting.html>`__).
 -  Export documents into many formats (bibtex, yaml..)
