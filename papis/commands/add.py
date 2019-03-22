@@ -492,7 +492,7 @@ def run(
     default=False
 )
 @click.option(
-    "--smart",
+    "-S", "--smart",
     help="Try to do smart things to get information from documents",
     default=False, is_flag=True
 )
@@ -599,6 +599,19 @@ def cli(
     except:
         pass
 
+    if (not from_doi and
+            not from_bibtex and
+            not from_url and
+            not from_folder and
+            files and
+            papis.utils.get_document_extension(files[0]) == 'pdf'):
+        logger.info("Trying to parse doi from file {0}".format(files[0]))
+        doi = papis.doi.pdf_to_doi(files[0])
+        if doi:
+            logger.info("Parsed doi {0}".format(doi))
+            logger.warning("There is no guarantee that this doi is the one")
+            from_doi = doi
+
     if from_crossref:
         logger.info("Querying crossref.org")
         docs = [
@@ -610,18 +623,6 @@ def cli(
             doc = papis.api.pick_doc(docs) if not batch else docs[0]
             if doc and not from_doi and doc.has('doi'):
                 from_doi = doc['doi']
-
-    if (not from_doi and
-            not from_bibtex and
-            not from_folder and
-            files and
-            papis.utils.get_document_extension(files[0]) == 'pdf'):
-        logger.info("Trying to parse doi from file {0}".format(files[0]))
-        doi = papis.doi.pdf_to_doi(files[0])
-        if doi:
-            logger.info("Parsed doi {0}".format(doi))
-            logger.warning("There is no guarantee that this doi is the one")
-            from_doi = doi
 
     if from_folder:
         original_document = papis.document.Document(from_folder)

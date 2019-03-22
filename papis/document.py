@@ -340,7 +340,7 @@ class Document(object):
         self._folder = folder
         self._info_file_path = os.path.join(
             folder,
-            papis.utils.get_info_file_name()
+            papis.config.get('info-name')
         )
         self.subfolder = self.get_main_folder().replace(
             os.environ["HOME"], ""

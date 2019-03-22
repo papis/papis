@@ -262,7 +262,7 @@ def doi_to_data(doi):
         data = get_cross_ref(doi)
     except Exception:
         raise ValueError(
-            "Couldn't resolve doi " + doi
+            "Couldn't resolve doi ({doi})".format(doi=doi)
         )
         return dict()
     else:
