@@ -120,11 +120,11 @@ def find_arxivid_in_text(text):
     """
     Try to find a arxivid in a text
     """
-    forbidden_arxivid_characters = r'"\(\)\s%$^\'<>@,;:#?&'
+    forbidden_arxivid_characters = r'"\(\)\s%!$^\'<>@,;:#?&'
     # Sometimes it is in the javascript defined
     regex = re.compile(
-        r'arxiv(.org/)?'
-        r'(abs|pdf)?'
+        r'arxiv(.org|.com)?'
+        r'(/abs|/pdf)?'
         r'\s*(=|:|/|\()\s*'
         r'("|\')?'
         r'(?P<arxivid>[^{fc}]+)'

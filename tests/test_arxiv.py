@@ -18,6 +18,8 @@ def test_find_arxiv_id():
         ('/URI(http://arxiv.org/abs/1011.2840)>>', '1011.2840'),
         ('/URI(http://arxiv.org/abs/1110.3658)>>', '1110.3658'),
         ('http://arxiv.org/abs/1110.3658>', '1110.3658'),
+        ('http://arxiv.com/abs/1110.3658>', '1110.3658'),
+        ('http://arxiv.org/1110.3658>', '1110.3658'),
     ]
     for url, arxivid in test_data:
         assert(find_arxivid_in_text(url) == arxivid)

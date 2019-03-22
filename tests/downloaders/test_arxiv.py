@@ -4,17 +4,10 @@ import papis.bibtex
 
 
 def test_match():
-    assert(Downloader.match(
-        'blah://pubs.arxiv.org/doi/abs/10.1021/acs.jchemed.6b00559'
-    ))
-    assert(Downloader.match(
-        'blah://pubs.arxiv.org/!@#!@$!%!@%!$che.6b00559'
-    ))
-    assert(Downloader.match(
-        'arxiv.com/!@#!@$!%!@%!$chemed.6b00559'
-    )) is False
+    assert(Downloader.match('arxiv.org/sdf'))
+    assert(Downloader.match('arxiv.com/!@#!@$!%!@%!$chemed.6b00559') is False)
 
-    down = Downloader.match('arXiv:1701.08223v2')
+    down = Downloader.match('arXiv:1701.08223v2?234')
     assert(down)
     assert(down.get_url() == 'https://arxiv.org/abs/1701.08223v2')
     assert(down.get_identifier() == '1701.08223v2')
