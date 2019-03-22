@@ -18,9 +18,8 @@ def pdf_to_doi(filepath):
     doi = None
     with open(filepath, 'rb') as fd:
         for line in fd:
-            m = regex.findall(line.decode('ascii', errors='ignore'))
-            if m:
-                doi = m[0]
+            doi = find_doi_in_text(line.decode('ascii', errors='ignore'))
+            if doi:
                 break
     return doi
 
@@ -69,19 +68,19 @@ def get_clean_doi(doi):
     :doi: String containing a doi
     :returns: The pure doi
     """
-    doi = find_doi_in_line(doi)
+    doi = find_doi_in_text(doi)
     if not doi:
         return doi
     else:
         return re.sub(r'(/abstract)', '', doi)
 
 
-def find_doi_in_line(line):
+def find_doi_in_text(text):
     """
-    Try to find a doi in a line
+    Try to find a doi in a text
     """
-    line = re.sub(r'%2F', '/', line)
-    line = re.sub(r'\)>', ' ', line)
+    text = re.sub(r'%2F', '/', text)
+    text = re.sub(r'\)>', ' ', text)
     forbidden_doi_characters = r'"\s%$^\'<>@,#?&'
     # Sometimes it is in the javascript defined
     var_doi = re.compile(
@@ -96,7 +95,7 @@ def find_doi_in_line(line):
     )
 
     for regex in [var_doi]:
-        miter = regex.finditer(line)
+        miter = regex.finditer(text)
         try:
             m = next(miter)
             if m:
