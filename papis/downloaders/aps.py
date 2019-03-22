@@ -16,7 +16,7 @@ class Downloader(papis.downloaders.base.Downloader):
             return False
 
     def get_document_url(self):
-        # http://whatever.aps.org/whatever/whatever/10.1103/PhysRevLett.115.066402
+        # http://whatever.aps.org/wth/wth/10.1103/PhysRevLett.115.066402
         # https://journals.aps.org/prl/pdf/10.1103/PhysRevLett.119.030403
         url = self.get_url()
         burl = re.sub(r'(aps.org/[a-z]+)/([a-z]+)', r'\1/pdf', url)
@@ -24,7 +24,7 @@ class Downloader(papis.downloaders.base.Downloader):
         return burl
 
     def get_doi(self):
-        # http://whatever.aps.org/whatever/whatever/(10.1103/PhysRevLett.115.066402)
+        # http://whatever.aps.org/wth/wth/(10.1103/PhysRevLett.115.066402)
         url = self.get_url()
         burl = re.sub(r'.*(aps.org/[a-z]+/[a-z]+/)', r'', url)
         self.logger.debug("[document doi] = %s" % burl)

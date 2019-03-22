@@ -68,27 +68,27 @@ def get_clean_doi(doi):
     :doi: String containing a doi
     :returns: The pure doi
     """
-    doi = find_doi_in_text(doi)
-    if not doi:
-        return doi
-    else:
-        return re.sub(r'(/abstract)', '', doi)
+    doi = re.sub(r'%2F', '/', doi)
+    # For pdfs
+    doi = re.sub(r'\)>', ' ', doi)
+    doi = re.sub(r'\)/S/URI', ' ', doi)
+    doi = re.sub(r'(/abstract)', '', doi)
+    return doi
 
 
 def find_doi_in_text(text):
     """
     Try to find a doi in a text
     """
-    text = re.sub(r'%2F', '/', text)
-    text = re.sub(r'\)>', ' ', text)
-    forbidden_doi_characters = r'"\s%$^\'<>@,#?&'
+    text = get_clean_doi(text)
+    forbidden_doi_characters = r'"\s%$^\'<>@,;:#?&'
     # Sometimes it is in the javascript defined
     var_doi = re.compile(
         r'doi(.org)?'
-        r'\s*(=|:|/)\s*'
+        r'\s*(=|:|/|\()\s*'
         r'("|\')?'
         r'(?P<doi>[^{fc}]+)'
-        r'("|\')?'
+        r'("|\'|\))?'
         .format(
             fc=forbidden_doi_characters
         ), re.I
