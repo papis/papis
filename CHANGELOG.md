@@ -2,12 +2,41 @@
 VERSION v0.9
 ============
 
+## Add command ##
+
+- The most notable update is that papis is now able to guess a `doi`
+  or `arxiv` id from a pdf that is being added, so the following could work
+
+  ```
+  papis add --confirm arxiv-paper.pdf
+  ```
+
+  or
+
+  ```
+  papis add --confirm some-random-paper.pdf
+  ```
+
+  with the `--confirm` flag it will ask if we want to use the `doi` or `arxivid`
+  retrieved.
+- We can query `crossref` with `--from-crossref` in order to get information
+  and add a paper.
+- A `--smart` or `-S` flag is added in order to add in a smart way information
+  about the paper. Right now it guesses the title from the `filepath`
+  and tries to search `crossref` and prompt the user to pick a document.
+
+## Databases ##
+
+
 - The default `papis` database is now caching the document objects instead
   of only the paths, which means that no yaml parsing is necessary every
   time, which makes it around `10x` faster than in version `v0.8`.
   For a library of 1200 documents, the speed of the `papis` database backend
   is comparable with the `whoosh` backend.
 - Libraries can have multiple directories defined.
+
+## Configuration ##
+
 - A `~/.config/papis/config.py` python file has been added which is
   sourced after the `~/.config/papis/config` file has been processed.
   This should enable some users to have more granularity in the customization.
