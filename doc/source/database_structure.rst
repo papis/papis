@@ -7,8 +7,21 @@ there can be many backends for the database system, including no database.
 Right now there are three types of database in that the user can use:
 
 - No database
+    ::
+
+      database-backend = papis
+      use-cache = False
+
 - Simple cache based database
+  - Configuration option
+    ::
+
+      database-backend = papis
+
 - `Whoosh <https://whoosh.readthedocs.io/en/latest>`_  based database.
+    ::
+
+      database-backend = whoosh
 
 If you just plan to have or have few dozen of documents in your library,
 probably you'll have ample performance with the two first options.
