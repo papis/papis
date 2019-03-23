@@ -58,6 +58,16 @@ class Database(papis.database.base.Database):
     def __init__(self, library=None):
         papis.database.base.Database.__init__(self, library)
         self.logger = logging.getLogger('db:whoosh')
+        self.cache_dir = os.path.join(get_cache_home(), 'database', 'whoosh')
+        self.index_dir = os.path.expanduser(
+            os.path.join(
+                self.cache_dir,
+                papis.database.cache.get_cache_file_name(
+                    self.lib.path_format()
+                )
+            )
+        )
+
         self.initialize()
 
     def get_backend_name(self):
@@ -67,7 +77,7 @@ class Database(papis.database.base.Database):
         import shutil
         if self.index_exists():
             self.logger.warning('Clearing the database')
-            shutil.rmtree(self._get_index_dir())
+            shutil.rmtree(self.index_dir)
 
 #   TODO
     def match(self, document, query_string):
@@ -152,16 +162,15 @@ class Database(papis.database.base.Database):
         exists it will delete it and create a new one.
         """
         self.logger.debug('Creating index...')
-        index_dir = self._get_index_dir()
-        if not os.path.exists(index_dir):
-            self.logger.debug('Creating dir %s' % index_dir)
-            os.makedirs(index_dir)
-        whoosh.index.create_in(self._get_index_dir(), self.create_schema())
+        if not os.path.exists(self.index_dir):
+            self.logger.debug('Creating dir %s' % self.index_dir)
+            os.makedirs(self.index_dir)
+        whoosh.index.create_in(self.index_dir, self.create_schema())
 
     def index_exists(self):
-        """Check if index already exists in _get_index_dir()
+        """Check if index already exists in index_dir()
         """
-        return whoosh.index.exists_in(self._get_index_dir())
+        return whoosh.index.exists_in(self.index_dir)
 
     def add_document_with_writer(self, document, writer, schema_keys):
         """Helper function that takes a writer and a dictionary
@@ -222,7 +231,7 @@ class Database(papis.database.base.Database):
         :returns: Index
         :rtype:  whoosh.index
         """
-        return whoosh.index.open_dir(self._get_index_dir())
+        return whoosh.index.open_dir(self.index_dir)
 
     def get_writer(self):
         """Gets the writer for the current library
@@ -268,27 +277,3 @@ class Database(papis.database.base.Database):
             fields.update({field: TEXT(stored=True)})
         # self.logger.debug('Schema prototype: {}'.format(fields))
         return fields
-
-    def _get_cache_dir(self):
-        """Get general directory to store whoosh indexes.
-
-        :returns: Full path to whoosh cache home directory
-        :rtype:  str
-        """
-        return os.path.join(get_cache_home(), 'database', 'whoosh')
-
-    def _get_index_dir(self):
-        """Get the directory inside `_get_cache_dir` to store the index.
-        :returns: Full path to index dir
-        :rtype:  str
-        """
-        path = os.path.expanduser(
-            os.path.join(
-                self._get_cache_dir(),
-                papis.database.cache.get_cache_file_name(
-                    self.lib.path_format()
-                )
-            )
-        )
-        self.logger.debug('Index dir %s' % path)
-        return path
