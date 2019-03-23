@@ -12,6 +12,7 @@ VERSION v0.9
   so that they become more readable and understandable.
   Also the flag `--name` is now `--folder-name`.
 - The flag `--dir` now has the more descriptive name `--subfolder`.
+- The flag `--no-document` has been finally removed.
 - The most notable update is that papis is now able to guess a `doi`
   or `arxiv` id from a pdf that is being added, so the following could work
 
