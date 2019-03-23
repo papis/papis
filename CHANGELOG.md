@@ -4,6 +4,14 @@ VERSION v0.9
 
 ## Add command ##
 
+- The configuration settings `file-name` and `folder-name` are now
+  ```
+  add-file-name
+  add-folder-name
+  ```
+  so that they become more readable and understandable.
+  Also the flag `--name` is now `--folder-name`.
+- The flag `--dir` now has the more descriptive name `--subfolder`.
 - The most notable update is that papis is now able to guess a `doi`
   or `arxiv` id from a pdf that is being added, so the following could work
 

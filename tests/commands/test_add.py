@@ -55,7 +55,7 @@ class TestGetFileName(unittest.TestCase):
         pdf = create_random_pdf(suffix='.pdf')
         path = create_random_file(prefix='papis-get_name-')
 
-        assert(papis.config.get('file-name') is None)
+        assert(papis.config.get('add-file-name') is None)
         filename = get_file_name(dict(title='blah'), path, suffix='3')
         assert(re.match(r'^papis-get-name-.*\.data$', filename) is not None)
         # With suffix
@@ -66,7 +66,7 @@ class TestGetFileName(unittest.TestCase):
         assert(len(re.split('[.]pdf', filename)) == 2)
 
         papis.config.set(
-            'file-name',
+            'add-file-name',
             '{doc[title]} {doc[author]} {doc[yeary]}'
         )
 

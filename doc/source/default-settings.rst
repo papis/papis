@@ -271,7 +271,7 @@ Bibtex options
     and you add it, i.e., you run ``papis add --confirm``, then it will
     fave the contrary effect, i.e., it will not ask for confirmation.
 
-.. papis-config:: add-name
+.. papis-config:: add-folder-name
     :default: empty string
 
     Default name for the folder of newly added documents. For example, if you
@@ -280,7 +280,7 @@ Bibtex options
     the papis format: ``{doc[author]}-{doc[title]}``.
     Per default a hash followed by the author name is created.
 
-.. papis-config:: file-name
+.. papis-config:: add-file-name
 
     Same as ``add-name``, but for files, not folders. If it is not set,
     the names of the files will be cleaned and taken `as-is`.

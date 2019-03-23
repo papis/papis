@@ -76,7 +76,7 @@ A more complete example of a configuration file is the following
   # use whoosh as a database for papers
   database-backend = whoosh
   # rename files added by author and title
-  file-name = {doc[author]}[doc[title]}
+  add-file-name = {doc[author]}[doc[title]}
 
   # Define a lib for books
   [books]

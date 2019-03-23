@@ -108,6 +108,6 @@ def cli(query, files, file_name):
         return
 
     if file_name is not None:  # Use args if set
-        papis.config.set("file-name", file_name)
+        papis.config.set("add-file-name", file_name)
 
     return run(document, files)
