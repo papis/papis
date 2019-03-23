@@ -35,7 +35,7 @@ Main features
    matter of seconds, also you can check the documentation
    `here <http://papis.readthedocs.io/en/latest/scihub.html>`__.
 -  Import from Zotero and other managers using
-    `papis-zotero <https://github.com/papis/papis-zotero>__`.
+   `papis-zotero <https://github.com/papis/papis-zotero>_`.
 -  Create custom scripts to help you achieve great tasks easily
    (`doc <http://papis.readthedocs.io/en/latest/scripting.html>`__).
 -  Export documents into many formats (bibtex, yaml..)

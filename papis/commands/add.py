@@ -13,7 +13,8 @@ Examples
 
     .. code::
 
-        papis add ~/Documents/interesting.pdf --name interesting-paper-2021
+        papis add ~/Documents/interesting.pdf \\
+            --folder-name interesting-paper-2021
 
   if you want to add directly some key values, like ``author``, ``title``
   and ``tags``, you can also run the following:
@@ -21,7 +22,7 @@ Examples
     .. code::
 
         papis add ~/Documents/interesting.pdf \\
-            --name interesting-paper-2021 \\
+            --folder-name interesting-paper-2021 \\
             --set author 'John Smith' \\
             --set title 'The interesting life of bees' \\
             --set year 1985 \\
@@ -219,7 +220,7 @@ def get_default_author(data, document_path):
 def run(
         paths,
         data=dict(),
-        name=None,
+        folder_name=None,
         file_name=None,
         subfolder=None,
         confirm=False,
@@ -235,8 +236,8 @@ def run(
         If more data is to be retrieved from other sources, the data dictionary
         will be updated from these sources.
     :type  data: dict
-    :param name: Name of the folder where the document will be stored
-    :type  name: str
+    :param folder_name: Name of the folder where the document will be stored
+    :type  folder_name: str
     :param file_name: File name of the document's files to be stored.
     :type  file_name: str
     :param subfolder: Folder within the library where the document's folder
@@ -275,12 +276,12 @@ def run(
 
     tmp_document = papis.document.Document(temp_dir)
 
-    if not name:
+    if not folder_name:
         out_folder_name = get_hash_folder(data, in_documents_paths)
         logger.info("Got an automatic folder name")
     else:
         temp_doc = papis.document.Document(data=data)
-        out_folder_name = papis.utils.format_doc(name, temp_doc)
+        out_folder_name = papis.utils.format_doc(folder_name, temp_doc)
         out_folder_name = papis.utils.clean_document_name(out_folder_name)
         del temp_doc
 
@@ -415,9 +416,9 @@ def run(
     default=""
 )
 @click.option(
-    "--name",
+    "--folder-name",
     help="Name for the document's folder (papis format)",
-    default=lambda: papis.config.get('add-name')
+    default=lambda: papis.config.get('add-folder-name')
 )
 @click.option(
     "--file-name",
@@ -514,7 +515,7 @@ def cli(
         files,
         set_list,
         directory,
-        name,
+        folder_name,
         file_name,
         from_bibtex,
         from_yaml,
@@ -736,7 +737,7 @@ def cli(
     return run(
         list(files),
         data=data,
-        name=name,
+        folder_name=folder_name,
         file_name=file_name,
         subfolder=directory,
         confirm=confirm,

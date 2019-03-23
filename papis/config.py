@@ -50,8 +50,8 @@ general_settings = {
     "use-git": False,
 
     "add-confirm": False,
-    "add-name": "",
-    "file-name": None,
+    "add-folder-name": "",
+    "add-file-name": None,
     "add-interactive": False,
     "add-edit": False,
     "add-open": False,
