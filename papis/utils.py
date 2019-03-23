@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from subprocess
+import subprocess
 import multiprocessing
 import time
 from itertools import count, product
