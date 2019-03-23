@@ -1,3 +1,5 @@
+#compdef papis
+
 _papis_completion() {
     local -a completions
     local -a completions_with_descriptions
@@ -25,4 +27,4 @@ _papis_completion() {
     compstate[insert]="automenu"
 }
 
-compdef _papis_completion papis;
+_papis_completion $@
