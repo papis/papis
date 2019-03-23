@@ -193,7 +193,7 @@ class TestCli(tests.cli.TestCli):
             '-s', 'author', 'Aristoteles',
             '--set', 'title', '"The apology of socrates"',
             '-b',
-            '--name', 'the_apology', pdf
+            '--folder-name', 'the_apology', pdf
         ])
         self.assertTrue(result.exit_code == 0)
         db = papis.database.get()

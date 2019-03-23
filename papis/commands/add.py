@@ -503,14 +503,6 @@ def run(
          "its original location",
     default=False
 )
-@click.option(
-    # TODO: REMOVE IT AT SOME POINT
-    "--no-document",
-    default=False,
-    is_flag=True,
-    help="DEPRECATION NOTICE: This option is no longer valid, "
-         "it will be removed in future releases"
-)
 def cli(
         files,
         set_list,
@@ -531,8 +523,7 @@ def cli(
         edit,
         commit,
         smart,
-        link,
-        no_document
+        link
         ):
     """
     :param from_folder: Filepath where to find a papis document (folder +
