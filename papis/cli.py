@@ -89,7 +89,6 @@ class MultiCommand(click.MultiCommand):
 def query_option(**attrs):
     """Adds a ``query`` argument as a decorator"""
     def decorator(f):
-        import papis.config
         attrs.setdefault(
             'default',
             lambda: papis.config.get('default-query-string')
@@ -111,7 +110,6 @@ def doc_folder_option(**attrs):
 def git_option(**attrs):
     """Adds a ``git`` option as a decorator"""
     def decorator(f):
-        import papis.config
         attrs.setdefault(
             'default',
             lambda: True if papis.config.get('use-git') else False

@@ -89,7 +89,6 @@ import os
 import papis.utils
 import papis.commands
 import papis.document
-from papis.document import from_folder
 import papis.config
 import papis.bibtex
 import papis.strings
@@ -355,7 +354,7 @@ def lib(ctx, query, doc_folder, library):
     """
     logger = logging.getLogger('explore:lib')
     if doc_folder:
-        ctx.obj['documents'] += [from_folder(doc_folder)]
+        ctx.obj['documents'] += [papis.document.from_folder(doc_folder)]
     db = papis.database.get(library=library)
     docs = db.query(query)
     logger.info('{} documents found'.format(len(docs)))
@@ -451,7 +450,7 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
     logger = logging.getLogger('explore:citations')
 
     if doc_folder is not None:
-        documents = [from_folder(doc_folder)]
+        documents = [papis.document.from_folder(doc_folder)]
     else:
         documents = papis.api.get_documents_in_lib(
             papis.config.get_lib_name(),

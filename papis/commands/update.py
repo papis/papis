@@ -47,7 +47,6 @@ import papis.strings
 import papis.bibtex
 import papis.downloaders.utils
 import papis.document
-from papis.document import from_folder
 import papis.database
 import papis.isbnplus
 import papis.isbn
@@ -215,7 +214,7 @@ def cli(
         logger.warning(papis.strings.no_documents_retrieved_message)
 
     if doc_folder:
-        documents = [from_folder(doc_folder)]
+        documents = [papis.document.from_folder(doc_folder)]
 
     if not all:
         documents = filter(

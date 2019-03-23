@@ -1,5 +1,3 @@
-import re
-import os
 import papis.downloaders.base
 import arxiv2bib
 import papis.arxiv
@@ -10,7 +8,7 @@ class Downloader(papis.downloaders.base.Downloader):
     def __init__(self, url):
         papis.downloaders.base.Downloader.__init__(self, url, name="arxiv")
         self.expected_document_extension = 'pdf'
-        arxivid = None
+        self.arxivid = None
 
     @classmethod
     def match(cls, url):

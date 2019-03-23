@@ -251,11 +251,11 @@ class DocHtmlEscaped(dict):
     """
 
     def __init__(self, doc):
-        self.doc = doc
+        self.__doc = doc
 
     def __getitem__(self, key):
         return (
-            str(self.doc[key])
+            str(self.__doc[key])
             .replace('&', '&amp;')
             .replace('<', '&lt;')
             .replace('>', '&gt;')

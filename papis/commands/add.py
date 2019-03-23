@@ -343,7 +343,6 @@ def run(
         papis.api.edit_file(tmp_document.get_info_file(), wait=True)
         logger.info("Loading the changes made by editing")
         tmp_document.load()
-        data = papis.document.to_dict(tmp_document)
 
     # Duplication checking
     logger.info("Checking if this document is already in the library")

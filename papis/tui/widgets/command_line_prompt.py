@@ -9,11 +9,10 @@ from prompt_toolkit.layout.controls import (
 )
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.filters import has_focus
-from prompt_toolkit.utils import Event
 import shlex
 
 
-class Command(Event):
+class Command:
     """
     :param name: Name of the command
     :type  name: parameter_type

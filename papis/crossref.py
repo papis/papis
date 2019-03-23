@@ -268,6 +268,5 @@ def doi_to_data(doi):
         raise ValueError(
             "Couldn't resolve doi ({doi})".format(doi=doi)
         )
-        return dict()
     else:
         return data

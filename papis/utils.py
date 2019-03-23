@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from subprocess import call
+from subprocess
 import multiprocessing
 import time
 from itertools import count, product
@@ -46,7 +46,6 @@ def general_open(fileName, key, default_opener=None, wait=True):
     if isinstance(fileName, list):
         fileName = papis.pick.pick(fileName)
     if isinstance(opener, str):
-        import subprocess
         import shlex
         cmd = shlex.split("{0} '{1}'".format(opener, fileName))
         logger.debug("cmd:  %s" % cmd)
@@ -360,8 +359,7 @@ def git_commit(path="", message=""):
     message = '-m "%s"' % message if len(message) > 0 else ''
     cmd = ['git', '-C', path, 'commit', message]
     logger.debug(cmd)
-    message = '-m "%s"' % message if len(message) > 0 else ''
-    call(cmd)
+    subprocess.call(cmd)
 
 
 def locate_document_in_lib(document, library=None):

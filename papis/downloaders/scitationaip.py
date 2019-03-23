@@ -13,7 +13,7 @@ class Downloader(papis.downloaders.base.Downloader):
     @classmethod
     def match(cls, url):
         # http://aip.scitation.org/doi/10.1063/1.4873138
-        if re.match(r".*(aip|aapt).scitation.org.*", url):
+        if re.match(r".*(aip|aapt)\.scitation\.org.*", url):
             return Downloader(url)
         else:
             return False
