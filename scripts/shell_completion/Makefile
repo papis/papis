@@ -1,3 +1,4 @@
+.PHONY: zsh
 
 all: dist/bash-completion.sh
 
@@ -6,8 +7,9 @@ dist/bash-completion.sh:
 
 zsh:
 	# run from a zsh shell
-	echo "#compdef papis" > click/papis.zsh
-	_PAPIS_COMPLETE=source_zsh papis >> click/papis.zsh
+	mkdir -p click/zsh/
+	echo "#compdef papis" > click/zsh/_papis
+	_PAPIS_COMPLETE=source_zsh papis >> click/zsh/_papis
 
 clean:
 	rm -rf dist

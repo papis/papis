@@ -118,6 +118,10 @@ setup(
             "scripts/shell_completion/click/papis.sh",
         ]),
 
+        ("share/zsh/site-functions/", [
+            "scripts/shell_completion/click/zsh/_papis",
+        ]),
+
         ("share/man/man1", glob.glob("doc/build/man/*")),
 
         ("share/applications", [
