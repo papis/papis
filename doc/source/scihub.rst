@@ -31,13 +31,15 @@ Some usage examples are:
 
     .. code:: bash
 
-      papis scihub 10.1002/andp.19053220607 add -d einstein_papers --name photon_definition
+      papis scihub 10.1002/andp.19053220607 \\
+        add -d einstein_papers --folder-name photon_definition
 
   - Download via a url that contains the doi number in the format ``.*/doi/<doinumber>``
 
     .. code:: bash
 
-      papis scihub http://physicstoday.scitation.org/doi/10.1063/1.881498 add --name important_paper
+      papis scihub http://physicstoday.scitation.org/doi/10.1063/1.881498 \\
+        add --folder-name important_paper
 
   - Download via the ``doi.org`` url:
 
