@@ -71,6 +71,7 @@ def update_document(document, data, force=False, interactive=False):
     :type  interactive: bool
 
     """
+    logger = logging.getLogger('cli:update')
     for key in data.keys():
         if document[key] == data[key]:
             continue
@@ -78,6 +79,9 @@ def update_document(document, data, force=False, interactive=False):
                 document[key] is None or
                 document[key] == ''):
             document[key] = data[key]
+            logger.info(
+                'setting {key} to {value}'.format(key=key, value=data[key])
+            )
         elif interactive:
             confirmation = papis.utils.confirm([
                 ('bg:ansiblack fg:ansiyellow',
@@ -208,7 +212,6 @@ def cli(
     """Update a document from a given library"""
 
     documents = papis.database.get().query(query)
-    data = dict()
     logger = logging.getLogger('cli:update')
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
@@ -223,12 +226,7 @@ def cli(
         )
 
     for document in documents:
-        if all:
-            data = dict()
-            from_url = None
-            from_doi = None
-            from_isbnplus = None
-            from_isbnplus = None
+        data = dict()
 
         if set:
             data.update(
@@ -271,14 +269,15 @@ def cli(
                 from_crossref = True
 
         if from_crossref:
-            logger.info('Trying with crossref')
+            query = papis.utils.format_doc(from_crossref, document)
+            logger.info('Trying with crossref with query {0}'.query(query))
             if from_crossref is True:
                 from_crossref = ''
             try:
                 doc = papis.api.pick_doc([
                         papis.document.from_data(d)
                         for d in papis.crossref.get_data(
-                            query=from_crossref,
+                            query=query,
                             author=document['author'],
                             title=document['title']
                         )
@@ -292,16 +291,13 @@ def cli(
                 logger.error(e)
 
         if from_base:
-            logger.info('Trying with base')
+            query = papis.utils.format_doc(from_base, document)
+            logger.info('Trying with base with query {0}'.format(query))
             try:
-                doc = papis.api.pick_doc(
-                    [
-                        papis.document.from_data(d)
-                        for d in papis.base.get_data(
-                            query=from_isbnplus
-                        )
-                    ]
-                )
+                doc = papis.api.pick_doc([
+                    papis.document.from_data(d)
+                    for d in papis.base.get_data(query=query)
+                ])
                 if doc:
                     data.update(papis.document.to_dict(doc))
             except urllib.error.HTTPError:
@@ -312,16 +308,13 @@ def cli(
             logger.warning('Isbnplus support is does not work... Not my fault')
 
         if from_isbn:
-            logger.info('Trying with isbn ({0:20})'.format(from_isbn))
+            query = papis.utils.format_doc(from_isbn, document)
+            logger.info('Trying with isbn ({0:20})'.format(query))
             try:
-                doc = papis.api.pick_doc(
-                    [
-                        papis.document.from_data(d)
-                        for d in papis.isbn.get_data(
-                            query=from_isbn
-                        )
-                    ]
-                )
+                doc = papis.api.pick_doc([
+                    papis.document.from_data(d)
+                    for d in papis.isbn.get_data(query=query)
+                ])
                 if doc:
                     data.update(papis.document.to_dict(doc))
             except Exception as e:
@@ -332,9 +325,10 @@ def cli(
             data.update(papis.yaml.yaml_to_data(from_yaml))
 
         if from_doi:
-            logger.info("Try using doi %s" % from_doi)
+            query = papis.utils.format_doc(from_doi, document)
+            logger.info("Try using doi %s" % query)
             try:
-                data.update(papis.crossref.doi_to_data(from_doi))
+                data.update(papis.crossref.doi_to_data(query))
             except ValueError as e:
                 logger.error(e)
 
@@ -346,9 +340,10 @@ def cli(
                 pass
 
         if from_url:
-            logger.info('Trying url {0}'.format(from_url))
+            query = papis.utils.format_doc(from_url, document)
+            logger.info('Trying url {0}'.format(query))
             try:
-                url_data = papis.downloaders.utils.get(from_url)
+                url_data = papis.downloaders.utils.get(query)
                 data.update(url_data["data"])
             except Exception:
                 pass

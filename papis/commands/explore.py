@@ -98,6 +98,7 @@ import logging
 import papis.commands.add
 import papis.commands.export
 import papis.api
+import papis.crossref
 
 
 logger = logging.getLogger('explore')
@@ -217,7 +218,6 @@ def crossref(ctx, query, author, title, max):
     papis explore crossref -a 'Albert einstein' pick export --bibtex lib.bib
 
     """
-    import papis.crossref
     logger = logging.getLogger('explore:crossref')
     logger.info('Looking up...')
     data = papis.crossref.get_data(
@@ -446,7 +446,6 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
 
     """
     from prompt_toolkit.shortcuts import ProgressBar
-    import papis.crossref
     logger = logging.getLogger('explore:citations')
 
     if doc_folder is not None:
