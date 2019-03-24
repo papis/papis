@@ -680,10 +680,9 @@ def cli(
 
     if from_doi:
         logger.info("using doi {0}".format(from_doi))
-        try:
-            data.update(papis.crossref.doi_to_data(from_doi))
-        except ValueError as e:
-            logger.error(e)
+        doidata = papis.crossref.get_data(dois=[from_doi])
+        if doidata:
+            data.update(doidata[0])
         if (len(files) == 0 and
                 papis.config.get('doc-url-key-name') in data.keys()):
 

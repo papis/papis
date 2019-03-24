@@ -94,7 +94,7 @@ general_settings = {
     "info-allow-unicode": True,
     "ref-format": "{doc[doi]}",
     "multiple-authors-separator": " and ",
-    "multiple-authors-format": "{au[surname]}, {au[given_name]}",
+    "multiple-authors-format": "{au[family]}, {au[given]}",
 
     "whoosh-schema-fields": "['doi']",
     "whoosh-schema-prototype":

@@ -1,6 +1,19 @@
+import os
+from unittest.mock import patch
+import json
 from papis.crossref import (
     get_data, doi_to_data
 )
+
+
+def _get_test_json(filename):
+    resources = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'resources', 'crossref'
+    )
+    filepath = os.path.join(resources, filename)
+    with open(filepath) as fd:
+        return json.load(fd)
 
 
 def test_get_data():
@@ -12,7 +25,12 @@ def test_get_data():
     assert(len(data) == 1)
 
 
+@patch(
+    'papis.crossref._get_crossref_works',
+    lambda **x: _get_test_json('test1.json')
+)
 def test_doi_to_data():
-    data = doi_to_data('http://dx.doi.org/10.1063%2F1.881498')
+    data = doi_to_data('10.1103/physrevb.89.140501')
     assert(isinstance(data, dict))
-    assert(data['doi'] == '10.1063/1.881498')
+    result = _get_test_json('test1_out.json')
+    assert(result == data)
