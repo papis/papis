@@ -52,6 +52,7 @@ key_conversion = {
     "issue": {},
     #"issued": {"key": "",},
     "language": {},
+    "ISBN": {"key": "isbn"},
     "page": {
         "key": "pages",
         "action": lambda p: re.sub(r"(-[^-])", r"-\1", p),
@@ -71,9 +72,15 @@ key_conversion = {
     },
     # "short-title": { "key": "", },
     # "subtitle": { "key": "", },
-    "title": {"key": "title", "action": lambda t: " ".join(t)},
-    "type": {"key": "type", "action": lambda t: type_converter[t]},
+    "title": {"action": lambda t: " ".join(t)},
+    "type": {"action": lambda t: type_converter[t]},
     "volume": {},
+    "event": [  # Conferences
+        {"key": "venue", "action": lambda x: x["location"]},
+        {"key": "booktitle", "action": lambda x: x["name"]},
+        {"key": "year", "action": lambda x: x['start']["date-parts"][0][0]},
+        {"key": "month", "action": lambda x: x['start']["date-parts"][0][1]},
+    ],
 }
 
 
@@ -171,34 +178,3 @@ def doi_to_data(doi):
         raise ValueError(
             "Couldn't get data for doi ({doi})".format(doi=doi)
         )
-
-    # # JOURNAL INFO
-    # journal = find_item_named(record, "journal_metadata")
-    # if journal:
-        # res["full_journal_title"] = data(
-            # find_item_named(journal, "full_title"))
-        # res["abbrev_journal_title"] = data(
-            # find_item_named(journal, "abbrev_title"))
-        # res["type"] = "article"
-
-    # conference = find_item_named(record, "proceedings_metadata")
-    # if conference:
-        # res["booktitle"] = data(
-            # find_item_named(conference, "proceedings_title"))
-        # res["year"] = data(find_item_named(conference, "year"))
-        # res["month"] = data(find_item_named(conference, "month"))
-        # res["type"] = "inproceedings"
-
-    # # VOLUME INFO
-    # issue = find_item_named(record, "journal_issue")
-    # if issue:
-        # res["issue"] = data(find_item_named(issue, "issue"))
-        # res["volume"] = data(find_item_named(issue, "volume"))
-        # res["year"] = data(find_item_named(issue, "year"))
-        # res["month"] = data(find_item_named(issue, "month"))
-
-    # # OTHER INFO
-    # other = find_item_named(record, "journal_article")
-    # other = find_item_named(record, "conference_paper")
-
-

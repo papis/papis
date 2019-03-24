@@ -1,0 +1,118 @@
+{
+  "booktitle": "Companion of the The Web Conference 2018",
+  "publisher": "ACM Press",
+  "journal": "Companion of the The Web Conference 2018 on The Web Conference 2018  - WWW '18",
+  "month": 4,
+  "author_list": [
+    {
+      "family": "Bühmann",
+      "given": "Lorenz"
+    },
+    {
+      "family": "Lehmann",
+      "given": "Jens"
+    },
+    {
+      "family": "Westphal",
+      "given": "Patrick"
+    },
+    {
+      "family": "Bin",
+      "given": "Simon"
+    }
+  ],
+  "type": "inproceedings",
+  "url": "http://dx.doi.org/10.1145/3184558.3186235",
+  "citations": [
+    {
+      "unstructured": "Pieter Bonte, Femke Ongenae, and Filip De Turck. 2016. Learning Semantic Rules for Intelligent Transport Scheduling in Hospitals. In Proc. of the 5th Workshop on Data Mining and Knowledge Discovery meets Linked Open Data."
+    },
+    {
+      "doi": "10.1007/978-3-319-13704-9_4",
+      "unstructured": "Lorenz B&#252;hmann, Daniel Fleischhacker, Jens Lehmann, Andre Melo, and Johanna V&#246;lker. 2014. Inductive Lexical Learning of Class Expressions. In Knowledge Engineering and Knowledge Management (LNCS), Vol. 8876. Springer International Publishing, 42--53."
+    },
+    {
+      "doi": "10.1007/978-3-642-33876-2_8",
+      "unstructured": "Lorenz B&#252;hmann and Jens Lehmann. 2012. Universal OWL Axiom Enrichment for Large Knowledge Bases. In Proc. of EKAW 2012. 57--71."
+    },
+    {
+      "doi": "10.1007/978-3-642-41335-3_3",
+      "unstructured": "Lorenz B&#252;hmann and Jens Lehmann. 2013. Pattern Based Knowledge Base Enrichment. In 12th International Semantic Web Conference, 21--25 October 2013, Sydney, Australia. 33--48."
+    },
+    {
+      "doi": "10.1016/j.websem.2016.06.001",
+      "unstructured": "Lorenz B&#252;hmann, Jens Lehmann, and Patrick Westphal. 2016. DL-Learner--A framework for inductive learning on the Semantic Web. Web Semantics: Science, Services and Agents on the World Wide Web 39 (2016), 15--24."
+    },
+    {
+      "unstructured": "Claudia dAmato, Nicola Fanizzi, and Floriana Esposito. 2008. A Note on the Evaluation of Inductive Concept Classification Procedures. In Proc. of the 5th Workshop on Semantic Web Applications and Perspectives (SWAP2008), Rome, Italy, 2008, Vol. 426. CEUR-WS.org."
+    },
+    {
+      "doi": "10.1007/s10994-008-5079-1",
+      "unstructured": "Thomas Dietterich, Pedro Domingos, Lise Getoor, Stephen Muggleton, and Prasad Tadepalli. 2008. Structured machine learning: the next ten years. Machine Learning 73, 1 (October 2008), 3--23."
+    },
+    {
+      "doi": "10.4018/978-1-60960-593-3.ch005",
+      "unstructured": "Sebastian Hellmann, Jens Lehmann, and S&#246;ren Auer. 2011. Learning of OWL Class Expressions on Very Large Knowledge Bases and its Applications. In Semantic Services, Interoperability and Web Applications: Emerging Concepts. IGI Global, 104--130."
+    },
+    {
+      "doi": "10.1109/ISDA.2011.6121843",
+      "unstructured": "Josu&#233; Iglesias and Jens Lehmann. 2011. Towards Integrating Fuzzy Logic Capabilities into an Ontology-based Inductive Logic Programming Framework. In Proc. of the 11th International Conference on Intelligent Systems Design and Applications (ISDA). 1323--1328."
+    },
+    {
+      "doi": "10.1145/2566486.2568002",
+      "unstructured": "Dimitris Kontokostas, Patrick Westphal, S&#246;ren Auer, Sebastian Hellmann, Jens Lehmann, Roland Cornelissen, and Amrapali Zaveri. 2014. Test-driven Evaluation of Linked Data Quality. In Proc. of the 23rd International Conference on World Wide Web (WWW'14). 747--758."
+    },
+    {
+      "doi": "10.1007/978-3-540-73499-4_66",
+      "unstructured": "Jens Lehmann. 2007. Hybrid Learning of Ontology Classes. In Proc. of the 5th Int. Conference on Machine Learning and Data Mining MLDM (LNCS), Vol. 4571. Springer, 883--898."
+    },
+    {
+      "unstructured": "Jens Lehmann. 2009. DL-Learner: Learning Concepts in Description Logics. Journal of Machine Learning Research (JMLR) 10 (2009), 2639--2642."
+    },
+    {
+      "doi": "10.1016/j.websem.2011.01.001",
+      "unstructured": "Jens Lehmann, S&#246;ren Auer, Lorenz B&#252;hmann, and Sebastian Tramp. 2011. Class expression learning for ontology engineering. Journal of Web Semantics 9 (2011), 71--81."
+    },
+    {
+      "doi": "10.1007/978-3-642-17749-1_12",
+      "unstructured": "Jens Lehmann and Lorenz B&#252;hmann. 2010. ORE--A Tool for Repairing and Enriching Knowledge Bases. In Proc. of the 9th International Semantic Web Conference (ISWC2010) (LNCS). Springer, 177--193."
+    },
+    {
+      "doi": "10.1007/978-3-642-21034-1_5",
+      "unstructured": "Jens Lehmann and Lorenz B&#252;hmann. 2011. AutoSPARQL: Let Users Query Your Knowledge Base. In Proc. of ESWC 2011. 63--79."
+    },
+    {
+      "unstructured": "Jens Lehmann and Christoph Haase. 2009. Ideal Downward Refinement in the EL Description Logic. In Inductive Logic Programming, 19th International Conference, ILP 2009, Leuven, Belgium. 73--87."
+    },
+    {
+      "unstructured": "Jens Lehmann and Pascal Hitzler. 2010. Concept Learning in Description Logics Using Refinement Operators. Machine Learning journal 78, 1--2 (2010), 203--250."
+    },
+    {
+      "doi": "10.1007/s10994-011-5259-2",
+      "unstructured": "Stephen Muggleton, Luc De Raedt, David Poole, Ivan Bratko, Peter Flach, Katsumi Inoue, and Ashwin Srinivasan. 2012. ILP turns 20. Machine Learning 86, 1 (2012), 3--23."
+    },
+    {
+      "doi": "10.1007/3-540-62927-0",
+      "unstructured": "Shan-Hwei Nienhuys-Cheng and Ronald de Wolf (Eds.). 1997. Foundations of Inductive Logic Programming. LNCS, Vol. 1228. Springer."
+    },
+    {
+      "unstructured": "Alberto Salguero and Macarena Espinilla. 2016. Sentiment Analysis and Ontology Engineering: An Environment of Computational Intelligence. Chapter Description Logic Class Expression Learning Applied to Sentiment Analysis, 93--111."
+    },
+    {
+      "unstructured": "A. Srinivasan, R. D. King, and D. W. Bristol. 1999. An Assessment of Submissions Made to the Predictive Toxicology Evaluation Challenge. In Proc. of the 16th International Joint Conference on Artifical Intelligence--Volume 1 (IJCAI99). 270-- 275."
+    },
+    {
+      "doi": "10.1007/978-3-642-32689-9_25",
+      "unstructured": "An C. Tran, Jens Dietrich, Hans W. Guesgen, and Stephen Marsland. 2012. An Approach to Parallel Class Expression Learning. In Proc. of the 6th International Conference on Rules on the Web: Research and Applications (RuleML'12). SpringerVerlag, Berlin, Heidelberg, 302--316."
+    }
+  ],
+  "venue": "Lyon, France",
+  "ref": "10.1145/3184558.3186235",
+  "doi": "10.1145/3184558.3186235",
+  "year": 2018,
+  "author": "Bühmann, Lorenz and Lehmann, Jens and Westphal, Patrick and Bin, Simon",
+  "isbn": [
+    "9781450356404"
+  ],
+  "title": "DL-Learner Structured Machine Learning on Semantic Web Data"
+}
