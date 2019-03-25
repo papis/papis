@@ -85,7 +85,7 @@ def update_document(document, data, force=False, interactive=False):
                     ('bg:ansiblack fg:ansiyellow bold', '{val}'.format(val=key)),
                     ('', '" to "'),
                     ('bg:ansiblack fg:green bold',
-                        '{val}'.format(val=data[key])),
+                        '{val:.200}'.format(val=str(data[key]))),
                     ('bg:ansiblack bold', '"? (Y/n) '),
                 ]
                 setkey = True
@@ -96,10 +96,10 @@ def update_document(document, data, force=False, interactive=False):
                     ('bg:ansired', "\n"),
                     ('', 'Replace "'),
                     ('bg:ansiblack fg:ansired bold',
-                        '{val}'.format(val=document[key])),
+                        '{val:.200}'.format(val=str(document[key]))),
                     ('', '"\nby      "'),
                     ('bg:ansiblack fg:green bold',
-                        '{val}'.format(val=data[key])),
+                        '{val:.200}'.format(val=str(data[key]))),
                     ('bg:ansiblack bold', '"? (Y/n) '),
                 ]
                 setkey = False
