@@ -50,7 +50,7 @@ key_conversion = {
     },
     "container-title": {"key": "journal", "action": lambda x: x[0]},
     "issue": {},
-    #"issued": {"key": "",},
+    # "issued": {"key": "",},
     "language": {},
     "ISBN": {"key": "isbn"},
     "page": {
@@ -97,7 +97,7 @@ def crossref_data_to_papis_data(data):
         _conv_data_src = key_conversion[xrefkey]
         # _conv_data_src can be a dict or a list of dicts
         if isinstance(_conv_data_src, dict):
-           _conv_data_src = [_conv_data_src]
+            _conv_data_src = [_conv_data_src]
         for _conv_data in _conv_data_src:
             papis_key = xrefkey
             papis_val = data[xrefkey]
@@ -109,8 +109,8 @@ def crossref_data_to_papis_data(data):
                 new_data[papis_key] = papis_val
             except Exception as e:
                 logger.warning(
-                    "Error while trying to parse {0}".format(papis_key)
-                )
+                    "Error while trying to parse {0} ({1})".format(
+                        papis_key, e))
 
     if 'author_list' in new_data.keys():
         new_data['author'] = (
@@ -150,7 +150,7 @@ def get_data(query="", author="", title="", dois=[], max_results=0):
     except Exception as e:
         logger.error(e)
         return []
-    if not 'message' in results.keys():
+    if 'message' not in results.keys():
         logger.error("Error retrieving from xref, I got an incorrect message")
         return []
     message = results['message']
