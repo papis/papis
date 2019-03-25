@@ -86,16 +86,8 @@ def export_to_bibtex(documents):
         papis.document.to_bibtex(document) for document in documents
     ])
 
-def export_to_text(documents):
-    text_format = papis.config.get('export-text-format')
-    return '\n'.join([
-        papis.utils.format_doc(text_format, document)
-        for document in documents
-    ])
-
 def available_formats():
     return exporters_mgr.entry_points_names()
-
 
 exporters_mgr = extension.ExtensionManager(
     namespace='papis.exporter',

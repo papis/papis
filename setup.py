@@ -139,8 +139,6 @@ setup(
             'bibtex=papis.commands.export:export_to_bibtex',
             'json=papis.commands.export:export_to_json',
             'yaml=papis.commands.export:export_to_yaml',
-            'text=papis.commands.export:export_to_text',
-
         ],
     },
     platforms=['linux', 'osx'],

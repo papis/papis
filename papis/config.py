@@ -76,9 +76,6 @@ general_settings = {
     "extra-bibtex-keys": "[]",
     "extra-bibtex-types": "[]",
     "default-library": "papers",
-    "export-text-format":
-        "{doc[author]}. {doc[title]}. {doc[journal]} {doc[pages]}"
-        " {doc[month]} {doc[year]}",
     "format-doc-name": "doc",
     "match-format":
         "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
