@@ -41,7 +41,7 @@ import papis.cli
 
 @click.group(
     cls=papis.cli.MultiCommand,
-    invoke_without_command=True
+    invoke_without_command=False
 )
 @click.help_option('--help', '-h')
 @click.version_option(version=papis.__version__)
