@@ -132,3 +132,12 @@ See the ``AUTHORS`` list for a list of authored commits.
    :target: https://pypi.org/project/papis
 .. |PyPI-Versions| image:: https://img.shields.io/pypi/pyversions/papis.svg?logo=python&logoColor=white
    :target: https://pypi.org/project/papis
+
+Related software
+----------------
+
+Here is a list of similar software:
+
+- `Mendeley <https://www.mendeley.com/>`__ Proprietary.
+- `Zotero <https://www.zotero.org/>`__ FOSS
+- `Xapers <https://finestructure.net/xapers/>`__.
