@@ -57,6 +57,10 @@ key_conversion = {
         "key": "pages",
         "action": lambda p: re.sub(r"(-[^-])", r"-\1", p),
     },
+    "link": {
+        "key": papis.config.get('doc-url-key-name'),
+        "action": lambda x: x[1]["URL"]
+    },
     "published-print": [
         {"key": "year", "action": lambda x: x.get("date-parts")[0][0]},
         {"key": "month", "action": lambda x: x.get("date-parts")[0][1]}
