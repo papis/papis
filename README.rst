@@ -125,3 +125,10 @@ See the ``AUTHORS`` list for a list of authored commits.
    :target: https://asciinema.org/a/3otatlbqXIsI102uAywMhT4fP
 .. |Code_Quality| image:: https://img.shields.io/lgtm/grade/python/g/papis/papis.svg?logo=lgtm&logoWidth=18
    :target: https://lgtm.com/projects/g/papis/papis/context:python
+
+Related software
+----------------
+
+- `Mendeley <https://www.mendeley.org/>`__.
+- `Zotero <https://www.mendeley.org/>`__.
+- `Xapers <https://finestructure.net/xapers/>`__.
