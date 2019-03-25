@@ -354,10 +354,9 @@ def cli(
         if from_doi:
             query = papis.utils.format_doc(from_doi, document)
             logger.info("Try using doi %s" % query)
-            try:
-                data.update(papis.crossref.doi_to_data(query))
-            except ValueError as e:
-                logger.error(e)
+            doidata = papis.crossref.doi_to_data(query)
+            if doidata:
+                data.update(doidata)
 
         if from_bibtex:
             try:
