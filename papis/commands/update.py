@@ -39,7 +39,7 @@ Cli
     :prog: papis update
 """
 
-import papis
+import colorama
 import urllib.error
 import logging
 import papis.utils
@@ -72,31 +72,52 @@ def update_document(document, data, force=False, interactive=False):
 
     """
     logger = logging.getLogger('cli:update')
+    _log = logger.info
     for key in data.keys():
         if document[key] == data[key]:
             continue
-        if (force or
-                document[key] is None or
-                document[key] == ''):
-            document[key] = data[key]
-            logger.info(
+        if force:
+            setkey = True
+        else:
+            if document[key] is None or document[key] == '':
+                message = [
+                    ('', 'Set "'),
+                    ('bg:ansiblack fg:ansiyellow bold', '{val}'.format(val=key)),
+                    ('', '" to "'),
+                    ('bg:ansiblack fg:green bold',
+                        '{val}'.format(val=data[key])),
+                    ('bg:ansiblack bold', '"? (Y/n) '),
+                ]
+                setkey = True
+            else:
+                message = [
+                    ('bg:ansiblack fg:ansiyellow',
+                        "({key} conflict)".format(key=key)),
+                    ('bg:ansired', "\n"),
+                    ('', 'Replace "'),
+                    ('bg:ansiblack fg:ansired bold',
+                        '{val}'.format(val=document[key])),
+                    ('', '"\nby      "'),
+                    ('bg:ansiblack fg:green bold',
+                        '{val}'.format(val=data[key])),
+                    ('bg:ansiblack bold', '"? (Y/n) '),
+                ]
+                setkey = False
+
+            if interactive:
+                setkey = papis.utils.confirm(message)
+                _log = logger.debug
+
+        if setkey:
+            _log(
                 'setting {key} to {value}'.format(key=key, value=data[key])
             )
-        elif interactive:
-            confirmation = papis.utils.confirm([
-                ('bg:ansiblack fg:ansiyellow',
-                    "({key} conflict)".format(key=key)),
-                ('bg:ansired', "\n"),
-                ('', 'Replace "'),
-                ('bg:ansiblack fg:ansired bold',
-                    '{val}'.format(val=document[key])),
-                ('', '" by "'),
-                ('bg:ansiblack fg:green bold', '{val}'.format(val=data[key])),
-                ('bg:ansiblack bold', '"? (Y/n) '),
-                ]
+            document[key] = data[key]
+        else:
+            _log(
+                'NOT setting {key} to {value}'.format(key=key, value=data[key])
             )
-            if confirmation:
-                document[key] = data[key]
+
 
 
 def run(document, data=dict(), interactive=False, force=False):
@@ -114,7 +135,7 @@ def run(document, data=dict(), interactive=False, force=False):
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
 @click.option(
-    "-i/-b,--batch",
+    "-i/-b",
     "--interactive/--no-interactive",
     help="Interactive or batch mode",
     default=True
@@ -227,6 +248,12 @@ def cli(
 
     for document in documents:
         data = dict()
+
+        logger.info(
+            'Updating '
+            '{c.Back.WHITE}{c.Fore.BLACK}{0}{c.Style.RESET_ALL}'
+            .format(papis.document.describe(document), c=colorama)
+        )
 
         if set:
             data.update(
