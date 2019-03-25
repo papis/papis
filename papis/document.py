@@ -210,6 +210,16 @@ def delete(document):
     shutil.rmtree(folder)
 
 
+def describe(document):
+    """Return a string description of the current document
+    using the document-description-format
+    """
+    return papis.utils.format_doc(
+        papis.config.get('document-description-format'),
+        document
+    )
+
+
 def move(document, path):
     """This function moves a document to path, it supposes that
     the document exists in the location ``document.get_main_folder()``.

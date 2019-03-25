@@ -110,6 +110,8 @@ general_settings = {
     "downloader-proxy": None,
     "bibtex-unicode": False,
 
+    "document-description-format": '{doc[title]} - {doc[author]}',
+
 }
 
 

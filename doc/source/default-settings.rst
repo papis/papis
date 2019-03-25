@@ -599,3 +599,25 @@ Other
     add another document with the same ``doi``, then papis will notify
     you that there is already another document with this ``doi`` because
     the ``doi`` key is part of the ``unique-document-keys`` option.
+
+.. papis-config:: document-description-format
+
+    ``papis`` sometimes will have to tell you which document it is processing
+    through text, for instance, imagine you are updating a document
+
+    .. code:: yaml
+
+        author: Albert Einstein
+        title: General Relativity
+
+    and papis is doing something with it. Then if your
+    ``document-description-format`` is set to
+    ``{doc[title]} - {doc[author]}``, you will see that papis tells you
+
+    ::
+
+        .....
+        Updating 'General Relativity - Albert Einstein'
+        ...
+
+    so you will know exactly what is going on.
