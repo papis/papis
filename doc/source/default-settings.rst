@@ -73,10 +73,6 @@ General settings
     The name of the library that is to be searched when ``papis``
     is run without library arguments.
 
-.. papis-config:: export-text-format
-
-    The default output papis format for ``papis export --text``.
-
 .. papis-config:: format-doc-name
 
     This setting controls the name of the document in the papis format strings

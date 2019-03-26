@@ -56,6 +56,7 @@ setup(
         "isbnlib>=3.9.1,<4.0.0",
         "prompt_toolkit>=2.0.5",
         "pygments>=2.2.0",
+        "stevedore",
     ],
     python_requires='>=3',
     classifiers=[
@@ -130,10 +131,15 @@ setup(
 
     ],
     packages=included_packages,
-    entry_points=dict(
-        console_scripts=[
+    entry_points={
+        'console_scripts':[
             'papis=papis.commands.default:run'
-        ]
-    ),
+        ],
+        'papis.exporter':[
+            'bibtex=papis.commands.export:export_to_bibtex',
+            'json=papis.commands.export:export_to_json',
+            'yaml=papis.commands.export:export_to_yaml',
+        ],
+    },
     platforms=['linux', 'osx'],
 )

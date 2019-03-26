@@ -55,57 +55,65 @@ import papis.api
 import papis.database
 import papis.strings
 import logging
+from stevedore import extension
 
+logger = logging.getLogger('cli:export')
+
+def stevedore_error_handler(manager, entrypoint, exception):
+    logger.error("Error while loading entrypoint [%s]" % entrypoint)
+    logger.error(exception)
+
+
+def export_to_yaml(documents):
+    import yaml
+    return yaml.dump_all(
+        [
+            papis.document.to_dict(document) for document in documents
+        ],
+        allow_unicode=True
+    )
+
+def export_to_json(documents):
+    import json
+    return json.dumps(
+        [
+            papis.document.to_dict(document) for document in documents
+        ]
+    )
+
+def export_to_bibtex(documents):
+    return '\n'.join([
+        papis.document.to_bibtex(document) for document in documents
+    ])
+
+def available_formats():
+    return exporters_mgr.entry_points_names()
+
+exporters_mgr = extension.ExtensionManager(
+    namespace='papis.exporter',
+    invoke_on_load=False,
+    verify_requirements=True,
+    propagate_map_exceptions=True,
+    on_load_failure_callback=stevedore_error_handler
+)
 
 def run(
     documents,
-    yaml=False,
-    bibtex=False,
-    json=False,
-    text=False
+    to_format,
 ):
     """
     Exports several documents into something else.
 
     :param document: A ist of papis document
     :type  document: [papis.document.Document]
-    :param yaml: Wether to return a yaml string
-    :type  yaml: bool
-    :param bibtex: Wether to return a bibtex string
-    :type  bibtex: bool
-    :param json: Wether to return a json string
-    :type  json: bool
-    :param text: Wether to return a text string representing the document
-    :type  text: bool
+    :param to_format: what format to use
+    :type  to_format: str
     """
-    if json:
-        import json
-        return json.dumps(
-            [
-                papis.document.to_dict(document) for document in documents
-            ]
-        )
-
-    if yaml:
-        import yaml
-        return yaml.dump_all(
-            [
-                papis.document.to_dict(document) for document in documents
-            ],
-            allow_unicode=True
-        )
-
-    if bibtex:
-        return '\n'.join([
-            papis.document.to_bibtex(document) for document in documents
-        ])
-
-    if text:
-        text_format = papis.config.get('export-text-format')
-        return '\n'.join([
-            papis.utils.format_doc(text_format, document)
-            for document in documents
-        ])
+    try:
+        ret_string = exporters_mgr[to_format].plugin(document for document in documents)
+        return ret_string
+    except KeyError as e:
+        logger.error("Format %s not supported." % to_format)
 
     return None
 
@@ -113,24 +121,6 @@ def run(
 @click.command("export")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
-@click.option(
-    "--yaml",
-    help="Export into yaml",
-    default=False,
-    is_flag=True
-)
-@click.option(
-    "--bibtex",
-    help="Export into bibtex",
-    default=False,
-    is_flag=True
-)
-@click.option(
-    "--json",
-    help="Export into json",
-    default=False,
-    is_flag=True
-)
 @click.option(
     "--folder",
     help="Export document folder to share",
@@ -144,11 +134,11 @@ def run(
     default=None
 )
 @click.option(
-    "-t",
-    "--text",
+    "--format",
+    "-f",
     help="Text formated reference",
-    default=False,
-    is_flag=True
+    type=click.Choice(available_formats()),
+    default="bibtex",
 )
 @click.option(
     "-a", "--all",
@@ -164,21 +154,18 @@ def run(
 )
 def cli(
         query,
-        yaml,
-        bibtex,
-        json,
         folder,
         out,
-        text,
+        format,
         all,
-        file
+        file,
+        **kwargs
         ):
     """Export a document from a given library"""
 
-    logger = logging.getLogger('cli:export')
     documents = papis.database.get().query(query)
 
-    if json and folder or yaml and folder:
+    if format == "json" and folder or format == "yaml" and folder:
         logger.warning("Only --folder flag will be considered")
 
     if not documents:
@@ -191,12 +178,10 @@ def cli(
             return 0
         documents = [document]
 
+
     ret_string = run(
         documents,
-        yaml=yaml,
-        bibtex=bibtex,
-        json=json,
-        text=text
+        to_format=format,
     )
 
     if ret_string is not None:

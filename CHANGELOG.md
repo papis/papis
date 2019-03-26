@@ -3,6 +3,11 @@ VERSION v0.9
 ============
 
 ## Add command ##
+- The configuration settings `export-text-format` has been removed along with
+  the export --text command. papis now support plugins so you should write your
+  own instead.
+- The flags --bibtex/--json/--yaml of the `export` command have been replaced
+  by `export --format=bibtex/json/yaml`
 
 - The configuration settings `file-name` and `folder-name` are now
   ```
