@@ -140,6 +140,10 @@ setup(
             'json=papis.commands.export:export_to_json',
             'yaml=papis.commands.export:export_to_yaml',
         ],
+        'papis.importer':[
+            'bibtex=papis.commands.importer:BibtexImporter',
+            # 'yaml=papis.commands.importer:YamlImporter',
+        ],
     },
     platforms=['linux', 'osx'],
 )
