@@ -56,7 +56,7 @@ setup(
         "isbnlib>=3.9.1,<4.0.0",
         "prompt_toolkit>=2.0.5",
         "pygments>=2.2.0",
-        "stevedore",
+        "stevedore>=1.30",
     ],
     python_requires='>=3',
     classifiers=[
