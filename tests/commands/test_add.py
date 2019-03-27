@@ -281,23 +281,26 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(get_document_extension(doc.get_files()[0]) == 'epub')
 
     @patch(
-        'papis.crossref.doi_to_data',
-        lambda x: {"author": "Turing", "doc_url": "https://nourl"}
-    )
+        'papis.crossref.get_data',
+        lambda **x: [{"author": "Kant", "doc_url": "https://nourl"}])
     @patch(
         'papis.downloaders.utils.get_downloader',
         lambda url, downloader:
-            tests.MockDownloader(bibtex_data=' ', document_data='%PDF-1.5%\n'.encode())
-    )
+            tests.MockDownloader(
+                bibtex_data=' ',
+                document_data='%PDF-1.5%\n'.encode()
+            ))
     @patch('papis.api.open_file', lambda x: None)
     @patch('papis.utils.confirm', lambda x: True)
+    @patch('papis.utils.text_area', lambda *x, **y: True)
     def test_from_doi(self):
         result = self.invoke([
-            '--from-doi', '10.1112/plms/s2-42.1.230'
+            '--from-doi', '10.1112/plms/s2-42.1.0',
+            '--confirm', '--open'
         ])
         self.assertTrue(result.exit_code == 0)
         db = papis.database.get()
-        docs = db.query_dict({"author": "Turing"})
+        docs = db.query_dict({"author": "Kant"})
         self.assertTrue(len(docs) == 1)
         doc = docs[0]
         # one file at least was retrieved
