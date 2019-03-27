@@ -22,13 +22,46 @@ import papis.api
 import click
 import papis.database
 import papis.strings
+import papis.document
+from urllib.parse import urlencode
 import logging
 
 
+logger = logging.getLogger('browse')
+
+
 def run(document):
-    """Open document's url in a browser"""
-    papis.document.open_in_browser(document)
-    return
+    """Browse document's url whenever possible.
+
+    :document: Document object
+    :returns: Returns the url that is composed from the document
+    :rtype:  str
+
+    """
+    global logger
+    url = None
+    key = papis.config.get("browse-key")
+
+    if document.has(key):
+        if "doi" == key:
+            url = 'https://doi.org/{}'.format(document['doi'])
+        elif "isbn" == key:
+            url = 'https://isbnsearch.org/isbn/{}'.format(document['isbn'])
+        else:
+            url = document[key]
+
+    if url is None or key == 'search-engine':
+        params = {
+            'q': papis.utils.format_doc(
+                papis.config.get('browse-query-format'),
+                document
+            )
+        }
+        url = papis.config.get('search-engine') + '/?' + urlencode(params)
+
+    logger.info("Opening url %s:" % url)
+    papis.utils.general_open(url, "browser", wait=False)
+    return url
 
 
 @click.command("browse")
@@ -39,7 +72,11 @@ def run(document):
     help='Use the value of the document\'s key to open in the browser, e.g.'
          'doi, url, doc_url ...'
 )
-def cli(query, key):
+@click.option(
+    '--all', default=False, is_flag=True,
+    help='Browse all selected documents'
+)
+def cli(query, key, all):
     """Open document's url in a browser"""
     documents = papis.database.get().query(query)
     logger = logging.getLogger('cli:browse')
@@ -48,9 +85,14 @@ def cli(query, key):
         logger.warning(papis.strings.no_documents_retrieved_message)
         return 0
 
-    document = papis.api.pick_doc(documents)
+    if not all:
+        document = papis.api.pick_doc(documents)
+        if not document:
+            return
+        documents = [document]
+
     if len(key):
         papis.config.set('browse-key', key)
-    if not document:
-        return
-    return run(document)
+
+    for document in documents:
+        run(document)

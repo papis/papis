@@ -10,43 +10,6 @@ import shutil
 logger = logging.getLogger("document")
 
 
-def open_in_browser(document):
-    """Browse document's url whenever possible.
-
-    :document: Document object
-    :returns: Returns the url that is composed from the document
-    :rtype:  str
-
-    """
-    global logger
-    url = None
-    key = papis.config.get("browse-key")
-
-    if document.has(key):
-        if "doi" == key:
-            url = 'https://doi.org/{}'.format(document['doi'])
-        elif "isbn" == key:
-            url = 'https://isbnsearch.org/isbn/{}'.format(document['isbn'])
-        else:
-            url = document[key]
-
-    if url is None or key == 'search-engine':
-        from urllib.parse import urlencode
-        params = {
-            'q': papis.utils.format_doc(
-                papis.config.get('browse-query-format'),
-                document
-            )
-        }
-        url = papis.config.get('search-engine') + '/?' + urlencode(params)
-
-    logger.debug("Opening url %s:" % url)
-    papis.utils.general_open(
-        url, "browser", wait=False
-    )
-    return url
-
-
 def from_folder(folder_path):
     """Construct a document object from a folder
 

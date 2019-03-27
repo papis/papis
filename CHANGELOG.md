@@ -49,6 +49,10 @@ VERSION v0.9
 - Change the flags for `papis explore export` to match the `papis export`
   command.
 
+## `papis browse` ##
+
+- Add `--all` flag, improve tests and log.
+
 ## Databases ##
 
 

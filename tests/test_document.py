@@ -4,24 +4,6 @@ import papis.config
 import pickle
 
 
-def test_open_in_browser():
-    papis.config.set('browser', 'echo')
-    papis.config.set('browse-key', 'url')
-    assert(
-        open_in_browser( from_data({'url': 'hello.com'}) ) ==
-        'hello.com'
-    )
-    papis.config.set('browse-key', 'doi')
-    assert( open_in_browser( from_data({'doi': '12312/1231'}) ) ==
-        'https://doi.org/12312/1231'
-    )
-    papis.config.set('browse-key', 'nonexistentkey')
-    assert(
-        open_in_browser( from_data({'title': 'blih', 'author': 'me'}) ) ==
-        'https://duckduckgo.com/?q=blih+me'
-    )
-
-
 def test_to_bibtex():
     papis.config.set('bibtex-journal-key', 'journal_abbrev')
     doc = from_data({'title': 'Hello', 'type': 'book', 'journal': 'jcp'})

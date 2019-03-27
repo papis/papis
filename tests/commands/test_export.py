@@ -140,4 +140,3 @@ class TestCli(tests.cli.TestCli):
     def test_no_documents(self):
         result = self.invoke(['-f', 'bibtex', '__no_document__'])
         self.assertTrue(result.exit_code == 0)
-
