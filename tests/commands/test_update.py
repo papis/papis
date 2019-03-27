@@ -110,16 +110,19 @@ class TestCli(tests.cli.TestCli):
         db = papis.database.get()
         docs = db.query_dict(dict(author='krishnamurti'))
         self.assertEqual(docs[0]['isbn'], '00000000')
+        self.assertTrue('doi' in docs[0].keys())
+        self.assertTrue('isbn' in docs[0].keys())
         result = self.invoke([
             'krishnamurti',
             '-d', 'isbn',
-            '--delete', 'doi'
+            '--delete', 'doi',
+            '--delete', '_non_existent_key',
         ])
         self.assertTrue(result.exit_code == 0)
         docs = db.query_dict(dict(author='krishnamurti'))
         self.assertTrue(docs)
-        self.assertTrue(docs[0].has('doi'))
         self.assertTrue(docs[0].has('isbn'))
+        self.assertTrue(docs[0].has('doi'))
 
     @patch('papis.utils.confirm', lambda *x, **y: True)
     def test_7_delete_key_confirm(self):

@@ -266,18 +266,22 @@ def cli(
         if delete:
             for key in delete:
                 _delete_key = False
-                if (interactive and
-                        not force and
-                        papis.utils.confirm("Delete {key}?".format(key=key))):
+                _confirmation = True
+                if interactive:
+                    _confirmation = papis.utils.confirm(
+                        "Delete {key}?".format(key=key))
+                if interactive and _confirmation and not force:
                     _delete_key = True
+                elif not _confirmation:
+                    _delete_key = False
                 else:
                     _delete_key = True
                 if _delete_key:
-                    logger.warning('Deleting {key}'.format(key=key))
                     try:
+                        logger.warning('Deleting {key}'.format(key=key))
                         del document[key]
-                    except ValueError as e:
-                        logger.error(e)
+                    except ValueError:
+                        logger.error('Document has no {key}'.format(key=key))
                     else:
                         _update_with_database(document)
 
