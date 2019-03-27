@@ -540,19 +540,45 @@ def cli(
         confirm = False
         open_file = False
 
+    try:
+        # Try getting title if title is an argument of add
+        data["title"] = data.get('title') or get_default_title(
+            data,
+            files[0],
+        )
+        logger.info("Set an automatic title {0}".format(data["title"]))
+        # logger.info("I will try with crossref with this title")
+        # from_crossref = data["title"]
+    except:
+        pass
+
+    try:
+        # Try getting author if author is an argument of add
+        data["author"] = data.get('author') or get_default_author(
+            data,
+            files[0],
+        )
+        logger.info("Author = % s" % data["author"])
+    except:
+        pass
+
+    def _update_doc(importer, doc, resource):
+
+        fresh_data = importer.fetch(resource)
+        if confirm:
+            # todo display fresh_data
+            papis.utils.confirm(
+                'Do you want to update the document with the newly acquired data')
+            )):
+
 
     try:
         if from_importer:
             loader = import_mgr[from_importer].obj
             res = loader.fetch(resource)
             data.update(res)
-
-    except Exception as e:
-        logger.exception(e)
-
-
-    try:
-        if smart:
+        else:
+            # try to be smart
             # def register_plots(ext, subparsers):
             #     """Adds a parser per plot"""
             #     # check if dat is loaded
@@ -563,39 +589,8 @@ def cli(
             for name, loader in import_mgr.items():
                 print("Importer [%s]" % name)
 
-                # data.update(res)
-
     except Exception as e:
         logger.exception(e)
-
-    # try:
-    #     # Try getting title if title is an argument of add
-    #     data["title"] = data.get('title') or get_default_title(
-    #         data,
-    #         files[0],
-    #     )
-    #     logger.info("Set an automatic title {0}".format(data["title"]))
-    #     if (not from_bibtex and
-    #             smart and
-    #             not batch and
-    #             not from_doi and
-    #             not from_folder and
-    #             not from_pmid and
-    #             not from_crossref):
-    #         logger.info("I will try with crossref with this title")
-    #         from_crossref = data["title"]
-    # except:
-    #     pass
-
-    # try:
-    #     # Try getting author if author is an argument of add
-    #     data["author"] = data.get('author') or get_default_author(
-    #         data,
-    #         files[0],
-    #     )
-    #     logger.info("Author = % s" % data["author"])
-    # except:
-    #     pass
 
     # GET INFORMATION FROM PDF
     # if (not from_doi and

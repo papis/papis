@@ -142,7 +142,11 @@ setup(
         ],
         'papis.importer':[
             'bibtex=papis.commands.importer:BibtexImporter',
-            # 'yaml=papis.commands.importer:YamlImporter',
+            'yaml=papis.commands.importer:YamlImporter',
+            # 'lib=papis.commands.importer:FromLibImporter',
+            # 'pmid=papis.commands.importer:PMIDImporter',
+            # 'crossref=papis.commands.importer:CrossrefImporter',
+            # 'doi=papis.commands.importer:DOIImporter',
         ],
     },
     platforms=['linux', 'osx'],
