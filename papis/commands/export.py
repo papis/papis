@@ -7,19 +7,19 @@ Some examples of its usage are:
 
 .. code::
 
-    papis export --bibtex 'author = einstein'
+    papis export --from bibtex 'author = einstein'
 
 or export all of them
 
 .. code::
 
-    papis export --bibtex --all 'author = einstein'
+    papis export --from bibtex --all 'author = einstein'
 
 - Export all documents to bibtex and save them into a ``lib.bib`` file
 
 .. code::
 
-    papis export --all --bibtex --out lib.bib
+    papis export --all --from bibtex --out lib.bib
 
 - Export a folder of one of the documents matching the word ``krebs``
   into a folder named, ``interesting-document``
@@ -31,12 +31,6 @@ or export all of them
   this will create the folder ``interesting-document`` containing the
   ``info.yaml`` file, the linked documents and a ``bibtex`` file for
   sharing with other people.
-
-  You can also just export its associated document:
-
-.. code::
-
-    papis export --file krebs
 
 
 Cli
@@ -134,9 +128,9 @@ def run(
     default=None
 )
 @click.option(
-    "--format",
     "-f",
-    help="Text formated reference",
+    "--format",
+    help="Format for the document",
     type=click.Choice(available_formats()),
     default="bibtex",
 )
@@ -146,26 +140,19 @@ def run(
     default=False,
     is_flag=True
 )
-@click.option(
-    "--file",
-    help="Export a copy of a file",
-    default=False,
-    is_flag=True
-)
 def cli(
         query,
         folder,
         out,
         format,
         all,
-        file,
         **kwargs
         ):
     """Export a document from a given library"""
 
     documents = papis.database.get().query(query)
 
-    if format == "json" and folder or format == "yaml" and folder:
+    if format and folder:
         logger.warning("Only --folder flag will be considered")
 
     if not documents:
@@ -184,7 +171,7 @@ def cli(
         to_format=format,
     )
 
-    if ret_string is not None:
+    if ret_string is not None and not folder:
         if out is not None:
             logger.info("Dumping to {0}".format(out))
             with open(out, 'a+') as fd:
