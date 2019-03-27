@@ -187,39 +187,9 @@ def cli(
             outdir = out or document.get_main_folder_name()
             if not len(documents) == 1:
                 outdir = os.path.join(
-                    outdir, document.get_main_folder_name()
+                    (out or ''), document.get_main_folder_name()
                 )
+            logger.info("Exporting doc {0} to {1}".format(
+                papis.document.describe(document), outdir
+            ))
             shutil.copytree(folder, outdir)
-        elif file:
-            logger.info("Exporting file")
-            files = document.get_files()
-            assert(isinstance(files, list))
-            if not files:
-                logger.error('No files found for doc in {0}'.format(
-                    document.get_main_folder()
-                ))
-                continue
-            files_to_open = [papis.api.pick(
-                files,
-                pick_config=dict(
-                    header_filter=lambda x: x.replace(
-                        document.get_main_folder(), ""
-                    )
-                )
-            )]
-            files_to_copy = list(filter(lambda x: x, files_to_open))
-            for file_to_open in files_to_copy:
-
-                if out is not None and len(files_to_open) == 1:
-                    out_file = out
-                else:
-                    out_file = os.path.basename(file_to_open)
-
-                logger.info("copy {0} to {1}".format(
-                    file_to_open,
-                    out_file
-                ))
-                shutil.copyfile(
-                    file_to_open,
-                    out_file
-                )
