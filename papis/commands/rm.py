@@ -26,6 +26,7 @@ def run(document, filepath=None):
         os.remove(filepath)
         document['files'].remove(os.path.basename(filepath))
         document.save()
+        db.update(document)
     else:
         papis.document.delete(document)
         db.delete(document)
