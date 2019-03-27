@@ -119,6 +119,10 @@ def update_document(document, data, force=False, interactive=False):
             )
 
 
+def _update_with_database(document):
+    document.save()
+    papis.database.get().update(document)
+
 
 def run(document, data=dict(), interactive=False, force=False):
     # Keep the ref the same, otherwise issues can be caused when
@@ -126,8 +130,7 @@ def run(document, data=dict(), interactive=False, force=False):
     data['ref'] = document['ref']
 
     update_document(document, data, force, interactive)
-    document.save()
-    papis.database.get().update(document)
+    _update_with_database(document)
 
 
 @click.command("update")
@@ -267,15 +270,16 @@ def cli(
                         not force and
                         papis.utils.confirm("Delete {key}?".format(key=key))):
                     _delete_key = True
-                elif not interactive:
-                    _delete_key = True
-                elif force:
-                    _delete_key = True
                 else:
-                    _delete_key = False
+                    _delete_key = True
                 if _delete_key:
-                    del document[key]
-                    document.save()
+                    logger.warning('Deleting {key}'.format(key=key))
+                    try:
+                        del document[key]
+                    except ValueError as e:
+                        logger.error(e)
+                    else:
+                        _update_with_database(document)
 
         if auto:
             if 'doi' in document.keys() and not from_doi:
@@ -315,6 +319,7 @@ def cli(
                         from_doi = doc['doi']
 
             except Exception as e:
+                logger.error('error processing crossref')
                 logger.error(e)
 
         if from_base:
@@ -362,8 +367,9 @@ def cli(
             try:
                 bib_data = papis.bibtex.bibtex_to_dict(from_bibtex)
                 data.update(bib_data[0])
-            except Exception:
-                pass
+            except Exception as e:
+                logger.error('error processing bibtex')
+                logger.error(e)
 
         if from_url:
             query = papis.utils.format_doc(from_url, document)
@@ -371,8 +377,9 @@ def cli(
             try:
                 url_data = papis.downloaders.utils.get(query)
                 data.update(url_data["data"])
-            except Exception:
-                pass
+            except Exception as e:
+                logger.error('error processing url')
+                logger.error(e)
 
         run(
             document,
