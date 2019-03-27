@@ -537,7 +537,7 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
                     citations_file
                 )
             )
-            yamldata = papis.commands.export.run(docs, yaml=True)
+            yamldata = papis.commands.export.run(docs, to_format='yaml')
             fd.write(yamldata)
     ctx.obj['documents'] += docs
 
@@ -629,7 +629,7 @@ def export(ctx, bibtex, yaml, json):
                     yaml
                 )
             )
-            yamldata = papis.commands.export.run(docs, yaml=True)
+            yamldata = papis.commands.export.run(docs, to_format='yaml')
             fd.write(yamldata)
 
     if bibtex:
@@ -640,7 +640,7 @@ def export(ctx, bibtex, yaml, json):
                     yaml
                 )
             )
-            bibtexdata = papis.commands.export.run(docs, bibtex=True)
+            bibtexdata = papis.commands.export.run(docs, to_format='bibtex')
             fd.write(bibtexdata)
 
     if json:
@@ -651,7 +651,7 @@ def export(ctx, bibtex, yaml, json):
                     json
                 )
             )
-            jsondata = papis.commands.export.run(docs, json=True)
+            jsondata = papis.commands.export.run(docs, to_format='json')
             fd.write(jsondata)
 
 
