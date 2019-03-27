@@ -713,20 +713,6 @@ def cli(
     #         if papis.utils.confirm('Do you want to use this file?'):
     #             files.append(tmp_filepath)
 
-    # if from_yaml:
-    #     logger.info("Reading yaml input file = %s" % from_yaml)
-    #     data.update(papis.yaml.yaml_to_data(from_yaml))
-
-    # if from_bibtex:
-    #     logger.info("Reading bibtex input file = %s" % from_bibtex)
-    #     bib_data = papis.bibtex.bibtex_to_dict(from_bibtex)
-    #     if len(bib_data) > 1:
-    #         logger.warning(
-    #             'Your bibtex file contains more than one entry,'
-    #             ' I will be taking the first entry'
-    #         )
-    #     if bib_data:
-    #         data.update(bib_data[0])
 
     assert(isinstance(data, dict))
 
