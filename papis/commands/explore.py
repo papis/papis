@@ -592,24 +592,20 @@ def json(ctx, jsonfile):
 @click.pass_context
 @click.help_option('--help', '-h')
 @click.option(
-    "--bibtex",
-    help="Export list of documents retrieved to a bibtex file",
-    type=click.Path(),
-    default=None
+    "-f",
+    "--format",
+    help="Format for the document",
+    type=click.Choice(papis.commands.export.available_formats()),
+    default="bibtex",
 )
 @click.option(
-    "--yaml",
-    help="Export list of documents retrieved to a yaml file",
+    "-o",
+    "--out",
+    help="Outfile to write information to",
     type=click.Path(),
-    default=None
+    default=None,
 )
-@click.option(
-    "--json",
-    help="Export list of documents retrieved to a json file",
-    type=click.Path(),
-    default=None
-)
-def export(ctx, bibtex, yaml, json):
+def export(ctx, format, out):
     """
     Export retrieved documents into various formats for later use
 
@@ -621,38 +617,17 @@ def export(ctx, bibtex, yaml, json):
     logger = logging.getLogger('explore:yaml')
     docs = ctx.obj['documents']
 
-    if yaml:
-        with open(yaml, 'a+') as fd:
-            logger.info(
-                "Writing {} documents' yaml into {}".format(
-                    len(docs),
-                    yaml
-                )
+    with open(out, 'a+') as fd:
+        logger.info(
+            "Writing {} documents' in {} into {}".format(
+                len(docs),
+                format,
+                out
             )
-            yamldata = papis.commands.export.run(docs, to_format='yaml')
-            fd.write(yamldata)
-
-    if bibtex:
-        with open(bibtex, 'a+') as fd:
-            logger.info(
-                "Writing {} documents' bibtex into {}".format(
-                    len(docs),
-                    yaml
-                )
-            )
-            bibtexdata = papis.commands.export.run(docs, to_format='bibtex')
-            fd.write(bibtexdata)
-
-    if json:
-        with open(json, 'a+') as fd:
-            logger.info(
-                "Writing {} documents' json into {}".format(
-                    len(docs),
-                    json
-                )
-            )
-            jsondata = papis.commands.export.run(docs, to_format='json')
-            fd.write(jsondata)
+        )
+        fd.write(
+            papis.commands.export.run(docs, to_format=format)
+        )
 
 
 @cli.command('cmd')

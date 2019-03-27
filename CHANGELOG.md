@@ -44,6 +44,11 @@ VERSION v0.9
 - The flag `--file` has been removed, if you want to export the related files
   then just either export the folder or write a small script for it.
 
+## `papis explore` ##
+
+- Change the flags for `papis explore export` to match the `papis export`
+  command.
+
 ## Databases ##
 
 
