@@ -261,12 +261,8 @@ class Document(object):
         :param key: Name of the property.
         :type  key: str
 
-        >>> doc = from_data({'title': 'Hello', 'type': 'book'})
-        >>> del doc['title']
-        >>> doc.has('title')
-        False
         """
-        self._keys.pop(self._keys.index(key))
+        self._keys.remove(key)
         delattr(self, key)
 
     def __setitem__(self, key, value):
@@ -332,11 +328,6 @@ class Document(object):
         :param key: Key name to be checked
         :returns: True/False
 
-        >>> doc = from_data({'title': 'Hello World'})
-        >>> doc.has('title')
-        True
-        >>> doc.has('author')
-        False
         """
         return key in self.keys()
 
@@ -346,7 +337,7 @@ class Document(object):
         import papis.yaml
         papis.yaml.data_to_yaml(
             self.get_info_file(),
-            {key: self[key] for key in self.keys()}
+            {key: self[key] for key in self.keys() if self[key]}
         )
 
     def get_info_file(self):
@@ -386,17 +377,6 @@ class Document(object):
         :rtype:  list
         """
         return self._keys
-
-    def dump(self):
-        """Return information string without any obvious format
-        :returns: String with document's information
-        :rtype:  str
-
-        >>> doc = from_data({'title': 'Hello World'})
-        >>> doc.dump()
-        'title:   Hello World\\n'
-        """
-        return dump(self)
 
     def load(self):
         """Load information from info file

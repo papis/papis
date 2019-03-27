@@ -64,11 +64,6 @@ def pick_doc(documents):
     :documents: List of documents
     :returns: Document
 
-    >>> from papis.document import from_data
-    >>> doc = from_data({'title': 'Hello World'})
-    >>> pick_doc([doc]).dump()
-    'title:   Hello World\\n'
-
     """
     header_format_path = papis.config.get('header-format-file')
     if header_format_path is not None:

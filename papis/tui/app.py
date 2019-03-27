@@ -13,6 +13,7 @@ from prompt_toolkit.layout.controls import (
 )
 from prompt_toolkit.layout.layout import Layout
 import papis.config as config
+import papis.document
 import logging
 
 from .widgets.command_line_prompt import Command
@@ -374,4 +375,4 @@ class Picker(Application):
 
     def update_info_window(self):
         doc = self.options_list.get_selection()
-        self.info_window.text = doc.dump()
+        self.info_window.text = papis.document.dump(doc)

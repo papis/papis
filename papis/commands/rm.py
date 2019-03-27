@@ -87,7 +87,9 @@ def cli(
             )
             logger.warning("This document will be removed, check it")
             papis.utils.text_area(
-                title=toolbar, text=document.dump(), lexer_name='yaml'
+                title=toolbar,
+                text=papis.document.dump(document),
+                lexer_name='yaml'
             )
             if not papis.utils.confirm("Are you sure?",
                     bottom_toolbar=toolbar):
