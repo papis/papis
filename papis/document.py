@@ -273,7 +273,8 @@ class Document(object):
         :param value: Value of the parameter
         :type  value: str,int,float,list
         """
-        self._keys.append(key)
+        if not key in self._keys:
+            self._keys.append(key)
         setattr(self, key, value)
 
     def __getitem__(self, key):
