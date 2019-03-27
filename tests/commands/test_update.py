@@ -108,10 +108,12 @@ class TestCli(tests.cli.TestCli):
     @patch('papis.utils.confirm', lambda *x, **y: False)
     def test_6_delete_key_no_confirm(self):
         db = papis.database.get()
+        docs = db.query_dict(dict(author='krishnamurti'))
+        self.assertEqual(docs[0]['isbn'], '00000000')
         result = self.invoke([
             'krishnamurti',
             '-d', 'isbn',
-            '--delete', 'doi',
+            '--delete', 'doi'
         ])
         self.assertTrue(result.exit_code == 0)
         docs = db.query_dict(dict(author='krishnamurti'))
@@ -131,8 +133,8 @@ class TestCli(tests.cli.TestCli):
         #self.assertTrue(result.exit_code == 0)
         docs = db.query_dict(dict(author='krishnamurti'))
         self.assertTrue(len(docs) == 1)
-        self.assertTrue(not docs[0]['doi'])
-        self.assertTrue(not docs[0]['isbn'])
+        self.assertTrue(not docs[0].has('doi'))
+        self.assertTrue(not docs[0].has('isbn'))
 
     def test_8_yaml_no_force(self):
         yamlpath = _get_resource_file('russell.yaml')
