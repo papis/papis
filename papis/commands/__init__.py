@@ -54,7 +54,7 @@ def get_scripts():
     global commands_mgr
     _create_commands_mgr()
     scripts_dict = dict()
-    for command_name in commands_mgr.entry_points_names():
+    for command_name in commands_mgr.names():
         scripts_dict[command_name] = dict(
             command_name=command_name,
             path=None,
