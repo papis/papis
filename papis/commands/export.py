@@ -104,7 +104,9 @@ def run(
     :type  to_format: str
     """
     try:
-        ret_string = exporters_mgr[to_format].plugin(document for document in documents)
+        ret_string = exporters_mgr[to_format].plugin(
+            document for document in documents
+        )
         return ret_string
     except KeyError as e:
         logger.error("Format %s not supported." % to_format)

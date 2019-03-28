@@ -132,13 +132,16 @@ setup(
     ],
     packages=included_packages,
     entry_points={
-        'console_scripts':[
-            'papis=papis.commands.default:run'
+        'console_scripts': [
+            'papis=papis.commands.default:run',
         ],
-        'papis.exporter':[
+        'papis.exporter': [
             'bibtex=papis.commands.export:export_to_bibtex',
             'json=papis.commands.export:export_to_json',
             'yaml=papis.commands.export:export_to_yaml',
+        ],
+        'papis.picker': [
+            'papis=papis.pick:papis_pick',
         ],
     },
     platforms=['linux', 'osx'],

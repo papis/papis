@@ -160,7 +160,7 @@ Tools options
     or options in general.
 
     Possible options are:
-        - papis.pick
+        - papis
 
 .. papis-config:: editor
     :default: $EDITOR

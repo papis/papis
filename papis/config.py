@@ -39,7 +39,7 @@ general_settings = {
     "opentool": get_default_opener(),
     "dir-umask": 0o755,
     "browser": os.environ.get('BROWSER') or get_default_opener(),
-    "picktool": "papis.pick",
+    "picktool": "papis",
     "mvtool": "mv",
     "editor": os.environ.get('EDITOR')
                         or os.environ.get('VISUAL')
