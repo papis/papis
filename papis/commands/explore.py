@@ -480,7 +480,7 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
         logger.warning('No citations found')
         return
 
-    dois = [d.get('doi') for d in doc['citations']]
+    dois = [d.get('doi') for d in doc['citations'] if d.get('doi')]
     if max_citations < 0:
         max_citations = len(dois)
     dois = dois[0:min(max_citations, len(dois))]

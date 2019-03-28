@@ -134,8 +134,6 @@ def _get_crossref_works(**kwargs):
 
 
 def get_data(query="", author="", title="", dois=[], max_results=0):
-    """
-    """
     assert(isinstance(dois, list))
     data = dict(
         query=query, query_author=author,
