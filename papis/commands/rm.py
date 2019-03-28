@@ -71,9 +71,8 @@ def cli(
         if not filepath:
             return
         if not force:
-            toolbar = 'The file {0} would be removed'.format(filepath)
-            if not papis.utils.confirm("Are you sure?",
-                    bottom_toolbar=toolbar):
+            tbar = 'The file {0} would be removed'.format(filepath)
+            if not papis.utils.confirm("Are you sure?", bottom_toolbar=tbar):
                 return
         logger.info("Removing %s..." % filepath)
         return run(
@@ -82,17 +81,16 @@ def cli(
         )
     else:
         if not force:
-            toolbar = 'The folder {0} would be removed'.format(
+            tbar = 'The folder {0} would be removed'.format(
                 document.get_main_folder()
             )
             logger.warning("This document will be removed, check it")
             papis.utils.text_area(
-                title=toolbar,
+                title=tbar,
                 text=papis.document.dump(document),
                 lexer_name='yaml'
             )
-            if not papis.utils.confirm("Are you sure?",
-                    bottom_toolbar=toolbar):
+            if not papis.utils.confirm("Are you sure?", bottom_toolbar=tbar):
                 return
         logger.info("Removing ...")
         return run(document)

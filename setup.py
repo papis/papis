@@ -143,6 +143,23 @@ setup(
         'papis.picker': [
             'papis=papis.pick:papis_pick',
         ],
+        'papis.command': [
+            "add=papis.commands.add:cli",
+            "addto=papis.commands.addto:cli",
+            "browse=papis.commands.browse:cli",
+            "config=papis.commands.config:cli",
+            "edit=papis.commands.edit:cli",
+            "explore=papis.commands.explore:cli",
+            "export=papis.commands.export:cli",
+            "git=papis.commands.git:cli",
+            "list=papis.commands.list:cli",
+            "mv=papis.commands.mv:cli",
+            "open=papis.commands.open:cli",
+            "rename=papis.commands.rename:cli",
+            "rm=papis.commands.rm:cli",
+            "run=papis.commands.run:cli",
+            "update=papis.commands.update:cli",
+        ]
     },
     platforms=['linux', 'osx'],
 )

@@ -82,7 +82,8 @@ def update_document(document, data, force=False, interactive=False):
             if document[key] is None or document[key] == '':
                 message = [
                     ('', 'Set "'),
-                    ('bg:ansiblack fg:ansiyellow bold', '{val}'.format(val=key)),
+                    ('bg:ansiblack fg:ansiyellow bold',
+                        '{val}'.format(val=key)),
                     ('', '" to "'),
                     ('bg:ansiblack fg:green bold',
                         '{val:.200}'.format(val=str(data[key]))),

@@ -273,7 +273,7 @@ class Document(object):
         :param value: Value of the parameter
         :type  value: str,int,float,list
         """
-        if not key in self._keys:
+        if key not in self._keys:
             self._keys.append(key)
         setattr(self, key, value)
 
