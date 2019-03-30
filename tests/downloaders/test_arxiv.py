@@ -1,4 +1,4 @@
-import papis.downloaders.utils
+import papis.downloaders
 from papis.downloaders.arxiv import Downloader
 import papis.bibtex
 
@@ -15,7 +15,7 @@ def test_match():
 
 def test_downloader_getter():
     url = 'https://arxiv.org/abs/1001.3032'
-    down = papis.downloaders.utils.get_downloader(url)
+    down = papis.downloaders.get_downloader(url)
     assert(down.name == 'arxiv')
     assert(down.expected_document_extension == 'pdf')
     #assert(down.get_doi() == '10.1021/ed044p128')

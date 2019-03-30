@@ -73,7 +73,7 @@ import papis.utils
 import papis.strings
 import papis.config
 import papis.database
-import papis.downloaders.utils
+import papis.downloaders
 import papis.cli
 import click
 
@@ -113,7 +113,7 @@ def run(
         fd.close()
 
     if downloaders:
-        return papis.downloaders.utils.get_available_downloaders()
+        return papis.downloaders.get_available_downloaders()
 
     if libraries:
         return [

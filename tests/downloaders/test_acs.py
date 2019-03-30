@@ -1,4 +1,4 @@
-import papis.downloaders.utils
+import papis.downloaders
 from papis.downloaders.acs import Downloader
 import papis.bibtex
 
@@ -16,7 +16,7 @@ def test_match():
 
 def test_downloader_getter():
     url = 'https://pubs.acs.org/doi/abs/10.1021/ed044p128?src=recsys'
-    down = papis.downloaders.utils.get_downloader(url)
+    down = papis.downloaders.get_downloader(url)
     assert(down.expected_document_extension == 'pdf')
     assert(down.get_doi() == '10.1021/ed044p128')
     assert(len(down.get_bibtex_url()) > 0)

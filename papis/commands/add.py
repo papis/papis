@@ -90,7 +90,7 @@ import papis.crossref
 import papis.doi
 import papis.arxiv
 import papis.document
-import papis.downloaders.utils
+import papis.downloaders
 import papis.cli
 import papis.yaml
 import click
@@ -645,7 +645,7 @@ def cli(
 
     if from_url:
         logger.info("Attempting to retrieve from url")
-        url_data = papis.downloaders.utils.get(from_url)
+        url_data = papis.downloaders.get(from_url)
         data.update(url_data["data"])
         if not files:
             files.extend(url_data["documents_paths"])
@@ -666,7 +666,7 @@ def cli(
         logger.info("Using PMID %s via HubMed" % from_pmid)
         hubmed_url = "http://pubmed.macropus.org/articles/"\
                      "?format=text%%2Fbibtex&id=%s" % from_pmid
-        bibtex_data = papis.downloaders.utils.get_downloader(
+        bibtex_data = papis.downloaders.get_downloader(
             hubmed_url,
             "get"
         ).get_document_data().decode("utf-8")
@@ -694,7 +694,7 @@ def cli(
             logger.info(
                 'I am trying to download the document from %s' % doc_url
             )
-            down = papis.downloaders.utils.get_downloader(doc_url, 'get')
+            down = papis.downloaders.get_downloader(doc_url, 'get')
             assert(down is not None)
             tmp_filepath = tempfile.mktemp()
             logger.debug("Saving in %s" % tmp_filepath)

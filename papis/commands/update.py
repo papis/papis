@@ -45,7 +45,7 @@ import logging
 import papis.utils
 import papis.strings
 import papis.bibtex
-import papis.downloaders.utils
+import papis.downloaders
 import papis.document
 import papis.database
 import papis.isbnplus
@@ -380,7 +380,7 @@ def cli(
             query = papis.utils.format_doc(from_url, document)
             logger.info('Trying url {0}'.format(query))
             try:
-                url_data = papis.downloaders.utils.get(query)
+                url_data = papis.downloaders.get(query)
                 data.update(url_data["data"])
             except Exception as e:
                 logger.error('error processing url')
