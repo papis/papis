@@ -617,17 +617,19 @@ def export(ctx, format, out):
     logger = logging.getLogger('explore:yaml')
     docs = ctx.obj['documents']
 
-    with open(out, 'a+') as fd:
-        logger.info(
-            "Writing {} documents' in {} into {}".format(
-                len(docs),
-                format,
-                out
+    outstring = papis.commands.export.run(docs, to_format=format)
+    if out is not None:
+        with open(out, 'a+') as fd:
+            logger.info(
+                "Writing {} documents' in {} into {}".format(
+                    len(docs),
+                    format,
+                    out
+                )
             )
-        )
-        fd.write(
-            papis.commands.export.run(docs, to_format=format)
-        )
+            fd.write(outstring)
+    else:
+        print(outstring)
 
 
 @cli.command('cmd')

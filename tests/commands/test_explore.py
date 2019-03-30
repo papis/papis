@@ -58,33 +58,13 @@ class TestCli(tests.cli.TestCli):
         with open(path) as fd:
             yaml = fd.read()
         expected_yaml = (
-            r'_test_files: 1\n'
-            r'author: J. Krishnamurti\n'
-            r'files: .*\n'
-            r'title: Freedom from the known\n'
-            r"year: '2009'\n"
+            r'author: J. Krishnamurti',
+            r'title: Freedom from the known',
+            r"year: '2009'"
         )
 
-        self.assertTrue(re.match(expected_yaml, yaml))
-
-    def test_citations(self):
-        path = tempfile.mktemp()
-        result = self.invoke([
-            'lib', 'krishnamurti', 'export', '--format', 'yaml', '-o', path
-        ])
-        self.assertTrue(result.exit_code == 0)
-        self.assertTrue(os.path.exists(path))
-        with open(path) as fd:
-            yaml = fd.read()
-        expected_yaml = (
-            r'_test_files: 1\n'
-            r'author: J. Krishnamurti\n'
-            r'files: .*\n'
-            r'title: Freedom from the known\n'
-            r"year: '2009'\n"
-        )
-
-        self.assertTrue(re.match(expected_yaml, yaml))
+        for ey in expected_yaml:
+            self.assertTrue(re.findall(ey, yaml))
 
     def test_citations_and_json(self):
         path = tempfile.mktemp()
