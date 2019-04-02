@@ -19,6 +19,7 @@ class Downloader(object):
         self.document_data = None
         self.logger.debug("[url] = %s" % url)
         self.expected_document_extension = None
+        self.priority = 1
 
         self.session = requests.Session()
         self.session.headers = {
@@ -140,7 +141,7 @@ class Downloader(object):
         url = self.get_document_url()
         if not url:
             return False
-        self.logger.info("Downloading file")
+        self.logger.info("downloading file...")
         res = self.session.get(url, cookies=self.cookies)
         self.document_data = res.content
 
