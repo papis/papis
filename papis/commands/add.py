@@ -645,7 +645,7 @@ def cli(
 
     if from_url:
         logger.info("Attempting to retrieve from url")
-        url_data = papis.downloaders.get(from_url)
+        url_data = papis.downloaders.get_info_from_url(from_url)
         data.update(url_data["data"])
         if not files:
             files.extend(url_data["documents_paths"])

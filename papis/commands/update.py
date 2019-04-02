@@ -380,7 +380,7 @@ def cli(
             query = papis.utils.format_doc(from_url, document)
             logger.info('Trying url {0}'.format(query))
             try:
-                url_data = papis.downloaders.get(query)
+                url_data = papis.downloaders.get_info_from_url(query)
                 data.update(url_data["data"])
             except Exception as e:
                 logger.error('error processing url')

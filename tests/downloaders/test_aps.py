@@ -31,7 +31,7 @@ def test_downloader_getter():
     #assert(not aps.check_document_format())
 
     # this is an open access paper, so it should work
-    aps = papis.downloaders.get(
+    aps = papis.downloaders.get_info_from_url(
      'https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.121.091601'
     )
     assert(isinstance(aps, dict))

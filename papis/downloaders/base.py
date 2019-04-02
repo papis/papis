@@ -173,14 +173,14 @@ class Downloader(object):
         result = None
         retrieved_kind = filetype.guess(self.get_document_data())
 
+        if retrieved_kind is None:
+            print_warning()
+            return False
+
         self.logger.debug(
             'retrieved kind of document seems to be {0}'.format(
                 retrieved_kind.mime)
         )
-
-        if retrieved_kind is None:
-            print_warning()
-            return False
 
         if not isinstance(self.expected_document_extension, list):
             expected_document_extensions = [

@@ -1,15 +1,12 @@
-import os
-import glob
 from stevedore import extension
-import logging
 import papis.config
-import re
 import logging
 import tempfile
 import papis.bibtex
 import papis.config
 
 logger = logging.getLogger("downloader")
+
 
 def stevedore_error_handler(manager, entrypoint, exception):
     logger = logging.getLogger('cmds:stevedore')
@@ -51,20 +48,48 @@ def get_downloader(url, downloader=''):
     :type  downloader: str
     :returns: A Downloader if found or none
     :rtype:  papis.downloader.base.Downloader
+    :raises KeyError: If no downloader is found
 
     """
     global downloader_mgr
     assert(isinstance(downloader, str))
-    if not downloader:
-        for downloader in get_available_downloaders():
-            result = downloader.match(url)
-            if result:
-                return result
+    if downloader:
+        return get_downloader_by_name(downloader)(url)
     else:
-        return downloader_mgr[downloader].plugin(url)
+        return get_matching_downloaders(url)[0]
 
 
-def get(url, data_format="bibtex", expected_doc_format=None):
+def get_matching_downloaders(url):
+    """Get matching downloaders sorted by their priorities.
+    The first elements have the higher priority
+
+    :param url: Url to be matched against
+    :type  url: str
+    :returns: A list of sorted downloaders
+    :rtype: list
+    """
+    return sorted(
+        filter(
+            lambda d: d,
+            [d.match(url) for d in get_available_downloaders()]
+        ),
+        key=lambda k: k.priority,
+        reverse=True
+    )
+
+
+def get_downloader_by_name(name):
+    """Get a downloader by its name
+
+    :param name: Name of the downloader
+    :type  name: str
+    :returns: A downloader class
+    :rtype:  papis.base.Downloader
+    """
+    return downloader_mgr[name].plugin
+
+
+def get_info_from_url(url, data_format="bibtex", expected_doc_format=None):
 
     result = {
         "data": dict(),
@@ -72,12 +97,15 @@ def get(url, data_format="bibtex", expected_doc_format=None):
         "documents_paths": []
     }
 
-    downloader = get_downloader(url)
-    if not downloader:
+    downloaders = get_matching_downloaders(url)
+    if not downloaders:
         logger.warning(
             "No matching downloader found (%s)" % url
         )
         return result
+    else:
+        logger.debug('Found {0} matching downloaders'.format(len(downloaders)))
+        downloader = downloaders[0]
 
     logger.info("Using downloader '%s'" % downloader)
     if downloader.expected_document_extension is None and \
