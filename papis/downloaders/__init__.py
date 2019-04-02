@@ -52,6 +52,7 @@ def get_downloader(url, downloader=''):
 
     """
     global downloader_mgr
+    _create_downloader_mgr()
     assert(isinstance(downloader, str))
     if downloader:
         return get_downloader_by_name(downloader)(url)
@@ -68,6 +69,8 @@ def get_matching_downloaders(url):
     :returns: A list of sorted downloaders
     :rtype: list
     """
+    global downloader_mgr
+    _create_downloader_mgr()
     return sorted(
         filter(
             lambda d: d,
@@ -86,6 +89,8 @@ def get_downloader_by_name(name):
     :returns: A downloader class
     :rtype:  papis.base.Downloader
     """
+    global downloader_mgr
+    _create_downloader_mgr()
     return downloader_mgr[name].plugin
 
 
