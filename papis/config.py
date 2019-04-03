@@ -481,13 +481,13 @@ def get_lib_from_name(libname):
         except:
             try:
                 paths = eval(expanduser(config[name].get('dirs')))
-            except:
+            except SyntaxError as e:
                 raise Exception(
                     "To define a library you have to set either dir or dirs"
-                    " in the configuration file."
+                    " in the configuration file.\n"
+                    "Error: ({0})".format(e)
                 )
         library_obj = papis.library.Library(libname, paths)
-        name = libname
     return library_obj
 
 

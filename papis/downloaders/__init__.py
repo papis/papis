@@ -1,7 +1,7 @@
 from stevedore import extension
-import papis.config
 import logging
 import tempfile
+
 import papis.bibtex
 import papis.config
 

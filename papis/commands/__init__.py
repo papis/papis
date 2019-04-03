@@ -41,7 +41,6 @@ def get_external_scripts():
             m = regex.match(script)
             if m is not None:
                 name = m.group(1)
-                path = script
                 scripts[name] = dict(
                     command_name=name,
                     path=script,

@@ -262,9 +262,11 @@ class OptionsList(ConditionalContainer):
             prestring = self.header_filter(o) + '\n'
             try:
                 htmlobject = HTML(prestring).formatted_text
-            except:
+            except Exception as e:
                 logger.error(
-                    'Error processing html for \n {0}'.format(prestring)
+                    'Error processing html for \n {0} \n {1}'.format(
+                        prestring, e
+                    )
                 )
                 htmlobject = [('fg:red', prestring)]
             self.options_headers += [htmlobject]

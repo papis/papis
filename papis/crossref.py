@@ -177,6 +177,7 @@ def doi_to_data(doi):
     results = get_data(dois=[doi])
     if results:
         return results[0]
+    else:
         raise ValueError(
             "Couldn't get data for doi ({doi})".format(doi=doi)
         )

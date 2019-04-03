@@ -170,7 +170,6 @@ class Downloader(object):
         if self.expected_document_extension is None:
             return True
 
-        result = None
         retrieved_kind = filetype.guess(self.get_document_data())
 
         if retrieved_kind is None:

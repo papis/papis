@@ -183,10 +183,7 @@ def run(
         papis.config.reset_configuration()
 
     if pick_lib:
-        lib = papis.pick.pick(
-            papis.api.get_libraries(),
-            pick_config=dict(header_filter=lambda x: x)
-        )
+        lib = papis.pick.pick(papis.api.get_libraries())
 
     papis.config.set_lib_from_name(lib)
     library = papis.config.get_lib()
