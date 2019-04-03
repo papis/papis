@@ -383,10 +383,10 @@ def pick(ctx, number):
     docs = ctx.obj['documents']
     if number is not None:
         docs = [docs[number - 1]]
-    ctx.obj['documents'] = list(filter(
-        lambda x: x is not None,
-        [papis.api.pick_doc(docs)]
-    ))
+    doc = papis.api.pick_doc(docs)
+    if not doc:
+        return
+    ctx.obj['documents'] = [doc]
     assert(isinstance(ctx.obj['documents'], list))
 
 
