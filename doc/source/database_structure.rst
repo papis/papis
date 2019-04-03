@@ -4,7 +4,7 @@ The database
 One of the things that makes papis interesting is the fact that
 there can be many backends for the database system, including no database.
 
-Right now there are three types of database in that the user can use:
+Right now there are three types of databases that the user can use:
 
 - No database
     ::
@@ -28,7 +28,7 @@ probably you'll have ample performance with the two first options.
 However if you're reaching higher numbers, 500, 1000, 2000 documents,
 you'll probably want to use the ``Whoosh`` backend for very good performance.
 
-You can select the databases using the flag
+You can select a database by using the flag
 :ref:`database-backend <config-settings-database-backend>`.
 
 Papis database
@@ -66,20 +66,20 @@ Query language
 
 Since version `0.3` there is a query language in place for the searching
 of documents.
-The queries can contain any field of the info file, i.e.,
+The queries can contain any field of the info file, e.g.,
 ``author=einstein publisher = review`` will match documents that have
-a matching ``author`` with ``einstein`` AND having a ``publisher``
+a matching ``author`` with ``einstein`` AND have a ``publisher``
 matching ``review``.
 The AND part here is important, since
 only the ``AND`` filter is implemented in this simple query
-language, at the moment it is not possible to do an ``OR``.
+language. At the moment it is not possible to do an ``OR``.
 If you need this, you should consider using the
 `Whoosh database`_.
 
 
-To illustrate it here are some examples:
+For illustration, here are some examples:
 
-  - Open documents where the author key matches 'albert' (ignoring case),
+  - Open documents where the author key matches 'albert' (ignoring case) and
     year matches '19' (i.e., 1990, 2019, 1920):
 
     .. code::
@@ -139,7 +139,7 @@ which fields we want to index. These flags are
 - :ref:`whoosh-schema-fields <config-settings-whoosh-schema-fields>`
 - :ref:`whoosh-schema-prototype <config-settings-whoosh-schema-prototype>`
 
-The prototype is for advanced users. If you just want to say, include
+The prototype is for advanced users. If you just want to, say, include
 the publisher to the fields that you can search in, then you can put
 
 ::

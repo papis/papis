@@ -35,7 +35,7 @@ inside the ``~/.papis/scripts`` folder. If this is the case then you can run
     papis -h
 
 and you will see that there is another command besides the default
-called ``mail``. You will see in fact
+called ``mail``. In fact, you will see
 
 .. code::
 
@@ -53,14 +53,14 @@ where the description ``Email a paper to my friend`` is there because
 we have defined the comment ``# papis-short-help: Email a paper to my friend``
 in the header of the script.
 
-Then if you type
+Then, if you type
 
 ::
 
     papis -l mylib mail this_paper
 
 this will create a folder called ``this_paper`` with a selection of a
-document, zip it, and send it to whoever you choose to.
+document, zip it and send it to whoever you choose to.
 
 Example: Accessing papis from within mutt
 -----------------------------------------
@@ -118,5 +118,3 @@ This is an example of using papis with the window manager `i3`.
     bindsym Return mode "default"
     bindsym Escape mode "default"
   }
-
-
