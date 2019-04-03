@@ -148,14 +148,21 @@ def get_data(query="", author="", title="", dois=[], max_results=0):
     except Exception as e:
         logger.error(e)
         return []
-    if 'message' not in results.keys():
+
+    if isinstance(results, list):
+        docs = [d["message"] for d in results]
+    elif isinstance(results, dict):
+        if 'message' not in results.keys():
+            logger.error("Error retrieving from xref, I got an incorrect message")
+            return []
+        message = results['message']
+        if "items" in message.keys():
+            docs = message['items']
+        else:
+            docs = [message]
+    else:
         logger.error("Error retrieving from xref, I got an incorrect message")
         return []
-    message = results['message']
-    if "items" in message.keys():
-        docs = message['items']
-    else:
-        docs = [message]
     logger.debug("Retrieved {} documents".format(len(docs)))
     return [
         crossref_data_to_papis_data(d)
@@ -173,6 +180,7 @@ def doi_to_data(doi):
 
     """
     global logger
+    assert(isinstance(doi, str))
     doi = papis.doi.get_clean_doi(doi)
     results = get_data(dois=[doi])
     if results:
