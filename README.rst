@@ -1,5 +1,8 @@
-Papis |Build_Status| |Coveralls| |RTD| |Pypi| |Code_Quality| |zenodo_badge|
+Papis
 =====
+
+|PyPI-Versions| |Build_Status| |Coveralls| |RTD| |Pypi|
+|Code_Quality| |zenodo_badge| |PyPI-Downloads|
 
 |Packaging_status|
 
@@ -125,3 +128,7 @@ See the ``AUTHORS`` list for a list of authored commits.
    :target: https://asciinema.org/a/3otatlbqXIsI102uAywMhT4fP
 .. |Code_Quality| image:: https://img.shields.io/lgtm/grade/python/g/papis/papis.svg?logo=lgtm&logoWidth=18
    :target: https://lgtm.com/projects/g/papis/papis/context:python
+.. |PyPI-Downloads| image:: https://img.shields.io/pypi/dm/papis.svg?label=pypi%20downloads&logo=python&logoColor=white
+   :target: https://pypi.org/project/papis
+.. |PyPI-Versions| image:: https://img.shields.io/pypi/pyversions/papis.svg?logo=python&logoColor=white
+   :target: https://pypi.org/project/papis
