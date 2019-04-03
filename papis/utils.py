@@ -292,10 +292,10 @@ def input(
     :rtype:  bool
 
     """
-    from prompt_toolkit import prompt
-    from prompt_toolkit.validation import Validator
+    import prompt_toolkit
+    import prompt_toolkit.validation
     if validator_function is not None:
-        validator = Validator.from_callable(
+        validator = prompt_toolkit.validation.Validator.from_callable(
             validator_function,
             error_message=dirty_message,
             move_cursor_to_end=True
@@ -311,7 +311,7 @@ def input(
     else:
         fragments = prompt
 
-    result = prompt(
+    result = prompt_toolkit.prompt(
         fragments,
         validator=validator,
         multiline=multiline,
