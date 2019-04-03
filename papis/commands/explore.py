@@ -502,14 +502,14 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
             citation = db.query_dict(dict(doi=doi))
             if citation:
                 progress.set_description(
-                    '{c.Fore.GREEN}{c.Back.BLACK}{0:.15}..{c.Style.RESET_ALL}'
+                    '{c.Fore.GREEN}{c.Back.BLACK}{0: <22.22}{c.Style.RESET_ALL}'
                     .format(doi, c=colorama)
                 )
                 dois_with_data.append(citation[0])
                 found_in_lib_dois.append(doi)
             else:
                 progress.set_description(
-                    '{c.Fore.RED}{c.Back.BLACK}{0:.15}..{c.Style.RESET_ALL}'
+                    '{c.Fore.RED}{c.Back.BLACK}{0: <22.22}{c.Style.RESET_ALL}'
                     .format(doi, c=colorama)
                 )
             progress.update()
