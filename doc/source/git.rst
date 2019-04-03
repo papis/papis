@@ -36,7 +36,7 @@ Interplay with other commands
 -----------------------------
 
 Some papis commands give you the opportunity of using ``git`` to manage
-changes. For instance if you are adding a new document, you could use
+changes. For instance, if you are adding a new document, you could use
 the ``--commit`` flag to also add a commit into your library, so if you do
 
 ::
@@ -46,14 +46,14 @@ the ``--commit`` flag to also add a commit into your library, so if you do
 then also papis will do an automatic commit for the book, so that you can
 push your library afterwards to a remote repository.
 
-You can imagine that papis command like ``rename`` and ``mv`` should also
+You can imagine that papis commands like ``rename`` and ``mv`` should also
 offer such functionality, and they indeed do through the ``--git`` flag.
 Go to their documentation for more information.
 
 Updating the libray
 -------------------
 
-You can use the papis' simple ``git`` wrapper,
+You can use papis' simple ``git`` wrapper,
 
 ::
 
@@ -91,7 +91,7 @@ When adding a document that you know for sure you want in your library:
 
 When editing a document's info file:
 
-  - Edit the file and then take a look at the ``diff`` maybe
+  - Edit the file and then take a look at the ``diff``
 
     ::
 
@@ -116,5 +116,5 @@ When editing a document's info file:
       papis git pull
       papis git push
 
-Of course these workflows are just very basic examples, you can imagine
-that your workflow would look completely different.
+Of course these workflows are just very basic examples.
+Your optimal workflow could look completely different.

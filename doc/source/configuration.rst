@@ -122,7 +122,7 @@ for your papers, for instance in
 
   ~/Documents/papers/.papis.config
 
-then everytime that you use this library also papis will source this
+then every time that you use this library papis will also source this
 configuration file.
 
 .. include:: default-settings.rst

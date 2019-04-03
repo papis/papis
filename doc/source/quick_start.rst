@@ -8,14 +8,14 @@ structure is ridiculously simple.
 
 But before taking a look at its database structure let us see how is the daily
 usage of papis for a regular user. This tutorial is command-line based, so you
-should be familiar with opening a terminal window in your system.
+should be familiar with opening a terminal window on your system.
 
 Creating a new library
 ----------------------
 
 We will illustrate the process by creating a first library with a couple of
 ```pdf``` documents in it. Papis can be highly configured using configuration
-files. Many programs use configuration files without you maybe being aware of
+files. Many programs use configuration files maybe without you being aware of
 it. Papis' configuration files are stored together inside the folder
 
 ::
@@ -29,13 +29,13 @@ configuration file is found,
 
     ~/.config/papis/config
 
-Right now we will open this file to edit and we will create a library.  In
+Right now we will open this file for editing and we will create a library.  In
 papis everything should be human-readable and human-editable. So adding a
 library is as easy as adding two lines to this configuration file.
 
 Say that you want to create a "papers" library, where you can finally order
-all those pdf's hanging around in your computer. We can create this library
-by putting inside the config file the two lines:
+all those pdf's hanging around on your computer. We create this library
+by putting these two lines inside the config file:
 
 .. code:: ini
 
@@ -46,10 +46,10 @@ In the above lines we have created a library with the name ``papers`` which is
 located in the directory ``~/Documents/mypapers``.  So all the documents that
 we will be adding to the library will be located inside
 ``~/Documents/mypapers``, and nowhere else. Everything that papis needs to take
-care of your papers library is inside the ``~/Documents/mypapers`` directory,
+care of your ``papers`` library is inside the ``~/Documents/mypapers`` directory,
 self-contained.
 
-So now add the two lines to the ``~/.config/papis/config`` file and save it, and we will
+If you have not already, add the two lines to the ``~/.config/papis/config`` file and save it, and we will
 proceed to add some documents.
 
 
@@ -61,8 +61,8 @@ If you don't have any special pdf lying around let me choose one for you:
 You can download this document and we are going to add it into the ``papers``
 library.
 
-Supposing that you have the document in the current directory and you have renamed
-the document to ``document.pdf``, you can do the following to add this into your
+Assuming that you have the document in the current directory and you have renamed
+the document to ``document.pdf``, do the following to add the pdf into your
 library:
 
 .. code:: bash
@@ -72,7 +72,7 @@ library:
 And it's done! We have added our first book to the library.
 
 Let us see how this works exactly. Papis consists of many commands, and one of
-these commands is ``add``. ``Add`` itself has many flags, which are options for the
+these commands is ``add``. ``add`` itself has many flags, which are options for the
 given command. In the example above we have used the flags ``author`` and
 ``title`` to tell papis to use ``Newton`` as the author's name and ``Principia
 Mathematica`` as the document's title. You can see all the possible flags
@@ -83,10 +83,10 @@ following command
 
   papis add --help
 
-Now you are asking yourself, what happened to the pdf file? Where it is
+Now you are asking yourself, what happened to the pdf-file? Where is it
 stored?  Is it stored in an obscure database somewhere in my computer? No,
 papis just copied the ``document.pdf`` file into a folder inside the library
-folder ``~/Documents/papers/``. If you go now there, you will see that a folder
+folder ``~/Documents/papers/``. If you now go there, you will see that a folder
 with a weird name has been created. Inside of the folder there is the
 ``document.pdf`` file and another file, ``info.yaml``.
 
@@ -110,15 +110,15 @@ Just do
 
   papis open
 
-and the document should just open in your default pdf viewer.
-You can change the default pdf viewer in your configuration file
+and the document should open in your default pdf-viewer.
+You can change the default pdf-viewer in your configuration file
 (see section on :ref:`configuration-file`).
 
-Now you can try to repeat the same process with another pdf file lying around.
+Now you can try to repeat the same process with another pdf-file lying around.
 When you hit ``papis open`` again, it will ask you which one you want.
 If you input parts of the title or the author's name it will try to match
 what you typed with the paper you are looking for, so that you can get the
-paper that you are looking for very easily.
+desired paper very easily.
 
 
 .. raw:: html
@@ -127,4 +127,3 @@ paper that you are looking for very easily.
     src="https://asciinema.org/a/hrNaFMh4XwqVpWsGWDi5SASUC.js"
     id="asciicast-hrNaFMh4XwqVpWsGWDi5SASUC" async>
   </script>
-

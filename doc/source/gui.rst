@@ -1,7 +1,7 @@
 Gui
 ===
 
-Papis is a program mainly intended for the command line, however
+Papis is a program mainly intended for the command line, however,
 some experimental frontends have been conceived for it and are
 already downloadable from pip.
 

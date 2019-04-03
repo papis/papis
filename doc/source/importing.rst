@@ -7,8 +7,8 @@ that another program such as ``zotero``, ``mendeley`` or
 field called ``FILE`` or ``file`` that points to a path
 where the document file can be found.
 
-To import such a library you can use a script originally
-intended for ``zotero`` but that is general enought to work
+To import such a library you can use a provided script originally
+intended for ``zotero`` which is, however, general enough to work
 for other programs too.
 
 To install this script you can copy the file ``papis-zotero`` in the
@@ -35,7 +35,7 @@ If you have a bibtex somewhere in your computer, you can use the script:
 
 .. warning::
 
-  Note that if your bibtex file has some pdf entries, i.e., looks like:
+  Note that if your bibtex file has some pdf entries, i.e., it looks like:
 
   .. code:: bibtex
 
@@ -51,7 +51,7 @@ If you have a bibtex somewhere in your computer, you can use the script:
     }
 
   then ``papis-zotero`` will interpret the path of the ``FILE`` entry
-  as a relative path, so you should run the command where this relative path
+  as a relative path, so you should run the command from where this relative path
   makes sense.
 
 Importing from zotero sqlite file
@@ -62,7 +62,7 @@ There is also a script that decodes the
 and creates papis Documents out of it.
 
 This script will retrieve the documents from zotero (be it ``pdf`` documents
-or else) and important information like tags.
+or something else) and important information like tags.
 
 .. code:: bash
 
@@ -76,13 +76,13 @@ it would look something like this on linux systems:
 
   cd ~/.mozilla/firefox/zqb7ju1q.default/zotero
 
-Maybe the path is slightly different, it may vary from version to version from
+Maybe the path is slightly different. It may vary from version to version from
 zotero.  In the zotero data directory there should be a file called
 ``zotero.sqlite`` and there might be a ``storage`` directory with
 document data inside. These will be used by ``zotero-sql`` to
 retrieve information and files from.
 
-Now you can use the script as
+Now you can use the script through
 
 .. code:: bash
 
@@ -102,7 +102,7 @@ or also by adding them through papis using the folder flag
 
   papis add --from-folder Documents/ZOTERO_ID
 
-or write a ``bash`` for loop to do it with all the converted documents
+or write a ``bash`` for-loop to do it with all the converted documents
 
 .. code::
 

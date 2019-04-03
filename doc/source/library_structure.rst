@@ -40,15 +40,15 @@ As an example let us consider the following library
           ├── notes.tex
           └── output.pdf
 
-The first thing that you might notice is that there are really many folders of
-course. Just to check that you undeerstand exactly what is a document, just
+The first thing that you might notice is that there are many folders.
+Just to check that you understand exactly what is a document,
 please think about which of these pdfs is not a valid papis document... That's
 right!, ``folder1/paper.pdf`` is not a valid document since the folder1 does not
 contain any ``info.yaml`` file. You see also that it does not matter how deep the
-folder structure is, you can have in your library a ``physics`` folder, where you
-have a ``newton`` folder, where also you have a folder containing the actual book
+folder structure is in your library: you can have a ``physics`` folder in which you
+have a ``newton`` folder in which you have a folder containing the actual book
 ``document.pdf`` plus some supplementary information ``supplements.pdf``.  In this
-case inside the ``info.yaml`` you would have the following ``file`` section
+case, inside the ``info.yaml`` you would have the following ``file`` section
 
 .. code:: yaml
 
@@ -56,6 +56,4 @@ case inside the ``info.yaml`` you would have the following ``file`` section
   - document.pdf
   - supplements.pdf
 
-so that you are telling papis that in this folder there are two relevant files.
-
-
+which tells papis that this folder contains two relevant files.
