@@ -55,6 +55,7 @@ setup(
         "habanero>=0.6.0",
         "isbnlib>=3.9.1,<4.0.0",
         "prompt_toolkit>=2.0.5",
+        "tqdm>=4.1",
         "pygments>=2.2.0",
         "stevedore>=1.30",
     ],
