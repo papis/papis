@@ -445,7 +445,8 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
         papis explore citations 'einstein' export --yaml einstein.yaml
 
     """
-    from prompt_toolkit.shortcuts import ProgressBar
+    import tqdm
+    import colorama
     logger = logging.getLogger('explore:citations')
 
     if doc_folder is not None:
@@ -461,6 +462,8 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
         return
 
     doc = papis.api.pick_doc(documents)
+    if doc is None:
+        return
     db = papis.database.get()
     citations_file = os.path.join(doc.get_main_folder(), 'citations.yaml')
 
@@ -481,51 +484,42 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
         return
 
     dois = [d.get('doi') for d in doc['citations'] if d.get('doi')]
+    if not dois:
+        logger.error('No dois retrieved from the document\'s information')
+        return
+
     if max_citations < 0:
         max_citations = len(dois)
     dois = dois[0:min(max_citations, len(dois))]
 
     logger.info("%s citations found" % len(dois))
-    logger.info("Fetching {} citations'".format(max_citations))
     dois_with_data = []
-    failed_dois = []
+    found_in_lib_dois = []
 
-    with ProgressBar() as progress:
-        progress.bottom_toolbar = (
-            'Getting {0} doi information'.format(len(dois))
-        )
-        for j, doi in progress(enumerate(dois), total=len(dois)):
+    logger.info("Checking which citations are already in the library")
+    with tqdm.tqdm(iterable=dois) as progress:
+        for doi in progress:
             citation = db.query_dict(dict(doi=doi))
-
             if citation:
-                progress.bottom_toolbar = [
-                    ('fg:green', 'Found in library'),
-                    ('', ' doi: {doi}'.format(doi=doi))
-                ]
+                progress.set_description(
+                    '{c.Fore.GREEN}{c.Back.BLACK}{0:.15}..{c.Style.RESET_ALL}'
+                    .format(doi, c=colorama)
+                )
                 dois_with_data.append(citation[0])
+                found_in_lib_dois.append(doi)
             else:
-                try:
-                    dois_with_data.append(
-                        papis.crossref.doi_to_data(doi)
-                    )
-                except ValueError:
-                    progress.bottom_toolbar = [
-                        ('fg:ansired', 'Error resolving doi'),
-                        ('', ' doi: {doi}'.format(doi=doi))
-                    ]
-                    failed_dois.append(doi)
-                except Exception as e:
-                    progress.bottom_toolbar = [
-                        ('fg:ansired', str(e)),
-                        ('', ' doi: {doi}'.format(doi=doi))
-                    ]
-                else:
-                    progress.bottom_toolbar = 'doi: {doi}'.format(doi=doi)
+                progress.set_description(
+                    '{c.Fore.RED}{c.Back.BLACK}{0:.15}..{c.Style.RESET_ALL}'
+                    .format(doi, c=colorama)
+                )
+            progress.update()
 
-    if failed_dois:
-        logger.error('Dois not found:')
-        for doi in failed_dois:
-            logger.error(doi)
+    for doi in found_in_lib_dois:
+        dois.remove(doi)
+    logger.info("Found {0} dois in library".format(len(found_in_lib_dois)))
+    logger.info("Fetching {} citations'".format(len(dois)))
+    logger.info("Please wait, this might take a while")
+    dois_with_data += papis.crossref.get_data(dois=dois)
 
     docs = [papis.document.Document(data=d) for d in dois_with_data]
     if save:
