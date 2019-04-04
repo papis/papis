@@ -80,6 +80,7 @@ def run(document, filepaths):
 
     document['files'] += new_file_list
     document.save()
+    papis.database.get().update(document)
 
 
 @click.command("addto")
