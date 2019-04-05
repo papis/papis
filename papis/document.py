@@ -354,9 +354,13 @@ class Document(object):
         :returns: List of full file paths
         :rtype:  list
         """
-        files = self["files"] if isinstance(self["files"], list) \
-            else [self["files"]]
         result = []
+        if not self.has('files'):
+            return result
+        files = (
+            self["files"] if isinstance(self["files"], list)
+            else [self["files"]]
+        )
         for f in files:
             result.append(os.path.join(self.get_main_folder(), f))
         return result
