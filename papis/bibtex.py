@@ -150,7 +150,13 @@ def bibtex_to_dict(bibtex):
         formally recognizes.
     :rtype:  list
     """
-    import bibtexparser
+    from bibtexparser.bparser import BibTexParser
+
+    parser = BibTexParser(common_strings=True)
+    parser.ignore_nonstandard_types = False
+    parser.homogenise_fields = False
+    parser.interpolate_strings = True
+
     # bibtexparser has too many debug messages to be useful
     logging.getLogger("bibtexparser.bparser").setLevel(logging.WARNING)
     global logger
@@ -160,11 +166,7 @@ def bibtex_to_dict(bibtex):
             text = fd.read()
     else:
         text = bibtex
-    logger.debug("Removing comments...")
-    text = re.sub(r" +%.*", "", text)
-    logger.debug("Removing empty lines...")
-    text = re.sub(r"^\s*$", "", text)
-    entries = bibtexparser.loads(text).entries
+    entries = parser.parse(text, partial=True).entries
     # Clean entries
     return [bibtexparser_entry_to_papis(entry) for entry in entries]
 
