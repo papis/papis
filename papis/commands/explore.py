@@ -385,6 +385,7 @@ def pick(ctx, number):
         docs = [docs[number - 1]]
     doc = papis.api.pick_doc(docs)
     if not doc:
+        ctx.obj['documents'] = []
         return
     ctx.obj['documents'] = [doc]
     assert(isinstance(ctx.obj['documents'], list))
