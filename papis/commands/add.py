@@ -185,13 +185,6 @@ def get_hash_folder(data, document_paths):
 
 
 def get_default_title(data, document_path):
-    """
-    >>> get_default_title({'title': 'hello world'}, 'whatever.pdf')
-    'hello world'
-    >>> open('Luces-de-bohemia.pdf', 'w+').close()
-    >>> get_default_title(dict(), 'Luces-de-bohemia.pdf')
-    'Luces de bohemia'
-    """
     if "title" in data.keys():
         return data["title"]
     extension = papis.utils.get_document_extension(document_path)
@@ -205,12 +198,6 @@ def get_default_title(data, document_path):
 
 
 def get_default_author(data, document_path):
-    """
-    >>> get_default_author({'author': 'Garcilaso de la vega'}, 'whatever.pdf')
-    'Garcilaso de la vega'
-    >>> get_default_author(dict(), 'Luces-de-bohemia.pdf')
-    'Unknown'
-    """
     if "author" in data.keys():
         return data["author"]
     author = "Unknown"

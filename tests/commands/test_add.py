@@ -9,10 +9,13 @@ import papis.config
 from papis.commands.add import (
     run, cli,
     get_file_name,
+    get_default_title,
+    get_default_author,
     get_hash_folder
 )
 from tests import (
-    create_random_pdf, create_random_file, create_random_epub
+    create_random_pdf, create_random_file, create_random_epub,
+    create_real_document
 )
 from papis.utils import get_document_extension
 
@@ -45,6 +48,23 @@ def test_get_hash_folder():
 
     newnewhh = get_hash_folder(data, [path])
     assert not newnewhh == newhh
+
+
+def test_get_default_title_and_author():
+    assert(
+        get_default_title({'title': 'hello world'}, 'whatever.pdf')
+        ==
+        'hello world'
+    )
+    pdf = create_random_pdf(suffix='luces-de-bohemia.pdf')
+    assert(re.match('.*luces de bohemia$', get_default_title(dict(), pdf)))
+
+    assert(
+        get_default_author({'author': 'Garcilaso de la vega'}, 'whatever.pdf')
+        ==
+        'Garcilaso de la vega'
+    )
+    assert(get_default_author(dict(), 'Luces-de-bohemia.pdf') == 'Unknown')
 
 
 class TestGetFileName(unittest.TestCase):
@@ -307,3 +327,17 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(len(doc.get_files()) == 1)
         # it has the pdf ending
         self.assertTrue(len(re.split('.pdf', doc.get_files()[0])) == 2)
+
+    @patch('papis.api.open_file', lambda x: None)
+    @patch('papis.utils.confirm', lambda x: True)
+    @patch('papis.utils.text_area', lambda *x, **y: True)
+    def test_from_lib(self):
+        newdoc = create_real_document({"author": "Lindgren"})
+        self.assertEqual(newdoc['author'], 'Lindgren')
+        folder = newdoc.get_main_folder()
+        self.assertTrue(os.path.exists(folder))
+        self.assertTrue(os.path.exists(newdoc.get_info_file()))
+        result = self.invoke([
+            '--confirm', '--from-lib', newdoc.get_main_folder(), '--open'
+        ])
+        self.assertTrue(result.exit_code == 0)

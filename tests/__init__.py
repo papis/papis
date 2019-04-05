@@ -42,6 +42,14 @@ def create_random_file(suffix='', prefix=''):
     return tempf
 
 
+def create_real_document(data, suffix=''):
+    folder = tempfile.mkdtemp(suffix=suffix)
+    doc = papis.document.Document(folder=folder, data=data)
+    doc.save()
+    assert(os.path.exists(doc.get_info_file()))
+    return doc
+
+
 test_data = [
     {
         "author": 'doc without files',
