@@ -436,7 +436,7 @@ def merge_configuration_from_path(path, configuration):
 
 
 def set_lib(library):
-    """Set library, notice that in principle library can be a full path.
+    """Set library
 
     :param library: Library object
     :type  library: papis.library.Library
@@ -451,6 +451,12 @@ def set_lib(library):
 
 
 def set_lib_from_name(libname):
+    """Set library, notice that in principle library can be a full path.
+
+    :param libname: Name of the library or some path to a folder
+    :type  libname: str
+    """
+    assert(isinstance(libname, str))
     set_lib(get_lib_from_name(libname))
 
 
