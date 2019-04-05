@@ -7,6 +7,7 @@ import os
 import papis.utils
 import papis.commands
 import papis.config
+import papis.pick
 import papis.database
 
 logger = logging.getLogger("api")
@@ -65,21 +66,7 @@ def pick_doc(documents):
     :returns: Document
 
     """
-    header_format_path = papis.config.get('header-format-file')
-    if header_format_path is not None:
-        with open(os.path.expanduser(header_format_path)) as fd:
-            header_format = fd.read()
-    else:
-        header_format = papis.config.get("header-format")
-    match_format = papis.config.get("match-format")
-    pick_config = dict(
-        header_filter=lambda x: papis.utils.format_doc(header_format, x),
-        match_filter=lambda x: papis.utils.format_doc(match_format, x)
-    )
-    return papis.api.pick(
-        documents,
-        pick_config
-    )
+    return papis.pick.pick_doc(documents)
 
 
 def pick(options, pick_config={}):

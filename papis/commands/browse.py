@@ -18,7 +18,7 @@ import papis
 import papis.utils
 import papis.config
 import papis.cli
-import papis.api
+import papis.pick
 import click
 import papis.database
 import papis.strings
@@ -86,7 +86,7 @@ def cli(query, key, all):
         return 0
 
     if not all:
-        document = papis.api.pick_doc(documents)
+        document = papis.pick.pick_doc(documents)
         if not document:
             return
         documents = [document]

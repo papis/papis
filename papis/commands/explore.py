@@ -98,6 +98,7 @@ import logging
 import papis.commands.add
 import papis.commands.export
 import papis.api
+import papis.pick
 import papis.crossref
 
 
@@ -383,7 +384,7 @@ def pick(ctx, number):
     docs = ctx.obj['documents']
     if number is not None:
         docs = [docs[number - 1]]
-    doc = papis.api.pick_doc(docs)
+    doc = papis.pick.pick_doc(docs)
     if not doc:
         ctx.obj['documents'] = []
         return
@@ -462,7 +463,7 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
-    doc = papis.api.pick_doc(documents)
+    doc = papis.pick.pick_doc(documents)
     if doc is None:
         return
     db = papis.database.get()

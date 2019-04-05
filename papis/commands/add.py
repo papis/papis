@@ -83,6 +83,7 @@ import hashlib
 import shutil
 import subprocess
 import papis.api
+import papis.pick
 import papis.utils
 import papis.config
 import papis.bibtex
@@ -543,7 +544,7 @@ def cli(
         open_file = False
 
     if from_lib:
-        doc = papis.api.pick_doc(
+        doc = papis.pick.pick_doc(
             papis.api.get_all_documents_in_lib(from_lib)
         )
         if doc:
@@ -621,7 +622,7 @@ def cli(
         ]
         if docs:
             logger.info("got {0} matches, picking...".format(len(docs)))
-            doc = papis.api.pick_doc(docs) if not batch else docs[0]
+            doc = papis.pick.pick_doc(docs) if not batch else docs[0]
             if doc and not from_doi and doc.has('doi'):
                 from_doi = doc['doi']
 

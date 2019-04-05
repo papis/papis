@@ -52,7 +52,7 @@ import papis.isbnplus
 import papis.isbn
 import papis.crossref
 import papis.base
-import papis.api
+import papis.pick
 import papis.cli
 import papis.yaml
 import click
@@ -247,7 +247,7 @@ def cli(
     if not all:
         documents = filter(
             lambda d: d,
-            [papis.api.pick_doc(documents)]
+            [papis.pick.pick_doc(documents)]
         )
 
     for document in documents:
@@ -310,7 +310,7 @@ def cli(
             if from_crossref is True:
                 from_crossref = ''
             try:
-                doc = papis.api.pick_doc([
+                doc = papis.pick.pick_doc([
                         papis.document.from_data(d)
                         for d in papis.crossref.get_data(
                             query=query,
@@ -331,7 +331,7 @@ def cli(
             query = papis.utils.format_doc(from_base, document)
             logger.info('Trying with base with query {0}'.format(query))
             try:
-                doc = papis.api.pick_doc([
+                doc = papis.pick.pick_doc([
                     papis.document.from_data(d)
                     for d in papis.base.get_data(query=query)
                 ])
@@ -348,7 +348,7 @@ def cli(
             query = papis.utils.format_doc(from_isbn, document)
             logger.info('Trying with isbn ({0:20})'.format(query))
             try:
-                doc = papis.api.pick_doc([
+                doc = papis.pick.pick_doc([
                     papis.document.from_data(d)
                     for d in papis.isbn.get_data(query=query)
                 ])

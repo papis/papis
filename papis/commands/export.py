@@ -162,7 +162,7 @@ def cli(
         return
 
     if not all:
-        document = papis.api.pick_doc(documents)
+        document = papis.pick.pick_doc(documents)
         if not document:
             return 0
         documents = [document]

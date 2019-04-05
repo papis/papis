@@ -10,6 +10,7 @@ Cli
 import papis
 import os
 import papis.api
+import papis.pick
 import papis.utils
 import papis.config
 import papis.database
@@ -63,7 +64,7 @@ def cli(
         papis.config.set('editor', editor)
 
     if not all:
-        document = papis.api.pick_doc(documents)
+        document = papis.pick.pick_doc(documents)
         documents = [document] if document else []
 
     if len(documents) == 0:

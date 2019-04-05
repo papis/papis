@@ -75,6 +75,7 @@ import papis.config
 import papis.database
 import papis.downloaders
 import papis.cli
+import papis.pick
 import click
 
 logger = logging.getLogger('list')
@@ -127,7 +128,7 @@ def run(
         logger.warning(papis.strings.no_documents_retrieved_message)
 
     if pick:
-        documents = filter(lambda x: x, [papis.api.pick_doc(documents)])
+        documents = filter(lambda x: x, [papis.pick.pick_doc(documents)])
 
     if files:
         return [

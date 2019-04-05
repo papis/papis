@@ -7,7 +7,7 @@ Cli
 """
 import papis
 import os
-import papis.api
+import papis.pick
 import papis.utils
 import subprocess
 import logging
@@ -57,7 +57,7 @@ def cli(query, git):
 
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
-    document = papis.api.pick_doc(documents)
+    document = papis.pick.pick_doc(documents)
     if not document:
         return 0
 

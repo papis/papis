@@ -6,7 +6,7 @@ Cli
     :prog: papis rm
 """
 import papis
-import papis.api
+import papis.pick
 import papis.utils
 import papis.config
 import papis.document
@@ -61,13 +61,11 @@ def cli(
         logger.warning(papis.strings.no_documents_retrieved_message)
         return 0
 
-    document = papis.api.pick_doc(documents)
+    document = papis.pick.pick_doc(documents)
     if not document:
         return
     if file:
-        filepath = papis.api.pick(
-            document.get_files()
-        )
+        filepath = papis.pick.pick(document.get_files())
         if not filepath:
             return
         if not force:
