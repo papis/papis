@@ -108,7 +108,7 @@ def crossref_data_to_papis_data(data):
                     papis_val = _conv_data['action'](data[xrefkey])
                 new_data[papis_key] = papis_val
             except Exception as e:
-                logger.warning(
+                logger.debug(
                     "Error while trying to parse {0} ({1})".format(
                         papis_key, e))
 

@@ -512,14 +512,23 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
                     '{c.Fore.RED}{c.Back.BLACK}{0: <22.22}{c.Style.RESET_ALL}'
                     .format(doi, c=colorama)
                 )
-            progress.update()
 
     for doi in found_in_lib_dois:
         dois.remove(doi)
+
     logger.info("Found {0} dois in library".format(len(found_in_lib_dois)))
-    logger.info("Fetching {} citations'".format(len(dois)))
-    logger.info("Please wait, this might take a while")
-    dois_with_data += papis.crossref.get_data(dois=dois)
+    logger.info("Fetching {} citations from crossref".format(len(dois)))
+
+    with tqdm.tqdm(iterable=dois) as progress:
+        for doi in progress:
+            data = papis.crossref.get_data(dois=[doi])
+            progress.set_description(
+                '{c.Fore.GREEN}{c.Back.BLACK}{0: <22.22}{c.Style.RESET_ALL}'
+                .format(doi, c=colorama)
+            )
+            if data:
+                assert(isinstance(data, list))
+                dois_with_data.extend(data)
 
     docs = [papis.document.Document(data=d) for d in dois_with_data]
     if save:
