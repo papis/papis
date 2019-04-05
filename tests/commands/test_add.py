@@ -284,7 +284,7 @@ class TestCli(tests.cli.TestCli):
         'papis.crossref.get_data',
         lambda **x: [{"author": "Kant", "doc_url": "https://nourl"}])
     @patch(
-        'papis.downloaders.get_info_from_url',
+        'papis.downloaders.get_downloader',
         lambda url, downloader:
             tests.MockDownloader(
                 bibtex_data=' ',
