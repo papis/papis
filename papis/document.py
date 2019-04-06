@@ -10,6 +10,32 @@ import shutil
 logger = logging.getLogger("document")
 
 
+def new(folder_path, data, files=[]):
+    """
+    Creates a document at a given folder with data and
+    some existing files.
+
+    :param folder_path: A folder path, if non existing it will be created
+    :type  folder_path: str
+    :param data: Dictionary with key and values to be updated
+    :type  data: dict
+    :param files: Existing paths for files
+    :type  files: list(str)
+    :raises FileExistsError: If folder_path exists
+    """
+    assert(isinstance(folder_path, str))
+    assert(isinstance(data, dict))
+    assert(isinstance(files, list))
+    os.makedirs(folder_path)
+    doc = Document(folder=folder_path, data=data)
+    doc['files'] = []
+    for f in files:
+        shutil.copy(f, os.path.join(folder_path))
+        doc['files'].append(os.path.basename(f))
+    doc.save()
+    return doc
+
+
 def from_folder(folder_path):
     """Construct a document object from a folder
 

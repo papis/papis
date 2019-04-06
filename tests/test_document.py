@@ -1,5 +1,6 @@
 from papis.document import (
     to_bibtex,
+    new,
     to_json,
     from_folder,
     from_data,
@@ -9,6 +10,31 @@ import tempfile
 import papis.config
 import pickle
 import os
+from tests import (
+    create_random_file
+)
+
+
+def test_new():
+    N = 10
+    files = [create_random_file(suffix='.' + str(i)) for i in range(N)]
+    tmp = os.path.join(tempfile.mkdtemp(), 'doc')
+    doc = new(tmp, {'author': 'hello'}, files)
+    assert(os.path.exists(doc.get_main_folder()))
+    assert(doc.get_main_folder() == tmp)
+    assert(len(doc['files']) == N)
+    assert(len(doc.get_files()) == N)
+    for i in range(N):
+        assert(doc['files'][i].endswith(str(i)))
+        assert(not os.path.exists(doc['files'][i]))
+        assert(os.path.exists(doc.get_files()[i]))
+
+    tmp = os.path.join(tempfile.mkdtemp(), 'doc')
+    doc = new(tmp, {'author': 'hello'}, [])
+    assert(os.path.exists(doc.get_main_folder()))
+    assert(doc.get_main_folder() == tmp)
+    assert(len(doc['files']) == 0)
+    assert(len(doc.get_files()) == 0)
 
 
 def test_from_data():
