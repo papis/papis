@@ -92,7 +92,7 @@ class TestCli(tests.cli.TestCli):
 
     @patch('papis.utils.confirm', lambda *x, **y: True)
     @patch('papis.pick.pick_doc', lambda x: x[0] if x else None)
-    @patch('papis.api.pick', lambda x: None)
+    @patch('papis.pick.pick', lambda x: None)
     def test_7_confirm_file_nopick(self):
         db = papis.database.get()
         docs = db.query_dict(dict(author='turing'))
@@ -110,7 +110,7 @@ class TestCli(tests.cli.TestCli):
 
     @patch('papis.utils.confirm', lambda *x, **y: False)
     @patch('papis.pick.pick_doc', lambda x: x[0] if x else None)
-    @patch('papis.api.pick', lambda x: x[0] if x else None)
+    @patch('papis.pick.pick', lambda x: x[0] if x else None)
     def test_6_confirm_file(self):
         db = papis.database.get()
         docs = db.query_dict(dict(author='turing'))
@@ -129,7 +129,7 @@ class TestCli(tests.cli.TestCli):
 
     @patch('papis.utils.confirm', lambda *x, **y: True)
     @patch('papis.pick.pick_doc', lambda x: x[0] if x else None)
-    @patch('papis.api.pick', lambda x: x[0] if x else None)
+    @patch('papis.pick.pick', lambda x: x[0] if x else None)
     def test_confirm_true_file(self):
         db = papis.database.get()
         docs = db.query_dict(dict(author='turing'))
