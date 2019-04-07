@@ -20,6 +20,7 @@ BASE_BASEURL = (
 
 
 def get_data(query="", max=20):
+    global BASE_BASEURL
 
     logger.warning('BASE engine in papis is experimental')
 
