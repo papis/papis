@@ -513,11 +513,15 @@ def get_lib_name():
 def get_lib():
     """Get current library, if there is no library set before,
     the default library will be retrieved.
+    If the `PAPIS_LIB` environment variable is defined, this is the
+    library name (or path) that will be taken as a default.
 
     :returns: Current library
     :rtype:  papis.library.Library
     """
     global _CURRENT_LIBRARY
+    if os.environ.get('PAPIS_LIB'):
+        set_lib_from_name(os.environ['PAPIS_LIB'])
     if _CURRENT_LIBRARY is None:
         # Do not put papis.config.get because get is a special function
         # that also needs the library to see if some key was overridden!
