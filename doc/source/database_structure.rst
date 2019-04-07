@@ -23,9 +23,9 @@ Right now there are three types of databases that the user can use:
 
       database-backend = whoosh
 
-If you just plan to have or have few dozen of documents in your library,
-probably you'll have ample performance with the two first options.
-However if you're reaching higher numbers, 500, 1000, 2000 documents,
+If you just plan to have up to 3000 documents in your library,
+you will have ample performance with the two first options.
+However if you're reaching higher numbers,
 you'll probably want to use the ``Whoosh`` backend for very good performance.
 
 You can select a database by using the flag
@@ -36,11 +36,11 @@ Papis database
 
 The fact that there is no database means that papis should crawl through
 the library folder and see which folders have an ``info.yaml`` file, which
-is for slow computers quite bad.
+is for slow computers (and harddrives) quite bad.
 
 Papis implements a very rudimentary caching system. A cache is created for
-every library. Inside the cache only the paths to the different valid papis
-documents are stored.
+every library. Inside the cache the whole information already converted
+into python is stored.
 
 These cache files are stored per default in
 
@@ -48,8 +48,14 @@ These cache files are stored per default in
 
   ~/.cache/papis/
 
-Some papis commands update the cache automatically, for example the ``add`` and
-``rm`` command clear the cache when something is changed.
+Notice that most papis commands will update the cache if it has to be the case.
+For instance the ``edit`` command will let you edit your document's information
+and after you are done editing it will update the information for the given
+document in the cache.
+If you go directly to the document and edit the info file without
+passing through the papis edit command, the cache will not be updated and
+therefore papis will not know of these changes, although they will be there.
+In such cases you will have to *clear the cache*.
 
 Clearing the cache
 ^^^^^^^^^^^^^^^^^^
