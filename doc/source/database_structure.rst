@@ -67,7 +67,7 @@ Query language
 Since version `0.3` there is a query language in place for the searching
 of documents.
 The queries can contain any field of the info file, e.g.,
-``author=einstein publisher = review`` will match documents that have
+``author:einstein publisher : review`` will match documents that have
 a matching ``author`` with ``einstein`` AND have a ``publisher``
 matching ``review``.
 The AND part here is important, since
@@ -84,21 +84,21 @@ For illustration, here are some examples:
 
     .. code::
 
-      papis open 'author = albert year = 05'
+      papis open 'author : albert year : 05'
 
   - Add the restriction to the previous search that the usual matching matches
     the substring 'licht' in addition to the previously selected
 
     .. code::
 
-      papis open 'author = albert year = 05 licht'
+      papis open 'author : albert year : 05 licht'
 
     This is not to be mixed with the restriction that the key `year` matches
     `'05 licht'`, which will not match any year, i.e.
 
     .. code::
 
-      papis open 'author = albert year = "05 licht"'
+      papis open 'author : albert year : "05 licht"'
 
 
 Disabling the cache

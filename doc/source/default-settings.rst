@@ -431,7 +431,7 @@ Databases
 
     ::
 
-        default-query-string = author="John Smith"
+        default-query-string = author:"John Smith"
 
     would do the trick.
     Notice that the current example has been

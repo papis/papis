@@ -61,6 +61,16 @@ VERSION v0.9
   time, which makes it around `10x` faster than in version `v0.8`.
   For a library of 1200 documents, the speed of the `papis` database backend
   is comparable with the `whoosh` backend.
+- The query language for the default `papis` database has changed, now
+  the setter character is `:` instead of `=` to better conform with other
+  common database engines like `whoosh` or `xapian`. For instance, before
+  ```
+  papis open 'author=einstein year=1905'
+  ```
+  and now it will be
+  ```
+  papis open 'author:einstein year:1905'
+  ```
 - Libraries can have multiple directories defined.
 
 ## Configuration ##

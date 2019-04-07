@@ -66,9 +66,9 @@ def filter_documents(documents, search=""):
     >>> document = papis.document.from_data({'author': 'einstein'})
     >>> len(filter_documents([document], search="einstein")) == 1
     True
-    >>> len(filter_documents([document], search="author = ein")) == 1
+    >>> len(filter_documents([document], search="author : ein")) == 1
     True
-    >>> len(filter_documents([document], search="title = ein")) == 1
+    >>> len(filter_documents([document], search="title : ein")) == 1
     False
 
     """
@@ -228,7 +228,7 @@ class Database(papis.database.base.Database):
 
     def query_dict(self, dictionary):
         query_string = " ".join(
-            ["{}=\"{}\" ".format(key, val) for key, val in dictionary.items()]
+            ["{}:\"{}\" ".format(key, val) for key, val in dictionary.items()]
         )
         return self.query(query_string)
 

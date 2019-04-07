@@ -9,7 +9,7 @@ Examples
 
     .. code::
 
-        papis update --auto -i "author = dyson"
+        papis update --auto -i "author : dyson"
 
 - Update your library from a bib(la)tex file where many entries are listed.
   papis will try to look for documents in your library that match these

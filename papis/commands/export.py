@@ -7,19 +7,19 @@ Some examples of its usage are:
 
 .. code::
 
-    papis export --from bibtex 'author = einstein'
+    papis export --format bibtex 'author : einstein'
 
 or export all of them
 
 .. code::
 
-    papis export --from bibtex --all 'author = einstein'
+    papis export --format bibtex --all 'author : einstein'
 
 - Export all documents to bibtex and save them into a ``lib.bib`` file
 
 .. code::
 
-    papis export --all --from bibtex --out lib.bib
+    papis export --all --format bibtex --out lib.bib
 
 - Export a folder of one of the documents matching the word ``krebs``
   into a folder named, ``interesting-document``
