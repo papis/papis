@@ -174,7 +174,7 @@ setup(
             "thesesfr=papis.downloaders.thesesfr:Downloader",
             "worldscientific=papis.downloaders.worldscientific:Downloader",
             "fallback=papis.downloaders.fallback:Downloader",
-            "libgen=papis.downloaders.libgen:Downloader",
+            "libgen=papis.libgen:Downloader",
             "arxiv=papis.arxiv:Downloader",
         ],
         'papis.explorer': [
