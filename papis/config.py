@@ -483,8 +483,8 @@ def get_lib_from_name(libname):
         if name not in config.keys():
             raise Exception('Library {0} not defined'.format(libname))
         try:
-            paths = [expanduser(config[name].get('dir'))]
-        except:
+            paths = [expanduser(config[name]['dir'])]
+        except KeyError:
             try:
                 paths = eval(expanduser(config[name].get('dirs')))
             except SyntaxError as e:
