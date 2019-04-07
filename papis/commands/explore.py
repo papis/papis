@@ -132,21 +132,13 @@ def get_available_explorers():
     return [e.plugin for e in explorer_mgr.extensions]
 
 
-@click.group("explore", invoke_without_command=False, chain=True)
-@click.help_option('--help', '-h')
-@click.pass_context
-def cli(ctx):
-    """
-    Explore new documents using a variety of resources
-    """
-    ctx.obj = {'documents': []}
+def get_explorer_mgr():
+    global explorer_mgr
+    _create_explorer_mgr()
+    return explorer_mgr
 
 
-for _explorer in get_available_explorers():
-    cli.add_command(_explorer)
-
-
-@cli.command('lib')
+@click.command('lib')
 @click.pass_context
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
@@ -171,7 +163,7 @@ def lib(ctx, query, doc_folder, library):
     assert(isinstance(ctx.obj['documents'], list))
 
 
-@cli.command('pick')
+@click.command('pick')
 @click.pass_context
 @click.help_option('--help', '-h')
 @click.option(
@@ -200,7 +192,7 @@ def pick(ctx, number):
     assert(isinstance(ctx.obj['documents'], list))
 
 
-@cli.command('citations')
+@click.command('citations')
 @click.pass_context
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
@@ -335,7 +327,7 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
     ctx.obj['documents'] += docs
 
 
-@cli.command('cmd')
+@click.command('cmd')
 @click.pass_context
 @click.help_option('--help', '-h')
 @click.argument('command', type=str)
@@ -360,3 +352,17 @@ def cmd(ctx, command):
         splitted_command = shlex.split(fcommand)
         logger.info('Calling %s' % splitted_command)
         call(splitted_command)
+
+
+@click.group("explore", invoke_without_command=False, chain=True)
+@click.help_option('--help', '-h')
+@click.pass_context
+def cli(ctx):
+    """
+    Explore new documents using a variety of resources
+    """
+    ctx.obj = {'documents': []}
+
+
+for _explorer in get_available_explorers():
+    cli.add_command(_explorer)

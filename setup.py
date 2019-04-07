@@ -183,6 +183,10 @@ setup(
             "arxiv=papis.arxiv:Downloader",
         ],
         'papis.explorer': [
+            "lib=papis.commands.explore:lib",
+            "citations=papis.commands.explore:citations",
+            "cmd=papis.commands.explore:cmd",
+            "pick=papis.commands.explore:pick",
             "arxiv=papis.arxiv:explorer",
             "libgen=papis.libgen:explorer",
             "crossref=papis.crossref:explorer",
