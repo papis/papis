@@ -52,6 +52,7 @@ import logging
 from stevedore import extension
 
 logger = logging.getLogger('cli:export')
+exporters_mgr = None
 
 
 def stevedore_error_handler(manager, entrypoint, exception):
@@ -85,16 +86,23 @@ def export_to_bibtex(documents):
 
 
 def available_formats():
+    global exporters_mgr
+    _create_mgr()
     return exporters_mgr.entry_points_names()
 
 
-exporters_mgr = extension.ExtensionManager(
-    namespace='papis.exporter',
-    invoke_on_load=False,
-    verify_requirements=True,
-    propagate_map_exceptions=True,
-    on_load_failure_callback=stevedore_error_handler
-)
+
+def _create_mgr():
+    global exporters_mgr
+    if exporters_mgr:
+        return
+    exporters_mgr = extension.ExtensionManager(
+        namespace='papis.exporter',
+        invoke_on_load=False,
+        verify_requirements=True,
+        propagate_map_exceptions=True,
+        on_load_failure_callback=stevedore_error_handler
+    )
 
 
 def run(
@@ -109,6 +117,8 @@ def run(
     :param to_format: what format to use
     :type  to_format: str
     """
+    global exporters_mgr
+    _create_mgr()
     try:
         ret_string = exporters_mgr[to_format].plugin(
             document for document in documents
@@ -199,7 +209,6 @@ def cli(
             shutil.copytree(folder, outdir)
 
 
-'''
 @click.command('export')
 @click.pass_context
 @click.help_option('--help', '-h')
@@ -207,7 +216,7 @@ def cli(
     "-f",
     "--format",
     help="Format for the document",
-    type=click.Choice(papis.commands.export.available_formats()),
+    type=click.Choice(available_formats()),
     default="bibtex",
 )
 @click.option(
@@ -242,4 +251,3 @@ def explorer(ctx, format, out):
             fd.write(outstring)
     else:
         print(outstring)
-'''

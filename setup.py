@@ -183,6 +183,7 @@ setup(
             "crossref=papis.crossref:explorer",
             "dissemin=papis.dissemin:explorer",
             "base=papis.base:explorer",
+            "export=papis.commands.export:explorer",
             "isbn=papis.isbn:explorer",
             "isbnplus=papis.isbnplus:explorer",
             "yaml=papis.yaml:explorer",
