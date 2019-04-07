@@ -27,6 +27,34 @@ import papis
 with open('README.rst') as fd:
     long_description = fd.read()
 
+if sys.platform == 'win32':
+    data_files = []
+else:
+    data_files = [
+
+        ("share/doc/papis", [
+            "README.rst",
+            "CHANGELOG.md",
+            "AUTHORS",
+            "LICENSE.txt",
+        ]),
+
+        ("etc/bash_completion.d/", [
+            "scripts/shell_completion/click/papis.sh",
+        ]),
+
+        ("share/zsh/site-functions/", [
+            "scripts/shell_completion/click/zsh/_papis",
+        ]),
+
+        ("share/man/man1", glob.glob("doc/build/man/*")),
+
+        ("share/applications", [
+            "contrib/papis.desktop",
+        ]),
+
+    ]
+
 included_packages = ['papis'] + ['papis.' + p for p in find_packages('papis')]
 
 setup(
@@ -107,30 +135,7 @@ setup(
         papis=[
         ],
     ),
-    data_files=[
-
-        ("share/doc/papis", [
-            "README.rst",
-            "CHANGELOG.md",
-            "AUTHORS",
-            "LICENSE.txt",
-        ]),
-
-        ("etc/bash_completion.d/", [
-            "scripts/shell_completion/click/papis.sh",
-        ]),
-
-        ("share/zsh/site-functions/", [
-            "scripts/shell_completion/click/zsh/_papis",
-        ]),
-
-        ("share/man/man1", glob.glob("doc/build/man/*")),
-
-        ("share/applications", [
-            "contrib/papis.desktop",
-        ]),
-
-    ],
+    data_files=data_files,
     packages=included_packages,
     entry_points={
         'console_scripts': [
