@@ -1,5 +1,7 @@
 import logging
 import isbnlib
+import click
+import papis.document
 # See https://github.com/xlcnd/isbnlib for details
 
 logger = logging.getLogger('papis:isbnlib')
@@ -30,3 +32,33 @@ def data_to_papis(data):
     """
     data = {k.lower(): data[k] for k in data}
     return data
+
+
+@click.command('isbn')
+@click.pass_context
+@click.help_option('--help', '-h')
+@click.option('--query', '-q', default=None)
+@click.option(
+    '--service',
+    '-s',
+    default='goob',
+    type=click.Choice(['wcat', 'goob', 'openl'])
+)
+def explorer(ctx, query, service):
+    """
+    Look for documents using isbnlib
+
+    Examples of its usage are
+
+    papis explore isbn -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
+
+    """
+    logger = logging.getLogger('explore:isbn')
+    logger.info('Looking up...')
+    data = get_data(
+        query=query,
+        service=service,
+    )
+    docs = [papis.document.from_data(data=d) for d in data]
+    logger.info('{} documents found'.format(len(docs)))
+    ctx.obj['documents'] += docs

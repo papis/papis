@@ -21,6 +21,7 @@ import urllib.request  # urlopen, Request
 import urllib.parse  # import urlencode
 import papis.config
 import re
+import click
 
 
 logger = logging.getLogger('arxiv')
@@ -142,3 +143,53 @@ def find_arxivid_in_text(text):
     except StopIteration:
         pass
     return None
+
+
+@click.command('arxiv')
+@click.pass_context
+@click.help_option('--help', '-h')
+@click.option('--query', '-q', default=None)
+@click.option('--author', '-a', default=None)
+@click.option('--title', '-t', default=None)
+@click.option('--abstract', default=None)
+@click.option('--comment', default=None)
+@click.option('--journal', default=None)
+@click.option('--report-number', default=None)
+@click.option('--category', default=None)
+@click.option('--id-list', default=None)
+@click.option('--page', default=None)
+@click.option('--max', '-m', default=20)
+def explorer(ctx, query, author, title, abstract, comment,
+             journal, report_number, category, id_list, page, max):
+    """
+    Look for documents on ArXiV.org.
+
+    Examples of its usage are
+
+        papis explore arxiv -a 'Hummel' -m 100 arxiv -a 'Garnet Chan' pick
+
+    If you want to search for the exact author name 'John Smith', you should
+    enclose it in extra quotes, as in the example below
+
+        papis explore arxiv -a '"John Smith"' pick
+
+    """
+    import papis.arxiv
+    logger = logging.getLogger('explore:arxiv')
+    logger.info('Looking up...')
+    data = papis.arxiv.get_data(
+        query=query,
+        author=author,
+        title=title,
+        abstract=abstract,
+        comment=comment,
+        journal=journal,
+        report_number=report_number,
+        category=category,
+        id_list=id_list,
+        page=page or 0,
+        max_results=max
+    )
+    docs = [papis.document.from_data(data=d) for d in data]
+    ctx.obj['documents'] += docs
+    logger.info('{} documents found'.format(len(docs)))

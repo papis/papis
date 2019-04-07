@@ -53,6 +53,7 @@ from stevedore import extension
 
 logger = logging.getLogger('cli:export')
 
+
 def stevedore_error_handler(manager, entrypoint, exception):
     logger.error("Error while loading entrypoint [%s]" % entrypoint)
     logger.error(exception)
@@ -67,6 +68,7 @@ def export_to_yaml(documents):
         allow_unicode=True
     )
 
+
 def export_to_json(documents):
     import json
     return json.dumps(
@@ -75,13 +77,16 @@ def export_to_json(documents):
         ]
     )
 
+
 def export_to_bibtex(documents):
     return '\n'.join([
         papis.document.to_bibtex(document) for document in documents
     ])
 
+
 def available_formats():
     return exporters_mgr.entry_points_names()
+
 
 exporters_mgr = extension.ExtensionManager(
     namespace='papis.exporter',
@@ -90,6 +95,7 @@ exporters_mgr = extension.ExtensionManager(
     propagate_map_exceptions=True,
     on_load_failure_callback=stevedore_error_handler
 )
+
 
 def run(
     documents,
@@ -167,11 +173,7 @@ def cli(
             return 0
         documents = [document]
 
-
-    ret_string = run(
-        documents,
-        to_format=format,
-    )
+    ret_string = run(documents, to_format=format)
 
     if ret_string is not None and not folder:
         if out is not None:
@@ -195,3 +197,49 @@ def cli(
                 papis.document.describe(document), outdir
             ))
             shutil.copytree(folder, outdir)
+
+
+'''
+@click.command('export')
+@click.pass_context
+@click.help_option('--help', '-h')
+@click.option(
+    "-f",
+    "--format",
+    help="Format for the document",
+    type=click.Choice(papis.commands.export.available_formats()),
+    default="bibtex",
+)
+@click.option(
+    "-o",
+    "--out",
+    help="Outfile to write information to",
+    type=click.Path(),
+    default=None,
+)
+def explorer(ctx, format, out):
+    """
+    Export retrieved documents into various formats for later use
+
+    Examples of its usage are
+
+    papis explore crossref -m 200 -a 'Schrodinger' export --yaml lib.yaml
+
+    """
+    logger = logging.getLogger('explore:yaml')
+    docs = ctx.obj['documents']
+
+    outstring = run(docs, to_format=format)
+    if out is not None:
+        with open(out, 'a+') as fd:
+            logger.info(
+                "Writing {} documents' in {} into {}".format(
+                    len(docs),
+                    format,
+                    out
+                )
+            )
+            fd.write(outstring)
+    else:
+        print(outstring)
+'''

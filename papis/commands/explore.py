@@ -90,7 +90,6 @@ import papis.utils
 import papis.commands
 import papis.document
 import papis.config
-import papis.bibtex
 import papis.strings
 import papis.cli
 import click
@@ -100,9 +99,37 @@ import papis.commands.export
 import papis.api
 import papis.pick
 import papis.crossref
-
+from stevedore import extension
 
 logger = logging.getLogger('explore')
+explorer_mgr = None
+
+
+def stevedore_error_handler(manager, entrypoint, exception):
+    logger = logging.getLogger('cmds:stevedore')
+    logger.error("Error while loading entrypoint [%s]" % entrypoint)
+    logger.error(exception)
+
+
+def _create_explorer_mgr():
+    global explorer_mgr
+
+    if explorer_mgr is not None:
+        return
+
+    explorer_mgr = extension.ExtensionManager(
+        namespace='papis.explorer',
+        invoke_on_load=False,
+        verify_requirements=True,
+        propagate_map_exceptions=True,
+        on_load_failure_callback=stevedore_error_handler
+    )
+
+
+def get_available_explorers():
+    global explorer_mgr
+    _create_explorer_mgr()
+    return [e.plugin for e in explorer_mgr.extensions]
 
 
 @click.group("explore", invoke_without_command=False, chain=True)
@@ -115,227 +142,8 @@ def cli(ctx):
     ctx.obj = {'documents': []}
 
 
-@cli.command('arxiv')
-@click.pass_context
-@click.help_option('--help', '-h')
-@click.option('--query', '-q', default=None)
-@click.option('--author', '-a', default=None)
-@click.option('--title', '-t', default=None)
-@click.option('--abstract', default=None)
-@click.option('--comment', default=None)
-@click.option('--journal', default=None)
-@click.option('--report-number', default=None)
-@click.option('--category', default=None)
-@click.option('--id-list', default=None)
-@click.option('--page', default=None)
-@click.option('--max', '-m', default=20)
-def arxiv(ctx, query, author, title, abstract, comment,
-          journal, report_number, category, id_list, page, max):
-    """
-    Look for documents on ArXiV.org.
-
-    Examples of its usage are
-
-        papis explore arxiv -a 'Hummel' -m 100 arxiv -a 'Garnet Chan' pick
-
-    If you want to search for the exact author name 'John Smith', you should
-    enclose it in extra quotes, as in the example below
-
-        papis explore arxiv -a '"John Smith"' pick
-
-    """
-    import papis.arxiv
-    logger = logging.getLogger('explore:arxiv')
-    logger.info('Looking up...')
-    data = papis.arxiv.get_data(
-        query=query,
-        author=author,
-        title=title,
-        abstract=abstract,
-        comment=comment,
-        journal=journal,
-        report_number=report_number,
-        category=category,
-        id_list=id_list,
-        page=page or 0,
-        max_results=max
-    )
-    docs = [papis.document.from_data(data=d) for d in data]
-    ctx.obj['documents'] += docs
-    logger.info('{} documents found'.format(len(docs)))
-
-
-@cli.command('libgen')
-@click.pass_context
-@click.help_option('--help', '-h')
-@click.option('--author', '-a', default=None)
-@click.option('--title', '-t', default=None)
-@click.option('--isbn', '-i', default=None)
-def libgen(ctx, author, title, isbn):
-    """
-    Look for documents on library genesis
-
-    Examples of its usage are
-
-    papis explore libgen -a 'Albert einstein' export --yaml einstein.yaml
-
-    """
-    from pylibgen import Library
-    logger = logging.getLogger('explore:libgen')
-    logger.info('Looking up...')
-    lg = Library()
-    ids = []
-
-    if author:
-        ids += lg.search(ascii(author), 'author')
-    if isbn:
-        ids += lg.search(ascii(isbn), 'isbn')
-    if title:
-        ids += lg.search(ascii(title), 'title')
-
-    try:
-        data = lg.lookup(ids)
-    except:
-        data = []
-
-    docs = [papis.document.from_data(data=d.__dict__) for d in data]
-    ctx.obj['documents'] += docs
-    logger.info('{} documents found'.format(len(docs)))
-
-
-@cli.command('crossref')
-@click.pass_context
-@click.help_option('--help', '-h')
-@click.option('--query', '-q', default=None)
-@click.option('--author', '-a', default=None)
-@click.option('--title', '-t', default=None)
-@click.option('--max', '-m', default=20)
-def crossref(ctx, query, author, title, max):
-    """
-    Look for documents on crossref.org.
-
-    Examples of its usage are
-
-    papis explore crossref -a 'Albert einstein' pick export --bibtex lib.bib
-
-    """
-    logger = logging.getLogger('explore:crossref')
-    logger.info('Looking up...')
-    data = papis.crossref.get_data(
-        query=query,
-        author=author,
-        title=title,
-        max_results=max
-    )
-    docs = [papis.document.from_data(data=d) for d in data]
-    ctx.obj['documents'] += docs
-    logger.info('{} documents found'.format(len(docs)))
-
-
-@cli.command('isbnplus')
-@click.pass_context
-@click.help_option('--help', '-h')
-@click.option('--query', '-q', default=None)
-@click.option('--author', '-a', default=None)
-@click.option('--title', '-t', default=None)
-def isbnplus(ctx, query, author, title):
-    """
-    Look for documents on isbnplus.com
-
-    Examples of its usage are
-
-    papis explore isbnplus -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
-
-    """
-    from papis.isbnplus import get_data
-    logger = logging.getLogger('explore:isbnplus')
-    logger.info('Looking up...')
-    try:
-        data = get_data(
-            query=query,
-            author=author,
-            title=title
-        )
-    except:
-        data = []
-    docs = [papis.document.from_data(data=d) for d in data]
-    ctx.obj['documents'] += docs
-    logger.info('{} documents found'.format(len(docs)))
-
-
-@cli.command('isbn')
-@click.pass_context
-@click.help_option('--help', '-h')
-@click.option('--query', '-q', default=None)
-@click.option(
-    '--service',
-    '-s',
-    default='goob',
-    type=click.Choice(['wcat', 'goob', 'openl'])
-)
-def isbn(ctx, query, service):
-    """
-    Look for documents using isbnlib
-
-    Examples of its usage are
-
-    papis explore isbn -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
-
-    """
-    from papis.isbn import get_data
-    logger = logging.getLogger('explore:isbn')
-    logger.info('Looking up...')
-    data = get_data(
-        query=query,
-        service=service,
-    )
-    docs = [papis.document.from_data(data=d) for d in data]
-    logger.info('{} documents found'.format(len(docs)))
-    ctx.obj['documents'] += docs
-
-
-@cli.command('dissemin')
-@click.pass_context
-@click.help_option('--help', '-h')
-@click.option('--query', '-q', default=None)
-def dissemin(ctx, query):
-    """
-    Look for documents on dissem.in
-
-    Examples of its usage are
-
-    papis explore dissemin -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
-
-    """
-    import papis.dissemin
-    logger = logging.getLogger('explore:dissemin')
-    logger.info('Looking up...')
-    data = papis.dissemin.get_data(query=query)
-    docs = [papis.document.from_data(data=d) for d in data]
-    ctx.obj['documents'] += docs
-    logger.info('{} documents found'.format(len(docs)))
-
-
-@cli.command('base')
-@click.pass_context
-@click.help_option('--help', '-h')
-@click.option('--query', '-q', default=None)
-def base(ctx, query):
-    """
-    Look for documents on the BielefeldAcademicSearchEngine
-
-    Examples of its usage are
-
-    papis explore base -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
-
-    """
-    import papis.base
-    logger = logging.getLogger('explore:base')
-    logger.info('Looking up...')
-    data = papis.base.get_data(query=query)
-    docs = [papis.document.from_data(data=d) for d in data]
-    ctx.obj['documents'] += docs
-    logger.info('{} documents found'.format(len(docs)))
+for _explorer in get_available_explorers():
+    cli.add_command(_explorer)
 
 
 @cli.command('lib')
@@ -392,29 +200,6 @@ def pick(ctx, number):
     assert(isinstance(ctx.obj['documents'], list))
 
 
-@cli.command('bibtex')
-@click.pass_context
-@click.argument('bibfile', type=click.Path(exists=True))
-@click.help_option('--help', '-h')
-def bibtex(ctx, bibfile):
-    """
-    Import documents from a bibtex file
-
-    Examples of its usage are
-
-    papis explore bibtex lib.bib pick
-
-    """
-    logger = logging.getLogger('explore:bibtex')
-    logger.info('Reading in bibtex file {}'.format(bibfile))
-    docs = [
-        papis.document.from_data(d)
-        for d in papis.bibtex.bibtex_to_dict(bibfile)
-    ]
-    ctx.obj['documents'] += docs
-    logger.info('{} documents found'.format(len(docs)))
-
-
 @cli.command('citations')
 @click.pass_context
 @papis.cli.query_option()
@@ -449,6 +234,7 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
     """
     import tqdm
     import colorama
+    import papis.yaml
     logger = logging.getLogger('explore:citations')
 
     if doc_folder is not None:
@@ -478,7 +264,7 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
                 'A citations file exists in {0}'.format(citations_file)
             )
             if papis.utils.confirm('Do you want to use it?'):
-                yaml.callback(citations_file)
+                papis.yaml.explorer.callback(citations_file)
                 return
 
     if not doc.has('citations') or doc['citations'] == []:
@@ -504,7 +290,9 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
             citation = db.query_dict(dict(doi=doi))
             if citation:
                 progress.set_description(
-                    '{c.Fore.GREEN}{c.Back.BLACK}{0: <22.22}{c.Style.RESET_ALL}'
+                    '{c.Fore.GREEN}{c.Back.BLACK}'
+                    '{0: <22.22}'
+                    '{c.Style.RESET_ALL}'
                     .format(doi, c=colorama)
                 )
                 dois_with_data.append(citation[0])
@@ -545,96 +333,6 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
             yamldata = papis.commands.export.run(docs, to_format='yaml')
             fd.write(yamldata)
     ctx.obj['documents'] += docs
-
-
-@cli.command('yaml')
-@click.pass_context
-@click.argument('yamlfile', type=click.Path(exists=True))
-@click.help_option('--help', '-h')
-def yaml(ctx, yamlfile):
-    """
-    Import documents from a yaml file
-
-    Examples of its usage are
-
-    papis explore yaml lib.yaml pick
-
-    """
-    import yaml
-    logger = logging.getLogger('explore:yaml')
-    logger.info('Reading in yaml file {}'.format(yamlfile))
-    docs = [
-        papis.document.from_data(d) for d in yaml.load_all(open(yamlfile))
-    ]
-    ctx.obj['documents'] += docs
-    logger.info('{} documents found'.format(len(docs)))
-
-
-@cli.command('json')
-@click.pass_context
-@click.argument('jsonfile', type=click.Path(exists=True))
-@click.help_option('--help', '-h')
-def json(ctx, jsonfile):
-    """
-    Import documents from a json file
-
-    Examples of its usage are
-
-    papis explore json lib.json pick
-
-    """
-    import json
-    logger = logging.getLogger('explore:json')
-    logger.info('Reading in json file {}'.format(jsonfile))
-    docs = [
-        papis.document.from_data(d) for d in json.load(open(jsonfile))
-    ]
-    ctx.obj['documents'] += docs
-    logger.info('{} documents found'.format(len(docs)))
-
-
-@cli.command('export')
-@click.pass_context
-@click.help_option('--help', '-h')
-@click.option(
-    "-f",
-    "--format",
-    help="Format for the document",
-    type=click.Choice(papis.commands.export.available_formats()),
-    default="bibtex",
-)
-@click.option(
-    "-o",
-    "--out",
-    help="Outfile to write information to",
-    type=click.Path(),
-    default=None,
-)
-def export(ctx, format, out):
-    """
-    Export retrieved documents into various formats for later use
-
-    Examples of its usage are
-
-    papis explore crossref -m 200 -a 'Schrodinger' export --yaml lib.yaml
-
-    """
-    logger = logging.getLogger('explore:yaml')
-    docs = ctx.obj['documents']
-
-    outstring = papis.commands.export.run(docs, to_format=format)
-    if out is not None:
-        with open(out, 'a+') as fd:
-            logger.info(
-                "Writing {} documents' in {} into {}".format(
-                    len(docs),
-                    format,
-                    out
-                )
-            )
-            fd.write(outstring)
-    else:
-        print(outstring)
 
 
 @cli.command('cmd')

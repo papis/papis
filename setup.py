@@ -176,6 +176,18 @@ setup(
             "thesesfr=papis.downloaders.thesesfr:Downloader",
             "worldscientific=papis.downloaders.worldscientific:Downloader",
             "fallback=papis.downloaders.fallback:Downloader",
+        ],
+        'papis.explorer': [
+            "arxiv=papis.arxiv:explorer",
+            "libgen=papis.libgen:explorer",
+            "crossref=papis.crossref:explorer",
+            "dissemin=papis.dissemin:explorer",
+            "base=papis.base:explorer",
+            "isbn=papis.isbn:explorer",
+            "isbnplus=papis.isbnplus:explorer",
+            "yaml=papis.yaml:explorer",
+            "json=papis.json:explorer",
+            "bibtex=papis.bibtex:explorer",
         ]
     },
     platforms=['linux', 'osx'],

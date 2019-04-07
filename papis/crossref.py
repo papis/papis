@@ -4,6 +4,8 @@ import papis.utils
 import papis.doi
 import habanero
 import re
+import click
+import papis.document
 
 logger = logging.getLogger("crossref")
 logger.debug("importing")
@@ -153,7 +155,8 @@ def get_data(query="", author="", title="", dois=[], max_results=0):
         docs = [d["message"] for d in results]
     elif isinstance(results, dict):
         if 'message' not in results.keys():
-            logger.error("Error retrieving from xref, I got an incorrect message")
+            logger.error(
+                "Error retrieving from xref, I got an incorrect message")
             return []
         message = results['message']
         if "items" in message.keys():
@@ -189,3 +192,32 @@ def doi_to_data(doi):
         raise ValueError(
             "Couldn't get data for doi ({doi})".format(doi=doi)
         )
+
+
+@click.command('crossref')
+@click.pass_context
+@click.help_option('--help', '-h')
+@click.option('--query', '-q', default=None)
+@click.option('--author', '-a', default=None)
+@click.option('--title', '-t', default=None)
+@click.option('--max', '-m', default=20)
+def explorer(ctx, query, author, title, max):
+    """
+    Look for documents on crossref.org.
+
+    Examples of its usage are
+
+    papis explore crossref -a 'Albert einstein' pick export --bibtex lib.bib
+
+    """
+    logger = logging.getLogger('explore:crossref')
+    logger.info('Looking up...')
+    data = get_data(
+        query=query,
+        author=author,
+        title=title,
+        max_results=max
+    )
+    docs = [papis.document.from_data(data=d) for d in data]
+    ctx.obj['documents'] += docs
+    logger.info('{} documents found'.format(len(docs)))

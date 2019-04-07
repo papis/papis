@@ -64,6 +64,8 @@ import urllib.request  # import urlencode
 import bs4
 import papis.config
 import logging
+import papis.document
+import click
 
 logger = logging.getLogger('isbn')
 
@@ -141,3 +143,30 @@ def book_to_data(booknode):
         if key_pair[0] in book.keys():
             book[key_pair[1]] = book[key_pair[0]]
     return book
+
+
+@click.command('isbnplus')
+@click.pass_context
+@click.help_option('--help', '-h')
+@click.option('--query', '-q', default=None)
+@click.option('--author', '-a', default=None)
+@click.option('--title', '-t', default=None)
+def explorer(ctx, query, author, title):
+    """
+    Look for documents on isbnplus.com
+
+    Examples of its usage are
+
+    papis explore isbnplus -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
+
+    """
+    logger = logging.getLogger('explore:isbnplus')
+    logger.info('Looking up...')
+    try:
+        data = get_data(query=query, author=author, title=title)
+    except Exception as e:
+        logger.error(e)
+        data = []
+    docs = [papis.document.from_data(data=d) for d in data]
+    ctx.obj['documents'] += docs
+    logger.info('{} documents found'.format(len(docs)))

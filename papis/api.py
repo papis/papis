@@ -3,7 +3,6 @@ create papis scripts.
 """
 
 import logging
-import os
 import papis.utils
 import papis.commands
 import papis.config
