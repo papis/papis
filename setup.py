@@ -151,9 +151,10 @@ setup(
             'yaml=papis.yaml:Importer',
             'doi=papis.crossref:Importer',
             'url=papis.downloaders:Importer',
-            # 'lib=papis.importer:FromLibImporter',
-            # 'pmid=papis.importer:PMIDImporter',
+            'arxiv=papis.arxiv:Importer',
             # 'crossref=papis.importer:CrossrefImporter',
+            # 'pmid=papis.importer:PMIDImporter',
+            # 'lib=papis.importer:FromLibImporter',
         ],
         'papis.picker': [
             'papis=papis.pick:papis_pick',

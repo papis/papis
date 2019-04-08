@@ -468,9 +468,9 @@ def cli(
         from_importer,
         # from_bibtex,
         # from_yaml,
-        # from_folder,
         # from_url,
         # from_doi,
+        # from_folder,
         # from_crossref,
         # from_pmid,
         # from_lib,
@@ -553,7 +553,7 @@ def cli(
             if importer.ctx.files:
                 logger.info(
                     'Got files {0} from importer {1}'
-                    .format(files, importer_name))
+                    .format(importer.ctx.files, importer_name))
                 files.extend(importer.ctx.files)
         except Exception as e:
             logger.exception(e)

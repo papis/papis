@@ -199,7 +199,7 @@ def explorer(ctx, query, author, title, abstract, comment,
 class Downloader(papis.downloaders.base.Downloader):
 
     def __init__(self, url):
-        papis.downloaders.base.Downloader.__init__(self, url, name="arxiv")
+        papis.downloaders.base.Downloader.__init__(self, uri=url, name="arxiv")
         self.expected_document_extension = 'pdf'
         self.arxivid = None
 
@@ -214,16 +214,16 @@ class Downloader(papis.downloaders.base.Downloader):
         else:
             return False
 
-    def get_identifier(self):
+    def _get_identifier(self):
         """Get arxiv identifier
         :returns: Identifier
         """
         if not self.arxivid:
-            self.arxivid = find_arxivid_in_text(self.get_url())
+            self.arxivid = find_arxivid_in_text(self.uri)
         return self.arxivid
 
     def get_bibtex_url(self):
-        identifier = self.get_identifier()
+        identifier = self._get_identifier()
         return identifier
 
     def download_bibtex(self):
@@ -235,9 +235,19 @@ class Downloader(papis.downloaders.base.Downloader):
         self.bibtex_data = data
 
     def get_document_url(self):
-        # https://arxiv.org/pdf/1702.01590
-        arxivid = self.get_identifier()
+        arxivid = self._get_identifier()
         self.logger.debug("arxivid %s" % arxivid)
         pdf_url = "https://arxiv.org/pdf/{arxivid}.pdf".format(arxivid=arxivid)
         self.logger.debug("[pdf url] = %s" % pdf_url)
         return pdf_url
+
+
+class Importer(papis.importer.Importer):
+
+    def __init__(self, uri='', **kwargs):
+        papis.importer.Importer.__init__(self, name='arxiv', uri=uri, **kwargs)
+        self.downloader = Downloader('https://arxiv.org/abs/{0}'.format(uri))
+
+    def fetch(self):
+        self.downloader.fetch()
+        self.ctx = self.downloader.ctx

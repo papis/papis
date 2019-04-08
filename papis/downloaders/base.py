@@ -22,11 +22,12 @@ class Downloader(papis.importer.Importer):
         self.name = name or os.path.basename(__file__)
         self.ctx = ctx
         self.logger = logging.getLogger("downloader:"+self.name)
-        self.bibtex_data = None
-        self.document_data = None
-        self.logger.debug("[uri] = %s" % uri)
+        self.logger.debug("uri {0}".format(uri))
         self.expected_document_extension = None
         self.priority = 1
+
+        self.bibtex_data = None
+        self.document_data = None
 
         self.session = requests.Session()
         self.session.headers = {
@@ -123,6 +124,7 @@ class Downloader(papis.importer.Importer):
         if not url:
             return False
         res = self.session.get(url, cookies=self.cookies)
+        self.logger.info("downloading bibtex from {0}".format(url))
         self.bibtex_data = res.content.decode()
 
     def get_document_url(self):
@@ -180,7 +182,7 @@ class Downloader(papis.importer.Importer):
         url = self.get_document_url()
         if not url:
             return False
-        self.logger.info("downloading file...")
+        self.logger.info("downloading file from {0}".format(url))
         res = self.session.get(url, cookies=self.cookies)
         self.document_data = res.content
 
