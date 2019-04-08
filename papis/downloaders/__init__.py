@@ -1,9 +1,11 @@
 from stevedore import extension
 import logging
 import tempfile
+import re
 
 import papis.bibtex
 import papis.config
+import papis.importer
 
 logger = logging.getLogger("downloader")
 
@@ -149,3 +151,35 @@ def get_info_from_url(url, data_format="bibtex", expected_doc_format=None):
                 fd.write(doc_data)
 
     return result
+
+
+class Importer(papis.importer.Importer):
+
+    def __init__(self, **kwargs):
+        papis.importer.Importer.__init__(self, name='url', **kwargs)
+
+    def match(url):
+        return re.match(' *http(s)?.*', url) is None
+
+    def fetch(self):
+        self.logger.info(
+                "attempting to retrieve from url {0}".format(self.uri))
+        url_data = get_info_from_url(self.uri)
+        data = (url_data["data"])
+        if data:
+            self.ctx.data.update(data)
+        files = url_data["documents_paths"]
+        if files:
+            self.ctx.files.extend(files)
+        # TODO: think about url_data[doi]
+        # if not data and url_data["doi"] is not None and not from_doi:
+            # logger.warning(
+                # "I could not get any data from {0}".format(from_url)
+            # )
+            # from_doi = url_data["doi"]
+            # logger.info(
+                # "But I found a doi ({0}), I'll try my luck there".format(
+                    # from_doi
+                # )
+            # )
+

@@ -610,25 +610,6 @@ def cli(
         # from_yaml = original_document.get_info_file()
         # files.extend(original_document.get_files())
 
-    # if from_url:
-        # logger.info("Attempting to retrieve from url")
-        # url_data = papis.downloaders.get_info_from_url(from_url)
-        # data.update(url_data["data"])
-        # if not files:
-            # files.extend(url_data["documents_paths"])
-        # # If no data was retrieved and doi was found, try to get
-        # # information with the document's doi
-        # if not data and url_data["doi"] is not None and not from_doi:
-            # logger.warning(
-                # "I could not get any data from {0}".format(from_url)
-            # )
-            # from_doi = url_data["doi"]
-            # logger.info(
-                # "But I found a doi ({0}), I'll try my luck there".format(
-                    # from_doi
-                # )
-            # )
-
     # if from_pmid:
         # logger.info("Using PMID %s via HubMed" % from_pmid)
         # hubmed_url = "http://pubmed.macropus.org/articles/"\
