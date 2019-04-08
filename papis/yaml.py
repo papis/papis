@@ -1,7 +1,10 @@
 import yaml
 import logging
 import papis.config
+import papis.importer
 import click
+import papis.utils
+import os
 
 logger = logging.getLogger("yaml")
 
@@ -68,3 +71,16 @@ def explorer(ctx, yamlfile):
     ]
     ctx.obj['documents'] += docs
     logger.info('{} documents found'.format(len(docs)))
+
+
+class Importer(papis.importer.Importer):
+
+    def __init__(self, **kwargs):
+        papis.importer.Importer.__init__(self, name='yaml', **kwargs)
+
+    def match(cls, res):
+        return papis.utils.get_document_extension(res) == 'yaml'
+
+    def fetch(self):
+        self.logger.info("Reading yaml input file = %s" % self.uri)
+        self.ctx.data = yaml_to_data(self.uri)

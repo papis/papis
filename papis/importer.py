@@ -11,30 +11,56 @@ import os.path
 
 logger = logging.getLogger('importer')
 
+class Context:
+    files = []
+    data = dict()
+
 class Importer:
-    name = "unset"
-    def __init__(self,):
-        pass
+    """This is the base class for every importer"""
 
-
-    @staticmethod
-    def matches(param):
+    def __init__(self, uri="", name="", ctx=Context()):
         """
-        Check if this is a candidate for this importer
-
-        :rtype:  bool
-
+        :param uri: uri
+        :type  uri: str
+        :param name: Name of the importer
+        :type  name: str
         """
-        raise NotImplementedError()
+        assert(isinstance(uri, str))
+        assert(isinstance(name, str))
+        assert(isinstance(ctx, Context))
+        self.uri = uri
+        self.name = name or os.path.basename(__file__)
+        self.logger = logging.getLogger("importer:{0}".format(self.name))
+        self.ctx = ctx
 
+    @classmethod
+    def match(uri):
+        """This method should be called to know if a given uri matches
+        the importer or not.
 
-    # TODO pass other parameters such as confirm etc ?
-    def fetch(resource):
+        For example, a valid match for archive would be:
+        .. code:: python
+
+            return re.match(r".*arxiv.org.*", uri)
+
+        it will return something that is true if it matches and something
+        falsely otherwise.
+
+        :param uri: uri where the document should be retrieved from.
+        :type  uri: str
+        """
+        raise NotImplementedError(
+            "Matching uri not implemented for this downloader"
+        )
+
+    def fetch(self):
         """
         can return a dict to update the document with
         """
         raise NotImplementedError()
 
+    def __str__(self):
+        return 'Importer({0}, uri={1})'.format(self.name, self.uri)
 
 
 class BibtexImporter(Importer):
@@ -102,15 +128,6 @@ class ArxivImporter(Importer):
         logger.info("Reading yaml input file = %s" % from_yaml)
         return papis.yaml.yaml_to_data(from_yaml)
 
-
-class YamlImporter(Importer):
-
-    def matches(res):
-        return papis.utils.get_document_extension(res) == 'yaml'
-
-    def fetch(from_yaml):
-        logger.info("Reading yaml input file = %s" % from_yaml)
-        return papis.yaml.yaml_to_data(from_yaml)
 
 class FromLibImporter(Importer):
     name = "from_lib"

@@ -528,12 +528,12 @@ def cli(
         confirm = False
         open_file = False
 
-    if from_lib:
-        doc = papis.pick.pick_doc(
-            papis.api.get_all_documents_in_lib(from_lib)
-        )
-        if doc:
-            from_folder = doc.get_main_folder()
+    # if from_lib:
+        # doc = papis.pick.pick_doc(
+            # papis.api.get_all_documents_in_lib(from_lib)
+        # )
+        # if doc:
+            # from_folder = doc.get_main_folder()
 
     try:
         # Try getting title if title is an argument of add
@@ -557,30 +557,14 @@ def cli(
     except:
         pass
 
-    def _update_doc(importer, doc, resource):
-
-        fresh_data = importer.fetch(resource)
-        if confirm:
-            # todo display fresh_data
-            papis.utils.confirm(
-                'Do you want to update the document with the newly acquired'
-                'data'
-            )
-
-
     try:
         if from_importer:
-            loader = import_mgr[from_importer].obj
-            res = loader.fetch(resource)
-            data.update(res)
+            importer_name = from_importer[0]
+            resource = from_importer[1]
+            importer = import_mgr[importer_name].plugin(uri=resource)
+            importer.fetch()
+            data.update(importer.ctx.data)
         else:
-            # try to be smart
-            # def register_plots(ext, subparsers):
-            #     """Adds a parser per plot"""
-            #     # check if dat is loaded
-            #     parser = ext.obj.default_parser()
-            #     ext.name
-
             # loaders = import_mgr.map(register_plots, subparsers)
             for name, loader in import_mgr.items():
                 print("Importer [%s]" % name)
@@ -588,136 +572,136 @@ def cli(
     except Exception as e:
         logger.exception(e)
 
-    # GET INFORMATION FROM PDF
-    if (not from_doi and
-            not from_bibtex and
-            not from_url and
-            not from_folder and
-            files and
-            papis.utils.get_document_extension(files[0]) == 'pdf'):
+    # # GET INFORMATION FROM PDF
+    # if (not from_doi and
+            # not from_bibtex and
+            # not from_url and
+            # not from_folder and
+            # files and
+            # papis.utils.get_document_extension(files[0]) == 'pdf'):
 
-        logger.info("Trying to parse doi from file {0}".format(files[0]))
-        doi = papis.doi.pdf_to_doi(files[0])
-        if doi:
-            logger.info("Parsed doi {0}".format(doi))
-            logger.warning("There is no guarantee that this doi is the one")
-        if (doi and
-                not batch and
-                confirm and
-                papis.utils.confirm(
-                    'Do you want to use the doi {0}'.format(doi)
-                )):
-            from_doi = doi
+        # logger.info("Trying to parse doi from file {0}".format(files[0]))
+        # doi = papis.doi.pdf_to_doi(files[0])
+        # if doi:
+            # logger.info("Parsed doi {0}".format(doi))
+            # logger.warning("There is no guarantee that this doi is the one")
+        # if (doi and
+                # not batch and
+                # confirm and
+                # papis.utils.confirm(
+                    # 'Do you want to use the doi {0}'.format(doi)
+                # )):
+            # from_doi = doi
 
-        arxivid = papis.arxiv.pdf_to_arxivid(files[0])
-        if arxivid:
-            logger.info("Parsed arxivid {0}".format(arxivid))
-            logger.warning(
-                "There is no guarantee that this arxivid is the one"
-            )
-        if (arxivid and
-                not batch and
-                confirm and
-                papis.utils.confirm(
-                    'Do you want to use the arxivid {0}'.format(arxivid)
-                )):
-            from_url = "https://arxiv.org/abs/{0}".format(arxivid)
+        # arxivid = papis.arxiv.pdf_to_arxivid(files[0])
+        # if arxivid:
+            # logger.info("Parsed arxivid {0}".format(arxivid))
+            # logger.warning(
+                # "There is no guarantee that this arxivid is the one"
+            # )
+        # if (arxivid and
+                # not batch and
+                # confirm and
+                # papis.utils.confirm(
+                    # 'Do you want to use the arxivid {0}'.format(arxivid)
+                # )):
+            # from_url = "https://arxiv.org/abs/{0}".format(arxivid)
 
-    if from_crossref:
-        logger.info("Querying crossref.org")
-        docs = [
-            papis.document.from_data(d)
-            for d in papis.crossref.get_data(query=from_crossref)
-        ]
-        if docs:
-            logger.info("got {0} matches, picking...".format(len(docs)))
-            doc = papis.pick.pick_doc(docs) if not batch else docs[0]
-            if doc and not from_doi and doc.has('doi'):
-                from_doi = doc['doi']
+    # if from_crossref:
+        # logger.info("Querying crossref.org")
+        # docs = [
+            # papis.document.from_data(d)
+            # for d in papis.crossref.get_data(query=from_crossref)
+        # ]
+        # if docs:
+            # logger.info("got {0} matches, picking...".format(len(docs)))
+            # doc = papis.pick.pick_doc(docs) if not batch else docs[0]
+            # if doc and not from_doi and doc.has('doi'):
+                # from_doi = doc['doi']
 
-    if from_folder:
-        original_document = papis.document.Document(from_folder)
-        from_yaml = original_document.get_info_file()
-        files.extend(original_document.get_files())
+    # if from_folder:
+        # original_document = papis.document.Document(from_folder)
+        # from_yaml = original_document.get_info_file()
+        # files.extend(original_document.get_files())
 
-    if from_url:
-        logger.info("Attempting to retrieve from url")
-        url_data = papis.downloaders.get_info_from_url(from_url)
-        data.update(url_data["data"])
-        if not files:
-            files.extend(url_data["documents_paths"])
-        # If no data was retrieved and doi was found, try to get
-        # information with the document's doi
-        if not data and url_data["doi"] is not None and not from_doi:
-            logger.warning(
-                "I could not get any data from {0}".format(from_url)
-            )
-            from_doi = url_data["doi"]
-            logger.info(
-                "But I found a doi ({0}), I'll try my luck there".format(
-                    from_doi
-                )
-            )
+    # if from_url:
+        # logger.info("Attempting to retrieve from url")
+        # url_data = papis.downloaders.get_info_from_url(from_url)
+        # data.update(url_data["data"])
+        # if not files:
+            # files.extend(url_data["documents_paths"])
+        # # If no data was retrieved and doi was found, try to get
+        # # information with the document's doi
+        # if not data and url_data["doi"] is not None and not from_doi:
+            # logger.warning(
+                # "I could not get any data from {0}".format(from_url)
+            # )
+            # from_doi = url_data["doi"]
+            # logger.info(
+                # "But I found a doi ({0}), I'll try my luck there".format(
+                    # from_doi
+                # )
+            # )
 
-    if from_pmid:
-        logger.info("Using PMID %s via HubMed" % from_pmid)
-        hubmed_url = "http://pubmed.macropus.org/articles/"\
-                     "?format=text%%2Fbibtex&id=%s" % from_pmid
-        bibtex_data = papis.downloaders.get_downloader(
-            hubmed_url,
-            "get"
-        ).get_document_data().decode("utf-8")
-        bibtex_data = papis.bibtex.bibtex_to_dict(bibtex_data)
-        if len(bibtex_data):
-            data.update(bibtex_data[0])
-            if "doi" in data and not from_doi:
-                from_doi = data["doi"]
-        else:
-            logger.error("PMID %s not found or invalid" % from_pmid)
+    # if from_pmid:
+        # logger.info("Using PMID %s via HubMed" % from_pmid)
+        # hubmed_url = "http://pubmed.macropus.org/articles/"\
+                     # "?format=text%%2Fbibtex&id=%s" % from_pmid
+        # bibtex_data = papis.downloaders.get_downloader(
+            # hubmed_url,
+            # "get"
+        # ).get_document_data().decode("utf-8")
+        # bibtex_data = papis.bibtex.bibtex_to_dict(bibtex_data)
+        # if len(bibtex_data):
+            # data.update(bibtex_data[0])
+            # if "doi" in data and not from_doi:
+                # from_doi = data["doi"]
+        # else:
+            # logger.error("PMID %s not found or invalid" % from_pmid)
 
-    if from_doi:
-        logger.info("using doi {0}".format(from_doi))
-        doidata = papis.crossref.get_data(dois=[from_doi])
-        if doidata:
-            data.update(doidata[0])
-        if (len(files) == 0 and
-                papis.config.get('doc-url-key-name') in data.keys()):
+    # if from_doi:
+        # logger.info("using doi {0}".format(from_doi))
+        # doidata = papis.crossref.get_data(dois=[from_doi])
+        # if doidata:
+            # data.update(doidata[0])
+        # if (len(files) == 0 and
+                # papis.config.get('doc-url-key-name') in data.keys()):
 
-            doc_url = data[papis.config.get('doc-url-key-name')]
-            logger.info(
-                'You did not provide any files, but I found a possible '
-                'url where the file might be'
-            )
-            logger.info(
-                'I am trying to download the document from %s' % doc_url
-            )
-            down = papis.downloaders.get_downloader(doc_url, 'get')
-            assert(down is not None)
-            tmp_filepath = tempfile.mktemp()
-            logger.debug("Saving in %s" % tmp_filepath)
+            # doc_url = data[papis.config.get('doc-url-key-name')]
+            # logger.info(
+                # 'You did not provide any files, but I found a possible '
+                # 'url where the file might be'
+            # )
+            # logger.info(
+                # 'I am trying to download the document from %s' % doc_url
+            # )
+            # down = papis.downloaders.get_downloader(doc_url, 'get')
+            # assert(down is not None)
+            # tmp_filepath = tempfile.mktemp()
+            # logger.debug("Saving in %s" % tmp_filepath)
 
-            with builtins.open(tmp_filepath, 'wb+') as fd:
-                fd.write(down.get_document_data())
+            # with builtins.open(tmp_filepath, 'wb+') as fd:
+                # fd.write(down.get_document_data())
 
-            logger.info('Opening the file')
-            papis.api.open_file(tmp_filepath)
-            if papis.utils.confirm('Do you want to use this file?'):
-                files.append(tmp_filepath)
+            # logger.info('Opening the file')
+            # papis.api.open_file(tmp_filepath)
+            # if papis.utils.confirm('Do you want to use this file?'):
+                # files.append(tmp_filepath)
 
-    if from_yaml:
-        logger.info("Reading yaml input file = %s" % from_yaml)
-        data.update(papis.yaml.yaml_to_data(from_yaml))
+    # if from_yaml:
+        # logger.info("Reading yaml input file = %s" % from_yaml)
+        # data.update(papis.yaml.yaml_to_data(from_yaml))
 
-    if from_bibtex:
-        logger.info("Reading bibtex input file = %s" % from_bibtex)
-        bib_data = papis.bibtex.bibtex_to_dict(from_bibtex)
-        if len(bib_data) > 1:
-            logger.warning(
-                'Your bibtex file contains more than one entry,'
-                ' I will be taking the first entry'
-            )
-        if bib_data:
-            data.update(bib_data[0])
+    # if from_bibtex:
+        # logger.info("Reading bibtex input file = %s" % from_bibtex)
+        # bib_data = papis.bibtex.bibtex_to_dict(from_bibtex)
+        # if len(bib_data) > 1:
+            # logger.warning(
+                # 'Your bibtex file contains more than one entry,'
+                # ' I will be taking the first entry'
+            # )
+        # if bib_data:
+            # data.update(bib_data[0])
 
     assert(isinstance(data, dict))
 

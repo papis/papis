@@ -148,11 +148,11 @@ setup(
         ],
         'papis.importer':[
             'bibtex=papis.importer:BibtexImporter',
-            'yaml=papis.importer:YamlImporter',
+            'yaml=papis.yaml:Importer',
             # 'lib=papis.importer:FromLibImporter',
             # 'pmid=papis.importer:PMIDImporter',
             # 'crossref=papis.importer:CrossrefImporter',
-            # 'doi=papis.importer:DOIImporter',
+            # 'doi=papis.commands.importer:DOIImporter',
         ],
         'papis.picker': [
             'papis=papis.pick:papis_pick',
