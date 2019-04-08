@@ -96,18 +96,21 @@ def get_downloader_by_name(name):
     return downloader_mgr[name].plugin
 
 
-def get_info_from_url(url, data_format="bibtex", expected_doc_format=None):
+def get_info_from_url(url, expected_doc_format=None):
+    """Get information directly from url
 
-    result = {
-        "data": dict(),
-        "doi": None,
-        "documents_paths": []
-    }
+    :param url: Url of the resource
+    :type  url: str
+    :param expected_doc_format: override the doc format of the document
+    :type  expected_doc_format: str
+    :returns: Context object
+    :rtype:  papis.importer.Context
+    """
 
     downloaders = get_matching_downloaders(url)
     if not downloaders:
         logger.warning(
-            "No matching downloader found (%s)" % url
+            "No matching downloader found for (%s)" % url
         )
         return result
     else:
@@ -118,39 +121,8 @@ def get_info_from_url(url, data_format="bibtex", expected_doc_format=None):
     if downloader.expected_document_extension is None and \
             expected_doc_format is not None:
         downloader.expected_document_extension = expected_doc_format
-
-    if data_format == "bibtex":
-        try:
-            bibtex_data = downloader.get_bibtex_data()
-            if bibtex_data:
-                result["data"] = papis.bibtex.bibtex_to_dict(
-                    bibtex_data
-                )
-                result["data"] = result["data"][0] \
-                    if len(result["data"]) > 0 else dict()
-        except NotImplementedError:
-            pass
-
-    try:
-        doc_data = downloader.get_document_data()
-    except NotImplementedError:
-        doc_data = None
-
-    try:
-        result['doi'] = downloader.get_doi()
-    except NotImplementedError:
-        pass
-
-    if doc_data is not None:
-        if downloader.check_document_format():
-            result["documents_paths"].append(tempfile.mktemp())
-            logger.info(
-                "Saving downloaded file in %s" % result["documents_paths"][-1]
-            )
-            with open(result["documents_paths"][-1], "wb+") as fd:
-                fd.write(doc_data)
-
-    return result
+    downloader.fetch()
+    return downloader.ctx
 
 
 class Importer(papis.importer.Importer):
@@ -162,15 +134,9 @@ class Importer(papis.importer.Importer):
         return re.match(' *http(s)?.*', url) is None
 
     def fetch(self):
-        self.logger.info(
-                "attempting to retrieve from url {0}".format(self.uri))
-        url_data = get_info_from_url(self.uri)
-        data = (url_data["data"])
-        if data:
-            self.ctx.data.update(data)
-        files = url_data["documents_paths"]
-        if files:
-            self.ctx.files.extend(files)
+        self.logger.info("attempting to import from url {0}".format(self.uri))
+        ctx = get_info_from_url(self.uri)
+        self.ctx = ctx
         # TODO: think about url_data[doi]
         # if not data and url_data["doi"] is not None and not from_doi:
             # logger.warning(

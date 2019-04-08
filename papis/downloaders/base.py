@@ -4,20 +4,27 @@ import requests
 import papis.config
 import papis.utils
 import filetype
+import papis.importer
+import papis.bibtex
+import tempfile
 
 
-class Downloader(object):
+class Downloader(papis.importer.Importer):
 
     """This is the base class for every downloader.
     """
 
-    def __init__(self, url="", name=""):
-        self.url = url
+    def __init__(self, uri="", name="", ctx=papis.importer.Context()):
+        assert(isinstance(uri, str))
+        assert(isinstance(name, str))
+        assert(isinstance(ctx, papis.importer.Context))
+        self.uri = uri
         self.name = name or os.path.basename(__file__)
-        self.logger = logging.getLogger("downloaders:"+self.name)
+        self.ctx = ctx
+        self.logger = logging.getLogger("downloader:"+self.name)
         self.bibtex_data = None
         self.document_data = None
-        self.logger.debug("[url] = %s" % url)
+        self.logger.debug("[uri] = %s" % uri)
         self.expected_document_extension = None
         self.priority = 1
 
@@ -33,28 +40,52 @@ class Downloader(object):
             }
         self.cookies = {}
 
-    def __repr__(self):
-        return self.name
+    def fetch(self):
+        # try with bibtex
+        try:
+            self.download_bibtex()
+        except NotImplementedError:
+            pass
+        else:
+            bib_rawdata = self.get_bibtex_data()
+            if bib_rawdata:
+                datalist = papis.bibtex.bibtex_to_dict(bib_rawdata)
+                if datalist:
+                    self.ctx.data.update(datalist[0])
 
-    @classmethod
-    def match(url):
-        """This method should be called to know if a given url matches
-        the downloader or not.
+        # Try with get_data
+        try:
+            data = self.get_data()
+            assert(isinstance(data, dict))
+        except NotImplementedError:
+            pass
+        else:
+            self.ctx.data.update(data)
 
-        For example, a valid match for archive would be:
-        .. code:: python
+        # try getting doi
+        try:
+            doi = self.get_doi()
+        except NotImplementedError:
+            pass
+        else:
+            self.ctx.data['doi'] = doi
 
-            return re.match(r".*arxiv.org.*", url)
+        # get documents
+        try:
+            self.download_document()
+        except NotImplementedError:
+            pass
+        else:
+            doc_rawdata = self.get_document_data()
+            if doc_rawdata and self.check_document_format():
+                tmp = tempfile.mktemp()
+                self.logger.info("Saving downloaded file in {0}".format(tmp))
+                with open(tmp, 'wb+') as fd:
+                    fd.write(doc_rawdata)
+                self.ctx.files.append(tmp)
 
-        it will return something that is true if it matches and something
-        falsely otherwise.
-
-        :param url: Url where the document should be retrieved from.
-        :type  url: str
-        """
-        raise NotImplementedError(
-            "Matching url not implemented for this downloader"
-        )
+    def __str__(self):
+        return 'Downloader({0}, uri={1})'.format(self.name, self.uri)
 
     def get_bibtex_url(self):
         """It returns the urls that is to be access to download
@@ -106,6 +137,14 @@ class Downloader(object):
             "Getting bibtex url not implemented for this downloader"
         )
 
+    def get_data(self):
+        """A general data retriever, for instance when data needn't need
+        to come from a bibtex
+        """
+        raise NotImplementedError(
+            "Getting general data is not implemented for this downloader"
+        )
+
     def get_doi(self):
         """It returns the doi of the document, if it is retrievable.
         It has to be implemented for every downloader, or otherwise it will
@@ -144,13 +183,6 @@ class Downloader(object):
         self.logger.info("downloading file...")
         res = self.session.get(url, cookies=self.cookies)
         self.document_data = res.content
-
-    def get_url(self):
-        """Url getter for Downloader
-        :returns: Main url of the Downloader
-        :rtype:  str
-        """
-        return self.url
 
     def check_document_format(self):
         """Check if the downloaded document has the filetype that the

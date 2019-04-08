@@ -19,7 +19,7 @@ class Downloader(papis.downloaders.base.Downloader):
             return False
 
     def get_doi(self):
-        mdoi = re.match(r'.*\.org/[^/]+/[^/]+/([^?]*)', self.get_url())
+        mdoi = re.match(r'.*\.org/[^/]+/[^/]+/([^?]*)', self.uri)
         if mdoi:
             doi = mdoi.group(1)
             self.logger.debug("[doi] = %s" % doi)

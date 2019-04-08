@@ -94,3 +94,16 @@ def get_import_mgr():
     global import_mgr
     _create_import_mgr()
     return import_mgr
+
+
+def get_importer_by_name(name):
+    """Get importer by name
+    :param name: Name of the importer
+    :type  name: str
+    :returns: The importer
+    :rtype:  Importer
+    """
+    assert(isinstance(name, str))
+    global import_mgr
+    _create_import_mgr()
+    return import_mgr[name].plugin

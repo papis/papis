@@ -24,7 +24,7 @@ class Downloader(papis.downloaders.base.Downloader):
         >>> d.get_identifier()
         '2014TOU30305'
         """
-        m = re.match(r".*hal.fr/([^/?.&]+).*", self.url)
+        m = re.match(r".*hal.fr/([^/?.&]+).*", self.uri)
         return m.group(1) if m is not None else None
 
     def get_document_url(self):
@@ -33,7 +33,7 @@ class Downloader(papis.downloaders.base.Downloader):
         >>> d.get_document_url()
         'https://hal.archives-ouvertes.fr/jpa-0205888/document'
         """
-        url = re.sub(r'\?.*', '', self.get_url()) + '/document'
+        url = re.sub(r'\?.*', '', self.uri) + '/document'
         return url
 
     def get_bibtex_url(self):
@@ -42,5 +42,5 @@ class Downloader(papis.downloaders.base.Downloader):
         >>> d.get_bibtex_url()
         'https://hal.archives-ouvertes.fr/jpa-00205888/bibtex'
         """
-        url = re.sub(r'\?.*', '', self.get_url()) + '/bibtex'
+        url = re.sub(r'\?.*', '', self.uri) + '/bibtex'
         return url

@@ -13,6 +13,6 @@ class Downloader(papis.downloaders.base.Downloader):
         return Downloader(url)
 
     def get_doi(self):
-        body = self.session.get(self.get_url()).content.decode('utf-8')
+        body = self.session.get(self.uri).content.decode('utf-8')
         self.logger.info('trying to parse doi...')
         return papis.doi.find_doi_in_text(body)

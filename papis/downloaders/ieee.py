@@ -25,7 +25,7 @@ class Downloader(papis.downloaders.base.Downloader):
             return False
 
     def get_identifier(self):
-        url = self.get_url()
+        url = self.uri
         return re.sub(r'^.*ieeexplore\.ieee\.org/document/(.*)\/', r'\1', url)
 
     def get_bibtex_url(self):
