@@ -216,6 +216,7 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
     lexer = PygmentsLexer(pygment_lexer)
     text_window = Window(
         height=text_height,
+        style='bg:black',
         content=BufferControl(buffer=buffer1, lexer=lexer)
     )
 
@@ -223,6 +224,7 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
         Window(
             char='-',
             align=WindowAlign.CENTER,
+            style='bg:black',
             height=1,
             content=FormattedTextControl(
                 text=[('fg:ansiblack bg:ansiwhite', title)]
@@ -236,6 +238,7 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
             height=1,
             width=None,
             align=WindowAlign.CENTER,
+            style='bg:black',
             char='-',
             content=FormattedTextControl(
                 text=[(

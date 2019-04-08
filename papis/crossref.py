@@ -7,6 +7,7 @@ import re
 import click
 import papis.document
 import papis.importer
+import tempfile
 
 logger = logging.getLogger("crossref")
 logger.debug("importing")
@@ -233,15 +234,15 @@ class Importer(papis.importer.Importer):
         self.logger.info("using doi {0}".format(self.uri))
         doidata = papis.crossref.get_data(dois=[self.uri])
         if doidata:
-            self.ctx.data = doidata
-        if papis.config.get('doc-url-key-name') in data.keys():
-            doc_url = data[papis.config.get('doc-url-key-name')]
-            self.logger.info(
-                'trying to download document from {0}..'
-                .format(doc_url))
-            document_data = papis.utils.geturl(doc_url)
-            tmp_filepath = tempfile.mktemp()
-            self.logger.debug("Saving in %s" % tmp_filepath)
-            with open(tmp_filepath, 'wb+') as fd:
-                fd.write(document_data)
-            self.ctx.files.append(tmp_filepath)
+            self.ctx.data = doidata[0]
+            if papis.config.get('doc-url-key-name') in self.ctx.data.keys():
+                doc_url = self.ctx.data[papis.config.get('doc-url-key-name')]
+                self.logger.info(
+                    'trying to download document from {0}..'
+                    .format(doc_url))
+                document_data = papis.utils.geturl(doc_url)
+                tmp_filepath = tempfile.mktemp()
+                self.logger.debug("Saving in %s" % tmp_filepath)
+                with open(tmp_filepath, 'wb+') as fd:
+                    fd.write(document_data)
+                self.ctx.files.append(tmp_filepath)
