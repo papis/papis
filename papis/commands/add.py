@@ -420,6 +420,7 @@ def run(
     help="Add document from a specific importer",
     type=(click.Choice(papis.importer.available_importers()), str),
     nargs=2,
+    multiple=True,
     default=None,
 )
 @click.option(
@@ -539,20 +540,23 @@ def cli(
         pass
 
     import_mgr = papis.importer.get_import_mgr()
-    try:
-        if from_importer:
-            importer_name = from_importer[0]
-            resource = from_importer[1]
+    for importer_tuple in from_importer:
+        try:
+            importer_name = importer_tuple[0]
+            resource = importer_tuple[1]
             importer = import_mgr[importer_name].plugin(uri=resource)
             importer.fetch()
-            data.update(importer.ctx.data)
-        else:
-            # loaders = import_mgr.map(register_plots, subparsers)
-            for name, loader in import_mgr.items():
-                print("Importer [%s]" % name)
-
-    except Exception as e:
-        logger.exception(e)
+            if importer.ctx.data:
+                logger.info(
+                    'Merging data from importer {0}'.format(importer_name))
+                data.update(importer.ctx.data)
+            if importer.ctx.files:
+                logger.info(
+                    'Got files {0} from importer {1}'
+                    .format(files, importer_name))
+                files.extend(importer.ctx.files)
+        except Exception as e:
+            logger.exception(e)
 
     # # GET INFORMATION FROM PDF
     # if (not from_doi and
