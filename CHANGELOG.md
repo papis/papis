@@ -2,12 +2,7 @@
 VERSION v0.9
 ============
 
-## Add command ##
-- The configuration settings `export-text-format` has been removed along with
-  the export --text command. papis now support plugins so you should write your
-  own instead.
-- The flags --bibtex/--json/--yaml of the `export` command have been replaced
-  by `export --format=bibtex/json/yaml`
+## `papis add` ##
 
 - The configuration settings `file-name` and `folder-name` are now
   ```
@@ -39,6 +34,25 @@ VERSION v0.9
   about the paper. Right now it guesses the title from the `filepath`
   and tries to search `crossref` and prompt the user to pick a document.
 
+## `papis export` ##
+
+- The configuration settings `export-text-format` has been removed along with
+  the export --text command. papis now support plugins so you should write your
+  own instead.
+- The flags --bibtex/--json/--yaml of the `export` command have been replaced
+  by `export --format=bibtex/json/yaml`
+- The flag `--file` has been removed, if you want to export the related files
+  then just either export the folder or write a small script for it.
+
+## `papis explore` ##
+
+- Change the flags for `papis explore export` to match the `papis export`
+  command.
+
+## `papis browse` ##
+
+- Add `--all` flag, improve tests and log.
+
 ## Databases ##
 
 
@@ -47,6 +61,16 @@ VERSION v0.9
   time, which makes it around `10x` faster than in version `v0.8`.
   For a library of 1200 documents, the speed of the `papis` database backend
   is comparable with the `whoosh` backend.
+- The query language for the default `papis` database has changed, now
+  the setter character is `:` instead of `=` to better conform with other
+  common database engines like `whoosh` or `xapian`. For instance, before
+  ```
+  papis open 'author=einstein year=1905'
+  ```
+  and now it will be
+  ```
+  papis open 'author:einstein year:1905'
+  ```
 - Libraries can have multiple directories defined.
 
 ## Configuration ##

@@ -5,6 +5,7 @@ import papis.downloaders.base
 class Downloader(papis.downloaders.base.Downloader):
     def __init__(self, url):
         papis.downloaders.base.Downloader.__init__(self, url, name="get")
+        self.priority = 0
 
     @classmethod
     def match(cls, url):
@@ -20,10 +21,13 @@ class Downloader(papis.downloaders.base.Downloader):
         m = re.match(r"^http.*\.(%s)$" % endings, url, re.IGNORECASE)
         if m:
             d = Downloader(url)
-            d.expected_document_extension = m.group(1)
+            extension = m.group(1)
+            d.logger.info(
+                'Expecting a document of type "{0}"'.format(extension))
+            d.expected_document_extension = extension
             return d
         else:
-            return False
+            return None
 
     def get_document_url(self):
         return self.get_url()

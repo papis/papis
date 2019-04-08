@@ -6,8 +6,8 @@ Cli
     :prog: papis rm
 """
 import papis
-import papis.api
-from papis.utils import confirm, text_area
+import papis.pick
+import papis.utils
 import papis.config
 import papis.document
 import papis.cli
@@ -26,6 +26,7 @@ def run(document, filepath=None):
         os.remove(filepath)
         document['files'].remove(os.path.basename(filepath))
         document.save()
+        db.update(document)
     else:
         papis.document.delete(document)
         db.delete(document)
@@ -60,34 +61,34 @@ def cli(
         logger.warning(papis.strings.no_documents_retrieved_message)
         return 0
 
-    document = papis.api.pick_doc(documents)
+    document = papis.pick.pick_doc(documents)
     if not document:
         return
     if file:
-        filepath = papis.api.pick(
-            document.get_files()
-        )
+        filepath = papis.pick.pick(document.get_files())
         if not filepath:
             return
         if not force:
-            toolbar = 'The file {0} would be removed'.format(filepath)
-            if not confirm("Are you sure?", bottom_toolbar=toolbar):
+            tbar = 'The file {0} would be removed'.format(filepath)
+            if not papis.utils.confirm("Are you sure?", bottom_toolbar=tbar):
                 return
-        click.echo("Removing %s..." % filepath)
+        logger.info("Removing %s..." % filepath)
         return run(
             document,
             filepath=filepath
         )
     else:
         if not force:
-            toolbar = 'The folder {0} would be removed'.format(
+            tbar = 'The folder {0} would be removed'.format(
                 document.get_main_folder()
             )
             logger.warning("This document will be removed, check it")
-            text_area(
-                title=toolbar, text=document.dump(), lexer_name='yaml'
+            papis.utils.text_area(
+                title=tbar,
+                text=papis.document.dump(document),
+                lexer_name='yaml'
             )
-            if not confirm("Are you sure?", bottom_toolbar=toolbar):
+            if not papis.utils.confirm("Are you sure?", bottom_toolbar=tbar):
                 return
-        click.echo("Removing ...")
+        logger.info("Removing ...")
         return run(document)

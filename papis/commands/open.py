@@ -73,6 +73,7 @@ Cli
 """
 import papis
 import papis.api
+import papis.pick
 import papis.utils
 import papis.config
 import papis.cli
@@ -176,7 +177,7 @@ def cli(query, doc_folder, tool, folder, all, mark):
         return 0
 
     if not all:
-        documents = [papis.api.pick_doc(documents)]
+        documents = [papis.pick.pick_doc(documents)]
         documents = [d for d in documents if d]
 
     for document in documents:

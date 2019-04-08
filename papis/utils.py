@@ -293,9 +293,9 @@ def input(
 
     """
     import prompt_toolkit
-    from prompt_toolkit.validation import Validator
+    import prompt_toolkit.validation
     if validator_function is not None:
-        validator = Validator.from_callable(
+        validator = prompt_toolkit.validation.Validator.from_callable(
             validator_function,
             error_message=dirty_message,
             move_cursor_to_end=True
@@ -451,21 +451,6 @@ def get_cache_home():
     :returns: Full path for cache main folder
     :rtype:  str
 
-    >>> import os; os.environ["XDG_CACHE_HOME"] = '~/.cache'
-    >>> get_cache_home() == os.path.expanduser(\
-            os.path.join(os.environ["XDG_CACHE_HOME"], 'papis')\
-        )
-    True
-    >>> os.environ["XDG_CACHE_HOME"] = '/tmp/.cache'
-    >>> get_cache_home()
-    '/tmp/.cache/papis'
-    >>> os.path.exists(get_cache_home())
-    True
-    >>> del os.environ["XDG_CACHE_HOME"]
-    >>> get_cache_home() == os.path.expanduser(\
-            os.path.join('~/.cache', 'papis')\
-        )
-    True
     """
     user_defined = papis.config.get('cache-dir')
     if user_defined is not None:

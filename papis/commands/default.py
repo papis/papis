@@ -39,8 +39,51 @@ import click
 import papis.cli
 
 
+class MultiCommand(click.MultiCommand):
+
+    scripts = papis.commands.get_scripts()
+    scripts.update(papis.commands.get_external_scripts())
+    logger = logging.getLogger('multicommand')
+
+    def list_commands(self, ctx):
+        """List all matched commands in the command folder and in path
+
+        >>> mc = MultiCommand()
+        >>> rv = mc.list_commands(None)
+        >>> len(rv) > 0
+        True
+        """
+        rv = [s for s in self.scripts.keys()]
+        rv.sort()
+        return rv
+
+    def get_command(self, ctx, name):
+        """Get the command to be run
+
+        >>> mc = MultiCommand()
+        >>> cmd = mc.get_command(None, 'add')
+        >>> cmd.name, cmd.help
+        ('add', 'Add...')
+        >>> mc.get_command(None, 'this command does not exist')
+        """
+        try:
+            script = self.scripts[name]
+        except KeyError:
+            return None
+        if script['plugin']:
+            return script['plugin']
+        # If it gets here, it means that it is an external script
+        from papis.commands.external import external_cli as cli
+        from papis.commands.external import get_command_help
+        cli.context_settings['obj'] = script
+        cli.help = get_command_help(script['path'])
+        cli.name = script["command_name"]
+        cli.short_help = cli.help
+        return cli
+
+
 @click.group(
-    cls=papis.cli.MultiCommand,
+    cls=MultiCommand,
     invoke_without_command=True
 )
 @click.help_option('--help', '-h')
@@ -140,10 +183,7 @@ def run(
         papis.config.reset_configuration()
 
     if pick_lib:
-        lib = papis.pick.pick(
-            papis.api.get_libraries(),
-            pick_config=dict(header_filter=lambda x: x)
-        )
+        lib = papis.pick.pick(papis.api.get_libraries())
 
     papis.config.set_lib_from_name(lib)
     library = papis.config.get_lib()

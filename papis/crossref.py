@@ -4,6 +4,8 @@ import papis.utils
 import papis.doi
 import habanero
 import re
+import click
+import papis.document
 
 logger = logging.getLogger("crossref")
 logger.debug("importing")
@@ -108,7 +110,7 @@ def crossref_data_to_papis_data(data):
                     papis_val = _conv_data['action'](data[xrefkey])
                 new_data[papis_key] = papis_val
             except Exception as e:
-                logger.warning(
+                logger.debug(
                     "Error while trying to parse {0} ({1})".format(
                         papis_key, e))
 
@@ -134,8 +136,6 @@ def _get_crossref_works(**kwargs):
 
 
 def get_data(query="", author="", title="", dois=[], max_results=0):
-    """
-    """
     assert(isinstance(dois, list))
     data = dict(
         query=query, query_author=author,
@@ -150,14 +150,22 @@ def get_data(query="", author="", title="", dois=[], max_results=0):
     except Exception as e:
         logger.error(e)
         return []
-    if 'message' not in results.keys():
+
+    if isinstance(results, list):
+        docs = [d["message"] for d in results]
+    elif isinstance(results, dict):
+        if 'message' not in results.keys():
+            logger.error(
+                "Error retrieving from xref, I got an incorrect message")
+            return []
+        message = results['message']
+        if "items" in message.keys():
+            docs = message['items']
+        else:
+            docs = [message]
+    else:
         logger.error("Error retrieving from xref, I got an incorrect message")
         return []
-    message = results['message']
-    if "items" in message.keys():
-        docs = message['items']
-    else:
-        docs = [message]
     logger.debug("Retrieved {} documents".format(len(docs)))
     return [
         crossref_data_to_papis_data(d)
@@ -175,10 +183,41 @@ def doi_to_data(doi):
 
     """
     global logger
+    assert(isinstance(doi, str))
     doi = papis.doi.get_clean_doi(doi)
     results = get_data(dois=[doi])
     if results:
         return results[0]
+    else:
         raise ValueError(
             "Couldn't get data for doi ({doi})".format(doi=doi)
         )
+
+
+@click.command('crossref')
+@click.pass_context
+@click.help_option('--help', '-h')
+@click.option('--query', '-q', default=None)
+@click.option('--author', '-a', default=None)
+@click.option('--title', '-t', default=None)
+@click.option('--max', '-m', default=20)
+def explorer(ctx, query, author, title, max):
+    """
+    Look for documents on crossref.org.
+
+    Examples of its usage are
+
+    papis explore crossref -a 'Albert einstein' pick export --bibtex lib.bib
+
+    """
+    logger = logging.getLogger('explore:crossref')
+    logger.info('Looking up...')
+    data = get_data(
+        query=query,
+        author=author,
+        title=title,
+        max_results=max
+    )
+    docs = [papis.document.from_data(data=d) for d in data]
+    ctx.obj['documents'] += docs
+    logger.info('{} documents found'.format(len(docs)))

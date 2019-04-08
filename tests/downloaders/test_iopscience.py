@@ -1,4 +1,4 @@
-import papis.downloaders.utils
+import papis.downloaders
 from papis.downloaders.iopscience import Downloader
 import papis.bibtex
 
@@ -28,7 +28,7 @@ def test_match():
 
 def test_downloader_getter():
     url = 'http://iopscience.iop.org/article/10.1088/0305-4470/24/2/004?a=2'
-    down = papis.downloaders.utils.get_downloader(url)
+    down = papis.downloaders.get_downloader(url)
     assert(down.name == 'iopscience')
     assert(down.expected_document_extension == 'pdf')
     assert(down.get_doi() == '10.1088/0305-4470/24/2/004')

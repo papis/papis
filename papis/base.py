@@ -9,6 +9,7 @@ import urllib.parse
 import urllib.request  # import urlencode
 import logging
 import json
+import click
 
 logger = logging.getLogger('base')
 
@@ -19,6 +20,7 @@ BASE_BASEURL = (
 
 
 def get_data(query="", max=20):
+    global BASE_BASEURL
 
     logger.warning('BASE engine in papis is experimental')
 
@@ -79,3 +81,25 @@ def basedoc_to_papisdoc(basedoc):
                 value = basedoc[kt[0]]
             doc[key] = value
     return doc
+
+
+@click.command('base')
+@click.pass_context
+@click.help_option('--help', '-h')
+@click.option('--query', '-q', default=None)
+def explorer(ctx, query):
+    """
+    Look for documents on the BielefeldAcademicSearchEngine
+
+    Examples of its usage are
+
+    papis explore base -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
+
+    """
+    import papis.document
+    logger = logging.getLogger('explore:base')
+    logger.info('Looking up...')
+    data = get_data(query=query)
+    docs = [papis.document.from_data(data=d) for d in data]
+    ctx.obj['documents'] += docs
+    logger.info('{} documents found'.format(len(docs)))

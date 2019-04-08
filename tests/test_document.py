@@ -1,25 +1,85 @@
-from papis.document import *
+from papis.document import (
+    to_bibtex,
+    new,
+    to_json,
+    from_folder,
+    from_data,
+    Document,
+)
 import tempfile
 import papis.config
 import pickle
+import os
+from tests import (
+    create_random_file
+)
 
 
-def test_open_in_browser():
-    papis.config.set('browser', 'echo')
-    papis.config.set('browse-key', 'url')
-    assert(
-        open_in_browser( from_data({'url': 'hello.com'}) ) ==
-        'hello.com'
+def test_new():
+    N = 10
+    files = [create_random_file(suffix='.' + str(i)) for i in range(N)]
+    tmp = os.path.join(tempfile.mkdtemp(), 'doc')
+    doc = new(tmp, {'author': 'hello'}, files)
+    assert(os.path.exists(doc.get_main_folder()))
+    assert(doc.get_main_folder() == tmp)
+    assert(len(doc['files']) == N)
+    assert(len(doc.get_files()) == N)
+    for i in range(N):
+        assert(doc['files'][i].endswith(str(i)))
+        assert(not os.path.exists(doc['files'][i]))
+        assert(os.path.exists(doc.get_files()[i]))
+
+    tmp = os.path.join(tempfile.mkdtemp(), 'doc')
+    doc = new(tmp, {'author': 'hello'}, [])
+    assert(os.path.exists(doc.get_main_folder()))
+    assert(doc.get_main_folder() == tmp)
+    assert(len(doc['files']) == 0)
+    assert(len(doc.get_files()) == 0)
+
+
+def test_from_data():
+    doc = from_data(
+        {'title': 'Hello World', 'author': 'turing'}
     )
-    papis.config.set('browse-key', 'doi')
-    assert( open_in_browser( from_data({'doi': '12312/1231'}) ) ==
-        'https://doi.org/12312/1231'
+    assert(isinstance(doc, Document))
+
+
+def test_from_folder():
+    doc = from_folder(os.path.join(
+        os.path.dirname(__file__), 'resources', 'document'
+    ))
+    assert(isinstance(doc, Document))
+    assert(doc['author'] == 'Russell, Bertrand')
+
+
+def test_main_features():
+    doc = from_data(
+        {'title': 'Hello World', 'author': 'turing'}
     )
-    papis.config.set('browse-key', 'nonexistentkey')
-    assert(
-        open_in_browser( from_data({'title': 'blih', 'author': 'me'}) ) ==
-        'https://duckduckgo.com/?q=blih+me'
-    )
+    assert(doc.title == 'Hello World')
+    assert(doc.title == doc['title'])
+    assert(doc.has('title'))
+    assert(set(doc.keys()) == set(['title', 'author']))
+    assert(not doc.has('doi'))
+    doc['doi'] = '123123.123123'
+    assert(doc.has('doi'))
+    assert(doc.doi == doc['doi'])
+    del doc['doi']
+    assert(doc['doi'] is '')
+    assert(set(doc.keys()) == set(['title', 'author']))
+    assert(not doc.has('doi'))
+
+    doc.set_folder(os.path.join(
+        os.path.dirname(__file__), 'resources', 'document'
+    ))
+    assert(doc.get_main_folder_name())
+    assert(os.path.exists(doc.get_main_folder()))
+    assert(doc['author'] == 'turing')
+    doc.load()
+    assert(doc['author'] == 'Russell, Bertrand')
+    assert(doc.get_files())
+    assert(isinstance(doc.get_files(), list))
+    assert(doc.html_escape['author'] == 'Russell, Bertrand')
 
 
 def test_to_bibtex():

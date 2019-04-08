@@ -1,6 +1,7 @@
 import yaml
 import logging
 import papis.config
+import click
 
 logger = logging.getLogger("yaml")
 
@@ -45,3 +46,25 @@ def yaml_to_data(yaml_path):
             return dict()
         else:
             return data
+
+
+@click.command('yaml')
+@click.pass_context
+@click.argument('yamlfile', type=click.Path(exists=True))
+@click.help_option('--help', '-h')
+def explorer(ctx, yamlfile):
+    """
+    Import documents from a yaml file
+
+    Examples of its usage are
+
+    papis explore yaml lib.yaml pick
+
+    """
+    logger = logging.getLogger('explore:yaml')
+    logger.info('reading in yaml file {}'.format(yamlfile))
+    docs = [
+        papis.document.from_data(d) for d in yaml.load_all(open(yamlfile))
+    ]
+    ctx.obj['documents'] += docs
+    logger.info('{} documents found'.format(len(docs)))

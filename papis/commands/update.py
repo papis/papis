@@ -9,7 +9,7 @@ Examples
 
     .. code::
 
-        papis update --auto -i "author = dyson"
+        papis update --auto -i "author : dyson"
 
 - Update your library from a bib(la)tex file where many entries are listed.
   papis will try to look for documents in your library that match these
@@ -45,14 +45,14 @@ import logging
 import papis.utils
 import papis.strings
 import papis.bibtex
-import papis.downloaders.utils
+import papis.downloaders
 import papis.document
 import papis.database
 import papis.isbnplus
 import papis.isbn
 import papis.crossref
 import papis.base
-import papis.api
+import papis.pick
 import papis.cli
 import papis.yaml
 import click
@@ -82,7 +82,8 @@ def update_document(document, data, force=False, interactive=False):
             if document[key] is None or document[key] == '':
                 message = [
                     ('', 'Set "'),
-                    ('bg:ansiblack fg:ansiyellow bold', '{val}'.format(val=key)),
+                    ('bg:ansiblack fg:ansiyellow bold',
+                        '{val}'.format(val=key)),
                     ('', '" to "'),
                     ('bg:ansiblack fg:green bold',
                         '{val:.200}'.format(val=str(data[key]))),
@@ -119,6 +120,10 @@ def update_document(document, data, force=False, interactive=False):
             )
 
 
+def _update_with_database(document):
+    document.save()
+    papis.database.get().update(document)
+
 
 def run(document, data=dict(), interactive=False, force=False):
     # Keep the ref the same, otherwise issues can be caused when
@@ -126,8 +131,7 @@ def run(document, data=dict(), interactive=False, force=False):
     data['ref'] = document['ref']
 
     update_document(document, data, force, interactive)
-    document.save()
-    papis.database.get().update(document)
+    _update_with_database(document)
 
 
 @click.command("update")
@@ -243,7 +247,7 @@ def cli(
     if not all:
         documents = filter(
             lambda d: d,
-            [papis.api.pick_doc(documents)]
+            [papis.pick.pick_doc(documents)]
         )
 
     for document in documents:
@@ -263,19 +267,24 @@ def cli(
         if delete:
             for key in delete:
                 _delete_key = False
-                if (interactive and
-                        not force and
-                        papis.utils.confirm("Delete {key}?".format(key=key))):
+                _confirmation = True
+                if interactive:
+                    _confirmation = papis.utils.confirm(
+                        "Delete {key}?".format(key=key))
+                if interactive and _confirmation and not force:
                     _delete_key = True
-                elif not interactive:
-                    _delete_key = True
-                elif force:
-                    _delete_key = True
-                else:
+                elif not _confirmation:
                     _delete_key = False
+                else:
+                    _delete_key = True
                 if _delete_key:
-                    del document[key]
-                    document.save()
+                    try:
+                        logger.warning('Deleting {key}'.format(key=key))
+                        del document[key]
+                    except ValueError:
+                        logger.error('Document has no {key}'.format(key=key))
+                    else:
+                        _update_with_database(document)
 
         if auto:
             if 'doi' in document.keys() and not from_doi:
@@ -301,7 +310,7 @@ def cli(
             if from_crossref is True:
                 from_crossref = ''
             try:
-                doc = papis.api.pick_doc([
+                doc = papis.pick.pick_doc([
                         papis.document.from_data(d)
                         for d in papis.crossref.get_data(
                             query=query,
@@ -315,13 +324,14 @@ def cli(
                         from_doi = doc['doi']
 
             except Exception as e:
+                logger.error('error processing crossref')
                 logger.error(e)
 
         if from_base:
             query = papis.utils.format_doc(from_base, document)
             logger.info('Trying with base with query {0}'.format(query))
             try:
-                doc = papis.api.pick_doc([
+                doc = papis.pick.pick_doc([
                     papis.document.from_data(d)
                     for d in papis.base.get_data(query=query)
                 ])
@@ -338,7 +348,7 @@ def cli(
             query = papis.utils.format_doc(from_isbn, document)
             logger.info('Trying with isbn ({0:20})'.format(query))
             try:
-                doc = papis.api.pick_doc([
+                doc = papis.pick.pick_doc([
                     papis.document.from_data(d)
                     for d in papis.isbn.get_data(query=query)
                 ])
@@ -362,17 +372,19 @@ def cli(
             try:
                 bib_data = papis.bibtex.bibtex_to_dict(from_bibtex)
                 data.update(bib_data[0])
-            except Exception:
-                pass
+            except Exception as e:
+                logger.error('error processing bibtex')
+                logger.error(e)
 
         if from_url:
             query = papis.utils.format_doc(from_url, document)
             logger.info('Trying url {0}'.format(query))
             try:
-                url_data = papis.downloaders.utils.get(query)
+                url_data = papis.downloaders.get_info_from_url(query)
                 data.update(url_data["data"])
-            except Exception:
-                pass
+            except Exception as e:
+                logger.error('error processing url')
+                logger.error(e)
 
         run(
             document,

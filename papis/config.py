@@ -39,7 +39,7 @@ general_settings = {
     "opentool": get_default_opener(),
     "dir-umask": 0o755,
     "browser": os.environ.get('BROWSER') or get_default_opener(),
-    "picktool": "papis.pick",
+    "picktool": "papis",
     "mvtool": "mv",
     "editor": os.environ.get('EDITOR')
                         or os.environ.get('VISUAL')
@@ -436,7 +436,7 @@ def merge_configuration_from_path(path, configuration):
 
 
 def set_lib(library):
-    """Set library, notice that in principle library can be a full path.
+    """Set library
 
     :param library: Library object
     :type  library: papis.library.Library
@@ -451,6 +451,12 @@ def set_lib(library):
 
 
 def set_lib_from_name(libname):
+    """Set library, notice that in principle library can be a full path.
+
+    :param libname: Name of the library or some path to a folder
+    :type  libname: str
+    """
+    assert(isinstance(libname, str))
     set_lib(get_lib_from_name(libname))
 
 
@@ -477,17 +483,17 @@ def get_lib_from_name(libname):
         if name not in config.keys():
             raise Exception('Library {0} not defined'.format(libname))
         try:
-            paths = [expanduser(config[name].get('dir'))]
-        except:
+            paths = [expanduser(config[name]['dir'])]
+        except KeyError:
             try:
                 paths = eval(expanduser(config[name].get('dirs')))
-            except:
+            except SyntaxError as e:
                 raise Exception(
                     "To define a library you have to set either dir or dirs"
-                    " in the configuration file."
+                    " in the configuration file.\n"
+                    "Error: ({0})".format(e)
                 )
         library_obj = papis.library.Library(libname, paths)
-        name = libname
     return library_obj
 
 
@@ -507,11 +513,15 @@ def get_lib_name():
 def get_lib():
     """Get current library, if there is no library set before,
     the default library will be retrieved.
+    If the `PAPIS_LIB` environment variable is defined, this is the
+    library name (or path) that will be taken as a default.
 
     :returns: Current library
     :rtype:  papis.library.Library
     """
     global _CURRENT_LIBRARY
+    if os.environ.get('PAPIS_LIB'):
+        set_lib_from_name(os.environ['PAPIS_LIB'])
     if _CURRENT_LIBRARY is None:
         # Do not put papis.config.get because get is a special function
         # that also needs the library to see if some key was overridden!

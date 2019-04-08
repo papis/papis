@@ -52,8 +52,8 @@ class DocMatcher(object):
         ([(['heisenberg'], {})], {})
         >>> DocMatcher.return_if_match(doc) is not None
         False
-        >>> DocMatcher.parse('title = ein')
-        ([(['title', '=', 'ein'], {})], {})
+        >>> DocMatcher.parse('title : ein')
+        ([(['title', ':', 'ein'], {})], {})
         >>> DocMatcher.return_if_match(doc) is not None
         True
 
@@ -100,14 +100,14 @@ class DocMatcher(object):
         :type  search: str
         :returns: Parsed query
         :rtype:  list
-        >>> print(DocMatcher.parse('hello author = einstein'))
-        [['hello'], ['author', '=', 'einstein']]
+        >>> print(DocMatcher.parse('hello author : einstein'))
+        [['hello'], ['author', ':', 'einstein']]
         >>> print(DocMatcher.parse(''))
         []
         >>> print(\
             DocMatcher.parse(\
-                '"hello world whatever =" tags = \\\'hello ====\\\''))
-        [['hello world whatever ='], ['tags', '=', 'hello ====']]
+                '"hello world whatever :" tags : \\\'hello ::::\\\''))
+        [['hello world whatever :'], ['tags', ':', 'hello ::::']]
         >>> print(DocMatcher.parse('hello'))
         [['hello']]
         """
@@ -132,7 +132,7 @@ def parse_query(query_string):
 
     equal = (
         pyparsing.ZeroOrMore(" ") +
-        pyparsing.Literal('=') +
+        pyparsing.Literal(':') +
         pyparsing.ZeroOrMore(" ")
     )
 

@@ -13,7 +13,7 @@ import papis.database
 import subprocess
 import logging
 import papis.cli
-import papis.api
+import papis.pick
 import papis.strings
 import click
 
@@ -53,7 +53,7 @@ def cli(query, git):
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
-    document = papis.api.pick_doc(documents)
+    document = papis.pick.pick_doc(documents)
     if not document:
         return 0
 

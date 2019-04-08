@@ -42,6 +42,14 @@ def create_random_file(suffix='', prefix=''):
     return tempf
 
 
+def create_real_document(data, suffix=''):
+    folder = tempfile.mkdtemp(suffix=suffix)
+    doc = papis.document.Document(folder=folder, data=data)
+    doc.save()
+    assert(os.path.exists(doc.get_info_file()))
+    return doc
+
+
 test_data = [
     {
         "author": 'doc without files',
@@ -54,14 +62,25 @@ test_data = [
         "title": 'Freedom from the known',
         "year": '2009',
         "_test_files": 1,
-    },
-    {
+    }, {
         "author": 'K. Popper',
         'doi': '10.1021/ct5004252',
         "title": 'The open society',
         "volume": 'I',
         "_test_files": 0,
-    },
+    }, {
+        "author": "Turing A. M.",
+        "doi": "10.1112/plms/s2-42.1.230",
+        "issue": "1",
+        "journal": "Proceedings of the London Mathematical Society",
+        "note": "First turing machine paper foundation of cs",
+        "pages": "230--265",
+        "title": "On Computable Numbers with an Application to the Entscheidungsproblem",
+        "url": "https://api.wiley.com/onlinelibrary/tdm/v1/articles/10.1112%2Fplms%2Fs2-42.1.230",
+        "volume": "s2-42",
+        "year": "1937",
+        "_test_files": 2,
+    }
 ]
 
 

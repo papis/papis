@@ -2,7 +2,6 @@ import pickle
 import logging
 import os
 import papis.utils
-from papis.utils import get_cache_home, folders_to_documents
 import papis.docmatcher
 import papis.document
 import papis.config
@@ -46,7 +45,9 @@ def get_cache_file_path(directory):
     '/tmp/papis/database/c39177eca0eaea2e21134b0bd06631b6-papers'
     """
     cache_name = get_cache_file_name(directory)
-    folder = os.path.expanduser(os.path.join(get_cache_home(), 'database'))
+    folder = os.path.expanduser(
+        os.path.join(papis.utils.get_cache_home(), 'database')
+    )
     if not os.path.exists(folder):
         os.makedirs(folder)
     return os.path.join(folder, cache_name)
@@ -65,9 +66,9 @@ def filter_documents(documents, search=""):
     >>> document = papis.document.from_data({'author': 'einstein'})
     >>> len(filter_documents([document], search="einstein")) == 1
     True
-    >>> len(filter_documents([document], search="author = ein")) == 1
+    >>> len(filter_documents([document], search="author : ein")) == 1
     True
-    >>> len(filter_documents([document], search="title = ein")) == 1
+    >>> len(filter_documents([document], search="title : ein")) == 1
     False
 
     """
@@ -176,7 +177,7 @@ class Database(papis.database.base.Database):
             folders = sum([
                 papis.utils.get_folders(d) for d in self.get_dirs()
             ], [])
-            self.documents = folders_to_documents(folders)
+            self.documents = papis.utils.folders_to_documents(folders)
             if use_cache:
                 self.save()
         self.logger.debug(
@@ -227,7 +228,7 @@ class Database(papis.database.base.Database):
 
     def query_dict(self, dictionary):
         query_string = " ".join(
-            ["{}=\"{}\" ".format(key, val) for key, val in dictionary.items()]
+            ["{}:\"{}\" ".format(key, val) for key, val in dictionary.items()]
         )
         return self.query(query_string)
 

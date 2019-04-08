@@ -3,6 +3,8 @@ import urllib.request  # urlopen, Request
 import urllib.parse  # import urlencode
 import papis.config
 import json
+import click
+import papis.document
 
 
 logger = logging.getLogger('dissemin')
@@ -65,3 +67,24 @@ def get_data(query=None):
     jsondoc = urllib.request.urlopen(url).read().decode()
     paperlist = json.loads(jsondoc)
     return sum([dissemindoc_to_papis(d) for d in paperlist['papers']], [])
+
+
+@click.command('dissemin')
+@click.pass_context
+@click.help_option('--help', '-h')
+@click.option('--query', '-q', default=None)
+def explorer(ctx, query):
+    """
+    Look for documents on dissem.in
+
+    Examples of its usage are
+
+    papis explore dissemin -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
+
+    """
+    logger = logging.getLogger('explore:dissemin')
+    logger.info('Looking up...')
+    data = get_data(query=query)
+    docs = [papis.document.from_data(data=d) for d in data]
+    ctx.obj['documents'] += docs
+    logger.info('{} documents found'.format(len(docs)))

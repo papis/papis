@@ -13,6 +13,7 @@ from prompt_toolkit.layout.controls import (
 )
 from prompt_toolkit.layout.layout import Layout
 import papis.config as config
+import papis.document
 import logging
 
 from .widgets.command_line_prompt import Command
@@ -91,7 +92,7 @@ def create_keybindings(app):
         event.app.message_toolbar.text = None
 
     @kb.add('escape', filter=Condition(lambda: app.error_toolbar.text))
-    def _(event):
+    def _escape(event):
         event.app.error_toolbar.text = None
 
     @kb.add('c-n', filter=~has_focus(app.info_window))
@@ -160,12 +161,12 @@ def create_keybindings(app):
         event.app.command_line_prompt.clear()
 
     @kb.add('escape', filter=has_focus(app.command_line_prompt))
-    def _(event):
+    def _escape_when_commandline_has_focus(event):
         event.app.layout.focus(event.app.options_list.search_buffer)
         event.app.command_line_prompt.clear()
 
     @kb.add('c-t')
-    def _(event):
+    def _toggle_mark_(event):
         event.app.options_list.toggle_mark_current_selection()
 
     return kb
@@ -374,4 +375,4 @@ class Picker(Application):
 
     def update_info_window(self):
         doc = self.options_list.get_selection()
-        self.info_window.text = doc.dump()
+        self.info_window.text = papis.document.dump(doc)

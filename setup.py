@@ -27,6 +27,34 @@ import papis
 with open('README.rst') as fd:
     long_description = fd.read()
 
+if sys.platform == 'win32':
+    data_files = []
+else:
+    data_files = [
+
+        ("share/doc/papis", [
+            "README.rst",
+            "CHANGELOG.md",
+            "AUTHORS",
+            "LICENSE.txt",
+        ]),
+
+        ("etc/bash_completion.d/", [
+            "scripts/shell_completion/click/papis.sh",
+        ]),
+
+        ("share/zsh/site-functions/", [
+            "scripts/shell_completion/click/zsh/_papis",
+        ]),
+
+        ("share/man/man1", glob.glob("doc/build/man/*")),
+
+        ("share/applications", [
+            "contrib/papis.desktop",
+        ]),
+
+    ]
+
 included_packages = ['papis'] + ['papis.' + p for p in find_packages('papis')]
 
 setup(
@@ -55,8 +83,9 @@ setup(
         "habanero>=0.6.0",
         "isbnlib>=3.9.1,<4.0.0",
         "prompt_toolkit>=2.0.5",
+        "tqdm>=4.1",
         "pygments>=2.2.0",
-        "stevedore",
+        "stevedore>=1.30",
     ],
     python_requires='>=3',
     classifiers=[
@@ -106,36 +135,13 @@ setup(
         papis=[
         ],
     ),
-    data_files=[
-
-        ("share/doc/papis", [
-            "README.rst",
-            "CHANGELOG.md",
-            "AUTHORS",
-            "LICENSE.txt",
-        ]),
-
-        ("etc/bash_completion.d/", [
-            "scripts/shell_completion/click/papis.sh",
-        ]),
-
-        ("share/zsh/site-functions/", [
-            "scripts/shell_completion/click/zsh/_papis",
-        ]),
-
-        ("share/man/man1", glob.glob("doc/build/man/*")),
-
-        ("share/applications", [
-            "contrib/papis.desktop",
-        ]),
-
-    ],
+    data_files=data_files,
     packages=included_packages,
     entry_points={
-        'console_scripts':[
-            'papis=papis.commands.default:run'
+        'console_scripts': [
+            'papis=papis.commands.default:run',
         ],
-        'papis.exporter':[
+        'papis.exporter': [
             'bibtex=papis.commands.export:export_to_bibtex',
             'json=papis.commands.export:export_to_json',
             'yaml=papis.commands.export:export_to_yaml',
@@ -148,6 +154,59 @@ setup(
             # 'crossref=papis.commands.importer:CrossrefImporter',
             # 'doi=papis.commands.importer:DOIImporter',
         ],
+        'papis.picker': [
+            'papis=papis.pick:papis_pick',
+        ],
+        'papis.command': [
+            "add=papis.commands.add:cli",
+            "addto=papis.commands.addto:cli",
+            "browse=papis.commands.browse:cli",
+            "config=papis.commands.config:cli",
+            "edit=papis.commands.edit:cli",
+            "explore=papis.commands.explore:cli",
+            "export=papis.commands.export:cli",
+            "git=papis.commands.git:cli",
+            "list=papis.commands.list:cli",
+            "mv=papis.commands.mv:cli",
+            "open=papis.commands.open:cli",
+            "rename=papis.commands.rename:cli",
+            "rm=papis.commands.rm:cli",
+            "run=papis.commands.run:cli",
+            "update=papis.commands.update:cli",
+        ],
+        'papis.downloader': [
+            "acs=papis.downloaders.acs:Downloader",
+            "annualreviews=papis.downloaders.annualreviews:Downloader",
+            "aps=papis.downloaders.aps:Downloader",
+            "frontiersin=papis.downloaders.frontiersin:Downloader",
+            "get=papis.downloaders.get:Downloader",
+            "hal=papis.downloaders.hal:Downloader",
+            "ieee=papis.downloaders.ieee:Downloader",
+            "iopscience=papis.downloaders.iopscience:Downloader",
+            "scitationaip=papis.downloaders.scitationaip:Downloader",
+            "thesesfr=papis.downloaders.thesesfr:Downloader",
+            "worldscientific=papis.downloaders.worldscientific:Downloader",
+            "fallback=papis.downloaders.fallback:Downloader",
+            "libgen=papis.libgen:Downloader",
+            "arxiv=papis.arxiv:Downloader",
+        ],
+        'papis.explorer': [
+            "lib=papis.commands.explore:lib",
+            "citations=papis.commands.explore:citations",
+            "cmd=papis.commands.explore:cmd",
+            "pick=papis.commands.explore:pick",
+            "arxiv=papis.arxiv:explorer",
+            "libgen=papis.libgen:explorer",
+            "crossref=papis.crossref:explorer",
+            "dissemin=papis.dissemin:explorer",
+            "base=papis.base:explorer",
+            "export=papis.commands.export:explorer",
+            "isbn=papis.isbn:explorer",
+            "isbnplus=papis.isbnplus:explorer",
+            "yaml=papis.yaml:explorer",
+            "json=papis.json:explorer",
+            "bibtex=papis.bibtex:explorer",
+        ]
     },
     platforms=['linux', 'osx'],
 )

@@ -10,41 +10,30 @@ import shutil
 logger = logging.getLogger("document")
 
 
-def open_in_browser(document):
-    """Browse document's url whenever possible.
-
-    :document: Document object
-    :returns: Returns the url that is composed from the document
-    :rtype:  str
-
+def new(folder_path, data, files=[]):
     """
-    global logger
-    url = None
-    key = papis.config.get("browse-key")
+    Creates a document at a given folder with data and
+    some existing files.
 
-    if document.has(key):
-        if "doi" == key:
-            url = 'https://doi.org/{}'.format(document['doi'])
-        elif "isbn" == key:
-            url = 'https://isbnsearch.org/isbn/{}'.format(document['isbn'])
-        else:
-            url = document[key]
-
-    if url is None or key == 'search-engine':
-        from urllib.parse import urlencode
-        params = {
-            'q': papis.utils.format_doc(
-                papis.config.get('browse-query-format'),
-                document
-            )
-        }
-        url = papis.config.get('search-engine') + '/?' + urlencode(params)
-
-    logger.debug("Opening url %s:" % url)
-    papis.utils.general_open(
-        url, "browser", wait=False
-    )
-    return url
+    :param folder_path: A folder path, if non existing it will be created
+    :type  folder_path: str
+    :param data: Dictionary with key and values to be updated
+    :type  data: dict
+    :param files: Existing paths for files
+    :type  files: list(str)
+    :raises FileExistsError: If folder_path exists
+    """
+    assert(isinstance(folder_path, str))
+    assert(isinstance(data, dict))
+    assert(isinstance(files, list))
+    os.makedirs(folder_path)
+    doc = Document(folder=folder_path, data=data)
+    doc['files'] = []
+    for f in files:
+        shutil.copy(f, os.path.join(folder_path))
+        doc['files'].append(os.path.basename(f))
+    doc.save()
+    return doc
 
 
 def from_folder(folder_path):
@@ -298,12 +287,8 @@ class Document(object):
         :param key: Name of the property.
         :type  key: str
 
-        >>> doc = from_data({'title': 'Hello', 'type': 'book'})
-        >>> del doc['title']
-        >>> doc.has('title')
-        False
         """
-        self._keys.pop(self._keys.index(key))
+        self._keys.remove(key)
         delattr(self, key)
 
     def __setitem__(self, key, value):
@@ -314,7 +299,8 @@ class Document(object):
         :param value: Value of the parameter
         :type  value: str,int,float,list
         """
-        self._keys.append(key)
+        if key not in self._keys:
+            self._keys.append(key)
         setattr(self, key, value)
 
     def __getitem__(self, key):
@@ -369,11 +355,6 @@ class Document(object):
         :param key: Key name to be checked
         :returns: True/False
 
-        >>> doc = from_data({'title': 'Hello World'})
-        >>> doc.has('title')
-        True
-        >>> doc.has('author')
-        False
         """
         return key in self.keys()
 
@@ -383,7 +364,7 @@ class Document(object):
         import papis.yaml
         papis.yaml.data_to_yaml(
             self.get_info_file(),
-            {key: self[key] for key in self.keys()}
+            {key: self[key] for key in self.keys() if self[key]}
         )
 
     def get_info_file(self):
@@ -399,9 +380,13 @@ class Document(object):
         :returns: List of full file paths
         :rtype:  list
         """
-        files = self["files"] if isinstance(self["files"], list) \
-            else [self["files"]]
         result = []
+        if not self.has('files'):
+            return result
+        files = (
+            self["files"] if isinstance(self["files"], list)
+            else [self["files"]]
+        )
         for f in files:
             result.append(os.path.join(self.get_main_folder(), f))
         return result
@@ -423,17 +408,6 @@ class Document(object):
         :rtype:  list
         """
         return self._keys
-
-    def dump(self):
-        """Return information string without any obvious format
-        :returns: String with document's information
-        :rtype:  str
-
-        >>> doc = from_data({'title': 'Hello World'})
-        >>> doc.dump()
-        'title:   Hello World\\n'
-        """
-        return dump(self)
 
     def load(self):
         """Load information from info file

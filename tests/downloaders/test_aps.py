@@ -1,4 +1,4 @@
-import papis.downloaders.utils
+import papis.downloaders
 from papis.downloaders.aps import Downloader
 import papis.bibtex
 
@@ -16,8 +16,8 @@ def test_match():
 
 
 def test_downloader_getter():
-    assert(papis.downloaders.utils.get_downloader is not None)
-    aps = papis.downloaders.utils.get_downloader(
+    assert(papis.downloaders.get_downloader is not None)
+    aps = papis.downloaders.get_downloader(
         "http://journals.aps.org/prb/abstract/10.1103/PhysRevB.95.085434"
     )
     assert(aps.expected_document_extension == 'pdf')
@@ -31,7 +31,7 @@ def test_downloader_getter():
     #assert(not aps.check_document_format())
 
     # this is an open access paper, so it should work
-    aps = papis.downloaders.utils.get(
+    aps = papis.downloaders.get_info_from_url(
      'https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.121.091601'
     )
     assert(isinstance(aps, dict))

@@ -1,9 +1,10 @@
 from __future__ import unicode_literals
 from __future__ import absolute_import, division, print_function
-import re
 import logging
 import os
 import papis.config
+import click
+import papis.document
 
 logger = logging.getLogger("bibtex")
 
@@ -114,6 +115,29 @@ bibtex_key_converter = {
 }
 
 
+@click.command('bibtex')
+@click.pass_context
+@click.argument('bibfile', type=click.Path(exists=True))
+@click.help_option('--help', '-h')
+def explorer(ctx, bibfile):
+    """
+    Import documents from a bibtex file
+
+    Examples of its usage are
+
+    papis explore bibtex lib.bib pick
+
+    """
+    logger = logging.getLogger('explore:bibtex')
+    logger.info('Reading in bibtex file {}'.format(bibfile))
+    docs = [
+        papis.document.from_data(d)
+        for d in papis.bibtex.bibtex_to_dict(bibfile)
+    ]
+    ctx.obj['documents'] += docs
+    logger.info('{} documents found'.format(len(docs)))
+
+
 def bibtexparser_entry_to_papis(entry):
     """Convert keys of a bib entry in bibtexparser format to papis compatible
     format.
@@ -150,7 +174,13 @@ def bibtex_to_dict(bibtex):
         formally recognizes.
     :rtype:  list
     """
-    import bibtexparser
+    from bibtexparser.bparser import BibTexParser
+
+    parser = BibTexParser(common_strings=True)
+    parser.ignore_nonstandard_types = False
+    parser.homogenise_fields = False
+    parser.interpolate_strings = True
+
     # bibtexparser has too many debug messages to be useful
     logging.getLogger("bibtexparser.bparser").setLevel(logging.WARNING)
     global logger
@@ -160,11 +190,7 @@ def bibtex_to_dict(bibtex):
             text = fd.read()
     else:
         text = bibtex
-    logger.debug("Removing comments...")
-    text = re.sub(r" +%.*", "", text)
-    logger.debug("Removing empty lines...")
-    text = re.sub(r"^\s*$", "", text)
-    entries = bibtexparser.loads(text).entries
+    entries = parser.parse(text, partial=True).entries
     # Clean entries
     return [bibtexparser_entry_to_papis(entry) for entry in entries]
 

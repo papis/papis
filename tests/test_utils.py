@@ -7,7 +7,31 @@ import papis.commands.add
 import papis.database
 import papis.document
 from papis.document import from_data
-from papis.utils import *
+from papis.utils import (
+    get_cache_home, create_identifier, locate_document,
+    general_open, format_doc, input, clean_document_name,
+    confirm, get_document_extension,
+)
+
+def test_get_cache_home():
+    os.environ["XDG_CACHE_HOME"] = '~/.cache'
+    assert(
+        get_cache_home() == os.path.expanduser(
+            os.path.join(os.environ["XDG_CACHE_HOME"], 'papis')
+        )
+    )
+    os.environ["XDG_CACHE_HOME"] = '/tmp/.cache'
+    assert(get_cache_home() == '/tmp/.cache/papis')
+    assert(os.path.exists(get_cache_home()))
+    del os.environ["XDG_CACHE_HOME"]
+    assert(
+        get_cache_home() == os.path.expanduser(
+            os.path.join('~/.cache', 'papis')
+        )
+    )
+    tmp = os.path.join(tempfile.mkdtemp(), 'blah')
+    papis.config.set('cache-dir', tmp)
+    assert(get_cache_home() == tmp)
 
 
 def test_create_identifier():

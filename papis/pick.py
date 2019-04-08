@@ -1,43 +1,48 @@
 import logging
+import os
 import papis.config
-from papis.tui.app import Picker as PapisPicker
+from papis.tui.app import Picker
+from stevedore import extension
+
 logger = logging.getLogger("pick")
 
 
-class Picker:
-    """
-    Main class for pickers, all possible pickers should follow this example
-    and subclass it.
-
-    """
-    def __init__(
-            self, options, default_index=0,
-            header_filter=lambda x: x, match_filter=lambda x: x
-            ):
-        self.options = options
-        self.default_index = default_index
-        self.header_filter = header_filter
-        self.match_filter = match_filter
-
-    def __call__(self):
-        if len(self.options) == 0:
-            return ""
-        if len(self.options) == 1:
-            return self.options[0]
-
-        picker = PapisPicker(
-            self.options,
-            self.default_index,
-            self.header_filter,
-            self.match_filter
-        )
-        picker.run()
-        return picker.options_list.get_selection()
+def stevedore_error_handler(manager, entrypoint, exception):
+    logger = logging.getLogger("pick:stevedore")
+    logger.error("Error while loading entrypoint [%s]" % entrypoint)
+    logger.error(exception)
 
 
-_PICKERS = {
-    "papis.pick": Picker
-}
+def available_pickers():
+    return pickers_mgr.entry_points_names()
+
+
+def papis_pick(
+        options, default_index=0,
+        header_filter=lambda x: x, match_filter=lambda x: x
+        ):
+    if len(options) == 0:
+        return ""
+    if len(options) == 1:
+        return options[0]
+
+    picker = Picker(
+        options,
+        default_index,
+        header_filter,
+        match_filter
+    )
+    picker.run()
+    return picker.options_list.get_selection()
+
+
+pickers_mgr = extension.ExtensionManager(
+    namespace='papis.picker',
+    invoke_on_load=False,
+    verify_requirements=True,
+    propagate_map_exceptions=True,
+    on_load_failure_callback=stevedore_error_handler
+)
 
 
 def pick(
@@ -48,37 +53,38 @@ def pick(
         ):
     """Construct and start a :class:`Picker <Picker>`.
     """
-    global _PICKERS
     name = papis.config.get("picktool")
     try:
-        picker = get_picker(name)
+        picker = pickers_mgr[name].plugin
     except KeyError:
-        logger.exception("I don't know how to use the picker '%s'" % name)
-        logger.exception(
-            "Registered pickers are: {0}".format(", ".join(_PICKERS.keys()))
-        )
+        logger.error("Invalid picker ({0})".format(name))
+        logger.error(
+            "Registered pickers are: {0}".format(available_pickers()))
     else:
         return picker(
             options,
             default_index=default_index,
             header_filter=header_filter,
             match_filter=match_filter
-        )()
+        )
 
 
-def register_picker(name, picker):
-    global _PICKERS
-    _PICKERS[name] = picker
+def pick_doc(documents):
+    """Pick a document from documents with the correct formatting
 
+    :documents: List of documents
+    :returns: Document
 
-def get_picker(name):
-    """Get a registered picker
-
-    :param name: Name of the picker
-    :type  name: Picker
-    :returns: Picker
-    :rtype:  Picker
-    :raises KeyError: Whenever the picker is not found
     """
-    global _PICKERS
-    return _PICKERS[name]
+    header_format_path = papis.config.get('header-format-file')
+    if header_format_path is not None:
+        with open(os.path.expanduser(header_format_path)) as fd:
+            header_format = fd.read()
+    else:
+        header_format = papis.config.get("header-format")
+    match_format = papis.config.get("match-format")
+    pick_config = dict(
+        header_filter=lambda x: papis.utils.format_doc(header_format, x),
+        match_filter=lambda x: papis.utils.format_doc(match_format, x)
+    )
+    return pick(documents, **pick_config)

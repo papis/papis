@@ -19,7 +19,7 @@ Cli
 from string import ascii_lowercase
 import os
 import shutil
-import papis.api
+import papis.pick
 import papis.utils
 import papis.document
 import papis.config
@@ -80,6 +80,7 @@ def run(document, filepaths):
 
     document['files'] += new_file_list
     document.save()
+    papis.database.get().update(document)
 
 
 @click.command("addto")
@@ -103,7 +104,7 @@ def cli(query, files, file_name):
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
-    document = papis.api.pick_doc(documents)
+    document = papis.pick.pick_doc(documents)
     if not document:
         return
 

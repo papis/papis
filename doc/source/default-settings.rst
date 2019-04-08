@@ -7,9 +7,9 @@ General settings
     will additionally read if the file is present in the current
     directory or in the base directory of a given library.
 
-    This is useful for instance if you have a library somewhere
-    for which you want special configuration settings to be set
-    but you do not want these settings to cluster in your configuration
+    This is useful, for instance, if you have a library somewhere
+    for which you want special configuration settings
+    but do not want these settings to cluster in your configuration
     file. It is also useful if you're sharing a library with someone
     else and you want them to have the same settings in that library as
     you. Imagine you're sharing a library of datasheets with your friend
@@ -64,8 +64,8 @@ General settings
 
 .. papis-config:: doc-url-key-name
 
-    Some documents might have associated apart from an url also a file url,
-    the key name appearing in the information file is defined by
+    Some documents might have, apart from an url, also a file url associated with them.
+    The key name appearing in the information file is defined by
     this setting.
 
 .. papis-config:: default-library
@@ -85,7 +85,7 @@ General settings
 
     Default format that is used to match a document against in order to select
     it. For example if the ``match-format`` is equal to
-    ``{doc[year]} {doc[author]}`` then title of a document will not work
+    ``{doc[year]} {doc[author]}`` then the title of a document will not work
     to match a document, only the year and author.
 
 .. papis-config:: header-format
@@ -141,9 +141,9 @@ Tools options
 .. papis-config:: opentool
 
     This is the general program that will be used to open documents.
-    As for now papis is not intended to detect the type of document to be open
-    and decide upon it how to open the document. You should set this
-    to the right program for the tool. If you are in linux you might want
+    As for now papis is not intended to detect the type of document to be opened
+    and decide upon how to open the document. You should set this
+    to the right program for the tool. If you are on linux you might want
     to take a look at `ranger <http://ranger.nongnu.org>`_ or let
     the default handle it in your system.
     For mac users you might set this to ``open``.
@@ -159,22 +159,22 @@ Tools options
     This is the program used whenever papis asks you to pick a document
     or options in general.
 
-    Possible options are:
-        - papis.pick
+    Only option is:
+        - papis
 
 .. papis-config:: editor
     :default: $EDITOR
 
-    Editor used to edit files in papis, for instance for the ``papis edit``
+    Editor used to edit files in papis, e.g., for the ``papis edit``
     command. It defaults to the ``$EDITOR`` environment variable, if this is
     not set then it will default to the ``$VISUAL`` environment variable.
     Otherwise the default editor in your system will be used.
 
 .. papis-config:: file-browser
 
-    File browser to be used when opening a directory, it defaults to the
-    default file browser in your system, however you can set it to different
-    file browsers such as ``dolphin``, ``thunar``, ``ranger`` to name a few.
+    File browser to be used when opening a directory. It defaults to the
+    default file browser in your system, however, you can set it to different
+    file browsers such as ``dolphin``, ``thunar`` or ``ranger`` just to name a few.
 
 
 Bibtex options
@@ -193,7 +193,7 @@ Bibtex options
   :default: []
 
   When exporting documents in bibtex format, you might want to add
-  non-standard bibtex keys such as ``doc_url`` or ``tags``, you can add
+  non-standard bibtex keys such as ``doc_url`` or ``tags``. You can add
   these as a valid python list of strings, for instance:
 
   .. code:: ini
@@ -239,7 +239,7 @@ Bibtex options
 
 .. papis-config:: bibtex-unicode
 
-    Wether or not to allow direct unicode characters in the document
+    Whether or not to allow direct unicode characters in the document
     fields to be exported into the bibtex text.
 
 .. _add-command-options:
@@ -262,7 +262,7 @@ Bibtex options
 
 .. papis-config:: add-confirm
 
-    If set to ``True``, everytime you run ``papis add``
+    If set to ``True``, every time you run ``papis add``
     the flag ``--confirm`` will be added automatically. If is set to ``True``
     and you add it, i.e., you run ``papis add --confirm``, then it will
     fave the contrary effect, i.e., it will not ask for confirmation.
@@ -270,7 +270,7 @@ Bibtex options
 .. papis-config:: add-folder-name
     :default: empty string
 
-    Default name for the folder of newly added documents. For example, if you
+    Default name for the folder of newly added documents. For example, if you want
     the folder of your documents to be named after the format
     ``author-title`` then you should set it to
     the papis format: ``{doc[author]}-{doc[title]}``.
@@ -283,25 +283,25 @@ Bibtex options
 
 .. papis-config:: add-interactive
 
-    If set to ``True``, everytime you run ``papis add``
+    If set to ``True``, every time you run ``papis add``
     the flag ``--interactive`` will be added automatically. If is set to
     ``True`` and you add it, i.e., you run ``papis add --interactive``, then it
     will fave the contrary effect, i.e., it will not run in interactive mode.
 
 .. papis-config:: add-edit
 
-    If set to ``True``, everytime you run ``papis add``
-    the flag ``--edit`` will be added automatically. If is set to
-    ``True`` and you add it, i.e., you run ``papis add --edit``, then it
-    will fave the contrary effect, i.e., it will not prompt to edit the info
+    If set to ``True``, every time you run ``papis add``
+    the flag ``--edit`` will be added automatically. If it is set to
+    ``True`` and you add something, i.e., you run ``papis add --edit``, then it
+    will have the contrary effect, i.e., it will not prompt to edit the info
     file.
 
 .. papis-config:: add-open
 
-    If set to ``True``, everytime you run ``papis add``
-    the flag ``--open`` will be added automatically. If is set to
-    ``True`` and you add it, i.e., you run ``papis add --open``, then it
-    will fave the contrary effect, i.e., it will not open the attached files
+    If set to ``True``, every time you run ``papis add``
+    the flag ``--open`` will be added automatically. If it is set to
+    ``True`` and you add something, i.e., you run ``papis add --open``, then it
+    will have the contrary effect, i.e., it will not open the attached files
     before adding the document to the library.
 
 ``papis browse`` options
@@ -310,11 +310,11 @@ Bibtex options
 .. papis-config:: browse-key
 
     This command provides the key that is used to generate the
-    url. For users that ``papis add --from-doi``, setting browse-key
+    url. For users that run ``papis add --from-doi``, setting browse-key
     to ``doi`` constructs the url from dx.doi.org/DOI, providing a
     much more accurate url.
 
-    Default value is set to ``url``. If the user needs functionality
+    Default value is set to ``url``. If you need functionality
     with the ``search-engine`` option, set the option to an empty
     string e.g.  ::
 
@@ -338,7 +338,7 @@ Marks
 
 .. papis-config:: open-mark
 
-    If this option is set to ``True``, then every time that papis opens
+    If this option is set to ``True``, every time papis opens
     a document it will ask to open a mark first.
     If it is set to ``False``, then doing
 
@@ -350,8 +350,8 @@ Marks
 
 .. papis-config:: mark-key-name
 
-    This is the default key name for the marks in the info file, for
-    example if you set ``mark-key-name = bookmarks`` then you would have
+    This is the default key name for the marks in the info file. For
+    example, if you set ``mark-key-name = bookmarks`` then you would have
     in your ``info.yaml`` file
 
     .. code::
@@ -370,9 +370,9 @@ Marks
 .. papis-config:: mark-header-format
 
     This is the format in which the mark will appear whenever the user
-    has to pick one, you can change this in order to make ``marks`` work
+    has to pick one. You can change this in order to make ``marks`` work
     in the way you like. Per default it is assumed that every mark
-    has a ``name`` and a ``value`` key, but this you can change.
+    has a ``name`` and a ``value`` key.
 
 .. papis-config:: mark-match-format
 
@@ -419,22 +419,22 @@ Databases
 
     This is the default query that a command will take if no
     query string is typed in the command line. For example this is
-    the query that is passed to the command open whenever no search
+    the query that is passed to the command ``open`` whenever no search
     string is typed:
 
     ::
 
         papis open
 
-    Imagine you want to have all your papers whenever you do not
-    specify an input query string, then you would set
+    Imagine you want to open all papers authored by ``John Smith`` whenever you do not
+    specify an input query string, i.e., ``papis open``. Then setting
 
     ::
 
-        default-query-string = author="John Smith"
+        default-query-string = author:"John Smith"
 
-    and whenever you typed ``papis open``, onlye the ``John Smith`` authored
-    papers would appear. Notice that the current example has been
+    would do the trick.
+    Notice that the current example has been
     done assuming the ``database-backend = papis``.
 
 .. papis-config:: database-backend
@@ -455,7 +455,7 @@ Databases
 .. papis-config:: whoosh-schema-fields
 
     Python list with the ``TEXT`` fields that should be included in the
-    whoosh database schema. For instance say that you want to be able
+    whoosh database schema. For instance, say that you want to be able
     to search for the ``doi`` and ``ref`` of the documents, then you could
     include
 
@@ -474,7 +474,7 @@ Terminal user interface (picker)
 
 These options are for the terminal user interface (tui).
 They are defined in the section ``tui`` which means that you can set them
-in your configuration file globaly like
+in your configuration file globally like
 
 .. code:: ini
 
@@ -487,13 +487,13 @@ or inside the library sections prepending a ``tui-``,
 .. code:: ini
 
     [papers]
-    tui-status_line_format = "Library papers"
+    tui-status_line_format = "Library papers**
     ...
 
 .. papis-config:: status_line_format
     :section: tui
 
-    This is the format of the string that appears on the bottom line in the
+    This is the format of the string that appears at the bottom in the
     status line.  Right now there are only two variables defined:
 
     - ``selected_index``
