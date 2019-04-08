@@ -392,7 +392,6 @@ def run(
     help="Add a document into a given library"
 )
 @click.help_option('--help', '-h')
-
 @click.argument("files", type=click.Path(exists=True), nargs=-1)
 @click.option(
     "-s", "--set", "set_list",
@@ -421,7 +420,7 @@ def run(
     type=(click.Choice(papis.importer.available_importers()), str),
     nargs=2,
     multiple=True,
-    default=None,
+    default=(),
 )
 @click.option(
     "-b", "--batch",
@@ -459,6 +458,57 @@ def run(
          "its original location",
     default=False
 )
+@click.option(
+    "--from-bibtex",
+    help="{c.Fore.RED}[DEPRECATED use --from bibtex <value>]{c.Style.RESET_ALL}"
+    "Parse information from a bibtex file".format(c=colorama),
+    default=""
+)
+@click.option(
+    "--from-yaml",
+    help="{c.Fore.RED}[DEPRECATED use --from yaml <value>]{c.Style.RESET_ALL}"
+    "Parse information from a yaml file".format(c=colorama),
+    default=""
+)
+@click.option(
+    "--from-folder",
+    help="{c.Fore.RED}[DEPRECATED use --from folder <value>]{c.Style.RESET_ALL}"
+    "Add document from folder being a valid papis document"
+         " (containing info.yaml)".format(c=colorama),
+    default=""
+)
+@click.option(
+    "--from-url",
+    help="{c.Fore.RED}[DEPRECATED use --from url <value>]{c.Style.RESET_ALL}"
+    "Get document and information from a "
+    "given url, a parser must be implemented"
+    .format(c=colorama),
+    default=""
+)
+@click.option(
+    "--from-doi",
+    help="{c.Fore.RED}[DEPRECATED use --from doi <value>]{c.Style.RESET_ALL}"
+    "Doi to try to get information from".format(c=colorama),
+    default=None
+)
+@click.option(
+    "--from-crossref",
+    help="{c.Fore.RED}[DEPRECATED use --from crossref <value>]{c.Style.RESET_ALL}"
+    "Try to get information from a crossref query".format(c=colorama),
+    default=None
+)
+@click.option(
+    "--from-pmid",
+    help="{c.Fore.RED}[DEPRECATED use --from pmid <value>]{c.Style.RESET_ALL}"
+    "PMID to try to get information from".format(c=colorama),
+    default=None
+)
+@click.option(
+    "--from-lib",
+    help="{c.Fore.RED}[DEPRECATED use --from lib <value>]{c.Style.RESET_ALL}"
+    "Add document from another library".format(c=colorama),
+    default=""
+)
 def cli(
         files,
         set_list,
@@ -466,21 +516,21 @@ def cli(
         folder_name,
         file_name,
         from_importer,
-        # from_bibtex,
-        # from_yaml,
-        # from_url,
-        # from_doi,
-        # from_folder,
-        # from_crossref,
-        # from_pmid,
-        # from_lib,
         batch,
         confirm,
         open_file,
         edit,
         commit,
         smart,
-        link
+        link,
+        from_bibtex,
+        from_yaml,
+        from_url,
+        from_doi,
+        from_folder,
+        from_crossref,
+        from_pmid,
+        from_lib,
         ):
     """
     :param from_folder: Filepath where to find a papis document (folder +
@@ -497,13 +547,35 @@ def cli(
     :param from_yaml: Filepath where to find a file containing yaml info.
     :type  from_yaml: str
     """
+    from_importer = list(from_importer)
+    logger = logging.getLogger('cli:add')
+    deprecated_flags = [
+        ("bibtex", from_bibtex), ("yaml", from_yaml), ("url", from_url),
+        ("doi", from_doi), ("folder", from_folder), ("pmid", from_pmid),
+        ("crossref", from_crossref), ("lib", from_lib),
+    ]
+    for deprecated in deprecated_flags:
+        name = deprecated[0]
+        resource = deprecated[1]
+        if resource:
+            logger.warning(
+                "{c.Fore.WHITE}{c.Back.BLACK}{c.Style.BRIGHT}"
+                "\n"
+                "The flag {c.Fore.RED}--from-{name} '{value}'{c.Fore.WHITE}"
+                " is deprecated, "
+                "please use in the future\n"
+                "\t {c.Fore.GREEN}--from {name} '{value}'"
+                "{c.Style.RESET_ALL}"
+                .format(c=colorama, name=name, value=resource)
+            )
+            from_importer.append((name, resource))
+
     data = dict()
     files = list(files)
 
     for data_set in set_list:
         data[data_set[0]] = data_set[1]
 
-    logger = logging.getLogger('cli:add')
 
     if batch:
         edit = False
