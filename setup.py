@@ -147,12 +147,12 @@ setup(
             'yaml=papis.commands.export:export_to_yaml',
         ],
         'papis.importer':[
-            'bibtex=papis.commands.importer:BibtexImporter',
-            'yaml=papis.commands.importer:YamlImporter',
-            # 'lib=papis.commands.importer:FromLibImporter',
-            # 'pmid=papis.commands.importer:PMIDImporter',
-            # 'crossref=papis.commands.importer:CrossrefImporter',
-            # 'doi=papis.commands.importer:DOIImporter',
+            'bibtex=papis.importer:BibtexImporter',
+            'yaml=papis.importer:YamlImporter',
+            # 'lib=papis.importer:FromLibImporter',
+            # 'pmid=papis.importer:PMIDImporter',
+            # 'crossref=papis.importer:CrossrefImporter',
+            # 'doi=papis.importer:DOIImporter',
         ],
         'papis.picker': [
             'papis=papis.pick:papis_pick',

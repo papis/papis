@@ -5,7 +5,6 @@ import logging
 import papis.doi
 import papis.arxiv
 import papis.document
-import papis.downloaders.utils
 import papis.cli
 import papis.yaml
 import os.path
@@ -19,9 +18,11 @@ class Importer:
 
 
     @staticmethod
-    def matches(param) -> bool:
+    def matches(param):
         """
         Check if this is a candidate for this importer
+
+        :rtype:  bool
 
         """
         raise NotImplementedError()

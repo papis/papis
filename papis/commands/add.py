@@ -104,7 +104,8 @@ logger = logging.getLogger('add')
 
 # TODO move
 def stevedore_error_handler(manager, entrypoint, exception):
-    print("Error while loading entrypoint [%s]" % entrypoint)
+    logger.error("Error while loading entrypoint [%s]" % entrypoint)
+    logger.error(exception)
 
 def get_file_name(data, original_filepath, suffix=""):
     """Generates file name for the document
@@ -411,7 +412,6 @@ def available_importers():
 )
 @click.help_option('--help', '-h')
 
-@click.argument("resource", type=str, nargs=1)
 @click.argument("files", type=click.Path(exists=True), nargs=-1)
 @click.option(
     "-s", "--set", "set_list",
@@ -437,7 +437,8 @@ def available_importers():
 @click.option(
     "--from-importer", "--from",
     help="Add document from a specific importer",
-    type=click.Choice(available_importers()),
+    type=(click.Choice(available_importers()), str),
+    nargs=2,
     default=None,
 )
 @click.option(
@@ -483,7 +484,6 @@ def cli(
         folder_name,
         file_name,
         from_importer,
-        resource,
         # from_bibtex,
         # from_yaml,
         # from_folder,
@@ -563,8 +563,9 @@ def cli(
         if confirm:
             # todo display fresh_data
             papis.utils.confirm(
-                'Do you want to update the document with the newly acquired data')
-            )):
+                'Do you want to update the document with the newly acquired'
+                'data'
+            )
 
 
     try:
@@ -717,7 +718,6 @@ def cli(
             )
         if bib_data:
             data.update(bib_data[0])
->>>>>>> master
 
     assert(isinstance(data, dict))
 
