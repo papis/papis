@@ -8,6 +8,7 @@ import papis.document
 import papis.cli
 import papis.yaml
 import os.path
+from stevedore import extension
 
 logger = logging.getLogger('importer')
 
@@ -250,3 +251,37 @@ class FromFolder(Importer):
 #             papis.api.open_file(tmp_filepath)
 #             if papis.utils.confirm('Do you want to use this file?'):
 #                 files.append(tmp_filepath)
+
+def stevedore_error_handler(manager, entrypoint, exception):
+    logger.error("Error while loading entrypoint [%s]" % entrypoint)
+    logger.error(exception)
+
+
+import_mgr = None
+
+
+def _create_import_mgr():
+    global import_mgr
+    if import_mgr:
+        return
+    import_mgr = extension.ExtensionManager(
+        namespace='papis.importer',
+        invoke_on_load=True,
+        verify_requirements=True,
+        invoke_args=(),
+        # invoke_kwds
+        propagate_map_exceptions=True,
+        on_load_failure_callback=stevedore_error_handler
+    )
+
+
+def available_importers():
+    global import_mgr
+    _create_import_mgr()
+    return import_mgr.entry_points_names()
+
+
+def get_import_mgr():
+    global import_mgr
+    _create_import_mgr()
+    return import_mgr

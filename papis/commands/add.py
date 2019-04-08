@@ -97,15 +97,10 @@ import papis.yaml
 import click
 import builtins
 import colorama
-# import stevedore
-from stevedore import extension
+import papis.importer
 
 logger = logging.getLogger('add')
 
-# TODO move
-def stevedore_error_handler(manager, entrypoint, exception):
-    logger.error("Error while loading entrypoint [%s]" % entrypoint)
-    logger.error(exception)
 
 def get_file_name(data, original_filepath, suffix=""):
     """Generates file name for the document
@@ -391,20 +386,6 @@ def run(
         )
     return
 
-import_mgr = extension.ExtensionManager(
-    namespace='papis.importer',
-    invoke_on_load=True,
-    verify_requirements=True,
-    invoke_args=(),
-    # invoke_kwds
-    propagate_map_exceptions=True,
-    on_load_failure_callback=stevedore_error_handler
-)
-
-def available_importers():
-    return import_mgr.entry_points_names()
-
-
 
 @click.command(
     "add",
@@ -437,7 +418,7 @@ def available_importers():
 @click.option(
     "--from-importer", "--from",
     help="Add document from a specific importer",
-    type=(click.Choice(available_importers()), str),
+    type=(click.Choice(papis.importer.available_importers()), str),
     nargs=2,
     default=None,
 )
@@ -557,6 +538,7 @@ def cli(
     except:
         pass
 
+    import_mgr = papis.importer.get_import_mgr()
     try:
         if from_importer:
             importer_name = from_importer[0]
