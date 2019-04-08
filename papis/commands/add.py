@@ -645,50 +645,6 @@ def cli(
         # else:
             # logger.error("PMID %s not found or invalid" % from_pmid)
 
-    # if from_doi:
-        # logger.info("using doi {0}".format(from_doi))
-        # doidata = papis.crossref.get_data(dois=[from_doi])
-        # if doidata:
-            # data.update(doidata[0])
-        # if (len(files) == 0 and
-                # papis.config.get('doc-url-key-name') in data.keys()):
-
-            # doc_url = data[papis.config.get('doc-url-key-name')]
-            # logger.info(
-                # 'You did not provide any files, but I found a possible '
-                # 'url where the file might be'
-            # )
-            # logger.info(
-                # 'I am trying to download the document from %s' % doc_url
-            # )
-            # down = papis.downloaders.get_downloader(doc_url, 'get')
-            # assert(down is not None)
-            # tmp_filepath = tempfile.mktemp()
-            # logger.debug("Saving in %s" % tmp_filepath)
-
-            # with builtins.open(tmp_filepath, 'wb+') as fd:
-                # fd.write(down.get_document_data())
-
-            # logger.info('Opening the file')
-            # papis.api.open_file(tmp_filepath)
-            # if papis.utils.confirm('Do you want to use this file?'):
-                # files.append(tmp_filepath)
-
-    # if from_yaml:
-        # logger.info("Reading yaml input file = %s" % from_yaml)
-        # data.update(papis.yaml.yaml_to_data(from_yaml))
-
-    # if from_bibtex:
-        # logger.info("Reading bibtex input file = %s" % from_bibtex)
-        # bib_data = papis.bibtex.bibtex_to_dict(from_bibtex)
-        # if len(bib_data) > 1:
-            # logger.warning(
-                # 'Your bibtex file contains more than one entry,'
-                # ' I will be taking the first entry'
-            # )
-        # if bib_data:
-            # data.update(bib_data[0])
-
     assert(isinstance(data, dict))
 
     return run(

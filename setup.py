@@ -146,13 +146,13 @@ setup(
             'json=papis.commands.export:export_to_json',
             'yaml=papis.commands.export:export_to_yaml',
         ],
-        'papis.importer':[
-            'bibtex=papis.importer:BibtexImporter',
+        'papis.importer': [
+            'bibtex=papis.bibtex:Importer',
             'yaml=papis.yaml:Importer',
+            'doi=papis.crossref:Importer',
             # 'lib=papis.importer:FromLibImporter',
             # 'pmid=papis.importer:PMIDImporter',
             # 'crossref=papis.importer:CrossrefImporter',
-            # 'doi=papis.commands.importer:DOIImporter',
         ],
         'papis.picker': [
             'papis=papis.pick:papis_pick',

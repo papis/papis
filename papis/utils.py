@@ -466,3 +466,13 @@ def get_cache_home():
     if not os.path.exists(path):
         os.makedirs(path)
     return path
+
+
+def geturl(url):
+    """Quick and dirty file get request utility.
+    """
+    assert(isinstance(url, str))
+    import requests
+    session = requests.Session()
+    session.headers = {'User-Agent': papis.config.get('user-agent')}
+    return session.get(url).content

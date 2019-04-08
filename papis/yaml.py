@@ -82,5 +82,5 @@ class Importer(papis.importer.Importer):
         return papis.utils.get_document_extension(res) == 'yaml'
 
     def fetch(self):
-        self.logger.info("Reading yaml input file = %s" % self.uri)
+        self.logger.info("Reading input file = %s" % self.uri)
         self.ctx.data = yaml_to_data(self.uri)

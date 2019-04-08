@@ -5,6 +5,8 @@ import os
 import papis.config
 import click
 import papis.document
+import papis.importer
+import papis.utils
 
 logger = logging.getLogger("bibtex")
 
@@ -115,6 +117,22 @@ bibtex_key_converter = {
 }
 
 
+class Importer(papis.importer.Importer):
+
+    def __init__(self, **kwargs):
+        papis.importer.Importer.__init__(self, name='bibtex', **kwargs)
+
+    def fetch(self):
+        self.logger.info("Reading input file = %s" % self.uri)
+        bib_data = bibtex_to_dict(from_bibtex)
+        if len(bib_data) > 1:
+            self.logger.warning(
+                'Your bibtex file contains more than one entry,'
+                ' I will be taking the first entry')
+        if bib_data:
+            self.ctx.data = bib_data[0]
+
+
 @click.command('bibtex')
 @click.pass_context
 @click.argument('bibfile', type=click.Path(exists=True))
@@ -132,7 +150,7 @@ def explorer(ctx, bibfile):
     logger.info('Reading in bibtex file {}'.format(bibfile))
     docs = [
         papis.document.from_data(d)
-        for d in papis.bibtex.bibtex_to_dict(bibfile)
+        for d in bibtex_to_dict(bibfile)
     ]
     ctx.obj['documents'] += docs
     logger.info('{} documents found'.format(len(docs)))
