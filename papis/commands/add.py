@@ -74,7 +74,6 @@ Cli
 
 """
 import logging
-import papis
 from string import ascii_lowercase
 import os
 import re
@@ -86,19 +85,49 @@ import papis.api
 import papis.pick
 import papis.utils
 import papis.config
-import papis.bibtex
-import papis.crossref
-import papis.doi
-import papis.arxiv
 import papis.document
-import papis.downloaders
+import papis.importer
 import papis.cli
-import papis.yaml
 import click
 import colorama
-import papis.importer
 
 logger = logging.getLogger('add')
+
+
+class FromFolderImporter(papis.importer.Importer):
+
+    def __init__(self, **kwargs):
+        papis.importer.Importer.__init__(self, name='folder', **kwargs)
+
+    @classmethod
+    def match(cls, uri):
+        return FromFolderImporter(uri=uri) if os.path.isdir(uri) else None
+
+    def fetch(self):
+        doc = papis.document.from_folder(self.uri)
+        self.logger.info('importing from folder {0}'.format(self.uri))
+        self.ctx.data = papis.document.to_dict(doc)
+        self.ctx.files = doc.get_files()
+
+
+class FromLibImporter(papis.importer.Importer):
+
+    def __init__(self, **kwargs):
+        papis.importer.Importer.__init__(self, name='lib', **kwargs)
+
+    @classmethod
+    def match(cls, uri):
+        return (
+            FromFolderImporter(uri=uri)
+            if papis.config.get_lib_from_name(uri)
+            else None
+        )
+
+    def fetch(self):
+        doc = papis.pick.pick_doc(papis.api.get_all_documents_in_lib(self.uri))
+        importer = FromFolderImporter(uri=doc.get_main_folder())
+        importer.fetch()
+        self.ctx = importer.ctx
 
 
 def get_file_name(data, original_filepath, suffix=""):
@@ -569,13 +598,6 @@ def cli(
         confirm = False
         open_file = False
 
-    # if from_lib:
-        # doc = papis.pick.pick_doc(
-            # papis.api.get_all_documents_in_lib(from_lib)
-        # )
-        # if doc:
-            # from_folder = doc.get_main_folder()
-
     try:
         # Try getting title if title is an argument of add
         data["title"] = data.get('title') or get_default_title(
@@ -628,11 +650,6 @@ def cli(
             # doc = papis.pick.pick_doc(docs) if not batch else docs[0]
             # if doc and not from_doi and doc.has('doi'):
                 # from_doi = doc['doi']
-
-    # if from_folder:
-        # original_document = papis.document.Document(from_folder)
-        # from_yaml = original_document.get_info_file()
-        # files.extend(original_document.get_files())
 
     assert(isinstance(data, dict))
 

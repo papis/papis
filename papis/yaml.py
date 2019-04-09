@@ -78,8 +78,13 @@ class Importer(papis.importer.Importer):
     def __init__(self, **kwargs):
         papis.importer.Importer.__init__(self, name='yaml', **kwargs)
 
-    def match(cls, res):
-        return papis.utils.get_document_extension(res) == 'yaml'
+    @classmethod
+    def match(cls, uri):
+        return (
+            Import(uri=uri)
+            if papis.utils.get_document_extension(uri) == 'yaml'
+            else None
+        )
 
     def fetch(self):
         self.logger.info("Reading input file = %s" % self.uri)

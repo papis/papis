@@ -154,8 +154,9 @@ setup(
             'url=papis.downloaders:Importer',
             'arxiv=papis.arxiv:Importer',
             'pmid=papis.pubmed:Importer',
+            'lib=papis.commands.add:FromLibImporter',
+            'folder=papis.commands.add:FromFolderImporter',
             # 'crossref=papis.importer:CrossrefImporter',
-            # 'lib=papis.importer:FromLibImporter',
         ],
         'papis.picker': [
             'papis=papis.pick:papis_pick',
