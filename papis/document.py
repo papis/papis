@@ -415,6 +415,14 @@ class Document(object):
         import papis.yaml
         if not os.path.exists(self.get_info_file()):
             return
-        data = papis.yaml.yaml_to_data(self.get_info_file())
-        for key in data:
-            self[key] = data[key]
+        try:
+            data = papis.yaml.yaml_to_data(
+                self.get_info_file(), raise_exception=True)
+        except Exception as e:
+            logger.error(
+                'Error reading yaml file in {0}'.format(yaml_path) +
+                '\nPlease check it!\n\n{0}'.format(str(e))
+            )
+        else:
+            for key in data:
+                self[key] = data[key]
