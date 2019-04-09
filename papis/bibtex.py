@@ -124,12 +124,14 @@ class Importer(papis.importer.Importer):
 
     @classmethod
     def match(cls, uri):
-        return (
-            Importer(uri=uri)
-            if (os.path.exists(uri) and not os.path.isdir(uri))
-            else None
-        )
+        if (not os.path.exists(uri) or os.path.isdir(uri) or
+                papis.utils.get_document_extension(uri) == 'pdf'):
+            return None
+        importer = Importer(uri=uri)
+        importer.fetch()
+        return importer if importer.ctx else None
 
+    @papis.importer.cache
     def fetch(self):
         self.logger.info("Reading input file = %s" % self.uri)
         try:
