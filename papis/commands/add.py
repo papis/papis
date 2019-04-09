@@ -617,41 +617,6 @@ def cli(
         except Exception as e:
             logger.exception(e)
 
-    # # GET INFORMATION FROM PDF
-    # if (not from_doi and
-            # not from_bibtex and
-            # not from_url and
-            # not from_folder and
-            # files and
-            # papis.utils.get_document_extension(files[0]) == 'pdf'):
-
-        # logger.info("Trying to parse doi from file {0}".format(files[0]))
-        # doi = papis.doi.pdf_to_doi(files[0])
-        # if doi:
-            # logger.info("Parsed doi {0}".format(doi))
-            # logger.warning("There is no guarantee that this doi is the one")
-        # if (doi and
-                # not batch and
-                # confirm and
-                # papis.utils.confirm(
-                    # 'Do you want to use the doi {0}'.format(doi)
-                # )):
-            # from_doi = doi
-
-        # arxivid = papis.arxiv.pdf_to_arxivid(files[0])
-        # if arxivid:
-            # logger.info("Parsed arxivid {0}".format(arxivid))
-            # logger.warning(
-                # "There is no guarantee that this arxivid is the one"
-            # )
-        # if (arxivid and
-                # not batch and
-                # confirm and
-                # papis.utils.confirm(
-                    # 'Do you want to use the arxivid {0}'.format(arxivid)
-                # )):
-            # from_url = "https://arxiv.org/abs/{0}".format(arxivid)
-
     # if from_crossref:
         # logger.info("Querying crossref.org")
         # docs = [

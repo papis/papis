@@ -225,6 +225,22 @@ def explorer(ctx, query, author, title, max):
     logger.info('{} documents found'.format(len(docs)))
 
 
+class DoiFromPdfImporter(papis.importer.Importer):
+
+    def __init__(self, **kwargs):
+        papis.importer.Importer.__init__(self, name='pdf2doi', **kwargs)
+
+    def fetch(self):
+        self.logger.info("Trying to parse doi from file {0}".format(self.uri))
+        doi = papis.doi.pdf_to_doi(self.uri)
+        if doi:
+            self.logger.info("Parsed doi {0}".format(doi))
+            self.logger.warning(
+                "There is no guarantee that this doi is the one")
+            importer = Importer(uri=self.uri)
+            self.ctx = importer.ctx
+
+
 class Importer(papis.importer.Importer):
 
     def __init__(self, **kwargs):

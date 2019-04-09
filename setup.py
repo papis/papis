@@ -150,6 +150,7 @@ setup(
             'bibtex=papis.bibtex:Importer',
             'yaml=papis.yaml:Importer',
             'doi=papis.crossref:Importer',
+            'pdf2doi=papis.crossref:DoiFromPdfImporter',
             'url=papis.downloaders:Importer',
             'arxiv=papis.arxiv:Importer',
             'pmid=papis.pubmed:Importer',
