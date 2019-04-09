@@ -79,12 +79,16 @@ class Importer(papis.importer.Importer):
 
     @classmethod
     def match(cls, uri):
-        return (
-            Importer(uri=uri)
-            if (os.path.exists(uri) and not os.path.isdir(uri))
-            else None
-        )
+        importer = Importer(uri=uri)
+        if os.path.exists(uri) and not os.path.isdir(uri):
+            importer.fetch()
+            if importer.ctx.data:
+                return importer
+            else:
+                return None
+        return None
 
+    @papis.importer.cache
     def fetch(self):
         self.logger.info("reading input file = %s" % self.uri)
-        self.ctx.data = yaml_to_data(self.uri)
+        self.ctx.data = yaml_to_data(self.uri, raise_exception=False)
