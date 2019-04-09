@@ -185,6 +185,7 @@ setup(
             "frontiersin=papis.downloaders.frontiersin:Downloader",
             "get=papis.downloaders.get:Downloader",
             "hal=papis.downloaders.hal:Downloader",
+            "doi=papis.crossref:Downloader",
             "ieee=papis.downloaders.ieee:Downloader",
             "iopscience=papis.downloaders.iopscience:Downloader",
             "scitationaip=papis.downloaders.scitationaip:Downloader",

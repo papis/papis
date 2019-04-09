@@ -7,6 +7,7 @@ import re
 import click
 import papis.document
 import papis.importer
+import papis.downloaders.base
 import tempfile
 
 logger = logging.getLogger("crossref")
@@ -241,25 +242,6 @@ class DoiFromPdfImporter(papis.importer.Importer):
             self.ctx = importer.ctx
 
 
-class FromCrossrefImpoter(papis.importer.Importer):
-
-    def __init__(self, **kwargs):
-        papis.importer.Importer.__init__(self, name='crossref', **kwargs)
-
-    def fetch(self):
-        self.logger.info("Querying crossref.org")
-        docs = [
-            papis.document.from_data(d)
-            for d in get_data(query=self.uri)
-        ]
-        if docs:
-            self.logger.info("got {0} matches, picking...".format(len(docs)))
-            doc = papis.pick.pick_doc(docs)
-            if doc:
-                importer = Importer(uri=doc['doi'])
-                importer.fetch()
-                self.ctx = importer.ctx
-
 class Importer(papis.importer.Importer):
 
     def __init__(self, **kwargs):
@@ -281,3 +263,43 @@ class Importer(papis.importer.Importer):
                 with open(tmp_filepath, 'wb+') as fd:
                     fd.write(document_data)
                 self.ctx.files.append(tmp_filepath)
+
+
+class FromCrossrefImpoter(papis.importer.Importer):
+
+    def __init__(self, **kwargs):
+        papis.importer.Importer.__init__(self, name='crossref', **kwargs)
+
+    def fetch(self):
+        self.logger.info("querying '{0}' to crossref.org".format(self.uri))
+        docs = [
+            papis.document.from_data(d)
+            for d in get_data(query=self.uri)
+        ]
+        if docs:
+            self.logger.info("got {0} matches, picking...".format(len(docs)))
+            doc = papis.pick.pick_doc(docs)
+            if doc:
+                importer = Importer(uri=doc['doi'])
+                importer.fetch()
+                self.ctx = importer.ctx
+
+
+class Downloader(papis.downloaders.base.Downloader):
+
+    def __init__(self, uri):
+        papis.downloaders.base.Downloader.__init__(self, uri=uri, name="doi")
+
+    @classmethod
+    def match(cls, uri):
+        doi = papis.doi.find_doi_in_text(uri)
+        if doi:
+            return Downloader(uri)
+        else:
+            return None
+
+    def fetch(self):
+        doi = papis.doi.find_doi_in_text(self.uri)
+        importer = Importer(uri=doi)
+        importer.fetch()
+        self.ctx = importer.ctx
