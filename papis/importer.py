@@ -1,5 +1,4 @@
 import papis
-import papis.utils
 import logging
 import os.path
 from stevedore import extension
@@ -8,8 +7,12 @@ logger = logging.getLogger('importer')
 
 
 class Context:
-    files = []
-    data = dict()
+    def __init__(self):
+        self.data = dict()
+        self.files = []
+
+    def __bool__(self):
+        return bool(self.files) or bool(self.data)
 
 
 class Importer:
@@ -83,16 +86,14 @@ def _create_import_mgr():
     )
 
 
-def available_importers():
-    global import_mgr
-    _create_import_mgr()
-    return import_mgr.entry_points_names()
-
-
 def get_import_mgr():
     global import_mgr
     _create_import_mgr()
     return import_mgr
+
+
+def available_importers():
+    return get_import_mgr().entry_points_names()
 
 
 def get_importer_by_name(name):
@@ -103,6 +104,15 @@ def get_importer_by_name(name):
     :rtype:  Importer
     """
     assert(isinstance(name, str))
-    global import_mgr
-    _create_import_mgr()
-    return import_mgr[name].plugin
+    return get_import_mgr()[name].plugin
+
+
+def cache(f):
+    """
+    :param self: Importer object
+    :type  self: Importer
+    """
+    def wrapper(self):
+        if not self.ctx:
+            f(self)
+    return wrapper
