@@ -152,8 +152,8 @@ setup(
             'doi=papis.crossref:Importer',
             'url=papis.downloaders:Importer',
             'arxiv=papis.arxiv:Importer',
+            'pmid=papis.pubmed:Importer',
             # 'crossref=papis.importer:CrossrefImporter',
-            # 'pmid=papis.importer:PMIDImporter',
             # 'lib=papis.importer:FromLibImporter',
         ],
         'papis.picker': [

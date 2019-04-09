@@ -95,7 +95,6 @@ import papis.downloaders
 import papis.cli
 import papis.yaml
 import click
-import builtins
 import colorama
 import papis.importer
 
@@ -415,7 +414,7 @@ def run(
     default=None
 )
 @click.option(
-    "--from-importer", "--from",
+    "--from", "from_importer",
     help="Add document from a specific importer",
     type=(click.Choice(papis.importer.available_importers()), str),
     nargs=2,
@@ -460,7 +459,8 @@ def run(
 )
 @click.option(
     "--from-bibtex",
-    help="{c.Fore.RED}[DEPRECATED use --from bibtex <value>]{c.Style.RESET_ALL}"
+    help="{c.Fore.RED}[DEPRECATED use --from bibtex <value>]"
+    "{c.Style.RESET_ALL}"
     "Parse information from a bibtex file".format(c=colorama),
     default=""
 )
@@ -472,9 +472,9 @@ def run(
 )
 @click.option(
     "--from-folder",
-    help="{c.Fore.RED}[DEPRECATED use --from folder <value>]{c.Style.RESET_ALL}"
-    "Add document from folder being a valid papis document"
-         " (containing info.yaml)".format(c=colorama),
+    help="{c.Fore.RED}[DEPRECATED use --from folder <value>]"
+    "{c.Style.RESET_ALL}"
+    "Add document from folder being a valid papis document".format(c=colorama),
     default=""
 )
 @click.option(
@@ -493,7 +493,8 @@ def run(
 )
 @click.option(
     "--from-crossref",
-    help="{c.Fore.RED}[DEPRECATED use --from crossref <value>]{c.Style.RESET_ALL}"
+    help="{c.Fore.RED}[DEPRECATED use --from crossref <value>]"
+    "{c.Style.RESET_ALL}"
     "Try to get information from a crossref query".format(c=colorama),
     default=None
 )
@@ -532,23 +533,10 @@ def cli(
         from_pmid,
         from_lib,
         ):
-    """
-    :param from_folder: Filepath where to find a papis document (folder +
-        info file) to be added to the library.
-    :type  from_folder: str
-    :param from_doi: doi number to try to download information from.
-    :type  from_doi: str
-    :param from_crossref: Crossref query to get doi
-    :type  from_crossref: str
-    :param from_pmid: pmid number to try to download information from.
-    :type  from_pmid: str
-    :param from_url: Url to try to download information and files from.
-    :type  from_url: str
-    :param from_yaml: Filepath where to find a file containing yaml info.
-    :type  from_yaml: str
-    """
+
     from_importer = list(from_importer)
     logger = logging.getLogger('cli:add')
+
     deprecated_flags = [
         ("bibtex", from_bibtex), ("yaml", from_yaml), ("url", from_url),
         ("doi", from_doi), ("folder", from_folder), ("pmid", from_pmid),
@@ -575,7 +563,6 @@ def cli(
 
     for data_set in set_list:
         data[data_set[0]] = data_set[1]
-
 
     if batch:
         edit = False
@@ -681,22 +668,6 @@ def cli(
         # original_document = papis.document.Document(from_folder)
         # from_yaml = original_document.get_info_file()
         # files.extend(original_document.get_files())
-
-    # if from_pmid:
-        # logger.info("Using PMID %s via HubMed" % from_pmid)
-        # hubmed_url = "http://pubmed.macropus.org/articles/"\
-                     # "?format=text%%2Fbibtex&id=%s" % from_pmid
-        # bibtex_data = papis.downloaders.get_downloader(
-            # hubmed_url,
-            # "get"
-        # ).get_document_data().decode("utf-8")
-        # bibtex_data = papis.bibtex.bibtex_to_dict(bibtex_data)
-        # if len(bibtex_data):
-            # data.update(bibtex_data[0])
-            # if "doi" in data and not from_doi:
-                # from_doi = data["doi"]
-        # else:
-            # logger.error("PMID %s not found or invalid" % from_pmid)
 
     assert(isinstance(data, dict))
 
