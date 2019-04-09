@@ -1,24 +1,34 @@
 import re
 import logging
+import math
 
 logger = logging.getLogger("doi")
 
 
-def pdf_to_doi(filepath):
+def pdf_to_doi(filepath, maxlines=math.inf):
     """Try to get doi from a filepath, it looks for a regex in the binary
     data and returns the first doi found, in the hopes that this doi
     is the correct one.
 
     :param filepath: Path to the pdf file
     :type  filepath: str
+    :param maxlines: Maximum number of lines that should be checked
+        For some documnets, it would spend a long time trying to look for
+        a doi, and dois in the middle of documents don't tend to be the correct
+        doi of the document.
+    :type  maxlines: int
     :returns: DOI or None
     :rtype:  str or None
     """
     doi = None
+    lines = 0
     with open(filepath, 'rb') as fd:
         for line in fd:
             doi = find_doi_in_text(line.decode('ascii', errors='ignore'))
             if doi:
+                break
+            lines += 1
+            if lines > maxlines:
                 break
     return doi
 

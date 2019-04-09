@@ -233,7 +233,7 @@ class DoiFromPdfImporter(papis.importer.Importer):
 
     def fetch(self):
         self.logger.info("Trying to parse doi from file {0}".format(self.uri))
-        doi = papis.doi.pdf_to_doi(self.uri)
+        doi = papis.doi.pdf_to_doi(self.uri, maxlines=2000)
         if doi:
             self.logger.info("Parsed doi {0}".format(doi))
             self.logger.warning(
