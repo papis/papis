@@ -421,7 +421,7 @@ def run(
     help="Add a document into a given library"
 )
 @click.help_option('--help', '-h')
-@click.argument("files", type=click.Path(exists=True), nargs=-1)
+@click.argument("files", type=str, nargs=-1)
 @click.option(
     "-s", "--set", "set_list",
     help="Set some information before",

@@ -129,10 +129,11 @@ class Importer(papis.importer.Importer):
     def __init__(self, **kwargs):
         papis.importer.Importer.__init__(self, name='url', **kwargs)
 
-    def match(url):
+    @classmethod
+    def match(cls, uri):
         return (
             Importer(uri=uri)
-            if re.match(' *http(s)?.*', url) is not None
+            if re.match(' *http(s)?.*', uri) is not None
             else None
         )
 
