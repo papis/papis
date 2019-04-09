@@ -231,26 +231,26 @@ class DoiFromPdfImporter(papis.importer.Importer):
 
     def __init__(self, **kwargs):
         papis.importer.Importer.__init__(self, name='pdf2doi', **kwargs)
+        self.doi = None
 
     @classmethod
     def match(cls, uri):
-        return (
-            DoiFromPdfImporter(uri=uri)
-            if (
-                not os.path.isdir(uri) and
-                os.path.exists(uri) and
-                papis.utils.get_document_extension(uri) == 'pdf'
-            ) else None
-        )
+        if (os.path.isdir(uri) or not os.path.exists(uri) or
+                not papis.utils.get_document_extension(uri) == 'pdf'):
+            return None
+        importer = DoiFromPdfImporter(uri=uri)
+        importer.doi = papis.doi.pdf_to_doi(uri, maxlines=2000)
+        return importer if importer.doi else None
 
     def fetch(self):
         self.logger.info("Trying to parse doi from file {0}".format(self.uri))
-        doi = papis.doi.pdf_to_doi(self.uri, maxlines=2000)
-        if doi:
-            self.logger.info("Parsed doi {0}".format(doi))
+        if not self.doi:
+            self.doi = papis.doi.pdf_to_doi(self.uri, maxlines=2000)
+        if self.doi:
+            self.logger.info("Parsed doi {0}".format(self.doi))
             self.logger.warning(
                 "There is no guarantee that this doi is the one")
-            importer = Importer(uri=doi)
+            importer = Importer(uri=self.doi)
             importer.fetch()
             self.ctx = importer.ctx
 
