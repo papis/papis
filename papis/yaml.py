@@ -28,7 +28,7 @@ def data_to_yaml(yaml_path, data):
         )
 
 
-def yaml_to_data(yaml_path):
+def yaml_to_data(yaml_path, raise_exception=False):
     """
     Convert a yaml file into a dictionary using the yaml module.
 
@@ -36,16 +36,15 @@ def yaml_to_data(yaml_path):
     :type  yaml_path: str
     :returns: Dictionary containing the info of the yaml file
     :rtype:  dict
+    :raises ValueError: If a yaml parsing error happens
     """
     global logger
     with open(yaml_path) as fd:
         try:
             data = yaml.safe_load(fd)
         except Exception as e:
-            logger.error(
-                'Error reading yaml file in {0}'.format(yaml_path) +
-                '\nPlease check it!\n\n{0}'.format(str(e))
-            )
+            if raise_exception:
+                raise ValueError(e)
             return dict()
         else:
             return data
