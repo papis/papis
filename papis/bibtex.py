@@ -122,15 +122,26 @@ class Importer(papis.importer.Importer):
     def __init__(self, **kwargs):
         papis.importer.Importer.__init__(self, name='bibtex', **kwargs)
 
+    @classmethod
+    def match(cls, uri):
+        return (
+            Importer(uri=uri)
+            if (os.path.exists(uri) and not os.path.isdir(uri))
+            else None
+        )
+
     def fetch(self):
         self.logger.info("Reading input file = %s" % self.uri)
-        bib_data = bibtex_to_dict(self.uri)
-        if len(bib_data) > 1:
-            self.logger.warning(
-                'Your bibtex file contains more than one entry,'
-                ' I will be taking the first entry')
-        if bib_data:
-            self.ctx.data = bib_data[0]
+        try:
+            bib_data = bibtex_to_dict(self.uri)
+            if len(bib_data) > 1:
+                self.logger.warning(
+                    'Your bibtex file contains more than one entry,'
+                    ' I will be taking the first entry')
+            if bib_data:
+                self.ctx.data = bib_data[0]
+        except Exception as e:
+            self.logger.debug(e)
 
 
 @click.command('bibtex')

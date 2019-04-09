@@ -4,6 +4,7 @@ import papis.utils
 import papis.doi
 import habanero
 import re
+import os
 import click
 import papis.document
 import papis.importer
@@ -231,6 +232,17 @@ class DoiFromPdfImporter(papis.importer.Importer):
     def __init__(self, **kwargs):
         papis.importer.Importer.__init__(self, name='pdf2doi', **kwargs)
 
+    @classmethod
+    def match(cls, uri):
+        return (
+            DoiFromPdfImporter(uri=uri)
+            if (
+                not os.path.isdir(uri) and
+                os.path.exists(uri) and
+                papis.utils.get_document_extension(uri) == 'pdf'
+            ) else None
+        )
+
     def fetch(self):
         self.logger.info("Trying to parse doi from file {0}".format(self.uri))
         doi = papis.doi.pdf_to_doi(self.uri, maxlines=2000)
@@ -238,7 +250,8 @@ class DoiFromPdfImporter(papis.importer.Importer):
             self.logger.info("Parsed doi {0}".format(doi))
             self.logger.warning(
                 "There is no guarantee that this doi is the one")
-            importer = Importer(uri=self.uri)
+            importer = Importer(uri=doi)
+            importer.fetch()
             self.ctx = importer.ctx
 
 
@@ -246,6 +259,15 @@ class Importer(papis.importer.Importer):
 
     def __init__(self, **kwargs):
         papis.importer.Importer.__init__(self, name='doi', **kwargs)
+
+    @classmethod
+    def match(cls, uri):
+        try:
+            papis.doi.validate_doi(uri)
+        except ValueError:
+            return None
+        else:
+            return Importer(uri=uri)
 
     def fetch(self):
         self.logger.info("using doi {0}".format(self.uri))
@@ -269,6 +291,11 @@ class FromCrossrefImpoter(papis.importer.Importer):
 
     def __init__(self, **kwargs):
         papis.importer.Importer.__init__(self, name='crossref', **kwargs)
+
+    @classmethod
+    def match(cls, uri):
+        # There is no way to check if it matches
+        return None
 
     def fetch(self):
         self.logger.info("querying '{0}' to crossref.org".format(self.uri))

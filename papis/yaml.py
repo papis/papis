@@ -4,6 +4,7 @@ import papis.config
 import papis.importer
 import click
 import papis.utils
+import os
 
 logger = logging.getLogger("yaml")
 
@@ -81,10 +82,10 @@ class Importer(papis.importer.Importer):
     def match(cls, uri):
         return (
             Importer(uri=uri)
-            if papis.utils.get_document_extension(uri) == 'yaml'
+            if (os.path.exists(uri) and not os.path.isdir(uri))
             else None
         )
 
     def fetch(self):
-        self.logger.info("Reading input file = %s" % self.uri)
+        self.logger.info("reading input file = %s" % self.uri)
         self.ctx.data = yaml_to_data(self.uri)

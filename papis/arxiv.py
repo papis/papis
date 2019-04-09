@@ -248,6 +248,11 @@ class Importer(papis.importer.Importer):
         papis.importer.Importer.__init__(self, name='arxiv', uri=uri, **kwargs)
         self.downloader = Downloader('https://arxiv.org/abs/{0}'.format(uri))
 
+    @classmethod
+    def match(cls, uri):
+        # TODO: check if uri is a valid arxiv identifier
+        pass
+
     def fetch(self):
         self.downloader.fetch()
         self.ctx = self.downloader.ctx

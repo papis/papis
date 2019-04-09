@@ -90,6 +90,7 @@ import papis.importer
 import papis.cli
 import click
 import colorama
+import tqdm
 
 logger = logging.getLogger('add')
 
@@ -117,11 +118,11 @@ class FromLibImporter(papis.importer.Importer):
 
     @classmethod
     def match(cls, uri):
-        return (
+        try:
+            papis.config.get_lib_from_name(uri)
             FromFolderImporter(uri=uri)
-            if papis.config.get_lib_from_name(uri)
-            else None
-        )
+        except Exception:
+            return None
 
     def fetch(self):
         doc = papis.pick.pick_doc(papis.api.get_all_documents_in_lib(self.uri))
@@ -619,6 +620,27 @@ def cli(
         pass
 
     import_mgr = papis.importer.get_import_mgr()
+    matching_contexts = []
+
+    if not from_importer and not batch and files:
+        filescopy = files
+        files = []
+        for _name in import_mgr.names():
+            logger.info(
+                "Trying with importer {c.Back.BLACK}{c.Fore.YELLOW}{name}"
+                "{c.Style.RESET_ALL}".format(c=colorama, name=_name)
+            )
+            importer = import_mgr[_name].plugin.match(filescopy[0])
+            if importer:
+                logger.info(
+                    "{c.Back.BLACK}{c.Fore.GREEN}Match {name}"
+                    "{c.Style.RESET_ALL}".format(c=colorama, name=_name)
+                )
+                importer.fetch()
+                matching_contexts.append(importer.ctx)
+                data.update(importer.ctx.data)
+                files.extend(importer.ctx.files)
+
     for importer_tuple in from_importer:
         try:
             importer_name = importer_tuple[0]

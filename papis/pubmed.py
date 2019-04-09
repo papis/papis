@@ -23,6 +23,11 @@ class Importer(papis.importer.Importer):
             self, name='pubmed', uri=uri, **kwargs)
         self.downloader = Downloader(uri)
 
+    @classmethod
+    def match(cls, uri):
+        # TODO:
+        pass
+
     def fetch(self):
         self.downloader.fetch()
         self.ctx = self.downloader.ctx

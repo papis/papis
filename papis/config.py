@@ -464,7 +464,7 @@ def get_lib_from_name(libname):
     assert(isinstance(libname, str))
     config = get_configuration()
     if libname not in config.keys():
-        if os.path.exists(libname):
+        if os.path.isdir(libname):
             # Check if the path exists, then use this path as a new library
             logger.warning(
                 "Since {0} exists, interpreting it as a library".format(

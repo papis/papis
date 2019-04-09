@@ -130,9 +130,12 @@ class Importer(papis.importer.Importer):
         papis.importer.Importer.__init__(self, name='url', **kwargs)
 
     def match(url):
-        return re.match(' *http(s)?.*', url) is None
+        return (
+            Importer(uri=uri)
+            if re.match(' *http(s)?.*', url) is not None
+            else None
+        )
 
     def fetch(self):
         self.logger.info("attempting to import from url {0}".format(self.uri))
-        ctx = get_info_from_url(self.uri)
-        self.ctx = ctx
+        self.ctx = get_info_from_url(self.uri)
