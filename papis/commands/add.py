@@ -605,8 +605,6 @@ def cli(
             files[0],
         )
         logger.info("Set an automatic title {0}".format(data["title"]))
-        # logger.info("I will try with crossref with this title")
-        # from_crossref = data["title"]
     except:
         pass
 
@@ -639,17 +637,6 @@ def cli(
         except Exception as e:
             logger.exception(e)
 
-    # if from_crossref:
-        # logger.info("Querying crossref.org")
-        # docs = [
-            # papis.document.from_data(d)
-            # for d in papis.crossref.get_data(query=from_crossref)
-        # ]
-        # if docs:
-            # logger.info("got {0} matches, picking...".format(len(docs)))
-            # doc = papis.pick.pick_doc(docs) if not batch else docs[0]
-            # if doc and not from_doi and doc.has('doi'):
-                # from_doi = doc['doi']
 
     assert(isinstance(data, dict))
 

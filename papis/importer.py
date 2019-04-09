@@ -1,7 +1,6 @@
 import papis
 import papis.utils
 import logging
-import papis.doi
 import os.path
 from stevedore import extension
 

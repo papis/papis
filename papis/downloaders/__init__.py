@@ -1,6 +1,5 @@
 from stevedore import extension
 import logging
-import tempfile
 import re
 
 import papis.bibtex
@@ -104,7 +103,7 @@ def get_info_from_url(url, expected_doc_format=None):
     :param expected_doc_format: override the doc format of the document
     :type  expected_doc_format: str
     :returns: Context object
-    :rtype:  papis.importer.Context
+    :rtype:  papis.importer.Context or None
     """
 
     downloaders = get_matching_downloaders(url)
@@ -112,7 +111,7 @@ def get_info_from_url(url, expected_doc_format=None):
         logger.warning(
             "No matching downloader found for (%s)" % url
         )
-        return result
+        return None
     else:
         logger.debug('Found {0} matching downloaders'.format(len(downloaders)))
         downloader = downloaders[0]
@@ -137,15 +136,3 @@ class Importer(papis.importer.Importer):
         self.logger.info("attempting to import from url {0}".format(self.uri))
         ctx = get_info_from_url(self.uri)
         self.ctx = ctx
-        # TODO: think about url_data[doi]
-        # if not data and url_data["doi"] is not None and not from_doi:
-            # logger.warning(
-                # "I could not get any data from {0}".format(from_url)
-            # )
-            # from_doi = url_data["doi"]
-            # logger.info(
-                # "But I found a doi ({0}), I'll try my luck there".format(
-                    # from_doi
-                # )
-            # )
-

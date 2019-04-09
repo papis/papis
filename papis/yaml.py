@@ -4,7 +4,6 @@ import papis.config
 import papis.importer
 import click
 import papis.utils
-import os
 
 logger = logging.getLogger("yaml")
 
@@ -81,7 +80,7 @@ class Importer(papis.importer.Importer):
     @classmethod
     def match(cls, uri):
         return (
-            Import(uri=uri)
+            Importer(uri=uri)
             if papis.utils.get_document_extension(uri) == 'yaml'
             else None
         )

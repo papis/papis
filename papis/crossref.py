@@ -241,6 +241,25 @@ class DoiFromPdfImporter(papis.importer.Importer):
             self.ctx = importer.ctx
 
 
+class FromCrossrefImpoter(papis.importer.Importer):
+
+    def __init__(self, **kwargs):
+        papis.importer.Importer.__init__(self, name='crossref', **kwargs)
+
+    def fetch(self):
+        self.logger.info("Querying crossref.org")
+        docs = [
+            papis.document.from_data(d)
+            for d in get_data(query=self.uri)
+        ]
+        if docs:
+            self.logger.info("got {0} matches, picking...".format(len(docs)))
+            doc = papis.pick.pick_doc(docs)
+            if doc:
+                importer = Importer(uri=doc['doi'])
+                importer.fetch()
+                self.ctx = importer.ctx
+
 class Importer(papis.importer.Importer):
 
     def __init__(self, **kwargs):

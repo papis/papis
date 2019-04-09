@@ -124,7 +124,7 @@ class Importer(papis.importer.Importer):
 
     def fetch(self):
         self.logger.info("Reading input file = %s" % self.uri)
-        bib_data = bibtex_to_dict(from_bibtex)
+        bib_data = bibtex_to_dict(self.uri)
         if len(bib_data) > 1:
             self.logger.warning(
                 'Your bibtex file contains more than one entry,'
