@@ -290,26 +290,28 @@ class ArxividFromPdfImporter(papis.importer.Importer):
 
     def __init__(self, **kwargs):
         papis.importer.Importer.__init__(self, name='pdf2arxivid', **kwargs)
+        self.arxivid = None
 
     @classmethod
     def match(cls, uri):
-        return (
-            ArxividFromPdfImporter(uri=uri)
-            if (
-                not os.path.isdir(uri) and
-                os.path.exists(uri) and
-                papis.utils.get_document_extension(uri) == 'pdf'
-            ) else None
-        )
+        if (os.path.isdir(uri) or not os.path.exists(uri) or
+                not papis.utils.get_document_extension(uri) == 'pdf'):
+            return None
+        importer = ArxividFromPdfImporter(uri=uri)
+        importer.arxivid = pdf_to_arxivid(uri, maxlines=2000)
+        return importer if importer.arxivid else None
 
+    @papis.importer.cache
     def fetch(self):
-        self.logger.info("trying to parse arxivid from file {0}".format(self.uri))
-        arxivid = pdf_to_arxivid(self.uri, maxlines=2000)
-        if arxivid:
-            self.logger.info("Parsed arxivid {0}".format(arxivid))
+        self.logger.info(
+            "trying to parse arxivid from file {0}".format(self.uri))
+        if not self.arxivid:
+            self.arxivid = pdf_to_arxivid(self.uri, maxlines=2000)
+        if self.arxivid:
+            self.logger.info("Parsed arxivid {0}".format(self.arxivid))
             self.logger.warning(
                 "There is no guarantee that this arxivid is the one")
-            importer = Importer.match(arxivid)
+            importer = Importer.match(self.arxivid)
             if importer:
                 importer.fetch()
                 self.ctx = importer.ctx
