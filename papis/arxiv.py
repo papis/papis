@@ -24,6 +24,8 @@ import re
 import click
 import papis.downloaders.base
 import arxiv2bib
+import math
+import os
 
 
 logger = logging.getLogger('arxiv')
@@ -98,25 +100,47 @@ def get_data(
     return result
 
 
-def pdf_to_arxivid(filepath):
+def validate_arxivid(arxivid):
+    from urllib.error import HTTPError, URLError
+    import urllib.request
+    import urllib.parse
+    url = "https://arxiv.org/abs/{0}".format(arxivid)
+    request = urllib.request.Request(url)
+
+    try:
+        urllib.request.urlopen(request)
+    except HTTPError:
+        raise ValueError('HTTP 404: {0} not an arxivid'.format(arxivid))
+    except URLError:
+        pass
+
+
+def pdf_to_arxivid(filepath, maxlines=math.inf):
     """Try to get arxivid from a filepath, it looks for a regex in the binary
     data and returns the first arxivid found, in the hopes that this arxivid
     is the correct one.
 
     :param filepath: Path to the pdf file
     :type  filepath: str
+    :param maxlines: Maximum number of lines that should be checked
+        For some documnets, it would spend a long time trying to look for
+        a arxivid, and arxivids in the middle of documents don't tend to be the
+        correct arxivid of the document.
+    :type  maxlines: int
     :returns: arxivid or None
     :rtype:  str or None
     """
-    arxivid = None
     with open(filepath, 'rb') as fd:
-        for line in fd:
+        for j, line in enumerate(fd):
             arxivid = find_arxivid_in_text(
                 line.decode('ascii', errors='ignore')
             )
             if arxivid:
-                break
-    return arxivid
+                return arxivid
+            if j > maxlines:
+                return None
+        else:
+            return None
 
 
 def find_arxivid_in_text(text):
@@ -250,9 +274,42 @@ class Importer(papis.importer.Importer):
 
     @classmethod
     def match(cls, uri):
-        # TODO: check if uri is a valid arxiv identifier
-        pass
+        try:
+            validate_arxivid(uri)
+        except ValueError:
+            return None
+        else:
+            return Importer(uri=uri)
 
     def fetch(self):
         self.downloader.fetch()
         self.ctx = self.downloader.ctx
+
+
+class ArxividFromPdfImporter(papis.importer.Importer):
+
+    def __init__(self, **kwargs):
+        papis.importer.Importer.__init__(self, name='pdf2arxivid', **kwargs)
+
+    @classmethod
+    def match(cls, uri):
+        return (
+            ArxividFromPdfImporter(uri=uri)
+            if (
+                not os.path.isdir(uri) and
+                os.path.exists(uri) and
+                papis.utils.get_document_extension(uri) == 'pdf'
+            ) else None
+        )
+
+    def fetch(self):
+        self.logger.info("trying to parse arxivid from file {0}".format(self.uri))
+        arxivid = pdf_to_arxivid(self.uri, maxlines=2000)
+        if arxivid:
+            self.logger.info("Parsed arxivid {0}".format(arxivid))
+            self.logger.warning(
+                "There is no guarantee that this arxivid is the one")
+            importer = Importer.match(arxivid)
+            if importer:
+                importer.fetch()
+                self.ctx = importer.ctx

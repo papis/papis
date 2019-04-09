@@ -154,6 +154,7 @@ setup(
             'pdf2doi=papis.crossref:DoiFromPdfImporter',
             'url=papis.downloaders:Importer',
             'arxiv=papis.arxiv:Importer',
+            'pdf2arxivid=papis.arxiv:ArxividFromPdfImporter',
             'pmid=papis.pubmed:Importer',
             'lib=papis.commands.add:FromLibImporter',
             'folder=papis.commands.add:FromFolderImporter',

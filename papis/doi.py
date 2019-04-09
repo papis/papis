@@ -20,17 +20,15 @@ def pdf_to_doi(filepath, maxlines=math.inf):
     :returns: DOI or None
     :rtype:  str or None
     """
-    doi = None
-    lines = 0
     with open(filepath, 'rb') as fd:
-        for line in fd:
+        for j, line in enumerate(fd):
             doi = find_doi_in_text(line.decode('ascii', errors='ignore'))
             if doi:
-                break
-            lines += 1
-            if lines > maxlines:
-                break
-    return doi
+                return doi
+            if j > maxlines:
+                return None
+        else:
+            return None
 
 
 def validate_doi(doi):
@@ -45,7 +43,7 @@ def validate_doi(doi):
 
     :raises ValueError: Whenever the doi is not valid
     """
-    from urllib.error import HTTPError
+    from urllib.error import HTTPError, URLError
     import urllib.request
     import urllib.parse
     import json
@@ -57,6 +55,8 @@ def validate_doi(doi):
         result = json.loads(urllib.request.urlopen(request).read().decode())
     except HTTPError:
         raise ValueError('HTTP 404: DOI not found')
+    except URLError as e:
+        raise ValueError(e)
 
     response_code = int(result["responseCode"])
     if response_code in [1, 200]:
