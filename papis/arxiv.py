@@ -24,7 +24,6 @@ import re
 import click
 import papis.downloaders.base
 import arxiv2bib
-import math
 import os
 
 
@@ -115,7 +114,7 @@ def validate_arxivid(arxivid):
         pass
 
 
-def pdf_to_arxivid(filepath, maxlines=math.inf):
+def pdf_to_arxivid(filepath, maxlines=float('inf')):
     """Try to get arxivid from a filepath, it looks for a regex in the binary
     data and returns the first arxivid found, in the hopes that this arxivid
     is the correct one.
