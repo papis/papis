@@ -1,7 +1,7 @@
 import logging
 import papis.config
 import papis.utils
-import papis.doi
+import doi
 import habanero
 import re
 import os
@@ -177,24 +177,24 @@ def get_data(query="", author="", title="", dois=[], max_results=0):
     ]
 
 
-def doi_to_data(doi):
+def doi_to_data(doi_string):
     """Search through crossref and get a dictionary containing the data
 
-    :param doi: Doi identificator or an url with some doi
-    :type  doi: str
+    :param doi_string: Doi identificator or an url with some doi
+    :type  doi_string: str
     :returns: Dictionary containing the data
     :raises ValueError: If no data could be retrieved for the doi
 
     """
     global logger
     assert(isinstance(doi, str))
-    doi = papis.doi.get_clean_doi(doi)
-    results = get_data(dois=[doi])
+    doi_string = doi.get_clean_doi(doi_string)
+    results = get_data(dois=[doi_string])
     if results:
         return results[0]
     else:
         raise ValueError(
-            "Couldn't get data for doi ({doi})".format(doi=doi)
+            "Couldn't get data for doi ({doi})".format(doi=doi_string)
         )
 
 
@@ -239,13 +239,13 @@ class DoiFromPdfImporter(papis.importer.Importer):
                 not papis.utils.get_document_extension(uri) == 'pdf'):
             return None
         importer = DoiFromPdfImporter(uri=uri)
-        importer.doi = papis.doi.pdf_to_doi(uri, maxlines=2000)
+        importer.doi = doi.pdf_to_doi(uri, maxlines=2000)
         return importer if importer.doi else None
 
     def fetch(self):
         self.logger.info("Trying to parse doi from file {0}".format(self.uri))
         if not self.doi:
-            self.doi = papis.doi.pdf_to_doi(self.uri, maxlines=2000)
+            self.doi = doi.pdf_to_doi(self.uri, maxlines=2000)
         if self.doi:
             self.logger.info("Parsed doi {0}".format(self.doi))
             self.logger.warning(
@@ -263,7 +263,7 @@ class Importer(papis.importer.Importer):
     @classmethod
     def match(cls, uri):
         try:
-            papis.doi.validate_doi(uri)
+            doi.validate_doi(uri)
         except ValueError:
             return None
         else:
@@ -319,14 +319,12 @@ class Downloader(papis.downloaders.base.Downloader):
 
     @classmethod
     def match(cls, uri):
-        doi = papis.doi.find_doi_in_text(uri)
-        if doi:
+        if doi.find_doi_in_text(uri):
             return Downloader(uri)
         else:
             return None
 
     def fetch(self):
-        doi = papis.doi.find_doi_in_text(self.uri)
-        importer = Importer(uri=doi)
+        importer = Importer(uri=doi.find_doi_in_text(self.uri))
         importer.fetch()
         self.ctx = importer.ctx

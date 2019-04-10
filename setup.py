@@ -86,6 +86,7 @@ setup(
         "tqdm>=4.1",
         "pygments>=2.2.0",
         "stevedore>=1.30",
+        "python-doi>=0.1.0",
     ],
     python_requires='>=3',
     classifiers=[

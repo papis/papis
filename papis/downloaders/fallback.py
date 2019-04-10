@@ -1,5 +1,5 @@
+import doi
 import papis.downloaders.base
-import papis.doi
 
 
 class Downloader(papis.downloaders.base.Downloader):
@@ -15,4 +15,4 @@ class Downloader(papis.downloaders.base.Downloader):
     def get_doi(self):
         body = self.session.get(self.uri).content.decode('utf-8')
         self.logger.info('trying to parse doi...')
-        return papis.doi.find_doi_in_text(body)
+        return doi.find_doi_in_text(body)
