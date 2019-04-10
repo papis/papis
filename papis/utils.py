@@ -111,9 +111,11 @@ def format_doc(python_format, document, key=""):
         else:
             return jinja2.Template(python_format).render(**{doc: fdoc})
     try:
-        return python_format.format(**{doc: fdoc})
-    except Exception as e:
-        return str(e)
+        res = python_format.format(**{doc: document})
+    except KeyError as e:
+        res = "missing_key_" + e.args[0]
+
+    return res
 
 
 def get_folders(folder):
