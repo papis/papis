@@ -627,14 +627,14 @@ def cli(
         filescopy = files
         files = []
         for _name in import_mgr.names():
-            logger.info(
-                "Trying with importer {c.Back.BLACK}{c.Fore.YELLOW}{name}"
+            logger.debug(
+                "trying with importer {c.Back.BLACK}{c.Fore.YELLOW}{name}"
                 "{c.Style.RESET_ALL}".format(c=colorama, name=_name)
             )
             importer = import_mgr[_name].plugin.match(filescopy[0])
             if importer:
                 logger.info(
-                    "{c.Back.BLACK}{c.Fore.GREEN}Match {name}"
+                    "{c.Back.BLACK}{c.Fore.GREEN}match {name}"
                     "{c.Style.RESET_ALL}".format(c=colorama, name=_name)
                 )
                 importer.fetch()
