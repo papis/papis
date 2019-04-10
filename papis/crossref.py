@@ -287,7 +287,7 @@ class Importer(papis.importer.Importer):
                 self.ctx.files.append(tmp_filepath)
 
 
-class FromCrossrefImpoter(papis.importer.Importer):
+class FromCrossrefImporter(papis.importer.Importer):
 
     def __init__(self, **kwargs):
         papis.importer.Importer.__init__(self, name='crossref', **kwargs)
