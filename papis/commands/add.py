@@ -120,9 +120,10 @@ class FromLibImporter(papis.importer.Importer):
     def match(cls, uri):
         try:
             papis.config.get_lib_from_name(uri)
-            FromFolderImporter(uri=uri)
         except Exception:
             return None
+        else:
+            return FromLibImporter(uri=uri)
 
     def fetch(self):
         doc = papis.pick.pick_doc(papis.api.get_all_documents_in_lib(self.uri))
