@@ -489,6 +489,12 @@ def run(
     default=False
 )
 @click.option(
+    "--list-importers", "--li", "list_importers",
+    help="List all available papis importers",
+    default=False,
+    is_flag=True
+)
+@click.option(
     "--from-bibtex",
     help="{c.Fore.RED}[DEPRECATED use --from bibtex <value>]"
     "{c.Style.RESET_ALL}"
@@ -555,6 +561,7 @@ def cli(
         commit,
         smart,
         link,
+        list_importers,
         from_bibtex,
         from_yaml,
         from_url,
@@ -564,6 +571,11 @@ def cli(
         from_pmid,
         from_lib,
         ):
+
+    if list_importers:
+        for n in papis.importer.available_importers():
+            print(n)
+        return
 
     from_importer = list(from_importer)
     logger = logging.getLogger('cli:add')
