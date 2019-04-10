@@ -2,6 +2,7 @@ import papis
 import logging
 import os.path
 from stevedore import extension
+import papis.plugin
 
 logger = logging.getLogger('importer')
 
@@ -63,11 +64,6 @@ class Importer:
         return 'Importer({0}, uri={1})'.format(self.name, self.uri)
 
 
-def stevedore_error_handler(manager, entrypoint, exception):
-    logger.error("Error while loading entrypoint [%s]" % entrypoint)
-    logger.error(exception)
-
-
 import_mgr = None
 
 
@@ -82,17 +78,25 @@ def _create_import_mgr():
         invoke_args=(),
         # invoke_kwds
         propagate_map_exceptions=True,
-        on_load_failure_callback=stevedore_error_handler
+        on_load_failure_callback=papis.plugin.stevedore_error_handler
     )
 
 
 def get_import_mgr():
+    """Get the import manager
+    :returns: Import manager
+    :rtype:  stevedore.extension.ExtensionManager
+    """
     global import_mgr
     _create_import_mgr()
     return import_mgr
 
 
 def available_importers():
+    """Get the available importers defined.
+    :returns: List of importer names
+    :rtype:  list(str)
+    """
     return get_import_mgr().entry_points_names()
 
 
@@ -109,8 +113,12 @@ def get_importer_by_name(name):
 
 def cache(f):
     """
-    :param self: Importer object
-    :type  self: Importer
+    This is a decorator to be used if a method of an Importer
+    is to be cached, i.e., if the context of the importer is already
+    set, then one does not need to run the function anymore, even if
+    it is explicitly run.
+
+    :param self: Method of an Importer
     """
     def wrapper(self):
         if not self.ctx:

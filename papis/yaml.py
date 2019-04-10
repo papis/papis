@@ -82,10 +82,7 @@ class Importer(papis.importer.Importer):
         importer = Importer(uri=uri)
         if os.path.exists(uri) and not os.path.isdir(uri):
             importer.fetch()
-            if importer.ctx.data:
-                return importer
-            else:
-                return None
+            return importer if importer.ctx.data else None
         return None
 
     @papis.importer.cache

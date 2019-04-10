@@ -3,14 +3,9 @@ import os
 import papis.config
 from papis.tui.app import Picker
 from stevedore import extension
+import papis.plugin
 
 logger = logging.getLogger("pick")
-
-
-def stevedore_error_handler(manager, entrypoint, exception):
-    logger = logging.getLogger("pick:stevedore")
-    logger.error("Error while loading entrypoint [%s]" % entrypoint)
-    logger.error(exception)
 
 
 def available_pickers():
@@ -41,7 +36,7 @@ pickers_mgr = extension.ExtensionManager(
     invoke_on_load=False,
     verify_requirements=True,
     propagate_map_exceptions=True,
-    on_load_failure_callback=stevedore_error_handler
+    on_load_failure_callback=papis.plugin.stevedore_error_handler
 )
 
 

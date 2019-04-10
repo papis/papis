@@ -5,14 +5,9 @@ import re
 import papis.bibtex
 import papis.config
 import papis.importer
+import papis.plugin
 
 logger = logging.getLogger("downloader")
-
-
-def stevedore_error_handler(manager, entrypoint, exception):
-    logger = logging.getLogger('cmds:stevedore')
-    logger.error("Error while loading entrypoint [%s]" % entrypoint)
-    logger.error(exception)
 
 
 downloader_mgr = None
@@ -29,7 +24,7 @@ def _create_downloader_mgr():
         invoke_on_load=False,
         verify_requirements=True,
         propagate_map_exceptions=True,
-        on_load_failure_callback=stevedore_error_handler
+        on_load_failure_callback=papis.plugin.stevedore_error_handler
     )
 
 
