@@ -222,19 +222,6 @@ def get_hash_folder(data, document_paths):
     return result
 
 
-def get_default_title(data, document_path):
-    if "title" in data.keys():
-        return data["title"]
-    extension = papis.utils.get_document_extension(document_path)
-    title = (
-        os.path.basename(document_path)
-        .replace("."+extension, "")
-        .replace("_", " ")
-        .replace("-", " ")
-    )
-    return title
-
-
 def run(
         paths,
         data=dict(),
@@ -583,6 +570,7 @@ def cli(
     from_importer = list(from_importer)
     logger = logging.getLogger('cli:add')
 
+    # TODO: Remove in v0.9.x BEGIN
     deprecated_flags = [
         ("bibtex", from_bibtex), ("yaml", from_yaml), ("url", from_url),
         ("doi", from_doi), ("folder", from_folder), ("pmid", from_pmid),
@@ -603,9 +591,11 @@ def cli(
                 .format(c=colorama, name=name, value=resource)
             )
             from_importer.append((name, resource))
+    # TODO: Remove in v0.9.x END
 
     data = dict()
     files = list(files)
+    ctx = papis.importer.Context()
 
     for data_set in set_list:
         data[data_set[0]] = data_set[1]
@@ -615,18 +605,8 @@ def cli(
         confirm = False
         open_file = False
 
-    try:
-        # Try getting title if title is an argument of add
-        data["title"] = data.get('title') or get_default_title(
-            data,
-            files[0],
-        )
-        logger.info("Set an automatic title {0}".format(data["title"]))
-    except:
-        pass
-
     import_mgr = papis.importer.get_import_mgr()
-    matching_contexts = []
+    matchin_importers = []
 
     if not from_importer and not batch and files:
         filescopy = files
@@ -643,9 +623,7 @@ def cli(
                     "{c.Style.RESET_ALL}".format(c=colorama, name=_name)
                 )
                 importer.fetch()
-                matching_contexts.append(importer.ctx)
-                data.update(importer.ctx.data)
-                files.extend(importer.ctx.files)
+                matchin_importers.append(importer)
 
     for importer_tuple in from_importer:
         try:
@@ -653,24 +631,34 @@ def cli(
             resource = importer_tuple[1]
             importer = import_mgr[importer_name].plugin(uri=resource)
             importer.fetch()
-            if importer.ctx.data:
-                logger.info(
-                    'Merging data from importer {0}'.format(importer_name))
-                data.update(importer.ctx.data)
-            if importer.ctx.files:
-                logger.info(
-                    'Got files {0} from importer {1}'
-                    .format(importer.ctx.files, importer_name))
-                files.extend(importer.ctx.files)
+            if importer.ctx:
+                matchin_importers.append(importer)
         except Exception as e:
             logger.exception(e)
 
+    if matchin_importers:
+        logger.info(
+            'There are {0} possible matchings'.format(len(matchin_importers)))
 
-    assert(isinstance(data, dict))
+        importer = matchin_importers[0]
+
+        if importer.ctx.data:
+            logger.info(
+                'Merging data from importer {0}'.format(importer.name))
+            ctx.data.update(importer.ctx.data)
+        if importer.ctx.files:
+            logger.info(
+                'Got files {0} from importer {1}'
+                .format(importer.ctx.files, importer.name))
+            ctx.files.extend(importer.ctx.files)
+
+    if not ctx:
+        logger.error('there is nothing to be added')
+        return
 
     return run(
-        list(files),
-        data=data,
+        ctx.files,
+        data=ctx.data,
         folder_name=folder_name,
         file_name=file_name,
         subfolder=subfolder,
