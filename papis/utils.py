@@ -216,7 +216,7 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
     lexer = PygmentsLexer(pygment_lexer)
     text_window = Window(
         height=text_height,
-        style='bg:black',
+        style='bg:black fg:ansiwhite',
         content=BufferControl(buffer=buffer1, lexer=lexer)
     )
 
