@@ -6,19 +6,23 @@
   "author_list": [
     {
       "family": "Bühmann",
-      "given": "Lorenz"
+      "given": "Lorenz",
+      "affiliation": [{"name": "University of Leipzig, Leipzig, Germany"}]
     },
     {
       "family": "Lehmann",
-      "given": "Jens"
+      "given": "Jens",
+      "affiliation": [{"name": "Fraunhofer IAIS & University of Bonn, Sankt Augustin, Germany"}]
     },
     {
       "family": "Westphal",
-      "given": "Patrick"
+      "given": "Patrick",
+      "affiliation": [{"name": "University of Leipzig, Leipzig, Germany"}]
     },
     {
       "family": "Bin",
-      "given": "Simon"
+      "given": "Simon",
+      "affiliation": [{"name": "University of Leipzig, Leipzig, Germany"}]
     }
   ],
   "type": "inproceedings",

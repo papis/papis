@@ -15,6 +15,39 @@ logger = logging.getLogger("crossref")
 logger.debug("importing")
 
 
+_filter_names = set([
+    "has_funder", "funder", "location", "prefix", "member", "from_index_date",
+    "until_index_date", "from_deposit_date", "until_deposit_date",
+    "from_update_date", "until_update_date", "from_created_date",
+    "until_created_date", "from_pub_date", "until_pub_date",
+    "from_online_pub_date", "until_online_pub_date", "from_print_pub_date",
+    "until_print_pub_date", "from_posted_date", "until_posted_date",
+    "from_accepted_date", "until_accepted_date", "has_license",
+    "license_url", "license_version", "license_delay",
+    "has_full_text", "full_text_version", "full_text_type",
+    "full_text_application", "has_references", "has_archive",
+    "archive", "has_orcid", "has_authenticated_orcid",
+    "orcid", "issn", "type", "directory", "doi", "updates", "is_update",
+    "has_update_policy", "container_title", "category_name", "type",
+    "type_name", "award_number", "award_funder", "has_assertion",
+    "assertion_group", "assertion", "has_affiliation", "alternative_id",
+    "article_number", "has_abstract", "has_clinical_trial_number",
+    "content_domain", "has_content_domain", "has_crossmark_restriction",
+    "has_relation", "relation_type", "relation_object", "relation_object_type",
+    "public_references", "publisher_name", "affiliation",
+])
+
+
+_sort_values = [
+"relevance", "score", "updated", "deposited", "indexed", "published",
+"published-print", "published-online", "issued", "is-referenced-by-count",
+"references-count",
+]
+
+
+_order_values = ['asc', 'desc']
+
+
 type_converter = {
     "book": "book",
     "book-chapter": "inbook",
@@ -50,7 +83,7 @@ key_conversion = {
     "author": {
         "key": "author_list",
         "action": lambda authors: [
-            {k: a.get(k) for k in ['given', 'family']}
+            {k: a.get(k) for k in ['given', 'family', 'affiliation']}
             for a in authors
         ],
     },
@@ -139,8 +172,20 @@ def _get_crossref_works(**kwargs):
     return cr.works(**kwargs)
 
 
-def get_data(query="", author="", title="", dois=[], max_results=0):
-    assert(isinstance(dois, list))
+def get_data(query="", author="", title="", dois=[], max_results=0,
+        filters={}, sort="score", order='desc'):
+    global _filter_names
+    global _sort_values
+    assert(isinstance(dois, list)), 'dois must be a list'
+    assert(sort in _sort_values), 'Sort value not valid'
+    assert(order in _order_values), 'Sort value not valid'
+    assert(isinstance(filters, dict)), 'filters must be a dictionary'
+    if filters:
+        if not set(filters.keys()) & _filter_names == set(filters.keys()):
+            raise Exception(
+                'Filter keys must be one of {0}'
+                .format(','.join(_filter_names))
+            )
     data = dict(
         query=query, query_author=author,
         ids=dois,
@@ -148,9 +193,9 @@ def get_data(query="", author="", title="", dois=[], max_results=0):
     )
     kwargs = {key: data[key] for key in data.keys() if data[key]}
     if not dois:
-        kwargs.update(dict(sort='relevance'))
+        kwargs.update(dict(sort=sort, order=order))
     try:
-        results = _get_crossref_works(**kwargs)
+        results = _get_crossref_works(filter=filters, **kwargs)
     except Exception as e:
         logger.error(e)
         return []
@@ -201,11 +246,24 @@ def doi_to_data(doi_string):
 @click.command('crossref')
 @click.pass_context
 @click.help_option('--help', '-h')
-@click.option('--query', '-q', default=None)
-@click.option('--author', '-a', default=None)
-@click.option('--title', '-t', default=None)
-@click.option('--max', '-m', default=20)
-def explorer(ctx, query, author, title, max):
+@click.option('--query', '-q', help='General query', default=None)
+@click.option('--author', '-a', help='Author of the query', default=None)
+@click.option('--title', '-t', help='Title of the query', default=None)
+@click.option('--max', '-m', help='Maximum number of results', default=20)
+@click.option(
+    '--filter', '-f', help='Filters to apply', default=(),
+    type=(click.Choice(_filter_names), str),
+    multiple=True
+)
+@click.option(
+    '--order', '-o', help='Order of appearance according to sorting',
+    default='desc', type=click.Choice(_order_values), show_default=True
+)
+@click.option(
+    '--sort', '-s', help='Sorting parameter', default='score',
+    type=click.Choice(_sort_values), show_default=True
+)
+def explorer(ctx, query, author, title, max, filter, sort, order):
     """
     Look for documents on crossref.org.
 
@@ -220,7 +278,9 @@ def explorer(ctx, query, author, title, max):
         query=query,
         author=author,
         title=title,
-        max_results=max
+        max_results=max,
+        filters=dict(filter),
+        sort=sort
     )
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj['documents'] += docs
