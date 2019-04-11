@@ -187,7 +187,7 @@ def doi_to_data(doi_string):
 
     """
     global logger
-    assert(isinstance(doi, str))
+    assert(isinstance(doi_string, str))
     doi_string = doi.get_clean_doi(doi_string)
     results = get_data(dois=[doi_string])
     if results:
