@@ -90,7 +90,6 @@ import papis.importer
 import papis.cli
 import click
 import colorama
-import tqdm
 
 logger = logging.getLogger('add')
 
@@ -432,7 +431,9 @@ def run(
 )
 @click.option(
     "--from", "from_importer",
-    help="Add document from a specific importer",
+    help="Add document from a specific importer ({0})".format(
+        ", ".join(papis.importer.available_importers())
+    ),
     type=(click.Choice(papis.importer.available_importers()), str),
     nargs=2,
     multiple=True,
