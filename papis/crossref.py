@@ -37,6 +37,15 @@ _filter_names = set([
     "public_references", "publisher_name", "affiliation",
 ])
 
+_types_values = [
+    "book-section", "monograph", "report", "peer-review", "book-track",
+    "journal-article", "book-part", "other", "book", "journal-volume",
+    "book-set", "reference-entry", "proceedings-article", "journal",
+    "component", "book-chapter", "proceedings-series", "report-series",
+    "proceedings", "standard", "reference-book", "posted-content",
+    "journal-issue", "dissertation", "dataset", "book-series", "edited-book",
+    "standard-series",
+]
 
 _sort_values = [
 "relevance", "score", "updated", "deposited", "indexed", "published",
@@ -280,7 +289,8 @@ def explorer(ctx, query, author, title, max, filter, sort, order):
         title=title,
         max_results=max,
         filters=dict(filter),
-        sort=sort
+        sort=sort,
+        order=order
     )
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj['documents'] += docs
