@@ -97,6 +97,8 @@ logger = logging.getLogger('add')
 
 class FromFolderImporter(papis.importer.Importer):
 
+    """Importer that gets files and data from a valid papis folder"""
+
     def __init__(self, **kwargs):
         papis.importer.Importer.__init__(self, name='folder', **kwargs)
 
@@ -112,6 +114,10 @@ class FromFolderImporter(papis.importer.Importer):
 
 
 class FromLibImporter(papis.importer.Importer):
+
+    """Importer that queries a valid papis library (also paths) and adds files
+    and data
+    """
 
     def __init__(self, **kwargs):
         papis.importer.Importer.__init__(self, name='lib', **kwargs)
@@ -227,13 +233,6 @@ def get_default_title(data, document_path):
         .replace("-", " ")
     )
     return title
-
-
-def get_default_author(data, document_path):
-    if "author" in data.keys():
-        return data["author"]
-    author = "Unknown"
-    return author
 
 
 def run(
@@ -573,8 +572,12 @@ def cli(
         ):
 
     if list_importers:
-        for n in papis.importer.available_importers():
-            print(n)
+        import_mgr = papis.importer.get_import_mgr()
+        for n in import_mgr.names():
+            print("{name}\n\t{text}".format(
+                name=n,
+                text=re.sub(r"[ \n]+", " ", import_mgr[n].plugin.__doc__)
+            ))
         return
 
     from_importer = list(from_importer)
@@ -619,16 +622,6 @@ def cli(
             files[0],
         )
         logger.info("Set an automatic title {0}".format(data["title"]))
-    except:
-        pass
-
-    try:
-        # Try getting author if author is an argument of add
-        data["author"] = data.get('author') or get_default_author(
-            data,
-            files[0],
-        )
-        logger.info("Author = % s" % data["author"])
     except:
         pass
 

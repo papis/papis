@@ -10,7 +10,6 @@ from papis.commands.add import (
     run, cli,
     get_file_name,
     get_default_title,
-    get_default_author,
     get_hash_folder
 )
 from tests import (
@@ -58,13 +57,6 @@ def test_get_default_title_and_author():
     )
     pdf = create_random_pdf(suffix='luces-de-bohemia.pdf')
     assert(re.match('.*luces de bohemia$', get_default_title(dict(), pdf)))
-
-    assert(
-        get_default_author({'author': 'Garcilaso de la vega'}, 'whatever.pdf')
-        ==
-        'Garcilaso de la vega'
-    )
-    assert(get_default_author(dict(), 'Luces-de-bohemia.pdf') == 'Unknown')
 
 
 class TestGetFileName(unittest.TestCase):

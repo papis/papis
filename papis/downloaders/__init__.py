@@ -121,6 +121,9 @@ def get_info_from_url(url, expected_doc_format=None):
 
 class Importer(papis.importer.Importer):
 
+    """Importer that tries to get data and files from implemented downloaders
+    """
+
     def __init__(self, **kwargs):
         papis.importer.Importer.__init__(self, name='url', **kwargs)
 

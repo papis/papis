@@ -267,6 +267,8 @@ class Downloader(papis.downloaders.base.Downloader):
 
 class Importer(papis.importer.Importer):
 
+    """Importer accepting an arxiv id and downloading files and data"""
+
     def __init__(self, uri='', **kwargs):
         papis.importer.Importer.__init__(self, name='arxiv', uri=uri, **kwargs)
         self.downloader = Downloader('https://arxiv.org/abs/{0}'.format(uri))
@@ -286,6 +288,8 @@ class Importer(papis.importer.Importer):
 
 
 class ArxividFromPdfImporter(papis.importer.Importer):
+
+    """Importer parsing an arxivid from a pdf file"""
 
     def __init__(self, **kwargs):
         papis.importer.Importer.__init__(self, name='pdf2arxivid', **kwargs)

@@ -18,6 +18,8 @@ class Downloader(papis.downloaders.base.Downloader):
 
 class Importer(papis.importer.Importer):
 
+    """Importer downloading data from a pubmed id"""
+
     def __init__(self, uri='', **kwargs):
         papis.importer.Importer.__init__(
             self, name='pubmed', uri=uri, **kwargs)

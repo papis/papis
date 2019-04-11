@@ -119,6 +119,8 @@ bibtex_key_converter = {
 
 class Importer(papis.importer.Importer):
 
+    """Importer that parses a bibtex files"""
+
     def __init__(self, **kwargs):
         papis.importer.Importer.__init__(self, name='bibtex', **kwargs)
 

@@ -229,6 +229,8 @@ def explorer(ctx, query, author, title, max):
 
 class DoiFromPdfImporter(papis.importer.Importer):
 
+    """Importer parsing a doi from a pdf file"""
+
     def __init__(self, **kwargs):
         papis.importer.Importer.__init__(self, name='pdf2doi', **kwargs)
         self.doi = None
@@ -257,8 +259,12 @@ class DoiFromPdfImporter(papis.importer.Importer):
 
 class Importer(papis.importer.Importer):
 
+    """Importer getting files and data form a doi through crossref.org"""
+
     def __init__(self, **kwargs):
-        papis.importer.Importer.__init__(self, name='doi', **kwargs)
+        papis.importer.Importer.__init__(
+            self,
+            name='doi', **kwargs)
 
     @classmethod
     def match(cls, uri):
@@ -288,6 +294,8 @@ class Importer(papis.importer.Importer):
 
 
 class FromCrossrefImporter(papis.importer.Importer):
+
+    """Importer that gets data from querying to crossref"""
 
     def __init__(self, **kwargs):
         papis.importer.Importer.__init__(self, name='crossref', **kwargs)

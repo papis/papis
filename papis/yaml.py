@@ -74,6 +74,8 @@ def explorer(ctx, yamlfile):
 
 class Importer(papis.importer.Importer):
 
+    """Importer that parses a yaml file"""
+
     def __init__(self, **kwargs):
         papis.importer.Importer.__init__(self, name='yaml', **kwargs)
 
