@@ -597,6 +597,7 @@ def cli(
     data = dict()
     files = list(files)
     ctx = papis.importer.Context()
+    ctx.files = list(files)
 
     for data_set in set_list:
         data[data_set[0]] = data_set[1]
