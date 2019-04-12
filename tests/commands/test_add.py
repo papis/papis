@@ -9,7 +9,6 @@ import papis.config
 from papis.commands.add import (
     run, cli,
     get_file_name,
-    get_default_title,
     get_hash_folder
 )
 from tests import (
@@ -47,16 +46,6 @@ def test_get_hash_folder():
 
     newnewhh = get_hash_folder(data, [path])
     assert not newnewhh == newhh
-
-
-def test_get_default_title_and_author():
-    assert(
-        get_default_title({'title': 'hello world'}, 'whatever.pdf')
-        ==
-        'hello world'
-    )
-    pdf = create_random_pdf(suffix='luces-de-bohemia.pdf')
-    assert(re.match('.*luces de bohemia$', get_default_title(dict(), pdf)))
 
 
 class TestGetFileName(unittest.TestCase):
