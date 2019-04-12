@@ -1,0 +1,132 @@
+{
+  "status": "ok",
+  "message-type": "work",
+  "message-version": "1.0.0",
+  "message": {
+    "indexed": {
+      "date-parts": [
+        [
+          2019,
+          2,
+          18
+        ]
+      ],
+      "date-time": "2019-02-18T19:55:32Z",
+      "timestamp": 1550519732660
+    },
+    "reference-count": 0,
+    "publisher": "University of Saskatchewan Library",
+    "issue": "1",
+    "content-domain": {
+      "domain": [],
+      "crossmark-restriction": false
+    },
+    "short-container-title": [
+      "USURJ"
+    ],
+    "abstract": "<jats:p>In the international community, human dependence on plastic is increasing. Meanwhile, global petroleum reserves are diminishing. The cost of this demand on petroleum use is not only economic; there are also escalating human and animal health concerns, environmental implications, and the inherent obligation to prepare feasible alternatives in the event that petroleum depletion occurs. While the bioproduct industry is heavily invested in finding fuel substitutes, innovative efforts in other petroleum-dominated industries, such as plastics, may be worthwhile. Fortunately, there are naturally-occurring compounds in bacteria with structures analogous to those currently derived from petroleum. These compounds offer potentially sustainable and healthier alternatives to petroleum. One such compound gaining attention today is polyhydroxyalkanoate (PHA). PHA has several attractive properties as an achievable bioplastic source material, either as a direct substitute or as a blend with petroleum. Genetic modification (GM) may be necessary to achieve adequate yields; accordingly, source and host genetics, agronomic practices, and industry-related technology must be examined in this context. This review will compare properties of petroleum-based to PHA-derived plastics, as well as summarize the obligations of, mechanisms by, and implications with which PHA is being introduced to the plastic industry.</jats:p>",
+    "DOI": "10.32396/usurj.v1i1.55",
+    "type": "journal-article",
+    "created": {
+      "date-parts": [
+        [
+          2018,
+          10,
+          29
+        ]
+      ],
+      "date-time": "2018-10-29T15:56:01Z",
+      "timestamp": 1540828561000
+    },
+    "source": "Crossref",
+    "is-referenced-by-count": 0,
+    "title": [
+      "Industrial Potential of Polyhydroxyalkanoate Bioplastic: A Brief Review"
+    ],
+    "prefix": "10.32396",
+    "volume": "1",
+    "author": [
+      {
+        "given": "Matthew",
+        "family": "Bernard",
+        "sequence": "first",
+        "affiliation": []
+      }
+    ],
+    "member": "14117",
+    "published-online": {
+      "date-parts": [
+        [
+          2014,
+          2,
+          27
+        ]
+      ]
+    },
+    "container-title": [
+      "USURJ: University of Saskatchewan Undergraduate Research Journal"
+    ],
+    "original-title": [],
+    "link": [
+      {
+        "URL": "https://usurj.journals.usask.ca/article/download/55/17",
+        "content-type": "application/pdf",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "https://usurj.journals.usask.ca/article/download/55/17",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "deposited": {
+      "date-parts": [
+        [
+          2018,
+          10,
+          29
+        ]
+      ],
+      "date-time": "2018-10-29T15:56:03Z",
+      "timestamp": 1540828563000
+    },
+    "score": 1,
+    "subtitle": [],
+    "short-title": [],
+    "issued": {
+      "date-parts": [
+        [
+          2014,
+          2,
+          27
+        ]
+      ]
+    },
+    "references-count": 0,
+    "journal-issue": {
+      "published-online": {
+        "date-parts": [
+          [
+            2014,
+            3,
+            1
+          ]
+        ]
+      },
+      "issue": "1"
+    },
+    "URL": "http://dx.doi.org/10.32396/usurj.v1i1.55",
+    "relation": {},
+    "ISSN": [
+      "2292-1141"
+    ],
+    "issn-type": [
+      {
+        "value": "2292-1141",
+        "type": "electronic"
+      }
+    ]
+  }
+}

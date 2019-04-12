@@ -10,6 +10,7 @@ import papis.document
 import papis.importer
 import papis.downloaders.base
 import tempfile
+import collections
 
 logger = logging.getLogger("crossref")
 logger.debug("importing")
@@ -86,7 +87,7 @@ type_converter = {
 }
 
 
-key_conversion = {
+key_conversion = collections.OrderedDict({
     "DOI": {"key": "doi"},
     "URL": {"key": "url"},
     "author": {
@@ -109,6 +110,14 @@ key_conversion = {
         "key": papis.config.get('doc-url-key-name'),
         "action": lambda x: x[1]["URL"]
     },
+    "issued": [
+        {"key": "year", "action": lambda x: x.get("date-parts")[0][0]},
+        {"key": "month", "action": lambda x: x.get("date-parts")[0][1]}
+    ],
+    "published-online": [
+        {"key": "year", "action": lambda x: x.get("date-parts")[0][0]},
+        {"key": "month", "action": lambda x: x.get("date-parts")[0][1]}
+    ],
     "published-print": [
         {"key": "year", "action": lambda x: x.get("date-parts")[0][0]},
         {"key": "month", "action": lambda x: x.get("date-parts")[0][1]}
@@ -133,13 +142,13 @@ key_conversion = {
         {"key": "year", "action": lambda x: x['start']["date-parts"][0][0]},
         {"key": "month", "action": lambda x: x['start']["date-parts"][0][1]},
     ],
-}
+})
 
 
 def crossref_data_to_papis_data(data):
     new_data = dict()
 
-    for xrefkey in key_conversion.keys():
+    for xrefkey in key_conversion:
         if xrefkey not in data.keys():
             continue
         _conv_data_src = key_conversion[xrefkey]
