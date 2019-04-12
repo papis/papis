@@ -101,6 +101,7 @@ key_conversion = collections.OrderedDict({
     "issue": {},
     # "issued": {"key": "",},
     "language": {},
+    "abstract": {},
     "ISBN": {"key": "isbn"},
     "page": {
         "key": "pages",
