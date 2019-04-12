@@ -262,7 +262,7 @@ class DocHtmlEscaped(dict):
         )
 
 
-class Document(object):
+class Document(dict):
 
     """Class implementing the entry abstraction of a document in a library.
     It is basically a python dictionary with more methods.
@@ -272,7 +272,6 @@ class Document(object):
     _info_file_path = ""
 
     def __init__(self, folder=None, data=None):
-        self._keys = []
         self._folder = None
 
         if folder is not None:
@@ -281,27 +280,6 @@ class Document(object):
 
         if data is not None:
             self.update(data)
-
-    def __delitem__(self, key):
-        """Deletes property from document, e.g. ``del doc['url']``.
-        :param key: Name of the property.
-        :type  key: str
-
-        """
-        self._keys.remove(key)
-        delattr(self, key)
-
-    def __setitem__(self, key, value):
-        """Sets property to value from document, e.g. ``doc['url'] =
-        'www.gnu.org'``.
-        :param key: Name of the property.
-        :type  key: str
-        :param value: Value of the parameter
-        :type  value: str,int,float,list
-        """
-        if key not in self._keys:
-            self._keys.append(key)
-        setattr(self, key, value)
 
     def __getitem__(self, key):
         """Gets property to value from document, e.g. ``a = doc['url']``.
@@ -312,7 +290,12 @@ class Document(object):
         :returns: Value of the property
         :rtype:  str,int,float,list
         """
-        return getattr(self, key) if hasattr(self, key) else ""
+        if key in self:
+            return self.get(key)
+        elif hasattr(self, key):
+            return getattr(self, key)
+        else:
+            return ""
 
     @property
     def html_escape(self):
@@ -356,7 +339,7 @@ class Document(object):
         :returns: True/False
 
         """
-        return key in self.keys()
+        return key in self
 
     def save(self):
         """Saves the current document's information into the info file.
@@ -390,24 +373,6 @@ class Document(object):
         for f in files:
             result.append(os.path.join(self.get_main_folder(), f))
         return result
-
-    def update(self, data):
-        """Update document's information from an info dictionary.
-
-        :param data: Dictionary with key and values to be updated
-        :type  data: dict
-
-        """
-        for key in data.keys():
-            self[key] = data[key]
-
-    def keys(self):
-        """Returns the keys defined for the document.
-
-        :returns: Keys for the document
-        :rtype:  list
-        """
-        return self._keys
 
     def load(self):
         """Load information from info file

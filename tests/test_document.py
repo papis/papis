@@ -56,14 +56,14 @@ def test_main_features():
     doc = from_data(
         {'title': 'Hello World', 'author': 'turing'}
     )
-    assert(doc.title == 'Hello World')
-    assert(doc.title == doc['title'])
+    assert(doc['title'] == 'Hello World')
+    assert(doc['title'] == doc['title'])
     assert(doc.has('title'))
     assert(set(doc.keys()) == set(['title', 'author']))
     assert(not doc.has('doi'))
     doc['doi'] = '123123.123123'
     assert(doc.has('doi'))
-    assert(doc.doi == doc['doi'])
+    assert(doc['doi'] == doc['doi'])
     del doc['doi']
     assert(doc['doi'] is '')
     assert(set(doc.keys()) == set(['title', 'author']))
@@ -123,5 +123,5 @@ def test_pickle():
     with open(filepath, 'rb') as fd:
         gotdocs = pickle.load(fd)
 
-    assert(gotdocs[0].title == docs[0].title)
-    assert(gotdocs[1].author == docs[1].author)
+    assert(gotdocs[0]['title'] == docs[0]['title'])
+    assert(gotdocs[1]['author'] == docs[1]['author'])
