@@ -2,6 +2,7 @@
 import subprocess
 import multiprocessing
 import time
+import copy
 from itertools import count, product
 import os
 import re
@@ -13,6 +14,7 @@ import papis.crossref
 import papis.bibtex
 import papis.exceptions
 import logging
+import collections
 
 logger = logging.getLogger("utils")
 logger.debug("importing")
@@ -78,6 +80,8 @@ def format_doc(python_format, document, key=""):
     :rtype: str
     """
     doc = key or papis.config.get("format-doc-name")
+    data = collections.defaultdict(str)
+    data.update(document)
     if papis.config.getboolean('format-jinja2-enable') is True:
         try:
             import jinja2
@@ -90,8 +94,9 @@ def format_doc(python_format, document, key=""):
 
             """)
         else:
-            return jinja2.Template(python_format).render(**{doc: document})
-    return python_format.format(**{doc: document})
+            return jinja2.Template(python_format).render(**{doc: data})
+    return python_format.format(**{doc: data})
+
 
 
 def get_folders(folder):
@@ -327,7 +332,6 @@ def input(
 
 def update_doc_from_data_interactively(document, data, data_name):
     import papis.tui.widgets.diff
-    import copy
     docdata = copy.copy(document)
     # do not compare some entries
     docdata.pop('files', None)
