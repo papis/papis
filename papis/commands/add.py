@@ -597,7 +597,7 @@ def cli(
     data = dict()
     files = list(files)
     ctx = papis.importer.Context()
-    ctx.files = list(files)
+    ctx.files = list(filter(lambda f: os.path.exists(f), files))
 
     for data_set in set_list:
         data[data_set[0]] = data_set[1]
@@ -642,17 +642,19 @@ def cli(
         logger.info(
             'There are {0} possible matchings'.format(len(matchin_importers)))
 
-        importer = matchin_importers[0]
-
-        if importer.ctx.data:
-            logger.info(
-                'Merging data from importer {0}'.format(importer.name))
-            ctx.data.update(importer.ctx.data)
-        if importer.ctx.files:
-            logger.info(
-                'Got files {0} from importer {1}'
-                .format(importer.ctx.files, importer.name))
-            ctx.files.extend(importer.ctx.files)
+        for importer in matchin_importers:
+            if importer.ctx.data:
+                logger.info(
+                    'Merging data from importer {0}'.format(importer.name))
+                papis.utils.update_doc_from_data_interactively(
+                    ctx.data,
+                    importer.ctx.data,
+                    importer.name)
+            if importer.ctx.files:
+                logger.info(
+                    'Got files {0} from importer {1}'
+                    .format(importer.ctx.files, importer.name))
+                ctx.files.extend(importer.ctx.files)
 
     if not ctx:
         logger.error('there is nothing to be added')

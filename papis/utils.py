@@ -339,7 +339,6 @@ def update_doc_from_data_interactively(document, data, data_name):
             namea=papis.document.describe(document), nameb=data_name))
 
 
-
 def clean_document_name(doc_path):
     """Get a file path and return the basename of the path cleaned.
 
