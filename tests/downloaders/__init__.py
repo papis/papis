@@ -1,4 +1,5 @@
 import os
+import json
 
 
 def get_resource(name):
@@ -6,3 +7,7 @@ def get_resource(name):
     assert os.path.exists(path)
     with open(path) as f:
         return f.read()
+
+
+def get_json_resource(name):
+    return json.loads(get_resource(name))
