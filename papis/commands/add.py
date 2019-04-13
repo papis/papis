@@ -649,7 +649,7 @@ def cli(
                 papis.utils.update_doc_from_data_interactively(
                     ctx.data,
                     importer.ctx.data,
-                    importer.name)
+                    str(importer))
             if importer.ctx.files:
                 logger.info(
                     'Got files {0} from importer {1}'
