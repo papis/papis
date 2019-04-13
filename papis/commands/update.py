@@ -58,79 +58,22 @@ import papis.yaml
 import click
 
 
-def update_document(document, data, force=False, interactive=False):
-    """Update document's information from an info dictionary.
-
-    :param data: Dictionary with key and values to be updated
-    :type  data: dict
-    :param force: If True, the update turns into a replace, i.e., it
-        replaces the old value by the new value stored in data.
-    :type  force: bool
-    :param interactive: If True, it will ask for user's input every time
-        that the values differ.
-    :type  interactive: bool
-
-    """
-    logger = logging.getLogger('cli:update')
-    _log = logger.info
-    for key in data.keys():
-        if document[key] == data[key]:
-            continue
-        if force:
-            setkey = True
-        else:
-            if document[key] is None or document[key] == '':
-                message = [
-                    ('', 'Set "'),
-                    ('bg:ansiblack fg:ansiyellow bold',
-                        '{val}'.format(val=key)),
-                    ('', '" to "'),
-                    ('bg:ansiblack fg:green bold',
-                        '{val:.200}'.format(val=str(data[key]))),
-                    ('bg:ansiblack bold', '"? (Y/n) '),
-                ]
-                setkey = True
-            else:
-                message = [
-                    ('bg:ansiblack fg:ansiyellow',
-                        "({key} conflict)".format(key=key)),
-                    ('bg:ansired', "\n"),
-                    ('', 'Replace "'),
-                    ('bg:ansiblack fg:ansired bold',
-                        '{val:.200}'.format(val=str(document[key]))),
-                    ('', '"\nby      "'),
-                    ('bg:ansiblack fg:green bold',
-                        '{val:.200}'.format(val=str(data[key]))),
-                    ('bg:ansiblack bold', '"? (Y/n) '),
-                ]
-                setkey = False
-
-            if interactive:
-                setkey = papis.utils.confirm(message)
-                _log = logger.debug
-
-        if setkey:
-            _log(
-                'setting {key} to {value}'.format(key=key, value=data[key])
-            )
-            document[key] = data[key]
-        else:
-            _log(
-                'NOT setting {key} to {value}'.format(key=key, value=data[key])
-            )
-
-
 def _update_with_database(document):
     document.save()
     papis.database.get().update(document)
 
 
-def run(document, data=dict(), interactive=False, force=False):
+def run(document, data=dict(), force=False):
     # Keep the ref the same, otherwise issues can be caused when
     # writing LaTeX documents and all the ref's change
     data['ref'] = document['ref']
 
-    update_document(document, data, force, interactive)
+    if force:
+        document.update(data)
+    else:
+        papis.utils.update_doc_from_data_interactively(
+            document=document, data=data, data_name='New data')
+
     _update_with_database(document)
 
 
@@ -389,6 +332,5 @@ def cli(
         run(
             document,
             data=data,
-            interactive=interactive,
             force=force,
         )
