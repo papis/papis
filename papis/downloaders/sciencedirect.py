@@ -32,6 +32,9 @@ def get_author_list(data):
             if authors:
                 authors[0]["affiliation"] = [dict(name=text)]
                 del authors[0]["refid"]
+            else:
+                if len(rdata) == 1:
+                    rdata[0]["affiliation"] = [dict(name=text)]
     return rdata
 
 
@@ -54,7 +57,7 @@ script_keyconv = collections.OrderedDict({
 })
 authors_keyconv = collections.OrderedDict({
     "content": {
-        "key": "aauthor_list",
+        "key": "author_list",
         "action": lambda x:
         get_author_list(
             list(
@@ -65,19 +68,36 @@ authors_keyconv = collections.OrderedDict({
     }
 })
 abstracts_keyconv = collections.OrderedDict({
-    "content": {
-        "key": "abstract",
-        "action": lambda x: " ".join(
-        map(lambda s: s["_"],
-            functools.reduce(lambda s, t: s + t,
-                map(lambda s: s["$$"],
-                    filter(lambda s: s["#name"] == 'abstract-sec',
-                        functools.reduce(lambda s, t: s+t,
-                            map(lambda s: s["$$"],
-                                filter(lambda s: s['$']['class'] == 'author',
-                                    x)))))))
-        )
-    }
+    "content": [
+        { # Single author format
+            "key": "abstract",
+            "action": lambda x: " ".join(
+                map(lambda s: s["_"],
+                    functools.reduce(lambda s, t: s + t,
+                        map(lambda s: s["$$"],
+                            filter(lambda s: s["#name"] == 'abstract-sec',
+                                functools.reduce(lambda s, t: s+t,
+                                    map(lambda s: s["$$"],
+                                        filter(lambda s:
+                                            s['$']['class'] == 'author',
+                                            x)))))))
+            )
+        }, { # multiple author format (apparently)
+            "key": "abstract",
+            "action": lambda x: " ".join(
+                map(lambda s: s['_'],
+                    functools.reduce(lambda x, y: x + y,
+                        map(lambda s: s["$$"],
+                            filter(lambda s: s['#name'] == 'simple-para',
+                                functools.reduce(lambda x, y: x + y,
+                                    map(lambda s: s["$$"],
+                                        filter(lambda s: s["#name"] == 'abstract-sec',
+                                            functools.reduce(lambda x, y: x + y,
+                                                map(lambda s: s["$$"],
+                                                    filter(lambda s: s['$']['class'] == 'author',
+                                                        x)))))))))))
+        }
+    ]
 })
 article_keyconv = collections.OrderedDict({
     "doi": {},
@@ -125,11 +145,11 @@ class Downloader(papis.downloaders.base.Downloader):
         soup = bs4.BeautifulSoup(body, "html.parser")
         scripts = soup.find_all(name="script", attrs={'data-iso-key': '_0'})
         if scripts:
-            rdata = json.loads(scripts[0].text)
+            rawdata = json.loads(scripts[0].text)
             self.logger.debug(
                 "found {0} scripts data-iso-key".format(len(scripts)))
             converted_data = papis.document.keyconversion_to_data(
-                script_keyconv, rdata)
+                script_keyconv, rawdata)
             data.update(converted_data["_article_data"])
             data.update(converted_data["_abstract_data"])
             data.update(converted_data["_author_data"])
