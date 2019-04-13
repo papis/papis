@@ -1,4 +1,6 @@
-from papis.importer import Importer, Context, cache, get_importer_by_name, available_importers
+from papis.importer import (
+    Importer, Context, cache, get_importer_by_name, available_importers
+)
 import time
 
 
@@ -12,6 +14,8 @@ def test_context():
     ctx.files = []
     ctx.data['key'] = 42
     assert(ctx)
+    ctx = Context()
+    assert(not ctx)
 
 
 def test_cache():

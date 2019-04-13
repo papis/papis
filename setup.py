@@ -189,6 +189,7 @@ setup(
             "hal=papis.downloaders.hal:Downloader",
             "doi=papis.crossref:Downloader",
             "ieee=papis.downloaders.ieee:Downloader",
+            "sciencedirect=papis.downloaders.sciencedirect:Downloader",
             "iopscience=papis.downloaders.iopscience:Downloader",
             "scitationaip=papis.downloaders.scitationaip:Downloader",
             "thesesfr=papis.downloaders.thesesfr:Downloader",
