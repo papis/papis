@@ -325,6 +325,21 @@ def input(
     return result if result else default
 
 
+def update_doc_from_data_interactively(document, data, data_name):
+    import papis.tui.widgets.diff
+    import copy
+    docdata = copy.copy(document)
+    # do not compare some entries
+    docdata.pop('files', None)
+    docdata.pop('tags', None)
+    document.update(
+        papis.tui.widgets.diff.diffdict(
+            docdata,
+            data,
+            namea=papis.document.describe(document), nameb=data_name))
+
+
+
 def clean_document_name(doc_path):
     """Get a file path and return the basename of the path cleaned.
 
