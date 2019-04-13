@@ -20,20 +20,20 @@ class Importer:
 
     """This is the base class for every importer"""
 
-    def __init__(self, uri="", name="", ctx=Context()):
+    def __init__(self, uri="", name="", ctx=None):
         """
         :param uri: uri
         :type  uri: str
         :param name: Name of the importer
         :type  name: str
         """
+        self.ctx = ctx or Context()
         assert(isinstance(uri, str))
         assert(isinstance(name, str))
-        assert(isinstance(ctx, Context))
+        assert(isinstance(self.ctx, Context))
         self.uri = uri
         self.name = name or os.path.basename(__file__)
         self.logger = logging.getLogger("importer:{0}".format(self.name))
-        self.ctx = ctx
 
     @classmethod
     def match(uri):
