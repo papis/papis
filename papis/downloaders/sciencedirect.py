@@ -136,9 +136,6 @@ class Downloader(papis.downloaders.base.Downloader):
         else:
             return False
 
-    def _get_body(self):
-        return self.session.get(self.uri).content.decode('utf-8')
-
     def get_data(self):
         data = dict()
         body = self._get_body()

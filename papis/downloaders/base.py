@@ -85,6 +85,10 @@ class Downloader(papis.importer.Importer):
                     fd.write(doc_rawdata)
                 self.ctx.files.append(tmp)
 
+    def _get_body(self):
+        """Get body of the uri, this is also important for unittesting"""
+        return self.session.get(self.uri).content.decode('utf-8')
+
     def __str__(self):
         return 'Downloader({0}, uri={1})'.format(self.name, self.uri)
 
