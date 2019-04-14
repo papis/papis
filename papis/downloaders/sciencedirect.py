@@ -150,4 +150,5 @@ class Downloader(papis.downloaders.base.Downloader):
             data.update(converted_data["_article_data"])
             data.update(converted_data["_abstract_data"])
             data.update(converted_data["_author_data"])
+            data['author'] = papis.document.author_list_to_author(data)
         return data

@@ -1,6 +1,7 @@
 import re
 import papis.downloaders.base
 import bs4
+import papis.document
 
 
 class Downloader(papis.downloaders.base.Downloader):
@@ -71,6 +72,7 @@ class Downloader(papis.downloaders.base.Downloader):
                             dict(name=aff.text.replace('\n', ' ')))
 
         data['author_list'] = author_list
+        data['author'] = papis.document.author_list_to_author(data)
 
         return data
 

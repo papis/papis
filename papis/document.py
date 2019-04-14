@@ -5,6 +5,67 @@ import papis.bibtex
 import logging
 import re
 import shutil
+import collections
+
+
+def keyconversion_to_data(key_conversion, data):
+    new_data = dict()
+
+    for xrefkey in key_conversion:
+        if xrefkey not in data.keys():
+            continue
+        _conv_data_src = key_conversion[xrefkey]
+        # _conv_data_src can be a dict or a list of dicts
+        if isinstance(_conv_data_src, dict):
+            _conv_data_src = [_conv_data_src]
+        for _conv_data in _conv_data_src:
+            papis_key = xrefkey
+            papis_val = data[xrefkey]
+            if 'key' in _conv_data.keys():
+                papis_key = _conv_data['key']
+            try:
+                if 'action' in _conv_data.keys():
+                    papis_val = _conv_data['action'](data[xrefkey])
+                new_data[papis_key] = papis_val
+            except Exception as e:
+                logger.debug(
+                    "Error while trying to parse {0} ({1})".format(
+                        papis_key, e))
+
+    if 'author_list' in new_data.keys():
+        new_data['author'] = author_list_to_author(new_data)
+
+    return new_data
+
+
+def author_list_to_author(data):
+    author = ''
+    if 'author_list' in data:
+        author = (
+            papis.config.get('multiple-authors-separator')
+            .join([
+                papis.config.get("multiple-authors-format").format(au=author)
+                for author in data['author_list']
+            ])
+        )
+    return author
+
+
+class Author(dict):
+    """Base class for authors, if you're parsing an author,
+    use this class.
+    """
+    def __init__(self, given, family, affiliations=[]):
+        dict.__init__(
+            self, given=given, family=family, affiliations=affiliations
+        )
+
+
+class Affiliation(dict):
+    """Base class for affiliation, if you're parsing an affiliations,
+    use this class."""
+    def __init__(self, name):
+        dict.__init__(self, name=name)
 
 
 logger = logging.getLogger("document")
