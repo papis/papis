@@ -1,0 +1,77 @@
+{
+  "publisher": "American Chemical Society",
+  "author": "Castro, Vida and Rodríguez, Hortensia and Albericio, Fernando",
+  "keywords": "Click Chemistry, CuAAC, solid-phase, azide, alkyne",
+  "type": "review-article",
+  "doi": "10.1021/acscombsci.5b00087",
+  "volume": "18",
+  "note": "Click Chemistry; CuAAC; solid-phase; azide; alkyne",
+  "abstract": "Click chemistry is an approach that uses efficient and reliable reactions, such as Cu(I)-catalyzed azide–alkyne cycloaddition (CuAAC), to bind two molecular building blocks. CuAAC has broad applications in medicinal chemistry and other fields of chemistry. This review describes the general features and applications of CuAAC in solid-phase synthesis (CuAAC-SP), highlighting the suitability of this kind of reaction for peptides, nucleotides, small molecules, supramolecular structures, and polymers, among others. This versatile reaction is expected to become pivotal for meeting future challenges in solid-phase chemistry.",
+  "title": "CuAAC: An Efficient Click Chemistry Reaction on Solid Phase",
+  "year": "2016",
+  "author_list": [
+    {
+      "family": "Castro",
+      "given": "Vida",
+      "affiliation": [
+        {
+          "name": "# Institute for Research in Biomedicine (IRB Barcelona), The Barcelona Institute of Science and Technology 08028-Barcelona, Spain"
+        },
+        {
+          "name": "⊥ CIBER-BBN, Networking Centre on Bioengineering, Biomaterials and Nanomedicine, 08028-Barcelona, Spain"
+        },
+        {
+          "name": "◊ Department of Organic Chemistry, University of Barcelona, 08028-Barcelona, Spain"
+        },
+        {
+          "name": "§ School of Chemistry, Yachay Tech, Yachay City of Knowledge, Urcuqui, Ecuador"
+        },
+        {
+          "name": "∥ School of Chemistry & Physics, University of KwaZulu-Natal, 4001-Durban, South Africa"
+        }
+      ]
+    },
+    {
+      "family": "Rodríguez",
+      "given": "Hortensia",
+      "affiliation": [
+        {
+          "name": "# Institute for Research in Biomedicine (IRB Barcelona), The Barcelona Institute of Science and Technology 08028-Barcelona, Spain"
+        },
+        {
+          "name": "⊥ CIBER-BBN, Networking Centre on Bioengineering, Biomaterials and Nanomedicine, 08028-Barcelona, Spain"
+        },
+        {
+          "name": "◊ Department of Organic Chemistry, University of Barcelona, 08028-Barcelona, Spain"
+        },
+        {
+          "name": "§ School of Chemistry, Yachay Tech, Yachay City of Knowledge, Urcuqui, Ecuador"
+        },
+        {
+          "name": "∥ School of Chemistry & Physics, University of KwaZulu-Natal, 4001-Durban, South Africa"
+        }
+      ]
+    },
+    {
+      "family": "Albericio",
+      "given": "Fernando",
+      "affiliation": [
+        {
+          "name": "# Institute for Research in Biomedicine (IRB Barcelona), The Barcelona Institute of Science and Technology 08028-Barcelona, Spain"
+        },
+        {
+          "name": "⊥ CIBER-BBN, Networking Centre on Bioengineering, Biomaterials and Nanomedicine, 08028-Barcelona, Spain"
+        },
+        {
+          "name": "◊ Department of Organic Chemistry, University of Barcelona, 08028-Barcelona, Spain"
+        },
+        {
+          "name": "§ School of Chemistry, Yachay Tech, Yachay City of Knowledge, Urcuqui, Ecuador"
+        },
+        {
+          "name": "∥ School of Chemistry & Physics, University of KwaZulu-Natal, 4001-Durban, South Africa"
+        }
+      ]
+    }
+  ]
+}
