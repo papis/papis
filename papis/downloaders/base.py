@@ -87,7 +87,10 @@ class Downloader(papis.importer.Importer):
 
     def _get_body(self):
         """Get body of the uri, this is also important for unittesting"""
-        return self.session.get(self.uri).content.decode('utf-8')
+        return (self.session
+                .get(self.uri)
+                .content
+                .decode('utf-8', errors='ignore'))
 
     def __str__(self):
         return 'Downloader({0}, uri={1})'.format(self.name, self.uri)

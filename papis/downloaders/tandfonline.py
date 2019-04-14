@@ -39,18 +39,26 @@ class Downloader(papis.downloaders.base.Downloader):
                 data['publisher'] = meta.attrs.get('content')
             elif meta.attrs.get('name') == 'dc.Description':
                 data['abstract'] += meta.attrs.get('content')
+            elif meta.attrs.get('name') == 'citation_journal_title':
+                data['journal'] = meta.attrs.get('content')
 
         author_list = []
         authors = soup.find_all(name='span', attrs={'class': 'contribDegrees'})
-        cleanregex = re.compile(r'(^\s*|\s$|&)')
+        cleanregex = re.compile(r'(^\s*|\s*$|&)')
+        editorregex = re.compile(r'([\n|]|\(Reviewing\s*Editor\))')
         morespace = re.compile(r'\s\+')
         for author in authors:
             affspan = author.find_all('span', attrs={'class': 'overlay'})
             afftext = affspan[0].text if affspan else ''
-            fullname = cleanregex.sub('', author.text.replace(afftext, ''))
+            fullname = re.sub(',', '',
+                        cleanregex.sub('', author.text.replace(afftext, '')))
             splitted = re.split(r'\s*', fullname)
             cafftext = re.sub(' ,', ',',
                               morespace.sub(' ', cleanregex.sub('', afftext)))
+            if 'Reviewing Editor' in fullname:
+                data['editor'] = cleanregex.sub(
+                    ' ', editorregex.sub('', fullname))
+                continue
             given = splitted[0]
             family = ' '.join(splitted[1:])
             author_list.append(
