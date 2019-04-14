@@ -23,3 +23,13 @@ def test_acs_1():
         down.fetch()
         correct_data = get_json_resource('acs_1_out.json')
         assert(down.ctx.data == correct_data)
+
+
+def test_acs_2():
+    url = 'https://pubs.acs.org/pdf/10.1021/acscombsci.5b00087'
+    down = papis.downloaders.get_downloader(url)
+    assert(not down.ctx)
+    with patch.object(down, '_get_body', lambda: get_resource('acs_2.html')):
+        down.fetch()
+        correct_data = get_json_resource('acs_2_out.json')
+        assert(down.ctx.data == correct_data)
