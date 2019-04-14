@@ -1,0 +1,31 @@
+{
+  "publisher": " Taylor & Francis Group ",
+  "type": "research-article",
+  "title": "The Møller–Plesset perturbation revisited: origin of high-order divergences",
+  "doi": "10.1080/00268976.2013.788745",
+  "author_list": [
+    {
+      "affiliation": [
+        {
+          "name": "Laboratoire de Chimie et Physique Quantiques, Université Paul Sabatier,  Toulouse Cedex, 118 route de Narbonne,  F-31062,  France"
+        }
+      ],
+      "given": "Jean-Paul",
+      "family": "Malrieu "
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Università di Ferrara, Dipartimento di Scienze Chimiche e Farmaceutiche,  Ferrara, Via Borsari 46,  I-44121,  Italy"
+        }
+      ],
+      "given": "Celestino",
+      "family": "Angeli"
+    }
+  ],
+  "subject": "Møller–Plesset perturbation theory; Epstein–Nesbet perturbation theory; divergences in perturbation theory; linked cluster theorem; coupled cluster",
+  "abstract": "Contrarily to what happens with the Epstein–Nesbet (EN) zeroth-order Hamiltonian, the Møller–Plesset (MP) perturbation operator has diagonal matrix elements, the expression of which is recalled. It is a balance between hole–hole and particle–particle repulsions on one hand and of hole–particle attractions on the other hand. For the double excitations, which dominate the correlation effects, the attractive terms prevail and the second-order MP energy is underestimated, at least for atoms of the first rows of the periodic table. It will be shown that when the perturbation expansion reaches multiple excitations, the diagonal terms of the MP perturbation operator may become larger than the zeroth-order MP excitation energy and creates an oscillating divergence of the series. Several situations of this type will be presented. This divergence is linked to the non-additivity of excitation energies, while this additivity is an underlying assumption for the linked cluster theorem and the coupled cluster method. Th...",
+  "journal": "Molecular Physics",
+  "author": "Malrieu , Jean-Paul and Angeli, Celestino",
+  "keywords": "Møller–Plesset perturbation theory, Epstein–Nesbet perturbation theory, divergences in perturbation theory, linked cluster theorem, coupled cluster"
+}
