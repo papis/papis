@@ -80,6 +80,8 @@ def format_doc(python_format, document, key=""):
     :rtype: str
     """
     doc = key or papis.config.get("format-doc-name")
+    fdoc = papis.document.Document()
+    fdoc.update(document)
     if papis.config.getboolean('format-jinja2-enable') is True:
         try:
             import jinja2
@@ -92,8 +94,11 @@ def format_doc(python_format, document, key=""):
 
             """)
         else:
-            return jinja2.Template(python_format).render(**{doc: document})
-    return python_format.format(**{doc: document})
+            return jinja2.Template(python_format).render(**{doc: fdoc})
+    try:
+        return python_format.format(**{doc: fdoc})
+    except Exception as e:
+        return str(e)
 
 
 def get_folders(folder):

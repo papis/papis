@@ -342,21 +342,11 @@ class Document(dict):
         if data is not None:
             self.update(data)
 
-    def __getitem__(self, key):
-        """Gets property to value from document, e.g. ``a = doc['url']``.
-        If the property `key` does not exist, then the empy string is returned.
-
-        :param key: Name of the property.
-        :type  key: str
-        :returns: Value of the property
-        :rtype:  str,int,float,list
+    def __missing__(self, key):
         """
-        if key in self:
-            return self.get(key)
-        elif hasattr(self, key):
-            return getattr(self, key)
-        else:
-            return ""
+        If key is not defined, return empty string
+        """
+        return ""
 
     @property
     def html_escape(self):
