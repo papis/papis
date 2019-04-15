@@ -153,7 +153,7 @@ setup(
             'doi=papis.crossref:Importer',
             'crossref=papis.crossref:FromCrossrefImporter',
             'pdf2doi=papis.crossref:DoiFromPdfImporter',
-            'url=papis.downloaders:Importer',
+            #'url=papis.downloaders:Importer',
             'arxiv=papis.arxiv:Importer',
             'pdf2arxivid=papis.arxiv:ArxividFromPdfImporter',
             'pmid=papis.pubmed:Importer',

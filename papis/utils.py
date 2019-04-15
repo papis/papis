@@ -14,7 +14,9 @@ import papis.crossref
 import papis.bibtex
 import papis.exceptions
 import logging
-import collections
+import papis.importer
+import papis.downloaders
+import colorama
 
 logger = logging.getLogger("utils")
 logger.debug("importing")
@@ -497,3 +499,27 @@ def geturl(url):
     session = requests.Session()
     session.headers = {'User-Agent': papis.config.get('user-agent')}
     return session.get(url).content
+
+
+def get_matching_importer_or_downloader(matching_string):
+    importers = []
+    logger = logging.getLogger("utils:matcher")
+    for importer_cls in (papis.importer.get_importers() +
+                         papis.downloaders.get_downloaders()):
+        importer = importer_cls.match(matching_string)
+        logger.debug(
+            "trying with importer {c.Back.BLACK}{c.Fore.YELLOW}{name}"
+            "{c.Style.RESET_ALL}".format(
+                c=colorama, name=importer_cls))
+        if importer:
+            logger.info(
+                "{f} {c.Back.BLACK}{c.Fore.GREEN}matches {name}"
+                "{c.Style.RESET_ALL}".format(
+                    f=matching_string, c=colorama, name=importer.name))
+            try:
+                importer.fetch()
+            except Exception as e:
+                logger.error(e)
+            else:
+                importers.append(importer)
+    return importers

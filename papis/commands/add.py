@@ -90,6 +90,7 @@ import papis.importer
 import papis.cli
 import click
 import colorama
+import papis.downloaders
 
 logger = logging.getLogger('add')
 
@@ -503,8 +504,7 @@ def cli(
         for n in import_mgr.names():
             print("{name}\n\t{text}".format(
                 name=n,
-                text=re.sub(r"[ \n]+", " ", import_mgr[n].plugin.__doc__)
-            ))
+                text=re.sub(r"[ \n]+", " ", import_mgr[n].plugin.__doc__)))
         return
 
     from_importer = list(from_importer)
@@ -525,27 +525,12 @@ def cli(
         open_file = False
 
     import_mgr = papis.importer.get_import_mgr()
-    matchin_importers = []
+    matching_importers = []
 
     if not from_importer and not batch and files:
-        for f in files:
-            for importer_cls in papis.importer.get_importers():
-                importer = importer_cls.match(f)
-                logger.debug(
-                    "trying with importer {c.Back.BLACK}{c.Fore.YELLOW}{name}"
-                    "{c.Style.RESET_ALL}".format(
-                        c=colorama, name=importer))
-                if importer:
-                    logger.info(
-                        "{f} {c.Back.BLACK}{c.Fore.GREEN}matches {name}"
-                        "{c.Style.RESET_ALL}".format(
-                            f=f, c=colorama, name=importer.name))
-                    try:
-                        importer.fetch()
-                    except Exception as e:
-                        logger.error(e)
-                    else:
-                        matchin_importers.append(importer)
+        matching_importers = sum((
+            papis.utils.get_matching_importer_or_downloader(f)
+            for f in files), [])
 
     for importer_tuple in from_importer:
         try:
@@ -554,15 +539,15 @@ def cli(
             importer = import_mgr[importer_name].plugin(uri=resource)
             importer.fetch()
             if importer.ctx:
-                matchin_importers.append(importer)
+                matching_importers.append(importer)
         except Exception as e:
             logger.exception(e)
 
-    if matchin_importers:
+    if matching_importers:
         logger.info(
-            'There are {0} possible matchings'.format(len(matchin_importers)))
+            'There are {0} possible matchings'.format(len(matching_importers)))
 
-        for importer in matchin_importers:
+        for importer in matching_importers:
             if importer.ctx.data:
                 logger.info(
                     'Merging data from importer {0}'.format(importer.name))
