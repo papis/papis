@@ -100,6 +100,7 @@ def diffdict(dicta, dictb, namea='a', nameb='b'):
     options = {
         "add": False,
         "reject": False,
+        "split": False,
         "quit": False,
         "add_all": False,
         "cancel": False,
@@ -115,9 +116,9 @@ def diffdict(dicta, dictb, namea='a', nameb='b'):
 
     actions = [
         Action(
-            name='Add', key='y', action=lambda e: oset(e, "add", True)),
-        Action(
             name='Add all', key='a', action=lambda e: oset(e, "add_all", True)),
+        Action(
+            name='Split', key='s', action=lambda e: oset(e, "split", True)),
         Action(
             name='Reject', key='n', action=lambda e: oset(e, "reject", True)),
         Action(
@@ -126,8 +127,34 @@ def diffdict(dicta, dictb, namea='a', nameb='b'):
             name='Cancel', key='c', action=lambda e: oset(e, "cancel", True)),
     ]
 
-    for key in filter(
-            lambda k: dicta.get(k) != dictb.get(k), set(dicta) | set(dictb)):
+    keys = [k for k in sorted(set(dicta) | set(dictb))
+            if not dicta.get(k) == dictb.get(k)]
+
+    texta = "\n".join(
+            "{k}: {v}".format(k=k, v=dicta.get(k, '')) for k in sorted(keys))
+    textb = "\n".join(
+            "{k}: {v}".format(k=k, v=dictb.get(k, '')) for k in sorted(keys))
+
+    diffshow(
+        texta=texta, textb=textb,
+        title='GENERAL DIFFERENCE',
+        namea=namea, nameb=nameb, actions=actions)
+
+    if options["cancel"] or options['quit']:
+        return dict()
+    elif options["add_all"]:
+        rdict.update(dicta)
+        rdict.update(dictb)
+        return rdict
+    elif options["split"]:
+        reset()
+
+    actions = [
+        Action(
+            name='Add', key='y', action=lambda e: oset(e, "add", True)),
+    ] + actions
+
+    for key in keys:
 
         if options["add_all"]:
             rdict[key] = dictb.get(key, dicta.get(key))
