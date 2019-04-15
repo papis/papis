@@ -101,6 +101,10 @@ def available_importers():
     return get_import_mgr().entry_points_names()
 
 
+def get_importers():
+    return [e.plugin for e in get_import_mgr().extensions]
+
+
 def get_importer_by_name(name):
     """Get importer by name
     :param name: Name of the importer

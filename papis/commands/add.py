@@ -34,14 +34,14 @@ Examples
 
     .. code::
 
-        papis add ~/Documents/interesting.pdf --from-doi 10.10763/1.3237134
+        papis add ~/Documents/interesting.pdf --from doi 10.10763/1.3237134
 
 - Add paper to a library named ``machine-learning`` from ``arxiv.org``
 
     .. code::
 
         papis -l machine-learning add \\
-            --from-url https://arxiv.org/abs/1712.03134
+            --from url https://arxiv.org/abs/1712.03134
 
 - If you do not want copy the original pdfs into the library, you can
   also tell papis to just create a link to them, for example
@@ -49,7 +49,7 @@ Examples
     .. code::
 
         papis add --link ~/Documents/interesting.pdf \\
-            --from-doi 10.10763/1.3237134
+            --from doi 10.10763/1.3237134
 
   will add an entry into the papis library, but the pdf document will remain
   at ``~/Documents/interesting.pdf``, and in the document's folder
@@ -481,59 +481,6 @@ def run(
     default=False,
     is_flag=True
 )
-@click.option(
-    "--from-bibtex",
-    help="{c.Fore.RED}[DEPRECATED use --from bibtex <value>]"
-    "{c.Style.RESET_ALL}"
-    "Parse information from a bibtex file".format(c=colorama),
-    default=""
-)
-@click.option(
-    "--from-yaml",
-    help="{c.Fore.RED}[DEPRECATED use --from yaml <value>]{c.Style.RESET_ALL}"
-    "Parse information from a yaml file".format(c=colorama),
-    default=""
-)
-@click.option(
-    "--from-folder",
-    help="{c.Fore.RED}[DEPRECATED use --from folder <value>]"
-    "{c.Style.RESET_ALL}"
-    "Add document from folder being a valid papis document".format(c=colorama),
-    default=""
-)
-@click.option(
-    "--from-url",
-    help="{c.Fore.RED}[DEPRECATED use --from url <value>]{c.Style.RESET_ALL}"
-    "Get document and information from a "
-    "given url, a parser must be implemented"
-    .format(c=colorama),
-    default=""
-)
-@click.option(
-    "--from-doi",
-    help="{c.Fore.RED}[DEPRECATED use --from doi <value>]{c.Style.RESET_ALL}"
-    "Doi to try to get information from".format(c=colorama),
-    default=None
-)
-@click.option(
-    "--from-crossref",
-    help="{c.Fore.RED}[DEPRECATED use --from crossref <value>]"
-    "{c.Style.RESET_ALL}"
-    "Try to get information from a crossref query".format(c=colorama),
-    default=None
-)
-@click.option(
-    "--from-pmid",
-    help="{c.Fore.RED}[DEPRECATED use --from pmid <value>]{c.Style.RESET_ALL}"
-    "PMID to try to get information from".format(c=colorama),
-    default=None
-)
-@click.option(
-    "--from-lib",
-    help="{c.Fore.RED}[DEPRECATED use --from lib <value>]{c.Style.RESET_ALL}"
-    "Add document from another library".format(c=colorama),
-    default=""
-)
 def cli(
         files,
         set_list,
@@ -549,14 +496,6 @@ def cli(
         smart,
         link,
         list_importers,
-        from_bibtex,
-        from_yaml,
-        from_url,
-        from_doi,
-        from_folder,
-        from_crossref,
-        from_pmid,
-        from_lib,
         ):
 
     if list_importers:
@@ -571,38 +510,14 @@ def cli(
     from_importer = list(from_importer)
     logger = logging.getLogger('cli:add')
 
-    # TODO: Remove in v0.9.x BEGIN
-    deprecated_flags = [
-        ("bibtex", from_bibtex), ("yaml", from_yaml), ("url", from_url),
-        ("doi", from_doi), ("folder", from_folder), ("pmid", from_pmid),
-        ("crossref", from_crossref), ("lib", from_lib),
-    ]
-    for deprecated in deprecated_flags:
-        name = deprecated[0]
-        resource = deprecated[1]
-        if resource:
-            logger.warning(
-                "{c.Fore.WHITE}{c.Back.BLACK}{c.Style.BRIGHT}"
-                "\n"
-                "The flag {c.Fore.RED}--from-{name} '{value}'{c.Fore.WHITE}"
-                " is deprecated, "
-                "please use in the future\n"
-                "\t {c.Fore.GREEN}--from {name} '{value}'"
-                "{c.Style.RESET_ALL}"
-                .format(c=colorama, name=name, value=resource)
-            )
-            from_importer.append((name, resource))
-    # TODO: Remove in v0.9.x END
-
     data = dict()
     for data_set in set_list:
         data[data_set[0]] = data_set[1]
 
     files = list(files)
     ctx = papis.importer.Context()
-    ctx.files = list(filter(lambda f: os.path.exists(f), files))
+    ctx.files = [f for f in files if os.path.exists(f)]
     ctx.data.update(data)
-
 
     if batch:
         edit = False
@@ -613,21 +528,24 @@ def cli(
     matchin_importers = []
 
     if not from_importer and not batch and files:
-        filescopy = files
-        files = []
-        for _name in import_mgr.names():
-            logger.debug(
-                "trying with importer {c.Back.BLACK}{c.Fore.YELLOW}{name}"
-                "{c.Style.RESET_ALL}".format(c=colorama, name=_name)
-            )
-            importer = import_mgr[_name].plugin.match(filescopy[0])
-            if importer:
-                logger.info(
-                    "{c.Back.BLACK}{c.Fore.GREEN}match {name}"
-                    "{c.Style.RESET_ALL}".format(c=colorama, name=_name)
-                )
-                importer.fetch()
-                matchin_importers.append(importer)
+        for f in files:
+            for importer_cls in papis.importer.get_importers():
+                importer = importer_cls.match(f)
+                logger.debug(
+                    "trying with importer {c.Back.BLACK}{c.Fore.YELLOW}{name}"
+                    "{c.Style.RESET_ALL}".format(
+                        c=colorama, name=importer))
+                if importer:
+                    logger.info(
+                        "{f} {c.Back.BLACK}{c.Fore.GREEN}matches {name}"
+                        "{c.Style.RESET_ALL}".format(
+                            f=f, c=colorama, name=importer.name))
+                    try:
+                        importer.fetch()
+                    except Exception as e:
+                        logger.error(e)
+                    else:
+                        matchin_importers.append(importer)
 
     for importer_tuple in from_importer:
         try:

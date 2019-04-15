@@ -90,6 +90,12 @@ def get_downloader_by_name(name):
     return downloader_mgr[name].plugin
 
 
+def get_downloaders():
+    global downloader_mgr
+    _create_downloader_mgr()
+    return [e.plugin for e in downloader_mgr.extensions]
+
+
 def get_info_from_url(url, expected_doc_format=None):
     """Get information directly from url
 
