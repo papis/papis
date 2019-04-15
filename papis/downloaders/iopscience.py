@@ -1,5 +1,6 @@
 import re
 import papis.downloaders.base
+import bs4
 
 
 class Downloader(papis.downloaders.base.Downloader):
@@ -9,6 +10,7 @@ class Downloader(papis.downloaders.base.Downloader):
             self, url, name="iopscience"
         )
         self.expected_document_extension = 'pdf'
+        self.priority = 10
 
     @classmethod
     def match(cls, url):
@@ -19,20 +21,16 @@ class Downloader(papis.downloaders.base.Downloader):
             return False
 
     def get_doi(self):
-        # http://iopscience.iop.org/article/10.1088/0305-4470/24/2/004?blah=1
-        mdoi = re.match(r'.*\.org/[^/]+/([^?]*)', self.uri)
-        if mdoi:
-            doi = mdoi.group(1).replace("abs/", "").replace("full/", "")
-            self.logger.debug("[doi] = %s" % doi)
-            return doi
+        return self.ctx.data.get('doi')
 
     def get_document_url(self):
-        # http://iopscience.iop.org/article/10.1088/0305-4470/24/2/004/pdf
-        durl = 'https://iopscience.iop.org/article/{0}/pdf'.format(
-            self.get_doi()
-        )
-        self.logger.debug("[doc url] = %s" % durl)
-        return durl
+        if 'pdf_url' in self.ctx.data:
+            return self.ctx.data.get('pdf_url')
+        doi = self.get_doi()
+        if doi:
+            durl = 'https://iopscience.iop.org/article/{0}/pdf'.format(doi)
+            self.logger.debug("doc url = %s" % durl)
+            return durl
 
     def _get_article_id(self):
         """Get article's id for IOP
@@ -41,19 +39,28 @@ class Downloader(papis.downloaders.base.Downloader):
         doi = self.get_doi()
         if doi:
             articleId = doi.replace('10.1088/', '')
-            self.logger.debug("[doc articleId] = %s" % articleId)
+            self.logger.debug("articleId = %s" % articleId)
             return articleId
 
     def get_bibtex_url(self):
-        # http://iopscience.iop.org/export?
-        # articleId=0305-4470/24/2/004&exportFormat=
-        # iopexport_bib&exportType=abs&navsubmit=Export%2Babstract
-        articleId = self._get_article_id()
-        url = "{0}{1}{2}".format(
-            "http://iopscience.iop.org/export?articleId=",
-            articleId,
-            "&exportFormat=iopexport_bib&exportType=abs"
-            "&navsubmit=Export%2Babstract"
-        )
-        self.logger.debug("[bibtex url] = %s" % url)
-        return url
+        aid = self._get_article_id()
+        if aid:
+            url = "{0}{1}{2}".format(
+                "http://iopscience.iop.org/export?aid=",
+                aid,
+                "&exportFormat=iopexport_bib&exportType=abs"
+                "&navsubmit=Export%2Babstract"
+            )
+            self.logger.debug("bibtex url = %s" % url)
+            return url
+
+    def get_data(self):
+        data = dict()
+        body = self._get_body()
+        soup = bs4.BeautifulSoup(body, "html.parser")
+        data.update(papis.downloaders.base.parse_meta_headers(soup))
+        abstract_nodes = soup.find_all(
+                'div', attrs={'class': 'wd-jnl-art-abstract'})
+        if abstract_nodes:
+            data['abstract'] = ' '.join(a.text for a in abstract_nodes)
+        return data

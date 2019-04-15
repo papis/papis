@@ -1,43 +1,35 @@
 import papis.downloaders
+from tests.downloaders import get_resource, get_json_resource
+from unittest.mock import patch
 from papis.downloaders.iopscience import Downloader
 import papis.bibtex
 
 
-def test_match():
-    assert(
-        Downloader.match(
-            'http://iopscience.iop.org/article/10.1088/0305-4470/24/2/004'
-        )
-    )
-    assert(
-        Downloader.match(
-            'blah://iop.org/!@#!@$!%!@%!$che.6b00559'
-        ) is False
-    )
-    assert(
-        Downloader.match(
-            'iopscience.iop.com/!@#!@$!%!@%!$chemed.6b00559'
-        ) is False
-    )
-    down = Downloader.match(
-        'http://iopscience.iop.org/article/10.1088/0305-4470/24/2/004/pdf?as=2'
-    )
-    assert(down)
-    assert(down.get_doi() == '10.1088/0305-4470/24/2/004')
-    assert(down._get_article_id() == '0305-4470/24/2/004')
-
-def test_downloader_getter():
-    url = 'http://iopscience.iop.org/article/10.1088/0305-4470/24/2/004?a=2'
+def test_1():
+    # One old paper
+    url = 'https://iopscience.iop.org/article/10.1088/0026-1394/12/4/002'
     down = papis.downloaders.get_downloader(url)
     assert(down.name == 'iopscience')
-    assert(down.expected_document_extension == 'pdf')
-    assert(down.get_doi() == '10.1088/0305-4470/24/2/004')
-    assert(len(down.get_bibtex_url()) > 0)
-    assert(len(down.get_bibtex_data()) > 0)
-    bibs = papis.bibtex.bibtex_to_dict(down.get_bibtex_data())
-    assert(len(bibs) == 1)
-    doc = down.get_document_data()
-    assert(doc is not None)
-    # not open access
-    # TODO:
-    # assert(not down.check_document_format())
+    with patch.object(down, '_get_body',
+            lambda: get_resource('iopscience_1.html')):
+        down.fetch()
+        correct_data = get_json_resource('iopscience_1_out.json')
+        assert(down.ctx.data == correct_data)
+        # with open('iopscience_1_out.json', 'w+') as f:
+            # import json
+            # json.dump(down.ctx.data, f)
+
+
+def test_2():
+    # Multiple authors with affiliations
+    url = 'https://iopscience.iop.org/article/10.1088/1748-605X/ab007b'
+    down = papis.downloaders.get_downloader(url)
+    assert(down.name == 'iopscience')
+    with patch.object(down, '_get_body',
+            lambda: get_resource('iopscience_2.html')):
+        down.fetch()
+        correct_data = get_json_resource('iopscience_2_out.json')
+        assert(down.ctx.data == correct_data)
+        # with open('iopscience_2_out.json', 'w+') as f:
+            # import json
+            # json.dump(down.ctx.data, f)

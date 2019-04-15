@@ -2,11 +2,86 @@ import os
 import logging
 import requests
 import papis.config
+import papis.document
 import papis.utils
 import filetype
 import papis.importer
 import papis.bibtex
 import tempfile
+import copy
+import re
+
+
+meta_equivalences = {
+    "og:type": "type",
+    "og:title": "title",
+    "og:url": "url",
+    "description": "abstract",
+    "citation_doi": "doi",
+    "citation_firstpage": "firstpage",
+    "citation_fulltext_html_url": "url",
+    "citation_pdf_url": "pdf_url",
+    "citation_issn": "issn",
+    "citation_issue": "issue",
+    "citation_journal_abbrev": "journal_abbrev",
+    "citation_journal_title": "journal",
+    "citation_language": "language",
+    "citation_online_date": "online_date",
+    "citation_publication_date": "publication_date",
+    "citation_publisher": "publisher",
+    "citation_title": "title",
+    "citation_volume": "volume",
+    "dc.publisher": "publisher",
+    "dc.date": "date",
+    "dc.language": "language",
+    "dc.subject": "subject",
+    "dc.title": "title",
+    "keywords": "keywords",
+    "dc.type": "type",
+    "dc.description": "description",
+}
+
+
+def parse_meta_headers(soup, extra_equivalences=dict()):
+    equivalences = copy.copy(meta_equivalences)
+    equivalences.update(extra_equivalences)
+    metas = soup.find_all(name="meta")
+    data = dict()
+    for meta in metas:
+        _mname = meta.attrs.get('name') or meta.attrs.get('property')
+        if _mname and _mname.lower() in equivalences:
+            data[equivalences[_mname.lower()]] = meta.attrs.get('content')
+
+    author_list = parse_meta_authors(soup)
+    if author_list:
+        data['author_list'] = author_list
+        data['author'] = papis.document.author_list_to_author(data)
+
+    return data
+
+
+def parse_meta_authors(soup):
+    author_list = []
+    authors = soup.find_all(name='meta', attrs={'name': 'citation_author'})
+    affs = soup.find_all(name='meta',
+            attrs={'name': 'citation_author_institution'})
+    if affs and authors:
+        tuples = zip(authors, affs)
+    elif authors:
+        tuples = [(a, None) for a in authors]
+    else:
+        return []
+
+    for t in tuples:
+        fullname = t[0].get('content')
+        affiliation = [dict(name=t[1].get('content'))] if t[1] else []
+        fullnames = re.split('\s+', fullname)
+        author_list.append(dict(
+            given=fullnames[0],
+            family=' '.join(fullnames[1:]),
+            affiliation=affiliation,
+        ))
+    return author_list
 
 
 class Downloader(papis.importer.Importer):

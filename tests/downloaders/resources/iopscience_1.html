@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		
+		<script>
+			function DeferJS(src) {
+			function downloadJSAtOnload() {
+			var element = document.createElement("script");
+			element.src = src;
+			document.body.appendChild(element);
+			}
+			if (window.addEventListener)
+			window.addEventListener("load", downloadJSAtOnload, false);
+			else if (window.attachEvent)
+			window.attachEvent("onload", downloadJSAtOnload);
+			else window.onload = downloadJSAtOnload;
+			}
+		</script>
+		<script>
+			DeferJS("https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js");
+		</script>
+		<script>
+			DeferJS("https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js");
+		</script>
+		<script>
+                DeferJS("https://badge.dimensions.ai/badge.js");
+			</script>
+		<script>
+                DeferJS("https://badge.dimensions.ai/badge.js");
+			</script>
+		<script>
+                DeferJS("https://badge.dimensions.ai/badge.js");
+			</script>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="robots" content="noarchive">
+		<title>Magnetic Temperature Scale in the 2 K to 30 K Range - IOPscience</title>
+		<meta name="citation_journal_title" content="Metrologia"></meta><meta name="citation_journal_abbrev" content="Metrologia"></meta><meta name="citation_issn" content="0026-1394"></meta><meta name="citation_publisher" content="IOP Publishing"></meta><meta name="citation_author" content="D N Astrov"></meta><meta name="citation_author" content="V A Pavlov"></meta><meta name="citation_author" content="V T Shkraba"></meta><meta name="citation_title" content="Magnetic Temperature Scale in the 2 K to 30 K Range"></meta><meta name="citation_online_date" content="2005-01-31"></meta><meta name="citation_volume" content="12"></meta><meta name="citation_issue" content="4"></meta><meta name="citation_firstpage" content="143"></meta><meta name="citation_doi" content="10.1088/0026-1394/12/4/002"></meta><meta name="citation_abstract_html_url" content="https://iopscience.iop.org/article/10.1088/0026-1394/12/4/002/meta"></meta><meta name="citation_pdf_url" content="https://iopscience.iop.org/article/10.1088/0026-1394/12/4/002/pdf"></meta><meta name="citation_fulltext_html_url" content="https://iopscience.iop.org/article/10.1088/0026-1394/12/4/002"></meta><meta name="citation_language" content="en"></meta><meta name="citation_reference" content="Astrov D N, Orlova M P and Kytin G A 1969 Metrologia 5 111"/><meta name="citation_reference" content="Rogers J S, Tainsh R J, Anderson M S and Swenson C A 1968 Metrologia 4 47"/><meta name="citation_reference" content="Plumb H H and Cataland G 1965 Science 150 155"/><meta name="citation_reference" content="Orlova M P, Astrov D N, Kytin G A, Filonchik R V and Kurakina T M 1973 Izmeritelnaya Tekhnika 7 3"/><meta name="citation_reference" content="Kytin G A, Kurilenok K V, Orlova M P, Astrov D N and Sharevskaya D I 1967 Comite Consultatif de Thermometrie p T81"/><meta name="citation_reference" content="Cetas T C and Swenson C A 1972 Metrologia 8 46"/><meta name="citation_reference" content="van Rijn C and Durieux M 1971 Comite Consultatif de Thermometrie doc. 44"/><meta name="citation_reference" content="Pavlov V A, Shkraba V T and Astrov D N 1971 Izmeritelnaya Tekhnika 2 63"/><meta name="citation_reference" content="Hague B 1932 Alternating Current Bridge Methods (London: Pitman)"/><meta name="citation_reference" content="Orlova M P, Astrov D N and Filonchik R V 1973 Izmeritelnaya Tekhnika 6 3"/><meta name="citation_reference" content="Orlova M P, Astrov D N, Sharevskaya D I, Belyansky L B, Razhba Ya E and Khnykov V N 1973 Izmeritelnaya Tekhnika 4 5"/><meta name="citation_reference" content="Kemp W R G, Collins J G, Pickup C P and Muijlwijk R 1972 Temperature, Its Measurement and Control in Science and Industry Part 1 vol 4 ed H H Plumb (Pittsburgh: Instrument Society of America) p 85"/><meta name="dc.publisher" content="IOP Publishing" lang="en"></meta><meta name="dc.date" content="October 1976" scheme="W3CDTF"></meta><meta name="dc.type" content="Text" scheme="DCMIType"></meta><meta name="dc.format" content="text/html" scheme="IMT"></meta><meta name="dc.identifier" content="doi:10.1088/0026-1394/12/4/002"></meta><meta name="dc.language" content="en"></meta><meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- Note Gridset ref 35089 -->
+<link rel="stylesheet" href="https://static.iopscience.com/2.18.0/css/critical-styles.min.css" type="text/css" />
+<link rel="preload" href="https://static.iopscience.com/2.18.0/css/all-styles.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://static.iopscience.com/2.18.0/css/all-styles.min.css"></noscript>
+    <script>
+        /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+    /* This file is meant as a standalone workflow for
+    - testing support for link[rel=preload]
+    - enabling async CSS loading in browsers that do not support rel=preload
+    - applying rel preload css once loaded, whether supported or not.
+    */
+    (function( w ){
+      "use strict";
+      // rel=preload support test
+      if( !w.loadCSS ){
+        w.loadCSS = function(){};
+      }
+      // define on the loadCSS obj
+      var rp = loadCSS.relpreload = {};
+      // rel=preload feature support test
+      // runs once and returns a function for compat purposes
+      rp.support = (function(){
+        var ret;
+        try {
+          ret = w.document.createElement( "link" ).relList.supports( "preload" );
+        } catch (e) {
+          ret = false;
+        }
+        return function(){
+          return ret;
+        };
+      })();
+      // if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+      // then change that media back to its intended value on load
+      rp.bindMediaToggle = function( link ){
+        // remember existing media attr for ultimate state, or default to 'all'
+        var finalMedia = link.media || "all";
+        function enableStylesheet(){
+          link.media = finalMedia;
+        }
+        // bind load handlers to enable media
+        if( link.addEventListener ){
+          link.addEventListener( "load", enableStylesheet );
+        } else if( link.attachEvent ){
+          link.attachEvent( "onload", enableStylesheet );
+        }
+        // Set rel and non-applicable media type to start an async request
+        // note: timeout allows this to happen async to let rendering continue in IE
+        setTimeout(function(){
+          link.rel = "stylesheet";
+          link.media = "only x";
+        });
+        // also enable media after 3 seconds,
+        // which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+        setTimeout( enableStylesheet, 3000 );
+      };
+      // loop through link elements in DOM
+      rp.poly = function(){
+        // double check this to prevent external calls from running
+        if( rp.support() ){
+          return;
+        }
+        var links = w.document.getElementsByTagName( "link" );
+        for( var i = 0; i < links.length; i++ ){
+          var link = links[ i ];
+          // qualify links to those with rel=preload and as=style attrs
+          if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+            // prevent rerunning on link
+            link.setAttribute( "data-loadcss", true );
+            // bind listeners to toggle media back
+            rp.bindMediaToggle( link );
+          }
+        }
+      };
+      // if unsupported, run the polyfill
+      if( !rp.support() ){
+        // run once at least
+        rp.poly();
+        // rerun poly on an interval until onload
+        var run = w.setInterval( rp.poly, 500 );
+        if( w.addEventListener ){
+          w.addEventListener( "load", function(){
+            rp.poly();
+            w.clearInterval( run );
+          } );
+        } else if( w.attachEvent ){
+          w.attachEvent( "onload", function(){
+            rp.poly();
+            w.clearInterval( run );
+          } );
+        }
+      }
+      // commonjs
+      if( typeof exports !== "undefined" ){
+        exports.loadCSS = loadCSS;
+      }
+      else {
+        w.loadCSS = loadCSS;
+      }
+    }( typeof global !== "undefined" ? global : this ) );
+    </script>
+<!--[if lte IE 10]>
+<link rel="stylesheet" href="https://static.iopscience.com/2.18.0/css/gridset-ie-lte8.css" type="text/css" />
+<![endif]-->
+<!-- Google Tag Manager -->
+<script type="text/javascript">
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push(
+        {'gtm.start': new Date().getTime(),event:'gtm.js'}
+        );var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-M73Z4W');
+    </script>
+<!-- End Google Tag Manager --><script>
+		/*  Cutting the mustard - http://responsivenews.co.uk/post/18948466399/cutting-the-mustard */
+		
+		/* Below is the original if statement, from the link above. I have amended it to turn of JS on all IE browsers less than 10.
+		This is due to a function in the iop.jquery.toolbar line 35/36. Uses .remove which is not native js supported in IE9 or lower */
+		/*if('querySelector' in document
+		&& 'localStorage' in window
+		&& 'addEventListener' in window)*/
+		
+		/* This is the updated selector, taken from: https://justmarkup.com/log/2015/02/26/cut-the-mustard-revisited/ */
+		if('visibilityState' in document) {
+		
+		/*! loadJS: load a JS. We are loading this command straight away, before the body loads, so that IF a user has JS enabled, their show hide panels will automatically be closed. */
+		/* If this isn't here, then these panels appear open while the page is loading, then when the js loads at the bottom of the page, they are shut. So the users sees open content, then hidden after a second or 2 when the js is loaded. Not nice */
+		document.write("<style>.reveal-content{display:none;}.search-res-filter .reveal-content{display:block;}</style>");
+		}
+		</script>
+		<script>
+		(function(d) {
+			var config = {
+			kitId: 'nal2qzr',
+			scriptTimeout: 3000
+			},
+			h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='//use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+		})(document);
+		</script>
+		</head>
+	<body id="back-to-top-target" itemscope itemtype="http://schema.org/Organization" class="issn-0026-1394">
+    <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M73Z4W"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) --><div class="cookies-banner-wrap" id="cookieBanner">
+    <div class="cookies-banner cf">
+        This site uses cookies. By continuing to use this site you agree to our use of cookies. To find out more, see our
+        <a href="http://ioppublishing.org/privacyPolicy">Privacy and Cookies</a> policy.
+        <div class="cookies-banner-close">
+            <span role="button" tabindex="0" class="icon-close large"><span class="offscreen-hidden">Close this notification</span></span>
+        </div>
+    </div>
+</div><!-- Start Production toolbar -->
+<!-- End Production toolbar --><div class="wrapper institute-banner wd-inst-banner">
+        <a href="http://www.ub.tuwien.ac.at/openaccess/foerderung"><img border="0" alt="Brought to you by VIENNA UNIVERSITY OF TECHNOLOGY" src="http://live.ej.iop.org/icons-nfs/branding/3_55.jpg"/></a></div>
+<!-- Start Downtime Banner -->
+<!-- End Downtime Banner --><!-- Header tile starts -->
+<header role="banner" data-nav-group>
+	<div class="accessibility" style="display: none;">
+	    <p><strong>Accessibility Links</strong></p>
+	    <ul>
+	        <li><a href="#page-content">Skip to content</a></li>
+	        <li><a href="/search#contentCol">Skip to search IOPscience</a></li>
+	        <li><a href="/journals#contentCol">Skip to Journals list</a></li>
+	        <li><a href="/page/accessibility#contentCol">Accessibility help</a></li>
+	    </ul>
+	</div>
+    <div class="wrapper dgh-showgrid tgh-showgrid cf" name="contentCol">
+
+        <div class="dgh1 tgh1">
+
+            <div id="mobile-header" class="ta-hide da-hide wd-mobile-nav">
+                <a href="#sidr-main" id="simple-menu" class="icon-menu"></a>
+            </div>
+
+			<a href="/" itemprop="url" class="header-logo wd-header-graphic">
+				<meta itemprop="name" content="IOPscience">
+				<svg height="15" width="100">
+					<image xlink:href="https://static.iopscience.com/2.18.0/img/iops-logo.svg" src="https://static.iopscience.com/2.18.0/img/iops-logo.png" height="15" width="100" border="0" itemprop="logo" />
+				</svg>
+                <span class="offscreen-hidden">IOP Science home</span>
+			</a>
+
+            <section role="region" aria-label="Accessibility links">
+                <div class="accessibility-skip-links">
+                    <ul>
+                        <li>
+                            <a class="btn btn-default" href="#skip-to-content-link-target">Skip to content</a>
+                        </li>
+                        <li>
+                            <a class="btn btn-default" id="accessibility-help" href="/page/accessibility#skip-to-content-link-target">Accessibility Help</a>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <nav role="navigation" id="sidr" class="m-hide wd-main-nav" aria-label="Site">
+                <div class="nav-journals nav-item wd-nav-journal">
+                    <a class="nav-top-link-drop-down" href="/journals" data-nav-trigger="journals">Journals<span class="icon-arrow-down"></span></a>
+
+                    <div class="nav-drop-down wd-nav-journal-dd" data-nav-item="journals">
+                        <a href="/journals">
+                            Journals list
+                            <div class="m-hide">Browse more than 70 science journal titles</div>
+                        </a>
+
+                        <a href="/page/subjects">
+                            Subject collections
+                            <div class="m-hide">Read the very best research published in IOP journals</div>
+                        </a>
+
+						<a href="/page/iopcorporate">
+                            IOPcorporate
+                            <div class="m-hide">IOP for R&amp;D</br>Science fueling innovation</div>
+                        </a>
+
+                        <a href="/collections?collectionType=SELECT">
+                            IOPselect
+                            <div class="m-hide">Articles from the past year selected by our editors</div>
+                        </a>
+
+                        <a href="/journals?type=partner#js-tab-pubpart">
+                            Publishing partners
+                            <div class="m-hide">Partner organisations and publications</div>
+                        </a>
+
+                        <a href="/info/page/openaccess">
+                            Open access
+                            <div class="m-hide">IOP Publishing open access policy guide</div>
+                        </a>
+
+                        <a href="/collections?collectionType=PHYSICS_REVIEWS">
+                            Review articles
+                            <div class="m-hide">The latest review articles from our journals</div>
+                        </a>
+
+                        <a href="http://conferenceseries.iop.org/">
+                            IOP Conference Series
+                            <div class="m-hide">Read open access proceedings from science conferences worldwide</div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-books nav-item wd-nav-books">
+                    <a href="/books" class="nav-top-link">Books</a>
+                </div>
+
+                <div class="nav-publishing-support nav-item wd-publishing-support">
+                        <a href="https://publishingsupport.iopscience.iop.org" class="nav-top-link">Publishing Support</a>
+                    </div>
+                <!-- Header Login tile starts here -->
+               <div class="nav-login nav-item wd-nav-login">
+<a class="nav-top-link-drop-down" id="login-drop-down-user" href="https://myiopscience.iop.org/signin?return=https%3A%2F%2Fiopscience.iop.org%2Farticle%2F10.1088%2F0026-1394%2F12%2F4%2F002" data-nav-trigger="login"><span class="nav-top-username">Login</span><span class="icon-arrow-down"></span></a>
+<div class="nav-drop-down wd-nav-login-dd" data-nav-item="login">
+
+    <div class='CMS-content'><p id="wd-login-dropdown__heading" class="replica-h3 mt-0">Reset your password</p>
+            <p id="wd-login-dropdown__body" class="small">If you have a user account, you will need to reset your password the next time you login. You will only need to do this once. <a href="/page/improvement-to-the-iopscience-login-process" aria-label="Find out more about the new I O P science login">Find out more</a>.</p></div><a class="btn btn-default mt-05 mb-05 d-b" href="https://myiopscience.iop.org/signin?return=https%3A%2F%2Fiopscience.iop.org%2Farticle%2F10.1088%2F0026-1394%2F12%2F4%2F002" id="wd-login-link">IOPscience login / Sign Up</a>
+        <div class="bdt-1">
+
+        <div class='CMS-content'><div class="eyebrow eyebrow--small eyebrow--marg-top-05"><span class="red">Please note:</span></div>
+<p id="wd-login-dropdown__athens-info" class="small mb-0">You do not need to reset your password if you login via Athens or an Institutional login.</p></div><a class="btn btn-primary mt-05 mb-05 d-b" href="https://ticket.iop.org/inst_login?return=https%3A%2F%2Fiopscience.iop.org%2Farticle%2F10.1088%2F0026-1394%2F12%2F4%2F002">Athens / Institution login</a>
+    </div>
+</div>
+</div><!-- Header Login tile ends here -->
+            </nav>
+
+
+        </div>
+
+        <div class="dgh2 tgh2">
+            <!-- Header search bar tile starts -->
+<!-- The new search, if the toggle is active -->
+<!-- The old search, if the toggle is not active -->
+<div id="search" class="wd-header-search">
+        <form accept-charset="utf-8,iso-8859-1" class="primary-search" method="get" action="/nsearch">
+            <fieldset>
+                <legend>Primary search</legend>
+                <label for="quickSearch">Search</label>
+                <input type="text" x-webkit-speech="" name="terms" id="quickSearch" placeholder="Search IOPscience content" value=""/>
+                <input type="submit" x-webkit-speech="" value="Search" class="btn btn-default hdr-search-btn bd-0">
+            </fieldset>
+        </form>
+    </div>
+<!-- Header search bar tile ends -->
+<!-- The new search, if the toggle is active -->
+<!-- The old search, if the toggle is not active -->
+<nav role="navigation" aria-label="Article Lookup" class="fl-r tb-hide m-hide">
+        <div class="nav-article-look-up nav-item wd-article-lookup">
+            <!-- Start Advanced search drop down -->
+            <a class="nav-top-link-drop-down" href="/search" data-nav-trigger="articlelookup">Article Lookup<span class="icon-arrow-down"></span></a>
+        </div>
+    </nav>
+</div>
+    </div>
+    <div class="art-lookup-panel tb-hide m-hide nav-drop-down" data-nav-item="articlelookup">
+    <div class="wrapper cf pt-1 pb-1 ta-c">
+        <form accept-charset="utf-8,iso-8859-1" method="get" action="/findcontent" name="contentFinderForm" id="wd-find-art-form" class="cf find-article-issue-display mt-1 mb-15" autocomplete="OFF">
+            <fieldset>
+                <legend class="hide">Find article</legend>
+                <label for="CF_JOURNAL" class="hide">List of journal titles:</label>
+                <select name="CF_JOURNAL"
+        id="CF_JOURNAL"class="find-article-select" >
+    <option value="2053-1583" >2D Mater. (2014 - present)</option>
+<option value="1004-423X" >Acta Phys. Sin. (Overseas Edn) (1992 - 1999)</option>
+<option value="2043-6262" >Adv. Nat. Sci: Nanosci. Nanotechnol. (2010 - present)</option>
+<option value="1882-0786" >Appl. Phys. Express (2008 - present)</option>
+<option value="1758-5090" >Biofabrication (2009 - present)</option>
+<option value="1748-3190" >Bioinspir. Biomim. (2006 - present)</option>
+<option value="1748-605X" >Biomed. Mater. (2006 - present)</option>
+<option value="2057-1976" >Biomed. Phys. Eng. Express (2015 - present)</option>
+<option value="0508-3443" >Br. J. Appl. Phys. (1950 - 1967)</option>
+<option value="1009-9271" >Chin. J. Astron. Astrophys. (2001 - 2008)</option>
+<option value="1003-7713" >Chin. J. Chem. Phys. (1987 - 2007)</option>
+<option value="1674-0068" >Chin. J. Chem. Phys. (2008 - 2012)</option>
+<option value="1009-1963" >Chinese Phys. (2000 - 2007)</option>
+<option value="1674-1056" >Chinese Phys. B (2008 - present)</option>
+<option value="1674-1137" >Chinese Phys. C (2008 - present)</option>
+<option value="0256-307X" >Chinese Phys. Lett. (1984 - present)</option>
+<option value="0264-9381" >Class. Quantum Grav. (1984 - present)</option>
+<option value="0143-0815" >Clin. Phys. Physiol. Meas. (1980 - 1992)</option>
+<option value="0253-6102" >Commun. Theor. Phys. (1982 - present)</option>
+<option value="1749-4699" >Comput. Sci. Disc. (2008 - 2015)</option>
+<option value="2057-1739" >Converg. Sci. Phys. Oncol. (2015 - present)</option>
+<option value="0967-1846" >Distrib. Syst. Engng. (1993 - 1999)</option>
+<option value="0295-5075" >EPL (1986 - present)</option>
+<option value="2516-1075" >Electron. Struct. (2019 - present)</option>
+<option value="2631-8695" >Eng. Res. Express (2019 - present)</option>
+<option value="2515-7620" >Environ. Res. Commun. (2018 - present)</option>
+<option value="1748-9326" >Environ. Res. Lett. (2006 - present)</option>
+<option value="0143-0807" >Eur. J. Phys. (1980 - present)</option>
+<option value="2058-8585" >Flex. Print. Electron. (2015 - present)</option>
+<option value="1873-7005" >Fluid Dyn. Res. (1986 - present)</option>
+<option value="2631-6331" >Funct. Compos. Struct. (2018 - present)</option>
+<option value="1755-1315" >IOP Conf. Ser.: Earth Environ. Sci. (2008 - present)</option>
+<option value="1757-899X" >IOP Conf. Ser.: Mater. Sci. Eng. (2009 - present)</option>
+<option value="2631-7990" >Int. J. Extrem. Manuf. (2019 - present)</option>
+<option value="0266-5611" >Inverse Problems (1985 - present)</option>
+<option value="1064-5632" >Izv. Math. (1995 - present)</option>
+<option value="1752-7163" >J. Breath Res. (2007 - present)</option>
+<option value="1475-7516" >J. Cosmol. Astropart. Phys. (2003 - present)</option>
+<option value="1742-2140" >J. Geophys. Eng. (2004 - 2018)</option>
+<option value="1126-6708" >J. High Energy Phys. (1997 - 2009)</option>
+<option value="1748-0221" >J. Inst. (2006 - present)</option>
+<option value="0960-1317" >J. Micromech. Microeng. (1991 - present)</option>
+<option value="1741-2552" >J. Neural Eng. (2004 - present)</option>
+<option value="0368-3281" >J. Nucl. Energy, Part C Plasma Phys. (1959 - 1966)</option>
+<option value="0150-536X" >J. Opt. (1977 - 1998)</option>
+<option value="2040-8986" >J. Opt. (2010 - present)</option>
+<option value="1464-4258" >J. Opt. A: Pure Appl. Opt. (1999 - 2009)</option>
+<option value="1464-4266" >J. Opt. B: Quantum Semiclass. Opt. (1999 - 2005)</option>
+<option value="0022-3689" >J. Phys. A: Gen. Phys. (1968 - 1972)</option>
+<option value="0305-4470" >J. Phys. A: Math. Gen. (1975 - 2006)</option>
+<option value="0301-0015" >J. Phys. A: Math. Nucl. Gen. (1973 - 1974)</option>
+<option value="1751-8121" >J. Phys. A: Math. Theor. (2007 - present)</option>
+<option value="0953-4075" >J. Phys. B: At. Mol. Opt. Phys. (1988 - present)</option>
+<option value="0022-3700" >J. Phys. B: At. Mol. Phys. (1968 - 1987)</option>
+<option value="0022-3719" >J. Phys. C: Solid State Phys. (1968 - 1988)</option>
+<option value="2399-6528" >J. Phys. Commun. (2017 - present)</option>
+<option value="0022-3727" >J. Phys. D: Appl. Phys. (1968 - present)</option>
+<option value="0022-3735" >J. Phys. E: Sci. Instrum. (1968 - 1989)</option>
+<option value="2515-7655" >J. Phys. Energy (2018 - present)</option>
+<option value="0305-4608" >J. Phys. F: Met. Phys. (1971 - 1988)</option>
+<option value="0954-3899" >J. Phys. G: Nucl. Part. Phys. (1989 - present)</option>
+<option value="0305-4616" >J. Phys. G: Nucl. Phys. (1975 - 1988)</option>
+<option value="2515-7639" >J. Phys. Mater. (2018 - present)</option>
+<option value="2515-7647" >J. Phys. Photonics (2018 - present)</option>
+<option value="0953-8984" >J. Phys.: Condens. Matter (1989 - present)</option>
+<option value="1742-6596" >J. Phys.: Conf. Ser. (2004 - present)</option>
+<option value="0952-4746" >J. Radiol. Prot. (1988 - present)</option>
+<option value="0950-7671" >J. Sci. Instrum. (1923 - 1967)</option>
+<option value="1674-4926" >J. Semicond. (2009 - present)</option>
+<option value="0260-2814" >J. Soc. Radiol. Prot. (1981 - 1987)</option>
+<option value="1742-5468" >J. Stat. Mech. (2004 - present)</option>
+<option value="1347-4065" >Jpn. J. Appl. Phys. (1962 - present)</option>
+<option value="1555-6611" >Laser Phys. (2013 - present)</option>
+<option value="1612-202X" >Laser Phys. Lett. (2004 - present)</option>
+<option value="2632-2153" >Mach. Learn.: Sci. Technol. (2019 - present)</option>
+<option value="2053-1591" >Mater. Res. Express (2014 - present)</option>
+<option value="0025-5726" >Math. USSR Izv. (1967 - 1992)</option>
+<option value="0025-5734" >Math. USSR Sb. (1967 - 1993)</option>
+<option value="0957-0233" >Meas. Sci. Technol. (1990 - present)</option>
+<option value="2050-6120" >Methods Appl. Fluoresc. (2013 - present)</option>
+<option value="0026-1394" selected>Metrologia (1965 - present)</option>
+<option value="0965-0393" >Modelling Simul. Mater. Sci. Eng. (1992 - present)</option>
+<option value="2399-7532" >Multifunct. Mater. (2018 - present)</option>
+<option value="2399-1984" >Nano Futures (2017 - present)</option>
+<option value="0957-4484" >Nanotechnology (1990 - present)</option>
+<option value="1367-2630" >New J. Phys. (1998 - present)</option>
+<option value="0951-7715" >Nonlinearity (1988 - present)</option>
+<option value="0335-7368" >Nouvelle Revue d'Optique (1973 - 1976)</option>
+<option value="0029-4780" >Nouvelle Revue d'Optique Appliquée (1970 - 1972)</option>
+<option value="0029-5515" >Nucl. Fusion (1960 - present)</option>
+<option value="1538-3873" >PASP (1889 - present)</option>
+<option value="1478-3975" >Phys. Biol. (2004 - present)</option>
+<option value="0031-9112" >Phys. Bull. (1950 - 1988)</option>
+<option value="0031-9120" >Phys. Educ. (1966 - present)</option>
+<option value="0031-9155" >Phys. Med. Biol. (1956 - present)</option>
+<option value="1402-4896" >Phys. Scr. (1970 - present)</option>
+<option value="2058-7058" >Phys. World (1988 - present)</option>
+<option value="1063-7869" >Phys.-Usp. (1993 - present)</option>
+<option value="0305-4624" >Physics in Technology (1973 - 1988)</option>
+<option value="0967-3334" >Physiol. Meas. (1993 - present)</option>
+<option value="0032-1028" >Plasma Phys. (1967 - 1983)</option>
+<option value="0741-3335" >Plasma Phys. Control. Fusion (1984 - present)</option>
+<option value="2516-1067" >Plasma Res. Express (2018 - present)</option>
+<option value="1009-0630" >Plasma Sci. Technol. (1999 - present)</option>
+<option value="0963-0252" >Plasma Sources Sci. Technol. (1992 - present)</option>
+<option value="0959-5309" >Proc. Phys. Soc. (1926 - 1948)</option>
+<option value="0370-1328" >Proc. Phys. Soc. (1958 - 1967)</option>
+<option value="0370-1298" >Proc. Phys. Soc. A (1949 - 1957)</option>
+<option value="0370-1301" >Proc. Phys. Soc. B (1949 - 1957)</option>
+<option value="1478-7814" >Proc. Phys. Soc. London (1874 - 1925)</option>
+<option value="2516-1091" >Prog. Biomed. Eng. (2018 - present)</option>
+<option value="2516-1083" >Prog. Energy (2018 - present)</option>
+<option value="0963-9659" >Pure Appl. Opt. (1992 - 1998)</option>
+<option value="1063-7818" >Quantum Electron. (1993 - present)</option>
+<option value="0954-8998" >Quantum Opt. (1989 - 1994)</option>
+<option value="2058-9565" >Quantum Sci. Technol. (2015 - present)</option>
+<option value="1355-5111" >Quantum Semiclass. Opt. (1995 - 1998)</option>
+<option value="0034-4885" >Rep. Prog. Phys. (1934 - present)</option>
+<option value="1674-4527" >Res. Astron. Astrophys. (2009 - present)</option>
+<option value="2515-5172" >Research Notes of the AAS (2017 - present)</option>
+<option value="0034-6683" >Review of Physics in Technology (1970 - 1972)</option>
+<option value="1468-4802" >Russ. Acad. Sci. Sb. Math. (1993 - 1995)</option>
+<option value="0036-021X" >Russ. Chem. Rev. (1960 - present)</option>
+<option value="0036-0279" >Russ. Math. Surv. (1960 - present)</option>
+<option value="1468-4810" >Russian Acad. Sci. Izv. Math. (1993 - 1995)</option>
+<option value="1064-5616" >Sb. Math. (1995 - present)</option>
+<option value="1468-6996" >Sci. Technol. Adv. Mater. (2000 - 2015)</option>
+<option value="0268-1242" >Semicond. Sci. Technol. (1986 - present)</option>
+<option value="0964-1726" >Smart Mater. Struct. (1992 - present)</option>
+<option value="0049-1748" >Sov. J. Quantum Electron. (1971 - 1992)</option>
+<option value="0038-5670" >Sov. Phys. Usp. (1958 - 1992)</option>
+<option value="0953-2048" >Supercond. Sci. Technol. (1988 - present)</option>
+<option value="2051-672X" >Surf. Topogr.: Metrol. Prop. (2013 - present)</option>
+<option value="1538-3881" >The Astronomical Journal (1849 - present)</option>
+<option value="0004-637X" >The Astrophysical Journal (1996 - present)</option>
+<option value="1538-4357" >The Astrophysical Journal Letters (1995 - 2009)</option>
+<option value="2041-8205" >The Astrophysical Journal Letters (2010 - present)</option>
+<option value="0067-0049" >The Astrophysical Journal Supplement Series (1996 - present)</option>
+<option value="1475-4878" >Trans. Opt. Soc. (1899 - 1932)</option>
+<option value="2053-1613" >Transl. Mater. Res. (2014 - present)</option>
+</select>
+<span class="find-article-inputs">
+                    <!-- Start content finder fields (long list) -->
+<label for="CF_VOLUME" class="hide">Volume number:</label>
+<input type="text" name="CF_VOLUME" id="CF_VOLUME" placeholder="Volume" x-webkit-speech="">
+<label for="CF_ISSUE" class="hide">Issue number (if known):</label>
+<input type="text" name="CF_ISSUE" id="CF_ISSUE" placeholder="Issue" x-webkit-speech="" placeholder="Issue" >
+<label for="CF_PAGE" class="hide">Article or page number:</label>
+<input type="text" name="CF_PAGE" id="CF_PAGE" placeholder="Article or page" x-webkit-speech="">
+<!-- End content finder fields (long list) --><input type="submit" class="btn btn-default" value="Lookup" name="submit">
+                </span>
+            </fieldset>
+        </form>
+    </div>
+</div></header>
+<!-- Header tile ends -->
+<div class="page-body" itemscope itemtype="http://schema.org/Periodical">
+        <a name="" id="skip-to-content-link-target" tabindex="-1"></a>
+        <div class="wrapper grid-3-col da-showgrid ta-showgrid cf">
+    <main role="main">
+        <!-- Secondary header starts -->
+<div class="secondary-header cf" id="wd-secondary-header">
+
+
+        <!-- Branded journal header starts -->
+<div class="branded">
+
+    <div class="publication-name" id="wd-pub-name">
+	<div class="publication-title" itemprop="name" itemid="periodical">
+				<a href="/journal/0026-1394" itemprop="url" >Metrologia</a>
+	</div>
+		</div>
+    <div class="partner-logos m-hide" id="wd-partner-logos">
+            <div class="partner-logo-alignment">
+                <!-- Partner logo tile starts -->
+<a href="" class="overlay-launch">
+    <img border="0" src="https://cms.iopscience.org/5f6a597b-a250-11db-91d1-43cbc024114a/bipm.gif?guest=true" alt="International Bureau of Weights and Measures (BIPM) logo">
+</a>
+<span class="overlay-set">
+    <div class="tint-screen"></div>
+    <div class="overlay-panel">
+        <a title="Close"  class="close-icon close-overlay" tabindex="0" role="button" aria-describedby="close-icon-description"><span class="icon-close"></span></a>
+        <p id="close-icon-description" class="offscreen-hidden">Click here to close this overlay, or press the "Escape" key on your keyboard.</p>
+        <div class="overlay-img">
+            <a href="http://www.bipm.org/">
+                <img border="0" src="https://cms.iopscience.org/5f6a597b-a250-11db-91d1-43cbc024114a/bipm.gif?guest=true" alt="International Bureau of Weights and Measures (BIPM) logo">
+            </a>
+        </div>
+        <div class="overlay-text">
+            <p>The International Bureau of Weights and Measures (BIPM) was set up by the Metre Convention and has its headquarters near Paris, France. It is financed jointly by its Member States and operates under the exclusive supervision of the CIPM.</p> <p>Its mandate is to provide the basis for a single, coherent system of measurements throughout the world, traceable to the International System of Units (SI). This task takes many forms, from direct dissemination of units (as in the case of mass and time) to coordination through international comparisons of national measurement standards (as in electricity and ionizing radiation).</p> <p>The BIPM has an international staff of over 70 and its status vis-&agrave;-vis the French Government is similar to that of other intergovernmental organizations based in Paris.</p></div>
+        <p class="ta-c mt-1 mb-2"><a href="http://www.bipm.org/">http://www.bipm.org/</a></p>
+    </div>
+</span>
+<!-- Partner logo tile ends -->
+
+</div>
+        </div>
+    </div>
+<!-- Branded journal header ends -->
+</div> <!-- end secondary-header -->
+<!-- Secondary header ends --><div class="da1-da2" itemscope="" itemtype="http://schema.org/ScholarlyArticle" id="page-content">
+            <div class="da1 ta1 article-head">
+                <!-- If it is confirmed that we need to keep id`s same as APR, then i will delete this JSP and use the APR one only. -->
+<script type="text/javascript">
+	
+	var tag_query = "article_tag=Temperature_scale&iopscience_pagetype=article&iopscience_issn=0026-1394&iopscience_vol=12&iopscience_issue=4&iopscience_doi=10__1088_0026-1394_12_4_002";
+	var oas_tag = {};
+	oas_tag.url = 'oasc-eu1.247realmedia.com'; //Define OAS URL
+	oas_tag.site_page = location.hostname; //Define OAS Site page
+	
+	oas_tag.sizes = function () {
+		oas_tag.definePos('Middle', [728,90]);
+		oas_tag.definePos('x11', [180,150]);
+		oas_tag.definePos('x12', [180,150]);
+		oas_tag.definePos('x13', [180,150]);
+	};	
+	
+    oas_tag.analytics = false;
+    oas_tag.taxonomy = 'oas_pv=no_analytics';
+    oas_tag.allowSizeOverride = true;  
+		
+	oas_tag.implMode = {'Middle':'div', 'x11':'div', 'x12':'div', 'x13':'div'};
+	
+    oas_tag.query = tag_query;
+	 
+	 (function() {
+		    oas_tag.version ='1'; var oas = document.createElement('script'),
+		    protocol = 'https:' == document.location.protocol?'https://':'http://',
+		    node = document.getElementsByTagName('script')[0];
+		    oas.type = 'text/javascript'; oas.async = true;
+		    oas.src = protocol + oas_tag.url + '/om/' + oas_tag.version + '.js';
+		    node.parentNode.insertBefore(oas, node);
+		})();
+</script><!-- Start Eyebrow block, containing Surtitle and Labels -->
+<div class="eyebrow">
+	<!-- Start Collection Labels -->
+    <!-- End Collection Labels --> </div>
+<!-- End Eyebrow block -->
+
+<h1 itemprop="headline" class="wd-jnl-art-title">Magnetic Temperature Scale in the 2 K to 30 K Range</h1>
+
+<p class="mb-0">
+	<span data-authors="">
+		<span xmlns:m="http://ns.iop.org/namespaces/meta" itemtype="http://schema.org/Person" itemprop="author" class="nowrap"><span itemprop="name">D N Astrov</span></span>, <span xmlns:m="http://ns.iop.org/namespaces/meta" itemtype="http://schema.org/Person" itemprop="author" class="nowrap"><span itemprop="name">V A Pavlov</span></span> and <span xmlns:m="http://ns.iop.org/namespaces/meta" itemtype="http://schema.org/Person" itemprop="author" class="nowrap"><span itemprop="name">V T Shkraba</span></span></span>
+</p>
+
+<p class="small" itemprop="isPartOf" itemscope="" itemtype="http://schema.org/PublicationIssue">
+	<!--Article Breadcrumb Tile Start-->
+<!-- Start Copyright-->
+    <!-- end Copyright -->
+<span itemscope itemtype="http://schema.org/Periodical" itemid="periodical" class="wd-jnl-art-breadcrumb-title article-toolbar-anchor">
+	<span itemprop="name">
+		<a href="/journal/0026-1394" itemprop="url">Metrologia</a></span></span>,
+	<span itemprop="isPartOf" itemscope itemtype="http://schema.org/PublicationVolume" class="wd-jnl-art-breadcrumb-vol nowrap">
+	<link itemprop="isPartOf" itemid="periodical" itemscope/>
+	<span itemprop="volumeNumber"><a href="/volume/0026-1394/12" itemprop="url">Volume 12</a></span></span>,
+<span itemprop="issueNumber" class="wd-jnl-art-breadcrumb-issue nowrap"><a href="/issue/0026-1394/12/4" itemprop="url"><!--Issue Number Tile Start-->
+Number 4<!--Issue Number Tile End--></a></span>
+<!--Article Breadcrumb Tile End-->
+<!-- Start Focus issue title -->
+	<!-- End focus issue title -->
+	</p>
+
+<div class="btn-multi-block mb-1">
+		<a href="/article/10.1088/0026-1394/12/4/002/pdf" class="btn btn-large btn-primary btn-full-w-mobile wd-jnl-art-pdf-button-main dupe-buttons" title="Magnetic Temperature Scale in the 2 K to 30 K Range" itemprop="sameAs" target = "_blank"><span class="icon-file-pdf"></span><span class="offscreen-hidden"> Download </span><span>Article</span> PDF</a>
+</div>
+<!-- Start toolbar -->
+<div class="in-page-nav-wrapper">
+	<div class="nav-in-page m-hide wd-in-pg-toolbar in-page-toolbar-anchor">
+		<div class="nav-in-page-active-wrapper">
+			<div class="">
+				<div class="nav-in-page-active-grid-1">
+					<nav data-nav-group>
+						<div class="nav-item wd-in-pg-toolbar-fig">
+							<a href="" class="nav-top-link-drop-down article-toolbar-dropdown" data-toolbar-action="figures" data-nav-trigger="figures">Figures<span class="icon-arrow-down"></span></a>
+							<div class="nav-drop-down" data-nav-item="figures">
+								<div class="overflow-x" data-toolbar-container="figures"></div>
+							</div>
+						</div>
+						<div class="nav-item wd-in-pg-toolbar-tables">
+							<a href="" class="nav-top-link-drop-down article-toolbar-dropdown" data-toolbar-action="table" data-nav-trigger="table">Tables<span class="icon-arrow-down"></span></a>
+							<div class="nav-drop-down" data-nav-item="table">
+								<div class="overflow-x" data-toolbar-container="table"></div>
+							</div>
+						</div>
+						<div class="nav-item wd-in-pg-toolbar-ref">
+							<a href="" class="nav-top-link-drop-down article-toolbar-dropdown" data-toolbar-action="references" data-nav-trigger="references">References<span class="icon-arrow-down"></span></a>
+							<div class="nav-drop-down" data-nav-item="references">
+								<div class="overflow-y" data-toolbar-container="references"></div>
+							</div>
+						</div>
+						</nav>
+				</div>
+				<div class="nav-in-page-active-grid-2 d-n">
+					<aside>
+						<div class="pdf-button-2nd">
+						</div>
+					</aside>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- End toolbar --></div>
+            <div class="da2 ta2">
+                <div class="print-hide content-tools">
+			<div>
+	<p>
+		<span id="total-downloads" class="wd-jnl-art-total-dwnlds"><b>32</b> Total downloads</span>
+			<br />
+		</p>
+	</div>
+	
+<div class="dimensions-altmetric-li">
+
+        <!-- Start Dimensions display -->
+        <!-- Start Dimensions display -->
+    <span class="__dimensions_badge_embed__ dimensions-embed" data-doi="10.1088/0026-1394/12/4/002" data-style="small_circle" data-hide-zero-citations="true" data-legend=""></span>
+    <!-- End Dimensions display -->
+<!-- End Dimensions display -->
+        <!-- Start Altmetrics display -->
+        <div data-badge-popover="right" data-badge-type="donut" data-doi="10.1088/0026-1394/12/4/002" data-hide-no-mentions="true" class="altmetric-embed" data-hide-less-than="1"></div>
+        <!-- End Altmetrics display -->
+        <div class="clear-fl"></div>
+    </div>
+<!-- Start MathJax links -->
+		<div>
+		  <a href="#" id="mathJaxOff" style="display: none;">Turn off MathJax</a>
+		  <a href="#" id="mathJaxOn" style="display: none;">Turn on MathJax</a>
+		</div>	
+	<!-- End MathJax links -->
+<!-- Start Permission Link -->
+	<div>
+			<p class="wd-jnl-art-get-permisssion print-hide">
+				<a href="http://www.copyright.com/ccc/openurl.do?issn=0026-1394&WT.mc.id=" target="_blank">Get permission to re-use this article</a>
+			</p>
+		</div>
+	<!-- End Permission Link --><div id="wd-share-icons">
+<p>Share this article</p>
+<ul class="share-icon-links">
+		<li id="wd-share-icon-email" class="share-icon-link">
+	<a href="mailto:?subject=Magnetic Temperature Scale in the 2 K to 30 K Range&amp;body=Magnetic Temperature Scale in the 2 K to 30 K Range - https://doi.org/10.1088/0026-1394/12/4/002" title="Share this content via email. Clicking this link will open your default email client." class="share-icon-link">
+			<img src="https://static.iopscience.com/2.18.0/img/icon-email.svg" alt="Share this content via email">
+	</a>
+	</li>
+	<li id="wd-share-icon-facebook" class="share-icon-link">
+	<a href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fdoi.org%2F10.1088%2F0026-1394%2F12%2F4%2F002" title="Share a link to this content on your Facebook profile" class="share-icon-link">
+			<img src="https://static.iopscience.com/2.18.0/img/icon-facebook.svg" alt="Share on Facebook">
+	</a>
+	</li>
+	<li id="wd-share-icon-twitter" class="share-icon-link">							
+	<a href="http://twitter.com/share?url=https%3A%2F%2Fdoi.org%2F10.1088%2F0026-1394%2F12%2F4%2F002&amp;text=Magnetic+Temperature+Scale+in+the+2+K+to+30+K+Range&amp;via=IOPscience" title="Share a link to this content on your Twitter profile" class="share-icon-link">
+			<img src="https://static.iopscience.com/2.18.0/img/icon-twitter.svg" alt="Share on Twitter">
+	</a>
+	</li>
+	<li id="wd-share-icon-google-plus" class="share-icon-link">
+	<a href="https://plus.google.com/share?url=https%3A%2F%2Fdoi.org%2F10.1088%2F0026-1394%2F12%2F4%2F002" title="Share a link to this content on your Google+ profile" class="share-icon-link">
+			<img src="https://static.iopscience.com/2.18.0/img/icon-google-plus.svg" alt="Share on Google+">
+	</a>
+	</li>
+	<li id="wd-share-icon-citeulike" class="share-icon-link">
+	<a href="http://www.citeulike.org/posturl?url=https%3A%2F%2Fdoi.org%2F10.1088%2F0026-1394%2F12%2F4%2F002" title="Share on CiteULike" class="share-icon-link">
+			<img src="https://static.iopscience.com/2.18.0/img/icon-citeulike.svg" alt="Share on CiteULike">
+	</a>
+	</li>
+	<li id="wd-share-icon-mendeley" class="share-icon-link">
+	<a href="https://www.mendeley.com/import/?doi=10.1088%2F0026-1394%2F12%2F4%2F002" title="Share on Mendeley" class="share-icon-link">
+			<img src="https://static.iopscience.com/2.18.0/img/icon-mendeley.svg" alt="Share on Mendeley">
+	</a>
+	</li>
+</ul>
+<div class="clear-fl"></div>
+</div>
+
+</div>
+</div>
+            <div class="da1 ta1">
+                <!-- Start Correction note -->
+	<!-- End Correction note -->
+<!-- Article information starts. This includes author emails, affiliations, article published date, doi etc. -->
+	<div class="reveal-container reveal-closed reveal-plus-icon bdt-1 wd-jnl-art-article-info-wrapper">
+      	<div class="replica-h3 mt-0">
+        	<a id="wd-article-info-accordion" href="#" class="reveal-trigger" data-reveal-label-alt="Hide article information">Article information</a>
+      	</div>
+      	<div class="reveal-content">
+        	<div class="article-meta">
+				<!-- Start Affiliations --><div class="wd-jnl-art-author-affiliations"><div class="replica-h4">Author affiliations</div><p class="mb-05">The Physico-Technical and Radio-Technical Measurements Institute (PRMI), Moscow, USSR</p></div><!-- End Affiliations --><!-- Start Dates -->
+<div class="col-no-break wd-jnl-art-dates">
+        <div class="replica-h4">Dates</div>
+        <p>
+            
+                Received <span itemprop="dateReceived">22 February 1975</span><br />
+            </p>
+    </div>
+<!-- End Dates -->
+
+<!-- Start Crossmark -->
+				<!-- End Crossmark -->
+
+				<!-- Start Peer Review Metrics -->
+<!-- End Peer Review Metrics -->
+
+<!--  Start Citation Alert -->
+                <div class="col-no-break wd-jnl-art-article-info-citation">
+                        <div class="replica-h4">Citation</div>
+                        <!-- Start citation-->
+    <p> D N Astrov <em>et al</em> 1976 <em>Metrologia</em> <b>12</b> 143</p>
+    <!-- end citation --><p class="print-hide wd-jnl-art-cite-alert-create-edit"><a href="https://myiopscience.iop.org/signin?return=https%3A%2F%2Fiopscience.iop.org%2Fmyiopscience%2Falerts%2Fsubscribe%3FarticleID%3D0026-1394%2F12%2F4%2F002"><span class="icon-alarm"></span>Create citation alert</a></p></div>
+                <!--  End Citation Alert-->
+				
+				<!-- Start DOI -->
+				<div class="col-no-break wd-jnl-art-doi">
+					<div class="replica-h4">
+					<abbr title="digital object identifier">DOI</abbr>
+					</div>
+					<p><a itemprop="sameAs" href="https://doi.org/10.1088/0026-1394/12/4/002">https://doi.org/10.1088/0026-1394/12/4/002</a></p>
+				</div>
+				<!-- End DOI -->
+				
+				<!-- Start Accepted manuscript Link -->
+<!-- End Accepted manuscript Link -->
+<!-- Start Annotations -->
+ <!-- End Annotations --><!-- Start Reprint Link -->
+	<p><a href="https://pod-iopscience.org?doi=10.1088/0026-1394/12/4/002&UTCDate=15042019_150448" id="wd-jnl-art-reprint">Buy this article in print</a></p>
+	<!-- End Reprint Link --><!-- Start Journal RSS feed -->
+				<p class="wd-jnl-rss print-hide">
+				<a href="/0026-1394/?rss=1"><span class="icon-feed"></span> Journal RSS feed</a>
+				</p>
+				<!-- End Journal RSS feed -->
+				
+				<!-- Start Email Alert -->
+
+<p class="wd-jnl-email-alert print-hide">
+        <a href="https://myiopscience.iop.org/signin?return=https%3A%2F%2Fiopscience.iop.org%2Fmyiopscience%2Falerts%2Fsubscribe%3Fjournal%3D0026-1394" class="loginRequired"  id="noId" title="Create journal email alert">
+            <span class="icon-alarm"></span>
+            Sign up for new issue notifications</a>
+    </p>
+<!-- End Email Alert --></div>
+		</div>
+    </div>
+    <!-- Article information ends -->
+<!-- Start Info top-->
+    <!-- end Info top --><div class="article-content">
+	<span id="articleId" class="hide">0026-1394/12/4/002</span>
+ 	<!-- Start Abstract -->
+    <h2 id="artAbst" class="collapse-blocked">Abstract</h2>
+        <!-- Start article video abstract -->
+	<!-- End article video abstract -->
+	<div class="article-text wd-jnl-art-abstract cf" itemprop="description">
+             <P>In the temperature range from 2 to 30 K a comparison has been made of a magnetic thermometer based on the magnetic susceptibilities of manganous ammonium sulfate (MAS) and gadolinium molybdate (GM) with the readings of a germanium resistance thermometer. The magnetic susceptibility was measured by a screened selfchecking mutual inductance bridge with an uncertainty of the relative measurements being not worse that ±5 <b>&#x00d7;</b> 10<SUP>-6</SUP>. The magnetic thermometer sensitivity near 30 K is 0.3 mK with MAS and 0.07 mK with GM. The magnetic thermometer was calibrated in terms of the IPTS-68 and T<SUB>58</SUB> temperature scale with an uncertainty of ±0.5 mK. The magnetic temperature scale was determined using the MAS data obtained in three experimental runs and GM data taken in two runs. The scale was transferred on a germanium resistance thermometer with a root-mean-square deviation of the data from the smooth curve of 0.7 mK. The inconsistency previously reported in the literature between the IPTS-68 and the T<SUB>58</SUB> temperature scale has been confirmed. The helium normal boiling point temperature on the T<SUB>58</SUB> scale is according to our data too low and must be raised by 9.5 ± 1.5 mK. An indirect comparison of our magnetic temperature scale with the results obtained by Van Rijn and Durieux as well as with those by Cetas and Swenson has been carried out in terms of the NBS P 2-20 K scale. The estimated difference between our data and the results of the above authors does not exceed ±3 mK.</P> </div>
+    <!-- End abstract -->
+<!-- Start Export citation and abstract tools -->
+	<p>
+		<small>Export citation and abstract</small>
+		<span class="btn-multi-block">
+			<a href="/export?articleId=0026-1394/12/4/002&exportFormat=iopexport_bib&exportType=abs&navsubmit=Export+abstract" class="btn btn-primary wd-btn-cit-abs-bib" title="Export BibTex">BibTeX</a>
+			<a href="/export?articleId=0026-1394/12/4/002&exportFormat=iopexport_ris&exportType=abs&navsubmit=Export+abstract" class="btn btn-primary wd-btn-cit-abs-ris" title="Export RIS">RIS</a>
+		</span>
+	</p>
+<!-- End Export citation and abstract tools -->
+<aside>
+		<div id="oas_Middle"
+			class="advert advert-banner wd-jnl-art-advert-banner"></div>
+	</aside>
+	<!-- Start info bottom -->
+    <!-- End info bottom -->
+<!-- Start Footnotes -->
+	<!-- End Footnotes -->	
+<!-- Start References List -->
+<h2 id="references">References</h2>
+	<div data-mobile-collapse>
+		<ul data-toolbar-content="references" class="clear-list">
+			<li data-reference class="indices-list"><span class="indices-id">[1]</span><div class="indices-content"><cite>Astrov D N, Orlova M P and Kytin G A 1969 <I>Metrologia</I> <B>5</B> 111</cite><p class="mb-0"><a class="mr-2" href="http://iopscience.iop.org/0026-1394/5/4/003" title="IOPscience">IOPscience</a></p></div></li><li data-reference class="indices-list"><span class="indices-id">[2]</span><div class="indices-content"><cite>Rogers J S, Tainsh R J, Anderson M S and Swenson C A 1968 <I>Metrologia</I> <B>4</B> 47</cite><p class="mb-0"><a class="mr-2" href="http://iopscience.iop.org/0026-1394/4/2/001" title="IOPscience">IOPscience</a></p></div></li><li data-reference class="indices-list"><span class="indices-id">[3]</span><div class="indices-content"><cite>Plumb H H and Cataland G 1965 <I>Science</I> <B>150</B> 155</cite><p class="mb-0"><a class="mr-2" href="http://dx.doi.org/10.1126/science.150.3693.155" title="Crossref">Crossref</a><a class="mr-2" href="http://www.ncbi.nlm.nih.gov/pubmed/17787267?dopt=Abstract" title="PubMed">PubMed</a></p></div></li><li data-reference class="indices-list"><span class="indices-id">[4]</span><div class="indices-content"><cite>Orlova M P, Astrov D N, Kytin G A, Filonchik R V and Kurakina T M 1973 <I>Izmeritelnaya Tekhnika</I> <B>7</B> 3</cite></div></li><li data-reference class="indices-list"><span class="indices-id">[5]</span><div class="indices-content"><cite>Kytin G A, Kurilenok K V, Orlova M P, Astrov D N and Sharevskaya D I 1967 <I>Comite Consultatif de Thermometrie</I> p T81</cite></div></li><li data-reference class="indices-list"><span class="indices-id">[6]</span><div class="indices-content"><cite>Cetas T C and Swenson C A 1972 <I>Metrologia</I> <B>8</B> 46</cite><p class="mb-0"><a class="mr-2" href="http://iopscience.iop.org/0026-1394/8/2/003" title="IOPscience">IOPscience</a></p></div></li><li data-reference class="indices-list"><span class="indices-id">[7]</span><div class="indices-content"><cite>van Rijn C and Durieux M 1971 <I>Comite Consultatif de Thermometrie</I> doc. 44</cite></div></li><li data-reference class="indices-list"><span class="indices-id">[8]</span><div class="indices-content"><cite>Pavlov V A, Shkraba V T and Astrov D N 1971 <I>Izmeritelnaya Tekhnika</I> <B>2</B> 63</cite></div></li><li data-reference class="indices-list"><span class="indices-id">[9]</span><div class="indices-content"><cite>Hague B 1932 <I>Alternating Current Bridge Methods</I> (London: Pitman)</cite></div></li><li data-reference class="indices-list"><span class="indices-id">[10]</span><div class="indices-content"><cite>Orlova M P, Astrov D N and Filonchik R V 1973 <I>Izmeritelnaya Tekhnika</I> <B>6</B> 3</cite></div></li><li data-reference class="indices-list"><span class="indices-id">[11]</span><div class="indices-content"><cite>Orlova M P, Astrov D N, Sharevskaya D I, Belyansky L B, Razhba Ya E and Khnykov V N 1973 <I>Izmeritelnaya Tekhnika</I> <B>4</B> 5</cite></div></li><li data-reference class="indices-list"><span class="indices-id">[12]</span><div class="indices-content"><cite>Kemp W R G, Collins J G, Pickup C P and Muijlwijk R 1972 <I>Temperature, Its Measurement and Control in Science and Industry</I> Part 1 vol 4 ed H H Plumb (Pittsburgh: Instrument Society of America) p 85</cite></div></li></ul>
+		<p>Export references:
+			<span class="btn-multi-block">
+				<a class="btn btn-primary wd-content-btn-ref-bib" href="/export?articleId=0026-1394/12/4/002&exportFormat=iopexport_bib&exportType=refs&navsubmit=Export+references">BibTeX</a>
+				<a class="btn btn-primary wd-content-btn-ref-ris" href="/export?articleId=0026-1394/12/4/002&exportFormat=iopexport_ris&exportType=refs&navsubmit=Export+references">RIS</a>
+			</span>
+		</p>
+	</div>
+<!-- End References List -->
+</div>
+</div>
+            <div class="da2 ta2">
+                <!-- Start Content nav and Back to top link -->
+<aside class="content-nav show-w-js">
+	<ul class="content-nav-ul wd-content-nav">
+	</ul>
+	<a data-footer-backtotop class="btn btn-bottom back-top pl-0" href="#back-to-top-target"><span class="icon-arrow-up2"></span> Back to top</a>
+</aside>
+<!-- End Content nav and Back to top link --></div>
+        </div>
+    </main>
+    <div class="da3 ta1">
+        <div class="side-and-below">
+            <!-- Start Related articles -->
+		<aside class="boxout bdt-6 related wd-related-articles hide">
+			<!-- Note: the contents this span tag are necessary for the JavaScript that retrieves the related content-->
+			<span id="doi" class="hide">10.1088/0026-1394/12/4/002</span>
+			<span class="replica-h3">Related content</span>
+
+			<div class="related-content-lists">
+				<div class="related-article-list">
+					<ul class="">
+					</ul>
+				</div>
+
+				<div class="related-book-list">
+					<ul class="">
+					</ul>
+				</div>
+			</div>
+
+		</aside>
+		<!-- End Related articles -->
+	<!--  Start of real media banners on right hand side.  -->
+<aside role="complementary" aria-label="Adverts">
+	<div id="oas_x11" class="advert wd-jnl-art-advert-tile"></div>
+
+	<div id="oas_x12" class="advert wd-jnl-art-advert-tile"></div>
+
+	<div id="oas_x13" class="advert wd-jnl-art-advert-tile"></div>
+</aside>
+<!--  End of real media banners on right hand side.  -->
+
+</div>
+    </div>
+</div></div>
+
+    <div data-scroll-header="" class="data-header-anchor" id="exp"></div>
+<!-- Footer tile starts -->
+<footer role="contentinfo" data-footer-content>
+    <div class="iops-footer cf">
+        <div class="wrapper">
+            <nav role="navigation" aria-label="Footer">
+       		<a class="iops-footer-logo" id="wd-iops-footer-logo" itemprop="url" href="/">
+					<meta content="IOPscience" itemprop="name">
+					<svg height="13" width="90">
+					  <image xlink:href="https://static.iopscience.com/2.18.0/img/iops-logo.svg" src="https://static.iopscience.com/2.18.0/img/iops-logo.png" border="0" height="13" width="90"/>
+					</svg>
+                    <span class="offscreen-hidden">IOP Science home</span>
+			</a>
+            <small>
+                <ul>
+                    <li><a href="/journals">Journals</a></li>
+                    <li><a href="/books">Books</a></li>
+                    <li><a href="/page/aboutiopscience">About IOPscience</a></li>
+                    <li><a href="/contact">Contact us</a></li>
+                    <li><a href="/info/page/developing-countries-access">Developing countries access</a></li>
+                    <li><a href="/info/page/openaccess">IOP Publishing open access policy</a></li>
+                </ul>
+            </small>
+        </nav>
+        </div> <!-- end wrapper -->
+    </div> <!-- end iopp-footer -->
+
+    <div class="iopp-footer cf">
+        <div class="wrapper">
+            <div class="media mar-0 ">
+                <nav role="navigation" aria-label="Further information about IOP Publishing">
+				<a class="iopp-footer-logo" id="wd-iopp-footer-logo" itemprop="url" href="http://ioppublishing.org">
+					<meta content="IOPscience" itemprop="name">
+					<svg width="100" height="15">
+					  <image xlink:href="https://static.iopscience.com/2.18.0/img/iopp-logo-white.svg" src="https://static.iopscience.com/2.18.0/img/iopp-logo.png" border="0" width="100" height="15"/>
+					</svg>
+                    <span class="offscreen-hidden">IOP Publishing home</span>
+				</a>
+                <div class="media-body mar-0">
+                    <ul>
+                        <li class="small"><a href="/page/copyright_notice">&copy; Copyright 2019 IOP Publishing</a></li>
+                        <li class="small"><a href="/page/terms">Terms &amp; conditions</a></li>
+                        <li class="small"><a href="/page/disclaimer">Disclaimer</a></li>
+                        <li class="small"><a href="http://ioppublishing.org/privacyPolicy" target="_blank">Privacy &amp; cookie policy <span class="icon-newtab white-text"></span></a></li>
+                        <li class="small"><small>This site uses cookies. By continuing to use this site you agree to our use of cookies.</small></li>
+                    </ul>
+                </div>
+            </nav>
+            </div>
+        </div> <!-- end wrapper -->
+    </div> <!-- end iopp-footer -->
+</footer>
+<!-- Footer tile ends -->
+<script>
+  var imgBase = "https://static.iopscience.com/2.18.0/img";
+  /*  Cutting the mustard - http://responsivenews.co.uk/post/18948466399/cutting-the-mustard */
+
+  /* This is the original if statement, from the link above. I have amended it to turn of JS on all IE browsers less than 10.
+	This is due to a function in the iop.jquery.toolbar.js line 35/36. Uses .remove which is not native js supported in IE9 or lower */
+  /* if('querySelector' in document 
+	&& 'localStorage' in window
+	&& 'addEventListener' in window) { */
+
+  /* This is the updated selector, taken from: https://justmarkup.com/log/2015/02/26/cut-the-mustard-revisited/ */
+	if('visibilityState' in document) {
+
+	/*! loadJS: load a JS file asynchronously. [c]2014 @scottjehl, Filament Group, Inc. (Based on http://goo.gl/REQGQ by Paul Irish).. Licensed MIT */
+	function loadJS( src, cb ){
+	  "use strict";
+	  var ref = window.document.getElementsByTagName( "script" )[ 0 ];
+	  var script = window.document.createElement( "script" );
+	  script.src = src;
+	  script.async = true;
+	  ref.parentNode.insertBefore( script, ref );
+	  if (cb && typeof(cb) === "function") {
+		script.onload = cb;
+	  }
+	  return script;
+	}
+
+	loadJS( "https://static.iopscience.com/2.18.0/js/scripts.min.js" );
+
+  }
+</script>
+</body>
+</html>
