@@ -5,8 +5,8 @@ import bs4
 
 class Downloader(papis.downloaders.base.Downloader):
 
-    def __init__(self, url):
-        papis.downloaders.base.Downloader.__init__(self, url, name="fallback")
+    def __init__(self, url, name="fallback"):
+        papis.downloaders.base.Downloader.__init__(self, url, name=name)
         self.priority = -1
 
     @classmethod

@@ -10,13 +10,19 @@ import papis.bibtex
 import tempfile
 import copy
 import re
+import collections
 
 
-meta_equivalences = {
+meta_equivalences = collections.OrderedDict({
+    # google
+    "description": "abstract",
+    "keywords": "keywords",
+    # facebook
     "og:type": "type",
+    "og:description": "description",
     "og:title": "title",
     "og:url": "url",
-    "description": "abstract",
+    # citation style
     "citation_doi": "doi",
     "citation_firstpage": "firstpage",
     "citation_lastpage": "lastpage",
@@ -24,6 +30,7 @@ meta_equivalences = {
     "citation_pdf_url": "pdf_url",
     "citation_issn": "issn",
     "citation_issue": "issue",
+    "citation_abstract": "abstract",
     "citation_journal_abbrev": "journal_abbrev",
     "citation_journal_title": "journal",
     "citation_language": "language",
@@ -35,12 +42,16 @@ meta_equivalences = {
     "dc.publisher": "publisher",
     "dc.date": "date",
     "dc.language": "language",
+    "dc.citation.issue": "issue",
+    "dc.citation.volume": "volume",
     "dc.subject": "subject",
     "dc.title": "title",
-    "keywords": "keywords",
     "dc.type": "type",
     "dc.description": "description",
-}
+    "dc.description.abstract": "abstract",
+    "dc.relation.ispartof": "journal_abbrev",
+    "dc.issued": "year",
+})
 
 
 def parse_meta_headers(soup, extra_equivalences=dict()):
