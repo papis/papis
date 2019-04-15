@@ -22,6 +22,9 @@ def test_acs_1():
     with patch.object(down, '_get_body', lambda: get_resource('acs_1.html')):
         with patch.object(down, 'download_document', lambda: None):
             down.fetch()
+            with open('acs_1_out.json', 'w+') as f:
+                import json
+                json.dump(down.ctx.data, f)
             correct_data = get_json_resource('acs_1_out.json')
             assert(down.ctx.data == correct_data)
 
@@ -33,5 +36,8 @@ def test_acs_2():
     with patch.object(down, '_get_body', lambda: get_resource('acs_2.html')):
         with patch.object(down, 'download_document', lambda: None):
             down.fetch()
+            with open('acs_2_out.json', 'w+') as f:
+                import json
+                json.dump(down.ctx.data, f)
             correct_data = get_json_resource('acs_2_out.json')
             assert(down.ctx.data == correct_data)

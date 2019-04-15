@@ -1,17 +1,17 @@
 {
   "publisher": "American Chemical Society",
-  "author": "Castro, Vida and Rodríguez, Hortensia and Albericio, Fernando",
-  "keywords": "Click Chemistry, CuAAC, solid-phase, azide, alkyne",
-  "type": "review-article",
-  "doi": "10.1021/acscombsci.5b00087",
+  "number": "1",
   "volume": "18",
-  "note": "Click Chemistry; CuAAC; solid-phase; azide; alkyne",
+  "ref": "doi:10.1021/acscombsci.5b00087",
+  "type": "article",
   "abstract": "Click chemistry is an approach that uses efficient and reliable reactions, such as Cu(I)-catalyzed azide–alkyne cycloaddition (CuAAC), to bind two molecular building blocks. CuAAC has broad applications in medicinal chemistry and other fields of chemistry. This review describes the general features and applications of CuAAC in solid-phase synthesis (CuAAC-SP), highlighting the suitability of this kind of reaction for peptides, nucleotides, small molecules, supramolecular structures, and polymers, among others. This versatile reaction is expected to become pivotal for meeting future challenges in solid-phase chemistry.",
-  "title": "CuAAC: An Efficient Click Chemistry Reaction on Solid Phase",
   "year": "2016",
+  "pages": "1-14",
+  "keywords": "Click Chemistry, CuAAC, solid-phase, azide, alkyne",
+  "note": "PMID: 26652044",
+  "url": " \nhttps://doi.org/10.1021/acscombsci.5b00087\n",
   "author_list": [
     {
-      "family": "Castro",
       "given": "Vida",
       "affiliation": [
         {
@@ -29,10 +29,10 @@
         {
           "name": "∥ School of Chemistry & Physics, University of KwaZulu-Natal, 4001-Durban, South Africa"
         }
-      ]
+      ],
+      "family": "Castro"
     },
     {
-      "family": "Rodríguez",
       "given": "Hortensia",
       "affiliation": [
         {
@@ -50,10 +50,10 @@
         {
           "name": "∥ School of Chemistry & Physics, University of KwaZulu-Natal, 4001-Durban, South Africa"
         }
-      ]
+      ],
+      "family": "Rodríguez"
     },
     {
-      "family": "Albericio",
       "given": "Fernando",
       "affiliation": [
         {
@@ -71,7 +71,13 @@
         {
           "name": "∥ School of Chemistry & Physics, University of KwaZulu-Natal, 4001-Durban, South Africa"
         }
-      ]
+      ],
+      "family": "Albericio"
     }
-  ]
+  ],
+  "journal": "ACS Combinatorial Science",
+  "author": "Castro, Vida and Rodríguez, Hortensia and Albericio, Fernando",
+  "eprint": " \nhttps://doi.org/10.1021/acscombsci.5b00087\n",
+  "doi": "10.1021/acscombsci.5b00087",
+  "title": "CuAAC: An Efficient Click Chemistry Reaction on Solid Phase"
 }

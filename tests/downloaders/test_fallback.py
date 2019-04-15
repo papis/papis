@@ -25,9 +25,10 @@ def test_2():
     assert(down.name == 'fallback')
     with patch.object(down, '_get_body',
             lambda: get_resource('fallback_2.html')):
-        down.fetch()
-        correct_data = get_json_resource('fallback_2_out.json')
-        assert(down.ctx.data == correct_data)
-        # with open('fallback_2_out.json', 'w+') as f:
-            # import json
-            # json.dump(down.ctx.data, f)
+        with patch.object(down, 'download_document', lambda: None):
+            down.fetch()
+            correct_data = get_json_resource('fallback_2_out.json')
+            assert(down.ctx.data == correct_data)
+            # with open('fallback_2_out.json', 'w+') as f:
+                # import json
+                # json.dump(down.ctx.data, f)

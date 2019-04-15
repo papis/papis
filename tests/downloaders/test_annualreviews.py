@@ -1,6 +1,9 @@
 import papis.downloaders
 from papis.downloaders.annualreviews import Downloader
-import papis.bibtex
+from unittest.mock import patch
+from tests.downloaders import get_resource, get_json_resource
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 
 def test_match():
@@ -14,18 +17,18 @@ def test_match():
         '10.1146/annurev-conmatphys-031214-014726'
     ))
 
-def test_downloader_getter():
-    url = 'http://annualreviews.org/doi/pdf/'\
-          '10.1146/annurev-conmatphys-031214-014726'\
-          '?asdfasdf=23'
+
+def test_1():
+    url = ('https://www.annualreviews.org/doi/10.1146/'
+           'annurev-conmatphys-031214-014726')
     down = papis.downloaders.get_downloader(url)
     assert(down.name == 'annualreviews')
-    assert(down.expected_document_extension == 'pdf')
-    assert(down.get_doi() == '10.1146/annurev-conmatphys-031214-014726')
-    assert(len(down.get_bibtex_url()) > 0)
-    assert(len(down.get_bibtex_data()) > 0)
-    bibs = papis.bibtex.bibtex_to_dict(down.get_bibtex_data())
-    assert(len(bibs) == 1)
-    doc = down.get_document_data()
-    assert(doc is not None)
-    assert(not down.check_document_format())
+    with patch.object(down, '_get_body',
+            lambda: get_resource('annualreviews_1.html')):
+        with patch.object(down, 'download_document', lambda: None):
+            down.fetch()
+            # with open('annualreviews_1_out.json', 'w+') as f:
+                # import json
+                # json.dump(down.ctx.data, f)
+            correct_data = get_json_resource('annualreviews_1_out.json')
+            assert(down.ctx.data == correct_data)

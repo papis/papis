@@ -12,12 +12,13 @@ def test_1():
     assert(down.name == 'iopscience')
     with patch.object(down, '_get_body',
             lambda: get_resource('iopscience_1.html')):
-        down.fetch()
-        correct_data = get_json_resource('iopscience_1_out.json')
-        assert(down.ctx.data == correct_data)
-        # with open('iopscience_1_out.json', 'w+') as f:
-            # import json
-            # json.dump(down.ctx.data, f)
+        with patch.object(down, 'download_document', lambda: None):
+            down.fetch()
+            correct_data = get_json_resource('iopscience_1_out.json')
+            assert(down.ctx.data == correct_data)
+            # with open('iopscience_1_out.json', 'w+') as f:
+                # import json
+                # json.dump(down.ctx.data, f)
 
 
 def test_2():
@@ -27,9 +28,10 @@ def test_2():
     assert(down.name == 'iopscience')
     with patch.object(down, '_get_body',
             lambda: get_resource('iopscience_2.html')):
-        down.fetch()
-        correct_data = get_json_resource('iopscience_2_out.json')
-        assert(down.ctx.data == correct_data)
-        # with open('iopscience_2_out.json', 'w+') as f:
-            # import json
-            # json.dump(down.ctx.data, f)
+        with patch.object(down, 'download_document', lambda: None):
+            down.fetch()
+            correct_data = get_json_resource('iopscience_2_out.json')
+            assert(down.ctx.data == correct_data)
+            # with open('iopscience_2_out.json', 'w+') as f:
+                # import json
+                # json.dump(down.ctx.data, f)

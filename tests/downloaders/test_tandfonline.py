@@ -21,12 +21,14 @@ def test_1():
     assert(down.name == 'tandfonline')
     with patch.object(down, '_get_body',
             lambda: get_resource('tandfonline_1.html')):
-        down.fetch()
-        correct_data = get_json_resource('tandfonline_1_out.json')
-        assert(down.ctx.data == correct_data)
-        # with open('tandfonline_1_out.json', 'w+') as f:
-            # import json
-            # json.dump(down.ctx.data, f)
+        with patch.object(down, 'download_document', lambda: None):
+            down.fetch()
+            # with open('tandfonline_1_out.json', 'w+') as f:
+                # import json
+                # json.dump(down.ctx.data, f)
+            correct_data = get_json_resource('tandfonline_1_out.json')
+            assert(down.ctx.data == correct_data)
+
 
 def test_2():
     url = 'https://www.tandfonline.com/doi/full/20.2080/00268976.2023.788745'
@@ -35,8 +37,9 @@ def test_2():
     with patch.object(down, '_get_body',
             lambda: get_resource('tandfonline_2.html')):
         down.fetch()
-        correct_data = get_json_resource('tandfonline_2_out.json')
-        assert(down.ctx.data == correct_data)
-        # with open('tandfonline_2_out.json', 'w+') as f:
-            # import json
-            # json.dump(down.ctx.data, f)
+        with patch.object(down, 'download_document', lambda: None):
+            # with open('tandfonline_2_out.json', 'w+') as f:
+                # import json
+                # json.dump(down.ctx.data, f)
+            correct_data = get_json_resource('tandfonline_2_out.json')
+            assert(down.ctx.data == correct_data)

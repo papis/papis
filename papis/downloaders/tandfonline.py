@@ -21,27 +21,17 @@ class Downloader(papis.downloaders.base.Downloader):
         data = dict()
         body = self._get_body()
         soup = bs4.BeautifulSoup(body, "html.parser")
-        metas = soup.find_all(name="meta")
-        data.setdefault('abstract', '')
-        for meta in metas:
-            if meta.attrs.get('name') == 'dc.Title':
-                data['title'] = meta.attrs.get('content')
-            elif meta.attrs.get('name') == 'keywords':
-                data['keywords'] = meta.attrs.get('content')
-            elif meta.attrs.get('name') == 'dc.Type':
-                data['type'] = meta.attrs.get('content')
-            elif meta.attrs.get('name') == 'dc.Subject':
-                data['subject'] = meta.attrs.get('content')
-            elif (meta.attrs.get('name') == 'dc.Identifier' and
-                    meta.attrs.get('scheme') == 'doi'):
-                data['doi'] = meta.attrs.get('content')
-            elif meta.attrs.get('name') == 'dc.Publisher':
-                data['publisher'] = meta.attrs.get('content')
-            elif meta.attrs.get('name') == 'dc.Description':
-                data['abstract'] += meta.attrs.get('content')
-            elif meta.attrs.get('name') == 'citation_journal_title':
-                data['journal'] = meta.attrs.get('content')
+        data.update(papis.downloaders.base.parse_meta_headers(soup))
 
+        doi = soup.find_all(name="meta",
+                attrs={"name": 'dc.Identifier', 'scheme': 'doi'})
+        if doi:
+            data['doi'] = doi[0].attrs.get('content')
+
+        if 'author_list' in data:
+            return data
+
+        # Read brute force the authors from the source
         author_list = []
         authors = soup.find_all(name='span', attrs={'class': 'contribDegrees'})
         cleanregex = re.compile(r'(^\s*|\s*$|&)')
@@ -52,7 +42,7 @@ class Downloader(papis.downloaders.base.Downloader):
             afftext = affspan[0].text if affspan else ''
             fullname = re.sub(',', '',
                         cleanregex.sub('', author.text.replace(afftext, '')))
-            splitted = re.split(r'\s\+', fullname)
+            splitted = re.split(r'\s+', fullname)
             cafftext = re.sub(' ,', ',',
                               morespace.sub(' ', cleanregex.sub('', afftext)))
             if 'Reviewing Editor' in fullname:

@@ -16,7 +16,6 @@ def test_get_downloader():
     down = get_downloader('https://google.com', 'get')
     assert(down is not None)
     assert(down.name == 'get')
-    assert(str(down) == 'get')
 
     down = get_downloader('arXiv:1701.08223v2')
     assert(down is not None)
