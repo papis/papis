@@ -26,8 +26,6 @@ class Downloader(papis.downloaders.base.Downloader):
         for meta in metas:
             if meta.attrs.get('name') == 'citation_title':
                 data['title'] = meta.attrs.get('content')
-            # elif meta.attrs.get('name') == 'keywords':
-                # data['keywords'] = meta.attrs.get('content')
             elif meta.attrs.get('name') == 'dc.Subject':
                 data['subject'] = meta.attrs.get('content')
             elif meta.attrs.get('name') == 'citation_doi':
