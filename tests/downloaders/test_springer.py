@@ -12,12 +12,13 @@ def test_1():
     assert(down.name == 'springer')
     with patch.object(down, '_get_body',
             lambda: get_resource('springer_1.html')):
-        down.fetch()
-        correct_data = get_json_resource('springer_1_out.json')
-        assert(down.ctx.data == correct_data)
-        # with open('springer_1_out.json', 'w+') as f:
-            # import json
-            # json.dump(down.ctx.data, f)
+        with patch.object(down, 'download_document', lambda: None):
+            down.fetch()
+            correct_data = get_json_resource('springer_1_out.json')
+            assert(down.ctx.data == correct_data)
+            # with open('springer_1_out.json', 'w+') as f:
+                # import json
+                # json.dump(down.ctx.data, f)
 
 def test_2():
     url = 'https://link.springer.com/article/10.1007%2FBF02727953'
@@ -25,9 +26,10 @@ def test_2():
     assert(down.name == 'springer')
     with patch.object(down, '_get_body',
             lambda: get_resource('springer_2.html')):
-        down.fetch()
-        correct_data = get_json_resource('springer_2_out.json')
-        assert(down.ctx.data == correct_data)
-        # with open('springer_2_out.json', 'w+') as f:
-            # import json
-            # json.dump(down.ctx.data, f)
+        with patch.object(down, 'download_document', lambda: None):
+            down.fetch()
+            correct_data = get_json_resource('springer_2_out.json')
+            assert(down.ctx.data == correct_data)
+            # with open('springer_2_out.json', 'w+') as f:
+                # import json
+                # json.dump(down.ctx.data, f)

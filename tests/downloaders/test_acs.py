@@ -20,9 +20,10 @@ def test_acs_1():
     down = papis.downloaders.get_downloader(url)
     assert(not down.ctx)
     with patch.object(down, '_get_body', lambda: get_resource('acs_1.html')):
-        down.fetch()
-        correct_data = get_json_resource('acs_1_out.json')
-        assert(down.ctx.data == correct_data)
+        with patch.object(down, 'download_document', lambda: None):
+            down.fetch()
+            correct_data = get_json_resource('acs_1_out.json')
+            assert(down.ctx.data == correct_data)
 
 
 def test_acs_2():
@@ -30,6 +31,7 @@ def test_acs_2():
     down = papis.downloaders.get_downloader(url)
     assert(not down.ctx)
     with patch.object(down, '_get_body', lambda: get_resource('acs_2.html')):
-        down.fetch()
-        correct_data = get_json_resource('acs_2_out.json')
-        assert(down.ctx.data == correct_data)
+        with patch.object(down, 'download_document', lambda: None):
+            down.fetch()
+            correct_data = get_json_resource('acs_2_out.json')
+            assert(down.ctx.data == correct_data)

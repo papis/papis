@@ -19,20 +19,24 @@ def test_1():
     url = 'https://www.sciencedirect.com/science/article/pii/bguss1'
     down = papis.downloaders.get_downloader(url)
     assert(not down.ctx)
-    with patch.object(down, '_get_body', lambda: get_resource('sciencedirect_1.html')):
-        down.fetch()
-        correct_data = get_json_resource('sciencedirect_1_out.json')
-        assert(down.ctx.data == correct_data)
+    with patch.object(down, '_get_body',
+            lambda: get_resource('sciencedirect_1.html')):
+        with patch.object(down, 'download_document', lambda: None):
+            down.fetch()
+            correct_data = get_json_resource('sciencedirect_1_out.json')
+            assert(down.ctx.data == correct_data)
 
 
 def test_2():
     url = 'https://www.sciencedirect.com/science/article/pii/bogus'
     down = papis.downloaders.get_downloader(url)
     assert(not down.ctx)
-    with patch.object(down, '_get_body', lambda: get_resource('sciencedirect_2.html')):
-        down.fetch()
-        correct_data = get_json_resource('sciencedirect_2_out.json')
-        assert(down.ctx.data == correct_data)
+    with patch.object(down, '_get_body',
+            lambda: get_resource('sciencedirect_2.html')):
+        with patch.object(down, 'download_document', lambda: None):
+            down.fetch()
+            correct_data = get_json_resource('sciencedirect_2_out.json')
+            assert(down.ctx.data == correct_data)
 
 
 def test_get_authors():
