@@ -229,7 +229,7 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
 
     root_container = HSplit([
         Window(
-            align=WindowAlign.CENTER,
+            align=WindowAlign.LEFT,
             style='bg:ansiwhite',
             height=1,
             content=FormattedTextControl(
@@ -243,7 +243,7 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
         Window(
             height=1,
             width=None,
-            align=WindowAlign.CENTER,
+            align=WindowAlign.LEFT,
             style='bg:ansiwhite',
             content=FormattedTextControl(
                 text=[(

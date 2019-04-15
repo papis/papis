@@ -19,6 +19,7 @@ meta_equivalences = {
     "description": "abstract",
     "citation_doi": "doi",
     "citation_firstpage": "firstpage",
+    "citation_lastpage": "lastpage",
     "citation_fulltext_html_url": "url",
     "citation_pdf_url": "pdf_url",
     "citation_issn": "issn",
