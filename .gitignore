@@ -1,4 +1,5 @@
 papis/deps/*
+.vim-run
 
 doc/build/
 #Vim swap files

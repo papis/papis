@@ -42,6 +42,20 @@ class Downloader(papis.importer.Importer):
         self.cookies = {}
 
     def fetch(self):
+        """
+        Try first to get data by hand with the get_data command.
+        Then commplement with bibtex data.
+        At last try to get the document from the retrieved data.
+        """
+        # Try with get_data
+        try:
+            data = self.get_data()
+            assert(isinstance(data, dict))
+        except NotImplementedError:
+            pass
+        else:
+            self.ctx.data.update(data)
+
         # try with bibtex
         try:
             self.download_bibtex()
@@ -53,16 +67,6 @@ class Downloader(papis.importer.Importer):
                 datalist = papis.bibtex.bibtex_to_dict(bib_rawdata)
                 if datalist:
                     self.ctx.data.update(datalist[0])
-
-        # Try with get_data
-        try:
-            data = self.get_data()
-            assert(isinstance(data, dict))
-        except NotImplementedError:
-            pass
-        else:
-            self.ctx.data.update(data)
-
         # try getting doi
         try:
             doi = self.get_doi()

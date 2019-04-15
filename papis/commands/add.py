@@ -595,12 +595,14 @@ def cli(
     # TODO: Remove in v0.9.x END
 
     data = dict()
+    for data_set in set_list:
+        data[data_set[0]] = data_set[1]
+
     files = list(files)
     ctx = papis.importer.Context()
     ctx.files = list(filter(lambda f: os.path.exists(f), files))
+    ctx.data.update(data)
 
-    for data_set in set_list:
-        data[data_set[0]] = data_set[1]
 
     if batch:
         edit = False

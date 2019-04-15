@@ -46,13 +46,13 @@ class Downloader(papis.downloaders.base.Downloader):
         authors = soup.find_all(name='span', attrs={'class': 'contribDegrees'})
         cleanregex = re.compile(r'(^\s*|\s*$|&)')
         editorregex = re.compile(r'([\n|]|\(Reviewing\s*Editor\))')
-        morespace = re.compile(r'\s\+')
+        morespace = re.compile(r'\s+')
         for author in authors:
             affspan = author.find_all('span', attrs={'class': 'overlay'})
             afftext = affspan[0].text if affspan else ''
             fullname = re.sub(',', '',
                         cleanregex.sub('', author.text.replace(afftext, '')))
-            splitted = re.split(r'\s*', fullname)
+            splitted = re.split(r'\s\+', fullname)
             cafftext = re.sub(' ,', ',',
                               morespace.sub(' ', cleanregex.sub('', afftext)))
             if 'Reviewing Editor' in fullname:
