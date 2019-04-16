@@ -19,7 +19,7 @@ Examples
 
     .. code::
 
-        papis update --from-bibtex libraryfile.bib -i
+        papis update --from bibtex libraryfile.bib -i
 
 - Tag all einstein papers with the tag classics
 
@@ -44,17 +44,12 @@ import urllib.error
 import logging
 import papis.utils
 import papis.strings
-import papis.bibtex
 import papis.downloaders
 import papis.document
 import papis.database
-import papis.isbnplus
-import papis.isbn
-import papis.crossref
-import papis.base
 import papis.pick
 import papis.cli
-import papis.yaml
+import papis.importer
 import click
 
 
@@ -95,46 +90,6 @@ def run(document, data=dict(), force=False):
     is_flag=True
 )
 @click.option(
-    "--from-crossref",
-    help="Update info from crossref.org",
-    default=None
-)
-@click.option(
-    "--from-isbn",
-    help="Update info from isbn",
-    default=None
-)
-@click.option(
-    "--from-isbnplus",
-    help="Update info from isbnplus.org",
-    default=None
-)
-@click.option(
-    "--from-base",
-    help="Update info from Bielefeld Academic Search Engine",
-    default=None
-)
-@click.option(
-    "--from-yaml",
-    help="Update info from yaml file",
-    default=None
-)
-@click.option(
-    "--from-bibtex",
-    help="Update info from bibtex file",
-    default=None
-)
-@click.option(
-    "--from-url",
-    help="Get document or information from url",
-    default=None
-)
-@click.option(
-    "--from-doi",
-    help="Doi to try to get information from",
-    default=None
-)
-@click.option(
     "--auto",
     help="Try to parse information from different sources",
     default=False,
@@ -145,6 +100,16 @@ def run(document, data=dict(), force=False):
     help="Update all entries in library",
     default=False,
     is_flag=True
+)
+@click.option(
+    "--from", "from_importer",
+    help="Add document from a specific importer ({0})".format(
+        ", ".join(papis.importer.available_importers())
+    ),
+    type=(click.Choice(papis.importer.available_importers()), str),
+    nargs=2,
+    multiple=True,
+    default=(),
 )
 @click.option(
     "-s", "--set",
@@ -164,14 +129,7 @@ def cli(
         doc_folder,
         interactive,
         force,
-        from_crossref,
-        from_base,
-        from_isbnplus,
-        from_isbn,
-        from_yaml,
-        from_bibtex,
-        from_url,
-        from_doi,
+        from_importer,
         auto,
         all,
         set,
@@ -194,7 +152,8 @@ def cli(
         )
 
     for document in documents:
-        data = dict()
+        ctx = papis.importer.Context()
+        ctx.data.update(document)
 
         logger.info(
             'Updating '
@@ -203,7 +162,7 @@ def cli(
         )
 
         if set:
-            data.update(
+            ctx.data.update(
                 {s[0]: papis.utils.format_doc(s[1], document) for s in set}
             )
 
@@ -229,108 +188,54 @@ def cli(
                     else:
                         _update_with_database(document)
 
-        if auto:
-            if 'doi' in document.keys() and not from_doi:
-                logger.info('Trying using the doi {}'.format(document['doi']))
-                from_doi = document['doi']
-            if 'url' in document.keys() and not from_url:
-                logger.info('Trying using the url {}'.format(document['url']))
-                from_url = document['url']
-            if 'title' in document.keys() and not from_isbn:
-                from_isbn = '{d[title]} {d[author]}'.format(d=document)
-                from_isbnplus = from_isbn
-                from_base = from_isbn
+    matching_importers = []
+    if not from_importer and auto:
+        for importer_cls in papis.importer.get_importers():
+            try:
+                importer = importer_cls.match_data(document)
+                importer.fetch()
+            except NotImplementedError:
+                continue
+            except Exception:
+                continue
+            else:
+                matching_importers.append(importer)
+
+    for importer_tuple in from_importer:
+        try:
+            importer_name = importer_tuple[0]
+            resource = papis.utils.format_doc(importer_tuple[1], document)
+            importer = (papis.importer
+                        .get_importer_by_name(importer_name)(uri=resource))
+            importer.fetch()
+            if importer.ctx:
+                matching_importers.append(importer)
+        except Exception as e:
+            logger.exception(e)
+
+    if matching_importers:
+        logger.info(
+            'There are {0} possible matchings'.format(len(matching_importers)))
+
+        for importer in matching_importers:
+            if importer.ctx.data:
                 logger.info(
-                    'Trying with `from_isbn`, `from_isbnplus` and `from_base` '
-                    'with the text "{0}"'.format(from_isbn)
-                )
-            if from_crossref is None and from_doi is None:
-                from_crossref = True
-
-        if from_crossref:
-            query = papis.utils.format_doc(from_crossref, document)
-            logger.info('Trying with crossref with query {0}'.query(query))
-            if from_crossref is True:
-                from_crossref = ''
-            try:
-                doc = papis.pick.pick_doc([
-                        papis.document.from_data(d)
-                        for d in papis.crossref.get_data(
-                            query=query,
-                            author=document['author'],
-                            title=document['title']
-                        )
-                ])
-                if doc:
-                    data.update(papis.document.to_dict(doc))
-                    if 'doi' in document.keys() and not from_doi and auto:
-                        from_doi = doc['doi']
-
-            except Exception as e:
-                logger.error('error processing crossref')
-                logger.error(e)
-
-        if from_base:
-            query = papis.utils.format_doc(from_base, document)
-            logger.info('Trying with base with query {0}'.format(query))
-            try:
-                doc = papis.pick.pick_doc([
-                    papis.document.from_data(d)
-                    for d in papis.base.get_data(query=query)
-                ])
-                if doc:
-                    data.update(papis.document.to_dict(doc))
-            except urllib.error.HTTPError:
-                logger.error('urllib failed to download')
-
-        if from_isbnplus:
-            logger.info('Trying with isbnplus')
-            logger.warning('Isbnplus support is does not work... Not my fault')
-
-        if from_isbn:
-            query = papis.utils.format_doc(from_isbn, document)
-            logger.info('Trying with isbn ({0:20})'.format(query))
-            try:
-                doc = papis.pick.pick_doc([
-                    papis.document.from_data(d)
-                    for d in papis.isbn.get_data(query=query)
-                ])
-                if doc:
-                    data.update(papis.document.to_dict(doc))
-            except Exception as e:
-                logger.error('Isbnlib had an error retrieving information')
-                logger.error(e)
-
-        if from_yaml:
-            data.update(papis.yaml.yaml_to_data(from_yaml))
-
-        if from_doi:
-            query = papis.utils.format_doc(from_doi, document)
-            logger.info("Try using doi %s" % query)
-            doidata = papis.crossref.doi_to_data(query)
-            if doidata:
-                data.update(doidata)
-
-        if from_bibtex:
-            try:
-                bib_data = papis.bibtex.bibtex_to_dict(from_bibtex)
-                data.update(bib_data[0])
-            except Exception as e:
-                logger.error('error processing bibtex')
-                logger.error(e)
-
-        if from_url:
-            query = papis.utils.format_doc(from_url, document)
-            logger.info('Trying url {0}'.format(query))
-            try:
-                url_data = papis.downloaders.get_info_from_url(query)
-                data.update(url_data["data"])
-            except Exception as e:
-                logger.error('error processing url')
-                logger.error(e)
+                    'Merging data from importer {0}'.format(importer.name))
+                papis.utils.update_doc_from_data_interactively(
+                    ctx.data,
+                    importer.ctx.data,
+                    str(importer))
+            if importer.ctx.files:
+                logger.info(
+                    'Got files {0} from importer {1}'
+                    .format(importer.ctx.files, importer.name))
+                for f in importer.ctx.files:
+                    papis.utils.open_file(f)
+                    if papis.utils.confirm("Use this file?"):
+                        ctx.files.append(f)
 
         run(
             document,
-            data=data,
+            data=ctx.data,
             force=force,
         )

@@ -52,7 +52,19 @@ class Importer:
         :type  uri: str
         """
         raise NotImplementedError(
-            "Matching uri not implemented for this downloader"
+            "Matching uri not implemented for this importer"
+        )
+
+    @classmethod
+    def match_data(data):
+        """Get a dictionary of data and try to decide if there is
+        a valid uri in it.
+
+        :param data: Data to look into
+        :type  data: dict
+        """
+        raise NotImplementedError(
+            "Matching data not implemented for this importer"
         )
 
     def fetch(self):

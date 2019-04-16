@@ -15,10 +15,9 @@ class Downloader(papis.downloaders.base.Downloader):
         m = re.match(r"^ieee:(.*)", url, re.IGNORECASE)
         if m:
             url = "http://ieeexplore.ieee.org/document/{m}".format(
-                m=m.group(1)
-            )
+                m=m.group(1))
+            return Downloader(url)
         if re.match(r".*ieee.org.*", url):
-            # http://http://ieeexplore.ieee.org/document/7989161/
             url = re.sub(r"\.pdf.*$", "", url)
             return Downloader(url)
         else:

@@ -39,11 +39,6 @@ class Downloader(papis.downloaders.base.Downloader):
         soup = bs4.BeautifulSoup(body, "html.parser")
         data.update(papis.downloaders.base.parse_meta_headers(soup))
 
-        doi = soup.find_all(name="meta",
-                            attrs={"name": 'dc.Identifier', 'scheme': 'doi'})
-        if doi:
-            data['doi'] = doi[0].attrs.get('content')
-
         if 'author_list' in data:
             return data
 

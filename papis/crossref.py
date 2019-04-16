@@ -320,6 +320,11 @@ class Importer(papis.importer.Importer):
         else:
             return Importer(uri=uri)
 
+    @classmethod
+    def match_data(cls, data):
+        if 'doi' in data:
+            return Importer(uri=data['doi'])
+
     def fetch(self):
         self.logger.info("using doi {0}".format(self.uri))
         doidata = papis.crossref.get_data(dois=[self.uri])

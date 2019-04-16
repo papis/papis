@@ -10,59 +10,66 @@ import papis.bibtex
 import tempfile
 import copy
 import re
-import collections
 
 
-meta_equivalences = collections.OrderedDict({
-    # google
-    "description": "abstract",
-    "keywords": "keywords",
-    # facebook
-    "og:type": "type",
-    "og:description": "description",
-    "og:title": "title",
-    "og:url": "url",
-    # citation style
-    "citation_doi": "doi",
-    "citation_firstpage": "firstpage",
-    "citation_lastpage": "lastpage",
-    "citation_fulltext_html_url": "url",
-    "citation_pdf_url": "pdf_url",
-    "citation_issn": "issn",
-    "citation_issue": "issue",
-    "citation_abstract": "abstract",
-    "citation_journal_abbrev": "journal_abbrev",
-    "citation_journal_title": "journal",
-    "citation_language": "language",
-    "citation_online_date": "online_date",
-    "citation_publication_date": "publication_date",
-    "citation_publisher": "publisher",
-    "citation_title": "title",
-    "citation_volume": "volume",
-    "dc.publisher": "publisher",
-    "dc.date": "date",
-    "dc.language": "language",
-    "dc.citation.issue": "issue",
-    "dc.citation.volume": "volume",
-    "dc.subject": "subject",
-    "dc.title": "title",
-    "dc.type": "type",
-    "dc.description": "description",
-    "dc.description.abstract": "abstract",
-    "dc.relation.ispartof": "journal_abbrev",
-    "dc.issued": "year",
-})
+meta_equivalences = [
+# google
+{"tag": "meta", "key": "abstract", "attrs": {"name": "description"}},
+{"tag": "meta", "key": "doi", "attrs": {"name": "doi"}},
+{"tag": "meta", "key": "keywords", "attrs": {"name": "keywords"}},
+{"tag": "title", "key": "title", "attrs": {}, "action": lambda e: e.text},
+# facebook
+{"tag": "meta", "key": "type", "attrs": {"property": "og:type"}},
+{"tag": "meta", "key": "description", "attrs": {"property": "og:description"}},
+{"tag": "meta", "key": "title", "attrs": {"property": "og:title"}},
+{"tag": "meta", "key": "url", "attrs": {"property": "og:url"}},
+# citation style
+{"tag": "meta", "key": "doi", "attrs": {"name": "citation_doi"}},
+{"tag": "meta", "key": "firstpage", "attrs": {"name": "citation_firstpage"}},
+{"tag": "meta", "key": "lastpage", "attrs": {"name": "citation_lastpage"}},
+{"tag": "meta", "key": "url", "attrs": {"name": "citation_fulltext_html_url"}},
+{"tag": "meta", "key": "pdf_url", "attrs": {"name": "citation_pdf_url"}},
+{"tag": "meta", "key": "issn", "attrs": {"name": "citation_issn"}},
+{"tag": "meta", "key": "issue", "attrs": {"name": "citation_issue"}},
+{"tag": "meta", "key": "abstract", "attrs": {"name": "citation_abstract"}},
+{"tag": "meta", "key": "journal_abbrev", "attrs": {"name": "citation_journal_abbrev"}},
+{"tag": "meta", "key": "journal", "attrs": {"name": "citation_journal_title"}},
+{"tag": "meta", "key": "language", "attrs": {"name": "citation_language"}},
+{"tag": "meta", "key": "online_date", "attrs": {"name": "citation_online_date"}},
+{"tag": "meta", "key": "publication_date", "attrs": {"name": "citation_publication_date"}},
+{"tag": "meta", "key": "publisher", "attrs": {"name": "citation_publisher"}},
+{"tag": "meta", "key": "title", "attrs": {"name": "citation_title"}},
+{"tag": "meta", "key": "volume", "attrs": {"name": "citation_volume"}},
+{"tag": "meta", "key": "publisher", "attrs": {"name": re.compile("dc.publisher", re.I)}},
+{"tag": "meta", "key": "publisher", "attrs": {"name": re.compile(".*st.publisher.*", re.I)}},
+{"tag": "meta", "key": "date", "attrs": {"name": re.compile("dc.date", re.I)}},
+{"tag": "meta", "key": "language", "attrs": {"name": re.compile("dc.language", re.I)}},
+{"tag": "meta", "key": "issue", "attrs": {"name": re.compile("dc.citation.issue", re.I)}},
+{"tag": "meta", "key": "volume", "attrs": {"name": re.compile("dc.citation.volume", re.I)}},
+{"tag": "meta", "key": "subject", "attrs": {"name": re.compile("dc.subject", re.I)}},
+{"tag": "meta", "key": "title", "attrs": {"name": re.compile("dc.title", re.I)}},
+{"tag": "meta", "key": "type", "attrs": {"name": re.compile("dc.type", re.I)}},
+{"tag": "meta", "key": "description", "attrs": {"name": re.compile("dc.description", re.I)}},
+{"tag": "meta", "key": "abstract", "attrs": {"name": re.compile("dc.description.abstract", re.I)}},
+{"tag": "meta", "key": "journal_abbrev", "attrs": {"name": re.compile("dc.relation.ispartof", re.I)}},
+{"tag": "meta", "key": "year", "attrs": {"name": re.compile("dc.issued", re.I)}},
+{"tag": "meta", "key": "doi", "attrs": {"name": re.compile("dc.identifier", re.I), "scheme": "doi"}},
+]
 
 
-def parse_meta_headers(soup, extra_equivalences=dict()):
+def parse_meta_headers(soup, extra_equivalences=[]):
     equivalences = copy.copy(meta_equivalences)
-    equivalences.update(extra_equivalences)
+    equivalences.extend(extra_equivalences)
     metas = soup.find_all(name="meta")
     data = dict()
-    for meta in metas:
-        _mname = meta.attrs.get('name') or meta.attrs.get('property')
-        if _mname and _mname.lower() in equivalences:
-            data[equivalences[_mname.lower()]] = meta.attrs.get('content')
+    for equiv in equivalences:
+        elements = soup.find_all(equiv['tag'], attrs=equiv["attrs"])
+        if elements:
+            if "action" in equiv:
+                value = equiv["action"](elements[0])
+            else:
+                value = elements[0].attrs.get("content")
+            data[equiv["key"]] = value
 
     author_list = parse_meta_authors(soup)
     if author_list:
