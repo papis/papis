@@ -78,7 +78,7 @@ def open_file(file_path, wait=True):
     :type  wait: bool
 
     """
-    papis.utils.general_open(file_path, "opentool", wait=wait)
+    general_open(fileName=file_path, key="opentool", wait=wait)
 
 
 def format_doc(python_format, document, key=""):

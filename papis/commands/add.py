@@ -383,7 +383,7 @@ def run(
 
     if open_file:
         for d_path in tmp_document.get_files():
-            papis.api.open_file(d_path)
+            papis.utils.open_file(d_path)
     if confirm:
         if not papis.utils.confirm('Really add?'):
             return
@@ -563,7 +563,6 @@ def cli(
                     papis.utils.open_file(f)
                     if papis.utils.confirm("Use this file?"):
                         ctx.files.append(f)
-                #ctx.files.extend(importer.ctx.files)
 
     if not ctx:
         logger.error('there is nothing to be added')

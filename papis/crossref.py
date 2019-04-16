@@ -309,9 +309,7 @@ class Importer(papis.importer.Importer):
     """Importer getting files and data form a doi through crossref.org"""
 
     def __init__(self, **kwargs):
-        papis.importer.Importer.__init__(
-            self,
-            name='doi', **kwargs)
+        papis.importer.Importer.__init__(self, name='doi', **kwargs)
 
     @classmethod
     def match(cls, uri):
