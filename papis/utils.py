@@ -68,6 +68,19 @@ def general_open(fileName, key, default_opener=None, wait=True):
         raise Warning("How should I use the opener %s?" % opener)
 
 
+def open_file(file_path, wait=True):
+    """Open file using the ``opentool`` key value as a program to
+    handle file_path.
+
+    :param file_path: File path to be handled.
+    :type  file_path: str
+    :param wait: Wait for the completion of the opener program to continue
+    :type  wait: bool
+
+    """
+    papis.utils.general_open(file_path, "opentool", wait=wait)
+
+
 def format_doc(python_format, document, key=""):
     """Construct a string using a pythonic format string and a document.
 

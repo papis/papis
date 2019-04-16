@@ -559,7 +559,11 @@ def cli(
                 logger.info(
                     'Got files {0} from importer {1}'
                     .format(importer.ctx.files, importer.name))
-                ctx.files.extend(importer.ctx.files)
+                for f in importer.ctx.files:
+                    papis.utils.open_file(f)
+                    if papis.utils.confirm("Use this file?"):
+                        ctx.files.append(f)
+                #ctx.files.extend(importer.ctx.files)
 
     if not ctx:
         logger.error('there is nothing to be added')

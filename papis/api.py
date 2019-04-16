@@ -99,7 +99,7 @@ def open_file(file_path, wait=True):
     :type  wait: bool
 
     """
-    papis.utils.general_open(file_path, "opentool", wait=wait)
+    papis.utils.general_open(file_path, wait=wait)
 
 
 def open_dir(dir_path, wait=True):
