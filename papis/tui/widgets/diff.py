@@ -40,7 +40,7 @@ def prompt(text, title='', actions=[], **kwargs):
             height=1,
             align=WindowAlign.LEFT,
             always_hide_cursor=True,
-            style='bg:ansiblack',
+            style='bg:ansiblack fg:ansiwhite',
             content=FormattedTextControl(
                 focusable=False,
                 text=HTML(' '.join(
@@ -75,17 +75,28 @@ def diffshow(texta, textb, title='', namea='a', nameb='b', actions=[]):
     assert(isinstance(texta, str))
     assert(isinstance(textb, str))
 
-    diffs = difflib.unified_diff(
+    # diffs = difflib.unified_diff(
+            # str(texta).splitlines(keepends=True),
+            # str(textb).splitlines(keepends=True),
+            # fromfile=namea, tofile=nameb)
+
+    diffs = difflib.ndiff(
             str(texta).splitlines(keepends=True),
             str(textb).splitlines(keepends=True),
-            fromfile=namea, tofile=nameb)
+            )
+
+    raw_text = [
+        "----- {namea}\n".format(namea=namea),
+        "+++++ {nameb}\n".format(nameb=nameb),] + list(diffs)
 
     formatted_text = list(map(lambda line:
-        line.startswith('@') and ('fg:violet', line) or
-        line.startswith('+') and ('fg:ansigreen', line) or
-        line.startswith('-') and ('fg:ansired', line) or
-        line.startswith('?') and ('fg:ansiyellow', line) or
-        ('fg:ansiwhite', line), diffs))
+        line.startswith('@') and ('fg:violet bg:black', line) or
+        # line.startswith('+++++') and ('fg:ansigreen bg:ansiyellow', line) or
+        # line.startswith('-----') and ('fg:ansired bg:ansiyellow', line) or
+        line.startswith('+') and ('fg:ansigreen bg:black', line) or
+        line.startswith('-') and ('fg:ansired bg:black', line) or
+        line.startswith('?') and ('fg:ansiyellow bg:black', line) or
+        ('fg:ansiwhite', line), raw_text))
 
     prompt(
         title=title,
@@ -131,14 +142,18 @@ def diffdict(dicta, dictb, namea='a', nameb='b'):
             if not dicta.get(k) == dictb.get(k) and dictb.get(k)]
 
     texta = "\n".join(
-            "{k}: {v}".format(k=k, v=dicta.get(k, '')) for k in sorted(keys))
+            "{k}: {v}".format(k=k, v=dicta.get(k, '')) for k in sorted(keys)
+            ) + "\n"
     textb = "\n".join(
-            "{k}: {v}".format(k=k, v=dictb.get(k, '')) for k in sorted(keys))
+            "{k}: {v}".format(k=k, v=dictb.get(k, '')) for k in sorted(keys)
+            ) + "\n"
 
     diffshow(
         texta=texta, textb=textb,
         title='GENERAL DIFFERENCE',
-        namea=namea, nameb=nameb, actions=actions)
+        namea=namea,
+        nameb=nameb,
+        actions=actions)
 
     if options["cancel"] or options['quit']:
         return dict()
@@ -161,9 +176,12 @@ def diffdict(dicta, dictb, namea='a', nameb='b'):
             continue
 
         diffshow(
-            texta=str(dicta.get(key, '')), textb=str(dictb.get(key, '')),
+            texta=str(dicta.get(key, '')) + "\n",
+            textb=str(dictb.get(key, '')) + "\n",
             title='Key: {0}'.format(key),
-            namea=namea, nameb=nameb, actions=actions)
+            namea=namea,
+            nameb=nameb,
+            actions=actions)
 
         if options["cancel"]:
             return dict()
