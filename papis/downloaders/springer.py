@@ -19,8 +19,7 @@ class Downloader(papis.downloaders.base.Downloader):
 
     def get_data(self):
         data = dict()
-        body = self._get_body()
-        soup = bs4.BeautifulSoup(body, "html.parser")
+        soup = self._get_soup()
         metas = soup.find_all(name="meta")
         author_list = []
         for meta in metas:

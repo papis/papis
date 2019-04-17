@@ -138,8 +138,7 @@ class Downloader(papis.downloaders.base.Downloader):
 
     def get_data(self):
         data = dict()
-        body = self._get_body()
-        soup = bs4.BeautifulSoup(body, "html.parser")
+        soup = self._get_soup()
         scripts = soup.find_all(name="script", attrs={'data-iso-key': '_0'})
         if scripts:
             rawdata = json.loads(scripts[0].text)

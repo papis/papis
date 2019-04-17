@@ -10,6 +10,7 @@ import papis.bibtex
 import tempfile
 import copy
 import re
+import bs4
 
 
 meta_equivalences = [
@@ -119,6 +120,7 @@ class Downloader(papis.importer.Importer):
         self.logger.debug("uri {0}".format(uri))
         self.expected_document_extension = None
         self.priority = 1
+        self._soup = None
 
         self.bibtex_data = None
         self.document_data = None
@@ -185,10 +187,14 @@ class Downloader(papis.importer.Importer):
 
     def _get_body(self):
         """Get body of the uri, this is also important for unittesting"""
-        return (self.session
-                .get(self.uri)
-                .content
-                .decode('utf-8', errors='ignore'))
+        return self.session.get(self.uri).content
+
+    def _get_soup(self):
+        """Get body of the uri, this is also important for unittesting"""
+        if self._soup:
+            return self._soup
+        self._soup = bs4.BeautifulSoup(self._get_body())
+        return self._soup
 
     def __str__(self):
         return 'Downloader({0}, uri={1})'.format(self.name, self.uri)
