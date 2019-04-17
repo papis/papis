@@ -137,11 +137,10 @@ class Downloader(papis.importer.Importer):
             }
         self.cookies = {}
 
-    def fetch(self):
+    def fetch_data(self):
         """
         Try first to get data by hand with the get_data command.
         Then commplement with bibtex data.
-        At last try to get the document from the retrieved data.
         """
         # Try with get_data
         try:
@@ -162,6 +161,7 @@ class Downloader(papis.importer.Importer):
             if bib_rawdata:
                 datalist = papis.bibtex.bibtex_to_dict(bib_rawdata)
                 if datalist:
+                    self.logger.info("Merging data from bibtex")
                     self.ctx.data.update(datalist[0])
         # try getting doi
         try:
@@ -171,6 +171,8 @@ class Downloader(papis.importer.Importer):
         else:
             self.ctx.data['doi'] = doi
 
+
+    def fetch_files(self):
         # get documents
         try:
             self.download_document()
@@ -185,6 +187,10 @@ class Downloader(papis.importer.Importer):
                     fd.write(doc_rawdata)
                 self.ctx.files.append(tmp)
 
+    def fetch(self):
+        self.fetch_data()
+        self.fetch_files()
+
     def _get_body(self):
         """Get body of the uri, this is also important for unittesting"""
         return self.session.get(self.uri).content
@@ -193,7 +199,7 @@ class Downloader(papis.importer.Importer):
         """Get body of the uri, this is also important for unittesting"""
         if self._soup:
             return self._soup
-        self._soup = bs4.BeautifulSoup(self._get_body())
+        self._soup = bs4.BeautifulSoup(self._get_body(), features='lxml')
         return self._soup
 
     def __str__(self):
