@@ -62,13 +62,7 @@ def run(document, data=dict(), force=False):
     # Keep the ref the same, otherwise issues can be caused when
     # writing LaTeX documents and all the ref's change
     data['ref'] = document['ref']
-
-    if force:
-        document.update(data)
-    else:
-        papis.utils.update_doc_from_data_interactively(
-            document=document, data=data, data_name='New data')
-
+    document.update(data)
     _update_with_database(document)
 
 

@@ -355,6 +355,11 @@ class FromCrossrefImporter(papis.importer.Importer):
         # There is no way to check if it matches
         return None
 
+    @classmethod
+    def match_data(cls, data):
+        if 'doi' in data:
+            return Importer(uri=data['doi'])
+
     def fetch(self):
         self.logger.info("querying '{0}' to crossref.org".format(self.uri))
         docs = [
