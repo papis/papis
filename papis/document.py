@@ -107,12 +107,13 @@ def to_bibtex(document):
     logger.debug("Used ref=%s" % ref)
 
     bibtexString += "@{type}{{{ref},\n".format(type=bibtexType, ref=ref)
-    for bibKey in sorted(document.keys()):
-        logger.debug('%s : %s' % (bibKey, document[bibKey]))
+    for bibKey in document.keys():
         if bibKey in papis.bibtex.bibtex_key_converter:
             newBibKey = papis.bibtex.bibtex_key_converter[bibKey]
             document[newBibKey] = document[bibKey]
-            continue
+            del document[bibKey]
+    for bibKey in sorted(document.keys()):
+        logger.debug('%s : %s' % (bibKey, document[bibKey]))
         if bibKey in papis.bibtex.bibtex_keys:
             value = str(document[bibKey])
             if not papis.config.get('bibtex-unicode'):
