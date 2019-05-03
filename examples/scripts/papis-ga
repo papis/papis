@@ -14,7 +14,7 @@ def usage():
 
 
 def add(doc):
-    path = os.path.expanduser(papis.config.get('dir'))
+    path = os.path.expanduser(papis.config.get_lib_dirs()[0])
     cmd = ['git', '-C', path, 'add'] + doc.get_files() + [doc.get_info_file()]
     print(cmd)
     subprocess.call(cmd)
@@ -30,7 +30,7 @@ if __name__ == "__main__":
             sys.exit(0)
 
     documents = papis.api.get_documents_in_lib(
-        papis.api.get_lib(),
+        papis.api.get_lib_name(),
         search=search
     )
 

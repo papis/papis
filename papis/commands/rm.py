@@ -6,36 +6,34 @@ Cli
     :prog: papis rm
 """
 import papis
-import papis.api
-from papis.api import status
+import papis.pick
 import papis.utils
 import papis.config
 import papis.document
 import papis.cli
+import papis.strings
 import papis.database
 import click
+import logging
+import os
 
 
-def run(
-        document,
-        filepath=None
-        ):
+def run(document, filepath=None):
     """Main method to the rm command
-
-    :returns: List different objects
-    :rtype:  list
     """
     db = papis.database.get()
     if filepath is not None:
-        document.rm_file(filepath)
+        os.remove(filepath)
+        document['files'].remove(os.path.basename(filepath))
         document.save()
+        db.update(document)
     else:
         papis.document.delete(document)
         db.delete(document)
-    return status.success
+    return
 
 
-@click.command()
+@click.command("rm")
 @click.help_option('-h', '--help')
 @papis.cli.query_option()
 @click.option(
@@ -57,30 +55,40 @@ def cli(
         ):
     """Delete command for several objects"""
     documents = papis.database.get().query(query)
-    document = papis.api.pick_doc(documents)
+    logger = logging.getLogger('cli:rm')
+
+    if not documents:
+        logger.warning(papis.strings.no_documents_retrieved_message)
+        return 0
+
+    document = papis.pick.pick_doc(documents)
     if not document:
-        return status.file_not_found
+        return
     if file:
-        filepath = papis.api.pick(
-            document.get_files()
-        )
+        filepath = papis.pick.pick(document.get_files())
         if not filepath:
-            return status.file_not_found
+            return
         if not force:
-            toolbar = 'The file {0} would be removed'.format(filepath)
-            if not papis.utils.confirm("Are you sure?", bottom_toolbar=toolbar):
-                return status.success
-        click.echo("Removing %s..." % filepath)
+            tbar = 'The file {0} would be removed'.format(filepath)
+            if not papis.utils.confirm("Are you sure?", bottom_toolbar=tbar):
+                return
+        logger.info("Removing %s..." % filepath)
         return run(
             document,
             filepath=filepath
         )
     else:
         if not force:
-            toolbar = 'The folder {0} would be removed'.format(
+            tbar = 'The folder {0} would be removed'.format(
                 document.get_main_folder()
             )
-            if not papis.utils.confirm("Are you sure?", bottom_toolbar=toolbar):
-                return status.success
-        click.echo("Removing ...")
+            logger.warning("This document will be removed, check it")
+            papis.utils.text_area(
+                title=tbar,
+                text=papis.document.dump(document),
+                lexer_name='yaml'
+            )
+            if not papis.utils.confirm("Are you sure?", bottom_toolbar=tbar):
+                return
+        logger.info("Removing ...")
         return run(document)

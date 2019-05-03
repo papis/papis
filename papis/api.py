@@ -3,24 +3,17 @@ create papis scripts.
 """
 
 import logging
+import papis.utils
+import papis.commands
+import papis.config
+import papis.pick
+import papis.database
 
 logger = logging.getLogger("api")
 logger.debug("importing")
 
-import os
-import papis.utils
-import papis.commands
-import papis.config
-import papis.database
 
-
-class status():
-    success = 0
-    generic_fail = 1
-    file_not_found = 2
-
-
-def get_lib():
+def get_lib_name():
     """Get current library, it either retrieves the library from
     the environment PAPIS_LIB variable or from the command line
     args passed by the user.
@@ -28,13 +21,13 @@ def get_lib():
     :returns: Library name
     :rtype:  str
 
-    >>> get_lib() is not None
+    >>> get_lib_name() is not None
     True
     """
-    return papis.config.get_lib()
+    return papis.config.get_lib_name()
 
 
-def set_lib(library):
+def set_lib_from_name(library):
     """Set current library, it either sets the library in
     the environment PAPIS_LIB variable or in the command line
     args passed by the user.
@@ -43,23 +36,12 @@ def set_lib(library):
     :type  library: str
 
     """
-    return papis.config.set_lib(library)
-
-
-def get_arg(arg, default=None):
-    try:
-        val = getattr(papis.commands.get_args(), arg)
-    except AttributeError:
-        try:
-            val = os.environ["PAPIS_"+arg.upper()]
-        except KeyError:
-            val = default
-    return val
+    return papis.config.set_lib_from_name(library)
 
 
 def get_libraries():
     """Get all libraries declared in the configuration. A library is discovered
-    if the ``dir`` key defined in the library section.
+    if the ``dir`` or ``dirs`` key defined in the library section.
 
     :returns: List of library names
     :rtype: list
@@ -71,41 +53,22 @@ def get_libraries():
     libs = []
     config = papis.config.get_configuration()
     for key in config.keys():
-        if "dir" in config[key]:
+        if "dir" in config[key] or "dirs" in config[key]:
             libs.append(key)
     return libs
 
 
-def pick_doc(documents: list):
+def pick_doc(documents):
     """Pick a document from documents with the correct formatting
 
     :documents: List of documents
     :returns: Document
 
-    >>> from papis.document import from_data
-    >>> doc = from_data({'title': 'Hello World'})
-    >>> pick_doc([doc]).dump()
-    'title:   Hello World\\n'
-
     """
-    header_format_path = papis.config.get('header-format-file')
-    if header_format_path is not None:
-        with open(os.path.expanduser(header_format_path)) as fd:
-            header_format = fd.read()
-    else:
-        header_format = papis.config.get("header-format")
-    match_format = papis.config.get("match-format")
-    pick_config = dict(
-        header_filter=lambda x: papis.utils.format_doc(header_format, x),
-        match_filter=lambda x: papis.utils.format_doc(match_format, x)
-    )
-    return papis.api.pick(
-        documents,
-        pick_config
-    )
+    return papis.pick.pick_doc(documents)
 
 
-def pick(options: list, pick_config={}):
+def pick(options, pick_config={}):
     """This is a wrapper for the various pickers that are supported.
     Depending on the configuration different selectors or 'pickers'
     are used.
@@ -122,35 +85,8 @@ def pick(options: list, pick_config={}):
     :returns: Returns elements of ``options``.
     :rtype: Element(s) of ``options``
 
-    >>> papis.config.set('picktool', 'papis.pick')
-    >>> pick(['something'])
-    'something'
-    >>> papis.config.set('picktool', 'nonexistent')
-    >>> pick(['something'])
-    Traceback (most recent call last):
-    ...
-    Exception: I don\'t know how to use the picker \'nonexistent\'
-    >>> papis.config.set('picktool', 'papis.pick')
-
     """
-    # Leave this import here
-    import papis.config
-    logger.debug("Parsing picktool")
-    picker = papis.config.get("picktool")
-    if picker == "dmenu":
-        import papis.gui.dmenu
-        logger.debug("Using dmenu picker")
-        return papis.gui.dmenu.pick(options, **pick_config)
-    elif picker == "vim":
-        import papis.gui.vim
-        logger.debug("Using vim picker")
-        return papis.gui.vim.pick(options, **pick_config)
-    elif picker == "papis.pick":
-        import papis.pick
-        logger.debug("Using papis.pick picker")
-        return papis.pick.pick(options, **pick_config)
-    else:
-        raise Exception("I don't know how to use the picker '%s'" % picker)
+    return papis.pick.pick(options, **pick_config)
 
 
 def open_file(file_path, wait=True):
@@ -203,7 +139,7 @@ def get_all_documents_in_lib(library=None):
 
     >>> import tempfile
     >>> folder = tempfile.mkdtemp()
-    >>> set_lib(folder)
+    >>> set_lib_from_name(folder)
     >>> docs = get_all_documents_in_lib(folder)
     >>> len(docs)
     0
@@ -231,7 +167,7 @@ def get_documents_in_dir(directory, search=""):
     0
 
     """
-    set_lib(directory)
+    set_lib_from_name(directory)
     return get_documents_in_lib(directory, search)
 
 
@@ -262,5 +198,16 @@ def clear_lib_cache(lib=None):
     >>> clear_lib_cache()
 
     """
-    lib = papis.api.get_lib() if lib is None else lib
     papis.database.get(lib).clear()
+
+
+def doi_to_data(doi):
+    """Try to get from a DOI expression a dictionary with the document's data
+    using the crossref module.
+
+    :param doi: DOI expression.
+    :type  doi: str
+    :returns: Document's data
+    :rtype: dict
+    """
+    return papis.crossref.doi_to_data(doi)

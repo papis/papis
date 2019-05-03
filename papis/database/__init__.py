@@ -7,9 +7,11 @@ DATABASES = dict()
 def get(library=None):
     global DATABASES
     import papis.config
-    backend = papis.config.get('database-backend')
     if library is None:
         library = papis.config.get_lib()
+    elif isinstance(library, str):
+        library = papis.config.get_lib_from_name(library)
+    backend = papis.config.get('database-backend')
     database = DATABASES.get(library)
     # if there is already a database and the backend of the database
     # is the same as the config backend, then return that library

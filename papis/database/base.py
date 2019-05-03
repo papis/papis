@@ -2,20 +2,21 @@
 Here the database abstraction for the libraries is defined.
 """
 
-import os
 import papis.utils
 import papis.config
+import papis.library
 
 
 class Database(object):
     """Abstract class for the database backends
     """
 
-    def __init__(self, library=papis.config.get_lib()):
-        self.lib = library
+    def __init__(self, library=None):
+        self.lib = library or papis.config.get_lib()
+        assert(isinstance(self.lib, papis.library.Library))
 
     def initialize(self):
-        pass
+        raise NotImplementedError('Initialize not implemented')
 
     def get_backend_name(self):
         raise NotImplementedError('Get backend name not implemented')
@@ -23,12 +24,12 @@ class Database(object):
     def get_lib(self):
         """Get library name
         """
-        return self.lib
+        return self.lib.name
 
-    def get_dir(self):
-        """Get directory of the library
+    def get_dirs(self):
+        """Get directories of the library
         """
-        return os.path.expanduser(papis.config.get('dir', section=self.lib))
+        return self.lib.paths
 
     def match(self, document, query_string):
         """Wether or not document matches query_string

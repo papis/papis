@@ -70,4 +70,3 @@ class Downloader(papis.downloaders.base.Downloader):
         url = "http://www.theses.fr/{id}.bib".format(id=self.get_identifier())
         self.logger.debug("[bibtex url] = %s" % url)
         return url
-

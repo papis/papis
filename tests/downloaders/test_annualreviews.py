@@ -1,4 +1,4 @@
-import papis.downloaders.utils
+import papis.downloaders
 from papis.downloaders.annualreviews import Downloader
 import papis.bibtex
 
@@ -18,7 +18,7 @@ def test_downloader_getter():
     url = 'http://annualreviews.org/doi/pdf/'\
           '10.1146/annurev-conmatphys-031214-014726'\
           '?asdfasdf=23'
-    down = papis.downloaders.utils.get_downloader(url)
+    down = papis.downloaders.get_downloader(url)
     assert(down.name == 'annualreviews')
     assert(down.expected_document_extension == 'pdf')
     assert(down.get_doi() == '10.1146/annurev-conmatphys-031214-014726')

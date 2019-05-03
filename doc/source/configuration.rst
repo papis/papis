@@ -25,14 +25,21 @@ A more complete example of a configuration file is the following
 
 .. code:: ini
 
+  #
+  # This is a general section, the settings set here will be set for
+  # all libraries
+  #
   [settings]
-  # Open file with rifle, a nice python program
+  #
+  # General file opener program, rifle is a nice python program
+  # If you're on macOS, you can write "open", if you're on linux
+  # you can also write "xdg-open", on windows-cygwin, you can set it to
+  # "cygstart"
+  #
   opentool = rifle
-  # Use gvim as a graphical editor
-  xeditor = gvim
-  # Use ranger as a file browser, too a  nice python package
+  # Use ranger as a file browser, a nice python program
   file-browser = ranger
-  # Ask for confirmation when doing papis add ...
+  # Ask for confirmation when doing papis add
   add-confirm = True
   # Edit the info.yaml file before adding a doc into the library
   # papis add --edit
@@ -40,19 +47,36 @@ A more complete example of a configuration file is the following
   # Open the files before adding a document into the library
   # papis add --open
   add-open = True
-
+  #
   # Define custom default match and header formats
+  #
   match-format = {doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}
-
+  #
   # Define header format with colors and multiline support
+  #
   header-format = <red>{doc.html_escape[title]}</red>
     <span color='#ff00ff'>  {doc.html_escape[author]}</span>
     <yellow>   ({doc.html_escape[year]})</yellow>
+
+  [tui]
+  editmode = vi
+  options_list.selected_margin_style = bg:ansigreen fg:ansired
+  options_list.unselected_margin_style =
+
 
 
   # Define a lib
   [papers]
   dir = ~/Documents/papers
+
+  # override settings from the section tui only for the papers library
+  # you have to prepend "tui-" to the settings
+  tui-editmode = emacs
+  tui-options_list.unselected_margin_style = bg:blue
+  # use whoosh as a database for papers
+  database-backend = whoosh
+  # rename files added by author and title
+  add-file-name = {doc[author]}[doc[title]}
 
   # Define a lib for books
   [books]
@@ -74,14 +98,6 @@ A more complete example of a configuration file is the following
   browse-query-format = {doc[first_name]} {doc[last_name]}
   add-open = False
 
-  rofi-gui-gui-eh = 2
-  rofi-gui-header-format = %(header-format)s
-                       {doc[tel][cell]}
-  tk-gui-header-format = %(rofi-gui-header-format)s
-  vim-gui-header-format = Title: %(header-format)s
-                          Tel  : {doc[tel]}
-                          Mail : {doc[email]}
-                       {doc[empty]}
 
 Local configuration files
 -------------------------
@@ -106,14 +122,7 @@ for your papers, for instance in
 
   ~/Documents/papers/.papis.config
 
-then everytime that you use this library also papis will source this
+then every time that you use this library papis will also source this
 configuration file.
 
-
-Default settings
-----------------
-
-.. automodule:: papis.config
-.. automodule:: papis.gui
-
-
+.. include:: default-settings.rst

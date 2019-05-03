@@ -1,3 +1,5 @@
+papis/deps/*
+
 doc/build/
 #Vim swap files
 *.swp

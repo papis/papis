@@ -1,5 +1,8 @@
-Papis |Build_Status| |Coveralls| |RTD| |Pypi| |Code_Quality| |zenodo_badge|
+Papis
 =====
+
+|PyPI-Versions| |Build_Status| |Coveralls| |RTD| |Pypi|
+|Code_Quality| |zenodo_badge| |PyPI-Downloads|
 
 |Packaging_status|
 
@@ -34,9 +37,8 @@ Main features
    add them to your library with all the relevant information, in a
    matter of seconds, also you can check the documentation
    `here <http://papis.readthedocs.io/en/latest/scihub.html>`__.
--  Import from Zotero and other managers using the script in
-   ``examples/scripts/papis-zotero``
-   (`doc <http://papis.readthedocs.io/en/latest/importing.html>`__).
+-  Import from Zotero and other managers using
+   `papis-zotero <https://github.com/papis/papis-zotero>_`.
 -  Create custom scripts to help you achieve great tasks easily
    (`doc <http://papis.readthedocs.io/en/latest/scripting.html>`__).
 -  Export documents into many formats (bibtex, yaml..)
@@ -126,3 +128,7 @@ See the ``AUTHORS`` list for a list of authored commits.
    :target: https://asciinema.org/a/3otatlbqXIsI102uAywMhT4fP
 .. |Code_Quality| image:: https://img.shields.io/lgtm/grade/python/g/papis/papis.svg?logo=lgtm&logoWidth=18
    :target: https://lgtm.com/projects/g/papis/papis/context:python
+.. |PyPI-Downloads| image:: https://img.shields.io/pypi/dm/papis.svg?label=pypi%20downloads&logo=python&logoColor=white
+   :target: https://pypi.org/project/papis
+.. |PyPI-Versions| image:: https://img.shields.io/pypi/pyversions/papis.svg?logo=python&logoColor=white
+   :target: https://pypi.org/project/papis

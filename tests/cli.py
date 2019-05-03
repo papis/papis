@@ -15,7 +15,8 @@ class TestCli(unittest.TestCase):
     def setUp(self):
         from click.testing import CliRunner
         self.runner = CliRunner()
-        self.assertTrue(papis.config.get_lib() == tests.get_test_lib())
+        self.assertTrue(
+            papis.config.get_lib_name() == tests.get_test_lib_name())
 
     def invoke(self, *args, **kwargs):
         return self.runner.invoke(self.cli, *args, **kwargs)

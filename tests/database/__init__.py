@@ -1,11 +1,13 @@
 import os
 import sys
+import papis.api
 import papis.config
 import papis.document
 import papis.database
 import unittest
 import tests
 import tempfile
+
 
 class DatabaseTest(unittest.TestCase):
 
@@ -15,11 +17,9 @@ class DatabaseTest(unittest.TestCase):
         tests.setup_test_library()
         papis.config.set('database-backend', backend)
 
-        os.environ['XDG_CACHE_HOME'] = tempfile.mkdtemp(prefix='papisdb-test-')
-
-        libdir = papis.config.get('dir')
+        libdir = papis.config.get_lib().paths[0]
         assert(os.path.exists(libdir))
-        assert(papis.config.get_lib() == tests.get_test_lib())
+        assert(papis.config.get_lib_name() == tests.get_test_lib_name())
 
         database = papis.database.get(papis.config.get_lib())
         database.clear()
@@ -28,18 +28,18 @@ class DatabaseTest(unittest.TestCase):
 
     def test_get_lib(self):
         database = papis.database.get()
-        self.assertTrue(database.get_lib() == papis.config.get_lib())
+        self.assertTrue(database.get_lib() == papis.config.get_lib_name())
 
     def test_get_dir(self):
         database = papis.database.get()
         self.assertTrue(
-            database.get_dir() == papis.config.get('dir')
+            database.get_dirs() == papis.config.get_lib_dirs()
         )
 
     def test_check_database(self):
         database = papis.database.get()
         self.assertTrue(database is not None)
-        self.assertTrue(database.get_lib() == tests.get_test_lib())
+        self.assertTrue(database.get_lib() == tests.get_test_lib_name())
 
     def test_update(self):
         database = papis.database.get()
@@ -71,10 +71,13 @@ class DatabaseTest(unittest.TestCase):
         Ni = len(docs)
         self.assertTrue(Ni > 1)
         database.delete( docs[0] )
-        papis.document.delete( docs[0] )
         docs = database.get_all_documents()
         Nf = len(docs)
-        self.assertTrue(Ni - Nf > 0)
+        self.assertTrue(Ni - Nf == 1)
+
+    def test_initialize(self):
+        # trying to initialize again should do nothing
+        papis.database.get().initialize()
 
     def test_get_all_documents(self):
         database = papis.database.get()
@@ -91,16 +94,15 @@ class DatabaseTest(unittest.TestCase):
         ]
         for j,doc in enumerate(newdocs):
             doc.set_folder(tempfile.mkdtemp())
-            doc['tempfile'] = doc.get_main_folder()
+            doc['title'] = 'lorem ipsum ' + str(j)
             doc.save()
             folder = os.path.join(
-                database.get_dir(),
+                database.get_dirs()[0],
                 'new',
                 str(j+N)
             )
             papis.document.move(doc, folder)
-            print(doc)
-            print(doc.get_main_folder())
+            assert(os.path.exists(doc.get_main_folder()))
             database.add(doc)
         docs = database.get_all_documents()
         self.assertEqual(len(docs), N*2)
@@ -110,6 +112,13 @@ class DatabaseTest(unittest.TestCase):
         database.clear()
         database.initialize()
         self.test_get_all_documents()
+
+    def test_all_query_string(self):
+        database = papis.database.get()
+        self.assertEqual(
+            papis.database.get_all_query_string(),
+            database.get_all_query_string()
+        )
 
     def test_backend_name(self):
         self.assertTrue(papis.database.get().get_backend_name() is not None)

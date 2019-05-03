@@ -19,8 +19,7 @@ Cli
 from string import ascii_lowercase
 import os
 import shutil
-import papis.api
-from papis.api import status
+import papis.pick
 import papis.utils
 import papis.document
 import papis.config
@@ -28,6 +27,7 @@ import papis.commands.add
 import logging
 import papis.cli
 import click
+import papis.strings
 
 
 def run(document, filepaths):
@@ -78,12 +78,12 @@ def run(document, filepaths):
         )
         shutil.copy(in_file_path, endDocumentPath)
 
-    document['files'] = document.get_files() + new_file_list
+    document['files'] += new_file_list
     document.save()
-    return status.success
+    papis.database.get().update(document)
 
 
-@click.command()
+@click.command("addto")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @click.option(
@@ -100,11 +100,15 @@ def run(document, filepaths):
 def cli(query, files, file_name):
     """Add files to an existing document"""
     documents = papis.database.get().query(query)
-    document = papis.api.pick_doc(documents)
+    logger = logging.getLogger('cli:addto')
+    if not documents:
+        logger.warning(papis.strings.no_documents_retrieved_message)
+        return
+    document = papis.pick.pick_doc(documents)
     if not document:
-        return status.file_not_found
+        return
 
     if file_name is not None:  # Use args if set
-        papis.config.set("file-name", file_name)
+        papis.config.set("add-file-name", file_name)
 
     return run(document, files)

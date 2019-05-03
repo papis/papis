@@ -68,13 +68,14 @@ Cli
 
 import logging
 import papis
-from papis.api import status
 import os
 import papis.utils
+import papis.strings
 import papis.config
 import papis.database
-import papis.downloaders.utils
+import papis.downloaders
 import papis.cli
+import papis.pick
 import click
 
 logger = logging.getLogger('list')
@@ -100,19 +101,20 @@ def run(
     if library is None:
         library = papis.config.get_lib()
     config = papis.config.get_configuration()
+    logger = logging.getLogger('cli:list')
     db = papis.database.get(library)
     if template is not None:
         if not os.path.exists(template):
             logger.error(
                 "Template file %s not found" % template
             )
-            return status.file_not_found
+            return
         fd = open(template)
         fmt = fd.read()
         fd.close()
 
     if downloaders:
-        return papis.downloaders.utils.get_available_downloaders()
+        return papis.downloaders.get_available_downloaders()
 
     if libraries:
         return [
@@ -122,9 +124,11 @@ def run(
         ]
 
     documents = db.query(query)
+    if not documents:
+        logger.warning(papis.strings.no_documents_retrieved_message)
 
     if pick:
-        documents = filter(lambda x: x, [papis.api.pick_doc(documents)])
+        documents = filter(lambda x: x, [papis.pick.pick_doc(documents)])
 
     if files:
         return [
@@ -152,7 +156,7 @@ def run(
         return documents
 
 
-@click.command()
+@click.command("list")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @click.option(
@@ -238,4 +242,4 @@ def cli(
     )
     for o in objects:
         click.echo(o)
-    return status.success
+    return

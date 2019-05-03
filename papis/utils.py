@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
-from subprocess import call
-import logging
+import subprocess
+import multiprocessing
+import time
 from itertools import count, product
-
-logger = logging.getLogger("utils")
-logger.debug("importing")
-
 import os
 import re
-import papis.api
+import papis.pick
 import papis.config
 import papis.commands
 import papis.document
 import papis.crossref
 import papis.bibtex
 import papis.exceptions
+import logging
+
+logger = logging.getLogger("utils")
+logger.debug("importing")
 
 
 def general_open(fileName, key, default_opener=None, wait=True):
@@ -43,9 +44,8 @@ def general_open(fileName, key, default_opener=None, wait=True):
             default_opener = papis.config.get_default_opener()
         opener = default_opener
     if isinstance(fileName, list):
-        fileName = papis.api.pick(fileName)
+        fileName = papis.pick.pick(fileName)
     if isinstance(opener, str):
-        import subprocess
         import shlex
         cmd = shlex.split("{0} '{1}'".format(opener, fileName))
         logger.debug("cmd:  %s" % cmd)
@@ -104,11 +104,12 @@ def get_folders(folder):
     :returns: List of folders containing an info file.
     :rtype: list
     """
-    logger.debug("Indexing folders")
+    logger.debug("Indexing folders in '{0}'".format(folder))
     folders = list()
     for root, dirnames, filenames in os.walk(folder):
-        if os.path.exists(os.path.join(root, get_info_file_name())):
+        if os.path.exists(os.path.join(root, papis.config.get('info-name'))):
             folders.append(root)
+    logger.debug("{0} valid folders retrieved".format(len(folders)))
     return folders
 
 
@@ -136,39 +137,6 @@ def create_identifier(input_list):
             yield ''.join(s)
 
 
-def get_info_file_name():
-    """Get the name of the general info file for any document
-
-    :returns: Name of the file.
-    :rtype: str
-    """
-    return papis.config.get("info-name")
-
-
-def doi_to_data(doi):
-    """Try to get from a DOI expression a dictionary with the document's data
-    using the crossref module.
-
-    :param doi: DOI expression.
-    :type  doi: str
-    :returns: Document's data
-    :rtype: dict
-    """
-    return papis.crossref.doi_to_data(doi)
-
-
-def yaml_to_data(yaml_path):
-    """Convert a yaml file into a dictionary using the yaml module.
-
-    :param yaml_path: Path to a yaml file
-    :type  yaml_path: str
-    :returns: Dictionary containing the info of the yaml file
-    :rtype:  dict
-    """
-    import yaml
-    return yaml.load(open(yaml_path))
-
-
 def confirm(prompt, yes=True, bottom_toolbar=None):
     """Confirm with user input
 
@@ -190,10 +158,129 @@ def confirm(prompt, yes=True, bottom_toolbar=None):
     if yes:
         return result not in 'Nn'
     else:
-        return result not in 'Yy'
+        return result in 'Yy'
 
 
-def input(prompt, default="", bottom_toolbar=None, multiline=False, 
+def text_area(title, text, lexer_name="", height=10, full_screen=False):
+    """
+    Small implementation of an editor/pager for small pieces of text.
+
+    :param title: Title of the text_area
+    :type  title: str
+    :param text: Editable text
+    :type  text: str
+    :param lexer_name: If the editable text should be highlighted with
+        some kind of grammar, examples are ``yaml``, ``python`` ...
+    :type  lexer_name: str
+    :param height: Max height of the text area
+    :type  height: int
+    :param full_screen: Wether or not the text area should be full screen.
+    :type  full_screen: bool
+    """
+    from prompt_toolkit import Application
+    from prompt_toolkit.enums import EditingMode
+    from prompt_toolkit.buffer import Buffer
+    from prompt_toolkit.layout.containers import HSplit, Window, WindowAlign
+    from prompt_toolkit.layout.controls import (
+        BufferControl, FormattedTextControl
+    )
+    from prompt_toolkit.layout.layout import Layout
+    from prompt_toolkit.layout import Dimension
+    from prompt_toolkit.key_binding import KeyBindings
+    from prompt_toolkit.lexers import PygmentsLexer
+    from pygments.lexers import find_lexer_class_by_name
+    assert(type(title) == str)
+    assert(type(text) == str)
+    assert(type(lexer_name) == str)
+    assert(type(height) == int)
+    assert(type(full_screen) == bool)
+
+    kb = KeyBindings()
+    buffer1 = Buffer()
+    buffer1.text = text
+
+    @kb.add('c-q')
+    def exit_(event):
+        event.app.exit(0)
+
+    @kb.add('c-s')
+    def save_(event):
+        event.app.return_text = buffer1.text
+
+    class App(Application):
+        return_text = None
+
+    text_height = Dimension(min=0, max=height) if height is not None else None
+
+    pygment_lexer = find_lexer_class_by_name(lexer_name)
+    lexer = PygmentsLexer(pygment_lexer)
+    text_window = Window(
+        height=text_height,
+        content=BufferControl(buffer=buffer1, lexer=lexer)
+    )
+
+    root_container = HSplit([
+        Window(
+            char='-',
+            align=WindowAlign.CENTER,
+            height=1,
+            content=FormattedTextControl(
+                text=[('fg:ansiblack bg:ansiwhite', title)]
+            ),
+            always_hide_cursor=True
+        ),
+
+        text_window,
+
+        Window(
+            height=1,
+            width=None,
+            align=WindowAlign.CENTER,
+            char='-',
+            content=FormattedTextControl(
+                text=[(
+                    'fg:ansiblack bg:ansiwhite',
+                    "Quit [Ctrl-q]  Save [Ctrl-s]"
+                )]
+            )
+        ),
+    ])
+
+    layout = Layout(root_container)
+
+    layout.focus(text_window)
+
+    app = App(
+        editing_mode=(
+            EditingMode.EMACS
+            if papis.config.get('editmode', section='tui') == 'emacs'
+            else EditingMode.VI
+        ), layout=layout, key_bindings=kb, full_screen=full_screen
+    )
+    app.run()
+    return app.return_text
+
+
+def yes_no_dialog(title, text):
+    from prompt_toolkit.shortcuts import yes_no_dialog
+    from prompt_toolkit.styles import Style
+
+    example_style = Style.from_dict({
+        'dialog': 'bg:#88ff88',
+        'dialog frame-label': 'bg:#ffffff #000000',
+        'dialog.body': 'bg:#000000 #00ff00',
+        'dialog shadow': 'bg:#00aa00',
+    })
+
+    return yes_no_dialog(
+        title=title,
+        text=text,
+        style=example_style
+    )
+
+
+def input(
+        prompt, default="", bottom_toolbar=None, multiline=False,
         validator_function=None, dirty_message=""):
     """Prompt user for input
 
@@ -206,21 +293,23 @@ def input(prompt, default="", bottom_toolbar=None, multiline=False,
 
     """
     import prompt_toolkit
-    from prompt_toolkit.validation import Validator
+    import prompt_toolkit.validation
     if validator_function is not None:
-        validator = Validator.from_callable(
+        validator = prompt_toolkit.validation.Validator.from_callable(
             validator_function,
             error_message=dirty_message,
             move_cursor_to_end=True
         )
     else:
         validator = None
-
-    fragments = [
-        ('', prompt),
-        ('fg:red', ' ({0})'.format(default)),
-        ('', ': '),
-    ]
+    if isinstance(prompt, str):
+        fragments = [
+            ('', prompt),
+            ('fg:red', ' ({0})'.format(default)),
+            ('', ': '),
+        ]
+    else:
+        fragments = prompt
 
     result = prompt_toolkit.prompt(
         fragments,
@@ -243,14 +332,10 @@ def clean_document_name(doc_path):
     :returns: Basename of the path cleaned
     :rtype:  str
 
-    >>> clean_document_name('{{] __ }}albert )(*& $ß $+_ einstein (*]')
-    'albert-ss-einstein'
-    >>> clean_document_name('/ashfd/df/  #$%@#$ }{_+"[ ]hello öworld--- .pdf')
-    'hello-oworld-.pdf'
     """
-    from slugify import slugify
+    import slugify
     regex_pattern = r'[^a-z0-9.]+'
-    return slugify(
+    return slugify.slugify(
         os.path.basename(doc_path),
         word_boundary=True,
         regex_pattern=regex_pattern
@@ -269,12 +354,12 @@ def git_commit(path="", message=""):
 
     """
     logger.debug('Commiting...')
-    path = path or os.path.expanduser(papis.config.get('dir'))
+    dirs = papis.config.get_lib_dirs()
+    path = path or os.path.expanduser(dirs[0])
     message = '-m "%s"' % message if len(message) > 0 else ''
     cmd = ['git', '-C', path, 'commit', message]
     logger.debug(cmd)
-    message = '-m "%s"' % message if len(message) > 0 else ''
-    call(cmd)
+    subprocess.call(cmd)
 
 
 def locate_document_in_lib(document, library=None):
@@ -336,3 +421,48 @@ def get_document_extension(document_path):
         return m.group(1) if m else 'data'
     else:
         return kind.extension
+
+
+def folders_to_documents(folders):
+    """Turn folders into documents, this is done in a multiprocessing way, this
+    step is quite critical for performance.
+
+    :param folders: List of folder paths.
+    :type  folders: list
+    :returns: List of document objects.
+    :rtype:  list
+    """
+    logger = logging.getLogger("utils:dir2doc")
+    np = multiprocessing.cpu_count()
+    logger.debug("converting folder into documents on {0} cores".format(np))
+    pool = multiprocessing.Pool(np)
+    begin_t = time.time()
+    result = pool.map(papis.document.from_folder, folders)
+    pool.close()
+    pool.join()
+    logger.debug("done in %.1f ms" % (1000*time.time()-1000*begin_t))
+    return result
+
+
+def get_cache_home():
+    """Get folder where the cache files are stored, it retrieves the
+    ``cache-dir`` configuration setting. It is ``XDG`` standard compatible.
+
+    :returns: Full path for cache main folder
+    :rtype:  str
+
+    """
+    user_defined = papis.config.get('cache-dir')
+    if user_defined is not None:
+        path = os.path.expanduser(user_defined)
+    else:
+        path = os.path.expanduser(
+            os.path.join(os.environ.get('XDG_CACHE_HOME'), 'papis')
+        ) if os.environ.get(
+            'XDG_CACHE_HOME'
+        ) else os.path.expanduser(
+            os.path.join('~', '.cache', 'papis')
+        )
+    if not os.path.exists(path):
+        os.makedirs(path)
+    return path

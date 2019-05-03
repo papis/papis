@@ -1,4 +1,3 @@
-import re
 import os
 import logging
 import requests
@@ -20,6 +19,7 @@ class Downloader(object):
         self.document_data = None
         self.logger.debug("[url] = %s" % url)
         self.expected_document_extension = None
+        self.priority = 1
 
         self.session = requests.Session()
         self.session.headers = {
@@ -92,12 +92,7 @@ class Downloader(object):
         if not url:
             return False
         res = self.session.get(url, cookies=self.cookies)
-        content_type = res.headers['Content-Type']
-        self.logger.debug('bibtex content type "{0}"'.format(content_type))
-        if not re.match('text/html', content_type):
-            self.bibtex_data = res.content.decode()
-        else:
-            self.logger.error('It seems no bibtex data could be retrieved')
+        self.bibtex_data = res.content.decode()
 
     def get_document_url(self):
         """It returns the urls that is to be access to download
@@ -143,13 +138,11 @@ class Downloader(object):
         :returns: Nothing
         :rtype:  None
         """
-        self.logger.debug("Downloading document")
         url = self.get_document_url()
         if not url:
             return False
+        self.logger.info("downloading file...")
         res = self.session.get(url, cookies=self.cookies)
-        content_type = res.headers['Content-Type']
-        self.logger.debug('document content type "{0}"'.format(content_type))
         self.document_data = res.content
 
     def get_url(self):
@@ -177,30 +170,24 @@ class Downloader(object):
         if self.expected_document_extension is None:
             return True
 
-        result = None
-        kind = filetype.guess(self.get_document_data())
+        retrieved_kind = filetype.guess(self.get_document_data())
 
-        if kind is None:
+        if retrieved_kind is None:
             print_warning()
             return False
 
+        self.logger.debug(
+            'retrieved kind of document seems to be {0}'.format(
+                retrieved_kind.mime)
+        )
+
         if not isinstance(self.expected_document_extension, list):
-            self.expected_document_extension = [
-                self.expected_document_extension]
+            expected_document_extensions = [
+                self.expected_document_extension
+            ]
 
-        for expected_document_extension in self.expected_document_extension:
-
-            expected_kind = filetype.get_type(ext=expected_document_extension)
-            if expected_kind is None:
-                raise Exception(
-                    "I can't understand the expected extension {0}".format(
-                        expected_document_extension
-                    )
-                )
-
-            result = kind.mime == expected_kind.mime
-
-        if not result:
+        if retrieved_kind.extension in expected_document_extensions:
+            return True
+        else:
             print_warning()
-
-        return result
+            return False

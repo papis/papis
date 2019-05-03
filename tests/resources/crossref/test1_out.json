@@ -1,0 +1,191 @@
+{
+  "language": "en",
+  "journal": "Physical Review B",
+  "publisher": "American Physical Society (APS)",
+  "author": "Herdman, C. M. and Roy, P.-N. and Melko, R. G. and Del Maestro, A.",
+  "title": "Particle entanglement in continuum many-body systems via quantum Monte Carlo",
+  "doi": "10.1103/physrevb.89.140501",
+  "ref": "10.1103/physrevb.89.140501",
+  "doc_url": "http://harvest.aps.org/v2/journals/articles/10.1103/PhysRevB.89.140501/fulltext",
+  "volume": "89",
+  "author_list": [
+    {
+      "given": "C. M.",
+      "family": "Herdman"
+    },
+    {
+      "given": "P.-N.",
+      "family": "Roy"
+    },
+    {
+      "given": "R. G.",
+      "family": "Melko"
+    },
+    {
+      "given": "A.",
+      "family": "Del Maestro"
+    }
+  ],
+  "type": "article",
+  "issue": "14",
+  "citations": [
+    {
+      "doi": "10.1142/S0217979290000139"
+    },
+    {
+      "doi": "10.1103/RevModPhys.80.1083"
+    },
+    {
+      "doi": "10.1103/RevModPhys.81.865"
+    },
+    {
+      "doi": "10.1103/RevModPhys.80.517"
+    },
+    {
+      "doi": "10.1103/PhysRevLett.71.666"
+    },
+    {
+      "doi": "10.1103/RevModPhys.82.277"
+    },
+    {
+      "doi": "10.1103/PhysRevB.82.100409"
+    },
+    {
+      "doi": "10.1103/PhysRevB.85.165121"
+    },
+    {
+      "doi": "10.1103/PhysRevB.86.235116"
+    },
+    {
+      "doi": "10.1088/1367-2630/15/7/073048"
+    },
+    {
+      "doi": "10.1103/PhysRevLett.106.135701"
+    },
+    {
+      "doi": "10.1088/1751-8113/40/25/S13"
+    },
+    {
+      "doi": "10.1103/PhysRevLett.100.030504"
+    },
+    {
+      "doi": "10.1103/PhysRevA.65.042101"
+    },
+    {
+      "doi": "10.1103/PhysRevA.67.024301"
+    },
+    {
+      "doi": "10.1016/S0375-9601(03)00546-2"
+    },
+    {
+      "doi": "10.1103/PhysRevA.78.042326"
+    },
+    {
+      "doi": "10.1088/1751-8113/42/50/504012"
+    },
+    {
+      "doi": "10.1006/aphy.2002.6268"
+    },
+    {
+      "doi": "10.1103/PhysRevLett.98.060401"
+    },
+    {
+      "doi": "10.1103/PhysRevB.76.125310"
+    },
+    {
+      "doi": "10.1103/PhysRevA.66.052323"
+    },
+    {
+      "doi": "10.2478/BF02476298"
+    },
+    {
+      "doi": "10.1103/PhysRevA.80.012329"
+    },
+    {
+      "doi": "10.1103/PhysRevLett.103.200502"
+    },
+    {
+      "doi": "10.1103/PhysRevB.82.012405"
+    },
+    {
+      "doi": "10.1103/PhysRevLett.91.097902"
+    },
+    {
+      "doi": "10.1103/PhysRevA.73.052323"
+    },
+    {
+      "doi": "10.1103/RevModPhys.67.279"
+    },
+    {
+      "doi": "10.1063/1.481926"
+    },
+    {
+      "doi": "10.1103/PhysRevA.67.013609"
+    },
+    {
+      "doi": "10.1103/PhysRevA.76.053605"
+    },
+    {
+      "doi": "10.1103/PhysRevA.80.022338"
+    },
+    {
+      "author": "P. Calabrese",
+      "journal-title": "J. Stat. Mech.",
+      "first-page": "P09028",
+      "volume": "2011"
+    },
+    {
+      "doi": "10.1103/PhysRevLett.107.020601"
+    },
+    {
+      "author": "K. Burnett",
+      "journal-title": "C. R. Acad. Sci. Ser. IV Phys.",
+      "first-page": "399",
+      "year": "2001",
+      "volume": "2"
+    },
+    {
+      "doi": "10.1103/PhysRevA.65.064302"
+    },
+    {
+      "doi": "10.1103/PhysRev.104.576"
+    },
+    {
+      "doi": "10.1063/1.1872775"
+    },
+    {
+      "doi": "10.1103/PhysRevLett.104.157201"
+    },
+    {
+      "doi": "10.1103/PhysRevB.87.081108"
+    },
+    {
+      "doi": "10.1103/PhysRevLett.106.150404"
+    },
+    {
+      "doi": "10.1103/PhysRevE.86.056712"
+    },
+    {
+      "doi": "10.1103/PhysRev.130.1605"
+    },
+    {
+      "doi": "10.1063/1.1410117"
+    },
+    {
+      "doi": "10.1126/science.1109545"
+    },
+    {
+      "doi": "10.1103/PhysRevLett.105.133401"
+    },
+    {
+      "doi": "10.1103/PhysRevLett.104.190405"
+    },
+    {
+      "doi": "10.1103/PhysRevLett.110.080503"
+    },
+    {
+      "doi": "10.1103/PhysRevA.85.042329"
+    }
+  ],
+  "url": "http://dx.doi.org/10.1103/physrevb.89.140501"
+}

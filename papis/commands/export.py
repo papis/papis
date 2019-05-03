@@ -7,19 +7,19 @@ Some examples of its usage are:
 
 .. code::
 
-    papis export --bibtex 'author = einstein'
+    papis export --format bibtex 'author : einstein'
 
 or export all of them
 
 .. code::
 
-    papis export --bibtex --all 'author = einstein'
+    papis export --format bibtex --all 'author : einstein'
 
 - Export all documents to bibtex and save them into a ``lib.bib`` file
 
 .. code::
 
-    papis export --all --bibtex --out lib.bib
+    papis export --all --format bibtex --out lib.bib
 
 - Export a folder of one of the documents matching the word ``krebs``
   into a folder named, ``interesting-document``
@@ -32,12 +32,6 @@ or export all of them
   ``info.yaml`` file, the linked documents and a ``bibtex`` file for
   sharing with other people.
 
-  You can also just export its associated document:
-
-.. code::
-
-    papis export --file krebs
-
 
 Cli
 ^^^
@@ -46,7 +40,6 @@ Cli
 """
 import papis
 import os
-import sys
 import shutil
 import papis.utils
 import papis.document
@@ -54,83 +47,92 @@ import click
 import papis.cli
 import papis.api
 import papis.database
+import papis.strings
 import logging
+from stevedore import extension
+
+logger = logging.getLogger('cli:export')
+exporters_mgr = None
+
+
+def stevedore_error_handler(manager, entrypoint, exception):
+    logger.error("Error while loading entrypoint [%s]" % entrypoint)
+    logger.error(exception)
+
+
+def export_to_yaml(documents):
+    import yaml
+    return yaml.dump_all(
+        [
+            papis.document.to_dict(document) for document in documents
+        ],
+        allow_unicode=True
+    )
+
+
+def export_to_json(documents):
+    import json
+    return json.dumps(
+        [
+            papis.document.to_dict(document) for document in documents
+        ]
+    )
+
+
+def export_to_bibtex(documents):
+    return '\n'.join([
+        papis.document.to_bibtex(document) for document in documents
+    ])
+
+
+def available_formats():
+    global exporters_mgr
+    _create_mgr()
+    return exporters_mgr.entry_points_names()
+
+
+
+def _create_mgr():
+    global exporters_mgr
+    if exporters_mgr:
+        return
+    exporters_mgr = extension.ExtensionManager(
+        namespace='papis.exporter',
+        invoke_on_load=False,
+        verify_requirements=True,
+        propagate_map_exceptions=True,
+        on_load_failure_callback=stevedore_error_handler
+    )
 
 
 def run(
     documents,
-    yaml=False,
-    bibtex=False,
-    json=False,
-    text=False
+    to_format,
 ):
     """
     Exports several documents into something else.
 
     :param document: A ist of papis document
     :type  document: [papis.document.Document]
-    :param yaml: Wether to return a yaml string
-    :type  yaml: bool
-    :param bibtex: Wether to return a bibtex string
-    :type  bibtex: bool
-    :param json: Wether to return a json string
-    :type  json: bool
-    :param text: Wether to return a text string representing the document
-    :type  text: bool
+    :param to_format: what format to use
+    :type  to_format: str
     """
-    if json:
-        import json
-        return json.dumps(
-            [
-                papis.document.to_dict(document) for document in documents
-            ]
+    global exporters_mgr
+    _create_mgr()
+    try:
+        ret_string = exporters_mgr[to_format].plugin(
+            document for document in documents
         )
-
-    if yaml:
-        import yaml
-        return yaml.dump_all(
-            [
-                papis.document.to_dict(document) for document in documents
-            ],
-            allow_unicode=True
-        )
-
-    if bibtex:
-        return '\n'.join([
-            papis.document.to_bibtex(document) for document in documents
-        ])
-
-    if text:
-        text_format = papis.config.get('export-text-format')
-        return '\n'.join([
-            papis.utils.format_doc(text_format, document)
-            for document in documents
-        ])
+        return ret_string
+    except KeyError as e:
+        logger.error("Format %s not supported." % to_format)
 
     return None
 
 
-@click.command()
+@click.command("export")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
-@click.option(
-    "--yaml",
-    help="Export into yaml",
-    default=False,
-    is_flag=True
-)
-@click.option(
-    "--bibtex",
-    help="Export into bibtex",
-    default=False,
-    is_flag=True
-)
-@click.option(
-    "--json",
-    help="Export into json",
-    default=False,
-    is_flag=True
-)
 @click.option(
     "--folder",
     help="Export document folder to share",
@@ -144,11 +146,11 @@ def run(
     default=None
 )
 @click.option(
-    "-t",
-    "--text",
-    help="Text formated reference",
-    default=False,
-    is_flag=True
+    "-f",
+    "--format",
+    help="Format for the document",
+    type=click.Choice(available_formats()),
+    default="bibtex",
 )
 @click.option(
     "-a", "--all",
@@ -156,49 +158,37 @@ def run(
     default=False,
     is_flag=True
 )
-@click.option(
-    "--file",
-    help="Export a copy of a file",
-    default=False,
-    is_flag=True
-)
 def cli(
         query,
-        yaml,
-        bibtex,
-        json,
         folder,
         out,
-        text,
+        format,
         all,
-        file
+        **kwargs
         ):
     """Export a document from a given library"""
 
-    logger = logging.getLogger('cli:export')
     documents = papis.database.get().query(query)
 
-    if json and folder or yaml and folder:
+    if format and folder:
         logger.warning("Only --folder flag will be considered")
 
+    if not documents:
+        logger.warning(papis.strings.no_documents_retrieved_message)
+        return
+
     if not all:
-        document = papis.api.pick_doc(documents)
+        document = papis.pick.pick_doc(documents)
         if not document:
             return 0
         documents = [document]
 
-    ret_string = run(
-        documents,
-        yaml=yaml,
-        bibtex=bibtex,
-        json=json,
-        text=text
-    )
+    ret_string = run(documents, to_format=format)
 
-    if ret_string is not None:
+    if ret_string is not None and not folder:
         if out is not None:
             logger.info("Dumping to {0}".format(out))
-            with open(out, 'w+') as fd:
+            with open(out, 'a+') as fd:
                 fd.write(ret_string)
         else:
             logger.info("Dumping to stdout")
@@ -211,39 +201,53 @@ def cli(
             outdir = out or document.get_main_folder_name()
             if not len(documents) == 1:
                 outdir = os.path.join(
-                    outdir, document.get_main_folder_name()
+                    (out or ''), document.get_main_folder_name()
                 )
+            logger.info("Exporting doc {0} to {1}".format(
+                papis.document.describe(document), outdir
+            ))
             shutil.copytree(folder, outdir)
-        elif file:
-            logger.info("Exporting file")
-            files = document.get_files()
-            assert(isinstance(files, list))
-            if not files:
-                logger.error('No files found for doc in {0}'.format(
-                    document.get_main_folder()
-                ))
-                continue
-            files_to_open = [papis.api.pick(
-                files,
-                pick_config=dict(
-                    header_filter=lambda x: x.replace(
-                        document.get_main_folder(), ""
-                    )
-                )
-            )]
-            files_to_copy = list(filter(lambda x: x, files_to_open))
-            for file_to_open in files_to_copy:
 
-                if out is not None and len(files_to_open) == 1:
-                    out_file = out
-                else:
-                    out_file = os.path.basename(file_to_open)
 
-                logger.info("copy {0} to {1}".format(
-                    file_to_open,
-                    out_file
-                ))
-                shutil.copyfile(
-                    file_to_open,
-                    out_file
+@click.command('export')
+@click.pass_context
+@click.help_option('--help', '-h')
+@click.option(
+    "-f",
+    "--format",
+    help="Format for the document",
+    type=click.Choice(available_formats()),
+    default="bibtex",
+)
+@click.option(
+    "-o",
+    "--out",
+    help="Outfile to write information to",
+    type=click.Path(),
+    default=None,
+)
+def explorer(ctx, format, out):
+    """
+    Export retrieved documents into various formats for later use
+
+    Examples of its usage are
+
+    papis explore crossref -m 200 -a 'Schrodinger' export --yaml lib.yaml
+
+    """
+    logger = logging.getLogger('explore:yaml')
+    docs = ctx.obj['documents']
+
+    outstring = run(docs, to_format=format)
+    if out is not None:
+        with open(out, 'a+') as fd:
+            logger.info(
+                "Writing {} documents' in {} into {}".format(
+                    len(docs),
+                    format,
+                    out
                 )
+            )
+            fd.write(outstring)
+    else:
+        print(outstring)

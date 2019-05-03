@@ -1,23 +1,29 @@
 language: python
-
 os:
-  - linux
-
+- linux
 python:
-  - "3.3"
-  - "3.4"
-  - "3.5"
-  - "3.6"
-
+- '3.3'
+- '3.4'
+- '3.5'
+- '3.6'
 script:
-  - python -m pytest papis tests --cov=papis
-
+- python -m pytest papis/ tests/ --cov=papis
 install:
-  - pip install setuptools
-  - pip install python-coveralls
-  - pip install -e .[develop]
-  - pip install -e .[optional]
-  - make install
-
+- pip install setuptools
+- pip install python-coveralls
+- pip install -e .[develop]
+- pip install -e .[optional]
 after_success:
-  - coveralls
+- coveralls
+- python setup.py sdist --formats zip,gztar
+
+#deploy:
+  #provider: releases
+  #skip_cleanup: true
+  #api_key:
+    #secure: YSWVW2PhxUwoA919l8nC3Z9sEdfV0PmrvzNiTGMBa/qhpmv3CeB2RMPzSreqG7/D6Rz5ybnXvNz0y4BuBkRPsT217X84OA5e43SqKquVeatSRFGdEjJcPrsYNMBnNG3G0Mjl7OtpM6YhzhI7fq9/RE8cASsHsEJFAvKz0ZIXv5aMW78VGewcbYqEUxaM3XFIo/eTljDLWLX0fbLjR6VC3T0fEgLMsPQoPlPrhUYoE/Yin5CjSbmW3q6/oThuLaJGFrYNTDl9GUaBEEWoUY4b+cy88qALHs1uAHqQqgFhGDnWNyZnE4/ZL7DeG7Czm8gr7/8GwBbLt68xIl8W0DeT7hLkmM7o/Bq9Y/Ow7oCtMiVkrdsr2WBqeLa2u6m7YI+QoNZyz4ct40gc1MWIGq6blUd8vw0pjNYIpTJyeCgXUM30s08gAK2s8YeJTqVnV56ITLCKQWcEY/zRfc/dOPVgX9kZ1/x7+97sVPccx3MnxRzEBCDARrq+o0bg90voErRKtQSgzOAC3KRUpyw5IGNiDYZSPshvQH/WQl+jB0//pIB9JwXq5rhnm+R3dTct/v0JE8sv4bzxpnXACAsYdtDRJfwoSLMK8mVXmf4pMuR/Ve/o87X4QWeBeFpgFuqPwyWaGSZQU4nEPL57FLPEwuj2qNe8KmMGfvZN1eO5Lr7j/VE=
+  #file:
+    #- dist/*
+    #- CHANGELOG.md
+  #on:
+    #repo: papis/papis

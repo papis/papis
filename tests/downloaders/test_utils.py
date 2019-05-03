@@ -1,4 +1,4 @@
-from papis.downloaders.utils import (
+from papis.downloaders import (
     get_available_downloaders,
     get_downloader
 )

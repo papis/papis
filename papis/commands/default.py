@@ -27,17 +27,63 @@ Cli
 
 """
 import os
+import sys
 import papis
 import papis.api
 import papis.config
 import papis.commands
+import papis.database
+import colorama
 import logging
 import click
 import papis.cli
 
 
+class MultiCommand(click.MultiCommand):
+
+    scripts = papis.commands.get_scripts()
+    scripts.update(papis.commands.get_external_scripts())
+    logger = logging.getLogger('multicommand')
+
+    def list_commands(self, ctx):
+        """List all matched commands in the command folder and in path
+
+        >>> mc = MultiCommand()
+        >>> rv = mc.list_commands(None)
+        >>> len(rv) > 0
+        True
+        """
+        rv = [s for s in self.scripts.keys()]
+        rv.sort()
+        return rv
+
+    def get_command(self, ctx, name):
+        """Get the command to be run
+
+        >>> mc = MultiCommand()
+        >>> cmd = mc.get_command(None, 'add')
+        >>> cmd.name, cmd.help
+        ('add', 'Add...')
+        >>> mc.get_command(None, 'this command does not exist')
+        """
+        try:
+            script = self.scripts[name]
+        except KeyError:
+            return None
+        if script['plugin']:
+            return script['plugin']
+        # If it gets here, it means that it is an external script
+        from papis.commands.external import external_cli as cli
+        from papis.commands.external import get_command_help
+        cli.context_settings['obj'] = script
+        cli.help = get_command_help(script['path'])
+        cli.name = script["command_name"]
+        cli.short_help = cli.help
+        return cli
+
+
 @click.group(
-    cls=papis.cli.MultiCommand,
+    cls=MultiCommand,
     invoke_without_command=True
 )
 @click.help_option('--help', '-h')
@@ -86,6 +132,12 @@ import papis.cli
     help="Set key value, e.g., "
          "--set info-name information.yaml  --set opentool evince",
 )
+@click.option(
+    "--color",
+    type=click.Choice(["always", "auto", "no"]),
+    default="auto",
+    help="Prevent the output from having color"
+)
 def run(
         verbose,
         config,
@@ -93,9 +145,26 @@ def run(
         log,
         pick_lib,
         clear_cache,
-        set_list
+        set_list,
+        color
         ):
-    log_format = '%(levelname)s:%(name)s:%(message)s'
+
+    if color == "no" or (color == "auto" and not sys.stdout.isatty()):
+        # Turn off colorama (strip escape sequences from the output)
+        colorama.init(strip=True)
+    else:
+        colorama.init()
+
+    log_format = (
+        colorama.Fore.YELLOW +
+        '%(levelname)s' +
+        ':' +
+        colorama.Fore.GREEN +
+        '%(name)s' +
+        colorama.Style.RESET_ALL +
+        ':' +
+        '%(message)s'
+    )
     if verbose:
         log = "DEBUG"
         log_format = '%(relativeCreated)d-'+log_format
@@ -114,26 +183,25 @@ def run(
         papis.config.reset_configuration()
 
     if pick_lib:
-        lib = papis.api.pick(
-            papis.api.get_libraries(),
-            pick_config=dict(header_filter=lambda x: x)
-        )
+        lib = papis.pick.pick(papis.api.get_libraries())
 
-    papis.config.set_lib(lib)
+    papis.config.set_lib_from_name(lib)
+    library = papis.config.get_lib()
 
-    # Now the library should be set, let us check if there is a
-    # local configuration file there, and if there is one, then
-    # merge its contents
-    local_config_file = os.path.expanduser(
-        os.path.join(
-            papis.config.get("dir"),
-            papis.config.get("local-config-file")
+    for path in library.paths:
+        # Now the library should be set, let us check if there is a
+        # local configuration file there, and if there is one, then
+        # merge its contents
+        local_config_file = os.path.expanduser(
+            os.path.join(
+                path,
+                papis.config.get("local-config-file")
+            )
         )
-    )
-    papis.config.merge_configuration_from_path(
-        local_config_file,
-        papis.config.get_configuration()
-    )
+        papis.config.merge_configuration_from_path(
+            local_config_file,
+            papis.config.get_configuration()
+        )
 
     if clear_cache:
-        papis.api.clear_lib_cache(lib)
+        papis.database.get().clear()

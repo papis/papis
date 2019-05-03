@@ -4,18 +4,31 @@ The database
 One of the things that makes papis interesting is the fact that
 there can be many backends for the database system, including no database.
 
-Right now there are three types of database in that the user can use:
+Right now there are three types of databases that the user can use:
 
 - No database
-- Simple cache based database
-- `Whoosh <https://whoosh.readthedocs.io/en/latest>`_  based database.
+    ::
 
-If you just plan to have or have few dozen of documents in your library,
-probably you'll have ample performance with the two first options.
-However if you're reaching higher numbers, 500, 1000, 2000 documents,
+      database-backend = papis
+      use-cache = False
+
+- Simple cache based database
+  - Configuration option
+    ::
+
+      database-backend = papis
+
+- `Whoosh <https://whoosh.readthedocs.io/en/latest>`_  based database.
+    ::
+
+      database-backend = whoosh
+
+If you just plan to have up to 3000 documents in your library,
+you will have ample performance with the two first options.
+However if you're reaching higher numbers,
 you'll probably want to use the ``Whoosh`` backend for very good performance.
 
-You can select the databases using the flag
+You can select a database by using the flag
 :ref:`database-backend <config-settings-database-backend>`.
 
 Papis database
@@ -23,11 +36,11 @@ Papis database
 
 The fact that there is no database means that papis should crawl through
 the library folder and see which folders have an ``info.yaml`` file, which
-is for slow computers quite bad.
+is for slow computers (and harddrives) quite bad.
 
 Papis implements a very rudimentary caching system. A cache is created for
-every library. Inside the cache only the paths to the different valid papis
-documents are stored.
+every library. Inside the cache the whole information already converted
+into python is stored.
 
 These cache files are stored per default in
 
@@ -35,8 +48,14 @@ These cache files are stored per default in
 
   ~/.cache/papis/
 
-Some papis commands update the cache automatically, for example the ``add`` and
-``rm`` command clear the cache when something is changed.
+Notice that most papis commands will update the cache if it has to be the case.
+For instance the ``edit`` command will let you edit your document's information
+and after you are done editing it will update the information for the given
+document in the cache.
+If you go directly to the document and edit the info file without
+passing through the papis edit command, the cache will not be updated and
+therefore papis will not know of these changes, although they will be there.
+In such cases you will have to *clear the cache*.
 
 Clearing the cache
 ^^^^^^^^^^^^^^^^^^
@@ -53,39 +72,39 @@ Query language
 
 Since version `0.3` there is a query language in place for the searching
 of documents.
-The queries can contain any field of the info file, i.e.,
-``author=einstein publisher = review`` will match documents that have
-a matching ``author`` with ``einstein`` AND having a ``publisher``
+The queries can contain any field of the info file, e.g.,
+``author:einstein publisher : review`` will match documents that have
+a matching ``author`` with ``einstein`` AND have a ``publisher``
 matching ``review``.
 The AND part here is important, since
 only the ``AND`` filter is implemented in this simple query
-language, at the moment it is not possible to do an ``OR``.
+language. At the moment it is not possible to do an ``OR``.
 If you need this, you should consider using the
 `Whoosh database`_.
 
 
-To illustrate it here are some examples:
+For illustration, here are some examples:
 
-  - Open documents where the author key matches 'albert' (ignoring case),
+  - Open documents where the author key matches 'albert' (ignoring case) and
     year matches '19' (i.e., 1990, 2019, 1920):
 
     .. code::
 
-      papis open 'author = albert year = 05'
+      papis open 'author : albert year : 05'
 
   - Add the restriction to the previous search that the usual matching matches
     the substring 'licht' in addition to the previously selected
 
     .. code::
 
-      papis open 'author = albert year = 05 licht'
+      papis open 'author : albert year : 05 licht'
 
     This is not to be mixed with the restriction that the key `year` matches
     `'05 licht'`, which will not match any year, i.e.
 
     .. code::
 
-      papis open 'author = albert year = "05 licht"'
+      papis open 'author : albert year : "05 licht"'
 
 
 Disabling the cache
@@ -126,7 +145,7 @@ which fields we want to index. These flags are
 - :ref:`whoosh-schema-fields <config-settings-whoosh-schema-fields>`
 - :ref:`whoosh-schema-prototype <config-settings-whoosh-schema-prototype>`
 
-The prototype is for advanced users. If you just want to say, include
+The prototype is for advanced users. If you just want to, say, include
 the publisher to the fields that you can search in, then you can put
 
 ::

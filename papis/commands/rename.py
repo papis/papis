@@ -7,13 +7,14 @@ Cli
 """
 import papis
 import os
-import papis.api
+import papis.pick
 import papis.utils
 import subprocess
 import logging
 import click
 import papis.cli
 import papis.database
+import papis.strings
 
 
 def run(document, new_name, git=False):
@@ -44,7 +45,7 @@ def run(document, new_name, git=False):
     return 0
 
 
-@click.command()
+@click.command("rename")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @papis.cli.git_option()
@@ -52,7 +53,11 @@ def cli(query, git):
     """Rename entry"""
 
     documents = papis.database.get().query(query)
-    document = papis.api.pick_doc(documents)
+    logger = logging.getLogger('cli:rename')
+
+    if not documents:
+        logger.warning(papis.strings.no_documents_retrieved_message)
+    document = papis.pick.pick_doc(documents)
     if not document:
         return 0
 

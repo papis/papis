@@ -1,10 +1,9 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-# papis-short-help: Correctly abbreviate journal titles 
+# papis-short-help: Correctly abbreviate journal titles
 # Copyright © 2017 Alejandro Gallo. GPLv3
 # Last modified: 2018-06-19
 import json
-import errno
 import sys
 import os
 import papis.api
@@ -30,14 +29,14 @@ except FileNotFoundError:
     print('LTWA.json not found!')
     print('Did you forget to copy or symlink it to your .config/scripts directory?')
     sys.exit(0)
-        
+
 def ltwa_abbreviate(full_journal_name, d=d):
     """
     Abbreviates a journal name using International Standard Serial
     Number (ISSN) guidelines.  ISSN abbreviations list last
     updated 14/09/2017.  Available
     http://www.issn.org/services/online-services/access-to-the-ltwa/
-    """    
+    """
 
     # local variables
     ignore_list = [ # List of short words that are ommited in abbreviations
@@ -58,8 +57,6 @@ def ltwa_abbreviate(full_journal_name, d=d):
         'ASSAY', 'ASTM', 'ASTRA',
     ]
 
-    # set counter, i, to 0
-    i = 0
     # initialize a new list
     return_list = []
     hyphenation = False
@@ -67,21 +64,21 @@ def ltwa_abbreviate(full_journal_name, d=d):
     # if just one word, return that word
     if len(full_journal_name.split(' ')) <= 1:
         return full_journal_name
-    
+
     # for all words in the full name...
     for h, word in enumerate(full_journal_name.replace('-',' -').split(' ')):
         word = word+'.' # Add a full stop to allow [:-i] to function as intended
         hyphenation = False # Set hyphenation to False
-        
+
         if '-' in word.lower():
             # if word contains a hyphen, remove it and set 'hyphenation' to True
             word = word.lower().replace('-','')
             hyphenation = True
             print(word)
-            
+
         #...shrink the word from right to left.
         for i in range(0, len(word.lower())):
-                
+
             # If it matches a json key...
             if word.lower()[:-i] in [x.lower() for x in d.keys()]:
                 # ...add it to the list.
@@ -94,7 +91,7 @@ def ltwa_abbreviate(full_journal_name, d=d):
             elif word.lower()[:-1] in ignore_list:
                 # Don't add the word if in ignore list
                 break
-            
+
             # If we get to the end of the word and it doesn't match...
             elif i == len(word.lower()[:-1]):
                 # ...add the full word to the list.
@@ -113,7 +110,7 @@ def ltwa_abbreviate(full_journal_name, d=d):
             return_list[j] = return_list[j].title()
     return " ".join(return_list).replace(' -','-')
 
-    
+
 if len(sys.argv) < 2:
     search = ""
 else:
@@ -125,7 +122,7 @@ else:
 add_flags = sys.argv[2:]
 
 documents = papis.api.get_documents_in_lib(
-    papis.api.get_lib(),
+    papis.api.get_lib_name(),
     search=search
 )
 
@@ -136,7 +133,7 @@ else:
         documents
     )]
 
-for item in doc:    
+for item in doc:
     if 'full_journal_title' not in item.keys():
         print_no_journal()
     else:

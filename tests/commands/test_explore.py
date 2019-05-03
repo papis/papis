@@ -31,64 +31,46 @@ class TestCli(tests.cli.TestCli):
     def test_export_bibtex(self):
         path = tempfile.mktemp()
         result = self.invoke([
-            'lib', 'krishnamurti', 'export', '--bibtex', path
+            'lib', 'krishnamurti', 'export', '--format', 'bibtex', '-o', path
         ])
         self.assertTrue(result.exit_code == 0)
         self.assertTrue(os.path.exists(path))
         with open(path) as fd:
             bibtex = fd.read()
         expected_bibtex = (
-            '@article{1,\n'
-            '  author = { J. Krishnamurti },\n'
-            '  title = { Freedom from the known },\n'
-            '  year = { 2009 },\n'
-            '}\n'
+            '@article{1,',
+            '  year = {2009},',
+            '  title = {Freedom from the known},',
+            '  author = {J. Krishnamurti},',
+            '}'
         )
 
-        self.assertEqual(bibtex, expected_bibtex)
+        for chunk in expected_bibtex:
+            self.assertTrue(chunk in bibtex.split('\n'))
 
     def test_export_yaml(self):
         path = tempfile.mktemp()
         result = self.invoke([
-            'lib', 'krishnamurti', 'export', '--yaml', path
+            'lib', 'krishnamurti', 'export', '--format', 'yaml', '-o', path
         ])
         self.assertTrue(result.exit_code == 0)
         self.assertTrue(os.path.exists(path))
         with open(path) as fd:
             yaml = fd.read()
         expected_yaml = (
-            r'_test_files: 1\n'
-            r'author: J. Krishnamurti\n'
-            r'files: .*\n'
-            r'title: Freedom from the known\n'
-            r"year: '2009'\n"
+            r'author: J. Krishnamurti',
+            r'title: Freedom from the known',
+            r"year: '2009'"
         )
 
-        self.assertTrue(re.match(expected_yaml, yaml))
-
-    def test_citations(self):
-        path = tempfile.mktemp()
-        result = self.invoke([
-            'lib', 'krishnamurti', 'export', '--yaml', path
-        ])
-        self.assertTrue(result.exit_code == 0)
-        self.assertTrue(os.path.exists(path))
-        with open(path) as fd:
-            yaml = fd.read()
-        expected_yaml = (
-            r'_test_files: 1\n'
-            r'author: J. Krishnamurti\n'
-            r'files: .*\n'
-            r'title: Freedom from the known\n'
-            r"year: '2009'\n"
-        )
-
-        self.assertTrue(re.match(expected_yaml, yaml))
+        for ey in expected_yaml:
+            self.assertTrue(re.findall(ey, yaml))
 
     def test_citations_and_json(self):
         path = tempfile.mktemp()
         result = self.invoke([
-            'citations', 'krishnamurti', 'export', '--json', path
+            'citations', 'krishnamurti', 'export', '--format', 'json', '--out',
+            path
         ])
         self.assertTrue(result.exit_code == 0)
         with open(path) as fd:

@@ -10,12 +10,14 @@ Cli
 import papis
 import os
 import papis.api
+import papis.pick
 import papis.utils
 import papis.config
 import papis.database
 import papis.cli
 import click
 import logging
+import papis.strings
 
 
 def run(document, wait=True):
@@ -25,7 +27,7 @@ def run(document, wait=True):
     database.update(document)
 
 
-@click.command()
+@click.command("edit")
 @click.help_option('-h', '--help')
 @papis.cli.query_option()
 @click.option(
@@ -62,10 +64,11 @@ def cli(
         papis.config.set('editor', editor)
 
     if not all:
-        document = papis.api.pick_doc(documents)
+        document = papis.pick.pick_doc(documents)
         documents = [document] if document else []
 
     if len(documents) == 0:
+        logger.warning(papis.strings.no_documents_retrieved_message)
         return 0
 
     for document in documents:

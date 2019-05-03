@@ -54,7 +54,7 @@ def run(option_string):
     return val
 
 
-@click.command()
+@click.command("config")
 @click.help_option('--help', '-h')
 @click.argument("option")
 def cli(option):

@@ -73,12 +73,15 @@ Cli
 """
 import papis
 import papis.api
+import papis.pick
 import papis.utils
 import papis.config
 import papis.cli
 import papis.database
 import click
 import logging
+from papis.document import from_folder
+import papis.strings
 
 
 def run(document, opener=None, folder=False, mark=False):
@@ -94,7 +97,7 @@ def run(document, opener=None, folder=False, mark=False):
             logger.debug("Getting document's marks")
             marks = document[papis.config.get("mark-key-name")]
             if marks:
-                logger.debug("Picking marks")
+                logger.info("Picking marks")
                 mark = papis.api.pick(
                     marks,
                     dict(
@@ -129,9 +132,10 @@ def run(document, opener=None, folder=False, mark=False):
         papis.api.open_file(file_to_open, wait=False)
 
 
-@click.command()
+@click.command("open")
 @click.help_option('-h', '--help')
 @papis.cli.query_option()
+@papis.cli.doc_folder_option()
 @click.option(
     "--tool",
     help="Tool for opening the file (opentool)",
@@ -140,6 +144,7 @@ def run(document, opener=None, folder=False, mark=False):
 @click.option(
     "-d",
     "--dir",
+    "folder",
     help="Open directory",
     default=False,
     is_flag=True
@@ -156,23 +161,24 @@ def run(document, opener=None, folder=False, mark=False):
     help="Open mark",
     default=lambda: True if papis.config.get('open-mark') else False
 )
-def cli(query, tool, dir, all, mark):
+def cli(query, doc_folder, tool, folder, all, mark):
     """Open document from a given library"""
     if tool:
         papis.config.set("opentool", tool)
+    logger = logging.getLogger('cli:run')
 
     documents = papis.database.get().query(query)
+
+    if doc_folder:
+        documents = [from_folder(doc_folder)]
+
     if not documents:
-        click.echo("No documents found with that name.")
-        return 1
+        logger.warning(papis.strings.no_documents_retrieved_message)
+        return 0
 
     if not all:
-        documents = [papis.api.pick_doc(documents)]
+        documents = [papis.pick.pick_doc(documents)]
         documents = [d for d in documents if d]
 
     for document in documents:
-        run(
-            document,
-            folder=dir,
-            mark=mark
-        )
+        run(document, folder=folder, mark=mark)

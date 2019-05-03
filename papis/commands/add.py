@@ -13,7 +13,8 @@ Examples
 
     .. code::
 
-        papis add ~/Documents/interesting.pdf --name interesting-paper-2021
+        papis add ~/Documents/interesting.pdf \\
+            --folder-name interesting-paper-2021
 
   if you want to add directly some key values, like ``author``, ``title``
   and ``tags``, you can also run the following:
@@ -21,7 +22,7 @@ Examples
     .. code::
 
         papis add ~/Documents/interesting.pdf \\
-            --name interesting-paper-2021 \\
+            --folder-name interesting-paper-2021 \\
             --set author 'John Smith' \\
             --set title 'The interesting life of bees' \\
             --set year 1985 \\
@@ -82,15 +83,20 @@ import hashlib
 import shutil
 import subprocess
 import papis.api
-from papis.api import status
+import papis.pick
 import papis.utils
 import papis.config
 import papis.bibtex
+import papis.crossref
+import papis.doi
+import papis.arxiv
 import papis.document
-import papis.downloaders.utils
+import papis.downloaders
 import papis.cli
+import papis.yaml
 import click
 import builtins
+import colorama
 
 logger = logging.getLogger('add')
 
@@ -111,11 +117,13 @@ def get_file_name(data, original_filepath, suffix=""):
     """
 
     basename_limit = 150
-    file_name_opt = papis.config.get('file-name')
+    file_name_opt = papis.config.get('add-file-name')
+    ext = papis.utils.get_document_extension(original_filepath)
 
     if file_name_opt is None:
         file_name_opt = os.path.basename(original_filepath)
 
+    # Get a file name from the format `add-file-name`
     file_name_base = papis.utils.format_doc(
         file_name_opt,
         papis.document.from_data(data)
@@ -123,12 +131,18 @@ def get_file_name(data, original_filepath, suffix=""):
 
     if len(file_name_base) > basename_limit:
         logger.warning(
-            'Shortening the documents\' {} name for portability'.format(
-                original_filepath
-            )
+            "Shortening the name {0} for portability".format(file_name_base)
         )
         file_name_base = file_name_base[0:basename_limit]
 
+    # Remove extension from file_name_base, if any
+    file_name_base = re.sub(
+        r"([.]{0})?$".format(ext),
+        '',
+        file_name_base
+    )
+
+    # Adding some extra suffixes, if any, and cleaning up document name
     filename_basename = papis.utils.clean_document_name(
         "{}{}".format(
             file_name_base,
@@ -136,10 +150,8 @@ def get_file_name(data, original_filepath, suffix=""):
         )
     )
 
-    filename = "{}.{}".format(
-        filename_basename,
-        papis.utils.get_document_extension(original_filepath)
-    )
+    # Adding the recognised extension
+    filename = filename_basename + '.' + ext
 
     return filename
 
@@ -173,69 +185,32 @@ def get_hash_folder(data, document_paths):
     return result
 
 
-def get_document_extension(document_path):
-    """Get document extension
-
-    :document_path: Path of the document
-    :returns: Extension (string)
-
-    """
-    import filetype
-    filetype.guess(document_path)
-    kind = filetype.guess(document_path)
-    if kind is None:
-        m = re.match(r"^.*\.([^.]+)$", os.path.basename(document_path))
-        return m.group(1) if m else 'data'
-    else:
-        return kind.extension
-
-
-def get_default_title(data, document_path, interactive=False):
-    """
-    >>> get_default_title({'title': 'hello world'}, 'whatever.pdf')
-    'hello world'
-    >>> open('Luces-de-bohemia.pdf', 'w+').close()
-    >>> get_default_title(dict(), 'Luces-de-bohemia.pdf')
-    'Luces de bohemia'
-    """
+def get_default_title(data, document_path):
     if "title" in data.keys():
         return data["title"]
-    extension = get_document_extension(document_path)
-    title = os.path.basename(document_path)\
-        .replace("."+extension, "")\
-        .replace("_", " ")\
+    extension = papis.utils.get_document_extension(document_path)
+    title = (
+        os.path.basename(document_path)
+        .replace("."+extension, "")
+        .replace("_", " ")
         .replace("-", " ")
-    if interactive:
-        title = papis.utils.input(
-            'Title?', title
-        )
+    )
     return title
 
 
-def get_default_author(data, document_path, interactive=False):
-    """
-    >>> get_default_author({'author': 'Garcilaso de la vega'}, 'whatever.pdf')
-    'Garcilaso de la vega'
-    >>> get_default_author(dict(), 'Luces-de-bohemia.pdf')
-    'Unknown'
-    """
+def get_default_author(data, document_path):
     if "author" in data.keys():
         return data["author"]
     author = "Unknown"
-    if interactive:
-        author = papis.utils.input(
-            'Author?', author
-        )
     return author
 
 
 def run(
         paths,
         data=dict(),
-        name=None,
+        folder_name=None,
         file_name=None,
         subfolder=None,
-        interactive=False,
         confirm=False,
         open_file=False,
         edit=False,
@@ -249,16 +224,13 @@ def run(
         If more data is to be retrieved from other sources, the data dictionary
         will be updated from these sources.
     :type  data: dict
-    :param name: Name of the folder where the document will be stored
-    :type  name: str
+    :param folder_name: Name of the folder where the document will be stored
+    :type  folder_name: str
     :param file_name: File name of the document's files to be stored.
     :type  file_name: str
     :param subfolder: Folder within the library where the document's folder
         should be stored.
     :type  subfolder: str
-    :param interactive: Wether or not interactive functionality of this command
-        should be activated.
-    :type  interactive: bool
     :param confirm: Wether or not to ask user for confirmation before adding.
     :type  confirm: bool
     :param open_file: Wether or not to ask user for opening file before adding.
@@ -292,29 +264,29 @@ def run(
 
     tmp_document = papis.document.Document(temp_dir)
 
-    if not name:
-        logger.info("Getting an automatic name")
+    if not folder_name:
         out_folder_name = get_hash_folder(data, in_documents_paths)
+        logger.info("Got an automatic folder name")
     else:
         temp_doc = papis.document.Document(data=data)
-        out_folder_name = papis.utils.format_doc(name, temp_doc)
+        out_folder_name = papis.utils.format_doc(folder_name, temp_doc)
         out_folder_name = papis.utils.clean_document_name(out_folder_name)
         del temp_doc
 
     data["files"] = in_documents_names
     out_folder_path = os.path.expanduser(os.path.join(
-        papis.config.get('dir'), subfolder or '',  out_folder_name
+        papis.config.get_lib_dirs()[0], subfolder or '',  out_folder_name
     ))
 
-    logger.debug("Folder name = % s" % out_folder_name)
-    logger.debug("Folder path = % s" % out_folder_path)
-    logger.debug("File(s)     = % s" % in_documents_paths)
+    logger.info("The folder name is {0}".format(out_folder_name))
+    logger.debug("Folder path: {0}".format(out_folder_path))
+    logger.debug("File(s): {0}".format(in_documents_paths))
 
     # First prepare everything in the temporary directory
     g = papis.utils.create_identifier(ascii_lowercase)
     string_append = ''
     if file_name is not None:  # Use args if set
-        papis.config.set("file-name", file_name)
+        papis.config.set("add-file-name", file_name)
     new_file_list = []
 
     for in_file_path in in_documents_paths:
@@ -350,31 +322,31 @@ def run(
             shutil.copy(in_file_path, tmp_end_filepath)
 
     data['files'] = new_file_list
+    tmp_document.update(data)
+    tmp_document.save()
 
     # Check if the user wants to edit before submitting the doc
     # to the library
     if edit:
-        tmp_document.update(data, force=True)
-        tmp_document.save()
         logger.info("Editing file before adding it")
         papis.api.edit_file(tmp_document.get_info_file(), wait=True)
         logger.info("Loading the changes made by editing")
         tmp_document.load()
-        data = papis.document.to_dict(tmp_document)
 
     # Duplication checking
-    logger.info("Check if the added document is already existing")
+    logger.info("Checking if this document is already in the library")
     try:
         found_document = papis.utils.locate_document_in_lib(tmp_document)
     except IndexError:
-        logger.info("Document not found in library")
+        logger.info("No document matching found already in the library")
     else:
         logger.warning(
-            '\n\n\n\n{0}\n\n\n\n'.format(papis.document.dump(found_document))
+            colorama.Fore.RED +
+            "DUPLICATION WARNING" +
+            colorama.Style.RESET_ALL
         )
-        logger.warning("DUPLICATION WARNING")
         logger.warning(
-            "The document above is in your library and it seems to match"
+            "The document beneath is in your library and it seems to match"
         )
         logger.warning(
             "the one that you're trying to add, "
@@ -384,16 +356,20 @@ def run(
             "(Hint) Use the update command if you just want to update"
             " the info."
         )
+        papis.utils.text_area(
+            'The following document is already in your library',
+            papis.document.dump(found_document),
+            lexer_name='yaml',
+            height=20
+        )
         confirm = True
 
-    tmp_document.update(data, force=True)
-    tmp_document.save()
     if open_file:
         for d_path in tmp_document.get_files():
             papis.api.open_file(d_path)
     if confirm:
         if not papis.utils.confirm('Really add?'):
-            return status.success
+            return
 
     logger.info(
         "[MV] '%s' to '%s'" %
@@ -407,10 +383,11 @@ def run(
         subprocess.call(
             ["git", "-C", out_folder_path, "commit", "-m", "Add document"]
         )
-    return status.success
+    return
 
 
 @click.command(
+    "add",
     help="Add a document into a given library"
 )
 @click.help_option('--help', '-h')
@@ -422,19 +399,14 @@ def run(
     type=(str, str)
 )
 @click.option(
-    "-d", "--dir", "directory",
+    "-d", "--subfolder",
     help="Subfolder in the library",
     default=""
 )
 @click.option(
-    "-i", "--interactive/--no-interactive",
-    help="Do some of the actions interactively",
-    default=lambda: True if papis.config.get('add-interactive') else False
-)
-@click.option(
-    "--name",
+    "--folder-name",
     help="Name for the document's folder (papis format)",
-    default=lambda: papis.config.get('add-name')
+    default=lambda: papis.config.get('add-folder-name')
 )
 @click.option(
     "--file-name",
@@ -469,6 +441,11 @@ def run(
     default=None
 )
 @click.option(
+    "--from-crossref",
+    help="Try to get information from a crossref query",
+    default=None
+)
+@click.option(
     "--from-pmid",
     help="PMID to try to get information from",
     default=None
@@ -477,6 +454,11 @@ def run(
     "--from-lib",
     help="Add document from another library",
     default=""
+)
+@click.option(
+    "-b", "--batch",
+    help="Batch mode, do not prompt or otherwise",
+    default=False, is_flag=True
 )
 @click.option(
     "--confirm/--no-confirm",
@@ -499,39 +481,37 @@ def run(
     default=False
 )
 @click.option(
+    "-S", "--smart",
+    help="Try to do smart things to get information from documents",
+    default=False, is_flag=True
+)
+@click.option(
     "--link/--no-link",
     help="Instead of copying the file to the library, create a link to"
          "its original location",
     default=False
 )
-@click.option(
-    #TODO: REMOVE IT AT SOME POINT
-    "--no-document",
-    default=False,
-    is_flag=True,
-    help="DEPRECATION NOTICE: This option is no longer valid, "
-         "it will be removed in future releases"
-)
 def cli(
         files,
         set_list,
-        directory,
-        interactive,
-        name,
+        subfolder,
+        folder_name,
         file_name,
         from_bibtex,
         from_yaml,
         from_folder,
         from_url,
         from_doi,
+        from_crossref,
         from_pmid,
         from_lib,
+        batch,
         confirm,
         open_file,
         edit,
         commit,
-        link,
-        no_document
+        smart,
+        link
         ):
     """
     :param from_folder: Filepath where to find a papis document (folder +
@@ -539,6 +519,8 @@ def cli(
     :type  from_folder: str
     :param from_doi: doi number to try to download information from.
     :type  from_doi: str
+    :param from_crossref: Crossref query to get doi
+    :type  from_crossref: str
     :param from_pmid: pmid number to try to download information from.
     :type  from_pmid: str
     :param from_url: Url to try to download information and files from.
@@ -556,8 +538,13 @@ def cli(
 
     logger = logging.getLogger('cli:add')
 
+    if batch:
+        edit = False
+        confirm = False
+        open_file = False
+
     if from_lib:
-        doc = papis.api.pick_doc(
+        doc = papis.pick.pick_doc(
             papis.api.get_all_documents_in_lib(from_lib)
         )
         if doc:
@@ -568,9 +555,17 @@ def cli(
         data["title"] = data.get('title') or get_default_title(
             data,
             files[0],
-            interactive
         )
-        logger.debug("Title = % s" % data["title"])
+        logger.info("Set an automatic title {0}".format(data["title"]))
+        if (not from_bibtex and
+                smart and
+                not batch and
+                not from_doi and
+                not from_folder and
+                not from_pmid and
+                not from_crossref):
+            logger.info("I will try with crossref with this title")
+            from_crossref = data["title"]
     except:
         pass
 
@@ -579,11 +574,57 @@ def cli(
         data["author"] = data.get('author') or get_default_author(
             data,
             files[0],
-            interactive
         )
-        logger.debug("Author = % s" % data["author"])
+        logger.info("Author = % s" % data["author"])
     except:
         pass
+
+    # GET INFORMATION FROM PDF
+    if (not from_doi and
+            not from_bibtex and
+            not from_url and
+            not from_folder and
+            files and
+            papis.utils.get_document_extension(files[0]) == 'pdf'):
+
+        logger.info("Trying to parse doi from file {0}".format(files[0]))
+        doi = papis.doi.pdf_to_doi(files[0])
+        if doi:
+            logger.info("Parsed doi {0}".format(doi))
+            logger.warning("There is no guarantee that this doi is the one")
+        if (doi and
+                not batch and
+                confirm and
+                papis.utils.confirm(
+                    'Do you want to use the doi {0}'.format(doi)
+                )):
+            from_doi = doi
+
+        arxivid = papis.arxiv.pdf_to_arxivid(files[0])
+        if arxivid:
+            logger.info("Parsed arxivid {0}".format(arxivid))
+            logger.warning(
+                "There is no guarantee that this arxivid is the one"
+            )
+        if (arxivid and
+                not batch and
+                confirm and
+                papis.utils.confirm(
+                    'Do you want to use the arxivid {0}'.format(arxivid)
+                )):
+            from_url = "https://arxiv.org/abs/{0}".format(arxivid)
+
+    if from_crossref:
+        logger.info("Querying crossref.org")
+        docs = [
+            papis.document.from_data(d)
+            for d in papis.crossref.get_data(query=from_crossref)
+        ]
+        if docs:
+            logger.info("got {0} matches, picking...".format(len(docs)))
+            doc = papis.pick.pick_doc(docs) if not batch else docs[0]
+            if doc and not from_doi and doc.has('doi'):
+                from_doi = doc['doi']
 
     if from_folder:
         original_document = papis.document.Document(from_folder)
@@ -592,23 +633,28 @@ def cli(
 
     if from_url:
         logger.info("Attempting to retrieve from url")
-        url_data = papis.downloaders.utils.get(from_url)
+        url_data = papis.downloaders.get_info_from_url(from_url)
         data.update(url_data["data"])
-        files.extend(url_data["documents_paths"])
+        if not files:
+            files.extend(url_data["documents_paths"])
         # If no data was retrieved and doi was found, try to get
         # information with the document's doi
-        if not data and url_data["doi"] is not None and\
-                not from_doi:
+        if not data and url_data["doi"] is not None and not from_doi:
             logger.warning(
-                "I could not get any data from %s" % from_url
+                "I could not get any data from {0}".format(from_url)
             )
             from_doi = url_data["doi"]
+            logger.info(
+                "But I found a doi ({0}), I'll try my luck there".format(
+                    from_doi
+                )
+            )
 
     if from_pmid:
         logger.info("Using PMID %s via HubMed" % from_pmid)
         hubmed_url = "http://pubmed.macropus.org/articles/"\
                      "?format=text%%2Fbibtex&id=%s" % from_pmid
-        bibtex_data = papis.downloaders.utils.get_downloader(
+        bibtex_data = papis.downloaders.get_downloader(
             hubmed_url,
             "get"
         ).get_document_data().decode("utf-8")
@@ -621,10 +667,12 @@ def cli(
             logger.error("PMID %s not found or invalid" % from_pmid)
 
     if from_doi:
-        logger.info("I'll try using doi %s" % from_doi)
-        data.update(papis.utils.doi_to_data(from_doi))
-        if len(files) == 0 and \
-                papis.config.get('doc-url-key-name') in data.keys():
+        logger.info("using doi {0}".format(from_doi))
+        doidata = papis.crossref.get_data(dois=[from_doi])
+        if doidata:
+            data.update(doidata[0])
+        if (len(files) == 0 and
+                papis.config.get('doc-url-key-name') in data.keys()):
 
             doc_url = data[papis.config.get('doc-url-key-name')]
             logger.info(
@@ -634,7 +682,7 @@ def cli(
             logger.info(
                 'I am trying to download the document from %s' % doc_url
             )
-            down = papis.downloaders.utils.get_downloader(doc_url, 'get')
+            down = papis.downloaders.get_downloader(doc_url, 'get')
             assert(down is not None)
             tmp_filepath = tempfile.mktemp()
             logger.debug("Saving in %s" % tmp_filepath)
@@ -649,7 +697,7 @@ def cli(
 
     if from_yaml:
         logger.info("Reading yaml input file = %s" % from_yaml)
-        data.update(papis.utils.yaml_to_data(from_yaml))
+        data.update(papis.yaml.yaml_to_data(from_yaml))
 
     if from_bibtex:
         logger.info("Reading bibtex input file = %s" % from_bibtex)
@@ -659,17 +707,17 @@ def cli(
                 'Your bibtex file contains more than one entry,'
                 ' I will be taking the first entry'
             )
-        data.update(bib_data[0])
+        if bib_data:
+            data.update(bib_data[0])
 
     assert(isinstance(data, dict))
 
     return run(
         list(files),
         data=data,
-        name=name,
+        folder_name=folder_name,
         file_name=file_name,
-        subfolder=directory,
-        interactive=interactive,
+        subfolder=subfolder,
         confirm=confirm,
         open_file=open_file,
         edit=edit,

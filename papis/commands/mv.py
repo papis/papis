@@ -7,27 +7,15 @@ Cli
 """
 import papis
 import os
-import re
 import papis.config
 import papis.utils
 import papis.database
 import subprocess
 import logging
 import papis.cli
-import papis.api
+import papis.pick
+import papis.strings
 import click
-
-
-def get_dirs(main):
-    directories = []
-    p = ""
-    for root, dirs, files in os.walk(main):
-        for di in dirs:
-            p = os.path.join(root, di, papis.utils.get_info_file_name())
-            if not os.path.exists(p) \
-               and not re.match(r".*[.]git.*", os.path.join(root, di)):
-                directories.append(di)
-    return directories
 
 
 def run(document, new_folder_path, git=False):
@@ -48,7 +36,7 @@ def run(document, new_folder_path, git=False):
     db.add(document)
 
 
-@click.command()
+@click.command("mv")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @papis.cli.git_option()
@@ -61,25 +49,32 @@ def cli(query, git):
     logger = logging.getLogger('cli:mv')
 
     documents = papis.database.get().query(query)
+    if not documents:
+        logger.warning(papis.strings.no_documents_retrieved_message)
+        return
 
-    document = papis.api.pick_doc(documents)
+    document = papis.pick.pick_doc(documents)
     if not document:
         return 0
 
-    lib_dir = os.path.expanduser(papis.config.get('dir'))
+    lib_dir = os.path.expanduser(papis.config.get_lib_dirs()[0])
 
-    directories = get_dirs(lib_dir)
-
-    completer = prompt_toolkit.completion.WordCompleter(
-        directories
+    completer = prompt_toolkit.completion.PathCompleter(
+        only_directories=True,
+        get_paths=lambda: [lib_dir]
     )
 
     try:
         new_folder = os.path.join(
             lib_dir,
             prompt_toolkit.prompt(
-                "Enter directory: (Tab completion enabled)\n"
-                ">  ",
+                message=(
+                    "Enter directory  : (Tab completion enabled)\n"
+                    "Current directory: ({dir})\n".format(
+                        dir=document.get_main_folder_name()
+                    ) +
+                    ">  "
+                ),
                 completer=completer,
                 complete_while_typing=True
             )

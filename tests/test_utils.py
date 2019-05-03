@@ -1,14 +1,37 @@
 import os
 import tempfile
-import papis.utils
 import papis.config
 import tests
+from unittest.mock import patch
 import papis.commands.add
 import papis.database
+import papis.document
 from papis.document import from_data
 from papis.utils import (
-    get_document_extension
+    get_cache_home, create_identifier, locate_document,
+    general_open, format_doc, input, clean_document_name,
+    confirm, get_document_extension,
 )
+
+def test_get_cache_home():
+    os.environ["XDG_CACHE_HOME"] = '~/.cache'
+    assert(
+        get_cache_home() == os.path.expanduser(
+            os.path.join(os.environ["XDG_CACHE_HOME"], 'papis')
+        )
+    )
+    os.environ["XDG_CACHE_HOME"] = '/tmp/.cache'
+    assert(get_cache_home() == '/tmp/.cache/papis')
+    assert(os.path.exists(get_cache_home()))
+    del os.environ["XDG_CACHE_HOME"]
+    assert(
+        get_cache_home() == os.path.expanduser(
+            os.path.join('~/.cache', 'papis')
+        )
+    )
+    tmp = os.path.join(tempfile.mkdtemp(), 'blah')
+    papis.config.set('cache-dir', tmp)
+    assert(get_cache_home() == tmp)
 
 
 def test_create_identifier():
@@ -16,7 +39,7 @@ def test_create_identifier():
     import string
     output = list(
         itertools.islice(
-            papis.utils.create_identifier(string.ascii_uppercase),
+            create_identifier(string.ascii_uppercase),
             30
         )
     )
@@ -37,7 +60,7 @@ def test_general_open_with_spaces():
 
     assert(os.path.exists(filename))
 
-    papis.utils.general_open(
+    general_open(
         filename,
         'nonexistentoption',
         default_opener="sed -i s/o/u/g",
@@ -63,26 +86,23 @@ def test_locate_document():
     ]
 
     doc = from_data(dict(doi='10.1021/CT5004252'))
-    found_doc = papis.utils.locate_document(doc, docs)
+    found_doc = locate_document(doc, docs)
     assert found_doc is not None
 
     doc = from_data(dict(doi='CT5004252'))
-    found_doc = papis.utils.locate_document(doc, docs)
+    found_doc = locate_document(doc, docs)
     assert found_doc is None
 
     doc = from_data(dict(author='noone really'))
-    found_doc = papis.utils.locate_document(doc, docs)
+    found_doc = locate_document(doc, docs)
     assert found_doc is None
 
     doc = from_data(dict(title='Hello world'))
-    found_doc = papis.utils.locate_document(doc, docs)
+    found_doc = locate_document(doc, docs)
     assert found_doc is None
 
 
 def test_format_doc():
-    import papis.document
-    from papis.utils import format_doc
-    import tests
     tests.setup_test_library()
     document = from_data(dict(author='Fulano', title='Something'))
 
@@ -111,3 +131,40 @@ def test_extension():
     ]
     for d in docs:
         assert(get_document_extension(d[0]) == d[1])
+
+
+def test_slugify():
+    assert(
+        clean_document_name('{{] __ }}albert )(*& $ß $+_ einstein (*]') ==
+        'albert-ss-einstein'
+    )
+    assert(
+        clean_document_name('/ashfd/df/  #$%@#$ }{_+"[ ]hello öworld--- .pdf')
+        ==
+        'hello-oworld-.pdf'
+    )
+    assert(clean_document_name('масса и енергиа.pdf') == 'massa-i-energia.pdf')
+    assert(clean_document_name('الامير الصغير.pdf') == 'lmyr-lsgyr.pdf')
+
+
+def test_confirm():
+    with patch('papis.utils.input', lambda prompt, **x: 'y'):
+        assert(confirm('This is true'))
+    with patch('papis.utils.input', lambda prompt, **x: 'Y'):
+        assert(confirm('This is true'))
+    with patch('papis.utils.input', lambda prompt, **x: 'n'):
+        assert(not confirm('This is false'))
+    with patch('papis.utils.input', lambda prompt, **x: 'N'):
+        assert(not confirm('This is false'))
+
+    with patch('papis.utils.input', lambda prompt, **x: '\n'):
+        assert(confirm('This is true'))
+    with patch('papis.utils.input', lambda prompt, **x: '\n'):
+        assert(not confirm('This is false', yes=False))
+
+
+def test_input():
+    with patch('prompt_toolkit.prompt', lambda p, **x: 'Hello World'):
+        assert(input('What: ') == 'Hello World')
+    with patch('prompt_toolkit.prompt', lambda p, **x: ''):
+        assert(input('What: ', default='Bye') == 'Bye')

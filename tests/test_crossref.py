@@ -1,6 +1,19 @@
+import os
+from unittest.mock import patch
+import json
 from papis.crossref import (
-    get_data, get_clean_doi, doi_to_data
+    get_data, doi_to_data
 )
+
+
+def _get_test_json(filename):
+    resources = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'resources', 'crossref'
+    )
+    filepath = os.path.join(resources, filename)
+    with open(filepath) as fd:
+        return json.load(fd)
 
 
 def test_get_data():
@@ -12,45 +25,23 @@ def test_get_data():
     assert(len(data) == 1)
 
 
+@patch(
+    'papis.crossref._get_crossref_works',
+    lambda **x: _get_test_json('test1.json')
+)
 def test_doi_to_data():
-    data = doi_to_data('http://dx.doi.org/10.1063%2F1.881498')
+    data = doi_to_data('10.1103/physrevb.89.140501')
     assert(isinstance(data, dict))
-    assert(data['doi'] == '10.1063/1.881498')
+    result = _get_test_json('test1_out.json')
+    assert(result == data)
 
 
-def test_get_clean_doi():
-    assert(
-        get_clean_doi('http://dx.doi.org/10.1063%2F1.881498') ==
-        '10.1063/1.881498'
-    )
-    assert(
-        get_clean_doi('http://dx.doi.org/10.1063/1.881498') ==
-        '10.1063/1.881498'
-    )
-    assert(get_clean_doi('10.1063%2F1.881498') == '10.1063/1.881498')
-    assert(get_clean_doi('10.1063/1.881498') == '10.1063/1.881498')
-    assert(
-        get_clean_doi(
-            'http://physicstoday.scitation.org/doi/10.1063/1.uniau12/abstract'
-        ) == '10.1063/1.uniau12'
-    )
-    assert(
-        get_clean_doi(
-            'http://scitation.org/doi/10.1063/1.uniau12/abstract?as=234'
-        ) == '10.1063/1.uniau12'
-    )
-    assert(
-        get_clean_doi(
-            'http://physicstoday.scitation.org/doi/10.1063/1.881498'
-        ) == '10.1063/1.881498'
-    )
-    assert(
-        get_clean_doi(
-            'https://doi.org/10.1093/analys/anw053' 
-        ) == '10.1093/analys/anw053'
-    )
-    assert(
-        get_clean_doi(
-            'http://physicstoday.scitation.org/doi/10.1063/1.881498?asdfwer' 
-        ) == '10.1063/1.881498'
-    )
+@patch(
+    'papis.crossref._get_crossref_works',
+    lambda **x: _get_test_json('test_conference.json')
+)
+def test_doi_to_data_conference():
+    data = doi_to_data('')
+    assert(isinstance(data, dict))
+    result = _get_test_json('test_conference_out.json')
+    assert(result == data)
