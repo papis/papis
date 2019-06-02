@@ -67,6 +67,10 @@ key_conversion = {
         {"key": "year", "action": lambda x: x.get("date-parts")[0][0]},
         {"key": "month", "action": lambda x: x.get("date-parts")[0][1]}
     ],
+    "published-online": [
+        {"key": "year", "action": lambda x: x.get("date-parts")[0][0]},
+        {"key": "month", "action": lambda x: x.get("date-parts")[0][1]}
+    ],
     "publisher": {},
     "reference": {
         "key": "citations",
