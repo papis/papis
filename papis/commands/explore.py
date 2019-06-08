@@ -25,11 +25,11 @@ will tell you which commands are available.
 Let us suppose that you want to look for some documents on crossref,
 say some papers of Schroedinger, and you want to store them into a bibtex
 file called ``lib.bib``, then you could concatenate the commands
-``crossref`` and ``export --bibtex`` as such
+``crossref`` and ``export --format bibtex`` as such
 
 ::
 
-    papis explore crossref -a 'Schrodinger' export --bibtex lib.bib
+    papis explore crossref -a 'Schrodinger' export --format bibtex lib.bib
 
 This will store everything that you got from crossref in the file ``lib.bib``
 and store in bibtex format. ``explore`` is much more flexible than that,
@@ -39,7 +39,7 @@ the ``pick`` command will take care of it
 
 ::
 
-    papis explore crossref -a 'Schrodinger' pick export --bibtex lib.bib
+    papis explore crossref -a 'Schrodinger' pick export --format bibtex lib.bib
 
 notice how the ``pick`` command is situated before the ``export``.
 More generally you could write something like
@@ -50,9 +50,9 @@ More generally you could write something like
         crossref -a Schroedinger \\
         crossref -a Einstein \\
         arxiv -a 'Felix Hummel' \\
-        export --yaml docs.yaml \\
+        export --format yaml docs.yaml \\
         pick  \\
-        export --bibtex specially-picked-document.bib
+        export --format bibtex specially-picked-document.bib
 
 The upper command will look in crossref for documents authored by Schrodinger,
 then also by Einstein, and will look on the arxiv for papers authored by Felix
@@ -216,7 +216,7 @@ def citations(ctx, query, doc_folder, max_citations, save, rmfile):
 
     Go through the citations of a paper and export it in a yaml file
 
-        papis explore citations 'einstein' export --yaml einstein.yaml
+        papis explore citations 'einstein' export --format yaml einstein.yaml
 
     """
     import tqdm
