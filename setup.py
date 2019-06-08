@@ -77,7 +77,6 @@ setup(
         "beautifulsoup4>=4.4.1",
         "colorama>=0.2",
         "bibtexparser>=0.6.2",
-        "pylibgen>=1.3.0",
         "click>=7.0.0",
         "python-slugify>=1.2.6",
         "habanero>=0.6.0",
@@ -197,7 +196,6 @@ setup(
             "thesesfr=papis.downloaders.thesesfr:Downloader",
             "worldscientific=papis.downloaders.worldscientific:Downloader",
             "fallback=papis.downloaders.fallback:Downloader",
-            "libgen=papis.libgen:Downloader",
             "arxiv=papis.arxiv:Downloader",
         ],
         'papis.explorer': [
@@ -206,7 +204,6 @@ setup(
             "cmd=papis.commands.explore:cmd",
             "pick=papis.commands.explore:pick",
             "arxiv=papis.arxiv:explorer",
-            "libgen=papis.libgen:explorer",
             "crossref=papis.crossref:explorer",
             "dissemin=papis.dissemin:explorer",
             "base=papis.base:explorer",
