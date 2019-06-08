@@ -107,8 +107,10 @@ setup(
             'pytest-cov==2.5.0',
         ]
     ),
-    description='Powerful and highly extensible command-line based document '
-                'and bibliography manager',
+    description=(
+        'Powerful and highly extensible command-line based document '
+        'and bibliography manager'
+    ),
     long_description=long_description,
     keywords=[
         'document', 'crossref', 'libgen', 'scihub', 'physics', 'mathematics',
@@ -138,7 +140,7 @@ setup(
             'doi=papis.crossref:Importer',
             'crossref=papis.crossref:FromCrossrefImporter',
             'pdf2doi=papis.crossref:DoiFromPdfImporter',
-            #'url=papis.downloaders:Importer',
+            # 'url=papis.downloaders:Importer',
             'arxiv=papis.arxiv:Importer',
             'pdf2arxivid=papis.arxiv:ArxividFromPdfImporter',
             'pmid=papis.pubmed:Importer',
