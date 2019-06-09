@@ -82,20 +82,20 @@ def diffshow(texta, textb, title='', namea='a', nameb='b', actions=[]):
 
     diffs = difflib.ndiff(
             str(texta).splitlines(keepends=True),
-            str(textb).splitlines(keepends=True),
-            )
+            str(textb).splitlines(keepends=True),)
 
-    raw_text = [
+    raw_text = list(diffs) + [
+        ("bg:ansiblack fg:ansipurple", "^^^^^^^^^\ndiff from\n"),
         "----- {namea}\n".format(namea=namea),
-        "+++++ {nameb}\n".format(nameb=nameb),] + list(diffs)
+        "+++++ {nameb}\n".format(nameb=nameb),]
 
     formatted_text = list(map(lambda line:
-        line.startswith('@') and ('fg:violet bg:black', line) or
-        # line.startswith('+++++') and ('fg:ansigreen bg:ansiyellow', line) or
-        # line.startswith('-----') and ('fg:ansired bg:ansiyellow', line) or
-        line.startswith('+') and ('fg:ansigreen bg:black', line) or
-        line.startswith('-') and ('fg:ansired bg:black', line) or
-        line.startswith('?') and ('fg:ansiyellow bg:black', line) or
+        # match line values
+        isinstance(line, tuple) and line or
+        line.startswith('@') and ('fg:violet bg:ansiblack', line) or
+        line.startswith('+') and ('fg:ansigreen bg:ansiblack', line) or
+        line.startswith('-') and ('fg:ansired bg:ansiblack', line) or
+        line.startswith('?') and ('fg:ansiyellow bg:ansiblack', line) or
         ('fg:ansiwhite', line), raw_text))
 
     prompt(
@@ -105,6 +105,21 @@ def diffshow(texta, textb, title='', namea='a', nameb='b', actions=[]):
 
 
 def diffdict(dicta, dictb, namea='a', nameb='b'):
+    """
+    Compute the difference of two dictionaries.
+
+    :param dicta: Base dictionary
+    :type  dicta: dict
+    :param dictb: Dictionary with the differences that the result might add
+    :type  dictb: dict
+    :param namea: Label to be shown for dictionary a
+    :type  namea: str
+    :param namea: Label to be shown for dictionary b
+    :type  namea: str
+    :returns: A dictionary containig the base data of dicta plus data
+        from dictb if this was chosen.
+    :rtype:  return_type
+    """
 
     rdict = dict()
 
@@ -165,8 +180,7 @@ def diffdict(dicta, dictb, namea='a', nameb='b'):
         reset()
 
     actions = [
-        Action(
-            name='Add', key='y', action=lambda e: oset(e, "add", True)),
+        Action(name='Add', key='y', action=lambda e: oset(e, "add", True)),
     ] + actions
 
     for key in keys:
