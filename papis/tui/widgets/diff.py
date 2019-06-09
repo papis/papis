@@ -52,7 +52,7 @@ def prompt(text, title='', actions=[], **kwargs):
         ([
             Window(
                 height=1, align=WindowAlign.LEFT,
-                always_hide_cursor=True, style='fg:ansiblack bg:ansiwhite',
+                always_hide_cursor=True, style='bold fg:ansipurple bg:ansiwhite',
                 content=FormattedTextControl(focusable=False, text=title))
         ] if title else [])
     )
