@@ -88,19 +88,13 @@ def filter_documents(documents, search=""):
             np
         )
     )
-    logger.debug("pool started")
-    begin_t = time.time()
-    result = pool.map(
-        papis.docmatcher.DocMatcher.return_if_match, documents
-    )
+    begin_t = 1000 * time.time()
+    result = pool.map(papis.docmatcher.DocMatcher.return_if_match, documents)
     pool.close()
     pool.join()
+    _delta = 1000 * time.time() - begin_t
     filtered_docs = [d for d in result if d is not None]
-    logger.debug(
-        "done ({} ms) ({} docs)".format(
-            1000*time.time()-1000*begin_t,
-            len(filtered_docs))
-    )
+    logger.debug("done ({} ms) ({} docs)".format( _delta, len(filtered_docs)))
     return filtered_docs
 
 

@@ -370,8 +370,9 @@ class Document(dict):
             folder,
             papis.config.get('info-name')
         )
+        # TODO: check if this makes sense at all
         self.subfolder = self.get_main_folder().replace(
-            os.environ["HOME"], ""
+            os.path.expanduser("~"), ""
         ).replace(
             "/", " "
         )

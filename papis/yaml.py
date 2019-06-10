@@ -18,7 +18,6 @@ def data_to_yaml(yaml_path, data):
     :param data: Data in a dictionary
     :type  data: dict
     """
-    global logger
     with open(yaml_path, 'w+') as fd:
         yaml.dump(
             data,
@@ -45,6 +44,7 @@ def yaml_to_data(yaml_path, raise_exception=False):
         except Exception as e:
             if raise_exception:
                 raise ValueError(e)
+            logger.error("Yaml syntax error: \n\n{0}".format(e))
             return dict()
         else:
             return data
@@ -66,7 +66,7 @@ def explorer(ctx, yamlfile):
     logger = logging.getLogger('explore:yaml')
     logger.info('reading in yaml file {}'.format(yamlfile))
     docs = [
-        papis.document.from_data(d) for d in yaml.load_all(open(yamlfile))
+        papis.document.from_data(d) for d in yaml.safe_load_all(open(yamlfile))
     ]
     ctx.obj['documents'] += docs
     logger.info('{} documents found'.format(len(docs)))
