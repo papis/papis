@@ -1,0 +1,1661 @@
+abbrev_journal_title: Mater. Trans.
+author: Iwata, Shohei and Ishii, Soh and Ohno, Kaoru
+author_list:
+- family: Iwata
+  given: Shohei
+- family: Ishii
+  given: Soh
+- family: Ohno
+  given: Kaoru
+citations: []
+doc_url: https://www.jstage.jst.go.jp/article/matertrans/46/6/46_6_1100/_pdf
+doi: 10.2320/matertrans.46.1100
+files:
+- i-calculation-of-lithium-chloride-crystal-iwata-shohei-and-ishii-soh-and-ohno-kaoru.pdf
+first_page: '1100'
+full_journal_title: MATERIALS TRANSACTIONS
+issue: '6'
+journal: MATERIALS TRANSACTIONS
+language: en
+last_page: '1102'
+pages: 1100--1102
+publisher: Japan Institute of Metals
+ref: 10.2320/matertrans.46.1100
+tags: licl fcenters
+title: Ab Initio All-Electron GW Calculation of Lithium Chloride Crystal
+type: article
+url: http://dx.doi.org/10.2320/matertrans.46.1100
+volume: '46'
+year: 2005
+---
+author: Seitz, Frederick
+author_list:
+- family: Seitz
+  given: Frederick
+citations:
+- author: R. W. Pohl
+  first-page: '36'
+  journal-title: Physik. Zeits.
+  volume: '39'
+  year: '1938'
+- author: N. F. Mott
+  volume-title: Modern Theory of Solids
+  year: '1940'
+- author: E. Goldstein
+  first-page: '211'
+  journal-title: Zeits. f. Instrumentkunde
+  volume: '16'
+  year: '1896'
+- author: E. Mollwo
+  first-page: '199'
+  journal-title: Göttinger Nachrichten
+  volume: '1'
+  year: '1935'
+- author: E. Mollwo
+  doi: 10.1002/andp.19374210504
+  first-page: '394'
+  journal-title: Ann. d. Physik
+  volume: '29'
+  year: '1937'
+- author: F. G. Kleinschrod
+  doi: 10.1002/andp.19364190202
+  first-page: '97'
+  journal-title: Ann. d. Physik
+  volume: '27'
+  year: '1936'
+- author: A. Smakula
+  doi: 10.1007/BF01344801
+  first-page: '603'
+  journal-title: Zeits. f. Physik
+  volume: '59'
+  year: '1930'
+- author: H. Rögener
+  doi: 10.1002/andp.19374210503
+  first-page: '386'
+  journal-title: Ann. d. Physik
+  volume: '29'
+  year: '1937'
+- author: H. Rögener
+  first-page: '219'
+  journal-title: Göttinger Nachrichten
+  volume: '3'
+  year: '1941'
+- author: H. Pick
+  doi: 10.1002/andp.19384230405
+  first-page: '365'
+  journal-title: Ann. d. Physik
+  volume: '31'
+  year: '1938'
+- author: G. Glaser
+  first-page: '31'
+  journal-title: Göttinger Nachrichten
+  volume: '3'
+  year: '1937'
+- author: F. Domanic
+  doi: 10.1002/andp.19434350304
+  first-page: '187'
+  journal-title: Ann. d. Physik
+  volume: '43'
+  year: '1943'
+- author: L. Landau
+  first-page: '664'
+  journal-title: Physik. Zeits. Sowjetunion
+  volume: '3'
+  year: '1933'
+- author: J. Frenkel
+  doi: 10.1007/BF01379812
+  first-page: '652'
+  journal-title: Zeits. f. Physik
+  volume: '35'
+  year: '1926'
+- author: W. Schottky
+  first-page: '335'
+  journal-title: Zeits. f. physik. Chemie
+  volume: B29
+  year: '1935'
+- author: C. Wagner
+  first-page: '163'
+  journal-title: Zeits. f. physik. Chemie
+  volume: B11
+  year: '1930'
+- author: W. Jost
+  doi: 10.1063/1.1749319
+  first-page: '466'
+  journal-title: J. Chem. Phys.
+  volume: '1'
+  year: '1933'
+- author: W. Jost
+  first-page: '129'
+  journal-title: Zeits. f. physik. Chemie
+  volume: A169
+  year: '1934'
+- author: W. Jost
+  first-page: '1'
+  journal-title: Zeits. f. physik. Chemie
+  volume: B32
+  year: '1936'
+- author: W. Jost
+  volume-title: Diffusion und Chemische Reaktion in festen Stoffen
+  year: '1937'
+- author: W. Lehfeldt
+  doi: 10.1007/BF01330319
+  first-page: '717'
+  journal-title: Zeits. f. Physik
+  volume: '85'
+  year: '1933'
+- author: N. F. Mott
+  doi: 10.1039/tf9383400485
+  first-page: '485'
+  journal-title: Trans. Faraday Soc.
+  volume: '34'
+  year: '1938'
+- author: C. Tubandt
+  volume-title: Handbuch der Experimental Physik
+- author: A. Einstein
+  doi: 10.1002/andp.19053220806
+  first-page: '549'
+  journal-title: Ann. d. Physik
+  volume: '17'
+  year: '1905'
+- author: E. Koch
+  first-page: '295'
+  journal-title: Zeits. f. physik. Chemie
+  volume: B38
+  year: '1937'
+- author: A. E. H. Love
+  volume-title: Elasticity
+  year: '1945'
+- author: R. T. Birge
+  volume-title: Reports on Progress in Physics
+  year: '1941'
+- author: R. T. Birge
+  doi: 10.1119/1.1990683
+  first-page: '63'
+  journal-title: Am. J. Phys.
+  volume: '13'
+  year: '1945'
+- author: D. A. Hutchison
+  doi: 10.1021/ja01868a075
+  first-page: '3165'
+  journal-title: J. Am. Chem. Soc.
+  volume: '62'
+  year: '1940'
+- author: D. A. Hutchison
+  doi: 10.1103/PhysRev.62.32
+  first-page: '32'
+  journal-title: Phys. Rev.
+  volume: '62'
+  year: '1942'
+- author: D. A. Hutchison
+  doi: 10.1103/PhysRev.66.144
+  first-page: '144'
+  journal-title: Phys. Rev.
+  volume: '66'
+  year: '1944'
+- author: D. A. Hutchison
+  doi: 10.1063/1.1723968
+  first-page: '383'
+  journal-title: J. Chem. Phys.
+  volume: '10'
+  year: '1945'
+- author: J. H. de Boer
+  doi: 10.1002/recl.19370560310
+  first-page: '301'
+  journal-title: Recueil des Trav. Chim. d. Pays-Bas
+  volume: '56'
+  year: '1937'
+- author: S. R. Tibbs
+  doi: 10.1039/tf9393501471
+  first-page: '1471'
+  journal-title: Trans. Faraday Soc.
+  volume: '35'
+  year: '1939'
+- author: G. Glaser
+  first-page: '91'
+  journal-title: Göttinger Nachrichten
+  volume: '2'
+  year: '1936'
+- author: G. Glaser
+  first-page: '31'
+  journal-title: Göttinger Nachrichten
+  volume: '3'
+  year: '1937'
+doc_url: http://harvest.aps.org/v2/journals/articles/10.1103/RevModPhys.18.384/fulltext
+doi: 10.1103/revmodphys.18.384
+files:
+- tmpszgptfg4.pdf
+issue: '3'
+journal: Reviews of Modern Physics
+language: en
+pages: 384--408
+publisher: American Physical Society (APS)
+ref: 10.1103/revmodphys.18.384
+tags: licl fcenters
+title: Color Centers in Alkali Halide Crystals
+type: article
+url: http://dx.doi.org/10.1103/revmodphys.18.384
+volume: '18'
+---
+abbrev_journal_title: Phys. Rev. B
+author: Rohlfing, Michael and Louie, Steven G.
+author_list:
+- family: Rohlfing
+  given: Michael
+- family: Louie
+  given: Steven G.
+citations:
+- author: L. Hedin
+  doi: 10.1103/PhysRev.139.A796
+  first-page: A796
+  journal-title: Phys. Rev.
+  volume: '139'
+  year: '1965'
+- author: L. Hedin
+  volume-title: Solid State Physics, Advances in Research and Application
+  year: '1969'
+- author: M.S. Hybertsen
+  doi: 10.1103/PhysRevLett.55.1418
+  first-page: '1418'
+  journal-title: Phys. Rev. Lett.
+  volume: '55'
+  year: '1985'
+- author: M.S. Hybertsen
+  doi: 10.1103/PhysRevB.34.5390
+  first-page: '5390'
+  journal-title: Phys. Rev. B
+  volume: '34'
+  year: '1986'
+- author: S.G. Louie
+  volume-title: Quantum Theory of Real Materials
+  year: '1996'
+- author: R.W. Godby
+  doi: 10.1103/PhysRevLett.56.2415
+  first-page: '2415'
+  journal-title: Phys. Rev. Lett.
+  volume: '56'
+  year: '1986'
+- author: R.W. Godby
+  doi: 10.1103/PhysRevB.37.10159
+  first-page: '10159'
+  journal-title: Phys. Rev. B
+  volume: '37'
+  year: '1988'
+- author: M. Rohlfing
+  doi: 10.1103/PhysRevLett.75.3489
+  first-page: '3489'
+  journal-title: Phys. Rev. Lett.
+  volume: '75'
+  year: '1995'
+- author: M. Rohlfing
+  doi: 10.1103/PhysRevB.52.1905
+  first-page: '1905'
+  journal-title: Phys. Rev. B
+  volume: '52'
+  year: '1995'
+- author: F. Aryasetiawan
+  doi: 10.1088/0034-4885/61/3/002
+  first-page: '237'
+  journal-title: Rep. Prog. Phys.
+  volume: '61'
+  year: '1998'
+- author: W.G. Aulbur
+  volume-title: Solid State Physics, Advances in Research and Application
+  year: '2000'
+- author: L.J. Sham
+  doi: 10.1103/PhysRev.144.708
+  first-page: '708'
+  journal-title: Phys. Rev.
+  volume: '144'
+  year: '1966'
+- author: G. Strinati
+  doi: 10.1103/PhysRevLett.49.1519
+  first-page: '1519'
+  journal-title: Phys. Rev. Lett.
+  volume: '49'
+  year: '1982'
+- author: G. Strinati
+  doi: 10.1103/PhysRevB.29.5718
+  first-page: '5718'
+  journal-title: Phys. Rev. B
+  volume: '29'
+  year: '1984'
+- author: G. Strinati
+  doi: 10.1007/BF02725962
+  first-page: '1'
+  journal-title: Riv. Nuovo Cimento
+  volume: '11'
+  year: '1988'
+- author: W. Hanke
+  doi: 10.1103/PhysRevLett.43.387
+  first-page: '387'
+  journal-title: Phys. Rev. Lett.
+  volume: '43'
+  year: '1979'
+- author: W. Hanke
+  doi: 10.1103/PhysRevB.21.4656
+  first-page: '4656'
+  journal-title: Phys. Rev. B
+  volume: '21'
+  year: '1980'
+- author: M. Rohlfing
+  doi: 10.1103/PhysRevLett.80.3320
+  first-page: '3320'
+  journal-title: Phys. Rev. Lett.
+  volume: '80'
+  year: '1998'
+- author: M. Rohlfing
+  doi: 10.1103/PhysRevLett.81.2312
+  first-page: '2312'
+  journal-title: Phys. Rev. Lett.
+  volume: '81'
+  year: '1998'
+- author: M. Rohlfing
+  doi: 10.1103/PhysRevLett.82.1959
+  first-page: '1959'
+  journal-title: Phys. Rev. Lett.
+  volume: '82'
+  year: '1999'
+- author: M. Rohlfing
+  doi: 10.1103/PhysRevLett.83.856
+  first-page: '856'
+  journal-title: Phys. Rev. Lett.
+  volume: '83'
+  year: '1999'
+- author: M. Rohlfing
+  doi: 10.1002/(SICI)1521-396X(199909)175:1<17::AID-PSSA17>3.0.CO;2-R
+  first-page: '17'
+  journal-title: Phys. Status Solidi A
+  volume: '175'
+  year: '1999'
+- author: G. Onida
+  doi: 10.1103/PhysRevLett.75.818
+  first-page: '818'
+  journal-title: Phys. Rev. Lett.
+  volume: '75'
+  year: '1995'
+- author: S. Albrecht
+  doi: 10.1103/PhysRevB.55.10278
+  first-page: '10'
+  journal-title: Phys. Rev. B
+  volume: '55'
+  year: '1997'
+- author: S. Albrecht
+  doi: 10.1103/PhysRevLett.80.4510
+  first-page: '4510'
+  journal-title: Phys. Rev. Lett.
+  volume: '80'
+  year: '1998'
+- author: S. Albrecht
+  doi: 10.1002/(SICI)1521-396X(199812)170:2<189::AID-PSSA189>3.0.CO;2-3
+  first-page: '189'
+  journal-title: Phys. Status Solidi A
+  volume: '170'
+  year: '1998'
+- author: L.X. Benedict
+  doi: 10.1103/PhysRevLett.80.4514
+  first-page: '4514'
+  journal-title: Phys. Rev. Lett.
+  volume: '80'
+  year: '1998'
+- author: L.X. Benedict
+  doi: 10.1103/PhysRevB.57.R9385
+  first-page: R9385
+  journal-title: Phys. Rev. B
+  volume: '57'
+  year: '1998'
+- author: L.X. Benedict
+  doi: 10.1103/PhysRevB.59.5441
+  first-page: '5441'
+  journal-title: Phys. Rev. B
+  year: '1999'
+- author: J.-W. van der Horst
+  doi: 10.1103/PhysRevLett.83.4413
+  first-page: '4413'
+  journal-title: Phys. Rev. Lett.
+  volume: '83'
+  year: '1999'
+- author: R. Del Sole
+  doi: 10.1103/PhysRevB.29.4631
+  first-page: '4631'
+  journal-title: Phys. Rev. B
+  volume: '29'
+  year: '1984'
+- author: G.B. Bachelet
+  doi: 10.1103/PhysRevB.26.4199
+  first-page: '4199'
+  journal-title: Phys. Rev. B
+  volume: '26'
+  year: '1982'
+- author: A. Fetter
+  doi: 10.1063/1.3071096
+  volume-title: Quantum Theory of Many Particle Systems
+  year: '1971'
+- author: B. Adolph
+  doi: 10.1103/PhysRevB.53.9797
+  first-page: '9797'
+  journal-title: Phys. Rev. B
+  volume: '53'
+  year: '1996'
+- author: Z.H. Levine
+  doi: 10.1103/PhysRevLett.63.1719
+  first-page: '1719'
+  journal-title: Phys. Rev. Lett.
+  volume: '63'
+  year: '1989'
+- author: Z.H. Levine
+  doi: 10.1103/PhysRevB.43.4187
+  first-page: '4187'
+  journal-title: Phys. Rev. B
+  volume: '43'
+  year: '1991'
+- author: H.N. Rojas
+  doi: 10.1103/PhysRevLett.74.1827
+  first-page: '1827'
+  journal-title: Phys. Rev. Lett.
+  volume: '74'
+  year: '1995'
+- author: M.M. Rieger
+  doi: 10.1016/S0010-4655(98)00174-X
+  first-page: '211'
+  journal-title: Comput. Phys. Commun.
+  volume: '117'
+  year: '1999'
+- author: E. Runge
+  doi: 10.1103/PhysRevLett.52.997
+  first-page: '997'
+  journal-title: Phys. Rev. Lett.
+  volume: '52'
+  year: '1984'
+- author: M. Petersilka
+  doi: 10.1103/PhysRevLett.76.1212
+  first-page: '1212'
+  journal-title: Phys. Rev. Lett.
+  volume: 76,
+  year: '1996'
+- author: R. Bauernschmitt
+  doi: 10.1016/0009-2614(96)00440-X
+  first-page: '454'
+  journal-title: Chem. Phys. Lett.
+  volume: '256'
+  year: '1996'
+- author: E.L. Shirley
+  first-page: '15'
+  journal-title: Phys. Rev. B
+  volume: '47'
+  year: '1993'
+- author: E.L. Shirley
+  first-page: '15'
+  journal-title: Phys. Rev. B
+  volume: '47'
+  year: '1993'
+- author: U. Itoh
+  doi: 10.1063/1.451721
+  first-page: '4867'
+  journal-title: J. Chem. Phys.
+  volume: '85'
+  year: '1986'
+- author: H. Takagi
+  doi: 10.1063/1.102921
+  first-page: '2379'
+  journal-title: Appl. Phys. Lett.
+  volume: '56'
+  year: '1990'
+- author: C. Delerue
+  doi: 10.1103/PhysRevB.48.11024
+  first-page: '11'
+  journal-title: Phys. Rev. B
+  volume: '48'
+  year: '1993'
+- author: A. Francheschetti
+  doi: 10.1103/PhysRevLett.78.915
+  first-page: '915'
+  journal-title: Phys. Rev. Lett.
+  volume: '78'
+  year: '1997'
+- author: S. Öğüt
+  doi: 10.1103/PhysRevLett.79.1770
+  first-page: '1770'
+  journal-title: Phys. Rev. Lett.
+  year: '1997'
+- author: D.E. Aspnes
+  doi: 10.1103/PhysRevB.27.985
+  first-page: '985'
+  journal-title: Phys. Rev. B
+  volume: '27'
+  year: '1983'
+- author: P. Lautenschlager
+  doi: 10.1103/PhysRevB.35.9174
+  first-page: '9174'
+  journal-title: Phys. Rev. B
+  volume: '35'
+  year: '1987'
+- author: H.R. Philipp
+  first-page: '2836'
+  journal-title: J. Appl. Phys.
+  volume: '43'
+  year: '1972'
+- author: D.E. Aspnes
+  doi: 10.1149/1.2129899
+  first-page: '1359'
+  journal-title: J. Electrochem. Soc.
+  volume: '127'
+  year: '1980'
+- author: P. Lautenschlager
+  doi: 10.1103/PhysRevB.36.4821
+  first-page: '4821'
+  journal-title: Phys. Rev. B
+  volume: '36'
+  year: '1987'
+- author: D.M. Roessler
+  doi: 10.1364/JOSA.57.000835
+  first-page: '835'
+  journal-title: J. Opt. Soc. Am.
+  volume: '57'
+  year: '1967'
+- author: G. Baldini
+  doi: 10.1002/pssb.19700380132
+  first-page: '325'
+  journal-title: Phys. Status Solidi
+  volume: '38'
+  year: '1970'
+doc_url: http://harvest.aps.org/v2/journals/articles/10.1103/PhysRevB.62.4927/fulltext
+doi: 10.1103/physrevb.62.4927
+files:
+- electron-hole-excitations-and-optical-spectra-from-first-principles-rohlfing-michael-and-louie-steven-g..pdf
+first_page: '4927'
+full_journal_title: Physical Review B
+issue: '8'
+journal: Physical Review B
+language: en
+last_page: '4944'
+pages: 4927--4944
+publisher: American Physical Society (APS)
+ref: 10.1103/PhysRevB.62.4927
+tags: licl fcenters
+title: Electron-hole excitations and optical spectra from first principles
+type: article
+url: http://dx.doi.org/10.1103/physrevb.62.4927
+volume: '62'
+year: '2000'
+---
+abbrev_journal_title: phys. stat. sol. (b)
+author: Dawson, R. K. and Pooley, D.
+author_list:
+- given_name: R. K.
+  surname: Dawson
+- given_name: D.
+  surname: Pooley
+citations:
+- doi: 10.1016/S0081-1947(08)60516-0
+- doi: 10.1103/PhysRev.133.A1717
+- doi: 10.1002/pssb.19660140115
+- doi: 10.1103/PhysRev.72.341
+- doi: 10.1016/S0081-1947(08)60702-X
+- doi: 10.1016/0022-3697(65)90137-X
+- doi: 10.1103/PhysRev.136.A451
+- doi: 10.1103/PhysRev.167.846
+- doi: 10.1103/RevModPhys.31.956
+- doi: 10.1016/0022-3697(65)90217-9
+- doi: 10.1103/PhysRev.95.837.2
+- doi: 10.1103/PhysRev.101.1473
+- doi: 10.1103/PhysRev.137.A1016
+- doi: 10.1103/PhysRev.139.A285
+- doi: 10.1088/0022-3719/1/3/305
+doi: 10.1002/pssb.19690350107
+files:
+- f-band-absorption-in-alkali-halides-as-a-function-of-temperature-dawson-r.-k.-and-pooley-d..pdf
+first_page: '95'
+full_journal_title: physica status solidi (b)
+issue: '1'
+journal: physica status solidi (b)
+last_page: '105'
+month: null
+pages: 95--105
+ref: 10.1002/pssb.19690350107
+tags: lif fcenter defects licl libr nacl
+title: F Band Absorption in Alkali Halides as a Function of Temperature
+type: article
+volume: '35'
+year: '1969'
+---
+abbrev_journal_title: Recl. Trav. Chim. Pays-Bas
+author: de Boer, J. H.
+author_list:
+- family: de Boer
+  given: J. H.
+citations:
+- author: Pohl
+  first-page: '257'
+  journal-title: Kolloid-Z.
+  volume: '71'
+  year: '1935'
+- author: Hilsch
+  doi: 10.1002/ange.19360490302
+  first-page: '69'
+  journal-title: Z. angew. Chem.
+  volume: '49'
+  year: '1936'
+- unstructured: J. H. de Boer Electron Emission and Adsorption Phenomena 1935
+- author: Smekal
+  first-page: '661'
+  journal-title: Z. Physik
+  volume: '101'
+  year: '1936'
+- article-title: Besprechung meines obenerwähnten Buches
+  author: Schottky
+  first-page: '659'
+  journal-title: Naturwissenschaften
+  volume: '23'
+  year: '1935'
+- author: Gudden
+  first-page: '323'
+  journal-title: Z. tech. Physik
+  volume: '16'
+  year: '1935'
+- author: Mollwo
+  doi: 10.1007/BF01330778
+  first-page: '56'
+  journal-title: Z. Physik
+  volume: '85'
+  year: '1935'
+- first-page: '79'
+  journal-title: Nachr. Ges. Wiss. Göttingen (N. F.)
+  volume: '1'
+  year: '1934'
+- unstructured: J. H. de Boer 248
+- author: Schottky
+  doi: 10.1007/BF01491416
+  first-page: '656'
+  journal-title: Naturwissenschaften
+  volume: '23'
+  year: '1935'
+- first-page: '335'
+  journal-title: Z. physik. Chem. (B)
+  volume: '29'
+  year: '1935'
+- unstructured: ''
+- author: Jost
+  first-page: '1'
+  journal-title: Z. physik. Chem. (B)
+  volume: '32'
+  year: '1936'
+- first-page: '348'
+  journal-title: Z. physik. Chem. (B)
+  volume: '34'
+  year: '1936'
+- author: Wagner
+  first-page: '113'
+  journal-title: Z. physik. Chem. (B)
+  volume: '32'
+  year: '1936'
+- author: Jost
+  first-page: '363'
+  journal-title: Z. tech. Physik.
+  volume: '16'
+  year: '1935'
+- author: Wagner
+  first-page: '163'
+  journal-title: Z. physik. Chem. (B)
+  volume: '11'
+  year: '1930'
+- unstructured: W. Jost 9
+- author: Lehfeldt
+  doi: 10.1007/BF01330319
+  first-page: '717'
+  journal-title: Z. Physik
+  volume: '85'
+  year: '1933'
+- author: Schockley
+  doi: 10.1103/PhysRev.50.754
+  first-page: '754'
+  journal-title: Phys. Rev.
+  volume: '50'
+  year: '1936'
+- author: Slater
+  doi: 10.1103/PhysRev.50.705
+  first-page: '705'
+  journal-title: Phys. Rev.
+  volume: '50'
+  year: '1936'
+- author: Schottky
+  first-page: '335'
+  journal-title: Z. physik. Chem. (B)
+  volume: '29'
+  year: '1935'
+- unstructured: ''
+- author: Hund
+  first-page: '331'
+  journal-title: Z. tech. Physik
+  volume: '16'
+  year: '1935'
+- author: Hilsch
+  doi: 10.1007/BF01391127
+  first-page: '721'
+  journal-title: Z. Physik
+  volume: '68'
+  year: '1931'
+- unstructured: ''
+- author: Pohl
+  doi: 10.1007/BF01423782
+  first-page: '256'
+  journal-title: Kolloid-Z.
+  volume: '71'
+  year: '1935'
+- author: Smakula
+  doi: 10.1007/BF01339274
+  first-page: '762'
+  journal-title: Z. Physik
+  volume: '63'
+  year: '1930'
+- unstructured: R. W. Pohl Kolloid-Z.
+- author: Rexer
+  first-page: '215'
+  journal-title: Physik. Z.
+  volume: '32'
+  year: '1931'
+- author: Smekal
+  doi: 10.1007/BF01342363
+  first-page: '661'
+  journal-title: Z. Physik
+  volume: '101'
+  year: '1936'
+- author: Flechsig
+  doi: 10.1007/BF01394306
+  first-page: '605'
+  journal-title: Z. Physik
+  volume: '36'
+  year: '1926'
+- author: Heibig
+  doi: 10.1007/BF01341397
+  first-page: '573'
+  journal-title: Z. Physik
+  volume: '91'
+  year: '1934'
+- author: Poser
+  doi: 10.1007/BF01341398
+  first-page: '593'
+  journal-title: Z. Physik
+  volume: '91'
+  year: '1934'
+doi: 10.1002/recl.19370560310
+files:
+- output.pdf
+first_page: '301'
+full_journal_title: Recueil des Travaux Chimiques des Pays-Bas
+issue: '3'
+journal: Recueil des Travaux Chimiques des Pays-Bas
+language: en
+last_page: '309'
+pages: 301--309
+publisher: Wiley
+ref: 10.1002/recl.19370560310
+tags: licl fcenters
+title: Ueber die Natur der Farbzentren in Alkalihalogenid-Kristallen
+type: article
+url: http://dx.doi.org/10.1002/recl.19370560310
+volume: '56'
+year: 1937
+---
+abbrev_journal_title: J. Phys. Soc. Jpn.
+author: Takiyama, Ken
+author_list:
+- family: Takiyama
+  given: Ken
+citations: []
+doc_url: http://journals.jps.jp/doi/pdf/10.1143/JPSJ.44.1627
+doi: 10.1143/jpsj.44.1627
+files:
+- the-f-center-emission-in-licl-takiyama-ken.pdf
+first_page: '1627'
+full_journal_title: Journal of the Physical Society of Japan
+issue: '5'
+journal: Journal of the Physical Society of Japan
+language: en
+last_page: '1631'
+month: 5
+pages: 1627--1631
+publisher: Physical Society of Japan
+ref: 10.1143/JPSJ.44.1627
+tags: licl fcenters
+title: The F-Center Emission in LiCl
+type: article
+url: http://dx.doi.org/10.1143/jpsj.44.1627
+volume: '44'
+year: 1978
+---
+author: Gourary, Barky S. and Adrian, Frank J.
+author_list:
+- family: Gourary
+  given: Barky S.
+- family: Adrian
+  given: Frank J.
+doi: 10.1016/s0081-1947(08)60702-x
+files:
+- output.pdf
+isbn:
+- '9780126077100'
+journal: Solid State Physics
+pages: 127--247
+publisher: Elsevier
+ref: 10.1016/s0081-1947(08)60702-x
+tags: licl fcenters review
+title: Wave Functions for Electron-Excess Color Centers in Alkali Halide Crystals
+type: inbook
+url: http://dx.doi.org/10.1016/s0081-1947(08)60702-x
+year: 1960
+---
+abbrev_journal_title: Phys. Rev. Lett.
+author: Tran, Fabien and Blaha, Peter
+author_list:
+- family: Tran
+  given: Fabien
+- family: Blaha
+  given: Peter
+citations:
+- doi: 10.1103/PhysRev.140.A1133
+- doi: 10.1103/PhysRevB.45.13244
+- doi: 10.1103/PhysRevLett.77.3865
+- doi: 10.1103/PhysRevLett.78.1396
+- doi: 10.1063/1.2085170
+- doi: 10.1103/PhysRevLett.49.1691
+- doi: 10.1103/PhysRevLett.51.1888
+- doi: 10.1103/PhysRevB.69.045111
+- doi: 10.1103/PhysRevLett.95.136402
+- doi: 10.1103/RevModPhys.80.3
+- doi: 10.1063/1.2187006
+- doi: 10.1063/1.2403866
+- doi: 10.1103/PhysRevB.44.943
+- doi: 10.1103/PhysRevLett.99.156404
+- doi: 10.1103/PhysRevB.62.7121
+- doi: 10.1103/PhysRevLett.93.126406
+- doi: 10.1103/PhysRevB.74.245125
+- doi: 10.1103/PhysRevB.76.165126
+- doi: 10.1103/PhysRevB.75.235102
+- doi: 10.1103/PhysRevLett.99.246403
+- doi: 10.1088/0953-8984/19/19/196208
+- doi: 10.1063/1.2213970
+- doi: 10.1103/PhysRevA.39.3761
+- doi: 10.1103/PhysRev.81.385
+- doi: 10.1103/PhysRevB.62.4927
+- doi: 10.1016/0038-1098(84)90007-3
+- doi: 10.1103/PhysRevLett.53.2339
+- doi: 10.1088/0953-8984/20/6/064201
+- doi: 10.1103/PhysRevB.77.245202
+- doi: 10.1103/PhysRevB.77.165106
+- doi: 10.1063/1.2920197
+- doi: 10.1063/1.2978377
+- doi: 10.1103/PhysRevB.64.195134
+- doi: 10.1103/PhysRevB.71.115113
+- doi: 10.1103/PhysRevB.74.155108
+doc_url: http://harvest.aps.org/v2/journals/articles/10.1103/PhysRevLett.102.226401/fulltext
+doi: 10.1103/physrevlett.102.226401
+files:
+- accurate-band-gaps-of-semiconductors-and-insulators-with-a-semilocal-exchange-correlation-potential-tran-fabien-and-blaha-peter.pdf
+full_journal_title: Physical Review Letters
+issue: '22'
+journal: Physical Review Letters
+language: en
+publisher: American Physical Society (APS)
+ref: 10.1103/PhysRevLett.102.226401
+tags: licl fcenters
+title: Accurate Band Gaps of Semiconductors and Insulators with a Semilocal Exchange-Correlation
+  Potential
+type: article
+url: http://dx.doi.org/10.1103/physrevlett.102.226401
+volume: '102'
+year: '2009'
+---
+abbrev_journal_title: Phys. Rev.
+author: R. F. Wood, J. Korringa
+author_list:
+- given_name: R. F.
+  surname: Wood
+- given_name: J.
+  surname: Korringa
+citations:
+- doi: 10.1002/recl.19370560310
+- doi: 10.1039/tf9393501471
+- doi: 10.1098/rspa.1949.0063
+- doi: 10.1103/PhysRev.89.1154.2
+- doi: 10.1143/JPSJ.3.254
+- doi: 10.1143/JPSJ.7.358
+- doi: 10.1088/0370-1298/64/7/306
+- doi: 10.1143/ptp/5.2.252
+- doi: 10.1103/PhysRev.105.1180
+- doi: 10.1103/PhysRev.110.647
+- doi: 10.1143/ptp/4.2.181
+- doi: 10.1103/PhysRev.48.948
+- doi: 10.1103/PhysRev.91.1066
+- doi: 10.1103/PhysRev.101.1473
+doc_url: http://harvest.aps.org/v2/journals/articles/10.1103/PhysRev.123.1138/fulltext
+doi: 10.1103/PhysRev.123.1138
+files:
+- output.pdf
+first_page: '1138'
+full_journal_title: Physical Review
+issue: '4'
+journal: Physical Review
+last_page: '1144'
+pages: 1138--1144
+ref: 10.1103/PhysRev.123.1138
+tags: licl fcenters
+title: Electronic Structure of the F Center in LiCl
+url: http://link.aps.org/article/10.1103/PhysRev.123.1138
+volume: '123'
+year: '1961'
+---
+abbrev_journal_title: Phys. Rev.
+author: Baldini, G. and Bosacchi, B.
+author_list:
+- given_name: G.
+  surname: Baldini
+- given_name: B.
+  surname: Bosacchi
+citations:
+- doi: 10.1103/PhysRev.116.1099
+- doi: 10.1103/PhysRev.155.896
+- doi: 10.1103/PhysRev.105.123
+- doi: 10.1103/PhysRev.131.2016
+- doi: 10.1007/BF01336981
+- doi: 10.1103/PhysRev.136.A1705
+- doi: 10.1103/PhysRev.124.652
+- doi: 10.1103/PhysRev.133.A1399
+- doi: 10.1103/PhysRev.136.A1714
+- doi: 10.1103/PhysRev.132.1591
+- doi: 10.1143/JPSJ.21.868
+- doi: 10.1103/PhysRev.153.931
+- doi: 10.1143/JPSJ.21.2229
+- doi: 10.1143/JPSJ.22.833
+- doi: 10.1103/PhysRevLett.17.19
+- doi: 10.1002/pssb.19660160113
+- doi: 10.1103/PhysRevLett.18.170
+- doi: 10.1007/BF01337474
+- doi: 10.1007/BF02710638
+- doi: 10.1103/PhysRev.109.1927
+- doi: 10.1103/PhysRev.142.462
+- doi: 10.1103/PhysRev.151.620
+- doi: 10.1143/JPSJ.21.409
+- doi: 10.1103/PhysRevLett.15.489
+- doi: 10.1016/0022-3697(66)90065-5
+- doi: 10.1016/0022-3697(61)90279-7
+- doi: 10.1103/PhysRev.141.797
+- doi: 10.1016/0022-3697(63)90102-1
+- doi: 10.1103/PhysRev.140.A2117
+- doi: 10.1103/PhysRev.121.1296
+- doi: 10.1103/PhysRev.138.A1247
+- doi: 10.1103/PhysRev.145.622
+- doi: 10.1103/PhysRev.136.A1721
+- doi: 10.1103/PhysRev.137.A1016
+- doi: 10.1103/PhysRev.128.1562
+- doi: 10.1103/PhysRev.137.A508
+- doi: 10.1103/PhysRev.136.A1714
+doc_url: http://harvest.aps.org/v2/journals/articles/10.1103/PhysRev.166.863/fulltext
+doi: 10.1103/PhysRev.166.863
+files:
+- optical-properties-of-alkali-halide-crystals-baldini-g.-and-bosacchi-b..pdf
+first_page: '863'
+full_journal_title: Physical Review
+issue: '3'
+journal: Physical Review
+last_page: '870'
+pages: 863--870
+ref: 10.1103/PhysRev.166.863
+tags: licl fcenters
+title: Optical Properties of Alkali-Halide Crystals
+url: http://link.aps.org/article/10.1103/PhysRev.166.863
+volume: '166'
+year: '1968'
+---
+abbrev_journal_title: Phys. Rev. B
+author: Hybertsen, Mark S. and Louie, Steven G.
+author_list:
+- given_name: Mark S.
+  surname: Hybertsen
+- given_name: Steven G.
+  surname: Louie
+citations:
+- doi: 10.1103/PhysRev.136.B864
+- doi: 10.1103/PhysRev.140.A1133
+- doi: 10.1016/0039-6028(85)90140-2
+- doi: 10.1103/PhysRevLett.55.1912
+- doi: 10.1103/PhysRevB.31.879
+- doi: 10.1016/0038-1098(84)91011-1
+- doi: 10.1103/PhysRevB.30.5777
+- doi: 10.1103/PhysRevB.15.5049
+- doi: 10.1103/PhysRevLett.51.1888
+- doi: 10.1103/PhysRevB.32.3883
+- doi: 10.1103/PhysRevLett.51.1884
+- doi: 10.1103/PhysRevB.32.3890
+- doi: 10.1103/PhysRev.139.A796
+- doi: 10.1103/PhysRevLett.43.1494
+- doi: 10.1103/PhysRevLett.55.1418
+- doi: 10.1103/PhysRevB.32.7005
+- doi: 10.1002/pssb.19700380132
+- doi: 10.1088/0022-3719/5/13/012
+- doi: 10.1103/PhysRev.123.420
+- doi: 10.1103/PhysRevB.27.5912
+- doi: 10.1103/PhysRevB.29.7045
+- doi: 10.1103/PhysRevB.31.5305
+- doi: 10.1103/PhysRev.126.413
+- doi: 10.1103/PhysRev.129.62
+- doi: 10.1088/0022-3719/13/9/004
+- doi: 10.1103/PhysRevB.23.5048
+- doi: 10.1103/PhysRevB.21.2630
+- doi: 10.1103/PhysRevB.25.2103
+- doi: 10.1103/PhysRevB.3.1888
+- doi: 10.1088/0022-3719/10/7/009
+- doi: 10.1088/0022-3719/11/10/012
+- doi: 10.1103/PhysRevB.9.4475
+- doi: 10.1088/0022-3719/18/13/014
+- doi: 10.1103/PhysRevB.5.3101
+- doi: 10.1103/PhysRevB.34.2920
+- doi: 10.1088/0305-4608/5/6/018
+- doi: 10.1088/0022-3719/12/21/009
+- doi: 10.1103/PhysRevB.8.5747
+- doi: 10.1103/PhysRev.128.2098
+- doi: 10.1103/PhysRevB.31.3231
+- doi: 10.1016/0038-1098(82)91257-1
+- doi: 10.1103/PhysRevB.28.5992
+- doi: 10.1103/PhysRevLett.33.582
+- doi: 10.1103/PhysRevB.12.4501
+- doi: 10.1103/PhysRevLett.43.387
+- doi: 10.1103/PhysRevB.21.4656
+- doi: 10.1103/PhysRevB.31.2092
+- doi: 10.1103/PhysRevB.9.5268
+- doi: 10.1103/PhysRevB.22.1967
+- doi: 10.1103/PhysRev.161.730
+- doi: 10.1103/PhysRevB.4.3610
+- doi: 10.1103/PhysRevB.32.2326
+- doi: 10.1103/PhysRevB.24.2003
+- doi: 10.1016/0038-1098(76)90973-X
+- doi: 10.1103/PhysRevLett.54.142
+- doi: 10.1103/PhysRevB.1.2668
+- doi: 10.1103/PhysRevB.33.2607
+- doi: 10.1016/0009-2614(73)80544-5
+- doi: 10.1016/0368-2048(77)87005-9
+- doi: 10.1088/0031-8949/14/1-2/011
+- doi: 10.1103/PhysRevB.26.2056
+- doi: 10.1103/PhysRev.149.597
+- doi: 10.1103/PhysRevB.5.1493
+- doi: 10.1103/PhysRevB.11.1600
+- doi: 10.1103/PhysRevB.11.929
+- doi: 10.1103/PhysRevB.2.3354
+- doi: 10.1103/PhysRevB.3.491
+- doi: 10.1143/PTP.12.421
+- doi: 10.1103/PhysRevB.10.2602
+- doi: 10.1103/PhysRevB.6.606
+- doi: 10.1103/PhysRevB.29.1870
+- doi: 10.1103/PhysRevLett.45.290
+- doi: 10.1103/PhysRevB.25.2867
+- doi: 10.1016/0038-1098(84)90763-4
+- doi: 10.1103/PhysRevLett.51.597
+- doi: 10.1103/PhysRevB.30.4719
+- doi: 10.1103/PhysRev.145.561
+- doi: 10.1103/PhysRevB.26.5668
+- doi: 10.1103/PhysRevB.1.910
+doc_url: http://harvest.aps.org/v2/journals/articles/10.1103/PhysRevB.34.5390/fulltext
+doi: 10.1103/PhysRevB.34.5390
+files:
+- electron-correlation-in-semiconductors-and-insulators-band-gaps-and-quasiparticle-energies-hybertsen-mark-s.-and-louie-steven-g.pdf
+first_page: '5390'
+full_journal_title: Physical Review B
+issue: '8'
+journal: Physical Review B
+last_page: '5413'
+pages: 5390--5413
+ref: 10.1103/PhysRevB.34.5390
+tags: licl fcenters
+title: 'Electron correlation in semiconductors and insulators: Band gaps and quasiparticle
+  energies'
+url: http://link.aps.org/article/10.1103/PhysRevB.34.5390
+volume: '34'
+year: '1986'
+---
+abbrev_journal_title: Journal of Applied Physics
+author: Gourary, Barry S. and Fein, Alvin E.
+author_list:
+- given_name: Barry S.
+  surname: Gourary
+- given_name: Alvin E.
+  surname: Fein
+citations:
+- doi: 10.1143/JPSJ.12.918
+- doi: 10.1103/PhysRev.123.1138
+- doi: 10.1103/PhysRev.105.1122
+- doi: 10.1016/0022-3697(60)90098-6
+- doi: 10.1103/PhysRev.122.1821
+- doi: 10.1103/PhysRev.118.644
+- doi: 10.1103/PhysRev.118.644
+- doi: 10.1063/1.1730905
+- doi: 10.1063/1.1730906
+- doi: 10.1098/rspa.1957.0138
+doc_url: http://aip.scitation.org/doi/pdf/10.1063/1.1777117
+doi: 10.1063/1.1777117
+files:
+- theory-of-localized-electronic-states-at-point-imperfections-gourary-barry-s.-and-fein-alvin-e..pdf
+first_page: '331'
+full_journal_title: Journal of Applied Physics
+issue: '1'
+journal: Journal of Applied Physics
+last_page: '339'
+pages: 331--339
+ref: 10.1063/1.1777117
+tags: fcenters defects theory licl
+title: Theory of Localized Electronic States at Point Imperfections
+volume: '33'
+year: '1962'
+---
+abbrev_journal_title: Phys. Scr.
+author: Johansson, L I and Hagström, S B M
+author_list:
+- given_name: L I
+  surname: Johansson
+- given_name: S B M
+  surname: Hagström
+citations: []
+doi: 10.1088/0031-8949/14/1-2/011
+files:
+- core-level-and-band-structure-energies-of-the-alkali-halides-lif-licl-and-libr-studied-by-esca-johansson-l-i-and-hagstrom-s-b-m.pdf
+first_page: '55'
+full_journal_title: Physica Scripta
+issue: 1-2
+journal: Physica Scripta
+last_page: '59'
+pages: 55--59
+ref: 10.1088/0031-8949/14/1-2/011
+tags: licl fcenters
+title: Core Level and Band Structure Energies of the Alkali Halides LiF, LiCl and
+  LiBr Studied by ESCA
+volume: '14'
+year: '1976'
+---
+abbrev_journal_title: Phys. Rev. B
+author: Surh, Michael P. and Chacham, Hélio and Louie, Steven G.
+author_list:
+- family: Surh
+  given: Michael P.
+- family: Chacham
+  given: Hélio
+- family: Louie
+  given: Steven G.
+citations:
+- author: K. Fukuda
+  doi: 10.1143/JPSJ.14.969
+  first-page: '969'
+  journal-title: J. Phys. Soc. Jpn.
+  volume: '14'
+  year: '1959'
+- author: C.J. Buchenauer
+  doi: 10.1103/PhysRev.167.846
+  first-page: '846'
+  journal-title: Phys. Rev.
+  volume: '167'
+  year: '1968'
+- author: R.K. Dawson
+  doi: 10.1002/pssb.19690350107
+  first-page: '95'
+  journal-title: Phys. Status Solidi
+  volume: '35'
+  year: '1969'
+- author: K. Takiyama
+  doi: 10.1002/pssb.2221150153
+  first-page: K59
+  journal-title: Phys. Status Solidi B
+  volume: '115'
+  year: '1983'
+- author: I. Schneider
+  doi: 10.1016/0038-1098(77)90619-6
+  first-page: '17'
+  journal-title: Solid State Commun.
+  volume: '23'
+  year: '1977'
+- author: G. Chiarotti
+  doi: 10.1007/BF02710289
+  first-page: '159'
+  journal-title: Nuovo Cimento B
+  volume: '64'
+  year: '1969'
+- author: U.M. Grassano
+  doi: 10.1103/PhysRevB.2.3319
+  first-page: '3319'
+  journal-title: Phys. Rev. B
+  volume: '2'
+  year: '1970'
+- author: L.D. Bogan
+  doi: 10.1103/PhysRevB.1.4122
+  first-page: '4122'
+  journal-title: Phys. Rev. B
+  volume: '1'
+  year: '1970'
+- author: L.F. Stiles
+  doi: 10.1103/PhysRevB.2.2077
+  first-page: '2077'
+  journal-title: Phys. Rev. B
+  volume: '2'
+  year: '1970'
+- author: H. Ohkura
+  doi: 10.1143/JPSJ.42.1942
+  first-page: '1942'
+  journal-title: J. Phys. Soc. Jpn.
+  volume: '42'
+  year: '1977'
+- author: R.T. Harley
+  doi: 10.1088/0022-3719/16/8/019
+  first-page: '1507'
+  journal-title: J. Phys. C
+  volume: '16'
+  year: '1983'
+- author: J.M. Worlock
+  doi: 10.1103/PhysRevLett.15.697
+  first-page: '697'
+  journal-title: Phys. Rev. Lett.
+  volume: '15'
+  year: '1965'
+- author: G. Benedek
+  doi: 10.1103/PhysRev.154.872
+  first-page: '872'
+  journal-title: Phys. Rev.
+  volume: '154'
+  year: '1967'
+- author: Y. Mori
+  doi: 10.1016/0022-3697(90)90143-4
+  first-page: '663'
+  journal-title: J. Phys. Chem. Solids
+  volume: '51'
+  year: '1990'
+- author: K. Takiyama
+  doi: 10.1143/JPSJ.44.1627
+  first-page: '1627'
+  journal-title: J. Phys. Soc. Jpn.
+  volume: '44'
+  year: '1978'
+- author: J. Franck
+  doi: 10.1039/tf9262100536
+  first-page: '536'
+  journal-title: Trans. Faraday Soc.
+  volume: '21'
+  year: '1925'
+- author: E.U. Condon
+  doi: 10.1103/PhysRev.28.1182
+  first-page: '1182'
+  journal-title: Phys. Rev.
+  volume: '28'
+  year: '1926'
+- author: E.U. Condon
+  doi: 10.1103/PhysRev.32.858
+  first-page: '858'
+  journal-title: Phys. Rev.
+  volume: '32'
+  year: '1928'
+- author: E. Mollwo
+  first-page: '97'
+  journal-title: Fachgruppe 2
+  volume: '236'
+  year: '1931'
+- author: H.F. Ivey
+  doi: 10.1103/PhysRev.72.341
+  first-page: '341'
+  journal-title: Phys. Rev.
+  volume: '72'
+  year: '1947'
+- author: C.K. Ong
+  doi: 10.1103/PhysRevB.15.3898
+  first-page: '3898'
+  journal-title: Phys. Rev. B
+  volume: '15'
+  year: '1977'
+- author: R.F. Wood
+  doi: 10.1103/PhysRev.123.1138
+  first-page: '1138'
+  journal-title: Phys. Rev.
+  volume: '123'
+  year: '1961'
+- author: B.S. Gourary
+  doi: 10.1016/S0081-1947(08)60702-X
+  first-page: '127'
+  journal-title: Solid State Phys.
+  volume: '10'
+  year: '1960'
+- author: R.F. Wood
+  doi: 10.1103/PhysRev.136.A451
+  first-page: A451
+  journal-title: Phys. Rev.
+  volume: '136'
+  year: '1964'
+- author: R.F. Wood
+  doi: 10.1103/PhysRev.179.783
+  first-page: '783'
+  journal-title: Phys. Rev.
+  volume: '179'
+  year: '1969'
+- author: A.M. Stoneham
+  doi: 10.1103/PhysRevB.2.3403
+  first-page: '3403'
+  journal-title: Phys. Rev. B
+  volume: '2'
+  year: '1970'
+- author: A.Y.S. Kung
+  doi: 10.1103/PhysRevB.26.3352
+  first-page: '3352'
+  journal-title: Phys. Rev. B
+  volume: '26'
+  year: '1982'
+- author: J. i. Adachi
+  doi: 10.1246/bcsj.66.3314
+  first-page: '3314'
+  journal-title: Bull. Chem. Soc. Jpn.
+  volume: '66'
+  year: '1993'
+- author: G. Baldini
+  doi: 10.1002/pssb.19700380132
+  first-page: '325'
+  journal-title: Phys. Status Solidi
+  volume: '38'
+  year: '1970'
+- author: F.C. Brown
+  doi: 10.1103/PhysRevB.2.2126
+  first-page: '2126'
+  journal-title: Phys. Rev. B
+  volume: '2'
+  year: '1970'
+- author: M.S. Hybertsen
+  doi: 10.1103/PhysRevLett.55.1418
+  first-page: '1418'
+  journal-title: Phys. Rev. Lett.
+  volume: '55'
+  year: '1985'
+- author: M.S. Hybertsen
+  doi: 10.1103/PhysRevB.34.5390
+  first-page: '5390'
+  journal-title: Phys. Rev. B
+  volume: '34'
+  year: '1986'
+- author: A.B. Kunz
+  doi: 10.1103/PhysRevB.26.2056
+  first-page: '2056'
+  journal-title: Phys. Rev. B
+  volume: '26'
+  year: '1982'
+- author: A. Zunger
+  doi: 10.1016/0038-1098(80)91101-1
+  first-page: '933'
+  journal-title: Solid State Commun.
+  volume: '34'
+  year: '1980'
+- author: J.P. Perdew
+  doi: 10.1103/PhysRevB.23.5048
+  first-page: '5048'
+  journal-title: Phys. Rev. B
+  volume: '23'
+  year: '1981'
+- author: R.A. Heaton
+  doi: 10.1088/0022-3719/17/11/007
+  first-page: '1853'
+  journal-title: J. Phys. C
+  volume: '17'
+  year: '1984'
+- author: X. Zhu
+  doi: 10.1103/PhysRevB.43.14142
+  first-page: '14142'
+  journal-title: Phys. Rev. B
+  volume: '43'
+  year: '1991'
+- author: G. Baldini
+  doi: 10.1103/PhysRev.166.863
+  first-page: '863'
+  journal-title: Phys. Rev.
+  volume: '166'
+  year: '1968'
+- author: C.C. Klick
+  doi: 10.1103/PhysRev.137.A1814
+  first-page: A1814
+  journal-title: Phys. Rev.
+  volume: '137'
+  year: '1965'
+- author: S.G. Louie
+  doi: 10.1103/PhysRevB.19.1774
+  first-page: '1774'
+  journal-title: Phys. Rev. B
+  volume: '18'
+  year: '1979'
+- author: N. Troullier
+  doi: 10.1016/0038-1098(90)90686-6
+  first-page: '613'
+  journal-title: Solid State Commun.
+  volume: '74'
+  year: '1990'
+- author: N. Troullier
+  doi: 10.1103/PhysRevB.43.1993
+  first-page: '1993'
+  journal-title: Phys. Rev. B
+  volume: '43'
+  year: '1991'
+- author: W. Hanke
+  doi: 10.1103/PhysRevB.12.4501
+  first-page: '4501'
+  journal-title: Phys. Rev. B
+  volume: '12'
+  year: '1975'
+- author: M.S. Hybertsen
+  doi: 10.1103/PhysRevB.37.2733
+  first-page: '2733'
+  journal-title: Phys. Rev. B
+  volume: '37'
+  year: '1988'
+- author: J.M. Vail
+  doi: 10.1016/0022-3697(90)90139-7
+  first-page: '589'
+  journal-title: J. Phys. Chem. Solids
+  volume: '51'
+  year: '1990'
+- author: B.M. Klein
+  doi: 10.1103/PhysRevB.35.5802
+  first-page: '5802'
+  journal-title: Phys. Rev. B
+  volume: '35'
+  year: '1987'
+- author: J. Callaway
+  first-page: '171'
+  journal-title: Solid State Phys.
+  volume: '38'
+  year: '1984'
+- author: G.D. Mahan
+  doi: 10.1016/S0081-1947(08)60424-5
+  first-page: '75'
+  journal-title: Solid State Physics
+  volume: '29'
+  year: '1974'
+- author: T. Uenoyama
+  doi: 10.1103/PhysRevLett.65.1048
+  first-page: '1048'
+  journal-title: Phys. Rev. Lett.
+  volume: '65'
+  year: '1990'
+- author: O. Gunnarsson
+  doi: 10.1103/PhysRevB.13.4274
+  first-page: '4272'
+  journal-title: Phys. Rev. B
+  volume: '13'
+  year: '1976'
+- author: M. Ya Amus'ya
+  first-page: '90'
+  journal-title: Sov. Phys. JETP
+  volume: '33'
+  year: '1971'
+- author: U. Condon
+  first-page: '151'
+  journal-title: Trans. Roy. Soc.
+  volume: A228
+  year: '1929'
+- author: O. Gunnarsson
+  doi: 10.1103/PhysRevB.40.12140
+  first-page: '12140'
+  journal-title: Phys. Rev. B
+  volume: '40'
+  year: '1989'
+- author: D. Vanderbilt
+  doi: 10.1103/PhysRevB.26.3203
+  first-page: '3203'
+  journal-title: Phys. Rev. B
+  volume: '26'
+  year: '1982'
+- author: A.B. Kunz
+  doi: 10.1103/PhysRevB.26.2056
+  first-page: '2056'
+  journal-title: Phys. Rev. B
+  volume: '26'
+  year: '1982'
+- author: A.B. Kunz
+  doi: 10.1103/PhysRevB.38.1058
+  first-page: '1058'
+  journal-title: Phys. Rev. B
+  volume: '38'
+  year: '1988'
+doc_url: http://harvest.aps.org/v2/journals/articles/10.1103/PhysRevB.51.7464/fulltext
+doi: 10.1103/physrevb.51.7464
+files:
+- output.pdf
+first_page: '7464'
+full_journal_title: Physical Review B
+issue: '12'
+journal: Physical Review B
+language: en
+last_page: '7470'
+pages: 7464--7470
+publisher: American Physical Society (APS)
+ref: 10.1103/PhysRevB.51.7464
+tags: licl fcenters
+title: Quasiparticle excitation energies for the [ital F]-center defect in LiCl
+type: article
+url: http://dx.doi.org/10.1103/physrevb.51.7464
+volume: '51'
+year: '1995'
+---
+abbrev_journal_title: Phys. Rev.
+author: Klick, Clifford C.
+author_list:
+- family: Klick
+  given: Clifford C.
+citations:
+- author: J. H. Schulman
+  volume-title: Color Centers in Solids
+  year: '1962'
+- author: F. Lüty
+  doi: 10.1007/BF01337474
+  first-page: '1'
+  journal-title: Z. Physik
+  volume: '160'
+  year: '1960'
+- author: M. Hirai
+  doi: 10.1143/JPSJ.17.566
+  first-page: '566'
+  journal-title: J. Phys. Soc. Japan
+  volume: '17'
+  year: '1962'
+- author: C. C. Klick
+  doi: 10.1103/PhysRev.131.1075
+  first-page: '1075'
+  journal-title: Phys. Rev.
+  volume: '131'
+  year: '1963'
+- author: R. F. Wood
+  doi: 10.1103/PhysRevLett.11.202
+  first-page: '202'
+  journal-title: Phys. Rev. Letters
+  volume: '11'
+  year: '1963'
+- author: H. Rabin
+  doi: 10.1103/PhysRev.117.1005
+  first-page: '1005'
+  journal-title: Phys. Rev.
+  volume: '117'
+  year: '1960'
+- author: R. F. Wood
+  first-page: '240'
+  journal-title: Bull. Am. Phys. Soc.
+  volume: '9'
+  year: '1964'
+doc_url: http://harvest.aps.org/v2/journals/articles/10.1103/PhysRev.137.A1814/fulltext
+doi: 10.1103/physrev.137.a1814
+files:
+- excited-states-of-the-klick-clifford-c..pdf
+first_page: A1814
+full_journal_title: Physical Review
+issue: 6A
+journal: Physical Review
+language: en
+last_page: A1816
+pages: A1814--A1816
+publisher: American Physical Society (APS)
+ref: 10.1103/PhysRev.137.A1814
+tags: licl fcenters exp
+title: Excited States of the F Center in LiCl
+type: article
+url: http://dx.doi.org/10.1103/physrev.137.a1814
+volume: '137'
+year: '1965'
+---
+abbrev_journal_title: Phys. Rev.
+author: Ivey, Henry F.
+author_list:
+- family: Ivey
+  given: Henry F.
+citations:
+- author: F. Seitz
+  doi: 10.1103/RevModPhys.18.384
+  first-page: '384'
+  journal-title: Rev. Mod. Phys.
+  volume: '18'
+  year: '1946'
+- author: N. Kalabuchov
+  first-page: '41'
+  journal-title: J. Phys. U.S.S.R.
+  volume: '9'
+  year: '1945'
+- author: E. G. Schneider
+  doi: 10.1364/JOSA.27.000072
+  first-page: '72'
+  journal-title: J. Opt. Soc. Am.
+  volume: '27'
+  year: '1937'
+- author: H. Fröhlich
+  doi: 10.1007/BF01342595
+  first-page: '819'
+  journal-title: Zeits. f. Physik
+  volume: '80'
+  year: '1933'
+- author: A. L. Hughes
+  doi: 10.1103/RevModPhys.8.294
+  first-page: '294'
+  journal-title: Rev. Mod. Phys.
+  volume: '8'
+  year: '1936'
+- author: A. H. Rosenthal
+  first-page: '203'
+  journal-title: Proc. Inst. Rad. Eng.
+  volume: '28'
+  year: '1940'
+- author: H. W. Leverenz
+  first-page: '199'
+  journal-title: R.C.A. Review
+  volume: '7'
+  year: '1946'
+doc_url: http://harvest.aps.org/v2/journals/articles/10.1103/PhysRev.72.341/fulltext
+doi: 10.1103/physrev.72.341
+files:
+- spectral-location-of-the-absorption-due-to-color-centers-in-alkali-halide-crystals-ivey-henry-f..pdf
+first_page: '341'
+full_journal_title: Physical Review
+issue: '4'
+journal: Physical Review
+language: en
+last_page: '343'
+pages: 341--343
+publisher: American Physical Society (APS)
+ref: 10.1103/PhysRev.72.341
+tags: fcenters licl
+title: Spectral Location of the Absorption Due to Color Centers in Alkali Halide Crystals
+type: article
+url: http://dx.doi.org/10.1103/physrev.72.341
+volume: '72'
+year: '1947'
