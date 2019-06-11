@@ -8,10 +8,10 @@ logging.basicConfig(level=logging.DEBUG)
 
 def test_match():
     assert(Downloader.match(
-        'https://www.tandfonline.com/science/article/pii/S0009261497040141'
+        'https://www.tandfonline.com/doi/full/10.1080/00268976.2013.788745'
     ).name == 'tandfonline')
     assert(Downloader.match(
-        'https://www.tandfonline.com/science/article/pii/S2210271X18305656'
+        'https://www.tandfonline.com/doi/full/10.1080/23311932.2015.1117749'
     ).name == 'tandfonline')
 
 
