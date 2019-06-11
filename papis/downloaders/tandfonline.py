@@ -48,7 +48,7 @@ class Downloader(papis.downloaders.base.Downloader):
             fullname = author.find_all('a', attrs={'class': 'entryAuthor'})
             fullname = fullname[0].get('href').split('/')[-1]
 
-            fullname = urllib.parse.unquote(re.sub(r'\+', ' ', fullname))
+            fullname = urllib.parse.unquote_plus(fullname)
             family, given = re.split(r',\s+', fullname)
             given = self.re_add_dot.sub(r'\1.', given)
 
