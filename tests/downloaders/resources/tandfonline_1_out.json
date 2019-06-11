@@ -1,17 +1,6 @@
 {
-  "journal": "Molecular Physics",
-  "ref": "doi:10.1080/00268976.2013.788745",
-  "volume": "111",
-  "subject": "Møller–Plesset perturbation theory; Epstein–Nesbet perturbation theory; divergences in perturbation theory; linked cluster theorem; coupled cluster",
-  "title": "The Møller–Plesset perturbation revisited: origin of high-order divergences",
-  "number": "9-11",
-  "publisher": "Taylor & Francis",
-  "pages": "1092-1099",
+  "abstract": "Contrarily to what happens with the Epstein–Nesbet (EN) zeroth-order Hamiltonian, the Møller–Plesset (MP) perturbation operator has diagonal matrix elements, the expression of which is recalled. It is a balance between hole–hole and particle–particle repulsions on one hand and of hole–particle attractions on the other hand. For the double excitations, which dominate the correlation effects, the attractive terms prevail and the second-order MP energy is underestimated, at least for atoms of the first rows of the periodic table. It will be shown that when the perturbation expansion reaches multiple excitations, the diagonal terms of the MP perturbation operator may become larger than the zeroth-order MP excitation energy and creates an oscillating divergence of the series. Several situations of this type will be presented. This divergence is linked to the non-additivity of excitation energies, while this additivity is an underlying assumption for the linked cluster theorem and the coupled cluster method. Th...",
   "author": " Jean-Paul   Malrieu  and  Celestino   Angeli ",
-  "type": "article",
-  "eprint": " \nhttps://doi.org/10.1080/00268976.2013.788745\n",
-  "url": " \nhttps://doi.org/10.1080/00268976.2013.788745\n",
-  "doi": "10.1080/00268976.2013.788745",
   "author_list": [
     {
       "affiliation": [
@@ -19,7 +8,7 @@
           "name": "Laboratoire de Chimie et Physique Quantiques, Université Paul Sabatier, Toulouse Cedex, 118 route de Narbonne, F-31062, France"
         }
       ],
-      "family": "Malrieu ",
+      "family": "Malrieu",
       "given": "Jean-Paul"
     },
     {
@@ -32,9 +21,19 @@
       "given": "Celestino"
     }
   ],
-  "description": "(2013). The Møller–Plesset perturbation revisited: origin of high-order divergences. Molecular Physics: Vol. 111, Special Issue: In Honour of Trygve Helgaker, pp. 1092-1099.",
-  "year": "2013",
-  "keywords": "Møller–Plesset perturbation theory, Epstein–Nesbet perturbation theory, divergences in perturbation theory, linked cluster theorem, coupled cluster",
   "date": "24 Apr 2013",
-  "language": "en"
+  "doi": "10.1080/00268976.2013.788745",
+  "eprint": " \nhttps://doi.org/10.1080/00268976.2013.788745\n",
+  "journal": "Molecular Physics",
+  "keywords": "Møller–Plesset perturbation theory; Epstein–Nesbet perturbation theory; divergences in perturbation theory; linked cluster theorem; coupled cluster",
+  "language": "en",
+  "number": "9-11",
+  "pages": "1092-1099",
+  "publisher": "Taylor & Francis",
+  "ref": "doi:10.1080/00268976.2013.788745",
+  "title": "The Møller–Plesset perturbation revisited: origin of high-order divergences",
+  "type": "article",
+  "url": " \nhttps://doi.org/10.1080/00268976.2013.788745\n",
+  "volume": "111",
+  "year": "2013"
 }

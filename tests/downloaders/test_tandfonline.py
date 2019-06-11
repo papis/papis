@@ -24,8 +24,11 @@ def test_1():
         with patch.object(down, 'download_document', lambda: None):
             down.fetch()
             # with open('tandfonline_1_out.json', 'w+') as f:
-                # import json
-                # json.dump(down.ctx.data, f)
+            #     import json
+            #     json.dump(down.ctx.data, f,
+            #             indent=2,
+            #             sort_keys=True,
+            #             ensure_ascii=False)
             correct_data = get_json_resource('tandfonline_1_out.json')
             assert(down.ctx.data == correct_data)
 
@@ -39,7 +42,10 @@ def test_2():
         down.fetch()
         with patch.object(down, 'download_document', lambda: None):
             # with open('tandfonline_2_out.json', 'w+') as f:
-                # import json
-                # json.dump(down.ctx.data, f)
+            #     import json
+            #     json.dump(down.ctx.data, f,
+            #             indent=2,
+            #             sort_keys=True,
+            #             ensure_ascii=False)
             correct_data = get_json_resource('tandfonline_2_out.json')
             assert(down.ctx.data == correct_data)
