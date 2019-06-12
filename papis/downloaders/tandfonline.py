@@ -27,10 +27,8 @@ class Downloader(papis.downloaders.base.Downloader):
         soup = self._get_soup()
         data.update(papis.downloaders.base.parse_meta_headers(soup))
 
-        if 'author_list' in data:
-            return data
-
-        # Read brute force the authors from the source
+        # `author` and `author_list` are already in meta_headers, but we
+        # brute-force them here again to get exact affiliation information
         author_list = []
         authors = soup.find_all(name='span', attrs={'class': 'contribDegrees'})
         for author in authors:
