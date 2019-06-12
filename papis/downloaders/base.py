@@ -25,6 +25,7 @@ meta_equivalences = [
 {"tag": "meta", "key": "title", "attrs": {"property": "og:title"}},
 {"tag": "meta", "key": "url", "attrs": {"property": "og:url"}},
 # citation style
+# https://scholar.google.com/intl/en/scholar/inclusion.html#indexing
 {"tag": "meta", "key": "doi", "attrs": {"name": "citation_doi"}},
 {"tag": "meta", "key": "firstpage", "attrs": {"name": "citation_firstpage"}},
 {"tag": "meta", "key": "lastpage", "attrs": {"name": "citation_lastpage"}},
@@ -71,7 +72,10 @@ def parse_meta_headers(soup, extra_equivalences=[]):
                 value = equiv["action"](elements[0])
             else:
                 value = elements[0].attrs.get("content")
-            data[equiv["key"]] = value
+            if isinstance(value, str):
+                data[equiv["key"]] = value.replace('\r', '')
+            else:
+                data[equiv["key"]] = value
 
     author_list = parse_meta_authors(soup)
     if author_list:
@@ -84,6 +88,9 @@ def parse_meta_headers(soup, extra_equivalences=[]):
 def parse_meta_authors(soup):
     author_list = []
     authors = soup.find_all(name='meta', attrs={'name': 'citation_author'})
+    if not authors:
+        authors = soup.find_all(
+            name='meta', attrs={'name': re.compile('dc.creator', re.I)})
     affs = soup.find_all(name='meta',
             attrs={'name': 'citation_author_institution'})
     if affs and authors:
