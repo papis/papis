@@ -36,7 +36,6 @@ def get_affiliations(soup):
 
 def get_author_list(soup):
     affiliations = get_affiliations(soup)
-    print(affiliations)
 
     author_list = []
     authors = soup.find_all(name='span',
@@ -54,7 +53,8 @@ def get_author_list(soup):
                 symbol = a.text.strip()
                 if symbol in affiliations:
                     author_affs.append(dict(name=affiliations[symbol]))
-        elif 'default' in affiliations:
+
+        if not author_affs and 'default' in affiliations:
             author_affs.append(dict(name=affiliations["default"]))
 
         # author name is in the <a> tag
