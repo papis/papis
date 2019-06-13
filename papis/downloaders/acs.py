@@ -4,6 +4,7 @@ import bs4
 import papis.document
 import papis.downloaders.base
 
+
 def get_affiliations(soup):
     affiliations = {}
 
@@ -86,7 +87,6 @@ class Downloader(papis.downloaders.base.Downloader):
         soup = self._get_soup()
         data.update(papis.downloaders.base.parse_meta_headers(soup))
 
-        # find authors
         author_list = get_author_list(soup)
         if author_list:
             data['author_list'] = author_list
