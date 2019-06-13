@@ -16,7 +16,7 @@ def test_match():
 
 
 def test_acs_1():
-    url = 'https://pubs.acs.org/pdf/10.1021/acscombsci.5b00087'
+    url = 'https://pubs.acs.org/doi/10.1021/acscombsci.5b00087'
     down = papis.downloaders.get_downloader(url)
     assert(not down.ctx)
     with patch.object(down, '_get_body', lambda: get_resource('acs_1.html')):
@@ -30,7 +30,7 @@ def test_acs_1():
 
 
 def test_acs_2():
-    url = 'https://pubs.acs.org/pdf/10.1021/acscombsci.5b00087'
+    url = 'https://pubs.acs.org/doi/10.1021/jp003647e'
     down = papis.downloaders.get_downloader(url)
     assert(not down.ctx)
     with patch.object(down, '_get_body', lambda: get_resource('acs_2.html')):

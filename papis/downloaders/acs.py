@@ -1,7 +1,8 @@
 import re
-import papis.downloaders.base
 import bs4
+
 import papis.document
+import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.base.Downloader):
@@ -20,28 +21,13 @@ class Downloader(papis.downloaders.base.Downloader):
     def get_data(self):
         data = dict()
         soup = self._get_soup()
-        metas = soup.find_all(name="meta")
-        data.setdefault('abstract', '')
-        for meta in metas:
-            if meta.attrs.get('name') == 'dc.Title':
-                data['title'] = meta.attrs.get('content')
-            elif meta.attrs.get('name') == 'keywords':
-                data['keywords'] = meta.attrs.get('content')
-            elif meta.attrs.get('name') == 'dc.Type':
-                data['type'] = meta.attrs.get('content')
-            elif meta.attrs.get('name') == 'dc.Subject':
-                data['note'] = meta.attrs.get('content')
-            elif (meta.attrs.get('name') == 'dc.Identifier' and
-                    meta.attrs.get('scheme') == 'doi'):
-                data['doi'] = meta.attrs.get('content')
-            elif meta.attrs.get('name') == 'dc.Publisher':
-                data['publisher'] = meta.attrs.get('content')
-            elif meta.attrs.get('name') == 'dc.Description':
-                data['abstract'] += meta.attrs.get('content')
+        data.update(papis.downloaders.base.parse_meta_headers(soup))
 
         articles = soup.find_all(name='article', attrs={'class': 'article'})
+        if not articles:
+            return data
+
         author_list = []
-        if articles:
             article = articles[0]
             for author in article.find_all(name='a', attrs={'id': 'authors'}):
                 author_list.append(
