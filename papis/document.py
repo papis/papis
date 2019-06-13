@@ -1,38 +1,43 @@
 import os
+import re
+import shutil
+import logging
+import collections
+
 import papis.utils
 import papis.config
 import papis.bibtex
-import logging
-import re
-import shutil
-import collections
 
 
-def keyconversion_to_data(key_conversion, data):
+def keyconversion_to_data(key_conversion, data, keep_unknown_keys=False):
     new_data = dict()
-
-    for xrefkey in key_conversion:
-        if xrefkey not in data.keys():
+    for orig_key in key_conversion:
+        if orig_key not in data:
             continue
-        _conv_data_src = key_conversion[xrefkey]
-        # _conv_data_src can be a dict or a list of dicts
-        if isinstance(_conv_data_src, dict):
-            _conv_data_src = [_conv_data_src]
-        for _conv_data in _conv_data_src:
-            papis_key = xrefkey
-            papis_val = data[xrefkey]
-            if 'key' in _conv_data.keys():
-                papis_key = _conv_data['key']
+
+        conv_data_list = key_conversion[orig_key]
+        if isinstance(conv_data_list, dict):
+            conv_data_list = [conv_data_list]
+
+        for conv_data in conv_data_list:
+            papis_key = conv_data.get('key', orig_key)
+            papis_value = data[orig_key]
+
             try:
-                if 'action' in _conv_data.keys():
-                    papis_val = _conv_data['action'](data[xrefkey])
-                new_data[papis_key] = papis_val
+                action = conv_data.get('action', lambda x: x)
+                new_data[papis_key] = action(papis_value)
             except Exception as e:
                 logger.debug(
                     "Error while trying to parse {0} ({1})".format(
                         papis_key, e))
 
-    if 'author_list' in new_data.keys():
+    if keep_unknown_keys:
+        for key, value in data.items():
+            if key in key_conversion:
+                continue
+            new_data[key] = value
+
+    if 'author_list' in new_data:
         new_data['author'] = author_list_to_author(new_data)
 
     return new_data

@@ -10,7 +10,6 @@ import papis.pick
 import papis.config
 import papis.commands
 import papis.document
-import papis.crossref
 import papis.bibtex
 import papis.exceptions
 import logging
