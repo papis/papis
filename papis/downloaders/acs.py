@@ -5,14 +5,14 @@ import papis.downloaders.base
 
 
 def get_affiliations(soup):
-
     # affiliations are in a <div class="affiliations"> with a list of
     # <div class="aff-info"> for each existing affiliation
     affs = soup.find_all(name='div', attrs={'class': 'aff-info'})
     if not affs:
         return {}
 
-    affiliations = {}
+    import collections
+    affiliations = collections.defaultdict(list)
     for aff in affs:
         spans = aff.find_all('span')
         # each affilition has a
@@ -26,13 +26,17 @@ def get_affiliations(soup):
             symbol = spans[0].text.strip()
             text = spans[1].text.strip()
 
-        affiliations[symbol] = text
+        affiliations[symbol].append(text)
+
+    for k in affiliations:
+        affiliations[k] = " and ".join(affiliations[k])
 
     return affiliations
 
 
 def get_author_list(soup):
     affiliations = get_affiliations(soup)
+    print(affiliations)
 
     author_list = []
     authors = soup.find_all(name='span',
@@ -63,6 +67,7 @@ def get_author_list(soup):
             family=family,
             given=given,
             affiliation=author_affs))
+    print(author_list)
 
     return author_list
 
