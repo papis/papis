@@ -4,6 +4,69 @@ import bs4
 import papis.document
 import papis.downloaders.base
 
+def get_affiliations(soup):
+    affiliations = {}
+
+    # affiliations are in a <div class="affiliations"> with a list of
+    # <div class="aff-info"> for each existing affilition
+    affs = soup.find_all(name='div', attrs={'class': 'aff-info'})
+
+    if not affs:
+        return affiliations
+
+    for aff in affs:
+        spans = aff.find_all('span')
+        # each affilition has a
+        #   <span>some_symbol</span>
+        #   <span>affilition_text</span>
+        # or just the text if all the authors are the same
+        if len(spans) == 1:
+            symbol = "default"
+            text = spans[0].text.strip()
+        else:
+            symbol = spans[0].text.strip()
+            text = spans[1].text.strip()
+
+        affiliations[symbol] = text
+
+    return affiliations
+
+
+def get_author_list(soup):
+    affiliations = get_affiliations(soup)
+
+    author_list = []
+    authors = soup.find_all(name='span',
+            attrs={'class': re.compile('hlFld-ContribAuthor', re.I)})
+
+    for author in authors:
+        # each author has a list of "author-aff-symbol"s that we can match to
+        # the data we have in `affiliations`
+        affs = author.find_all(name='span',
+                attrs={'class': 'author-aff-symbol'})
+
+        author_affs = []
+        if affs:
+            for a in affs:
+                symbol = a.text.strip()
+                if symbol in affiliations:
+                    author_affs.append(dict(name=affiliations[symbol]))
+        elif affiliations:
+            author_affs.append(dict(name=affiliations["default"]))
+
+        # author name is in the <a> tag
+        fullname = author.find_all(name='a')[0].text
+        splitted = re.split(r'\s+', fullname)
+        family = splitted[-1]
+        given = " ".join(splitted[:-1])
+
+        author_list.append(dict(
+            family=family,
+            given=given,
+            affiliation=author_affs))
+
+    return author_list
+
 
 class Downloader(papis.downloaders.base.Downloader):
 
@@ -23,41 +86,11 @@ class Downloader(papis.downloaders.base.Downloader):
         soup = self._get_soup()
         data.update(papis.downloaders.base.parse_meta_headers(soup))
 
-        articles = soup.find_all(name='article', attrs={'class': 'article'})
-        if not articles:
-            return data
-
-        author_list = []
-            article = articles[0]
-            for author in article.find_all(name='a', attrs={'id': 'authors'}):
-                author_list.append(
-                    dict(
-                        given=author.text.split(' ')[0],
-                        family=' '.join(author.text.split(' ')[1:]),
-                        affiliation=[]
-                    )
-                )
-            year = article.find_all(
-                    name='span', attrs={'class': 'citation_year'})
-            if year:
-                data['year'] = year[0].text
-            volume = article.find_all(
-                    name='span', attrs={'class': 'citation_volume'})
-            if volume:
-                data['volume'] = volume[0].text
-            affiliations = article.find_all(
-                    name='div', attrs={'class': 'affiliations'})
-            if affiliations:
-                # TODO: There is no guarantee that the affiliations thus
-                # retrieved are ok, however is better than nothing.
-                # They will most probably don't match the authors
-                for aff in affiliations[0].find_all(name='div'):
-                    for author in author_list:
-                        author['affiliation'].append(
-                            dict(name=aff.text.replace('\n', ' ')))
-
-        data['author_list'] = author_list
-        data['author'] = papis.document.author_list_to_author(data)
+        # find authors
+        author_list = get_author_list(soup)
+        if author_list:
+            data['author_list'] = author_list
+            data['author'] = papis.document.author_list_to_author(data)
 
         return data
 
