@@ -42,7 +42,7 @@ def get_author_list(soup):
             attrs={'class': re.compile('hlFld-ContribAuthor', re.I)})
 
     for author in authors:
-        # each author has a list of "author-aff-symbol"s that we can match to
+        # 1. each author has a list of "author-aff-symbol"s that we can match to
         # the data we have in `affiliations`
         affs = author.find_all(name='span',
                 attrs={'class': 'author-aff-symbol'})
@@ -54,11 +54,25 @@ def get_author_list(soup):
                 if symbol in affiliations:
                     author_affs.append(dict(name=affiliations[symbol]))
 
+
+        # 2. each author has an overlay with the affiliation
+        affs = author.find_all(name='div',
+                attrs={"class": "loa-info-affiliations-info"})
+
+        if affs:
+            author_affs.append(dict(name=affs[0].text))
+
+        # 3. use a default, if available
         if not author_affs and 'default' in affiliations:
             author_affs.append(dict(name=affiliations["default"]))
 
-        # author name is in the <a> tag
-        fullname = author.find_all(name='a')[0].text
+        fullname = author.find_all(name='div',
+                attrs={'class': 'loa-info-name'})
+        if fullname:
+            fullname = fullname[0].text
+        if not fullname:
+            fullname = author.find_all(name='a')[0].text
+
         splitted = re.split(r'\s+', fullname)
         family = splitted[-1]
         given = " ".join(splitted[:-1])
@@ -67,7 +81,6 @@ def get_author_list(soup):
             family=family,
             given=given,
             affiliation=author_affs))
-    print(author_list)
 
     return author_list
 

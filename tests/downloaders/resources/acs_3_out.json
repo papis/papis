@@ -1,0 +1,57 @@
+{
+  "abstract": "The minimum resolvable signal in sensing and metrology platforms that rely on optical readout fields is increasingly constrained by the standard quantum limit, which is determined by the sum of photon shot noise and back-action noise. A combination of back-action and shot noise reduction techniques will be critical to the development of the next generation of sensors for applications ranging from high-energy physics to biochemistry and for novel microscopy platforms capable of resolving material properties that were previously obscured by quantum noise. This Perspective reviews the dramatic advances made in the use of squeezed light for sub-shot-noise quantum sensing in recent years and highlights emerging applications that enable new science based on signals that would otherwise be obscured by noise at the standard quantum limit.",
+  "author": "Lawrie, B. J. and Lett, P. D. and Marino, A. M. and Pooser, R. C.",
+  "author_list": [
+    {
+      "affiliation": [
+        {
+          "name": "Quantum Information Science Group, Computational Science and Engineering Division, Oak Ridge National Laboratory, Oak Ridge, Tennessee 37831, United States"
+        }
+      ],
+      "family": "Lawrie",
+      "given": "B. J."
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Joint Quantum Institute, National Institute of Standards and Technology and the University of Maryland, College Park, Maryland 20742, United States"
+        }
+      ],
+      "family": "Lett",
+      "given": "P. D."
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Homer L. Dodge Department of Physics and Astronomy, The University of Oklahoma, Norman, Oklahoma 73019, United States"
+        }
+      ],
+      "family": "Marino",
+      "given": "A. M."
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Quantum Information Science Group, Computational Science and Engineering Division, Oak Ridge National Laboratory, Oak Ridge, Tennessee 37831, United States"
+        }
+      ],
+      "family": "Pooser",
+      "given": "R. C."
+    }
+  ],
+  "date": "May 24, 2019",
+  "doi": "10.1021/acsphotonics.9b00250",
+  "eprint": " \nhttps://doi.org/10.1021/acsphotonics.9b00250\n",
+  "journal": "ACS Photonics",
+  "keywords": "quantum sensing; squeezing; quantum noise reduction; continuous variable quantum optics",
+  "language": "en",
+  "number": "0",
+  "pages": "null",
+  "publisher": "American Chemical Society",
+  "ref": "doi:10.1021/acsphotonics.9b00250",
+  "title": "Quantum Sensing with Squeezed Light",
+  "type": "article",
+  "url": " \nhttps://doi.org/10.1021/acsphotonics.9b00250\n",
+  "volume": "0",
+  "year": "0"
+}

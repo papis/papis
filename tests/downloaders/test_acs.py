@@ -57,3 +57,25 @@ def test_acs_2():
 
             correct_data = get_json_resource('acs_2_out.json')
             assert(down.ctx.data == correct_data)
+
+
+def test_acs_3():
+    url = 'https://pubs.acs.org/doi/10.1021/acsphotonics.9b00250'
+    down = papis.downloaders.get_downloader(url)
+    assert(not down.ctx)
+
+    # with open('acs_3.html', 'w+') as f:
+    #     f.write(down.session.get(url).content.decode())
+
+    with patch.object(down, '_get_body', lambda: get_resource('acs_3.html')):
+        with patch.object(down, 'download_document', lambda: None):
+            down.fetch()
+            # with open('acs_3_out.json', 'w+') as f:
+            #     import json
+            #     json.dump(down.ctx.data, f,
+            #             indent=2,
+            #             sort_keys=True,
+            #             ensure_ascii=False)
+
+            correct_data = get_json_resource('acs_3_out.json')
+            assert(down.ctx.data == correct_data)
