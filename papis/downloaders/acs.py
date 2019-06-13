@@ -1,20 +1,18 @@
 import re
-import bs4
 
 import papis.document
 import papis.downloaders.base
 
 
 def get_affiliations(soup):
-    affiliations = {}
 
     # affiliations are in a <div class="affiliations"> with a list of
-    # <div class="aff-info"> for each existing affilition
+    # <div class="aff-info"> for each existing affiliation
     affs = soup.find_all(name='div', attrs={'class': 'aff-info'})
-
     if not affs:
-        return affiliations
+        return {}
 
+    affiliations = {}
     for aff in affs:
         spans = aff.find_all('span')
         # each affilition has a
@@ -52,7 +50,7 @@ def get_author_list(soup):
                 symbol = a.text.strip()
                 if symbol in affiliations:
                     author_affs.append(dict(name=affiliations[symbol]))
-        elif affiliations:
+        elif 'default' in affiliations:
             author_affs.append(dict(name=affiliations["default"]))
 
         # author name is in the <a> tag
@@ -70,12 +68,13 @@ def get_author_list(soup):
 
 
 class Downloader(papis.downloaders.base.Downloader):
+    ACS_BIBTEX_URL = "http://pubs.acs.org/action/downloadCitation?format=bibtex&cookieSet=1&doi={data[doi]}"
 
     def __init__(self, url):
         papis.downloaders.base.Downloader.__init__(self, url, name="acs")
         self.expected_document_extension = 'pdf'
         # It seems to be necessary so that acs lets us download the bibtex
-        self.cookies = { 'gdpr': 'true', }
+        self.cookies = {'gdpr': 'true'}
         self.priority = 10
 
     @classmethod
@@ -100,7 +99,6 @@ class Downloader(papis.downloaders.base.Downloader):
 
     def get_bibtex_url(self):
         if 'doi' in self.ctx.data:
-            url = ("http://pubs.acs.org/action/downloadCitation"
-                  "?format=bibtex&cookieSet=1&doi=%s" % self.ctx.data['doi'])
+            url = self.ACS_BIBTEX_URL.format(data=self.ctx.data)
             self.logger.debug("bibtex url = %s" % url)
             return url
