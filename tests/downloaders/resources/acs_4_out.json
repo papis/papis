@@ -1,0 +1,112 @@
+{
+  "abstract": "The exact mechanism of angiogenesis by europium hydroxide nanorods was unclear. In this study we have showed that formation of reactive oxygen species (H2O2 and O2·−) is involved in redox signaling pathways during angiogenesis, important for cardiovascular and ischemic diseases. Here we used single-walled carbon nanotube sensor array to measure the single-molecule efflux of H2O2 and a HPLC method for the determination of O2·– from endothelial cells in response to proangiogenic factors. Additionally, reactive oxygen species-mediated angiogenesis using inorganic nanorods was observed in transgenic (fli1a:EGFP) zebrafish embryos.",
+  "author": "Patra, Chitta Ranjan and Kim, Jong-Ho and Pramanik, Kallal and d’Uscio, Livius V. and Patra, Sujata and Pal, Krishnendu and Ramchandran, Ramani and Strano, Michael S. and Mukhopadhyay, Debabrata",
+  "author_list": [
+    {
+      "affiliation": [
+        {
+          "name": "Department of Chemical Biology, Indian Institute of Chemical Technology, Uppal Road, Tarnaka, Hyderabad 500607, AP, India"
+        },
+        {
+          "name": "Department of Biochemistry and Molecular Biology, 200 First Street S.W., Mayo Clinic College of Medicine, Mayo Foundation, Rochester, Minnesota 55905, United States"
+        }
+      ],
+      "family": "Patra",
+      "given": "Chitta Ranjan"
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Department of Chemical Engineering, Massachusetts Institute of Technology, Cambridge, Massachusetts 02139, United States"
+        },
+        {
+          "name": "Department of Chemical Engineering, Hanyang University, Ansan 426-791, Republic of Korea"
+        }
+      ],
+      "family": "Kim",
+      "given": "Jong-Ho"
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Developmental Biology Division, Developmental Vascular Biology Program, Medical College of Wisconsin and Children’s Research Institute, Milwaukee, Wisconsin 53226, United States"
+        }
+      ],
+      "family": "Pramanik",
+      "given": "Kallal"
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Department of Anesthesiology and Molecular Pharmacology, 200 First Street S.W., Mayo Clinic College of Medicine, Mayo Foundation, Rochester, Minnesota 55905, United States"
+        }
+      ],
+      "family": "d’Uscio",
+      "given": "Livius V."
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Department of Biochemistry and Molecular Biology, 200 First Street S.W., Mayo Clinic College of Medicine, Mayo Foundation, Rochester, Minnesota 55905, United States"
+        }
+      ],
+      "family": "Patra",
+      "given": "Sujata"
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Department of Biochemistry and Molecular Biology, 200 First Street S.W., Mayo Clinic College of Medicine, Mayo Foundation, Rochester, Minnesota 55905, United States"
+        }
+      ],
+      "family": "Pal",
+      "given": "Krishnendu"
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Developmental Biology Division, Developmental Vascular Biology Program, Medical College of Wisconsin and Children’s Research Institute, Milwaukee, Wisconsin 53226, United States"
+        }
+      ],
+      "family": "Ramchandran",
+      "given": "Ramani"
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Department of Chemical Engineering, Massachusetts Institute of Technology, Cambridge, Massachusetts 02139, United States"
+        }
+      ],
+      "family": "Strano",
+      "given": "Michael S."
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Department of Biochemistry and Molecular Biology, 200 First Street S.W., Mayo Clinic College of Medicine, Mayo Foundation, Rochester, Minnesota 55905, United States"
+        },
+        {
+          "name": "Department of Biomedical Engineering, 200 First Street S.W., Mayo Clinic College of Medicine, Mayo Foundation, Rochester, Minnesota 55905, United States"
+        }
+      ],
+      "family": "Mukhopadhyay",
+      "given": "Debabrata"
+    }
+  ],
+  "date": "October 10, 2011",
+  "doi": "10.1021/nl2028766",
+  "eprint": " \nhttps://doi.org/10.1021/nl2028766\n",
+  "journal": "Nano Letters",
+  "keywords": "Europium hydroxide [EuIII(OH)3] nanorods; reactive oxygen species; hydrogen peroxide (H2O2); single-walled carbon nanotubes; in vivo angiogenesis; zebrafish model",
+  "language": "EN",
+  "note": "PMID: 21967244",
+  "number": "11",
+  "pages": "4932-4938",
+  "publisher": "American Chemical Society",
+  "ref": "doi:10.1021/nl2028766",
+  "title": "Reactive Oxygen Species Driven Angiogenesis by Inorganic Nanorods",
+  "type": "article",
+  "url": " \nhttps://doi.org/10.1021/nl2028766\n",
+  "volume": "11",
+  "year": "2011"
+}

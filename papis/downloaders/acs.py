@@ -4,68 +4,134 @@ import papis.document
 import papis.downloaders.base
 
 
-def get_affiliations(soup):
-    # affiliations are in a <div class="affiliations"> with a list of
-    # <div class="aff-info"> for each existing affiliation
+def get_dropdown_affiliations(soup):
+    # this function handles getting affiliations when they're described in the
+    # separate `View Author Information` dropdown on acs.org. they are
+    # in a <div class="affiliations"> with a list of <div class="aff-info">
+    # for each existing affiliation.
+    #
+    # the affiliations seem to be presented in two ways
+    #
+    # 1. with children `<span>symbol</span>` and `<span>text</span>`, where
+    # we just add it to the dictionary with the relevant symbol as a key.
+    # this will get matched in `get_author_list` when going over the symbols
+    # of each author.
+    #
+    # 2. just a `<span>text</span>` child. there are two subcases that need
+    # to be handled here:
+    #   2.1 sometimes the text contains a list of
+    #   `<sup>symbol</sup> text, <sup>symbol</sup> text...`, when the
+    #   affiliations are from different departments of the same institution.
+    #   this gets split up and put in the dictionary.
+    #
+    #   2.2 no additional symbol info is given. in this case, we just add
+    #   the affiliation with a key `affX`, where `X` is a counter for the
+    #   unknown affiliations, starting at 0. these then get matched, in the
+    #   same order to the authors in `get_author_list`, if possible.
+
     affs = soup.find_all(name='div', attrs={'class': 'aff-info'})
     if not affs:
         return {}
 
-    import collections
-    affiliations = collections.defaultdict(list)
+    affindex = 0
+    affiliations = {}
     for aff in affs:
         spans = aff.find_all('span')
-        # each affilition has a
-        #   <span>some_symbol</span>
-        #   <span>affilition_text</span>
-        # or just the text if all the authors are the same
+        symbol = []
+        text = []
         if len(spans) == 1:
-            symbol = "default"
-            text = spans[0].text.strip()
+            children = list(spans[0].children)
+            if len(children) == 1:
+                symbol.append("aff{}".format(affindex))
+                text.append(children[0])
+                affindex += 1
+            else:
+                child_text = []
+                for s, t in zip(children[0::2], children[1::2]):
+                    symbol.append(s.text)
+                    child_text.append(t.string.split(',')[0].strip())
+
+                last_text = children[-1].string.split(',', maxsplit=1)[1]
+                last_text = last_text.strip()
+                text.extend(["{}, {}".format(t, last_text)
+                             for t in child_text])
         else:
-            symbol = spans[0].text.strip()
-            text = spans[1].text.strip()
+            symbol.append(spans[0].text)
+            text.append(spans[1].text)
 
-        affiliations[symbol].append(text)
-
-    for k in affiliations:
-        affiliations[k] = " and ".join(affiliations[k])
+        for k, v in zip(symbol, text):
+            affiliations[k.strip()] = v.strip()
 
     return affiliations
 
 
 def get_author_list(soup):
-    affiliations = get_affiliations(soup)
+    # this function tries to find all the authors which are given as
+    # <span class="hlFld-ContribAuthor">author_info</span>.
+    #
+    # to get author names, we handle two different cases
+    #
+    # 1. the author name is in a <div class="loa-info-name"></div> tag
+    # 2. the author name is in a <a>name</a> tag as the first child
+    #
+    # getting the affiliations is a bit more tricky and we handle two cases
+    #
+    # 1. the affiliations is in a popup with in a tag
+    # <div class="lua-info-affiliations-info"> and can be obtained directly.
+    #
+    # 2. the affiliations are in a separate `View Author Information`
+    # dropdown and a list was obtained from `get_dropdown_affiliations`.
+    # this is sometimes ambiguous, so we handle three cases
+    #   2.1 the author has a <span class="author-aff-symbol"> that directly
+    #   matches to a key in the `affiliations` dict.
+    #
+    #   2.2 the author has an `author-aff-symbol`, but it doesn't match. in
+    #   this case we look for a `affX` key in the order they are found in
+    #   the author list (incrementing `curr_index`).
+    #
+    #   2.3 if the `affiliations` dict only has one unmatched key, just use
+    #   that.
+
+    affiliations = get_dropdown_affiliations(soup)
 
     author_list = []
     authors = soup.find_all(name='span',
             attrs={'class': re.compile('hlFld-ContribAuthor', re.I)})
 
+    curr_index = 0
+    symbol_key = {}
     for author in authors:
-        # 1. each author has a list of "author-aff-symbol"s that we can match to
-        # the data we have in `affiliations`
-        affs = author.find_all(name='span',
-                attrs={'class': 'author-aff-symbol'})
-
+        # attempt to get affiliations
         author_affs = []
-        if affs:
-            for a in affs:
-                symbol = a.text.strip()
-                if symbol in affiliations:
-                    author_affs.append(dict(name=affiliations[symbol]))
 
+        if affiliations:
+            affsymbols = author.find_all(name='span',
+                    attrs={'class': 'author-aff-symbol'})
+            if affsymbols:
+                for s in affsymbols:
+                    symbol = s.text.strip()
+                    if symbol in affiliations:
+                        author_affs.append(dict(name=affiliations[symbol]))
+                        continue
 
-        # 2. each author has an overlay with the affiliation
-        affs = author.find_all(name='div',
-                attrs={"class": "loa-info-affiliations-info"})
+                    if symbol not in symbol_key:
+                        symbol_key[symbol] = "aff{}".format(curr_index)
+                        curr_index += 1
 
-        if affs:
-            author_affs.append(dict(name=affs[0].text))
+                    symbol = symbol_key[symbol]
+                    if symbol in affiliations:
+                        author_affs.append(dict(name=affiliations[symbol]))
 
-        # 3. use a default, if available
-        if not author_affs and 'default' in affiliations:
-            author_affs.append(dict(name=affiliations["default"]))
+        if not author_affs:
+            affs = author.find_all(name='div',
+                    attrs={"class": "loa-info-affiliations-info"})
+            if affs:
+                author_affs.append(dict(name=affs[0].text))
 
+        if not author_affs and len(affiliations) == 1:
+            author_affs.append(dict(name=list(affiliations.values())[0]))
+
+        # attempt to get author name
         fullname = author.find_all(name='div',
                 attrs={'class': 'loa-info-name'})
         if fullname:
