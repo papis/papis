@@ -1,10 +1,15 @@
 import re
+import urllib.parse
+
 import papis.downloaders.base
 import bs4
 import papis.document
 
 
 class Downloader(papis.downloaders.base.Downloader):
+    re_clean = re.compile(r'(^\s*|\s*$|\s{2,}?|&)')
+    re_comma = re.compile(r'(\s*,\s*)')
+    re_add_dot = re.compile(r'(\b\w\b)')
 
     def __init__(self, url):
         papis.downloaders.base.Downloader.__init__(
@@ -22,41 +27,39 @@ class Downloader(papis.downloaders.base.Downloader):
         soup = self._get_soup()
         data.update(papis.downloaders.base.parse_meta_headers(soup))
 
-        doi = soup.find_all(name="meta",
-                attrs={"name": 'dc.Identifier', 'scheme': 'doi'})
-        if doi:
-            data['doi'] = doi[0].attrs.get('content')
-
-        if 'author_list' in data:
-            return data
-
-        # Read brute force the authors from the source
+        # `author` and `author_list` are already in meta_headers, but we
+        # brute-force them here again to get exact affiliation information
         author_list = []
         authors = soup.find_all(name='span', attrs={'class': 'contribDegrees'})
-        cleanregex = re.compile(r'(^\s*|\s*$|&)')
-        editorregex = re.compile(r'([\n|]|\(Reviewing\s*Editor\))')
-        morespace = re.compile(r'\s+')
         for author in authors:
-            affspan = author.find_all('span', attrs={'class': 'overlay'})
-            afftext = affspan[0].text if affspan else ''
-            fullname = re.sub(',', '',
-                        cleanregex.sub('', author.text.replace(afftext, '')))
-            splitted = re.split(r'\s+', fullname)
-            cafftext = re.sub(' ,', ',',
-                              morespace.sub(' ', cleanregex.sub('', afftext)))
-            if 'Reviewing Editor' in fullname:
-                data['editor'] = cleanregex.sub(
-                    ' ', editorregex.sub('', fullname))
+            affiliation = author.find_all('span', attrs={'class': 'overlay'})
+            if affiliation:
+                # the span contains other things like the email, but we only
+                # want the starting text with the affiliation address
+                affiliation = next(affiliation[0].children)
+
+                affiliation = self.re_comma.sub(', ',
+                        self.re_clean.sub('', affiliation))
+                affiliation = [dict(name=affiliation)]
+
+            # find href="/author/escaped_fullname"
+            fullname = author.find_all('a', attrs={'class': 'entryAuthor'})
+            fullname = fullname[0].get('href').split('/')[-1]
+
+            fullname = urllib.parse.unquote_plus(fullname)
+            family, given = re.split(r',\s+', fullname)
+            given = self.re_add_dot.sub(r'\1.', given)
+
+            if 'Reviewing Editor' in author.text:
+                data['editor'] = \
+                    papis.config.get('multiple-authors-format').format(
+                            au=dict(family=family, given=given))
                 continue
-            given = splitted[0]
-            family = ' '.join(splitted[1:])
-            author_list.append(
-                dict(
-                    given=given,
-                    family=family,
-                    affiliation=[dict(name=cafftext)] if cafftext else []
-                )
-            )
+
+            new_author = dict(given=given, family=family)
+            if affiliation:
+                new_author['affiliation'] = affiliation
+            author_list.append(new_author)
 
         data['author_list'] = author_list
         data['author'] = papis.document.author_list_to_author(data)

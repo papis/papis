@@ -1,23 +1,11 @@
 {
-  "journal": "Cogent Food \\& Agriculture",
-  "ref": "doi:10.1080/23311932.2015.1117749",
-  "volume": "1",
-  "subject": "bioplastic; petrochemical; polymerase; packaging; biodegradable",
-  "title": "Bioplastics and food packaging: A review",
-  "number": "1",
-  "publisher": "Cogent OA",
-  "pages": "1117749",
+  "abstract": "AbstractFood packaging as a vital part of the subject of food technology is involved with protection and preservation of all types of foods. Due to economical abundance, petrochemical plastics have been largely used as packaging material due to their desirable properties of good barrier properties towards O2, aroma compounds, tensile strength and tear strength. Meanwhile, they have many disadvantages like very low water vapour transmission rate and the major disadvantage is that they are non-biodegradable and result in environmental pollution. Keeping in view the non-renewable nature and waste disposal problem of petroleum, newer concept of use of bioplastics came into existence. Bioplastics of renewable origin are compostable or degradable by the enzymatic action of micro-organisms. Generally biodegradable polymers get hydrolysed into CO2, CH4, inorganic compounds or biomass. The use of bio-origin materials obtained through microbial fermentations, starch and cellulose has led to their tremendous innovat...",
   "author": "Nafisa Jabeen and Ishrat Majid and Gulzar Ahmad Nayik",
-  "type": "article",
-  "eprint": " \nhttps://doi.org/10.1080/23311932.2015.1117749\n",
-  "url": " \nhttps://doi.org/10.1080/23311932.2015.1117749\n",
-  "doi": "10.1080/23311932.2015.1117749",
-  "editor": "Fatih Yildiz",
   "author_list": [
     {
       "affiliation": [
         {
-          "name": "Division of Post Harvest Technology, SKUAST-Kashmir, Srinagar 190025, IndiaView further author information"
+          "name": "Division of Post Harvest Technology, SKUAST-Kashmir, Srinagar 190025, India"
         }
       ],
       "family": "Jabeen",
@@ -26,25 +14,36 @@
     {
       "affiliation": [
         {
-          "name": "Department of Food Engineering Technology, SLIET, Longowal 148106, Punjab, IndiaView further author information"
+          "name": "Department of Food Engineering  Technology, SLIET, Longowal 148106, Punjab, India"
         }
       ],
-      "family": "Majid ",
+      "family": "Majid",
       "given": "Ishrat"
     },
     {
       "affiliation": [
         {
-          "name": "Department of Food Engineering Technology, SLIET, Longowal 148106, Punjab, IndiaCorrespondencegulzarnaik@gmail.comView further author information"
+          "name": "Department of Food Engineering  Technology, SLIET, Longowal 148106, Punjab, India"
         }
       ],
-      "family": "Ahmad Nayik",
-      "given": "Gulzar"
+      "family": "Nayik",
+      "given": "Gulzar Ahmad"
     }
   ],
-  "description": "(2015). Bioplastics and food packaging: A review. Cogent Food & Agriculture: Vol. 1, No. 1, 1117749.",
-  "year": "2015",
-  "keywords": "bioplastic, petrochemical, polymerase, packaging, biodegradable",
   "date": "14 Dec 2015",
-  "language": "en"
+  "doi": "10.1080/23311932.2015.1117749",
+  "editor": "Fatih Yildiz",
+  "eprint": " \nhttps://doi.org/10.1080/23311932.2015.1117749\n",
+  "journal": "Cogent Food \\& Agriculture",
+  "keywords": "bioplastic; petrochemical; polymerase; packaging; biodegradable",
+  "language": "en",
+  "number": "1",
+  "pages": "1117749",
+  "publisher": "Cogent OA",
+  "ref": "doi:10.1080/23311932.2015.1117749",
+  "title": "Bioplastics and food packaging: A review",
+  "type": "article",
+  "url": " \nhttps://doi.org/10.1080/23311932.2015.1117749\n",
+  "volume": "1",
+  "year": "2015"
 }
