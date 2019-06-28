@@ -40,7 +40,6 @@ Cli
 """
 
 import colorama
-import urllib.error
 import logging
 import papis.utils
 import papis.strings
@@ -140,10 +139,7 @@ def cli(
         documents = [papis.document.from_folder(doc_folder)]
 
     if not all:
-        documents = filter(
-            lambda d: d,
-            [papis.pick.pick_doc(documents)]
-        )
+        documents = filter(lambda d: d, [papis.pick.pick_doc(documents)])
 
     for document in documents:
         ctx = papis.importer.Context()
@@ -190,17 +186,17 @@ def cli(
                 importer.fetch()
             except NotImplementedError:
                 continue
-            except Exception:
-                continue
+            except Exception as e:
+                logger.exception(e)
             else:
-                matching_importers.append(importer)
+                if importer.ctx:
+                    matching_importers.append(importer)
 
-    for importer_tuple in from_importer:
+    for _importer_name, _uri in from_importer:
         try:
-            importer_name = importer_tuple[0]
-            resource = papis.utils.format_doc(importer_tuple[1], document)
+            _uri = papis.utils.format_doc(_uri, document)
             importer = (papis.importer
-                        .get_importer_by_name(importer_name)(uri=resource))
+                        .get_importer_by_name(_importer_name)(uri=_uri))
             importer.fetch()
             if importer.ctx:
                 matching_importers.append(importer)
@@ -231,5 +227,4 @@ def cli(
         run(
             document,
             data=ctx.data,
-            force=force,
-        )
+            force=force,)
