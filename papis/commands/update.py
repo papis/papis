@@ -57,7 +57,7 @@ def _update_with_database(document):
     papis.database.get().update(document)
 
 
-def run(document, data=dict(), force=False):
+def run(document, data=dict()):
     # Keep the ref the same, otherwise issues can be caused when
     # writing LaTeX documents and all the ref's change
     data['ref'] = document['ref']
@@ -70,26 +70,13 @@ def run(document, data=dict(), force=False):
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
 @click.option(
-    "-i/-b",
-    "--interactive/--no-interactive",
-    help="Interactive or batch mode",
-    default=True
-)
-@click.option(
-    "-f",
-    "--force",
-    help="Force update, overwrite conflicting information",
-    default=False,
-    is_flag=True
-)
-@click.option(
     "--auto",
     help="Try to parse information from different sources",
     default=False,
     is_flag=True
 )
 @click.option(
-    "--all",
+    "--all", "all_entries",
     help="Update all entries in library",
     default=False,
     is_flag=True
@@ -105,28 +92,19 @@ def run(document, data=dict(), force=False):
     default=(),
 )
 @click.option(
-    "-s", "--set",
+    "-s", "--set", "set_tuples",
     help="Update document's information with key value."
          "The value can be a papis format.",
     multiple=True,
     type=(str, str),
 )
-@click.option(
-    "-d", "--delete",
-    help="Delete document's key",
-    multiple=True,
-    type=str,
-)
 def cli(
         query,
         doc_folder,
-        interactive,
-        force,
         from_importer,
         auto,
-        all,
-        set,
-        delete
+        all_entries,
+        set_tuples,
         ):
     """Update a document from a given library"""
 
@@ -138,12 +116,11 @@ def cli(
     if doc_folder:
         documents = [papis.document.from_folder(doc_folder)]
 
-    if not all:
+    if not all_entries:
         documents = filter(lambda d: d, [papis.pick.pick_doc(documents)])
 
     for document in documents:
         ctx = papis.importer.Context()
-        ctx.data.update(document)
 
         logger.info(
             'Updating '
@@ -151,80 +128,56 @@ def cli(
             .format(papis.document.describe(document), c=colorama)
         )
 
-        if set:
+        ctx.data.update(document)
+        if set_tuples:
             ctx.data.update(
-                {s[0]: papis.utils.format_doc(s[1], document) for s in set}
-            )
+                {key: papis.utils.format_doc(value, document)
+                    for key, value in set_tuples})
 
-        if delete:
-            for key in delete:
-                _delete_key = False
-                _confirmation = True
-                if interactive:
-                    _confirmation = papis.utils.confirm(
-                        "Delete {key}?".format(key=key))
-                if interactive and _confirmation and not force:
-                    _delete_key = True
-                elif not _confirmation:
-                    _delete_key = False
+        matching_importers = []
+        if not from_importer and auto:
+            for importer_cls in papis.importer.get_importers():
+                try:
+                    importer = importer_cls.match_data(document)
+                    importer.fetch()
+                except NotImplementedError:
+                    continue
+                except Exception as e:
+                    logger.exception(e)
                 else:
-                    _delete_key = True
-                if _delete_key:
-                    try:
-                        logger.warning('Deleting {key}'.format(key=key))
-                        del document[key]
-                    except ValueError:
-                        logger.error('Document has no {key}'.format(key=key))
-                    else:
-                        _update_with_database(document)
+                    if importer.ctx:
+                        matching_importers.append(importer)
 
-    matching_importers = []
-    if not from_importer and auto:
-        for importer_cls in papis.importer.get_importers():
+        for _importer_name, _uri in from_importer:
             try:
-                importer = importer_cls.match_data(document)
+                _uri = papis.utils.format_doc(_uri, document)
+                importer = (papis.importer
+                            .get_importer_by_name(_importer_name)(uri=_uri))
                 importer.fetch()
-            except NotImplementedError:
-                continue
-            except Exception as e:
-                logger.exception(e)
-            else:
                 if importer.ctx:
                     matching_importers.append(importer)
+            except Exception as e:
+                logger.exception(e)
 
-    for _importer_name, _uri in from_importer:
-        try:
-            _uri = papis.utils.format_doc(_uri, document)
-            importer = (papis.importer
-                        .get_importer_by_name(_importer_name)(uri=_uri))
-            importer.fetch()
-            if importer.ctx:
-                matching_importers.append(importer)
-        except Exception as e:
-            logger.exception(e)
+        if matching_importers:
+            logger.info(
+                'There are {0} possible matchings'.format(len(matching_importers)))
 
-    if matching_importers:
-        logger.info(
-            'There are {0} possible matchings'.format(len(matching_importers)))
+            for importer in matching_importers:
+                if importer.ctx.data:
+                    logger.info(
+                        'Merging data from importer {0}'.format(importer.name))
+                    papis.utils.update_doc_from_data_interactively(
+                        ctx.data,
+                        importer.ctx.data,
+                        str(importer))
+                if importer.ctx.files:
+                    logger.info(
+                        'Got files {0} from importer {1}'
+                        .format(importer.ctx.files, importer.name))
+                    for f in importer.ctx.files:
+                        papis.utils.open_file(f)
+                        if papis.utils.confirm("Use this file?"):
+                            ctx.files.append(f)
 
-        for importer in matching_importers:
-            if importer.ctx.data:
-                logger.info(
-                    'Merging data from importer {0}'.format(importer.name))
-                papis.utils.update_doc_from_data_interactively(
-                    ctx.data,
-                    importer.ctx.data,
-                    str(importer))
-            if importer.ctx.files:
-                logger.info(
-                    'Got files {0} from importer {1}'
-                    .format(importer.ctx.files, importer.name))
-                for f in importer.ctx.files:
-                    papis.utils.open_file(f)
-                    if papis.utils.confirm("Use this file?"):
-                        ctx.files.append(f)
-
-        run(
-            document,
-            data=ctx.data,
-            force=force,)
+        run(document, data=ctx.data)
