@@ -72,7 +72,7 @@ def run(document, filepaths):
                 "%s already exists, ignoring..." % endDocumentPath
             )
             continue
-        logger.debug(
+        logger.info(
             "[CP] '%s' to '%s'" %
             (in_file_path, endDocumentPath)
         )
