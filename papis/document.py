@@ -111,7 +111,6 @@ def to_bibtex(document):
         if bibKey in papis.bibtex.bibtex_key_converter:
             newBibKey = papis.bibtex.bibtex_key_converter[bibKey]
             document[newBibKey] = document[bibKey]
-            del document[bibKey]
     for bibKey in sorted(document.keys()):
         logger.debug('%s : %s' % (bibKey, document[bibKey]))
         if bibKey in papis.bibtex.bibtex_keys:
