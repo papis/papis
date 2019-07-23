@@ -47,7 +47,7 @@ def test_bibtypes_exist():
     assert(len(papis.bibtex.bibtex_types) != 0)
 
 
-@pytest.mark.parametrize("bibfile", ["1.bib", "2.bib"])
+@pytest.mark.parametrize("bibfile", ["1.bib", "2.bib", "3.bib"])
 def test_author_list_conversion(bibfile, overwrite=False):
     jsonfile = "{}_out.json".format(os.path.splitext(bibfile)[0])
     bibpath = os.path.join(os.path.dirname(__file__),

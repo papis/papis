@@ -114,15 +114,13 @@ def bibtexparser_entry_to_papis(entry):
     :returns: Dictionary with keys of papis format.
 
     """
+    from bibtexparser.customization import splitname
     def to_author_list(authors):
         author_list = []
         for author in re.split(r"\s+and\s+", authors):
-            if ',' in author:
-                family, given = re.split(r"\s*,\s+", author.strip())
-            else:
-                names = re.split(r"\s+", author.strip())
-                given = " ".join(names[:-1])
-                family = names[-1]
+            parts = splitname(author)
+            given = " ".join(parts["first"])
+            family = " ".join(parts["von"] + parts["last"] + parts["jr"])
 
             author_list.append(dict(family=family, given=given))
 

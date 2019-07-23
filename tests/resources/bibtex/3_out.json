@@ -1,0 +1,19 @@
+{
+  "author": "de la Vallee Poussin, Charles Louis Xavier Joseph and von Beethoven, Ludwig and Ford Jr., Henry",
+  "author_list": [
+    {
+      "family": "de la Vallee Poussin",
+      "given": "Charles Louis Xavier Joseph"
+    },
+    {
+      "family": "von Beethoven",
+      "given": "Ludwig"
+    },
+    {
+      "family": "Ford Jr.",
+      "given": "Henry"
+    }
+  ],
+  "ref": "bibtextest3",
+  "type": "article"
+}
