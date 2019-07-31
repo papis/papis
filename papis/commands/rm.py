@@ -48,10 +48,17 @@ def run(document, filepath=None):
     is_flag=True,
     default=False
 )
+@click.option(
+    "--all",
+    help="Remove all matches",
+    is_flag=True,
+    default=False
+)
 def cli(
         query,
         file,
-        force
+        force,
+        all
         ):
     """Delete command for several objects"""
     documents = papis.database.get().query(query)
@@ -61,34 +68,37 @@ def cli(
         logger.warning(papis.strings.no_documents_retrieved_message)
         return 0
 
-    document = papis.pick.pick_doc(documents)
-    if not document:
-        return
+    if not all:
+        documents = [papis.pick.pick_doc(documents)]
+        documents = [d for d in documents if d]
+
     if file:
-        filepath = papis.pick.pick(document.get_files())
-        if not filepath:
-            return
-        if not force:
-            tbar = 'The file {0} would be removed'.format(filepath)
-            if not papis.utils.confirm("Are you sure?", bottom_toolbar=tbar):
-                return
-        logger.info("Removing %s..." % filepath)
-        return run(
-            document,
-            filepath=filepath
-        )
+        for document in documents:
+            filepath = papis.pick.pick(document.get_files())
+            if not filepath:
+                continue
+            if not force:
+                tbar = 'The file {0} would be removed'.format(filepath)
+                if not papis.utils.confirm("Are you sure?", bottom_toolbar=tbar):
+                    continue
+            logger.info("Removing %s..." % filepath)
+            run(
+                document,
+                filepath=filepath
+            )
     else:
-        if not force:
-            tbar = 'The folder {0} would be removed'.format(
-                document.get_main_folder()
-            )
-            logger.warning("This document will be removed, check it")
-            papis.utils.text_area(
-                title=tbar,
-                text=papis.document.dump(document),
-                lexer_name='yaml'
-            )
-            if not papis.utils.confirm("Are you sure?", bottom_toolbar=tbar):
-                return
-        logger.info("Removing ...")
-        return run(document)
+        for document in documents:
+            if not force:
+                tbar = 'The folder {0} would be removed'.format(
+                    document.get_main_folder()
+                )
+                logger.warning("This document will be removed, check it")
+                papis.utils.text_area(
+                    title=tbar,
+                    text=papis.document.dump(document),
+                    lexer_name='yaml'
+                )
+                if not papis.utils.confirm("Are you sure?", bottom_toolbar=tbar):
+                    continue
+            logger.info("Removing ...")
+            run(document)
