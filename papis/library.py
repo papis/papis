@@ -1,6 +1,8 @@
 import os
 import glob
+import logging
 
+logger = logging.getLogger("library")
 
 class Library:
 
@@ -11,10 +13,9 @@ class Library:
 
         # If any of the paths do not exist, create them.
         for path in paths:
-            print(path)
             if not os.path.exists(path):
                 os.makedirs(path)
-                print("Initialized library", name, ".  Created:", path)
+                logger.info("Initialized library", name, ".  Created:", path)
 
         self.paths = sum(
             [glob.glob(os.path.expanduser(p)) for p in paths],
