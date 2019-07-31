@@ -218,10 +218,44 @@ class Database(papis.database.base.Database):
         """Function to be called everytime a database object is created.
         It checks if an index exists, if not, it creates one and
         indexes the library.
+
+        If the schema fields have been changed, it updates the database.
         """
         if self.index_exists():
-            self.logger.debug('Initialized index found for library')
-            return True
+            user_fields = self.get_schema_init_fields()
+            db_fields = self.get_schema()
+
+            user_field_names = sorted(list(user_fields))
+            db_field_names = sorted(db_fields.names())
+
+            # If the user fields and the fields in the DB
+            # aren't the same, then we have to rebuild the
+            # database.
+            if user_field_names != db_field_names:
+                self.rebuild()
+                self.logger.debug("Rebuilt database because field names"
+                                  "don't match")
+            else:
+                # Otherwise, verify that the fields are
+                # all the same and rebuild if any have
+                # changed at all.
+                rebuilt_db = False
+                for field in user_field_names:
+                    if user_fields[field] != db_fields[field]:
+                        self.rebuild()
+                        self.logger.debug("Rebuilt DB because field types"
+                                          " don't match")
+                        rebuilt_db = True
+                        break
+
+                if not rebuilt_db:
+                    self.logger.debug('Initialized index found for library')
+                    return True
+        self.create_index()
+        self.do_indexing()
+
+    def rebuild(self):
+        self.clear()
         self.create_index()
         self.do_indexing()
 
