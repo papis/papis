@@ -37,7 +37,9 @@ A more complete example of a configuration file is the following
   # "cygstart"
   #
   opentool = rifle
-  # Specify a PDF editing program for PDF filetypes
+  # Specify a PDF editing program for PDF filetypes.
+  # More generally, a tool for a filetype .XYZ can be specified as 
+  # "opentool-XYZ = <tool>"
   opentool-pdf = evince
   # Use ranger as a file browser, a nice python program
   file-browser = ranger
