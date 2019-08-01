@@ -3,11 +3,12 @@ create papis scripts.
 """
 
 import logging
-import papis.utils
 import papis.commands
 import papis.config
-import papis.pick
 import papis.database
+import papis.pick
+import papis.utils
+import pathlib
 
 logger = logging.getLogger("api")
 logger.debug("importing")
@@ -90,8 +91,10 @@ def pick(options, pick_config={}):
 
 
 def open_file(file_path, wait=True):
-    """Open file using the ``opentool`` key value as a program to
-    handle file_path.
+    """Open file using the most specific tool possible.  The config is
+    searched for an ``opentool-<extension>'' key.  If that exists, use the
+    associated value as a program to handle file_path.  Otherwise, use the
+    ``opentool'' key value as a program to handle file_path.
 
     :param file_path: File path to be handled.
     :type  file_path: str
@@ -99,7 +102,15 @@ def open_file(file_path, wait=True):
     :type  wait: bool
 
     """
-    papis.utils.general_open(file_path, "opentool", wait=wait)
+    extension = pathlib.Path(file_path).suffix
+    if extension.startswith('.'):
+        extension = extension[1:]
+
+    if papis.config.get_configuration().has_option("settings", "opentool-" + extension):
+        papis.utils.general_open(file_path, "opentool-" + extension, wait=wait)
+    else:
+        # Use the default opentool.
+        papis.utils.general_open(file_path, "opentool", wait=wait)
 
 
 def open_dir(dir_path, wait=True):
