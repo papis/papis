@@ -118,7 +118,7 @@ def run(
 
     if libraries:
         return [
-            config[section]['dir']
+            section + '\t' + config[section]['dir']
             for section in config
             if 'dir' in config[section]
         ]
