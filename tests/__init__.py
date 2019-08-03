@@ -80,7 +80,19 @@ test_data = [
         "volume": "s2-42",
         "year": "1937",
         "_test_files": 2,
-    }
+    },
+    {
+        "author": "test_author",
+        "title": "Test Document 1",
+        "year": "2019",
+        "_test_files": 1
+    },
+    {
+        "author": "test_author",
+        "title": "Test Document 2",
+        "year": "2019",
+        "_test_files": 1
+    },
 ]
 
 
