@@ -15,7 +15,7 @@ class Library:
         for path in paths:
             if not os.path.exists(path):
                 os.makedirs(path)
-                logger.info("Initialized library", name, ".  Created:", path)
+                logger.info("Initialized library " + name + ".  Created: " + path)
 
         self.paths = sum(
             [glob.glob(os.path.expanduser(p)) for p in paths],
