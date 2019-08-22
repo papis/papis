@@ -1,0 +1,42 @@
+{
+  "author": "Francois, Marianne M. and Cummins, Sharen J. and Dendy, Edward D. and Kothe, Douglas B. and Sicilian, James M. and Williams, Matthew W.",
+  "author_list": [
+    {
+      "family": "Francois",
+      "given": "Marianne M."
+    },
+    {
+      "family": "Cummins",
+      "given": "Sharen J."
+    },
+    {
+      "family": "Dendy",
+      "given": "Edward D."
+    },
+    {
+      "family": "Kothe",
+      "given": "Douglas B."
+    },
+    {
+      "family": "Sicilian",
+      "given": "James M."
+    },
+    {
+      "family": "Williams",
+      "given": "Matthew W."
+    }
+  ],
+  "doi": "10.1016/j.jcp.2005.08.004",
+  "issue": "1",
+  "journal": "Journal of Computational Physics",
+  "language": "en",
+  "month": "3",
+  "pages": "141--173",
+  "publisher": "Elsevier BV",
+  "ref": "10.1016j.jcp.2005.08.004",
+  "title": "A balanced-force algorithm for continuous and sharp interfacial surface tension models within a volume tracking framework",
+  "type": "article",
+  "url": "http://dx.doi.org/10.1016/j.jcp.2005.08.004",
+  "volume": "213",
+  "year": "2006"
+}

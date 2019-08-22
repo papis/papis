@@ -1,7 +1,10 @@
 from __future__ import unicode_literals
 from __future__ import absolute_import, division, print_function
+
 import logging
 import os
+import re
+
 import papis.config
 import click
 import papis.document
@@ -111,16 +114,29 @@ def bibtexparser_entry_to_papis(entry):
     :returns: Dictionary with keys of papis format.
 
     """
-    result = dict()
-    for key in entry.keys():
-        if key == 'ID':
-            result['ref'] = entry[key]
-        elif key == 'ENTRYTYPE':
-            result['type'] = entry[key]
-        elif key == 'link':
-            result['url'] = entry[key]
-        else:
-            result[key] = entry[key]
+    from bibtexparser.customization import splitname
+    def to_author_list(authors):
+        author_list = []
+        for author in re.split(r"\s+and\s+", authors):
+            parts = splitname(author)
+            given = " ".join(parts["first"])
+            family = " ".join(parts["von"] + parts["last"] + parts["jr"])
+
+            author_list.append(dict(family=family, given=given))
+
+        return author_list
+
+    from collections import OrderedDict
+    key_conversion = OrderedDict({
+        "ID": {"key": "ref"},
+        "ENTRYTYPE": {"key": "type"},
+        "link": {"key": "url"},
+        "author": {"key": "author_list", "action": to_author_list},
+    })
+
+    result = papis.document.keyconversion_to_data(key_conversion, entry,
+            keep_unknown_keys=True)
+
     return result
 
 
@@ -140,10 +156,10 @@ def bibtex_to_dict(bibtex):
     """
     from bibtexparser.bparser import BibTexParser
 
-    parser = BibTexParser(common_strings=True)
-    parser.ignore_nonstandard_types = False
-    parser.homogenise_fields = False
-    parser.interpolate_strings = True
+    parser = BibTexParser(common_strings=True,
+            ignore_nonstandard_types=False,
+            homogenize_fields=False,
+            interpolate_strings=True)
 
     # bibtexparser has too many debug messages to be useful
     logging.getLogger("bibtexparser.bparser").setLevel(logging.WARNING)
