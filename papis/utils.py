@@ -96,19 +96,6 @@ def format_doc(python_format, document, key=""):
     doc = key or papis.config.get("format-doc-name")
     fdoc = papis.document.Document()
     fdoc.update(document)
-    if papis.config.getboolean('format-jinja2-enable') is True:
-        try:
-            import jinja2
-        except ImportError:
-            logger.error("""
-            You're trying to format strings using jinja2
-            Jinja2 is not installed by default, so just install it
-
-                pip3 install jinja2
-
-            """)
-        else:
-            return jinja2.Template(python_format).render(**{doc: fdoc})
     try:
         return python_format.format(**{doc: fdoc})
     except Exception as e:

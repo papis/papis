@@ -79,7 +79,6 @@ general_settings = {
     "format-doc-name": "doc",
     "match-format":
         "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
-    "format-jinja2-enable": False,
     "header-format-file": None,
     "header-format": (
         "<ansired>{doc.html_escape[title]}</ansired>\n"

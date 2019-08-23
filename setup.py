@@ -97,7 +97,6 @@ setup(
         # for example:
         # $ pip install -e .[develop]
         optional=[
-            "Jinja2>=2.10",
             "Whoosh>=2.7.4",
         ],
         develop=[
