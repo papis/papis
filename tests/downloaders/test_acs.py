@@ -1,104 +1,52 @@
 import papis.downloaders
 from papis.downloaders.acs import Downloader
-from unittest.mock import patch
 from tests.downloaders import get_resource, get_json_resource
+
+import pytest
+from unittest.mock import patch
+
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
 
+ACS_URLS = {
+    'acs_1': 'https://pubs.acs.org/doi/10.1021/acscombsci.5b00087',
+    'acs_2': 'https://pubs.acs.org/doi/10.1021/jp003647e',
+    'acs_3': 'https://pubs.acs.org/doi/10.1021/acsphotonics.9b00250',
+    'acs_4': 'https://pubs.acs.org/doi/10.1021/nl2028766'
+}
+
+
 def test_match():
-    assert(Downloader.match(
-        'https://www.acs.org/science/article/pii/S0009261497040141'
-    ))
-    assert(Downloader.match(
-        'https://www.acs.org/science/article/pii/S2210271X18305656'
-    ))
+    for k in ACS_URLS:
+        assert(Downloader.match(ACS_URLS[k]))
 
 
-def test_acs_1():
-    url = 'https://pubs.acs.org/doi/10.1021/acscombsci.5b00087'
-    down = papis.downloaders.get_downloader(url)
+@pytest.mark.parametrize('basename', ['acs_1', 'acs_2', 'acs_3', 'acs_4'])
+def test_acs_downloader(basename):
+    htmlfile = "{}.html".format(basename)
+    jsonfile = "{}_out.json".format(basename)
+
+    down = papis.downloaders.get_downloader(ACS_URLS[basename])
     assert(not down.ctx)
 
-    # with open('acs_1.html', 'w+') as f:
+    # with open(htmlfile, 'w+') as f:
     #     f.write(down.session.get(url).content.decode())
 
-    with patch.object(down, '_get_body', lambda: get_resource('acs_1.html')):
-        with patch.object(down, 'download_document', lambda: None):
-            down.fetch()
-            # with open('acs_1_out.json', 'w+') as f:
-            #     import json
-            #     json.dump(down.ctx.data, f,
-            #             indent=2,
-            #             sort_keys=True,
-            #             ensure_ascii=False)
+    def mock_get_bibtex_url():
+        raise NotImplementedError
 
-            correct_data = get_json_resource('acs_1_out.json')
-            assert(down.ctx.data == correct_data)
+    with patch.multiple(down,
+                        _get_body=lambda: get_resource(htmlfile),
+                        download_document=lambda: None,
+                        get_bibtex_url=mock_get_bibtex_url):
+        down.fetch()
+        # with open(jsonfile, 'w+') as f:
+        #     import json
+        #     json.dump(down.ctx.data, f,
+        #             indent=2,
+        #             sort_keys=True,
+        #             ensure_ascii=False)
 
-
-def test_acs_2():
-    url = 'https://pubs.acs.org/doi/10.1021/jp003647e'
-    down = papis.downloaders.get_downloader(url)
-    assert(not down.ctx)
-
-    # with open('acs_2.html', 'w+') as f:
-    #     f.write(down.session.get(url).content.decode())
-
-    with patch.object(down, '_get_body', lambda: get_resource('acs_2.html')):
-        with patch.object(down, 'download_document', lambda: None):
-            down.fetch()
-            # with open('acs_2_out.json', 'w+') as f:
-            #     import json
-            #     json.dump(down.ctx.data, f,
-            #             indent=2,
-            #             sort_keys=True,
-            #             ensure_ascii=False)
-
-            correct_data = get_json_resource('acs_2_out.json')
-            assert(down.ctx.data == correct_data)
-
-
-def test_acs_3():
-    url = 'https://pubs.acs.org/doi/10.1021/acsphotonics.9b00250'
-    down = papis.downloaders.get_downloader(url)
-    assert(not down.ctx)
-
-    # with open('acs_3.html', 'w+') as f:
-    #     f.write(down.session.get(url).content.decode())
-
-    with patch.object(down, '_get_body', lambda: get_resource('acs_3.html')):
-        with patch.object(down, 'download_document', lambda: None):
-            down.fetch()
-            # with open('acs_3_out.json', 'w+') as f:
-            #     import json
-            #     json.dump(down.ctx.data, f,
-            #             indent=2,
-            #             sort_keys=True,
-            #             ensure_ascii=False)
-
-            correct_data = get_json_resource('acs_3_out.json')
-            assert(down.ctx.data == correct_data)
-
-def test_acs_4():
-    url = 'https://pubs.acs.org/doi/10.1021/nl2028766'
-    down = papis.downloaders.get_downloader(url)
-    assert(not down.ctx)
-
-    # with open('acs_4.html', 'w+') as f:
-    #     f.write(down.session.get(url).content.decode())
-
-    with patch.object(down, '_get_body', lambda: get_resource('acs_4.html')):
-        with patch.object(down, 'download_document', lambda: None):
-            down.fetch()
-            # with open('acs_4_out.json', 'w+') as f:
-            #     import json
-            #     json.dump(down.ctx.data, f,
-            #             indent=2,
-            #             sort_keys=True,
-            #             ensure_ascii=False)
-
-            correct_data = get_json_resource('acs_4_out.json')
-            assert(down.ctx.data == correct_data)
-
-
+        correct_data = get_json_resource(jsonfile)
+        assert(down.ctx.data['author_list'] == correct_data['author_list'])
