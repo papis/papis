@@ -106,14 +106,6 @@ def test_format_doc():
     tests.setup_test_library()
     document = from_data(dict(author='Fulano', title='Something'))
 
-    papis.config.set('format-jinja2-enable', True)
-    assert format_doc('{{doc["author"]}}{{doc["title"]}}', document) == \
-        'FulanoSomething'
-    assert format_doc(
-        '{{doc["author"]}}{{doc["title"]}}{{doc["blahblah"]}}', document
-    ) == 'FulanoSomething'
-
-    papis.config.set('format-jinja2-enable', False)
     assert format_doc('{doc[author]}{doc[title]}', document) == \
         'FulanoSomething'
     assert format_doc('{doc[author]}{doc[title]}{doc[blahblah]}', document) ==\
