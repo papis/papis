@@ -128,6 +128,7 @@ setup(
     entry_points={
         'console_scripts': [
             'papis=papis.commands.default:run',
+            'papiz=papis.fzf:main',
         ],
         'papis.exporter': [
             'bibtex=papis.commands.export:export_to_bibtex',
