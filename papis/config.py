@@ -484,6 +484,10 @@ def get_lib_from_name(libname):
             raise Exception('Library {0} not defined'.format(libname))
         try:
             paths = [expanduser(config[name]['dir'])]
+            for path in paths:
+                if not os.path.exists(path):
+                    raise Exception(("Path '%s' for library '%s' does not "
+                                    "seem to exist") % (path, name))
         except KeyError:
             try:
                 paths = eval(expanduser(config[name].get('dirs')))
