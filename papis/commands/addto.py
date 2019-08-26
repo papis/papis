@@ -78,7 +78,10 @@ def run(document, filepaths):
         )
         shutil.copy(in_file_path, endDocumentPath)
 
-    document['files'] += new_file_list
+    if document['files'] == '':
+        document['files'] = new_file_list
+    else:
+        document['files'] += new_file_list
     document.save()
     papis.database.get().update(document)
 
