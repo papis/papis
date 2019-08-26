@@ -670,7 +670,12 @@ def cli(
         logger.info("using doi {0}".format(from_doi))
         doidata = papis.crossref.get_data(dois=[from_doi])
         if doidata:
-            data.update(doidata[0])
+            doidata = doidata[0]
+            data.update(doidata)
+            if 'title' in doidata and 'author' in doidata:
+                logger.info('DOI points to: ' + doidata['title'] + '\n' +
+                            doidata['author'])
+
         if (len(files) == 0 and
                 papis.config.get('doc-url-key-name') in data.keys()):
 
