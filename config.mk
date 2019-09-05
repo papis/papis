@@ -1,3 +1,5 @@
+.PHONY: bash-autocomplete update-authors
+
 PYTHON = python3
 PIP = pip3
 TEST_COMMAND = $(PYTHON) -m pytest papis tests --cov=papis

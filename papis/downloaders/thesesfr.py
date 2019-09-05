@@ -25,7 +25,7 @@ class Downloader(papis.downloaders.base.Downloader):
         >>> d.get_identifier()
         '2014TOU30305'
         """
-        m = re.match(r".*theses.fr/([^/?.&]+).*", self.url)
+        m = re.match(r".*theses.fr/([^/?.&]+).*", self.uri)
         return m.group(1) if m is not None else None
 
     def get_document_url(self):
@@ -36,7 +36,7 @@ class Downloader(papis.downloaders.base.Downloader):
         >>> d = Downloader("http://theses.fr/1998ENPC9815")
         >>> d.get_document_url()
         """
-        raw_data = self.session.get(self.url).content.decode('utf-8')
+        raw_data = self.session.get(self.uri).content.decode('utf-8')
         soup = bs4.BeautifulSoup(raw_data, "html.parser")
         a = list(filter(
             lambda t: re.match(r'.*en ligne.*', t.text),

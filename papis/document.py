@@ -1,10 +1,76 @@
 import os
+import re
+import shutil
+import logging
+import collections
+
 import papis.utils
 import papis.config
 import papis.bibtex
-import logging
-import re
-import shutil
+
+
+def keyconversion_to_data(key_conversion, data, keep_unknown_keys=False):
+    new_data = dict()
+    for orig_key in key_conversion:
+        if orig_key not in data:
+            continue
+
+        conv_data_list = key_conversion[orig_key]
+        if isinstance(conv_data_list, dict):
+            conv_data_list = [conv_data_list]
+
+        for conv_data in conv_data_list:
+            papis_key = conv_data.get('key', orig_key)
+            papis_value = data[orig_key]
+
+            try:
+                action = conv_data.get('action', lambda x: x)
+                new_data[papis_key] = action(papis_value)
+            except Exception as e:
+                logger.debug(
+                    "Error while trying to parse {0} ({1})".format(
+                        papis_key, e))
+
+    if keep_unknown_keys:
+        for key, value in data.items():
+            if key in key_conversion:
+                continue
+            new_data[key] = value
+
+    if 'author_list' in new_data:
+        new_data['author'] = author_list_to_author(new_data)
+
+    return new_data
+
+
+def author_list_to_author(data):
+    author = ''
+    if 'author_list' in data:
+        author = (
+            papis.config.get('multiple-authors-separator')
+            .join([
+                papis.config.get("multiple-authors-format").format(au=author)
+                for author in data['author_list']
+            ])
+        )
+    return author
+
+
+class Author(dict):
+    """Base class for authors, if you're parsing an author,
+    use this class.
+    """
+    def __init__(self, given, family, affiliations=[]):
+        dict.__init__(
+            self, given=given, family=family, affiliations=affiliations
+        )
+
+
+class Affiliation(dict):
+    """Base class for affiliation, if you're parsing an affiliations,
+    use this class."""
+    def __init__(self, name):
+        dict.__init__(self, name=name)
 
 
 logger = logging.getLogger("document")
@@ -262,7 +328,7 @@ class DocHtmlEscaped(dict):
         )
 
 
-class Document(object):
+class Document(dict):
 
     """Class implementing the entry abstraction of a document in a library.
     It is basically a python dictionary with more methods.
@@ -272,7 +338,6 @@ class Document(object):
     _info_file_path = ""
 
     def __init__(self, folder=None, data=None):
-        self._keys = []
         self._folder = None
 
         if folder is not None:
@@ -282,37 +347,11 @@ class Document(object):
         if data is not None:
             self.update(data)
 
-    def __delitem__(self, key):
-        """Deletes property from document, e.g. ``del doc['url']``.
-        :param key: Name of the property.
-        :type  key: str
-
+    def __missing__(self, key):
         """
-        self._keys.remove(key)
-        delattr(self, key)
-
-    def __setitem__(self, key, value):
-        """Sets property to value from document, e.g. ``doc['url'] =
-        'www.gnu.org'``.
-        :param key: Name of the property.
-        :type  key: str
-        :param value: Value of the parameter
-        :type  value: str,int,float,list
+        If key is not defined, return empty string
         """
-        if key not in self._keys:
-            self._keys.append(key)
-        setattr(self, key, value)
-
-    def __getitem__(self, key):
-        """Gets property to value from document, e.g. ``a = doc['url']``.
-        If the property `key` does not exist, then the empy string is returned.
-
-        :param key: Name of the property.
-        :type  key: str
-        :returns: Value of the property
-        :rtype:  str,int,float,list
-        """
-        return getattr(self, key) if hasattr(self, key) else ""
+        return ""
 
     @property
     def html_escape(self):
@@ -336,8 +375,9 @@ class Document(object):
             folder,
             papis.config.get('info-name')
         )
+        # TODO: check if this makes sense at all
         self.subfolder = self.get_main_folder().replace(
-            os.environ["HOME"], ""
+            os.path.expanduser("~"), ""
         ).replace(
             "/", " "
         )
@@ -356,7 +396,7 @@ class Document(object):
         :returns: True/False
 
         """
-        return key in self.keys()
+        return key in self
 
     def save(self):
         """Saves the current document's information into the info file.
@@ -391,30 +431,20 @@ class Document(object):
             result.append(os.path.join(self.get_main_folder(), f))
         return result
 
-    def update(self, data):
-        """Update document's information from an info dictionary.
-
-        :param data: Dictionary with key and values to be updated
-        :type  data: dict
-
-        """
-        for key in data.keys():
-            self[key] = data[key]
-
-    def keys(self):
-        """Returns the keys defined for the document.
-
-        :returns: Keys for the document
-        :rtype:  list
-        """
-        return self._keys
-
     def load(self):
         """Load information from info file
         """
         import papis.yaml
         if not os.path.exists(self.get_info_file()):
             return
-        data = papis.yaml.yaml_to_data(self.get_info_file())
-        for key in data:
-            self[key] = data[key]
+        try:
+            data = papis.yaml.yaml_to_data(
+                self.get_info_file(), raise_exception=True)
+        except Exception as e:
+            logger.error(
+                'Error reading yaml file in {0}'.format(yaml_path) +
+                '\nPlease check it!\n\n{0}'.format(str(e))
+            )
+        else:
+            for key in data:
+                self[key] = data[key]

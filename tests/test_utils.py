@@ -119,6 +119,10 @@ def test_format_doc():
     assert format_doc('{doc[author]}{doc[title]}{doc[blahblah]}', document) ==\
         'FulanoSomething'
 
+    assert(format_doc(
+        '{doc[author]}{doc[title]}{doc[blahblah]}', dict(title='hell'))
+        == 'hell')
+
 
 def test_extension():
     docs = [

@@ -1,0 +1,37 @@
+{
+  "volume": "278",
+  "issn": "00092614",
+  "doi": "10.1016/S0009-2614(97)04014-1",
+  "author": "Mitrushenkov, Alexander O. and Palmieri, Paolo",
+  "publication-date": "31 October 1997",
+  "abstract": "The Cr 2  potential energy curve is obtained by treating the dynamical correlation energy terms using a CI procedure based on determinants, equivalent to multi-reference second-order perturbation theory with the Epstein-Nesbet partition of the Hamiltonian. One of the advantages of this treatment is that the level shifts required for the equivalent Møller-Plesset type of treatment to eliminate intruder states and avoid divergences in the ground state second-order energy expression, are not required. Moreover, by truncating the reference space, the dynamical and the non-dynamical correlation energy is included also for the 3s, 3p electrons. The potentials are compared to experiment and to the most accurate theoretical potential curves in the literature.",
+  "pii": "S0009261497040141",
+  "date": "1997-10-31",
+  "language": "en",
+  "type": "converted-article",
+  "accepted-date": "26 August 1997",
+  "author_list": [
+    {
+      "given": "Alexander O.",
+      "affiliation": [
+        {
+          "name": "Department of Theoretical Physics, Institute of Physics, St. Petersburg University, 198904 St. Petersburg, Russia"
+        }
+      ],
+      "family": "Mitrushenkov"
+    },
+    {
+      "given": "Paolo",
+      "affiliation": [
+        {
+          "name": "Dipartimento di Chimica Fisica ed Inorganica, Università di Bologna, Viale Risorgimento 4, 40136 Bologna, Italy"
+        }
+      ],
+      "family": "Palmieri"
+    }
+  ],
+  "title": "Epstein-Nesbet second-order perturbation treatment of dynamical electron correlation and ground state potential energy curve of Cr2",
+  "journal": "Chemical Physics Letters",
+  "pages": "285--290",
+  "year": "1997"
+}

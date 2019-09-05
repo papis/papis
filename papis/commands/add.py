@@ -34,14 +34,14 @@ Examples
 
     .. code::
 
-        papis add ~/Documents/interesting.pdf --from-doi 10.10763/1.3237134
+        papis add ~/Documents/interesting.pdf --from doi 10.10763/1.3237134
 
 - Add paper to a library named ``machine-learning`` from ``arxiv.org``
 
     .. code::
 
         papis -l machine-learning add \\
-            --from-url https://arxiv.org/abs/1712.03134
+            --from url https://arxiv.org/abs/1712.03134
 
 - If you do not want copy the original pdfs into the library, you can
   also tell papis to just create a link to them, for example
@@ -49,7 +49,7 @@ Examples
     .. code::
 
         papis add --link ~/Documents/interesting.pdf \\
-            --from-doi 10.10763/1.3237134
+            --from doi 10.10763/1.3237134
 
   will add an entry into the papis library, but the pdf document will remain
   at ``~/Documents/interesting.pdf``, and in the document's folder
@@ -74,7 +74,6 @@ Cli
 
 """
 import logging
-import papis
 from string import ascii_lowercase
 import os
 import re
@@ -86,19 +85,57 @@ import papis.api
 import papis.pick
 import papis.utils
 import papis.config
-import papis.bibtex
-import papis.crossref
-import papis.doi
-import papis.arxiv
 import papis.document
-import papis.downloaders
+import papis.importer
 import papis.cli
-import papis.yaml
 import click
-import builtins
 import colorama
+import papis.downloaders
 
 logger = logging.getLogger('add')
+
+
+class FromFolderImporter(papis.importer.Importer):
+
+    """Importer that gets files and data from a valid papis folder"""
+
+    def __init__(self, **kwargs):
+        papis.importer.Importer.__init__(self, name='folder', **kwargs)
+
+    @classmethod
+    def match(cls, uri):
+        return FromFolderImporter(uri=uri) if os.path.isdir(uri) else None
+
+    def fetch(self):
+        doc = papis.document.from_folder(self.uri)
+        self.logger.info('importing from folder {0}'.format(self.uri))
+        self.ctx.data = papis.document.to_dict(doc)
+        self.ctx.files = doc.get_files()
+
+
+class FromLibImporter(papis.importer.Importer):
+
+    """Importer that queries a valid papis library (also paths) and adds files
+    and data
+    """
+
+    def __init__(self, **kwargs):
+        papis.importer.Importer.__init__(self, name='lib', **kwargs)
+
+    @classmethod
+    def match(cls, uri):
+        try:
+            papis.config.get_lib_from_name(uri)
+        except Exception:
+            return None
+        else:
+            return FromLibImporter(uri=uri)
+
+    def fetch(self):
+        doc = papis.pick.pick_doc(papis.api.get_all_documents_in_lib(self.uri))
+        importer = FromFolderImporter(uri=doc.get_main_folder())
+        importer.fetch()
+        self.ctx = importer.ctx
 
 
 def get_file_name(data, original_filepath, suffix=""):
@@ -183,26 +220,6 @@ def get_hash_folder(data, document_paths):
     result = papis.utils.clean_document_name(result)
 
     return result
-
-
-def get_default_title(data, document_path):
-    if "title" in data.keys():
-        return data["title"]
-    extension = papis.utils.get_document_extension(document_path)
-    title = (
-        os.path.basename(document_path)
-        .replace("."+extension, "")
-        .replace("_", " ")
-        .replace("-", " ")
-    )
-    return title
-
-
-def get_default_author(data, document_path):
-    if "author" in data.keys():
-        return data["author"]
-    author = "Unknown"
-    return author
 
 
 def run(
@@ -366,7 +383,7 @@ def run(
 
     if open_file:
         for d_path in tmp_document.get_files():
-            papis.api.open_file(d_path)
+            papis.utils.open_file(d_path)
     if confirm:
         if not papis.utils.confirm('Really add?'):
             return
@@ -391,7 +408,7 @@ def run(
     help="Add a document into a given library"
 )
 @click.help_option('--help', '-h')
-@click.argument("files", type=click.Path(exists=True), nargs=-1)
+@click.argument("files", type=str, nargs=-1)
 @click.option(
     "-s", "--set", "set_list",
     help="Set some information before",
@@ -414,46 +431,14 @@ def run(
     default=None
 )
 @click.option(
-    "--from-bibtex",
-    help="Parse information from a bibtex file",
-    default=""
-)
-@click.option(
-    "--from-yaml",
-    help="Parse information from a yaml file",
-    default=""
-)
-@click.option(
-    "--from-folder",
-    help="Add document from folder being a valid papis document"
-         " (containing info.yaml)",
-    default=""
-)
-@click.option(
-    "--from-url",
-    help="Get document and information from a"
-    "given url, a parser must be implemented",
-    default=""
-)
-@click.option(
-    "--from-doi",
-    help="Doi to try to get information from",
-    default=None
-)
-@click.option(
-    "--from-crossref",
-    help="Try to get information from a crossref query",
-    default=None
-)
-@click.option(
-    "--from-pmid",
-    help="PMID to try to get information from",
-    default=None
-)
-@click.option(
-    "--from-lib",
-    help="Add document from another library",
-    default=""
+    "--from", "from_importer",
+    help="Add document from a specific importer ({0})".format(
+        ", ".join(papis.importer.available_importers())
+    ),
+    type=(click.Choice(papis.importer.available_importers()), str),
+    nargs=2,
+    multiple=True,
+    default=(),
 )
 @click.option(
     "-b", "--batch",
@@ -491,230 +476,101 @@ def run(
          "its original location",
     default=False
 )
+@click.option(
+    "--list-importers", "--li", "list_importers",
+    help="List all available papis importers",
+    default=False,
+    is_flag=True
+)
 def cli(
         files,
         set_list,
         subfolder,
         folder_name,
         file_name,
-        from_bibtex,
-        from_yaml,
-        from_folder,
-        from_url,
-        from_doi,
-        from_crossref,
-        from_pmid,
-        from_lib,
+        from_importer,
         batch,
         confirm,
         open_file,
         edit,
         commit,
         smart,
-        link
+        link,
+        list_importers,
         ):
-    """
-    :param from_folder: Filepath where to find a papis document (folder +
-        info file) to be added to the library.
-    :type  from_folder: str
-    :param from_doi: doi number to try to download information from.
-    :type  from_doi: str
-    :param from_crossref: Crossref query to get doi
-    :type  from_crossref: str
-    :param from_pmid: pmid number to try to download information from.
-    :type  from_pmid: str
-    :param from_url: Url to try to download information and files from.
-    :type  from_url: str
-    :param from_bibtex: Filepath where to find a file containing bibtex info.
-    :type  from_bibtex: str
-    :param from_yaml: Filepath where to find a file containing yaml info.
-    :type  from_yaml: str
-    """
-    data = dict()
-    files = list(files)
 
+    if list_importers:
+        import_mgr = papis.importer.get_import_mgr()
+        for n in import_mgr.names():
+            print("{name}\n\t{text}".format(
+                name=n,
+                text=re.sub(r"[ \n]+", " ", import_mgr[n].plugin.__doc__)))
+        return
+
+    from_importer = list(from_importer)
+    logger = logging.getLogger('cli:add')
+
+    data = dict()
     for data_set in set_list:
         data[data_set[0]] = data_set[1]
 
-    logger = logging.getLogger('cli:add')
+    files = list(files)
+    ctx = papis.importer.Context()
+    ctx.files = [f for f in files if os.path.exists(f)]
+    ctx.data.update(data)
 
     if batch:
         edit = False
         confirm = False
         open_file = False
 
-    if from_lib:
-        doc = papis.pick.pick_doc(
-            papis.api.get_all_documents_in_lib(from_lib)
-        )
-        if doc:
-            from_folder = doc.get_main_folder()
+    import_mgr = papis.importer.get_import_mgr()
+    matching_importers = []
 
-    try:
-        # Try getting title if title is an argument of add
-        data["title"] = data.get('title') or get_default_title(
-            data,
-            files[0],
-        )
-        logger.info("Set an automatic title {0}".format(data["title"]))
-        if (not from_bibtex and
-                smart and
-                not batch and
-                not from_doi and
-                not from_folder and
-                not from_pmid and
-                not from_crossref):
-            logger.info("I will try with crossref with this title")
-            from_crossref = data["title"]
-    except:
-        pass
+    if not from_importer and not batch and files:
+        matching_importers = sum((
+            papis.utils.get_matching_importer_or_downloader(f)
+            for f in files), [])
 
-    try:
-        # Try getting author if author is an argument of add
-        data["author"] = data.get('author') or get_default_author(
-            data,
-            files[0],
-        )
-        logger.info("Author = % s" % data["author"])
-    except:
-        pass
+    for importer_tuple in from_importer:
+        try:
+            importer_name = importer_tuple[0]
+            resource = importer_tuple[1]
+            importer = import_mgr[importer_name].plugin(uri=resource)
+            importer.fetch()
+            if importer.ctx:
+                matching_importers.append(importer)
+        except Exception as e:
+            logger.exception(e)
 
-    # GET INFORMATION FROM PDF
-    if (not from_doi and
-            not from_bibtex and
-            not from_url and
-            not from_folder and
-            files and
-            papis.utils.get_document_extension(files[0]) == 'pdf'):
+    if matching_importers:
+        logger.info(
+            'There are {0} possible matchings'.format(len(matching_importers)))
 
-        logger.info("Trying to parse doi from file {0}".format(files[0]))
-        doi = papis.doi.pdf_to_doi(files[0])
-        if doi:
-            logger.info("Parsed doi {0}".format(doi))
-            logger.warning("There is no guarantee that this doi is the one")
-        if (doi and
-                not batch and
-                confirm and
-                papis.utils.confirm(
-                    'Do you want to use the doi {0}'.format(doi)
-                )):
-            from_doi = doi
+        for importer in matching_importers:
+            if importer.ctx.data:
+                logger.info(
+                    'Merging data from importer {0}'.format(importer.name))
+                papis.utils.update_doc_from_data_interactively(
+                    ctx.data,
+                    importer.ctx.data,
+                    str(importer))
+            if importer.ctx.files:
+                logger.info(
+                    'Got files {0} from importer {1}'
+                    .format(importer.ctx.files, importer.name))
+                for f in importer.ctx.files:
+                    papis.utils.open_file(f)
+                    if papis.utils.confirm("Use this file?"):
+                        ctx.files.append(f)
 
-        arxivid = papis.arxiv.pdf_to_arxivid(files[0])
-        if arxivid:
-            logger.info("Parsed arxivid {0}".format(arxivid))
-            logger.warning(
-                "There is no guarantee that this arxivid is the one"
-            )
-        if (arxivid and
-                not batch and
-                confirm and
-                papis.utils.confirm(
-                    'Do you want to use the arxivid {0}'.format(arxivid)
-                )):
-            from_url = "https://arxiv.org/abs/{0}".format(arxivid)
-
-    if from_crossref:
-        logger.info("Querying crossref.org")
-        docs = [
-            papis.document.from_data(d)
-            for d in papis.crossref.get_data(query=from_crossref)
-        ]
-        if docs:
-            logger.info("got {0} matches, picking...".format(len(docs)))
-            doc = papis.pick.pick_doc(docs) if not batch else docs[0]
-            if doc and not from_doi and doc.has('doi'):
-                from_doi = doc['doi']
-
-    if from_folder:
-        original_document = papis.document.Document(from_folder)
-        from_yaml = original_document.get_info_file()
-        files.extend(original_document.get_files())
-
-    if from_url:
-        logger.info("Attempting to retrieve from url")
-        url_data = papis.downloaders.get_info_from_url(from_url)
-        data.update(url_data["data"])
-        if not files:
-            files.extend(url_data["documents_paths"])
-        # If no data was retrieved and doi was found, try to get
-        # information with the document's doi
-        if not data and url_data["doi"] is not None and not from_doi:
-            logger.warning(
-                "I could not get any data from {0}".format(from_url)
-            )
-            from_doi = url_data["doi"]
-            logger.info(
-                "But I found a doi ({0}), I'll try my luck there".format(
-                    from_doi
-                )
-            )
-
-    if from_pmid:
-        logger.info("Using PMID %s via HubMed" % from_pmid)
-        hubmed_url = "http://pubmed.macropus.org/articles/"\
-                     "?format=text%%2Fbibtex&id=%s" % from_pmid
-        bibtex_data = papis.downloaders.get_downloader(
-            hubmed_url,
-            "get"
-        ).get_document_data().decode("utf-8")
-        bibtex_data = papis.bibtex.bibtex_to_dict(bibtex_data)
-        if len(bibtex_data):
-            data.update(bibtex_data[0])
-            if "doi" in data and not from_doi:
-                from_doi = data["doi"]
-        else:
-            logger.error("PMID %s not found or invalid" % from_pmid)
-
-    if from_doi:
-        logger.info("using doi {0}".format(from_doi))
-        doidata = papis.crossref.get_data(dois=[from_doi])
-        if doidata:
-            data.update(doidata[0])
-        if (len(files) == 0 and
-                papis.config.get('doc-url-key-name') in data.keys()):
-
-            doc_url = data[papis.config.get('doc-url-key-name')]
-            logger.info(
-                'You did not provide any files, but I found a possible '
-                'url where the file might be'
-            )
-            logger.info(
-                'I am trying to download the document from %s' % doc_url
-            )
-            down = papis.downloaders.get_downloader(doc_url, 'get')
-            assert(down is not None)
-            tmp_filepath = tempfile.mktemp()
-            logger.debug("Saving in %s" % tmp_filepath)
-
-            with builtins.open(tmp_filepath, 'wb+') as fd:
-                fd.write(down.get_document_data())
-
-            logger.info('Opening the file')
-            papis.api.open_file(tmp_filepath)
-            if papis.utils.confirm('Do you want to use this file?'):
-                files.append(tmp_filepath)
-
-    if from_yaml:
-        logger.info("Reading yaml input file = %s" % from_yaml)
-        data.update(papis.yaml.yaml_to_data(from_yaml))
-
-    if from_bibtex:
-        logger.info("Reading bibtex input file = %s" % from_bibtex)
-        bib_data = papis.bibtex.bibtex_to_dict(from_bibtex)
-        if len(bib_data) > 1:
-            logger.warning(
-                'Your bibtex file contains more than one entry,'
-                ' I will be taking the first entry'
-            )
-        if bib_data:
-            data.update(bib_data[0])
-
-    assert(isinstance(data, dict))
+    if not ctx:
+        logger.error('there is nothing to be added')
+        return
 
     return run(
-        list(files),
-        data=data,
+        ctx.files,
+        data=ctx.data,
         folder_name=folder_name,
         file_name=file_name,
         subfolder=subfolder,

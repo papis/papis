@@ -1,30 +1,43 @@
 import papis.downloaders
 from papis.downloaders.acs import Downloader
-import papis.bibtex
+from unittest.mock import patch
+from tests.downloaders import get_resource, get_json_resource
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 
 def test_match():
     assert(Downloader.match(
-        'blah://pubs.acs.org/doi/abs/10.1021/acs.jchemed.6b00559'
+        'https://www.acs.org/science/article/pii/S0009261497040141'
     ))
     assert(Downloader.match(
-        'blah://pubs.acs.org/!@#!@$!%!@%!$che.6b00559'
+        'https://www.acs.org/science/article/pii/S2210271X18305656'
     ))
-    assert(Downloader.match(
-            'acs.com/!@#!@$!%!@%!$chemed.6b00559'
-    ) is False)
 
-def test_downloader_getter():
-    url = 'https://pubs.acs.org/doi/abs/10.1021/ed044p128?src=recsys'
+
+def test_acs_1():
+    url = 'https://pubs.acs.org/pdf/10.1021/acscombsci.5b00087'
     down = papis.downloaders.get_downloader(url)
-    assert(down.expected_document_extension == 'pdf')
-    assert(down.get_doi() == '10.1021/ed044p128')
-    assert(len(down.get_bibtex_url()) > 0)
-    assert(len(down.get_bibtex_data()) > 0)
-    bibs = papis.bibtex.bibtex_to_dict(down.get_bibtex_data())
-    assert(len(bibs) == 1)
-    doc = down.get_document_data()
-    assert(doc is not None)
-    #TODO: find a way to check formats well enough so that it does not
-    # fail in each build due to ip restrictions in the test suites
-    #assert(not down.check_document_format())
+    assert(not down.ctx)
+    with patch.object(down, '_get_body', lambda: get_resource('acs_1.html')):
+        with patch.object(down, 'download_document', lambda: None):
+            down.fetch()
+            with open('acs_1_out.json', 'w+') as f:
+                import json
+                json.dump(down.ctx.data, f)
+            correct_data = get_json_resource('acs_1_out.json')
+            assert(down.ctx.data == correct_data)
+
+
+def test_acs_2():
+    url = 'https://pubs.acs.org/pdf/10.1021/acscombsci.5b00087'
+    down = papis.downloaders.get_downloader(url)
+    assert(not down.ctx)
+    with patch.object(down, '_get_body', lambda: get_resource('acs_2.html')):
+        with patch.object(down, 'download_document', lambda: None):
+            down.fetch()
+            with open('acs_2_out.json', 'w+') as f:
+                import json
+                json.dump(down.ctx.data, f)
+            correct_data = get_json_resource('acs_2_out.json')
+            assert(down.ctx.data == correct_data)

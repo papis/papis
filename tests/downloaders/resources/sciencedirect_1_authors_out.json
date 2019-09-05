@@ -1,0 +1,20 @@
+[
+  {
+    "given": "Alexander O.",
+    "affiliation": [
+      {
+        "name": "Department of Theoretical Physics, Institute of Physics, St. Petersburg University, 198904 St. Petersburg, Russia"
+      }
+    ],
+    "family": "Mitrushenkov"
+  },
+  {
+    "given": "Paolo",
+    "affiliation": [
+      {
+        "name": "Dipartimento di Chimica Fisica ed Inorganica, Università di Bologna, Viale Risorgimento 4, 40136 Bologna, Italy"
+      }
+    ],
+    "family": "Palmieri"
+  }
+]

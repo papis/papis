@@ -2,6 +2,7 @@
 import subprocess
 import multiprocessing
 import time
+import copy
 from itertools import count, product
 import os
 import re
@@ -9,10 +10,12 @@ import papis.pick
 import papis.config
 import papis.commands
 import papis.document
-import papis.crossref
 import papis.bibtex
 import papis.exceptions
 import logging
+import papis.importer
+import papis.downloaders
+import colorama
 
 logger = logging.getLogger("utils")
 logger.debug("importing")
@@ -64,6 +67,19 @@ def general_open(fileName, key, default_opener=None, wait=True):
         raise Warning("How should I use the opener %s?" % opener)
 
 
+def open_file(file_path, wait=True):
+    """Open file using the ``opentool`` key value as a program to
+    handle file_path.
+
+    :param file_path: File path to be handled.
+    :type  file_path: str
+    :param wait: Wait for the completion of the opener program to continue
+    :type  wait: bool
+
+    """
+    general_open(fileName=file_path, key="opentool", wait=wait)
+
+
 def format_doc(python_format, document, key=""):
     """Construct a string using a pythonic format string and a document.
 
@@ -78,6 +94,8 @@ def format_doc(python_format, document, key=""):
     :rtype: str
     """
     doc = key or papis.config.get("format-doc-name")
+    fdoc = papis.document.Document()
+    fdoc.update(document)
     if papis.config.getboolean('format-jinja2-enable') is True:
         try:
             import jinja2
@@ -90,8 +108,11 @@ def format_doc(python_format, document, key=""):
 
             """)
         else:
-            return jinja2.Template(python_format).render(**{doc: document})
-    return python_format.format(**{doc: document})
+            return jinja2.Template(python_format).render(**{doc: fdoc})
+    try:
+        return python_format.format(**{doc: fdoc})
+    except Exception as e:
+        return str(e)
 
 
 def get_folders(folder):
@@ -216,13 +237,14 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
     lexer = PygmentsLexer(pygment_lexer)
     text_window = Window(
         height=text_height,
+        style='bg:black fg:ansiwhite',
         content=BufferControl(buffer=buffer1, lexer=lexer)
     )
 
     root_container = HSplit([
         Window(
-            char='-',
-            align=WindowAlign.CENTER,
+            align=WindowAlign.LEFT,
+            style='bg:ansiwhite',
             height=1,
             content=FormattedTextControl(
                 text=[('fg:ansiblack bg:ansiwhite', title)]
@@ -235,8 +257,8 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
         Window(
             height=1,
             width=None,
-            align=WindowAlign.CENTER,
-            char='-',
+            align=WindowAlign.LEFT,
+            style='bg:ansiwhite',
             content=FormattedTextControl(
                 text=[(
                     'fg:ansiblack bg:ansiwhite',
@@ -320,6 +342,19 @@ def input(
     )
 
     return result if result else default
+
+
+def update_doc_from_data_interactively(document, data, data_name):
+    import papis.tui.widgets.diff
+    docdata = copy.copy(document)
+    # do not compare some entries
+    docdata.pop('files', None)
+    docdata.pop('tags', None)
+    document.update(
+        papis.tui.widgets.diff.diffdict(
+            docdata,
+            data,
+            namea=papis.document.describe(document), nameb=data_name))
 
 
 def clean_document_name(doc_path):
@@ -466,3 +501,37 @@ def get_cache_home():
     if not os.path.exists(path):
         os.makedirs(path)
     return path
+
+
+def geturl(url):
+    """Quick and dirty file get request utility.
+    """
+    assert(isinstance(url, str))
+    import requests
+    session = requests.Session()
+    session.headers = {'User-Agent': papis.config.get('user-agent')}
+    return session.get(url).content
+
+
+def get_matching_importer_or_downloader(matching_string):
+    importers = []
+    logger = logging.getLogger("utils:matcher")
+    for importer_cls in (papis.importer.get_importers() +
+                         papis.downloaders.get_downloaders()):
+        importer = importer_cls.match(matching_string)
+        logger.debug(
+            "trying with importer {c.Back.BLACK}{c.Fore.YELLOW}{name}"
+            "{c.Style.RESET_ALL}".format(
+                c=colorama, name=importer_cls))
+        if importer:
+            logger.info(
+                "{f} {c.Back.BLACK}{c.Fore.GREEN}matches {name}"
+                "{c.Style.RESET_ALL}".format(
+                    f=matching_string, c=colorama, name=importer.name))
+            try:
+                importer.fetch()
+            except Exception as e:
+                logger.error(e)
+            else:
+                importers.append(importer)
+    return importers

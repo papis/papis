@@ -1,0 +1,67 @@
+{
+  "abstract": "... to 100 {\\%}(concurrent intercalation)...",
+  "author": "Shi, % some comments here Fazhan and Rong, Xing and Xu, Nanyang and Wang, Ya and Wu, Jie and Chong, Bo and Peng, Xinhua and Kniepert, Juliane and Schoenfeld, Rolf-Simon and Harneit, Wolfgang and Feng, Mang and Du, Jiangfeng",
+  "author_list": [
+    {
+      "family": "Shi",
+      "given": "% some comments here Fazhan"
+    },
+    {
+      "family": "Rong",
+      "given": "Xing"
+    },
+    {
+      "family": "Xu",
+      "given": "Nanyang"
+    },
+    {
+      "family": "Wang",
+      "given": "Ya"
+    },
+    {
+      "family": "Wu",
+      "given": "Jie"
+    },
+    {
+      "family": "Chong",
+      "given": "Bo"
+    },
+    {
+      "family": "Peng",
+      "given": "Xinhua"
+    },
+    {
+      "family": "Kniepert",
+      "given": "Juliane"
+    },
+    {
+      "family": "Schoenfeld",
+      "given": "Rolf-Simon"
+    },
+    {
+      "family": "Harneit",
+      "given": "Wolfgang"
+    },
+    {
+      "family": "Feng",
+      "given": "Mang"
+    },
+    {
+      "family": "Du",
+      "given": "Jiangfeng"
+    }
+  ],
+  "doi": "10.1103/PhysRevLett.105.040504",
+  "issue": "4",
+  "journal": "Phys. {Rev}. Lett.",
+  "month": "Jul",
+  "numpages": "4",
+  "pages": "040504",
+  "publisher": "American Physical Society",
+  "ref": "PhysRevLett.105.040504",
+  "title": "\nRoom-Temperature Implementation of the Deutsch-Jozsa Algorithm with a Single\nElectronic Spin in Diamond\n",
+  "type": "article",
+  "url": "http://link.aps.org/doi/10.1103/PhysRevLett.105.040504",
+  "volume": "105",
+  "year": "2010"
+}

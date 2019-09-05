@@ -6,20 +6,6 @@
 #   ./venv/bin/pip install --editable .[dev]  # with dev requirements, too
 
 import sys
-
-main_dependencies = [ "setuptools" ]
-for dep in main_dependencies:
-    try:
-        __import__(dep)
-    except ImportError:
-        print(
-            "Error: You do not have %s installed, please\n"
-            "       install it. For example doing\n"
-            "\n"
-            "       pip3 install %s\n" % (dep, dep)
-        )
-        sys.exit(1)
-
 import glob
 from setuptools import setup, find_packages
 import papis
@@ -77,7 +63,6 @@ setup(
         "beautifulsoup4>=4.4.1",
         "colorama>=0.2",
         "bibtexparser>=0.6.2",
-        "pylibgen>=1.3.0",
         "click>=7.0.0",
         "python-slugify>=1.2.6",
         "habanero>=0.6.0",
@@ -86,6 +71,8 @@ setup(
         "tqdm>=4.1",
         "pygments>=2.2.0",
         "stevedore>=1.30",
+        "python-doi>=0.1.1",
+        "lxml"
     ],
     python_requires='>=3',
     classifiers=[
@@ -121,8 +108,10 @@ setup(
             'pytest-cov==2.5.0',
         ]
     ),
-    description='Powerful and highly extensible command-line based document '
-                'and bibliography manager',
+    description=(
+        'Powerful and highly extensible command-line based document '
+        'and bibliography manager'
+    ),
     long_description=long_description,
     keywords=[
         'document', 'crossref', 'libgen', 'scihub', 'physics', 'mathematics',
@@ -145,6 +134,19 @@ setup(
             'bibtex=papis.commands.export:export_to_bibtex',
             'json=papis.commands.export:export_to_json',
             'yaml=papis.commands.export:export_to_yaml',
+        ],
+        'papis.importer': [
+            'bibtex=papis.bibtex:Importer',
+            'yaml=papis.yaml:Importer',
+            'doi=papis.crossref:Importer',
+            'crossref=papis.crossref:FromCrossrefImporter',
+            'pdf2doi=papis.crossref:DoiFromPdfImporter',
+            # 'url=papis.downloaders:Importer',
+            'arxiv=papis.arxiv:Importer',
+            'pdf2arxivid=papis.arxiv:ArxividFromPdfImporter',
+            'pmid=papis.pubmed:Importer',
+            'lib=papis.commands.add:FromLibImporter',
+            'folder=papis.commands.add:FromFolderImporter',
         ],
         'papis.picker': [
             'papis=papis.pick:papis_pick',
@@ -173,13 +175,16 @@ setup(
             "frontiersin=papis.downloaders.frontiersin:Downloader",
             "get=papis.downloaders.get:Downloader",
             "hal=papis.downloaders.hal:Downloader",
+            "doi=papis.crossref:Downloader",
             "ieee=papis.downloaders.ieee:Downloader",
+            "sciencedirect=papis.downloaders.sciencedirect:Downloader",
+            "tandfonline=papis.downloaders.tandfonline:Downloader",
+            "springer=papis.downloaders.springer:Downloader",
             "iopscience=papis.downloaders.iopscience:Downloader",
             "scitationaip=papis.downloaders.scitationaip:Downloader",
             "thesesfr=papis.downloaders.thesesfr:Downloader",
             "worldscientific=papis.downloaders.worldscientific:Downloader",
             "fallback=papis.downloaders.fallback:Downloader",
-            "libgen=papis.libgen:Downloader",
             "arxiv=papis.arxiv:Downloader",
         ],
         'papis.explorer': [
@@ -188,7 +193,6 @@ setup(
             "cmd=papis.commands.explore:cmd",
             "pick=papis.commands.explore:pick",
             "arxiv=papis.arxiv:explorer",
-            "libgen=papis.libgen:explorer",
             "crossref=papis.crossref:explorer",
             "dissemin=papis.dissemin:explorer",
             "base=papis.base:explorer",

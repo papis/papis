@@ -27,6 +27,7 @@ Cli
 
 """
 import os
+import difflib
 import sys
 import papis
 import papis.api
@@ -69,6 +70,15 @@ class MultiCommand(click.MultiCommand):
         try:
             script = self.scripts[name]
         except KeyError:
+            self.logger.error(
+                '{c.Fore.RED}{c.Style.BRIGHT}{c.Back.BLACK}'
+                'did you mean {0}?'
+                '{c.Style.RESET_ALL}'
+                .format(
+                    ' or '.join(
+                        difflib.get_close_matches(name, self.scripts, n=2)),
+                    c=colorama
+                ))
             return None
         if script['plugin']:
             return script['plugin']

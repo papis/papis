@@ -9,8 +9,6 @@ import papis.config
 from papis.commands.add import (
     run, cli,
     get_file_name,
-    get_default_title,
-    get_default_author,
     get_hash_folder
 )
 from tests import (
@@ -48,23 +46,6 @@ def test_get_hash_folder():
 
     newnewhh = get_hash_folder(data, [path])
     assert not newnewhh == newhh
-
-
-def test_get_default_title_and_author():
-    assert(
-        get_default_title({'title': 'hello world'}, 'whatever.pdf')
-        ==
-        'hello world'
-    )
-    pdf = create_random_pdf(suffix='luces-de-bohemia.pdf')
-    assert(re.match('.*luces de bohemia$', get_default_title(dict(), pdf)))
-
-    assert(
-        get_default_author({'author': 'Garcilaso de la vega'}, 'whatever.pdf')
-        ==
-        'Garcilaso de la vega'
-    )
-    assert(get_default_author(dict(), 'Luces-de-bohemia.pdf') == 'Unknown')
 
 
 class TestGetFileName(unittest.TestCase):
@@ -227,7 +208,7 @@ class TestCli(tests.cli.TestCli):
         assert(len(re.split(r'[.]pdf', gotpdf)) == 2)
 
         result = self.invoke([
-            '--from-folder', doc.get_main_folder()
+            '--from folder', doc.get_main_folder()
         ])
         self.assertTrue(result.exit_code == 0)
         docs = db.query_dict(dict(author="Aristoteles"))
@@ -252,7 +233,7 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(get_document_extension(pdf) == 'pdf')
 
         result = self.invoke([
-            pdf, '--from-bibtex', bibfile
+            pdf, '--from bibtex', bibfile
         ])
 
         db = papis.database.get()
@@ -285,7 +266,7 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(get_document_extension(epub) == 'epub')
 
         result = self.invoke([
-            epub, '--from-yaml', yamlfile
+            epub, '--from yaml', yamlfile
         ])
 
         db = papis.database.get()
@@ -315,7 +296,7 @@ class TestCli(tests.cli.TestCli):
     @patch('papis.utils.text_area', lambda *x, **y: True)
     def test_from_doi(self):
         result = self.invoke([
-            '--from-doi', '10.1112/plms/s2-42.1.0',
+            '--from doi', '10.1112/plms/s2-42.1.0',
             '--confirm', '--open'
         ])
         self.assertTrue(result.exit_code == 0)
@@ -338,6 +319,6 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(os.path.exists(folder))
         self.assertTrue(os.path.exists(newdoc.get_info_file()))
         result = self.invoke([
-            '--confirm', '--from-lib', newdoc.get_main_folder(), '--open'
+            '--confirm', '--from lib', newdoc.get_main_folder(), '--open'
         ])
         self.assertTrue(result.exit_code == 0)
