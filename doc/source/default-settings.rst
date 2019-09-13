@@ -278,7 +278,7 @@ Bibtex options
 
 .. papis-config:: add-file-name
 
-    Same as ``add-name``, but for files, not folders. If it is not set,
+    Same as ``add-folder-name``, but for files, not folders. If it is not set,
     the names of the files will be cleaned and taken `as-is`.
 
 .. papis-config:: add-interactive
