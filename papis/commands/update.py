@@ -110,14 +110,16 @@ def cli(
 
     documents = papis.database.get().query(query)
     logger = logging.getLogger('cli:update')
-    if not documents:
-        logger.warning(papis.strings.no_documents_retrieved_message)
 
     if doc_folder:
         documents = [papis.document.from_folder(doc_folder)]
 
     if not all_entries:
-        documents = filter(lambda d: d, [papis.pick.pick_doc(documents)])
+        documents = list(filter(lambda d: d, [papis.pick.pick_doc(documents)]))
+
+    if not documents:
+        logger.error(papis.strings.no_documents_retrieved_message)
+        return
 
     for document in documents:
         ctx = papis.importer.Context()
