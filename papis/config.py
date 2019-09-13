@@ -538,8 +538,6 @@ def reset_configuration():
     :rtype:  papis.config.Configuration
     """
     global _CONFIGURATION
-    if _CONFIGURATION is not None:
-        logger.warning("Overwriting previous configuration")
     _CONFIGURATION = None
     logger.debug("Resetting configuration")
     return get_configuration()

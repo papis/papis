@@ -115,6 +115,7 @@ class MultiCommand(click.MultiCommand):
     "-c",
     "--config",
     help="Configuration file to use",
+    type=click.Path(exists=True),
     default=None,
 )
 @click.option(
