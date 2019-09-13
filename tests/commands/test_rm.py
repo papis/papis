@@ -144,3 +144,15 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(len(docs) == 1)
         Nf = len(docs[0].get_files())
         self.assertTrue(N == Nf+1)
+
+
+    def test_rm_all(self):
+        db = papis.database.get()
+        docs = db.query_dict(dict(author='test_author'))
+        self.assertTrue(len(docs) == 2)
+        
+        result = self.invoke(['test_author', '--all', '--force'])
+        self.assertTrue(result.exit_code == 0)
+
+        docs = db.query_dict(dict(author='test_author'))
+        self.assertTrue(len(docs) == 0)
