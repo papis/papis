@@ -357,8 +357,8 @@ class FromCrossrefImporter(papis.importer.Importer):
 
     @classmethod
     def match_data(cls, data):
-        if 'doi' in data:
-            return Importer(uri=data['doi'])
+        if 'title' in data:
+            return FromCrossrefImporter(uri=data['title'])
 
     def fetch(self):
         self.logger.info("querying '{0}' to crossref.org".format(self.uri))

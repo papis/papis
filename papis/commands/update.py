@@ -141,13 +141,14 @@ def cli(
             for importer_cls in papis.importer.get_importers():
                 try:
                     importer = importer_cls.match_data(document)
-                    importer.fetch()
+                    if importer:
+                        importer.fetch()
                 except NotImplementedError:
                     continue
                 except Exception as e:
                     logger.exception(e)
                 else:
-                    if importer.ctx:
+                    if importer and importer.ctx:
                         matching_importers.append(importer)
 
         for _importer_name, _uri in from_importer:

@@ -56,7 +56,7 @@ class Importer:
         )
 
     @classmethod
-    def match_data(data):
+    def match_data(cls, data):
         """Get a dictionary of data and try to decide if there is
         a valid uri in it.
 

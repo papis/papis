@@ -57,10 +57,11 @@ def prompt(text, title='', actions=[], **kwargs):
         ] if title else [])
     )
 
-    Application(
+    app = Application(
         layout=Layout(root_container),
         key_bindings=kb,
-        **kwargs).run()
+        **kwargs)
+    app.run()
 
 
 def diffshow(texta, textb, title='', namea='a', nameb='b', actions=[]):
