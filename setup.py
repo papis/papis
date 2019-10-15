@@ -162,6 +162,7 @@ setup(
             "git=papis.commands.git:cli",
             "list=papis.commands.list:cli",
             "mv=papis.commands.mv:cli",
+            "bibtex=papis.commands.bibtex:cli",
             "open=papis.commands.open:cli",
             "rename=papis.commands.rename:cli",
             "rm=papis.commands.rm:cli",
