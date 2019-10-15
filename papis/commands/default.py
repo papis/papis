@@ -70,16 +70,22 @@ class MultiCommand(click.MultiCommand):
         try:
             script = self.scripts[name]
         except KeyError:
+            matches = difflib.get_close_matches(name, self.scripts, n=2)
             self.logger.error(
                 '{c.Fore.RED}{c.Style.BRIGHT}{c.Back.BLACK}'
                 'did you mean {0}?'
                 '{c.Style.RESET_ALL}'
                 .format(
-                    ' or '.join(
-                        difflib.get_close_matches(name, self.scripts, n=2)),
+                    ' or '.join(matches),
                     c=colorama
                 ))
-            return None
+            # return the match if there was only one match
+            if len(matches) == 1:
+                self.logger.warning("I suppose you meant {0}".format(*matches))
+                script = self.scripts[matches[0]]
+            else:
+                return None
+
         if script['plugin']:
             return script['plugin']
         # If it gets here, it means that it is an external script
