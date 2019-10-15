@@ -26,8 +26,7 @@ config.register_default_settings({'bibtex': {
 explorer_mgr = explore.get_explorer_mgr()
 
 
-print('hello world')
-@click.group(cls=papis.cli.AliasedGroup, chain=True)
+@click.group("bibtex", cls=papis.cli.AliasedGroup, chain=True)
 @click.help_option('-h', '--help')
 @click.option(
     '--noar', '--no-auto-read', 'no_auto_read',

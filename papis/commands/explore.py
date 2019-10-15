@@ -349,7 +349,9 @@ def cmd(ctx, command):
         call(splitted_command)
 
 
-@click.group("explore", invoke_without_command=False, chain=True)
+@click.group("explore",
+    cls=papis.cli.AliasedGroup,
+    invoke_without_command=False, chain=True)
 @click.help_option('--help', '-h')
 @click.pass_context
 def cli(ctx):
