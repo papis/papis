@@ -91,6 +91,7 @@ import papis.cli
 import click
 import colorama
 import papis.downloaders
+import papis.git
 
 logger = logging.getLogger('add')
 
@@ -396,11 +397,9 @@ def run(
     papis.document.move(tmp_document, out_folder_path)
     papis.database.get().add(tmp_document)
     if commit:
-        subprocess.call(["git", "-C", out_folder_path, "add", "."])
-        subprocess.call(
-            ["git", "-C", out_folder_path, "commit", "-m", "Add document"]
-        )
-    return
+        papis.git.add_and_commit_resource(
+            document.get_main_folder(), '.',
+            "Add document '{0}'".format(papis.document.describe(document)))
 
 
 @click.command(

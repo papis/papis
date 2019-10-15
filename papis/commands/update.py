@@ -49,6 +49,7 @@ import papis.database
 import papis.pick
 import papis.cli
 import papis.importer
+import papis.git
 import click
 
 
@@ -63,10 +64,18 @@ def run(document, data=dict()):
     data['ref'] = document['ref']
     document.update(data)
     _update_with_database(document)
+    if git:
+        papis.git.add_and_commit_resource(
+            document.get_main_folder(),
+            document.get_info_file(),
+            "Update information for '{0}'".format(
+                papis.document.describe(document)))
+
 
 
 @click.command("update")
 @click.help_option('--help', '-h')
+@papis.cli.git_option()
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
 @click.option(
@@ -100,6 +109,7 @@ def run(document, data=dict()):
 )
 def cli(
         query,
+        git,
         doc_folder,
         from_importer,
         auto,

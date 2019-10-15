@@ -7,8 +7,7 @@ def query_option(**attrs):
     def decorator(f):
         attrs.setdefault(
             'default',
-            lambda: papis.config.get('default-query-string')
-        )
+            lambda: papis.config.get('default-query-string'))
         return click.decorators.argument('query', **attrs)(f)
     return decorator
 
@@ -23,14 +22,13 @@ def doc_folder_option(**attrs):
     return decorator
 
 
-def git_option(**attrs):
+def git_option(help="Add git interoperability", **attrs):
     """Adds a ``git`` option as a decorator"""
     def decorator(f):
         attrs.setdefault(
             'default',
-            lambda: True if papis.config.get('use-git') else False
-        )
-        attrs.setdefault('help', 'Add git interoperability')
+            lambda: True if papis.config.get('use-git') else False)
+        attrs.setdefault('help', help)
         return click.decorators.option('--git/--no-git', **attrs)(f)
     return decorator
 

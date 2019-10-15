@@ -377,26 +377,6 @@ def clean_document_name(doc_path):
     )
 
 
-def git_commit(path="", message=""):
-    """Commits changes in the path with a message.
-    If the path is not given, then the lib path is used.
-
-    :param path: Folder where a git repo exists.
-    :type  path: str
-    :param message: Commit message
-    :type  message: str
-    :returns: None
-
-    """
-    logger.debug('Commiting...')
-    dirs = papis.config.get_lib_dirs()
-    path = path or os.path.expanduser(dirs[0])
-    message = '-m "%s"' % message if len(message) > 0 else ''
-    cmd = ['git', '-C', path, 'commit', message]
-    logger.debug(cmd)
-    subprocess.call(cmd)
-
-
 def locate_document_in_lib(document, library=None):
     """Try to figure out if a document is already in a library
 

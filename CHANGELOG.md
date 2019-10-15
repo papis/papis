@@ -2,6 +2,18 @@
 VERSION v0.9
 ============
 
+## Git interface ##
+
+Now some usual commands have a `--git` flag that lets the command work
+alongside git. For instance if the `--git` flag is passed to `papis-edit`,
+it will add and commit the `info.yaml` file automatically. The same applies
+to `papis-add`, `papis-addto`, `papis-update` and `papis-rm`.
+
+You can activate by default the `--git` flag using the `use-git` configuration
+option.
+**For devs**: The main functions to implement this interface are found in the
+papis module `papis.git`.
+
 ## `papis add` ##
 
 - The configuration settings `file-name` and `folder-name` are now
@@ -11,6 +23,7 @@ VERSION v0.9
   ```
   so that they become more readable and understandable.
   Also the flag `--name` is now `--folder-name`.
+- The flag `--commit` now has the name `--git`.
 - The flag `--dir` now has the more descriptive name `--subfolder`.
 - The flag `--no-document` has been finally removed.
 - The most notable update is that papis is now able to guess a `doi`
