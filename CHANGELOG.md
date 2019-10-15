@@ -62,6 +62,14 @@ papis module `papis.git`.
 - Change the flags for `papis explore export` to match the `papis export`
   command.
 
+## `papis list` ##
+
+- Add `-n, --notes` flags to list notes.
+- Remove the `--pick` flag and add the `--all` flag to be consistent with the
+  behaviour of other commands.
+- Remove the query argument in the `run` function for consistency with other
+  commands.
+
 ## `papis browse` ##
 
 - Add `--all` flag, improve tests and log.
