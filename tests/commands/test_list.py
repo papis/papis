@@ -19,30 +19,20 @@ class Test(unittest.TestCase):
     def test_lib_is_correct(self):
         assert(papis.config.get_lib_name() == tests.get_test_lib_name())
 
-    def test_list_docs(self):
-        docs = run(
-            query=papis.database.get_all_query_string(),
-            library=papis.config.get_lib_name()
-        )
-        assert(isinstance(docs, list))
-        assert(len(docs) >= 1)
-
-    def test_list_docs_no_lib(self):
-        docs = run(
-            query=papis.database.get_all_query_string()
-        )
-        assert(isinstance(docs, list))
-        assert(len(docs) >= 1)
+    def test_list_info_notes(self):
+        for k in [[dict(info_files=True), 1], [dict(notes=True), 0]]:
+            objs = run(papis.database.get().get_all_documents(), **k[0])
+            assert(isinstance(objs, list))
+            assert(len(objs) >= k[1])
 
     def test_list_libs(self):
-        libs = run(libraries=True)
+        libs = run([], libraries=True)
         assert(len(libs) >= 1)
 
     def test_list_folders(self):
         folders = run(
-            query=papis.database.get_all_query_string(),
-            library=papis.config.get_lib_name(),
-            folders=True
+           papis.database.get().get_all_documents(),
+           folders=True
         )
         assert(len(folders) >= 1)
         assert(isinstance(folders, list))
