@@ -58,7 +58,7 @@ def _update_with_database(document):
     papis.database.get().update(document)
 
 
-def run(document, data=dict()):
+def run(document, data=dict(), git=False):
     # Keep the ref the same, otherwise issues can be caused when
     # writing LaTeX documents and all the ref's change
     data['ref'] = document['ref']
@@ -193,4 +193,4 @@ def cli(
                         if papis.utils.confirm("Use this file?"):
                             ctx.files.append(f)
 
-        run(document, data=ctx.data)
+        run(document, data=ctx.data, git=git)
