@@ -398,7 +398,7 @@ def run(
     papis.database.get().add(tmp_document)
     if git:
         papis.git.add_and_commit_resource(
-            document.get_main_folder(), '.',
+            tmp_document.get_main_folder(), '.',
             "Add document '{0}'".format(papis.document.describe(document)))
 
 
