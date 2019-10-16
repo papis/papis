@@ -232,7 +232,7 @@ def run(
         confirm=False,
         open_file=False,
         edit=False,
-        commit=False,
+        git=False,
         link=False
         ):
     """
@@ -256,9 +256,9 @@ def run(
     :param edit: Wether or not to ask user for editing the infor file
         before adding.
     :type  edit: bool
-    :param commit: Wether or not to ask user for committing before adding,
+    :param git: Wether or not to ask user for committing before adding,
         in the case of course that the library is a git repository.
-    :type  commit: bool
+    :type  git: bool
     """
 
     logger = logging.getLogger('add:run')
@@ -396,7 +396,7 @@ def run(
     # This also sets the folder of tmp_document
     papis.document.move(tmp_document, out_folder_path)
     papis.database.get().add(tmp_document)
-    if commit:
+    if git:
         papis.git.add_and_commit_resource(
             document.get_main_folder(), '.',
             "Add document '{0}'".format(papis.document.describe(document)))
@@ -412,23 +412,19 @@ def run(
     "-s", "--set", "set_list",
     help="Set some information before",
     multiple=True,
-    type=(str, str)
-)
+    type=(str, str))
 @click.option(
     "-d", "--subfolder",
     help="Subfolder in the library",
-    default=""
-)
+    default="")
 @click.option(
     "--folder-name",
     help="Name for the document's folder (papis format)",
-    default=lambda: papis.config.get('add-folder-name')
-)
+    default=lambda: papis.config.get('add-folder-name'))
 @click.option(
     "--file-name",
     help="File name for the document (papis format)",
-    default=None
-)
+    default=None)
 @click.option(
     "--from", "from_importer",
     help="Add document from a specific importer ({0})".format(
@@ -437,50 +433,38 @@ def run(
     type=(click.Choice(papis.importer.available_importers()), str),
     nargs=2,
     multiple=True,
-    default=(),
-)
+    default=(),)
 @click.option(
     "-b", "--batch",
     help="Batch mode, do not prompt or otherwise",
-    default=False, is_flag=True
-)
+    default=False, is_flag=True)
 @click.option(
     "--confirm/--no-confirm",
     help="Ask to confirm before adding to the collection",
-    default=lambda: True if papis.config.get('add-confirm') else False
-)
+    default=lambda: True if papis.config.get('add-confirm') else False)
 @click.option(
     "--open/--no-open", "open_file",
     help="Open file before adding document",
-    default=lambda: True if papis.config.get('add-open') else False
-)
+    default=lambda: True if papis.config.get('add-open') else False)
 @click.option(
     "--edit/--no-edit",
     help="Edit info file before adding document",
-    default=lambda: True if papis.config.get('add-edit') else False
-)
-@click.option(
-    "--commit/--no-commit",
-    help="Commit document if library is a git repository",
-    default=False
-)
+    default=lambda: True if papis.config.get('add-edit') else False)
 @click.option(
     "-S", "--smart",
     help="Try to do smart things to get information from documents",
-    default=False, is_flag=True
-)
+    default=False, is_flag=True)
 @click.option(
     "--link/--no-link",
     help="Instead of copying the file to the library, create a link to"
          "its original location",
-    default=False
-)
+    default=False)
+@papis.cli.git_option(help="Git add and commit the new document")
 @click.option(
     "--list-importers", "--li", "list_importers",
     help="List all available papis importers",
     default=False,
-    is_flag=True
-)
+    is_flag=True)
 def cli(
         files,
         set_list,
@@ -492,7 +476,7 @@ def cli(
         confirm,
         open_file,
         edit,
-        commit,
+        git,
         smart,
         link,
         list_importers,
@@ -576,6 +560,6 @@ def cli(
         confirm=confirm,
         open_file=open_file,
         edit=edit,
-        commit=commit,
+        git=git,
         link=link
     )
