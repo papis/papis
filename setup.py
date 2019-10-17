@@ -72,7 +72,8 @@ setup(
         "pygments>=2.2.0",
         "stevedore>=1.30",
         "python-doi>=0.1.1",
-        "lxml<=4.4.0"
+        # for python 3.4
+        "lxml<=4.3.5"
     ],
     python_requires='>=3',
     classifiers=[
