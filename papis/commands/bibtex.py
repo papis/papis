@@ -82,9 +82,13 @@ def _add(ctx, query, all):
     '-t', '--to', help='Update the library document from retrieved document',
     show_default=True,
     default=False, is_flag=True)
+@click.option(
+    '-k', '--keys',
+    help='Update only given keys (this flag can be given multiple times)',
+    type=str, multiple=True)
 @click.pass_context
-def _update(ctx, all, fromdb, to):
-    """Update information from and to the library"""
+def _update(ctx, all, fromdb, to, keys):
+    """Update documents from and to the library"""
     docs = click.get_current_context().obj['documents']
     picked_doc = None
     picked_index = -1
@@ -111,7 +115,11 @@ def _update(ctx, all, fromdb, to):
                     '{c.Fore.GREEN}{c.Back.BLACK}{doc: <80.80}{c.Style.RESET_ALL}'
                     .format(doc=papis.document.describe(doc), c=colorama)
                 )
-                docs[j] = libdoc
+                if keys:
+                    docs[j].update(
+                        {k: libdoc.get(k) for k in keys if libdoc.has(k)})
+                else:
+                    docs[j] = libdoc
     click.get_current_context().obj['documents'] = docs
 
 
