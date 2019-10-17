@@ -208,7 +208,7 @@ class TestCli(tests.cli.TestCli):
         assert(len(re.split(r'[.]pdf', gotpdf)) == 2)
 
         result = self.invoke([
-            '--from folder', doc.get_main_folder()
+            '--from', 'folder', doc.get_main_folder()
         ])
         self.assertTrue(result.exit_code == 0)
         docs = db.query_dict(dict(author="Aristoteles"))
@@ -233,7 +233,7 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(get_document_extension(pdf) == 'pdf')
 
         result = self.invoke([
-            pdf, '--from bibtex', bibfile
+            pdf, '--from', 'bibtex', bibfile
         ])
 
         db = papis.database.get()
@@ -266,7 +266,7 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(get_document_extension(epub) == 'epub')
 
         result = self.invoke([
-            epub, '--from yaml', yamlfile
+            epub, '--from', 'yaml', yamlfile
         ])
 
         db = papis.database.get()
@@ -296,7 +296,7 @@ class TestCli(tests.cli.TestCli):
     @patch('papis.utils.text_area', lambda *x, **y: True)
     def test_from_doi(self):
         result = self.invoke([
-            '--from doi', '10.1112/plms/s2-42.1.0',
+            '--from', 'doi', '10.1112/plms/s2-42.1.0',
             '--confirm', '--open'
         ])
         self.assertTrue(result.exit_code == 0)
@@ -319,6 +319,6 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(os.path.exists(folder))
         self.assertTrue(os.path.exists(newdoc.get_info_file()))
         result = self.invoke([
-            '--confirm', '--from lib', newdoc.get_main_folder(), '--open'
+            '--confirm', '--from', 'lib', newdoc.get_main_folder(), '--open'
         ])
         self.assertTrue(result.exit_code == 0)
