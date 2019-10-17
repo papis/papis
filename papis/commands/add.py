@@ -399,7 +399,7 @@ def run(
     if git:
         papis.git.add_and_commit_resource(
             tmp_document.get_main_folder(), '.',
-            "Add document '{0}'".format(papis.document.describe(document)))
+            "Add document '{0}'".format(papis.document.describe(tmp_document)))
 
 
 @click.command(
