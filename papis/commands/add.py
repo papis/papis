@@ -291,9 +291,11 @@ def run(
         del temp_doc
 
     data["files"] = in_documents_names
-    out_folder_path = os.path.expanduser(os.path.join(
-        papis.config.get_lib_dirs()[0], subfolder or '',  out_folder_name
-    ))
+    out_folder_path = os.path.expanduser(
+        os.path.join(
+            papis.config.get_lib_dirs()[0],
+            subfolder or '',
+            out_folder_name))
 
     logger.info("The folder name is {0}".format(out_folder_name))
     logger.debug("Folder path: {0}".format(out_folder_path))
@@ -313,29 +315,24 @@ def run(
             get_file_name(
                 data,
                 in_file_path,
-                suffix=string_append
-            )
-        )
+                suffix=string_append))
         new_file_list.append(new_filename)
 
         tmp_end_filepath = os.path.join(
             tmp_document.get_main_folder(),
-            new_filename
-        )
+            new_filename)
         string_append = next(g)
 
         if link:
             in_file_abspath = os.path.abspath(in_file_path)
             logger.debug(
                 "[SYMLINK] '%s' to '%s'" %
-                (in_file_abspath, tmp_end_filepath)
-            )
+                (in_file_abspath, tmp_end_filepath))
             os.symlink(in_file_abspath, tmp_end_filepath)
         else:
             logger.debug(
                 "[CP] '%s' to '%s'" %
-                (in_file_path, tmp_end_filepath)
-            )
+                (in_file_path, tmp_end_filepath))
             shutil.copy(in_file_path, tmp_end_filepath)
 
     data['files'] = new_file_list
@@ -360,25 +357,20 @@ def run(
         logger.warning(
             colorama.Fore.RED +
             "DUPLICATION WARNING" +
-            colorama.Style.RESET_ALL
-        )
+            colorama.Style.RESET_ALL)
         logger.warning(
-            "The document beneath is in your library and it seems to match"
-        )
+            "The document beneath is in your library and it seems to match")
         logger.warning(
             "the one that you're trying to add, "
-            "I will prompt you for confirmation"
-        )
+            "I will prompt you for confirmation")
         logger.warning(
             "(Hint) Use the update command if you just want to update"
-            " the info."
-        )
+            " the info.")
         papis.utils.text_area(
             'The following document is already in your library',
             papis.document.dump(found_document),
             lexer_name='yaml',
-            height=20
-        )
+            height=20)
         confirm = True
 
     if open_file:
@@ -464,22 +456,8 @@ def run(
     help="List all available papis importers",
     default=False,
     is_flag=True)
-def cli(
-        files,
-        set_list,
-        subfolder,
-        folder_name,
-        file_name,
-        from_importer,
-        batch,
-        confirm,
-        open_file,
-        edit,
-        git,
-        smart,
-        link,
-        list_importers,
-        ):
+def cli(files, set_list, subfolder, folder_name, file_name, from_importer,
+        batch, confirm, open_file, edit, git, smart, link, list_importers):
 
     if list_importers:
         import_mgr = papis.importer.get_import_mgr()
@@ -533,17 +511,20 @@ def cli(
             if importer.ctx.data:
                 logger.info(
                     'Merging data from importer {0}'.format(importer.name))
-                papis.utils.update_doc_from_data_interactively(
-                    ctx.data,
-                    importer.ctx.data,
-                    str(importer))
+                if batch:
+                    ctx.data.update(importer.ctx.data)
+                else:
+                    papis.utils.update_doc_from_data_interactively(
+                        ctx.data,
+                        importer.ctx.data,
+                        str(importer))
             if importer.ctx.files:
                 logger.info(
                     'Got files {0} from importer {1}'
                     .format(importer.ctx.files, importer.name))
                 for f in importer.ctx.files:
                     papis.utils.open_file(f)
-                    if papis.utils.confirm("Use this file?"):
+                    if batch or papis.utils.confirm("Use this file?"):
                         ctx.files.append(f)
 
     if not ctx:
@@ -560,5 +541,4 @@ def cli(
         open_file=open_file,
         edit=edit,
         git=git,
-        link=link
-    )
+        link=link)
