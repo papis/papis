@@ -1,6 +1,5 @@
 import re
 import papis.downloaders.base
-import bs4
 import papis.document
 
 

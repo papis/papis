@@ -12,7 +12,6 @@ import papis.commands.browse
 import papis.commands.export
 import logging
 import colorama
-import difflib
 
 logger = logging.getLogger('papis:bibtex')
 
@@ -71,7 +70,8 @@ def _add(ctx, query, all):
 @cli.command('update')
 @click.help_option('-h', '--help')
 @click.option(
-    '-a', '--all', show_default=True, help='update all searched documents',
+    '-a', '--all', "_all",
+    show_default=True, help='update all searched documents',
     default=False, is_flag=True)
 @click.option(
     '--from', '-f', 'fromdb',
@@ -87,32 +87,33 @@ def _add(ctx, query, all):
     help='Update only given keys (this flag can be given multiple times)',
     type=str, multiple=True)
 @click.pass_context
-def _update(ctx, all, fromdb, to, keys):
+def _update(ctx, _all, fromdb, to, keys):
     """Update documents from and to the library"""
     docs = click.get_current_context().obj['documents']
     picked_doc = None
     picked_index = -1
-    if not all:
+    if not _all:
         picked_doc = papis.api.pick_doc(docs)
         if picked_doc is None:
             return
         picked_index = list(map(lambda x: id(x), docs)).index(id(picked_doc))
     for j, doc in enumerate(docs):
-        if not all:
+        if not _all:
             if not j == picked_index:
                 continue
         try:
             libdoc = papis.utils.locate_document_in_lib(doc)
         except IndexError as e:
             logger.info(
-                '{c.Fore.YELLOW}{0}: \n\t{c.Back.RED}{doc: <80.80}{c.Style.RESET_ALL}'
+                '{c.Fore.YELLOW}{0}:'
+                '\n\t{c.Back.RED}{doc: <80.80}{c.Style.RESET_ALL}'
                 .format(e, doc=papis.document.describe(doc), c=colorama)
             )
         else:
             if fromdb:
                 logger.info(
-                    'Updating \n\t'
-                    '{c.Fore.GREEN}{c.Back.BLACK}{doc: <80.80}{c.Style.RESET_ALL}'
+                    'Updating \n\t{c.Fore.GREEN}'
+                    '{c.Back.BLACK}{doc: <80.80}{c.Style.RESET_ALL}'
                     .format(doc=papis.document.describe(doc), c=colorama)
                 )
                 if keys:

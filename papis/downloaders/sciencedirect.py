@@ -1,11 +1,9 @@
 import re
-import bs4
 import papis.downloaders.base
 import papis.document
 import json
 import collections
 import functools
-import logging
 
 
 def get_author_list(data):

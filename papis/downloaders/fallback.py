@@ -1,6 +1,5 @@
 import doi
 import papis.downloaders.base
-import bs4
 
 
 class Downloader(papis.downloaders.base.Downloader):

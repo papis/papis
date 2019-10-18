@@ -1,6 +1,5 @@
 import re
 import papis.downloaders.base
-import bs4
 import papis.document
 
 
@@ -15,7 +14,7 @@ class Downloader(papis.downloaders.base.Downloader):
     @classmethod
     def match(cls, url):
         return (Downloader(url)
-                if re.match(r".*link.springer.com.*", url) else False)
+                if re.match(r".*link\.springer.com.*", url) else False)
 
     def get_data(self):
         data = dict()

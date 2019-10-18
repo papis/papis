@@ -2,7 +2,6 @@ import os
 import re
 import shutil
 import logging
-import collections
 
 import papis.utils
 import papis.config

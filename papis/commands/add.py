@@ -80,7 +80,6 @@ import re
 import tempfile
 import hashlib
 import shutil
-import subprocess
 import papis.api
 import papis.pick
 import papis.utils
