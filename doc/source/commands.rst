@@ -4,6 +4,7 @@ Commands
 .. include:: commands/add.rst
 .. include:: commands/addto.rst
 .. include:: commands/browse.rst
+.. include:: commands/bibtex.rst
 .. include:: commands/commands.rst
 .. include:: commands/config.rst
 .. include:: commands/default.rst

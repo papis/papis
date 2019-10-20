@@ -1,4 +1,76 @@
 # -*- coding: utf-8 -*-
+"""
+
+This command helps to interact with `bib` files in your LaTeX projects.
+
+Examples
+^^^^^^^^
+
+::
+
+    papis bibtex                            \
+      read new_papers.bib                   \ # Read bib file
+      cmd 'papis add --from-doi {doc[doi]}'   # For every entry run the command
+
+I use it for opening some papers for instance
+
+::
+
+    papis bibtex read new_papers.bib open
+
+or to add papers to the bib
+
+::
+
+    papis bibtex          \
+      read new_papers.bib \ # Read bib file
+      add einstein        \ # Pick a document with query 'einstein' from library
+      add heisenberg      \ # Pick a document with query 'heisenberg' from library
+      save new_papers.bib   # Save in new_papers.bib
+
+or if I update some information in my papis ``yaml`` files then I can do
+
+::
+
+    papis bibtex          \
+      read new_papers.bib \ # Read bib file
+      update -f           \ # Update what has been read from papis library
+      save new_papers.bib   # save everything to new_papers.bib, overwriting
+
+Maybe this is also interesting for you guys!
+
+Vim integration
+^^^^^^^^^^^^^^^
+
+Right now, you can easily use it from vim with these simple lines
+
+.. code:: vimscript
+
+    function! PapisBibtexRef()
+      let l:temp = tempname()
+      echom l:temp
+      silent exec "!papis bibtex ref -o ".l:temp
+      let l:olda = @a
+      let @a = join(readfile(l:temp), ',')
+      normal! "ap
+      redraw!
+      let @a = l:olda
+    endfunction
+
+    command! -nargs=0 BibRef call PapisBibtexRef()
+    command! -nargs=0 BibOpen exec "!papis bibtex open"
+
+And use like such: |asciicast|
+
+.. |asciicast| image:: https://asciinema.org/a/8KbLQJSVYVYNXHVF3wgcxx5Cp.svg
+   :target: https://asciinema.org/a/8KbLQJSVYVYNXHVF3wgcxx5Cp
+
+Cli
+^^^
+.. click:: papis.commands.add:cli
+    :prog: papis add
+
+"""
 import os
 import papis.api
 import papis.cli
