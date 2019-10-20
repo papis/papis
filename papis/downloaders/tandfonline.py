@@ -2,7 +2,6 @@ import re
 import urllib.parse
 
 import papis.downloaders.base
-import bs4
 import papis.document
 
 

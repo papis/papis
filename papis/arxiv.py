@@ -101,8 +101,6 @@ def get_data(
 
 def validate_arxivid(arxivid):
     from urllib.error import HTTPError, URLError
-    import urllib.request
-    import urllib.parse
     url = "https://arxiv.org/abs/{0}".format(arxivid)
     request = urllib.request.Request(url)
 
@@ -132,14 +130,11 @@ def pdf_to_arxivid(filepath, maxlines=float('inf')):
     with open(filepath, 'rb') as fd:
         for j, line in enumerate(fd):
             arxivid = find_arxivid_in_text(
-                line.decode('ascii', errors='ignore')
-            )
+                line.decode('ascii', errors='ignore'))
             if arxivid:
                 return arxivid
             if j > maxlines:
                 return None
-        else:
-            return None
 
 
 def find_arxivid_in_text(text):

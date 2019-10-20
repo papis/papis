@@ -63,7 +63,7 @@ meta_equivalences = [
 def parse_meta_headers(soup, extra_equivalences=[]):
     equivalences = copy.copy(meta_equivalences)
     equivalences.extend(extra_equivalences)
-    metas = soup.find_all(name="meta")
+    #metas = soup.find_all(name="meta")
     data = dict()
     for equiv in equivalences:
         elements = soup.find_all(equiv['tag'], attrs=equiv["attrs"])
