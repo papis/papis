@@ -2,6 +2,12 @@
 VERSION v0.9
 ============
 
+## Plugin architecture ##
+
+A new plugin architecture is in place.
+For more information please refer to
+[the documentation](https://papis.readthedocs.io/en/latest/plugin.html)
+
 ## Git interface ##
 
 Now some usual commands have a `--git` flag that lets the command work

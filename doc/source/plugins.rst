@@ -1,0 +1,4 @@
+Plugin architecture
+===================
+
+.. note:: TODO
