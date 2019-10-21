@@ -64,7 +64,6 @@ setup(
         "colorama>=0.2",
         "bibtexparser>=0.6.2",
         "click>=7.0.0",
-        "python-slugify>=1.2.6",
         "habanero>=0.6.0",
         "isbnlib>=3.9.1,<4.0.0",
         "prompt_toolkit>=2.0.5,<3",
@@ -73,7 +72,8 @@ setup(
         "stevedore>=1.30",
         "python-doi>=0.1.1",
         # for python 3.4
-        "lxml<=4.3.5"
+        "lxml<=4.3.5",
+        "python-slugify>=1.2.6,<4",
     ],
     python_requires='>=3',
     classifiers=[
