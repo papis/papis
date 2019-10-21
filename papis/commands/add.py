@@ -442,10 +442,6 @@ def run(
     help="Edit info file before adding document",
     default=lambda: True if papis.config.get('add-edit') else False)
 @click.option(
-    "-S", "--smart",
-    help="Try to do smart things to get information from documents",
-    default=False, is_flag=True)
-@click.option(
     "--link/--no-link",
     help="Instead of copying the file to the library, create a link to"
          "its original location",
@@ -457,7 +453,7 @@ def run(
     default=False,
     is_flag=True)
 def cli(files, set_list, subfolder, folder_name, file_name, from_importer,
-        batch, confirm, open_file, edit, git, smart, link, list_importers):
+        batch, confirm, open_file, edit, git, link, list_importers):
 
     if list_importers:
         import_mgr = papis.importer.get_import_mgr()

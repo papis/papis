@@ -43,9 +43,6 @@ papis module `papis.git`.
   retrieved.
 - We can query `crossref` with `--from-crossref` in order to get information
   and add a paper.
-- A `--smart` or `-S` flag is added in order to add in a smart way information
-  about the paper. Right now it guesses the title from the `filepath`
-  and tries to search `crossref` and prompt the user to pick a document.
 
 ## `papis export` ##
 
