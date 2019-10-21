@@ -101,7 +101,6 @@ setup(
             "Whoosh>=2.7.4",
         ],
         develop=[
-            "sphinx",
             'sphinx-click',
             'sphinx_rtd_theme',
             'pytest',
