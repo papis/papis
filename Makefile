@@ -281,10 +281,10 @@ lint: ## Check syntax of sources
 
 
 doc: ## Create documentation
-	make -C doc/ html
+	$(MAKE) -C doc/ html
 
 doc-%:
-	make -C doc/ $*
+	$(MAKE) -C doc/ $*
 
 update-gh-pages: ## Update github pages
 	@echo "Warning: Black magic in action"
