@@ -58,6 +58,20 @@ Examples
   document at ``~/Documents/interesting.pdf`` does not disappear, otherwise
   you will end up without a document to open.
 
+- Papis also tries to make sense of the inputs that you have passed
+  to the command, for instance you could provide only a ``doi`` and
+  papis will try to know if this is indeed a ``doi``
+
+    .. code::
+
+        papis add 10.1103/PhysRevLett.123.156401
+
+  or from a ``url``
+
+    .. code::
+
+        papis add https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.156401
+
 
 Examples in python
 ^^^^^^^^^^^^^^^^^^
