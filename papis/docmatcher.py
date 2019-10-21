@@ -19,15 +19,7 @@ class DocMatcher(object):
     """
     search = ""
     parsed_search = None
-    if papis.config.get('format-jinja2-enable'):
-        doc_format = (
-            '{{' +
-            papis.config.get('format-doc-name') +
-            '["DOC_KEY"]' +
-            '}}'
-        )
-    else:
-        doc_format = '{' + papis.config.get('format-doc-name') + '[DOC_KEY]}'
+    doc_format = '{' + papis.config.get('format-doc-name') + '[DOC_KEY]}'
     logger = logging.getLogger('DocMatcher')
     matcher = None
 
