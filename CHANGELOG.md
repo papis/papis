@@ -103,6 +103,11 @@ papis module `papis.git`.
   sourced after the `~/.config/papis/config` file has been processed.
   This should enable some users to have more granularity in the customization.
 
+## Downloaders ##
+
+- Some downloaders have been improved and a `fallback` downloader has
+  been added. Now you will be able to retrieve information
+  from many more websites by by virtue of the metadata of html websites.
 
 VERSION v0.8.1
 ==============
