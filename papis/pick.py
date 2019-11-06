@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 import papis.config
 from papis.tui.app import Picker
 from stevedore import extension
@@ -21,6 +22,12 @@ def papis_pick(
     if len(options) == 1:
         return options[0]
 
+    # patch stdout to stderr if the output is not a tty (terminal)
+    oldstdout = sys.stdout
+    if not sys.stdout.isatty():
+        sys.stdout = sys.stderr
+        sys.__stdout__ = sys.stderr
+
     picker = Picker(
         options,
         default_index,
@@ -28,7 +35,13 @@ def papis_pick(
         match_filter
     )
     picker.run()
-    return picker.options_list.get_selection()
+    result = picker.options_list.get_selection()
+
+    # restore the stdout to normality
+    sys.stdout = oldstdout
+    sys.__stdout__ = oldstdout
+
+    return result
 
 
 pickers_mgr = extension.ExtensionManager(
