@@ -167,10 +167,11 @@ def cli(query, doc_folder, tool, folder, all, mark):
         papis.config.set("opentool", tool)
     logger = logging.getLogger('cli:run')
 
-    documents = papis.database.get().query(query)
-
     if doc_folder:
         documents = [from_folder(doc_folder)]
+    else:
+        documents = papis.database.get().query(query)
+
 
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
