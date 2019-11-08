@@ -11,6 +11,7 @@ import papis
 import os
 import papis.api
 import papis.pick
+import papis.document
 import papis.utils
 import papis.config
 import papis.database
@@ -37,6 +38,7 @@ def run(document, wait=True, git=False):
 @click.command("edit")
 @click.help_option('-h', '--help')
 @papis.cli.query_option()
+@papis.cli.doc_folder_option()
 @papis.cli.git_option(help="Add changes made to the info file")
 @click.option(
     "-n",
@@ -45,7 +47,7 @@ def run(document, wait=True, git=False):
     default=False,
     is_flag=True)
 @click.option(
-    "--all",
+    "--all", "_all",
     help="Edit all matching documents",
     default=False,
     is_flag=True)
@@ -54,22 +56,20 @@ def run(document, wait=True, git=False):
     "--editor",
     help="Editor to be used",
     default=None)
-def cli(
-        query,
-        git,
-        notes,
-        all,
-        editor
-        ):
+def cli(query, doc_folder, git, notes, _all, editor):
     """Edit document information from a given library"""
 
     logger = logging.getLogger('cli:edit')
-    documents = papis.database.get().query(query)
+
+    if doc_folder:
+        documents = [papis.document.from_folder(doc_folder)]
+    else:
+        documents = papis.database.get().query(query)
 
     if editor is not None:
         papis.config.set('editor', editor)
 
-    if not all:
+    if not _all:
         document = papis.pick.pick_doc(documents)
         documents = [document] if document else []
 
@@ -103,7 +103,6 @@ def cli(
                     document.get_info_file(),
                     "Update notes for '{0}'".format(
                         papis.document.describe(document)))
-
 
         else:
             run(document, git=git)

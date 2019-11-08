@@ -139,28 +139,24 @@ def run(document, opener=None, folder=False, mark=False):
 @click.option(
     "--tool",
     help="Tool for opening the file (opentool)",
-    default=""
-)
+    default="")
 @click.option(
     "-d",
     "--dir",
     "folder",
     help="Open directory",
     default=False,
-    is_flag=True
-)
+    is_flag=True)
 @click.option(
     "--all",
     help="Open all matching documents",
     default=False,
-    is_flag=True
-)
+    is_flag=True)
 @click.option(
     "-m",
     "--mark/--no-mark",
     help="Open mark",
-    default=lambda: True if papis.config.get('open-mark') else False
-)
+    default=lambda: True if papis.config.get('open-mark') else False)
 def cli(query, doc_folder, tool, folder, all, mark):
     """Open document from a given library"""
     if tool:
@@ -171,7 +167,6 @@ def cli(query, doc_folder, tool, folder, all, mark):
         documents = [from_folder(doc_folder)]
     else:
         documents = papis.database.get().query(query)
-
 
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
