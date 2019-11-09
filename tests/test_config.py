@@ -28,9 +28,10 @@ def test_get_config_home():
 
 
 def test_get_config_dirs():
-    os.environ['XDG_CONFIG_DIRS'] = ''
-    os.environ['XDG_CONFIG_HOME'] = '/tmp'
+    tmpdir = '/tmp'
+    os.environ['XDG_CONFIG_HOME'] = tmpdir
     dirs = get_config_dirs()
+    assert os.environ.get('XDG_CONFIG_DIRS') is None
     assert len(dirs) == 2
     assert '/tmp/papis' == dirs[0]
 
@@ -190,9 +191,8 @@ def test_reset_configuration():
 
 def test_get_default_settings():
     import collections
-    assert(type(get_default_settings()) is collections.OrderedDict)
-    assert(get_default_settings(key='mvtool') == 'mv')
-    assert(get_default_settings(key='mvtool', section='settings') == 'mv')
+    assert(type(get_default_settings()) is dict)
+    assert(get_default_settings()['settings']['mvtool'] == 'mv')
 
 
 def test_register_default_settings():
@@ -210,7 +210,9 @@ def test_register_default_settings():
     assert(papis.config.get('hubhub') == 42)
     assert(papis.config.get('info-name') is not None)
     assert(not papis.config.get('default-library') == 'mag')
-    assert(papis.config.get_default_settings(key='default-library') == 'mag')
+    assert(
+        papis.config.get_default_settings()['settings']['default-library']
+        == 'mag')
 
 
 def test_get_list():

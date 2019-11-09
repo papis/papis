@@ -4,30 +4,32 @@ from os.path import expanduser
 import configparser
 import papis.exceptions
 import papis.library
-from collections import OrderedDict
 import logging
+from typing import Dict, Any, List, Optional, Type, Callable
+
+PapisConfigType = Dict[str, Dict[str, Any]]
 
 logger = logging.getLogger("config")
 logger.debug("importing")
 
 _CURRENT_LIBRARY = None  #: Current library in use
-_CONFIGURATION = None  #: Global configuration object variable.
-_DEFAULT_SETTINGS = None  #: Default settings for the whole papis.
+_CONFIGURATION = None  # type: Optional[Configuration]
+_DEFAULT_SETTINGS = None  # type: Optional[PapisConfigType]
 _OVERRIDE_VARS = {
     "folder": None,
     "file": None,
     "scripts": None
-}
+}  # type: Dict[str, Optional[str]]
 
 
-def get_default_opener():
+def get_default_opener() -> str:
     """Get the default file opener for the current system
     """
     if sys.platform.startswith('darwin'):
         return "open"
     elif os.name == 'nt':
         return "start"
-    elif os.name == 'posix':
+    else:
         return "xdg-open"
 
 
@@ -107,11 +109,10 @@ general_settings = {
     "bibtex-unicode": False,
 
     "document-description-format": '{doc[title]} - {doc[author]}',
-
 }
 
 
-def get_general_settings_name():
+def get_general_settings_name() -> str:
     """Get the section name of the general settings
     :returns: Section's name
     :rtype:  str
@@ -121,41 +122,84 @@ def get_general_settings_name():
     return "settings"
 
 
-def get_default_settings(section="", key=""):
+class Configuration(configparser.ConfigParser):
+
+    def __init__(self) -> None:
+        configparser.ConfigParser.__init__(self)
+        self.dir_location = get_config_folder()
+        self.scripts_location = get_scripts_folder()
+        self.file_location = get_config_file()
+        self.logger = logging.getLogger("Configuration")
+        self.default_info = {
+          "papers": {
+            'dir': '~/Documents/papers'
+          },
+          get_general_settings_name(): {
+            'default-library': 'papers'
+          }
+        }  # type: PapisConfigType
+        self.initialize()
+
+    def handle_includes(self) -> None:
+        if "include" in self.keys():
+            for name in self["include"]:
+                self.logger.debug("including %s" % name)
+                fullpath = os.path.expanduser(self.get("include", name))
+                if os.path.exists(fullpath):
+                    self.read(fullpath)
+                else:
+                    self.logger.warning(
+                        "{0} not included because it does not exist"
+                        .format(fullpath))
+
+    def initialize(self) -> None:
+        if not os.path.exists(self.dir_location):
+            self.logger.warning(
+                'Creating configuration folder in {0}'
+                .format(self.dir_location))
+            os.makedirs(self.dir_location)
+        if not os.path.exists(self.scripts_location):
+            os.makedirs(self.scripts_location)
+        if os.path.exists(self.file_location):
+            self.logger.debug(
+                'Reading configuration from {0}'.format(self.file_location))
+            self.read(self.file_location)
+            self.handle_includes()
+        else:
+            for section in self.default_info:
+                self[section] = {}
+                for field in self.default_info[section]:
+                    self[section][field] = self.default_info[section][field]
+            with open(self.file_location, "w") as configfile:
+                self.write(configfile)
+        with open('test.conf', "w+") as fd:
+            self.write(fd)
+        configpy = get_configpy_file()
+        if os.path.exists(configpy):
+            self.logger.debug('Executing {0}'.format(configpy))
+            with open(configpy) as fd:
+                exec(fd.read())
+
+
+def get_default_settings() -> PapisConfigType:
     """Get the default settings for all non-user variables
     in papis.
-
-    If section and key are given, then the setting
-    for the given section and the given key are returned.
-
-    If only ``key`` is given, then the setting
-    for the ``general`` section is returned.
-
-    :param section: Particular section of the default settings
-    :type  section: str
-    :param key: Setting's name to be queried for.
-    :type  key: str
 
     """
     global _DEFAULT_SETTINGS
     # We use an OrderedDict so that the first entry will always be the general
     # settings, also good for automatic documentation
     if _DEFAULT_SETTINGS is None:
-        _DEFAULT_SETTINGS = OrderedDict()
+        _DEFAULT_SETTINGS = dict()
         _DEFAULT_SETTINGS.update({
             get_general_settings_name(): general_settings,
         })
         import papis.tui
         _DEFAULT_SETTINGS.update(papis.tui.get_default_settings())
-    if not section and not key:
-        return _DEFAULT_SETTINGS
-    elif not section:
-        return _DEFAULT_SETTINGS[get_general_settings_name()][key]
-    else:
-        return _DEFAULT_SETTINGS[section][key]
+    return _DEFAULT_SETTINGS
 
 
-def register_default_settings(settings_dictionary):
+def register_default_settings(settings_dictionary: PapisConfigType) -> None:
     """Register configuration settings into the global configuration registry.
 
     Notice that you can define sections or global options. For instance,
@@ -187,7 +231,7 @@ def register_default_settings(settings_dictionary):
             default_settings[section] = settings_dictionary[section]
 
 
-def get_config_home():
+def get_config_home() -> str:
     """Returns the base directory relative to which user specific configuration
     files should be stored.
 
@@ -201,27 +245,25 @@ def get_config_home():
         return os.path.join(expanduser('~'), '.config')
 
 
-def get_config_dirs():
+def get_config_dirs() -> List[str]:
     """Get papis configuration directories where the configuration
     files might be stored
     """
-    dirs = []
-    if os.environ.get('XDG_CONFIG_DIRS'):
-        # get_config_home should also be included on top of XDG_CONFIG_DIRS
+    dirs = []  # type: List[str]
+    # get_config_home should also be included on top of XDG_CONFIG_DIRS
+    if os.environ.get('XDG_CONFIG_DIRS') is not None:
         dirs += [
             os.path.join(d, 'papis') for d in
-            os.environ.get('XDG_CONFIG_DIRS').split(':')
-        ]
+            os.environ.get('XDG_CONFIG_DIRS', '').split(':')]
     # Take XDG_CONFIG_HOME and $HOME/.papis for backwards
     # compatibility
     dirs += [
         os.path.join(get_config_home(), 'papis'),
-        os.path.join(expanduser('~'), '.papis')
-    ]
+        os.path.join(expanduser('~'), '.papis')]
     return dirs
 
 
-def get_config_folder():
+def get_config_folder() -> str:
     """Get folder where the configuration files are stored,
     e.g. ``/home/user/.papis``. It is XDG compatible, which means that if the
     environment variable ``XDG_CONFIG_HOME`` is defined it will use the
@@ -236,7 +278,7 @@ def get_config_folder():
     return os.path.join(get_config_home(), 'papis')
 
 
-def get_config_file():
+def get_config_file() -> str:
     """Get the path of the main configuration file,
     e.g. /home/user/.papis/config
     """
@@ -244,21 +286,19 @@ def get_config_file():
     if _OVERRIDE_VARS["file"] is not None:
         config_file = _OVERRIDE_VARS["file"]
     else:
-        config_file = os.path.join(
-            get_config_folder(), "config"
-        )
+        config_file = os.path.join(get_config_folder(), "config")
     logger.debug("Getting config file %s" % config_file)
     return config_file
 
 
-def get_configpy_file():
+def get_configpy_file() -> str:
     """Get the path of the main python configuration file,
     e.g. /home/user/config/.papis/config.py
     """
     return os.path.join(get_config_folder(), "config.py")
 
 
-def set_config_file(filepath):
+def set_config_file(filepath: str) -> None:
     """Override the main configuration file path
     """
     global _OVERRIDE_VARS
@@ -266,16 +306,14 @@ def set_config_file(filepath):
     _OVERRIDE_VARS["file"] = filepath
 
 
-def get_scripts_folder():
+def get_scripts_folder() -> str:
     """Get folder where the scripts are stored,
     e.g. /home/user/.papis/scripts
     """
-    return os.path.join(
-        get_config_folder(), "scripts"
-    )
+    return os.path.join(get_config_folder(), "scripts")
 
 
-def set(key, val, section=None):
+def set(key: str, val: Any, section: Optional[str] = None) -> None:
     """Set a key to val in some section and make these changes available
     everywhere.
     """
@@ -285,7 +323,8 @@ def set(key, val, section=None):
     config[section or get_general_settings_name()][key] = str(val)
 
 
-def general_get(key, section=None, data_type=None):
+def general_get(key: str, section: Optional[str] = None,
+                data_type: Optional[Type[Any]] = None) -> Optional[Any]:
     """General getter method that will be specialized for different modules.
 
     :param data_type: The data type that should be expected for the value of
@@ -297,8 +336,8 @@ def general_get(key, section=None, data_type=None):
     :param extras: List of tuples containing section and prefixes
     """
     # Init main variables
-    method = None
-    value = None
+    method = None  # type: Optional[Callable[[Any, Any], Any]]
+    value = None  # type: Optional[Any]
     config = get_configuration()
     libname = get_lib_name()
     global_section = get_general_settings_name()
@@ -341,65 +380,64 @@ def general_get(key, section=None, data_type=None):
     return value
 
 
-def get(*args, **kwargs):
+def get(key: str, section: Optional[str] = None) -> Optional[Any]:
     """String getter
     """
-    return general_get(*args, **kwargs)
+    return general_get(key, section=section)
 
 
-def getint(*args, **kwargs):
+def getint(key: str, section: Optional[str] = None) -> Optional[int]:
     """Integer getter
     >>> set('something', 42)
     >>> getint('something')
     42
     """
-    return general_get(*args, data_type=int, **kwargs)
+    return general_get(key, section=section, data_type=int)
 
 
-def getfloat(*args, **kwargs):
+def getfloat(key: str, section: Optional[str] = None) -> Optional[float]:
     """Float getter
     >>> set('something', 0.42)
     >>> getfloat('something')
     0.42
     """
-    return general_get(*args, data_type=float, **kwargs)
+    return general_get(key, section=section, data_type=float)
 
 
-def getboolean(*args, **kwargs):
+def getboolean(key: str, section: Optional[str] = None) -> Optional[bool]:
     """Bool getter
     >>> set('add-open', True)
     >>> getboolean('add-open')
     True
     """
-    return general_get(*args, data_type=bool, **kwargs)
+    return general_get(key, section=section, data_type=bool)
 
 
-def getlist(key, **kwargs):
-    """Bool getter
+def getlist(key: str, section: Optional[str] = None) -> Optional[List[str]]:
+    """List getter
 
     :returns: A python list
     :rtype:  list
     :raises SyntaxError: Whenever the parsed syntax is either not a valid
         python object or a valid python list.
     """
-    rawvalue = general_get(key, **kwargs)
+    rawvalue = general_get(key, section=section)  # type: Any
     if isinstance(rawvalue, list):
         return rawvalue
     try:
         value = eval(rawvalue)
     except Exception as e:
         raise SyntaxError(
-            "The key '{0}' must be a valid python object\n\t{1}".format(key, e)
-        )
+            "The key '{0}' must be a valid python object\n\t{1}"
+            .format(key, e))
     else:
         if not isinstance(value, list):
             raise SyntaxError(
-                "The key '{0}' must be a valid python list".format(key)
-            )
+                "The key '{0}' must be a valid python list".format(key))
         return value
 
 
-def get_configuration():
+def get_configuration() -> Configuration:
     """Get the configuration object, if no papis configuration has ever been
     initialized, it initializes one. Only one configuration per process should
     ever be configured.
@@ -417,7 +455,8 @@ def get_configuration():
     return _CONFIGURATION
 
 
-def merge_configuration_from_path(path, configuration):
+def merge_configuration_from_path(path: Optional[str],
+                                  configuration: Configuration) -> None:
     """
     Merge information of a configuration file found in `path`
     to the information of the configuration object stored in `configuration`.
@@ -427,14 +466,14 @@ def merge_configuration_from_path(path, configuration):
     :param configuration: Configuration object
     :type  configuration: papis.config.Configuration
     """
-    if not os.path.exists(path):
+    if path is None or not os.path.exists(path):
         return
     logger.debug("Merging configuration from " + path)
     configuration.read(path)
     configuration.handle_includes()
 
 
-def set_lib(library):
+def set_lib(library: papis.library.Library) -> None:
     """Set library
 
     :param library: Library object
@@ -442,41 +481,36 @@ def set_lib(library):
 
     """
     global _CURRENT_LIBRARY
-    assert(isinstance(library, papis.library.Library))
     config = get_configuration()
     if library.name not in config.keys():
-        config[library.name] = dict(dirs=library.paths)
+        config[library.name] = dict(dirs=str(library.paths))
     _CURRENT_LIBRARY = library
 
 
-def set_lib_from_name(libname):
+def set_lib_from_name(libname: str) -> None:
     """Set library, notice that in principle library can be a full path.
 
     :param libname: Name of the library or some path to a folder
     :type  libname: str
     """
-    assert(isinstance(libname, str))
     set_lib(get_lib_from_name(libname))
 
 
-def get_lib_from_name(libname):
-    assert(isinstance(libname, str))
+def get_lib_from_name(libname: str) -> papis.library.Library:
     config = get_configuration()
     if libname not in config.keys():
         if os.path.isdir(libname):
             # Check if the path exists, then use this path as a new library
             logger.warning(
-                "Since {0} exists, interpreting it as a library".format(
-                    libname
-                )
-            )
+                "Since {0} exists, interpreting it as a library"
+                .format(libname))
             library_obj = papis.library.from_paths([libname])
             name = library_obj.path_format()
-            config[name] = dict(dirs=library_obj.paths)
+            # the configuration object can only store strings
+            config[name] = dict(dirs=str(library_obj.paths))
         else:
             raise Exception(
-                "Path or library '%s' does not seem to exist" % libname
-            )
+                "Path or library '{0}' does not seem to exist".format(libname))
     else:
         name = libname
         if name not in config.keys():
@@ -490,13 +524,12 @@ def get_lib_from_name(libname):
                 raise Exception(
                     "To define a library you have to set either dir or dirs"
                     " in the configuration file.\n"
-                    "Error: ({0})".format(e)
-                )
+                    "Error: ({0})".format(e))
         library_obj = papis.library.Library(libname, paths)
     return library_obj
 
 
-def get_lib_dirs():
+def get_lib_dirs() -> List[str]:
     """Get the directories of the current library
 
     :returns: A list of paths
@@ -505,11 +538,11 @@ def get_lib_dirs():
     return get_lib().paths
 
 
-def get_lib_name():
+def get_lib_name() -> str:
     return get_lib().name
 
 
-def get_lib():
+def get_lib() -> papis.library.Library:
     """Get current library, if there is no library set before,
     the default library will be retrieved.
     If the `PAPIS_LIB` environment variable is defined, this is the
@@ -524,13 +557,14 @@ def get_lib():
     if _CURRENT_LIBRARY is None:
         # Do not put papis.config.get because get is a special function
         # that also needs the library to see if some key was overridden!
-        lib = papis.config.get_default_settings(key="default-library")
+        default_settings = get_default_settings()[get_general_settings_name()]
+        lib = default_settings['default-library']
         set_lib_from_name(lib)
     assert(isinstance(_CURRENT_LIBRARY, papis.library.Library))
     return _CURRENT_LIBRARY
 
 
-def reset_configuration():
+def reset_configuration() -> Configuration:
     """Destroys existing configuration and returns a new one.
 
     :returns: Configuration object
@@ -540,64 +574,3 @@ def reset_configuration():
     _CONFIGURATION = None
     logger.debug("Resetting configuration")
     return get_configuration()
-
-
-class Configuration(configparser.ConfigParser):
-
-    default_info = {
-      "papers": {
-        'dir': '~/Documents/papers'
-      },
-      get_general_settings_name(): {
-        'default-library': 'papers'
-      }
-    }
-
-    def __init__(self):
-        configparser.ConfigParser.__init__(self)
-        self.dir_location = get_config_folder()
-        self.scripts_location = get_scripts_folder()
-        self.file_location = get_config_file()
-        self.logger = logging.getLogger("Configuration")
-        self.initialize()
-
-    def handle_includes(self):
-        if "include" in self.keys():
-            for name in self["include"]:
-                self.logger.debug("including %s" % name)
-                fullpath = os.path.expanduser(self.get("include", name))
-                if os.path.exists(fullpath):
-                    self.read(fullpath)
-                else:
-                    self.logger.warn(
-                        "{0} not included because it does not exist".format(
-                            fullpath
-                        )
-                    )
-
-    def initialize(self):
-        if not os.path.exists(self.dir_location):
-            self.logger.warning(
-                'Creating configuration folder in %s' % self.dir_location
-            )
-            os.makedirs(self.dir_location)
-        if not os.path.exists(self.scripts_location):
-            os.makedirs(self.scripts_location)
-        if os.path.exists(self.file_location):
-            self.logger.debug(
-                'Reading configuration from {0}'.format(self.file_location)
-            )
-            self.read(self.file_location)
-            self.handle_includes()
-        else:
-            for section in self.default_info:
-                self[section] = {}
-                for field in self.default_info[section]:
-                    self[section][field] = self.default_info[section][field]
-            with open(self.file_location, "w") as configfile:
-                self.write(configfile)
-        configpy = get_configpy_file()
-        if os.path.exists(configpy):
-            self.logger.debug('Executing {0}'.format(configpy))
-            with open(configpy) as fd:
-                exec(fd.read())
