@@ -1,4 +1,8 @@
-def get_default_settings():
+from typing import Dict, Any
+PapisConfigType = Dict[str, Dict[str, Any]]
+
+
+def get_default_settings() -> PapisConfigType:
     return dict(tui={
         "status_line_format": (
             "{selected_index}/{number_of_documents}  " +
