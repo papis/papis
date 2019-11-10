@@ -21,7 +21,7 @@ class DatabaseTest(unittest.TestCase):
         assert(os.path.exists(libdir))
         assert(papis.config.get_lib_name() == tests.get_test_lib_name())
 
-        database = papis.database.get(papis.config.get_lib())
+        database = papis.database.get(papis.config.get_lib_name())
         database.clear()
         database.initialize()
         assert(database is not None)

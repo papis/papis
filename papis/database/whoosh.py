@@ -45,6 +45,8 @@ import logging
 import whoosh
 import whoosh.index
 import whoosh.qparser
+from whoosh.fields import Schema, FieldType
+from whoosh.writing import IndexWriter
 
 import papis.config
 import papis.document
@@ -52,10 +54,11 @@ import papis.database.base
 import papis.database.cache
 from papis.utils import get_cache_home, get_folders, folders_to_documents
 
+from typing import List, Dict, Optional, Any
 
 class Database(papis.database.base.Database):
 
-    def __init__(self, library=None):
+    def __init__(self, library: Optional[papis.library.Library] = None):
         papis.database.base.Database.__init__(self, library)
         self.logger = logging.getLogger('db:whoosh')
         self.cache_dir = os.path.join(get_cache_home(), 'database', 'whoosh')
@@ -64,26 +67,20 @@ class Database(papis.database.base.Database):
                 self.cache_dir,
                 papis.database.cache.get_cache_file_name(
                     self.lib.path_format()
-                )
-            )
-        )
+                )))  # type: str
 
         self.initialize()
 
-    def get_backend_name(self):
+    def get_backend_name(self) -> str:
         return 'whoosh'
 
-    def clear(self):
+    def clear(self) -> None:
         import shutil
         if self.index_exists():
             self.logger.warning('Clearing the database')
             shutil.rmtree(self.index_dir)
 
-#   TODO
-    def match(self, document, query_string):
-        pass
-
-    def add(self, document):
+    def add(self, document: papis.document.Document) -> None:
         schema_keys = self.get_schema_init_fields().keys()
         self.logger.debug("adding document")
         writer = self.get_writer()
@@ -91,29 +88,29 @@ class Database(papis.database.base.Database):
         self.logger.debug("commiting document..")
         writer.commit()
 
-    def update(self, document):
+    def update(self, document: papis.document.Document) -> None:
         """As it says in the docs, just delete the document and add it again
         """
         self.delete(document)
         self.add(document)
 
-    def delete(self, document):
+    def delete(self, document: papis.document.Document) -> None:
         writer = self.get_writer()
         self.logger.debug("deleting document..")
         writer.delete_by_term(
             self.get_id_key(),
-            self.get_id_value(document)
-        )
+            self.get_id_value(document))
         self.logger.debug("commiting deletion..")
         writer.commit()
 
-    def query_dict(self, dictionary):
+    def query_dict(self,
+            dictionary: Dict[str, str]) -> List[papis.document.Document]:
         query_string = " AND ".join(
-            ["{}:\"{}\" ".format(key, val) for key, val in dictionary.items()]
-        )
+            ["{}:\"{}\" ".format(key, val)
+                for key, val in dictionary.items()])
         return self.query(query_string)
 
-    def query(self, query_string):
+    def query(self, query_string: str) -> List[papis.document.Document]:
         self.logger.debug('Query string %s' % query_string)
         index = self.get_index()
         qp = whoosh.qparser.MultifieldParser(
@@ -127,17 +124,16 @@ class Database(papis.database.base.Database):
             self.logger.debug(results)
             documents = [
                 papis.document.from_folder(r.get(self.get_id_key()))
-                for r in results
-            ]
+                for r in results]
         return documents
 
-    def get_all_query_string(self):
+    def get_all_query_string(self) -> str:
         return '*'
 
-    def get_all_documents(self):
+    def get_all_documents(self) -> List[papis.document.Document]:
         return self.query(self.get_all_query_string())
 
-    def get_id_key(self):
+    def get_id_key(self) -> str:
         """Get the unique key identifier name of the documents in the database
 
         :returns: key identifier
@@ -145,7 +141,7 @@ class Database(papis.database.base.Database):
         """
         return 'whoosh_id_'
 
-    def get_id_value(self, document):
+    def get_id_value(self, document: papis.document.Document) -> str:
         """Get the value that is stored in the unique key identifier
         of the documents in the database. In the case of papis this is
         just the path of the documents.
@@ -157,7 +153,7 @@ class Database(papis.database.base.Database):
         """
         return document.get_main_folder()
 
-    def create_index(self):
+    def create_index(self) -> None:
         """Create a brand new index, notice that if an index already
         exists it will delete it and create a new one.
         """
@@ -167,12 +163,14 @@ class Database(papis.database.base.Database):
             os.makedirs(self.index_dir)
         whoosh.index.create_in(self.index_dir, self.create_schema())
 
-    def index_exists(self):
+    def index_exists(self) -> Any:
         """Check if index already exists in index_dir()
         """
         return whoosh.index.exists_in(self.index_dir)
 
-    def add_document_with_writer(self, document, writer, schema_keys):
+    def add_document_with_writer(self,
+            document: papis.document.Document,
+            writer: IndexWriter, schema_keys: Dict[str, FieldType]) -> None:
         """Helper function that takes a writer and a dictionary
         containing the keys of the schema and adds the document to the writer.
         Notice that this function does only two things, creating a suitable
@@ -183,7 +181,7 @@ class Database(papis.database.base.Database):
         :param document: Papis document
         :type  document: papis.document.Document
         :param writer: Whoosh writer
-        :type  writer: whoosh.writer
+        :type  writer: whoosh.writing.IndexWriter
         :param schema_keys: Dictionary containing the defining keys of the
             database Schema
         :type  schema_keys: dict
@@ -198,7 +196,7 @@ class Database(papis.database.base.Database):
         doc_d[self.get_id_key()] = self.get_id_value(document)
         writer.add_document(**doc_d)
 
-    def do_indexing(self):
+    def do_indexing(self) -> None:
         """This function initializes the database. Basically it goes through
         all folders from the library (that contain an `info.yaml` file)
         and adds the documents to the database index. This function is
@@ -206,7 +204,9 @@ class Database(papis.database.base.Database):
         at the time of building a brand new index.
         """
         self.logger.debug('Indexing the library, this might take a while...')
-        folders = sum([get_folders(d) for d in self.get_dirs()], [])
+        folders = sum(
+                [get_folders(d)
+                    for d in self.get_dirs()], [])  # type: List[str]
         documents = folders_to_documents(folders)
         schema_keys = self.get_schema_init_fields().keys()
         writer = self.get_writer()
@@ -214,7 +214,7 @@ class Database(papis.database.base.Database):
             self.add_document_with_writer(doc, writer, schema_keys)
         writer.commit()
 
-    def initialize(self):
+    def initialize(self) -> None:
         """Function to be called everytime a database object is created.
         It checks if an index exists, if not, it creates one and
         indexes the library.
@@ -250,16 +250,16 @@ class Database(papis.database.base.Database):
 
                 if not rebuilt_db:
                     self.logger.debug('Initialized index found for library')
-                    return True
+                    return
         self.create_index()
         self.do_indexing()
 
-    def rebuild(self):
+    def rebuild(self) -> None:
         self.clear()
         self.create_index()
         self.do_indexing()
 
-    def get_index(self):
+    def get_index(self) -> whoosh.index.Index:
         """Gets the index for the current library
 
         :returns: Index
@@ -267,7 +267,7 @@ class Database(papis.database.base.Database):
         """
         return whoosh.index.open_dir(self.index_dir)
 
-    def get_writer(self):
+    def get_writer(self) -> IndexWriter:
         """Gets the writer for the current library
 
         :returns: Writer
@@ -275,7 +275,7 @@ class Database(papis.database.base.Database):
         """
         return self.get_index().writer()
 
-    def get_schema(self):
+    def get_schema(self) -> Schema:
         """Gets current schema
 
         :returns: Whoosch Schema
@@ -283,7 +283,7 @@ class Database(papis.database.base.Database):
         """
         return self.get_index().schema
 
-    def create_schema(self):
+    def create_schema(self) -> Schema:
         """Creates and returns whoosh schema to be applied to the library
 
         :returns: Whoosch Schema
@@ -295,7 +295,7 @@ class Database(papis.database.base.Database):
         schema = Schema(**fields)
         return schema
 
-    def get_schema_init_fields(self):
+    def get_schema_init_fields(self) -> Dict[str, FieldType]:
         """Returns the arguments to be passed to the whoosh schema
         object instantiation found in the method `get_schema`.
         """
@@ -304,7 +304,7 @@ class Database(papis.database.base.Database):
         fields = {self.get_id_key(): ID(stored=True, unique=True)}
         user_prototype = eval(
             papis.config.get('whoosh-schema-prototype')
-        )
+            )  # Dict[str, FieldType]
         fields.update(user_prototype)
         fields_list = papis.config.getlist('whoosh-schema-fields')
         for field in fields_list:
