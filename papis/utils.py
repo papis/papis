@@ -16,12 +16,14 @@ import logging
 import papis.importer
 import papis.downloaders
 import colorama
+from typing import Optional, List
 
 logger = logging.getLogger("utils")
 logger.debug("importing")
 
 
-def general_open(fileName, key, default_opener=None, wait=True):
+def general_open(fileName: str, key: str,
+        default_opener: Optional[str] = None, wait: bool = True) -> None:
     """Wraper for openers
 
 
@@ -80,7 +82,8 @@ def open_file(file_path, wait=True):
     general_open(fileName=file_path, key="opentool", wait=wait)
 
 
-def format_doc(python_format, document, key=""):
+def format_doc(python_format: str,
+        document: papis.document.Document, key: str="") -> str:
     """Construct a string using a pythonic format string and a document.
 
     :param python_format: Python-like format string.
@@ -102,7 +105,7 @@ def format_doc(python_format, document, key=""):
         return str(e)
 
 
-def get_folders(folder):
+def get_folders(folder: str) -> List[str]:
     """This is the main indexing routine. It looks inside ``folder`` and crawls
     the whole directory structure in search for subfolders containing an info
     file.
@@ -425,7 +428,7 @@ def get_document_extension(document_path):
         return kind.extension
 
 
-def folders_to_documents(folders):
+def folders_to_documents(folders: List[str]) -> List[papis.document.Document]:
     """Turn folders into documents, this is done in a multiprocessing way, this
     step is quite critical for performance.
 
@@ -446,7 +449,7 @@ def folders_to_documents(folders):
     return result
 
 
-def get_cache_home():
+def get_cache_home() -> str:
     """Get folder where the cache files are stored, it retrieves the
     ``cache-dir`` configuration setting. It is ``XDG`` standard compatible.
 
