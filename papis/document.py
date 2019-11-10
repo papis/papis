@@ -101,17 +101,6 @@ def new(folder_path, data, files=[]):
     return doc
 
 
-def from_folder(folder_path):
-    """Construct a document object from a folder
-
-    :param folder_path: Full path to a valid papis folder
-    :type  folder_path: str
-    :returns: A papis document
-    :rtype:  papis.document.Document
-    """
-    return papis.document.Document(folder=folder_path)
-
-
 def from_data(data):
     """Construct a document object from a data dictionary.
 
@@ -356,14 +345,14 @@ class Document(dict):
     def html_escape(self):
         return DocHtmlEscaped(self)
 
-    def get_main_folder(self):
+    def get_main_folder(self) -> str:
         """Get full path for the folder where the document and the information
         is stored.
         :returns: Folder path
         """
         return self._folder
 
-    def set_folder(self, folder):
+    def set_folder(self, folder: str) -> None:
         """Set document's folder. The info_file path will be accordingly set.
 
         :param folder: Folder where the document will be stored, full path.
@@ -372,8 +361,7 @@ class Document(dict):
         self._folder = folder
         self._info_file_path = os.path.join(
             folder,
-            papis.config.get('info-name')
-        )
+            papis.config.get('info-name'))
         # TODO: check if this makes sense at all
         self.subfolder = self.get_main_folder().replace(
             os.path.expanduser("~"), ""
@@ -381,14 +369,14 @@ class Document(dict):
             "/", " "
         )
 
-    def get_main_folder_name(self):
+    def get_main_folder_name(self) -> str:
         """Get main folder name where the document and the information is
         stored.
         :returns: Folder name
         """
         return os.path.basename(self._folder)
 
-    def has(self, key):
+    def has(self, key: str) -> bool:
         """Check if the information file has some key defined.
 
         :param key: Key name to be checked
@@ -447,3 +435,14 @@ class Document(dict):
         else:
             for key in data:
                 self[key] = data[key]
+
+
+def from_folder(folder_path: str) -> Document:
+    """Construct a document object from a folder
+
+    :param folder_path: Full path to a valid papis folder
+    :type  folder_path: str
+    :returns: A papis document
+    :rtype:  papis.document.Document
+    """
+    return Document(folder=folder_path)
