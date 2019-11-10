@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger("papis.git")
 
 
-def _issue_git_command(path, cmd):
+def _issue_git_command(path: str, cmd: str) -> None:
     """Issues a general git command ``cmd`` at ``path``.
 
     :param path: Folder where a git repo exists.
@@ -20,13 +20,13 @@ def _issue_git_command(path, cmd):
     assert(type(cmd) == str)
     path = os.path.expanduser(path)
     assert(os.path.exists(path))
-    cmd = shlex.split(cmd)
+    split_cmd = shlex.split(cmd)
     os.chdir(path)
-    logger.debug(cmd)
-    subprocess.call(cmd)
+    logger.debug(split_cmd)
+    subprocess.call(split_cmd)
 
 
-def commit(path, message):
+def commit(path: str, message: str) -> None:
     """Commits changes in the path with a message.
 
     :param path: Folder where a git repo exists.
@@ -42,7 +42,7 @@ def commit(path, message):
     _issue_git_command(path, cmd)
 
 
-def add(path, resource):
+def add(path: str, resource: str) -> None:
     """Adds changes in the path with a message.
 
     :param path: Folder where a git repo exists.
@@ -58,7 +58,7 @@ def add(path, resource):
     _issue_git_command(path, cmd)
 
 
-def rm(path, resource, recursive=False):
+def rm(path: str, resource: str, recursive: bool = False) -> None:
     """Adds changes in the path with a message.
 
     :param path: Folder where a git repo exists.
@@ -75,7 +75,6 @@ def rm(path, resource, recursive=False):
     _issue_git_command(path, cmd)
 
 
-
-def add_and_commit_resource(path, resource, message):
+def add_and_commit_resource(path: str, resource: str, message: str) -> None:
     add(path, resource)
     commit(path, message)
