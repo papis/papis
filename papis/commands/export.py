@@ -49,62 +49,41 @@ import papis.api
 import papis.database
 import papis.strings
 import logging
-from stevedore import extension
 import papis.plugin
+from typing import List
 
 logger = logging.getLogger('cli:export')
-exporters_mgr = None
 
 
-def export_to_yaml(documents):
+def available_formats() -> List[str]:
+    return papis.plugin.get_available_entrypoints(_extension_name())
+
+
+def _extension_name() -> str:
+    return "papis.exporter"
+
+
+def export_to_yaml(documents: List[papis.document.Document]) -> str:
     import yaml
-    return yaml.dump_all(
-        [
-            papis.document.to_dict(document) for document in documents
-        ],
-        allow_unicode=True
-    )
+    string = yaml.dump_all(
+        [papis.document.to_dict(document) for document in documents],
+        allow_unicode=True)
+    assert isinstance(string, str)
+    return string
 
 
-def export_to_json(documents):
+def export_to_json(documents: List[papis.document.Document]) -> str:
     import json
-    return json.dumps(
-        [
-            papis.document.to_dict(document) for document in documents
-        ]
-    )
+    return json.dumps([
+            papis.document.to_dict(document) for document in documents])
 
 
-def export_to_bibtex(documents):
+def export_to_bibtex(documents: List[papis.document.Document]) -> str:
     return '\n'.join([
-        papis.document.to_bibtex(document) for document in documents
-    ])
+        papis.document.to_bibtex(document) for document in documents])
 
 
-def available_formats():
-    global exporters_mgr
-    _create_mgr()
-    return exporters_mgr.entry_points_names()
-
-
-
-def _create_mgr():
-    global exporters_mgr
-    if exporters_mgr:
-        return
-    exporters_mgr = extension.ExtensionManager(
-        namespace='papis.exporter',
-        invoke_on_load=False,
-        verify_requirements=True,
-        propagate_map_exceptions=True,
-        on_load_failure_callback=papis.plugin.stevedore_error_handler
-    )
-
-
-def run(
-    documents,
-    to_format,
-):
+def run(documents: List[papis.document.Document], to_format: str,) -> str:
     """
     Exports several documents into something else.
 
@@ -113,73 +92,60 @@ def run(
     :param to_format: what format to use
     :type  to_format: str
     """
-    global exporters_mgr
-    _create_mgr()
-    try:
-        ret_string = exporters_mgr[to_format].plugin(
-            document for document in documents
-        )
-        return ret_string
-    except KeyError as e:
-        logger.error("Format %s not supported." % to_format)
-
-    return None
+    ret_string = (
+        papis.plugin.get_extension_manager(_extension_name())[to_format]
+        .plugin(document for document in documents))
+    return str(ret_string)
 
 
 @click.command("export")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
+@papis.cli.doc_folder_option()
 @click.option(
     "--folder",
     help="Export document folder to share",
     default=False,
-    is_flag=True
-)
+    is_flag=True)
 @click.option(
     "-o",
     "--out",
     help="Outfile or outdir",
-    default=None
-)
+    default=None)
 @click.option(
     "-f",
-    "--format",
+    "--format", "fmt",
     help="Format for the document",
     type=click.Choice(available_formats()),
-    default="bibtex",
-)
+    default="bibtex",)
 @click.option(
-    "-a", "--all",
+    "-a", "--all", "_all",
     help="Export all without picking",
     default=False,
-    is_flag=True
-)
-def cli(
-        query,
-        folder,
-        out,
-        format,
-        all,
-        **kwargs
-        ):
+    is_flag=True)
+def cli(query: str, doc_folder: str,
+        folder: str, out: str, fmt: str, _all: bool) -> None:
     """Export a document from a given library"""
 
-    documents = papis.database.get().query(query)
+    if doc_folder:
+        documents = [papis.document.from_folder(doc_folder)]
+    else:
+        documents = papis.database.get().query(query)
 
-    if format and folder:
+    if fmt and folder:
         logger.warning("Only --folder flag will be considered")
 
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
-    if not all:
+    if not _all:
         document = papis.pick.pick_doc(documents)
         if not document:
-            return 0
+            return
         documents = [document]
 
-    ret_string = run(documents, to_format=format)
+    ret_string = run(documents, to_format=fmt)
 
     if ret_string is not None and not folder:
         if out is not None:
@@ -189,7 +155,7 @@ def cli(
         else:
             logger.info("Dumping to stdout")
             print(ret_string)
-        return 0
+        return
 
     for document in documents:
         if folder:
@@ -209,20 +175,17 @@ def cli(
 @click.pass_context
 @click.help_option('--help', '-h')
 @click.option(
-    "-f",
-    "--format",
+    "-f", "--format", "fmt",
     help="Format for the document",
     type=click.Choice(available_formats()),
-    default="bibtex",
-)
+    default="bibtex",)
 @click.option(
     "-o",
     "--out",
     help="Outfile to write information to",
     type=click.Path(),
-    default=None,
-)
-def explorer(ctx, format, out):
+    default=None,)
+def explorer(ctx: click.Context, fmt: str, out: str) -> None:
     """
     Export retrieved documents into various formats for later use
 
@@ -234,16 +197,12 @@ def explorer(ctx, format, out):
     logger = logging.getLogger('explore:yaml')
     docs = ctx.obj['documents']
 
-    outstring = run(docs, to_format=format)
+    outstring = run(docs, to_format=fmt)
     if out is not None:
         with open(out, 'a+') as fd:
             logger.info(
                 "Writing {} documents' in {} into {}".format(
-                    len(docs),
-                    format,
-                    out
-                )
-            )
+                    len(docs), fmt, out))
             fd.write(outstring)
     else:
         print(outstring)
