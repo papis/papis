@@ -6,6 +6,7 @@ import logging
 import papis.utils
 import papis.config
 import papis.bibtex
+from typing import List, Dict, Any, Optional
 
 
 def keyconversion_to_data(key_conversion, data, keep_unknown_keys=False):
@@ -101,7 +102,248 @@ def new(folder_path, data, files=[]):
     return doc
 
 
-def from_data(data):
+class DocHtmlEscaped(dict):
+    """
+    Small helper class to escape html elements.
+
+    >>> DocHtmlEscaped(from_data(dict(title='> >< int & "" "')))['title']
+    '&gt; &gt;&lt; int &amp; &quot;&quot; &quot;'
+    """
+
+    def __init__(self, doc):
+        self.__doc = doc
+
+    def __getitem__(self, key: str) -> str:
+        return (
+            str(self.__doc[key])
+            .replace('&', '&amp;')
+            .replace('<', '&lt;')
+            .replace('>', '&gt;')
+            .replace('"', '&quot;'))
+
+
+class Document(dict):
+
+    """Class implementing the entry abstraction of a document in a library.
+    It is basically a python dictionary with more methods.
+    """
+
+    subfolder = ""  # type: str
+    _info_file_path = ""  # type: str
+
+    def __init__(self, folder: Optional[str] = None,
+            data: Optional[Dict[str, Any]]=None):
+        self._folder = None  # type: str
+
+        if folder is not None:
+            self.set_folder(folder)
+            self.load()
+
+        if data is not None:
+            self.update(data)
+
+    def __missing__(self, key: str) -> str:
+        """
+        If key is not defined, return empty string
+        """
+        return ""
+
+    @property
+    def html_escape(self) -> DocHtmlEscaped:
+        return DocHtmlEscaped(self)
+
+    def get_main_folder(self) -> str:
+        """Get full path for the folder where the document and the information
+        is stored.
+        :returns: Folder path
+        """
+        return self._folder
+
+    def set_folder(self, folder: str) -> None:
+        """Set document's folder. The info_file path will be accordingly set.
+
+        :param folder: Folder where the document will be stored, full path.
+        :type  folder: str
+        """
+        self._folder = folder
+        self._info_file_path = os.path.join(
+            folder,
+            papis.config.get('info-name'))
+        # TODO: check if this makes sense at all
+        self.subfolder = self.get_main_folder().replace(
+            os.path.expanduser("~"), ""
+        ).replace(
+            "/", " "
+        )
+
+    def get_main_folder_name(self) -> str:
+        """Get main folder name where the document and the information is
+        stored.
+        :returns: Folder name
+        """
+        return os.path.basename(self._folder)
+
+    def has(self, key: str) -> bool:
+        """Check if the information file has some key defined.
+
+        :param key: Key name to be checked
+        :returns: True/False
+
+        """
+        return key in self
+
+    def save(self) -> None:
+        """Saves the current document's information into the info file.
+        """
+        import papis.yaml
+        papis.yaml.data_to_yaml(
+            self.get_info_file(),
+            {key: self[key] for key in self.keys() if self[key]})
+
+    def get_info_file(self) -> str:
+        """Get full path for the info file
+        :returns: Full path for the info file
+        :rtype: str
+        """
+        return self._info_file_path
+
+    def get_files(self) -> List[str]:
+        """Get the files linked to the document, if any.
+
+        :returns: List of full file paths
+        :rtype:  list
+        """
+        result = []  # type: List[str]
+        if not self.has('files'):
+            return result
+        files = (self["files"] if isinstance(self["files"], list)
+                               else [self["files"]])
+        for f in files:
+            result.append(os.path.join(self.get_main_folder(), f))
+        return result
+
+    def load(self) -> None:
+        """Load information from info file
+        """
+        import papis.yaml
+        if not os.path.exists(self.get_info_file()):
+            return
+        try:
+            data = papis.yaml.yaml_to_data(
+                self.get_info_file(), raise_exception=True)
+        except Exception as e:
+            logger.error(
+                'Error reading yaml file in {0}'.format(yaml_path) +
+                '\nPlease check it!\n\n{0}'.format(str(e)))
+        else:
+            for key in data:
+                self[key] = data[key]
+
+
+def from_folder(folder_path: str) -> Document:
+    """Construct a document object from a folder
+
+    :param folder_path: Full path to a valid papis folder
+    :type  folder_path: str
+    :returns: A papis document
+    :rtype:  papis.document.Document
+    """
+    return Document(folder=folder_path)
+
+
+def to_json(document: Document) -> str:
+    """Export information into a json string
+    :param document: Papis document
+    :type  document: Document
+    :returns: Json formatted info file
+    :rtype:  str
+
+    """
+    import json
+    return json.dumps(to_dict(document))
+
+
+def to_dict(document: Document) -> Dict[str, Any]:
+    """Gets a python dictionary with the information of the document
+    :param document: Papis document
+    :type  document: Document
+    :returns: Python dictionary
+    :rtype:  dict
+    """
+    result = dict()
+    for key in document.keys():
+        result[key] = document[key]
+    return result
+
+
+def dump(document: Document) -> str:
+    """Return information string without any obvious format
+    :param document: Papis document
+    :type  document: Document
+    :returns: String with document's information
+    :rtype:  str
+
+    >>> doc = from_data({'title': 'Hello World'})
+    >>> dump(doc)
+    'title:   Hello World\\n'
+    """
+    string = ""
+    for i in document.keys():
+        string += str(i)+":   "+str(document[i])+"\n"
+    return string
+
+
+def delete(document: Document) -> None:
+    """This function deletes a document from disk.
+    :param document: Papis document
+    :type  document: papis.document.Document
+    """
+    folder = document.get_main_folder()
+    shutil.rmtree(folder)
+
+
+def describe(document: Document) -> str:
+    """Return a string description of the current document
+    using the document-description-format
+    """
+    return papis.utils.format_doc(
+        papis.config.get('document-description-format'),
+        document)
+
+
+def move(document: Document, path: str) -> None:
+    """This function moves a document to path, it supposes that
+    the document exists in the location ``document.get_main_folder()``.
+    Warning: This method will change the folder in the document object too.
+    :param document: Papis document
+    :type  document: papis.document.Document
+    :param path: Full path where the document will be moved to
+    :type  path: str
+
+    >>> doc = from_data({'title': 'Hello World'})
+    >>> doc.set_folder('path/to/folder')
+    >>> import tempfile; newfolder = tempfile.mkdtemp()
+    >>> move(doc, newfolder)
+    Traceback (most recent call last):
+    ...
+    Exception: There is already...
+    """
+    path = os.path.expanduser(path)
+    if os.path.exists(path):
+        raise Exception(
+            "There is already a document in {0}, please check it,\n"
+            "a temporary papis document has been stored in {1}".format(
+                path, document.get_main_folder()
+            )
+        )
+    shutil.move(document.get_main_folder(), path)
+    # Let us chmod it because it might come from a temp folder
+    # and temp folders are per default 0o600
+    os.chmod(path, papis.config.getint('dir-umask'))
+    document.set_folder(path)
+
+
+def from_data(data: Dict[str, Any]) -> Document:
     """Construct a document object from a data dictionary.
 
     :param data: Data to be copied to a new document
@@ -109,10 +351,10 @@ def from_data(data):
     :returns: A papis document
     :rtype:  papis.document.Document
     """
-    return papis.document.Document(data=data)
+    return Document(data=data)
 
 
-def to_bibtex(document):
+def to_bibtex(document: Document) -> str:
     """Create a bibtex string from document's information
 
     :param document: Papis document
@@ -200,249 +442,3 @@ def to_bibtex(document):
                 )
     bibtexString += "}\n"
     return bibtexString
-
-
-def to_json(document):
-    """Export information into a json string
-    :param document: Papis document
-    :type  document: Document
-    :returns: Json formatted info file
-    :rtype:  str
-
-    """
-    import json
-    return json.dumps(to_dict(document))
-
-
-def to_dict(document):
-    """Gets a python dictionary with the information of the document
-    :param document: Papis document
-    :type  document: Document
-    :returns: Python dictionary
-    :rtype:  dict
-    """
-    result = dict()
-    for key in document.keys():
-        result[key] = document[key]
-    return result
-
-
-def dump(document):
-    """Return information string without any obvious format
-    :param document: Papis document
-    :type  document: Document
-    :returns: String with document's information
-    :rtype:  str
-
-    >>> doc = from_data({'title': 'Hello World'})
-    >>> dump(doc)
-    'title:   Hello World\\n'
-    """
-    string = ""
-    for i in document.keys():
-        string += str(i)+":   "+str(document[i])+"\n"
-    return string
-
-
-def delete(document):
-    """This function deletes a document from disk.
-    :param document: Papis document
-    :type  document: papis.document.Document
-    """
-    folder = document.get_main_folder()
-    shutil.rmtree(folder)
-
-
-def describe(document):
-    """Return a string description of the current document
-    using the document-description-format
-    """
-    return papis.utils.format_doc(
-        papis.config.get('document-description-format'),
-        document
-    )
-
-
-def move(document, path):
-    """This function moves a document to path, it supposes that
-    the document exists in the location ``document.get_main_folder()``.
-    Warning: This method will change the folder in the document object too.
-    :param document: Papis document
-    :type  document: papis.document.Document
-    :param path: Full path where the document will be moved to
-    :type  path: str
-
-    >>> doc = from_data({'title': 'Hello World'})
-    >>> doc.set_folder('path/to/folder')
-    >>> import tempfile; newfolder = tempfile.mkdtemp()
-    >>> move(doc, newfolder)
-    Traceback (most recent call last):
-    ...
-    Exception: There is already...
-    """
-    path = os.path.expanduser(path)
-    if os.path.exists(path):
-        raise Exception(
-            "There is already a document in {0}, please check it,\n"
-            "a temporary papis document has been stored in {1}".format(
-                path, document.get_main_folder()
-            )
-        )
-    shutil.move(document.get_main_folder(), path)
-    # Let us chmod it because it might come from a temp folder
-    # and temp folders are per default 0o600
-    os.chmod(path, papis.config.getint('dir-umask'))
-    document.set_folder(path)
-
-
-class DocHtmlEscaped(dict):
-    """
-    Small helper class to escape html elements.
-
-    >>> DocHtmlEscaped(from_data(dict(title='> >< int & "" "')))['title']
-    '&gt; &gt;&lt; int &amp; &quot;&quot; &quot;'
-    """
-
-    def __init__(self, doc):
-        self.__doc = doc
-
-    def __getitem__(self, key):
-        return (
-            str(self.__doc[key])
-            .replace('&', '&amp;')
-            .replace('<', '&lt;')
-            .replace('>', '&gt;')
-            .replace('"', '&quot;')
-        )
-
-
-class Document(dict):
-
-    """Class implementing the entry abstraction of a document in a library.
-    It is basically a python dictionary with more methods.
-    """
-
-    subfolder = ""
-    _info_file_path = ""
-
-    def __init__(self, folder=None, data=None):
-        self._folder = None
-
-        if folder is not None:
-            self.set_folder(folder)
-            self.load()
-
-        if data is not None:
-            self.update(data)
-
-    def __missing__(self, key):
-        """
-        If key is not defined, return empty string
-        """
-        return ""
-
-    @property
-    def html_escape(self):
-        return DocHtmlEscaped(self)
-
-    def get_main_folder(self) -> str:
-        """Get full path for the folder where the document and the information
-        is stored.
-        :returns: Folder path
-        """
-        return self._folder
-
-    def set_folder(self, folder: str) -> None:
-        """Set document's folder. The info_file path will be accordingly set.
-
-        :param folder: Folder where the document will be stored, full path.
-        :type  folder: str
-        """
-        self._folder = folder
-        self._info_file_path = os.path.join(
-            folder,
-            papis.config.get('info-name'))
-        # TODO: check if this makes sense at all
-        self.subfolder = self.get_main_folder().replace(
-            os.path.expanduser("~"), ""
-        ).replace(
-            "/", " "
-        )
-
-    def get_main_folder_name(self) -> str:
-        """Get main folder name where the document and the information is
-        stored.
-        :returns: Folder name
-        """
-        return os.path.basename(self._folder)
-
-    def has(self, key: str) -> bool:
-        """Check if the information file has some key defined.
-
-        :param key: Key name to be checked
-        :returns: True/False
-
-        """
-        return key in self
-
-    def save(self):
-        """Saves the current document's information into the info file.
-        """
-        import papis.yaml
-        papis.yaml.data_to_yaml(
-            self.get_info_file(),
-            {key: self[key] for key in self.keys() if self[key]}
-        )
-
-    def get_info_file(self):
-        """Get full path for the info file
-        :returns: Full path for the info file
-        :rtype: str
-        """
-        return self._info_file_path
-
-    def get_files(self):
-        """Get the files linked to the document, if any.
-
-        :returns: List of full file paths
-        :rtype:  list
-        """
-        result = []
-        if not self.has('files'):
-            return result
-        files = (
-            self["files"] if isinstance(self["files"], list)
-            else [self["files"]]
-        )
-        for f in files:
-            result.append(os.path.join(self.get_main_folder(), f))
-        return result
-
-    def load(self):
-        """Load information from info file
-        """
-        import papis.yaml
-        if not os.path.exists(self.get_info_file()):
-            return
-        try:
-            data = papis.yaml.yaml_to_data(
-                self.get_info_file(), raise_exception=True)
-        except Exception as e:
-            logger.error(
-                'Error reading yaml file in {0}'.format(yaml_path) +
-                '\nPlease check it!\n\n{0}'.format(str(e))
-            )
-        else:
-            for key in data:
-                self[key] = data[key]
-
-
-def from_folder(folder_path: str) -> Document:
-    """Construct a document object from a folder
-
-    :param folder_path: Full path to a valid papis folder
-    :type  folder_path: str
-    :returns: A papis document
-    :rtype:  papis.document.Document
-    """
-    return Document(folder=folder_path)
