@@ -413,6 +413,18 @@ def getboolean(key: str, section: Optional[str] = None) -> Optional[bool]:
     return general_get(key, section=section, data_type=bool)
 
 
+def getstring(key: str, section: Optional[str] = None) -> str:
+    """String getter
+    >>> set('add-open', "hello world")
+    >>> getstring('add-open')
+    "hello world"
+    """
+    result = general_get(key, section=section, data_type=str)
+    if not isinstance(result, str):
+        raise ValueError("Key {0} should be a string".format(key))
+    return str(result)
+
+
 def getlist(key: str, section: Optional[str] = None) -> Optional[List[str]]:
     """List getter
 
