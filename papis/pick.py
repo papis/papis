@@ -2,21 +2,24 @@ import logging
 import os
 import sys
 import papis.config
+import papis.document
 from papis.tui.app import Picker
-from stevedore import extension
 import papis.plugin
+
+from typing import Sequence, Any, Callable
+_filter_type = Callable[[Any], Any]
+_option_type = Sequence[Any]
 
 logger = logging.getLogger("pick")
 
 
-def available_pickers():
-    return pickers_mgr.entry_points_names()
+def _extension_name() -> str:
+    return "papis.picker"
 
 
-def papis_pick(
-        options, default_index=0,
-        header_filter=lambda x: x, match_filter=lambda x: x
-        ):
+def papis_pick(options: _option_type, default_index: int = 0,
+        header_filter: _filter_type = lambda x: x,
+        match_filter: _filter_type = lambda x: x) -> Any:
     if len(options) == 0:
         return ""
     if len(options) == 1:
@@ -44,40 +47,31 @@ def papis_pick(
     return result
 
 
-pickers_mgr = extension.ExtensionManager(
-    namespace='papis.picker',
-    invoke_on_load=False,
-    verify_requirements=True,
-    propagate_map_exceptions=True,
-    on_load_failure_callback=papis.plugin.stevedore_error_handler
-)
-
-
-def pick(
-        options,
-        default_index=0,
-        header_filter=lambda x: x,
-        match_filter=lambda x: x
-        ):
+def pick(options: _option_type, default_index: int = 0,
+        header_filter: _filter_type = lambda x: x,
+        match_filter: _filter_type = lambda x: x) -> Any:
     """Construct and start a :class:`Picker <Picker>`.
     """
     name = papis.config.get("picktool")
     try:
-        picker = pickers_mgr[name].plugin
+        picker = papis.plugin.get_extension_manager(
+                        _extension_name())[name].plugin
     except KeyError:
         logger.error("Invalid picker ({0})".format(name))
         logger.error(
-            "Registered pickers are: {0}".format(available_pickers()))
+            "Registered pickers are: {0}"
+            .format(papis.plugin.get_available_entrypoints(_extension_name())))
+        return []
     else:
         return picker(
             options,
             default_index=default_index,
             header_filter=header_filter,
-            match_filter=match_filter
-        )
+            match_filter=match_filter)
 
 
-def pick_doc(documents):
+def pick_doc(documents: Sequence[papis.document.Document]
+        ) -> papis.document.Document:
     """Pick a document from documents with the correct formatting
 
     :documents: List of documents
@@ -89,10 +83,9 @@ def pick_doc(documents):
         with open(os.path.expanduser(header_format_path)) as fd:
             header_format = fd.read()
     else:
-        header_format = papis.config.get("header-format")
-    match_format = papis.config.get("match-format")
+        header_format = papis.config.getstring("header-format")
+    match_format = papis.config.getstring("match-format")
     pick_config = dict(
         header_filter=lambda x: papis.utils.format_doc(header_format, x),
-        match_filter=lambda x: papis.utils.format_doc(match_format, x)
-    )
+        match_filter=lambda x: papis.utils.format_doc(match_format, x))
     return pick(documents, **pick_config)
