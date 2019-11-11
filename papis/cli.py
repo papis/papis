@@ -1,6 +1,7 @@
 import click
 import papis.config
 import difflib
+from typing import Optional, List, Dict, Any, Callable
 
 
 class AliasedGroup(click.Group):
@@ -10,7 +11,8 @@ class AliasedGroup(click.Group):
     and is to be used for groups with aliases
     """
 
-    def get_command(self, ctx, cmd_name):
+    def get_command(self, ctx: click.Context,
+            cmd_name: str) -> Optional[click.Command]:
         rv = click.Group.get_command(self, ctx, cmd_name)
         if rv is not None:
             return rv
@@ -19,13 +21,15 @@ class AliasedGroup(click.Group):
         if not matches:
             return None
         elif len(matches) == 1:
-            return click.Group.get_command(self, ctx, matches[0])
-        ctx.fail('Too many matches: %s' % ', '.join(sorted(matches)))
+            return click.Group.get_command(self, ctx, str(matches[0]))
+        else:
+            ctx.fail('Too many matches: {0}'.format(matches))
+            return None
 
 
-def query_option(**attrs):
+def query_option(**attrs: Dict[str, Any]) -> Callable[..., Any]:
     """Adds a ``query`` argument as a decorator"""
-    def decorator(f):
+    def decorator(f: Any) -> click.Argument:
         attrs.setdefault(
             'default',
             lambda: papis.config.get('default-query-string'))
