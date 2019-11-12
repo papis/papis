@@ -1,18 +1,18 @@
 import papis
 import logging
 import os.path
-from stevedore import extension
 import papis.plugin
+from typing import Optional, List, Dict, Any, Callable
 
 logger = logging.getLogger('importer')
 
 
 class Context:
-    def __init__(self):
-        self.data = dict()
-        self.files = []
+    def __init__(self) -> None:
+        self.data = dict()  # type: Dict[str, Any]
+        self.files = []  # type: List[str]
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return bool(self.files) or bool(self.data)
 
 
@@ -20,23 +20,24 @@ class Importer:
 
     """This is the base class for every importer"""
 
-    def __init__(self, uri="", name="", ctx=None):
+    def __init__(self, uri: str = "", name: str = "",
+            ctx: Context = Context()):
         """
         :param uri: uri
         :type  uri: str
         :param name: Name of the importer
         :type  name: str
         """
-        self.ctx = ctx or Context()
+        self.ctx = Context()
         assert(isinstance(uri, str))
         assert(isinstance(name, str))
         assert(isinstance(self.ctx, Context))
-        self.uri = uri
-        self.name = name or os.path.basename(__file__)
+        self.uri = uri  # type: str
+        self.name = name or os.path.basename(__file__)  # type: str
         self.logger = logging.getLogger("importer:{0}".format(self.name))
 
     @classmethod
-    def match(uri):
+    def match(cls, uri: str):
         """This method should be called to know if a given uri matches
         the importer or not.
 
@@ -52,11 +53,10 @@ class Importer:
         :type  uri: str
         """
         raise NotImplementedError(
-            "Matching uri not implemented for this importer"
-        )
+            "Matching uri not implemented for this importer")
 
     @classmethod
-    def match_data(cls, data):
+    def match_data(cls, data: Dict[str, Any]) -> None:
         """Get a dictionary of data and try to decide if there is
         a valid uri in it.
 
@@ -64,60 +64,42 @@ class Importer:
         :type  data: dict
         """
         raise NotImplementedError(
-            "Matching data not implemented for this importer"
-        )
+            "Matching data not implemented for this importer")
 
-    def fetch(self):
+    def fetch(self) -> str:
         """
         can return a dict to update the document with
         """
         raise NotImplementedError()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return 'Importer({0}, uri={1})'.format(self.name, self.uri)
 
 
-import_mgr = None
+def _extension_name() -> str:
+    return "papis.importer"
 
 
-def _create_import_mgr():
-    global import_mgr
-    if import_mgr:
-        return
-    import_mgr = extension.ExtensionManager(
-        namespace='papis.importer',
-        invoke_on_load=True,
-        verify_requirements=True,
-        invoke_args=(),
-        # invoke_kwds
-        propagate_map_exceptions=True,
-        on_load_failure_callback=papis.plugin.stevedore_error_handler
-    )
-
-
-def get_import_mgr():
+def get_import_mgr() -> papis.plugin.ExtensionManager:
     """Get the import manager
     :returns: Import manager
-    :rtype:  stevedore.extension.ExtensionManager
     """
-    global import_mgr
-    _create_import_mgr()
-    return import_mgr
+    return papis.plugin.get_extension_manager(_extension_name())
 
 
-def available_importers():
+def available_importers() -> List[str]:
     """Get the available importers defined.
     :returns: List of importer names
     :rtype:  list(str)
     """
-    return get_import_mgr().entry_points_names()
+    return papis.plugin.get_available_entrypoints(_extension_name())
 
 
-def get_importers():
-    return [e.plugin for e in get_import_mgr().extensions]
+def get_importers() -> List[Importer]:
+    return [e.plugin for e in get_import_mgr()]
 
 
-def get_importer_by_name(name):
+def get_importer_by_name(name: str) -> Any:
     """Get importer by name
     :param name: Name of the importer
     :type  name: str
@@ -128,7 +110,7 @@ def get_importer_by_name(name):
     return get_import_mgr()[name].plugin
 
 
-def cache(f):
+def cache(f: Callable[[Importer], Any]) -> Callable[[Importer], Any]:
     """
     This is a decorator to be used if a method of an Importer
     is to be cached, i.e., if the context of the importer is already
@@ -137,7 +119,7 @@ def cache(f):
 
     :param self: Method of an Importer
     """
-    def wrapper(self):
+    def wrapper(self: Importer) -> Any:
         if not self.ctx:
             f(self)
     return wrapper
