@@ -8,7 +8,7 @@ import logging
 @click.pass_context
 @click.argument('jsonfile', type=click.Path(exists=True))
 @click.help_option('--help', '-h')
-def explorer(ctx, jsonfile):
+def explorer(ctx: click.Context, jsonfile: str) -> None:
     """
     Import documents from a json file
 
@@ -19,8 +19,6 @@ def explorer(ctx, jsonfile):
     """
     logger = logging.getLogger('explore:json')
     logger.info('Reading in json file {}'.format(jsonfile))
-    docs = [
-        papis.document.from_data(d) for d in json.load(open(jsonfile))
-    ]
+    docs = [papis.document.from_data(d) for d in json.load(open(jsonfile))]
     ctx.obj['documents'] += docs
     logger.info('{} documents found'.format(len(docs)))
