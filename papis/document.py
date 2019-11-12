@@ -233,7 +233,7 @@ class Document(dict):
                 self.get_info_file(), raise_exception=True)
         except Exception as e:
             logger.error(
-                'Error reading yaml file in {0}'.format(yaml_path) +
+                'Error reading yaml file in {0}'.format(self.get_info_file()) +
                 '\nPlease check it!\n\n{0}'.format(str(e)))
         else:
             for key in data:

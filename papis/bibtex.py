@@ -10,6 +10,7 @@ import click
 import papis.document
 import papis.importer
 import papis.utils
+from typing import Optional, List, Dict, Any, Callable
 
 logger = logging.getLogger("bibtex")
 
@@ -68,7 +69,7 @@ class Importer(papis.importer.Importer):
         return importer if importer.ctx else None
 
     @papis.importer.cache
-    def fetch(self):
+    def fetch(self: papis.importer.Importer) -> Any:
         self.logger.info("Reading input file = %s" % self.uri)
         try:
             bib_data = bibtex_to_dict(self.uri)

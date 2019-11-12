@@ -283,7 +283,7 @@ class DoiFromPdfImporter(papis.importer.Importer):
         self.doi = None
 
     @classmethod
-    def match(cls, uri):
+    def match(cls, uri: str):
         if (os.path.isdir(uri) or not os.path.exists(uri) or
                 not papis.utils.get_document_extension(uri) == 'pdf'):
             return None
