@@ -5,11 +5,12 @@ import papis.importer
 import click
 import papis.utils
 import os
+from typing import Optional, List, Dict, Any, Callable
 
 logger = logging.getLogger("yaml")
 
 
-def data_to_yaml(yaml_path, data):
+def data_to_yaml(yaml_path: str, data: Dict[str, Any]) -> None:
     """
     Save data to yaml at path outpath
 
@@ -23,11 +24,11 @@ def data_to_yaml(yaml_path, data):
             data,
             fd,
             allow_unicode=papis.config.getboolean("info-allow-unicode"),
-            default_flow_style=False
-        )
+            default_flow_style=False)
 
 
-def yaml_to_data(yaml_path, raise_exception=False):
+def yaml_to_data(yaml_path: str,
+        raise_exception: bool = False) -> Dict[str, Any]:
     """
     Convert a yaml file into a dictionary using the yaml module.
 
@@ -47,6 +48,7 @@ def yaml_to_data(yaml_path, raise_exception=False):
             logger.error("Yaml syntax error: \n\n{0}".format(e))
             return dict()
         else:
+            assert isinstance(data, dict)
             return data
 
 
@@ -54,7 +56,7 @@ def yaml_to_data(yaml_path, raise_exception=False):
 @click.pass_context
 @click.argument('yamlfile', type=click.Path(exists=True))
 @click.help_option('--help', '-h')
-def explorer(ctx, yamlfile):
+def explorer(ctx: click.Context, yamlfile: str) -> None:
     """
     Import documents from a yaml file
 
@@ -65,9 +67,8 @@ def explorer(ctx, yamlfile):
     """
     logger = logging.getLogger('explore:yaml')
     logger.info('reading in yaml file {}'.format(yamlfile))
-    docs = [
-        papis.document.from_data(d) for d in yaml.safe_load_all(open(yamlfile))
-    ]
+    docs = [papis.document.from_data(d)
+            for d in yaml.safe_load_all(open(yamlfile))]
     ctx.obj['documents'] += docs
     logger.info('{} documents found'.format(len(docs)))
 
@@ -76,11 +77,11 @@ class Importer(papis.importer.Importer):
 
     """Importer that parses a yaml file"""
 
-    def __init__(self, **kwargs):
-        papis.importer.Importer.__init__(self, name='yaml', **kwargs)
+    def __init__(self, uri: str) -> None:
+        papis.importer.Importer.__init__(self, name='yaml', uri=uri)
 
     @classmethod
-    def match(cls, uri):
+    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
         importer = Importer(uri=uri)
         if os.path.exists(uri) and not os.path.isdir(uri):
             importer.fetch()
@@ -88,7 +89,7 @@ class Importer(papis.importer.Importer):
         return None
 
     @papis.importer.cache
-    def fetch(self):
+    def fetch(self: papis.importer.Importer) -> Any:
         self.ctx.data = yaml_to_data(self.uri, raise_exception=False)
         if self.ctx:
             self.logger.info("successfully read file = %s" % self.uri)
