@@ -100,37 +100,21 @@ import papis.api
 import papis.pick
 import papis.crossref
 import papis.plugin
-from stevedore import extension
+from typing import List
 
 logger = logging.getLogger('explore')
-explorer_mgr = None
 
 
-def _create_explorer_mgr():
-    global explorer_mgr
-
-    if explorer_mgr is not None:
-        return
-
-    explorer_mgr = extension.ExtensionManager(
-        namespace='papis.explorer',
-        invoke_on_load=False,
-        verify_requirements=True,
-        propagate_map_exceptions=True,
-        on_load_failure_callback=papis.plugin.stevedore_error_handler
-    )
+def _extension_name() -> str:
+    return "papis.explorer"
 
 
-def get_available_explorers():
-    global explorer_mgr
-    _create_explorer_mgr()
-    return [e.plugin for e in explorer_mgr.extensions]
+def get_available_explorers() -> List[str]:
+    return papis.plugin.get_available_plugins(_extension_name())
 
 
-def get_explorer_mgr():
-    global explorer_mgr
-    _create_explorer_mgr()
-    return explorer_mgr
+def get_explorer_mgr() -> papis.plugin.ExtensionManager:
+    return papis.plugin.get_extension_manager(_extension_name())
 
 
 @click.command('lib')
@@ -350,8 +334,7 @@ def cmd(ctx, command):
 
 
 @click.group("explore",
-    cls=papis.cli.AliasedGroup,
-    invoke_without_command=False, chain=True)
+    cls=papis.cli.AliasedGroup, invoke_without_command=False, chain=True)
 @click.help_option('--help', '-h')
 @click.pass_context
 def cli(ctx):

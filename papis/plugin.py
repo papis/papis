@@ -37,3 +37,7 @@ def get_extension_manager(namespace: str) -> ExtensionManager:
 
 def get_available_entrypoints(namespace: str) -> List[str]:
     return get_extension_manager(namespace).entry_points_names()
+
+
+def get_available_plugins(namespace: str):
+    return [e.plugin for e in get_extension_manager(namespace)]
