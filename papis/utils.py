@@ -16,7 +16,7 @@ import logging
 import papis.importer
 import papis.downloaders
 import colorama
-from typing import Optional, List
+from typing import Optional, List, Iterator, Callable, Any, Dict, AnyStr
 
 logger = logging.getLogger("utils")
 logger.debug("importing")
@@ -56,20 +56,17 @@ def general_open(fileName: str, key: str,
         logger.debug("cmd:  %s" % cmd)
         if wait:
             logger.debug("Waiting for process to finsih")
-            return subprocess.call(cmd)
+            subprocess.call(cmd)
         else:
             logger.debug("Not waiting for process to finish")
-            return subprocess.Popen(
+            subprocess.Popen(
                 cmd, shell=False,
-                stdin=None, stdout=None, stderr=None, close_fds=True
-            )
-    elif hasattr(opener, '__call__'):
-        return opener(fileName)
+                stdin=None, stdout=None, stderr=None, close_fds=True)
     else:
         raise Warning("How should I use the opener %s?" % opener)
 
 
-def open_file(file_path, wait=True):
+def open_file(file_path: str, wait: bool = True) -> None:
     """Open file using the ``opentool`` key value as a program to
     handle file_path.
 
@@ -96,7 +93,7 @@ def format_doc(python_format: str,
     :returns: Formated string
     :rtype: str
     """
-    doc = key or papis.config.get("format-doc-name")
+    doc = key or papis.config.getstring("format-doc-name")
     fdoc = papis.document.Document()
     fdoc.update(document)
     try:
@@ -118,13 +115,14 @@ def get_folders(folder: str) -> List[str]:
     logger.debug("Indexing folders in '{0}'".format(folder))
     folders = list()
     for root, dirnames, filenames in os.walk(folder):
-        if os.path.exists(os.path.join(root, papis.config.get('info-name'))):
+        if os.path.exists(
+                os.path.join(root, papis.config.getstring('info-name'))):
             folders.append(root)
     logger.debug("{0} valid folders retrieved".format(len(folders)))
     return folders
 
 
-def create_identifier(input_list):
+def create_identifier(input_list: str) -> Iterator[str]:
     """This creates a generator object capable of iterating over lists to
     create combinations of that list that result in unique strings.
     Ideally for use in modifying an existing string to make it unique.
@@ -148,7 +146,8 @@ def create_identifier(input_list):
             yield ''.join(s)
 
 
-def confirm(prompt, yes=True, bottom_toolbar=None):
+def confirm(prompt: str, yes: bool = True,
+        bottom_toolbar: Optional[str] = None) -> bool:
     """Confirm with user input
 
     :param prompt: Question or text that the user gets.
@@ -164,15 +163,15 @@ def confirm(prompt, yes=True, bottom_toolbar=None):
         bottom_toolbar=bottom_toolbar,
         default='Y/n' if yes else 'y/N',
         validator_function=lambda x: x in 'YyNn',
-        dirty_message='Please, write either "y" or "n" to confirm'
-    )
+        dirty_message='Please, write either "y" or "n" to confirm')
     if yes:
         return result not in 'Nn'
     else:
         return result in 'Yy'
 
 
-def text_area(title, text, lexer_name="", height=10, full_screen=False):
+def text_area(title: str, text:str, lexer_name: str = "",
+        height: int = 10, full_screen: bool = False) -> str:
     """
     Small implementation of an editor/pager for small pieces of text.
 
@@ -196,6 +195,7 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
         BufferControl, FormattedTextControl
     )
     from prompt_toolkit.layout.layout import Layout
+    from prompt_toolkit.utils import Event
     from prompt_toolkit.layout import Dimension
     from prompt_toolkit.key_binding import KeyBindings
     from prompt_toolkit.lexers import PygmentsLexer
@@ -211,15 +211,15 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
     buffer1.text = text
 
     @kb.add('c-q')
-    def exit_(event):
+    def exit_(event: Event) -> None:
         event.app.exit(0)
 
     @kb.add('c-s')
-    def save_(event):
+    def save_(event: Event) -> None:
         event.app.return_text = buffer1.text
 
     class App(Application):
-        return_text = None
+        return_text = ""  # type: str
 
     text_height = Dimension(min=0, max=height) if height is not None else None
 
@@ -228,8 +228,7 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
     text_window = Window(
         height=text_height,
         style='bg:black fg:ansiwhite',
-        content=BufferControl(buffer=buffer1, lexer=lexer)
-    )
+        content=BufferControl(buffer=buffer1, lexer=lexer))
 
     root_container = HSplit([
         Window(
@@ -273,7 +272,7 @@ def text_area(title, text, lexer_name="", height=10, full_screen=False):
     return app.return_text
 
 
-def yes_no_dialog(title, text):
+def yes_no_dialog(title: str, text: str) -> Any:
     from prompt_toolkit.shortcuts import yes_no_dialog
     from prompt_toolkit.styles import Style
 
@@ -284,16 +283,13 @@ def yes_no_dialog(title, text):
         'dialog shadow': 'bg:#00aa00',
     })
 
-    return yes_no_dialog(
-        title=title,
-        text=text,
-        style=example_style
-    )
+    return yes_no_dialog(title=title, text=text, style=example_style)
 
 
-def input(
-        prompt, default="", bottom_toolbar=None, multiline=False,
-        validator_function=None, dirty_message=""):
+def input(prompt: str, default: str = "", bottom_toolbar: Optional[str] = None,
+        multiline: bool = False,
+        validator_function: Optional[Callable[[str], bool]] = None,
+        dirty_message: str = "") -> str:
     """Prompt user for input
 
     :param prompt: Question or text that the user gets.
@@ -328,13 +324,13 @@ def input(
         validator=validator,
         multiline=multiline,
         bottom_toolbar=bottom_toolbar,
-        validate_while_typing=True
-    )
+        validate_while_typing=True)
 
-    return result if result else default
+    return str(result) if result else default
 
 
-def update_doc_from_data_interactively(document, data, data_name):
+def update_doc_from_data_interactively(document: papis.document.Document,
+        data: Dict[str, Any], data_name: str) -> None:
     import papis.tui.widgets.diff
     docdata = copy.copy(document)
     # do not compare some entries
@@ -347,7 +343,7 @@ def update_doc_from_data_interactively(document, data, data_name):
             namea=papis.document.describe(document), nameb=data_name))
 
 
-def clean_document_name(doc_path):
+def clean_document_name(doc_path: str) -> str:
     """Get a file path and return the basename of the path cleaned.
 
     It will also turn chinese, french, russian etc into ascii characters.
@@ -360,14 +356,14 @@ def clean_document_name(doc_path):
     """
     import slugify
     regex_pattern = r'[^a-z0-9.]+'
-    return slugify.slugify(
+    return str(slugify.slugify(
         os.path.basename(doc_path),
         word_boundary=True,
-        regex_pattern=regex_pattern
-    )
+        regex_pattern=regex_pattern))
 
 
-def locate_document_in_lib(document, library=None):
+def locate_document_in_lib(document: papis.document.Document,
+        library: Optional[str] = None) -> papis.document.Document:
     """Try to figure out if a document is already in a library
 
     :param document: Document to be searched for
@@ -378,8 +374,9 @@ def locate_document_in_lib(document, library=None):
     :rtype:  papis.document.Document
     :raises IndexError: Whenever document is not found in the library
     """
-    db = papis.database.get(library=library)
-    comparing_keys = eval(papis.config.get('unique-document-keys'))
+    db = papis.database.get(library_name=library)
+    comparing_keys = papis.config.getlist('unique-document-keys')
+    assert comparing_keys is not None
 
     for k in comparing_keys:
         if not document.has(k):
@@ -391,7 +388,9 @@ def locate_document_in_lib(document, library=None):
     raise IndexError("Document not found in library")
 
 
-def locate_document(document, documents):
+def locate_document(document: papis.document.Document,
+        documents: List[papis.document.Document]
+        ) -> Optional[papis.document.Document]:
     """Try to figure out if a document is already within a list of documents.
 
     :param document: Document to be searched for
@@ -403,15 +402,17 @@ def locate_document(document, documents):
     """
     # if these keys exist in the documents, then check those first
     # TODO: find a way to really match well titles and author
-    comparing_keys = eval(papis.config.get('unique-document-keys'))
+    comparing_keys = papis.config.getlist('unique-document-keys')
+    assert comparing_keys is not None
     for d in documents:
         for key in comparing_keys:
             if key in document.keys() and key in d.keys():
                 if re.match(document[key], d[key], re.I):
                     return d
+    return None
 
 
-def get_document_extension(document_path):
+def get_document_extension(document_path: str) -> str:
     """Get document extension
 
     :document_path: Path of the document
@@ -425,6 +426,7 @@ def get_document_extension(document_path):
         m = re.match(r"^.*\.([^.]+)$", os.path.basename(document_path))
         return m.group(1) if m else 'data'
     else:
+        assert isinstance(kind.extension, str)
         return kind.extension
 
 
@@ -462,7 +464,7 @@ def get_cache_home() -> str:
         path = os.path.expanduser(user_defined)
     else:
         path = os.path.expanduser(
-            os.path.join(os.environ.get('XDG_CACHE_HOME'), 'papis')
+            os.path.join(str(os.environ.get('XDG_CACHE_HOME')), 'papis')
         ) if os.environ.get(
             'XDG_CACHE_HOME'
         ) else os.path.expanduser(
@@ -470,21 +472,12 @@ def get_cache_home() -> str:
         )
     if not os.path.exists(path):
         os.makedirs(path)
-    return path
+    return str(path)
 
 
-def geturl(url):
-    """Quick and dirty file get request utility.
-    """
-    assert(isinstance(url, str))
-    import requests
-    session = requests.Session()
-    session.headers = {'User-Agent': papis.config.get('user-agent')}
-    return session.get(url).content
-
-
-def get_matching_importer_or_downloader(matching_string):
-    importers = []
+def get_matching_importer_or_downloader(matching_string: str
+        ) -> List[papis.importer.Importer]:
+    importers = []  # type: List[papis.importer.Importer]
     logger = logging.getLogger("utils:matcher")
     for importer_cls in (papis.importer.get_importers() +
                          papis.downloaders.get_downloaders()):

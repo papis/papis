@@ -11,6 +11,7 @@ import papis.importer
 import papis.downloaders.base
 import tempfile
 import collections
+import requests
 
 logger = logging.getLogger("crossref")
 logger.debug("importing")
@@ -335,7 +336,10 @@ class Importer(papis.importer.Importer):
                 self.logger.info(
                     'trying to download document from {0}..'
                     .format(doc_url))
-                document_data = papis.utils.geturl(doc_url)
+                session = requests.Session()
+                session.headers = {
+                    'User-Agent': papis.config.get('user-agent')}
+                document_data = session.get(url).content
                 tmp_filepath = tempfile.mktemp()
                 self.logger.debug("Saving in %s" % tmp_filepath)
                 with open(tmp_filepath, 'wb+') as fd:
