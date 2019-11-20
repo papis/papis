@@ -2,8 +2,9 @@ import papis
 import logging
 import os.path
 import papis.plugin
-from typing import Optional, List, Dict, Any, Callable
+from typing import Optional, List, Dict, Any, Callable, Type, TypeVar
 
+TT = Type[TypeVar('TT', bound='Importer')]
 logger = logging.getLogger('importer')
 
 
@@ -66,7 +67,7 @@ class Importer:
         raise NotImplementedError(
             "Matching data not implemented for this importer")
 
-    def fetch(self) -> str:
+    def fetch(self) -> Any:
         """
         can return a dict to update the document with
         """
@@ -110,7 +111,8 @@ def get_importer_by_name(name: str) -> Any:
     return get_import_mgr()[name].plugin
 
 
-def cache(f: Callable[[Importer], Any]) -> Callable[[Importer], Any]:
+
+def cache(f: Callable[[TT], Any]) -> Callable[[TT], Any]:
     """
     This is a decorator to be used if a method of an Importer
     is to be cached, i.e., if the context of the importer is already
@@ -119,7 +121,8 @@ def cache(f: Callable[[Importer], Any]) -> Callable[[Importer], Any]:
 
     :param self: Method of an Importer
     """
-    def wrapper(self: Importer) -> Any:
+    def wrapper(self: TT) -> Any:
         if not self.ctx:
             f(self)
+
     return wrapper
