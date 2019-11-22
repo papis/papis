@@ -21,7 +21,7 @@ class Importer:
     """This is the base class for every importer"""
 
     def __init__(self, uri: str = "", name: str = "",
-            ctx: Context = Context()):
+                 ctx: Context = Context()):
         """
         :param uri: uri
         :type  uri: str
@@ -37,7 +37,7 @@ class Importer:
         self.logger = logging.getLogger("importer:{0}".format(self.name))
 
     @classmethod
-    def match(cls, uri: str):
+    def match(cls, uri: str) -> Optional[object]:
         """This method should be called to know if a given uri matches
         the importer or not.
 
