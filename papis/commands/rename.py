@@ -47,12 +47,18 @@ def run(document, new_name, git=False):
 
 @click.command("rename")
 @click.help_option('--help', '-h')
+@click.option(
+    "--sort",
+    "sort_field",
+    help="Sort results by field",
+    default=None
+)
 @papis.cli.query_option()
 @papis.cli.git_option()
-def cli(query, git):
+def cli(query, git, sort_field):
     """Rename entry"""
 
-    documents = papis.database.get().query(query)
+    documents = papis.database.get().query(query, sort_field)
     logger = logging.getLogger('cli:rename')
 
     if not documents:

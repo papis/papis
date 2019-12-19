@@ -38,9 +38,15 @@ def run(document, new_folder_path, git=False):
 
 @click.command("mv")
 @click.help_option('--help', '-h')
+@click.option(
+    "--sort",
+    "sort_field",
+    help="Sort results by field",
+    default=None
+)
 @papis.cli.query_option()
 @papis.cli.git_option()
-def cli(query, git):
+def cli(query, git, sort_field):
     """Move a document into some other path"""
     # Leave this imports here for performance
     import prompt_toolkit
@@ -48,7 +54,7 @@ def cli(query, git):
 
     logger = logging.getLogger('cli:mv')
 
-    documents = papis.database.get().query(query)
+    documents = papis.database.get().query(query, sort_field)
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
         return

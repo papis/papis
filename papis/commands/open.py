@@ -150,6 +150,12 @@ def run(document, opener=None, folder=False, mark=False):
     is_flag=True
 )
 @click.option(
+    "--sort",
+    "sort_field",
+    help="Sort results by field",
+    default=None
+)
+@click.option(
     "--all",
     help="Open all matching documents",
     default=False,
@@ -161,13 +167,13 @@ def run(document, opener=None, folder=False, mark=False):
     help="Open mark",
     default=lambda: True if papis.config.get('open-mark') else False
 )
-def cli(query, doc_folder, tool, folder, all, mark):
+def cli(query, doc_folder, tool, folder, sort_field, all, mark):
     """Open document from a given library"""
     if tool:
         papis.config.set("opentool", tool)
     logger = logging.getLogger('cli:run')
 
-    documents = papis.database.get().query(query)
+    documents = papis.database.get().query(query, sort_field)
 
     if doc_folder:
         documents = [from_folder(doc_folder)]

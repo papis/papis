@@ -216,6 +216,12 @@ def run(document, data=dict(), interactive=False, force=False):
     multiple=True,
     type=str,
 )
+@click.option(
+    "--sort",
+    "sort_field",
+    help="Sort results by field",
+    default=None
+)
 def cli(
         query,
         doc_folder,
@@ -232,11 +238,12 @@ def cli(
         auto,
         all,
         set,
+        sort_field,
         delete
         ):
     """Update a document from a given library"""
 
-    documents = papis.database.get().query(query)
+    documents = papis.database.get().query(query, sort_field)
     logger = logging.getLogger('cli:update')
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)

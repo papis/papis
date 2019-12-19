@@ -87,6 +87,12 @@ def run(document, filepaths):
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @click.option(
+    "--sort",
+    "sort_field",
+    help="Sort results by field",
+    default=None
+)
+@click.option(
     "-f", "--files",
     help="File fullpaths to documents",
     multiple=True,
@@ -97,9 +103,9 @@ def run(document, filepaths):
     help="File name for the document (papis format)",
     default=None
 )
-def cli(query, files, file_name):
+def cli(query, files, file_name, sort_field):
     """Add files to an existing document"""
-    documents = papis.database.get().query(query)
+    documents = papis.database.get().query(query, sort_field)
     logger = logging.getLogger('cli:addto')
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)

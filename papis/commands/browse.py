@@ -76,9 +76,15 @@ def run(document):
     '--all', default=False, is_flag=True,
     help='Browse all selected documents'
 )
-def cli(query, key, all):
+@click.option(
+    "--sort",
+    "sort_field",
+    help="Sort results by field",
+    default=None
+)
+def cli(query, key, all, sort_field):
     """Open document's url in a browser"""
-    documents = papis.database.get().query(query)
+    documents = papis.database.get().query(query, sort_field)
     logger = logging.getLogger('cli:browse')
 
     if len(documents) == 0:

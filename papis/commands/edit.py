@@ -38,6 +38,12 @@ def run(document, wait=True):
     is_flag=True
 )
 @click.option(
+    "--sort",
+    "sort_field",
+    help="Sort results by field",
+    default=None
+)
+@click.option(
     "--all",
     help="Edit all matching documents",
     default=False,
@@ -53,12 +59,13 @@ def cli(
         query,
         notes,
         all,
+        sort_field,
         editor
         ):
     """Edit document information from a given library"""
 
     logger = logging.getLogger('cli:edit')
-    documents = papis.database.get().query(query)
+    documents = papis.database.get().query(query, sort_field)
 
     if editor is not None:
         papis.config.set('editor', editor)

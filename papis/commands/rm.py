@@ -48,13 +48,20 @@ def run(document, filepath=None):
     is_flag=True,
     default=False
 )
+@click.option(
+    "--sort",
+    "sort_field",
+    help="Sort results by field",
+    default=None
+)
 def cli(
         query,
         file,
-        force
+        force,
+        sort_field
         ):
     """Delete command for several objects"""
-    documents = papis.database.get().query(query)
+    documents = papis.database.get().query(query, sort_field)
     logger = logging.getLogger('cli:rm')
 
     if not documents:

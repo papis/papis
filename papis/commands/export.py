@@ -158,17 +158,24 @@ def run(
     default=False,
     is_flag=True
 )
+@click.option(
+    "--sort",
+    "sort_field",
+    help="Sort results by field",
+    default=None
+)
 def cli(
         query,
         folder,
         out,
         format,
         all,
+        sort_field,
         **kwargs
         ):
     """Export a document from a given library"""
 
-    documents = papis.database.get().query(query)
+    documents = papis.database.get().query(query, sort_field)
 
     if format and folder:
         logger.warning("Only --folder flag will be considered")
