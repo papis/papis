@@ -107,35 +107,51 @@ class Database(papis.database.base.Database):
         self.logger.debug("commiting deletion..")
         writer.commit()
 
-    def query_dict(self, dictionary):
+    def query_dict(self, dictionary, sort_field=None):
         query_string = " AND ".join(
             ["{}:\"{}\" ".format(key, val) for key, val in dictionary.items()]
         )
         return self.query(query_string)
 
-    def query(self, query_string):
+    def query(self, query_string, sort_field=None):
         self.logger.debug('Query string %s' % query_string)
         index = self.get_index()
         qp = whoosh.qparser.MultifieldParser(
             ['title', 'author', 'tags'],
             schema=self.get_schema()
         )
+
+        # Check if the database can do the search. 
+        # Otherwise, do it after loading docs.
+        schema_keys = self.get_schema_init_fields().keys()
+        if sort_field in schema_keys:
+            python_sort_field = None
+            whoosh_sort_field = sort_field
+        else:
+            python_sort_field = sort_field
+            whoosh_sort_field = None
+
         qp.add_plugin(whoosh.qparser.FuzzyTermPlugin())
         query = qp.parse(query_string)
         with index.searcher() as searcher:
-            results = searcher.search(query, limit=None)
+            results = searcher.search(query, limit=None, sortedby=whoosh_sort_field)
             self.logger.debug(results)
             documents = [
                 papis.document.from_folder(r.get(self.get_id_key()))
                 for r in results
             ]
+
+        # Sort on fields not visible to whoosh.
+        if python_sort_field:
+            return sorted(documents, key=lambda doc: self.sort_field_from_doc(doc, python_sort_field))
+
         return documents
 
     def get_all_query_string(self):
         return '*'
 
-    def get_all_documents(self):
-        return self.query(self.get_all_query_string())
+    def get_all_documents(self, sort_field=None):
+        return self.query(self.get_all_query_string(), sort_field)
 
     def get_id_key(self):
         """Get the unique key identifier name of the documents in the database
