@@ -94,6 +94,8 @@ import re
 import tempfile
 import hashlib
 import shutil
+import subprocess
+import time
 import papis.api
 import papis.pick
 import papis.utils
@@ -101,6 +103,8 @@ import papis.config
 import papis.document
 import papis.importer
 import papis.cli
+import papis.yaml
+import papis.strings
 import click
 import colorama
 import papis.downloaders
@@ -540,6 +544,8 @@ def cli(files, set_list, subfolder, folder_name, file_name, from_importer,
     if not ctx:
         logger.error('there is nothing to be added')
         return
+
+    ctx.data['time-added'] = time.strftime(papis.strings.time_format)
 
     return run(
         ctx.files,
