@@ -1,6 +1,7 @@
 import tests.database
 import papis.config
 import papis.database
+import papis.document
 import os
 
 class Test(tests.database.DatabaseTest):
@@ -17,6 +18,19 @@ class Test(tests.database.DatabaseTest):
         database = papis.database.get()
         docs = database.query('.')
         self.assertTrue(len(docs) > 0)
+
+    def test_sort_string(self):
+        database = papis.database.get()
+        title_sorted_docs = database.query('.', sort_field='title')
+
+        self.assertEqual(papis.document.to_dict(title_sorted_docs[0])['title'],
+                         'Test Document 1')
+
+    def test_sort_int(self):
+        database = papis.database.get()
+        year_sorted_docs = database.query('.', sort_field='year')
+        self.assertEqual(papis.document.to_dict(year_sorted_docs[0])['year'],
+                         '1093')
 
     def test_cache_path(self):
         database = papis.database.get()
