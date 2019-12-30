@@ -339,7 +339,7 @@ class Importer(papis.importer.Importer):
                 session = requests.Session()
                 session.headers = {
                     'User-Agent': papis.config.get('user-agent')}
-                document_data = session.get(url).content
+                document_data = session.get(doc_url).content
                 tmp_filepath = tempfile.mktemp()
                 self.logger.debug("Saving in %s" % tmp_filepath)
                 with open(tmp_filepath, 'wb+') as fd:
