@@ -39,7 +39,11 @@ def sort_option(**attrs):
         attrs.setdefault('default', lambda: papis.config.get('sort-field'))
         attrs.setdefault('help', 'Sort documents with respect to FIELD')
         attrs.setdefault('metavar', 'FIELD')
-        return click.decorators.option('--sort', "sort_field", **attrs)(f)
+        sort_f = click.decorators.option('--sort', "sort_field", **attrs)
+        reverse_f = click.decorators.option(
+            "--reverse", "sort_reverse",
+            help="Reverse sort order", is_flag=True)
+        return sort_f(reverse_f(f))
     return decorator
 
 
