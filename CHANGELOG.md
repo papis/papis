@@ -2,6 +2,24 @@
 VERSION v0.9
 ============
 
+## Plugin architecture ##
+
+A new plugin architecture is in place.
+For more information please refer to
+[the documentation](https://papis.readthedocs.io/en/latest/plugin.html)
+
+## Git interface ##
+
+Now some usual commands have a `--git` flag that lets the command work
+alongside git. For instance if the `--git` flag is passed to `papis-edit`,
+it will add and commit the `info.yaml` file automatically. The same applies
+to `papis-add`, `papis-addto`, `papis-update` and `papis-rm`.
+
+You can activate by default the `--git` flag using the `use-git` configuration
+option.
+**For devs**: The main functions to implement this interface are found in the
+papis module `papis.git`.
+
 ## `papis add` ##
 
 - The configuration settings `file-name` and `folder-name` are now
@@ -11,6 +29,7 @@ VERSION v0.9
   ```
   so that they become more readable and understandable.
   Also the flag `--name` is now `--folder-name`.
+- The flag `--commit` now has the name `--git`.
 - The flag `--dir` now has the more descriptive name `--subfolder`.
 - The flag `--no-document` has been finally removed.
 - The most notable update is that papis is now able to guess a `doi`
@@ -30,9 +49,6 @@ VERSION v0.9
   retrieved.
 - We can query `crossref` with `--from-crossref` in order to get information
   and add a paper.
-- A `--smart` or `-S` flag is added in order to add in a smart way information
-  about the paper. Right now it guesses the title from the `filepath`
-  and tries to search `crossref` and prompt the user to pick a document.
 
 ## `papis export` ##
 
@@ -48,6 +64,14 @@ VERSION v0.9
 
 - Change the flags for `papis explore export` to match the `papis export`
   command.
+
+## `papis list` ##
+
+- Add `-n, --notes` flags to list notes.
+- Remove the `--pick` flag and add the `--all` flag to be consistent with the
+  behaviour of other commands.
+- Remove the query argument in the `run` function for consistency with other
+  commands.
 
 ## `papis browse` ##
 
@@ -79,6 +103,11 @@ VERSION v0.9
   sourced after the `~/.config/papis/config` file has been processed.
   This should enable some users to have more granularity in the customization.
 
+## Downloaders ##
+
+- Some downloaders have been improved and a `fallback` downloader has
+  been added. Now you will be able to retrieve information
+  from many more websites by by virtue of the metadata of html websites.
 
 VERSION v0.8.1
 ==============

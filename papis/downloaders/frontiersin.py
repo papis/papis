@@ -21,7 +21,7 @@ class Downloader(papis.downloaders.base.Downloader):
             return False
 
     def get_doi(self):
-        url = self.get_url()
+        url = self.uri
         self.logger.info('Parsing doi from {0}'.format(url))
         mdoi = re.match(r'.*/articles/([^/]+/[^/?&%^$]+).*', url)
         if mdoi:

@@ -83,9 +83,9 @@ def cli(query, git, sort_field):
                 ),
                 completer=completer,
                 complete_while_typing=True
-            )
-        )
-    except:
+            ))
+    except Exception as e:
+        logger.error(e)
         return 0
 
     logger.info(new_folder)

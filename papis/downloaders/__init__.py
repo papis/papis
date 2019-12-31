@@ -1,17 +1,13 @@
 from stevedore import extension
 import logging
-import tempfile
+import re
 
 import papis.bibtex
 import papis.config
+import papis.importer
+import papis.plugin
 
 logger = logging.getLogger("downloader")
-
-
-def stevedore_error_handler(manager, entrypoint, exception):
-    logger = logging.getLogger('cmds:stevedore')
-    logger.error("Error while loading entrypoint [%s]" % entrypoint)
-    logger.error(exception)
 
 
 downloader_mgr = None
@@ -28,7 +24,7 @@ def _create_downloader_mgr():
         invoke_on_load=False,
         verify_requirements=True,
         propagate_map_exceptions=True,
-        on_load_failure_callback=stevedore_error_handler
+        on_load_failure_callback=papis.plugin.stevedore_error_handler
     )
 
 
@@ -94,20 +90,29 @@ def get_downloader_by_name(name):
     return downloader_mgr[name].plugin
 
 
-def get_info_from_url(url, data_format="bibtex", expected_doc_format=None):
+def get_downloaders():
+    global downloader_mgr
+    _create_downloader_mgr()
+    return [e.plugin for e in downloader_mgr.extensions]
 
-    result = {
-        "data": dict(),
-        "doi": None,
-        "documents_paths": []
-    }
+
+def get_info_from_url(url, expected_doc_format=None):
+    """Get information directly from url
+
+    :param url: Url of the resource
+    :type  url: str
+    :param expected_doc_format: override the doc format of the document
+    :type  expected_doc_format: str
+    :returns: Context object
+    :rtype:  papis.importer.Context or None
+    """
 
     downloaders = get_matching_downloaders(url)
     if not downloaders:
         logger.warning(
-            "No matching downloader found (%s)" % url
+            "No matching downloader found for (%s)" % url
         )
-        return result
+        return None
     else:
         logger.debug('Found {0} matching downloaders'.format(len(downloaders)))
         downloader = downloaders[0]
@@ -116,36 +121,26 @@ def get_info_from_url(url, data_format="bibtex", expected_doc_format=None):
     if downloader.expected_document_extension is None and \
             expected_doc_format is not None:
         downloader.expected_document_extension = expected_doc_format
+    downloader.fetch()
+    return downloader.ctx
 
-    if data_format == "bibtex":
-        try:
-            bibtex_data = downloader.get_bibtex_data()
-            if bibtex_data:
-                result["data"] = papis.bibtex.bibtex_to_dict(
-                    bibtex_data
-                )
-                result["data"] = result["data"][0] \
-                    if len(result["data"]) > 0 else dict()
-        except NotImplementedError:
-            pass
 
-    try:
-        doc_data = downloader.get_document_data()
-    except NotImplementedError:
-        doc_data = None
+class Importer(papis.importer.Importer):
 
-    try:
-        result['doi'] = downloader.get_doi()
-    except NotImplementedError:
-        pass
+    """Importer that tries to get data and files from implemented downloaders
+    """
 
-    if doc_data is not None:
-        if downloader.check_document_format():
-            result["documents_paths"].append(tempfile.mktemp())
-            logger.info(
-                "Saving downloaded file in %s" % result["documents_paths"][-1]
-            )
-            with open(result["documents_paths"][-1], "wb+") as fd:
-                fd.write(doc_data)
+    def __init__(self, **kwargs):
+        papis.importer.Importer.__init__(self, name='url', **kwargs)
 
-    return result
+    @classmethod
+    def match(cls, uri):
+        return (
+            Importer(uri=uri)
+            if re.match(' *http(s)?.*', uri) is not None
+            else None
+        )
+
+    def fetch(self):
+        self.logger.info("attempting to import from url {0}".format(self.uri))
+        self.ctx = get_info_from_url(self.uri)

@@ -38,6 +38,17 @@ def test_doi_to_data():
 
 @patch(
     'papis.crossref._get_crossref_works',
+    lambda **x: _get_test_json('test_2.json')
+)
+def test_doi_to_data():
+    data = doi_to_data('10.1103/physrevb.89.140501')
+    assert(isinstance(data, dict))
+    result = _get_test_json('test_2_out.json')
+    assert(result == data)
+
+
+@patch(
+    'papis.crossref._get_crossref_works',
     lambda **x: _get_test_json('test_conference.json')
 )
 def test_doi_to_data_conference():

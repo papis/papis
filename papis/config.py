@@ -80,7 +80,6 @@ general_settings = {
     "format-doc-name": "doc",
     "match-format":
         "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
-    "format-jinja2-enable": False,
     "header-format-file": None,
     "header-format": (
         "<ansired>{doc.html_escape[title]}</ansired>\n"
@@ -465,7 +464,7 @@ def get_lib_from_name(libname):
     assert(isinstance(libname, str))
     config = get_configuration()
     if libname not in config.keys():
-        if os.path.exists(libname):
+        if os.path.isdir(libname):
             # Check if the path exists, then use this path as a new library
             logger.warning(
                 "Since {0} exists, interpreting it as a library".format(
@@ -539,8 +538,6 @@ def reset_configuration():
     :rtype:  papis.config.Configuration
     """
     global _CONFIGURATION
-    if _CONFIGURATION is not None:
-        logger.warning("Overwriting previous configuration")
     _CONFIGURATION = None
     logger.debug("Resetting configuration")
     return get_configuration()

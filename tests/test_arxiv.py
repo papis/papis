@@ -1,5 +1,7 @@
 import papis.downloaders
-from papis.arxiv import Downloader, get_data, find_arxivid_in_text
+from papis.arxiv import (
+    Downloader, get_data, find_arxivid_in_text, validate_arxivid
+)
 import papis.bibtex
 
 def test_general():
@@ -33,8 +35,8 @@ def test_match():
 
     down = Downloader.match('arXiv:1701.08223v2?234')
     assert(down)
-    assert(down.get_url() == 'https://arxiv.org/abs/1701.08223v2')
-    assert(down.get_identifier() == '1701.08223v2')
+    assert(down.uri == 'https://arxiv.org/abs/1701.08223v2')
+    assert(down._get_identifier() == '1701.08223v2')
 
 
 def test_downloader_getter():
@@ -50,3 +52,19 @@ def test_downloader_getter():
     doc = down.get_document_data()
     assert(doc is not None)
     assert(down.check_document_format())
+
+
+def test_validate_arxivid():
+    # good
+    validate_arxivid('1206.6272')
+    validate_arxivid('1206.6272v1')
+    validate_arxivid('1206.6272v2')
+    assert(True)
+
+    for bad in ['1206.6272v3', 'blahv2']:
+        try:
+            validate_arxivid(bad)
+        except ValueError:
+            assert(True)
+        else:
+            assert(False)

@@ -11,6 +11,7 @@ import papis
 import os
 import papis.api
 import papis.pick
+import papis.document
 import papis.utils
 import papis.config
 import papis.database
@@ -18,59 +19,62 @@ import papis.cli
 import click
 import logging
 import papis.strings
+import papis.git
 
 
-def run(document, wait=True):
+def run(document, wait=True, git=False):
     database = papis.database.get()
     papis.utils.general_open(document.get_info_file(), "editor", wait=wait)
     document.load()
     database.update(document)
+    if git:
+        papis.git.add_and_commit_resource(
+            document.get_main_folder(),
+            document.get_info_file(),
+            "Update information for '{0}'".format(
+                papis.document.describe(document)))
 
 
 @click.command("edit")
 @click.help_option('-h', '--help')
 @papis.cli.query_option()
+@papis.cli.doc_folder_option()
+@papis.cli.git_option(help="Add changes made to the info file")
 @click.option(
     "-n",
     "--notes",
     help="Edit notes associated to the document",
     default=False,
-    is_flag=True
-)
+    is_flag=True)
 @click.option(
     "--sort",
     "sort_field",
     help="Sort results by field",
-    default=None
-)
+    default=None)
 @click.option(
-    "--all",
+    "--all", "_all",
     help="Edit all matching documents",
     default=False,
-    is_flag=True
-)
+    is_flag=True)
 @click.option(
     "-e",
     "--editor",
     help="Editor to be used",
-    default=None
-)
-def cli(
-        query,
-        notes,
-        all,
-        sort_field,
-        editor
-        ):
+    default=None)
+def cli(query, doc_folder, git, notes, _all, editor, sort_field):
     """Edit document information from a given library"""
 
     logger = logging.getLogger('cli:edit')
-    documents = papis.database.get().query(query, sort_field)
+
+    if doc_folder:
+        documents = [papis.document.from_folder(doc_folder)]
+    else:
+        documents = papis.database.get().query(query, sort_field)
 
     if editor is not None:
         papis.config.set('editor', editor)
 
-    if not all:
+    if not _all:
         document = papis.pick.pick_doc(documents)
         documents = [document] if document else []
 
@@ -94,9 +98,16 @@ def cli(
             )
 
             if not os.path.exists(notesPath):
-                logger.debug("Creating %s" % notesPath)
+                logger.info("Creating {0}".format(notesPath))
                 open(notesPath, "w+").close()
 
             papis.api.edit_file(notesPath)
+            if git:
+                papis.git.add_and_commit_resource(
+                    document.get_main_folder(),
+                    document.get_info_file(),
+                    "Update notes for '{0}'".format(
+                        papis.document.describe(document)))
+
         else:
-            run(document)
+            run(document, git=git)

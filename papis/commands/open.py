@@ -140,22 +140,19 @@ def run(document, opener=None, folder=False, mark=False):
 @click.option(
     "--tool",
     help="Tool for opening the file (opentool)",
-    default=""
-)
+    default="")
 @click.option(
     "-d",
     "--dir",
     "folder",
     help="Open directory",
     default=False,
-    is_flag=True
-)
+    is_flag=True)
 @click.option(
     "--all",
     help="Open all matching documents",
     default=False,
-    is_flag=True
-)
+    is_flag=True)
 @click.option(
     "-m",
     "--mark/--no-mark",
@@ -168,10 +165,10 @@ def cli(query, doc_folder, tool, folder, sort_field, all, mark):
         papis.config.set("opentool", tool)
     logger = logging.getLogger('cli:run')
 
-    documents = papis.database.get().query(query, sort_field)
-
     if doc_folder:
         documents = [from_folder(doc_folder)]
+    else:
+        documents = papis.database.get().query(query, sort_field)
 
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)

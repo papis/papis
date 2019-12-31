@@ -30,4 +30,4 @@ class Downloader(papis.downloaders.base.Downloader):
             return None
 
     def get_document_url(self):
-        return self.get_url()
+        return self.uri

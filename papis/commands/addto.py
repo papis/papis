@@ -22,6 +22,7 @@ import shutil
 import papis.pick
 import papis.utils
 import papis.document
+import papis.git
 import papis.config
 import papis.commands.add
 import logging
@@ -30,7 +31,7 @@ import click
 import papis.strings
 
 
-def run(document, filepaths):
+def run(document, filepaths, git=False):
     logger = logging.getLogger('addto')
     g = papis.utils.create_identifier(ascii_lowercase)
     string_append = ''
@@ -72,20 +73,29 @@ def run(document, filepaths):
                 "%s already exists, ignoring..." % endDocumentPath
             )
             continue
-        logger.debug(
+        logger.info(
             "[CP] '%s' to '%s'" %
             (in_file_path, endDocumentPath)
         )
         shutil.copy(in_file_path, endDocumentPath)
 
+    if not "files" in document.keys():
+        document["files"] = []
     document['files'] += new_file_list
     document.save()
     papis.database.get().update(document)
+    if git:
+        for r in new_file_list + [document.get_info_file()]:
+            papis.git.add(document.get_main_folder(), r)
+        papis.git.commit(
+            document.get_main_folder(),
+            "Add new files to '{}'".format(papis.document.describe(document)))
 
 
 @click.command("addto")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
+@papis.cli.git_option(help="Add and commit files")
 @click.option(
     "--sort",
     "sort_field",
@@ -96,14 +106,12 @@ def run(document, filepaths):
     "-f", "--files",
     help="File fullpaths to documents",
     multiple=True,
-    type=click.Path(exists=True)
-)
+    type=click.Path(exists=True))
 @click.option(
     "--file-name",
     help="File name for the document (papis format)",
-    default=None
-)
-def cli(query, files, file_name, sort_field):
+    default=None)
+def cli(query, git, files, file_name, sort_field):
     """Add files to an existing document"""
     documents = papis.database.get().query(query, sort_field)
     logger = logging.getLogger('cli:addto')
@@ -117,4 +125,4 @@ def cli(query, files, file_name, sort_field):
     if file_name is not None:  # Use args if set
         papis.config.set("add-file-name", file_name)
 
-    return run(document, files)
+    return run(document, files, git=git)

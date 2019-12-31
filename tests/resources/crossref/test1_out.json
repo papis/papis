@@ -8,22 +8,28 @@
   "ref": "10.1103/physrevb.89.140501",
   "doc_url": "http://harvest.aps.org/v2/journals/articles/10.1103/PhysRevB.89.140501/fulltext",
   "volume": "89",
+  "year": 2014,
+  "month": 4,
   "author_list": [
     {
       "given": "C. M.",
-      "family": "Herdman"
+      "family": "Herdman",
+      "affiliation": []
     },
     {
       "given": "P.-N.",
-      "family": "Roy"
+      "family": "Roy",
+      "affiliation": []
     },
     {
       "given": "R. G.",
-      "family": "Melko"
+      "family": "Melko",
+      "affiliation": []
     },
     {
       "given": "A.",
-      "family": "Del Maestro"
+      "family": "Del Maestro",
+      "affiliation": []
     }
   ],
   "type": "article",

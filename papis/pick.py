@@ -1,16 +1,12 @@
 import logging
 import os
+import sys
 import papis.config
 from papis.tui.app import Picker
 from stevedore import extension
+import papis.plugin
 
 logger = logging.getLogger("pick")
-
-
-def stevedore_error_handler(manager, entrypoint, exception):
-    logger = logging.getLogger("pick:stevedore")
-    logger.error("Error while loading entrypoint [%s]" % entrypoint)
-    logger.error(exception)
 
 
 def available_pickers():
@@ -26,6 +22,12 @@ def papis_pick(
     if len(options) == 1:
         return options[0]
 
+    # patch stdout to stderr if the output is not a tty (terminal)
+    oldstdout = sys.stdout
+    if not sys.stdout.isatty():
+        sys.stdout = sys.stderr
+        sys.__stdout__ = sys.stderr
+
     picker = Picker(
         options,
         default_index,
@@ -33,7 +35,13 @@ def papis_pick(
         match_filter
     )
     picker.run()
-    return picker.options_list.get_selection()
+    result = picker.options_list.get_selection()
+
+    # restore the stdout to normality
+    sys.stdout = oldstdout
+    sys.__stdout__ = oldstdout
+
+    return result
 
 
 pickers_mgr = extension.ExtensionManager(
@@ -41,7 +49,7 @@ pickers_mgr = extension.ExtensionManager(
     invoke_on_load=False,
     verify_requirements=True,
     propagate_map_exceptions=True,
-    on_load_failure_callback=stevedore_error_handler
+    on_load_failure_callback=papis.plugin.stevedore_error_handler
 )
 
 

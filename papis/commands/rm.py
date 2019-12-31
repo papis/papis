@@ -13,12 +13,13 @@ import papis.document
 import papis.cli
 import papis.strings
 import papis.database
+import papis.git
 import click
 import logging
 import os
 
 
-def run(document, filepath=None):
+def run(document, filepath=None, git=False):
     """Main method to the rm command
     """
     db = papis.database.get()
@@ -27,75 +28,88 @@ def run(document, filepath=None):
         document['files'].remove(os.path.basename(filepath))
         document.save()
         db.update(document)
+        if git:
+            papis.git.rm(document.get_main_folder(), filepath)
+            papis.git.add(document.get_main_folder(), document.get_info_file())
+            papis.git.commit(
+                document.get_main_folder(),
+                "Remove file '{0}'".format(filepath))
     else:
-        papis.document.delete(document)
+        if git:
+            _topfolder = os.path.dirname(
+                os.path.abspath(document.get_main_folder()))
+            papis.git.rm(
+                document.get_main_folder(), document.get_main_folder(),
+                recursive=True)
+            papis.git.commit(_topfolder,
+                "Remove document '{0}'".format(
+                    papis.document.describe(document)))
+        else:
+            papis.document.delete(document)
         db.delete(document)
-    return
 
 
 @click.command("rm")
 @click.help_option('-h', '--help')
 @papis.cli.query_option()
+@papis.cli.git_option(help="Remove in git")
 @click.option(
     "--file",
     help="Remove files from a document instead of the whole folder",
     is_flag=True,
-    default=False
-)
+    default=False)
 @click.option(
     "-f", "--force",
     help="Do not confirm removal",
     is_flag=True,
-    default=False
-)
+    default=False)
 @click.option(
     "--sort",
     "sort_field",
     help="Sort results by field",
-    default=None
-)
-def cli(
-        query,
-        file,
-        force,
-        sort_field
-        ):
-    """Delete command for several objects"""
+    default=None)
+@click.option(
+    "--all",
+    help="Remove all matches",
+    is_flag=True,
+    default=False)
+def cli(query, git, file, force, all, sort_field):
+    """Delete a document or a file"""
+
     documents = papis.database.get().query(query, sort_field)
+
     logger = logging.getLogger('cli:rm')
 
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
         return 0
 
-    document = papis.pick.pick_doc(documents)
-    if not document:
-        return
+    if not all:
+        documents = [papis.pick.pick_doc(documents)]
+        documents = [d for d in documents if d]
+
     if file:
-        filepath = papis.pick.pick(document.get_files())
-        if not filepath:
-            return
-        if not force:
-            tbar = 'The file {0} would be removed'.format(filepath)
-            if not papis.utils.confirm("Are you sure?", bottom_toolbar=tbar):
-                return
-        logger.info("Removing %s..." % filepath)
-        return run(
-            document,
-            filepath=filepath
-        )
+        for document in documents:
+            filepath = papis.pick.pick(document.get_files())
+            if not filepath:
+                continue
+            if not force:
+                tbar = 'The file {0} would be removed'.format(filepath)
+                if not papis.utils.confirm("Are you sure?", bottom_toolbar=tbar):
+                    continue
+            logger.info("Removing %s..." % filepath)
+            run(document, filepath=filepath, git=git)
     else:
-        if not force:
-            tbar = 'The folder {0} would be removed'.format(
-                document.get_main_folder()
-            )
-            logger.warning("This document will be removed, check it")
-            papis.utils.text_area(
-                title=tbar,
-                text=papis.document.dump(document),
-                lexer_name='yaml'
-            )
-            if not papis.utils.confirm("Are you sure?", bottom_toolbar=tbar):
-                return
-        logger.info("Removing ...")
-        return run(document)
+        for document in documents:
+            if not force:
+                tbar = 'The folder {0} would be removed'.format(
+                    document.get_main_folder())
+                logger.warning("This document will be removed, check it")
+                papis.utils.text_area(
+                    title=tbar,
+                    text=papis.document.dump(document),
+                    lexer_name='yaml')
+                if not papis.utils.confirm("Are you sure?", bottom_toolbar=tbar):
+                    continue
+            logger.warning("removing ...")
+            run(document, git=git)

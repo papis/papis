@@ -8,7 +8,7 @@ CLI Examples
 
     .. code:: bash
 
-        papis list --file
+        papis list --all --file
 
     .. raw:: HTML
 
@@ -20,7 +20,7 @@ CLI Examples
 
     .. code:: bash
 
-        papis list --format '{doc[year]} {doc[title]}'
+        papis list --all --format '{doc[year]} {doc[title]}'
 
     .. raw:: HTML
 
@@ -33,32 +33,13 @@ CLI Examples
 
     .. code:: bash
 
-        papis list --template bibitem.template
+        papis list --all --template bibitem.template
 
     .. raw:: HTML
 
         <script type="text/javascript"
         src="https://asciinema.org/a/QZTBZ3tFfyk9WQuJ9WWB2UpSw.js"
         id="asciicast-QZTBZ3tFfyk9WQuJ9WWB2UpSw" async></script>
-
-Python examples
-^^^^^^^^^^^^^^^
-
-.. code:: python
-
-    # Import the run function from the list command
-
-    from papis.commands.list import run as papis_list
-
-    documents = papis_list(query='einstein', library='papis')
-
-    for doc in documents:
-        print(doc["url"])
-
-    # etc...
-    info_files = list(query='einstein', library='papis', info_files=True)
-
-    # do something with the info file paths...
 
 Cli
 ^^^
@@ -82,14 +63,14 @@ logger = logging.getLogger('list')
 
 
 def run(
-        query="",
-        library=None,
+        documents,
         libraries=False,
         downloaders=False,
         pick=False,
         files=False,
         folders=False,
         info_files=False,
+        notes=False,
         fmt="",
         template=None
         ):
@@ -98,37 +79,22 @@ def run(
     :returns: List different objects
     :rtype:  list
     """
-    if library is None:
-        library = papis.config.get_lib()
-    config = papis.config.get_configuration()
-    logger = logging.getLogger('cli:list')
-    db = papis.database.get(library)
-    if template is not None:
-        if not os.path.exists(template):
-            logger.error(
-                "Template file %s not found" % template
-            )
-            return
-        fd = open(template)
-        fmt = fd.read()
-        fd.close()
-
     if downloaders:
         return papis.downloaders.get_available_downloaders()
 
+    if template is not None:
+        if not os.path.exists(template):
+            logger.error("Template file %s not found".format(template))
+            return
+        with open(template) as fd:
+            fmt = fd.read()
+
     if libraries:
+        config = papis.config.get_configuration()
         return [
-            config[section]['dir']
+            section + ' ' + config[section]['dir']
             for section in config
-            if 'dir' in config[section]
-        ]
-
-    documents = db.query(query)
-    if not documents:
-        logger.warning(papis.strings.no_documents_retrieved_message)
-
-    if pick:
-        documents = filter(lambda x: x, [papis.pick.pick_doc(documents)])
+            if 'dir' in config[section] ]
 
     if files:
         return [
@@ -136,6 +102,13 @@ def run(
                 document.get_files() for document in documents
             ] for doc_file in files
         ]
+    elif notes:
+        return [
+            os.path.join(d.get_main_folder(), d["notes"])
+            for d in documents
+            if d.has("notes") and isinstance(d["notes"], str)
+                and os.path.exists(
+                        os.path.join(d.get_main_folder(), d["notes"]))]
     elif info_files:
         return [
             os.path.join(
@@ -164,82 +137,74 @@ def run(
     "--info",
     help="Show the info file name associated with the document",
     default=False,
-    is_flag=True
-)
+    is_flag=True)
 @click.option(
-    "-f",
-    "--file",
+    "-f", "--file", "_file",
     help="Show the file name associated with the document",
     default=False,
-    is_flag=True
-)
+    is_flag=True)
 @click.option(
-    "-d",
-    "--dir",
+    "-d", "--dir", "_dir",
     help="Show the folder name associated with the document",
     default=False,
-    is_flag=True
-)
+    is_flag=True)
 @click.option(
-    "--format",
+    "-n", "--notes",
+    help="List notes files, if any",
+    default=False,
+    is_flag=True)
+@click.option(
+    "--format", "_format",
     help="List entries using a custom papis format, e.g."
     " '{doc[year] {doc[title]}",
-    default=None
-)
+    default=None)
 @click.option(
     "--template",
     help="Template file containing a papis format to list entries",
-    default=None
-)
-@click.option(
-    "-p",
-    "--pick",
-    help="Pick the document instead of listing everything",
-    default=False,
-    is_flag=True
-)
+    default=None)
 @click.option(
     "--downloaders",
     help="List available downloaders",
     default=False,
-    is_flag=True
-)
+    is_flag=True)
 @click.option(
     "--libraries",
     help="List defined libraries",
     default=False,
-    is_flag=True
-)
-def cli(
-        query,
-        info,
-        file,
-        dir,
-        format,
-        template,
-        pick,
-        downloaders,
-        libraries
-        ):
+    is_flag=True)
+@click.option(
+    "-a", "--all", "_all",
+    help="Process all documents matching a query, if a query is given",
+    default=False,
+    is_flag=True)
+def cli(query, info, _file, notes, _dir, _format,
+        template, _all, downloaders, libraries,):
     """List documents' properties"""
 
-    if not libraries and not downloaders and not file and not info and not dir:
-        dir = True
+    logger = logging.getLogger('cli:list')
+    documents = []
 
-    lib = papis.config.get_lib()
+    if not libraries and not downloaders and not _file and not info and not _dir:
+        _dir = True
+
+    if not libraries and not downloaders:
+        db = papis.database.get()
+        documents = db.query(query)
+        if not documents:
+            logger.warning(papis.strings.no_documents_retrieved_message)
+        if not _all:
+            documents = filter(lambda x: x, [papis.pick.pick_doc(documents)])
 
     objects = run(
-        query=query,
-        library=lib,
+        documents,
         libraries=libraries,
         downloaders=downloaders,
-        pick=pick,
-        files=file,
-        folders=dir,
+        notes=notes,
+        files=_file,
+        folders=_dir,
         info_files=info,
-        fmt=format,
-        template=template
-    )
+        fmt=_format,
+        template=template)
+
     for o in objects:
         click.echo(o)
-    return

@@ -19,15 +19,7 @@ class DocMatcher(object):
     """
     search = ""
     parsed_search = None
-    if papis.config.get('format-jinja2-enable'):
-        doc_format = (
-            '{{' +
-            papis.config.get('format-doc-name') +
-            '["DOC_KEY"]' +
-            '}}'
-        )
-    else:
-        doc_format = '{' + papis.config.get('format-doc-name') + '[DOC_KEY]}'
+    doc_format = '{' + papis.config.get('format-doc-name') + '[DOC_KEY]}'
     logger = logging.getLogger('DocMatcher')
     matcher = None
 
@@ -122,13 +114,14 @@ def parse_query(query_string):
     logger = logging.getLogger('query_parser')
     logger.debug('Parsing search')
 
-    papis_key = pyparsing.Word(pyparsing.alphanums + '-._/')
+    papis_key_word = pyparsing.Word(pyparsing.alphanums + '-._/')
+    papis_value_word = pyparsing.Word(pyparsing.alphanums + '-._/()')
 
     papis_value = pyparsing.QuotedString(
         quoteChar='"', escChar='\\', escQuote='\\'
     ) ^ pyparsing.QuotedString(
         quoteChar="'", escChar='\\', escQuote='\\'
-    ) ^ papis_key
+    ) ^ papis_value_word
 
     equal = (
         pyparsing.ZeroOrMore(" ") +
@@ -139,10 +132,11 @@ def parse_query(query_string):
     papis_query = pyparsing.ZeroOrMore(
         pyparsing.Group(
             pyparsing.ZeroOrMore(
-                papis_key + equal
+                papis_key_word + equal
             ) + papis_value
         )
     )
     parsed = papis_query.parseString(query_string)
+
     logger.debug('Parsed query = %s' % parsed)
     return parsed

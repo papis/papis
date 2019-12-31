@@ -50,14 +50,10 @@ import papis.database
 import papis.strings
 import logging
 from stevedore import extension
+import papis.plugin
 
 logger = logging.getLogger('cli:export')
 exporters_mgr = None
-
-
-def stevedore_error_handler(manager, entrypoint, exception):
-    logger.error("Error while loading entrypoint [%s]" % entrypoint)
-    logger.error(exception)
 
 
 def export_to_yaml(documents):
@@ -101,7 +97,7 @@ def _create_mgr():
         invoke_on_load=False,
         verify_requirements=True,
         propagate_map_exceptions=True,
-        on_load_failure_callback=stevedore_error_handler
+        on_load_failure_callback=papis.plugin.stevedore_error_handler
     )
 
 

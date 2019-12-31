@@ -1,28 +1,22 @@
 from __future__ import unicode_literals
 from __future__ import absolute_import, division, print_function
+
 import logging
 import os
+import re
+
 import papis.config
 import click
 import papis.document
+import papis.importer
+import papis.utils
 
 logger = logging.getLogger("bibtex")
 
 bibtex_types = [
-  "article",
-  "book",
-  "booklet",
-  "conference",
-  "inbook",
-  "incollection",
-  "inproceedings",
-  "manual",
-  "mastersthesis",
-  "misc",
-  "phdthesis",
-  "proceedings",
-  "techreport",
-  "unpublished"
+  "article", "book", "booklet", "conference", "inbook", "incollection",
+  "inproceedings", "manual", "mastersthesis", "misc", "phdthesis",
+  "proceedings", "techreport", "unpublished"
 ] + papis.config.getlist('extra-bibtex-types')
 
 bibtex_type_converter = {
@@ -32,77 +26,19 @@ bibtex_type_converter = {
 }
 
 bibtex_keys = [
-    "addendum",
-    "address",
-    "afterword",
-    "annotator",
-    "annote",
-    "author",
-    "bookauthor",
-    "booksubtitle",
-    "booktitle",
-    "booktitleaddon",
-    "chapter",
-    "commentator",
-    "crossref",
-    "date",
-    "doi",
-    "edition",
-    "editor",
-    "editora",
-    "editorb",
-    "editorc",
-    "eid",
-    "eprint",
-    "eprintclass",
-    "eprinttype",
-    "eventdate",
-    "eventtitle",
-    "eventtitleaddon",
-    "foreword",
-    "holder",
-    "howpublished",
-    "institution",
-    "introduction",
-    "isbn",
-    "isrn",
-    "issn",
-    "issue",
-    "issuesubtitle",
-    "issuetitle",
-    "journal",
-    "journalsubtitle",
-    "journaltitle",
-    "key",
-    "language",
-    "location",
-    "mainsubtitle",
-    "maintitle",
-    "maintitleaddon",
-    "month",
-    "note",
-    "number",
-    "organization",
-    "origlanguage",
-    "pages",
-    "pagetotal",
-    "part",
-    "publisher",
-    "pubstate",
-    "school",
-    "series",
-    "subtitle",
-    "title",
-    "translator",
-    "type",
-    "titleaddon",
-    "url",
-    "urldate",
-    "venue",
-    "version",
-    "volume",
-    "volumes",
-    "year",
+    "addendum", "address", "afterword", "annotator", "annote", "author",
+    "bookauthor", "booksubtitle", "booktitle", "booktitleaddon", "chapter",
+    "commentator", "crossref", "date", "doi", "edition", "editor", "editora",
+    "editorb", "editorc", "eid", "eprint", "eprintclass", "eprinttype",
+    "eventdate", "eventtitle", "eventtitleaddon", "foreword", "holder",
+    "howpublished", "institution", "introduction", "isbn", "isrn",
+    "issn", "issue", "issuesubtitle", "issuetitle", "journal",
+    "journalsubtitle", "journaltitle", "key", "language", "location",
+    "mainsubtitle", "maintitle", "maintitleaddon", "month", "note",
+    "number", "organization", "origlanguage", "pages", "pagetotal", "part",
+    "publisher", "pubstate", "school", "series", "subtitle", "title",
+    "translator", "type", "titleaddon", "url", "urldate", "venue", "version",
+    "volume", "volumes", "year",
 ] + papis.config.getlist('extra-bibtex-keys')
 
 bibtex_key_converter = {
@@ -113,6 +49,37 @@ bibtex_key_converter = {
     "publicationTitle": "journal",
     "proceedingsTitle": "booktitle"
 }
+
+
+class Importer(papis.importer.Importer):
+
+    """Importer that parses a bibtex files"""
+
+    def __init__(self, **kwargs):
+        papis.importer.Importer.__init__(self, name='bibtex', **kwargs)
+
+    @classmethod
+    def match(cls, uri):
+        if (not os.path.exists(uri) or os.path.isdir(uri) or
+                papis.utils.get_document_extension(uri) == 'pdf'):
+            return None
+        importer = Importer(uri=uri)
+        importer.fetch()
+        return importer if importer.ctx else None
+
+    @papis.importer.cache
+    def fetch(self):
+        self.logger.info("Reading input file = %s" % self.uri)
+        try:
+            bib_data = bibtex_to_dict(self.uri)
+            if len(bib_data) > 1:
+                self.logger.warning(
+                    'Your bibtex file contains more than one entry,'
+                    ' I will be taking the first entry')
+            if bib_data:
+                self.ctx.data = bib_data[0]
+        except Exception as e:
+            self.logger.debug(e)
 
 
 @click.command('bibtex')
@@ -132,7 +99,7 @@ def explorer(ctx, bibfile):
     logger.info('Reading in bibtex file {}'.format(bibfile))
     docs = [
         papis.document.from_data(d)
-        for d in papis.bibtex.bibtex_to_dict(bibfile)
+        for d in bibtex_to_dict(bibfile)
     ]
     ctx.obj['documents'] += docs
     logger.info('{} documents found'.format(len(docs)))
@@ -147,16 +114,29 @@ def bibtexparser_entry_to_papis(entry):
     :returns: Dictionary with keys of papis format.
 
     """
-    result = dict()
-    for key in entry.keys():
-        if key == 'ID':
-            result['ref'] = entry[key]
-        elif key == 'ENTRYTYPE':
-            result['type'] = entry[key]
-        elif key == 'link':
-            result['url'] = entry[key]
-        else:
-            result[key] = entry[key]
+    from bibtexparser.customization import splitname
+    def to_author_list(authors):
+        author_list = []
+        for author in re.split(r"\s+and\s+", authors):
+            parts = splitname(author)
+            given = " ".join(parts["first"])
+            family = " ".join(parts["von"] + parts["last"] + parts["jr"])
+
+            author_list.append(dict(family=family, given=given))
+
+        return author_list
+
+    from collections import OrderedDict
+    key_conversion = OrderedDict({
+        "ID": {"key": "ref"},
+        "ENTRYTYPE": {"key": "type"},
+        "link": {"key": "url"},
+        "author": {"key": "author_list", "action": to_author_list},
+    })
+
+    result = papis.document.keyconversion_to_data(key_conversion, entry,
+            keep_unknown_keys=True)
+
     return result
 
 
@@ -176,10 +156,10 @@ def bibtex_to_dict(bibtex):
     """
     from bibtexparser.bparser import BibTexParser
 
-    parser = BibTexParser(common_strings=True)
-    parser.ignore_nonstandard_types = False
-    parser.homogenise_fields = False
-    parser.interpolate_strings = True
+    parser = BibTexParser(common_strings=True,
+            ignore_nonstandard_types=False,
+            homogenize_fields=False,
+            interpolate_strings=True)
 
     # bibtexparser has too many debug messages to be useful
     logging.getLogger("bibtexparser.bparser").setLevel(logging.WARNING)

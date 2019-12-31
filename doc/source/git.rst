@@ -101,7 +101,7 @@ When editing a document's info file:
 
     ::
 
-      papis git add -a
+      papis git add --all
 
   - Commit
 

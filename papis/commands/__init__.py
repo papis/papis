@@ -3,13 +3,8 @@ import glob
 from stevedore import extension
 import logging
 import papis.config
+import papis.plugin
 import re
-
-
-def stevedore_error_handler(manager, entrypoint, exception):
-    logger = logging.getLogger('cmds:stevedore')
-    logger.error("Error while loading entrypoint [%s]" % entrypoint)
-    logger.error(exception)
 
 
 commands_mgr = None
@@ -26,7 +21,7 @@ def _create_commands_mgr():
         invoke_on_load=False,
         verify_requirements=True,
         propagate_map_exceptions=True,
-        on_load_failure_callback=stevedore_error_handler
+        on_load_failure_callback=papis.plugin.stevedore_error_handler
     )
 
 

@@ -9,6 +9,7 @@ import papis.database.base
 import re
 import multiprocessing
 import time
+import sys
 
 
 logger = logging.getLogger("cache")
@@ -76,31 +77,31 @@ def filter_documents(documents, search=""):
     papis.docmatcher.DocMatcher.set_search(search)
     papis.docmatcher.DocMatcher.parse()
     papis.docmatcher.DocMatcher.set_matcher(match_document)
-    # Doing this multiprocessing in filtering does not seem
-    # to help much, I don't know if it's because I'm doing something
-    # wrong or it is really like this.
-    np = multiprocessing.cpu_count()
-    pool = multiprocessing.Pool(np)
-    logger.debug(
-        "Filtering {} docs (search {}) using {} cores".format(
-            len(documents),
-            search,
-            np
-        )
-    )
-    logger.debug("pool started")
-    begin_t = time.time()
-    result = pool.map(
-        papis.docmatcher.DocMatcher.return_if_match, documents
-    )
-    pool.close()
-    pool.join()
-    filtered_docs = [d for d in result if d is not None]
-    logger.debug(
-        "done ({} ms) ({} docs)".format(
-            1000*time.time()-1000*begin_t,
-            len(filtered_docs))
-    )
+    begin_t = 1000 * time.time()
+    # FIXME: find a better solution for this that works for both OSes
+    if sys.platform == "win32":
+        logger.debug(
+            "Filtering {0} docs (search {1})".format(
+                len(documents), search))
+        filtered_docs = list(
+            filter(
+                lambda d: d is not None,
+                map(papis.docmatcher.DocMatcher.return_if_match, documents)))
+    else:
+        # Doing this multiprocessing in filtering does not seem
+        # to help much, I don't know if it's because I'm doing something
+        # wrong or it is really like this.
+        np = multiprocessing.cpu_count()
+        pool = multiprocessing.Pool(np)
+        logger.debug(
+            "Filtering {0} docs (search {1}) using {2} cores".format(
+                len(documents), search, np))
+        result = pool.map(papis.docmatcher.DocMatcher.return_if_match, documents)
+        pool.close()
+        pool.join()
+        filtered_docs = [d for d in result if d is not None]
+    _delta = 1000 * time.time() - begin_t
+    logger.debug("done ({0} ms) ({1} docs)".format(_delta, len(filtered_docs)))
     return filtered_docs
 
 

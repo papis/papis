@@ -6,20 +6,6 @@
 #   ./venv/bin/pip install --editable .[dev]  # with dev requirements, too
 
 import sys
-
-main_dependencies = [ "setuptools" ]
-for dep in main_dependencies:
-    try:
-        __import__(dep)
-    except ImportError:
-        print(
-            "Error: You do not have %s installed, please\n"
-            "       install it. For example doing\n"
-            "\n"
-            "       pip3 install %s\n" % (dep, dep)
-        )
-        sys.exit(1)
-
 import glob
 from setuptools import setup, find_packages
 import papis
@@ -77,15 +63,19 @@ setup(
         "beautifulsoup4>=4.4.1",
         "colorama>=0.2",
         "bibtexparser>=0.6.2",
-        "pylibgen>=1.3.0",
         "click>=7.0.0",
-        "python-slugify>=1.2.6",
         "habanero>=0.6.0",
-        "isbnlib>=3.9.1,<4.0.0",
+        "isbnlib>=3.9.1",
         "prompt_toolkit>=2.0.5",
         "tqdm>=4.1",
         "pygments>=2.2.0",
         "stevedore>=1.30",
+        "python-doi>=0.1.1",
+        # for python 3.4
+        "lxml<=4.3.5 ; python_version<='3.5'",
+        "lxml>=4.3.5 ; python_version>'3.5'",
+        "python-slugify>=1.2.6,<4 ; python_version<='3.4'",
+        "python-slugify>=1.2.6 ; python_version>'3.4'",
     ],
     python_requires='>=3',
     classifiers=[
@@ -98,10 +88,10 @@ setup(
         'Operating System :: MacOS',
         'Operating System :: POSIX',
         'Operating System :: Unix',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Utilities',
     ],
     extras_require=dict(
@@ -110,19 +100,19 @@ setup(
         # for example:
         # $ pip install -e .[develop]
         optional=[
-            "Jinja2>=2.10",
             "Whoosh>=2.7.4",
         ],
         develop=[
-            "sphinx",
             'sphinx-click',
             'sphinx_rtd_theme',
             'pytest',
             'pytest-cov==2.5.0',
         ]
     ),
-    description='Powerful and highly extensible command-line based document '
-                'and bibliography manager',
+    description=(
+        'Powerful and highly extensible command-line based document '
+        'and bibliography manager'
+    ),
     long_description=long_description,
     keywords=[
         'document', 'crossref', 'libgen', 'scihub', 'physics', 'mathematics',
@@ -146,6 +136,19 @@ setup(
             'json=papis.commands.export:export_to_json',
             'yaml=papis.commands.export:export_to_yaml',
         ],
+        'papis.importer': [
+            'bibtex=papis.bibtex:Importer',
+            'yaml=papis.yaml:Importer',
+            'doi=papis.crossref:Importer',
+            'crossref=papis.crossref:FromCrossrefImporter',
+            'pdf2doi=papis.crossref:DoiFromPdfImporter',
+            # 'url=papis.downloaders:Importer',
+            'arxiv=papis.arxiv:Importer',
+            'pdf2arxivid=papis.arxiv:ArxividFromPdfImporter',
+            'pmid=papis.pubmed:Importer',
+            'lib=papis.commands.add:FromLibImporter',
+            'folder=papis.commands.add:FromFolderImporter',
+        ],
         'papis.picker': [
             'papis=papis.pick:papis_pick',
         ],
@@ -160,6 +163,7 @@ setup(
             "git=papis.commands.git:cli",
             "list=papis.commands.list:cli",
             "mv=papis.commands.mv:cli",
+            "bibtex=papis.commands.bibtex:cli",
             "open=papis.commands.open:cli",
             "rename=papis.commands.rename:cli",
             "rm=papis.commands.rm:cli",
@@ -173,13 +177,16 @@ setup(
             "frontiersin=papis.downloaders.frontiersin:Downloader",
             "get=papis.downloaders.get:Downloader",
             "hal=papis.downloaders.hal:Downloader",
+            "doi=papis.crossref:Downloader",
             "ieee=papis.downloaders.ieee:Downloader",
+            "sciencedirect=papis.downloaders.sciencedirect:Downloader",
+            "tandfonline=papis.downloaders.tandfonline:Downloader",
+            "springer=papis.downloaders.springer:Downloader",
             "iopscience=papis.downloaders.iopscience:Downloader",
             "scitationaip=papis.downloaders.scitationaip:Downloader",
             "thesesfr=papis.downloaders.thesesfr:Downloader",
             "worldscientific=papis.downloaders.worldscientific:Downloader",
             "fallback=papis.downloaders.fallback:Downloader",
-            "libgen=papis.libgen:Downloader",
             "arxiv=papis.arxiv:Downloader",
         ],
         'papis.explorer': [
@@ -188,7 +195,6 @@ setup(
             "cmd=papis.commands.explore:cmd",
             "pick=papis.commands.explore:pick",
             "arxiv=papis.arxiv:explorer",
-            "libgen=papis.libgen:explorer",
             "crossref=papis.crossref:explorer",
             "dissemin=papis.dissemin:explorer",
             "base=papis.base:explorer",

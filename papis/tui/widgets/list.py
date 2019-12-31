@@ -44,7 +44,7 @@ class OptionsList(ConditionalContainer):
         self.match_filter = match_filter
         self.current_index = default_index
         self.entries_left_offset = 0
-        self.pool = multiprocessing.Pool(cpu_count)
+        self.cpu_count = cpu_count
 
         self.options_headers_linecount = []
         self._indices_to_lines = []
@@ -87,11 +87,6 @@ class OptionsList(ConditionalContainer):
                 else has_focus(self.search_buffer)
             )
         )
-
-    def __del__(self):
-        # Clean initialized pool upon deleting of the object
-        self.pool.close()
-        self.pool.join()
 
     def get_line_prefix(self, line, blih):
         if self.current_index is None:
@@ -192,18 +187,19 @@ class OptionsList(ConditionalContainer):
 
         self.last_query_text = self.query_text
 
-        result = [
-            self.pool.apply_async(
-                match_against_regex,
-                args=(regex, opt, i,)
-            )
-            for i, opt in enumerate(self.options_matchers)
-            if i in search_indices
-        ]
+        with multiprocessing.Pool(self.cpu_count) as pool:
+            results = [
+                pool.apply_async(
+                    match_against_regex,
+                    args=(regex, opt, i,)
+                )
+                for i, opt in enumerate(self.options_matchers)
+                if i in search_indices
+            ]
 
-        indices = [d.get() for d in result if d.get() is not None]
+            self.indices = [d.get() for d in results
+                            if d.get(timeout=1) is not None]
 
-        self.indices = indices
         if len(self.indices) and self.current_index not in self.indices:
             if self.current_index > max(self.indices):
                 self.current_index = max(self.indices)
