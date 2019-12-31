@@ -133,33 +133,25 @@ def run(
     "--folder",
     help="Export document folder to share",
     default=False,
-    is_flag=True
-)
+    is_flag=True)
 @click.option(
     "-o",
     "--out",
     help="Outfile or outdir",
-    default=None
-)
+    default=None)
 @click.option(
     "-f",
     "--format",
     help="Format for the document",
     type=click.Choice(available_formats()),
-    default="bibtex",
-)
-@click.option(
-    "-a", "--all",
-    help="Export all without picking",
-    default=False,
-    is_flag=True
-)
+    default="bibtex",)
+@papis.cli.all_option()
 def cli(
         query,
         folder,
         out,
         format,
-        all,
+        _all,
         **kwargs
         ):
     """Export a document from a given library"""
@@ -173,7 +165,7 @@ def cli(
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
-    if not all:
+    if not _all:
         document = papis.pick.pick_doc(documents)
         if not document:
             return 0

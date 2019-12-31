@@ -43,6 +43,16 @@ def doc_folder_option(**attrs):
     return decorator
 
 
+def all_option(**attrs):
+    """Adds a ``query`` argument as a decorator"""
+    def decorator(f):
+        attrs.setdefault('default', False)
+        attrs.setdefault('is_flag', True)
+        attrs.setdefault('help', 'Apply action to all matching documents')
+        return click.decorators.option('-a', '--all', '_all', **attrs)(f)
+    return decorator
+
+
 def git_option(help="Add git interoperability", **attrs):
     """Adds a ``git`` option as a decorator"""
     def decorator(f):

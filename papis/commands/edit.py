@@ -46,11 +46,7 @@ def run(document, wait=True, git=False):
     help="Edit notes associated to the document",
     default=False,
     is_flag=True)
-@click.option(
-    "--all", "_all",
-    help="Edit all matching documents",
-    default=False,
-    is_flag=True)
+@papis.cli.all_option()
 @click.option(
     "-e",
     "--editor",

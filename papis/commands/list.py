@@ -172,11 +172,7 @@ def run(
     help="List defined libraries",
     default=False,
     is_flag=True)
-@click.option(
-    "-a", "--all", "_all",
-    help="Process all documents matching a query, if a query is given",
-    default=False,
-    is_flag=True)
+@papis.cli.all_option()
 def cli(query, info, _file, notes, _dir, _format,
         template, _all, downloaders, libraries,):
     """List documents' properties"""

@@ -63,12 +63,8 @@ def run(document, filepath=None, git=False):
     help="Do not confirm removal",
     is_flag=True,
     default=False)
-@click.option(
-    "--all",
-    help="Remove all matches",
-    is_flag=True,
-    default=False)
-def cli(query, git, file, force, all):
+@papis.cli.all_option()
+def cli(query, git, file, force, _all):
     """Delete a document or a file"""
     documents = papis.database.get().query(query)
     logger = logging.getLogger('cli:rm')
@@ -77,7 +73,7 @@ def cli(query, git, file, force, all):
         logger.warning(papis.strings.no_documents_retrieved_message)
         return 0
 
-    if not all:
+    if not _all:
         documents = [papis.pick.pick_doc(documents)]
         documents = [d for d in documents if d]
 

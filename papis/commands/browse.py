@@ -72,11 +72,8 @@ def run(document):
     help='Use the value of the document\'s key to open in the browser, e.g.'
          'doi, url, doc_url ...'
 )
-@click.option(
-    '--all', default=False, is_flag=True,
-    help='Browse all selected documents'
-)
-def cli(query, key, all):
+@papis.cli.all_option()
+def cli(query, key, _all):
     """Open document's url in a browser"""
     documents = papis.database.get().query(query)
     logger = logging.getLogger('cli:browse')
@@ -85,7 +82,7 @@ def cli(query, key, all):
         logger.warning(papis.strings.no_documents_retrieved_message)
         return 0
 
-    if not all:
+    if not _all:
         document = papis.pick.pick_doc(documents)
         if not document:
             return

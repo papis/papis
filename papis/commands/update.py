@@ -78,15 +78,10 @@ def run(document, data=dict(), git=False):
 @papis.cli.git_option()
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
+@papis.cli.all_option()
 @click.option(
     "--auto",
     help="Try to parse information from different sources",
-    default=False,
-    is_flag=True
-)
-@click.option(
-    "--all", "all_entries",
-    help="Update all entries in library",
     default=False,
     is_flag=True
 )
@@ -113,7 +108,7 @@ def cli(
         doc_folder,
         from_importer,
         auto,
-        all_entries,
+        _all,
         set_tuples,
         ):
     """Update a document from a given library"""
@@ -124,7 +119,7 @@ def cli(
     if doc_folder:
         documents = [papis.document.from_folder(doc_folder)]
 
-    if not all_entries:
+    if not _all:
         documents = list(filter(lambda d: d, [papis.pick.pick_doc(documents)]))
 
     if not documents:

@@ -127,24 +127,19 @@ cli.add_command(explorer_mgr['bibtex'].plugin, 'read')
 @cli.command('add')
 @papis.cli.query_option()
 @click.help_option('-h', '--help')
-@click.option(
-    '-a', '--all', help='Add all searched documents', default=False,
-    is_flag=True)
+@papis.cli.all_option()
 @click.pass_context
-def _add(ctx, query, all):
+def _add(ctx, query, _all):
     """Add a refrence to the bibtex file"""
     docs = papis.api.get_documents_in_lib(search=query)
-    if not all:
+    if not _all:
         docs = [papis.api.pick_doc(docs)]
     ctx.obj['documents'].extend(docs)
 
 
 @cli.command('update')
 @click.help_option('-h', '--help')
-@click.option(
-    '-a', '--all', "_all",
-    show_default=True, help='update all searched documents',
-    default=False, is_flag=True)
+@papis.cli.all_option()
 @click.option(
     '--from', '-f', 'fromdb',
     show_default=True,
