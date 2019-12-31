@@ -67,6 +67,7 @@ def run(document):
 @click.command("browse")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
+@papis.cli.sort_option()
 @click.option(
     '-k', '--key', default='',
     help='Use the value of the document\'s key to open in the browser, e.g.'
@@ -75,12 +76,6 @@ def run(document):
 @click.option(
     '--all', default=False, is_flag=True,
     help='Browse all selected documents'
-)
-@click.option(
-    "--sort",
-    "sort_field",
-    help="Sort results by field",
-    default=None
 )
 def cli(query, key, all, sort_field):
     """Open document's url in a browser"""

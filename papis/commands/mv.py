@@ -38,14 +38,9 @@ def run(document, new_folder_path, git=False):
 
 @click.command("mv")
 @click.help_option('--help', '-h')
-@click.option(
-    "--sort",
-    "sort_field",
-    help="Sort results by field",
-    default=None
-)
 @papis.cli.query_option()
 @papis.cli.git_option()
+@papis.cli.sort_option()
 def cli(query, git, sort_field):
     """Move a document into some other path"""
     # Leave this imports here for performance

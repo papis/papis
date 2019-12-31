@@ -40,17 +40,13 @@ def run(document, wait=True, git=False):
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
 @papis.cli.git_option(help="Add changes made to the info file")
+@papis.cli.sort_option()
 @click.option(
     "-n",
     "--notes",
     help="Edit notes associated to the document",
     default=False,
     is_flag=True)
-@click.option(
-    "--sort",
-    "sort_field",
-    help="Sort results by field",
-    default=None)
 @click.option(
     "--all", "_all",
     help="Edit all matching documents",

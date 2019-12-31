@@ -53,6 +53,7 @@ def run(document, filepath=None, git=False):
 @click.help_option('-h', '--help')
 @papis.cli.query_option()
 @papis.cli.git_option(help="Remove in git")
+@papis.cli.sort_option()
 @click.option(
     "--file",
     help="Remove files from a document instead of the whole folder",
@@ -63,11 +64,6 @@ def run(document, filepath=None, git=False):
     help="Do not confirm removal",
     is_flag=True,
     default=False)
-@click.option(
-    "--sort",
-    "sort_field",
-    help="Sort results by field",
-    default=None)
 @click.option(
     "--all",
     help="Remove all matches",

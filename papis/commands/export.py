@@ -129,37 +129,28 @@ def run(
 @click.command("export")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
+@papis.cli.sort_option()
 @click.option(
     "--folder",
     help="Export document folder to share",
     default=False,
-    is_flag=True
-)
+    is_flag=True)
 @click.option(
     "-o",
     "--out",
     help="Outfile or outdir",
-    default=None
-)
+    default=None)
 @click.option(
     "-f",
     "--format",
     help="Format for the document",
     type=click.Choice(available_formats()),
-    default="bibtex",
-)
+    default="bibtex",)
 @click.option(
     "-a", "--all",
     help="Export all without picking",
     default=False,
-    is_flag=True
-)
-@click.option(
-    "--sort",
-    "sort_field",
-    help="Sort results by field",
-    default=None
-)
+    is_flag=True)
 def cli(
         query,
         folder,

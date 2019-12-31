@@ -78,18 +78,17 @@ def run(document, data=dict(), git=False):
 @papis.cli.git_option()
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
+@papis.cli.sort_option()
 @click.option(
     "--auto",
     help="Try to parse information from different sources",
     default=False,
-    is_flag=True
-)
+    is_flag=True)
 @click.option(
     "--all", "all_entries",
     help="Update all entries in library",
     default=False,
-    is_flag=True
-)
+    is_flag=True)
 @click.option(
     "--from", "from_importer",
     help="Add document from a specific importer ({0})".format(
@@ -98,21 +97,13 @@ def run(document, data=dict(), git=False):
     type=(click.Choice(papis.importer.available_importers()), str),
     nargs=2,
     multiple=True,
-    default=(),
-)
+    default=(),)
 @click.option(
     "-s", "--set", "set_tuples",
     help="Update document's information with key value."
          "The value can be a papis format.",
     multiple=True,
-    type=(str, str),
-)
-@click.option(
-    "--sort",
-    "sort_field",
-    help="Sort results by field",
-    default=None
-)
+    type=(str, str),)
 def cli(
         query,
         git,

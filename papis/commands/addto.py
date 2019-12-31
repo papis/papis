@@ -96,12 +96,7 @@ def run(document, filepaths, git=False):
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @papis.cli.git_option(help="Add and commit files")
-@click.option(
-    "--sort",
-    "sort_field",
-    help="Sort results by field",
-    default=None
-)
+@papis.cli.sort_option()
 @click.option(
     "-f", "--files",
     help="File fullpaths to documents",

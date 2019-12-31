@@ -47,14 +47,9 @@ def run(document, new_name, git=False):
 
 @click.command("rename")
 @click.help_option('--help', '-h')
-@click.option(
-    "--sort",
-    "sort_field",
-    help="Sort results by field",
-    default=None
-)
 @papis.cli.query_option()
 @papis.cli.git_option()
+@papis.cli.sort_option()
 def cli(query, git, sort_field):
     """Rename entry"""
 
