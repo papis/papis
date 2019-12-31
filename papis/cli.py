@@ -36,10 +36,9 @@ def query_option(**attrs):
 def sort_option(**attrs):
     """Adds a ``sort`` argument as a decorator"""
     def decorator(f):
-        attrs.setdefault(
-            'default',
-            lambda: papis.config.get('sort-field')
-        )
+        attrs.setdefault('default', lambda: papis.config.get('sort-field'))
+        attrs.setdefault('help', 'Sort documents with respect to FIELD')
+        attrs.setdefault('metavar', 'FIELD')
         return click.decorators.option('--sort', "sort_field", **attrs)(f)
     return decorator
 
