@@ -372,14 +372,12 @@ class Document(dict):
         self._folder = folder
         self._info_file_path = os.path.join(
             folder,
-            papis.config.get('info-name')
-        )
+            papis.config.get('info-name'))
         # TODO: check if this makes sense at all
-        self.subfolder = self.get_main_folder().replace(
-            os.path.expanduser("~"), ""
-        ).replace(
-            "/", " "
-        )
+        self.subfolder = (
+            self.get_main_folder()
+            .replace(os.path.expanduser("~"), "")
+            .replace("/", " "))
 
     def get_main_folder_name(self):
         """Get main folder name where the document and the information is
@@ -447,3 +445,7 @@ class Document(dict):
         else:
             for key in data:
                 self[key] = data[key]
+
+
+def sort(docs: [Document], key: str, reverse: bool) -> [Document]:
+    return sorted(docs, key=lambda d: str(d.get(key)), reverse=reverse)
