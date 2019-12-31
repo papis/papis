@@ -106,14 +106,19 @@ def run(document, filepaths, git=False):
     "--file-name",
     help="File name for the document (papis format)",
     default=None)
-def cli(query, git, files, file_name, sort_field):
+def cli(query, git, files, file_name, sort_field, sort_reverse):
     """Add files to an existing document"""
-    documents = papis.database.get().query(query, sort_field)
+    documents = papis.database.get().query(query)
     logger = logging.getLogger('cli:addto')
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
+
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
+
     document = papis.pick.pick_doc(documents)
+
     if not document:
         return
 

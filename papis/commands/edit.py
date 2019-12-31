@@ -57,7 +57,7 @@ def run(document, wait=True, git=False):
     "--editor",
     help="Editor to be used",
     default=None)
-def cli(query, doc_folder, git, notes, _all, editor, sort_field):
+def cli(query, doc_folder, git, notes, _all, editor, sort_field, sort_reverse):
     """Edit document information from a given library"""
 
     logger = logging.getLogger('cli:edit')
@@ -65,7 +65,10 @@ def cli(query, doc_folder, git, notes, _all, editor, sort_field):
     if doc_folder:
         documents = [papis.document.from_folder(doc_folder)]
     else:
-        documents = papis.database.get().query(query, sort_field)
+        documents = papis.database.get().query(query)
+
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     if editor is not None:
         papis.config.set('editor', editor)

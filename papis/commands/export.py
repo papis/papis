@@ -158,11 +158,12 @@ def cli(
         format,
         all,
         sort_field,
+        sort_reverse,
         **kwargs
         ):
     """Export a document from a given library"""
 
-    documents = papis.database.get().query(query, sort_field)
+    documents = papis.database.get().query(query)
 
     if format and folder:
         logger.warning("Only --folder flag will be considered")
@@ -170,6 +171,9 @@ def cli(
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
+
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     if not all:
         document = papis.pick.pick_doc(documents)

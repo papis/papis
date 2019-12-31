@@ -77,9 +77,9 @@ def run(document):
     '--all', default=False, is_flag=True,
     help='Browse all selected documents'
 )
-def cli(query, key, all, sort_field):
+def cli(query, key, all, sort_field, sort_reverse):
     """Open document's url in a browser"""
-    documents = papis.database.get().query(query, sort_field)
+    documents = papis.database.get().query(query)
     logger = logging.getLogger('cli:browse')
 
     if len(documents) == 0:
@@ -91,6 +91,9 @@ def cli(query, key, all, sort_field):
         if not document:
             return
         documents = [document]
+
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     if len(key):
         papis.config.set('browse-key', key)

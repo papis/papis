@@ -111,12 +111,13 @@ def cli(
         from_importer,
         auto,
         sort_field,
+        sort_reverse,
         all_entries,
         set_tuples,
         ):
     """Update a document from a given library"""
 
-    documents = papis.database.get().query(query, sort_field)
+    documents = papis.database.get().query(query)
     logger = logging.getLogger('cli:update')
 
     if doc_folder:
@@ -128,6 +129,9 @@ def cli(
     if not documents:
         logger.error(papis.strings.no_documents_retrieved_message)
         return
+
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     for document in documents:
         ctx = papis.importer.Context()
