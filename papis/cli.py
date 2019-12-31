@@ -13,6 +13,17 @@ def query_option(**attrs):
     return decorator
 
 
+def sort_option(**attrs):
+    """Adds a ``sort`` argument as a decorator"""
+    def decorator(f):
+        attrs.setdefault(
+            'default',
+            lambda: papis.config.get('sort-field')
+        )
+        return click.decorators.option('--sort', "sort_field", **attrs)(f)
+    return decorator
+
+
 def doc_folder_option(**attrs):
     """Adds a ``query`` argument as a decorator"""
     def decorator(f):

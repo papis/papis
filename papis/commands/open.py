@@ -135,6 +135,7 @@ def run(document, opener=None, folder=False, mark=False):
 @click.command("open")
 @click.help_option('-h', '--help')
 @papis.cli.query_option()
+@papis.cli.sort_option()
 @papis.cli.doc_folder_option()
 @click.option(
     "--tool",
@@ -148,12 +149,6 @@ def run(document, opener=None, folder=False, mark=False):
     help="Open directory",
     default=False,
     is_flag=True
-)
-@click.option(
-    "--sort",
-    "sort_field",
-    help="Sort results by field",
-    default=None
 )
 @click.option(
     "--all",
