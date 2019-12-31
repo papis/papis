@@ -227,44 +227,27 @@ class Database(papis.database.base.Database):
         if os.path.exists(cache_path):
             os.remove(cache_path)
 
-    def query_dict(self, dictionary, sort_field=None):
+    def query_dict(self, dictionary):
         query_string = " ".join(
             ["{}:\"{}\" ".format(key, val) for key, val in dictionary.items()]
         )
-        return self.query(query_string, sort_field)
+        return self.query(query_string)
 
-    def query(self, query_string, sort_field=None):
+    def query(self, query_string):
         self.logger.debug('Querying')
         docs = self.get_documents()
         # This makes it faster, if it's the all query string, return everything
         # without filtering
         if query_string == self.get_all_query_string():
-            return self.sort(docs, sort_field)
+            return docs
         else:
-            return self.sort(filter_documents(docs, query_string), sort_field)
+            return filter_documents(docs, query_string)
 
     def get_all_query_string(self):
         return '.'
 
-    def get_all_documents(self, sort_field=None):
-        return self.sort(self.get_documents(), sort_field)
-
-    def sort(self, docs, field):
-        if field is None:
-            return docs
-        else:
-            # Any 'none' values should be at the end of the list.
-            return sorted(docs, key=lambda doc: self.sort_field_from_doc(doc, field))
-
-    def get_doc_field(doc, field):
-        if field in doc:
-            value = doc[field]
-            if value.isdigit():
-                # If the value is really an integer, then
-                # return it as such.
-                return int(value)
-            else:
-                return value
+    def get_all_documents(self):
+        return self.get_documents()
 
     def save(self):
         docs = self.get_documents()
