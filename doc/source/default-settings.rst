@@ -596,3 +596,12 @@ Other
         ...
 
     so you will know exactly what is going on.
+
+.. papis-config:: sort-field
+
+  As of version ``0.10``, some command line commands have the ``--sort`` option
+  to sort the documents according to a given field. If you set
+  ``sort-field`` in your configuration file, this will sort by default
+  the documents according to this sort field. For instance,
+  if you want your documents by default to be sorted by ``year``, you
+  would set ``sort-field = year``.
