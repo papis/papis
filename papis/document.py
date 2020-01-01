@@ -1,13 +1,13 @@
 import os
 import shutil
 import logging
-from typing import List, Dict, Any, Optional, Union, NamedTuple, Callable
+from typing import List, Dict, Any, Optional, Union, NamedTuple, Callable, Tuple
 from typing_extensions import TypedDict
 
 import papis.config
 
 
-logger = logging.getLogger("document")  # type: logging.Logger
+LOGGER = logging.getLogger("document")  # type: logging.Logger
 
 KeyConversion = TypedDict(
     "KeyConversion", {"key": Optional[str],
@@ -41,7 +41,7 @@ def keyconversion_to_data(
                 action = conv_data.get('action') or (lambda x: x)
                 new_data[papis_key] = action(papis_value)
             except Exception as e:
-                logger.debug(
+                LOGGER.debug(
                     "Error while trying to parse %s (%s)", papis_key, e)
 
     if keep_unknown_keys:
@@ -212,7 +212,7 @@ class Document(Dict[str, Any]):
             data = papis.yaml.yaml_to_data(
                 self.get_info_file(), raise_exception=True)
         except Exception as e:
-            logger.error(
+            LOGGER.error(
                 'Error reading yaml file in {0}'.format(self.get_info_file()) +
                 '\nPlease check it!\n\n{0}'.format(str(e)))
         else:
@@ -338,7 +338,21 @@ def from_data(data: Dict[str, Any]) -> Document:
 
 
 def sort(docs: List[Document], key: str, reverse: bool) -> List[Document]:
-    return sorted(docs, key=lambda d: str(d.get(key)), reverse=reverse)
+
+    def _sort_for_key(key: str, doc: Document) -> Tuple[bool, bool, int, str]:
+        # The tuple represents:
+        # (is not None?, is an integer?, integer value, string value)
+        if key in doc.keys():
+            if str(doc[key]).isdigit():
+                return (False, True, int(doc[key]), str(doc[key]))
+            else:
+                return (False, False, 0, str(doc[key]))
+        else:
+            # The key does not appear in the document, ensure
+            # it comes last.
+            return (True, False, 0, '')
+    LOGGER.debug("sorting %d documents", len(docs))
+    return sorted(docs, key=lambda d: _sort_for_key(key, d), reverse=reverse)
 
 
 def new(folder_path: str, data: Dict[str, Any],
