@@ -53,8 +53,9 @@ def run(document, filepath=None, git=False):
 @click.help_option('-h', '--help')
 @papis.cli.query_option()
 @papis.cli.git_option(help="Remove in git")
+@papis.cli.sort_option()
 @click.option(
-    "--file",
+    "--file", "_file",
     help="Remove files from a document instead of the whole folder",
     is_flag=True,
     default=False)
@@ -64,9 +65,14 @@ def run(document, filepath=None, git=False):
     is_flag=True,
     default=False)
 @papis.cli.all_option()
-def cli(query, git, file, force, _all):
+def cli(query, git, _file, force, _all, sort_field, sort_reverse):
     """Delete a document or a file"""
+
     documents = papis.database.get().query(query)
+
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
+
     logger = logging.getLogger('cli:rm')
 
     if not documents:
@@ -77,7 +83,7 @@ def cli(query, git, file, force, _all):
         documents = [papis.pick.pick_doc(documents)]
         documents = [d for d in documents if d]
 
-    if file:
+    if _file:
         for document in documents:
             filepath = papis.pick.pick(document.get_files())
             if not filepath:

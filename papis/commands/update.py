@@ -79,12 +79,12 @@ def run(document, data=dict(), git=False):
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
+@papis.cli.sort_option()
 @click.option(
     "--auto",
     help="Try to parse information from different sources",
     default=False,
-    is_flag=True
-)
+    is_flag=True)
 @click.option(
     "--from", "from_importer",
     help="Add document from a specific importer ({0})".format(
@@ -93,15 +93,13 @@ def run(document, data=dict(), git=False):
     type=(click.Choice(papis.importer.available_importers()), str),
     nargs=2,
     multiple=True,
-    default=(),
-)
+    default=(),)
 @click.option(
     "-s", "--set", "set_tuples",
     help="Update document's information with key value."
          "The value can be a papis format.",
     multiple=True,
-    type=(str, str),
-)
+    type=(str, str),)
 def cli(
         query,
         git,
@@ -109,6 +107,8 @@ def cli(
         from_importer,
         auto,
         _all,
+        sort_field,
+        sort_reverse,
         set_tuples,
         ):
     """Update a document from a given library"""
@@ -125,6 +125,9 @@ def cli(
     if not documents:
         logger.error(papis.strings.no_documents_retrieved_message)
         return
+
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     for document in documents:
         ctx = papis.importer.Context()

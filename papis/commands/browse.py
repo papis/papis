@@ -67,13 +67,14 @@ def run(document):
 @click.command("browse")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
+@papis.cli.sort_option()
 @click.option(
     '-k', '--key', default='',
     help='Use the value of the document\'s key to open in the browser, e.g.'
          'doi, url, doc_url ...'
 )
 @papis.cli.all_option()
-def cli(query, key, _all):
+def cli(query, key, _all, sort_field, sort_reverse):
     """Open document's url in a browser"""
     documents = papis.database.get().query(query)
     logger = logging.getLogger('cli:browse')
@@ -87,6 +88,9 @@ def cli(query, key, _all):
         if not document:
             return
         documents = [document]
+
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     if len(key):
         papis.config.set('browse-key', key)

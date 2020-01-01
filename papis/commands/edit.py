@@ -40,6 +40,7 @@ def run(document, wait=True, git=False):
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
 @papis.cli.git_option(help="Add changes made to the info file")
+@papis.cli.sort_option()
 @click.option(
     "-n",
     "--notes",
@@ -52,7 +53,7 @@ def run(document, wait=True, git=False):
     "--editor",
     help="Editor to be used",
     default=None)
-def cli(query, doc_folder, git, notes, _all, editor):
+def cli(query, doc_folder, git, notes, _all, editor, sort_field, sort_reverse):
     """Edit document information from a given library"""
 
     logger = logging.getLogger('cli:edit')
@@ -61,6 +62,9 @@ def cli(query, doc_folder, git, notes, _all, editor):
         documents = [papis.document.from_folder(doc_folder)]
     else:
         documents = papis.database.get().query(query)
+
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     if editor is not None:
         papis.config.set('editor', editor)

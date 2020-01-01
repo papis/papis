@@ -5,7 +5,8 @@ from papis.document import (
     from_folder,
     from_data,
     Document,
-    Author
+    Author,
+    sort
 )
 import tempfile
 import papis.config
@@ -133,3 +134,12 @@ def test_pickle():
 
     assert(gotdocs[0]['title'] == docs[0]['title'])
     assert(gotdocs[1]['author'] == docs[1]['author'])
+
+
+def test_sort():
+    docs = [
+        from_data(dict(title="Hello world", year=1990)),
+        from_data({'author': 'Turing', 'year': "1932"}),
+    ]
+    sDocs = sort(docs, key="year", reverse=False)
+    assert(sDocs[0] == docs[1])

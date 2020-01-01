@@ -129,6 +129,8 @@ def run(
 @click.command("export")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
+@papis.cli.sort_option()
+@papis.cli.all_option()
 @click.option(
     "--folder",
     help="Export document folder to share",
@@ -145,13 +147,14 @@ def run(
     help="Format for the document",
     type=click.Choice(available_formats()),
     default="bibtex",)
-@papis.cli.all_option()
 def cli(
         query,
         folder,
         out,
         format,
         _all,
+        sort_field,
+        sort_reverse,
         **kwargs
         ):
     """Export a document from a given library"""
@@ -170,6 +173,9 @@ def cli(
         if not document:
             return 0
         documents = [document]
+
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     ret_string = run(documents, to_format=format)
 

@@ -135,6 +135,7 @@ def run(document, opener=None, folder=False, mark=False):
 @click.command("open")
 @click.help_option('-h', '--help')
 @papis.cli.query_option()
+@papis.cli.sort_option()
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @click.option(
@@ -153,7 +154,7 @@ def run(document, opener=None, folder=False, mark=False):
     "--mark/--no-mark",
     help="Open mark",
     default=lambda: True if papis.config.get('open-mark') else False)
-def cli(query, doc_folder, tool, folder, _all, mark):
+def cli(query, doc_folder, tool, folder, sort_field, sort_reverse, _all, mark):
     """Open document from a given library"""
     if tool:
         papis.config.set("opentool", tool)
@@ -163,6 +164,9 @@ def cli(query, doc_folder, tool, folder, _all, mark):
         documents = [from_folder(doc_folder)]
     else:
         documents = papis.database.get().query(query)
+
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
