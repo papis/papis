@@ -395,6 +395,19 @@ class Document(dict):
         """
         return key in self
 
+    def sort_for_key(self, key):
+        # The tuple represents:
+        # (is not None?, is an integer?, integer value, string value)
+        if key in self.keys():
+            if str(self[key]).isdigit():
+                return (False, True, int(self[key]), self[key])
+            else:
+                return (False, False, 0, self[key])
+        else:
+            # The key does not appear in the document, ensure
+            # it comes last.
+            return (True, False, 0, '')
+
     def save(self):
         """Saves the current document's information into the info file.
         """
@@ -448,4 +461,4 @@ class Document(dict):
 
 
 def sort(docs: [Document], key: str, reverse: bool) -> [Document]:
-    return sorted(docs, key=lambda d: str(d.get(key)), reverse=reverse)
+    return sorted(docs, key=lambda d: d.sort_for_key(key), reverse=reverse)
