@@ -1,7 +1,6 @@
 import tests.database
 import papis.config
 import papis.database
-import papis.document
 
 class Test(tests.database.DatabaseTest):
 
@@ -19,14 +18,3 @@ class Test(tests.database.DatabaseTest):
         database = papis.database.get()
         docs = database.query('*')
         self.assertTrue(len(docs) > 0)
-
-    def test_sort(self):
-        database = papis.database.get()
-        docs = database.query('*', sort_field='title')
-        print([papis.document.to_dict(doc)['title'] for doc in docs])
-        self.assertEqual(papis.document.to_dict(docs[0])['title'], 'Freedom from the known')
-
-    def test_python_sort(self):
-        database = papis.database.get()
-        docs = database.query('*', sort_field='doi')
-        self.assertEqual(papis.document.to_dict(docs[0])['doi'], '10.1021/ct5004252')
