@@ -96,6 +96,7 @@ def run(document, filepaths, git=False):
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @papis.cli.git_option(help="Add and commit files")
+@papis.cli.sort_option()
 @click.option(
     "-f", "--files",
     help="File fullpaths to documents",
@@ -105,14 +106,19 @@ def run(document, filepaths, git=False):
     "--file-name",
     help="File name for the document (papis format)",
     default=None)
-def cli(query, git, files, file_name):
+def cli(query, git, files, file_name, sort_field, sort_reverse):
     """Add files to an existing document"""
     documents = papis.database.get().query(query)
     logger = logging.getLogger('cli:addto')
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
+
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
+
     document = papis.pick.pick_doc(documents)
+
     if not document:
         return
 

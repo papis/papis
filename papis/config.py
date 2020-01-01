@@ -37,6 +37,7 @@ general_settings = {
     "local-config-file": ".papis.config",
     "database-backend": "papis",
     "default-query-string": ".",
+    "sort-field": None,
 
     "opentool": get_default_opener(),
     "dir-umask": 0o755,

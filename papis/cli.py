@@ -37,6 +37,20 @@ def query_option(**attrs: Dict[str, Any]) -> Callable[..., Any]:
     return decorator
 
 
+def sort_option(**attrs):
+    """Adds a ``sort`` argument as a decorator"""
+    def decorator(f):
+        attrs.setdefault('default', lambda: papis.config.get('sort-field'))
+        attrs.setdefault('help', 'Sort documents with respect to FIELD')
+        attrs.setdefault('metavar', 'FIELD')
+        sort_f = click.decorators.option('--sort', "sort_field", **attrs)
+        reverse_f = click.decorators.option(
+            "--reverse", "sort_reverse",
+            help="Reverse sort order", is_flag=True)
+        return sort_f(reverse_f(f))
+    return decorator
+
+
 def doc_folder_option(**attrs):
     """Adds a ``query`` argument as a decorator"""
     def decorator(f):
@@ -44,6 +58,16 @@ def doc_folder_option(**attrs):
         attrs.setdefault('type', click.Path(exists=True))
         attrs.setdefault('help', 'Apply action to a document path')
         return click.decorators.option('--doc-folder', **attrs)(f)
+    return decorator
+
+
+def all_option(**attrs):
+    """Adds a ``query`` argument as a decorator"""
+    def decorator(f):
+        attrs.setdefault('default', False)
+        attrs.setdefault('is_flag', True)
+        attrs.setdefault('help', 'Apply action to all matching documents')
+        return click.decorators.option('-a', '--all', '_all', **attrs)(f)
     return decorator
 
 

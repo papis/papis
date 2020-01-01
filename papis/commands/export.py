@@ -50,7 +50,7 @@ import papis.database
 import papis.strings
 import logging
 import papis.plugin
-from typing import List
+from typing import List, Optional
 
 logger = logging.getLogger('cli:export')
 
@@ -102,6 +102,8 @@ def run(documents: List[papis.document.Document], to_format: str,) -> str:
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
+@papis.cli.sort_option()
+@papis.cli.all_option()
 @click.option(
     "--folder",
     help="Export document folder to share",
@@ -118,12 +120,8 @@ def run(documents: List[papis.document.Document], to_format: str,) -> str:
     help="Format for the document",
     type=click.Choice(available_formats()),
     default="bibtex",)
-@click.option(
-    "-a", "--all", "_all",
-    help="Export all without picking",
-    default=False,
-    is_flag=True)
 def cli(query: str, doc_folder: str,
+        sort_field: Optional[str], sort_reverse: bool,
         folder: str, out: str, fmt: str, _all: bool) -> None:
     """Export a document from a given library"""
 
@@ -144,6 +142,9 @@ def cli(query: str, doc_folder: str,
         if not document:
             return
         documents = [document]
+
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     ret_string = run(documents, to_format=fmt)
 

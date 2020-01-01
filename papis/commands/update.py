@@ -78,18 +78,13 @@ def run(document, data=dict(), git=False):
 @papis.cli.git_option()
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
+@papis.cli.all_option()
+@papis.cli.sort_option()
 @click.option(
     "--auto",
     help="Try to parse information from different sources",
     default=False,
-    is_flag=True
-)
-@click.option(
-    "--all", "all_entries",
-    help="Update all entries in library",
-    default=False,
-    is_flag=True
-)
+    is_flag=True)
 @click.option(
     "--from", "from_importer",
     help="Add document from a specific importer ({0})".format(
@@ -98,22 +93,22 @@ def run(document, data=dict(), git=False):
     type=(click.Choice(papis.importer.available_importers()), str),
     nargs=2,
     multiple=True,
-    default=(),
-)
+    default=(),)
 @click.option(
     "-s", "--set", "set_tuples",
     help="Update document's information with key value."
          "The value can be a papis format.",
     multiple=True,
-    type=(str, str),
-)
+    type=(str, str),)
 def cli(
         query,
         git,
         doc_folder,
         from_importer,
         auto,
-        all_entries,
+        _all,
+        sort_field,
+        sort_reverse,
         set_tuples,
         ):
     """Update a document from a given library"""
@@ -124,12 +119,15 @@ def cli(
     if doc_folder:
         documents = [papis.document.from_folder(doc_folder)]
 
-    if not all_entries:
+    if not _all:
         documents = list(filter(lambda d: d, [papis.pick.pick_doc(documents)]))
 
     if not documents:
         logger.error(papis.strings.no_documents_retrieved_message)
         return
+
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     for document in documents:
         ctx = papis.importer.Context()

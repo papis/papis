@@ -40,7 +40,8 @@ def run(document, new_folder_path, git=False):
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @papis.cli.git_option()
-def cli(query, git):
+@papis.cli.sort_option()
+def cli(query, git, sort_field, sort_reverse):
     """Move a document into some other path"""
     # Leave this imports here for performance
     import prompt_toolkit
@@ -52,6 +53,9 @@ def cli(query, git):
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
+
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     document = papis.pick.pick_doc(documents)
     if not document:

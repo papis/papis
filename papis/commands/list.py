@@ -54,6 +54,7 @@ import papis.utils
 import papis.strings
 import papis.config
 import papis.database
+import papis.document
 import papis.downloaders
 import papis.cli
 import papis.pick
@@ -132,6 +133,7 @@ def run(
 @click.command("list")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
+@papis.cli.sort_option()
 @click.option(
     "-i",
     "--info",
@@ -172,13 +174,9 @@ def run(
     help="List defined libraries",
     default=False,
     is_flag=True)
-@click.option(
-    "-a", "--all", "_all",
-    help="Process all documents matching a query, if a query is given",
-    default=False,
-    is_flag=True)
+@papis.cli.all_option()
 def cli(query, info, _file, notes, _dir, _format,
-        template, _all, downloaders, libraries,):
+        template, _all, downloaders, libraries, sort_field, sort_reverse):
     """List documents' properties"""
 
     logger = logging.getLogger('cli:list')
@@ -194,6 +192,9 @@ def cli(query, info, _file, notes, _dir, _format,
             logger.warning(papis.strings.no_documents_retrieved_message)
         if not _all:
             documents = filter(lambda x: x, [papis.pick.pick_doc(documents)])
+
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     objects = run(
         documents,

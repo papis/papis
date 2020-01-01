@@ -442,3 +442,7 @@ def to_bibtex(document: Document) -> str:
                 )
     bibtexString += "}\n"
     return bibtexString
+
+
+def sort(docs: [Document], key: str, reverse: bool) -> [Document]:
+    return sorted(docs, key=lambda d: str(d.get(key)), reverse=reverse)

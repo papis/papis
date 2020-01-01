@@ -1,3 +1,8 @@
+VERSION v0.10
+=============
+
+- Add `--sort` and `--reverse` flags to most command line commands, together
+  with the `sort-file` configuration option.
 
 VERSION v0.9
 ============
