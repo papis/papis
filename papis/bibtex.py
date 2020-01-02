@@ -60,7 +60,7 @@ class Importer(papis.importer.Importer):
         papis.importer.Importer.__init__(self, name='bibtex', **kwargs)
 
     @classmethod
-    def match(cls, uri: str) -> Optional[Importer]:
+    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
         if (not os.path.exists(uri) or os.path.isdir(uri) or
                 papis.utils.get_document_extension(uri) == 'pdf'):
             return None
