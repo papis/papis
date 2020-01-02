@@ -18,13 +18,13 @@ bibtex_types = [
   "article", "book", "booklet", "conference", "inbook", "incollection",
   "inproceedings", "manual", "mastersthesis", "misc", "phdthesis",
   "proceedings", "techreport", "unpublished"
-] + papis.config.getlist('extra-bibtex-types')
+] + papis.config.getlist('extra-bibtex-types')  # type: List[str]
 
 bibtex_type_converter = {
   "conferencePaper": "inproceedings",
   "journalArticle": "article",
   "journal": "article"
-}
+}  # type: Dict[str, str]
 
 bibtex_keys = [
     "addendum", "address", "afterword", "annotator", "annote", "author",
@@ -40,7 +40,7 @@ bibtex_keys = [
     "publisher", "pubstate", "school", "series", "subtitle", "title",
     "translator", "type", "titleaddon", "url", "urldate", "venue", "version",
     "volume", "volumes", "year",
-] + papis.config.getlist('extra-bibtex-keys')
+] + papis.config.getlist('extra-bibtex-keys')  # type: List[str]
 
 bibtex_key_converter = {
     "abstractNote": "abstract",
@@ -49,7 +49,7 @@ bibtex_key_converter = {
     "place": "location",
     "publicationTitle": "journal",
     "proceedingsTitle": "booktitle"
-}
+}  # type: Dict[str, str]
 
 
 class Importer(papis.importer.Importer):
@@ -176,7 +176,7 @@ def bibtex_to_dict(bibtex):
     return [bibtexparser_entry_to_papis(entry) for entry in entries]
 
 
-def unicode_to_latex(text):
+def unicode_to_latex(text: str) -> str:
     """
     unicode_to_latex - what it says
 
