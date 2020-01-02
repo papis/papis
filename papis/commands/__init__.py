@@ -1,31 +1,20 @@
 import os
 import glob
-from stevedore import extension
-import logging
 import papis.config
 import papis.plugin
 import re
+from click.core import Command
+from papis.cli import AliasedGroup
+from typing import Dict, Optional, Union, NamedTuple
 
 
-commands_mgr = None
+Script = NamedTuple("Script",
+                    [("command_name", str),
+                     ("path", Optional[str]),
+                     ("plugin", Union[None, Command, AliasedGroup])])
 
 
-def _create_commands_mgr():
-    global commands_mgr
-
-    if commands_mgr is not None:
-        return
-
-    commands_mgr = extension.ExtensionManager(
-        namespace='papis.command',
-        invoke_on_load=False,
-        verify_requirements=True,
-        propagate_map_exceptions=True,
-        on_load_failure_callback=papis.plugin.stevedore_error_handler
-    )
-
-
-def get_external_scripts():
+def get_external_scripts() -> Dict[str, Script]:
     regex = re.compile('.*papis-([^ .]+)$')
     paths = []
     scripts = {}
@@ -36,20 +25,21 @@ def get_external_scripts():
             m = regex.match(script)
             if m is not None:
                 name = m.group(1)
-                scripts[name] = dict(
-                    command_name=name,
-                    path=script,
-                    plugin=None
-                )
+                scripts[name] = Script(command_name=name,
+                                       path=script,
+                                       plugin=None)
     return scripts
 
 
-def get_scripts():
-    global commands_mgr
-    _create_commands_mgr()
+def _extension_name() -> str:
+    return "papis.command"
+
+
+def get_scripts() -> Dict[str, Script]:
+    commands_mgr = papis.plugin.get_extension_manager(_extension_name())
     scripts_dict = dict()
     for command_name in commands_mgr.names():
-        scripts_dict[command_name] = dict(
+        scripts_dict[command_name] = Script(
             command_name=command_name,
             path=None,
             plugin=commands_mgr[command_name].plugin
