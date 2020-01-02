@@ -36,26 +36,23 @@ import papis.exceptions
 import logging
 import click
 
+from typing import List
+
 logger = logging.getLogger('run')
 
 
-def run(folder, command=[]):
+def run(folder: str, command: List[str] = []) -> None:
     logger.debug("Changing directory into %s" % folder)
     os.chdir(os.path.expanduser(folder))
-    try:
-        commandstr = os.path.expanduser(
-            papis.config.get("".join(command))
-        )
-    except papis.exceptions.DefaultSettingValueMissing:
-        commandstr = " ".join(command)
+    commandstr = " ".join(command)
     logger.debug("Command = %s" % commandstr)
-    return os.system(commandstr)
+    os.system(commandstr)
 
 
 @click.command("run", context_settings=dict(ignore_unknown_options=True))
 @click.help_option('--help', '-h')
 @click.argument("run_command", nargs=-1)
-def cli(run_command):
+def cli(run_command: List[str]) -> None:
     """Run an arbitrary shell command in the library folder"""
     for folder in papis.config.get_lib_dirs():
         run(folder, command=run_command)

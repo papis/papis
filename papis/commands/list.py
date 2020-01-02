@@ -60,33 +60,35 @@ import papis.cli
 import papis.pick
 import click
 
+from typing import List, Optional, Union, Sequence
+
 logger = logging.getLogger('list')
 
 
 def run(
-        documents,
-        libraries=False,
-        downloaders=False,
-        pick=False,
-        files=False,
-        folders=False,
-        info_files=False,
-        notes=False,
-        fmt="",
-        template=None
-        ):
+        documents: List[papis.document.Document],
+        libraries: bool = False,
+        downloaders: bool = False,
+        pick: bool = False,
+        files: bool = False,
+        folders: bool = False,
+        info_files: bool = False,
+        notes: bool = False,
+        fmt: str = "",
+        template: Optional[str] = None
+        ) -> Sequence[Union[str, papis.document.Document]]:
     """Main method to the list command
 
     :returns: List different objects
     :rtype:  list
     """
     if downloaders:
-        return papis.downloaders.get_available_downloaders()
+        return [str(d) for d in papis.downloaders.get_available_downloaders()]
 
     if template is not None:
         if not os.path.exists(template):
-            logger.error("Template file %s not found".format(template))
-            return
+            logger.error("Template file {} not found".format(template))
+            return []
         with open(template) as fd:
             fmt = fd.read()
 
@@ -105,18 +107,14 @@ def run(
         ]
     elif notes:
         return [
-            os.path.join(d.get_main_folder(), d["notes"])
+            os.path.join(d.get_main_folder() or '', d["notes"])
             for d in documents
-            if d.has("notes") and isinstance(d["notes"], str)
+            if d.get_main_folder() is not None
+                and d.has("notes") and isinstance(d["notes"], str)
                 and os.path.exists(
-                        os.path.join(d.get_main_folder(), d["notes"]))]
+                        os.path.join(d.get_main_folder() or '', d["notes"]))]
     elif info_files:
-        return [
-            os.path.join(
-                document.get_main_folder(),
-                document.get_info_file()
-            ) for document in documents
-        ]
+        return [ d.get_info_file() for d in documents ]
     elif fmt:
         return [
             papis.utils.format_doc(fmt, document)
@@ -124,7 +122,8 @@ def run(
         ]
     elif folders:
         return [
-            document.get_main_folder() for document in documents
+            str(d.get_main_folder()) for d in documents
+            if d.get_main_folder() is not None
         ]
     else:
         return documents
@@ -159,7 +158,7 @@ def run(
     "--format", "_format",
     help="List entries using a custom papis format, e.g."
     " '{doc[year] {doc[title]}",
-    default=None)
+    default='')
 @click.option(
     "--template",
     help="Template file containing a papis format to list entries",
@@ -175,12 +174,16 @@ def run(
     default=False,
     is_flag=True)
 @papis.cli.all_option()
-def cli(query, info, _file, notes, _dir, _format,
-        template, _all, downloaders, libraries, sort_field, sort_reverse):
+def cli(
+        query: str, info: bool, _file: bool, notes: bool, _dir: bool,
+        _format: str,
+        template: Optional[str], _all: bool, downloaders: bool,
+        libraries: bool,
+        sort_field: Optional[str], sort_reverse: bool) -> None:
     """List documents' properties"""
 
     logger = logging.getLogger('cli:list')
-    documents = []
+    documents = []  # type: List[papis.document.Document]
 
     if not libraries and not downloaders and not _file and not info and not _dir:
         _dir = True
@@ -191,7 +194,8 @@ def cli(query, info, _file, notes, _dir, _format,
         if not documents:
             logger.warning(papis.strings.no_documents_retrieved_message)
         if not _all:
-            documents = filter(lambda x: x, [papis.pick.pick_doc(documents)])
+            documents = list(
+                    filter(lambda x: x, [papis.pick.pick_doc(documents)]))
 
     if sort_field:
         documents = papis.document.sort(documents, sort_field, sort_reverse)
