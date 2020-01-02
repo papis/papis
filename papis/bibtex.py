@@ -12,7 +12,7 @@ import papis.importer
 import papis.utils
 from typing import Optional, List, Dict, Any, Callable
 
-logger = logging.getLogger("bibtex")
+logger = logging.getLogger("bibtex")  # type: logging.Logger
 
 bibtex_types = [
   "article", "book", "booklet", "conference", "inbook", "incollection",
@@ -56,11 +56,11 @@ class Importer(papis.importer.Importer):
 
     """Importer that parses a bibtex files"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         papis.importer.Importer.__init__(self, name='bibtex', **kwargs)
 
     @classmethod
-    def match(cls, uri):
+    def match(cls, uri: str) -> Optional[Importer]:
         if (not os.path.exists(uri) or os.path.isdir(uri) or
                 papis.utils.get_document_extension(uri) == 'pdf'):
             return None
@@ -87,7 +87,7 @@ class Importer(papis.importer.Importer):
 @click.pass_context
 @click.argument('bibfile', type=click.Path(exists=True))
 @click.help_option('--help', '-h')
-def explorer(ctx, bibfile):
+def explorer(ctx: click.core.Context, bibfile: str) -> None:
     """
     Import documents from a bibtex file
 
@@ -100,13 +100,12 @@ def explorer(ctx, bibfile):
     logger.info('Reading in bibtex file {}'.format(bibfile))
     docs = [
         papis.document.from_data(d)
-        for d in bibtex_to_dict(bibfile)
-    ]
+        for d in bibtex_to_dict(bibfile) ]
     ctx.obj['documents'] += docs
     logger.info('{} documents found'.format(len(docs)))
 
 
-def bibtexparser_entry_to_papis(entry):
+def bibtexparser_entry_to_papis(entry: Dict[str, str]) -> Dict[str, str]:
     """Convert keys of a bib entry in bibtexparser format to papis compatible
     format.
 
@@ -116,7 +115,7 @@ def bibtexparser_entry_to_papis(entry):
 
     """
     from bibtexparser.customization import splitname
-    def to_author_list(authors):
+    def to_author_list(authors: str) -> List[Dict[str, str]]:
         author_list = []
         for author in re.split(r"\s+and\s+", authors):
             parts = splitname(author)
@@ -141,7 +140,7 @@ def bibtexparser_entry_to_papis(entry):
     return result
 
 
-def bibtex_to_dict(bibtex):
+def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
     """
     Convert bibtex file to dict
 
