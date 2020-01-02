@@ -16,7 +16,7 @@ import logging
 import papis.importer
 import papis.downloaders
 import colorama
-from typing import Optional, List, Iterator, Callable, Any, Dict, AnyStr
+from typing import Optional, List, Iterator, Callable, Any, Dict, AnyStr, Union
 
 logger = logging.getLogger("utils")
 logger.debug("importing")
@@ -329,7 +329,8 @@ def input(prompt: str, default: str = "", bottom_toolbar: Optional[str] = None,
     return str(result) if result else default
 
 
-def update_doc_from_data_interactively(document: papis.document.Document,
+def update_doc_from_data_interactively(
+        document: Union[papis.document.Document, Dict[str, Any]],
         data: Dict[str, Any], data_name: str) -> None:
     import papis.tui.widgets.diff
     docdata = copy.copy(document)

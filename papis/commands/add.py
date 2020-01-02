@@ -70,7 +70,7 @@ Examples
 
     .. code::
 
-        papis add https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.156401
+        papis add journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.156401
 
 
 Examples in python
@@ -106,21 +106,23 @@ import colorama
 import papis.downloaders
 import papis.git
 
-logger = logging.getLogger('add')
+from typing import List, Any, Optional, Dict, Tuple
+
+logger = logging.getLogger('add')  # type: logging.Logger
 
 
 class FromFolderImporter(papis.importer.Importer):
 
     """Importer that gets files and data from a valid papis folder"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         papis.importer.Importer.__init__(self, name='folder', **kwargs)
 
     @classmethod
-    def match(cls, uri):
+    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
         return FromFolderImporter(uri=uri) if os.path.isdir(uri) else None
 
-    def fetch(self):
+    def fetch(self) -> None:
         doc = papis.document.from_folder(self.uri)
         self.logger.info('importing from folder {0}'.format(self.uri))
         self.ctx.data = papis.document.to_dict(doc)
@@ -133,11 +135,11 @@ class FromLibImporter(papis.importer.Importer):
     and data
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         papis.importer.Importer.__init__(self, name='lib', **kwargs)
 
     @classmethod
-    def match(cls, uri):
+    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
         try:
             papis.config.get_lib_from_name(uri)
         except Exception:
@@ -145,14 +147,17 @@ class FromLibImporter(papis.importer.Importer):
         else:
             return FromLibImporter(uri=uri)
 
-    def fetch(self):
+    def fetch(self) -> None:
         doc = papis.pick.pick_doc(papis.api.get_all_documents_in_lib(self.uri))
         importer = FromFolderImporter(uri=doc.get_main_folder())
         importer.fetch()
         self.ctx = importer.ctx
 
 
-def get_file_name(data, original_filepath, suffix=""):
+def get_file_name(
+        data: Dict[str, Any],
+        original_filepath: str,
+        suffix: str = "") -> str:
     """Generates file name for the document
 
     :param data: Data parsed for the actual document
@@ -168,7 +173,7 @@ def get_file_name(data, original_filepath, suffix=""):
     """
 
     basename_limit = 150
-    file_name_opt = papis.config.get('add-file-name')
+    file_name_opt = papis.config.getstring('add-file-name')
     ext = papis.utils.get_document_extension(original_filepath)
 
     if file_name_opt is None:
@@ -207,7 +212,7 @@ def get_file_name(data, original_filepath, suffix=""):
     return filename
 
 
-def get_hash_folder(data, document_paths):
+def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
     """Folder name where the document will be stored.
 
     :data: Data parsed for the actual document
@@ -237,17 +242,17 @@ def get_hash_folder(data, document_paths):
 
 
 def run(
-        paths,
-        data=dict(),
-        folder_name=None,
-        file_name=None,
-        subfolder=None,
-        confirm=False,
-        open_file=False,
-        edit=False,
-        git=False,
-        link=False
-        ):
+        paths: List[str],
+        data: Dict[str, Any] = dict(),
+        folder_name: Optional[str] = None,
+        file_name: Optional[str] = None,
+        subfolder: Optional[str] = None,
+        confirm: bool = False,
+        open_file: bool = False,
+        edit: bool = False,
+        git: bool = False,
+        link: bool = False
+        ) -> None:
     """
     :param paths: Paths to the documents to be added
     :type  paths: []
@@ -333,7 +338,7 @@ def run(
         new_file_list.append(new_filename)
 
         tmp_end_filepath = os.path.join(
-            tmp_document.get_main_folder(),
+            temp_dir,
             new_filename)
         string_append = next(g)
 
@@ -403,7 +408,7 @@ def run(
     papis.database.get().add(tmp_document)
     if git:
         papis.git.add_and_commit_resource(
-            tmp_document.get_main_folder(), '.',
+            str(tmp_document.get_main_folder()), '.',
             "Add document '{0}'".format(papis.document.describe(tmp_document)))
 
 
@@ -425,7 +430,7 @@ def run(
 @click.option(
     "--folder-name",
     help="Name for the document's folder (papis format)",
-    default=lambda: papis.config.get('add-folder-name'))
+    default=lambda: papis.config.getstring('add-folder-name'))
 @click.option(
     "--file-name",
     help="File name for the document (papis format)",
@@ -466,8 +471,20 @@ def run(
     help="List all available papis importers",
     default=False,
     is_flag=True)
-def cli(files, set_list, subfolder, folder_name, file_name, from_importer,
-        batch, confirm, open_file, edit, git, link, list_importers):
+def cli(
+        files: List[str],
+        set_list: List[Tuple[str, str]],
+        subfolder: str,
+        folder_name: str,
+        file_name: Optional[str],
+        from_importer: List[Tuple[str, str]],
+        batch: bool,
+        confirm: bool,
+        open_file: bool,
+        edit: bool,
+        git: bool,
+        link: bool,
+        list_importers: bool) -> None:
 
     if list_importers:
         import_mgr = papis.importer.get_import_mgr()
@@ -495,7 +512,7 @@ def cli(files, set_list, subfolder, folder_name, file_name, from_importer,
         open_file = False
 
     import_mgr = papis.importer.get_import_mgr()
-    matching_importers = []
+    matching_importers = []  # type: List[papis.importer.Importer]
 
     if not from_importer and not batch and files:
         matching_importers = sum((
