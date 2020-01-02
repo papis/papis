@@ -1,19 +1,29 @@
 import click
+import click.core
+import click.types
+import click.decorators
+
 import papis.config
 import difflib
-from typing import Optional, List, Dict, Any, Callable
+from typing import Optional, Any, Callable, Union
 
 
-class AliasedGroup(click.Group):
+DecoratorCallable = Callable[..., Any]
+DecoratorArgs = Any
+
+
+class AliasedGroup(click.core.Group):
     """
     This group command is taken from
         http://click.palletsprojects.com/en/5.x/advanced/#command-aliases
     and is to be used for groups with aliases
     """
 
-    def get_command(self, ctx: click.Context,
-            cmd_name: str) -> Optional[click.Command]:
-        rv = click.Group.get_command(self, ctx, cmd_name)
+    def get_command(
+            self,
+            ctx: click.core.Context,
+            cmd_name: str) -> Optional[click.core.Command]:
+        rv = click.core.Group.get_command(self, ctx, cmd_name)
         if rv is not None:
             return rv
         matches = difflib.get_close_matches(
@@ -21,15 +31,15 @@ class AliasedGroup(click.Group):
         if not matches:
             return None
         elif len(matches) == 1:
-            return click.Group.get_command(self, ctx, str(matches[0]))
+            return click.core.Group.get_command(self, ctx, str(matches[0]))
         else:
             ctx.fail('Too many matches: {0}'.format(matches))
             return None
 
 
-def query_option(**attrs: Dict[str, Any]) -> Callable[..., Any]:
+def query_option(**attrs: DecoratorArgs) -> DecoratorCallable:
     """Adds a ``query`` argument as a decorator"""
-    def decorator(f: Any) -> click.Argument:
+    def decorator(f: DecoratorCallable) -> Any:
         attrs.setdefault(
             'default',
             lambda: papis.config.get('default-query-string'))
@@ -37,9 +47,9 @@ def query_option(**attrs: Dict[str, Any]) -> Callable[..., Any]:
     return decorator
 
 
-def sort_option(**attrs):
+def sort_option(**attrs: DecoratorArgs) -> DecoratorCallable:
     """Adds a ``sort`` argument as a decorator"""
-    def decorator(f):
+    def decorator(f: DecoratorCallable) -> Any:
         attrs.setdefault('default', lambda: papis.config.get('sort-field'))
         attrs.setdefault('help', 'Sort documents with respect to FIELD')
         attrs.setdefault('metavar', 'FIELD')
@@ -51,19 +61,19 @@ def sort_option(**attrs):
     return decorator
 
 
-def doc_folder_option(**attrs):
-    """Adds a ``query`` argument as a decorator"""
-    def decorator(f):
+def doc_folder_option(**attrs: DecoratorArgs) -> DecoratorCallable:
+    """Adds a ``document folder`` argument as a decorator"""
+    def decorator(f: DecoratorCallable) -> Any:
         attrs.setdefault('default', None)
-        attrs.setdefault('type', click.Path(exists=True))
+        attrs.setdefault('type', click.types.Path(exists=True))
         attrs.setdefault('help', 'Apply action to a document path')
         return click.decorators.option('--doc-folder', **attrs)(f)
     return decorator
 
 
-def all_option(**attrs):
+def all_option(**attrs: DecoratorArgs) -> DecoratorCallable:
     """Adds a ``query`` argument as a decorator"""
-    def decorator(f):
+    def decorator(f: DecoratorCallable) -> Any:
         attrs.setdefault('default', False)
         attrs.setdefault('is_flag', True)
         attrs.setdefault('help', 'Apply action to all matching documents')
@@ -71,9 +81,11 @@ def all_option(**attrs):
     return decorator
 
 
-def git_option(help="Add git interoperability", **attrs):
+def git_option(
+        help: str = "Add git interoperability",
+        **attrs: DecoratorArgs) -> DecoratorCallable:
     """Adds a ``git`` option as a decorator"""
-    def decorator(f):
+    def decorator(f: DecoratorCallable) -> Any:
         attrs.setdefault(
             'default',
             lambda: True if papis.config.get('use-git') else False)
@@ -82,7 +94,10 @@ def git_option(help="Add git interoperability", **attrs):
     return decorator
 
 
-def bypass(group, command, command_name):
+def bypass(
+        group: click.core.Group,
+        command: click.core.Command,
+        command_name: str) -> Callable[..., Any]:
     """
     This function is specially important for people developing scripts in
     papis.
@@ -113,7 +128,7 @@ def bypass(group, command, command_name):
     """
     group.add_command(command, command_name)
 
-    def decorator(new_callback):
+    def _decorator(new_callback: Callable[..., Any]) -> None:
         setattr(command, "bypassed", command.callback)
         command.callback = new_callback
-    return decorator
+    return _decorator
