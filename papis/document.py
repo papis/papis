@@ -9,7 +9,10 @@ import papis.bibtex
 from typing import List, Dict, Any, Optional
 
 
-def keyconversion_to_data(key_conversion, data, keep_unknown_keys=False):
+def keyconversion_to_data(
+        key_conversion: Dict[str, Any],
+        data: Dict[str, Any],
+        keep_unknown_keys: bool = False) -> Dict[str, Any]:
     new_data = dict()
     for orig_key in key_conversion:
         if orig_key not in data:
@@ -43,66 +46,28 @@ def keyconversion_to_data(key_conversion, data, keep_unknown_keys=False):
     return new_data
 
 
-def author_list_to_author(data):
+def author_list_to_author(data: Dict[str, List[str]]) -> str:
     author = ''
+    separator = papis.config.get('multiple-authors-separator')
+    separator_fmt = papis.config.get('multiple-authors-format')
+    if separator is None or separator_fmt is None:
+        raise Exception(
+            "You have to define 'multiple-author-separator'"
+            " and 'multiple-author-format'")
     if 'author_list' in data:
         author = (
-            papis.config.get('multiple-authors-separator')
-            .join([
-                papis.config.get("multiple-authors-format").format(au=author)
+            separator.join([
+                separator_fmt.format(au=author)
                 for author in data['author_list']
             ])
         )
     return author
 
 
-class Author(dict):
-    """Base class for authors, if you're parsing an author,
-    use this class.
-    """
-    def __init__(self, given, family, affiliations=[]):
-        dict.__init__(
-            self, given=given, family=family, affiliations=affiliations
-        )
+logger = logging.getLogger("document")  # type: logging.Logger
 
 
-class Affiliation(dict):
-    """Base class for affiliation, if you're parsing an affiliations,
-    use this class."""
-    def __init__(self, name):
-        dict.__init__(self, name=name)
-
-
-logger = logging.getLogger("document")
-
-
-def new(folder_path, data, files=[]):
-    """
-    Creates a document at a given folder with data and
-    some existing files.
-
-    :param folder_path: A folder path, if non existing it will be created
-    :type  folder_path: str
-    :param data: Dictionary with key and values to be updated
-    :type  data: dict
-    :param files: Existing paths for files
-    :type  files: list(str)
-    :raises FileExistsError: If folder_path exists
-    """
-    assert(isinstance(folder_path, str))
-    assert(isinstance(data, dict))
-    assert(isinstance(files, list))
-    os.makedirs(folder_path)
-    doc = Document(folder=folder_path, data=data)
-    doc['files'] = []
-    for f in files:
-        shutil.copy(f, os.path.join(folder_path))
-        doc['files'].append(os.path.basename(f))
-    doc.save()
-    return doc
-
-
-class DocHtmlEscaped(dict):
+class DocHtmlEscaped(Dict[str, Any]):
     """
     Small helper class to escape html elements.
 
@@ -110,7 +75,7 @@ class DocHtmlEscaped(dict):
     '&gt; &gt;&lt; int &amp; &quot;&quot; &quot;'
     """
 
-    def __init__(self, doc):
+    def __init__(self, doc: Any) -> None:
         self.__doc = doc
 
     def __getitem__(self, key: str) -> str:
@@ -122,7 +87,7 @@ class DocHtmlEscaped(dict):
             .replace('"', '&quot;'))
 
 
-class Document(dict):
+class Document(Dict[str, Any]):
 
     """Class implementing the entry abstraction of a document in a library.
     It is basically a python dictionary with more methods.
@@ -133,7 +98,7 @@ class Document(dict):
 
     def __init__(self, folder: Optional[str] = None,
             data: Optional[Dict[str, Any]]=None):
-        self._folder = None  # type: str
+        self._folder = None  # type: Optional[str]
 
         if folder is not None:
             self.set_folder(folder)
@@ -152,7 +117,7 @@ class Document(dict):
     def html_escape(self) -> DocHtmlEscaped:
         return DocHtmlEscaped(self)
 
-    def get_main_folder(self) -> str:
+    def get_main_folder(self) -> Optional[str]:
         """Get full path for the folder where the document and the information
         is stored.
         :returns: Folder path
@@ -168,20 +133,24 @@ class Document(dict):
         self._folder = folder
         self._info_file_path = os.path.join(
             folder,
-            papis.config.get('info-name'))
+            papis.config.getstring('info-name'))
         # TODO: check if this makes sense at all
-        self.subfolder = self.get_main_folder().replace(
+        self.subfolder = self._folder.replace(
             os.path.expanduser("~"), ""
         ).replace(
             "/", " "
         )
 
-    def get_main_folder_name(self) -> str:
+    def get_main_folder_name(self) -> Optional[str]:
         """Get main folder name where the document and the information is
         stored.
         :returns: Folder name
         """
-        return os.path.basename(self._folder)
+        folder = self.get_main_folder()
+        if folder:
+            return os.path.basename(folder)
+        else:
+            return None
 
     def has(self, key: str) -> bool:
         """Check if the information file has some key defined.
@@ -218,8 +187,10 @@ class Document(dict):
             return result
         files = (self["files"] if isinstance(self["files"], list)
                                else [self["files"]])
-        for f in files:
-            result.append(os.path.join(self.get_main_folder(), f))
+        folder = self.get_main_folder()
+        if folder:
+            for f in files:
+                result.append(os.path.join(folder, f))
         return result
 
     def load(self) -> None:
@@ -299,7 +270,8 @@ def delete(document: Document) -> None:
     :type  document: papis.document.Document
     """
     folder = document.get_main_folder()
-    shutil.rmtree(folder)
+    if folder:
+        shutil.rmtree(folder)
 
 
 def describe(document: Document) -> str:
@@ -307,7 +279,7 @@ def describe(document: Document) -> str:
     using the document-description-format
     """
     return papis.utils.format_doc(
-        papis.config.get('document-description-format'),
+        papis.config.getstring('document-description-format'),
         document)
 
 
@@ -336,11 +308,13 @@ def move(document: Document, path: str) -> None:
                 path, document.get_main_folder()
             )
         )
-    shutil.move(document.get_main_folder(), path)
-    # Let us chmod it because it might come from a temp folder
-    # and temp folders are per default 0o600
-    os.chmod(path, papis.config.getint('dir-umask'))
-    document.set_folder(path)
+    folder = document.get_main_folder()
+    if folder:
+        shutil.move(folder, path)
+        # Let us chmod it because it might come from a temp folder
+        # and temp folders are per default 0o600
+        os.chmod(path, papis.config.getint('dir-umask') or 0o600)
+        document.set_folder(path)
 
 
 def from_data(data: Dict[str, Any]) -> Document:
@@ -382,7 +356,7 @@ def to_bibtex(document: Document) -> str:
     elif papis.config.get('ref-format'):
         try:
             ref = papis.utils.format_doc(
-                papis.config.get("ref-format"),
+                papis.config.getstring("ref-format"),
                 document
             ).replace(" ", "")
         except Exception as e:
@@ -394,9 +368,10 @@ def to_bibtex(document: Document) -> str:
         if document.has('doi'):
             ref = document['doi']
         else:
-            try:
-                ref = os.path.basename(document.get_main_folder())
-            except:
+            folder = document.get_main_folder()
+            if folder:
+                ref = os.path.basename(folder)
+            else:
                 ref = 'noreference'
 
     ref = re.sub(r'[;,()\/{}\[\]]', '', ref)
@@ -418,11 +393,9 @@ def to_bibtex(document: Document) -> str:
                 if bibtex_journal_key in document.keys():
                     bibtexString += "  %s = {%s},\n" % (
                         'journal',
-                        papis.bibtex.unicode_to_latex(
-                            str(
-                              document[papis.config.get('bibtex-journal-key')]
-                            )
-                        )
+                        papis.bibtex.unicode_to_latex(str(
+                          document[papis.config.getstring('bibtex-journal-key')]
+                            ))
                     )
                 elif bibtex_journal_key not in document.keys():
                     logger.warning(
@@ -444,5 +417,32 @@ def to_bibtex(document: Document) -> str:
     return bibtexString
 
 
-def sort(docs: [Document], key: str, reverse: bool) -> [Document]:
+def sort(docs: List[Document], key: str, reverse: bool) -> List[Document]:
     return sorted(docs, key=lambda d: str(d.get(key)), reverse=reverse)
+
+
+def new(folder_path: str, data: Dict[str, Any],
+        files: List[str]=[]) -> Document:
+    """
+    Creates a document at a given folder with data and
+    some existing files.
+
+    :param folder_path: A folder path, if non existing it will be created
+    :type  folder_path: str
+    :param data: Dictionary with key and values to be updated
+    :type  data: dict
+    :param files: Existing paths for files
+    :type  files: list(str)
+    :raises FileExistsError: If folder_path exists
+    """
+    assert(isinstance(folder_path, str))
+    assert(isinstance(data, dict))
+    assert(isinstance(files, list))
+    os.makedirs(folder_path)
+    doc = Document(folder=folder_path, data=data)
+    doc['files'] = []
+    for f in files:
+        shutil.copy(f, os.path.join(folder_path))
+        doc['files'].append(os.path.basename(f))
+    doc.save()
+    return doc
