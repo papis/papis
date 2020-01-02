@@ -94,32 +94,35 @@ def run(document: Document, opener: Optional[str] = None,
 
     if folder:
         # Open directory
-        papis.api.open_dir(document.get_main_folder())
+        _doc_folder = document.get_main_folder()
+        if not _doc_folder:
+            raise Exception(papis.strings.no_folder_attached_to_document)
+        papis.api.open_dir(_doc_folder)
     else:
         if mark:
             logger.debug("Getting document's marks")
-            marks = document[papis.config.get("mark-key-name")]
+            marks = document[papis.config.getstring("mark-key-name")]
             if marks:
                 logger.info("Picking marks")
-                _mark_fmt = papis.config.get("mark-header-format")
-                _mark_name = papis.config.get("mark-format-name")
-                _mark_opener = papis.config.get("mark-opener-format")
+                _mark_fmt = papis.config.getstring("mark-header-format")
+                _mark_name = papis.config.getstring("mark-format-name")
+                _mark_opener = papis.config.getstring("mark-opener-format")
                 if not _mark_fmt:
                     raise Exception("No mark header format")
                 if not _mark_name:
                     raise Exception("No mark name format")
-                mark = papis.api.pick(
+                mark_dict = papis.api.pick(
                     marks,
                     dict(
                         header_filter=lambda x: papis.utils.format_doc(
                             _mark_fmt, x, key=_mark_name),
                         match_filter=lambda x: papis.utils.format_doc(
                             _mark_fmt, x, key=_mark_name)))
-                if mark:
+                if mark_dict:
                     if not _mark_opener:
                         raise Exception("mark-opener-format not set")
                     opener = papis.utils.format_doc(
-                        _mark_opener, from_data(mark), key=_mark_name)
+                        _mark_opener, from_data(mark_dict), key=_mark_name)
                     logger.info("Setting opener to '{0}'".format(opener))
                     papis.config.set("opentool", opener)
         files = document.get_files()
