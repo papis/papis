@@ -12,8 +12,9 @@ import papis.downloaders.base
 import tempfile
 import collections
 import requests
+from typing import Set, List, Dict, Any
 
-logger = logging.getLogger("crossref")
+logger = logging.getLogger("crossref")  # type: logging.Logger
 logger.debug("importing")
 
 
@@ -37,7 +38,7 @@ _filter_names = set([
     "content_domain", "has_content_domain", "has_crossmark_restriction",
     "has_relation", "relation_type", "relation_object", "relation_object_type",
     "public_references", "publisher_name", "affiliation",
-])
+])  # type: Set[str]
 
 _types_values = [
     "book-section", "monograph", "report", "peer-review", "book-track",
@@ -47,16 +48,16 @@ _types_values = [
     "proceedings", "standard", "reference-book", "posted-content",
     "journal-issue", "dissertation", "dataset", "book-series", "edited-book",
     "standard-series",
-]
+]  # type: List[str]
 
 _sort_values = [
 "relevance", "score", "updated", "deposited", "indexed", "published",
 "published-print", "published-online", "issued", "is-referenced-by-count",
 "references-count",
-]
+]  # type: List[str]
 
 
-_order_values = ['asc', 'desc']
+_order_values = ['asc', 'desc']  # type: List[str]
 
 
 type_converter = {
@@ -85,7 +86,7 @@ type_converter = {
     "report-series": "inproceedings",
     "standard-series": "incollection",
     "standard": "techreport",
-}
+}  # type: Dict[str, str]
 
 
 key_conversion = collections.OrderedDict({
@@ -144,29 +145,35 @@ key_conversion = collections.OrderedDict({
         {"key": "year", "action": lambda x: x['start']["date-parts"][0][0]},
         {"key": "month", "action": lambda x: x['start']["date-parts"][0][1]},
     ],
-})
+})  # type: collections.OrderedDict[str, Dict[str, Union[str, Callable[[str], str]]]]
 
 
-def crossref_data_to_papis_data(data):
+def crossref_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
     global key_conversion
     new_data = papis.document.keyconversion_to_data(key_conversion, data)
     new_data['author'] = papis.document.author_list_to_author(new_data)
     return new_data
 
 
-def _get_crossref_works(**kwargs):
+def _get_crossref_works(
+        **kwargs: Dict[str, Any]) -> habanero.request_class.Request:
     cr = habanero.Crossref()
     return cr.works(**kwargs)
 
 
-def get_data(query="", author="", title="", dois=[], max_results=0,
-        filters={}, sort="score", order='desc'):
+def get_data(
+        query: str = "",
+        author: str = "",
+        title: str = "",
+        dois: List[str] = [],
+        max_results: int = 0,
+        filters: Dict[str, Any] = {},
+        sort: str = "score",
+        order: str = "desc") -> List[Dict[str, Any]]:
     global _filter_names
     global _sort_values
-    assert(isinstance(dois, list)), 'dois must be a list'
     assert(sort in _sort_values), 'Sort value not valid'
     assert(order in _order_values), 'Sort value not valid'
-    assert(isinstance(filters, dict)), 'filters must be a dictionary'
     if filters:
         if not set(filters.keys()) & _filter_names == set(filters.keys()):
             raise Exception(
@@ -209,7 +216,7 @@ def get_data(query="", author="", title="", dois=[], max_results=0,
     ]
 
 
-def doi_to_data(doi_string):
+def doi_to_data(doi_string: str) -> Dict[str, Any]:
     """Search through crossref and get a dictionary containing the data
 
     :param doi_string: Doi identificator or an url with some doi
@@ -219,15 +226,13 @@ def doi_to_data(doi_string):
 
     """
     global logger
-    assert(isinstance(doi_string, str))
     doi_string = doi.get_clean_doi(doi_string)
     results = get_data(dois=[doi_string])
     if results:
         return results[0]
     else:
         raise ValueError(
-            "Couldn't get data for doi ({doi})".format(doi=doi_string)
-        )
+            "Couldn't get data for doi ({doi})".format(doi=doi_string))
 
 
 @click.command('crossref')
@@ -268,8 +273,7 @@ def explorer(ctx, query, author, title, max, filter, sort, order):
         max_results=max,
         filters=dict(filter),
         sort=sort,
-        order=order
-    )
+        order=order)
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj['documents'] += docs
     logger.info('{} documents found'.format(len(docs)))

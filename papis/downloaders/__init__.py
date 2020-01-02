@@ -7,6 +7,8 @@ import papis.config
 import papis.importer
 import papis.plugin
 
+from typing import List
+
 logger = logging.getLogger("downloader")
 
 
@@ -28,7 +30,7 @@ def _create_downloader_mgr():
     )
 
 
-def get_available_downloaders():
+def get_available_downloaders() -> List[str]:
     global downloader_mgr
     _create_downloader_mgr()
     return [e.plugin for e in downloader_mgr.extensions]

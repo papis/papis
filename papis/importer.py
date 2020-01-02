@@ -28,7 +28,7 @@ class Importer:
         :param name: Name of the importer
         :type  name: str
         """
-        self.ctx = Context()
+        self.ctx = ctx  # type: Context
         self.uri = uri  # type: str
         self.name = name or os.path.basename(__file__)  # type: str
         self.logger = logging.getLogger("importer:{0}".format(self.name))

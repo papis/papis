@@ -426,7 +426,7 @@ def getstring(key: str, section: Optional[str] = None) -> str:
     return str(result)
 
 
-def getlist(key: str, section: Optional[str] = None) -> Optional[List[str]]:
+def getlist(key: str, section: Optional[str] = None) -> List[str]:
     """List getter
 
     :returns: A python list
@@ -436,18 +436,18 @@ def getlist(key: str, section: Optional[str] = None) -> Optional[List[str]]:
     """
     rawvalue = general_get(key, section=section)  # type: Any
     if isinstance(rawvalue, list):
-        return rawvalue
+        return list(map(str, rawvalue))
     try:
-        value = eval(rawvalue)
+        rawvalue = eval(rawvalue)
     except Exception as e:
         raise SyntaxError(
             "The key '{0}' must be a valid python object\n\t{1}"
             .format(key, e))
     else:
-        if not isinstance(value, list):
+        if not isinstance(rawvalue, list):
             raise SyntaxError(
                 "The key '{0}' must be a valid python list".format(key))
-        return value
+        return list(map(str, rawvalue))
 
 
 def get_configuration() -> Configuration:
