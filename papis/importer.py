@@ -29,9 +29,6 @@ class Importer:
         :type  name: str
         """
         self.ctx = Context()
-        assert(isinstance(uri, str))
-        assert(isinstance(name, str))
-        assert(isinstance(self.ctx, Context))
         self.uri = uri  # type: str
         self.name = name or os.path.basename(__file__)  # type: str
         self.logger = logging.getLogger("importer:{0}".format(self.name))
@@ -70,6 +67,20 @@ class Importer:
         """
         can return a dict to update the document with
         """
+        try:
+            self.fetch_data()
+        except NotImplementedError:
+            pass
+        try:
+            self.fetch_files()
+        except NotImplementedError:
+            pass
+        raise NotImplementedError()
+
+    def fetch_data(self) -> None:
+        raise NotImplementedError()
+
+    def fetch_files(self) -> None:
         raise NotImplementedError()
 
     def __str__(self) -> str:
@@ -106,7 +117,6 @@ def get_importer_by_name(name: str) -> Any:
     :returns: The importer
     :rtype:  Importer
     """
-    assert(isinstance(name, str))
     return get_import_mgr()[name].plugin
 
 

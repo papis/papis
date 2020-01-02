@@ -6,12 +6,13 @@ import json
 import click
 import papis.document
 
+from typing import List, Dict, Any
 
 logger = logging.getLogger('dissemin')
 
 
-def dissemin_authors_to_papis_authors(data):
-    new_data = dict()
+def dissemin_authors_to_papis_authors(data: Dict[str, Any]) -> Dict[str, Any]:
+    new_data = dict()  # type: Dict[str, Any]
     if 'authors' in data.keys():
         authors = []
         for author in data['authors']:
@@ -24,12 +25,11 @@ def dissemin_authors_to_papis_authors(data):
             )
         new_data["author_list"] = authors
         new_data["author"] = ",".join(
-            ["{a[given_name]} {a[surname]}".format(a=a) for a in authors]
-        )
+            ["{a[given_name]} {a[surname]}".format(a=a) for a in authors])
     return new_data
 
 
-def dissemindoc_to_papis(data):
+def dissemindoc_to_papis(data: Dict[str, Any]) -> List[Dict[str, Any]]:
     common_data = dict()
     result = []
     common_data['title'] = data.get('title')
@@ -48,7 +48,7 @@ def dissemindoc_to_papis(data):
     return result
 
 
-def get_data(query=None):
+def get_data(query: str = "") -> List[Dict[str, Any]]:
     """
     Get data using the dissemin API
     https://dissem.in/api/search/?q=pregroup
@@ -57,11 +57,11 @@ def get_data(query=None):
     params = urllib.parse.urlencode(dict_params)
     main_url = "https://dissem.in/api/search/?"
     req_url = main_url + params
-    logger.debug("url = " + req_url)
+    logger.debug("url = {}".format(req_url))
     url = urllib.request.Request(
         req_url,
         headers={
-            'User-Agent': papis.config.get('user-agent')
+            'User-Agent': str(papis.config.get('user-agent'))
         }
     )
     jsondoc = urllib.request.urlopen(url).read().decode()
@@ -72,8 +72,8 @@ def get_data(query=None):
 @click.command('dissemin')
 @click.pass_context
 @click.help_option('--help', '-h')
-@click.option('--query', '-q', default=None)
-def explorer(ctx, query):
+@click.option('--query', '-q', default="", type=str)
+def explorer(ctx: click.core.Context, query: str) -> None:
     """
     Look for documents on dissem.in
 
