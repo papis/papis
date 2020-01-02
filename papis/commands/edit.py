@@ -21,16 +21,23 @@ import logging
 import papis.strings
 import papis.git
 
+from typing import Optional
 
-def run(document, wait=True, git=False):
+
+def run(document: papis.document.Document,
+        wait: bool = True,
+        git: bool = False) -> None:
     database = papis.database.get()
-    papis.utils.general_open(document.get_info_file(), "editor", wait=wait)
+    info_file_path = document.get_info_file()
+    if not info_file_path:
+        raise Exception(papis.strings.no_folder_attached_to_document)
+    papis.utils.general_open(info_file_path, "editor", wait=wait)
     document.load()
     database.update(document)
     if git:
         papis.git.add_and_commit_resource(
-            document.get_main_folder(),
-            document.get_info_file(),
+            str(document.get_main_folder()),
+            info_file_path,
             "Update information for '{0}'".format(
                 papis.document.describe(document)))
 
@@ -53,7 +60,15 @@ def run(document, wait=True, git=False):
     "--editor",
     help="Editor to be used",
     default=None)
-def cli(query, doc_folder, git, notes, _all, editor, sort_field, sort_reverse):
+def cli(
+        query: str,
+        doc_folder: str,
+        git: bool,
+        notes: bool,
+        _all: bool,
+        editor: Optional[str],
+        sort_field: Optional[str],
+        sort_reverse: bool) -> None:
     """Edit document information from a given library"""
 
     logger = logging.getLogger('cli:edit')
@@ -75,7 +90,7 @@ def cli(query, doc_folder, git, notes, _all, editor, sort_field, sort_reverse):
 
     if len(documents) == 0:
         logger.warning(papis.strings.no_documents_retrieved_message)
-        return 0
+        return
 
     for document in documents:
         if notes:
@@ -85,10 +100,10 @@ def cli(query, doc_folder, git, notes, _all, editor, sort_field, sort_reverse):
                     "The document selected has no notes attached, \n"
                     "creating a notes files"
                 )
-                document["notes"] = papis.config.get("notes-name")
+                document["notes"] = papis.config.getstring("notes-name")
                 document.save()
             notesPath = os.path.join(
-                document.get_main_folder(),
+                str(document.get_main_folder()),
                 document["notes"]
             )
 
@@ -99,8 +114,8 @@ def cli(query, doc_folder, git, notes, _all, editor, sort_field, sort_reverse):
             papis.api.edit_file(notesPath)
             if git:
                 papis.git.add_and_commit_resource(
-                    document.get_main_folder(),
-                    document.get_info_file(),
+                    str(document.get_main_folder()),
+                    str(document.get_info_file()),
                     "Update notes for '{0}'".format(
                         papis.document.describe(document)))
 
