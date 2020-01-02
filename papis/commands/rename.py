@@ -15,19 +15,28 @@ import click
 import papis.cli
 import papis.database
 import papis.strings
+import papis.git
+
+from typing import Optional
 
 
-def run(document, new_name, git=False):
+def run(
+        document: papis.document.Document,
+        new_name: str, git: bool = False) -> None:
     db = papis.database.get()
     logger = logging.getLogger('rename:run')
     folder = document.get_main_folder()
+
+    if not folder:
+        raise Exception(papis.strings.no_folder_attached_to_document)
+
     subfolder = os.path.dirname(folder)
 
     new_folder_path = os.path.join(subfolder, new_name)
 
     if os.path.exists(new_folder_path):
         logger.warning("Path %s already exists" % new_folder_path)
-        return 1
+        return
 
     cmd = ['git', '-C', folder] if git else []
     cmd += ['mv', folder, new_folder_path]
@@ -36,13 +45,14 @@ def run(document, new_name, git=False):
     subprocess.call(cmd)
 
     if git:
-        papis.utils.git_commit(message="Rename %s" % folder)
+        papis.git.commit(
+            new_folder_path,
+            "Rename from {} to '{}'".format(folder, new_name))
 
     db.delete(document)
     logger.debug("New document folder: {}".format(new_folder_path))
     document.set_folder(new_folder_path)
     db.add(document)
-    return 0
 
 
 @click.command("rename")
@@ -50,7 +60,11 @@ def run(document, new_name, git=False):
 @papis.cli.query_option()
 @papis.cli.git_option()
 @papis.cli.sort_option()
-def cli(query, git, sort_field, sort_reverse):
+def cli(
+        query: str,
+        git: bool,
+        sort_field: Optional[str],
+        sort_reverse: bool) -> None:
     """Rename entry"""
 
     documents = papis.database.get().query(query)
@@ -64,11 +78,11 @@ def cli(query, git, sort_field, sort_reverse):
         logger.warning(papis.strings.no_documents_retrieved_message)
     document = papis.pick.pick_doc(documents)
     if not document:
-        return 0
+        return
 
     new_name = papis.utils.input(
         "Enter new folder name:\n"
         ">",
-        default=document.get_main_folder_name()
+        default=document.get_main_folder_name() or ''
     )
-    return run(document, new_name, git=git)
+    run(document, new_name, git=git)
