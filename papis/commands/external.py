@@ -5,22 +5,23 @@ import papis.config
 import papis.commands
 import click
 import logging
+from typing import List
 
 
 logger = logging.getLogger("external")
 
 
-def get_command_help(path):
-    magic_word = papis.config.get("scripts-short-help-regex")
+def get_command_help(path: str) -> str:
+    magic_word = papis.config.getstring("scripts-short-help-regex")
     with open(path) as fd:
         for line in fd:
             m = re.match(magic_word, line)
             if m:
-                return m.group(1)
+                return str(m.group(1))
     return "No help message available"
 
 
-def export_variables():
+def export_variables() -> None:
     """Export environment variables so that external script can access to
     the information
     """
@@ -34,14 +35,15 @@ def export_variables():
 @click.command(
     context_settings=dict(
         ignore_unknown_options=True,
-        help_option_names=[]
-    )
-)
+        help_option_names=[]))
 @click.argument("flags", nargs=-1)
 @click.pass_context
-def external_cli(ctx, flags):
+def external_cli(ctx: click.core.Context, flags: List[str]) -> None:
     script = ctx.obj
-    cmd = [script['path']] + list(flags)
+    path = script.path
+    if not path:
+        raise Exception("Path for script {} not found".format(script))
+    cmd = [path] + list(flags)
     logger.debug("Calling {}".format(cmd))
     export_variables()
     subprocess.call(cmd)
