@@ -26,21 +26,20 @@ import papis.document
 from urllib.parse import urlencode
 import logging
 
+from typing import Optional
 
 logger = logging.getLogger('browse')
 
 
-def run(document):
+def run(document: papis.document.Document) -> None:
     """Browse document's url whenever possible.
 
     :document: Document object
-    :returns: Returns the url that is composed from the document
-    :rtype:  str
 
     """
     global logger
     url = None
-    key = papis.config.get("browse-key")
+    key = papis.config.getstring("browse-key")
 
     if document.has(key):
         if "doi" == key:
@@ -53,15 +52,17 @@ def run(document):
     if url is None or key == 'search-engine':
         params = {
             'q': papis.utils.format_doc(
-                papis.config.get('browse-query-format'),
+                papis.config.getstring('browse-query-format'),
                 document
             )
         }
-        url = papis.config.get('search-engine') + '/?' + urlencode(params)
+        url = (
+            papis.config.getstring('search-engine') +
+            '/?' +
+            urlencode(params))
 
     logger.info("Opening url %s:" % url)
     papis.utils.general_open(url, "browser", wait=False)
-    return url
 
 
 @click.command("browse")
@@ -74,14 +75,19 @@ def run(document):
          'doi, url, doc_url ...'
 )
 @papis.cli.all_option()
-def cli(query, key, _all, sort_field, sort_reverse):
+def cli(
+        query: str,
+        key: str,
+        _all: bool,
+        sort_field: Optional[str],
+        sort_reverse: bool) -> None:
     """Open document's url in a browser"""
     documents = papis.database.get().query(query)
     logger = logging.getLogger('cli:browse')
 
     if len(documents) == 0:
         logger.warning(papis.strings.no_documents_retrieved_message)
-        return 0
+        return
 
     if not _all:
         document = papis.pick.pick_doc(documents)

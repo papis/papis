@@ -30,11 +30,21 @@ import papis.cli
 import click
 import papis.strings
 
+from typing import List, Optional
 
-def run(document, filepaths, git=False):
+
+def run(
+        document: papis.document.Document,
+        filepaths: List[str],
+        git: bool = False) -> None:
     logger = logging.getLogger('addto')
     g = papis.utils.create_identifier(ascii_lowercase)
     string_append = ''
+
+    _doc_folder = document.get_main_folder()
+    if not _doc_folder:
+        raise Exception("Document does not have a folder attached")
+
     for i in range(len(document.get_files())):
         string_append = next(g)
 
@@ -56,7 +66,7 @@ def run(document, filepaths, git=False):
         new_file_list.append(new_filename)
 
         endDocumentPath = os.path.join(
-            document.get_main_folder(),
+            _doc_folder,
             new_filename
         )
         string_append = next(g)
@@ -79,16 +89,16 @@ def run(document, filepaths, git=False):
         )
         shutil.copy(in_file_path, endDocumentPath)
 
-    if not "files" in document.keys():
+    if "files" not in document.keys():
         document["files"] = []
     document['files'] += new_file_list
     document.save()
     papis.database.get().update(document)
     if git:
         for r in new_file_list + [document.get_info_file()]:
-            papis.git.add(document.get_main_folder(), r)
+            papis.git.add(_doc_folder, r)
         papis.git.commit(
-            document.get_main_folder(),
+            _doc_folder,
             "Add new files to '{}'".format(papis.document.describe(document)))
 
 
@@ -106,7 +116,13 @@ def run(document, filepaths, git=False):
     "--file-name",
     help="File name for the document (papis format)",
     default=None)
-def cli(query, git, files, file_name, sort_field, sort_reverse):
+def cli(
+        query: str,
+        git: bool,
+        files: List[str],
+        file_name: Optional[str],
+        sort_field: Optional[str],
+        sort_reverse: bool) -> None:
     """Add files to an existing document"""
     documents = papis.database.get().query(query)
     logger = logging.getLogger('cli:addto')
