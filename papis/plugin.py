@@ -1,5 +1,5 @@
 import logging
-from stevedore import ExtensionManager  # type: ignore
+from stevedore import ExtensionManager
 from typing import List, Dict
 
 logger = logging.getLogger("plugin")
@@ -36,8 +36,8 @@ def get_extension_manager(namespace: str) -> ExtensionManager:
 
 
 def get_available_entrypoints(namespace: str) -> List[str]:
-    return get_extension_manager(namespace).entry_points_names()
+    return list(map(str, get_extension_manager(namespace).entry_points_names()))
 
 
-def get_available_plugins(namespace: str):
+def get_available_plugins(namespace: str) -> List[object]:
     return [e.plugin for e in get_extension_manager(namespace)]
