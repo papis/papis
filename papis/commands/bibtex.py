@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
+r"""
 
 This command helps to interact with `bib` files in your LaTeX projects.
 
@@ -24,8 +24,8 @@ or to add papers to the bib
 
     papis bibtex          \
       read new_papers.bib \ # Read bib file
-      add einstein        \ # Pick a document with query 'einstein' from library
-      add heisenberg      \ # Pick a document with query 'heisenberg' from library
+      add einstein        \ # Pick a doc with query 'einstein' from library
+      add heisenberg      \ # Pick a doc with query 'heisenberg' from library
       save new_papers.bib   # Save in new_papers.bib
 
 or if I update some information in my papis ``yaml`` files then I can do
@@ -85,6 +85,8 @@ import papis.commands.export
 import logging
 import colorama
 
+from typing import List, Optional
+
 logger = logging.getLogger('papis:bibtex')
 
 
@@ -103,10 +105,9 @@ explorer_mgr = explore.get_explorer_mgr()
     '--noar', '--no-auto-read', 'no_auto_read',
     default=False,
     is_flag=True,
-    help="Do not auto read even if the configuration file says otherwise"
-)
+    help="Do not auto read even if the configuration file says otherwise")
 @click.pass_context
-def cli(ctx, no_auto_read):
+def cli(ctx: click.Context, no_auto_read: bool) -> None:
     """A papis script to interact wit bibtex files"""
     global explorer_mgr
     ctx.obj = {'documents': []}
@@ -117,19 +118,21 @@ def cli(ctx, no_auto_read):
 
     bibfile = config.get('default-read-bibfile', section='bibtex')
     if (bool(config.getboolean('auto-read', section='bibtex')) and
-        bibfile and
-        os.path.exists(bibfile)):
+       bibfile and
+       os.path.exists(bibfile)):
         logger.info("auto reading {0}".format(bibfile))
         explorer_mgr['bibtex'].plugin.callback(bibfile)
 
+
 cli.add_command(explorer_mgr['bibtex'].plugin, 'read')
+
 
 @cli.command('add')
 @papis.cli.query_option()
 @click.help_option('-h', '--help')
 @papis.cli.all_option()
 @click.pass_context
-def _add(ctx, query, _all):
+def _add(ctx: click.Context, query: str, _all: bool) -> None:
     """Add a refrence to the bibtex file"""
     docs = papis.api.get_documents_in_lib(search=query)
     if not _all:
@@ -154,7 +157,8 @@ def _add(ctx, query, _all):
     help='Update only given keys (this flag can be given multiple times)',
     type=str, multiple=True)
 @click.pass_context
-def _update(ctx, _all, fromdb, to, keys):
+def _update(ctx: click.Context, _all: bool,
+            fromdb: bool, to: bool, keys: List[str]) -> None:
     """Update documents from and to the library"""
     docs = click.get_current_context().obj['documents']
     picked_doc = None
@@ -194,7 +198,7 @@ def _update(ctx, _all, fromdb, to, keys):
 @cli.command('open')
 @click.help_option('-h', '--help')
 @click.pass_context
-def _open(ctx):
+def _open(ctx: click.Context) -> None:
     """Open a document in the documents list"""
     docs = ctx.obj['documents']
     doc = papis.api.pick_doc(docs)
@@ -212,7 +216,7 @@ def _open(ctx):
     help='Edit document in papis library',
     default=False, is_flag=True)
 @click.pass_context
-def _edit(ctx, lib):
+def _edit(ctx: click.Context, lib: bool) -> None:
     """edit a document in the documents list"""
     docs = ctx.obj['documents']
     doc = papis.api.pick_doc(docs)
@@ -225,7 +229,7 @@ def _edit(ctx, lib):
 @cli.command('rm')
 @click.help_option('-h', '--help')
 @click.pass_context
-def _rm(ctx):
+def _rm(ctx: click.Context) -> None:
     """Remove a document from the documents list"""
     print('Sorry, TODO...')
 
@@ -234,7 +238,7 @@ def _rm(ctx):
 @click.help_option('-h', '--help')
 @click.option('-o', '--out', help='Output ref to a file', default=None)
 @click.pass_context
-def _ref(ctx, out):
+def _ref(ctx: click.Context, out: Optional[str]) -> None:
     """Print the reference for a document"""
     docs = ctx.obj['documents']
     doc = papis.api.pick_doc(docs)
@@ -256,7 +260,7 @@ def _ref(ctx, out):
     required=True, type=click.Path())
 @click.option('-f', '--force', default=False, is_flag=True)
 @click.pass_context
-def _save(ctx, bibfile, force):
+def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
     """Save the documents imported in bibtex format"""
     docs = ctx.obj['documents']
     if not force:
@@ -283,7 +287,7 @@ def _save(ctx, bibfile, force):
     default=False,
     is_flag=True)
 @click.pass_context
-def _sort(ctx, key, reverse):
+def _sort(ctx: click.Context, key: Optional[str], reverse: bool) -> None:
     """Save the documents imported in bibtex format"""
     docs = ctx.obj['documents']
     ctx.obj['documents'] = list(
