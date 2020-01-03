@@ -191,7 +191,9 @@ class Database(papis.database.base.Database):
         self.logger.debug('adding ...')
         docs.append(document)
         assert(docs[-1].get_main_folder() == document.get_main_folder())
-        assert(os.path.exists(document.get_main_folder()))
+        _folder = document.get_main_folder()
+        assert(_folder is not None)
+        assert(os.path.exists(_folder))
         self.save()
 
     def update(self, document: papis.document.Document) -> None:

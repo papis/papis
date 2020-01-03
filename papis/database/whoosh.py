@@ -54,7 +54,7 @@ import papis.database.base
 import papis.database.cache
 from papis.utils import get_cache_home, get_folders, folders_to_documents
 
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, KeysView
 
 class Database(papis.database.base.Database):
 
@@ -151,7 +151,11 @@ class Database(papis.database.base.Database):
         :returns: Path for the document
         :rtype:  str
         """
-        return document.get_main_folder()
+        _folder = document.get_main_folder()
+        if _folder is None:
+            raise Exception(papis.strings.no_folder_attached_to_document)
+        else:
+            return _folder
 
     def create_index(self) -> None:
         """Create a brand new index, notice that if an index already
@@ -170,7 +174,7 @@ class Database(papis.database.base.Database):
 
     def add_document_with_writer(self,
             document: papis.document.Document,
-            writer: IndexWriter, schema_keys: Dict[str, FieldType]) -> None:
+            writer: IndexWriter, schema_keys: KeysView[str]) -> None:
         """Helper function that takes a writer and a dictionary
         containing the keys of the schema and adds the document to the writer.
         Notice that this function does only two things, creating a suitable
@@ -303,8 +307,7 @@ class Database(papis.database.base.Database):
         # This part is non-negotiable
         fields = {self.get_id_key(): ID(stored=True, unique=True)}
         user_prototype = eval(
-            papis.config.get('whoosh-schema-prototype')
-            )  # Dict[str, FieldType]
+            papis.config.getstring('whoosh-schema-prototype'))  # KeysView[str]
         fields.update(user_prototype)
         fields_list = papis.config.getlist('whoosh-schema-fields')
         for field in fields_list:
