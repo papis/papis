@@ -173,7 +173,7 @@ def get_file_name(
     """
 
     basename_limit = 150
-    file_name_opt = papis.config.getstring('add-file-name')
+    file_name_opt = papis.config.get('add-file-name')
     ext = papis.utils.get_document_extension(original_filepath)
 
     if file_name_opt is None:
