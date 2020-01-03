@@ -160,16 +160,17 @@ def cli(query: str, doc_folder: str,
 
     for document in documents:
         if folder:
-            folder = document.get_main_folder()
-            outdir = out or document.get_main_folder_name()
+            _doc_folder = document.get_main_folder()
+            _doc_folder_name = document.get_main_folder_name()
+            outdir = out or _doc_folder_name
+            if not _doc_folder or not _doc_folder_name or not outdir:
+                raise Exception(papis.strings.no_folder_attached_to_document)
             if not len(documents) == 1:
-                outdir = os.path.join(
-                    (out or ''), document.get_main_folder_name()
-                )
+                outdir = os.path.join(out, _doc_folder_name)
             logger.info("Exporting doc {0} to {1}".format(
                 papis.document.describe(document), outdir
             ))
-            shutil.copytree(folder, outdir)
+            shutil.copytree(_doc_folder, outdir)
 
 
 @click.command('export')
