@@ -8,11 +8,22 @@ from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.key_binding import KeyBindings
 
+from typing import Dict, Any, List, Union, NamedTuple, Callable, Tuple, Sequence
 
-Action = collections.namedtuple('Action', ['name', 'key', 'action'])
+Action = NamedTuple(
+        'Action',
+        [
+            ('name', str),
+            ('key', str),
+            ('action', Callable[[prompt_toolkit.utils.Event], None])
+        ])
 
 
-def prompt(text, title='', actions=[], **kwargs):
+def prompt(
+        text: Union[str, FormattedText],
+        title: str = '',
+        actions: List[Action] = [],
+        **kwargs: Any) -> None:
     """A simple and extensible prompt helper routine
 
     :param text: Text to be printed before the prompt, it can be formatted text
@@ -64,7 +75,13 @@ def prompt(text, title='', actions=[], **kwargs):
     app.run()
 
 
-def diffshow(texta, textb, title='', namea='a', nameb='b', actions=[]):
+def diffshow(
+        texta: str,
+        textb: str,
+        title: str = '',
+        namea: str = 'a',
+        nameb: str = 'b',
+        actions: List[Action] = []) -> None:
     """Show the difference of texta and textb with a prompt.
 
     :param texta: From text
@@ -86,17 +103,18 @@ def diffshow(texta, textb, title='', namea='a', nameb='b', actions=[]):
             str(textb).splitlines(keepends=True),)
 
     raw_text = list(diffs) + [
-        ("bg:ansiblack fg:ansipurple", "^^^^^^^^^\ndiff from\n"),
+        "^^^^^^^^^\ndiff from\n",
         "----- {namea}\n".format(namea=namea),
-        "+++++ {nameb}\n".format(nameb=nameb),]
+        "+++++ {nameb}\n".format(nameb=nameb),
+    ] # type: Sequence[str]
 
     formatted_text = list(map(lambda line:
         # match line values
-        isinstance(line, tuple) and line or
         line.startswith('@') and ('fg:violet bg:ansiblack', line) or
         line.startswith('+') and ('fg:ansigreen bg:ansiblack', line) or
         line.startswith('-') and ('fg:ansired bg:ansiblack', line) or
         line.startswith('?') and ('fg:ansiyellow bg:ansiblack', line) or
+        line.startswith('^^^') and ('bg:ansiblack fg:ansipurple', line) or
         ('fg:ansiwhite', line), raw_text))
 
     prompt(
@@ -105,7 +123,10 @@ def diffshow(texta, textb, title='', namea='a', nameb='b', actions=[]):
         actions=actions)
 
 
-def diffdict(dicta, dictb, namea='a', nameb='b'):
+def diffdict(
+        dicta: Dict[str, Any],
+        dictb: Dict[str, Any],
+        namea: str = 'a', nameb: str = 'b') -> Dict[str, Any]:
     """
     Compute the difference of two dictionaries.
 
@@ -131,13 +152,13 @@ def diffdict(dicta, dictb, namea='a', nameb='b'):
         "quit": False,
         "add_all": False,
         "cancel": False,
-    }
+    }  # type: Dict[str, bool]
 
-    def reset():
+    def reset() -> None:
         for k in options:
             options[k] = False
 
-    def oset(event, option, value):
+    def oset(event: prompt_toolkit.utils.Event, option: str, value: bool) -> None:
         options[option] = value
         event.app.exit(0)
 
