@@ -110,7 +110,7 @@ key_conversion = collections.OrderedDict({
         "action": lambda p: re.sub(r"(-[^-])", r"-\1", p),
     },
     "link": {
-        "key": papis.config.get('doc-url-key-name'),
+        "key": str(papis.config.get('doc-url-key-name')),
         "action": lambda x: x[1]["URL"]
     },
     "issued": [
@@ -368,12 +368,11 @@ class FromCrossrefImporter(papis.importer.Importer):
         if 'title' in data:
             return FromCrossrefImporter(uri=data['title'])
 
-    def fetch(self):
+    def fetch_data(self):
         self.logger.info("querying '{0}' to crossref.org".format(self.uri))
         docs = [
             papis.document.from_data(d)
-            for d in get_data(query=self.uri)
-        ]
+            for d in get_data(query=self.uri) ]
         if docs:
             self.logger.info("got {0} matches, picking...".format(len(docs)))
             doc = papis.pick.pick_doc(docs)

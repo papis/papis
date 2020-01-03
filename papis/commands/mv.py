@@ -17,10 +17,17 @@ import papis.pick
 import papis.strings
 import click
 
+from typing import Optional
 
-def run(document, new_folder_path, git=False):
+
+def run(
+        document: papis.document.Document,
+        new_folder_path: str,
+        git: bool = False) -> None:
     logger = logging.getLogger('mv:run')
     folder = document.get_main_folder()
+    if not folder:
+        raise Exception(papis.strings.no_folder_attached_to_document)
     cmd = ['git', '-C', folder] if git else []
     cmd += ['mv', folder, new_folder_path]
     db = papis.database.get()
@@ -29,8 +36,7 @@ def run(document, new_folder_path, git=False):
     db.delete(document)
     new_document_folder = os.path.join(
         new_folder_path,
-        os.path.basename(document.get_main_folder())
-    )
+        os.path.basename(folder))
     logger.debug("New document folder: {}".format(new_document_folder))
     document.set_folder(new_document_folder)
     db.add(document)
@@ -41,7 +47,8 @@ def run(document, new_folder_path, git=False):
 @papis.cli.query_option()
 @papis.cli.git_option()
 @papis.cli.sort_option()
-def cli(query, git, sort_field, sort_reverse):
+def cli(query: str, git: bool, sort_field: Optional[str],
+        sort_reverse: bool) -> None:
     """Move a document into some other path"""
     # Leave this imports here for performance
     import prompt_toolkit
@@ -59,7 +66,7 @@ def cli(query, git, sort_field, sort_reverse):
 
     document = papis.pick.pick_doc(documents)
     if not document:
-        return 0
+        return
 
     lib_dir = os.path.expanduser(papis.config.get_lib_dirs()[0])
 
@@ -84,12 +91,12 @@ def cli(query, git, sort_field, sort_reverse):
             ))
     except Exception as e:
         logger.error(e)
-        return 0
+        return
 
     logger.info(new_folder)
 
     if not os.path.exists(new_folder):
         logger.info("Creating path %s" % new_folder)
-        os.makedirs(new_folder, mode=papis.config.getint('dir-umask'))
+        os.makedirs(new_folder, mode=papis.config.getint('dir-umask') or 0o666)
 
     run(document, new_folder, git=git)

@@ -63,7 +63,7 @@ class Importer:
         raise NotImplementedError(
             "Matching data not implemented for this importer")
 
-    def fetch(self) -> str:
+    def fetch(self) -> None:
         """
         can return a dict to update the document with
         """
@@ -75,7 +75,6 @@ class Importer:
             self.fetch_files()
         except NotImplementedError:
             pass
-        raise NotImplementedError()
 
     def fetch_data(self) -> None:
         raise NotImplementedError()
