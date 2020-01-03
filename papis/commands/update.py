@@ -52,25 +52,32 @@ import papis.importer
 import papis.git
 import click
 
+from typing import List, Dict, Tuple, Optional, Any
 
-def _update_with_database(document):
+
+def _update_with_database(document: papis.document.Document) -> None:
     document.save()
     papis.database.get().update(document)
 
 
-def run(document, data=dict(), git=False):
+def run(
+        document: papis.document.Document,
+        data: Dict[str, Any] = dict(),
+        git: bool = False) -> None:
     # Keep the ref the same, otherwise issues can be caused when
     # writing LaTeX documents and all the ref's change
     data['ref'] = document['ref']
     document.update(data)
     _update_with_database(document)
+    folder = document.get_main_folder()
+    info = document.get_info_file()
+    if not folder or not info:
+        raise Exception(papis.strings.no_folder_attached_to_document)
     if git:
         papis.git.add_and_commit_resource(
-            document.get_main_folder(),
-            document.get_info_file(),
+            folder, info,
             "Update information for '{0}'".format(
                 papis.document.describe(document)))
-
 
 
 @click.command("update")
@@ -101,16 +108,15 @@ def run(document, data=dict(), git=False):
     multiple=True,
     type=(str, str),)
 def cli(
-        query,
-        git,
-        doc_folder,
-        from_importer,
-        auto,
-        _all,
-        sort_field,
-        sort_reverse,
-        set_tuples,
-        ):
+        query: str,
+        git: bool,
+        doc_folder: str,
+        from_importer: List[Tuple[str, str]],
+        auto: bool,
+        _all: bool,
+        sort_field: Optional[str],
+        sort_reverse: bool,
+        set_tuples: List[Tuple[str, str]],) -> None:
     """Update a document from a given library"""
 
     documents = papis.database.get().query(query)
@@ -172,7 +178,8 @@ def cli(
 
         if matching_importers:
             logger.info(
-                'There are {0} possible matchings'.format(len(matching_importers)))
+                'There are {0} possible matchings'
+                .format(len(matching_importers)))
 
             for importer in matching_importers:
                 if importer.ctx.data:
