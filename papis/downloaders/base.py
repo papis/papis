@@ -12,13 +12,28 @@ import copy
 import re
 import bs4
 
+from typing import (
+    NamedTuple, Any,
+    List, Dict, Union, Pattern, Callable, Optional
+    )
+from typing_extensions import TypedDict
+
+MetaEquivalence = TypedDict(
+    "MetaEquivalence",
+    {
+    "tag": str,
+    "key": str,
+    "attrs": Dict[str, Union[str, Pattern[str]]],
+    }
+);
 
 meta_equivalences = [
 # google
 {"tag": "meta", "key": "abstract", "attrs": {"name": "description"}},
 {"tag": "meta", "key": "doi", "attrs": {"name": "doi"}},
 {"tag": "meta", "key": "keywords", "attrs": {"name": "keywords"}},
-{"tag": "title", "key": "title", "attrs": {}, "action": lambda e: e.text},
+#{"tag": "title", "key": "title", "attrs": {}, "action": lambda e: e.text},
+{"tag": "title", "key": "title", "attrs": {}},
 # facebook
 {"tag": "meta", "key": "type", "attrs": {"property": "og:type"}},
 {"tag": "meta", "key": "abstract", "attrs": {"property": "og:description"}},
@@ -57,25 +72,18 @@ meta_equivalences = [
 {"tag": "meta", "key": "journal_abbrev", "attrs": {"name": re.compile("dc.relation.ispartof", re.I)}},
 {"tag": "meta", "key": "year", "attrs": {"name": re.compile("dc.issued", re.I)}},
 {"tag": "meta", "key": "doi", "attrs": {"name": re.compile("dc.identifier", re.I), "scheme": "doi"}},
-]
+]  # type: List[MetaEquivalence]
 
 
-def parse_meta_headers(soup, extra_equivalences=[]):
-    equivalences = copy.copy(meta_equivalences)
-    equivalences.extend(extra_equivalences)
+def parse_meta_headers(soup: bs4.BeautifulSoup) -> Dict[str, Any]:
+    global meta_equivalences
     #metas = soup.find_all(name="meta")
-    data = dict()
-    for equiv in equivalences:
+    data = dict()  # type: Dict[str, Any]
+    for equiv in meta_equivalences:
         elements = soup.find_all(equiv['tag'], attrs=equiv["attrs"])
         if elements:
-            if "action" in equiv:
-                value = equiv["action"](elements[0])
-            else:
-                value = elements[0].attrs.get("content")
-            if isinstance(value, str):
-                data[equiv["key"]] = value.replace('\r', '')
-            else:
-                data[equiv["key"]] = value
+            value = elements[0].attrs.get("content")
+            data[equiv["key"]] = str(value).replace('\r', '')
 
     author_list = parse_meta_authors(soup)
     if author_list:
@@ -85,8 +93,8 @@ def parse_meta_headers(soup, extra_equivalences=[]):
     return data
 
 
-def parse_meta_authors(soup):
-    author_list = []
+def parse_meta_authors(soup: bs4.BeautifulSoup) -> List[Dict[str, Any]]:
+    author_list = []  # type: List[Dict[str, Any]]
     authors = soup.find_all(name='meta', attrs={'name': 'citation_author'})
     if not authors:
         authors = soup.find_all(
@@ -117,35 +125,36 @@ class Downloader(papis.importer.Importer):
     """This is the base class for every downloader.
     """
 
-    def __init__(self, uri="", name="", ctx=None):
-        self.ctx = ctx or papis.importer.Context()
-        assert(isinstance(uri, str))
-        assert(isinstance(name, str))
-        assert(isinstance(self.ctx, papis.importer.Context))
+    def __init__(
+            self,
+            uri: str = "",
+            name: str = "",
+            ctx: papis.importer.Context = papis.importer.Context()):
+        self.ctx = ctx
         self.uri = uri
         self.name = name or os.path.basename(__file__)
         self.logger = logging.getLogger("downloader:"+self.name)
         self.logger.debug("uri {0}".format(uri))
-        self.expected_document_extension = None
-        self.priority = 1
-        self._soup = None
+        self.expected_document_extension = None  # type: Optional[str]
+        self.priority = 1  # type: int
+        self._soup = None  # type: Optional[bs4.BeautifulSoup]
 
-        self.bibtex_data = None
-        self.document_data = None
+        self.bibtex_data = None  # type: Optional[str]
+        self.document_data = None  # type: Optional[bytes]
 
-        self.session = requests.Session()
-        self.session.headers = {
-            'User-Agent': papis.config.get('user-agent')
-        }
+        self.session = requests.Session()  # type: requests.Session
+        self.session.headers = requests.structures.CaseInsensitiveDict({
+            'User-Agent': papis.config.getstring('user-agent')
+        })
         proxy = papis.config.get('downloader-proxy')
         if proxy is not None:
             self.session.proxies = {
                 'http': proxy,
                 'https': proxy,
             }
-        self.cookies = {}
+        self.cookies = {}  # type: Dict[str, str]
 
-    def fetch_data(self):
+    def fetch_data(self) -> None:
         """
         Try first to get data by hand with the get_data command.
         Then commplement with bibtex data.
@@ -180,7 +189,7 @@ class Downloader(papis.importer.Importer):
             self.ctx.data['doi'] = doi
 
 
-    def fetch_files(self):
+    def fetch_files(self) -> None:
         # get documents
         try:
             self.download_document()
@@ -195,25 +204,25 @@ class Downloader(papis.importer.Importer):
                     fd.write(doc_rawdata)
                 self.ctx.files.append(tmp)
 
-    def fetch(self):
+    def fetch(self) -> None:
         self.fetch_data()
         self.fetch_files()
 
-    def _get_body(self):
+    def _get_body(self) -> bytes:
         """Get body of the uri, this is also important for unittesting"""
         return self.session.get(self.uri).content
 
-    def _get_soup(self):
+    def _get_soup(self) -> bs4.BeautifulSoup:
         """Get body of the uri, this is also important for unittesting"""
         if self._soup:
             return self._soup
         self._soup = bs4.BeautifulSoup(self._get_body(), features='lxml')
         return self._soup
 
-    def __str__(self):
+    def __str__(self) -> str:
         return 'Downloader({0}, uri={1})'.format(self.name, self.uri)
 
-    def get_bibtex_url(self):
+    def get_bibtex_url(self) -> Optional[str]:
         """It returns the urls that is to be access to download
         the bibtex information. It has to be implemented for every
         downloader, or otherwise it will raise an exception.
@@ -222,10 +231,9 @@ class Downloader(papis.importer.Importer):
         :rtype:  str
         """
         raise NotImplementedError(
-            "Getting bibtex url not implemented for this downloader"
-        )
+            "Getting bibtex url not implemented for this downloader")
 
-    def get_bibtex_data(self):
+    def get_bibtex_data(self) -> Optional[str]:
         """Get the bibtex_data data if it has been downloaded already
         and if not download it and return the data in utf-8 format.
 
@@ -236,7 +244,7 @@ class Downloader(papis.importer.Importer):
             self.download_bibtex()
         return self.bibtex_data
 
-    def download_bibtex(self):
+    def download_bibtex(self) -> None:
         """Bibtex downloader, it should try to download bibtex information from
         the url provided by ``get_bibtex_url``.
 
@@ -247,12 +255,12 @@ class Downloader(papis.importer.Importer):
         """
         url = self.get_bibtex_url()
         if not url:
-            return False
+            return
         res = self.session.get(url, cookies=self.cookies)
         self.logger.info("downloading bibtex from {0}".format(url))
         self.bibtex_data = res.content.decode()
 
-    def get_document_url(self):
+    def get_document_url(self) -> Optional[str]:
         """It returns the urls that is to be access to download
         the document information. It has to be implemented for every
         downloader, or otherwise it will raise an exception.
@@ -261,18 +269,16 @@ class Downloader(papis.importer.Importer):
         :rtype:  str
         """
         raise NotImplementedError(
-            "Getting bibtex url not implemented for this downloader"
-        )
+            "Getting bibtex url not implemented for this downloader")
 
-    def get_data(self):
+    def get_data(self) -> Dict[str, Any]:
         """A general data retriever, for instance when data needn't need
         to come from a bibtex
         """
         raise NotImplementedError(
-            "Getting general data is not implemented for this downloader"
-        )
+            "Getting general data is not implemented for this downloader")
 
-    def get_doi(self):
+    def get_doi(self) -> Optional[str]:
         """It returns the doi of the document, if it is retrievable.
         It has to be implemented for every downloader, or otherwise it will
         raise an exception.
@@ -281,10 +287,9 @@ class Downloader(papis.importer.Importer):
         :rtype:  str
         """
         raise NotImplementedError(
-            "Getting document url not implemented for this downloader"
-        )
+            "Getting document url not implemented for this downloader")
 
-    def get_document_data(self):
+    def get_document_data(self) -> Optional[bytes]:
         """Get the document_data data if it has been downloaded already
         and if not download it and return the data in binary format.
 
@@ -295,7 +300,7 @@ class Downloader(papis.importer.Importer):
             self.download_document()
         return self.document_data
 
-    def download_document(self):
+    def download_document(self) -> None:
         """Document downloader, it should try to download document information from
         the url provided by ``get_document_url``.
 
@@ -306,12 +311,12 @@ class Downloader(papis.importer.Importer):
         """
         url = self.get_document_url()
         if not url:
-            return False
+            return
         self.logger.info("downloading file from {0}".format(url))
         res = self.session.get(url, cookies=self.cookies)
         self.document_data = res.content
 
-    def check_document_format(self):
+    def check_document_format(self) -> bool:
         """Check if the downloaded document has the filetype that the
         downloader expects. If the downloader does not expect any special
         filetype, accept anything because there is no way to know if it is
@@ -320,11 +325,11 @@ class Downloader(papis.importer.Importer):
         :returns: True if it is of the right type, else otherwise
         :rtype:  bool
         """
-        def print_warning():
+        def print_warning() -> None:
             self.logger.error(
                 "The downloaded data does not seem to be of"
-                "the correct type (%s)" % self.expected_document_extension
-            )
+                "the correct type ({})"
+                .format(self.expected_document_extension))
 
         if self.expected_document_extension is None:
             return True
@@ -336,14 +341,11 @@ class Downloader(papis.importer.Importer):
             return False
 
         self.logger.debug(
-            'retrieved kind of document seems to be {0}'.format(
-                retrieved_kind.mime)
-        )
+            'retrieved kind of document seems to be {0}'
+            .format(retrieved_kind.mime))
 
         if not isinstance(self.expected_document_extension, list):
-            expected_document_extensions = [
-                self.expected_document_extension
-            ]
+            expected_document_extensions = [self.expected_document_extension]
 
         if retrieved_kind.extension in expected_document_extensions:
             return True
