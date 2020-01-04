@@ -1,10 +1,8 @@
-import papis
 import logging
-import os.path
-import papis.plugin
 from typing import Optional, List, Dict, Any, Callable
-
-logger = logging.getLogger('importer')
+import os.path
+import papis
+import papis.plugin
 
 
 class Context:
@@ -119,7 +117,7 @@ def get_importer_by_name(name: str) -> Any:
     return get_import_mgr()[name].plugin
 
 
-def cache(f: Callable[[Importer], Any]) -> Callable[[Importer], Any]:
+def cache(fun: Callable[[Importer], Any]) -> Callable[[Importer], Any]:
     """
     This is a decorator to be used if a method of an Importer
     is to be cached, i.e., if the context of the importer is already
@@ -130,5 +128,5 @@ def cache(f: Callable[[Importer], Any]) -> Callable[[Importer], Any]:
     """
     def wrapper(self: Importer) -> Any:
         if not self.ctx:
-            f(self)
+            fun(self)
     return wrapper
