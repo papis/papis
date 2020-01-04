@@ -17,7 +17,9 @@ def _extension_name() -> str:
     return "papis.picker"
 
 
-def papis_pick(options: _option_type, default_index: int = 0,
+def papis_pick(
+        options: _option_type,
+        default_index: int = 0,
         header_filter: _filter_type = lambda x: x,
         match_filter: _filter_type = lambda x: x) -> Any:
     if len(options) == 0:
@@ -47,7 +49,9 @@ def papis_pick(options: _option_type, default_index: int = 0,
     return result
 
 
-def pick(options: _option_type, default_index: int = 0,
+def pick(
+        options: _option_type,
+        default_index: int = 0,
         header_filter: _filter_type = lambda x: x,
         match_filter: _filter_type = lambda x: x) -> Any:
     """Construct and start a :class:`Picker <Picker>`.
@@ -64,14 +68,14 @@ def pick(options: _option_type, default_index: int = 0,
         return []
     else:
         return picker(
-            options,
-            default_index=default_index,
-            header_filter=header_filter,
-            match_filter=match_filter)
+                    options,
+                    default_index=default_index,
+                    header_filter=header_filter,
+                    match_filter=match_filter)
 
 
 def pick_doc(documents: Sequence[papis.document.Document]
-        ) -> papis.document.Document:
+             ) -> papis.document.Document:
     """Pick a document from documents with the correct formatting
 
     :documents: List of documents

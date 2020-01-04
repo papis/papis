@@ -2,7 +2,7 @@ import logging
 from stevedore import ExtensionManager
 from typing import List, Dict, Any
 
-logger = logging.getLogger("plugin")
+logger = logging.getLogger("papis:plugin")
 
 
 MANAGERS = dict()  # type: Dict[str, ExtensionManager]
