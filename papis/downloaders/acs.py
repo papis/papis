@@ -2,10 +2,11 @@ import re
 import papis.downloaders.base
 import papis.document
 
+from typing import Optional, Any, Dict
 
 class Downloader(papis.downloaders.base.Downloader):
 
-    def __init__(self, url):
+    def __init__(self, url: str):
         papis.downloaders.base.Downloader.__init__(self, url, name="acs")
         self.expected_document_extension = 'pdf'
         # It seems to be necessary so that acs lets us download the bibtex
@@ -13,11 +14,11 @@ class Downloader(papis.downloaders.base.Downloader):
         self.priority = 10
 
     @classmethod
-    def match(cls, url):
-        return Downloader(url) if re.match(r".*acs.org.*", url) else False
+    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
+        return Downloader(url) if re.match(r".*acs.org.*", url) else None
 
-    def get_data(self):
-        data = dict()
+    def get_data(self) -> Dict[str, Any]:
+        data = dict()  # type: Dict[str, Any]
         soup = self._get_soup()
         metas = soup.find_all(name="meta")
         data.setdefault('abstract', '')
@@ -74,13 +75,18 @@ class Downloader(papis.downloaders.base.Downloader):
 
         return data
 
-    def get_document_url(self):
+    def get_document_url(self) -> Optional[str]:
         if 'doi' in self.ctx.data:
-            return "http://pubs.acs.org/doi/pdf/" + self.ctx.data['doi']
+            return "http://pubs.acs.org/doi/pdf/{}".format(self.ctx.data['doi'])
+        else:
+            return None
 
-    def get_bibtex_url(self):
+    def get_bibtex_url(self) -> Optional[str]:
         if 'doi' in self.ctx.data:
             url = ("http://pubs.acs.org/action/downloadCitation"
-                  "?format=bibtex&cookieSet=1&doi=%s" % self.ctx.data['doi'])
+                   "?format=bibtex&cookieSet=1&doi={}"
+                   .format(self.ctx.data['doi']))
             self.logger.debug("bibtex url = %s" % url)
             return url
+        else:
+            return None
