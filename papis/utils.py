@@ -16,14 +16,16 @@ import logging
 import papis.importer
 import papis.downloaders
 import colorama
-from typing import Optional, List, Iterator, Callable, Any, Dict, AnyStr, Union
+from typing import Optional, List, Iterator, Callable, Any, Dict, Union
 
 logger = logging.getLogger("utils")
 logger.debug("importing")
 
 
-def general_open(fileName: str, key: str,
-        default_opener: Optional[str] = None, wait: bool = True) -> None:
+def general_open(
+        fileName: str, key: str,
+        default_opener: Optional[str] = None,
+        wait: bool = True) -> None:
     """Wraper for openers
 
 
@@ -79,8 +81,10 @@ def open_file(file_path: str, wait: bool = True) -> None:
     general_open(fileName=file_path, key="opentool", wait=wait)
 
 
-def format_doc(python_format: str,
-        document: papis.document.Document, key: str="") -> str:
+def format_doc(
+        python_format: str,
+        document: papis.document.Document,
+        key: str = "") -> str:
     """Construct a string using a pythonic format string and a document.
 
     :param python_format: Python-like format string.
@@ -146,7 +150,9 @@ def create_identifier(input_list: str) -> Iterator[str]:
             yield ''.join(s)
 
 
-def confirm(prompt: str, yes: bool = True,
+def confirm(
+        prompt: str,
+        yes: bool = True,
         bottom_toolbar: Optional[str] = None) -> bool:
     """Confirm with user input
 
@@ -170,8 +176,12 @@ def confirm(prompt: str, yes: bool = True,
         return result in 'Yy'
 
 
-def text_area(title: str, text:str, lexer_name: str = "",
-        height: int = 10, full_screen: bool = False) -> str:
+def text_area(
+        title: str,
+        text: str,
+        lexer_name: str = "",
+        height: int = 10,
+        full_screen: bool = False) -> str:
     """
     Small implementation of an editor/pager for small pieces of text.
 
@@ -210,11 +220,11 @@ def text_area(title: str, text:str, lexer_name: str = "",
     buffer1 = Buffer()
     buffer1.text = text
 
-    @kb.add('c-q')
+    @kb.add('c-q')  # type: ignore
     def exit_(event: Event) -> None:
         event.app.exit(0)
 
-    @kb.add('c-s')
+    @kb.add('c-s')  # type: ignore
     def save_(event: Event) -> None:
         event.app.return_text = buffer1.text
 
@@ -286,7 +296,10 @@ def yes_no_dialog(title: str, text: str) -> Any:
     return yes_no_dialog(title=title, text=text, style=example_style)
 
 
-def input(prompt: str, default: str = "", bottom_toolbar: Optional[str] = None,
+def input(
+        prompt: str,
+        default: str = "",
+        bottom_toolbar: Optional[str] = None,
         multiline: bool = False,
         validator_function: Optional[Callable[[str], bool]] = None,
         dirty_message: str = "") -> str:
@@ -363,7 +376,8 @@ def clean_document_name(doc_path: str) -> str:
         regex_pattern=regex_pattern))
 
 
-def locate_document_in_lib(document: papis.document.Document,
+def locate_document_in_lib(
+        document: papis.document.Document,
         library: Optional[str] = None) -> papis.document.Document:
     """Try to figure out if a document is already in a library
 
@@ -389,7 +403,8 @@ def locate_document_in_lib(document: papis.document.Document,
     raise IndexError("Document not found in library")
 
 
-def locate_document(document: papis.document.Document,
+def locate_document(
+        document: papis.document.Document,
         documents: List[papis.document.Document]
         ) -> Optional[papis.document.Document]:
     """Try to figure out if a document is already within a list of documents.
@@ -476,13 +491,13 @@ def get_cache_home() -> str:
     return str(path)
 
 
-def get_matching_importer_or_downloader(matching_string: str
-        ) -> List[papis.importer.Importer]:
+def get_matching_importer_or_downloader(
+        matching_string: str) -> List[papis.importer.Importer]:
     importers = []  # type: List[papis.importer.Importer]
     logger = logging.getLogger("utils:matcher")
     for importer_cls in (papis.importer.get_importers() +
-                         papis.downloaders.get_downloaders()):
-        importer = importer_cls.match(matching_string)
+                         papis.downloaders.get_available_downloaders()):
+        importer = importer_cls.match(matching_string)  # type: Optional[papis.importer.Importer]
         logger.debug(
             "trying with importer {c.Back.BLACK}{c.Fore.YELLOW}{name}"
             "{c.Style.RESET_ALL}".format(
