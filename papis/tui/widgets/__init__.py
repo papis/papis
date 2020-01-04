@@ -24,14 +24,16 @@ logger = logging.getLogger('pick')
 from typing import Any
 
 
-class MessageToolbar(ConditionalContainer):
+class MessageToolbar(ConditionalContainer):  # type: ignore
+    # TODO: add stubs to be able to remove type ignore above
 
     def __init__(self, style: str = "") -> None:
         self.message = None
         self.text_control = FormattedTextControl(text="")
         super(MessageToolbar, self).__init__(
             content=Window(
-                style=style, content=self.text_control,
+                style=style,
+                content=self.text_control,
                 height=1
             ),
             filter=Condition(lambda: self.text)
@@ -46,7 +48,8 @@ class MessageToolbar(ConditionalContainer):
         self.text_control.text = value
 
 
-class InfoWindow(ConditionalContainer):
+class InfoWindow(ConditionalContainer):  # type: ignore
+    # TODO: add stubs to be able to remove type ignore above
 
     def __init__(self, lexer_name: str = 'yaml') -> None:
         self.buf = Buffer()
@@ -72,7 +75,8 @@ class InfoWindow(ConditionalContainer):
         self.buf.text = text
 
 
-class HelpWindow(ConditionalContainer):
+class HelpWindow(ConditionalContainer):  # type: ignore
+    # TODO: add stubs to be able to remove type ignore above
 
     def __init__(self) -> None:
         self.text_control = FormattedTextControl(
