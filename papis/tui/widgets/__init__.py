@@ -21,10 +21,12 @@ from .command_line_prompt import CommandLinePrompt
 
 logger = logging.getLogger('pick')
 
+from typing import Any
+
 
 class MessageToolbar(ConditionalContainer):
 
-    def __init__(self, style=""):
+    def __init__(self, style: str = "") -> None:
         self.message = None
         self.text_control = FormattedTextControl(text="")
         super(MessageToolbar, self).__init__(
@@ -36,17 +38,17 @@ class MessageToolbar(ConditionalContainer):
         )
 
     @property
-    def text(self):
+    def text(self) -> Any:
         return self.text_control.text
 
     @text.setter
-    def text(self, value):
+    def text(self, value: str) -> None:
         self.text_control.text = value
 
 
 class InfoWindow(ConditionalContainer):
 
-    def __init__(self, lexer_name='yaml'):
+    def __init__(self, lexer_name: str = 'yaml') -> None:
         self.buf = Buffer()
         self.buf.text = ''
         self.lexer = PygmentsLexer(find_lexer_class_by_name(lexer_name))
@@ -62,17 +64,17 @@ class InfoWindow(ConditionalContainer):
         )
 
     @property
-    def text(self):
+    def text(self) -> Any:
         return self.buf.text
 
     @text.setter
-    def text(self, text):
+    def text(self, text: str) -> None:
         self.buf.text = text
 
 
 class HelpWindow(ConditionalContainer):
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.text_control = FormattedTextControl(
             text=HTML('')
         )
@@ -87,9 +89,9 @@ class HelpWindow(ConditionalContainer):
         )
 
     @property
-    def text(self):
+    def text(self) -> Any:
         return self.text_control.text
 
     @text.setter
-    def text(self, value):
+    def text(self, value: str) -> None:
         self.text_control.text = value
