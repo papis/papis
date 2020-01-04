@@ -8,9 +8,10 @@ import papis.library
 import papis.document
 
 from typing import Optional, List, Dict, Match
+from abc import ABC, abstractmethod
 
 
-class Database(object):
+class Database(ABC):
     """Abstract class for the database backends
     """
 
@@ -18,11 +19,13 @@ class Database(object):
         self.lib = library or papis.config.get_lib()
         assert(isinstance(self.lib, papis.library.Library))
 
+    @abstractmethod
     def initialize(self) -> None:
-        raise NotImplementedError('Initialize not implemented')
+        ...
 
+    @abstractmethod
     def get_backend_name(self) -> str:
-        raise NotImplementedError('Get backend name not implemented')
+        ...
 
     def get_lib(self) -> str:
         """Get library name
@@ -34,7 +37,9 @@ class Database(object):
         """
         return self.lib.paths
 
-    def match(self, document: papis.document.Document,
+    def match(
+            self,
+            document: papis.document.Document,
             query_string: str) -> bool:
         """Wether or not document matches query_string
 
@@ -43,29 +48,37 @@ class Database(object):
         :param query_string: Query string
         :type  query_string: str
         """
-        raise NotImplementedError('Match not implemented')
+        raise NotImplementedError("Match not defined for this class")
 
+    @abstractmethod
     def clear(self) -> None:
-        raise NotImplementedError('Clear not implemented')
+        ...
 
+    @abstractmethod
     def add(self, document: papis.document.Document) -> None:
-        raise NotImplementedError('Add not implemented')
+        ...
 
+    @abstractmethod
     def update(self, document: papis.document.Document) -> None:
-        raise NotImplementedError('Update not implemented')
+        ...
 
+    @abstractmethod
     def delete(self, document: papis.document.Document) -> None:
-        raise NotImplementedError('Delete not implemented')
+        ...
 
+    @abstractmethod
     def query(self, query_string: str) -> List[papis.document.Document]:
-        raise NotImplementedError('Query not implemented')
+        ...
 
-    def query_dict(self, query: Dict[str, str]
-            ) -> List[papis.document.Document]:
-        raise NotImplementedError('Query dict not implemented')
+    @abstractmethod
+    def query_dict(self,
+            query: Dict[str, str]) -> List[papis.document.Document]:
+        ...
 
+    @abstractmethod
     def get_all_documents(self) -> List[papis.document.Document]:
-        raise NotImplementedError('Get all docs not implemented')
+        ...
 
+    @abstractmethod
     def get_all_query_string(self) -> str:
-        raise NotImplementedError('Get all query string not implemented')
+        ...
