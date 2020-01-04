@@ -1,22 +1,23 @@
 import re
 import papis.downloaders.base
 import bs4
+from typing import Optional
 
 
 class Downloader(papis.downloaders.base.Downloader):
 
-    def __init__(self, url):
+    def __init__(self, url: str):
         papis.downloaders.base.Downloader.__init__(self, url, name="thesesfr")
         self.expected_document_extension = 'pdf'
 
     @classmethod
-    def match(cls, url):
+    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
         if re.match(r".*theses.fr.*", url):
             return Downloader(url)
         else:
-            return False
+            return None
 
-    def get_identifier(self):
+    def get_identifier(self) -> Optional[str]:
         """
         >>> d = Downloader("http://www.theses.fr/2014TOU30305")
         >>> d.get_identifier()
@@ -28,7 +29,7 @@ class Downloader(papis.downloaders.base.Downloader):
         m = re.match(r".*theses.fr/([^/?.&]+).*", self.uri)
         return m.group(1) if m is not None else None
 
-    def get_document_url(self):
+    def get_document_url(self) -> Optional[str]:
         """
         >>> d = Downloader("http://www.theses.fr/2014TOU30305")
         >>> d.get_document_url()
@@ -36,6 +37,7 @@ class Downloader(papis.downloaders.base.Downloader):
         >>> d = Downloader("http://theses.fr/1998ENPC9815")
         >>> d.get_document_url()
         """
+        # TODO: Simplify this function for typing
         raw_data = self.session.get(self.uri).content.decode('utf-8')
         soup = bs4.BeautifulSoup(raw_data, "html.parser")
         a = list(filter(
@@ -59,9 +61,9 @@ class Downloader(papis.downloaders.base.Downloader):
             self.logger.error('No document url in {0}'.format(second_url))
             return None
 
-        return a[0]['href']
+        return str(a[0]['href'])
 
-    def get_bibtex_url(self):
+    def get_bibtex_url(self) -> Optional[str]:
         """
         >>> d = Downloader("http://www.theses.fr/2014TOU30305")
         >>> d.get_bibtex_url()

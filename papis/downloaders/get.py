@@ -1,14 +1,16 @@
 import re
 import papis.downloaders.base
+from typing import Optional
 
 
 class Downloader(papis.downloaders.base.Downloader):
-    def __init__(self, url):
+
+    def __init__(self, url: str):
         papis.downloaders.base.Downloader.__init__(self, url, name="get")
         self.priority = 0
 
     @classmethod
-    def match(cls, url):
+    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
         """
         >>> Downloader.match('http://wha2341!@#!@$%!@#file.pdf') is False
         False
@@ -29,5 +31,5 @@ class Downloader(papis.downloaders.base.Downloader):
         else:
             return None
 
-    def get_document_url(self):
+    def get_document_url(self) -> Optional[str]:
         return self.uri

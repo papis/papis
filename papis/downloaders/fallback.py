@@ -6,8 +6,9 @@ from typing import Dict, Any, List, Optional
 
 class Downloader(papis.downloaders.base.Downloader):
 
-    def __init__(self, url: str):
-        papis.downloaders.base.Downloader.__init__(self, url, name="fallback")
+    def __init__(self, uri: str, name: str = "fallback"):
+        papis.downloaders.base.Downloader.__init__(
+            self, uri=uri, name=name)
         self.priority = -1
 
     @classmethod

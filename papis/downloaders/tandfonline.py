@@ -3,6 +3,7 @@ import urllib.parse
 
 import papis.downloaders.base
 import papis.document
+from typing import Optional, Any, Dict
 
 
 class Downloader(papis.downloaders.base.Downloader):
@@ -10,18 +11,18 @@ class Downloader(papis.downloaders.base.Downloader):
     re_comma = re.compile(r'(\s*,\s*)')
     re_add_dot = re.compile(r'(\b\w\b)')
 
-    def __init__(self, url):
+    def __init__(self, url: str):
         papis.downloaders.base.Downloader.__init__(
             self, url, name="tandfonline")
         self.expected_document_extension = 'pdf'
         self.priority = 10
 
     @classmethod
-    def match(cls, url):
+    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
         return (Downloader(url)
-                if re.match(r".*tandfonline.com.*", url) else False)
+                if re.match(r".*tandfonline.com.*", url) else None)
 
-    def get_data(self):
+    def get_data(self) -> Dict[str, Any]:
         data = dict()
         soup = self._get_soup()
         data.update(papis.downloaders.base.parse_meta_headers(soup))
@@ -50,9 +51,9 @@ class Downloader(papis.downloaders.base.Downloader):
             given = self.re_add_dot.sub(r'\1.', given)
 
             if 'Reviewing Editor' in author.text:
-                data['editor'] = \
-                    papis.config.get('multiple-authors-format').format(
-                            au=dict(family=family, given=given))
+                data['editor'] = (
+                    papis.config.getstring('multiple-authors-format')
+                    .format(au=dict(family=family, given=given)))
                 continue
 
             new_author = dict(given=given, family=family)
@@ -65,18 +66,21 @@ class Downloader(papis.downloaders.base.Downloader):
 
         return data
 
-    def get_bibtex_url(self):
+    def get_bibtex_url(self) -> Optional[str]:
         if 'doi' in self.ctx.data:
-            url = (
-                "http://www.tandfonline.com/action/downloadCitation"
-                "?format=bibtex&cookieSet=1&doi=%s" % self.ctx.data['doi'])
+            url = ("http://www.tandfonline.com/action/downloadCitation"
+                   "?format=bibtex&cookieSet=1&doi={doi}"
+                   .format(doi=self.ctx.data['doi']))
             self.logger.debug("bibtex url = %s" % url)
             return url
+        else:
+            return None
 
-    def get_document_url(self):
+    def get_document_url(self) -> Optional[str]:
         if 'doi' in self.ctx.data:
-            durl = (
-                "http://www.tandfonline.com/doi/pdf/{doi}"
-                .format(doi=self.ctx.data['doi']))
+            durl = ("http://www.tandfonline.com/doi/pdf/{doi}"
+                    .format(doi=self.ctx.data['doi']))
             self.logger.debug("doc url = %s" % durl)
             return durl
+        else:
+            return None

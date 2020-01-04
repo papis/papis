@@ -1,28 +1,28 @@
 import re
 import papis.downloaders.base
+from typing import List, Dict, Any, Optional
 
 
 class Downloader(papis.downloaders.base.Downloader):
 
-    def __init__(self, url):
+    def __init__(self, url: str):
         papis.downloaders.base.Downloader.__init__(
-            self, url, name="iopscience"
-        )
+            self, url, name="iopscience")
         self.expected_document_extension = 'pdf'
         self.priority = 10
 
     @classmethod
-    def match(cls, url):
+    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
         url = re.sub(r'/pdf', '', url)
         if re.match(r".*iopscience\.iop\.org.*", url):
             return Downloader(url)
         else:
-            return False
+            return None
 
-    def get_doi(self):
+    def get_doi(self) -> Optional[str]:
         return self.ctx.data.get('doi')
 
-    def get_document_url(self):
+    def get_document_url(self) -> Optional[str]:
         if 'pdf_url' in self.ctx.data:
             return self.ctx.data.get('pdf_url')
         doi = self.get_doi()
@@ -30,8 +30,10 @@ class Downloader(papis.downloaders.base.Downloader):
             durl = 'https://iopscience.iop.org/article/{0}/pdf'.format(doi)
             self.logger.debug("doc url = %s" % durl)
             return durl
+        else:
+            return None
 
-    def _get_article_id(self):
+    def _get_article_id(self) -> Optional[str]:
         """Get article's id for IOP
         :returns: Article id
         """
@@ -40,8 +42,10 @@ class Downloader(papis.downloaders.base.Downloader):
             articleId = doi.replace('10.1088/', '')
             self.logger.debug("articleId = %s" % articleId)
             return articleId
+        else:
+            return None
 
-    def get_bibtex_url(self):
+    def get_bibtex_url(self) -> Optional[str]:
         aid = self._get_article_id()
         if aid:
             url = "{0}{1}{2}".format(
@@ -52,8 +56,10 @@ class Downloader(papis.downloaders.base.Downloader):
             )
             self.logger.debug("bibtex url = %s" % url)
             return url
+        else:
+            return None
 
-    def get_data(self):
+    def get_data(self) -> Dict[str, Any]:
         data = dict()
         soup = self._get_soup()
         data.update(papis.downloaders.base.parse_meta_headers(soup))

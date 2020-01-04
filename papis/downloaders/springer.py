@@ -1,22 +1,23 @@
 import re
 import papis.downloaders.base
 import papis.document
+from typing import Optional, Any, Dict
 
 
 class Downloader(papis.downloaders.base.Downloader):
 
-    def __init__(self, url):
+    def __init__(self, url: str):
         papis.downloaders.base.Downloader.__init__(
             self, url, name="springer")
         self.expected_document_extension = 'pdf'
         self.priority = 10
 
     @classmethod
-    def match(cls, url):
+    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
         return (Downloader(url)
-                if re.match(r".*link\.springer.com.*", url) else False)
+                if re.match(r".*link\.springer.com.*", url) else None)
 
-    def get_data(self):
+    def get_data(self) -> Dict[str, Any]:
         data = dict()
         soup = self._get_soup()
         metas = soup.find_all(name="meta")
@@ -53,19 +54,21 @@ class Downloader(papis.downloaders.base.Downloader):
 
         return data
 
-    def get_bibtex_url(self):
+    def get_bibtex_url(self) -> Optional[str]:
         if 'doi' in self.ctx.data:
-            url = (
-                "http://citation-needed.springer.com/v2/"
-                "references/{doi}?format=bibtex&amp;flavour=citation"
-                .format(doi=self.ctx.data['doi']))
+            url = ("http://citation-needed.springer.com/v2/"
+                   "references/{doi}?format=bibtex&amp;flavour=citation"
+                   .format(doi=self.ctx.data['doi']))
             self.logger.debug("bibtex url = %s" % url)
             return url
+        else:
+            return None
 
-    def get_document_url(self):
+    def get_document_url(self) -> Optional[str]:
         if 'doi' in self.ctx.data:
-            url = (
-                "https://link.springer.com/content/pdf/"
-                "{doi}.pdf".format(doi=self.ctx.data['doi']))
+            url = ("https://link.springer.com/content/pdf/"
+                   "{doi}.pdf".format(doi=self.ctx.data['doi']))
             self.logger.debug("doc url = %s" % url)
             return url
+        else:
+            return None

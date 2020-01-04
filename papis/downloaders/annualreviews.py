@@ -1,38 +1,43 @@
 import re
 import papis.downloaders.base
+from typing import Optional, Dict, Any
 
 
 class Downloader(papis.downloaders.base.Downloader):
 
-    def __init__(self, url):
+    def __init__(self, url: str):
         papis.downloaders.base.Downloader.__init__(
-            self, url, name="annualreviews"
-        )
+            self, url, name="annualreviews")
         self.expected_document_extension = 'pdf'
         self.priority = 10
 
     @classmethod
-    def match(cls, url):
+    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
         if re.match(r".*annualreviews.org.*", url):
             return Downloader(url)
         else:
-            return False
+            return None
 
-    def get_document_url(self):
+    def get_document_url(self) -> Optional[str]:
         if 'doi' in self.ctx.data:
             doi = self.ctx.data['doi']
-            url = "http://annualreviews.org/doi/pdf/%s" % doi
+            url = "http://annualreviews.org/doi/pdf/{doi}".format(doi=doi)
             self.logger.debug("doc url = %s" % url)
             return url
+        else:
+            return None
 
-    def get_bibtex_url(self):
+    def get_bibtex_url(self) -> Optional[str]:
         if 'doi' in self.ctx.data:
             url = ("http://annualreviews.org/action/downloadCitation"
-                   "?format=bibtex&cookieSet=1&doi=%s" % self.ctx.data['doi'])
+                   "?format=bibtex&cookieSet=1&doi={doi}"
+                   .format(doi=self.ctx.data['doi']))
             self.logger.debug("bibtex url = %s" % url)
             return url
+        else:
+            return None
 
-    def get_data(self):
+    def get_data(self) -> Dict[str, Any]:
         data = dict()
         soup = self._get_soup()
         data.update(papis.downloaders.base.parse_meta_headers(soup))
