@@ -7,58 +7,20 @@ import papis.config
 import papis.importer
 import papis.plugin
 
-from typing import List
+from typing import List, Optional, Any, Sequence
 
 logger = logging.getLogger("downloader")
 
 
-downloader_mgr = None
+def _extension_name() -> str:
+    return "papis.downloader"
 
 
-def _create_downloader_mgr():
-    global downloader_mgr
-
-    if downloader_mgr is not None:
-        return
-
-    downloader_mgr = extension.ExtensionManager(
-        namespace='papis.downloader',
-        invoke_on_load=False,
-        verify_requirements=True,
-        propagate_map_exceptions=True,
-        on_load_failure_callback=papis.plugin.stevedore_error_handler
-    )
+def get_available_downloaders() -> List[papis.importer.Importer]:
+    return papis.plugin.get_available_plugins(_extension_name())
 
 
-def get_available_downloaders() -> List[str]:
-    global downloader_mgr
-    _create_downloader_mgr()
-    return [e.plugin for e in downloader_mgr.extensions]
-
-
-def get_downloader(url, downloader=''):
-    """Get downloader object. If only a url is given, the url is matched
-    against the match method of the downloaders.
-
-    :param url: Url of the document
-    :type  url: str
-    :param downloader: Name of a downloader
-    :type  downloader: str
-    :returns: A Downloader if found or none
-    :rtype:  papis.downloader.base.Downloader
-    :raises KeyError: If no downloader is found
-
-    """
-    global downloader_mgr
-    _create_downloader_mgr()
-    assert(isinstance(downloader, str))
-    if downloader:
-        return get_downloader_by_name(downloader)(url)
-    else:
-        return get_matching_downloaders(url)[0]
-
-
-def get_matching_downloaders(url):
+def get_matching_downloaders(url: str) -> Sequence[papis.importer.Importer]:
     """Get matching downloaders sorted by their priorities.
     The first elements have the higher priority
 
@@ -67,19 +29,16 @@ def get_matching_downloaders(url):
     :returns: A list of sorted downloaders
     :rtype: list
     """
-    global downloader_mgr
-    _create_downloader_mgr()
+    matches = list(filter(lambda d: d is not None,
+        [d.match(url) for d in get_available_downloaders()]
+    ))  # type: List[papis.importer.Importer]
     return sorted(
-        filter(
-            lambda d: d,
-            [d.match(url) for d in get_available_downloaders()]
-        ),
+        matches,
         key=lambda k: k.priority,
-        reverse=True
-    )
+        reverse=True)
 
 
-def get_downloader_by_name(name):
+def get_downloader_by_name(name: str) -> papis.importer.Importer:
     """Get a downloader by its name
 
     :param name: Name of the downloader
@@ -87,18 +46,14 @@ def get_downloader_by_name(name):
     :returns: A downloader class
     :rtype:  papis.base.Downloader
     """
-    global downloader_mgr
-    _create_downloader_mgr()
+    downloader_mgr = papis.plugin.get_extension_manager(_extension_name())
     return downloader_mgr[name].plugin
 
 
-def get_downloaders():
-    global downloader_mgr
-    _create_downloader_mgr()
-    return [e.plugin for e in downloader_mgr.extensions]
-
-
-def get_info_from_url(url, expected_doc_format=None):
+def get_info_from_url(
+        url: str,
+        expected_doc_format: Optional[str] = None
+        ) -> papis.importer.Context:
     """Get information directly from url
 
     :param url: Url of the resource
@@ -114,7 +69,7 @@ def get_info_from_url(url, expected_doc_format=None):
         logger.warning(
             "No matching downloader found for (%s)" % url
         )
-        return None
+        return papis.importer.Context()
     else:
         logger.debug('Found {0} matching downloaders'.format(len(downloaders)))
         downloader = downloaders[0]
@@ -132,17 +87,17 @@ class Importer(papis.importer.Importer):
     """Importer that tries to get data and files from implemented downloaders
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         papis.importer.Importer.__init__(self, name='url', **kwargs)
 
     @classmethod
-    def match(cls, uri):
+    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
         return (
             Importer(uri=uri)
             if re.match(' *http(s)?.*', uri) is not None
             else None
         )
 
-    def fetch(self):
+    def fetch(self) -> None:
         self.logger.info("attempting to import from url {0}".format(self.uri))
-        self.ctx = get_info_from_url(self.uri)
+        self.ctx = get_info_from_url(self.uri) or papis.importer.Context()
