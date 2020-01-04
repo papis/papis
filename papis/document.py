@@ -3,10 +3,9 @@ import re
 import shutil
 import logging
 
-import papis.utils
 import papis.config
 import papis.bibtex
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Union
 
 
 def keyconversion_to_data(
@@ -274,10 +273,11 @@ def delete(document: Document) -> None:
         shutil.rmtree(folder)
 
 
-def describe(document: Document) -> str:
+def describe(document: Union[Document, Dict[str, Any]]) -> str:
     """Return a string description of the current document
     using the document-description-format
     """
+    import papis.utils
     return papis.utils.format_doc(
         papis.config.getstring('document-description-format'),
         document)
@@ -337,6 +337,7 @@ def to_bibtex(document: Document) -> str:
     :rtype:  str
 
     """
+    import papis.utils
     logger = logging.getLogger("document:bibtex")
     bibtexString = ""
     bibtexType = ""
