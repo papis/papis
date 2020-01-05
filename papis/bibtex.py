@@ -4,13 +4,13 @@ from __future__ import absolute_import, division, print_function
 import logging
 import os
 import re
+from typing import Optional, List, Dict, Any, Callable
 
 import papis.config
 import click
 import papis.document
 import papis.importer
-import papis.utils
-from typing import Optional, List, Dict, Any, Callable
+import papis.filetype
 
 logger = logging.getLogger("bibtex")  # type: logging.Logger
 
@@ -62,7 +62,7 @@ class Importer(papis.importer.Importer):
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
         if (not os.path.exists(uri) or os.path.isdir(uri) or
-                papis.utils.get_document_extension(uri) == 'pdf'):
+                papis.filetype.get_document_extension(uri) == 'pdf'):
             return None
         importer = Importer(uri=uri)
         importer.fetch()

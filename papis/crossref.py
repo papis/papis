@@ -1,18 +1,19 @@
-import logging
-import papis.config
-import papis.utils
-import doi
-import habanero
 import re
 import os
 import click
-import papis.document
-import papis.importer
-import papis.downloaders.base
+import logging
+import doi
+import habanero
 import tempfile
 import collections
 import requests
 from typing import Set, List, Dict, Any
+
+import papis.config
+import papis.filetype
+import papis.document
+import papis.importer
+import papis.downloaders.base
 
 logger = logging.getLogger("crossref")  # type: logging.Logger
 logger.debug("importing")
@@ -290,7 +291,7 @@ class DoiFromPdfImporter(papis.importer.Importer):
     @classmethod
     def match(cls, uri: str):
         if (os.path.isdir(uri) or not os.path.exists(uri) or
-                not papis.utils.get_document_extension(uri) == 'pdf'):
+                not papis.filetype.get_document_extension(uri) == 'pdf'):
             return None
         importer = DoiFromPdfImporter(uri=uri)
         importer.doi = doi.pdf_to_doi(uri, maxlines=2000)

@@ -15,16 +15,18 @@
  id              Id (use id_list instead)
  all             All of the above
 """
+import os
+import re
 import bs4
 import logging
 import urllib.request  # urlopen, Request
 import urllib.parse  # import urlencode
 import papis.config
-import re
 import click
-import papis.downloaders.base
 import arxiv2bib
-import os
+
+import papis.filetype
+import papis.downloaders.base
 
 
 logger = logging.getLogger('arxiv')
@@ -293,7 +295,7 @@ class ArxividFromPdfImporter(papis.importer.Importer):
     @classmethod
     def match(cls, uri):
         if (os.path.isdir(uri) or not os.path.exists(uri) or
-                not papis.utils.get_document_extension(uri) == 'pdf'):
+                not papis.filetype.get_document_extension(uri) == 'pdf'):
             return None
         importer = ArxividFromPdfImporter(uri=uri)
         importer.arxivid = pdf_to_arxivid(uri, maxlines=2000)

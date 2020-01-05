@@ -97,6 +97,7 @@ import shutil
 import papis.api
 import papis.pick
 import papis.utils
+import papis.filetype
 import papis.config
 import papis.document
 import papis.importer
@@ -174,7 +175,7 @@ def get_file_name(
 
     basename_limit = 150
     file_name_opt = papis.config.get('add-file-name')
-    ext = papis.utils.get_document_extension(original_filepath)
+    ext = papis.filetype.get_document_extension(original_filepath)
 
     if file_name_opt is None:
         file_name_opt = os.path.basename(original_filepath)
