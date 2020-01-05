@@ -54,16 +54,22 @@ def papis_pick(
     return result
 
 
+def get_picker(name: str) -> PickerType[Option]:
+    """Get the picker named 'name' declared as a plugin"""
+    picker = papis.plugin.get_extension_manager(
+        _extension_name())[name].plugin  # type: PickerType[Option]
+    return picker
+
+
 def pick(
         options: List[Option],
         default_index: int = 0,
         header_filter: Filter[Option] = str,
         match_filter: Filter[Option] = str) -> Optional[Option]:
 
-    name = papis.config.get("picktool")
+    name = papis.config.getstring("picktool")
     try:
-        picker = papis.plugin.get_extension_manager(
-                        _extension_name())[name].plugin
+        picker = get_picker(name)  # type: PickerType[Option]
     except KeyError:
         LOGGER.error("Invalid picker (%s)", name)
         LOGGER.error(
@@ -72,9 +78,9 @@ def pick(
         return None
     else:
         return picker(options,
-                      default_index=default_index,
-                      header_filter=header_filter,
-                      match_filter=match_filter)
+                      default_index,
+                      header_filter,
+                      match_filter)
 
 
 def pick_doc(documents: List[papis.document.Document]
