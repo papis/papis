@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import shlex
+from typing import Optional, List, Iterator, Callable, Any, Dict, Union
 import subprocess
 import multiprocessing
 import time
@@ -6,17 +8,15 @@ import copy
 from itertools import count, product
 import os
 import re
-import papis.pick
-import papis.config
-import papis.commands
-import papis.document
-import papis.bibtex
-import papis.exceptions
+import colorama
 import logging
+
+import papis.config
+import papis.exceptions
 import papis.importer
 import papis.downloaders
-import colorama
-from typing import Optional, List, Iterator, Callable, Any, Dict, Union
+import papis.document
+import papis.database
 
 logger = logging.getLogger("utils")
 logger.debug("importing")
@@ -79,31 +79,6 @@ def open_file(file_path: str, wait: bool = True) -> None:
 
     """
     general_open(fileName=file_path, key="opentool", wait=wait)
-
-
-def format_doc(
-        python_format: str,
-        document: papis.document.Document,
-        key: str = "") -> str:
-    """Construct a string using a pythonic format string and a document.
-
-    :param python_format: Python-like format string.
-        (`see <
-            https://docs.python.org/2/library/string.html#format-string-syntax
-        >`_)
-    :type  python_format: str
-    :param document: Papis document
-    :type  document: papis.document.Document
-    :returns: Formated string
-    :rtype: str
-    """
-    doc = key or papis.config.getstring("format-doc-name")
-    fdoc = papis.document.Document()
-    fdoc.update(document)
-    try:
-        return python_format.format(**{doc: fdoc})
-    except Exception as e:
-        return str(e)
 
 
 def get_folders(folder: str) -> List[str]:
@@ -228,7 +203,8 @@ def text_area(
     def save_(event: Event) -> None:
         event.app.return_text = buffer1.text
 
-    class App(Application):
+    class App(Application):  # type: ignore
+        # TODO: add stubs to be able to remove type ignore above
         return_text = ""  # type: str
 
     text_height = Dimension(min=0, max=height) if height is not None else None

@@ -51,7 +51,7 @@ def run(document: papis.document.Document) -> None:
 
     if url is None or key == 'search-engine':
         params = {
-            'q': papis.utils.format_doc(
+            'q': papis.document.format_doc(
                 papis.config.getstring('browse-query-format'),
                 document
             )

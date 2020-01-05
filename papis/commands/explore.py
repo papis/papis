@@ -336,7 +336,7 @@ def cmd(ctx: click.Context, command: str) -> None:
     logger = logging.getLogger('explore:cmd')
     docs = ctx.obj['documents']
     for doc in docs:
-        fcommand = papis.utils.format_doc(command, doc)
+        fcommand = papis.document.format_doc(command, doc)
         splitted_command = shlex.split(fcommand)
         logger.info('Calling %s' % splitted_command)
         call(splitted_command)

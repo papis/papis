@@ -148,7 +148,7 @@ def cli(
         ctx.data.update(document)
         if set_tuples:
             ctx.data.update(
-                {key: papis.utils.format_doc(value, document)
+                {key: papis.document.format_doc(value, document)
                     for key, value in set_tuples})
 
         matching_importers = []
@@ -168,7 +168,7 @@ def cli(
 
         for _importer_name, _uri in from_importer:
             try:
-                _uri = papis.utils.format_doc(_uri, document)
+                _uri = papis.document.format_doc(_uri, document)
                 importer = (papis.importer
                             .get_importer_by_name(_importer_name)(uri=_uri))
                 importer.fetch()

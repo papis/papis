@@ -117,7 +117,7 @@ def run(
         return [ d.get_info_file() for d in documents ]
     elif fmt:
         return [
-            papis.utils.format_doc(fmt, document)
+            papis.document.format_doc(fmt, document)
             for document in documents
         ]
     elif folders:

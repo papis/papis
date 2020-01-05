@@ -87,6 +87,7 @@ Cli
     :prog: papis add
 
 """
+from typing import List, Any, Optional, Dict, Tuple
 import logging
 from string import ascii_lowercase
 import os
@@ -94,6 +95,10 @@ import re
 import tempfile
 import hashlib
 import shutil
+
+import click
+import colorama
+
 import papis.api
 import papis.pick
 import papis.utils
@@ -102,12 +107,8 @@ import papis.config
 import papis.document
 import papis.importer
 import papis.cli
-import click
-import colorama
 import papis.downloaders
 import papis.git
-
-from typing import List, Any, Optional, Dict, Tuple
 
 logger = logging.getLogger('add')  # type: logging.Logger
 
@@ -183,7 +184,7 @@ def get_file_name(
         file_name_opt = os.path.basename(original_filepath)
 
     # Get a file name from the format `add-file-name`
-    file_name_base = papis.utils.format_doc(
+    file_name_base = papis.document.format_doc(
         file_name_opt,
         papis.document.from_data(data)
     )
@@ -308,7 +309,7 @@ def run(
         logger.info("Got an automatic folder name")
     else:
         temp_doc = papis.document.Document(data=data)
-        out_folder_name = papis.utils.format_doc(folder_name, temp_doc)
+        out_folder_name = papis.document.format_doc(folder_name, temp_doc)
         out_folder_name = papis.utils.clean_document_name(out_folder_name)
         del temp_doc
 

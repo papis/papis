@@ -3,6 +3,8 @@ VERSION v0.10
 
 - Add `--sort` and `--reverse` flags to most command line commands, together
   with the `sort-file` configuration option.
+- Move `papis.utils.format_doc` to `papis.document.format_doc`
+  in order to minimize circular dependencies.
 
 VERSION v0.9
 ============
