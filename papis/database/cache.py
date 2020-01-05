@@ -182,8 +182,7 @@ class Database(papis.database.base.Database):
             if use_cache:
                 self.save()
         self.logger.debug(
-            "Loaded documents ({} documents)".format(
-            len(self.documents)))
+            "Loaded documents (%s documents)", len(self.documents))
         return self.documents
 
     def add(self, document: papis.document.Document) -> None:
