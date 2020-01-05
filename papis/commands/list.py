@@ -194,8 +194,8 @@ def cli(
         if not documents:
             logger.warning(papis.strings.no_documents_retrieved_message)
         if not _all:
-            documents = list(
-                    filter(lambda x: x, [papis.pick.pick_doc(documents)]))
+            _doc = papis.pick.pick_doc(documents)
+            documents = [_doc] if _doc is not None else []
 
     if sort_field:
         documents = papis.document.sort(documents, sort_field, sort_reverse)

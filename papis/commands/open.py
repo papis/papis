@@ -71,6 +71,11 @@ Cli
 .. click:: papis.commands.open:cli
     :prog: papis open
 """
+import os
+import logging
+from typing import Optional
+import click
+
 import papis
 import papis.api
 import papis.pick
@@ -78,11 +83,8 @@ import papis.utils
 import papis.config
 import papis.cli
 import papis.database
-import click
-import logging
-from papis.document import from_folder, Document, from_data
+from papis.document import from_folder, Document, from_data, format_doc
 import papis.strings
-from typing import Optional
 
 
 def run(document: Document, opener: Optional[str] = None,
@@ -92,11 +94,12 @@ def run(document: Document, opener: Optional[str] = None,
     if opener is not None:
         papis.config.set("opentool", opener)
 
+    _doc_folder = document.get_main_folder()
+    if _doc_folder is None:
+        raise Exception(papis.strings.no_folder_attached_to_document)
+
     if folder:
         # Open directory
-        _doc_folder = document.get_main_folder()
-        if not _doc_folder:
-            raise Exception(papis.strings.no_folder_attached_to_document)
         papis.api.open_dir(_doc_folder)
     else:
         if mark:
@@ -113,28 +116,24 @@ def run(document: Document, opener: Optional[str] = None,
                     raise Exception("No mark name format")
                 mark_dict = papis.api.pick(
                     marks,
-                    dict(
-                        header_filter=lambda x: papis.utils.format_doc(
-                            _mark_fmt, x, key=_mark_name),
-                        match_filter=lambda x: papis.utils.format_doc(
-                            _mark_fmt, x, key=_mark_name)))
+                    header_filter=lambda x: format_doc(
+                        _mark_fmt, x, key=_mark_name),
+                    match_filter=lambda x: format_doc(
+                        _mark_fmt, x, key=_mark_name))
                 if mark_dict:
                     if not _mark_opener:
                         raise Exception("mark-opener-format not set")
-                    opener = papis.utils.format_doc(
+                    opener = format_doc(
                         _mark_opener, from_data(mark_dict), key=_mark_name)
-                    logger.info("Setting opener to '{0}'".format(opener))
+                    logger.info("Setting opener to '%s'", opener)
                     papis.config.set("opentool", opener)
         files = document.get_files()
         if len(files) == 0:
             logger.error("The document chosen has no files attached")
             return
-        file_to_open = papis.api.pick(
-            files,
-            pick_config=dict(
-                header_filter=lambda x: x.replace(
-                    document.get_main_folder(), "")))
-        papis.api.open_file(file_to_open, wait=False)
+        file_to_open = papis.api.pick(files, header_filter=os.path.basename)
+        if file_to_open:
+            papis.api.open_file(file_to_open, wait=False)
 
 
 @click.command("open")
@@ -180,8 +179,8 @@ def cli(query: str, doc_folder: str, tool: str, folder: bool,
         return
 
     if not _all:
-        documents = [papis.pick.pick_doc(documents)]
-        documents = [d for d in documents if d]
+        _doc = papis.pick.pick_doc(documents)
+        documents = [_doc] if _doc is not None else []
 
     for document in documents:
         run(document, folder=folder, mark=mark)

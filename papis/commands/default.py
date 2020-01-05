@@ -29,20 +29,19 @@ Cli
 import os
 import difflib
 import sys
+import logging
+from typing import Optional, Tuple, List
+
 import papis
 import papis.api
 import papis.config
 import papis.commands
 import papis.database
-import colorama
-import logging
-
-import click
-import click.core
-
 import papis.cli
 
-from typing import Dict, Optional, Union, Tuple, List, Type, Any
+import colorama
+import click
+import click.core
 
 
 class MultiCommand(click.core.MultiCommand):
@@ -59,11 +58,12 @@ class MultiCommand(click.core.MultiCommand):
         >>> len(rv) > 0
         True
         """
-        rv = [s for s in self.scripts.keys()]
-        rv.sort()
-        return rv
+        _rv = list(self.scripts.keys())
+        _rv.sort()
+        return _rv
 
-    def get_command(self,
+    def get_command(
+            self,
             ctx: click.core.Context,
             name: str) -> Optional[click.core.Command]:
         """Get the command to be run
@@ -78,7 +78,7 @@ class MultiCommand(click.core.MultiCommand):
             script = self.scripts[name]
         except KeyError:
             matches = list(map(
-                    str, difflib.get_close_matches(name, self.scripts, n=2)))
+                str, difflib.get_close_matches(name, self.scripts, n=2)))
             self.logger.error(
                 '{c.Fore.RED}{c.Style.BRIGHT}{c.Back.BLACK}'
                 'did you mean {0}?'
@@ -89,7 +89,7 @@ class MultiCommand(click.core.MultiCommand):
                 ))
             # return the match if there was only one match
             if len(matches) == 1:
-                self.logger.warning("I suppose you meant {0}".format(*matches))
+                self.logger.warning("I suppose you meant: '%s'", *matches)
                 script = self.scripts[matches[0]]
             else:
                 return None
@@ -161,7 +161,7 @@ def run(
         lib: str,
         log: str,
         pick_lib: bool,
-        clear_cache:bool,
+        clear_cache: bool,
         set_list: List[Tuple[str, str]],
         color: str) -> None:
 
@@ -199,7 +199,8 @@ def run(
         papis.config.reset_configuration()
 
     if pick_lib:
-        lib = papis.pick.pick(papis.api.get_libraries())
+        _picked_lib = papis.pick.pick(papis.api.get_libraries())
+        lib = _picked_lib or lib
 
     papis.config.set_lib_from_name(lib)
     library = papis.config.get_lib()
@@ -219,7 +220,3 @@ def run(
 
     if clear_cache:
         papis.database.get().clear()
-
-
-if __name__ == "__main__":
-    run()

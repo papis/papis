@@ -88,8 +88,8 @@ def cli(query: str,
         return
 
     if not _all:
-        documents = [papis.pick.pick_doc(documents)]
-        documents = [d for d in documents if d]
+        _doc = papis.pick.pick_doc(documents)
+        documents = [_doc] if _doc is not None else []
 
     if _file:
         for document in documents:
