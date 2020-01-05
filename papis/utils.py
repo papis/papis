@@ -50,22 +50,16 @@ def general_open(
         if default_opener is None:
             default_opener = papis.config.get_default_opener()
         opener = default_opener
-    if isinstance(fileName, list):
-        fileName = papis.pick.pick(fileName)
-    if isinstance(opener, str):
-        import shlex
-        cmd = shlex.split("{0} '{1}'".format(opener, fileName))
-        logger.debug("cmd:  %s" % cmd)
-        if wait:
-            logger.debug("Waiting for process to finsih")
-            subprocess.call(cmd)
-        else:
-            logger.debug("Not waiting for process to finish")
-            subprocess.Popen(
-                cmd, shell=False,
-                stdin=None, stdout=None, stderr=None, close_fds=True)
+    cmd = shlex.split("{0} '{1}'".format(opener, fileName))
+    logger.debug("cmd:  %s" % cmd)
+    if wait:
+        logger.debug("Waiting for process to finsih")
+        subprocess.call(cmd)
     else:
-        raise Warning("How should I use the opener %s?" % opener)
+        logger.debug("Not waiting for process to finish")
+        subprocess.Popen(
+            cmd, shell=False,
+            stdin=None, stdout=None, stderr=None, close_fds=True)
 
 
 def open_file(file_path: str, wait: bool = True) -> None:
