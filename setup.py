@@ -131,9 +131,9 @@ setup(
             'papis=papis.commands.default:run',
         ],
         'papis.exporter': [
-            'bibtex=papis.commands.export:export_to_bibtex',
-            'json=papis.commands.export:export_to_json',
-            'yaml=papis.commands.export:export_to_yaml',
+            'bibtex=papis.bibtex:exporter',
+            'json=papis.json:exporter',
+            'yaml=papis.yaml:exporter',
         ],
         'papis.importer': [
             'bibtex=papis.bibtex:Importer',

@@ -1,11 +1,13 @@
 import yaml
 import logging
-import papis.config
-import papis.importer
 import click
-import papis.utils
 import os
 from typing import Optional, List, Dict, Any, Callable
+
+import papis.utils
+import papis.config
+import papis.importer
+import papis.document
 
 logger = logging.getLogger("yaml")
 
@@ -25,6 +27,13 @@ def data_to_yaml(yaml_path: str, data: Dict[str, Any]) -> None:
             fd,
             allow_unicode=papis.config.getboolean("info-allow-unicode"),
             default_flow_style=False)
+
+
+def exporter(documents: List[papis.document.Document]) -> str:
+    string = yaml.dump_all(
+        (papis.document.to_dict(document) for document in documents),
+        allow_unicode=True)
+    return string
 
 
 def yaml_to_data(yaml_path: str,

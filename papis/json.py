@@ -1,7 +1,13 @@
 import click
-import papis.document
 import json
 import logging
+from typing import List
+
+import papis.document
+
+
+def exporter(documents: List[papis.document.Document]) -> str:
+    return json.dumps(papis.document.to_dict(doc) for doc in documents)
 
 
 @click.command('json')

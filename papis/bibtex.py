@@ -8,9 +8,9 @@ from typing import Optional, List, Dict, Any, Callable
 
 import papis.config
 import click
-import papis.document
 import papis.importer
 import papis.filetype
+import papis.document
 
 logger = logging.getLogger("bibtex")  # type: logging.Logger
 
@@ -50,6 +50,10 @@ bibtex_key_converter = {
     "publicationTitle": "journal",
     "proceedingsTitle": "booktitle"
 }  # type: Dict[str, str]
+
+
+def exporter(documents: List[papis.document.Document]) -> str:
+    return '\n'.join(to_bibtex(document) for document in documents)
 
 
 class Importer(papis.importer.Importer):
@@ -173,6 +177,95 @@ def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
     entries = parser.parse(text, partial=True).entries
     # Clean entries
     return [bibtexparser_entry_to_papis(entry) for entry in entries]
+
+
+def to_bibtex(document: papis.document.Document) -> str:
+    """Create a bibtex string from document's information
+
+    :param document: Papis document
+    :type  document: Document
+    :returns: String containing bibtex formating
+    :rtype:  str
+
+    """
+    logger = logging.getLogger("document:bibtex")
+    bibtex_string = ""
+    bibtex_type = ""
+
+    # First the type, article ....
+    if "type" in document.keys():
+        if document["type"] in bibtex_types:
+            bibtex_type = document["type"]
+        elif document["type"] in bibtex_type_converter.keys():
+            bibtex_type = bibtex_type_converter[document["type"]]
+    if not bibtex_type:
+        bibtex_type = "article"
+
+    # REFERENCE BUILDING
+    if document.has("ref"):
+        ref = document["ref"]
+    elif papis.config.get('ref-format'):
+        try:
+            ref = format_doc(
+                papis.config.getstring("ref-format"),
+                document
+            ).replace(" ", "")
+        except Exception as e:
+            logger.error(e)
+            ref = None
+
+    logger.debug("generated ref=%s" % ref)
+    if not ref:
+        if document.has('doi'):
+            ref = document['doi']
+        else:
+            folder = document.get_main_folder()
+            if folder:
+                ref = os.path.basename(folder)
+            else:
+                ref = 'noreference'
+
+    ref = re.sub(r'[;,()\/{}\[\]]', '', ref)
+    logger.debug("Used ref=%s" % ref)
+
+    bibtex_string += "@{type}{{{ref},\n".format(type=bibtex_type, ref=ref)
+    for bibKey in sorted(document.keys()):
+        logger.debug('%s : %s' % (bibKey, document[bibKey]))
+        if bibKey in bibtex_key_converter:
+            newBibKey = bibtex_key_converter[bibKey]
+            document[newBibKey] = document[bibKey]
+            continue
+        if bibKey in bibtex_keys:
+            value = str(document[bibKey])
+            if not papis.config.get('bibtex-unicode'):
+                value = unicode_to_latex(value)
+            if bibKey == 'journal':
+                bibtex_journal_key = papis.config.get('bibtex-journal-key')
+                if bibtex_journal_key in document.keys():
+                    bibtex_string += "  %s = {%s},\n" % (
+                        'journal',
+                        unicode_to_latex(str(
+                          document[papis.config.getstring('bibtex-journal-key')]
+                            ))
+                    )
+                elif bibtex_journal_key not in document.keys():
+                    logger.warning(
+                        "Key '%s' is not present for ref=%s" % (
+                            papis.config.get('bibtex-journal-key'),
+                            document["ref"]
+                        )
+                    )
+                    bibtex_string += "  %s = {%s},\n" % (
+                        'journal',
+                        value
+                    )
+            else:
+                bibtex_string += "  %s = {%s},\n" % (
+                    bibKey,
+                    value
+                )
+    bibtex_string += "}\n"
+    return bibtex_string
 
 
 def unicode_to_latex(text: str) -> str:

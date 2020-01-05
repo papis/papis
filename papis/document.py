@@ -2,10 +2,12 @@ import os
 import re
 import shutil
 import logging
+from typing import List, Dict, Any, Optional, Union
 
 import papis.config
-import papis.bibtex
-from typing import List, Dict, Any, Optional, Union
+
+
+logger = logging.getLogger("document")  # type: logging.Logger
 
 
 def keyconversion_to_data(
@@ -29,9 +31,8 @@ def keyconversion_to_data(
                 action = conv_data.get('action', lambda x: x)
                 new_data[papis_key] = action(papis_value)
             except Exception as e:
-                logger.debug(
-                    "Error while trying to parse {0} ({1})".format(
-                        papis_key, e))
+                logger.debug("Error while trying to parse %s (%s)",
+                             papis_key, e)
 
     if keep_unknown_keys:
         for key, value in data.items():
@@ -61,9 +62,6 @@ def author_list_to_author(data: Dict[str, List[str]]) -> str:
             ])
         )
     return author
-
-
-logger = logging.getLogger("document")  # type: logging.Logger
 
 
 class DocHtmlEscaped(Dict[str, Any]):
@@ -328,102 +326,12 @@ def from_data(data: Dict[str, Any]) -> Document:
     return Document(data=data)
 
 
-def to_bibtex(document: Document) -> str:
-    """Create a bibtex string from document's information
-
-    :param document: Papis document
-    :type  document: Document
-    :returns: String containing bibtex formating
-    :rtype:  str
-
-    """
-    import papis.utils
-    logger = logging.getLogger("document:bibtex")
-    bibtexString = ""
-    bibtexType = ""
-
-    # First the type, article ....
-    if "type" in document.keys():
-        if document["type"] in papis.bibtex.bibtex_types:
-            bibtexType = document["type"]
-        elif document["type"] in papis.bibtex.bibtex_type_converter.keys():
-            bibtexType = papis.bibtex.bibtex_type_converter[document["type"]]
-    if not bibtexType:
-        bibtexType = "article"
-
-    # REFERENCE BUILDING
-    if document.has("ref"):
-        ref = document["ref"]
-    elif papis.config.get('ref-format'):
-        try:
-            ref = papis.utils.format_doc(
-                papis.config.getstring("ref-format"),
-                document
-            ).replace(" ", "")
-        except Exception as e:
-            logger.error(e)
-            ref = None
-
-    logger.debug("generated ref=%s" % ref)
-    if not ref:
-        if document.has('doi'):
-            ref = document['doi']
-        else:
-            folder = document.get_main_folder()
-            if folder:
-                ref = os.path.basename(folder)
-            else:
-                ref = 'noreference'
-
-    ref = re.sub(r'[;,()\/{}\[\]]', '', ref)
-    logger.debug("Used ref=%s" % ref)
-
-    bibtexString += "@{type}{{{ref},\n".format(type=bibtexType, ref=ref)
-    for bibKey in sorted(document.keys()):
-        logger.debug('%s : %s' % (bibKey, document[bibKey]))
-        if bibKey in papis.bibtex.bibtex_key_converter:
-            newBibKey = papis.bibtex.bibtex_key_converter[bibKey]
-            document[newBibKey] = document[bibKey]
-            continue
-        if bibKey in papis.bibtex.bibtex_keys:
-            value = str(document[bibKey])
-            if not papis.config.get('bibtex-unicode'):
-                value = papis.bibtex.unicode_to_latex(value)
-            if bibKey == 'journal':
-                bibtex_journal_key = papis.config.get('bibtex-journal-key')
-                if bibtex_journal_key in document.keys():
-                    bibtexString += "  %s = {%s},\n" % (
-                        'journal',
-                        papis.bibtex.unicode_to_latex(str(
-                          document[papis.config.getstring('bibtex-journal-key')]
-                            ))
-                    )
-                elif bibtex_journal_key not in document.keys():
-                    logger.warning(
-                        "Key '%s' is not present for ref=%s" % (
-                            papis.config.get('bibtex-journal-key'),
-                            document["ref"]
-                        )
-                    )
-                    bibtexString += "  %s = {%s},\n" % (
-                        'journal',
-                        value
-                    )
-            else:
-                bibtexString += "  %s = {%s},\n" % (
-                    bibKey,
-                    value
-                )
-    bibtexString += "}\n"
-    return bibtexString
-
-
 def sort(docs: List[Document], key: str, reverse: bool) -> List[Document]:
     return sorted(docs, key=lambda d: str(d.get(key)), reverse=reverse)
 
 
 def new(folder_path: str, data: Dict[str, Any],
-        files: List[str]=[]) -> Document:
+        files: List[str] = []) -> Document:
     """
     Creates a document at a given folder with data and
     some existing files.
@@ -436,14 +344,11 @@ def new(folder_path: str, data: Dict[str, Any],
     :type  files: list(str)
     :raises FileExistsError: If folder_path exists
     """
-    assert(isinstance(folder_path, str))
-    assert(isinstance(data, dict))
-    assert(isinstance(files, list))
     os.makedirs(folder_path)
     doc = Document(folder=folder_path, data=data)
     doc['files'] = []
-    for f in files:
-        shutil.copy(f, os.path.join(folder_path))
-        doc['files'].append(os.path.basename(f))
+    for _file in files:
+        shutil.copy(_file, os.path.join(folder_path))
+        doc['files'].append(os.path.basename(_file))
     doc.save()
     return doc

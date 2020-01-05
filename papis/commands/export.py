@@ -63,26 +63,6 @@ def _extension_name() -> str:
     return "papis.exporter"
 
 
-def export_to_yaml(documents: List[papis.document.Document]) -> str:
-    import yaml
-    string = yaml.dump_all(
-        [papis.document.to_dict(document) for document in documents],
-        allow_unicode=True)
-    assert isinstance(string, str)
-    return string
-
-
-def export_to_json(documents: List[papis.document.Document]) -> str:
-    import json
-    return json.dumps([
-            papis.document.to_dict(document) for document in documents])
-
-
-def export_to_bibtex(documents: List[papis.document.Document]) -> str:
-    return '\n'.join([
-        papis.document.to_bibtex(document) for document in documents])
-
-
 def run(documents: List[papis.document.Document], to_format: str,) -> str:
     """
     Exports several documents into something else.
