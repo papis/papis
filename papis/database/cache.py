@@ -130,7 +130,7 @@ def match_document(document: papis.document.Document, search: str,
     True
     """
     match_format = match_format or str(papis.config.get("match-format"))
-    match_string = papis.utils.format_doc(match_format, document)
+    match_string = papis.document.format_doc(match_format, document)
     regex = get_regex_from_search(search)
     return re.match(regex, match_string, re.IGNORECASE)
 
