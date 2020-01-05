@@ -31,9 +31,9 @@ def data_to_yaml(yaml_path: str, data: Dict[str, Any]) -> None:
 
 def exporter(documents: List[papis.document.Document]) -> str:
     string = yaml.dump_all(
-        (papis.document.to_dict(document) for document in documents),
+        [papis.document.to_dict(document) for document in documents],
         allow_unicode=True)
-    return string
+    return str(string)
 
 
 def yaml_to_data(yaml_path: str,

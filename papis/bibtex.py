@@ -206,7 +206,7 @@ def to_bibtex(document: papis.document.Document) -> str:
         ref = document["ref"]
     elif papis.config.get('ref-format'):
         try:
-            ref = format_doc(
+            ref = papis.document.format_doc(
                 papis.config.getstring("ref-format"),
                 document
             ).replace(" ", "")

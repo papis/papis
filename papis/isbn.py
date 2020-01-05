@@ -1,15 +1,18 @@
+import papis.document
 import logging
 import isbnlib
 import click
-import papis.document
 # See https://github.com/xlcnd/isbnlib for details
+from typing import Optional, Dict, Any, List
 
 logger = logging.getLogger('papis:isbnlib')
 
 
-def get_data(query="", service=None):
+def get_data(
+        query: str = "",
+        service: Optional[str] = None) -> List[Dict[str, Any]]:
     global logger
-    results = []
+    results = []  # type: List[Dict[str, Any]]
     logger.debug('Trying to retrieve isbn')
     isbn = isbnlib.isbn_from_words(query)
     data = isbnlib.meta(isbn, service=service)
@@ -22,7 +25,7 @@ def get_data(query="", service=None):
         return results
 
 
-def data_to_papis(data):
+def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
     """Convert data from isbnlib into papis formated data
 
     :param data: Dictionary with data
@@ -44,7 +47,7 @@ def data_to_papis(data):
     default='goob',
     type=click.Choice(['wcat', 'goob', 'openl'])
 )
-def explorer(ctx, query, service):
+def explorer(ctx: click.core.Context, query: str, service: str) -> None:
     """
     Look for documents using isbnlib
 
