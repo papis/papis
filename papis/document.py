@@ -275,8 +275,7 @@ def describe(document: Union[Document, Dict[str, Any]]) -> str:
     """Return a string description of the current document
     using the document-description-format
     """
-    import papis.utils
-    return papis.utils.format_doc(
+    return format_doc(
         papis.config.getstring('document-description-format'),
         document)
 
@@ -352,3 +351,28 @@ def new(folder_path: str, data: Dict[str, Any],
         doc['files'].append(os.path.basename(_file))
     doc.save()
     return doc
+
+
+def format_doc(
+        python_format: str,
+        document: Union[Document, Dict[str, Any]],
+        key: str = "") -> str:
+    """Construct a string using a pythonic format string and a document.
+
+    :param python_format: Python-like format string.
+        (`see <
+            https://docs.python.org/2/library/string.html#format-string-syntax
+        >`_)
+    :type  python_format: str
+    :param document: Papis document
+    :type  document: papis.document.Document
+    :returns: Formated string
+    :rtype: str
+    """
+    doc = key or papis.config.getstring("format-doc-name")
+    fdoc = Document()
+    fdoc.update(document)
+    try:
+        return python_format.format(**{doc: fdoc})
+    except Exception as exception:
+        return str(exception)
