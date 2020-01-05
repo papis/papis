@@ -1,3 +1,4 @@
+from prompt_toolkit.application import Application
 from prompt_toolkit.layout.processors import BeforeInput
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.completion import WordCompleter
@@ -10,6 +11,7 @@ from prompt_toolkit.layout.controls import (
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.filters import has_focus
 import shlex
+from typing import Optional, Dict, Any, List, Union, Callable, Tuple
 
 
 class Command:
@@ -19,35 +21,30 @@ class Command:
     :param run: A callable object where the first argument is the cmd itself.
     :type  run: callable
     """
-    def __init__(self, name, run, aliases=[]):
-        assert(isinstance(name, str)), 'name should be a string'
-        assert(callable(run)), 'run should be callable'
-        assert(isinstance(aliases, list))
+    def __init__(
+            self,
+            name: str,
+            run: Callable[['Command'], Any],
+            aliases: List[str] = []):
         self.name = name
         self.run = run
         self.aliases = aliases
 
     @property
-    def app(self):
+    def app(self) -> Application:
         return get_app()
 
     @property
-    def names(self):
+    def names(self) -> List[str]:
         return [self.name] + self.aliases
 
-    def __call__(self, *args, **kwargs):
-        return self.run(self, *args, **kwargs)
 
-
-class CommandLinePrompt(ConditionalContainer):
+class CommandLinePrompt(ConditionalContainer):  # type: ignore
     """
     A vim-like command line prompt widget.
     It's supposed to be instantiated only once.
     """
-    def __init__(self, commands=[]):
-        assert(isinstance(commands, list))
-        for c in commands:
-            assert(isinstance(c, Command))
+    def __init__(self, commands: List[Command] = []):
         self.commands = commands
         wc = WordCompleter(sum([c.names for c in commands], []))
         self.buf = Buffer(
@@ -66,7 +63,7 @@ class CommandLinePrompt(ConditionalContainer):
             filter=has_focus(self.window)
         )
 
-    def trigger(self):
+    def trigger(self) -> None:
         input_cmd = shlex.split(self.buf.text)
         if not input_cmd:
             return
@@ -79,15 +76,15 @@ class CommandLinePrompt(ConditionalContainer):
             raise Exception('No command found ({0})'.format(name))
 
         input_cmd.pop(0)
-        return cmds[0](*input_cmd)
+        cmds[0].run(cmds[0], *input_cmd)
 
-    def clear(self):
+    def clear(self) -> None:
         self.text = ''
 
     @property
-    def text(self):
+    def text(self) -> Any:
         return self.buf.text
 
     @text.setter
-    def text(self, text):
+    def text(self, text: str) -> None:
         self.buf.text = text
