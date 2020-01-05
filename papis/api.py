@@ -59,36 +59,8 @@ def get_libraries() -> List[str]:
     return libs
 
 
-def pick_doc(documents: Sequence[papis.document.Document]
-        ) -> papis.document.Document:
-    """Pick a document from documents with the correct formatting
-
-    :documents: List of documents
-    :returns: Document
-
-    """
-    return papis.pick.pick_doc(documents)
-
-
-def pick(options: Sequence[Any], pick_config: Dict[str, Any] = {}) -> Any:
-    """This is a wrapper for the various pickers that are supported.
-    Depending on the configuration different selectors or 'pickers'
-    are used.
-
-    :param options: List of different objects. The type of the objects within
-        the list must be supported by the pickers. This is the reason why this
-        function is difficult to generalize for external picker programs.
-    :type  options: list
-
-    :param pick_config: Dictionary with additional configuration for the used
-        picker. This depends on the picker.
-    :type  pick_config: dict
-
-    :returns: Returns elements of ``options``.
-    :rtype: Element(s) of ``options``
-
-    """
-    return papis.pick.pick(options, **pick_config)
+pick_doc = papis.pick.pick_doc
+pick = papis.pick.pick
 
 
 def open_file(file_path: str, wait: bool = True) -> None:

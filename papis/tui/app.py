@@ -14,15 +14,12 @@ from prompt_toolkit.layout.controls import (
 )
 from prompt_toolkit.layout.layout import Layout
 import papis.config as config
-import logging
 
 from .widgets.command_line_prompt import Command, CommandLinePrompt
 from .widgets import InfoWindow, HelpWindow, MessageToolbar
 from .widgets.list import Option, OptionsList
 
-from typing import (
-    Optional, Dict, Any, List, Union, Callable, Tuple,
-    Pattern, Sequence, TypeVar, Generic)
+from typing import Optional, Dict, Any, List, Callable, Tuple, Generic
 from typing_extensions import TypedDict
 
 __all__ = [
@@ -30,17 +27,15 @@ __all__ = [
     "Picker"
 ]
 
-KeyInfo = TypedDict("KeyInfo", { "key": str, "help": str })
+KeyInfo = TypedDict("KeyInfo", {"key": str, "help": str})
 
-logger = logging.getLogger('pick')
-
-_keys_info = None  # type: Optional[Dict[str, KeyInfo]]
+_KEYS_INFO = None  # type: Optional[Dict[str, KeyInfo]]
 
 
 def get_keys_info() -> Dict[str, KeyInfo]:
-    global _keys_info
-    if _keys_info is None:
-        _keys_info = {
+    global _KEYS_INFO
+    if _KEYS_INFO is None:
+        _KEYS_INFO = {
             "move_down_key": {
                 'key': config.getstring('move_down_key', section='tui'),
                 'help': 'Move cursor down in the list',
@@ -62,7 +57,8 @@ def get_keys_info() -> Dict[str, KeyInfo]:
                 'help': 'Move cursor up while info window is active',
             },
             "focus_command_line_key": {
-                'key': config.getstring('focus_command_line_key', section='tui'),
+                'key':
+                    config.getstring('focus_command_line_key', section='tui'),
                 'help': 'Focus command line prompt',
             },
             "edit_document_key": {
@@ -90,7 +86,7 @@ def get_keys_info() -> Dict[str, KeyInfo]:
                 'help': 'Go to the bottom of the list',
             },
         }
-    return _keys_info
+    return _KEYS_INFO
 
 
 def create_keybindings(app: Application) -> KeyBindings:
@@ -247,7 +243,7 @@ def get_commands(app: Application) -> Tuple[List[Command], KeyBindings]:
         Command("go_bottom", run=go_end),
         Command("move_down", run=lambda c: c.app.options_list.move_down()),
         Command("move_up", run=lambda c: c.app.options_list.move_up()),
-        #Command("echo", run=_echo),
+        # Command("echo", run=_echo),
         Command("help", run=help),
     ], kb)
 
@@ -264,9 +260,8 @@ class Picker(Application, Generic[Option]):  # type: ignore
             self,
             options: List[Option],
             default_index: int = 0,
-            header_filter: Callable[[Option], str] = lambda x: str(x),
-            match_filter: Callable[[Option], str] = lambda x: str(x)
-            ):
+            header_filter: Callable[[Option], str] = str,
+            match_filter: Callable[[Option], str] = str):
 
         self.info_window = InfoWindow()
         self.help_window = HelpWindow()
@@ -279,8 +274,8 @@ class Picker(Application, Generic[Option]):  # type: ignore
         self.options_list = OptionsList(
             options,
             default_index,
-            header_filter,
-            match_filter,
+            header_filter=header_filter,
+            match_filter=match_filter,
             custom_filter=~has_focus(self.help_window)
         )  # type: OptionsList[Option]
         self.options_list.search_buffer.on_text_changed += self.update
