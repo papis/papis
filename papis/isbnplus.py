@@ -61,31 +61,33 @@ An example of sucessful returns:
 """
 import urllib.parse
 import urllib.request  # import urlencode
-import bs4
-import papis.config
 import logging
-import papis.document
+from typing import List, Dict, Any
+
+import bs4
 import click
+import papis.config
+import papis.document
 
-logger = logging.getLogger('isbn')
+LOGGER = logging.getLogger('isbnplus')
 
-ISBNPLUS_KEY = "98a765346bc0ffee6ede527499b6a4ee"
-ISBNPLUS_APPID = "4846a7d1"
-ISBNPLUS_BASEURL = "https://api-2445581351187.apicast.io:443/"
-ISBNPLUS_BASEURL = "https://api-2445581351187.apicast.io/"
+ISBNPLUS_KEY = "98a765346bc0ffee6ede527499b6a4ee"  # type: str
+ISBNPLUS_APPID = "4846a7d1"  # type: str
+ISBNPLUS_BASEURL = "https://api-2445581351187.apicast.io:443/"  # type: str
+# ISBNPLUS_BASEURL = "https://api-2445581351187.apicast.io/"  # type: str
 
 
 def get_data(
-    query="",
-    page=1,
-    author="",
-    category="",
-    series="",
-    title="",
-    order="isbn",
-    app_id=ISBNPLUS_APPID,
-    app_key=ISBNPLUS_KEY
-):
+        query: str = "",
+        page: int = 1,
+        author: str = "",
+        category: str = "",
+        series: str = "",
+        title: str = "",
+        order: str = "isbn",
+        app_id: str = ISBNPLUS_APPID,
+        app_key: str = ISBNPLUS_KEY
+        ) -> List[Dict[str, Any]]:
     results = []
     dict_params = {
         "q": query,
@@ -102,12 +104,10 @@ def get_data(
         {x: dict_params[x] for x in dict_params if dict_params[x]}
     )
     req_url = ISBNPLUS_BASEURL + "search?" + params
-    logger.debug("url = " + req_url)
+    LOGGER.debug("url = %s", req_url)
     url = urllib.request.Request(
         req_url,
-        headers={
-            'User-Agent': papis.config.get('user-agent')
-        }
+        headers={'User-Agent': papis.config.getstring('user-agent')}
     )
     xmldoc = urllib.request.urlopen(url).read()
     root = bs4.BeautifulSoup(xmldoc, 'html.parser')
@@ -115,11 +115,11 @@ def get_data(
     for book in root.find_all('book'):
         book_data = book_to_data(book)
         results.append(book_data)
-    logger.debug('%s records retrieved' % len(results))
+    LOGGER.debug('%s records retrieved', len(results))
     return results
 
 
-def book_to_data(booknode):
+def book_to_data(booknode: bs4.Tag) -> Dict[str, Any]:
     """Convert book xml node into dictionary
 
     :booknode: Bs4 book node
@@ -148,10 +148,11 @@ def book_to_data(booknode):
 @click.command('isbnplus')
 @click.pass_context
 @click.help_option('--help', '-h')
-@click.option('--query', '-q', default=None)
-@click.option('--author', '-a', default=None)
-@click.option('--title', '-t', default=None)
-def explorer(ctx, query, author, title):
+@click.option('--query', '-q', default="", type=str)
+@click.option('--author', '-a', default="", type=str)
+@click.option('--title', '-t', default="", type=str)
+def explorer(ctx: click.core.Context,
+             query: str, author: str, title: str) -> None:
     """
     Look for documents on isbnplus.com
 
@@ -169,4 +170,4 @@ def explorer(ctx, query, author, title):
         data = []
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj['documents'] += docs
-    logger.info('{} documents found'.format(len(docs)))
+    logger.info('%s documents found', len(docs))
