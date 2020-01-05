@@ -21,12 +21,13 @@ class DocMatcher(object):
     """
     search = ""  # type: str
     parsed_search = []  # type: List[Any]
-    doc_format = '{%s[DOC_KEY]}' % (papis.config.get('format-doc-name'))
+    doc_format = '{%s[DOC_KEY]}' % (papis.config.getstring('format-doc-name'))
     logger = logging.getLogger('DocMatcher')
     matcher = None  # type: Optional[Callable[[papis.document.Document, str, str], Any]]
 
     @classmethod
-    def return_if_match(cls,
+    def return_if_match(
+            cls,
             doc: papis.document.Document) -> Optional[papis.document.Document]:
         """Use the attribute `cls.parsed_search` to match the `doc` document
         to the previously parsed query.
@@ -59,7 +60,8 @@ class DocMatcher(object):
             elif len(parsed) == 3:
                 search = parsed[2]
                 sformat = cls.doc_format.replace('DOC_KEY', parsed[0])
-            match = doc if cls.matcher(doc, search, sformat) else None
+            if cls.matcher is not None and sformat is not None:
+                match = doc if cls.matcher(doc, search, sformat) else None
             if not match:
                 break
         return match
@@ -137,7 +139,7 @@ def parse_query(query_string: str) -> List[List[str]]:
             ) + papis_value
         )
     )
-    parsed = papis_query.parseString(query_string)
+    parsed = papis_query.parseString(query_string)  # type: List[List[str]]
 
     logger.debug('Parsed query = %s' % parsed)
     return parsed
