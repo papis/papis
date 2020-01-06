@@ -1,9 +1,6 @@
 import re
 import json
-import functools
-from typing import (
-    Dict, Optional, Any, List, Union, NamedTuple, Callable,
-    Tuple, Sequence, TypeVar)
+from typing import Dict, Optional, Any, List
 
 import papis.downloaders
 import papis.document

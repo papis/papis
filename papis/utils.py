@@ -450,14 +450,13 @@ def get_matching_importer_or_downloader(
     logger = logging.getLogger("utils:matcher")
     _imps = papis.importer.get_importers()
     _downs = papis.downloaders.get_available_downloaders()
-    _all_importers = _imps + _downs  # type: List[Type[papis.importer.Importer]]
+    _all_importers = list(_imps) + list(_downs)
     for importer_cls in _all_importers:
-        importer = importer_cls.match(
-            matching_string)  # type: Optional[papis.importer.Importer]
         logger.debug(
             "trying with importer {c.Back.BLACK}{c.Fore.YELLOW}{name}"
-            "{c.Style.RESET_ALL}".format(
-                c=colorama, name=importer_cls))
+            "{c.Style.RESET_ALL}".format(c=colorama, name=importer_cls))
+        importer = importer_cls.match(
+            matching_string)  # type: Optional[papis.importer.Importer]
         if importer:
             logger.info(
                 "{f} {c.Back.BLACK}{c.Fore.GREEN}matches {name}"
