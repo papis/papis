@@ -7,22 +7,28 @@ import papis.library
 from papis.downloaders.base import Downloader
 import os
 import shutil
+from typing import Dict, Any, Optional
 
 
 class MockDownloader(Downloader):
-    def __init__(self, url="", name="", bibtex_data=None, document_data=None):
+    def __init__(
+            self,
+            url: str = "",
+            name: str = "",
+            bibtex_data: Optional[str] = None,
+            document_data: Optional[bytes] = None):
         self.bibtex_data = bibtex_data
         self.document_data = document_data
 
 
-def create_random_pdf(suffix='', prefix=''):
+def create_random_pdf(suffix: str = '', prefix: str = '') -> str:
     tempf = tempfile.mktemp(suffix=suffix, prefix=prefix)
     with open(tempf, 'wb+') as fd:
         fd.write('%PDF-1.5%\n'.encode())
     return tempf
 
 
-def create_random_epub(suffix='', prefix=''):
+def create_random_epub(suffix: str = '', prefix: str = '') -> str:
     tempf = tempfile.mktemp(suffix=suffix, prefix=prefix)
     buf = [0x50, 0x4B, 0x3, 0x4]
     buf += [0x00 for i in range(26)]
@@ -35,14 +41,15 @@ def create_random_epub(suffix='', prefix=''):
     return tempf
 
 
-def create_random_file(suffix='', prefix=''):
+def create_random_file(suffix: str = '', prefix: str = '') -> str:
     tempf = tempfile.mktemp(suffix=suffix, prefix=prefix)
     with open(tempf, 'wb+') as fd:
         fd.write('hello'.encode())
     return tempf
 
 
-def create_real_document(data, suffix=''):
+def create_real_document(
+        data: Dict[str, Any], suffix: str = '') -> Dict[str, Any]:
     folder = tempfile.mkdtemp(suffix=suffix)
     doc = papis.document.Document(folder=folder, data=data)
     doc.save()
@@ -96,11 +103,11 @@ test_data = [
 ]
 
 
-def get_test_lib_name():
+def get_test_lib_name() -> str:
     return 'test-lib'
 
 
-def setup_test_library():
+def setup_test_library() -> None:
     """Set-up a test library for tests
     """
     config = papis.config.get_configuration()

@@ -16,7 +16,7 @@ from tests import (
 )
 
 
-def test_new():
+def test_new() -> None:
     N = 10
     files = [create_random_file(suffix='.' + str(i)) for i in range(N)]
     tmp = os.path.join(tempfile.mkdtemp(), 'doc')
@@ -38,14 +38,14 @@ def test_new():
     assert(len(doc.get_files()) == 0)
 
 
-def test_from_data():
+def test_from_data() -> None:
     doc = from_data(
         {'title': 'Hello World', 'author': 'turing'}
     )
     assert(isinstance(doc, Document))
 
 
-def test_from_folder():
+def test_from_folder() -> None:
     doc = from_folder(os.path.join(
         os.path.dirname(__file__), 'resources', 'document'
     ))
@@ -53,7 +53,7 @@ def test_from_folder():
     assert(doc['author'] == 'Russell, Bertrand')
 
 
-def test_main_features():
+def test_main_features() -> None:
     doc = from_data(
         {'title': 'Hello World', 'author': 'turing'}
     )
@@ -83,7 +83,7 @@ def test_main_features():
     assert(doc.html_escape['author'] == 'Russell, Bertrand')
 
 
-def test_to_bibtex():
+def test_to_bibtex() -> None:
     papis.config.set('bibtex-journal-key', 'journal_abbrev')
     doc = from_data({'title': 'Hello', 'type': 'book', 'journal': 'jcp'})
     doc.set_folder('path/to/superfolder')
@@ -104,7 +104,7 @@ def test_to_bibtex():
     )
 
 
-def test_to_json():
+def test_to_json() -> None:
     doc = from_data({'title': 'Hello World'})
     assert(
         to_json(doc) ==
@@ -112,7 +112,7 @@ def test_to_json():
     )
 
 
-def test_pickle():
+def test_pickle() -> None:
     docs = [
         from_data({'title': 'Hello World'}),
         from_data({'author': 'Turing'}),
@@ -128,7 +128,7 @@ def test_pickle():
     assert(gotdocs[1]['author'] == docs[1]['author'])
 
 
-def test_sort():
+def test_sort() -> None:
     docs = [
         from_data(dict(title="Hello world", year=1990)),
         from_data({'author': 'Turing', 'year': "1932"}),

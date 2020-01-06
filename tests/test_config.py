@@ -218,24 +218,24 @@ def test_register_default_settings():
 def test_get_list():
     papis.config.set('super-key-list', [1,2,3,4])
     assert(papis.config.get('super-key-list') == '[1, 2, 3, 4]')
-    assert(papis.config.getlist('super-key-list') == [1,2,3,4])
+    assert(papis.config.getlist('super-key-list') == ['1','2','3','4'])
 
     papis.config.set('super-key-list', ['asdf',2,3,4])
     assert(papis.config.get('super-key-list') == "['asdf', 2, 3, 4]")
-    assert(papis.config.getlist('super-key-list') == ['asdf',2,3,4])
+    assert(papis.config.getlist('super-key-list') == ['asdf','2','3','4'])
 
     papis.config.set('super-key-list', ['asdf',2,3,4])
     assert(papis.config.get('super-key-list') == "['asdf', 2, 3, 4]")
-    assert(papis.config.getlist('super-key-list') == ['asdf',2,3,4])
+    assert(papis.config.getlist('super-key-list') == ['asdf','2','3','4'])
 
     papis.config.set('super-key-list', "['asdf',2,3,4]")
     assert(papis.config.get('super-key-list') == "['asdf',2,3,4]")
-    assert(papis.config.getlist('super-key-list') == ['asdf',2,3,4])
+    assert(papis.config.getlist('super-key-list') == ['asdf','2','3','4'])
 
     papis.config.set('super-key-list', "[asdf,2,3,4]")
     assert(papis.config.get('super-key-list') == "[asdf,2,3,4]")
     try:
-        papis.config.getlist('super-key-list') == "[asdf,2,3,4]"
+        papis.config.getlist('super-key-list') == "[asdf,'2','3','4']"
     except SyntaxError as e:
         assert(
             str(e) == (
