@@ -56,7 +56,7 @@ def keyconversion_to_data(
     return new_data
 
 
-def author_list_to_author(data: Dict[str, List[str]]) -> str:
+def author_list_to_author(data: Dict[str, Any]) -> str:
     author = ''
     separator = papis.config.get('multiple-authors-separator')
     separator_fmt = papis.config.get('multiple-authors-format')
