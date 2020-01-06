@@ -34,6 +34,10 @@ def match_against_regex(
 
 class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
 
+    """This is the main widget containing a list of items (options)
+    to select from.
+    """
+
     def __init__(
             self,
             options: List[Option],
@@ -63,9 +67,12 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         self._options = []  # type: List[Option]
         self.marks = []  # type: List[int]
         self.max_entry_height = 1  # type: int
-        # Options are processed here also through the setter
+
+        # options are processed here also through the setter
+        # ##################################################
         self.set_options(options)  # type: List[Option]
         self.cursor = Point(0, 0)  # type: Point
+        # ##################################################
 
         self.content = FormattedTextControl(
             text=self.get_tokens,
