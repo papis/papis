@@ -1,23 +1,31 @@
+"""
+This module define the entry point for external scripts
+to be called by papis.
+"""
 import os
 import re
 import subprocess
-import papis.config
-import papis.commands
-import click
 import logging
 from typing import List
 
+import click
 
-logger = logging.getLogger("external")
+import papis.config
+import papis.commands
+
+
+LOGGER = logging.getLogger("external")
 
 
 def get_command_help(path: str) -> str:
+    """Get help string from external commands
+    """
     magic_word = papis.config.getstring("scripts-short-help-regex")
-    with open(path) as fd:
-        for line in fd:
-            m = re.match(magic_word, line)
-            if m:
-                return str(m.group(1))
+    with open(path, 'r') as _fd:
+        for line in _fd:
+            match = re.match(magic_word, line)
+            if match:
+                return str(match.group(1))
     return "No help message available"
 
 
@@ -39,11 +47,13 @@ def export_variables() -> None:
 @click.argument("flags", nargs=-1)
 @click.pass_context
 def external_cli(ctx: click.core.Context, flags: List[str]) -> None:
-    script = ctx.obj
+    """Actual papis command to call the external command
+    """
+    script = ctx.obj  # type: papis.commands.Script
     path = script.path
     if not path:
         raise Exception("Path for script {} not found".format(script))
     cmd = [path] + list(flags)
-    logger.debug("Calling {}".format(cmd))
+    LOGGER.debug("Calling %s", cmd)
     export_variables()
     subprocess.call(cmd)
