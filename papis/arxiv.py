@@ -21,30 +21,32 @@ import bs4
 import logging
 import urllib.request  # urlopen, Request
 import urllib.parse  # import urlencode
-import papis.config
+from typing import Optional, List, Dict, Any, Callable, Type
+
 import click
 import arxiv2bib
 
 import papis.filetype
 import papis.downloaders.base
+import papis.config
 
 
 logger = logging.getLogger('arxiv')
 
 
 def get_data(
-    query="",
-    author="",
-    title="",
-    abstract="",
-    comment="",
-    journal="",
-    report_number="",
-    category="",
-    id_list="",
-    page=0,
-    max_results=30
-):
+    query: str = "",
+    author: str = "",
+    title: str = "",
+    abstract: str = "",
+    comment: str = "",
+    journal: str = "",
+    report_number: str = "",
+    category: str = "",
+    id_list: str = "",
+    page: int = 0,
+    max_results: int = 30
+        ) -> List[Dict[str, Any]]:
     dict_params = {
         "all": query,
         "ti": title,
@@ -75,7 +77,7 @@ def get_data(
     url = urllib.request.Request(
         req_url,
         headers={
-            'User-Agent': papis.config.get('user-agent')
+            'User-Agent': papis.config.getstring('user-agent')
         }
     )
     xmldoc = urllib.request.urlopen(url).read()
@@ -89,7 +91,10 @@ def get_data(
         )
         data["url"] = entry.find("id").get_text()
         data["published"] = entry.find("published").get_text()
-        data["year"] = data.get("published")[0:4]
+        published = data.get("published")
+        if published:
+            assert(isinstance(published, str))
+            data["year"] = published[0:4]
         data["title"] = entry.find("title").get_text().replace("\n", " ")
         data["author"] = ", ".join(
             [
@@ -101,7 +106,7 @@ def get_data(
     return result
 
 
-def validate_arxivid(arxivid):
+def validate_arxivid(arxivid: str) -> None:
     from urllib.error import HTTPError, URLError
     url = "https://arxiv.org/abs/{0}".format(arxivid)
     request = urllib.request.Request(url)
@@ -114,7 +119,8 @@ def validate_arxivid(arxivid):
         pass
 
 
-def pdf_to_arxivid(filepath, maxlines=float('inf')):
+def pdf_to_arxivid(
+        filepath: str, maxlines: float = float('inf')) -> Optional[str]:
     """Try to get arxivid from a filepath, it looks for a regex in the binary
     data and returns the first arxivid found, in the hopes that this arxivid
     is the correct one.
@@ -137,9 +143,10 @@ def pdf_to_arxivid(filepath, maxlines=float('inf')):
                 return arxivid
             if j > maxlines:
                 return None
+    return None
 
 
-def find_arxivid_in_text(text):
+def find_arxivid_in_text(text: str) -> Optional[str]:
     """
     Try to find a arxivid in a text
     """
@@ -170,19 +177,22 @@ def find_arxivid_in_text(text):
 @click.command('arxiv')
 @click.pass_context
 @click.help_option('--help', '-h')
-@click.option('--query', '-q', default=None)
-@click.option('--author', '-a', default=None)
-@click.option('--title', '-t', default=None)
-@click.option('--abstract', default=None)
-@click.option('--comment', default=None)
-@click.option('--journal', default=None)
-@click.option('--report-number', default=None)
-@click.option('--category', default=None)
-@click.option('--id-list', default=None)
-@click.option('--page', default=None)
-@click.option('--max', '-m', default=20)
-def explorer(ctx, query, author, title, abstract, comment,
-             journal, report_number, category, id_list, page, max):
+@click.option('--query', '-q', default="", type=str)
+@click.option('--author', '-a', default="", type=str)
+@click.option('--title', '-t', default="", type=str)
+@click.option('--abstract', default="", type=str)
+@click.option('--comment', default="", type=str)
+@click.option('--journal', default="", type=str)
+@click.option('--report-number', default="", type=str)
+@click.option('--category', default="", type=str)
+@click.option('--id-list', default="", type=str)
+@click.option('--page', default=0, type=int)
+@click.option('--max', '-m', default=20, type=int)
+def explorer(
+        ctx: click.core.Context,
+        query: str, author: str, title: str, abstract: str, comment: str,
+        journal: str, report_number: str, category: str, id_list: str,
+        page: int, max: int) -> None:
     """
     Look for documents on ArXiV.org.
 
@@ -209,22 +219,21 @@ def explorer(ctx, query, author, title, abstract, comment,
         category=category,
         id_list=id_list,
         page=page or 0,
-        max_results=max
-    )
+        max_results=max)
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj['documents'] += docs
-    logger.info('{} documents found'.format(len(docs)))
+    logger.info('%s documents found', len(docs))
 
 
 class Downloader(papis.downloaders.base.Downloader):
 
-    def __init__(self, url):
+    def __init__(self, url: str):
         papis.downloaders.base.Downloader.__init__(self, uri=url, name="arxiv")
         self.expected_document_extension = 'pdf'
-        self.arxivid = None
+        self.arxivid = None  # type: Optional[str]
 
     @classmethod
-    def match(cls, url):
+    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
         arxivid = find_arxivid_in_text(url)
         if arxivid:
             url = "https://arxiv.org/abs/{0}".format(arxivid)
@@ -232,9 +241,9 @@ class Downloader(papis.downloaders.base.Downloader):
             down.arxivid = arxivid
             return down
         else:
-            return False
+            return None
 
-    def _get_identifier(self):
+    def _get_identifier(self) -> Optional[str]:
         """Get arxiv identifier
         :returns: Identifier
         """
@@ -242,19 +251,21 @@ class Downloader(papis.downloaders.base.Downloader):
             self.arxivid = find_arxivid_in_text(self.uri)
         return self.arxivid
 
-    def get_bibtex_url(self):
-        identifier = self._get_identifier()
-        return identifier
+    def get_bibtex_url(self) -> Optional[str]:
+        return self._get_identifier()
 
-    def download_bibtex(self):
+    def download_bibtex(self) -> None:
         bib_url = self.get_bibtex_url()
-        bibtexCli = arxiv2bib.Cli([bib_url])
-        bibtexCli.run()
+        if not bib_url:
+            return None
+        bibtex_cli = arxiv2bib.Cli([bib_url])
+        bibtex_cli.run()
         self.logger.debug("[bibtex url] = %s" % bib_url)
-        data = ''.join(bibtexCli.output).replace('\n', ' ')
+        output = bibtex_cli.output  # List[str]
+        data = ''.join(output).replace('\n', ' ')
         self.bibtex_data = data
 
-    def get_document_url(self):
+    def get_document_url(self) -> Optional[str]:
         arxivid = self._get_identifier()
         self.logger.debug("arxivid %s" % arxivid)
         pdf_url = "https://arxiv.org/pdf/{arxivid}.pdf".format(arxivid=arxivid)
@@ -266,12 +277,12 @@ class Importer(papis.importer.Importer):
 
     """Importer accepting an arxiv id and downloading files and data"""
 
-    def __init__(self, uri='', **kwargs):
-        papis.importer.Importer.__init__(self, name='arxiv', uri=uri, **kwargs)
+    def __init__(self, uri: str):
+        papis.importer.Importer.__init__(self, name='arxiv', uri=uri)
         self.downloader = Downloader('https://arxiv.org/abs/{0}'.format(uri))
 
     @classmethod
-    def match(cls, uri):
+    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
         try:
             validate_arxivid(uri)
         except ValueError:
@@ -279,7 +290,7 @@ class Importer(papis.importer.Importer):
         else:
             return Importer(uri=uri)
 
-    def fetch(self):
+    def fetch(self) -> None:
         self.downloader.fetch()
         self.ctx = self.downloader.ctx
 
@@ -288,12 +299,12 @@ class ArxividFromPdfImporter(papis.importer.Importer):
 
     """Importer parsing an arxivid from a pdf file"""
 
-    def __init__(self, **kwargs):
-        papis.importer.Importer.__init__(self, name='pdf2arxivid', **kwargs)
-        self.arxivid = None
+    def __init__(self, uri: str):
+        papis.importer.Importer.__init__(self, name='pdf2arxivid', uri=uri)
+        self.arxivid = None  # type: Optional[str]
 
     @classmethod
-    def match(cls, uri):
+    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
         if (os.path.isdir(uri) or not os.path.exists(uri) or
                 not papis.filetype.get_document_extension(uri) == 'pdf'):
             return None
@@ -301,8 +312,7 @@ class ArxividFromPdfImporter(papis.importer.Importer):
         importer.arxivid = pdf_to_arxivid(uri, maxlines=2000)
         return importer if importer.arxivid else None
 
-    @papis.importer.cache
-    def fetch(self):
+    def fetch(self) -> None:
         self.logger.info(
             "trying to parse arxivid from file {0}".format(self.uri))
         if not self.arxivid:
