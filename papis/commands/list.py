@@ -97,7 +97,7 @@ def run(
         return [
             section + ' ' + config[section]['dir']
             for section in config
-            if 'dir' in config[section] ]
+            if 'dir' in config[section]]
 
     if files:
         return [
@@ -110,11 +110,11 @@ def run(
             os.path.join(d.get_main_folder() or '', d["notes"])
             for d in documents
             if d.get_main_folder() is not None
-                and d.has("notes") and isinstance(d["notes"], str)
-                and os.path.exists(
+            and d.has("notes") and isinstance(d["notes"], str)
+            and os.path.exists(
                         os.path.join(d.get_main_folder() or '', d["notes"]))]
     elif info_files:
-        return [ d.get_info_file() for d in documents ]
+        return [d.get_info_file() for d in documents]
     elif fmt:
         return [
             papis.document.format_doc(fmt, document)
@@ -185,7 +185,8 @@ def cli(
     logger = logging.getLogger('cli:list')
     documents = []  # type: List[papis.document.Document]
 
-    if not libraries and not downloaders and not _file and not info and not _dir:
+    if (not libraries and not downloaders and
+            not _file and not info and not _dir):
         _dir = True
 
     if not libraries and not downloaders:

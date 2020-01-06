@@ -65,29 +65,29 @@ def run(
         )
         new_file_list.append(new_filename)
 
-        endDocumentPath = os.path.join(
+        end_document_path = os.path.join(
             _doc_folder,
             new_filename
         )
         string_append = next(g)
 
         # Check if the absolute file path is > 255 characters
-        if len(os.path.abspath(endDocumentPath)) >= 255:
+        if len(os.path.abspath(end_document_path)) >= 255:
             logger.warning(
                 'Length of absolute path is > 255 characters. '
                 'This may cause some issues with some pdf viewers'
             )
 
-        if os.path.exists(endDocumentPath):
+        if os.path.exists(end_document_path):
             logger.warning(
-                "%s already exists, ignoring..." % endDocumentPath
+                "%s already exists, ignoring..." % end_document_path
             )
             continue
         logger.info(
             "[CP] '%s' to '%s'" %
-            (in_file_path, endDocumentPath)
+            (in_file_path, end_document_path)
         )
-        shutil.copy(in_file_path, endDocumentPath)
+        shutil.copy(in_file_path, end_document_path)
 
     if "files" not in document.keys():
         document["files"] = []

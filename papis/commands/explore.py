@@ -261,8 +261,10 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
     dois = dois[0:min(max_citations, len(dois))]
 
     logger.info("%s citations found" % len(dois))
-    dois_with_data = []  # type: List[Union[papis.document.Document, Dict[str, Any]]]
-    found_in_lib_dois = []  # type: List[Union[papis.document.Document, Dict[str, Any]]]
+    dois_with_data = [
+    ]  # type: List[Union[papis.document.Document, Dict[str, Any]]]
+    found_in_lib_dois = [
+    ]  # type: List[Union[papis.document.Document, Dict[str, Any]]]
 
     logger.info("Checking which citations are already in the library")
     with tqdm.tqdm(iterable=dois) as progress:

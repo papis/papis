@@ -102,16 +102,16 @@ def cli(
                 )
                 document["notes"] = papis.config.getstring("notes-name")
                 document.save()
-            notesPath = os.path.join(
+            notes_path = os.path.join(
                 str(document.get_main_folder()),
                 document["notes"]
             )
 
-            if not os.path.exists(notesPath):
-                logger.info("Creating {0}".format(notesPath))
-                open(notesPath, "w+").close()
+            if not os.path.exists(notes_path):
+                logger.info("Creating {0}".format(notes_path))
+                open(notes_path, "w+").close()
 
-            papis.api.edit_file(notesPath)
+            papis.api.edit_file(notes_path)
             if git:
                 papis.git.add_and_commit_resource(
                     str(document.get_main_folder()),
