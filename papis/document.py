@@ -1,42 +1,52 @@
 import os
-import re
 import shutil
 import logging
-from typing import List, Dict, Any, Optional, Union
+from typing import List, Dict, Any, Optional, Union, NamedTuple, Callable
+from typing_extensions import TypedDict
 
 import papis.config
 
 
 logger = logging.getLogger("document")  # type: logging.Logger
 
+KeyConversion = TypedDict(
+    "KeyConversion", {"key": Optional[str],
+                      "action": Optional[Callable[[Any], Any]]}
+)
+EmptyKeyConversion = {"key": None, "action": None}  # type: KeyConversion
+KeyConversionPair = NamedTuple(
+    "KeyConversionPair",
+    [("foreign_key", str), ("list", List[KeyConversion])]
+)
+
 
 def keyconversion_to_data(
-        key_conversion: Dict[str, Any],
+        conversion_list: List[KeyConversionPair],
         data: Dict[str, Any],
         keep_unknown_keys: bool = False) -> Dict[str, Any]:
+
     new_data = dict()
-    for orig_key in key_conversion:
-        if orig_key not in data:
+
+    for key_pair in conversion_list:
+
+        foreign_key = key_pair.foreign_key
+        if foreign_key not in data:
             continue
 
-        conv_data_list = key_conversion[orig_key]
-        if isinstance(conv_data_list, dict):
-            conv_data_list = [conv_data_list]
-
-        for conv_data in conv_data_list:
-            papis_key = conv_data.get('key', orig_key)
-            papis_value = data[orig_key]
+        for conv_data in key_pair.list:
+            papis_key = conv_data.get('key') or foreign_key  # type: str
+            papis_value = data[foreign_key]
 
             try:
-                action = conv_data.get('action', lambda x: x)
+                action = conv_data.get('action') or (lambda x: x)
                 new_data[papis_key] = action(papis_value)
             except Exception as e:
-                logger.debug("Error while trying to parse %s (%s)",
-                             papis_key, e)
+                logger.debug(
+                    "Error while trying to parse %s (%s)", papis_key, e)
 
     if keep_unknown_keys:
         for key, value in data.items():
-            if key in key_conversion:
+            if key in [c.foreign_key for c in conversion_list]:
                 continue
             new_data[key] = value
 

@@ -1,23 +1,25 @@
 import re
 import os
-import click
 import logging
+import tempfile
+from typing import Set, List, Dict, Any, Optional, Tuple
+
+import requests
+import requests.structures
+import click
 import doi
 import habanero
-import tempfile
-import collections
-import requests
-from typing import Set, List, Dict, Any
 
 import papis.config
+import papis.pick
 import papis.filetype
 import papis.document
 import papis.importer
 import papis.downloaders.base
 
-logger = logging.getLogger("crossref")  # type: logging.Logger
-logger.debug("importing")
-
+LOGGER = logging.getLogger("crossref")  # type: logging.Logger
+LOGGER.debug("importing")
+KeyConversionPair = papis.document.KeyConversionPair
 
 _filter_names = set([
     "has_funder", "funder", "location", "prefix", "member", "from_index_date",
@@ -52,9 +54,9 @@ _types_values = [
 ]  # type: List[str]
 
 _sort_values = [
-"relevance", "score", "updated", "deposited", "indexed", "published",
-"published-print", "published-online", "issued", "is-referenced-by-count",
-"references-count",
+    "relevance", "score", "updated", "deposited", "indexed", "published",
+    "published-print", "published-online", "issued", "is-referenced-by-count",
+    "references-count",
 ]  # type: List[str]
 
 
@@ -90,63 +92,64 @@ type_converter = {
 }  # type: Dict[str, str]
 
 
-key_conversion = collections.OrderedDict({
-    "DOI": {"key": "doi"},
-    "URL": {"key": "url"},
-    "author": {
+key_conversion = [
+    KeyConversionPair("DOI", [{"key": "doi", "action": None}]),
+    KeyConversionPair("URL", [{"key": "url", "action": None}]),
+    KeyConversionPair("author", [{
         "key": "author_list",
         "action": lambda authors: [
             {k: a.get(k) for k in ['given', 'family', 'affiliation']}
             for a in authors
         ],
-    },
-    "container-title": {"key": "journal", "action": lambda x: x[0]},
-    "issue": {},
+    }]),
+    KeyConversionPair("container-title", [
+        {"key": "journal", "action": lambda x: x[0]}]),
+    KeyConversionPair("issue", [papis.document.EmptyKeyConversion]),
     # "issued": {"key": "",},
-    "language": {},
-    "abstract": {},
-    "ISBN": {"key": "isbn"},
-    "page": {
+    KeyConversionPair("language", [papis.document.EmptyKeyConversion]),
+    KeyConversionPair("abstract", [papis.document.EmptyKeyConversion]),
+    KeyConversionPair("ISBN", [{"key": "isbn", "action": None}]),
+    KeyConversionPair("page", [{
         "key": "pages",
         "action": lambda p: re.sub(r"(-[^-])", r"-\1", p),
-    },
-    "link": {
+    }]),
+    KeyConversionPair("link", [{
         "key": str(papis.config.get('doc-url-key-name')),
         "action": lambda x: x[1]["URL"]
-    },
-    "issued": [
+    }]),
+    KeyConversionPair("issued", [
         {"key": "year", "action": lambda x: x.get("date-parts")[0][0]},
         {"key": "month", "action": lambda x: x.get("date-parts")[0][1]}
-    ],
-    "published-online": [
+    ]),
+    KeyConversionPair("published-online", [
         {"key": "year", "action": lambda x: x.get("date-parts")[0][0]},
         {"key": "month", "action": lambda x: x.get("date-parts")[0][1]}
-    ],
-    "published-print": [
+    ]),
+    KeyConversionPair("published-print", [
         {"key": "year", "action": lambda x: x.get("date-parts")[0][0]},
         {"key": "month", "action": lambda x: x.get("date-parts")[0][1]}
-    ],
-    "publisher": {},
-    "reference": {
+    ]),
+    KeyConversionPair("publisher", [papis.document.EmptyKeyConversion]),
+    KeyConversionPair("reference", [{
         "key": "citations",
         "action": lambda cs: [
             {key.lower(): c[key]
                 for key in set(c.keys()) - set(("key", "doi-asserted-by"))}
             for c in cs
         ]
-    },
-    # "short-title": { "key": "", },
-    # "subtitle": { "key": "", },
-    "title": {"action": lambda t: " ".join(t)},
-    "type": {"action": lambda t: type_converter[t]},
-    "volume": {},
-    "event": [  # Conferences
+    }]),
+    KeyConversionPair("title", [
+        {"key": None, "action": lambda t: " ".join(t)}]),
+    KeyConversionPair("type", [
+        {"key": None, "action": lambda t: type_converter[t]}]),
+    KeyConversionPair("volume", [papis.document.EmptyKeyConversion]),
+    KeyConversionPair("event", [  # Conferences
         {"key": "venue", "action": lambda x: x["location"]},
         {"key": "booktitle", "action": lambda x: x["name"]},
         {"key": "year", "action": lambda x: x['start']["date-parts"][0][0]},
         {"key": "month", "action": lambda x: x['start']["date-parts"][0][1]},
-    ],
-})  # type: collections.OrderedDict[str, Dict[str, Union[str, Callable[[str], str]]]]
+    ]),
+]  # List[papis.document.KeyConversionPair]
 
 
 def crossref_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -157,7 +160,7 @@ def crossref_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _get_crossref_works(
-        **kwargs: Dict[str, Any]) -> habanero.request_class.Request:
+        **kwargs: Any) -> habanero.request_class.Request:
     cr = habanero.Crossref()
     return cr.works(**kwargs)
 
@@ -186,21 +189,20 @@ def get_data(
         ids=dois,
         query_title=title, limit=max_results
     )
-    kwargs = {key: data[key] for key in data.keys() if data[key]}
+    kwargs = {key: data[key] for key in data if data[key]}
     if not dois:
         kwargs.update(dict(sort=sort, order=order))
     try:
         results = _get_crossref_works(filter=filters, **kwargs)
     except Exception as e:
-        logger.error(e)
+        LOGGER.error(e)
         return []
 
     if isinstance(results, list):
         docs = [d["message"] for d in results]
     elif isinstance(results, dict):
         if 'message' not in results.keys():
-            logger.error(
-                "Error retrieving from xref, I got an incorrect message")
+            LOGGER.error("Error retrieving from xref: incorrect message")
             return []
         message = results['message']
         if "items" in message.keys():
@@ -208,13 +210,12 @@ def get_data(
         else:
             docs = [message]
     else:
-        logger.error("Error retrieving from xref, I got an incorrect message")
+        LOGGER.error("Error retrieving from xref: incorrect message")
         return []
-    logger.debug("Retrieved {} documents".format(len(docs)))
+    LOGGER.debug("Retrieved %s documents", len(docs))
     return [
         crossref_data_to_papis_data(d)
-        for d in docs
-    ]
+        for d in docs]
 
 
 def doi_to_data(doi_string: str) -> Dict[str, Any]:
@@ -226,37 +227,41 @@ def doi_to_data(doi_string: str) -> Dict[str, Any]:
     :raises ValueError: If no data could be retrieved for the doi
 
     """
-    global logger
+    global LOGGER
     doi_string = doi.get_clean_doi(doi_string)
     results = get_data(dois=[doi_string])
     if results:
         return results[0]
-    else:
-        raise ValueError(
-            "Couldn't get data for doi ({doi})".format(doi=doi_string))
+    raise ValueError("Couldn't get data for doi ({})".format(doi_string))
 
 
 @click.command('crossref')
 @click.pass_context
 @click.help_option('--help', '-h')
-@click.option('--query', '-q', help='General query', default=None)
-@click.option('--author', '-a', help='Author of the query', default=None)
-@click.option('--title', '-t', help='Title of the query', default=None)
-@click.option('--max', '-m', help='Maximum number of results', default=20)
+@click.option('--query', '-q', help='General query', default="")
+@click.option('--author', '-a', help='Author of the query', default="")
+@click.option('--title', '-t', help='Title of the query', default="")
 @click.option(
-    '--filter', '-f', help='Filters to apply', default=(),
+    '--max', '-m', '_ma', help='Maximum number of results', default=20)
+@click.option(
+    '--filter', '-f', '_filters', help='Filters to apply', default=(),
     type=(click.Choice(_filter_names), str),
-    multiple=True
-)
+    multiple=True)
 @click.option(
     '--order', '-o', help='Order of appearance according to sorting',
-    default='desc', type=click.Choice(_order_values), show_default=True
-)
+    default='desc', type=click.Choice(_order_values), show_default=True)
 @click.option(
     '--sort', '-s', help='Sorting parameter', default='score',
-    type=click.Choice(_sort_values), show_default=True
-)
-def explorer(ctx, query, author, title, max, filter, sort, order):
+    type=click.Choice(_sort_values), show_default=True)
+def explorer(
+        ctx: click.core.Context,
+        query: str,
+        author: str,
+        title: str,
+        _ma: int,
+        _filters: List[Tuple[str, str]],
+        sort: str,
+        order: str) -> None:
     """
     Look for documents on crossref.org.
 
@@ -271,41 +276,43 @@ def explorer(ctx, query, author, title, max, filter, sort, order):
         query=query,
         author=author,
         title=title,
-        max_results=max,
-        filters=dict(filter),
+        max_results=_ma,
+        filters=dict(_filters),
         sort=sort,
         order=order)
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj['documents'] += docs
-    logger.info('{} documents found'.format(len(docs)))
+    logger.info('%s documents found', len(docs))
 
 
 class DoiFromPdfImporter(papis.importer.Importer):
 
     """Importer parsing a doi from a pdf file"""
 
-    def __init__(self, **kwargs):
-        papis.importer.Importer.__init__(self, name='pdf2doi', **kwargs)
-        self.doi = None
+    def __init__(self, filepath: str) -> None:
+        papis.importer.Importer.__init__(self, name='pdf2doi', uri=filepath)
+        self.doi = None  # type: Optional[str]
 
     @classmethod
-    def match(cls, uri: str):
-        if (os.path.isdir(uri) or not os.path.exists(uri) or
-                not papis.filetype.get_document_extension(uri) == 'pdf'):
+    def match(cls, filepath: str) -> Optional[papis.importer.Importer]:
+        if (os.path.isdir(filepath) or not os.path.exists(filepath) or
+                not papis.filetype.get_document_extension(filepath) == 'pdf'):
             return None
-        importer = DoiFromPdfImporter(uri=uri)
-        importer.doi = doi.pdf_to_doi(uri, maxlines=2000)
+        importer = DoiFromPdfImporter(filepath)
+        importer.fetch()
         return importer if importer.doi else None
 
-    def fetch(self):
+    def fetch(self) -> None:
         self.logger.info("Trying to parse doi from file {0}".format(self.uri))
+        if self.ctx:
+            return
         if not self.doi:
             self.doi = doi.pdf_to_doi(self.uri, maxlines=2000)
         if self.doi:
             self.logger.info("Parsed doi {0}".format(self.doi))
             self.logger.warning(
                 "There is no guarantee that this doi is the one")
-            importer = Importer(uri=self.doi)
+            importer = Importer(doi=self.doi)
             importer.fetch()
             self.ctx = importer.ctx
 
@@ -314,36 +321,38 @@ class Importer(papis.importer.Importer):
 
     """Importer getting files and data form a doi through crossref.org"""
 
-    def __init__(self, **kwargs):
-        papis.importer.Importer.__init__(self, name='doi', **kwargs)
+    def __init__(self, doi: str) -> None:
+        papis.importer.Importer.__init__(self, name='doi', uri=doi)
 
     @classmethod
-    def match(cls, uri):
+    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
         try:
             doi.validate_doi(uri)
         except ValueError:
             return None
         else:
-            return Importer(uri=uri)
+            return Importer(doi=uri)
 
     @classmethod
-    def match_data(cls, data):
+    def match_data(
+            cls, data: Dict[str, Any]) -> Optional[papis.importer.Importer]:
         if 'doi' in data:
-            return Importer(uri=data['doi'])
+            return Importer(doi=data['doi'])
+        return None
 
-    def fetch(self):
+    def fetch(self) -> None:
         self.logger.info("using doi {0}".format(self.uri))
         doidata = papis.crossref.get_data(dois=[self.uri])
         if doidata:
             self.ctx.data = doidata[0]
-            if papis.config.get('doc-url-key-name') in self.ctx.data.keys():
-                doc_url = self.ctx.data[papis.config.get('doc-url-key-name')]
+            _doc_url_keyname = papis.config.getstring('doc-url-key-name')
+            if _doc_url_keyname in self.ctx.data.keys():
+                doc_url = self.ctx.data[_doc_url_keyname]
                 self.logger.info(
-                    'trying to download document from {0}..'
-                    .format(doc_url))
+                    'trying to download document from %s..', doc_url)
                 session = requests.Session()
-                session.headers = {
-                    'User-Agent': papis.config.get('user-agent')}
+                session.headers = requests.structures.CaseInsensitiveDict({
+                    'user-agent': papis.config.getstring('user-agent')})
                 document_data = session.get(doc_url).content
                 tmp_filepath = tempfile.mktemp()
                 self.logger.debug("Saving in %s" % tmp_filepath)
@@ -356,46 +365,51 @@ class FromCrossrefImporter(papis.importer.Importer):
 
     """Importer that gets data from querying to crossref"""
 
-    def __init__(self, **kwargs):
-        papis.importer.Importer.__init__(self, name='crossref', **kwargs)
+    def __init__(self, uri: str) -> None:
+        papis.importer.Importer.__init__(self, uri=uri, name='crossref')
 
     @classmethod
-    def match(cls, uri):
+    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
         # There is no way to check if it matches
         return None
 
     @classmethod
-    def match_data(cls, data):
+    def match_data(
+            cls, data: Dict[str, Any]) -> Optional[papis.importer.Importer]:
         if 'title' in data:
             return FromCrossrefImporter(uri=data['title'])
+        return None
 
-    def fetch_data(self):
+    def fetch_data(self) -> None:
         self.logger.info("querying '{0}' to crossref.org".format(self.uri))
         docs = [
             papis.document.from_data(d)
-            for d in get_data(query=self.uri) ]
+            for d in get_data(query=self.uri)]
         if docs:
             self.logger.info("got {0} matches, picking...".format(len(docs)))
             doc = papis.pick.pick_doc(docs)
             if doc:
-                importer = Importer(uri=doc['doi'])
+                importer = Importer(doi=doc['doi'])
                 importer.fetch()
                 self.ctx = importer.ctx
 
 
 class Downloader(papis.downloaders.base.Downloader):
 
-    def __init__(self, uri):
+    def __init__(self, uri: str):
         papis.downloaders.base.Downloader.__init__(self, uri=uri, name="doi")
 
     @classmethod
-    def match(cls, uri):
+    def match(cls, uri: str) -> Optional[papis.downloaders.base.Downloader]:
         if doi.find_doi_in_text(uri):
             return Downloader(uri)
         else:
             return None
 
-    def fetch(self):
-        importer = Importer(uri=doi.find_doi_in_text(self.uri))
+    def fetch(self) -> None:
+        _doi = doi.find_doi_in_text(self.uri)
+        if _doi is None:
+            return None
+        importer = Importer(doi=_doi)
         importer.fetch()
         self.ctx = importer.ctx

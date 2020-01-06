@@ -32,7 +32,7 @@ class Importer:
         self.logger = logging.getLogger("importer:{0}".format(self.name))
 
     @classmethod
-    def match(cls, uri: str) -> Optional[object]:
+    def match(cls, uri: str) -> Optional['Importer']:
         """This method should be called to know if a given uri matches
         the importer or not.
 
@@ -51,7 +51,7 @@ class Importer:
             "Matching uri not implemented for this importer")
 
     @classmethod
-    def match_data(cls, data: Dict[str, Any]) -> None:
+    def match_data(cls, data: Dict[str, Any]) -> Optional['Importer']:
         """Get a dictionary of data and try to decide if there is
         a valid uri in it.
 
