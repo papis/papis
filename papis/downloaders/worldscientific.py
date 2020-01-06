@@ -1,4 +1,6 @@
 import re
+from typing import Optional
+
 import papis.downloaders.base
 
 
@@ -15,7 +17,7 @@ class Downloader(papis.downloaders.base.Downloader):
         if re.match(r".*worldscientific.com.*", url):
             return Downloader(url)
         else:
-            return False
+            return None
 
     def get_doi(self) -> Optional[str]:
         url = self.uri
