@@ -11,7 +11,7 @@ from prompt_toolkit.layout.controls import (
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.filters import has_focus
 import shlex
-from typing import Optional, Dict, Any, List, Union, Callable, Tuple
+from typing import Any, List, Callable
 
 
 class Command:

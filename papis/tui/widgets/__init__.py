@@ -1,3 +1,5 @@
+from typing import Any
+
 from prompt_toolkit.formatted_text.html import HTML
 from prompt_toolkit.filters import has_focus, Condition
 from prompt_toolkit.buffer import Buffer
@@ -14,14 +16,9 @@ from prompt_toolkit.widgets import (
 )
 from prompt_toolkit.lexers import PygmentsLexer
 from pygments.lexers import find_lexer_class_by_name
-import logging
 
 from .list import OptionsList
 from .command_line_prompt import CommandLinePrompt
-
-logger = logging.getLogger('pick')
-
-from typing import Any
 
 
 class MessageToolbar(ConditionalContainer):  # type: ignore

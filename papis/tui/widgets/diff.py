@@ -1,5 +1,4 @@
 import difflib
-import collections
 import prompt_toolkit
 from prompt_toolkit import Application
 from prompt_toolkit.layout.containers import HSplit, Window, WindowAlign
@@ -8,7 +7,7 @@ from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.key_binding import KeyBindings
 
-from typing import Dict, Any, List, Union, NamedTuple, Callable, Tuple, Sequence
+from typing import Dict, Any, List, Union, NamedTuple, Callable, Sequence
 
 Action = NamedTuple(
         'Action',
@@ -63,7 +62,8 @@ def prompt(
         ([
             Window(
                 height=1, align=WindowAlign.LEFT,
-                always_hide_cursor=True, style='bold fg:ansipurple bg:ansiwhite',
+                always_hide_cursor=True,
+                style='bold fg:ansipurple bg:ansiwhite',
                 content=FormattedTextControl(focusable=False, text=title))
         ] if title else [])
     )
@@ -94,9 +94,9 @@ def diffshow(
     assert(isinstance(textb, str))
 
     # diffs = difflib.unified_diff(
-            # str(texta).splitlines(keepends=True),
-            # str(textb).splitlines(keepends=True),
-            # fromfile=namea, tofile=nameb)
+    #         str(texta).splitlines(keepends=True),
+    #         str(textb).splitlines(keepends=True),
+    #         fromfile=namea, tofile=nameb)
 
     diffs = difflib.ndiff(
             str(texta).splitlines(keepends=True),
@@ -106,16 +106,17 @@ def diffshow(
         "^^^^^^^^^\ndiff from\n",
         "----- {namea}\n".format(namea=namea),
         "+++++ {nameb}\n".format(nameb=nameb),
-    ] # type: Sequence[str]
+    ]  # type: Sequence[str]
 
-    formatted_text = list(map(lambda line:
-        # match line values
-        line.startswith('@') and ('fg:violet bg:ansiblack', line) or
-        line.startswith('+') and ('fg:ansigreen bg:ansiblack', line) or
-        line.startswith('-') and ('fg:ansired bg:ansiblack', line) or
-        line.startswith('?') and ('fg:ansiyellow bg:ansiblack', line) or
-        line.startswith('^^^') and ('bg:ansiblack fg:ansipurple', line) or
-        ('fg:ansiwhite', line), raw_text))
+    formatted_text = list(map(
+        lambda line:
+            # match line values
+            line.startswith('@') and ('fg:violet bg:ansiblack', line) or
+            line.startswith('+') and ('fg:ansigreen bg:ansiblack', line) or
+            line.startswith('-') and ('fg:ansired bg:ansiblack', line) or
+            line.startswith('?') and ('fg:ansiyellow bg:ansiblack', line) or
+            line.startswith('^^^') and ('bg:ansiblack fg:ansipurple', line) or
+            ('fg:ansiwhite', line), raw_text))
 
     prompt(
         title=title,
@@ -158,13 +159,16 @@ def diffdict(
         for k in options:
             options[k] = False
 
-    def oset(event: prompt_toolkit.utils.Event, option: str, value: bool) -> None:
+    def oset(
+            event: prompt_toolkit.utils.Event,
+            option: str, value: bool) -> None:
         options[option] = value
         event.app.exit(0)
 
     actions = [
         Action(
-            name='Add all', key='a', action=lambda e: oset(e, "add_all", True)),
+            name='Add all',
+            key='a', action=lambda e: oset(e, "add_all", True)),
         Action(
             name='Split', key='s', action=lambda e: oset(e, "split", True)),
         Action(
