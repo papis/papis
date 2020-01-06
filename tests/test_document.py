@@ -4,6 +4,7 @@ from papis.document import (
     to_json,
     from_folder,
     from_data,
+    format_doc,
     Document,
     sort
 )
@@ -11,9 +12,7 @@ import tempfile
 import papis.config
 import pickle
 import os
-from tests import (
-    create_random_file
-)
+from tests import create_random_file, setup_test_library
 
 
 def test_new() -> None:
@@ -135,3 +134,17 @@ def test_sort() -> None:
     ]
     sDocs = sort(docs, key="year", reverse=False)
     assert(sDocs[0] == docs[1])
+
+
+def test_format_doc():
+    setup_test_library()
+    document = from_data(dict(author='Fulano', title='Something'))
+
+    assert format_doc('{doc[author]}{doc[title]}', document) == \
+        'FulanoSomething'
+    assert format_doc('{doc[author]}{doc[title]}{doc[blahblah]}', document) ==\
+        'FulanoSomething'
+
+    assert(format_doc(
+        '{doc[author]}{doc[title]}{doc[blahblah]}', dict(title='hell'))
+        == 'hell')

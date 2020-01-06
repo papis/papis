@@ -9,9 +9,11 @@ import papis.document
 from papis.document import from_data
 from papis.utils import (
     get_cache_home, create_identifier, locate_document,
-    general_open, format_doc, input, clean_document_name,
-    confirm, get_document_extension,
+    general_open, input, clean_document_name,
+    confirm
 )
+from papis.filetype import get_document_extension
+
 
 def test_get_cache_home():
     os.environ["XDG_CACHE_HOME"] = '~/.cache'
@@ -100,20 +102,6 @@ def test_locate_document():
     doc = from_data(dict(title='Hello world'))
     found_doc = locate_document(doc, docs)
     assert found_doc is None
-
-
-def test_format_doc():
-    tests.setup_test_library()
-    document = from_data(dict(author='Fulano', title='Something'))
-
-    assert format_doc('{doc[author]}{doc[title]}', document) == \
-        'FulanoSomething'
-    assert format_doc('{doc[author]}{doc[title]}{doc[blahblah]}', document) ==\
-        'FulanoSomething'
-
-    assert(format_doc(
-        '{doc[author]}{doc[title]}{doc[blahblah]}', dict(title='hell'))
-        == 'hell')
 
 
 def test_extension():
