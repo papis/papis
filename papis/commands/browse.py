@@ -31,8 +31,8 @@ from typing import Optional
 logger = logging.getLogger('browse')
 
 
-def run(document: papis.document.Document) -> None:
-    """Browse document's url whenever possible.
+def run(document: papis.document.Document) -> Optional[str]:
+    """Browse document's url whenever possible and returns the url
 
     :document: Document object
 
@@ -63,6 +63,7 @@ def run(document: papis.document.Document) -> None:
 
     logger.info("Opening url %s:" % url)
     papis.utils.general_open(url, "browser", wait=False)
+    return url
 
 
 @click.command("browse")
