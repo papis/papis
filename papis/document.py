@@ -103,8 +103,9 @@ class Document(Dict[str, Any]):
     subfolder = ""  # type: str
     _info_file_path = ""  # type: str
 
-    def __init__(self, folder: Optional[str] = None,
-            data: Optional[Dict[str, Any]]=None):
+    def __init__(
+            self, folder: Optional[str] = None,
+            data: Optional[Dict[str, Any]] = None):
         self._folder = None  # type: Optional[str]
 
         if folder is not None:
@@ -192,8 +193,9 @@ class Document(Dict[str, Any]):
         result = []  # type: List[str]
         if not self.has('files'):
             return result
-        files = (self["files"] if isinstance(self["files"], list)
-                               else [self["files"]])
+        files = (self["files"]
+                 if isinstance(self["files"], list)
+                 else [self["files"]])
         folder = self.get_main_folder()
         if folder:
             for f in files:

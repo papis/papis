@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function
 import logging
 import os
 import re
-from typing import Optional, List, Dict, Any, Callable
+from typing import Optional, List, Dict, Any
 
 import papis.config
 import click
@@ -104,7 +104,7 @@ def explorer(ctx: click.core.Context, bibfile: str) -> None:
     logger.info('Reading in bibtex file {}'.format(bibfile))
     docs = [
         papis.document.from_data(d)
-        for d in bibtex_to_dict(bibfile) ]
+        for d in bibtex_to_dict(bibfile)]
     ctx.obj['documents'] += docs
     logger.info('{} documents found'.format(len(docs)))
 
@@ -161,7 +161,8 @@ def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
     """
     from bibtexparser.bparser import BibTexParser
 
-    parser = BibTexParser(common_strings=True,
+    parser = BibTexParser(
+            common_strings=True,
             ignore_nonstandard_types=False,
             homogenize_fields=False,
             interpolate_strings=True)
@@ -233,38 +234,27 @@ def to_bibtex(document: papis.document.Document) -> str:
     for bibKey in sorted(document.keys()):
         logger.debug('%s : %s' % (bibKey, document[bibKey]))
         if bibKey in bibtex_key_converter:
-            newBibKey = bibtex_key_converter[bibKey]
-            document[newBibKey] = document[bibKey]
+            new_bibkey = bibtex_key_converter[bibKey]
+            document[new_bibkey] = document[bibKey]
             continue
         if bibKey in bibtex_keys:
             value = str(document[bibKey])
             if not papis.config.get('bibtex-unicode'):
                 value = unicode_to_latex(value)
             if bibKey == 'journal':
-                bibtex_journal_key = papis.config.get('bibtex-journal-key')
-                if bibtex_journal_key in document.keys():
+                journal_key = papis.config.getstring('bibtex-journal-key')
+                if journal_key in document.keys():
                     bibtex_string += "  %s = {%s},\n" % (
                         'journal',
-                        unicode_to_latex(str(
-                          document[papis.config.getstring('bibtex-journal-key')]
-                            ))
+                        unicode_to_latex(str(document[journal_key]))
                     )
-                elif bibtex_journal_key not in document.keys():
+                elif journal_key not in document.keys():
                     logger.warning(
-                        "Key '%s' is not present for ref=%s" % (
-                            papis.config.get('bibtex-journal-key'),
-                            document["ref"]
-                        )
-                    )
-                    bibtex_string += "  %s = {%s},\n" % (
-                        'journal',
-                        value
-                    )
+                        "Key '{0}' is not present for ref={1}"
+                        .format(journal_key, document["ref"]))
+                    bibtex_string += "  %s = {%s},\n" % ('journal', value)
             else:
-                bibtex_string += "  %s = {%s},\n" % (
-                    bibKey,
-                    value
-                )
+                bibtex_string += "  %s = {%s},\n" % (bibKey, value)
     bibtex_string += "}\n"
     return bibtex_string
 

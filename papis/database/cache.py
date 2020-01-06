@@ -53,8 +53,9 @@ def get_cache_file_path(directory: str) -> str:
     return os.path.join(folder, cache_name)
 
 
-def filter_documents(documents: List[papis.document.Document],
-        search: str="") -> List[papis.document.Document]:
+def filter_documents(
+        documents: List[papis.document.Document],
+        search: str = "") -> List[papis.document.Document]:
     """Filter documents. It can be done in a multi core way.
 
     :param documents: List of papis documents.
@@ -96,7 +97,8 @@ def filter_documents(documents: List[papis.document.Document],
         logger.debug(
             "Filtering {0} docs (search {1}) using {2} cores".format(
                 len(documents), search, np))
-        result = pool.map(papis.docmatcher.DocMatcher.return_if_match, documents)
+        result = pool.map(papis.docmatcher.DocMatcher.return_if_match,
+                          documents)
         pool.close()
         pool.join()
         filtered_docs = [d for d in result if d is not None]
@@ -105,8 +107,9 @@ def filter_documents(documents: List[papis.document.Document],
     return filtered_docs
 
 
-def match_document(document: papis.document.Document, search: str,
-        match_format: str="") -> Optional[Match[str]]:
+def match_document(
+        document: papis.document.Document, search: str,
+        match_format: str = "") -> Optional[Match[str]]:
     """Main function to match document to a given search.
 
     :param document: Papis document
@@ -215,7 +218,8 @@ class Database(papis.database.base.Database):
         docs.pop(index)
         self.save()
 
-    def match(self, document: papis.document.Document,
+    def match(
+            self, document: papis.document.Document,
             query_string: str) -> bool:
         return bool(match_document(document, query_string))
 
@@ -225,7 +229,8 @@ class Database(papis.database.base.Database):
         if os.path.exists(cache_path):
             os.remove(cache_path)
 
-    def query_dict(self, dictionary: Dict[str, str]) -> List[papis.document.Document]:
+    def query_dict(
+            self, dictionary: Dict[str, str]) -> List[papis.document.Document]:
         query_string = " ".join(
             ["{}:\"{}\" ".format(key, val)
                 for key, val in dictionary.items()])
@@ -258,7 +263,9 @@ class Database(papis.database.base.Database):
     def _get_cache_file_path(self) -> str:
         return get_cache_file_path(self.lib.path_format())
 
-    def _locate_document(self, document: papis.document.Document
+    def _locate_document(
+            self,
+            document: papis.document.Document
             ) -> List[Tuple[int, papis.document.Document]]:
         assert(isinstance(document, papis.document.Document))
         result = list(filter(

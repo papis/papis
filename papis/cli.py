@@ -5,7 +5,7 @@ import click.decorators
 
 import papis.config
 import difflib
-from typing import Optional, Any, Callable, Union
+from typing import Optional, Any, Callable
 
 
 DecoratorCallable = Callable[..., Any]

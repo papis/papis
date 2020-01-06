@@ -1,17 +1,17 @@
 """This module describes which functions are intended to be used by users to
 create papis scripts.
 """
-
+from typing import Any, Dict, List, Optional
 import logging
+
 import papis.utils
 import papis.commands
 import papis.config
 import papis.pick
 import papis.database
-from typing import Any, Dict, List, Optional, Sequence
 
-logger = logging.getLogger("api")
-logger.debug("importing")
+LOGGER = logging.getLogger("api")
+LOGGER.debug("importing")
 
 
 def get_lib_name() -> str:
@@ -102,8 +102,8 @@ def edit_file(file_path: str, wait: bool = True) -> None:
     papis.utils.general_open(file_path, "editor", wait=wait)
 
 
-def get_all_documents_in_lib(library: Optional[str] = None
-        ) -> List[papis.document.Document]:
+def get_all_documents_in_lib(
+        library: Optional[str] = None) -> List[papis.document.Document]:
     """Get ALL documents contained in the given library with possibly.
 
     :param library: Library name.
@@ -123,8 +123,8 @@ def get_all_documents_in_lib(library: Optional[str] = None
     return papis.database.get(library).get_all_documents()
 
 
-def get_documents_in_dir(directory: str, search: str = ""
-        ) -> List[papis.document.Document]:
+def get_documents_in_dir(
+        directory: str, search: str = "") -> List[papis.document.Document]:
     """Get documents contained in the given folder with possibly a search
     string.
 
@@ -147,8 +147,9 @@ def get_documents_in_dir(directory: str, search: str = ""
     return get_documents_in_lib(directory, search)
 
 
-def get_documents_in_lib(library: Optional[str] = None, search: str = ""
-        ) -> List[papis.document.Document]:
+def get_documents_in_lib(
+        library: Optional[str] = None,
+        search: str = "") -> List[papis.document.Document]:
     """Get documents contained in the given library with possibly a search
     string.
 

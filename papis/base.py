@@ -9,11 +9,11 @@ import urllib.parse
 import urllib.request  # import urlencode
 import logging
 import json
-from typing import Optional, Dict, Any, List, Union, Callable, Tuple, NamedTuple
+from typing import Optional, Dict, Any, List, Callable, NamedTuple
 
 import click
 
-logger = logging.getLogger('base')
+LOGGER = logging.getLogger('base')
 
 
 def get_data(query: str = "", max: int = 20) -> List[Dict[str, Any]]:
@@ -22,10 +22,10 @@ def get_data(query: str = "", max: int = 20) -> List[Dict[str, Any]]:
         "cgi-bin/BaseHttpSearchInterface.fcgi/"
     )
 
-    logger.warning('BASE engine in papis is experimental')
+    LOGGER.warning('BASE engine in papis is experimental')
 
     if max > 125:
-        logger.error('BASE only allows a maximum of 125 hits')
+        LOGGER.error('BASE only allows a maximum of 125 hits')
         max = 125
 
     dict_params = {
@@ -38,7 +38,7 @@ def get_data(query: str = "", max: int = 20) -> List[Dict[str, Any]]:
         {x: dict_params[x] for x in dict_params if dict_params[x]}
     )
     req_url = base_baseurl + "search?" + params
-    logger.debug("url = " + req_url)
+    LOGGER.debug("url = " + req_url)
     url = urllib.request.Request(
         req_url,
         headers={
@@ -47,7 +47,7 @@ def get_data(query: str = "", max: int = 20) -> List[Dict[str, Any]]:
     )
     jsondoc = json.loads(urllib.request.urlopen(url).read().decode())
     docs = jsondoc.get('response').get('docs')
-    logger.info("Retrieved {0} documents".format(len(docs)))
+    LOGGER.info("Retrieved {0} documents".format(len(docs)))
     return list(map(basedoc_to_papisdoc, docs))
 
 

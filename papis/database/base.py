@@ -7,7 +7,7 @@ import papis.config
 import papis.library
 import papis.document
 
-from typing import Optional, List, Dict, Match
+from typing import Optional, List, Dict
 from abc import ABC, abstractmethod
 
 
@@ -71,8 +71,8 @@ class Database(ABC):
         ...
 
     @abstractmethod
-    def query_dict(self,
-            query: Dict[str, str]) -> List[papis.document.Document]:
+    def query_dict(
+            self, query: Dict[str, str]) -> List[papis.document.Document]:
         ...
 
     @abstractmethod

@@ -34,7 +34,6 @@ def _instantiate_database(backend_name: str, library: Library) -> Database:
         raise Exception('No valid database type: {}'.format(backend_name))
 
 
-
 def get_all_query_string() -> str:
     return get().get_all_query_string()
 

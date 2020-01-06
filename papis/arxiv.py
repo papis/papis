@@ -21,7 +21,7 @@ import bs4
 import logging
 import urllib.request  # urlopen, Request
 import urllib.parse  # import urlencode
-from typing import Optional, List, Dict, Any, Callable, Type
+from typing import Optional, List, Dict, Any
 
 import click
 import arxiv2bib

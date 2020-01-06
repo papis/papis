@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import shlex
-from typing import Optional, List, Iterator, Callable, Any, Dict, Union, Type
+from typing import Optional, List, Iterator, Callable, Any, Dict, Union
 import subprocess
 import multiprocessing
 import time
@@ -23,7 +23,7 @@ logger.debug("importing")
 
 
 def general_open(
-        fileName: str, key: str,
+        file_name: str, key: str,
         default_opener: Optional[str] = None,
         wait: bool = True) -> None:
     """Wraper for openers
@@ -50,7 +50,7 @@ def general_open(
         if default_opener is None:
             default_opener = papis.config.get_default_opener()
         opener = default_opener
-    cmd = shlex.split("{0} '{1}'".format(opener, fileName))
+    cmd = shlex.split("{0} '{1}'".format(opener, file_name))
     logger.debug("cmd:  %s" % cmd)
     if wait:
         logger.debug("Waiting for process to finsih")
@@ -72,7 +72,7 @@ def open_file(file_path: str, wait: bool = True) -> None:
     :type  wait: bool
 
     """
-    general_open(fileName=file_path, key="opentool", wait=wait)
+    general_open(file_name=file_path, key="opentool", wait=wait)
 
 
 def get_folders(folder: str) -> List[str]:

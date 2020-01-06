@@ -2,7 +2,7 @@ import yaml
 import logging
 import click
 import os
-from typing import Optional, List, Dict, Any, Callable
+from typing import Optional, List, Dict, Any
 
 import papis.utils
 import papis.config
@@ -36,7 +36,8 @@ def exporter(documents: List[papis.document.Document]) -> str:
     return str(string)
 
 
-def yaml_to_data(yaml_path: str,
+def yaml_to_data(
+        yaml_path: str,
         raise_exception: bool = False) -> Dict[str, Any]:
     """
     Convert a yaml file into a dictionary using the yaml module.

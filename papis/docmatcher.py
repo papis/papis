@@ -2,6 +2,7 @@ import papis.config
 import papis.document
 import logging
 from typing import Optional, List, Any, Callable
+MATCHER_TYPE = Callable[[papis.document.Document, str, str], Any]
 
 
 class DocMatcher(object):
@@ -23,7 +24,7 @@ class DocMatcher(object):
     parsed_search = []  # type: List[Any]
     doc_format = '{%s[DOC_KEY]}' % (papis.config.getstring('format-doc-name'))
     logger = logging.getLogger('DocMatcher')
-    matcher = None  # type: Optional[Callable[[papis.document.Document, str, str], Any]]
+    matcher = None  # type: Optional[MATCHER_TYPE]
 
     @classmethod
     def return_if_match(
@@ -76,7 +77,7 @@ class DocMatcher(object):
         cls.search = search
 
     @classmethod
-    def set_matcher(cls, matcher: Callable[[papis.document.Document, str, str], Any]) -> None:
+    def set_matcher(cls, matcher: MATCHER_TYPE) -> None:
         """
         >>> from papis.database.cache import match_document
         >>> DocMatcher.set_matcher(match_document)

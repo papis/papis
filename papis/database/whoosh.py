@@ -56,6 +56,7 @@ from papis.utils import get_cache_home, get_folders, folders_to_documents
 
 from typing import List, Dict, Optional, Any, KeysView
 
+
 class Database(papis.database.base.Database):
 
     def __init__(self, library: Optional[papis.library.Library] = None):
@@ -103,8 +104,8 @@ class Database(papis.database.base.Database):
         self.logger.debug("commiting deletion..")
         writer.commit()
 
-    def query_dict(self,
-            dictionary: Dict[str, str]) -> List[papis.document.Document]:
+    def query_dict(
+            self, dictionary: Dict[str, str]) -> List[papis.document.Document]:
         query_string = " AND ".join(
             ["{}:\"{}\" ".format(key, val)
                 for key, val in dictionary.items()])
@@ -172,9 +173,11 @@ class Database(papis.database.base.Database):
         """
         return whoosh.index.exists_in(self.index_dir)
 
-    def add_document_with_writer(self,
+    def add_document_with_writer(
+            self,
             document: papis.document.Document,
-            writer: IndexWriter, schema_keys: KeysView[str]) -> None:
+            writer: IndexWriter,
+            schema_keys: KeysView[str]) -> None:
         """Helper function that takes a writer and a dictionary
         containing the keys of the schema and adds the document to the writer.
         Notice that this function does only two things, creating a suitable
@@ -303,9 +306,11 @@ class Database(papis.database.base.Database):
         """Returns the arguments to be passed to the whoosh schema
         object instantiation found in the method `get_schema`.
         """
-        from whoosh.fields import TEXT, ID, KEYWORD, STORED
+        # This we need for the eval code beneath
+        from whoosh.fields import TEXT, ID, KEYWORD, STORED  # noqa: F401
         # This part is non-negotiable
         fields = {self.get_id_key(): ID(stored=True, unique=True)}
+        # TODO: this is a security risk, find a way to fix it
         user_prototype = eval(
             papis.config.getstring('whoosh-schema-prototype'))  # KeysView[str]
         fields.update(user_prototype)
