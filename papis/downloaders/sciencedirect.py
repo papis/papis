@@ -1,98 +1,25 @@
 import re
-import papis.downloaders.base
-import papis.document
 import json
-import collections
 import functools
 from typing import (
-    Dict, Optional, Any, List, Union, NamedTuple, Callable, Tuple, Sequence, TypeVar)
+    Dict, Optional, Any, List, Union, NamedTuple, Callable,
+    Tuple, Sequence, TypeVar)
+
+import papis.downloaders
+import papis.document
 
 _K = papis.document.KeyConversionPair
-A = TypeVar("A")
-B = TypeVar("B")
 
 
-def fmap(fun: Callable[[A], B], value: Optional[A]) -> Optional[B]:
-    return fun(value) if value is not None else None
+def _page_to_pages(data: List[Dict[str, str]]) -> str:
+    if len(data) == 0:
+        raise RuntimeError("No data to turn to pages")
+    x = data[0]
+    if not {"first-page", "last-page"} & x.keys():
+        raise RuntimeError("first-page and last-page not found")
+    return "{0}--{1}".format(x["first-page"], x["last-page"])
 
 
-def get_author_list(data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    rdata = []  # type: List[Dict[str, Any]]
-    for d in data:
-        if d["#name"] == "author":
-            author_data = dict()
-            for prop in d["$$"]:
-                if prop["#name"] == "given-name":
-                    author_data["given"] = prop["_"]
-                elif prop["#name"] == "surname":
-                    author_data["family"] = prop["_"]
-                elif prop["#name"] == "cross-ref":
-                    author_data["refid"] = prop["$"]["refid"]
-            rdata.append(author_data)
-        if d["#name"] == "affiliation":
-            affid = d["$"]["id"]
-            text = functools.reduce(lambda x, y: x + y,
-                map(lambda x: x["_"],
-                    filter(lambda x: x["#name"] == "textfn",
-                        d["$$"])))
-            authors = list(filter(lambda a: a.get("refid") == affid, rdata))
-            if authors:
-                authors[0]["affiliation"] = [dict(name=text)]
-                del authors[0]["refid"]
-            else:
-                if len(rdata) == 1:
-                    rdata[0]["affiliation"] = [dict(name=text)]
-    return rdata
-
-
-authors_keyconv = [
-    _K("content", [{
-        "key": "author_list",
-        "action": lambda x:
-        get_author_list(
-            list(
-                functools.reduce(lambda s, t: s+t,
-                    map(lambda s: s["$$"],
-                    filter(lambda s: s["#name"] == "author-group",
-                        x)))))
-    }])
-]  # List[papis.document.KeyConversionPair]
-"""
-abstracts_keyconv = [_K(
-    "content",
-    [
-        {  # Single author format
-            "key": "abstract",
-            "action": lambda x: " ".join(
-                map(lambda s: s["_"],
-                    functools.reduce(lambda s, t: s + t,
-                        map(lambda s: s["$$"],
-                            filter(lambda s: s["#name"] == 'abstract-sec',
-                                functools.reduce(lambda s, t: s+t,
-                                    map(lambda s: s["$$"],
-                                        filter(lambda s:
-                                            s['$']['class'] == 'author',
-                                            x)))))))
-            )
-        },
-        { # multiple author format (apparently)
-            "key": "abstract",
-            "action": lambda x: " ".join(
-                map(lambda s: s['_'],
-                    functools.reduce(lambda x, y: x + y,
-                        map(lambda s: s["$$"],
-                            filter(lambda s: s['#name'] == 'simple-para',
-                                functools.reduce(lambda x, y: x + y,
-                                    map(lambda s: s["$$"],
-                                        filter(lambda s: s["#name"] == 'abstract-sec',
-                                            functools.reduce(lambda x, y: x + y,
-                                                map(lambda s: s["$$"],
-                                                    filter(lambda s: s['$']['class'] == 'author',
-                                                        x)))))))))))
-        }
-    ]
-)]  # List[papis.document.KeyConversionPair]
-"""
 article_keyconv = [
     _K("doi", [papis.document.EmptyKeyConversion]),
     _K("pii", [papis.document.EmptyKeyConversion]),
@@ -110,7 +37,7 @@ article_keyconv = [
         {"key": "publication-date", "action": lambda x: x["Publication date"]}
     ]),
     _K("pages", [{
-        "action": lambda x: "{x[first-page]}--{x[last-page]}".format(x=x[0]),
+        "action": _page_to_pages,
         "key": None
     }]),
 ]  # List[papis.document.KeyConversionPair]
@@ -119,16 +46,6 @@ script_keyconv = [
         "key": "_article_data",
         "action": lambda x:
             papis.document.keyconversion_to_data(article_keyconv, x)
-    }]),
-    _K("abstracts", [{
-        "key": "_abstract_data",
-        "action": lambda x:
-            papis.document.keyconversion_to_data(abstracts_keyconv, x)
-    }]),
-    _K("authors", [{
-        "key": "_author_data",
-        "action": lambda x:
-            papis.document.keyconversion_to_data(authors_keyconv, x)
     }]),
 ]  # List[papis.document.KeyConversionPair]
 
@@ -149,7 +66,7 @@ class Downloader(papis.downloaders.Downloader):
 
     def get_data(self) -> Dict[str, Any]:
         global script_keyconv
-        data = dict()
+        data = dict()  # type: Dict[str, Any]
         soup = self._get_soup()
         scripts = soup.find_all(name="script", attrs={'data-iso-key': '_0'})
         if scripts:
@@ -159,7 +76,9 @@ class Downloader(papis.downloaders.Downloader):
             converted_data = papis.document.keyconversion_to_data(
                 script_keyconv, rawdata)
             data.update(converted_data["_article_data"])
-            data.update(converted_data["_abstract_data"])
-            data.update(converted_data["_author_data"])
+            # TODO: parse abstract and author in a typed checked and meaningful
+            #       way
+            # data.update(converted_data["_abstract_data"])
+            # data.update(converted_data["_author_data"])
             data['author'] = papis.document.author_list_to_author(data)
         return data
