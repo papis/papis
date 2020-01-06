@@ -289,12 +289,15 @@ class DoiFromPdfImporter(papis.importer.Importer):
 
     """Importer parsing a doi from a pdf file"""
 
-    def __init__(self, filepath: str) -> None:
-        papis.importer.Importer.__init__(self, name='pdf2doi', uri=filepath)
+    def __init__(self, uri: str) -> None:
+        """The uri should be a filepath"""
+        papis.importer.Importer.__init__(self, name='pdf2doi', uri=uri)
         self.doi = None  # type: Optional[str]
 
     @classmethod
-    def match(cls, filepath: str) -> Optional[papis.importer.Importer]:
+    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+        """The uri should be a filepath"""
+        filepath = uri
         if (os.path.isdir(filepath) or not os.path.exists(filepath) or
                 not papis.filetype.get_document_extension(filepath) == 'pdf'):
             return None
@@ -312,7 +315,7 @@ class DoiFromPdfImporter(papis.importer.Importer):
             self.logger.info("Parsed doi {0}".format(self.doi))
             self.logger.warning(
                 "There is no guarantee that this doi is the one")
-            importer = Importer(doi=self.doi)
+            importer = Importer(uri=self.doi)
             importer.fetch()
             self.ctx = importer.ctx
 
@@ -321,8 +324,8 @@ class Importer(papis.importer.Importer):
 
     """Importer getting files and data form a doi through crossref.org"""
 
-    def __init__(self, doi: str) -> None:
-        papis.importer.Importer.__init__(self, name='doi', uri=doi)
+    def __init__(self, uri: str) -> None:
+        papis.importer.Importer.__init__(self, name='doi', uri=uri)
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
@@ -331,13 +334,13 @@ class Importer(papis.importer.Importer):
         except ValueError:
             return None
         else:
-            return Importer(doi=uri)
+            return Importer(uri=uri)
 
     @classmethod
     def match_data(
             cls, data: Dict[str, Any]) -> Optional[papis.importer.Importer]:
         if 'doi' in data:
-            return Importer(doi=data['doi'])
+            return Importer(uri=data['doi'])
         return None
 
     def fetch(self) -> None:
@@ -389,7 +392,7 @@ class FromCrossrefImporter(papis.importer.Importer):
             self.logger.info("got {0} matches, picking...".format(len(docs)))
             doc = papis.pick.pick_doc(docs)
             if doc:
-                importer = Importer(doi=doc['doi'])
+                importer = Importer(uri=doc['doi'])
                 importer.fetch()
                 self.ctx = importer.ctx
 
@@ -410,6 +413,6 @@ class Downloader(papis.downloaders.base.Downloader):
         _doi = doi.find_doi_in_text(self.uri)
         if _doi is None:
             return None
-        importer = Importer(doi=_doi)
+        importer = Importer(uri=_doi)
         importer.fetch()
         self.ctx = importer.ctx

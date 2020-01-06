@@ -1,6 +1,7 @@
 import logging
-from typing import Optional, List, Dict, Any, Callable
+from typing import Optional, List, Dict, Any, Callable, Type
 import os.path
+
 import papis
 import papis.plugin
 
@@ -96,25 +97,28 @@ def get_import_mgr() -> papis.plugin.ExtensionManager:
 
 
 def available_importers() -> List[str]:
-    """Get the available importers defined.
+    """Get the available importer names.
     :returns: List of importer names
     :rtype:  list(str)
     """
     return papis.plugin.get_available_entrypoints(_extension_name())
 
 
-def get_importers() -> List[Importer]:
+def get_importers() -> List[Type[Importer]]:
+    """Get all available importers
+    """
     return [e.plugin for e in get_import_mgr()]
 
 
-def get_importer_by_name(name: str) -> Any:
+def get_importer_by_name(name: str) -> Type[Importer]:
     """Get importer by name
     :param name: Name of the importer
     :type  name: str
     :returns: The importer
     :rtype:  Importer
     """
-    return get_import_mgr()[name].plugin
+    imp = get_import_mgr()[name].plugin  # type: Importer
+    return imp
 
 
 def cache(fun: Callable[[Importer], Any]) -> Callable[[Importer], Any]:

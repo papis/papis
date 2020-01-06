@@ -169,8 +169,8 @@ def cli(
         for _importer_name, _uri in from_importer:
             try:
                 _uri = papis.document.format_doc(_uri, document)
-                importer = (papis.importer
-                            .get_importer_by_name(_importer_name)(uri=_uri))
+                _iclass = papis.importer.get_importer_by_name(_importer_name)
+                importer = _iclass(uri=_uri)
                 importer.fetch()
                 if importer.ctx:
                     matching_importers.append(importer)
