@@ -1,11 +1,10 @@
+from papis.bibtex import to_bibtex
 from papis.document import (
-    to_bibtex,
     new,
     to_json,
     from_folder,
     from_data,
     Document,
-    Author,
     sort
 )
 import tempfile
@@ -15,13 +14,6 @@ import os
 from tests import (
     create_random_file
 )
-
-
-def test_author():
-    a = Author(given='John', family='smith')
-    assert(a['given'] == 'John')
-    assert(a['family'] == 'smith')
-    assert(a['affiliations'] == [])
 
 
 def test_new():

@@ -690,7 +690,7 @@ def unicode_to_latex(text: str) -> str:
         u"\u03A3": r"\ensuremath{\Sigma}",
         u"\u03A4": r"\ensuremath{\Tau}",
         # note non-raw string (\u confuses Python)
-        u"\u03A5": "\\ensuremath{\\Upsilon}",
+        u"\u03A5": r"\ensuremath{\Upsilon}",
         u"\u03A6": r"\ensuremath{\Phi}",
         u"\u03A7": r"\ensuremath{\Chi}",
         u"\u03A8": r"\ensuremath{\Psi}",
@@ -702,7 +702,7 @@ def unicode_to_latex(text: str) -> str:
         u"\u03AE": r"\acute{\eta}",
         u"\u03AF": r"\acute{\iota}",
         # note non-raw string (\u confuses Python)
-        u"\u03B0": "\\acute{\\ddot{\\upsilon}}",
+        u"\u03B0": r"\acute{\ddot{\upsilon}}",
         u"\u03B1": r"\ensuremath{\alpha}",
         u"\u03B2": r"\ensuremath{\beta}",
         u"\u03B3": r"\ensuremath{\gamma}",
@@ -2442,7 +2442,7 @@ def unicode_to_latex(text: str) -> str:
         u"\uD6F4": r"\mathsl{\Sigma}",
         u"\uD6F5": r"\mathsl{\Tau}",
         # note non-raw string (\u confuses Python)
-        u"\uD6F6": "\mathsl{\\Upsilon}",
+        u"\uD6F6": r"\mathsl{\Upsilon}",
         u"\uD6F7": r"\mathsl{\Phi}",
         u"\uD6F8": r"\mathsl{\Chi}",
         u"\uD6F9": r"\mathsl{\Psi}",
