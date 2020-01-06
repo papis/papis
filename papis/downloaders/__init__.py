@@ -1,26 +1,30 @@
-from stevedore import extension
 import logging
 import re
+from typing import List, Optional, Any, Sequence, Type
 
 import papis.bibtex
 import papis.config
 import papis.importer
 import papis.plugin
+from .base import Downloader
 
-from typing import List, Optional, Any, Sequence
 
-logger = logging.getLogger("downloader")
+LOGGER = logging.getLogger("downloader")
 
 
 def _extension_name() -> str:
     return "papis.downloader"
 
 
-def get_available_downloaders() -> List[papis.importer.Importer]:
-    return papis.plugin.get_available_plugins(_extension_name())
+def get_available_downloaders() -> List[Type[Downloader]]:
+    """Get all declared downloader classes
+    """
+    _ret = papis.plugin.get_available_plugins(
+        _extension_name())  # type: List[Type[Downloader]]
+    return _ret
 
 
-def get_matching_downloaders(url: str) -> Sequence[papis.importer.Importer]:
+def get_matching_downloaders(url: str) -> Sequence[Downloader]:
     """Get matching downloaders sorted by their priorities.
     The first elements have the higher priority
 
@@ -29,16 +33,21 @@ def get_matching_downloaders(url: str) -> Sequence[papis.importer.Importer]:
     :returns: A list of sorted downloaders
     :rtype: list
     """
-    matches = list(filter(lambda d: d is not None,
-        [d.match(url) for d in get_available_downloaders()]
-    ))  # type: List[papis.importer.Importer]
+    print(get_available_downloaders())
+    _maybe_matches = [
+        d.match(url)
+        for d in get_available_downloaders()]  # List[Optional[Downloader]]
+    matches = [m
+               for m in _maybe_matches
+               if m is not None]  # type: List[Downloader]
+    print(matches)
     return sorted(
         matches,
         key=lambda k: k.priority,
         reverse=True)
 
 
-def get_downloader_by_name(name: str) -> papis.importer.Importer:
+def get_downloader_by_name(name: str) -> Type[Downloader]:
     """Get a downloader by its name
 
     :param name: Name of the downloader
@@ -46,8 +55,9 @@ def get_downloader_by_name(name: str) -> papis.importer.Importer:
     :returns: A downloader class
     :rtype:  papis.base.Downloader
     """
-    downloader_mgr = papis.plugin.get_extension_manager(_extension_name())
-    return downloader_mgr[name].plugin
+    downloader_class = papis.plugin.get_extension_manager(
+        _extension_name())[name].plugin  # type: Type[Downloader]
+    return downloader_class
 
 
 def get_info_from_url(
@@ -66,15 +76,13 @@ def get_info_from_url(
 
     downloaders = get_matching_downloaders(url)
     if not downloaders:
-        logger.warning(
-            "No matching downloader found for (%s)" % url
-        )
+        LOGGER.warning("No matching downloader found for (%s)", url)
         return papis.importer.Context()
-    else:
-        logger.debug('Found {0} matching downloaders'.format(len(downloaders)))
-        downloader = downloaders[0]
 
-    logger.info("Using downloader '%s'" % downloader)
+    LOGGER.debug('Found %s matching downloaders', len(downloaders))
+    downloader = downloaders[0]
+
+    LOGGER.info("Using downloader '%s'", downloader)
     if downloader.expected_document_extension is None and \
             expected_doc_format is not None:
         downloader.expected_document_extension = expected_doc_format
@@ -99,5 +107,5 @@ class Importer(papis.importer.Importer):
         )
 
     def fetch(self) -> None:
-        self.logger.info("attempting to import from url {0}".format(self.uri))
+        self.logger.info("attempting to import from url %s", self.uri)
         self.ctx = get_info_from_url(self.uri) or papis.importer.Context()

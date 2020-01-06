@@ -117,7 +117,7 @@ def get_importer_by_name(name: str) -> Type[Importer]:
     :returns: The importer
     :rtype:  Importer
     """
-    imp = get_import_mgr()[name].plugin  # type: Importer
+    imp = get_import_mgr()[name].plugin  # type: Type[Importer]
     return imp
 
 

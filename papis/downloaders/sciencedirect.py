@@ -4,11 +4,20 @@ import papis.document
 import json
 import collections
 import functools
+from typing import (
+    Dict, Optional, Any, List, Union, NamedTuple, Callable, Tuple, Sequence, TypeVar)
+
+_K = papis.document.KeyConversionPair
+A = TypeVar("A")
+B = TypeVar("B")
 
 
-def get_author_list(data):
-    rdata = []
-    assert(isinstance(data, list))
+def fmap(fun: Callable[[A], B], value: Optional[A]) -> Optional[B]:
+    return fun(value) if value is not None else None
+
+
+def get_author_list(data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    rdata = []  # type: List[Dict[str, Any]]
     for d in data:
         if d["#name"] == "author":
             author_data = dict()
@@ -36,25 +45,8 @@ def get_author_list(data):
     return rdata
 
 
-script_keyconv = collections.OrderedDict({
-    "article": {
-        "key": "_article_data",
-        "action": lambda x:
-            papis.document.keyconversion_to_data(article_keyconv, x)
-    },
-    "abstracts": {
-        "key": "_abstract_data",
-        "action": lambda x:
-            papis.document.keyconversion_to_data(abstracts_keyconv, x)
-    },
-    "authors": {
-        "key": "_author_data",
-        "action": lambda x:
-            papis.document.keyconversion_to_data(authors_keyconv, x)
-    },
-})
-authors_keyconv = collections.OrderedDict({
-    "content": {
+authors_keyconv = [
+    _K("content", [{
         "key": "author_list",
         "action": lambda x:
         get_author_list(
@@ -63,11 +55,13 @@ authors_keyconv = collections.OrderedDict({
                     map(lambda s: s["$$"],
                     filter(lambda s: s["#name"] == "author-group",
                         x)))))
-    }
-})
-abstracts_keyconv = collections.OrderedDict({
-    "content": [
-        { # Single author format
+    }])
+]  # List[papis.document.KeyConversionPair]
+"""
+abstracts_keyconv = [_K(
+    "content",
+    [
+        {  # Single author format
             "key": "abstract",
             "action": lambda x: " ".join(
                 map(lambda s: s["_"],
@@ -80,7 +74,8 @@ abstracts_keyconv = collections.OrderedDict({
                                             s['$']['class'] == 'author',
                                             x)))))))
             )
-        }, { # multiple author format (apparently)
+        },
+        { # multiple author format (apparently)
             "key": "abstract",
             "action": lambda x: " ".join(
                 map(lambda s: s['_'],
@@ -96,45 +91,64 @@ abstracts_keyconv = collections.OrderedDict({
                                                         x)))))))))))
         }
     ]
-})
-article_keyconv = collections.OrderedDict({
-    "doi": {},
-    "pii": {},
-    "language": {},
-    "subtitle": {},
-    "issn": {},
-    "srctitle": {"key": "journal"},
-    "vol-first": {"key": "volume"},
-    "cover-date-years": {"key": "year", "action": lambda x: x[0]},
-    "cover-date-start": {"key": "date"},
-    "document-type": {"key": "type"},
-    "titleString": {"key": "title"},
-    "dates": [
+)]  # List[papis.document.KeyConversionPair]
+"""
+article_keyconv = [
+    _K("doi", [papis.document.EmptyKeyConversion]),
+    _K("pii", [papis.document.EmptyKeyConversion]),
+    _K("language", [papis.document.EmptyKeyConversion]),
+    _K("subtitle", [papis.document.EmptyKeyConversion]),
+    _K("issn", [papis.document.EmptyKeyConversion]),
+    _K("srctitle", [{"key": "journal", "action": None}]),
+    _K("vol-first", [{"key": "volume", "action": None}]),
+    _K("cover-date-years", [{"key": "year", "action": lambda x: x[0]}]),
+    _K("cover-date-start", [{"key": "date", "action": None}]),
+    _K("document-type", [{"key": "type", "action": None}]),
+    _K("titleString", [{"key": "title", "action": None}]),
+    _K("dates", [
         {"key": "accepted-date", "action": lambda x: x["Accepted"]},
         {"key": "publication-date", "action": lambda x: x["Publication date"]}
-    ],
-    "pages": {
-        "action": lambda x: "{x[first-page]}--{x[last-page]}".format(x=x[0])
-    },
-})
+    ]),
+    _K("pages", [{
+        "action": lambda x: "{x[first-page]}--{x[last-page]}".format(x=x[0]),
+        "key": None
+    }]),
+]  # List[papis.document.KeyConversionPair]
+script_keyconv = [
+    _K("article", [{
+        "key": "_article_data",
+        "action": lambda x:
+            papis.document.keyconversion_to_data(article_keyconv, x)
+    }]),
+    _K("abstracts", [{
+        "key": "_abstract_data",
+        "action": lambda x:
+            papis.document.keyconversion_to_data(abstracts_keyconv, x)
+    }]),
+    _K("authors", [{
+        "key": "_author_data",
+        "action": lambda x:
+            papis.document.keyconversion_to_data(authors_keyconv, x)
+    }]),
+]  # List[papis.document.KeyConversionPair]
 
 
 class Downloader(papis.downloaders.base.Downloader):
 
-    def __init__(self, url):
+    def __init__(self, url: str):
         papis.downloaders.base.Downloader.__init__(
-            self, url, name="sciencedirect"
-        )
+            self, url, name="sciencedirect")
         self.expected_document_extension = 'pdf'
 
     @classmethod
-    def match(cls, url):
+    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
         if re.match(r".*\.sciencedirect\.com.*", url):
             return Downloader(url)
         else:
-            return False
+            return None
 
-    def get_data(self):
+    def get_data(self) -> Dict[str, Any]:
+        global script_keyconv
         data = dict()
         soup = self._get_soup()
         scripts = soup.find_all(name="script", attrs={'data-iso-key': '_0'})

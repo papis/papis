@@ -16,7 +16,7 @@ from tests import (
     create_random_pdf, create_random_file, create_random_epub,
     create_real_document
 )
-from papis.utils import get_document_extension
+from papis.filetype import get_document_extension
 
 
 def test_get_hash_folder():

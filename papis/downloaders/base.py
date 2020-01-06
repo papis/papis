@@ -1,31 +1,28 @@
-import os
 import logging
-import requests
-import papis.config
-import papis.document
-import papis.utils
-import filetype
-import papis.importer
-import papis.bibtex
-import tempfile
-import copy
+import os
 import re
-import bs4
-
-from typing import (
-    NamedTuple, Any,
-    List, Dict, Union, Pattern, Callable, Optional
-    )
+import requests
+import tempfile
+from typing import Any, List, Dict, Union, Pattern, Optional
 from typing_extensions import TypedDict
 
+import bs4
+import filetype
+
+import papis.bibtex
+import papis.config
+import papis.document
+import papis.importer
+import papis.utils
+
+
 MetaEquivalence = TypedDict(
-    "MetaEquivalence",
-    {
-    "tag": str,
-    "key": str,
-    "attrs": Dict[str, Union[str, Pattern[str]]],
+    "MetaEquivalence", {
+        "tag": str,
+        "key": str,
+        "attrs": Dict[str, Union[str, Pattern[str]]],
     }
-);
+)
 
 meta_equivalences = [
 # google
@@ -99,19 +96,20 @@ def parse_meta_authors(soup: bs4.BeautifulSoup) -> List[Dict[str, Any]]:
     if not authors:
         authors = soup.find_all(
             name='meta', attrs={'name': re.compile('dc.creator', re.I)})
-    affs = soup.find_all(name='meta',
-            attrs={'name': 'citation_author_institution'})
+    affs = soup.find_all(
+        name='meta',
+        attrs={'name': 'citation_author_institution'})
     if affs and authors:
         tuples = zip(authors, affs)
     elif authors:
-        tuples = [(a, None) for a in authors]
+        tuples = ((a, None) for a in authors)
     else:
         return []
 
     for t in tuples:
         fullname = t[0].get('content')
         affiliation = [dict(name=t[1].get('content'))] if t[1] else []
-        fullnames = re.split('\s+', fullname)
+        fullnames = re.split(r'\s+', fullname)
         author_list.append(dict(
             given=fullnames[0],
             family=' '.join(fullnames[1:]),
@@ -188,7 +186,6 @@ class Downloader(papis.importer.Importer):
         else:
             self.ctx.data['doi'] = doi
 
-
     def fetch_files(self) -> None:
         # get documents
         try:
@@ -207,6 +204,11 @@ class Downloader(papis.importer.Importer):
     def fetch(self) -> None:
         self.fetch_data()
         self.fetch_files()
+
+    @classmethod
+    def match(cls, url: str) -> Optional['Downloader']:
+        raise NotImplementedError(
+            "Matching uri not implemented for this importer")
 
     def _get_body(self) -> bytes:
         """Get body of the uri, this is also important for unittesting"""
