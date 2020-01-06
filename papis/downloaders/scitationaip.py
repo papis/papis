@@ -3,15 +3,15 @@ import papis.downloaders.base
 from typing import Optional
 
 
-class Downloader(papis.downloaders.base.Downloader):
+class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str):
-        papis.downloaders.base.Downloader.__init__(
+        papis.downloaders.Downloader.__init__(
             self, url, name="scitationaip")
         self.expected_document_extension = 'pdf'
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
+    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
         # http://aip.scitation.org/doi/10.1063/1.4873138
         if re.match(r".*(aip|aapt)\.scitation\.org.*", url):
             return Downloader(url)

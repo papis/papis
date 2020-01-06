@@ -15,7 +15,8 @@ class Downloader(papis.downloaders.fallback.Downloader):
         self.priority = 10
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.fallback.Downloader]:
+    def match(
+            cls, url: str) -> Optional[papis.downloaders.fallback.Downloader]:
         return Downloader(url) if re.match(r".*aps.org.*", url) else None
 
     def get_bibtex_url(self) -> Optional[str]:

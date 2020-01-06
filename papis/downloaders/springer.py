@@ -4,16 +4,16 @@ import papis.document
 from typing import Optional, Any, Dict
 
 
-class Downloader(papis.downloaders.base.Downloader):
+class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str):
-        papis.downloaders.base.Downloader.__init__(
+        papis.downloaders.Downloader.__init__(
             self, url, name="springer")
         self.expected_document_extension = 'pdf'
         self.priority = 10
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
+    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
         return (Downloader(url)
                 if re.match(r".*link\.springer.com.*", url) else None)
 
@@ -37,7 +37,7 @@ class Downloader(papis.downloaders.base.Downloader):
                 data['issn'] = meta.attrs.get('content')
             elif meta.attrs.get('name') == 'citation_author':
                 fnam = meta.attrs.get('content')
-                fnams = re.split('\s+', fnam)
+                fnams = re.split(r'\s+', fnam)
                 author_list.append(
                     dict(
                         given=fnams[0],

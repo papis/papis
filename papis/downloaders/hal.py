@@ -11,7 +11,8 @@ class Downloader(papis.downloaders.fallback.Downloader):
         self.priority = 10
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.fallback.Downloader]:
+    def match(
+            cls, url: str) -> Optional[papis.downloaders.fallback.Downloader]:
         if re.match(r".*hal\.archives-ouvertes\.fr.*", url):
             return Downloader(url)
         else:

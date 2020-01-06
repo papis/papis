@@ -3,16 +3,16 @@ import papis.downloaders.base
 from typing import Optional, Dict, Any
 
 
-class Downloader(papis.downloaders.base.Downloader):
+class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str):
-        papis.downloaders.base.Downloader.__init__(
+        papis.downloaders.Downloader.__init__(
             self, url, name="annualreviews")
         self.expected_document_extension = 'pdf'
         self.priority = 10
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
+    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
         if re.match(r".*annualreviews.org.*", url):
             return Downloader(url)
         else:
@@ -54,9 +54,8 @@ class Downloader(papis.downloaders.base.Downloader):
         for author in authors:
             affspan = author.find_all('span', attrs={'class': 'overlay'})
             afftext = affspan[0].text if affspan else ''
-            fullname = re.sub(',', '',
-                          cleanregex.sub('',
-                              author.text.replace(afftext, '')))
+            fullname = re.sub(
+                ',', '', cleanregex.sub('', author.text.replace(afftext, '')))
             splitted = re.split(r'\s+', fullname)
             cafftext = re.sub(' ,', ',',
                               morespace.sub(' ', cleanregex.sub('', afftext)))

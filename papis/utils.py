@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import shlex
-from typing import Optional, List, Iterator, Callable, Any, Dict, Union
+from typing import Optional, List, Iterator, Callable, Any, Dict, Union, Type
 import subprocess
 import multiprocessing
 import time
@@ -444,12 +444,16 @@ def get_cache_home() -> str:
 
 
 def get_matching_importer_or_downloader(
-        matching_string: str) -> List[papis.importer.Importer]:
+        matching_string: str
+        ) -> List[papis.importer.Importer]:
     importers = []  # type: List[papis.importer.Importer]
     logger = logging.getLogger("utils:matcher")
-    for importer_cls in (papis.importer.get_importers() +
-                         papis.downloaders.get_available_downloaders()):
-        importer = importer_cls.match(matching_string)  # type: Optional[papis.importer.Importer]
+    _imps = papis.importer.get_importers()
+    _downs = papis.downloaders.get_available_downloaders()
+    _all_importers = _imps + _downs  # type: List[Type[papis.importer.Importer]]
+    for importer_cls in _all_importers:
+        importer = importer_cls.match(
+            matching_string)  # type: Optional[papis.importer.Importer]
         logger.debug(
             "trying with importer {c.Back.BLACK}{c.Fore.YELLOW}{name}"
             "{c.Style.RESET_ALL}".format(

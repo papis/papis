@@ -133,15 +133,15 @@ script_keyconv = [
 ]  # List[papis.document.KeyConversionPair]
 
 
-class Downloader(papis.downloaders.base.Downloader):
+class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str):
-        papis.downloaders.base.Downloader.__init__(
+        papis.downloaders.Downloader.__init__(
             self, url, name="sciencedirect")
         self.expected_document_extension = 'pdf'
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
+    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
         if re.match(r".*\.sciencedirect\.com.*", url):
             return Downloader(url)
         else:

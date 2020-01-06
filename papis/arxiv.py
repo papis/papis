@@ -225,15 +225,15 @@ def explorer(
     logger.info('%s documents found', len(docs))
 
 
-class Downloader(papis.downloaders.base.Downloader):
+class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str):
-        papis.downloaders.base.Downloader.__init__(self, uri=url, name="arxiv")
+        papis.downloaders.Downloader.__init__(self, uri=url, name="arxiv")
         self.expected_document_extension = 'pdf'
         self.arxivid = None  # type: Optional[str]
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
+    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
         arxivid = find_arxivid_in_text(url)
         if arxivid:
             url = "https://arxiv.org/abs/{0}".format(arxivid)

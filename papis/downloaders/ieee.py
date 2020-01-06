@@ -5,14 +5,14 @@ import papis.downloaders.base
 from typing import Optional, Tuple, Dict
 
 
-class Downloader(papis.downloaders.base.Downloader):
+class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str):
-        papis.downloaders.base.Downloader.__init__(self, url, name="ieee")
+        papis.downloaders.Downloader.__init__(self, url, name="ieee")
         self.expected_document_extension = 'pdf'
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
+    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
         m = re.match(r"^ieee:(.*)", url, re.IGNORECASE)
         if m:
             url = "http://ieeexplore.ieee.org/document/{}".format(m.group(1))

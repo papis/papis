@@ -6,19 +6,19 @@ import papis.document
 from typing import Optional, Any, Dict
 
 
-class Downloader(papis.downloaders.base.Downloader):
+class Downloader(papis.downloaders.Downloader):
     re_clean = re.compile(r'(^\s*|\s*$|\s{2,}?|&)')
     re_comma = re.compile(r'(\s*,\s*)')
     re_add_dot = re.compile(r'(\b\w\b)')
 
     def __init__(self, url: str):
-        papis.downloaders.base.Downloader.__init__(
+        papis.downloaders.Downloader.__init__(
             self, url, name="tandfonline")
         self.expected_document_extension = 'pdf'
         self.priority = 10
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
+    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
         return (Downloader(url)
                 if re.match(r".*tandfonline.com.*", url) else None)
 
@@ -38,8 +38,8 @@ class Downloader(papis.downloaders.base.Downloader):
                 # want the starting text with the affiliation address
                 affiliation = next(affiliation[0].children)
 
-                affiliation = self.re_comma.sub(', ',
-                        self.re_clean.sub('', affiliation))
+                affiliation = self.re_comma.sub(
+                    ', ', self.re_clean.sub('', affiliation))
                 affiliation = [dict(name=affiliation)]
 
             # find href="/author/escaped_fullname"

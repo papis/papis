@@ -1,20 +1,21 @@
 import re
-import papis.downloaders.base
-import papis.document
-
 from typing import Optional, Any, Dict
 
-class Downloader(papis.downloaders.base.Downloader):
+import papis.downloaders
+import papis.document
+
+
+class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str):
-        papis.downloaders.base.Downloader.__init__(self, url, name="acs")
+        papis.downloaders.Downloader.__init__(self, url, name="acs")
         self.expected_document_extension = 'pdf'
         # It seems to be necessary so that acs lets us download the bibtex
-        self.cookies = { 'gdpr': 'true', }
+        self.cookies = {'gdpr': 'true'}
         self.priority = 10
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
+    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
         return Downloader(url) if re.match(r".*acs.org.*", url) else None
 
     def get_data(self) -> Dict[str, Any]:
@@ -32,7 +33,7 @@ class Downloader(papis.downloaders.base.Downloader):
             elif meta.attrs.get('name') == 'dc.Subject':
                 data['note'] = meta.attrs.get('content')
             elif (meta.attrs.get('name') == 'dc.Identifier' and
-                    meta.attrs.get('scheme') == 'doi'):
+                  meta.attrs.get('scheme') == 'doi'):
                 data['doi'] = meta.attrs.get('content')
             elif meta.attrs.get('name') == 'dc.Publisher':
                 data['publisher'] = meta.attrs.get('content')
@@ -52,15 +53,15 @@ class Downloader(papis.downloaders.base.Downloader):
                     )
                 )
             year = article.find_all(
-                    name='span', attrs={'class': 'citation_year'})
+                name='span', attrs={'class': 'citation_year'})
             if year:
                 data['year'] = year[0].text
             volume = article.find_all(
-                    name='span', attrs={'class': 'citation_volume'})
+                name='span', attrs={'class': 'citation_volume'})
             if volume:
                 data['volume'] = volume[0].text
             affiliations = article.find_all(
-                    name='div', attrs={'class': 'affiliations'})
+                name='div', attrs={'class': 'affiliations'})
             if affiliations:
                 # TODO: There is no guarantee that the affiliations thus
                 # retrieved are ok, however is better than nothing.
@@ -77,16 +78,15 @@ class Downloader(papis.downloaders.base.Downloader):
 
     def get_document_url(self) -> Optional[str]:
         if 'doi' in self.ctx.data:
-            return "http://pubs.acs.org/doi/pdf/{}".format(self.ctx.data['doi'])
-        else:
-            return None
+            return ("http://pubs.acs.org/doi/pdf/{}"
+                    .format(self.ctx.data['doi']))
+        return None
 
     def get_bibtex_url(self) -> Optional[str]:
         if 'doi' in self.ctx.data:
             url = ("http://pubs.acs.org/action/downloadCitation"
                    "?format=bibtex&cookieSet=1&doi={}"
                    .format(self.ctx.data['doi']))
-            self.logger.debug("bibtex url = %s" % url)
+            self.logger.debug("bibtex url = %s", url)
             return url
-        else:
-            return None
+        return None

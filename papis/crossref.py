@@ -397,13 +397,13 @@ class FromCrossrefImporter(papis.importer.Importer):
                 self.ctx = importer.ctx
 
 
-class Downloader(papis.downloaders.base.Downloader):
+class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, uri: str):
-        papis.downloaders.base.Downloader.__init__(self, uri=uri, name="doi")
+        papis.downloaders.Downloader.__init__(self, uri=uri, name="doi")
 
     @classmethod
-    def match(cls, uri: str) -> Optional[papis.downloaders.base.Downloader]:
+    def match(cls, uri: str) -> Optional[papis.downloaders.Downloader]:
         if doi.find_doi_in_text(uri):
             return Downloader(uri)
         else:

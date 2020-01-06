@@ -1,18 +1,18 @@
 import re
 import papis.downloaders.base
-from typing import List, Dict, Any, Optional
+from typing import Dict, Any, Optional
 
 
-class Downloader(papis.downloaders.base.Downloader):
+class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str):
-        papis.downloaders.base.Downloader.__init__(
+        papis.downloaders.Downloader.__init__(
             self, url, name="iopscience")
         self.expected_document_extension = 'pdf'
         self.priority = 10
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
+    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
         url = re.sub(r'/pdf', '', url)
         if re.match(r".*iopscience\.iop\.org.*", url):
             return Downloader(url)
@@ -39,9 +39,9 @@ class Downloader(papis.downloaders.base.Downloader):
         """
         doi = self.get_doi()
         if doi:
-            articleId = doi.replace('10.1088/', '')
-            self.logger.debug("articleId = %s" % articleId)
-            return articleId
+            article_id = doi.replace('10.1088/', '')
+            self.logger.debug("article_id = %s" % article_id)
+            return article_id
         else:
             return None
 

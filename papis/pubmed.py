@@ -4,10 +4,10 @@ import papis.importer
 import papis.downloaders.base
 
 
-class Downloader(papis.downloaders.base.Downloader):
+class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str):
-        papis.downloaders.base.Downloader.__init__(
+        papis.downloaders.Downloader.__init__(
             self, uri=url, name="pubmed")
 
     def get_bibtex_url(self) -> Optional[str]:

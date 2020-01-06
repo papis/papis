@@ -1,18 +1,18 @@
 import doi
 import papis.downloaders.base
 
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, Optional
 
 
-class Downloader(papis.downloaders.base.Downloader):
+class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, uri: str, name: str = "fallback"):
-        papis.downloaders.base.Downloader.__init__(
+        papis.downloaders.Downloader.__init__(
             self, uri=uri, name=name)
         self.priority = -1
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
+    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
         return Downloader(url)
 
     def get_data(self) -> Dict[str, Any]:

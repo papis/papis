@@ -4,16 +4,16 @@ import papis.downloaders.base
 from typing import Optional
 
 
-class Downloader(papis.downloaders.base.Downloader):
+class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str):
-        papis.downloaders.base.Downloader.__init__(
+        papis.downloaders.Downloader.__init__(
             self, url, name="frontiersin")
         self.expected_document_extension = 'pdf'
-        self.cookies = { 'gdpr': 'true', }
+        self.cookies = {'gdpr': 'true'}
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.base.Downloader]:
+    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
         if re.match(r".*frontiersin.org.*", url):
             return Downloader(url)
         else:
