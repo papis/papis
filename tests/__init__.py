@@ -4,7 +4,7 @@ import papis.api
 import papis.utils
 import papis.document
 import papis.library
-from papis.downloaders.base import Downloader
+from papis.downloaders import Downloader
 import os
 import shutil
 from typing import Dict, Any, Optional
