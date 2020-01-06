@@ -9,8 +9,11 @@ python:
 - '3.8'
 script:
 - python -m pytest papis/ tests/ --cov=papis
+- mypy papis
+- flake8 papis
 install:
 - pip install setuptools
+- pip install flake8
 - pip install python-coveralls
 - pip install -e .[develop]
 - pip install -e .[optional]

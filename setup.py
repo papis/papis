@@ -72,7 +72,6 @@ setup(
         "stevedore>=1.30",
         "python-doi>=0.1.1",
         "typing-extensions>=3.7",
-        # for python 3.4
         "lxml>=4.3.5 ; python_version>'3.5'",
         "python-slugify>=1.2.6 ; python_version>'3.4'",
     ],
@@ -104,8 +103,8 @@ setup(
         develop=[
             'sphinx-click',
             'sphinx_rtd_theme',
-            'pytest',
-            'pytest-cov==2.5.0',
+            'pytest-cov',
+            'mypy>=0.7',
         ]
     ),
     description=(
