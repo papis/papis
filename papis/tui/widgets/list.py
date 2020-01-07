@@ -70,7 +70,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
 
         # options are processed here also through the setter
         # ##################################################
-        self.set_options(options)  # type: Sequence[Option]
+        self.set_options(options)
         self.cursor = Point(0, 0)  # type: Point
         # ##################################################
 
