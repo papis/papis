@@ -325,7 +325,7 @@ def set(key: str, val: Any, section: Optional[str] = None) -> None:
 
 
 def general_get(key: str, section: Optional[str] = None,
-                data_type: Optional[Type[Any]] = None) -> Optional[Any]:
+                data_type: Optional[Any] = None) -> Optional[Any]:
     """General getter method that will be specialized for different modules.
 
     :param data_type: The data type that should be expected for the value of
