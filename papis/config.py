@@ -5,7 +5,7 @@ import configparser
 import papis.exceptions
 import papis.library
 import logging
-from typing import Dict, Any, List, Optional, Type, Callable
+from typing import Dict, Any, List, Optional, Callable
 
 PapisConfigType = Dict[str, Dict[str, Any]]
 
