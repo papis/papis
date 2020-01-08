@@ -5,6 +5,7 @@ VERSION v0.10
   with the `sort-file` configuration option.
 - Move `papis.utils.format_doc` to `papis.document.format_doc`
   in order to minimize circular dependencies.
+- Add `--logfile` flag in order to dump log messages to a file.
 
 VERSION v0.9
 ============

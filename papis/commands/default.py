@@ -130,11 +130,6 @@ class MultiCommand(click.core.MultiCommand):
     type=click.Path(exists=True),
     default=None,)
 @click.option(
-    "--log",
-    help="Logging level",
-    type=click.Choice(["INFO", "DEBUG", "WARNING", "ERROR", "CRITICAL"]),
-    default="INFO")
-@click.option(
     "--pick-lib",
     help="Pick library to use",
     default=False,
@@ -155,11 +150,22 @@ class MultiCommand(click.core.MultiCommand):
     type=click.Choice(["always", "auto", "no"]),
     default="auto",
     help="Prevent the output from having color")
+@click.option(
+    "--log",
+    help="Logging level",
+    type=click.Choice(["INFO", "DEBUG", "WARNING", "ERROR", "CRITICAL"]),
+    default="INFO")
+@click.option(
+    "--logfile",
+    help="File to dump the log",
+    type=str,
+    default=None)
 def run(
         verbose: bool,
         config: str,
         lib: str,
         log: str,
+        logfile: Optional[str],
         pick_lib: bool,
         clear_cache: bool,
         set_list: List[Tuple[str, str]],
@@ -186,8 +192,9 @@ def run(
         log_format = '%(relativeCreated)d-'+log_format
     logging.basicConfig(
         level=getattr(logging, log),
-        format=log_format
-    )
+        format=log_format,
+        filename=logfile,
+        filemode='w+' if logfile is not None else 'a')
     logger = logging.getLogger('default')
 
     for pair in set_list:
