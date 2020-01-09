@@ -418,7 +418,7 @@ def getstring(key: str, section: Optional[str] = None) -> str:
     """String getter
     >>> set('add-open', "hello world")
     >>> getstring('add-open')
-    "hello world"
+    'hello world'
     """
     result = general_get(key, section=section, data_type=str)
     if not isinstance(result, str):

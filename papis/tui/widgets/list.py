@@ -130,7 +130,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
             self.mark_current_selection()
 
     def mark_current_selection(self) -> None:
-        if self.current_index:
+        if self.current_index is not None:
             self.marks.append(self.current_index)
 
     def get_options(self) -> List[Option]:

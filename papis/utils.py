@@ -30,8 +30,7 @@ def general_open(
 
 
     >>> import tempfile; path = tempfile.mktemp()
-    >>> general_open(path, 'nonexistent-key', wait=False).stdin == None
-    True
+    >>> general_open(path, 'nonexistent-key', wait=False)
     >>> general_open(path, 'nonexistent-key') > 0
     True
     >>> general_open([path], 'nonexistent-key', default_opener=lambda path: 42)

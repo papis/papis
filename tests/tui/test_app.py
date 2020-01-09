@@ -1,4 +1,4 @@
-from papis.tui.app import *
+from papis.tui.app import config, get_keys_info
 import papis.config as config
 from prompt_toolkit.application.current import get_app
 
@@ -23,4 +23,5 @@ def test_settings():
     config.get('go_bottom_key', section='tui')
     config.get("editmode", section='tui')
 
-    ki = get_keys_info()
+    kb = get_keys_info()
+    assert kb is not None
