@@ -109,7 +109,7 @@ def filter_documents(
 
 def match_document(
         document: papis.document.Document, search: str,
-        match_format: str = "") -> Optional[Match[str]]:
+        match_format: Optional[str] = None) -> Optional[Match[str]]:
     """Main function to match document to a given search.
 
     :param document: Papis document
