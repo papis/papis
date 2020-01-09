@@ -1,7 +1,8 @@
+import os
 import tests.database
 import papis.config
 import papis.database
-import os
+from papis.database.cache import filter_documents
 
 class Test(tests.database.DatabaseTest):
 
@@ -41,3 +42,10 @@ class Test(tests.database.DatabaseTest):
             self.assertTrue(True)
         else:
             self.assertTrue(False)
+
+
+def test_filter_documents():
+    document = papis.document.from_data({'author': 'einstein'})
+    assert len(filter_documents([document], search="einstein")) == 1
+    assert len(filter_documents([document], search="author : ein")) == 1
+    assert len(filter_documents([document], search="title : ein")) != 1
