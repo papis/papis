@@ -1,6 +1,6 @@
-from papis.tui.widgets.list import *
-from prompt_toolkit.layout.screen import Point
 import re
+from papis.tui.widgets.list import match_against_regex, OptionsList
+from prompt_toolkit.layout.screen import Point
 
 
 def test_basic():
@@ -45,12 +45,11 @@ def test_basic():
     ol.search_buffer.text = 'l  '
     assert(ol.search_regex == re.compile('.*l.*', re.I))
     assert(ol.indices == [0, 1])
-    assert(len(ol.options) == 3)
+    assert(len(ol.get_options()) == 3)
     ol.deselect()
     assert(ol.current_index is None)
 
-
-    ol.options = [str(i) for i in range(1000)]
+    ol.set_options([str(i) for i in range(1000)])
     assert(len(ol.marks) == 0)
     assert(len(ol.indices) == 1000)
     ol.go_top()
@@ -74,14 +73,8 @@ def test_basic():
     ol.search_buffer.text = '99'
     assert(len(ol.indices) == 19)
     ol.update()
-    # assert(
-        # ol.get_line_prefix(0, None) ==
-        # [('class:options_list.selected_margin', '|')]
-    # )
-
-    del ol
 
 
 def test_match_against_regex():
-    assert(match_against_regex(re.compile(r'.*he.*'), 'he', 2) == 2)
-    assert(match_against_regex(re.compile(r'hes'), 'he', 2) is None)
+    assert match_against_regex(re.compile(r'.*he.*'), 'he', 2) == 2
+    assert match_against_regex(re.compile(r'hes'), 'he', 2) is None
