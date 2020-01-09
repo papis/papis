@@ -7,6 +7,14 @@ VERSION v0.10
   in order to minimize circular dependencies.
 - Add `--logfile` flag in order to dump log messages to a file.
 
+
+## Run and `Git` command ##
+- Add `--pick`, `--doc-folder`, `--all` and `--sort`
+  flags so that we can choose a document to run the shell or git command
+  in that folder or in all folders matching a given query introduced by
+  `--pick`.
+
+
 VERSION v0.9
 ============
 

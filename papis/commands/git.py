@@ -20,25 +20,10 @@ CLI Examples
 
 
 """
-import papis.commands
-import papis.commands.run
-import papis.config
-import logging
+import copy
 import click
+import papis.commands.run
 
-from typing import List
-
-logger = logging.getLogger('git')
-
-
-def run(folder: str, command: List[str] = []) -> None:
-    papis.commands.run.run(folder, command=["git"] + command)
-
-
-@click.command("git", context_settings=dict(ignore_unknown_options=True))
-@click.help_option('--help', '-h')
-@click.argument("command", nargs=-1)
-def cli(command: List[str]) -> None:
-    "Run a git command in the library folder"
-    for d in papis.config.get_lib_dirs():
-        run(d, command=list(command))
+cli = copy.deepcopy(papis.commands.run.cli)
+cli.help = "Run git command in a library or document folder"
+cli = click.option("--prefix", hidden=True, default="git", type=str)(cli)
