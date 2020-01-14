@@ -1,6 +1,6 @@
 import logging
 from stevedore import ExtensionManager
-from typing import List, Dict, Any
+from typing import List, Dict, Any  # noqa: ignore
 
 logger = logging.getLogger("papis:plugin")
 

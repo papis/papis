@@ -100,7 +100,7 @@ import papis.api
 import papis.pick
 import papis.crossref
 import papis.plugin
-from typing import List, Optional, Union, Any, Dict
+from typing import List, Optional, Union, Any, Dict  # noqa: ignore
 
 logger = logging.getLogger('explore')
 
@@ -222,9 +222,11 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
-    doc = papis.pick.pick_doc(documents)
-    if doc is None:
+    docs = papis.pick.pick_doc(documents)
+    if not docs:
         return
+    doc = docs[0]
+
     db = papis.database.get()
 
     _main_folder = doc.get_main_folder()

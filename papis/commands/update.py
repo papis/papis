@@ -126,8 +126,7 @@ def cli(
         documents = [papis.document.from_folder(doc_folder)]
 
     if not _all:
-        _doc = papis.pick.pick_doc(documents)
-        documents = [_doc] if _doc is not None else []
+        documents = list(papis.pick.pick_doc(documents))
 
     if not documents:
         logger.error(papis.strings.no_documents_retrieved_message)

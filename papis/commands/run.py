@@ -102,8 +102,7 @@ def cli(
         documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     if not _all:
-        _doc = papis.pick.pick_doc(documents)
-        documents = [_doc] if _doc is not None else []
+        documents = [d for d in papis.pick.pick_doc(documents)]
 
     if documents:
         folders = [d for d in [d.get_main_folder() for d in documents] if d]

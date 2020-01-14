@@ -76,9 +76,11 @@ def cli(
 
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
-    document = papis.pick.pick_doc(documents)
-    if not document:
+    docs = papis.pick.pick_doc(documents)
+    if not docs:
         return
+
+    document = docs[0]
 
     new_name = papis.utils.input(
         "Enter new folder name:\n"

@@ -150,10 +150,11 @@ class FromLibImporter(papis.importer.Importer):
             return FromLibImporter(uri=uri)
 
     def fetch(self) -> None:
-        doc = papis.pick.pick_doc(papis.api.get_all_documents_in_lib(self.uri))
-        if not doc:
+        docs = papis.pick.pick_doc(
+            papis.api.get_all_documents_in_lib(self.uri))
+        if not docs:
             return
-        importer = FromFolderImporter(uri=doc.get_main_folder())
+        importer = FromFolderImporter(uri=docs[0].get_main_folder())
         importer.fetch()
         self.ctx = importer.ctx
 

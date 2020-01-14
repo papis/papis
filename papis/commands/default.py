@@ -206,8 +206,9 @@ def run(
         papis.config.reset_configuration()
 
     if pick_lib:
-        _picked_lib = papis.pick.pick(papis.api.get_libraries())
-        lib = _picked_lib or lib
+        _picked_libs = papis.pick.pick(papis.api.get_libraries())
+        if _picked_libs:
+            lib = _picked_libs[0]
 
     papis.config.set_lib_from_name(lib)
     library = papis.config.get_lib()

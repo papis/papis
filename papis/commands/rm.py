@@ -88,14 +88,14 @@ def cli(query: str,
         return
 
     if not _all:
-        _doc = papis.pick.pick_doc(documents)
-        documents = [_doc] if _doc is not None else []
+        documents = list(papis.pick.pick_doc(documents))
 
     if _file:
         for document in documents:
-            filepath = papis.pick.pick(document.get_files())
-            if not filepath:
+            filepaths = papis.pick.pick(document.get_files())
+            if not filepaths:
                 continue
+            filepath = filepaths[0]
             if not force:
                 tbar = 'The file {0} would be removed'.format(filepath)
                 if not papis.utils.confirm(
