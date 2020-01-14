@@ -7,7 +7,8 @@ from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.key_binding import KeyBindings
 
-from typing import Dict, Any, List, Union, NamedTuple, Callable, Sequence
+from typing import (  # noqa: ignore
+    Dict, Any, List, Union, NamedTuple, Callable, Sequence)
 
 Action = NamedTuple(
         'Action',

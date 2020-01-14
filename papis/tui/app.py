@@ -19,7 +19,9 @@ from .widgets.command_line_prompt import Command, CommandLinePrompt
 from .widgets import InfoWindow, HelpWindow, MessageToolbar
 from .widgets.list import Option, OptionsList
 
-from typing import Optional, Dict, Any, List, Callable, Tuple, Generic
+from typing import (  # noqa: ignore
+    Optional, Dict, Any, List, Callable, Tuple, Generic,
+    Sequence)
 from typing_extensions import TypedDict
 
 __all__ = [
@@ -258,7 +260,7 @@ class Picker(Application, Generic[Option]):  # type: ignore
 
     def __init__(
             self,
-            options: List[Option],
+            options: Sequence[Option],
             default_index: int = 0,
             header_filter: Callable[[Option], str] = str,
             match_filter: Callable[[Option], str] = str):
@@ -361,7 +363,7 @@ class Picker(Application, Generic[Option]):  # type: ignore
         self.options_list.update()
         self.refresh_status_line()
 
-    def get_selection(self) -> Optional[Option]:
+    def get_selection(self) -> Sequence[Option]:
         return self.options_list.get_selection()
 
     def update_info_window(self) -> None:

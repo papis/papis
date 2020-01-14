@@ -5,11 +5,11 @@ import functools
 import time
 import logging
 from typing import (
-    Optional, Any, List, Generic,
+    Optional, Any, List, Generic, Sequence,
     Callable, Tuple, Pattern, TypeVar)
 
 from prompt_toolkit.formatted_text.html import HTML
-from prompt_toolkit.formatted_text.base import FormattedText
+from prompt_toolkit.formatted_text.base import FormattedText  # noqa: ignore
 from prompt_toolkit.layout.screen import Point
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.controls import FormattedTextControl
@@ -40,7 +40,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
 
     def __init__(
             self,
-            options: List[Option],
+            options: Sequence[Option],
             default_index: int = 0,
             header_filter: Callable[[Option], str] = str,
             match_filter: Callable[[Option], str] = str,
@@ -64,13 +64,13 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         self.options_headers = []  # type: FormattedText
         self.options_matchers = []  # type: List[str]
         self.indices = []  # type: List[int]
-        self._options = []  # type: List[Option]
+        self._options = []  # type: Sequence[Option]
         self.marks = []  # type: List[int]
         self.max_entry_height = 1  # type: int
 
         # options are processed here also through the setter
         # ##################################################
-        self.set_options(options)  # type: List[Option]
+        self.set_options(options)  # type: Sequence[Option]
         self.cursor = Point(0, 0)  # type: Point
         # ##################################################
 
@@ -133,12 +133,12 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         if self.current_index is not None:
             self.marks.append(self.current_index)
 
-    def get_options(self) -> List[Option]:
+    def get_options(self) -> Sequence[Option]:
         """Get the original options
         """
         return self._options
 
-    def set_options(self, new_options: List[Option]) -> None:
+    def set_options(self, new_options: Sequence[Option]) -> None:
         """Set the options and process them"""
         self._options = new_options
         self.process_options()
@@ -244,11 +244,11 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
             else:
                 self.current_index = self.indices[0]
 
-    def get_selection(self) -> Optional[Option]:
+    def get_selection(self) -> Sequence[Option]:
         """Get the selected item, if there is Any"""
         if self.indices and self.current_index is not None:
-            return self.get_options()[self.current_index]
-        return None
+            return [self.get_options()[self.current_index]]
+        return []
 
     def update_cursor(self) -> None:
         """This function updates the cursor according to the current index

@@ -1,90 +1,67 @@
 import logging
 import os
-import sys
 import functools
-from typing import List, Callable, Optional
+from typing import Callable, TypeVar, Generic, Sequence, Type
+from abc import ABC, abstractmethod
 
 import papis.config
 import papis.document
-from papis.tui.app import Picker, Option
 import papis.plugin
 
-Filter = Callable[[Option], str]
-
 LOGGER = logging.getLogger("pick")
+T = TypeVar("T")
+Option = TypeVar("Option")
 
-PickerType = Callable[[List[Option], int, Filter[Option], Filter[Option]],
-                      Optional[Option]]
+
+class Picker(ABC, Generic[T]):
+
+    @abstractmethod
+    def __call__(
+            self,
+            items: Sequence[T],
+            header_filter: Callable[[T], str],
+            match_filter: Callable[[T], str],
+            default_index: int = 0
+            ) -> Sequence[T]:
+        ...
 
 
 def _extension_name() -> str:
     return "papis.picker"
 
 
-def papis_pick(
-        options: List[Option],
-        default_index: int = 0,
-        header_filter: Filter[Option] = str,
-        match_filter: Filter[Option] = str) -> Optional[Option]:
-
-    if len(options) == 0:
-        return None
-    if len(options) == 1:
-        return options[0]
-
-    # patch stdout to stderr if the output is not a tty (terminal)
-    oldstdout = sys.stdout
-    if not sys.stdout.isatty():
-        sys.stdout = sys.stderr
-        sys.__stdout__ = sys.stderr
-
-    picker = Picker(
-        options,
-        default_index,
-        header_filter,
-        match_filter
-    )
-    picker.run()
-    result = picker.options_list.get_selection()
-
-    # restore the stdout to normality
-    sys.stdout = oldstdout
-    sys.__stdout__ = oldstdout
-
-    return result
-
-
-def get_picker(name: str) -> PickerType[Option]:
+def get_picker(name: str) -> Type[Picker[Option]]:
     """Get the picker named 'name' declared as a plugin"""
     picker = papis.plugin.get_extension_manager(
-        _extension_name())[name].plugin  # type: PickerType[Option]
+        _extension_name())[name].plugin  # type: Type[Picker[Option]]
     return picker
 
 
 def pick(
-        options: List[Option],
+        options: Sequence[Option],
         default_index: int = 0,
-        header_filter: Filter[Option] = str,
-        match_filter: Filter[Option] = str) -> Optional[Option]:
+        header_filter: Callable[[Option], str] = str,
+        match_filter: Callable[[Option], str] = str) -> Sequence[Option]:
 
     name = papis.config.getstring("picktool")
     try:
-        picker = get_picker(name)  # type: PickerType[Option]
+        picker = get_picker(name)  # type: Type[Picker[Option]]
     except KeyError:
         LOGGER.error("Invalid picker (%s)", name)
         LOGGER.error(
             "Registered pickers are: %s",
             papis.plugin.get_available_entrypoints(_extension_name()))
-        return None
+        return []
     else:
-        return picker(options,
-                      default_index,
-                      header_filter,
-                      match_filter)
+        return picker()(options,
+                        header_filter,
+                        match_filter,
+                        default_index)
 
 
-def pick_doc(documents: List[papis.document.Document]
-             ) -> Optional[papis.document.Document]:
+def pick_doc(
+        documents: Sequence[papis.document.Document]
+     ) -> Sequence[papis.document.Document]:
     """Pick a document from documents with the correct formatting
 
     :documents: List of documents
