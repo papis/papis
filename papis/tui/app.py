@@ -197,15 +197,17 @@ def get_commands(app: Application) -> Tuple[List[Command], KeyBindings]:
             filter=has_focus(app.options_list.search_buffer))
     def open(cmd: Command) -> None:
         from papis.commands.open import run
-        doc = cmd.app.get_selection()
-        run(doc)
+        docs = cmd.app.get_selection()
+        for doc in docs:
+            run(doc)
 
     @kb.add(keys_info["edit_document_key"]["key"],  # type: ignore
             filter=has_focus(app.options_list.search_buffer))
     def edit(cmd: Command) -> None:
         from papis.commands.edit import run
-        doc = cmd.app.get_selection()
-        run(doc)
+        docs = cmd.app.get_selection()
+        for doc in docs:
+            run(doc)
         cmd.app.renderer.clear()
 
     @kb.add(keys_info["show_help_key"]["key"],  # type: ignore
