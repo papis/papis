@@ -1,3 +1,4 @@
+import datetime
 import os
 import re
 import shutil
@@ -7,6 +8,7 @@ import papis.utils
 import papis.config
 import papis.bibtex
 
+zero_date = datetime.datetime.fromtimestamp(0)
 
 def keyconversion_to_data(key_conversion, data, keep_unknown_keys=False):
     new_data = dict()
@@ -399,14 +401,23 @@ class Document(dict):
         # The tuple represents:
         # (is not None?, is an integer?, integer value, string value)
         if key in self.keys():
+            if key == 'time-added':
+                try:
+                    date_value = \
+                        datetime.datetime.strptime(str(self[key]),
+                                                   papis.strings.time_format)
+                    return (False, False, date_value, False, 0, '')
+                except ValueError:
+                    pass
+
             if str(self[key]).isdigit():
-                return (False, True, int(self[key]), self[key])
+                return (False, True, zero_date, True, int(self[key]), str(self[key]))
             else:
-                return (False, False, 0, self[key])
+                return (False, True, zero_date, False, 0, self[key])
         else:
             # The key does not appear in the document, ensure
             # it comes last.
-            return (True, False, 0, '')
+            return (True, False, zero_date, True, 0, '')
 
     def save(self):
         """Saves the current document's information into the info file.
