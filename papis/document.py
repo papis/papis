@@ -10,6 +10,7 @@ import papis.bibtex
 
 zero_date = datetime.datetime.fromtimestamp(0)
 
+
 def keyconversion_to_data(key_conversion, data, keep_unknown_keys=False):
     new_data = dict()
     for orig_key in key_conversion:
@@ -397,27 +398,38 @@ class Document(dict):
         """
         return key in self
 
-    def sort_for_key(self, key):
+    def sort_for_key(self, key, reverse=False):
         # The tuple represents:
         # (is not None?, is an integer?, integer value, string value)
+
+        # If the sort is reversed, it's still a nice feature to have the
+        # fields with the value specified first.  This keeps that ordering,
+        # while reversing the sorts within each type of item.
+        if reverse:
+            before = True
+            after = False
+        else:
+            before = False
+            after = True
+
         if key in self.keys():
             if key == 'time-added':
                 try:
                     date_value = \
                         datetime.datetime.strptime(str(self[key]),
                                                    papis.strings.time_format)
-                    return (False, False, date_value, False, 0, '')
+                    return (before, before, date_value, before, 0, '')
                 except ValueError:
                     pass
 
             if str(self[key]).isdigit():
-                return (False, True, zero_date, True, int(self[key]), str(self[key]))
+                return (before, after, zero_date, after, int(self[key]), str(self[key]))
             else:
-                return (False, True, zero_date, False, 0, self[key])
+                return (before, after, zero_date, before, 0, self[key])
         else:
             # The key does not appear in the document, ensure
             # it comes last.
-            return (True, False, zero_date, True, 0, '')
+            return (after, before, zero_date, after, 0, '')
 
     def save(self):
         """Saves the current document's information into the info file.
@@ -472,4 +484,4 @@ class Document(dict):
 
 
 def sort(docs: [Document], key: str, reverse: bool) -> [Document]:
-    return sorted(docs, key=lambda d: d.sort_for_key(key), reverse=reverse)
+    return sorted(docs, key=lambda d: d.sort_for_key(key, reverse=reverse), reverse=reverse)
