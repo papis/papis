@@ -102,6 +102,7 @@ import colorama
 import papis.api
 import papis.pick
 import papis.utils
+import papis.tui.utils
 import papis.filetype
 import papis.config
 import papis.document
@@ -390,7 +391,7 @@ def run(
         logger.warning(
             "(Hint) Use the update command if you just want to update"
             " the info.")
-        papis.utils.text_area(
+        papis.tui.utils.text_area(
             'The following document is already in your library',
             papis.document.dump(found_document),
             lexer_name='yaml',
@@ -401,7 +402,7 @@ def run(
         for d_path in tmp_document.get_files():
             papis.utils.open_file(d_path)
     if confirm:
-        if not papis.utils.confirm('Really add?'):
+        if not papis.tui.utils.confirm('Really add?'):
             return
 
     logger.info(
@@ -556,7 +557,7 @@ def cli(
                     .format(importer.ctx.files, importer.name))
                 for f in importer.ctx.files:
                     papis.utils.open_file(f)
-                    if batch or papis.utils.confirm("Use this file?"):
+                    if batch or papis.tui.utils.confirm("Use this file?"):
                         ctx.files.append(f)
 
     if not ctx:

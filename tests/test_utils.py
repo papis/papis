@@ -9,8 +9,7 @@ import papis.document
 from papis.document import from_data
 from papis.utils import (
     get_cache_home, create_identifier, locate_document,
-    general_open, input, clean_document_name,
-    confirm
+    general_open, clean_document_name,
 )
 from papis.filetype import get_document_extension
 
@@ -129,26 +128,3 @@ def test_slugify():
     )
     assert(clean_document_name('масса и енергиа.pdf') == 'massa-i-energia.pdf')
     assert(clean_document_name('الامير الصغير.pdf') == 'lmyr-lsgyr.pdf')
-
-
-def test_confirm():
-    with patch('papis.utils.input', lambda prompt, **x: 'y'):
-        assert(confirm('This is true'))
-    with patch('papis.utils.input', lambda prompt, **x: 'Y'):
-        assert(confirm('This is true'))
-    with patch('papis.utils.input', lambda prompt, **x: 'n'):
-        assert(not confirm('This is false'))
-    with patch('papis.utils.input', lambda prompt, **x: 'N'):
-        assert(not confirm('This is false'))
-
-    with patch('papis.utils.input', lambda prompt, **x: '\n'):
-        assert(confirm('This is true'))
-    with patch('papis.utils.input', lambda prompt, **x: '\n'):
-        assert(not confirm('This is false', yes=False))
-
-
-def test_input():
-    with patch('prompt_toolkit.prompt', lambda p, **x: 'Hello World'):
-        assert(input('What: ') == 'Hello World')
-    with patch('prompt_toolkit.prompt', lambda p, **x: ''):
-        assert(input('What: ', default='Bye') == 'Bye')

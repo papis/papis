@@ -8,7 +8,7 @@ Cli
 import papis
 import os
 import papis.pick
-import papis.utils
+import papis.tui.utils
 import subprocess
 import logging
 import click
@@ -82,7 +82,7 @@ def cli(
 
     document = docs[0]
 
-    new_name = papis.utils.input(
+    new_name = papis.tui.utils.prompt(
         "Enter new folder name:\n"
         ">",
         default=document.get_main_folder_name() or ''

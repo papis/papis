@@ -42,6 +42,7 @@ Cli
 import colorama
 import logging
 import papis.utils
+import papis.tui.utils
 import papis.strings
 import papis.downloaders
 import papis.document
@@ -195,7 +196,7 @@ def cli(
                         .format(importer.ctx.files, importer.name))
                     for f in importer.ctx.files:
                         papis.utils.open_file(f)
-                        if papis.utils.confirm("Use this file?"):
+                        if papis.tui.utils.confirm("Use this file?"):
                             ctx.files.append(f)
 
         run(document, data=ctx.data, git=git)

@@ -66,8 +66,8 @@ class TestCli(tests.cli.TestCli):
         docs = db.query_dict(dict(author='krish'))
         self.assertFalse(docs)
 
-    @patch('papis.utils.text_area', lambda **y: False)
-    @patch('papis.utils.confirm', lambda *x, **y: False)
+    @patch('papis.tui.utils.text_area', lambda **y: False)
+    @patch('papis.tui.utils.confirm', lambda *x, **y: False)
     @patch('papis.pick.pick_doc', lambda x: [x[0]] if x else [])
     def test_4_confirm(self):
         db = papis.database.get()
@@ -78,8 +78,8 @@ class TestCli(tests.cli.TestCli):
         docs = db.query_dict(dict(author='popper'))
         self.assertTrue(docs)
 
-    @patch('papis.utils.text_area', lambda **y: False)
-    @patch('papis.utils.confirm', lambda *x, **y: True)
+    @patch('papis.tui.utils.text_area', lambda **y: False)
+    @patch('papis.tui.utils.confirm', lambda *x, **y: True)
     @patch('papis.pick.pick_doc', lambda x: [x[0]] if x else [])
     def test_5_confirm_true(self):
         db = papis.database.get()
@@ -90,7 +90,7 @@ class TestCli(tests.cli.TestCli):
         docs = db.query_dict(dict(author='popper'))
         self.assertFalse(docs)
 
-    @patch('papis.utils.confirm', lambda *x, **y: True)
+    @patch('papis.tui.utils.confirm', lambda *x, **y: True)
     @patch('papis.pick.pick_doc', lambda x: [x[0]] if x else [])
     @patch('papis.pick.pick', lambda x: [])
     def test_7_confirm_file_nopick(self):
@@ -108,7 +108,7 @@ class TestCli(tests.cli.TestCli):
         Nf = len(docs[0].get_files())
         self.assertTrue(N == Nf)
 
-    @patch('papis.utils.confirm', lambda *x, **y: False)
+    @patch('papis.tui.utils.confirm', lambda *x, **y: False)
     @patch('papis.pick.pick_doc', lambda x: [x[0]] if x else [])
     @patch('papis.pick.pick', lambda x: [x[0]] if x else [])
     def test_6_confirm_file(self):
@@ -127,7 +127,7 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(N == Nf)
 
 
-    @patch('papis.utils.confirm', lambda *x, **y: True)
+    @patch('papis.tui.utils.confirm', lambda *x, **y: True)
     @patch('papis.pick.pick_doc', lambda x: [x[0]] if x else [])
     @patch('papis.pick.pick', lambda x: [x[0]] if x else [])
     def test_confirm_true_file(self):

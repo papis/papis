@@ -86,7 +86,7 @@ Cli
     :show-nested:
 """
 import os
-import papis.utils
+import papis.tui.utils
 import papis.commands
 import papis.document
 import papis.config
@@ -243,7 +243,7 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
             logger.info(
                 'A citations file exists in {0}'.format(citations_file)
             )
-            if papis.utils.confirm('Do you want to use it?'):
+            if papis.tui.utils.confirm('Do you want to use it?'):
                 # TODO: here it complains that papis.yaml.explorer.callback
                 #       None, somehow mypy does not get that.
                 papis.yaml.explorer.callback(citations_file)  # type: ignore

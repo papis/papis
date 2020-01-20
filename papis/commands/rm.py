@@ -7,7 +7,7 @@ Cli
 """
 import papis
 import papis.pick
-import papis.utils
+import papis.tui.utils
 import papis.document
 import papis.cli
 import papis.strings
@@ -98,7 +98,7 @@ def cli(query: str,
             filepath = filepaths[0]
             if not force:
                 tbar = 'The file {0} would be removed'.format(filepath)
-                if not papis.utils.confirm(
+                if not papis.tui.utils.confirm(
                         "Are you sure?", bottom_toolbar=tbar):
                     continue
             logger.info("Removing %s..." % filepath)
@@ -109,11 +109,11 @@ def cli(query: str,
                 tbar = 'The folder {0} would be removed'.format(
                     document.get_main_folder())
                 logger.warning("This document will be removed, check it")
-                papis.utils.text_area(
+                papis.tui.utils.text_area(
                     title=tbar,
                     text=papis.document.dump(document),
                     lexer_name='yaml')
-                if not papis.utils.confirm(
+                if not papis.tui.utils.confirm(
                         "Are you sure?", bottom_toolbar=tbar):
                     continue
             logger.warning("removing ...")

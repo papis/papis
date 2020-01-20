@@ -77,6 +77,7 @@ import papis.cli
 import click
 import papis.config as config
 import papis.utils
+import papis.tui.utils
 import papis.commands.explore as explore
 import papis.commands.open
 import papis.commands.edit
@@ -264,7 +265,7 @@ def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
     """Save the documents imported in bibtex format"""
     docs = ctx.obj['documents']
     if not force:
-        c = papis.utils.confirm('Are you sure you want to save?')
+        c = papis.tui.utils.confirm('Are you sure you want to save?')
         if not c:
             print('Not saving..')
             return

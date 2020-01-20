@@ -190,7 +190,7 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(os.path.islink(doc.get_files()[0]))
 
     @patch('papis.utils.open_file', lambda x: None)
-    @patch('papis.utils.confirm', lambda x: True)
+    @patch('papis.tui.utils.confirm', lambda x: True)
     @patch(
         'papis.utils.update_doc_from_data_interactively',
         lambda ctxdata, impdata, string: ctxdata.update(impdata))
@@ -222,7 +222,7 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(len(docs) == 2)
 
     @patch('papis.utils.open_file', lambda x: None)
-    @patch('papis.utils.confirm', lambda x: True)
+    @patch('papis.tui.utils.confirm', lambda x: True)
     @patch(
         'papis.utils.update_doc_from_data_interactively',
         lambda ctxdata, impdata, string: ctxdata.update(impdata))
@@ -264,7 +264,7 @@ class TestCli(tests.cli.TestCli):
         #self.assertTrue(get_document_extension(doc.get_files()[0]) == 'pdf')
 
     @patch('papis.utils.open_file', lambda x: None)
-    @patch('papis.utils.confirm', lambda x: True)
+    @patch('papis.tui.utils.confirm', lambda x: True)
     @patch(
         'papis.utils.update_doc_from_data_interactively',
         lambda ctxdata, impdata, string: ctxdata.update(impdata))
@@ -327,11 +327,11 @@ class TestCli(tests.cli.TestCli):
         #self.assertTrue(len(re.split('.pdf', doc.get_files()[0])) == 2)
 
     @patch('papis.utils.open_file', lambda x: None)
-    @patch('papis.utils.confirm', lambda x: True)
+    @patch('papis.tui.utils.confirm', lambda x: True)
     @patch(
         'papis.utils.update_doc_from_data_interactively',
         lambda ctxdata, impdata, string: ctxdata.update(impdata))
-    @patch('papis.utils.text_area', lambda *x, **y: True)
+    @patch('papis.tui.utils.text_area', lambda *x, **y: True)
     def test_from_lib(self):
         newdoc = create_real_document({"author": "Lindgren"})
         self.assertEqual(newdoc['author'], 'Lindgren')
