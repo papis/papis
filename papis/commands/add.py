@@ -524,6 +524,13 @@ def cli(
         matching_importers = sum((
             papis.utils.get_matching_importer_or_downloader(f)
             for f in files), [])
+        logger.info(
+            "These importers where automatically matched,"
+            "select the ones you want to use")
+        _range = papis.tui.utils.select_range(
+            [imp.name for imp in matching_importers],
+            "Select matching importers (for instance 0, 1, 3-10)")
+        matching_importers = [matching_importers[i] for i in _range]
 
     for importer_tuple in from_importer:
         try:
