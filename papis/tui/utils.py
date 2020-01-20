@@ -201,10 +201,14 @@ def select_range(options: List[Any], message: str) -> List[int]:
 
     possible_indices = range(len(options))
 
+    if not options:
+        return []
+
     selection = prompt(
         prompt_string=message,
         default="",
         dirty_message="Range not valid, example: 0, 2, 3-10",
         validator_function=lambda string:
                 len(set(get_range(string)) & set(possible_indices)) > 0)
+
     return [i for i in get_range(selection) if i in possible_indices]
