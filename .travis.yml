@@ -11,7 +11,7 @@ python:
 - '3.8'
 script:
 - python -m pytest papis/ tests/ --cov=papis
-- mypy papis
+- if [[ ! "$PYTHON_VERSION" == 3.8 ]]; then mypy papis; fi
 - flake8 papis
 install:
 - pip install setuptools
