@@ -357,11 +357,11 @@ class Importer(papis.importer.Importer):
                 session.headers = requests.structures.CaseInsensitiveDict({
                     'user-agent': papis.config.getstring('user-agent')})
                 document_data = session.get(doc_url).content
-                tmp_filepath = tempfile.mktemp()
-                self.logger.debug("Saving in %s" % tmp_filepath)
-                with open(tmp_filepath, 'wb+') as fd:
-                    fd.write(document_data)
-                self.ctx.files.append(tmp_filepath)
+                with tempfile.NamedTemporaryFile(
+                        mode="wb+", delete=False) as f:
+                    f.write(document_data)
+                    self.logger.debug("Saving in %s", f.name)
+                    self.ctx.files.append(f.name)
 
 
 class FromCrossrefImporter(papis.importer.Importer):

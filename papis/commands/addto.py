@@ -143,4 +143,4 @@ def cli(
     if file_name is not None:  # Use args if set
         papis.config.set("add-file-name", file_name)
 
-    return run(document, files, git=git)
+    run(document, files, git=git)

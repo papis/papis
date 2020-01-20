@@ -163,16 +163,11 @@ def _update(ctx: click.Context, _all: bool,
     """Update documents from and to the library"""
     docs = click.get_current_context().obj['documents']
     picked_doc = None
-    picked_index = -1
     if not _all:
         picked_doc = papis.api.pick_doc(docs)
         if picked_doc is None:
             return
-        picked_index = list(map(lambda x: id(x), docs)).index(id(picked_doc))
     for j, doc in enumerate(docs):
-        if not _all:
-            if not j == picked_index:
-                continue
         try:
             libdoc = papis.utils.locate_document_in_lib(doc)
         except IndexError as e:

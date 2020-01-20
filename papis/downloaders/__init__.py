@@ -126,11 +126,11 @@ class Downloader(papis.importer.Importer):
         else:
             doc_rawdata = self.get_document_data()
             if doc_rawdata and self.check_document_format():
-                tmp = tempfile.mktemp()
-                self.logger.info("Saving downloaded file in {0}".format(tmp))
-                with open(tmp, 'wb+') as fd:
-                    fd.write(doc_rawdata)
-                self.ctx.files.append(tmp)
+                with tempfile.NamedTemporaryFile(
+                        mode="wb+", delete=False) as f:
+                    f.write(doc_rawdata)
+                    self.logger.info("Saving downloaded file in %s", f.name)
+                    self.ctx.files.append(f.name)
 
     def fetch(self) -> None:
         self.fetch_data()
