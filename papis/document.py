@@ -1,7 +1,8 @@
 import os
 import shutil
 import logging
-from typing import List, Dict, Any, Optional, Union, NamedTuple, Callable, Tuple
+from typing import (
+    List, Dict, Any, Optional, Union, NamedTuple, Callable, Tuple)
 from typing_extensions import TypedDict
 
 import papis.config
