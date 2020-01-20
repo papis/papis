@@ -2,7 +2,7 @@ import re
 import os
 import logging
 import tempfile
-from typing import Set, List, Dict, Any, Optional, Tuple
+from typing import Set, List, Dict, Any, Optional, Tuple  # noqa: ignore
 
 import requests
 import requests.structures
@@ -390,11 +390,13 @@ class FromCrossrefImporter(papis.importer.Importer):
             for d in get_data(query=self.uri)]
         if docs:
             self.logger.info("got {0} matches, picking...".format(len(docs)))
-            doc = papis.pick.pick_doc(docs)
-            if doc:
-                importer = Importer(uri=doc['doi'])
-                importer.fetch()
-                self.ctx = importer.ctx
+            docs = list(papis.pick.pick_doc(docs))
+            if not docs:
+                return
+            doc = docs[0]
+            importer = Importer(uri=doc['doi'])
+            importer.fetch()
+            self.ctx = importer.ctx
 
 
 class Downloader(papis.downloaders.Downloader):

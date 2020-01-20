@@ -1,4 +1,4 @@
-"""
+r"""
 This command is useful to issue commands in the directory of your library.
 
 CLI Examples
@@ -16,14 +16,25 @@ CLI Examples
 
         papis run find -name 'document.pdf'
 
-Python examples
-^^^^^^^^^^^^^^^
+    - Find all pdfs in the document folders matching einstein
 
-.. code::python
+    .. code::
 
-    from papis.commands.run import run
+        papis run -p einstein --all -- find . -name '*.pdf'
 
-    run(library='papers', command=["ls", "-a"])
+      notice that in general, the symbol ``--`` is advisable
+      so that the arguments after it are considered as positional arguments
+      for the shell commands.
+
+      In this example you could also use pipes, for instance to print the
+      absolute path to the files, in linux you can use the command
+      ``readlink -f`` and a pipe ``|`` to do this, i.e.:
+
+    .. code::
+
+        papis run -p einstein \
+                --all -- "find . -name '*.pdf' | xargs readlink -f"
+
 
 Cli
 ^^^
@@ -31,28 +42,72 @@ Cli
     :prog: papis run
 """
 import os
-import papis.config
-import papis.exceptions
 import logging
+from typing import List, Optional
+
 import click
 
-from typing import List
+import papis.pick
+import papis.cli
+import papis.config
+import papis.document
+import papis.database
 
-logger = logging.getLogger('run')
+LOGGER = logging.getLogger('run')
 
 
-def run(folder: str, command: List[str] = []) -> None:
-    logger.debug("Changing directory into %s" % folder)
+def run(folder: str, command: List[str] = []) -> int:
+    LOGGER.debug("Changing directory into %s", folder)
     os.chdir(os.path.expanduser(folder))
     commandstr = " ".join(command)
-    logger.debug("Command = %s" % commandstr)
-    os.system(commandstr)
+    LOGGER.debug("Command: %s", commandstr)
+    return os.system(commandstr)
 
 
 @click.command("run", context_settings=dict(ignore_unknown_options=True))
 @click.help_option('--help', '-h')
-@click.argument("run_command", nargs=-1)
-def cli(run_command: List[str]) -> None:
-    """Run an arbitrary shell command in the library folder"""
-    for folder in papis.config.get_lib_dirs():
-        run(folder, command=run_command)
+@click.option(
+    '--pick', '-p',
+    help="Give a query to pick a document to run the command in its folder",
+    metavar="<QUERY>",
+    type=str,
+    default="")
+@papis.cli.sort_option()
+@papis.cli.doc_folder_option()
+@papis.cli.all_option()
+@click.option(
+    '--prefix',
+    default=None,
+    type=str,
+    metavar="<PREFIX>",
+    help="Prefix shell commands by a prefix command")
+@click.argument("run_command", metavar="<COMMANDS>", nargs=-1)
+def cli(
+        run_command: List[str],
+        pick: str,
+        sort_field: str,
+        sort_reverse: bool,
+        prefix: Optional[str],
+        doc_folder: str, _all: bool) -> None:
+    """Run an arbitrary shell command in the library or command folder"""
+
+    documents = []
+
+    if doc_folder:
+        documents = [papis.document.from_folder(doc_folder)]
+    elif pick:
+        documents = papis.database.get().query(pick)
+
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
+
+    if not _all:
+        documents = [d for d in papis.pick.pick_doc(documents)]
+
+    if documents:
+        folders = [d for d in [d.get_main_folder() for d in documents] if d]
+    else:
+        folders = papis.config.get_lib_dirs()
+
+    for folder in folders:
+        run(folder, command=([prefix] if prefix else []) + list(run_command))

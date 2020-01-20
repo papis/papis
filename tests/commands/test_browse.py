@@ -62,7 +62,7 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(result.exit_code == 0)
 
     @patch('papis.utils.general_open', lambda *x, **y: None)
-    @patch('papis.pick.pick_doc', lambda x: None)
+    @patch('papis.pick.pick_doc', lambda x: [])
     def test_key_doi_not_select(self):
         result = self.invoke([
             'krishnamurti', '-k', 'doi'

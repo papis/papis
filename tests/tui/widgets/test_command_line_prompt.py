@@ -8,7 +8,7 @@ from papis.tui.widgets import *
 def test_simple_command():
     cmd = Command('test', lambda c: 1+1)
     assert(cmd.app is not None)
-    r = cmd()
+    r = cmd.run(cmd)
     assert(r == 2)
     assert(cmd.names == ['test'])
 
@@ -22,7 +22,7 @@ def test_commandlineprompt():
     prompt = CommandLinePrompt(commands=cmds)
     prompt.text = 'test'
     re = prompt.trigger()
-    assert(re == 2)
+    assert(re is None)
     try:
         prompt.text = 'est'
         e = prompt.trigger()

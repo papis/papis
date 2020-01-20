@@ -148,7 +148,7 @@ setup(
             'folder=papis.commands.add:FromFolderImporter',
         ],
         'papis.picker': [
-            'papis=papis.pick:papis_pick',
+            'papis=papis.tui.picker:Picker',
         ],
         'papis.command': [
             "add=papis.commands.add:cli",

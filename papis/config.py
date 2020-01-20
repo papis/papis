@@ -5,7 +5,7 @@ import configparser
 import papis.exceptions
 import papis.library
 import logging
-from typing import Dict, Any, List, Optional, Callable
+from typing import Dict, Any, List, Optional, Callable  # noqa: ignore
 
 PapisConfigType = Dict[str, Dict[str, Any]]
 
@@ -418,7 +418,7 @@ def getstring(key: str, section: Optional[str] = None) -> str:
     """String getter
     >>> set('add-open', "hello world")
     >>> getstring('add-open')
-    "hello world"
+    'hello world'
     """
     result = general_get(key, section=section, data_type=str)
     if not isinstance(result, str):

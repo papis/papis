@@ -125,16 +125,15 @@ def cli(
     if doc_folder:
         documents = [papis.document.from_folder(doc_folder)]
 
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
+
     if not _all:
-        _doc = papis.pick.pick_doc(documents)
-        documents = [_doc] if _doc is not None else []
+        documents = list(papis.pick.pick_doc(documents))
 
     if not documents:
         logger.error(papis.strings.no_documents_retrieved_message)
         return
-
-    if sort_field:
-        documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     for document in documents:
         ctx = papis.importer.Context()

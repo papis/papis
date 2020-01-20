@@ -64,9 +64,10 @@ def cli(query: str, git: bool, sort_field: Optional[str],
     if sort_field:
         documents = papis.document.sort(documents, sort_field, sort_reverse)
 
-    document = papis.pick.pick_doc(documents)
-    if not document:
+    docs = papis.pick.pick_doc(documents)
+    if not docs:
         return
+    document = docs[0]
 
     lib_dir = os.path.expanduser(papis.config.get_lib_dirs()[0])
 

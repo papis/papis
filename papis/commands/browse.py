@@ -91,10 +91,9 @@ def cli(
         return
 
     if not _all:
-        document = papis.pick.pick_doc(documents)
-        if not document:
+        documents = list(papis.pick.pick_doc(documents))
+        if not documents:
             return
-        documents = [document]
 
     if sort_field:
         documents = papis.document.sort(documents, sort_field, sort_reverse)

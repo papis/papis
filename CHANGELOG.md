@@ -5,6 +5,15 @@ VERSION v0.10
   with the `sort-file` configuration option.
 - Move `papis.utils.format_doc` to `papis.document.format_doc`
   in order to minimize circular dependencies.
+- Add `--logfile` flag in order to dump log messages to a file.
+
+
+## Run and `Git` command ##
+- Add `--pick`, `--doc-folder`, `--all` and `--sort`
+  flags so that we can choose a document to run the shell or git command
+  in that folder or in all folders matching a given query introduced by
+  `--pick`.
+
 
 VERSION v0.9
 ============

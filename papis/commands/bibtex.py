@@ -136,9 +136,8 @@ def _add(ctx: click.Context, query: str, _all: bool) -> None:
     """Add a refrence to the bibtex file"""
     docs = papis.api.get_documents_in_lib(search=query)
     if not _all:
-        _doc = papis.api.pick_doc(docs)
-        docs = [_doc] if _doc is not None else []
-    ctx.obj['documents'].extend(docs)
+        _docs = papis.api.pick_doc(docs)
+    ctx.obj['documents'].extend(_docs)
 
 
 @cli.command('update')
@@ -202,10 +201,10 @@ def _update(ctx: click.Context, _all: bool,
 def _open(ctx: click.Context) -> None:
     """Open a document in the documents list"""
     docs = ctx.obj['documents']
-    doc = papis.api.pick_doc(docs)
-    if not doc:
+    docs = papis.api.pick_doc(docs)
+    if not docs:
         return
-    doc = papis.utils.locate_document_in_lib(doc)
+    doc = papis.utils.locate_document_in_lib(docs[0])
     papis.commands.open.run(doc)
 
 
@@ -220,10 +219,10 @@ def _open(ctx: click.Context) -> None:
 def _edit(ctx: click.Context, lib: bool) -> None:
     """edit a document in the documents list"""
     docs = ctx.obj['documents']
-    doc = papis.api.pick_doc(docs)
-    if not doc:
+    docs = papis.api.pick_doc(docs)
+    if not docs:
         return
-    doc = papis.utils.locate_document_in_lib(doc)
+    doc = papis.utils.locate_document_in_lib(docs[0])
     papis.commands.edit.run(doc)
 
 
@@ -242,10 +241,10 @@ def _rm(ctx: click.Context) -> None:
 def _ref(ctx: click.Context, out: Optional[str]) -> None:
     """Print the reference for a document"""
     docs = ctx.obj['documents']
-    doc = papis.api.pick_doc(docs)
-    if not doc:
+    docs = papis.api.pick_doc(docs)
+    if not docs:
         return
-    ref = doc["ref"]
+    ref = docs[0]["ref"]
     if out:
         with open(out, 'w+') as fd:
             fd.write(ref)

@@ -85,8 +85,7 @@ def cli(
         papis.config.set('editor', editor)
 
     if not _all:
-        document = papis.pick.pick_doc(documents)
-        documents = [document] if document else []
+        documents = list(papis.pick.pick_doc(documents))
 
     if len(documents) == 0:
         logger.warning(papis.strings.no_documents_retrieved_message)

@@ -1,15 +1,15 @@
-# -*- coding: utf-8 -*-
-import shlex
-from typing import Optional, List, Iterator, Callable, Any, Dict, Union
-import subprocess
-import multiprocessing
-import time
-import copy
 from itertools import count, product
+from typing import Optional, List, Iterator, Callable, Any, Dict, Union
+import copy
+import logging
+import multiprocessing
 import os
 import re
+import shlex
+import subprocess
+import time
+
 import colorama
-import logging
 
 import papis.config
 import papis.exceptions
@@ -18,8 +18,8 @@ import papis.downloaders
 import papis.document
 import papis.database
 
-logger = logging.getLogger("utils")
-logger.debug("importing")
+LOGGER = logging.getLogger("utils")
+LOGGER.debug("importing")
 
 
 def general_open(
@@ -27,22 +27,6 @@ def general_open(
         default_opener: Optional[str] = None,
         wait: bool = True) -> None:
     """Wraper for openers
-
-
-    >>> import tempfile; path = tempfile.mktemp()
-    >>> general_open(path, 'nonexistent-key', wait=False).stdin == None
-    True
-    >>> general_open(path, 'nonexistent-key') > 0
-    True
-    >>> general_open([path], 'nonexistent-key', default_opener=lambda path: 42)
-    42
-    >>> general_open([path], 'nonexistent-key', default_opener=tempfile)
-    Traceback (most recent call last):
-    ...
-    Warning: How should I use the opener ...?
-    >>> papis.config.set('editor', 'echo')
-    >>> general_open([path], 'editor', wait=False)
-    <subprocess.Popen...>
     """
     try:
         opener = papis.config.get(key)
@@ -51,12 +35,12 @@ def general_open(
             default_opener = papis.config.get_default_opener()
         opener = default_opener
     cmd = shlex.split("{0} '{1}'".format(opener, file_name))
-    logger.debug("cmd:  %s" % cmd)
+    LOGGER.debug("cmd:  %s", cmd)
     if wait:
-        logger.debug("Waiting for process to finsih")
+        LOGGER.debug("Waiting for process to finsih")
         subprocess.call(cmd)
     else:
-        logger.debug("Not waiting for process to finish")
+        LOGGER.debug("Not waiting for process to finish")
         subprocess.Popen(
             cmd, shell=False,
             stdin=None, stdout=None, stderr=None, close_fds=True)
@@ -85,13 +69,13 @@ def get_folders(folder: str) -> List[str]:
     :returns: List of folders containing an info file.
     :rtype: list
     """
-    logger.debug("Indexing folders in '{0}'".format(folder))
+    LOGGER.debug("Indexing folders in '{0}'".format(folder))
     folders = list()
     for root, dirnames, filenames in os.walk(folder):
         if os.path.exists(
                 os.path.join(root, papis.config.getstring('info-name'))):
             folders.append(root)
-    logger.debug("{0} valid folders retrieved".format(len(folders)))
+    LOGGER.debug("{0} valid folders retrieved".format(len(folders)))
     return folders
 
 
@@ -141,8 +125,7 @@ def confirm(
         dirty_message='Please, write either "y" or "n" to confirm')
     if yes:
         return result not in 'Nn'
-    else:
-        return result in 'Yy'
+    return result in 'Yy'
 
 
 def text_area(
@@ -179,11 +162,6 @@ def text_area(
     from prompt_toolkit.key_binding import KeyBindings
     from prompt_toolkit.lexers import PygmentsLexer
     from pygments.lexers import find_lexer_class_by_name
-    assert(type(title) == str)
-    assert(type(text) == str)
-    assert(type(lexer_name) == str)
-    assert(type(height) == int)
-    assert(type(full_screen) == bool)
 
     kb = KeyBindings()
     buffer1 = Buffer()

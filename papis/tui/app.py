@@ -19,7 +19,9 @@ from .widgets.command_line_prompt import Command, CommandLinePrompt
 from .widgets import InfoWindow, HelpWindow, MessageToolbar
 from .widgets.list import Option, OptionsList
 
-from typing import Optional, Dict, Any, List, Callable, Tuple, Generic
+from typing import (  # noqa: ignore
+    Optional, Dict, Any, List, Callable, Tuple, Generic,
+    Sequence)
 from typing_extensions import TypedDict
 
 __all__ = [
@@ -195,15 +197,17 @@ def get_commands(app: Application) -> Tuple[List[Command], KeyBindings]:
             filter=has_focus(app.options_list.search_buffer))
     def open(cmd: Command) -> None:
         from papis.commands.open import run
-        doc = cmd.app.get_selection()
-        run(doc)
+        docs = cmd.app.get_selection()
+        for doc in docs:
+            run(doc)
 
     @kb.add(keys_info["edit_document_key"]["key"],  # type: ignore
             filter=has_focus(app.options_list.search_buffer))
     def edit(cmd: Command) -> None:
         from papis.commands.edit import run
-        doc = cmd.app.get_selection()
-        run(doc)
+        docs = cmd.app.get_selection()
+        for doc in docs:
+            run(doc)
         cmd.app.renderer.clear()
 
     @kb.add(keys_info["show_help_key"]["key"],  # type: ignore
@@ -258,7 +262,7 @@ class Picker(Application, Generic[Option]):  # type: ignore
 
     def __init__(
             self,
-            options: List[Option],
+            options: Sequence[Option],
             default_index: int = 0,
             header_filter: Callable[[Option], str] = str,
             match_filter: Callable[[Option], str] = str):
@@ -361,7 +365,7 @@ class Picker(Application, Generic[Option]):  # type: ignore
         self.options_list.update()
         self.refresh_status_line()
 
-    def get_selection(self) -> Optional[Option]:
+    def get_selection(self) -> Sequence[Option]:
         return self.options_list.get_selection()
 
     def update_info_window(self) -> None:

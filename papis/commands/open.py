@@ -124,15 +124,15 @@ def run(document: Document, opener: Optional[str] = None,
                     if not _mark_opener:
                         raise Exception("mark-opener-format not set")
                     opener = format_doc(
-                        _mark_opener, from_data(mark_dict), key=_mark_name)
+                        _mark_opener, from_data(mark_dict[0]), key=_mark_name)
                     logger.info("Setting opener to '%s'", opener)
                     papis.config.set("opentool", opener)
         files = document.get_files()
         if len(files) == 0:
             logger.error("The document chosen has no files attached")
             return
-        file_to_open = papis.api.pick(files, header_filter=os.path.basename)
-        if file_to_open:
+        files_to_open = papis.api.pick(files, header_filter=os.path.basename)
+        for file_to_open in files_to_open:
             papis.api.open_file(file_to_open, wait=False)
 
 
@@ -179,8 +179,7 @@ def cli(query: str, doc_folder: str, tool: str, folder: bool,
         return
 
     if not _all:
-        _doc = papis.pick.pick_doc(documents)
-        documents = [_doc] if _doc is not None else []
+        documents = [d for d in papis.pick.pick_doc(documents)]
 
     for document in documents:
         run(document, folder=folder, mark=mark)

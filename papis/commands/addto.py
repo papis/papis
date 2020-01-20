@@ -133,10 +133,12 @@ def cli(
     if sort_field:
         documents = papis.document.sort(documents, sort_field, sort_reverse)
 
-    document = papis.pick.pick_doc(documents)
+    docs = papis.pick.pick_doc(documents)
 
-    if not document:
+    if not docs:
         return
+
+    document = docs[0]
 
     if file_name is not None:  # Use args if set
         papis.config.set("add-file-name", file_name)

@@ -49,6 +49,7 @@ from whoosh.fields import Schema, FieldType
 from whoosh.writing import IndexWriter
 
 import papis.config
+import papis.strings
 import papis.document
 import papis.database.base
 import papis.database.cache

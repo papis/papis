@@ -2,7 +2,7 @@ import papis.config
 import papis.document
 import logging
 from typing import Optional, List, Any, Callable
-MATCHER_TYPE = Callable[[papis.document.Document, str, str], Any]
+MATCHER_TYPE = Callable[[papis.document.Document, str, Optional[str]], Any]
 
 
 class DocMatcher(object):
@@ -61,7 +61,8 @@ class DocMatcher(object):
             elif len(parsed) == 3:
                 search = parsed[2]
                 sformat = cls.doc_format.replace('DOC_KEY', parsed[0])
-            if cls.matcher is not None and sformat is not None:
+
+            if cls.matcher is not None:
                 match = doc if cls.matcher(doc, search, sformat) else None
             if not match:
                 break
