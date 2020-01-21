@@ -85,7 +85,7 @@ def filter_documents(
             "Filtering {0} docs (search {1})".format(
                 len(documents), search))
         filtered_docs = [
-            d for d in [papis.docmatcher.DocMatcher.return_if_match[d]
+            d for d in [papis.docmatcher.DocMatcher.return_if_match(d)
                         for d in documents] if d is not None]
 
     else:
