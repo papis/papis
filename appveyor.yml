@@ -30,8 +30,8 @@ build: off
 
 test_script:
   - "%PYTHON%\\python.exe -m pytest papis tests"
-  - "%PYTHON%\\mypy papis"
-  - "%PYTHON%\\flake8 tests"
+  - "%PYTHON%\\python.exe -m mypy papis"
+  - "%PYTHON%\\python.exe -m flake8 papis"
 
 #on_success:
 #  You can use this step to upload your artifacts to a public website.
