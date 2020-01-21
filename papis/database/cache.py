@@ -84,10 +84,10 @@ def filter_documents(
         logger.debug(
             "Filtering {0} docs (search {1})".format(
                 len(documents), search))
-        filtered_docs = list(
-            filter(
-                lambda d: d is not None,
-                map(papis.docmatcher.DocMatcher.return_if_match, documents)))
+        filtered_docs = [
+            d for d in [papis.docmatcher.DocMatcher.return_if_match[d]
+                        for d in documents] if d is not None]
+
     else:
         # Doing this multiprocessing in filtering does not seem
         # to help much, I don't know if it's because I'm doing something
