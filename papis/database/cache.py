@@ -42,8 +42,8 @@ def get_cache_file_path(directory: str) -> str:
     :type  directory: str
 
     >>> import os; os.environ["XDG_CACHE_HOME"] = '/tmp'
-    >>> get_cache_file_path('blah/papers')
-    '/tmp/papis/database/c39177eca0eaea2e21134b0bd06631b6-papers'
+    >>> os.path.basename(get_cache_file_path('blah/papers'))
+    'c39177eca0eaea2e21134b0bd06631b6-papers'
     """
     cache_name = get_cache_file_name(directory)
     folder = os.path.expanduser(
