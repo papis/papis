@@ -41,8 +41,10 @@ def test_get_config_dirs():
     assert len(dirs) == 4
     assert os.path.abspath('/etc/papis') == os.path.abspath(dirs[0])
     assert os.path.abspath('/usr/local/etc/papis') == os.path.abspath(dirs[1])
-    assert os.path.abspath('~/papis') == os.path.abspath(dirs[2])
-    assert os.path.abspath('~/.papis') == os.path.abspath(dirs[3])
+    assert (os.path.abspath(os.path.expanduser('~/papis'))
+            == os.path.abspath(dirs[2]))
+    assert (os.path.abspath(os.path.expanduser('~/.papis'))
+            == os.path.abspath(dirs[3]))
 
 
 def test_get_config_folder():
