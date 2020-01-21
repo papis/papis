@@ -21,14 +21,13 @@ def test_get_cache_home():
             os.path.join(os.environ["XDG_CACHE_HOME"], 'papis')
         )
     )
-    os.environ["XDG_CACHE_HOME"] = '/tmp/.cache'
-    assert(get_cache_home() == '/tmp/.cache/papis')
+    os.environ["XDG_CACHE_HOME"] = os.path.abspath('/tmp/.cache')
+    assert(get_cache_home() == os.path.abspath('/tmp/.cache/papis'))
     assert(os.path.exists(get_cache_home()))
     del os.environ["XDG_CACHE_HOME"]
-    assert(
-        get_cache_home() == os.path.expanduser(
-            os.path.join('~/.cache', 'papis')
-        )
+    assert (
+        get_cache_home() ==
+        os.path.abspath(os.path.expanduser(os.path.join('~/.cache', 'papis')))
     )
     tmp = os.path.join(tempfile.mkdtemp(), 'blah')
     papis.config.set('cache-dir', tmp)

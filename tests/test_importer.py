@@ -35,6 +35,7 @@ def test_cache():
 
         @cache
         def fetch(self):
+            time.sleep(.1)
             self.ctx.data = {'time': time.time()}
 
     importer = SimpleImporter()

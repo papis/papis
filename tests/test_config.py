@@ -33,14 +33,14 @@ def test_get_config_dirs():
     dirs = get_config_dirs()
     assert os.environ.get('XDG_CONFIG_DIRS') is None
     assert len(dirs) == 2
-    assert '/tmp/papis' == dirs[0]
+    assert os.path.join('/', 'tmp', 'papis') == dirs[0]
 
     os.environ['XDG_CONFIG_DIRS'] = '/etc/:/usr/local/etc'
     os.environ['XDG_CONFIG_HOME'] = '~'
     dirs = get_config_dirs()
     assert len(dirs) == 4
-    assert '/etc/papis' == dirs[0]
-    assert '/usr/local/etc/papis' == dirs[1]
+    assert os.path.join('/', 'etc', 'papis') == dirs[0]
+    assert os.path.join('/', 'usr', 'local', 'etc', 'papis') == dirs[1]
     assert os.path.expanduser('~/papis') == dirs[2]
     assert os.path.expanduser('~/.papis') == dirs[3]
 
