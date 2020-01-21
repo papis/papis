@@ -19,6 +19,8 @@ environment:
 install:
 
   - "%PYTHON%\\python.exe -m pip install wheel"
+  - "%PYTHON%\\python.exe -m pip install mypy"
+  - "%PYTHON%\\python.exe -m pip install flake8"
   - "%PYTHON%\\python.exe -m pip install setuptools"
   - "%PYTHON%\\python.exe -m pip install -e .[develop]"
   - "%PYTHON%\\python.exe -m pip install -e .[optional]"
@@ -27,7 +29,9 @@ install:
 build: off
 
 test_script:
-  - "%PYTHON%\\python.exe -m pytest papis"
+  - "%PYTHON%\\python.exe -m pytest papis tests"
+  - "%PYTHON%\\mypy papis"
+  - "%PYTHON%\\flake8 tests"
 
 #on_success:
 #  You can use this step to upload your artifacts to a public website.
