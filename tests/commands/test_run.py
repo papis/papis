@@ -20,4 +20,4 @@ class Test(unittest.TestCase):
 
     def test_run_nonexistent(self):
         status = run(papis.config.get_lib_dirs()[0], command=['nonexistent'])
-        assert(not status == 1)
+        assert(not status == 0)
