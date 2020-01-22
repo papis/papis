@@ -192,13 +192,14 @@ def cli(
     if not libraries and not downloaders:
         db = papis.database.get()
         documents = db.query(query)
+        if sort_field:
+            documents = \
+                papis.document.sort(documents, sort_field, sort_reverse)
+
         if not documents:
             logger.warning(papis.strings.no_documents_retrieved_message)
         if not _all:
             documents = list(papis.pick.pick_doc(documents))
-
-    if sort_field:
-        documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     objects = run(
         documents,
