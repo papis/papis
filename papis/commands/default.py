@@ -30,7 +30,7 @@ import os
 import difflib
 import sys
 import logging
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, List, Callable
 
 import papis
 import papis.api
@@ -39,6 +39,9 @@ import papis.commands
 import papis.database
 import papis.cli
 
+import atexit
+import cProfile
+import pstats
 import colorama
 import click
 import click.core
@@ -107,6 +110,19 @@ class MultiCommand(click.core.MultiCommand):
         return cli
 
 
+def generate_profile_writing_function(profiler: cProfile.Profile,
+                                      filename: str) -> Callable[[], None]:
+    def _on_finish() -> None:
+        profiler.disable()
+        profiler.create_stats()
+        with open(filename, 'w') as output:
+            stats = pstats.Stats(profiler, stream=output)
+            stats.sort_stats('time')
+            stats.print_stats()
+
+    return _on_finish
+
+
 @click.group(
     cls=MultiCommand,
     invoke_without_command=True)
@@ -118,6 +134,11 @@ class MultiCommand(click.core.MultiCommand):
     help="Make the output verbose (equivalent to --log DEBUG)",
     default=False,
     is_flag=True)
+@click.option(
+    "--profile",
+    help="Print profiling information into file",
+    type=click.Path(),
+    default=None)
 @click.option(
     "-l",
     "--lib",
@@ -162,6 +183,7 @@ class MultiCommand(click.core.MultiCommand):
     default=None)
 def run(
         verbose: bool,
+        profile: str,
         config: str,
         lib: str,
         log: str,
@@ -170,6 +192,11 @@ def run(
         clear_cache: bool,
         set_list: List[Tuple[str, str]],
         color: str) -> None:
+
+    if profile:
+        profiler = cProfile.Profile()
+        profiler.enable()
+        atexit.register(generate_profile_writing_function(profiler, profile))
 
     if color == "no" or (color == "auto" and not sys.stdout.isatty()):
         # Turn off colorama (strip escape sequences from the output)
