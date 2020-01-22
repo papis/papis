@@ -351,6 +351,11 @@ def sort(docs: List[Document], key: str, reverse: bool) -> List[Document]:
         "None": 2
     }
 
+    # Preserve the ordering of types even if --reverse is used.
+    if reverse:
+        for sort_type in sort_rankings:
+            sort_rankings[sort_type] = -sort_rankings[sort_type]
+
     def _sort_for_key(key: str, doc: Document) -> Tuple[int, int, str]:
         if key in doc.keys():
             if str(doc[key]).isdigit():
