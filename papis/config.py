@@ -173,8 +173,6 @@ class Configuration(configparser.ConfigParser):
                     self[section][field] = self.default_info[section][field]
             with open(self.file_location, "w") as configfile:
                 self.write(configfile)
-        with open('test.conf', "w+") as fd:
-            self.write(fd)
         configpy = get_configpy_file()
         if os.path.exists(configpy):
             self.logger.debug('Executing {0}'.format(configpy))
