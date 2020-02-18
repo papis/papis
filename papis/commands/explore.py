@@ -164,11 +164,11 @@ def pick(ctx: click.Context, number: Optional[int]) -> None:
     docs = ctx.obj['documents']
     if number is not None:
         docs = [docs[number - 1]]
-    doc = papis.pick.pick_doc(docs)
-    if not doc:
+    picked_docs = papis.pick.pick_doc(docs)
+    if not picked_docs:
         ctx.obj['documents'] = []
         return
-    ctx.obj['documents'] = [doc]
+    ctx.obj['documents'] = picked_docs
     assert(isinstance(ctx.obj['documents'], list))
 
 
