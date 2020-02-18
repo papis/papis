@@ -1,4 +1,5 @@
 import os
+import datetime
 import shutil
 import logging
 from typing import (
@@ -339,19 +340,50 @@ def from_data(data: Dict[str, Any]) -> Document:
 
 
 def sort(docs: List[Document], key: str, reverse: bool) -> List[Document]:
+    # The tuple returned by the _sort_for_key function represents:
+    # (ranking, integer value, string value)
+    # Rankings are:
+    #   date:   0 (come first)
+    #   integers:    2 (come after integers)
+    #   strings:    3 (come after integers)
+    #   None:       4 (come last)
+    sort_rankings = {
+        "date": 0,
+        "int": 1,
+        "string": 2,
+        "None": 3
+    }
 
-    def _sort_for_key(key: str, doc: Document) -> Tuple[bool, bool, int, str]:
-        # The tuple represents:
-        # (is not None?, is an integer?, integer value, string value)
+    # Preserve the ordering of types even if --reverse is used.
+    if reverse:
+        for sort_type in sort_rankings:
+            sort_rankings[sort_type] = -sort_rankings[sort_type]
+
+    zero_date = datetime.datetime.fromtimestamp(0)
+
+    def _sort_for_key(key: str, doc: Document
+                      ) -> Tuple[int, datetime.datetime, int, str]:
         if key in doc.keys():
+            if key == 'time-added':
+                try:
+                    date_value = \
+                        datetime.datetime.strptime(str(doc[key]),
+                                                   papis.strings.time_format)
+                    return (sort_rankings["date"],
+                            date_value, 0, str(doc[key]))
+                except ValueError:
+                    pass
+
             if str(doc[key]).isdigit():
-                return (False, True, int(doc[key]), str(doc[key]))
+                return (sort_rankings["int"],
+                        zero_date, int(doc[key]), str(doc[key]))
             else:
-                return (False, False, 0, str(doc[key]))
+                return (sort_rankings["string"],
+                        zero_date, 0, str(doc[key]))
         else:
             # The key does not appear in the document, ensure
             # it comes last.
-            return (True, False, 0, '')
+            return (sort_rankings["None"], zero_date, 0, '')
     LOGGER.debug("sorting %d documents", len(docs))
     return sorted(docs, key=lambda d: _sort_for_key(key, d), reverse=reverse)
 
