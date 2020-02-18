@@ -111,38 +111,30 @@ class PapisConfig(Directive):
         key = self.arguments[0]
         section = self.options.get(
             'section',
-            papis.config.get_general_settings_name()
-        )
+            papis.config.get_general_settings_name())
         default = self.options.get(
             'default',
-            papis.config.get_default_settings(section=section, key=key)
-        )
+            papis.config.get_default_settings().get(section).get(key))
         source = self.state_machine.input_lines.source(
-            self.lineno - self.state_machine.input_offset - 1
-        )
+            self.lineno - self.state_machine.input_offset - 1)
 
 
         lines = []
         lines.append("")
-        lines.append(
-            ".. _config-{section}-{key}:".format(section=section, key=key)
-        )
+        lines.append(".. _config-{section}-{key}:"
+                     .format(section=section, key=key))
         lines.append("")
-        lines.append(
-                "**{key}** (config-{section}-{key}_)".format(section=section, key=key)
-        )
+        lines.append("**{key}** (config-{section}-{key}_)"
+                     .format(section=section, key=key))
         if '\n' in str(default):
-            lines.append(
-                "    - **Default**: "
-            )
+            lines.append("    - **Default**: ")
             lines.append("        .. code::")
             lines.append("")
             for lindef in default.split('\n'):
                 lines.append(3*"    " + lindef)
         else:
-            lines.append(
-                "    - **Default**: ``{value}``".format(value=default)
-            )
+            lines.append("    - **Default**: ``{value}``"
+                         .format(value=default))
         lines.append("")
 
         newViewList = docutils.statemachine.ViewList(lines)
@@ -150,9 +142,7 @@ class PapisConfig(Directive):
 
         node = docutils.nodes.paragraph()
         node.document = self.state.document
-        self.state.nested_parse(
-            self.content, self.content_offset, node
-        )
+        self.state.nested_parse(self.content, self.content_offset, node)
         return node.children
 
 def setup(app):
