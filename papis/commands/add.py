@@ -573,7 +573,8 @@ def cli(
         logger.error('there is nothing to be added')
         return
 
-    ctx.data['time-added'] = time.strftime(papis.strings.time_format)
+    if papis.config.getboolean("time-stamp"):
+        ctx.data['time-added'] = time.strftime(papis.strings.time_format)
 
     return run(
         ctx.files,

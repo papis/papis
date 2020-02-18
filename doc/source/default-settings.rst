@@ -605,3 +605,10 @@ Other
   the documents according to this sort field. For instance,
   if you want your documents by default to be sorted by ``year``, you
   would set ``sort-field = year``.
+
+.. papis-config:: time-stamp
+
+  Wether or not to add a timestamp to a document when is being added to
+  papis. If documents have a timestamp, then they will be sortable
+  using `--sort time-added` option.
+
