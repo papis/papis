@@ -239,7 +239,7 @@ def to_bibtex(document: papis.document.Document) -> str:
         logger.debug('%s : %s' % (bibKey, document[bibKey]))
         if bibKey in bibtex_keys:
             value = str(document[bibKey])
-            if not papis.config.get('bibtex-unicode'):
+            if not papis.config.getboolean('bibtex-unicode'):
                 value = unicode_to_latex(value)
             if bibKey == 'journal':
                 journal_key = papis.config.getstring('bibtex-journal-key')
