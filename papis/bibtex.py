@@ -231,7 +231,7 @@ def to_bibtex(document: papis.document.Document) -> str:
     logger.debug("Used ref=%s" % ref)
 
     bibtex_string += "@{type}{{{ref},\n".format(type=bibtex_type, ref=ref)
-    for bibKey in document.keys():
+    for bibKey in list(document.keys()):
         if bibKey in bibtex_key_converter:
             new_bibkey = bibtex_key_converter[bibKey]
             document[new_bibkey] = document[bibKey]
