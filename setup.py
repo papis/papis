@@ -65,7 +65,7 @@ setup(
         "bibtexparser>=0.6.2",
         "click>=7.0.0",
         "habanero>=0.6.0",
-        "isbnlib>=3.9.1",
+        "isbnlib>=3.9.1,<3.10",
         "prompt_toolkit>=2.0.5",
         "tqdm>=4.1",
         "pygments>=2.2.0",
