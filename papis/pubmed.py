@@ -97,7 +97,7 @@ def get_data(query: str = "") -> Dict[str, Any]:
     response = session.get(PUBMED_URL.format(
         pmid=query.strip(), database=PUBMED_DATABASE))
 
-    return pubmed_data_to_papis_data(json.loads(response.content))
+    return pubmed_data_to_papis_data(json.loads(response.content.decode()))
 
 
 class Importer(papis.importer.Importer):
