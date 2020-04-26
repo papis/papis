@@ -25,25 +25,38 @@ def _issue_hg_command(path: str, cmd: str) -> None:
     logger.debug(split_cmd)
     subprocess.call(split_cmd)
 
+def add(path: str, resource: str) -> None:
+    """Adds new files in the path.
 
-def commit(path: str, resource: str, message: str) -> None:
+    :param path: Folder where a Mercurial repo exists.
+    :type  path: str
+    :param resource: File resource
+    :type  resource: str
+    :returns: None
+
+    """
+    global logger
+    logger.info('Adding {path}'.format(**locals()))
+    cmd = 'hg add "{0}"'.format(resource)
+    _issue_hg_command(path, cmd)
+
+
+def commit(path: str, resources: list(str), message: str) -> None:
     """Commits changes in the path with a message.
 
     :param path: Folder where a Mercurial repo exists.
     :type  path: str
-    :param resource: Commit resource
-    :type  resource: str
+    :param resources: Commit resources
+    :type  resources: list(str)
     :param message: Commit message
     :type  message: str
     :returns: None
 
     """
     global logger
-    logger.info('Adding {path}'.format(**locals()))
-    cmd_add = 'hg add "{0}"'.format(resource)
-    _issue_hg_command(path, cmd_add)
     logger.info('Commiting {path} with message {message}'.format(**locals()))
-    cmd = 'hg commit -m "{0}" "{1}"'.format(message, resource)
+    resource = " ".join(map(lambda x: '"{0}"'.format(x), resources))
+    cmd = 'hg commit -m "{0}" {1}'.format(message, resource)
     _issue_hg_command(path, cmd)
 
 def rm(path: str, resource: str, message: str, recursive: bool = False) -> None:
@@ -69,4 +82,5 @@ def rm(path: str, resource: str, message: str, recursive: bool = False) -> None:
 
 
 def add_and_commit_resource(path: str, resource: str, message: str) -> None:
-    commit(path, resource, message)
+    add(path, resource)
+    commit(path, [resource], message)

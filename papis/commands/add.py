@@ -112,6 +112,7 @@ import papis.cli
 import papis.strings
 import papis.downloaders
 import papis.git
+import papis.hg
 
 logger = logging.getLogger('add')  # type: logging.Logger
 
@@ -259,6 +260,7 @@ def run(
         open_file: bool = False,
         edit: bool = False,
         git: bool = False,
+        hg: bool = False,
         link: bool = False
         ) -> None:
     """
@@ -285,6 +287,9 @@ def run(
     :param git: Wether or not to ask user for committing before adding,
         in the case of course that the library is a git repository.
     :type  git: bool
+    :param hg: Wether or not to ask user for committing before adding,
+        in the case of course that the library is a mercurial repository.
+    :type  hg: bool
     """
 
     logger = logging.getLogger('add:run')
@@ -418,6 +423,10 @@ def run(
         papis.git.add_and_commit_resource(
             str(tmp_document.get_main_folder()), '.',
             "Add document '{0}'".format(papis.document.describe(tmp_document)))
+    if hg:
+        papis.hg.add_and_commit_resource(
+            str(tmp_document.get_main_folder()), '.',
+            "Add document '{0}'".format(papis.document.describe(tmp_document)))
 
 
 @click.command(
@@ -474,6 +483,7 @@ def run(
          "its original location",
     default=False)
 @papis.cli.git_option(help="Git add and commit the new document")
+@papis.cli.hg_option(help="Mercurial add and commit the new document")
 @click.option(
     "--list-importers", "--li", "list_importers",
     help="List all available papis importers",
@@ -491,6 +501,7 @@ def cli(
         open_file: bool,
         edit: bool,
         git: bool,
+        hg: bool,
         link: bool,
         list_importers: bool) -> None:
 
@@ -586,4 +597,5 @@ def cli(
         open_file=open_file,
         edit=edit,
         git=git,
+        hg=hg,
         link=link)

@@ -23,6 +23,7 @@ import papis.pick
 import papis.utils
 import papis.document
 import papis.git
+import papis.hg
 import papis.config
 import papis.commands.add
 import logging
@@ -36,7 +37,8 @@ from typing import List, Optional
 def run(
         document: papis.document.Document,
         filepaths: List[str],
-        git: bool = False) -> None:
+        git: bool = False,
+        hg: bool = False) -> None:
     logger = logging.getLogger('addto')
     g = papis.utils.create_identifier(ascii_lowercase)
     string_append = ''
@@ -100,12 +102,20 @@ def run(
         papis.git.commit(
             _doc_folder,
             "Add new files to '{}'".format(papis.document.describe(document)))
+    if hg:
+        for r in new_file_list + [document.get_info_file()]:
+            papis.hg.add(_doc_folder, r)
+        papis.hg.commit(
+            _doc_folder,
+            new_file_list + [document.get_info_file()],
+            "Add new files to '{}'".format(papis.document.describe(document)))
 
 
 @click.command("addto")
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @papis.cli.git_option(help="Add and commit files")
+@papis.cli.hg_option(help="Add and commit files")
 @papis.cli.sort_option()
 @click.option(
     "-f", "--files",
@@ -119,6 +129,7 @@ def run(
 def cli(
         query: str,
         git: bool,
+        hg: bool,
         files: List[str],
         file_name: Optional[str],
         sort_field: Optional[str],
@@ -143,4 +154,4 @@ def cli(
     if file_name is not None:  # Use args if set
         papis.config.set("add-file-name", file_name)
 
-    run(document, files, git=git)
+    run(document, files, git=git, hg=hg)
