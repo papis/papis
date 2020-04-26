@@ -159,6 +159,7 @@ setup(
             "explore=papis.commands.explore:cli",
             "export=papis.commands.export:cli",
             "git=papis.commands.git:cli",
+            "hg=papis.commands.hg:cli",
             "list=papis.commands.list:cli",
             "mv=papis.commands.mv:cli",
             "bibtex=papis.commands.bibtex:cli",
