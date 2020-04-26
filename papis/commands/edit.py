@@ -20,13 +20,15 @@ import click
 import logging
 import papis.strings
 import papis.git
+import papis.hg
 
 from typing import Optional
 
 
 def run(document: papis.document.Document,
         wait: bool = True,
-        git: bool = False) -> None:
+        git: bool = False,
+        hg: bool = False) -> None:
     database = papis.database.get()
     info_file_path = document.get_info_file()
     if not info_file_path:
@@ -40,6 +42,12 @@ def run(document: papis.document.Document,
             info_file_path,
             "Update information for '{0}'".format(
                 papis.document.describe(document)))
+    if hg:
+        papis.hg.add_and_commit_resource(
+            str(document.get_main_folder()),
+            info_file_path,
+            "Update information for '{0}'".format(
+                papis.document.describe(document)))
 
 
 @click.command("edit")
@@ -47,6 +55,7 @@ def run(document: papis.document.Document,
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
 @papis.cli.git_option(help="Add changes made to the info file")
+@papis.cli.hg_option(help="Add changes made to the info file")
 @papis.cli.sort_option()
 @click.option(
     "-n",
@@ -64,6 +73,7 @@ def cli(
         query: str,
         doc_folder: str,
         git: bool,
+        hg: bool,
         notes: bool,
         _all: bool,
         editor: Optional[str],
@@ -117,6 +127,12 @@ def cli(
                     str(document.get_info_file()),
                     "Update notes for '{0}'".format(
                         papis.document.describe(document)))
+            if hg:
+                papis.hg.add_and_commit_resource(
+                    str(document.get_main_folder()),
+                    str(document.get_info_file()),
+                    "Update notes for '{0}'".format(
+                        papis.document.describe(document)))
 
         else:
-            run(document, git=git)
+            run(document, git=git, hg=hg)

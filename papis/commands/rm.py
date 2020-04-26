@@ -13,6 +13,7 @@ import papis.cli
 import papis.strings
 import papis.database
 import papis.git
+import papis.hg
 import click
 import logging
 import os
@@ -22,7 +23,7 @@ from typing import Optional
 
 def run(document: papis.document.Document,
         filepath: Optional[str] = None,
-        git: bool = False) -> None:
+        git: bool = False, hg: bool = False) -> None:
     """Main method to the rm command
     """
     db = papis.database.get()
@@ -38,12 +39,23 @@ def run(document: papis.document.Document,
             papis.git.rm(_doc_folder, filepath)
             papis.git.add(_doc_folder, document.get_info_file())
             papis.git.commit(_doc_folder, "Remove file '{0}'".format(filepath))
+        if hg: 
+            papis.hg.rm(_doc_folder, filepath, after = git)
+            papis.hg.commit(_doc_folder, [filepath, document.get_info_file()], "Remove file '{0}'".format(filepath))
     else:
         if git:
             _topfolder = os.path.dirname(os.path.abspath(_doc_folder))
             papis.git.rm(_doc_folder, _doc_folder, recursive=True)
             papis.git.commit(
                 _topfolder,
+                "Remove document '{0}'".format(
+                    papis.document.describe(document)))
+        if hg:
+            _topfolder = os.path.dirname(os.path.abspath(_doc_folder))
+            papis.hg.rm(_doc_folder, _doc_folder, recursive=True, after = git)
+            papis.hg.commit(
+                _topfolder,
+                [_doc_folder],
                 "Remove document '{0}'".format(
                     papis.document.describe(document)))
         else:
@@ -55,6 +67,7 @@ def run(document: papis.document.Document,
 @click.help_option('-h', '--help')
 @papis.cli.query_option()
 @papis.cli.git_option(help="Remove in git")
+@papis.cli.hg_option(help="Remove in Mercurial")
 @papis.cli.sort_option()
 @click.option(
     "--file", "_file",
@@ -69,6 +82,7 @@ def run(document: papis.document.Document,
 @papis.cli.all_option()
 def cli(query: str,
         git: bool,
+        hg: bool,
         _file: bool,
         force: bool,
         _all: bool,
@@ -102,7 +116,7 @@ def cli(query: str,
                         "Are you sure?", bottom_toolbar=tbar):
                     continue
             logger.info("Removing %s..." % filepath)
-            run(document, filepath=filepath, git=git)
+            run(document, filepath=filepath, git=git, hg=hg)
     else:
         for document in documents:
             if not force:
@@ -117,4 +131,4 @@ def cli(query: str,
                         "Are you sure?", bottom_toolbar=tbar):
                     continue
             logger.warning("removing ...")
-            run(document, git=git)
+            run(document, git=git, hg=hg)

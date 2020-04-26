@@ -59,15 +59,17 @@ def commit(path: str, resources: list(str), message: str) -> None:
     cmd = 'hg commit -m "{0}" {1}'.format(message, resource)
     _issue_hg_command(path, cmd)
 
-def rm(path: str, resource: str, message: str, recursive: bool = False) -> None:
+def rm(path: str, resource: str, message: str, recursive: bool = False, after: bool = False) -> None:
     """Remove files in the path with a message.
 
-    :param path: Folder where a git repo exists.
+    :param path: Folder where a Mercurial repo exists.
     :type  path: str
     :param resource: Commit resource
     :type  resource: str
     :param message: Commit message
     :type  message: str
+    :param after: Actually remove
+    :type after: bool
     :returns: None
 
     """
@@ -75,10 +77,8 @@ def rm(path: str, resource: str, message: str, recursive: bool = False) -> None:
     logger.info('Removing {path}'.format(**locals()))
     # force removal always
     pattern = '"{0}"'.format(resource) if recursive else '-I rootfilesin:"{0}"'.format(resource)
-    rm_cmd = 'hg rm -f {0}'.format(pattern)
-    _issue_git_command(path, rm_cmd)
-    cmd = 'hg commit -m "{0}" "{1}'.format(message, pattern)
-    _issue_hg_command(path, cmd)
+    rm_cmd = 'hg rm {a} -f {0}'.format(pattern, a = '-A' if after else '')
+    _issue_hg_command(path, rm_cmd)
 
 
 def add_and_commit_resource(path: str, resource: str, message: str) -> None:

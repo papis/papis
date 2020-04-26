@@ -51,6 +51,7 @@ general_settings = {
     "use-cache": True,
     "cache-dir": None,
     "use-git": False,
+    "use-hg": False,
 
     "add-confirm": False,
     "add-folder-name": "",

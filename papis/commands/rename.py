@@ -16,13 +16,14 @@ import papis.cli
 import papis.database
 import papis.strings
 import papis.git
+import papis.hg
 
 from typing import Optional
 
 
 def run(
         document: papis.document.Document,
-        new_name: str, git: bool = False) -> None:
+        new_name: str, git: bool = False, hg: bool = False) -> None:
     db = papis.database.get()
     logger = logging.getLogger('rename:run')
     folder = document.get_main_folder()
@@ -38,15 +39,25 @@ def run(
         logger.warning("Path %s already exists" % new_folder_path)
         return
 
-    cmd = ['git', '-C', folder] if git else []
+    cmd = ['git', '-C', folder] if git else ['hg', '--cwd', folder] if hg else []
     cmd += ['mv', folder, new_folder_path]
 
     logger.debug(cmd)
     subprocess.call(cmd)
 
+    if git and hg:
+        hgcmd = ['hg', '--cwd', folder, 'mv', '-A', folder, new_folder_path]
+        logger.debug(hgcmd)
+        subprocess.call(hgcmd)
+
     if git:
         papis.git.commit(
             new_folder_path,
+            "Rename from {} to '{}'".format(folder, new_name))
+    if hg:
+        papis.hg.commit(
+            new_folder_path,
+            [folder, new_folder_path],
             "Rename from {} to '{}'".format(folder, new_name))
 
     db.delete(document)
@@ -59,10 +70,12 @@ def run(
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @papis.cli.git_option()
+@papis.cli.hg_option()
 @papis.cli.sort_option()
 def cli(
         query: str,
         git: bool,
+        hg: bool,
         sort_field: Optional[str],
         sort_reverse: bool) -> None:
     """Rename entry"""
@@ -87,4 +100,4 @@ def cli(
         ">",
         default=document.get_main_folder_name() or ''
     )
-    run(document, new_name, git=git)
+    run(document, new_name, git=git, hg=hg)

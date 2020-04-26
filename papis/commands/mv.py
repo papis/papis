@@ -23,16 +23,21 @@ from typing import Optional
 def run(
         document: papis.document.Document,
         new_folder_path: str,
-        git: bool = False) -> None:
+        git: bool = False,
+        hg: bool = False) -> None:
     logger = logging.getLogger('mv:run')
     folder = document.get_main_folder()
     if not folder:
         raise Exception(papis.strings.no_folder_attached_to_document)
-    cmd = ['git', '-C', folder] if git else []
+    cmd = ['git', '-C', folder] if git else ['hg', '--cwd', folder] if hg else []
     cmd += ['mv', folder, new_folder_path]
     db = papis.database.get()
     logger.debug(cmd)
     subprocess.call(cmd)
+    if git and hg:
+        hgcmd = ['hg', '--cwd', folder, 'mv', '-A', folder, new_folder_path]
+        logger.debug(hgcmd)
+        subprocess.call(hgcmd)
     db.delete(document)
     new_document_folder = os.path.join(
         new_folder_path,
@@ -46,8 +51,9 @@ def run(
 @click.help_option('--help', '-h')
 @papis.cli.query_option()
 @papis.cli.git_option()
+@papis.cli.hg_option()
 @papis.cli.sort_option()
-def cli(query: str, git: bool, sort_field: Optional[str],
+def cli(query: str, git: bool, hg: bool, sort_field: Optional[str],
         sort_reverse: bool) -> None:
     """Move a document into some other path"""
     # Leave this imports here for performance
@@ -100,4 +106,4 @@ def cli(query: str, git: bool, sort_field: Optional[str],
         logger.info("Creating path %s" % new_folder)
         os.makedirs(new_folder, mode=papis.config.getint('dir-umask') or 0o666)
 
-    run(document, new_folder, git=git)
+    run(document, new_folder, git=git, hg=hg)

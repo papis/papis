@@ -51,6 +51,7 @@ import papis.pick
 import papis.cli
 import papis.importer
 import papis.git
+import papis.hg
 import click
 
 from typing import List, Dict, Tuple, Optional, Any
@@ -64,7 +65,7 @@ def _update_with_database(document: papis.document.Document) -> None:
 def run(
         document: papis.document.Document,
         data: Dict[str, Any] = dict(),
-        git: bool = False) -> None:
+        git: bool = False, hg: bool = False) -> None:
     # Keep the ref the same, otherwise issues can be caused when
     # writing LaTeX documents and all the ref's change
     data['ref'] = document['ref']
@@ -79,11 +80,17 @@ def run(
             folder, info,
             "Update information for '{0}'".format(
                 papis.document.describe(document)))
+    if hg:
+        papis.hg.add_and_commit_resource(
+            folder, info,
+            "Update information for '{0}'".format(
+                papis.document.describe(document)))
 
 
 @click.command("update")
 @click.help_option('--help', '-h')
 @papis.cli.git_option()
+@papis.cli.hg_option()
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
@@ -111,6 +118,7 @@ def run(
 def cli(
         query: str,
         git: bool,
+        hg: bool,
         doc_folder: str,
         from_importer: List[Tuple[str, str]],
         auto: bool,
@@ -199,4 +207,4 @@ def cli(
                         if papis.tui.utils.confirm("Use this file?"):
                             ctx.files.append(f)
 
-        run(document, data=ctx.data, git=git)
+        run(document, data=ctx.data, git=git, hg=hg)
