@@ -216,5 +216,4 @@ def select_range(options: List[Any], message: str) -> List[int]:
     if selection in all_keywords:
         selection = ",".join(map(str, range(len(options))))
 
-
     return [i for i in get_range(selection) if i in possible_indices]
