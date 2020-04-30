@@ -1,0 +1,419 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+      
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head profile="http://www.w3.org/2005/11/profile http://a9.com/-/spec/opensearch/1.1/">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta property="og:image" content="/images/csx_logo_front.png" />
+   
+    <title>CiteSeerX &mdash; Computational Lambda-Calculus and Monads</title>
+  
+  
+    <meta name="description" content="CiteSeerX - Document Details (Isaac Councill, Lee Giles, Pradeep Teregowda): The λ-calculus is considered an useful mathematical tool in the study of programming languages, since programs can be identified with λ-terms.  However, if one goes further and uses fij-conversion to prove equivalence of programs, then a gross simplification is introduced, that may jeopardise the applicability of theoretical results to real situations. In this paper we introduce a new calculus based on a categorical semantics for computations.  This calculus provides a correct basis for proving equivalence of programs, independent from any specific computational model." />
+  
+  
+    <meta name="keywords" content="CiteSeerX, Eugenio Moggi" />
+  
+    
+    <meta name="citation_title" content="Computational Lambda-Calculus and Monads" />
+  
+  
+    <meta name="citation_authors" content="Eugenio Moggi" />
+  
+  
+    <meta name="citation_year" content="1988" />
+  
+  
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico;jsessionid=A93778BE199A6C9594935DE4481E8719" />
+  
+  <link rel="search" title="CiteSeerX" type="application/opensearchdescription+xml" href="/search_plugins/citeseerx_general.xml;jsessionid=A93778BE199A6C9594935DE4481E8719" />
+  <link rel="search" title="CiteSeerX Author" type="application/opensearchdescription+xml" href="/search_plugins/citeseerx_author.xml;jsessionid=A93778BE199A6C9594935DE4481E8719" />
+  <link rel="search" title="CiteSeerX Title" type="application/opensearchdescription+xml" href="/search_plugins/citeseerx_title.xml;jsessionid=A93778BE199A6C9594935DE4481E8719" />
+    
+    
+	<link rel="alternate" type="application/atom+xml" title="CiteSeerX Search Results - Atom" href="/search;jsessionid=A93778BE199A6C9594935DE4481E8719?" />
+	<link rel="alternate" type="application/rss+xml" title="CiteSeerX Search Results - RSS" href="/search;jsessionid=A93778BE199A6C9594935DE4481E8719?" />
+
+	
+	<link type="text/css" rel="stylesheet" href="/css/main.css;jsessionid=A93778BE199A6C9594935DE4481E8719" />
+	<script type="text/javascript" src="/js/jquery-1.4.2.min.js;jsessionid=A93778BE199A6C9594935DE4481E8719"></script>
+  <script type="text/javascript" src="/js/jquery-ui-1.8.custom.min.js;jsessionid=A93778BE199A6C9594935DE4481E8719"></script>
+	<script type="text/javascript" src="/js/jquery.idTabs.min.js;jsessionid=A93778BE199A6C9594935DE4481E8719"></script>
+	<script type="text/javascript" src="/js/metacart.js;jsessionid=A93778BE199A6C9594935DE4481E8719"></script>
+	<script type="text/javascript" src="/js/topnav.js;jsessionid=A93778BE199A6C9594935DE4481E8719"></script>
+	<script type="text/javascript" src="/js/citeseerx.js;jsessionid=A93778BE199A6C9594935DE4481E8719"></script>
+	<script type="text/javascript" src="/js/correctionutils.js;jsessionid=A93778BE199A6C9594935DE4481E8719"></script>
+	<script type="text/javascript" src="/js/checkboxes.js;jsessionid=A93778BE199A6C9594935DE4481E8719"></script>
+	<script type="text/javascript" src="/js/ga.js;jsessionid=A93778BE199A6C9594935DE4481E8719"></script>
+	<script type="text/javascript" src="/js/s2button.js;jsessionid=A93778BE199A6C9594935DE4481E8719"></script>
+	
+	
+</head>
+<body>
+	<div id="wrapper">
+  	
+
+
+
+<div id="topnav">
+  
+  <ul id="search_nav">
+    
+      <li class="active"><a href="#search_docs">Documents</a></li>
+      <li><a href="/#search_auth">Authors</a></li>
+      <li><a href="/#search_tables">Tables</a></li>
+      
+    
+    
+  </ul>
+  
+  
+  
+    
+    
+    
+    <ul id="toptools">
+  		
+        <li><a href="/myciteseer/login;jsessionid=A93778BE199A6C9594935DE4481E8719">Log in</a></li>
+        <li><a href="/mcsutils/newAccount;jsessionid=A93778BE199A6C9594935DE4481E8719">Sign up</a></li>
+      
+        <li><a href="/metacart;jsessionid=A93778BE199A6C9594935DE4481E8719">MetaCart</a></li>
+		<li><a href="https://www.psu.edu/copyright-information/" target="_blank">DMCA</a></li>
+
+        <li><a href="http://www.givenow.psu.edu/CiteseerxFund"><font color="#045FB4">Donate</font></a></li>
+    </ul>
+  
+</div>
+
+	  <div id="header">
+			<h1 id="title"><a href="/;jsessionid=A93778BE199A6C9594935DE4481E8719" title="CiteSeerX"><img src="/images/csx_logo.png;jsessionid=A93778BE199A6C9594935DE4481E8719" alt="CiteSeerX logo" height="50%" width="50%"/></a></h1>
+		</div>
+
+<div id="main">
+<div id="search">
+  
+    <div id="search_docs">
+      <form method="get" action="/search;jsessionid=A93778BE199A6C9594935DE4481E8719" enctype="application/x-www-form-urlencoded">
+        <label>Documents:</label>
+        <input class="s_field" type="text" name="q" value="" />
+		<input class="s_button" type="image" name="submit" value="Search" alt="Search" src="/images/search_icon.png;jsessionid=A93778BE199A6C9594935DE4481E8719" />
+		<input class="s_button" type="image" name="s2" value="Semantic Scholar" alt="Semantic Scholar" src="/images/s2_icon.png;jsessionid=A93778BE199A6C9594935DE4481E8719" />
+		<div class="opts">
+          <a href="/advanced_search;jsessionid=A93778BE199A6C9594935DE4481E8719" title="Search full text, title, abstract, date, author name, author affiliation, etc.">Advanced Search</a>
+          <input class="c_box" type="checkbox" name="ic" value="1"  /> Include Citations
+        </div>
+        <input type="hidden" name="sort" value="rlv" />
+        <input type="hidden" name="t" value="doc" />
+      </form>
+    </div>
+		  
+	<div id="search_auth">
+	  <form method="get" action="/search;jsessionid=A93778BE199A6C9594935DE4481E8719" enctype="application/x-www-form-urlencoded">
+	    <label>Authors:</label>
+        <input class="s_field" type="text" name="q" value="" />
+        <input class="s_button" type="submit" name="submit" value="Search" alt="Search" />
+        <div class="opts">
+          <a href="/advanced_search;jsessionid=A93778BE199A6C9594935DE4481E8719" title="Search full text, title, abstract, date, author name, author affiliation, etc.">Advanced Search</a>
+          <input class="c_box" type="checkbox" name="ic" value="1"  /> Include Citations |
+          <input class="c_box" type="checkbox" name="uauth" value="1" checked="checked" /> Disambiguate
+        </div>
+        <input type="hidden" name="sort" value="ndocs" />
+        <input type="hidden" name="t" value="auth" />
+	   </form>
+	  </div>		  
+    <div id="search_tables">
+      <form method="get" action="/search;jsessionid=A93778BE199A6C9594935DE4481E8719" enctype="application/x-www-form-urlencoded">
+        <label>Tables:</label>
+        <input class="s_field" type="text" name="q" value="" />
+        <input class="s_button" type="submit" name="submit" value="Search" alt="Search" />
+        <input type="hidden" name="t" value="table" />
+        <input type="hidden" name="sort" value="rlv" />
+     </form>
+    </div>
+
+
+  
+  
+</div>
+
+  <div id="viewHeader" class="viewDoc">
+	<h4 id="DMCA" style="float: right;"><a href="https://www.psu.edu/copyright-information/" title="DMCA">DMCA</a></h4>
+    <h2>Computational Lambda-Calculus and Monads  (1988) </h2>
+    <div id="downloads">
+      
+        
+          <h3>Cached</h3>
+          <ul id="clinks">
+          
+            
+            
+            
+              <li><a href="/viewdoc/download;jsessionid=A93778BE199A6C9594935DE4481E8719?doi=10.1.1.26.2787&amp;rep=rep1&amp;type=pdf" title="View or Download this document as PDF">
+              <img src="/images/pdf_icon.png;jsessionid=A93778BE199A6C9594935DE4481E8719" alt="Download as a PDF"/>
+              </a></li>
+            
+            
+          
+          </ul>
+        
+        
+      
+      
+        <h3>Download Links</h3>
+        <ul id="dlinks">
+        
+          <li>
+            <a href="http://pfp7.is.ocha.ac.jp/~ichikawa/ppe/ftp/moggi/lc88.ps" title="http://pfp7.is.ocha.ac.jp/~ichikawa/ppe/ftp/moggi/lc88.ps" escapeXml="true">
+              [pfp7.is.ocha.ac.jp]
+            </a>
+          </li>
+        
+          <li>
+            <a href="http://www.disi.unige.it/person/MoggiE/ftp/lc88.ps.gz" title="http://www.disi.unige.it/person/MoggiE/ftp/lc88.ps.gz" escapeXml="true">
+              [www.disi.unige.it]
+            </a>
+          </li>
+        
+          <li>
+            <a href="http://www.disi.unige.it/person/MoggiE/ftp/lics89.ps.gz" title="http://www.disi.unige.it/person/MoggiE/ftp/lics89.ps.gz" escapeXml="true">
+              [www.disi.unige.it]
+            </a>
+          </li>
+        
+          <li>
+            <a href="http://www.disi.unige.it/person/MoggiE/ftp/lics89.pdf" title="http://www.disi.unige.it/person/MoggiE/ftp/lics89.pdf" escapeXml="true">
+              [www.disi.unige.it]
+            </a>
+          </li>
+        
+          <li>
+            <a href="http://www.cs.cmu.edu/afs/cs/user/crary/www/819-f09/Moggi89.pdf" title="http://www.cs.cmu.edu/afs/cs/user/crary/www/819-f09/Moggi89.pdf" escapeXml="true">
+              [www.cs.cmu.edu]
+            </a>
+          </li>
+        
+          <li>
+            <a href="http://www.cs.cmu.edu/%7Ecrary/819-f09/Moggi89.pdf" title="http://www.cs.cmu.edu/%7Ecrary/819-f09/Moggi89.pdf" escapeXml="true">
+              [www.cs.cmu.edu]
+            </a>
+          </li>
+        
+          <li>
+            <a href="http://www.cs.cmu.edu/~crary/819-f09/Moggi89.pdf" title="http://www.cs.cmu.edu/~crary/819-f09/Moggi89.pdf" escapeXml="true">
+              [www.cs.cmu.edu]
+            </a>
+          </li>
+        
+          <li>
+            <a href="http://www.disi.unige.it/person/MoggiE/ftp/lc88.pdf" title="http://www.disi.unige.it/person/MoggiE/ftp/lc88.pdf" escapeXml="true">
+              [www.disi.unige.it]
+            </a>
+          </li>
+        
+          <li>
+            <a href="http://pdf.aminer.org/000/267/711/lazy_lambda_calculus_theories_models_and_local_structure_characterization_extended.pdf" title="http://pdf.aminer.org/000/267/711/lazy_lambda_calculus_theories_models_and_local_structure_characterization_extended.pdf" escapeXml="true">
+              [pdf.aminer.org]
+            </a>
+          </li>
+        
+      
+      <br/>
+      
+        <h3>Other Repositories/Bibliography</h3>
+        
+          <li><a href="/viewdoc/redirect;jsessionid=A93778BE199A6C9594935DE4481E8719?doi=10.1.1.26.2787&label=DBLP" title="DBLP">
+          DBLP</a></li>
+        
+      
+      </ul>
+    </div>
+    <div id="docTools">
+      <ul class="button_nav">
+        <li><a style="cursor: pointer;" onclick="addToCartProxy(20641)">Save to List</a>
+        <span id="cmsg_20641" class="cartmsg"></span></li>
+        <li><a class="remove"  href="/myciteseer/action/addPaperCollection;jsessionid=A93778BE199A6C9594935DE4481E8719?doi=10.1.1.26.2787" title="Add this document to your collection (Account required)">Add to Collection</a></li>
+        <li><a class="remove" href="/correct;jsessionid=A93778BE199A6C9594935DE4481E8719?doi=10.1.1.26.2787" title="Submit corrections for this document (Account required)">Correct Errors</a></li>
+        <li><a class="remove" href="/myciteseer/action/editMonitors;jsessionid=A93778BE199A6C9594935DE4481E8719?doi=10.1.1.26.2787" title="Monitor changes to this document (Account required)">Monitor Changes</a></li>
+      </ul>
+    </div>
+    <div id="docInfo">
+      <div id="docAuthors">
+        by 
+        
+          
+            
+            
+              Eugenio Moggi
+            
+            
+          
+        
+      </div>
+      <div id="docOther">
+        <table>
+          
+          
+            <tr id="docCites"><td class="title">Citations:</td><td><a href="/showciting;jsessionid=A93778BE199A6C9594935DE4481E8719?doi=10.1.1.26.2787" title="number of citations">500 - 6 self</a>
+            </td></tr>
+          
+        </table>
+      </div>
+    </div>
+    <div class="clear"></div>
+  </div>
+
+  <div id="docMenu" class="submenu">
+    <ul>
+      <li  class="active" ><a href="/viewdoc/summary;jsessionid=A93778BE199A6C9594935DE4481E8719?doi=10.1.1.26.2787">Summary</a></li>
+      <li  ><a href="/viewdoc/citations;jsessionid=A93778BE199A6C9594935DE4481E8719?doi=10.1.1.26.2787">Citations</a></li>
+      <li  ><a href="/viewdoc/similar;jsessionid=A93778BE199A6C9594935DE4481E8719?doi=10.1.1.26.2787&amp;type=ab" title="Documents that cite the same works">Active Bibliography</a></li>
+      <li  ><a href="/viewdoc/similar;jsessionid=A93778BE199A6C9594935DE4481E8719?doi=10.1.1.26.2787&amp;type=cc" title="Documents cited by the same works">Co-citation</a></li>
+      <li ><a href="/viewdoc/similar;jsessionid=A93778BE199A6C9594935DE4481E8719?doi=10.1.1.26.2787&amp;type=sc" title="Documents in the Same Cluster">Clustered Documents</a></li>
+      <li ><a href="/viewdoc/versions;jsessionid=A93778BE199A6C9594935DE4481E8719?doi=10.1.1.26.2787">Version History</a></li>
+      <!--<li><a  href="/viewdoc/clustered;jsessionid=A93778BE199A6C9594935DE4481E8719?doi=10.1.1.26.2787">Clustered Documents</a></li>-->
+    </ul>
+  </div>
+
+  <div id="viewContent" class="sidebar">
+    <div id="viewContent-inner">
+      <div id="viewSidebar">
+        
+          
+          
+          
+        		
+        
+        
+        
+          <div id="bibtex" class="block">
+            <h3>BibTeX</h3>
+            <p>@INPROCEEDINGS{Moggi88computationallambda-calculus,<br/>&nbsp;&nbsp;&nbsp;&nbsp;author = {Eugenio Moggi},<br/>&nbsp;&nbsp;&nbsp;&nbsp;title = {Computational Lambda-Calculus and Monads},<br/>&nbsp;&nbsp;&nbsp;&nbsp;booktitle = {},<br/>&nbsp;&nbsp;&nbsp;&nbsp;year = {1988},<br/>&nbsp;&nbsp;&nbsp;&nbsp;pages = {14--23},<br/>&nbsp;&nbsp;&nbsp;&nbsp;publisher = {IEEE Computer Society Press}<br/>}<br/></p>
+          </div> <!-- End content box -->
+        
+        <div id="bookmark" class="block">
+          <h3>Share</h3>
+          <table border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td><a href="/viewdoc/bookmark;jsessionid=A93778BE199A6C9594935DE4481E8719?doi=10.1.1.26.2787&amp;title=Computational Lambda-Calculus and Monads&amp;site=facebook" title="Facebook"><img src="/images/facebook_icon.png;jsessionid=A93778BE199A6C9594935DE4481E8719" alt="Facebook"/></a></td>
+              <td><a href="/viewdoc/bookmark;jsessionid=A93778BE199A6C9594935DE4481E8719?doi=10.1.1.26.2787&amp;title=Computational Lambda-Calculus and Monads&amp;site=twitter" title="Twitter"><img src="/images/twitter_icon.png;jsessionid=A93778BE199A6C9594935DE4481E8719" alt="Twitter"/></a></td>
+              <td><a href="/viewdoc/bookmark;jsessionid=A93778BE199A6C9594935DE4481E8719?doi=10.1.1.26.2787&amp;title=Computational Lambda-Calculus and Monads&amp;site=reddit" title="Reddit"><img src="/images/reddit_icon.png;jsessionid=A93778BE199A6C9594935DE4481E8719" alt="Reddit"/></a></td>
+              <td><a href="/viewdoc/bookmark;jsessionid=A93778BE199A6C9594935DE4481E8719?doi=10.1.1.26.2787&amp;site=bibsonomy&amp;title=Computational Lambda-Calculus and Monads" title="BibSonomy"><img src="/images/bibsonomy_icon.png;jsessionid=A93778BE199A6C9594935DE4481E8719" alt="Bibsonomy"/></a></td>
+              </tr>
+	      <tr>
+		<td colspan="6">
+		<script src="http://widgets.twimg.com/j/2/widget.js"></script>
+		<script>
+			var doi;
+			doi="10.1.1.26.2787";
+			new TWTR.Widget({
+  			version: 2,
+  			type: 'search',
+  			search: 'citeseerx+'+doi,
+  			interval: 30000,
+  			title: 'CiteSeerX',
+  			subject: doi,
+  			width: 255,
+  			height: 30,
+  			theme: {
+    			shell: {
+      			background: '#E6E6E6',
+      			color: '#000000'
+    			},
+    			tweets: {
+      				background: '#ffffff',
+      				color: '#444444',
+      				links: '#1985b5'
+    			}
+  		},
+  		features: {
+    		scrollbar: false,
+    		loop: true,
+    		live: true,
+    		behavior: 'default'
+ 		 }
+		}).render().start();
+		</script>	
+		</td>
+	      </tr>
+          </table>
+        </div>
+        
+          <div id="OpenURL" class="block">
+            <h3>OpenURL</h3>
+            <span class="Z3988" title="url_ver=Z39.88-2004&amp;url_ctx_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Actx&amp;ctx_ver=Z39.88-2004&amp;ctx_enc=info%3Aofi%2Fenc%3AUTF-8&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft_id=https%3A%2F%2Fciteseerx.ist.psu.edu%2Fviewdoc%2Fsummary%3Fdoi%3D10.1.1.26.2787&amp;rft.atitle=Computational+Lambda-Calculus+and+Monads&amp;rft.jtitle=&amp;rft.date=1988&amp;rft.spage=14&amp;rft.epage=23&amp;rft.pages=14--23&amp;rft.genre=article&amp;rft.aulast=Moggi&amp;rft.aufirst=+Eugenio&amp;rft.au=Moggi%2C+Eugenio">&nbsp;</span>
+          </div>
+        
+      </div> 
+      <div id="abstract">
+        <h3>Abstract</h3>
+        <p>The λ-calculus is considered an useful mathematical tool in the study of programming languages, since programs can be identified with λ-terms.  However, if one goes further and uses fij-conversion to prove equivalence of programs, then a gross simplification is introduced, that may jeopardise the applicability of theoretical results to real situations. In this paper we introduce a new calculus based on a categorical semantics for computations.  This calculus provides a correct basis for proving equivalence of programs, independent from any specific computational model.</p>
+      </div>
+      <div id="keywords">
+        
+          <h3>Keyphrases</h3>
+          <p>
+            
+            <a href="/search;jsessionid=A93778BE199A6C9594935DE4481E8719?q=computational lambda-calculus&submit=Search&sort=rlv&t=doc">computational lambda-calculus</a>&nbsp;&nbsp;&nbsp;
+            
+            <a href="/search;jsessionid=A93778BE199A6C9594935DE4481E8719?q=real situation&submit=Search&sort=rlv&t=doc">real situation</a>&nbsp;&nbsp;&nbsp;
+            
+            <a href="/search;jsessionid=A93778BE199A6C9594935DE4481E8719?q=new calculus&submit=Search&sort=rlv&t=doc">new calculus</a>&nbsp;&nbsp;&nbsp;
+            
+            <a href="/search;jsessionid=A93778BE199A6C9594935DE4481E8719?q=gross simplification&submit=Search&sort=rlv&t=doc">gross simplification</a>&nbsp;&nbsp;&nbsp;
+            
+            <a href="/search;jsessionid=A93778BE199A6C9594935DE4481E8719?q=useful mathematical tool&submit=Search&sort=rlv&t=doc">useful mathematical tool</a>&nbsp;&nbsp;&nbsp;
+            
+            <a href="/search;jsessionid=A93778BE199A6C9594935DE4481E8719?q=consolidated tradition&submit=Search&sort=rlv&t=doc">consolidated tradition</a>&nbsp;&nbsp;&nbsp;
+            
+            <a href="/search;jsessionid=A93778BE199A6C9594935DE4481E8719?q=specific computational model&submit=Search&sort=rlv&t=doc">specific computational model</a>&nbsp;&nbsp;&nbsp;
+            
+            <a href="/search;jsessionid=A93778BE199A6C9594935DE4481E8719?q=correct basis&submit=Search&sort=rlv&t=doc">correct basis</a>&nbsp;&nbsp;&nbsp;
+            
+            <a href="/search;jsessionid=A93778BE199A6C9594935DE4481E8719?q=categorical semantics&submit=Search&sort=rlv&t=doc">categorical semantics</a>&nbsp;&nbsp;&nbsp;
+            
+            <a href="/search;jsessionid=A93778BE199A6C9594935DE4481E8719?q=theoretical result&submit=Search&sort=rlv&t=doc">theoretical result</a>&nbsp;&nbsp;&nbsp;
+            
+            <a href="/search;jsessionid=A93778BE199A6C9594935DE4481E8719?q=extra constant&submit=Search&sort=rlv&t=doc">extra constant</a>&nbsp;&nbsp;&nbsp;
+            
+            <a href="/search;jsessionid=A93778BE199A6C9594935DE4481E8719?q=theoretical computer science&submit=Search&sort=rlv&t=doc">theoretical computer science</a>&nbsp;&nbsp;&nbsp;
+            
+            <a href="/search;jsessionid=A93778BE199A6C9594935DE4481E8719?q=closed term&submit=Search&sort=rlv&t=doc">closed term</a>&nbsp;&nbsp;&nbsp;
+            
+            <a href="/search;jsessionid=A93778BE199A6C9594935DE4481E8719?q=programming language&submit=Search&sort=rlv&t=doc">programming language</a>&nbsp;&nbsp;&nbsp;
+            
+          </p>
+        
+      </div>
+    </div>
+  </div>
+  <div class="clear"></div>
+</div>
+
+  <div id="footer">
+  	<div id="sponsors">
+  	
+        Powered by:
+  	<a href="http://lucene.apache.org/solr/"><img src="/images/solrlogo1.png;jsessionid=A93778BE199A6C9594935DE4481E8719" alt="Apache Solr" height="8%" width="8%"/></a>
+  	</div>
+    <ul class="links">
+      <li><a href="http://csxstatic.ist.psu.edu/home" target="_blank">About CiteSeerX</a></li>
+      <li><a href="http://csxcrawlweb01.ist.psu.edu/submit_pub/" target="_blank">Submit and Index Documents</a></li>
+      <li><a href="http://csxstatic.ist.psu.edu/privacy-policy" target="_blank">Privacy Policy</a></li>
+      <li><a href="http://csxstatic.ist.psu.edu/help" target="_blank">Help</a></li>
+      <li><a href="http://csxstatic.ist.psu.edu/downloads/data" target="_blank">Data</a></li>      
+      <li><a href="https://github.com/SeerLabs/CiteSeerX" target="_blank">Source</a></li>      
+      <li><a href="http://csxstatic.ist.psu.edu/contact" target="_blank">Contact Us</a></li>
+    </ul>
+  	<p class="info">Developed at and hosted by <a href="http://ist.psu.edu">The College of Information Sciences and Technology</a></p>
+  	<p>&copy; 2007-2019 <a href="http://www.psu.edu">The Pennsylvania State University</a></p>
+  </div>
+</div> 
+
+</body>
+</html>
+

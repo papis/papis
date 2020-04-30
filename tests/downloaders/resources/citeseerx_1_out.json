@@ -1,0 +1,19 @@
+{
+  "year": "1988",
+  "author_list": [
+    {
+      "family": "Moggi",
+      "given": "Eugenio"
+    }
+  ],
+  "ref": "Moggi88computationallambda-calculus",
+  "title": "Computational Lambda-Calculus and Monads",
+  "type": "inproceedings",
+  "publisher": "IEEE Computer Society Press",
+  "booktitle": "",
+  "doi": "10.1.1.26.2787",
+  "author": "Moggi, Eugenio",
+  "pages": "14--23",
+  "keywords": "CiteSeerX, Eugenio Moggi",
+  "abstract": "CiteSeerX - Document Details (Isaac Councill, Lee Giles, Pradeep Teregowda): The λ-calculus is considered an useful mathematical tool in the study of programming languages, since programs can be identified with λ-terms.  However, if one goes further and uses fij-conversion to prove equivalence of programs, then a gross simplification is introduced, that may jeopardise the applicability of theoretical results to real situations. In this paper we introduce a new calculus based on a categorical semantics for computations.  This calculus provides a correct basis for proving equivalence of programs, independent from any specific computational model."
+}
