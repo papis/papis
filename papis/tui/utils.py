@@ -200,6 +200,7 @@ def select_range(options: List[Any], message: str) -> List[int]:
         print("{i}. {o}".format(i=i, o=o))
 
     possible_indices = range(len(options))
+    all_keywords = ["all", "a"]
 
     if not options:
         return []
@@ -207,8 +208,13 @@ def select_range(options: List[Any], message: str) -> List[int]:
     selection = prompt(
         prompt_string=message,
         default="",
-        dirty_message="Range not valid, example: 0, 2, 3-10",
+        dirty_message="Range not valid, example: 0, 2, 3-10, a, all, ...",
         validator_function=lambda string:
+                string in all_keywords or
                 len(set(get_range(string)) & set(possible_indices)) > 0)
+
+    if selection in all_keywords:
+        selection = ",".join(map(str, range(len(options))))
+
 
     return [i for i in get_range(selection) if i in possible_indices]
