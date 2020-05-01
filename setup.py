@@ -77,15 +77,20 @@ setup(
     ],
     python_requires='>=3.5',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Intended Audience :: Developers',
+        'Intended Audience :: Education',
+        'Intended Audience :: Science/Research',
         'Intended Audience :: End Users/Desktop',
         'Intended Audience :: System Administrators',
+        'Natural Language :: English',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: MacOS',
         'Operating System :: POSIX',
         'Operating System :: Unix',
+        'Operating System :: Microsoft',
+        'Operating System :: OS Independent',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
@@ -117,7 +122,7 @@ setup(
         'books', 'papers', 'science', 'research',
         'bibtex', 'latex', 'command-line', 'tui', 'biblatex', 'pubmed', 'ieee',
         'reference manager', 'mendeley', 'zotero', 'elsevier',
-        'cli', 'biliography', 'datasheets'
+        'cli', 'biliography', 'datasheets', 'bibtex'
     ],
     package_data=dict(
         papis=[
@@ -205,5 +210,5 @@ setup(
             "bibtex=papis.bibtex:explorer",
         ]
     },
-    platforms=['linux', 'osx'],
+    platforms=['linux', 'osx', 'win32'],
 )
