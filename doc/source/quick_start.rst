@@ -3,18 +3,19 @@ Quick start
 ===========
 
 This is a tutorial that should be enough to get you started using papis.  Papis
-tries to be as simple and lightweight as possible, therefore its database
-structure is ridiculously simple.
+tries to be as simple and lightweight as possible, therefore its document model
+should be too as simple as possible.
 
-But before taking a look at its database structure let us see how is the daily
+But before taking a look at its database structure let us show the daily
 usage of papis for a regular user. This tutorial is command-line based, so you
-should be familiar with opening a terminal window on your system.
+should be familiar with opening a terminal window on your system and
+do some general operations with it, like creating folders and files.
 
 Creating a new library
 ----------------------
 
 We will illustrate the process by creating a first library with a couple of
-```pdf``` documents in it. Papis can be highly configured using configuration
+``pdf`` documents in it. Papis can be highly configured using configuration
 files. Many programs use configuration files maybe without you being aware of
 it. Papis' configuration files are stored together inside the folder
 
@@ -49,8 +50,14 @@ we will be adding to the library will be located inside
 care of your ``papers`` library is inside the ``~/Documents/mypapers`` directory,
 self-contained.
 
-If you have not already, add the two lines to the ``~/.config/papis/config`` file and save it, and we will
-proceed to add some documents.
+If you have not already, add the two lines to the ``~/.config/papis/config``
+file and save it, and we will proceed to add some documents.
+Of course, you have to make sure that the folder ``~/Documents/mypapers``
+exists, so go ahead and create it
+
+.. code:: init
+
+    mkdir -p ~/Documents/mypapers
 
 
 Adding the first document
