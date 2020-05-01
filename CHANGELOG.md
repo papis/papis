@@ -20,7 +20,7 @@ VERSION v0.10
 
 ## `papis add`
 - Add an experimental importer selector when smart matching inputs.
-  See [here](https://asciinema.org/a/i2kXyZMNaT8n7YRz7DcVIfqm5.js).
+  See [here](https://asciinema.org/a/i2kXyZMNaT8n7YRz7DcVIfqm5).
 
 ## `papis bibtex`
 - Add `papis bibtex browse`.
