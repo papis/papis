@@ -39,8 +39,10 @@ Cli
     :prog: papis update
 """
 
+import click
 import colorama
 import logging
+
 import papis.utils
 import papis.tui.utils
 import papis.strings
@@ -51,7 +53,6 @@ import papis.pick
 import papis.cli
 import papis.importer
 import papis.git
-import click
 
 from typing import List, Dict, Tuple, Optional, Any
 
@@ -120,11 +121,12 @@ def cli(
         set_tuples: List[Tuple[str, str]],) -> None:
     """Update a document from a given library"""
 
-    documents = papis.database.get().query(query)
     logger = logging.getLogger('cli:update')
 
     if doc_folder:
         documents = [papis.document.from_folder(doc_folder)]
+    else:
+        documents = papis.database.get().query(query)
 
     if sort_field:
         documents = papis.document.sort(documents, sort_field, sort_reverse)

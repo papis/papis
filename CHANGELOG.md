@@ -3,9 +3,11 @@ VERSION v0.10
 
 - Add `--sort` and `--reverse` flags to most command line commands, together
   with the `sort-file` configuration option.
+- Add `--doc-folder` to most command line commands for better bash-scripting
+  capabilities.
+- Add `--logfile` flag in order to dump log messages to a file.
 - Move `papis.utils.format_doc` to `papis.document.format_doc`
   in order to minimize circular dependencies.
-- Add `--logfile` flag in order to dump log messages to a file.
 
 
 ## Run and `Git` command ##

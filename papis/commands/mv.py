@@ -5,23 +5,23 @@ Cli
 .. click:: papis.commands.mv:cli
     :prog: papis mv
 """
-import papis
 import os
+import subprocess
+import logging
+import click
+
 import papis.config
 import papis.utils
 import papis.database
-import subprocess
-import logging
+import papis.document
 import papis.cli
 import papis.pick
 import papis.strings
-import click
 
 from typing import Optional
 
 
-def run(
-        document: papis.document.Document,
+def run(document: papis.document.Document,
         new_folder_path: str,
         git: bool = False) -> None:
     logger = logging.getLogger('mv:run')
@@ -47,7 +47,11 @@ def run(
 @papis.cli.query_option()
 @papis.cli.git_option()
 @papis.cli.sort_option()
-def cli(query: str, git: bool, sort_field: Optional[str],
+@papis.cli.doc_folder_option()
+def cli(query: str,
+        git: bool,
+        sort_field: Optional[str],
+        doc_folder: str,
         sort_reverse: bool) -> None:
     """Move a document into some other path"""
     # Leave this imports here for performance
@@ -56,7 +60,11 @@ def cli(query: str, git: bool, sort_field: Optional[str],
 
     logger = logging.getLogger('cli:mv')
 
-    documents = papis.database.get().query(query)
+    if doc_folder:
+        documents = [papis.document.from_folder(doc_folder)]
+    else:
+        documents = papis.database.get().query(query)
+
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
         return

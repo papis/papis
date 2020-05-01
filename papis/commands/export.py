@@ -100,9 +100,14 @@ def run(documents: List[papis.document.Document], to_format: str,) -> str:
     help="Format for the document",
     type=click.Choice(available_formats()),
     default="bibtex",)
-def cli(query: str, doc_folder: str,
-        sort_field: Optional[str], sort_reverse: bool,
-        folder: str, out: str, fmt: str, _all: bool) -> None:
+def cli(query: str,
+        doc_folder: str,
+        sort_field: Optional[str],
+        sort_reverse: bool,
+        folder: str,
+        out: str,
+        fmt: str,
+        _all: bool) -> None:
     """Export a document from a given library"""
 
     if doc_folder:
