@@ -2,7 +2,7 @@ Papis
 =====
 
 |PyPI-Versions| |Build_Status| |build_appveyor| |Coveralls| |RTD| |Pypi|
-|Code_Quality| |zenodo_badge| |PyPI-Downloads|
+|Code_Quality| |zenodo_badge| |PyPI-Downloads| |MYPY-CHECKED|
 
 |Packaging_status|
 
@@ -134,6 +134,9 @@ See the ``AUTHORS`` list for a list of authored commits.
    :target: https://pypi.org/project/papis
 .. |PyPI-Versions| image:: https://img.shields.io/pypi/pyversions/papis.svg?logo=python&logoColor=white
    :target: https://pypi.org/project/papis
+.. |MYPY-CHECKED| image:: http://www.mypy-lang.org/static/mypy_badge.svg
+   :target: http://mypy-lang.org/
+
 
 Related software
 ----------------
