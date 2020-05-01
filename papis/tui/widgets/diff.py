@@ -1,6 +1,6 @@
 import difflib
-import prompt_toolkit
-from prompt_toolkit import Application
+from prompt_toolkit import Application, print_formatted_text
+from prompt_toolkit.utils import Event
 from prompt_toolkit.layout.containers import HSplit, Window, WindowAlign
 from prompt_toolkit.formatted_text import FormattedText, HTML
 from prompt_toolkit.layout.controls import FormattedTextControl
@@ -15,7 +15,7 @@ Action = NamedTuple(
         [
             ('name', str),
             ('key', str),
-            ('action', Callable[[prompt_toolkit.utils.Event], None])
+            ('action', Callable[[Event], None])
         ])
 
 
@@ -42,7 +42,7 @@ def prompt(
     for action in actions:
         kb.add(action.key)(action.action)
 
-    prompt_toolkit.print_formatted_text(FormattedText(text))
+    print_formatted_text(FormattedText(text))
 
     root_container = HSplit([
 
@@ -161,7 +161,7 @@ def diffdict(
             options[k] = False
 
     def oset(
-            event: prompt_toolkit.utils.Event,
+            event: Event,
             option: str, value: bool) -> None:
         options[option] = value
         event.app.exit(0)

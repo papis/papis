@@ -6,8 +6,9 @@ from typing import Dict, Any, Optional
 class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str):
-        papis.downloaders.Downloader.__init__(
-            self, url, name="iopscience")
+        papis.downloaders.Downloader.__init__(self,
+                                              url,
+                                              name="iopscience")
         self.expected_document_extension = 'pdf'
         self.priority = 10
 

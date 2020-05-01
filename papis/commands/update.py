@@ -62,8 +62,7 @@ def _update_with_database(document: papis.document.Document) -> None:
     papis.database.get().update(document)
 
 
-def run(
-        document: papis.document.Document,
+def run(document: papis.document.Document,
         data: Dict[str, Any] = dict(),
         git: bool = False) -> None:
     # Keep the ref the same, otherwise issues can be caused when
@@ -89,28 +88,24 @@ def run(
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @papis.cli.sort_option()
-@click.option(
-    "--auto",
-    help="Try to parse information from different sources",
-    default=False,
-    is_flag=True)
-@click.option(
-    "--from", "from_importer",
-    help="Add document from a specific importer ({0})".format(
-        ", ".join(papis.importer.available_importers())
-    ),
-    type=(click.Choice(papis.importer.available_importers()), str),
-    nargs=2,
-    multiple=True,
-    default=(),)
-@click.option(
-    "-s", "--set", "set_tuples",
-    help="Update document's information with key value."
-         "The value can be a papis format.",
-    multiple=True,
-    type=(str, str),)
-def cli(
-        query: str,
+@click.option("--auto",
+              help="Try to parse information from different sources",
+              default=False,
+              is_flag=True)
+@click.option("--from", "from_importer",
+              help="Add document from a specific importer ({0})".format(
+                ", ".join(papis.importer.available_importers())
+                ),
+              type=(click.Choice(papis.importer.available_importers()), str),
+              nargs=2,
+              multiple=True,
+              default=(),)
+@click.option("-s", "--set", "set_tuples",
+              help="Update document's information with key value."
+                   "The value can be a papis format.",
+              multiple=True,
+              type=(str, str),)
+def cli(query: str,
         git: bool,
         doc_folder: str,
         from_importer: List[Tuple[str, str]],
@@ -141,11 +136,9 @@ def cli(
     for document in documents:
         ctx = papis.importer.Context()
 
-        logger.info(
-            'Updating '
-            '{c.Back.WHITE}{c.Fore.BLACK}{0}{c.Style.RESET_ALL}'
-            .format(papis.document.describe(document), c=colorama)
-        )
+        logger.info('Updating '
+                    '{c.Back.WHITE}{c.Fore.BLACK}{0}{c.Style.RESET_ALL}'
+                    .format(papis.document.describe(document), c=colorama))
 
         ctx.data.update(document)
         if set_tuples:
