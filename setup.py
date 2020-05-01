@@ -75,7 +75,7 @@ setup(
         "lxml>=4.3.5 ; python_version>'3.5'",
         "python-slugify>=1.2.6 ; python_version>'3.4'",
     ],
-    python_requires='>=3',
+    python_requires='>=3.5',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
