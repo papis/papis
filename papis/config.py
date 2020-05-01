@@ -543,7 +543,7 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
                                 " dir or dirs in the configuration file.\n"
                                 "\tdir must be a path to a single folder.\n"
                                 "\tdirs must be a python list of "
-                                    "paths to folders.\n\n"
+                                "paths to folders.\n\n"
                                 "Error: ({0})"
                                 .format(e))
         library_obj = papis.library.Library(libname, paths)
