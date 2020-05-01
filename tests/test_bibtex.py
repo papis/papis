@@ -11,28 +11,27 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 def test_bibtex_to_dict():
-    bibpath = os.path.join(
-        os.path.dirname(__file__), "resources", "bibtex", "1.bib")
-    bib = papis.bibtex.bibtex_to_dict(bibpath)[0]
-    keys = [
-      "title",
-      "author",
-      "journal",
-      "abstract",
-      "volume",
-      "issue",
-      "pages",
-      "numpages",
-      "year",
-      "month",
-      "publisher",
-      "doi",
-      "url"
-      ]
-    print(bib)
+    bibpath = os.path.join(os.path.dirname(__file__),
+                           "resources", "bibtex", "1.bib")
+    bibs = papis.bibtex.bibtex_to_dict(bibpath)
+    keys = [ "title",
+             "author",
+             "journal",
+             "abstract",
+             "volume",
+             "issue",
+             "pages",
+             "numpages",
+             "year",
+             "month",
+             "publisher",
+             "doi",
+             "url" ]
 
-    for key in keys:
-        assert key in bib
+    assert len(bibs) == 1
+    for bib in bibs:
+        for key in keys:
+            assert key in bib
 
     assert bib["type"] == "article"
     assert re.match(r".*Rev.*", bib["journal"])

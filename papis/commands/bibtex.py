@@ -102,11 +102,10 @@ explorer_mgr = explore.get_explorer_mgr()
 
 @click.group("bibtex", cls=papis.cli.AliasedGroup, chain=True)
 @click.help_option('-h', '--help')
-@click.option(
-    '--noar', '--no-auto-read', 'no_auto_read',
-    default=False,
-    is_flag=True,
-    help="Do not auto read even if the configuration file says otherwise")
+@click.option('--noar', '--no-auto-read', 'no_auto_read',
+              default=False,
+              is_flag=True,
+              help="Do not auto read even if the configuration file says it")
 @click.pass_context
 def cli(ctx: click.Context, no_auto_read: bool) -> None:
     """A papis script to interact wit bibtex files"""
@@ -144,19 +143,18 @@ def _add(ctx: click.Context, query: str, _all: bool) -> None:
 @cli.command('update')
 @click.help_option('-h', '--help')
 @papis.cli.all_option()
-@click.option(
-    '--from', '-f', 'fromdb',
-    show_default=True,
-    help='Update the document from the library',
-    default=False, is_flag=True)
-@click.option(
-    '-t', '--to', help='Update the library document from retrieved document',
-    show_default=True,
-    default=False, is_flag=True)
-@click.option(
-    '-k', '--keys',
-    help='Update only given keys (this flag can be given multiple times)',
-    type=str, multiple=True)
+@click.option('--from', '-f', 'fromdb',
+              show_default=True,
+              help='Update the document from the library',
+              default=False, is_flag=True)
+@click.option('-t', '--to',
+              help='Update the library document from retrieved document',
+              show_default=True,
+              default=False, is_flag=True)
+@click.option('-k', '--keys',
+              help='Update only given keys (can be given multiple times)',
+              type=str,
+              multiple=True)
 @click.pass_context
 def _update(ctx: click.Context, _all: bool,
             fromdb: bool, to: bool, keys: List[str]) -> None:
@@ -206,11 +204,10 @@ def _open(ctx: click.Context) -> None:
 
 @cli.command('edit')
 @click.help_option('-h', '--help')
-@click.option(
-    '-l', '--lib',
-    show_default=True,
-    help='Edit document in papis library',
-    default=False, is_flag=True)
+@click.option('-l', '--lib',
+              show_default=True,
+              help='Edit document in papis library',
+              default=False, is_flag=True)
 @click.pass_context
 def _edit(ctx: click.Context, lib: bool) -> None:
     """edit a document in the documents list"""
@@ -220,6 +217,21 @@ def _edit(ctx: click.Context, lib: bool) -> None:
         return
     doc = papis.utils.locate_document_in_lib(docs[0])
     papis.commands.edit.run(doc)
+
+
+@cli.command('browse')
+@click.help_option('-h', '--help')
+@click.option('-k', '--key', default=None, help="doi, url, ...")
+@click.pass_context
+def _browse(ctx: click.Context, key: Optional[str]) -> None:
+    """browse a document in the documents list"""
+    docs = papis.api.pick_doc(ctx.obj['documents'])
+    if key:
+        papis.config.set("browse-key", key)
+    if not docs:
+        return
+    for d in docs:
+        papis.commands.browse.run(d)
 
 
 @cli.command('rm')
@@ -271,17 +283,15 @@ def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
 
 @cli.command('sort')
 @click.help_option('-h', '--help')
-@click.option(
-    '-k', '--key',
-    help="Field to order it",
-    default=None,
-    type=str,
-    required=True)
-@click.option(
-    '-r', '--reverse',
-    help="Reverse the order",
-    default=False,
-    is_flag=True)
+@click.option('-k', '--key',
+              help="Field to order it",
+              default=None,
+              type=str,
+              required=True)
+@click.option('-r', '--reverse',
+              help="Reverse the order",
+              default=False,
+              is_flag=True)
 @click.pass_context
 def _sort(ctx: click.Context, key: Optional[str], reverse: bool) -> None:
     """Save the documents imported in bibtex format"""

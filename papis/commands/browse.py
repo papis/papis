@@ -76,8 +76,7 @@ def run(document: papis.document.Document) -> Optional[str]:
          'doi, url, doc_url ...'
 )
 @papis.cli.all_option()
-def cli(
-        query: str,
+def cli(query: str,
         key: str,
         _all: bool,
         sort_field: Optional[str],
