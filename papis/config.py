@@ -174,6 +174,8 @@ class Configuration(configparser.ConfigParser):
                 for field in self.default_info[section]:
                     self[section][field] = self.default_info[section][field]
             with open(self.file_location, "w") as configfile:
+                self.logger.info('Creating config file at {0}'
+                                 .format(self.file_location))
                 self.write(configfile)
         configpy = get_configpy_file()
         if os.path.exists(configpy):
@@ -514,30 +516,36 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
     if libname not in config.keys():
         if os.path.isdir(libname):
             # Check if the path exists, then use this path as a new library
-            logger.warning(
-                "Since {0} exists, interpreting it as a library"
-                .format(libname))
+            logger.warning("Since the path '{0}' exists, "
+                           "I'm interpreting it as a library"
+                           .format(libname))
             library_obj = papis.library.from_paths([libname])
             name = library_obj.path_format()
             # the configuration object can only store strings
             config[name] = dict(dirs=str(library_obj.paths))
         else:
-            raise Exception(
-                "Path or library '{0}' does not seem to exist".format(libname))
+            raise Exception("Library '{0}' does not seem to exist"
+                            "\n\n"
+                            "To add a library simply write the following"
+                            "in your configuration file located at '{cpath}'"
+                            "\n\n"
+                            "\t[{0}]\n"
+                            "\tdir = path/to/your/{0}/folder"
+                            .format(libname, cpath=get_config_file()))
     else:
-        name = libname
-        if name not in config.keys():
-            raise Exception('Library {0} not defined'.format(libname))
         try:
-            paths = [expanduser(config[name]['dir'])]
+            paths = [expanduser(config[libname]['dir'])]
         except KeyError:
             try:
-                paths = eval(expanduser(config[name].get('dirs')))
-            except SyntaxError as e:
-                raise Exception(
-                    "To define a library you have to set either dir or dirs"
-                    " in the configuration file.\n"
-                    "Error: ({0})".format(e))
+                paths = eval(expanduser(config[libname].get('dirs')))
+            except Exception as e:
+                raise Exception("To define a library you have to set either"
+                                " dir or dirs in the configuration file.\n"
+                                "\tdir must be a path to a single folder.\n"
+                                "\tdirs must be a python list of "
+                                    "paths to folders.\n\n"
+                                "Error: ({0})"
+                                .format(e))
         library_obj = papis.library.Library(libname, paths)
     return library_obj
 

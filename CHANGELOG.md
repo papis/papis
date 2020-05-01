@@ -8,6 +8,7 @@ VERSION v0.10
 - Add `--logfile` flag in order to dump log messages to a file.
 - Move `papis.utils.format_doc` to `papis.document.format_doc`
   in order to minimize circular dependencies.
+- Add a `--profile` flag to profile the papis run.
 
 
 ## Run and `Git` command ##
