@@ -55,7 +55,7 @@ file and save it, and we will proceed to add some documents.
 Of course, you have to make sure that the folder ``~/Documents/mypapers``
 exists, so go ahead and create it
 
-.. code:: init
+::
 
     mkdir -p ~/Documents/mypapers
 
@@ -128,9 +128,32 @@ what you typed with the paper you are looking for, so that you can get the
 desired paper very easily.
 
 
+.. comment
+  .. raw:: html
+
+    <script type="text/javascript"
+      src="https://asciinema.org/a/hrNaFMh4XwqVpWsGWDi5SASUC.js"
+      id="asciicast-hrNaFMh4XwqVpWsGWDi5SASUC" async>
+    </script>
+
+Of course papis shines really in other areas, for instance imagine
+you are browsing this paper
+`prl paper <https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.124.171801/>`_
+and you want to add it to your library, as of version ``v0.9``
+you can issue one of these commands
+
+::
+
+  papis add https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.124.171801/
+  papis add --from url https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.124.171801/
+  papis add --from doi 10.1103/PhysRevLett.124.171801/
+
+Here you can see it in action using the smart matching first alternative
+
 .. raw:: html
 
-  <script type="text/javascript"
-    src="https://asciinema.org/a/hrNaFMh4XwqVpWsGWDi5SASUC.js"
-    id="asciicast-hrNaFMh4XwqVpWsGWDi5SASUC" async>
-  </script>
+    <script type="text/javascript"
+      src="https://asciinema.org/a/i2kXyZMNaT8n7YRz7DcVIfqm5.js"
+      id="asciicast-i2kXyZMNaT8n7YRz7DcVIfqm5" async>
+    </script>
+

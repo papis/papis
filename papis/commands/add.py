@@ -526,12 +526,12 @@ def cli(
         matching_importers = sum((
             papis.utils.get_matching_importer_or_downloader(f)
             for f in files), [])
-        logger.info(
-            "These importers where automatically matched,"
-            "select the ones you want to use")
+        logger.info("These importers where automatically matched, "
+                    "select the ones you want to use")
         _range = papis.tui.utils.select_range(
-            [imp.name for imp in matching_importers],
-            "Select matching importers (for instance 0, 1, 3-10)")
+            ["{0} (files: {1}) ".format(imp.name, ", ".join(imp.ctx.files))
+                for imp in matching_importers],
+            "Select matching importers (for instance 0, 1, 3-10, a, all...)")
         matching_importers = [matching_importers[i] for i in _range]
 
     for importer_tuple in from_importer:
@@ -546,13 +546,13 @@ def cli(
             logger.exception(e)
 
     if matching_importers:
-        logger.info(
-            'There are {0} possible matchings'.format(len(matching_importers)))
+        logger.info('There are {0} possible matchings'
+                    .format(len(matching_importers)))
 
         for importer in matching_importers:
             if importer.ctx.data:
-                logger.info(
-                    'Merging data from importer {0}'.format(importer.name))
+                logger.info('Merging data from importer {0}'
+                            .format(importer.name))
                 if batch:
                     ctx.data.update(importer.ctx.data)
                 else:
@@ -561,12 +561,12 @@ def cli(
                         importer.ctx.data,
                         str(importer))
             if importer.ctx.files:
-                logger.info(
-                    'Got files {0} from importer {1}'
-                    .format(importer.ctx.files, importer.name))
+                logger.info('Got files {0} from importer {1}'
+                            .format(importer.ctx.files, importer.name))
                 for f in importer.ctx.files:
                     papis.utils.open_file(f)
-                    if batch or papis.tui.utils.confirm("Use this file?"):
+                    _msg = "Use this file? (from {0})".format(importer.name)
+                    if batch or papis.tui.utils.confirm(_msg):
                         ctx.files.append(f)
 
     if not ctx:
