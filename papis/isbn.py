@@ -1,6 +1,7 @@
 import papis.document
 import logging
 import isbnlib
+import isbnlib.registry
 import click
 # See https://github.com/xlcnd/isbnlib for details
 from typing import Optional, Dict, Any, List
@@ -11,18 +12,20 @@ logger = logging.getLogger('papis:isbnlib')
 def get_data(
         query: str = "",
         service: Optional[str] = None) -> List[Dict[str, Any]]:
-    global logger
-    results = []  # type: List[Dict[str, Any]]
+    isbnlib_version = tuple(int(n) for n in isbnlib.__version__.split('.'))
+    if service is None and isbnlib_version >= (3, 10, 0):
+        service = "default"
+
     logger.debug('Trying to retrieve isbn')
     isbn = isbnlib.isbn_from_words(query)
     data = isbnlib.meta(isbn, service=service)
-    if data is None:
-        return results
-    else:
-        logger.debug('Trying to retrieve isbn')
-        assert(isinstance(data, dict))
+
+    results = []  # type: List[Dict[str, Any]]
+    if data is not None:
+        assert isinstance(data, dict)
         results.append(data_to_papis(data))
-        return results
+
+    return results
 
 
 def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -45,7 +48,7 @@ def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
     '--service',
     '-s',
     default='goob',
-    type=click.Choice(['wcat', 'goob', 'openl'])
+    type=click.Choice(list(isbnlib.registry.services.keys()))
 )
 def explorer(ctx: click.core.Context, query: str, service: str) -> None:
     """
