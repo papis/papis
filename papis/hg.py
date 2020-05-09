@@ -3,6 +3,8 @@ import os
 import shlex
 import logging
 
+from typing import List
+
 logger = logging.getLogger("papis.hg")
 
 
@@ -41,7 +43,7 @@ def add(path: str, resource: str) -> None:
     _issue_hg_command(path, cmd)
 
 
-def commit(path: str, resources: list(str), message: str) -> None:
+def commit(path: str, resources: List[str], message: str) -> None:
     """Commits changes in the path with a message.
 
     :param path: Folder where a Mercurial repo exists.
