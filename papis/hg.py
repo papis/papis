@@ -61,15 +61,13 @@ def commit(path: str, resources: List[str], message: str) -> None:
     cmd = 'hg commit -m "{0}" {1}'.format(message, resource)
     _issue_hg_command(path, cmd)
 
-def rm(path: str, resource: str, message: str, recursive: bool = False, after: bool = False) -> None:
+def rm(path: str, resource: str, recursive: bool = False, after: bool = False) -> None:
     """Remove files in the path with a message.
 
     :param path: Folder where a Mercurial repo exists.
     :type  path: str
     :param resource: Commit resource
     :type  resource: str
-    :param message: Commit message
-    :type  message: str
     :param after: Actually remove
     :type after: bool
     :returns: None
