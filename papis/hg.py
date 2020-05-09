@@ -27,6 +27,7 @@ def _issue_hg_command(path: str, cmd: str) -> None:
     logger.debug(split_cmd)
     subprocess.call(split_cmd)
 
+
 def add(path: str, resource: str) -> None:
     """Adds new files in the path.
 
@@ -61,7 +62,13 @@ def commit(path: str, resources: List[str], message: str) -> None:
     cmd = 'hg commit -m "{0}" {1}'.format(message, resource)
     _issue_hg_command(path, cmd)
 
-def rm(path: str, resource: str, recursive: bool = False, after: bool = False) -> None:
+
+def rm(
+        path: str,
+        resource: str,
+        recursive: bool = False,
+        after: bool = False
+      ) -> None:
     """Remove files in the path with a message.
 
     :param path: Folder where a Mercurial repo exists.
@@ -76,8 +83,9 @@ def rm(path: str, resource: str, recursive: bool = False, after: bool = False) -
     global logger
     logger.info('Removing {path}'.format(**locals()))
     # force removal always
-    pattern = '"{0}"'.format(resource) if recursive else '-I rootfilesin:"{0}"'.format(resource)
-    rm_cmd = 'hg rm {a} -f {0}'.format(pattern, a = '-A' if after else '')
+    pattern = '"{0}"'.format(resource) if recursive \
+              else '-I rootfilesin:"{0}"'.format(resource)
+    rm_cmd = 'hg rm {a} -f {0}'.format(pattern, a='-A' if after else '')
     _issue_hg_command(path, rm_cmd)
 
 

@@ -29,7 +29,8 @@ def run(document: papis.document.Document,
     folder = document.get_main_folder()
     if not folder:
         raise Exception(papis.strings.no_folder_attached_to_document)
-    cmd = ['git', '-C', folder] if git else ['hg', '--cwd', folder] if hg else []
+    cmd = ['git', '-C', folder] if git \
+        else ['hg', '--cwd', folder] if hg else []
     cmd += ['mv', folder, new_folder_path]
     db = papis.database.get()
     logger.debug(cmd)

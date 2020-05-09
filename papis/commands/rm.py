@@ -39,9 +39,11 @@ def run(document: papis.document.Document,
             papis.git.rm(_doc_folder, filepath)
             papis.git.add(_doc_folder, document.get_info_file())
             papis.git.commit(_doc_folder, "Remove file '{0}'".format(filepath))
-        if hg: 
-            papis.hg.rm(_doc_folder, filepath, after = git)
-            papis.hg.commit(_doc_folder, [filepath, document.get_info_file()], "Remove file '{0}'".format(filepath))
+        if hg:
+            papis.hg.rm(_doc_folder, filepath, after=git)
+            papis.hg.commit(_doc_folder,
+                            [filepath, document.get_info_file()],
+                            "Remove file '{0}'".format(filepath))
     else:
         if git:
             _topfolder = os.path.dirname(os.path.abspath(_doc_folder))
@@ -52,7 +54,7 @@ def run(document: papis.document.Document,
                     papis.document.describe(document)))
         if hg:
             _topfolder = os.path.dirname(os.path.abspath(_doc_folder))
-            papis.hg.rm(_doc_folder, _doc_folder, recursive=True, after = git)
+            papis.hg.rm(_doc_folder, _doc_folder, recursive=True, after=git)
             papis.hg.commit(
                 _topfolder,
                 [_doc_folder],

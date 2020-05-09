@@ -93,6 +93,7 @@ def git_option(
         return click.decorators.option('--git/--no-git', **attrs)(f)
     return decorator
 
+
 def hg_option(
         help: str = "Add mercurial interoperability",
         **attrs: DecoratorArgs) -> DecoratorCallable:
@@ -104,6 +105,7 @@ def hg_option(
         attrs.setdefault('help', help)
         return click.decorators.option('--hg/--no-hg', **attrs)(f)
     return decorator
+
 
 def bypass(
         group: click.core.Group,

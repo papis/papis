@@ -39,7 +39,8 @@ def run(
         logger.warning("Path %s already exists" % new_folder_path)
         return
 
-    cmd = ['git', '-C', folder] if git else ['hg', '--cwd', folder] if hg else []
+    cmd = ['git', '-C', folder] if git \
+        else ['hg', '--cwd', folder] if hg else []
     cmd += ['mv', folder, new_folder_path]
 
     logger.debug(cmd)
