@@ -82,13 +82,13 @@ def run(folder: str, command: List[str] = []) -> int:
     metavar="<PREFIX>",
     help="Prefix shell commands by a prefix command")
 @click.argument("run_command", metavar="<COMMANDS>", nargs=-1)
-def cli(
-        run_command: List[str],
+def cli(run_command: List[str],
         pick: str,
         sort_field: str,
         sort_reverse: bool,
         prefix: Optional[str],
-        doc_folder: str, _all: bool) -> None:
+        doc_folder: str,
+        _all: bool) -> None:
     """Run an arbitrary shell command in the library or command folder"""
 
     documents = []

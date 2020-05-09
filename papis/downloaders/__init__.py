@@ -54,14 +54,15 @@ class Downloader(papis.importer.Importer):
     """This is the base class for every downloader.
     """
 
-    def __init__(
-            self,
-            uri: str = "",
-            name: str = "",
-            ctx: papis.importer.Context = papis.importer.Context()):
-        self.ctx = ctx
-        self.uri = uri
-        self.name = name or os.path.basename(__file__)
+    def __init__(self,
+                 uri: str = "",
+                 name: str = "",
+                 ctx: papis.importer.Context = papis.importer.Context()):
+        papis.importer.Importer.__init__(self,
+                                         uri=uri,
+                                         ctx=ctx,
+                                         name=name or
+                                         os.path.basename(__file__))
         self.logger = logging.getLogger("downloader:"+self.name)
         self.logger.debug("uri {0}".format(uri))
         self.expected_document_extension = None  # type: Optional[str]

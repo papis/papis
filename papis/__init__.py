@@ -2,7 +2,7 @@ import os
 
 # Information
 __license__ = 'GPLv3'
-__version__ = '0.9'
+__version__ = '0.10'
 __author__ = __maintainer__ = 'Alejandro Gallo'
 __email__ = 'aamsgallo@gmail.com'
 

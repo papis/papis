@@ -2,10 +2,9 @@ from typing import Optional, List, Callable, Any
 import re
 
 
-def confirm(
-        prompt_string: str,
-        yes: bool = True,
-        bottom_toolbar: Optional[str] = None) -> bool:
+def confirm(prompt_string: str,
+            yes: bool = True,
+            bottom_toolbar: Optional[str] = None) -> bool:
     """Confirm with user input
 
     :param prompt_string: Question or text that the user gets.
@@ -16,23 +15,21 @@ def confirm(
     :rtype:  bool
 
     """
-    result = prompt(
-        prompt_string,
-        bottom_toolbar=bottom_toolbar,
-        default='Y/n' if yes else 'y/N',
-        validator_function=lambda x: x in 'YyNn',
-        dirty_message='Please, write either "y" or "n" to confirm')
+    result = prompt(prompt_string,
+                    bottom_toolbar=bottom_toolbar,
+                    default='Y/n' if yes else 'y/N',
+                    validator_function=lambda x: x in 'YyNn',
+                    dirty_message='Please, write either "y" or "n" to confirm')
     if yes:
         return result not in 'Nn'
     return result in 'Yy'
 
 
-def text_area(
-        title: str,
-        text: str,
-        lexer_name: str = "",
-        height: int = 10,
-        full_screen: bool = False) -> str:
+def text_area(title: str,
+              text: str,
+              lexer_name: str = "",
+              height: int = 10,
+              full_screen: bool = False) -> str:
     """
     Small implementation of an editor/pager for small pieces of text.
 
@@ -82,10 +79,9 @@ def text_area(
 
     pygment_lexer = find_lexer_class_by_name(lexer_name)
     lexer = PygmentsLexer(pygment_lexer)
-    text_window = Window(
-        height=text_height,
-        style='bg:black fg:ansiwhite',
-        content=BufferControl(buffer=buffer1, lexer=lexer))
+    text_window = Window(height=text_height,
+                         style='bg:black fg:ansiwhite',
+                         content=BufferControl(buffer=buffer1, lexer=lexer))
 
     root_container = HSplit([
         Window(
@@ -118,11 +114,10 @@ def text_area(
 
     layout.focus(text_window)
 
-    app = App(
-        editing_mode=EditingMode.EMACS,
-        layout=layout,
-        key_bindings=kb,
-        full_screen=full_screen)
+    app = App(editing_mode=EditingMode.EMACS,
+              layout=layout,
+              key_bindings=kb,
+              full_screen=full_screen)
     app.run()
     return app.return_text
 
@@ -175,12 +170,11 @@ def prompt(
         ('', ': '),
     ]
 
-    result = prompt_toolkit.prompt(
-        fragments,
-        validator=validator,
-        multiline=multiline,
-        bottom_toolbar=bottom_toolbar,
-        validate_while_typing=True)
+    result = prompt_toolkit.prompt(fragments,
+                                   validator=validator,
+                                   multiline=multiline,
+                                   bottom_toolbar=bottom_toolbar,
+                                   validate_while_typing=True)
 
     return str(result) if result else default
 
@@ -200,6 +194,7 @@ def select_range(options: List[Any], message: str) -> List[int]:
         print("{i}. {o}".format(i=i, o=o))
 
     possible_indices = range(len(options))
+    all_keywords = ["all", "a"]
 
     if not options:
         return []
@@ -207,8 +202,12 @@ def select_range(options: List[Any], message: str) -> List[int]:
     selection = prompt(
         prompt_string=message,
         default="",
-        dirty_message="Range not valid, example: 0, 2, 3-10",
+        dirty_message="Range not valid, example: 0, 2, 3-10, a, all, ...",
         validator_function=lambda string:
+                string in all_keywords or
                 len(set(get_range(string)) & set(possible_indices)) > 0)
+
+    if selection in all_keywords:
+        selection = ",".join(map(str, range(len(options))))
 
     return [i for i in get_range(selection) if i in possible_indices]

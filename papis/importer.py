@@ -20,14 +20,14 @@ class Importer:
     """This is the base class for every importer"""
 
     def __init__(self, uri: str = "", name: str = "",
-                 ctx: Context = Context()):
+                 ctx: Optional[Context] = None):
         """
         :param uri: uri
         :type  uri: str
         :param name: Name of the importer
         :type  name: str
         """
-        self.ctx = ctx  # type: Context
+        self.ctx = ctx or Context()  # type: Context
         self.uri = uri  # type: str
         self.name = name or os.path.basename(__file__)  # type: str
         self.logger = logging.getLogger("importer:{0}".format(self.name))

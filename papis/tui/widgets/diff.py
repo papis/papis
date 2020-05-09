@@ -1,6 +1,6 @@
 import difflib
-import prompt_toolkit
-from prompt_toolkit import Application
+from prompt_toolkit import Application, print_formatted_text
+from prompt_toolkit.utils import Event
 from prompt_toolkit.layout.containers import HSplit, Window, WindowAlign
 from prompt_toolkit.formatted_text import FormattedText, HTML
 from prompt_toolkit.layout.controls import FormattedTextControl
@@ -10,20 +10,19 @@ from prompt_toolkit.key_binding import KeyBindings
 from typing import (  # noqa: ignore
     Dict, Any, List, Union, NamedTuple, Callable, Sequence)
 
-Action = NamedTuple(
-        'Action',
-        [
-            ('name', str),
-            ('key', str),
-            ('action', Callable[[prompt_toolkit.utils.Event], None])
-        ])
+Action = NamedTuple('Action',
+                    [
+                        ('name', str),
+                        ('key', str),
+                        ('action', Callable[[Event], None])
+                    ])
 
 
-def prompt(
-        text: Union[str, FormattedText],
-        title: str = '',
-        actions: List[Action] = [],
-        **kwargs: Any) -> None:
+def prompt(text: Union[str, FormattedText],
+           title: str = '',
+           actions: List[Action] = [],
+           **kwargs: Any
+           ) -> None:
     """A simple and extensible prompt helper routine
 
     :param text: Text to be printed before the prompt, it can be formatted text
@@ -42,7 +41,7 @@ def prompt(
     for action in actions:
         kb.add(action.key)(action.action)
 
-    prompt_toolkit.print_formatted_text(FormattedText(text))
+    print_formatted_text(FormattedText(text))
 
     root_container = HSplit([
 
@@ -76,13 +75,13 @@ def prompt(
     app.run()
 
 
-def diffshow(
-        texta: str,
-        textb: str,
-        title: str = '',
-        namea: str = 'a',
-        nameb: str = 'b',
-        actions: List[Action] = []) -> None:
+def diffshow(texta: str,
+             textb: str,
+             title: str = '',
+             namea: str = 'a',
+             nameb: str = 'b',
+             actions: List[Action] = []
+             ) -> None:
     """Show the difference of texta and textb with a prompt.
 
     :param texta: From text
@@ -103,7 +102,13 @@ def diffshow(
             str(texta).splitlines(keepends=True),
             str(textb).splitlines(keepends=True),)
 
-    raw_text = list(diffs) + [
+    _diffs = list(diffs)
+    if len(_diffs) == 1:
+        # this means that _diffs is just a new line character, so there is
+        # no real difference, in that case then do not instantiate a prompt
+        return
+
+    raw_text = _diffs + [
         "^^^^^^^^^\ndiff from\n",
         "----- {namea}\n".format(namea=namea),
         "+++++ {nameb}\n".format(nameb=nameb),
@@ -119,16 +124,16 @@ def diffshow(
             line.startswith('^^^') and ('bg:ansiblack fg:ansipurple', line) or
             ('fg:ansiwhite', line), raw_text))
 
-    prompt(
-        title=title,
-        text=formatted_text,
-        actions=actions)
+    prompt(title=title,
+           text=formatted_text,
+           actions=actions)
 
 
-def diffdict(
-        dicta: Dict[str, Any],
-        dictb: Dict[str, Any],
-        namea: str = 'a', nameb: str = 'b') -> Dict[str, Any]:
+def diffdict(dicta: Dict[str, Any],
+             dictb: Dict[str, Any],
+             namea: str = 'a',
+             nameb: str = 'b'
+             ) -> Dict[str, Any]:
     """
     Compute the difference of two dictionaries.
 
@@ -160,9 +165,7 @@ def diffdict(
         for k in options:
             options[k] = False
 
-    def oset(
-            event: prompt_toolkit.utils.Event,
-            option: str, value: bool) -> None:
+    def oset(event: Event, option: str, value: bool) -> None:
         options[option] = value
         event.app.exit(0)
 

@@ -5,10 +5,7 @@ Cli
 .. click:: papis.commands.rename:cli
     :prog: papis rename
 """
-import papis
 import os
-import papis.pick
-import papis.tui.utils
 import subprocess
 import logging
 import click
@@ -17,6 +14,9 @@ import papis.database
 import papis.strings
 import papis.git
 import papis.hg
+import papis.pick
+import papis.document
+import papis.tui.utils
 
 from typing import Optional
 
@@ -72,15 +72,19 @@ def run(
 @papis.cli.git_option()
 @papis.cli.hg_option()
 @papis.cli.sort_option()
-def cli(
-        query: str,
+@papis.cli.doc_folder_option()
+def cli(query: str,
         git: bool,
         hg: bool,
         sort_field: Optional[str],
+        doc_folder: str,
         sort_reverse: bool) -> None:
     """Rename entry"""
 
-    documents = papis.database.get().query(query)
+    if doc_folder:
+        documents = [papis.document.from_folder(doc_folder)]
+    else:
+        documents = papis.database.get().query(query)
 
     if sort_field:
         documents = papis.document.sort(documents, sort_field, sort_reverse)

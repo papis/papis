@@ -2,7 +2,7 @@ Papis
 =====
 
 |PyPI-Versions| |Build_Status| |build_appveyor| |Coveralls| |RTD| |Pypi|
-|Code_Quality| |zenodo_badge| |PyPI-Downloads|
+|Code_Quality| |zenodo_badge| |PyPI-Downloads| |MYPY-CHECKED|
 
 |Packaging_status|
 
@@ -102,7 +102,7 @@ find help messages in all commands:
     papis -h
     papis add -h
 
-|asciicast_help| AND MUCH, MUCH MORE!
+AND MUCH, MUCH MORE!
 
 Authors
 -------
@@ -126,14 +126,15 @@ See the ``AUTHORS`` list for a list of authored commits.
    :target: https://ci.appveyor.com/project/alejandrogallo/papis/branch/master
 .. |Packaging_status| image:: https://repology.org/badge/vertical-allrepos/papis.svg
    :target: https://repology.org/metapackage/papis
-.. |asciicast_help| image:: https://asciinema.org/a/3otatlbqXIsI102uAywMhT4fP.png
-   :target: https://asciinema.org/a/3otatlbqXIsI102uAywMhT4fP
 .. |Code_Quality| image:: https://img.shields.io/lgtm/grade/python/g/papis/papis.svg?logo=lgtm&logoWidth=18
    :target: https://lgtm.com/projects/g/papis/papis/context:python
 .. |PyPI-Downloads| image:: https://img.shields.io/pypi/dm/papis.svg?label=pypi%20downloads&logo=python&logoColor=white
    :target: https://pypi.org/project/papis
 .. |PyPI-Versions| image:: https://img.shields.io/pypi/pyversions/papis.svg?logo=python&logoColor=white
    :target: https://pypi.org/project/papis
+.. |MYPY-CHECKED| image:: http://www.mypy-lang.org/static/mypy_badge.svg
+   :target: http://mypy-lang.org/
+
 
 Related software
 ----------------
@@ -143,3 +144,4 @@ Here is a list of similar software:
 - `Mendeley <https://www.mendeley.com/>`__ Proprietary.
 - `Zotero <https://www.zotero.org/>`__ FOSS
 - `Xapers <https://finestructure.net/xapers/>`__.
+- `pubs <https://github.com/pubs/pubs/>`__.

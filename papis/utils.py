@@ -219,25 +219,24 @@ def get_cache_home() -> str:
     return str(path)
 
 
-def get_matching_importer_or_downloader(
-        matching_string: str
-        ) -> List[papis.importer.Importer]:
+def get_matching_importer_or_downloader(matching_string: str
+                                        ) -> List[papis.importer.Importer]:
     importers = []  # type: List[papis.importer.Importer]
     logger = logging.getLogger("utils:matcher")
     _imps = papis.importer.get_importers()
     _downs = papis.downloaders.get_available_downloaders()
     _all_importers = list(_imps) + list(_downs)
     for importer_cls in _all_importers:
-        logger.debug(
-            "trying with importer {c.Back.BLACK}{c.Fore.YELLOW}{name}"
-            "{c.Style.RESET_ALL}".format(c=colorama, name=importer_cls))
+        logger.debug("trying with importer "
+                     "{c.Back.BLACK}{c.Fore.YELLOW}{name}{c.Style.RESET_ALL}"
+                     .format(c=colorama, name=importer_cls))
         importer = importer_cls.match(
             matching_string)  # type: Optional[papis.importer.Importer]
         if importer:
-            logger.info(
-                "{f} {c.Back.BLACK}{c.Fore.GREEN}matches {name}"
-                "{c.Style.RESET_ALL}".format(
-                    f=matching_string, c=colorama, name=importer.name))
+            logger.info("{f} {c.Back.BLACK}{c.Fore.GREEN}matches {name}"
+                        "{c.Style.RESET_ALL}".format(f=matching_string,
+                                                     c=colorama,
+                                                     name=importer.name))
             try:
                 importer.fetch()
             except Exception as e:
@@ -255,8 +254,8 @@ def update_doc_from_data_interactively(
     # do not compare some entries
     docdata.pop('files', None)
     docdata.pop('tags', None)
-    document.update(
-        papis.tui.widgets.diff.diffdict(
-            docdata,
-            data,
-            namea=papis.document.describe(document), nameb=data_name))
+    document.update(papis.tui.widgets.diff.diffdict(
+                        docdata,
+                        data,
+                        namea=papis.document.describe(document),
+                        nameb=data_name))

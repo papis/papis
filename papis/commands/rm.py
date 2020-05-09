@@ -5,7 +5,10 @@ Cli
 .. click:: papis.commands.rm:cli
     :prog: papis rm
 """
-import papis
+import click
+import logging
+import os
+
 import papis.pick
 import papis.tui.utils
 import papis.document
@@ -14,9 +17,6 @@ import papis.strings
 import papis.database
 import papis.git
 import papis.hg
-import click
-import logging
-import os
 
 from typing import Optional
 
@@ -69,6 +69,7 @@ def run(document: papis.document.Document,
 @papis.cli.git_option(help="Remove in git")
 @papis.cli.hg_option(help="Remove in Mercurial")
 @papis.cli.sort_option()
+@papis.cli.doc_folder_option()
 @click.option(
     "--file", "_file",
     help="Remove files from a document instead of the whole folder",
@@ -86,11 +87,15 @@ def cli(query: str,
         _file: bool,
         force: bool,
         _all: bool,
+        doc_folder: str,
         sort_field: Optional[str],
         sort_reverse: bool) -> None:
     """Delete a document or a file"""
 
-    documents = papis.database.get().query(query)
+    if doc_folder:
+        documents = [papis.document.from_folder(doc_folder)]
+    else:
+        documents = papis.database.get().query(query)
 
     if sort_field:
         documents = papis.document.sort(documents, sort_field, sort_reverse)

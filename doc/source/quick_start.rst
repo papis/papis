@@ -3,18 +3,19 @@ Quick start
 ===========
 
 This is a tutorial that should be enough to get you started using papis.  Papis
-tries to be as simple and lightweight as possible, therefore its database
-structure is ridiculously simple.
+tries to be as simple and lightweight as possible, therefore its document model
+should be too as simple as possible.
 
-But before taking a look at its database structure let us see how is the daily
+But before taking a look at its database structure let us show the daily
 usage of papis for a regular user. This tutorial is command-line based, so you
-should be familiar with opening a terminal window on your system.
+should be familiar with opening a terminal window on your system and
+do some general operations with it, like creating folders and files.
 
 Creating a new library
 ----------------------
 
 We will illustrate the process by creating a first library with a couple of
-```pdf``` documents in it. Papis can be highly configured using configuration
+``pdf`` documents in it. Papis can be highly configured using configuration
 files. Many programs use configuration files maybe without you being aware of
 it. Papis' configuration files are stored together inside the folder
 
@@ -49,8 +50,14 @@ we will be adding to the library will be located inside
 care of your ``papers`` library is inside the ``~/Documents/mypapers`` directory,
 self-contained.
 
-If you have not already, add the two lines to the ``~/.config/papis/config`` file and save it, and we will
-proceed to add some documents.
+If you have not already, add the two lines to the ``~/.config/papis/config``
+file and save it, and we will proceed to add some documents.
+Of course, you have to make sure that the folder ``~/Documents/mypapers``
+exists, so go ahead and create it
+
+::
+
+    mkdir -p ~/Documents/mypapers
 
 
 Adding the first document
@@ -121,9 +128,32 @@ what you typed with the paper you are looking for, so that you can get the
 desired paper very easily.
 
 
+.. comment
+  .. raw:: html
+
+    <script type="text/javascript"
+      src="https://asciinema.org/a/hrNaFMh4XwqVpWsGWDi5SASUC.js"
+      id="asciicast-hrNaFMh4XwqVpWsGWDi5SASUC" async>
+    </script>
+
+Of course papis shines really in other areas, for instance imagine
+you are browsing this paper
+`prl paper <https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.124.171801/>`_
+and you want to add it to your library, as of version ``v0.9``
+you can issue one of these commands
+
+::
+
+  papis add https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.124.171801/
+  papis add --from url https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.124.171801/
+  papis add --from doi 10.1103/PhysRevLett.124.171801/
+
+Here you can see it in action using the smart matching first alternative
+
 .. raw:: html
 
-  <script type="text/javascript"
-    src="https://asciinema.org/a/hrNaFMh4XwqVpWsGWDi5SASUC.js"
-    id="asciicast-hrNaFMh4XwqVpWsGWDi5SASUC" async>
-  </script>
+    <script type="text/javascript"
+      src="https://asciinema.org/a/i2kXyZMNaT8n7YRz7DcVIfqm5.js"
+      id="asciicast-i2kXyZMNaT8n7YRz7DcVIfqm5" async>
+    </script>
+

@@ -76,14 +76,20 @@ def run(document: papis.document.Document) -> Optional[str]:
          'doi, url, doc_url ...'
 )
 @papis.cli.all_option()
-def cli(
-        query: str,
+@papis.cli.doc_folder_option()
+def cli(query: str,
         key: str,
         _all: bool,
+        doc_folder: str,
         sort_field: Optional[str],
         sort_reverse: bool) -> None:
     """Open document's url in a browser"""
-    documents = papis.database.get().query(query)
+
+    if doc_folder:
+        documents = [papis.document.from_folder(doc_folder)]
+    else:
+        documents = papis.database.get().query(query)
+
     logger = logging.getLogger('cli:browse')
 
     if len(documents) == 0:

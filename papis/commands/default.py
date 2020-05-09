@@ -204,33 +204,31 @@ def run(
     else:
         colorama.init()
 
-    log_format = (
-        colorama.Fore.YELLOW +
-        '%(levelname)s' +
-        ':' +
-        colorama.Fore.GREEN +
-        '%(name)s' +
-        colorama.Style.RESET_ALL +
-        ':' +
-        '%(message)s'
-    )
+    log_format = (colorama.Fore.YELLOW +
+                  '%(levelname)s' +
+                  ':' +
+                  colorama.Fore.GREEN +
+                  '%(name)s' +
+                  colorama.Style.RESET_ALL +
+                  ':' +
+                  '%(message)s'
+                  )
     if verbose:
         log = "DEBUG"
         log_format = '%(relativeCreated)d-'+log_format
-    logging.basicConfig(
-        level=getattr(logging, log),
-        format=log_format,
-        filename=logfile,
-        filemode='w+' if logfile is not None else 'a')
+    logging.basicConfig(level=getattr(logging, log),
+                        format=log_format,
+                        filename=logfile,
+                        filemode='w+' if logfile is not None else 'a')
     logger = logging.getLogger('default')
-
-    for pair in set_list:
-        logger.debug('Setting "{0}" to "{1}"'.format(*pair))
-        papis.config.set(pair[0], pair[1])
 
     if config:
         papis.config.set_config_file(config)
         papis.config.reset_configuration()
+
+    for pair in set_list:
+        logger.debug('Setting "{0}" to "{1}"'.format(*pair))
+        papis.config.set(pair[0], pair[1])
 
     if pick_lib:
         _picked_libs = papis.pick.pick(papis.api.get_libraries())
@@ -240,18 +238,21 @@ def run(
     papis.config.set_lib_from_name(lib)
     library = papis.config.get_lib()
 
+    if not library.paths:
+        raise Exception("Library '{0}' does not have any existing folders"
+                        " attached to it, please define and create the paths"
+                        .format(lib))
+
     for path in library.paths:
         # Now the library should be set, let us check if there is a
         # local configuration file there, and if there is one, then
         # merge its contents
         local_config_file = os.path.expanduser(
-            os.path.join(
-                path,
-                papis.config.getstring("local-config-file")))
+            os.path.join(path,
+                         papis.config.getstring("local-config-file")))
         papis.config.merge_configuration_from_path(
             local_config_file,
-            papis.config.get_configuration()
-        )
+            papis.config.get_configuration())
 
     if clear_cache:
         papis.database.get().clear()

@@ -69,8 +69,7 @@ def run(document: papis.document.Document,
     "--editor",
     help="Editor to be used",
     default=None)
-def cli(
-        query: str,
+def cli(query: str,
         doc_folder: str,
         git: bool,
         hg: bool,

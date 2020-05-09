@@ -5,7 +5,7 @@ DIST_DIR=dist
 
 
 rm -rf distenv
-virtualenv distenv
+virtualenv -p python3.5 distenv
 source ./distenv/bin/activate
 pip install .
 pip install .[develop]

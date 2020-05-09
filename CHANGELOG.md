@@ -1,18 +1,36 @@
 VERSION v0.10
 =============
 
+- Fix several bugs.
+- Typecheck the whole codebase
+  and drop support for python versions up to 3.4, the latter version included.
 - Add `--sort` and `--reverse` flags to most command line commands, together
   with the `sort-file` configuration option.
+  see [doc](https://papis.readthedocs.io/en/latest/configuration.html#config-settings-sort-field).
+- Add `time-stamps` in order to sort chronologically documents
+  see [doc](https://papis.readthedocs.io/en/latest/configuration.html#config-settings-time-stamp).
+- Add `--doc-folder` to most command line commands for better bash-scripting
+  capabilities.
+- Add `--logfile` flag in order to dump log messages to a file.
 - Move `papis.utils.format_doc` to `papis.document.format_doc`
   in order to minimize circular dependencies.
-- Add `--logfile` flag in order to dump log messages to a file.
+- Add a `--profile` flag to profile the papis run.
+- Define a new API for general pickers. (TBD)
+- Add a citeseerx downloader.
 
+## `papis add`
+- Add an experimental importer selector when smart matching inputs.
+  See [here](https://asciinema.org/a/i2kXyZMNaT8n7YRz7DcVIfqm5).
 
-## Run and `Git` command ##
+## `papis bibtex`
+- Add `papis bibtex browse`.
+
+## `Run` and `Git` command
 - Add `--pick`, `--doc-folder`, `--all` and `--sort`
   flags so that we can choose a document to run the shell or git command
   in that folder or in all folders matching a given query introduced by
   `--pick`.
+
 
 
 VERSION v0.9

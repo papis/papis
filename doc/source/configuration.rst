@@ -3,23 +3,56 @@
 Configuration file
 ==================
 
-Papis uses a configuration file in *INI* format. You can then have
-several libraries which work independently from each other.
+Papis uses a configuration file in
+`*INI* <https://en.wikipedia.org/wiki/INI_file>`_  format.
 
-For example, maybe you want to have one library for papers and the other
-for some miscellaneous documents. An example for that is given below
+The basic configuration unit is a library.
+Imagine you want to have a library called ``papers`` and
+another called ``books``.
+You can have these libraries work independently from each other.
+
+You would declare these libraries telling papis where the folders
+are in your system, like so:
 
 .. code:: ini
 
+    # my library for papers and stuff
     [papers]
     dir = ~/Documents/papers
 
-    [settings]
-    editor = vim
-    default-library = papers
-
+    # my library for books and related documents
     [books]
     dir = ~/Documents/books
+
+One important aspect of the configuration system is that you can
+override settings on a per library basis, this means that
+you can set settings that should have a value for the library ``papers``
+and another value if you're currently using the library ``books``.
+The settings have to be set in the section under the library definition.
+For example, let's suppose you want to open your documents in ``papers``
+using the pdf reader ``okular`` however in ``books`` you want to open
+the documents in ``firefox``, for some reason, the you would write
+
+.. code:: ini
+
+    # my library for papers and stuff
+    [papers]
+    dir = ~/Documents/papers
+    opentool = okular
+
+    # my library for books and related documents
+    [books]
+    dir = ~/Documents/books
+    opentool = firefox
+
+    [settings]
+    opentool = evince
+    default-library = papers
+
+Here we wrote also the special section ``[settings]``, which sets global
+settings that are valid in all libraries. Of course, every setting set
+within ``[settings]`` can be overriden by any library through the mechanism
+previously discussed.
 
 A more complete example of a configuration file is the following
 
@@ -62,8 +95,6 @@ A more complete example of a configuration file is the following
   editmode = vi
   options_list.selected_margin_style = bg:ansigreen fg:ansired
   options_list.unselected_margin_style =
-
-
 
   # Define a lib
   [papers]
@@ -112,7 +143,7 @@ library that you are considering in the papis command.
 For instance let us suppose that you are in some project folder
 ``~/Documents/myproject`` and you have a local config file there
 with a definition of a new library. Then whenever you are
-in the ``~/Documents/myproject`` directory papis will also source the
+in the ``~/Documents/myproject`` directory papis will also read the
 local configuration file found there.
 
 On the other hand, also if you have a configuration file in the library folder
@@ -126,3 +157,9 @@ then every time that you use this library papis will also source this
 configuration file.
 
 .. include:: default-settings.rst
+
+An example of a project using a local configuration file can be seen
+`here <https://github.com/alejandrogallo/datasheets/blob/master/.papis.config/>`_
+, where the repository includes documents for component datasheets
+and everytime ``papis`` is using that library the ``.papis.config``
+file is also read and some settings will be getting overriden.

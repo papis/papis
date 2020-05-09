@@ -84,45 +84,6 @@ or download the
 Go inside of the ``papis`` source folder and you can either use the ``Makefile``
 or install it with ``python3``.
 
-Using the Makefile
-^^^^^^^^^^^^^^^^^^
-
-Now you have to initialize the submodules, just type
-
-::
-
-  make submodules
-
-check the file `config.mk` for more information about the submodule
-initialization.
-
-If you want to install it globally, just hit
-
-::
-
-    sudo make install
-
-If you want to install it locally:
-
-::
-
-    make install-local
-
-If you want to install it locally and have the development version:
-
-::
-
-    make install-dev-local
-
-And to see the available targets hit:
-
-::
-
-    make help
-
-Using python3
-^^^^^^^^^^^^^
-
 The general command that you have to hit is by using the ``setup.py`` script:
 
 .. code:: python
