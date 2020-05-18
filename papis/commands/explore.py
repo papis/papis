@@ -319,6 +319,14 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
     ctx.obj['documents'] += docs
 
 
+@click.command("add")
+@click.pass_context
+def add(ctx: click.Context) -> None:
+    docs = ctx.obj["documents"]
+    for d in docs:
+        papis.commands.add.run([], d)
+
+
 @click.command('cmd')
 @click.pass_context
 @click.help_option('--help', '-h')

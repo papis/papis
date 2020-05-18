@@ -1,3 +1,10 @@
+VERSION v0.11
+=============
+
+## `papis explore`
+- Add `add` command to simply add documents retrieved.
+
+
 VERSION v0.10
 =============
 

@@ -195,6 +195,7 @@ setup(
         ],
         'papis.explorer': [
             "lib=papis.commands.explore:lib",
+            "add=papis.commands.explore:add",
             "citations=papis.commands.explore:citations",
             "cmd=papis.commands.explore:cmd",
             "pick=papis.commands.explore:pick",
