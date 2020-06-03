@@ -155,6 +155,9 @@ setup(
         'papis.picker': [
             'papis=papis.tui.picker:Picker',
         ],
+        'papis.format': [
+            'python=papis.format:Formater'
+        ],
         'papis.command': [
             "add=papis.commands.add:cli",
             "addto=papis.commands.addto:cli",

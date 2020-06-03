@@ -11,6 +11,7 @@ import click
 import papis.importer
 import papis.filetype
 import papis.document
+import papis.format
 
 logger = logging.getLogger("bibtex")  # type: logging.Logger
 
@@ -208,7 +209,7 @@ def to_bibtex(document: papis.document.Document) -> str:
         ref = document["ref"]
     elif papis.config.get('ref-format'):
         try:
-            ref = papis.document.format_doc(
+            ref = papis.format.format(
                 papis.config.getstring("ref-format"),
                 document
             ).replace(" ", "")

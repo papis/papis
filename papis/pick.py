@@ -75,8 +75,8 @@ def pick_doc(
     else:
         header_format = papis.config.getstring("header-format")
     match_format = papis.config.getstring("match-format")
-    header_filter = functools.partial(papis.document.format_doc, header_format)
-    match_filter = functools.partial(papis.document.format_doc, match_format)
+    header_filter = functools.partial(papis.format.format, header_format)
+    match_filter = functools.partial(papis.format.format, match_format)
     return pick(documents,
                 header_filter=header_filter,
                 match_filter=match_filter)

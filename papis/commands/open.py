@@ -83,7 +83,8 @@ import papis.utils
 import papis.config
 import papis.cli
 import papis.database
-from papis.document import from_folder, Document, from_data, format_doc
+from papis.document import from_folder, Document, from_data
+import papis.format
 import papis.strings
 
 
@@ -116,14 +117,14 @@ def run(document: Document, opener: Optional[str] = None,
                     raise Exception("No mark name format")
                 mark_dict = papis.api.pick(
                     marks,
-                    header_filter=lambda x: format_doc(
+                    header_filter=lambda x: papis.format.format(
                         _mark_fmt, x, key=_mark_name),
-                    match_filter=lambda x: format_doc(
+                    match_filter=lambda x: papis.format.format(
                         _mark_fmt, x, key=_mark_name))
                 if mark_dict:
                     if not _mark_opener:
                         raise Exception("mark-opener-format not set")
-                    opener = format_doc(
+                    opener = papis.format.format(
                         _mark_opener, from_data(mark_dict[0]), key=_mark_name)
                     logger.info("Setting opener to '%s'", opener)
                     papis.config.set("opentool", opener)
