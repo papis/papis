@@ -7,31 +7,64 @@ from papis.document import Document
 
 LOGGER = logging.getLogger("format")
 
+
 class Formater:
-  def format(
+    ...
+
+class PythonFormater(Formater):
+    def format(
         self,
         fmt: str, 
         doc: papis.document.Document,
-        key: str = "") -> str:
-    """Construct a string using a pythonic format string and a document.
+        key: str = ""
+            ) -> str:
+        """Construct a string using a pythonic format string and a document.
 
-    :param python_format: Python-like format string.
-        (`see <
-            https://docs.python.org/2/library/string.html#format-string-syntax
-        >`_)
-    :type  fmt: str
-    :param doc: Papis document
-    :type  document: papis.document.Document
-    :returns: Formated string
-    :rtype: str
-    """
-    doc_name = key or papis.config.getstring("format-doc-name")
-    fdoc = Document()
-    fdoc.update(doc)
-    try:
-        return fmt.format(**{doc_name: fdoc})
-    except Exception as exception:
-        return str(exception)
+        :param python_format: Python-like format string.
+            (`see <
+                https://docs.python.org/2/library/string.html#format-string-syntax
+            >`_)
+        :type  fmt: str
+        :param doc: Papis document
+        :type  document: papis.document.Document
+        :returns: Formated string
+        :rtype: str
+        """
+        doc_name = key or papis.config.getstring("format-doc-name")
+        fdoc = Document()
+        fdoc.update(doc)
+        try:
+            return fmt.format(**{doc_name: fdoc})
+        except Exception as exception:
+            return str(exception)
+
+class Jinja2Formater(Formater):
+    def format(
+        self,
+        fmt: str, 
+        doc: papis.document.Document,
+        key: str = ""
+            ) -> str:
+
+        try:
+            import jinja2
+        except ImportError as exception:
+            LOGGER.error("""
+            You're trying to format strings using jinja2
+            Jinja2 is not installed by default, so just install it
+                pip3 install jinja2
+            """)
+            return str(exception)
+
+        doc_name = key or papis.config.getstring("format-doc-name")
+
+        try:
+            return jinja2.Template(fmt).render(**{doc_name: doc})
+        except Exception as exception:
+            return str(exception)
+
+            
+
 
 def _extension_name() -> str:
     return "papis.format"
