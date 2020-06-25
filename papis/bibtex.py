@@ -291,20 +291,23 @@ def unicode_to_latex(text: str) -> str:
 
     # from six import text_type
 
+    # Some characters we choose not to translate to allow for latex
+    # formatting within yaml files.
+    #    u"\u007B": r"\lbrace{}",
+    #    u"\u007D": r"\rbrace{}",
+    #    u"\u005C": r"\textbackslash{}",
+    #    u"\u005F": r"\_",
+    #    u"\u0024": r"\textdollar{}",
+
     unicode_to_latex_table_base = {
         u"\u0023": r"\#",
-        u"\u0024": r"\textdollar{}",
         u"\u0025": r"\%",
         u"\u0026": r"\&",
         u"\u0027": r"'",
         u"\u002A": r"\ast{}",
-        u"\u005C": r"\textbackslash{}",
         u"\u005E": r"\^{}",
-        u"\u005F": r"\_",
         u"\u0060": r"\textasciigrave{}",
-        u"\u007B": r"\lbrace{}",
         u"\u007C": r"\vert{}",
-        u"\u007D": r"\rbrace{}",
         u"\u007E": r"\textasciitilde{}",
         u"\u00A0": r"~",
         u"\u00A1": r"\textexclamdown{}",
