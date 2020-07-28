@@ -32,6 +32,13 @@ or export all of them
   ``info.yaml`` file, the linked documents and a ``bibtex`` file for
   sharing with other people.
 
+.. note::
+
+    Every document exported also comes with the key `_papis_local_folder`
+    associated that points to the full local folder path where the document
+    is stored in the file system. This is done for the convenience of third
+    party apps.
+
 
 Cli
 ^^^
@@ -129,6 +136,11 @@ def cli(query: str,
 
     if sort_field:
         documents = papis.document.sort(documents, sort_field, sort_reverse)
+
+    # Get the local folder of the document so that third-party apps can actually
+    # go to the folder without checking with papis
+    for d in documents:
+        d["_papis_local_folder"] = d.get_main_folder()
 
     ret_string = run(documents, to_format=fmt)
 
