@@ -140,7 +140,7 @@ def match_document(
 
 
 def get_regex_from_search(search: str) -> str:
-    """Creates a default regex from a search string.
+    r"""Creates a default regex from a search string.
 
     :param search: A valid search string
     :type  search: str
@@ -148,9 +148,12 @@ def get_regex_from_search(search: str) -> str:
     :rtype: str
 
     >>> get_regex_from_search(' ein 192     photon')
-    '.*.*ein.*192.*photon'
+    '.*ein.*192.*photon.*'
+
+    >>> get_regex_from_search('{1234}')
+    '.*\\{1234\\}.*'
     """
-    return r".*"+re.sub(r"\s+", ".*", search)
+    return ".*" + ".*".join(map(re.escape, search.split())) + ".*"
 
 
 class Database(papis.database.base.Database):

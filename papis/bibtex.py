@@ -181,6 +181,18 @@ def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
     # Clean entries
     return [bibtexparser_entry_to_papis(entry) for entry in entries]
 
+def ref_cleanup(ref: str) -> str:
+    """
+    Function to cleanup references to be acceptable for latex
+    """
+    import slugify
+    allowed_characters = r'[^a-zA-Z0-9]+'
+    return str(slugify.slugify(
+               ref,
+               lowercase=False,
+               word_boundary=False,
+               separator=".",
+               regex_pattern=allowed_characters))
 
 def to_bibtex(document: papis.document.Document) -> str:
     """Create a bibtex string from document's information
@@ -228,7 +240,7 @@ def to_bibtex(document: papis.document.Document) -> str:
             else:
                 ref = 'noreference'
 
-    ref = re.sub(r'[;,()\/{}\[\]]', '', ref)
+    ref = ref_cleanup(ref)
     logger.debug("Used ref=%s" % ref)
 
     bibtex_string += "@{type}{{{ref},\n".format(type=bibtex_type, ref=ref)

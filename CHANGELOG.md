@@ -4,6 +4,10 @@ VERSION v0.11
 ## `papis explore`
 - Add `add` command to simply add documents retrieved.
 
+## `papis.export`
+- Add the key `_papis_local_folder` so that third-party apps
+  can get the documents' paths without having to go again through papis.
+
 
 VERSION v0.10
 =============
