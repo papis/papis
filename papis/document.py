@@ -410,5 +410,3 @@ def new(folder_path: str, data: Dict[str, Any],
         doc['files'].append(os.path.basename(_file))
     doc.save()
     return doc
-
-

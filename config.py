@@ -43,7 +43,6 @@ general_settings = {
     "dir-umask": 0o755,
     "browser": os.environ.get('BROWSER') or get_default_opener(),
     "picktool": "papis",
-    "formater": "python",
     "mvtool": "mv",
     "editor": os.environ.get('EDITOR')
                         or os.environ.get('VISUAL')
@@ -113,6 +112,8 @@ general_settings = {
     "time-stamp": True,
 
     "document-description-format": '{doc[title]} - {doc[author]}',
+    "formater": "python",
+
 }
 
 

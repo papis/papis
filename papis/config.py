@@ -112,6 +112,7 @@ general_settings = {
     "time-stamp": True,
 
     "document-description-format": '{doc[title]} - {doc[author]}',
+    "formater": "python",
 }
 
 

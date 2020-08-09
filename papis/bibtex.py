@@ -181,6 +181,7 @@ def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
     # Clean entries
     return [bibtexparser_entry_to_papis(entry) for entry in entries]
 
+
 def ref_cleanup(ref: str) -> str:
     """
     Function to cleanup references to be acceptable for latex
@@ -193,6 +194,7 @@ def ref_cleanup(ref: str) -> str:
                word_boundary=False,
                separator=".",
                regex_pattern=allowed_characters))
+
 
 def to_bibtex(document: papis.document.Document) -> str:
     """Create a bibtex string from document's information
