@@ -10,6 +10,11 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 
+def test_ref_cleanup():
+    assert( papis.bibtex.ref_cleanup("Äöasf () : Aλבert Eιنς€in")
+          == "Aoasf.Albert.EinsEURin")
+
+
 def test_bibtex_to_dict():
     bibpath = os.path.join(os.path.dirname(__file__),
                            "resources", "bibtex", "1.bib")

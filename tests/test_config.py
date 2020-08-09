@@ -30,6 +30,7 @@ def test_get_config_home():
 def test_get_config_dirs():
     tmpdir = '/tmp'
     os.environ['XDG_CONFIG_HOME'] = tmpdir
+    del os.environ['XDG_CONFIG_DIRS']
     dirs = get_config_dirs()
     assert os.environ.get('XDG_CONFIG_DIRS') is None
     assert len(dirs) == 2
