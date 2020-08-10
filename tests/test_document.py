@@ -6,6 +6,7 @@ from papis.document import (
     from_data,
     Document,
     sort
+    sort,
 )
 import papis.format
 import tempfile
@@ -13,6 +14,7 @@ import papis.config
 import pickle
 import os
 from tests import create_random_file, setup_test_library
+from tests import create_random_file, setup_test_library, create_real_document
 
 
 def test_new() -> None:

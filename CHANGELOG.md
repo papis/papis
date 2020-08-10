@@ -8,6 +8,23 @@ VERSION v0.11
 - Add the key `_papis_local_folder` so that third-party apps
   can get the documents' paths without having to go again through papis.
 
+## Add Format plugin
+- Sébastien Popoff has added a format plugin architecture, so now `jinja2`
+  is available again as a plugin.
+
+## Bibtex
+- Improve the reference building routine.
+- Change the default `ref-format` to
+  ```
+  "{doc[title]:.15}{doc[author]:.6}{doc[year]}",
+  ```
+- The default ref if no reference could be built will not be
+  using the folder name as before, but using the values in the `info.yaml`
+  limited to 30 characters.
+
+## `papis add`
+- Create a reference at the time of adding if no reference exists.
+
 
 VERSION v0.10
 =============

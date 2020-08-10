@@ -10,11 +10,6 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 
-def test_ref_cleanup():
-    assert( papis.bibtex.ref_cleanup("Äöasf () : Aλבert Eιنς€in")
-          == "Aoasf.Albert.EinsEURin")
-
-
 def test_bibtex_to_dict():
     bibpath = os.path.join(os.path.dirname(__file__),
                            "resources", "bibtex", "1.bib")
@@ -73,3 +68,12 @@ def test_author_list_conversion(bibfile, overwrite=False):
         expected = json.loads(f.read())
 
     assert bib['author_list'] == expected['author_list']
+
+
+def test_clean_ref() -> None:
+    for (r, rc) in [("Einstein über etwas und so 1923",
+                     "EinsteinUberEtwasUndSo1923"),
+                    ("Äöasf () : Aλבert Eιنς€in",
+                     "AoasfAlbertEinseurin")
+                   ]:
+        assert rc == papis.bibtex.ref_cleanup(r)

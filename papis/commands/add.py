@@ -250,8 +250,7 @@ def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
     return result
 
 
-def run(
-        paths: List[str],
+def run(paths: List[str],
         data: Dict[str, Any] = dict(),
         folder_name: Optional[str] = None,
         file_name: Optional[str] = None,
@@ -364,6 +363,12 @@ def run(
             shutil.copy(in_file_path, tmp_end_filepath)
 
     data['files'] = new_file_list
+
+    # reference building
+    if data.get('ref') is None:
+        data['ref'] = papis.bibtex.create_reference(data)
+        logger.info("Created reference [%s]", data['ref'])
+
     tmp_document.update(data)
     tmp_document.save()
 
