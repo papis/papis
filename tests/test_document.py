@@ -5,7 +5,6 @@ from papis.document import (
     from_folder,
     from_data,
     Document,
-    sort
     sort,
 )
 import papis.format
