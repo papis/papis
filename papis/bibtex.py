@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from __future__ import absolute_import, division, print_function
 
+import string
 import logging
 import os
 import re
@@ -11,6 +12,7 @@ import click
 import papis.importer
 import papis.filetype
 import papis.document
+import papis.format
 
 logger = logging.getLogger("bibtex")  # type: logging.Logger
 
@@ -181,6 +183,48 @@ def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
     return [bibtexparser_entry_to_papis(entry) for entry in entries]
 
 
+def ref_cleanup(ref: str) -> str:
+    """
+    Function to cleanup references to be acceptable for latex
+    """
+    import slugify
+    allowed_characters = r'[^a-zA-Z0-9]+'
+    return string.capwords(str(slugify.slugify(
+               ref,
+               lowercase=False,
+               word_boundary=False,
+               separator=" ",
+               regex_pattern=allowed_characters))).replace(" ", "")
+
+
+def create_reference(doc: Dict[str, Any]) -> str:
+    """
+    Try to create a sane reference for the document
+    """
+    ref = ""
+    # Check first if the paper has a reference
+    if doc.get("ref"):
+        return str(doc["ref"])
+    elif papis.config.get('ref-format'):
+        try:
+            ref = papis.format.format(papis.config.getstring("ref-format"),
+                                      doc)
+        except Exception as e:
+            logger.error(e)
+            ref = ""
+
+    logger.debug("generated ref=%s" % ref)
+    if not ref:
+        if doc.get('doi'):
+            ref = doc['doi']
+        else:
+            # Just try to get something out of the data
+            ref = "{:.30}".format(
+                " ".join(string.capwords(str(d)) for d in doc.values()))
+
+    return ref_cleanup(ref)
+
+
 def to_bibtex(document: papis.document.Document) -> str:
     """Create a bibtex string from document's information
 
@@ -203,31 +247,7 @@ def to_bibtex(document: papis.document.Document) -> str:
     if not bibtex_type:
         bibtex_type = "article"
 
-    # REFERENCE BUILDING
-    if document.has("ref"):
-        ref = document["ref"]
-    elif papis.config.get('ref-format'):
-        try:
-            ref = papis.document.format_doc(
-                papis.config.getstring("ref-format"),
-                document
-            ).replace(" ", "")
-        except Exception as e:
-            logger.error(e)
-            ref = None
-
-    logger.debug("generated ref=%s" % ref)
-    if not ref:
-        if document.has('doi'):
-            ref = document['doi']
-        else:
-            folder = document.get_main_folder()
-            if folder:
-                ref = os.path.basename(folder)
-            else:
-                ref = 'noreference'
-
-    ref = re.sub(r'[;,()\/{}\[\]]', '', ref)
+    ref = create_reference(document)
     logger.debug("Used ref=%s" % ref)
 
     bibtex_string += "@{type}{{{ref},\n".format(type=bibtex_type, ref=ref)

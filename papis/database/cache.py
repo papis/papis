@@ -5,6 +5,7 @@ import papis.utils
 import papis.docmatcher
 import papis.document
 import papis.config
+import papis.format
 import papis.database.base
 import re
 import multiprocessing
@@ -133,7 +134,7 @@ def match_document(
     True
     """
     match_format = match_format or str(papis.config.get("match-format"))
-    match_string = papis.document.format_doc(match_format, document)
+    match_string = papis.format.format(match_format, document)
     regex = get_regex_from_search(search)
     return re.match(regex, match_string, re.IGNORECASE)
 

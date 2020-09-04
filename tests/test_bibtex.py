@@ -68,3 +68,12 @@ def test_author_list_conversion(bibfile, overwrite=False):
         expected = json.loads(f.read())
 
     assert bib['author_list'] == expected['author_list']
+
+
+def test_clean_ref() -> None:
+    for (r, rc) in [("Einstein über etwas und so 1923",
+                     "EinsteinUberEtwasUndSo1923"),
+                    ("Äöasf () : Aλבert Eιنς€in",
+                     "AoasfAlbertEinseurin")
+                   ]:
+        assert rc == papis.bibtex.ref_cleanup(r)

@@ -58,6 +58,7 @@ import papis.document
 import papis.downloaders
 import papis.cli
 import papis.pick
+import papis.format
 import click
 
 from typing import List, Optional, Union, Sequence
@@ -117,7 +118,7 @@ def run(
         return [d.get_info_file() for d in documents]
     elif fmt:
         return [
-            papis.document.format_doc(fmt, document)
+            papis.format.format(fmt, document)
             for document in documents
         ]
     elif folders:

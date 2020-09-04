@@ -137,8 +137,8 @@ def cli(query: str,
     if sort_field:
         documents = papis.document.sort(documents, sort_field, sort_reverse)
 
-    # Get the local folder of the document so that third-party apps can actually
-    # go to the folder without checking with papis
+    # Get the local folder of the document so that third-party apps
+    # can actually go to the folder without checking with papis
     for d in documents:
         d["_papis_local_folder"] = d.get_main_folder()
 

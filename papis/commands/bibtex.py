@@ -136,8 +136,8 @@ def _add(ctx: click.Context, query: str, _all: bool) -> None:
     """Add a refrence to the bibtex file"""
     docs = papis.api.get_documents_in_lib(search=query)
     if not _all:
-        _docs = papis.api.pick_doc(docs)
-    ctx.obj['documents'].extend(_docs)
+        docs = list(papis.api.pick_doc(docs))
+    ctx.obj['documents'].extend(docs)
 
 
 @cli.command('update')

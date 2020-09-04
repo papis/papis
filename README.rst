@@ -3,6 +3,7 @@ Papis
 
 |PyPI-Versions| |Build_Status| |build_appveyor| |Coveralls| |RTD| |Pypi|
 |Code_Quality| |zenodo_badge| |PyPI-Downloads| |MYPY-CHECKED|
+|OpenHub|
 
 |Packaging_status|
 
@@ -134,6 +135,9 @@ See the ``AUTHORS`` list for a list of authored commits.
    :target: https://pypi.org/project/papis
 .. |MYPY-CHECKED| image:: http://www.mypy-lang.org/static/mypy_badge.svg
    :target: http://mypy-lang.org/
+.. |OpenHub| image:: https://www.openhub.net/p/papis/widgets/project_thin_badge.gif
+   :target: https://www.openhub.net/p/papis
+
 
 
 Related software

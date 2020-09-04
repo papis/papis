@@ -156,10 +156,10 @@ for your papers, for instance in
 then every time that you use this library papis will also source this
 configuration file.
 
-.. include:: default-settings.rst
-
 An example of a project using a local configuration file can be seen
 `here <https://github.com/alejandrogallo/datasheets/blob/master/.papis.config/>`_
 , where the repository includes documents for component datasheets
 and everytime ``papis`` is using that library the ``.papis.config``
 file is also read and some settings will be getting overriden.
+
+.. include:: default-settings.rst

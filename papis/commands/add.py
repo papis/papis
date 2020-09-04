@@ -112,6 +112,7 @@ import papis.cli
 import papis.strings
 import papis.downloaders
 import papis.git
+import papis.format
 
 logger = logging.getLogger('add')  # type: logging.Logger
 
@@ -188,7 +189,7 @@ def get_file_name(
         file_name_opt = os.path.basename(original_filepath)
 
     # Get a file name from the format `add-file-name`
-    file_name_base = papis.document.format_doc(
+    file_name_base = papis.format.format(
         file_name_opt,
         papis.document.from_data(data)
     )
@@ -249,8 +250,7 @@ def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
     return result
 
 
-def run(
-        paths: List[str],
+def run(paths: List[str],
         data: Dict[str, Any] = dict(),
         folder_name: Optional[str] = None,
         file_name: Optional[str] = None,
@@ -313,7 +313,7 @@ def run(
         logger.info("Got an automatic folder name")
     else:
         temp_doc = papis.document.Document(data=data)
-        out_folder_name = papis.document.format_doc(folder_name, temp_doc)
+        out_folder_name = papis.format.format(folder_name, temp_doc)
         out_folder_name = papis.utils.clean_document_name(out_folder_name)
         del temp_doc
 
@@ -363,6 +363,12 @@ def run(
             shutil.copy(in_file_path, tmp_end_filepath)
 
     data['files'] = new_file_list
+
+    # reference building
+    if data.get('ref') is None:
+        data['ref'] = papis.bibtex.create_reference(data)
+        logger.info("Created reference [%s]", data['ref'])
+
     tmp_document.update(data)
     tmp_document.save()
 

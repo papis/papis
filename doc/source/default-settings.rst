@@ -612,3 +612,10 @@ Other
   papis. If documents have a timestamp, then they will be sortable
   using `--sort time-added` option.
 
+.. papis-config:: formater
+
+    The formating language in python can be configured through plugins.
+
+    .. autoclass:: papis.format.PythonFormater
+
+    .. autoclass:: papis.format.Jinja2Formater

@@ -91,7 +91,7 @@ general_settings = {
     ),
 
     "info-allow-unicode": True,
-    "ref-format": "{doc[title]:.15}{doc[author]:.6}{doc[year]}",
+    "ref-format": "{doc[doi]}",
     "multiple-authors-separator": " and ",
     "multiple-authors-format": "{au[family]}, {au[given]}",
 
@@ -113,6 +113,7 @@ general_settings = {
 
     "document-description-format": '{doc[title]} - {doc[author]}',
     "formater": "python",
+
 }
 
 
