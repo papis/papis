@@ -79,7 +79,7 @@ you can set the year `--set year 2018` or tags for organizing
 
     papis add libc.pdf --set author "Sandra Loosemore" --set title "GNU C reference manual" --set year 2018 --set tags programming --confirm
     # Get paper information automatically via de DOI
-    papis add --from-doi 10.1090/noti963 --set tags programming rnoti-p434.pdf
+    papis add --from doi 10.1090/noti963 --set tags programming rnoti-p434.pdf
 
 Now open one for example, or edit them
 
