@@ -294,7 +294,49 @@ def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
               is_flag=True)
 @click.pass_context
 def _sort(ctx: click.Context, key: Optional[str], reverse: bool) -> None:
-    """Save the documents imported in bibtex format"""
+    """Sort documents"""
     docs = ctx.obj['documents']
     ctx.obj['documents'] = list(
         sorted(docs, key=lambda d: d[key], reverse=reverse))
+
+
+@cli.command('unique')
+@click.help_option('-h', '--help')
+@click.option('-k', '--key',
+              help="Field to test for uniqueness, default is ref",
+              default="ref",
+              type=str)
+@click.option('-o',
+              help="Output the discarded documents to a file",
+              default=None,
+              type=str)
+@click.pass_context
+def _unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
+    """Remove repetitions"""
+    docs = ctx.obj['documents']
+    unique_docs = []
+    duplis_docs = []
+
+    while True:
+        if not len(docs):
+            break
+        doc = docs.pop(0)
+        unique_docs.append(doc)
+        indices = []
+        for i, bottle in enumerate(docs):
+            if doc.get(key) == bottle.get(key):
+                indices.append(i)
+                duplis_docs.append(bottle)
+                logger.info('{}. repeated {} ⇒ {}'
+                            .format(len(duplis_docs), key, doc.get(key)))
+        docs = [d for (i, d) in enumerate(docs) if i not in indices]
+
+    logger.info("Unique   : {}".format(len(unique_docs)))
+    logger.info("Discarded: {}".format(len(duplis_docs)))
+
+    ctx.obj['documents'] = unique_docs
+    if o:
+        with open(o, 'w+') as f:
+            logger.info('Saving {1} documents in {0}..'
+                        .format(o, len(duplis_docs)))
+            f.write(papis.commands.export.run(duplis_docs, to_format='bibtex'))

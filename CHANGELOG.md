@@ -8,6 +8,10 @@ VERSION v0.11
 - Add the key `_papis_local_folder` so that third-party apps
   can get the documents' paths without having to go again through papis.
 
+## `papis bibtex`
+- Add `unique` command to be able to merge different bib files
+  and filter out repetitions.
+
 ## Add Format plugin
 - Sébastien Popoff has added a format plugin architecture, so now `jinja2`
   is available again as a plugin.
