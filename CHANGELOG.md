@@ -29,6 +29,11 @@ VERSION v0.11
 ## `papis add`
 - Create a reference at the time of adding if no reference exists.
 
+## `papis browse`
+- Add more documentation.
+- Add an `ads` handler to jump into the `ads` website of the paper
+  using a doi.
+
 
 VERSION v0.10
 =============
