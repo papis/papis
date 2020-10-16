@@ -300,8 +300,9 @@ def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
 def _sort(ctx: click.Context, key: Optional[str], reverse: bool) -> None:
     """Sort documents"""
     docs = ctx.obj['documents']
-    ctx.obj['documents'] = list(
-        sorted(docs, key=lambda d: d[key], reverse=reverse))
+    ctx.obj['documents'] = list(sorted(docs,
+                                       key=lambda d: str(d[key]),
+                                       reverse=reverse))
 
 
 @cli.command('unique')
