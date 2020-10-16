@@ -1,3 +1,5 @@
+"""Module defining the main document type.
+"""
 import os
 import datetime
 import shutil
@@ -6,6 +8,7 @@ from typing import (
     List, Dict, Any, Optional, Union, NamedTuple, Callable, Tuple)
 from typing_extensions import TypedDict
 
+import papis.yaml
 import papis.config
 import papis
 
@@ -22,10 +25,14 @@ KeyConversionPair = NamedTuple(
 )
 
 
-def keyconversion_to_data(
-        conversion_list: List[KeyConversionPair],
-        data: Dict[str, Any],
-        keep_unknown_keys: bool = False) -> Dict[str, Any]:
+def keyconversion_to_data(conversion_list: List[KeyConversionPair],
+                          data: Dict[str, Any],
+                          keep_unknown_keys: bool = False) -> Dict[str, Any]:
+    """Function to convert general dictionaries into a papis document.
+
+    This can be used for instance when parsing a website and
+    writing a KeyConversionPair to be input to this function.
+    """
 
     new_data = dict()
 
@@ -42,9 +49,9 @@ def keyconversion_to_data(
             try:
                 action = conv_data.get('action') or (lambda x: x)
                 new_data[papis_key] = action(papis_value)
-            except Exception as e:
-                LOGGER.debug(
-                    "Error while trying to parse %s (%s)", papis_key, e)
+            except Exception as ex:
+                LOGGER.debug("Error while trying to parse %s (%s)",
+                             papis_key, ex)
 
     if keep_unknown_keys:
         for key, value in data.items():
@@ -59,6 +66,8 @@ def keyconversion_to_data(
 
 
 def author_list_to_author(data: Dict[str, Any]) -> str:
+    """Convert a list of authors into a single author string.
+    """
     author = ''
     separator = papis.config.get('multiple-authors-separator')
     separator_fmt = papis.config.get('multiple-authors-format')
@@ -105,9 +114,8 @@ class Document(Dict[str, Any]):
     subfolder = ""  # type: str
     _info_file_path = ""  # type: str
 
-    def __init__(
-            self, folder: Optional[str] = None,
-            data: Optional[Dict[str, Any]] = None):
+    def __init__(self, folder: Optional[str] = None,
+                 data: Optional[Dict[str, Any]] = None):
         self._folder = None  # type: Optional[str]
 
         if folder is not None:
@@ -144,12 +152,9 @@ class Document(Dict[str, Any]):
         self._info_file_path = os.path.join(
             folder,
             papis.config.getstring('info-name'))
-        # TODO: check if this makes sense at all
-        self.subfolder = self._folder.replace(
-            os.path.expanduser("~"), ""
-        ).replace(
-            "/", " "
-        )
+        self.subfolder = (self._folder
+                              .replace(os.path.expanduser("~"), "")
+                              .replace("/", " "))
 
     def get_main_folder_name(self) -> Optional[str]:
         """Get main folder name where the document and the information is
@@ -157,10 +162,7 @@ class Document(Dict[str, Any]):
         :returns: Folder name
         """
         folder = self.get_main_folder()
-        if folder:
-            return os.path.basename(folder)
-        else:
-            return None
+        return os.path.basename(folder) if folder else None
 
     def has(self, key: str) -> bool:
         """Check if the information file has some key defined.
@@ -174,10 +176,9 @@ class Document(Dict[str, Any]):
     def save(self) -> None:
         """Saves the current document's information into the info file.
         """
-        import papis.yaml
-        papis.yaml.data_to_yaml(
-            self.get_info_file(),
-            {key: self[key] for key in self.keys() if self[key]})
+        papis.yaml.data_to_yaml(self.get_info_file(),
+                                {key: self[key]
+                                 for key in self.keys() if self[key]})
 
     def get_info_file(self) -> str:
         """Get full path for the info file
@@ -192,31 +193,26 @@ class Document(Dict[str, Any]):
         :returns: List of full file paths
         :rtype:  list
         """
-        result = []  # type: List[str]
         if not self.has('files'):
-            return result
+            return []
         files = (self["files"]
                  if isinstance(self["files"], list)
                  else [self["files"]])
         folder = self.get_main_folder()
-        if folder:
-            for f in files:
-                result.append(os.path.join(folder, f))
-        return result
+        return [os.path.join(folder, fl) for fl in files] if folder else []
 
     def load(self) -> None:
         """Load information from info file
         """
-        import papis.yaml
         if not os.path.exists(self.get_info_file()):
             return
         try:
-            data = papis.yaml.yaml_to_data(
-                self.get_info_file(), raise_exception=True)
-        except Exception as e:
-            LOGGER.error(
-                'Error reading yaml file in {0}'.format(self.get_info_file()) +
-                '\nPlease check it!\n\n{0}'.format(str(e)))
+            data = papis.yaml.yaml_to_data(self.get_info_file(),
+                                           raise_exception=True)
+        except Exception as ex:
+            LOGGER.error('Error reading yaml file in %s'
+                         '\nPlease check it!\n\n%s',
+                         self.get_info_file(), str(ex))
         else:
             for key in data:
                 self[key] = data[key]
@@ -376,10 +372,14 @@ def sort(docs: List[Document], key: str, reverse: bool) -> List[Document]:
 
             if str(doc[key]).isdigit():
                 return (sort_rankings["int"],
-                        zero_date, int(doc[key]), str(doc[key]))
+                        zero_date,
+                        int(doc[key]),
+                        str(doc[key]))
             else:
                 return (sort_rankings["string"],
-                        zero_date, 0, str(doc[key]))
+                        zero_date,
+                        0,
+                        str(doc[key]))
         else:
             # The key does not appear in the document, ensure
             # it comes last.
