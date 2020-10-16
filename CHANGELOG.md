@@ -11,6 +11,7 @@ VERSION v0.11
 ## `papis bibtex`
 - Add `unique` command to be able to merge different bib files
   and filter out repetitions.
+- Add `doctor` to check for fields in a bibfile.
 
 ## Add Format plugin
 - Sébastien Popoff has added a format plugin architecture, so now `jinja2`

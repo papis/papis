@@ -343,3 +343,31 @@ def _unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
             logger.info('Saving {1} documents in {0}..'
                         .format(o, len(duplis_docs)))
             f.write(papis.commands.export.run(duplis_docs, to_format='bibtex'))
+
+
+@cli.command('doctor')
+@click.help_option('-h', '--help')
+@click.option('-k', '--key',
+              help="Field to test for uniqueness, default is ref",
+              multiple=True,
+              default=("doi", "url", "year", "title", "author"),
+              type=str)
+@click.pass_context
+def _doctor(ctx: click.Context, key: str) -> None:
+    """
+    Check bibfile for correctness, missing keys etc.
+        e.g. papis bibtex -k title -k url -k doi
+
+    """
+    logger.info("Checking for existence of %s", ", ".join(key))
+
+    failed = \
+      [ (d, keys) for d, keys in [ (d, [k for k in key if not d.has(k)])
+                                   for d in ctx.obj['documents'] ]
+                  if keys ]
+
+    for j, (doc, keys) in enumerate(failed):
+        logger.info('{} {c.Back.BLACK}{c.Fore.RED}{doc: <80.80}{c.Style.RESET_ALL}'
+                    .format(j, doc=papis.document.describe(doc), c=colorama))
+        for k in keys:
+            logger.info('\tmissing: %s', k)
