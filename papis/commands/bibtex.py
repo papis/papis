@@ -165,7 +165,10 @@ def _update(ctx: click.Context, _all: bool,
         picked_doc = papis.api.pick_doc(docs)
         if picked_doc is None:
             return
+        picked_doc = picked_doc[0]
     for j, doc in enumerate(docs):
+        if picked_doc and doc["ref"] != picked_doc["ref"]:
+            continue
         try:
             libdoc = papis.utils.locate_document_in_lib(doc)
         except IndexError as e:
