@@ -1,4 +1,5 @@
 """This command is to update the information of the documents.
+
 Some examples of the usage are given below
 
 Examples
@@ -115,8 +116,7 @@ def cli(query: str,
         sort_field: Optional[str],
         sort_reverse: bool,
         set_tuples: List[Tuple[str, str]],) -> None:
-    """Update a document from a given library"""
-
+    """Update a document from a given library."""
     logger = logging.getLogger('cli:update')
 
     if doc_folder:
