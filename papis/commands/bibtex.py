@@ -72,6 +72,7 @@ Cli
 
 """
 import os
+import re
 import papis.api
 import papis.cli
 import click
@@ -162,10 +163,10 @@ def _update(ctx: click.Context, _all: bool,
     docs = click.get_current_context().obj['documents']
     picked_doc = None
     if not _all:
-        picked_doc = papis.api.pick_doc(docs)
-        if picked_doc is None:
+        picked_docs = papis.api.pick_doc(docs)
+        if picked_docs is None or picked_docs[0] is None:
             return
-        picked_doc = picked_doc[0]
+        picked_doc = picked_docs[0]
     for j, doc in enumerate(docs):
         if picked_doc and doc["ref"] != picked_doc["ref"]:
             continue
@@ -353,7 +354,7 @@ def _unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
               default=("doi", "url", "year", "title", "author"),
               type=str)
 @click.pass_context
-def _doctor(ctx: click.Context, key: str) -> None:
+def _doctor(ctx: click.Context, key: List[str]) -> None:
     """
     Check bibfile for correctness, missing keys etc.
         e.g. papis bibtex -k title -k url -k doi
@@ -361,13 +362,42 @@ def _doctor(ctx: click.Context, key: str) -> None:
     """
     logger.info("Checking for existence of %s", ", ".join(key))
 
-    failed = \
-      [ (d, keys) for d, keys in [ (d, [k for k in key if not d.has(k)])
-                                   for d in ctx.obj['documents'] ]
-                  if keys ]
+    failed = [(d, keys) for d, keys in [(d, [k for k in key if not d.has(k)])
+                                        for d in ctx.obj['documents']]
+              if keys]
 
     for j, (doc, keys) in enumerate(failed):
-        logger.info('{} {c.Back.BLACK}{c.Fore.RED}{doc: <80.80}{c.Style.RESET_ALL}'
+        logger.info('{} {c.Back.BLACK}{c.Fore.RED}{doc: <80.80}'
+                    '{c.Style.RESET_ALL}'
                     .format(j, doc=papis.document.describe(doc), c=colorama))
         for k in keys:
             logger.info('\tmissing: %s', k)
+
+
+@cli.command('iscited')
+@click.help_option('-h', '--help')
+@click.option('-f', '--file', '_files',
+              help="Text file to check for references",
+              multiple=True, required=True, type=str)
+@papis.cli.all_option()
+@click.pass_context
+def _iscited(ctx: click.Context, _files: List[str], _all: bool) -> None:
+    """
+    Check which documents are not cited
+    e.g. papis bibtex iscited -f main.tex -f chapter-2.tex
+    """
+    unfound = []
+
+    for f in _files:
+        with open(f) as fd:
+            text = fd.read()
+            for doc in ctx.obj['documents']:
+                if not re.search(doc["ref"], text):
+                    unfound.append(doc)
+
+    logger.info('%s documents not cited', len(unfound))
+
+    for j, doc in enumerate(unfound):
+        logger.info('{} {c.Back.BLACK}{c.Fore.RED}{doc: <80.80}'
+                    '{c.Style.RESET_ALL}'
+                    .format(j, doc=papis.document.describe(doc), c=colorama))
