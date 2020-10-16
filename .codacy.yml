@@ -3,3 +3,4 @@ exclude_paths:
 - Dockerfile
 - tools/**
 - **.md
+- scripts/shell_completion/**
