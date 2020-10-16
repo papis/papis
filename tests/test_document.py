@@ -85,22 +85,42 @@ def test_main_features() -> None:
 
 def test_to_bibtex() -> None:
     papis.config.set('bibtex-journal-key', 'journal_abbrev')
-    doc = from_data({'title': 'Hello', 'type': 'book', 'journal': 'jcp'})
+    doc = from_data({'title': 'Hello',
+                     'author': 'Fernandez, Gilgamesh',
+                     'year': "3200BCE",
+                     'type': 'book',
+                     'journal': 'jcp'
+                     })
     doc.set_folder('path/to/superfolder')
-    assert(
-        to_bibtex(doc) ==
-        '@book{superfolder,\n  journal = {jcp},\n  title = {Hello},\n  type = {book},\n}\n'
-    )
+    assert \
+        to_bibtex(doc) == \
+        ("@book{HelloFernan3200bce,\n"
+         "  author = {Fernandez, Gilgamesh},\n"
+         "  journal = {jcp},\n"
+         "  title = {Hello},\n"
+         "  type = {book},\n"
+         "  year = {3200BCE},\n"
+         "}\n")
     doc['journal_abbrev'] = 'j'
-    assert(
-        to_bibtex(doc) ==
-        '@book{superfolder,\n  journal = {j},\n  title = {Hello},\n  type = {book},\n}\n'
-    )
+    assert \
+        to_bibtex(doc) == \
+        ('@book{HelloFernan3200bce,\n'
+         '  author = {Fernandez, Gilgamesh},\n'
+         '  journal = {j},\n'
+         '  title = {Hello},\n'
+         '  type = {book},\n'
+         '  year = {3200BCE},\n'
+         '}\n')
     del doc['title']
     doc['ref'] = 'hello1992'
     assert(
         to_bibtex(doc) ==
-        '@book{hello1992,\n  journal = {j},\n  type = {book},\n}\n'
+        '@book{hello1992,\n'
+        '  journal = {j},\n'
+        '  author = {Fernandez, Gilgamesh},\n',
+        '  type = {book},\n'
+        '  year = {3200BCE},\n'
+        '}\n'
     )
 
 

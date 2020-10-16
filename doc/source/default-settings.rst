@@ -237,7 +237,17 @@ Bibtex options
 
         ref-format = {doc[author_list][0][surname]}{doc[year]}
 
-    The default behavior is to set the doi as the ref.
+    In general however I recomment the default behaviour of just using the
+    ``author`` key of the document, i.e.,
+    ::
+
+        ref-format = {doc[title]:.15} {doc[author]:.6} {doc[year]}
+
+    The spaces in the value of the format will be important in order
+    to capitalize the string, i.e., if you have a title like
+    ``STUDIES ABOUT EARTH AND HIMMEL`` and and an author list like
+    ``mesh-ki-ang-nuna`` then the built reference will be
+    ``StudiesAboutEMeshKi``.
 
 .. papis-config:: add-confirm
 

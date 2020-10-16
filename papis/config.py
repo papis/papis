@@ -91,7 +91,7 @@ general_settings = {
     ),
 
     "info-allow-unicode": True,
-    "ref-format": "{doc[title]:.15}{doc[author]:.6}{doc[year]}",
+    "ref-format": "{doc[title]:.15} {doc[author]:.6} {doc[year]}",
     "multiple-authors-separator": " and ",
     "multiple-authors-format": "{au[family]}, {au[given]}",
 
