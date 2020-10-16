@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 _papis_completion() {
     local IFS=$'
 '

@@ -33,8 +33,7 @@ import papis.strings
 from typing import List, Optional
 
 
-def run(
-        document: papis.document.Document,
+def run(document: papis.document.Document,
         filepaths: List[str],
         git: bool = False) -> None:
     logger = logging.getLogger('addto')
