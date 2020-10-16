@@ -22,7 +22,7 @@ VERSION v0.11
 - Improve the reference building routine.
 - Change the default `ref-format` to
   ```
-  "{doc[title]:.15}{doc[author]:.6}{doc[year]}",
+  "{doc[title]:.15} {doc[author]:.6} {doc[year]}",
   ```
 - The default ref if no reference could be built will not be
   using the folder name as before, but using the values in the `info.yaml`
