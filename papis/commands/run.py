@@ -35,6 +35,15 @@ CLI Examples
         papis run -p einstein \
                 --all -- "find . -name '*.pdf' | xargs readlink -f"
 
+    - Replace some text in all info.yaml files by something.
+      For instance imagine you want to replace all ``note`` field names
+      in the ``info.yaml`` files by ``_note`` so that the ``note`` field
+      does not get exported to bibtex. You can do
+
+      .. code::
+
+          papis run -a -- sed -i "s/^note:/_note:/" info.yaml
+
 
 Cli
 ^^^
@@ -101,8 +110,11 @@ def cli(run_command: List[str],
     if sort_field:
         documents = papis.document.sort(documents, sort_field, sort_reverse)
 
-    if not _all:
+    if not _all and pick:
         documents = [d for d in papis.pick.pick_doc(documents)]
+
+    if _all and not pick:
+        documents = papis.database.get().get_all_documents()
 
     if documents:
         folders = [d for d in [d.get_main_folder() for d in documents] if d]
