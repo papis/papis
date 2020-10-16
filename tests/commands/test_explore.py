@@ -38,7 +38,7 @@ class TestCli(tests.cli.TestCli):
         with open(path) as fd:
             bibtex = fd.read()
         expected_bibtex = (
-            '@article{FreedomFromThjKri2009,',
+            '@article{FreedomFromThJKri2009,',
             '  year = {2009},',
             '  title = {Freedom from the known},',
             '  author = {J. Krishnamurti},',
