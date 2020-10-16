@@ -1,9 +1,11 @@
+"""This module serves as an lightweight interface for git related functions.
+"""
 import subprocess
 import os
 import shlex
 import logging
 
-logger = logging.getLogger("papis.git")
+LOGGER = logging.getLogger("papis.git")
 
 
 def _issue_git_command(path: str, cmd: str) -> None:
@@ -16,13 +18,12 @@ def _issue_git_command(path: str, cmd: str) -> None:
     :returns: None
 
     """
-    global logger
-    assert(type(cmd) == str)
+    assert isinstance(cmd, str)
     path = os.path.expanduser(path)
-    assert(os.path.exists(path))
+    assert os.path.exists(path)
     split_cmd = shlex.split(cmd)
     os.chdir(path)
-    logger.debug(split_cmd)
+    LOGGER.debug(split_cmd)
     subprocess.call(split_cmd)
 
 
@@ -36,8 +37,7 @@ def commit(path: str, message: str) -> None:
     :returns: None
 
     """
-    global logger
-    logger.info('Commiting {path} with message {message}'.format(**locals()))
+    LOGGER.info('Commiting %s with message %s', path, message)
     cmd = 'git commit -m "{0}"'.format(message)
     _issue_git_command(path, cmd)
 
@@ -52,13 +52,12 @@ def add(path: str, resource: str) -> None:
     :returns: None
 
     """
-    global logger
-    logger.info('Adding {path}'.format(**locals()))
+    LOGGER.info('Adding %s', path)
     cmd = 'git add "{0}"'.format(resource)
     _issue_git_command(path, cmd)
 
 
-def rm(path: str, resource: str, recursive: bool = False) -> None:
+def remove(path: str, resource: str, recursive: bool = False) -> None:
     """Adds changes in the path with a message.
 
     :param path: Folder where a git repo exists.
@@ -68,13 +67,14 @@ def rm(path: str, resource: str, recursive: bool = False) -> None:
     :returns: None
 
     """
-    global logger
-    logger.info('Removing {path}'.format(**locals()))
+    LOGGER.info('Removing %s', path)
     # force removal always
     cmd = 'git rm -f {r} "{0}"'.format(resource, r="-r" if recursive else "")
     _issue_git_command(path, cmd)
 
 
 def add_and_commit_resource(path: str, resource: str, message: str) -> None:
+    """Adds and commits a resource.
+    """
     add(path, resource)
     commit(path, message)

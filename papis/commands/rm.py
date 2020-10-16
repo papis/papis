@@ -35,13 +35,13 @@ def run(document: papis.document.Document,
         document.save()
         db.update(document)
         if git:
-            papis.git.rm(_doc_folder, filepath)
+            papis.git.remove(_doc_folder, filepath)
             papis.git.add(_doc_folder, document.get_info_file())
             papis.git.commit(_doc_folder, "Remove file '{0}'".format(filepath))
     else:
         if git:
             _topfolder = os.path.dirname(os.path.abspath(_doc_folder))
-            papis.git.rm(_doc_folder, _doc_folder, recursive=True)
+            papis.git.remove(_doc_folder, _doc_folder, recursive=True)
             papis.git.commit(
                 _topfolder,
                 "Remove document '{0}'".format(
