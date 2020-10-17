@@ -8,7 +8,6 @@ from typing import (
     List, Dict, Any, Optional, Union, NamedTuple, Callable, Tuple)
 from typing_extensions import TypedDict
 
-import papis.yaml
 import papis.config
 import papis
 
@@ -176,6 +175,8 @@ class Document(Dict[str, Any]):
     def save(self) -> None:
         """Saves the current document's information into the info file.
         """
+        # FIXME: fix circular import in papis.yaml
+        import papis.yaml
         papis.yaml.data_to_yaml(self.get_info_file(),
                                 {key: self[key]
                                  for key in self.keys() if self[key]})
