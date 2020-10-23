@@ -1,3 +1,11 @@
+VERSION v0.12
+=============
+
+## `papis bibtex`
+- Add `import` command to import bibtex files as papis documents
+  into the library.
+
+
 VERSION v0.11
 =============
 

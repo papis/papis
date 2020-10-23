@@ -80,10 +80,12 @@ import papis.config as config
 import papis.utils
 import papis.tui.utils
 import papis.commands.explore as explore
+import papis.commands.add
 import papis.commands.open
 import papis.commands.edit
 import papis.commands.browse
 import papis.commands.export
+import papis.bibtex
 import logging
 import colorama
 
@@ -231,7 +233,7 @@ def _browse(ctx: click.Context, key: Optional[str]) -> None:
     """browse a document in the documents list"""
     docs = papis.api.pick_doc(ctx.obj['documents'])
     if key:
-        papis.config.set("browse-key", key)
+        config.set("browse-key", key)
     if not docs:
         return
     for d in docs:
@@ -402,3 +404,58 @@ def _iscited(ctx: click.Context, _files: List[str], _all: bool) -> None:
         logger.info('{} {c.Back.BLACK}{c.Fore.RED}{doc: <80.80}'
                     '{c.Style.RESET_ALL}'
                     .format(j, doc=papis.document.describe(doc), c=colorama))
+
+
+@cli.command('import')
+@click.help_option('-h', '--help')
+@click.option('-o', '--out', help="Out folder to export", default=None)
+@papis.cli.all_option()
+@click.pass_context
+def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
+
+    """
+    Import documents to papis
+        e.g. papis bibtex read mybib.bib import
+    """
+    docs = ctx.obj['documents']
+
+    if not _all:
+        docs = papis.api.pick_doc(docs)
+
+    if out is not None:
+        logging.info("Setting lib name to %s", out)
+        if not os.path.exists(out):
+            os.makedirs(out)
+        config.set_lib_from_name(out)
+
+    for j, doc in enumerate(docs):
+        fileValue = None
+        filepaths = []
+        for k in ["file", "FILE"]:
+            logger.info('{} {c.Back.BLACK}{c.Fore.YELLOW}{doc: <80.80}'
+                        '{c.Style.RESET_ALL}'
+                        .format(j, doc=papis.document.describe(doc),
+                                c=colorama))
+            if doc.has(k):
+                fileValue = doc[k]
+                logger.info("\tkey '%s' exists", k)
+                break
+
+        if not fileValue:
+            logger.info("\t"
+                        "{c.Back.YELLOW}{c.Fore.BLACK}"
+                        "no pdf files will be imported"
+                        "{c.Style.RESET_ALL}".format(c=colorama))
+        else:
+            filepaths = [f for f in fileValue.split(":") if os.path.exists(f)]
+
+        if not filepaths and fileValue is not None:
+            logger.info("\t"
+                        "{c.Back.BLACK}{c.Fore.RED}"
+                        "I could not find a valid file in \n"
+                        "{value}{c.Style.RESET_ALL}"
+                        .format(value=fileValue, c=colorama))
+        else:
+            logger.info("\tfound %s file(s)", len(filepaths))
+
+        papis.commands.add.run(filepaths, data=doc)
