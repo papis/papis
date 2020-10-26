@@ -1,6 +1,6 @@
 import os
 import glob
-from typing import List
+from typing import List, Dict, Any
 
 
 class Library:
@@ -18,6 +18,9 @@ class Library:
     def __str__(self) -> str:
         """Get the name of the library when formatting"""
         return self.name
+
+    def to_dict(self) -> Dict[str, Any]:
+        return dict(name=self.name, paths=self.paths)
 
 
 def from_paths(paths: List[str]) -> Library:
