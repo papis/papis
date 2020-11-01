@@ -10,6 +10,7 @@ You can edit this file as you like.
   , "affjax"
   , "maybe"
   , "psci-support"
+  , "biscotti-cookie"
   , "argonaut"
   ]
 , packages = ./packages.dhall
