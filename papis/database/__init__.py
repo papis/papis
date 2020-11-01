@@ -2,24 +2,24 @@ import logging
 from typing import Optional, Dict  # noqa: ignore
 from .base import Database
 from papis.library import Library
-logger = logging.getLogger('database')
+LOGGER = logging.getLogger('database')
 
-DATABASES = dict()  # type: Dict[Library, Database]
+DATABASES = dict()  # type: Dict[str, Database]
 
 
 def get(library_name: Optional[str] = None) -> Database:
-    global DATABASES
     import papis.config
     if library_name is None:
         library = papis.config.get_lib()
     else:
         library = papis.config.get_lib_from_name(library_name)
     backend = papis.config.get('database-backend') or 'papis'
-    try:
-        database = DATABASES[library]
-    except KeyError:
+    key_name = str(library)
+    if key_name in DATABASES:
+        database = DATABASES[key_name]
+    else:
         database = _instantiate_database(backend, library)
-        DATABASES[library] = database
+        DATABASES[key_name] = database
     return database
 
 
@@ -39,5 +39,4 @@ def get_all_query_string() -> str:
 
 
 def clear_cached() -> None:
-    global DATABASES
     DATABASES = dict()
