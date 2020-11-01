@@ -3,6 +3,7 @@ import re
 import json
 import logging
 import http.server
+import urllib.parse
 from typing import Any
 
 import papis.api
@@ -69,8 +70,9 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self._send_json(docs)
 
     def get_query(self, libname: str, query: str) -> None:
-        logger.info("Querying in lib %s for <%s>", libname, query)
-        docs = papis.api.get_documents_in_lib(libname, query)
+        cleaned_query = urllib.parse.unquote(query)
+        logger.info("Querying in lib %s for <%s>", libname, cleaned_query)
+        docs = papis.api.get_documents_in_lib(libname, cleaned_query)
         logger.info("%s documents retrieved", len(docs))
 
         self._ok()
@@ -92,12 +94,22 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.end_headers()
 
-        self.wfile.write(bytes("<html><p>hello world</p></html>\n", "utf-8"))
+        with open("index.html") as f:
+            self.wfile.write(bytes(f.read(), "utf-8"))
+
+    def get_index_js(self) -> None:
+        self._ok()
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.end_headers()
+
+        with open("index.js") as f:
+            self.wfile.write(bytes(f.read(), "utf-8"))
 
     def do_GET(self) -> None:
         routes = [
-            ("^/$",
-                self.get_index),
+            ("^/$", self.get_index),
+            ("^/index.html$", self.get_index),
+            ("^/index.js$", self.get_index_js),
             ("^/library$",
                 self.get_libraries),
             ("^/library/([^/]+)$",
