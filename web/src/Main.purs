@@ -26,6 +26,7 @@ import Halogen.VDom.Driver (runUI)
 import Query as Q
 import Templates.Bootstrap as BO
 import Utils.Cookies as UC
+import Utils.HTML (cls)
 
 type Input = Unit
 type Output = Unit
@@ -161,10 +162,6 @@ navBar state = HH.nav [nav'] [hamburger, menu, searchBar]
                   ]
 
 
-cls ∷ ∀ r i. String → HH.IProp (class ∷ String | r) i
-cls = HP.class_ <<< H.ClassName
-
-
 renderLibs ∷ ∀ m. State → H.ComponentHTML Action Slots m
 renderLibs state = HH.select [ cls "form-control", event ] libs
   where
@@ -208,7 +205,7 @@ render state = HH.div [] [nav, tabNav, tabContent]
     nav = navBar state
     enumeratedTabs = zip tabRange state.tabs
     tabRange = range 1 (length state.tabs)
-    tabNav = HH.nav_ [tabHeaders]
+    tabNav = HH.nav [cls "sticky-top"] [tabHeaders]
     tabHeaders = HH.div [cls "nav nav-tabs"] (renderTabHeader <$> enumeratedTabs)
     tabContent = HH.div [cls "tab-content"] (renderTab <$> enumeratedTabs)
 
