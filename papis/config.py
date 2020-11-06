@@ -86,7 +86,7 @@ general_settings = {
     "header-format": (
         "<ansired>{doc.html_escape[title]}</ansired>\n"
         " <ansigreen>{doc.html_escape[author]}</ansigreen>\n"
-        "  <blue>({doc.html_escape[year]})</blue> "
+        "  <ansiblue>({doc.html_escape[year]})</ansiblue> "
         "[<ansiyellow>{doc.html_escape[tags]}</ansiyellow>]"
     ),
 
