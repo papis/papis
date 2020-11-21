@@ -1,10 +1,12 @@
 import click
 import re
+import os
 import json
 import logging
 import http.server
 import urllib.parse
-from typing import Any
+from typing import Any, List
+import functools
 
 import papis.api
 import papis.config
@@ -62,18 +64,23 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
     def get_all_documents(self, libname: str) -> None:
         docs = papis.api.get_all_documents_in_lib(libname)
-        logger.info("Getting all documents in %s", libname)
-
-        self._ok()
-        self._header_json()
-        self.end_headers()
-        self._send_json(docs)
+        self.serve_documents(docs)
 
     def get_query(self, libname: str, query: str) -> None:
         cleaned_query = urllib.parse.unquote(query)
         logger.info("Querying in lib %s for <%s>", libname, cleaned_query)
         docs = papis.api.get_documents_in_lib(libname, cleaned_query)
-        logger.info("%s documents retrieved", len(docs))
+        self.serve_documents(docs)
+
+    def serve_documents(self, docs: List[papis.document.Document]) -> None:
+        """Serve a list of documents and set the files attribute to
+        the full paths so that the user can reach them.
+        """
+        logger.info("serving %s documents", len(docs))
+
+        # get absolute paths for files
+        for d in docs:
+            d["files"] = d.get_files()
 
         self._ok()
         self._header_json()
@@ -89,27 +96,34 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self._send_json(fmts)
 
-    def get_index(self) -> None:
+    def get_text_file(self, content_type: str, path: str) -> None:
         self._ok()
-        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Type", content_type)
         self.end_headers()
-
-        with open("index.html") as f:
+        with open(path) as f:
             self.wfile.write(bytes(f.read(), "utf-8"))
 
-    def get_index_js(self) -> None:
-        self._ok()
-        self.send_header("Content-Type", "text/html; charset=utf-8")
-        self.end_headers()
-
-        with open("index.js") as f:
-            self.wfile.write(bytes(f.read(), "utf-8"))
+    def get_local_resources(self, path) -> None:
+        if os.path.exists(path):
+            self._ok()
+            self.send_header("Content-Type", "application/pdf")
+            self.end_headers()
+            with open(path, "rb") as f:
+                self.wfile.write(f.read())
+        else:
+            raise Exception("File {} does not exist".format(path))
 
     def do_GET(self) -> None:
         routes = [
-            ("^/$", self.get_index),
-            ("^/index.html$", self.get_index),
-            ("^/index.js$", self.get_index_js),
+            ("^/$", functools.partial(self.get_text_file,
+                                      "text/html; charset=utf-8",
+                                      "index.html")),
+            ("^/index.html$", functools.partial(self.get_text_file,
+                                      "text/html; charset=utf-8",
+                                      "index.html")),
+            ("^/index.js$", functools.partial(self.get_text_file,
+                                      "text/html; charset=utf-8",
+                                      "index.js")),
             ("^/library$",
                 self.get_libraries),
             ("^/library/([^/]+)$",
@@ -120,6 +134,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.get_query),
             ("^/library/([^/]+)/document/([^/]+)/format/([^/]+)$",
                 self.get_document_format),
+            ("^(.*)$", self.get_local_resources),
         ]
         try:
             for route, method in routes:
@@ -140,11 +155,13 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 @click.option("-p", "--port",
               help="Port to listen to",
               default=8888, type=int)
-@click.option("--address", help="Address to bind", default="localhost")
+@click.option("--address", help="Address to bind", default="")
 def cli(address: str, port: int) -> None:
     """Start a papis server"""
     server_address = (address, port)
-    logger.info("starting server in address https://%s:%s", address, port)
+    logger.info("starting server in address https://%s:%s",
+                address or "localhost",
+                port)
     logger.info("press Ctrl-C to exit")
     httpd = http.server.HTTPServer(server_address, PapisRequestHandler)
     httpd.serve_forever()

@@ -191,7 +191,7 @@ class Document(Dict[str, Any]):
     def get_files(self) -> List[str]:
         """Get the files linked to the document, if any.
 
-        :returns: List of full file paths
+        :returns: List of absolute file paths
         :rtype:  list
         """
         if not self.has('files'):
