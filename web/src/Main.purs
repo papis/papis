@@ -9,6 +9,7 @@ import Components.Tab as CT
 import Data.Array (length, range, zip, (!!))
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..), fromMaybe)
+import Data.String (take)
 import Data.Symbol (SProxy(..))
 import Data.Tuple (Tuple(..))
 import Database as DB
@@ -93,8 +94,7 @@ handleAction GetAvailableLibraries = do
 handleAction GetAndProcessCookies = do
   --cookie ← H.liftEffect getCookies
   --H.modify_ \s → s { query = fromMaybe "" $ Cookie.getValue <$> cookie }
-  state ← H.get
-  handleAction $ SubmitQuery state.query
+  H.get >>= H.put
 handleAction GetAllDocuments = do
   state ← H.get
   docs ← H.liftAff $ DB.getAllDocuments state.library
@@ -124,8 +124,8 @@ getCookies ∷ Effect (Maybe Cookie.Cookie)
 getCookies = do
   cookies ← UC.getCookies
   case Cookie.parse cookies of
-      Right c -> pure <<< Just $ c
-      otherwise -> pure Nothing
+      Right c → pure <<< Just $ c
+      otherwise → pure Nothing
 
 
 
@@ -138,10 +138,10 @@ navBar state = HH.nav [nav'] [hamburger, menu, searchBar]
     input = HH.input [ HP.placeholder "database query"
                      , HP.value state.query
                      , HPA.label "search"
-                     , HE.onValueChange \x -> Just $ SubmitQuery x
+                     , HE.onValueChange \x → Just $ SubmitQuery x
                      , cls "form-control"
                      ]
-    submitButton = HH.button [ HE.onClick \x -> Just GetAllDocuments
+    submitButton = HH.button [ HE.onClick \x → Just GetAllDocuments
                              , cls "btn btn-outline-success form-control"
                              ]
                              [HH.text "All"]
@@ -180,34 +180,45 @@ renderTab (Tuple i (CT.Document d)) = HH.div [id, cls "tab-pane"] [doc]
 renderTab (Tuple i (CT.Documents q docs)) = HH.div [id, cls "tab-pane"] [docList]
   where
     id = HP.id_ $ tabId i
-    docList = HH.slot _documentList i CL.component {documents: docs} openDoc
-    openDoc ∷ CL.Output → Maybe Action
-    openDoc (CL.Clicked doc) = Just $ OpenDocument doc
+    docList = HH.slot _documentList i CL.component {documents: docs} _handleAction
+    _handleAction ∷ CL.Output → Maybe Action
+    _handleAction (CL.Clicked doc) = Just $ OpenDocument doc
+    _handleAction (CL.QueryTag t) = Just <<< SubmitQuery $ "tags:" <> t
 
+style :: forall r i. String -> HH.IProp (style :: String | r) i
+style = HH.prop (HH.PropName "style")
 
 renderTabHeader ∷ ∀ w i. (Tuple Int CT.Tab) → HH.HTML w i
 renderTabHeader (Tuple i (CT.Document d)) = a
   where
-    a = BO.a [cls "nav-link", href, dt] [HH.text $ fromMaybe "lolo" $ DO.title d]
+    a = BO.a [ cls "nav-link"
+             , href
+             , dt
+             ] [icon, HH.text title ]
+    title = " " <> (take 20 <<< fromMaybe "" $ DO.title d)
+    icon = HH.i [cls "fa fa-file"] []
     href = HP.href $ "#" <> tabId i
     dt = BO.dataToggle "pill"
+    --truncate s = substring s
 renderTabHeader (Tuple i (CT.Documents q ds)) = a
   where
-    a = BO.a [cls "nav-link", href, dt] [HH.text $ show q <> num]
+    a = BO.a [cls "nav-link", href, dt] [icon, HH.text $ " " <> show q <> num]
+    icon = HH.i [cls "fa fa-list"] []
     num = " (" <> (show $ length ds) <> ")"
     href = HP.href $ "#" <> tabId i
     dt = BO.dataToggle "tab"
 
 
 render ∷ ∀ m. State → H.ComponentHTML Action Slots m
-render state = HH.div [] [nav, tabNav, tabContent]
+render state = HH.div [] [nav, tabs]
   where
     nav = navBar state
     enumeratedTabs = zip tabRange state.tabs
-    tabRange = range 1 (length state.tabs)
-    tabNav = HH.nav [cls "sticky-top"] [tabHeaders]
-    tabHeaders = HH.div [cls "nav nav-tabs"] (renderTabHeader <$> enumeratedTabs)
-    tabContent = HH.div [cls "tab-content"] (renderTab <$> enumeratedTabs)
+    tabRange = range 0 (length state.tabs)
+    tabNav = HH.nav [] [tabHeaders]
+    tabs = HH.div [cls "row"] [tabHeaders, tabContent]
+    tabHeaders = HH.div [cls "col-sm-2"] [HH.div [cls "nav flex-column nav-pills"] (renderTabHeader <$> enumeratedTabs)]
+    tabContent = HH.div [cls "col-sm-10"] [HH.div [cls "tab-content"] (renderTab <$> enumeratedTabs)]
 
 
 main ∷ Effect Unit
