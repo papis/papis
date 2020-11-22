@@ -9,7 +9,7 @@ import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
 import Prelude (identity, ($), (<<<))
-import Utils.HTML (cls)
+import Utils.HTML (blankTarget, cls)
 import Utils.String (basename)
 
 
@@ -49,7 +49,7 @@ renderField d name = HH.div [cls "input-group"] [label, input]
     value = fromMaybe "" $ DO.getString name d
 
 renderFileUrl :: ∀ w i. String -> HH.HTML w i
-renderFileUrl url = HH.a [HP.href url] [HH.text <<< basename $ url]
+renderFileUrl url = HH.a [HP.href url, blankTarget] [HH.text <<< basename $ url]
 
 render ∷ ∀ m. State → H.ComponentHTML Action Slots m
 render state = HH.div [cls ""] [HH.div [cls "row"] [files, iframe, fields]]

@@ -6,16 +6,17 @@ import Biscotti.Cookie as Cookie
 import Components.Document as CD
 import Components.List as CL
 import Components.Tab as CT
-import Data.Array (length, range, zip, (!!))
+import Data.Array (length, range, replicate, snoc, zip, (!!))
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.String (take)
 import Data.Symbol (SProxy(..))
-import Data.Tuple (Tuple(..))
+import Data.Tuple (Tuple(..), uncurry)
 import Database as DB
 import Document as DO
 import Effect (Effect)
 import Effect.Aff.Class (class MonadAff)
+import Effect.Class (liftEffect)
 import Effect.Console (log)
 import Halogen as H
 import Halogen.Aff as HA
@@ -44,6 +45,7 @@ data Action
   | GetAllDocuments
   | SetLibrary String
   | SubmitQuery String
+  | CloseTabById String
   | OpenDocument DO.Document
 
 
@@ -82,9 +84,8 @@ handleAction
   ⇒ Action
   → H.HalogenM State Action Slots Output m Unit
 handleAction (OpenDocument d) = do
-  H.liftEffect $ log $ "setting document"
-  H.modify_ \s → s { tabs = s.tabs <> [CT.Document d]
-                   }
+  liftEffect $ log "opening document"
+  H.modify_ \s → s { tabs = s.tabs `snoc` CT.Document d }
 handleAction GetAvailableLibraries = do
   libraries ← H.liftAff DB.getLibraries
   H.modify_ \s → s { libraries = fromMaybe [] libraries
@@ -92,25 +93,30 @@ handleAction GetAvailableLibraries = do
                    }
   handleAction GetAndProcessCookies
 handleAction GetAndProcessCookies = do
-  --cookie ← H.liftEffect getCookies
+  --cookie ← liftEffect getCookies
   --H.modify_ \s → s { query = fromMaybe "" $ Cookie.getValue <$> cookie }
   H.get >>= H.put
 handleAction GetAllDocuments = do
   state ← H.get
   docs ← H.liftAff $ DB.getAllDocuments state.library
-  H.modify_ \s → s { tabs = state.tabs <> [CT.Documents (Q.mkQuery "∀")
-                                                        (fromMaybe [] docs)] }
+  H.modify_ \s → s { tabs = state.tabs `snoc` CT.Documents (Q.mkQuery "∀")
+                                                           (fromMaybe [] docs)
+                   }
 handleAction (SetLibrary libname) = H.modify_ \s → s { library = libname }
 handleAction (SubmitQuery query) = do
   state ← H.get
   docs ← H.liftAff $ DB.getDocuments state.library query
   let newState = state { query = ""
-                       , tabs = state.tabs
-                              <> [CT.Documents (Q.mkQuery query)
-                                               (fromMaybe [] docs)]
+                       , tabs = state.tabs `snoc` CT.Documents
+                                                    (Q.mkQuery query)
+                                                    (fromMaybe [] docs)
                        }
-  --H.liftEffect $ setCookies newState
+  --liftEffect $ setCookies newState
   H.modify_ \s → newState
+handleAction (CloseTabById id) = do
+  -- TODO
+  state ← H.get
+  H.modify_ \s → state {tabs = []}
 
 
 setCookies ∷ State → Effect Unit
@@ -126,7 +132,6 @@ getCookies = do
   case Cookie.parse cookies of
       Right c → pure <<< Just $ c
       otherwise → pure Nothing
-
 
 
 navBar ∷ ∀ m. State → H.ComponentHTML Action Slots m
@@ -172,53 +177,62 @@ tabId ∷ Int → String
 tabId i = "main-tab-" <> show i
 
 
-renderTab ∷ ∀ m. (Tuple Int CT.Tab) → H.ComponentHTML Action Slots m
-renderTab (Tuple i (CT.Document d)) = HH.div [id, cls "tab-pane"] [doc]
+renderTab ∷ ∀ m. Boolean → (Tuple Int CT.Tab) → H.ComponentHTML Action Slots m
+renderTab active (Tuple i (CT.Document d)) = HH.div [id, cls pane_class] [doc]
   where
+    pane_class = "tab-pane" <> (if active then " active" else "")
     id = HP.id_ $ tabId i
     doc = HH.slot _documentView i CD.component {document: d} absurd
-renderTab (Tuple i (CT.Documents q docs)) = HH.div [id, cls "tab-pane"] [docList]
+renderTab active (Tuple i (CT.Documents q docs)) = HH.div [id, cls pane_class] [docList]
   where
+    pane_class = "tab-pane" <> (if active then " active" else "")
     id = HP.id_ $ tabId i
     docList = HH.slot _documentList i CL.component {documents: docs} _handleAction
     _handleAction ∷ CL.Output → Maybe Action
     _handleAction (CL.Clicked doc) = Just $ OpenDocument doc
     _handleAction (CL.QueryTag t) = Just <<< SubmitQuery $ "tags:" <> t
 
-style :: forall r i. String -> HH.IProp (style :: String | r) i
-style = HH.prop (HH.PropName "style")
-
-renderTabHeader ∷ ∀ w i. (Tuple Int CT.Tab) → HH.HTML w i
-renderTabHeader (Tuple i (CT.Document d)) = a
+-- | TODO: refactor code
+renderTabHeader ∷ ∀ m. Boolean → (Tuple Int CT.Tab) → H.ComponentHTML Action Slots m
+renderTabHeader active (Tuple i (CT.Document d)) = a
   where
-    a = BO.a [ cls "nav-link"
+    a = BO.a [ cls $ "nav-link" <> if active then " active" else ""
              , href
              , dt
-             ] [icon, HH.text title ]
+             ] [icon, HH.text title, close]
     title = " " <> (take 20 <<< fromMaybe "" $ DO.title d)
     icon = HH.i [cls "fa fa-file"] []
-    href = HP.href $ "#" <> tabId i
+    id = tabId i
+    href = HP.href $ "#" <> id
     dt = BO.dataToggle "pill"
-    --truncate s = substring s
-renderTabHeader (Tuple i (CT.Documents q ds)) = a
+    -- TODO: close the tab
+    close = BO.closeButton $ const Nothing
+renderTabHeader active (Tuple i (CT.Documents q ds)) = a
   where
-    a = BO.a [cls "nav-link", href, dt] [icon, HH.text $ " " <> show q <> num]
+    a = BO.a [ cls $ "nav-link" <> if active then " active" else ""
+             , href
+             , dt
+             ] [icon, HH.text $ " " <> show q <> num, close]
     icon = HH.i [cls "fa fa-list"] []
     num = " (" <> (show $ length ds) <> ")"
-    href = HP.href $ "#" <> tabId i
+    id = tabId i
+    href = HP.href $ "#" <> id
     dt = BO.dataToggle "tab"
+    -- TODO: close the tab
+    close = BO.closeButton $ const Nothing
 
 
 render ∷ ∀ m. State → H.ComponentHTML Action Slots m
 render state = HH.div [] [nav, tabs]
   where
     nav = navBar state
-    enumeratedTabs = zip tabRange state.tabs
+    enumeratedTabs = zip activeTabs $ zip tabRange state.tabs
+    activeTabs = replicate (length state.tabs - 1) false <> [true]
     tabRange = range 0 (length state.tabs)
     tabNav = HH.nav [] [tabHeaders]
     tabs = HH.div [cls "row"] [tabHeaders, tabContent]
-    tabHeaders = HH.div [cls "col-sm-2"] [HH.div [cls "nav flex-column nav-pills"] (renderTabHeader <$> enumeratedTabs)]
-    tabContent = HH.div [cls "col-sm-10"] [HH.div [cls "tab-content"] (renderTab <$> enumeratedTabs)]
+    tabHeaders = HH.div [cls "col-sm-2"] [HH.div [cls "nav flex-column nav-pills"] (uncurry renderTabHeader <$> enumeratedTabs)]
+    tabContent = HH.div [cls "col-sm-10"] [HH.div [cls "tab-content"] (uncurry renderTab <$> enumeratedTabs)]
 
 
 main ∷ Effect Unit

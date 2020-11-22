@@ -1,13 +1,16 @@
 module Templates.Bootstrap where
 
 import DOM.HTML.Indexed (Interactive)
+import Data.Maybe (Maybe)
 import Data.MediaType (MediaType(..))
 import Data.Show (class Show, show)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Elements as HE
+import Halogen.HTML.Events as HEV
 import Halogen.HTML.Properties as HP
-import Prelude ((<>))
+import Prelude (($), (<>))
+import Web.UIEvent.MouseEvent (MouseEvent)
 
 
 data Style
@@ -89,3 +92,11 @@ type HTMLa = Interactive
 
 a :: ∀ w i. HH.Node HTMLa w i
 a = HE.element (HH.ElemName "a")
+
+-- | Usual close button. I had to insert a unicode &times; because
+-- | I did not know how to put it.
+closeButton :: forall a b. (MouseEvent -> Maybe a) -> HH.HTML b a
+closeButton f = HH.button
+              [ HP.class_ $ HH.ClassName "close"
+              , HEV.onClick f
+              ] [HH.text "⨉"]

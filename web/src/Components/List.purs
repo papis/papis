@@ -9,7 +9,7 @@ import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Prelude (Unit, ($), (<$>), (<<<), (<>))
 import Templates.Bootstrap as BO
-import Utils.HTML (cls)
+import Utils.HTML (blankTarget, cls)
 
 type State = { documents ∷ Array DO.Document }
 type Input = { documents ∷ Array DO.Document }
@@ -53,12 +53,18 @@ renderTag t = HH.a [HP.href "#", HE.onClick \x → Just $ ClickTag t] [span]
 renderDocument ∷ ∀ m. DO.Document → H.ComponentHTML Action Slots m
 renderDocument doc = HH.li [lgia, event] $ [title', author', year']
                                          <> (foldr (\ x y → fromFoldable x <> y)  [] [url'])
+                                         <> files
         where
           lgia = BO.listGroupItemAction'
           urlClass = BO.badge' BO.Success
           url = DO.getValidUrl doc
-          url' = (\x → a x $ HH.i [cls "badge badge-success fa fa-link"] [HH.text " "]) <$> url
-          a href el = HH.a [HP.href href, HP.target "_blank"] [el]
+          url' = (\x → a x
+                       $ HH.i [cls "badge badge-success fa fa-link"]
+                              [HH.text " "]) <$> url
+          files = (\x → a x
+                       $ HH.i [cls "badge badge-success fa fa-file"]
+                              [HH.text " "]) <$> DO.files doc
+          a href el = HH.a [HP.href href, blankTarget] [el]
           event = HE.onClick \x → Just $ Click doc
           tags = fromMaybe [] $ DO.tags doc
           year = fromMaybe "" $ DO.year doc
@@ -69,7 +75,11 @@ renderDocument doc = HH.li [lgia, event] $ [title', author', year']
           title = fromMaybe "NO TITLE" $ DO.title doc
           title' = HH.div [cls "justify-content-between"]
                           ([titleHeader] <> tags')
-          titleHeader = HH.h5 [cls "mb-1"] [HH.text title]
+          i n = HH.i [cls $ "fa fa-" <> n] [HH.text " "]
+          titleHeader = HH.h5 [cls "mb-1"] [a "#" $ i "ellipsis-v"
+                                           , HH.text " "
+                                           , HH.text title
+                                           ]
 
 render ∷ ∀ m. State → H.ComponentHTML Action Slots m
 render state = HH.div [lg] docs
