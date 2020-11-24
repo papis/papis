@@ -71,7 +71,7 @@ def pick_doc(
     header_format_path = papis.config.get('header-format-file')
     if header_format_path is not None:
         with open(os.path.expanduser(header_format_path)) as _fd:
-            header_format = _fd.read()
+            header_format = _fd.read().rstrip()
     else:
         header_format = papis.config.getstring("header-format")
     match_format = papis.config.getstring("match-format")
