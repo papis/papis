@@ -249,6 +249,21 @@ Bibtex options
     ``mesh-ki-ang-nuna`` then the built reference will be
     ``StudiesAboutEMeshKi``.
 
+    .. note::
+        Special characters will be replaced when generating the ``ref`` entry
+        (e.g.  ``Ö → O``, ``.`` and other symbols will be striped from the
+        string). 
+
+    If you want to add some punctuation, dots (``.``) and underscores (``_``)
+    can be escaped by a backslash. For example,
+
+    ::
+
+        ref-format = {doc[author_list][0][surname]}\.{doc[year]}
+
+    would result in 'Plews.2019'. To ensure correct capitalization you might
+    consider inserting whitespaces after an escaped character.
+
 .. papis-config:: add-confirm
 
     If set to ``True``, every time you run ``papis add``
