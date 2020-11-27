@@ -188,7 +188,7 @@ def ref_cleanup(ref: str) -> str:
     Function to cleanup references to be acceptable for latex
     """
     import slugify
-    allowed_characters = r'[^a-zA-Z0-9]+'
+    allowed_characters = r'([^a-zA-Z0-9._]+|(?<!\\)[._])'
     return string.capwords(str(slugify.slugify(
                ref,
                lowercase=False,
