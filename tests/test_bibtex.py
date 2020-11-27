@@ -74,6 +74,8 @@ def test_clean_ref() -> None:
     for (r, rc) in [("Einstein über etwas und so 1923",
                      "EinsteinUberEtwasUndSo1923"),
                     ("Äöasf () : Aλבert Eιنς€in",
-                     "AoasfAlbertEinseurin")
+                     "AoasfAlbertEinseurin"),
+                    ("Albert_Ein\_stein\.1923.b",
+                     "AlbertEin_stein.1923B")
                    ]:
         assert rc == papis.bibtex.ref_cleanup(r)
