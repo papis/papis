@@ -43,23 +43,6 @@ to download the paper.
 
 It would be somehow nice to have a logo.
 
-## GUI
-
-(
-There is a running project in
-[here](https://github.com/PatWie/papis-webfrontend)
-so before implementing a GUI yourself you might want to help out there?
-)
-
-It would be nice to have a GTK or QT based GUI, there is a branch with a gtk
-GUI however I'm in principle a little bit afraid of implementing a gui
-and becoming jabref. A GUI for papis should be extremely simple and
-uncluttered.
-
-People should be able to control everything by configurable
-keyboard shortcuts. I do not know however if papis needs a GUI. This is
-therefore a low priority for papis.
-
 ## Linux distros and macOS packages.
 
 It would be nice to implement packages for the common linux distributions

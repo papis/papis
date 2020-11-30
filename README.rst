@@ -151,22 +151,21 @@ Here is a list of similar software:
 - `pubs <https://github.com/pubs/pubs/>`__.
 
 
+Papis projects maintainers
+--------------------------
 
-License
--------
+If you find papis useful and want to maintain one of papis
+plugins, feel free to contact us. Right now some of papis projects
+and maintainers are the following
 
-Papis, a document manager
-Copyright © 2017 Alejandro Gallo
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+========================================================== =========================================================================================
+project                                                    maintainer(s)
+========================================================== =========================================================================================
+`papis <https://github.com/papis/papis-rofi/>`__ (core)    `alejandrogallo <https://alejandrogallo.github.io/>`__ `teto <https://github.com/teto>`__
+`papis-rofi <https://github.com/papis/papis-rofi/>`__      `Etn40ff <https://github.com/Etn40ff>`__
+`papis-dmenu <https://github.com/papis/papis-dmenu>`__     YOU?
+`papis-vim <https://github.com/papis/papis-vim>`__         YOU?
+`papis-zotero <https://github.com/papis/papis-zotero>`__   YOU?
+`papis-libgen <https://github.com/papis/papis-zotero>`__   YOU?
+`papis-firefox <https://github.com/papis/papis-firefox>`__ `wavefrontshaping <https://github.com/wavefrontshaping>`__
+========================================================== =========================================================================================
