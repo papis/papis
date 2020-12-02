@@ -31,6 +31,7 @@ import difflib
 import sys
 import logging
 from typing import Optional, Tuple, List, Callable
+import copy
 
 import papis
 import papis.api
@@ -100,8 +101,9 @@ class MultiCommand(click.core.MultiCommand):
         if script.plugin is not None:
             return script.plugin
         # If it gets here, it means that it is an external script
-        from papis.commands.external import external_cli as cli
+        from papis.commands.external import external_cli
         from papis.commands.external import get_command_help
+        cli = copy.copy(external_cli)
         cli.context_settings['obj'] = script
         if script.path is not None:
             cli.help = get_command_help(script.path)
