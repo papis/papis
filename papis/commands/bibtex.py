@@ -111,7 +111,7 @@ explorer_mgr = explore.get_explorer_mgr()
               help="Do not auto read even if the configuration file says it")
 @click.pass_context
 def cli(ctx: click.Context, no_auto_read: bool) -> None:
-    """A papis script to interact wit bibtex files"""
+    """A papis script to interact with bibtex files"""
     global explorer_mgr
     ctx.obj = {'documents': []}
 
