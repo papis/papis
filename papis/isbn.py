@@ -1,9 +1,10 @@
 import papis.document
+import papis.importer
 import logging
 import isbnlib
 import click
 # See https://github.com/xlcnd/isbnlib for details
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 logger = logging.getLogger('papis:isbnlib')
 
@@ -58,3 +59,25 @@ def explorer(ctx: click.core.Context, query: str, service: str) -> None:
     docs = [papis.document.from_data(data=d) for d in data]
     logger.info('{} documents found'.format(len(docs)))
     ctx.obj['documents'] += docs
+
+
+class Importer(papis.importer.Importer):
+    """Importer for ISBN identifiers through isbnlib."""
+
+    def __init__(self, uri: str) -> None:
+        super().__init__(name='isbn', uri=uri)
+
+    @classmethod
+    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+        if isbnlib.notisbn(uri):
+            return None
+        return Importer(uri=uri)
+
+    def fetch(self) -> None:
+        try:
+            data = get_data(self.uri)
+        except isbnlib.ISBNLibDevException:
+            pass
+        else:
+            if data:
+                self.ctx.data = data_to_papis(data[0])

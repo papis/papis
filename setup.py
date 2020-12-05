@@ -151,6 +151,7 @@ setup(
             'pmid=papis.pubmed:Importer',
             'lib=papis.commands.add:FromLibImporter',
             'folder=papis.commands.add:FromFolderImporter',
+            'isbn=papis.isbn:Importer',
         ],
         'papis.picker': [
             'papis=papis.tui.picker:Picker',
