@@ -26,15 +26,28 @@ def get_data(query: str = "",
 
 
 def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
-    """Convert data from isbnlib into papis formated data
+    """
+    Convert data from isbnlib into papis formated data
 
     :param data: Dictionary with data
     :type  data: dict
-    :returns: Dictionary with papis keynames
-
+    :returns: Dictionary with papis key names
     """
+    _k = papis.document.KeyConversionPair
+    key_conversion = [
+            _k("authors", [{
+                "key": "author_list",
+                "action": papis.document.split_authors_name
+                }]),
+            _k("isbn-13", [
+                {"key": "isbn", "action": None},
+                {"key": "isbn-13", "action": None},
+                ]),
+            ]
+
     data = {k.lower(): data[k] for k in data}
-    return data
+    return papis.document.keyconversion_to_data(
+            key_conversion, data, keep_unknown_keys=True)
 
 
 @click.command('isbn')
@@ -77,7 +90,7 @@ class Importer(papis.importer.Importer):
     def fetch(self) -> None:
         try:
             data = get_data(self.uri)
-        except isbnlib.ISBNLibDevException:
+        except isbnlib.ISBNLibException:
             pass
         else:
             if data:
