@@ -19,7 +19,7 @@ Learn more:
 
 - Take a look at the `documentation <http://papis.readthedocs.io/en/latest/>`__!
 - Blog post about getting paper's references with ``papis explore``
-  `here https://alejandrogallo.github.io/blog/get-paper-references.html`__.
+  `here <https://alejandrogallo.github.io/blog/get-paper-references.html>`__.
 - The folks at `OSTechNix <https://www.ostechnix.com/>`__ have dedicated us a
   review, you may also check it out `here
   <https://www.ostechnix.com/papis-command-line-based-document-bibliography-manager/>`__.
