@@ -205,6 +205,7 @@ class Document(Dict[str, Any]):
     def load(self) -> None:
         """Load information from info file
         """
+        import papis.yaml
         if not os.path.exists(self.get_info_file()):
             return
         try:
