@@ -1,10 +1,13 @@
 Papis
 =====
 
-|PyPI-Versions| |Build_Status| |build_appveyor| |Coveralls| |RTD| |Pypi|
-|Code_Quality| |zenodo_badge| |PyPI-Downloads| |MYPY-CHECKED|
-|OpenHub| |Contributors|
+|Build_Status| |build_appveyor| |ghbadge| |Coveralls| |RTD|
+|Code_Quality|
+|PyPI-Versions| |MYPY-CHECKED| |PyPI-Downloads|
+|Contributors| |zenodo_badge| |OpenHub|
 
+
+|Pypi|
 |Packaging_status|
 
 Description
@@ -41,7 +44,7 @@ Main features
    matter of seconds, also you can check the documentation
    `here <http://papis.readthedocs.io/en/latest/scihub.html>`__.
 -  Import from Zotero and other managers using
-   `papis-zotero <https://github.com/papis/papis-zotero>_`.
+   `papis-zotero <https://github.com/papis/papis-zotero>__`.
 -  Create custom scripts to help you achieve great tasks easily
    (`doc <http://papis.readthedocs.io/en/latest/scripting.html>`__).
 -  Export documents into many formats (bibtex, yaml..)
@@ -140,6 +143,7 @@ See the ``AUTHORS`` list for a list of authored commits.
 .. |OpenHub| image:: https://www.openhub.net/p/papis/widgets/project_thin_badge.gif
    :target: https://www.openhub.net/p/papis
 .. |Contributors| image:: https://img.shields.io/github/contributors/papis/papis
+.. |ghbadge| image:: https://github.com/papis/papis/workflows/CI/badge.svg
 
 
 
