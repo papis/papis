@@ -279,7 +279,8 @@ class Importer(papis.importer.Importer):
 
     def __init__(self, uri: str):
         papis.importer.Importer.__init__(self, name='arxiv', uri=uri)
-        self.downloader = Downloader('https://arxiv.org/abs/{0}'.format(uri))
+        aid = find_arxivid_in_text(uri)
+        self.downloader = Downloader('https://arxiv.org/abs/{0}'.format(aid))
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
