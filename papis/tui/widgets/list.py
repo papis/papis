@@ -1,5 +1,5 @@
+import os
 import re
-import multiprocessing
 import operator
 import functools
 import time
@@ -7,6 +7,13 @@ import logging
 from typing import (
     Optional, Any, List, Generic, Sequence,
     Callable, Tuple, Pattern, TypeVar)
+
+try:
+    import multiprocessing.synchronize  # noqa: F401
+    from multiprocessing import Pool
+    has_multiprocessing = True
+except ImportError:
+    has_multiprocessing = False
 
 from prompt_toolkit.formatted_text.html import HTML
 from prompt_toolkit.formatted_text.base import FormattedText  # noqa: ignore
@@ -46,7 +53,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
             match_filter: Callable[[Option], str] = str,
             custom_filter: Optional[Callable[[str], bool]] = None,
             search_buffer: Buffer = Buffer(multiline=False),
-            cpu_count: int = multiprocessing.cpu_count()):
+            cpu_count: int = os.cpu_count()):
 
         self.search_buffer = search_buffer
         self.last_query_text = ''  # type: str
@@ -223,18 +230,25 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
 
         self.last_query_text = self.query_text
 
-        with multiprocessing.Pool(self.cpu_count) as pool:
+        if has_multiprocessing:
+            with Pool(self.cpu_count) as pool:
+                results = [
+                    pool.apply_async(
+                        match_against_regex,
+                        args=(regex, opt, i,)
+                    )
+                    for i, opt in enumerate(self.options_matchers)
+                    if i in search_indices
+                ]
+        else:
             results = [
-                pool.apply_async(
-                    match_against_regex,
-                    args=(regex, opt, i,)
-                )
+                match_against_regex(regex, opt, i)
                 for i, opt in enumerate(self.options_matchers)
                 if i in search_indices
             ]
 
-            _maybe_indices = [d.get() for d in results]
-            self.indices = [i for i in _maybe_indices if i is not None]
+        _maybe_indices = [d.get() for d in results]
+        self.indices = [i for i in _maybe_indices if i is not None]
 
         if (self.indices
                 and self.current_index is not None
