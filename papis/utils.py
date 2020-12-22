@@ -2,7 +2,6 @@ from itertools import count, product
 from typing import Optional, List, Iterator, Any, Dict, Union
 import copy
 import logging
-import multiprocessing
 import os
 import re
 import shlex
@@ -10,6 +9,13 @@ import subprocess
 import time
 
 import colorama
+
+try:
+    import multiprocessing.synchronize  # noqa: F401
+    from multiprocessing import Pool
+    has_multiprocessing = True
+except ImportError:
+    has_multiprocessing = False
 
 import papis.config
 import papis.exceptions
@@ -175,22 +181,29 @@ def locate_document(
 
 
 def folders_to_documents(folders: List[str]) -> List[papis.document.Document]:
-    """Turn folders into documents, this is done in a multiprocessing way, this
-    step is quite critical for performance.
+    """Turn folders into documents, this step is quite critical for performance
 
     :param folders: List of folder paths.
     :type  folders: list
     :returns: List of document objects.
     :rtype:  list
+
     """
     logger = logging.getLogger("utils:dir2doc")
-    np = multiprocessing.cpu_count()
-    logger.debug("converting folder into documents on {0} cores".format(np))
-    pool = multiprocessing.Pool(np)
-    begin_t = time.time()
-    result = pool.map(papis.document.from_folder, folders)
-    pool.close()
-    pool.join()
+    if has_multiprocessing:
+        np = os.cpu_count()
+        logger.debug(
+            "converting folder into documents on {0} cores".format(np))
+        pool = Pool(np)
+        begin_t = time.time()
+        result = pool.map(papis.document.from_folder, folders)
+        pool.close()
+        pool.join()
+    else:
+        logger.debug("converting folder into documents")
+        begin_t = time.time()
+        result = map(papis.document.from_folder, folders)
+
     logger.debug("done in %.1f ms" % (1000*time.time()-1000*begin_t))
     return result
 
