@@ -243,8 +243,12 @@ def get_matching_importer_or_downloader(matching_string: str
         logger.debug("trying with importer "
                      "{c.Back.BLACK}{c.Fore.YELLOW}{name}{c.Style.RESET_ALL}"
                      .format(c=colorama, name=importer_cls))
-        importer = importer_cls.match(
-            matching_string)  # type: Optional[papis.importer.Importer]
+        try:
+            importer = importer_cls.match(
+                matching_string)  # type: Optional[papis.importer.Importer]
+        except Exception as e:
+            logger.error(e)
+            continue
         if importer:
             logger.info("{f} {c.Back.BLACK}{c.Fore.GREEN}matches {name}"
                         "{c.Style.RESET_ALL}".format(f=matching_string,
