@@ -113,8 +113,8 @@ def filter_documents(
         else:
             logger.debug("Filtering {0} docs (search {1})".format(
                 len(documents), search))
-            result = map(papis.docmatcher.DocMatcher.return_if_match,
-                         documents)
+            result = list(map(papis.docmatcher.DocMatcher.return_if_match,
+                         documents))
 
         filtered_docs = [d for d in result if d is not None]
     _delta = 1000 * time.time() - begin_t

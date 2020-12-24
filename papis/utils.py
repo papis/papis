@@ -202,7 +202,7 @@ def folders_to_documents(folders: List[str]) -> List[papis.document.Document]:
     else:
         logger.debug("converting folder into documents")
         begin_t = time.time()
-        result = map(papis.document.from_folder, folders)
+        result = list(map(papis.document.from_folder, folders))
 
     logger.debug("done in %.1f ms" % (1000*time.time()-1000*begin_t))
     return result
