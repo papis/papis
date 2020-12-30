@@ -194,11 +194,9 @@ def folders_to_documents(folders: List[str]) -> List[papis.document.Document]:
         np = os.cpu_count()
         logger.debug(
             "converting folder into documents on {0} cores".format(np))
-        pool = Pool(np)
         begin_t = time.time()
-        result = pool.map(papis.document.from_folder, folders)
-        pool.close()
-        pool.join()
+        with Pool(np) as pool:
+            result = pool.map(papis.document.from_folder, folders)
     else:
         logger.debug("converting folder into documents")
         begin_t = time.time()

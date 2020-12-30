@@ -102,19 +102,18 @@ def filter_documents(
             # to help much, I don't know if it's because I'm doing something
             # wrong or it is really like this.
             np = os.cpu_count()
-            pool = Pool(np)
             logger.debug(
                 "Filtering {0} docs (search {1}) using {2} cores".format(
                     len(documents), search, np))
-            result = pool.map(papis.docmatcher.DocMatcher.return_if_match,
-                              documents)
-            pool.close()
-            pool.join()
+            with Pool(np) as pool:
+                result = pool.map(
+                        papis.docmatcher.DocMatcher.return_if_match,
+                        documents)
         else:
             logger.debug("Filtering {0} docs (search {1})".format(
                 len(documents), search))
             result = list(map(papis.docmatcher.DocMatcher.return_if_match,
-                         documents))
+                          documents))
 
         filtered_docs = [d for d in result if d is not None]
     _delta = 1000 * time.time() - begin_t
