@@ -344,24 +344,41 @@ class Importer(papis.importer.Importer):
         return None
 
     def fetch(self) -> None:
-        self.logger.info("using doi {0}".format(self.uri))
+        self.logger.info("Using DOI '%s'", self.uri)
         doidata = papis.crossref.get_data(dois=[self.uri])
         if doidata:
             self.ctx.data = doidata[0]
-            _doc_url_keyname = papis.config.getstring('doc-url-key-name')
-            if _doc_url_keyname in self.ctx.data.keys():
-                doc_url = self.ctx.data[_doc_url_keyname]
+            doc_url = self.ctx.data.get(
+                    papis.config.getstring("doc-url-key-name"),
+                    None)
+
+            if doc_url is not None:
                 self.logger.info(
-                    'trying to download document from %s..', doc_url)
+                    "Trying to download document from %s..", doc_url)
                 session = requests.Session()
                 session.headers = requests.structures.CaseInsensitiveDict({
-                    'user-agent': papis.config.getstring('user-agent')})
-                document_data = session.get(doc_url).content
-                with tempfile.NamedTemporaryFile(
-                        mode="wb+", delete=False) as f:
-                    f.write(document_data)
-                    self.logger.debug("Saving in %s", f.name)
-                    self.ctx.files.append(f.name)
+                    "user-agent": papis.config.getstring("user-agent")})
+
+                import filetype
+                response = session.get(doc_url, allow_redirects=True)
+                kind = filetype.guess(response.content)
+
+                if response.status_code != requests.codes.ok:
+                    self.logger.info("Could not download document. "
+                                     "HTTP status: %s (%d)",
+                                     response.reason, response.status_code)
+                elif kind is None:
+                    self.logger.info("Downloaded document does not have a "
+                                     "recognizable (binary) mimetype: '%s'",
+                                     response.headers["Content-Type"])
+                else:
+                    with tempfile.NamedTemporaryFile(
+                            mode="wb+",
+                            suffix=".{}".format(kind.extension),
+                            delete=False) as f:
+                        f.write(response.content)
+                        self.logger.debug("Saving in %s", f.name)
+                        self.ctx.files.append(f.name)
 
 
 class FromCrossrefImporter(papis.importer.Importer):
