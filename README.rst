@@ -10,6 +10,8 @@ Papis
 |Pypi|
 |Packaging_status|
 
+|zulip|
+
 Description
 -----------
 
@@ -144,6 +146,8 @@ See the ``AUTHORS`` list for a list of authored commits.
    :target: https://www.openhub.net/p/papis
 .. |Contributors| image:: https://img.shields.io/github/contributors/papis/papis
 .. |ghbadge| image:: https://github.com/papis/papis/workflows/CI/badge.svg
+.. |zulip| image:: https://img.shields.io/badge/papis-join_chat-brightgreen.svg
+   :target: https://papis.zulipchat.com
 
 
 
