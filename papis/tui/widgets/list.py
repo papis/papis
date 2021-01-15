@@ -240,6 +240,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
                     for i, opt in enumerate(self.options_matchers)
                     if i in search_indices
                 ]
+                results = [d.get() for d in results]
         else:
             results = [
                 match_against_regex(regex, opt, i)
@@ -247,8 +248,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
                 if i in search_indices
             ]
 
-        _maybe_indices = [d.get() for d in results]
-        self.indices = [i for i in _maybe_indices if i is not None]
+        self.indices = [i for i in results if i is not None]
 
         if (self.indices
                 and self.current_index is not None
