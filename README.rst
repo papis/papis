@@ -1,7 +1,7 @@
 Papis
 =====
 
-|Build_Status| |build_appveyor| |ghbadge| |Coveralls| |RTD|
+|Build_Status| |ghbadge| |Coveralls| |RTD|
 |Code_Quality|
 |PyPI-Versions| |MYPY-CHECKED| |PyPI-Downloads|
 |Contributors| |zenodo_badge| |OpenHub|
@@ -130,8 +130,6 @@ See the ``AUTHORS`` list for a list of authored commits.
    :target: https://coveralls.io/github/papis/papis?branch=master
 .. |Build_Status| image:: https://travis-ci.org/papis/papis.svg?branch=master
    :target: https://travis-ci.org/papis/papis
-.. |build_appveyor| image:: https://ci.appveyor.com/api/projects/status/ncklsgj2xep5fqwx/branch/master?svg=true
-   :target: https://ci.appveyor.com/project/alejandrogallo/papis/branch/master
 .. |Packaging_status| image:: https://repology.org/badge/vertical-allrepos/papis.svg
    :target: https://repology.org/metapackage/papis
 .. |Code_Quality| image:: https://img.shields.io/lgtm/grade/python/g/papis/papis.svg?logo=lgtm&logoWidth=18
