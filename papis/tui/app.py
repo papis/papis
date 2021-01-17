@@ -67,6 +67,10 @@ def get_keys_info() -> Dict[str, KeyInfo]:
                 'key': config.getstring('edit_document_key', section='tui'),
                 'help': 'Edit currently selected document',
             },
+            "edit_notes_key": {
+                'key': config.getstring('edit_notes_key', section='tui'),
+                'help': 'Edit notes of currently selected document',
+            },
             "open_document_key": {
                 'key': config.getstring('open_document_key', section='tui'),
                 'help': 'Open currently selected document',
@@ -208,6 +212,15 @@ def get_commands(app: Application) -> Tuple[List[Command], KeyBindings]:
         docs = cmd.app.get_selection()
         for doc in docs:
             run(doc)
+        cmd.app.renderer.clear()
+
+    @kb.add(keys_info["edit_notes_key"]["key"],  # type: ignore
+            filter=has_focus(app.options_list.search_buffer))
+    def edit_notes(cmd: Command) -> None:
+        from papis.commands.edit import edit_notes
+        docs = cmd.app.get_selection()
+        for doc in docs:
+            edit_notes(doc)
         cmd.app.renderer.clear()
 
     @kb.add(keys_info["show_help_key"]["key"],  # type: ignore

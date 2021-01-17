@@ -42,6 +42,31 @@ def run(document: papis.document.Document,
                 papis.document.describe(document)))
 
 
+def edit_notes(document: papis.document.Document,
+               git: bool = False) -> None:
+    logger = logging.getLogger('edit:notes')
+    logger.debug("Editing notes")
+    if not document.has("notes"):
+        document["notes"] = papis.config.getstring("notes-name")
+        document.save()
+    notes_path = os.path.join(
+        str(document.get_main_folder()),
+        document["notes"]
+    )
+
+    if not os.path.exists(notes_path):
+        logger.debug("Creating {0}".format(notes_path))
+        open(notes_path, "w+").close()
+
+    papis.api.edit_file(notes_path)
+    if git:
+        papis.git.add_and_commit_resource(
+            str(document.get_main_folder()),
+            str(document.get_info_file()),
+            "Update notes for '{0}'".format(
+                papis.document.describe(document)))
+
+
 @click.command("edit")
 @click.help_option('-h', '--help')
 @papis.cli.query_option()
@@ -92,30 +117,7 @@ def cli(query: str,
 
     for document in documents:
         if notes:
-            logger.debug("Editing notes")
-            if not document.has("notes"):
-                logger.warning(
-                    "The document selected has no notes attached, \n"
-                    "creating a notes files"
-                )
-                document["notes"] = papis.config.getstring("notes-name")
-                document.save()
-            notes_path = os.path.join(
-                str(document.get_main_folder()),
-                document["notes"]
-            )
-
-            if not os.path.exists(notes_path):
-                logger.info("Creating {0}".format(notes_path))
-                open(notes_path, "w+").close()
-
-            papis.api.edit_file(notes_path)
-            if git:
-                papis.git.add_and_commit_resource(
-                    str(document.get_main_folder()),
-                    str(document.get_info_file()),
-                    "Update notes for '{0}'".format(
-                        papis.document.describe(document)))
+            edit_notes(document, git=git)
 
         else:
             run(document, git=git)
