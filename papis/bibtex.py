@@ -39,7 +39,7 @@ bibtex_keys = [
     "mainsubtitle", "maintitle", "maintitleaddon", "month", "note",
     "number", "organization", "origlanguage", "pages", "pagetotal", "part",
     "publisher", "pubstate", "school", "series", "subtitle", "title",
-    "translator", "type", "titleaddon", "url", "urldate", "venue", "version",
+    "translator", "titleaddon", "url", "urldate", "venue", "version",
     "volume", "volumes", "year",
 ] + papis.config.getlist('extra-bibtex-keys')  # type: List[str]
 
