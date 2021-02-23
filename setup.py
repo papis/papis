@@ -178,6 +178,7 @@ setup(
             "rm=papis.commands.rm:cli",
             "run=papis.commands.run:cli",
             "update=papis.commands.update:cli",
+            "exec=papis.commands.exec:cli",
         ],
         'papis.downloader': [
             "acs=papis.downloaders.acs:Downloader",
