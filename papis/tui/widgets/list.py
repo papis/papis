@@ -8,13 +8,6 @@ from typing import (
     Optional, Any, List, Generic, Sequence,
     Callable, Tuple, Pattern, TypeVar)
 
-try:
-    import multiprocessing.synchronize  # noqa: F401
-    from multiprocessing import Pool
-    has_multiprocessing = True
-except ImportError:
-    has_multiprocessing = False
-
 from prompt_toolkit.formatted_text.html import HTML
 from prompt_toolkit.formatted_text.base import FormattedText  # noqa: ignore
 from prompt_toolkit.layout.screen import Point
@@ -25,6 +18,8 @@ from prompt_toolkit.layout.containers import (
 )
 from prompt_toolkit.filters import has_focus
 
+import papis.utils
+
 
 Option = TypeVar("Option")
 
@@ -33,10 +28,13 @@ LOGGER = logging.getLogger('tui:widget:list')
 
 def match_against_regex(
         regex: Pattern[str],
-        line: str,
-        index: int) -> Optional[int]:
-    """Return index if line matches regex"""
-    return index if regex.match(line) else None
+        pair: (int, str)) -> Optional[int]:
+    """Return index if line matches regex
+
+        pair[0] is the index of the element
+        and pair[1] is the line to be matched
+    """
+    return pair[0] if regex.match(pair[1]) else None
 
 
 class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
@@ -230,23 +228,12 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
 
         self.last_query_text = self.query_text
 
-        if has_multiprocessing:
-            with Pool(self.cpu_count) as pool:
-                results = [
-                    pool.apply_async(
-                        match_against_regex,
-                        args=(regex, opt, i,)
-                    )
-                    for i, opt in enumerate(self.options_matchers)
-                    if i in search_indices
-                ]
-                results = [d.get() for d in results]
-        else:
-            results = [
-                match_against_regex(regex, opt, i)
-                for i, opt in enumerate(self.options_matchers)
-                if i in search_indices
-            ]
+        f = functools.partial(match_against_regex, regex)
+        results = papis.utils.parmap(f,
+                                     [(i, l)
+                                      for i, l in
+                                      enumerate(self.options_matchers)
+                                      if i in search_indices])
 
         self.indices = [i for i in results if i is not None]
 

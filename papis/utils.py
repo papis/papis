@@ -1,5 +1,6 @@
 from itertools import count, product
-from typing import Optional, List, Iterator, Any, Dict, Union
+from typing import (Optional, List, Iterator, Any, Dict,
+                    Union, Callable, TypeVar)
 import copy
 import logging
 import os
@@ -13,9 +14,9 @@ import colorama
 try:
     import multiprocessing.synchronize  # noqa: F401
     from multiprocessing import Pool
-    has_multiprocessing = True
+    HAS_MULTIPROCESSING = True
 except ImportError:
-    has_multiprocessing = False
+    HAS_MULTIPROCESSING = False
 
 import papis.config
 import papis.exceptions
@@ -27,11 +28,30 @@ import papis.database
 LOGGER = logging.getLogger("utils")
 LOGGER.debug("importing")
 
+A = TypeVar("A")
+B = TypeVar("B")
 
-def general_open(
-        file_name: str, key: str,
-        default_opener: Optional[str] = None,
-        wait: bool = True) -> None:
+
+def has_multiprocessing() -> bool:
+    return HAS_MULTIPROCESSING
+
+
+def parmap(f: Callable[[A], B],
+           xs: List[A],
+           np: Optional[int] = None) -> List[B]:
+    if has_multiprocessing():
+        np = np or os.cpu_count()
+        np = int(os.environ.get("PAPIS_NP", str(np)))
+        with Pool(np) as pool:
+            return list(pool.map(f, xs))
+    else:
+        return list(map(f, xs))
+
+
+def general_open(file_name: str,
+                 key: str,
+                 default_opener: Optional[str] = None,
+                 wait: bool = True) -> None:
     """Wraper for openers
     """
     try:
@@ -128,9 +148,9 @@ def clean_document_name(doc_path: str) -> str:
         regex_pattern=regex_pattern))
 
 
-def locate_document_in_lib(
-        document: papis.document.Document,
-        library: Optional[str] = None) -> papis.document.Document:
+def locate_document_in_lib(document: papis.document.Document,
+                           library: Optional[str] = None
+                           ) -> papis.document.Document:
     """Try to figure out if a document is already in a library
 
     :param document: Document to be searched for
@@ -190,18 +210,8 @@ def folders_to_documents(folders: List[str]) -> List[papis.document.Document]:
 
     """
     logger = logging.getLogger("utils:dir2doc")
-    if has_multiprocessing:
-        np = os.cpu_count()
-        logger.debug(
-            "converting folder into documents on {0} cores".format(np))
-        begin_t = time.time()
-        with Pool(np) as pool:
-            result = pool.map(papis.document.from_folder, folders)
-    else:
-        logger.debug("converting folder into documents")
-        begin_t = time.time()
-        result = list(map(papis.document.from_folder, folders))
-
+    begin_t = time.time()
+    result = parmap(papis.document.from_folder, folders)
     logger.debug("done in %.1f ms" % (1000*time.time()-1000*begin_t))
     return result
 

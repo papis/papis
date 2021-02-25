@@ -11,12 +11,6 @@ import re
 import time
 import sys
 
-try:
-    import multiprocessing.synchronize  # noqa: F401
-    from multiprocessing import Pool
-    has_multiprocessing = True
-except ImportError:
-    has_multiprocessing = False
 
 from typing import List, Optional, Match, Dict, Tuple
 
@@ -97,24 +91,11 @@ def filter_documents(
                         for d in documents] if d is not None]
 
     else:
-        if has_multiprocessing:
-            # Doing this multiprocessing in filtering does not seem
-            # to help much, I don't know if it's because I'm doing something
-            # wrong or it is really like this.
-            np = os.cpu_count()
-            logger.debug(
-                "Filtering {0} docs (search {1}) using {2} cores".format(
-                    len(documents), search, np))
-            with Pool(np) as pool:
-                result = pool.map(
-                        papis.docmatcher.DocMatcher.return_if_match,
-                        documents)
-        else:
-            logger.debug("Filtering {0} docs (search {1})".format(
-                len(documents), search))
-            result = list(map(papis.docmatcher.DocMatcher.return_if_match,
-                          documents))
-
+        logger.debug("Filtering {0} docs (search {1})".format(
+                     len(documents), search))
+        result = \
+            papis.utils.parmap(papis.docmatcher.DocMatcher.return_if_match,
+                               documents)
         filtered_docs = [d for d in result if d is not None]
     _delta = 1000 * time.time() - begin_t
     logger.debug("done ({0} ms) ({1} docs)".format(_delta, len(filtered_docs)))
