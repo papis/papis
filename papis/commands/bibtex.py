@@ -377,14 +377,38 @@ def _doctor(ctx: click.Context, key: List[str]) -> None:
             logger.info('\tmissing: %s', k)
 
 
+@cli.command('filter-cited')
+@click.help_option('-h', '--help')
+@click.option('-f', '--file', '_files',
+              help="Text file to check for references",
+              multiple=True, required=True, type=str)
+@click.pass_context
+def _filter_cited(ctx: click.Context, _files: List[str]) -> None:
+    """
+    Filter cited documents from the read bib file
+    e.g.
+        papis bibtex read main.bib filter-cited -f main.tex save cited.bib
+    """
+    found = []
+
+    for f in _files:
+        with open(f) as fd:
+            text = fd.read()
+            for doc in ctx.obj['documents']:
+                if re.search(doc["ref"], text):
+                    found.append(doc)
+
+    logger.info('%s documents cited', len(found))
+    ctx.obj["documents"] = found
+
+
 @cli.command('iscited')
 @click.help_option('-h', '--help')
 @click.option('-f', '--file', '_files',
               help="Text file to check for references",
               multiple=True, required=True, type=str)
-@papis.cli.all_option()
 @click.pass_context
-def _iscited(ctx: click.Context, _files: List[str], _all: bool) -> None:
+def _iscited(ctx: click.Context, _files: List[str]) -> None:
     """
     Check which documents are not cited
     e.g. papis bibtex iscited -f main.tex -f chapter-2.tex

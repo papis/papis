@@ -4,6 +4,7 @@ VERSION v0.12
 ## `papis bibtex`
 - Add `import` command to import bibtex files as papis documents
   into the library.
+- Add `filter-cited`.
 
 ## `papis exec`
 - Add command `exec` to run python scripts in the environment of the
