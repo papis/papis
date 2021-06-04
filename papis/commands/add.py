@@ -98,6 +98,7 @@ import shutil
 
 import click
 import colorama
+import pdf2doi
 
 import time
 import papis.api
@@ -539,6 +540,12 @@ def cli(
                 for imp in matching_importers],
             "Select matching importers (for instance 0, 1, 3-10, a, all...)")
         matching_importers = [matching_importers[i] for i in _range]
+        
+        for f in files:
+            doi = pdf2doi.pdf2doi(f)['identifier']
+            if doi is not None:
+                from_importer.append(('doi', doi))
+                
 
     for importer_tuple in from_importer:
         try:
