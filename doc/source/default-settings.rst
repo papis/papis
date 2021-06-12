@@ -583,7 +583,57 @@ or inside the library sections prepending a ``tui-``,
 .. papis-config:: go_bottom_key
     :section: tui
 
+FZF integration
+---------------
 
+From version `0.12 <https://github.com/papis/papis/issues/334>`_
+papis ships with an *out-of-the-box*
+`fzf <https://github.com/junegunn/fzf>`_ integration for the picker.  A
+minimal terminal user interface is provided and together with options
+for its customization.
+You can set the picktool to ``fzf`` by setting
+
+.. ini::
+
+   picktool = fzf
+
+in the configuration section of your library.
+
+In comparison to the *built-in* papis tui the advantage of the fzf
+picker is that it is much faster, however a disadvantage is that it is
+restricted to one-line entries.
+
+.. papis-config:: fzf-binary
+
+    Path to or name of the fzf binary.
+
+.. papis-config:: fzf-extra-flags
+
+    Extra flags to be passed to fzf everytime it gets called.
+
+.. papis-config:: fzf-extra-bindings
+
+    Extra bindings to fzf as a python list.
+    Refer to the fzf documentation for more details.
+
+.. papis-config:: fzf-header-format
+
+    Format for the entries for fzf.
+    Notice that if you want colors you should have in ``fzf-extra-flags``
+    the ``--ansi`` flag and include the colors in the header-format
+    as ``ansi`` escape sequences.
+
+    Refer to a color table for ansi escape sequences as
+    `here <https://en.wikipedia.org/wiki/ANSI_escape_code#Colors>`_.
+    For instance, if you want the title in red you would put in your
+    ``fzf-header-format``
+
+    .. code:: python
+
+        "\x1b[31m{doc[title]}\x1b[0m"
+
+    where the number ``31`` is the escape code for a red foreground.
+    
 Other
 -----
 
