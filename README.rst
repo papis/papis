@@ -11,7 +11,6 @@ Papis
 |Packaging_status|
 
 |zulip|
-..for libera: libera-vg8HTHf8ki94NEbBeoBYyfyj
 
 Description
 -----------

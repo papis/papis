@@ -156,6 +156,7 @@ setup(
         ],
         'papis.picker': [
             'papis=papis.tui.picker:Picker',
+            'fzf=papis.fzf:Picker',
         ],
         'papis.format': [
             'python=papis.format:PythonFormater',
