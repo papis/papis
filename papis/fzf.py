@@ -1,4 +1,4 @@
-from typing import Callable, Sequence, TypeVar, List, Optional, Generic, Union
+from typing import Callable, Sequence, TypeVar, List, Optional, Generic
 from typing.re import Pattern
 from abc import ABC, abstractmethod
 import subprocess as sp
