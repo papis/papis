@@ -593,7 +593,7 @@ minimal terminal user interface is provided and together with options
 for its customization.
 You can set the picktool to ``fzf`` by setting
 
-.. ini::
+.. code:: ini
 
    picktool = fzf
 
@@ -602,6 +602,12 @@ in the configuration section of your library.
 In comparison to the *built-in* papis tui the advantage of the fzf
 picker is that it is much faster, however a disadvantage is that it is
 restricted to one-line entries.
+Also it is important to notice that ``fzf`` will **only**
+match against what is shown on the terminal screen, as oposed to the papis
+matcher, that can match agains the **whole** title and **whole** author
+text since this is controled by the ``match-format`` setting.
+However, for many uses it might not bother the user to have this limitation
+of fzf.
 
 .. papis-config:: fzf-binary
 
