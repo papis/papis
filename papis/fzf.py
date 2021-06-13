@@ -84,13 +84,13 @@ class Picker(papis.pick.Picker[T]):
                    "--bind", ",".join(bindings)
                    ] + papis.config.getlist("fzf-extra-flags")
 
-        _fmt = papis.config.getstring("fzf-header-format") + "\n"
+        _fmt = papis.config.getstring("fzf-header-format")
 
         def _header_filter(d: T) -> str:
             if isinstance(d, papis.document.Document):
                 return papis.format.format(_fmt, d)
             else:
-                return str(d)
+                return header_filter(d)
 
         headers = [_header_filter(o) for o in options]
         docs = []  # type: Sequence[T]
@@ -99,7 +99,7 @@ class Picker(papis.pick.Picker[T]):
             if p.stdin is not None:
                 with p.stdin as stdin:
                     for h in headers:
-                        stdin.write(h.encode())
+                        stdin.write((h + "\n").encode())
             if p.stdout is not None:
                 for line in p.stdout.readlines():
                     for c in commands:
