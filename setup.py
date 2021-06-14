@@ -135,6 +135,8 @@ setup(
         'console_scripts': [
             'papis=papis.commands.default:run',
         ],
+        "papis.hook.on_edit_done" : [
+        ],
         'papis.exporter': [
             'bibtex=papis.bibtex:exporter',
             'json=papis.json:exporter',

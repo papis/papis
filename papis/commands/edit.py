@@ -9,6 +9,7 @@ Cli
 """
 import papis
 import os
+import papis.hooks
 import papis.api
 import papis.pick
 import papis.document
@@ -31,9 +32,17 @@ def run(document: papis.document.Document,
     info_file_path = document.get_info_file()
     if not info_file_path:
         raise Exception(papis.strings.no_folder_attached_to_document)
+    _old_dict = papis.document.to_dict(document)
     papis.utils.general_open(info_file_path, "editor", wait=wait)
     document.load()
+    _new_dict = papis.document.to_dict(document)
+
+    # If nothing changed there is nothing else to be done
+    if _old_dict != _new_dict:
+        return
+
     database.update(document)
+    papis.hooks.run("on_edit_done")
     if git:
         papis.git.add_and_commit_resource(
             str(document.get_main_folder()),

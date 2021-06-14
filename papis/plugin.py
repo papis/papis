@@ -68,7 +68,7 @@ MANAGERS = dict()  # type: Dict[str, ExtensionManager]
 
 def stevedore_error_handler(manager: ExtensionManager,
                             entrypoint: str, exception: str) -> None:
-    logger.error("Error while loading entrypoint [%s]" % entrypoint)
+    logger.error("Error while loading entrypoint [%s]", entrypoint)
     logger.error(exception)
 
 
