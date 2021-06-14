@@ -162,4 +162,17 @@ An example of a project using a local configuration file can be seen
 and everytime ``papis`` is using that library the ``.papis.config``
 file is also read and some settings will be getting overriden.
 
+Python configuration file
+-------------------------
+
+For some users it would be useful to have a python file that gets
+loaded together with the usual configuration file, this file
+lives in your papis configuration directory with the name ``config.py``,
+for instance for most users it will be in
+
+::
+
+  ~/.config/papis/config.py
+
+
 .. include:: default-settings.rst
