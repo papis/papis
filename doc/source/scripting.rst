@@ -119,3 +119,21 @@ This is an example of using papis with the window manager `i3`.
     bindsym Return mode "default"
     bindsym Escape mode "default"
   }
+
+Useful links
+------------
+
+- `Get paper references with papis <https://alejandrogallo.github.io/blog/get-paper-references.html`_
+  .. code:: sh
+
+        citget() {
+            query=$1
+            shift
+            papis explore               \\
+                citations -s "$query" \\
+                pick                  \\
+                cmd "papis add --from doi {doc[doi]} $@"
+        }
+
+            
+
