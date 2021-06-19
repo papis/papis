@@ -629,16 +629,17 @@ of fzf.
     the ``--ansi`` flag and include the colors in the header-format
     as ``ansi`` escape sequences.
 
-    Refer to a color table for ansi escape sequences as
-    `here <https://en.wikipedia.org/wiki/ANSI_escape_code#Colors>`_.
+    The papis format string is given the additional variable
+    ``c`` which contains the package ``colorama`` in it.
+    Refer to the ``colorama`` documentation to see which colors
+    are available
+    `here <https://github.com/tartley/colorama/blob/master/colorama/ansi.py#L49>`_.
     For instance, if you want the title in red you would put in your
     ``fzf-header-format``
 
     .. code:: python
 
-        "\x1b[31m{doc[title]}\x1b[0m"
-
-    where the number ``31`` is the escape code for a red foreground.
+        "{c.Fore.RED}{doc[title]}{c.Style.RESET_ALL}"
     
 Other
 -----

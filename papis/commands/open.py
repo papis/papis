@@ -118,14 +118,15 @@ def run(document: Document, opener: Optional[str] = None,
                 mark_dict = papis.api.pick(
                     marks,
                     header_filter=lambda x: papis.format.format(
-                        _mark_fmt, x, key=_mark_name),
+                        _mark_fmt, x, doc_key=_mark_name),
                     match_filter=lambda x: papis.format.format(
-                        _mark_fmt, x, key=_mark_name))
+                        _mark_fmt, x, doc_key=_mark_name))
                 if mark_dict:
                     if not _mark_opener:
                         raise Exception("mark-opener-format not set")
-                    opener = papis.format.format(
-                        _mark_opener, from_data(mark_dict[0]), key=_mark_name)
+                    opener = papis.format.format(_mark_opener,
+                                                 from_data(mark_dict[0]),
+                                                 doc_key=_mark_name)
                     logger.info("Setting opener to '%s'", opener)
                     papis.config.set("opentool", opener)
         files = document.get_files()
