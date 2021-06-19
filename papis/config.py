@@ -118,10 +118,16 @@ general_settings = {
     "fzf-binary": "fzf",
     "fzf-extra-flags": ["--ansi", "--multi", "-i"],
     "fzf-extra-bindings": ["ctrl-s:jump"],
-    "fzf-header-format": ("\x1b[35m{doc[title]:<70.70}\x1b[0m"
+    "fzf-header-format": ("{c.Fore.MAGENTA}"
+                          "{doc[title]:<70.70}"
+                          "{c.Style.RESET_ALL}"
                           " :: "
-                          "\x1b[36m{doc[author]:<20.20}\x1b[0m "
-                          "\x1b[33m«{doc[year]:4}»\x1b[0m "
+                          "{c.Fore.CYAN}"
+                          "{doc[author]:<20.20}"
+                          "{c.Style.RESET_ALL}"
+                          "{c.Fore.YELLOW}"
+                          "«{doc[year]:4}»"
+                          "{c.Style.RESET_ALL}"
                           ":{doc[tags]}")
 }
 

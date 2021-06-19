@@ -3,6 +3,7 @@ from typing.re import Pattern
 from abc import ABC, abstractmethod
 import subprocess as sp
 import re
+import colorama
 
 import papis.pick
 import papis.config
@@ -89,6 +90,7 @@ class Picker(papis.pick.Picker[T]):
         def _header_filter(d: T) -> str:
             if isinstance(d, papis.document.Document):
                 return papis.format.format(_fmt, d)
+                return papis.format.format(_fmt, d, additional=dict(c=colorama))
             else:
                 return header_filter(d)
 
