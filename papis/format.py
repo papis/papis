@@ -16,12 +16,16 @@ class Formater:
     def format(self,
                fmt: str,
                doc: FormatDocType,
-               key: str = "") -> str:
+               doc_key: str = "",
+               additional: Dict[str, Any] = {}) -> str:
         """
         :param fmt: Python-like format string.
         :type  fmt: str
         :param doc: Papis document
         :type  doc: FormatDocType
+        :param doc_key: Name of the document in the format string
+        :type  doc: str
+        :param additional: Additional named keys available to the format string
         :returns: Formated string
         :rtype: str
         """
@@ -35,12 +39,13 @@ class PythonFormater(Formater):
     def format(self,
                fmt: str,
                doc: FormatDocType,
-               key: str = "") -> str:
-        doc_name = key or papis.config.getstring("format-doc-name")
+               doc_key: str = "",
+               additional: Dict[str, Any] = {}) -> str:
+        doc_name = doc_key or papis.config.getstring("format-doc-name")
         fdoc = Document()
         fdoc.update(doc)
         try:
-            return fmt.format(**{doc_name: fdoc})
+            return fmt.format(**{doc_name: fdoc}, **additional)
         except Exception as exception:
             return str(exception)
 
@@ -66,10 +71,13 @@ class Jinja2Formater(Formater):
     def format(self,
                fmt: str,
                doc: FormatDocType,
-               key: str = "") -> str:
-        doc_name = key or papis.config.getstring("format-doc-name")
+               doc_key: str = "",
+               additional: Dict[str, Any] = {}) -> str:
+        doc_name = doc_key or papis.config.getstring("format-doc-name")
         try:
-            return str(self.jinja2.Template(fmt).render(**{doc_name: doc}))
+            return str(self.jinja2
+                           .Template(fmt)
+                           .render(**{doc_name: doc}, **additional))
         except Exception as exception:
             return str(exception)
 
@@ -97,6 +105,7 @@ def get_formater() -> Formater:
 
 def format(fmt: str,
            doc: FormatDocType,
-           key: str = "") -> str:
+           doc_key: str = "",
+           additional: Dict[str, Any] = {}) -> str:
     formater = get_formater()
-    return formater.format(fmt, doc, key)
+    return formater.format(fmt, doc, doc_key=doc_key, additional=additional)

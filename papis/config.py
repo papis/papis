@@ -117,7 +117,7 @@ general_settings = {
     # fzf options
     "fzf-binary": "fzf",
     "fzf-extra-flags": ["--ansi", "--multi", "-i"],
-    "fzf-extra-bindings": [],
+    "fzf-extra-bindings": ["ctrl-s:jump"],
     "fzf-header-format": ("\x1b[35m{doc[title]:<70.70}\x1b[0m"
                           " :: "
                           "\x1b[36m{doc[author]:<20.20}\x1b[0m "
