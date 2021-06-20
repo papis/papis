@@ -640,6 +640,32 @@ of fzf.
     .. code:: python
 
         "{c.Fore.RED}{doc[title]}{c.Style.RESET_ALL}"
+
+``fzf`` with a preview window
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``fzf`` has the disadvantage that it does not support
+multiline output and it matches only against what it shows
+on the screen.
+
+You can go around this issue by composing an ``fzf`` customization.
+The following configuration
+
+.. code:: ini
+
+    fzf-extra-flags = ["--ansi", "--multi", "-i",
+                       "--preview", "echo {} | sed -r 's/~~/\\n/g; /^ *$/d' ",
+                       "--preview-window", "bottom:wrap:20%",
+                       "--color", "preview-fg:#F6E6E4,preview-bg:#5B6D5B"]
+
+    fzf-extra-bindings = ["ctrl-s:jump",
+                          "ctrl-t:toggle-preview"]
+
+    fzf-header-format = {c.Fore.MAGENTA}{doc[title]}{c.Style.RESET_ALL}~~ {c.Fore.CYAN}{doc[author]}{c.Style.RESET_ALL}~~ {c.Fore.YELLOW}«{doc[year]}»{c.Style.RESET_ALL}~~ {c.Fore.YELLOW}{doc[journal]}{c.Style.RESET_ALL}~~ :{doc[tags]}
+
+will have unrestricted titles, author, journal etc fields against which the query will match and it will show
+in the ``fzf`` preview window a tidy description of the currently selected field by replacing the token ``~~``
+by a newline. You can try this out and play with ``fzf`` customizations.
     
 Other
 -----
