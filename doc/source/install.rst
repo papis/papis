@@ -38,8 +38,11 @@ You can also **update** papis with ``pip``
 Archlinux
 ---------
 
-The package `papis` is also found in the archlinux repositories
-`here <https://aur.archlinux.org/packages/papis/>`_.
+- The package `papis` is also found in the archlinux repositories
+  `here <https://aur.archlinux.org/packages/papis/>`_.
+- If you want to use the git version of ``papis`` instead
+  refer to `papis-git <https://aur.archlinux.org/packages/papis-git/>`_ package.
+  Thanks `Julian <https://julianhauser.com/>`_!.
 
 NixOS
 -----

@@ -1,9 +1,20 @@
 VERSION v0.12
 =============
 
+## Add hook infrastructure
+A basic hook infrastructure has been added to be able to
+use emacs-like hooks for some commands.
+
+## Add `additional` keyword for the formatter plugin system
+
 ## `papis bibtex`
 - Add `import` command to import bibtex files as papis documents
   into the library.
+- Add `filter-cited`.
+
+## `papis exec`
+- Add command `exec` to run python scripts in the environment of the
+  papis executable.
 
 
 VERSION v0.11

@@ -100,7 +100,7 @@ class Database(papis.database.base.Database):
         writer = self.get_writer()
         self.logger.debug("deleting document..")
         writer.delete_by_term(
-            self.get_id_key(),
+            Database.get_id_key(),
             self.get_id_value(document))
         self.logger.debug("commiting deletion..")
         writer.commit()
@@ -115,17 +115,15 @@ class Database(papis.database.base.Database):
     def query(self, query_string: str) -> List[papis.document.Document]:
         self.logger.debug('Query string %s' % query_string)
         index = self.get_index()
-        qp = whoosh.qparser.MultifieldParser(
-            ['title', 'author', 'tags'],
-            schema=self.get_schema()
-        )
+        qp = whoosh.qparser.MultifieldParser(['title', 'author', 'tags'],
+                                             schema=self.get_schema())
         qp.add_plugin(whoosh.qparser.FuzzyTermPlugin())
         query = qp.parse(query_string)
         with index.searcher() as searcher:
             results = searcher.search(query, limit=None)
             self.logger.debug(results)
             documents = [
-                papis.document.from_folder(r.get(self.get_id_key()))
+                papis.document.from_folder(r.get(Database.get_id_key()))
                 for r in results]
         return documents
 
@@ -135,7 +133,8 @@ class Database(papis.database.base.Database):
     def get_all_documents(self) -> List[papis.document.Document]:
         return self.query(self.get_all_query_string())
 
-    def get_id_key(self) -> str:
+    @staticmethod
+    def get_id_key() -> str:
         """Get the unique key identifier name of the documents in the database
 
         :returns: key identifier
@@ -201,7 +200,7 @@ class Database(papis.database.base.Database):
                 for k in schema_keys
             }
         )
-        doc_d[self.get_id_key()] = self.get_id_value(document)
+        doc_d[Database.get_id_key()] = self.get_id_value(document)
         writer.add_document(**doc_d)
 
     def do_indexing(self) -> None:
@@ -310,7 +309,7 @@ class Database(papis.database.base.Database):
         # This we need for the eval code beneath
         from whoosh.fields import TEXT, ID, KEYWORD, STORED  # noqa: F401
         # This part is non-negotiable
-        fields = {self.get_id_key(): ID(stored=True, unique=True)}
+        fields = {Database.get_id_key(): ID(stored=True, unique=True)}
         # TODO: this is a security risk, find a way to fix it
         user_prototype = eval(
             papis.config.getstring('whoosh-schema-prototype'))  # KeysView[str]

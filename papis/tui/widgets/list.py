@@ -1,5 +1,5 @@
+import os
 import re
-import multiprocessing
 import operator
 import functools
 import time
@@ -18,6 +18,8 @@ from prompt_toolkit.layout.containers import (
 )
 from prompt_toolkit.filters import has_focus
 
+import papis.utils
+
 
 Option = TypeVar("Option")
 
@@ -26,10 +28,13 @@ LOGGER = logging.getLogger('tui:widget:list')
 
 def match_against_regex(
         regex: Pattern[str],
-        line: str,
-        index: int) -> Optional[int]:
-    """Return index if line matches regex"""
-    return index if regex.match(line) else None
+        pair: (int, str)) -> Optional[int]:
+    """Return index if line matches regex
+
+        pair[0] is the index of the element
+        and pair[1] is the line to be matched
+    """
+    return pair[0] if regex.match(pair[1]) else None
 
 
 class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
@@ -46,7 +51,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
             match_filter: Callable[[Option], str] = str,
             custom_filter: Optional[Callable[[str], bool]] = None,
             search_buffer: Buffer = Buffer(multiline=False),
-            cpu_count: int = multiprocessing.cpu_count()):
+            cpu_count: int = os.cpu_count()):
 
         self.search_buffer = search_buffer
         self.last_query_text = ''  # type: str
@@ -223,18 +228,14 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
 
         self.last_query_text = self.query_text
 
-        with multiprocessing.Pool(self.cpu_count) as pool:
-            results = [
-                pool.apply_async(
-                    match_against_regex,
-                    args=(regex, opt, i,)
-                )
-                for i, opt in enumerate(self.options_matchers)
-                if i in search_indices
-            ]
+        f = functools.partial(match_against_regex, regex)
+        results = papis.utils.parmap(f,
+                                     [(i, l)
+                                      for i, l in
+                                      enumerate(self.options_matchers)
+                                      if i in search_indices])
 
-            _maybe_indices = [d.get() for d in results]
-            self.indices = [i for i in _maybe_indices if i is not None]
+        self.indices = [i for i in results if i is not None]
 
         if (self.indices
                 and self.current_index is not None

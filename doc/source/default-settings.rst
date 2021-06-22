@@ -249,6 +249,21 @@ Bibtex options
     ``mesh-ki-ang-nuna`` then the built reference will be
     ``StudiesAboutEMeshKi``.
 
+    .. note::
+        Special characters will be replaced when generating the ``ref`` entry
+        (e.g.  ``Ö → O``, ``.`` and other symbols will be striped from the
+        string). 
+
+    If you want to add some punctuation, dots (``.``) and underscores (``_``)
+    can be escaped by a backslash. For example,
+
+    ::
+
+        ref-format = {doc[author_list][0][surname]}\.{doc[year]}
+
+    would result in 'Plews.2019'. To ensure correct capitalization you might
+    consider inserting whitespaces after an escaped character.
+
 .. papis-config:: add-confirm
 
     If set to ``True``, every time you run ``papis add``
@@ -568,7 +583,90 @@ or inside the library sections prepending a ``tui-``,
 .. papis-config:: go_bottom_key
     :section: tui
 
+FZF integration
+---------------
 
+From version `0.12 <https://github.com/papis/papis/issues/334>`_
+papis ships with an *out-of-the-box*
+`fzf <https://github.com/junegunn/fzf>`_ integration for the picker.  A
+minimal terminal user interface is provided and together with options
+for its customization.
+You can set the picktool to ``fzf`` by setting
+
+.. code:: ini
+
+   picktool = fzf
+
+in the configuration section of your library.
+
+In comparison to the *built-in* papis tui the advantage of the fzf
+picker is that it is much faster, however a disadvantage is that it is
+restricted to one-line entries.
+Also it is important to notice that ``fzf`` will **only**
+match against what is shown on the terminal screen, as oposed to the papis
+matcher, that can match agains the **whole** title and **whole** author
+text since this is controled by the ``match-format`` setting.
+However, for many uses it might not bother the user to have this limitation
+of fzf.
+
+.. papis-config:: fzf-binary
+
+    Path to or name of the fzf binary.
+
+.. papis-config:: fzf-extra-flags
+
+    Extra flags to be passed to fzf everytime it gets called.
+
+.. papis-config:: fzf-extra-bindings
+
+    Extra bindings to fzf as a python list.
+    Refer to the fzf documentation for more details.
+
+.. papis-config:: fzf-header-format
+
+    Format for the entries for fzf.
+    Notice that if you want colors you should have in ``fzf-extra-flags``
+    the ``--ansi`` flag and include the colors in the header-format
+    as ``ansi`` escape sequences.
+
+    The papis format string is given the additional variable
+    ``c`` which contains the package ``colorama`` in it.
+    Refer to the ``colorama`` documentation to see which colors
+    are available
+    `here <https://github.com/tartley/colorama/blob/master/colorama/ansi.py#L49>`_.
+    For instance, if you want the title in red you would put in your
+    ``fzf-header-format``
+
+    .. code:: python
+
+        "{c.Fore.RED}{doc[title]}{c.Style.RESET_ALL}"
+
+``fzf`` with a preview window
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``fzf`` has the disadvantage that it does not support
+multiline output and it matches only against what it shows
+on the screen.
+
+You can go around this issue by composing an ``fzf`` customization.
+The following configuration
+
+.. code:: ini
+
+    fzf-extra-flags = ["--ansi", "--multi", "-i",
+                       "--preview", "echo {} | sed -r 's/~~/\\n/g; /^ *$/d' ",
+                       "--preview-window", "bottom:wrap:20%",
+                       "--color", "preview-fg:#F6E6E4,preview-bg:#5B6D5B"]
+
+    fzf-extra-bindings = ["ctrl-s:jump",
+                          "ctrl-t:toggle-preview"]
+
+    fzf-header-format = {c.Fore.MAGENTA}{doc[title]}{c.Style.RESET_ALL}~~ {c.Fore.CYAN}{doc[author]}{c.Style.RESET_ALL}~~ {c.Fore.YELLOW}«{doc[year]}»{c.Style.RESET_ALL}~~ {c.Fore.YELLOW}{doc[journal]}{c.Style.RESET_ALL}~~ :{doc[tags]}
+
+will have unrestricted titles, author, journal etc fields against which the query will match and it will show
+in the ``fzf`` preview window a tidy description of the currently selected field by replacing the token ``~~``
+by a newline. You can try this out and play with ``fzf`` customizations.
+    
 Other
 -----
 

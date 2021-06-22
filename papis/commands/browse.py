@@ -100,13 +100,11 @@ def run(document: papis.document.Document) -> Optional[str]:
             params = {
                 'q': papis.format.format(
                     papis.config.getstring('browse-query-format'),
-                    document
-                )
+                    document)
             }
             url = (papis.config.getstring('search-engine')
                    + '/?'
-                   + urlencode(params)
-                   )
+                   + urlencode(params))
 
     logger.info("Opening url %s:" % url)
     papis.utils.general_open(url, "browser", wait=False)

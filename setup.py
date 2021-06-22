@@ -65,7 +65,7 @@ setup(
         "bibtexparser>=0.6.2",
         "click>=7.0.0",
         "habanero>=0.6.0",
-        "isbnlib>=3.9.1,<3.10",
+        "isbnlib>=3.9.1",
         "prompt_toolkit>=2.0.5",
         "tqdm>=4.1",
         "pygments>=2.2.0",
@@ -126,6 +126,7 @@ setup(
     ],
     package_data=dict(
         papis=[
+            "py.typed"
         ],
     ),
     data_files=data_files,
@@ -133,6 +134,8 @@ setup(
     entry_points={
         'console_scripts': [
             'papis=papis.commands.default:run',
+        ],
+        "papis.hook.on_edit_done" : [
         ],
         'papis.exporter': [
             'bibtex=papis.bibtex:exporter',
@@ -151,9 +154,11 @@ setup(
             'pmid=papis.pubmed:Importer',
             'lib=papis.commands.add:FromLibImporter',
             'folder=papis.commands.add:FromFolderImporter',
+            'isbn=papis.isbn:Importer',
         ],
         'papis.picker': [
             'papis=papis.tui.picker:Picker',
+            'fzf=papis.fzf:Picker',
         ],
         'papis.format': [
             'python=papis.format:PythonFormater',
@@ -176,6 +181,7 @@ setup(
             "rm=papis.commands.rm:cli",
             "run=papis.commands.run:cli",
             "update=papis.commands.update:cli",
+            "exec=papis.commands.exec:cli",
             "serve=papis.commands.serve:cli",
         ],
         'papis.downloader': [

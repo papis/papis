@@ -31,6 +31,7 @@ import difflib
 import sys
 import logging
 from typing import Optional, Tuple, List, Callable
+import copy
 
 import papis
 import papis.api
@@ -100,8 +101,9 @@ class MultiCommand(click.core.MultiCommand):
         if script.plugin is not None:
             return script.plugin
         # If it gets here, it means that it is an external script
-        from papis.commands.external import external_cli as cli
+        from papis.commands.external import external_cli
         from papis.commands.external import get_command_help
+        cli = copy.copy(external_cli)
         cli.context_settings['obj'] = script
         if script.path is not None:
             cli.help = get_command_help(script.path)
@@ -181,8 +183,12 @@ def generate_profile_writing_function(profiler: cProfile.Profile,
     help="File to dump the log",
     type=str,
     default=None)
-def run(
-        verbose: bool,
+@click.option(
+    "--np",
+    help="Use number of processors for multicore functionalities in papis",
+    type=str,
+    default=None)
+def run(verbose: bool,
         profile: str,
         config: str,
         lib: str,
@@ -191,7 +197,11 @@ def run(
         pick_lib: bool,
         clear_cache: bool,
         set_list: List[Tuple[str, str]],
-        color: str) -> None:
+        color: str,
+        np: Optional[int]) -> None:
+
+    if np:
+        os.environ["PAPIS_NP"] = str(np)
 
     if profile:
         profiler = cProfile.Profile()
@@ -205,17 +215,17 @@ def run(
         colorama.init()
 
     log_format = (colorama.Fore.YELLOW +
-                  '%(levelname)s' +
-                  ':' +
+                  "%(levelname)s" +
+                  ":" +
                   colorama.Fore.GREEN +
-                  '%(name)s' +
+                  "%(name)s" +
                   colorama.Style.RESET_ALL +
-                  ':' +
-                  '%(message)s'
+                  ":" +
+                  "%(message)s"
                   )
     if verbose:
         log = "DEBUG"
-        log_format = '%(relativeCreated)d-'+log_format
+        log_format = "%(relativeCreated)d-"+log_format
     logging.basicConfig(level=getattr(logging, log),
                         format=log_format,
                         filename=logfile,

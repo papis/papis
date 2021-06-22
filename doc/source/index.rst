@@ -21,6 +21,7 @@ command-line interface (*CLI*) is heavily tailored after
    database_structure
    commands
    gui
+   hooks
    scripting
    api
    plugins

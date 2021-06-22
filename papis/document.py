@@ -1,6 +1,7 @@
 """Module defining the main document type.
 """
 import os
+import re
 import datetime
 import shutil
 import logging
@@ -82,6 +83,28 @@ def author_list_to_author(data: Dict[str, Any]) -> str:
             ])
         )
     return author
+
+
+def split_authors_name(
+        authors: List[str], separator: str = "and") -> List[Dict[str, str]]:
+    """
+    Convert a list of authors to papis formatted data.
+
+    :arg authors: A list of single author names or multiple authors separated
+        by *separator*.
+    """
+    from bibtexparser.customization import splitname
+
+    author_list = []
+    for subauthors in authors:
+        for author in re.split(r"\s+{}\s+".format(separator), subauthors):
+            parts = splitname(author)
+            given = " ".join(parts["first"])
+            family = " ".join(parts["von"] + parts["last"] + parts["jr"])
+
+            author_list.append(dict(family=family, given=given))
+
+    return author_list
 
 
 class DocHtmlEscaped(Dict[str, Any]):
@@ -205,6 +228,7 @@ class Document(Dict[str, Any]):
     def load(self) -> None:
         """Load information from info file
         """
+        import papis.yaml
         if not os.path.exists(self.get_info_file()):
             return
         try:

@@ -1,8 +1,8 @@
 from itertools import count, product
-from typing import Optional, List, Iterator, Any, Dict, Union
+from typing import (Optional, List, Iterator, Any, Dict,
+                    Union, Callable, TypeVar)
 import copy
 import logging
-import multiprocessing
 import os
 import re
 import shlex
@@ -10,6 +10,13 @@ import subprocess
 import time
 
 import colorama
+
+try:
+    import multiprocessing.synchronize  # noqa: F401
+    from multiprocessing import Pool
+    HAS_MULTIPROCESSING = True
+except ImportError:
+    HAS_MULTIPROCESSING = False
 
 import papis.config
 import papis.exceptions
@@ -21,11 +28,30 @@ import papis.database
 LOGGER = logging.getLogger("utils")
 LOGGER.debug("importing")
 
+A = TypeVar("A")
+B = TypeVar("B")
 
-def general_open(
-        file_name: str, key: str,
-        default_opener: Optional[str] = None,
-        wait: bool = True) -> None:
+
+def has_multiprocessing() -> bool:
+    return HAS_MULTIPROCESSING
+
+
+def parmap(f: Callable[[A], B],
+           xs: List[A],
+           np: Optional[int] = None) -> List[B]:
+    if has_multiprocessing():
+        np = np or os.cpu_count()
+        np = int(os.environ.get("PAPIS_NP", str(np)))
+        with Pool(np) as pool:
+            return list(pool.map(f, xs))
+    else:
+        return list(map(f, xs))
+
+
+def general_open(file_name: str,
+                 key: str,
+                 default_opener: Optional[str] = None,
+                 wait: bool = True) -> None:
     """Wraper for openers
     """
     try:
@@ -122,9 +148,9 @@ def clean_document_name(doc_path: str) -> str:
         regex_pattern=regex_pattern))
 
 
-def locate_document_in_lib(
-        document: papis.document.Document,
-        library: Optional[str] = None) -> papis.document.Document:
+def locate_document_in_lib(document: papis.document.Document,
+                           library: Optional[str] = None
+                           ) -> papis.document.Document:
     """Try to figure out if a document is already in a library
 
     :param document: Document to be searched for
@@ -175,22 +201,17 @@ def locate_document(
 
 
 def folders_to_documents(folders: List[str]) -> List[papis.document.Document]:
-    """Turn folders into documents, this is done in a multiprocessing way, this
-    step is quite critical for performance.
+    """Turn folders into documents, this step is quite critical for performance
 
     :param folders: List of folder paths.
     :type  folders: list
     :returns: List of document objects.
     :rtype:  list
+
     """
     logger = logging.getLogger("utils:dir2doc")
-    np = multiprocessing.cpu_count()
-    logger.debug("converting folder into documents on {0} cores".format(np))
-    pool = multiprocessing.Pool(np)
     begin_t = time.time()
-    result = pool.map(papis.document.from_folder, folders)
-    pool.close()
-    pool.join()
+    result = parmap(papis.document.from_folder, folders)
     logger.debug("done in %.1f ms" % (1000*time.time()-1000*begin_t))
     return result
 
@@ -230,8 +251,12 @@ def get_matching_importer_or_downloader(matching_string: str
         logger.debug("trying with importer "
                      "{c.Back.BLACK}{c.Fore.YELLOW}{name}{c.Style.RESET_ALL}"
                      .format(c=colorama, name=importer_cls))
-        importer = importer_cls.match(
-            matching_string)  # type: Optional[papis.importer.Importer]
+        try:
+            importer = importer_cls.match(
+                matching_string)  # type: Optional[papis.importer.Importer]
+        except Exception as e:
+            logger.error(e)
+            continue
         if importer:
             logger.info("{f} {c.Back.BLACK}{c.Fore.GREEN}matches {name}"
                         "{c.Style.RESET_ALL}".format(f=matching_string,

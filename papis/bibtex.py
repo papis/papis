@@ -4,7 +4,6 @@ from __future__ import absolute_import, division, print_function
 import string
 import logging
 import os
-import re
 from typing import Optional, List, Dict, Any
 
 import papis.config
@@ -40,7 +39,7 @@ bibtex_keys = [
     "mainsubtitle", "maintitle", "maintitleaddon", "month", "note",
     "number", "organization", "origlanguage", "pages", "pagetotal", "part",
     "publisher", "pubstate", "school", "series", "subtitle", "title",
-    "translator", "type", "titleaddon", "url", "urldate", "venue", "version",
+    "translator", "titleaddon", "url", "urldate", "venue", "version",
     "volume", "volumes", "year",
 ] + papis.config.getlist('extra-bibtex-keys')  # type: List[str]
 
@@ -120,25 +119,16 @@ def bibtexparser_entry_to_papis(entry: Dict[str, str]) -> Dict[str, str]:
     :returns: Dictionary with keys of papis format.
 
     """
-    from bibtexparser.customization import splitname
-
-    def to_author_list(authors: str) -> List[Dict[str, str]]:
-        author_list = []
-        for author in re.split(r"\s+and\s+", authors):
-            parts = splitname(author)
-            given = " ".join(parts["first"])
-            family = " ".join(parts["von"] + parts["last"] + parts["jr"])
-
-            author_list.append(dict(family=family, given=given))
-
-        return author_list
 
     _k = papis.document.KeyConversionPair
     key_conversion = [
         _k("ID", [{"key": "ref", "action": None}]),
         _k("ENTRYTYPE", [{"key": "type", "action": None}]),
         _k("link", [{"key": "url", "action": None}]),
-        _k("author", [{"key": "author_list", "action": to_author_list}]),
+        _k("author", [{
+            "key": "author_list", "action":
+                lambda author: papis.document.split_authors_name([author])
+            }]),
     ]
 
     result = papis.document.keyconversion_to_data(
@@ -188,7 +178,7 @@ def ref_cleanup(ref: str) -> str:
     Function to cleanup references to be acceptable for latex
     """
     import slugify
-    allowed_characters = r'[^a-zA-Z0-9]+'
+    allowed_characters = r'([^a-zA-Z0-9._]+|(?<!\\)[._])'
     return string.capwords(str(slugify.slugify(
                ref,
                lowercase=False,

@@ -1,11 +1,16 @@
 Papis
 =====
 
-|PyPI-Versions| |Build_Status| |build_appveyor| |Coveralls| |RTD| |Pypi|
-|Code_Quality| |zenodo_badge| |PyPI-Downloads| |MYPY-CHECKED|
-|OpenHub|
+|Build_Status| |ghbadge| |Coveralls| |RTD|
+|Code_Quality|
+|PyPI-Versions| |MYPY-CHECKED| |PyPI-Downloads|
+|Contributors| |zenodo_badge| |OpenHub|
 
+
+|Pypi|
 |Packaging_status|
+
+|zulip|
 
 Description
 -----------
@@ -18,6 +23,10 @@ and bibliography manager.
 Learn more:
 
 - Take a look at the `documentation <http://papis.readthedocs.io/en/latest/>`__!
+- Blog post about getting paper's references with ``papis explore``
+  `here <https://alejandrogallo.github.io/blog/get-paper-references.html>`__.
+- GNU/Linux Switzerland wrote about papis
+  `here <https://gnulinux.ch/papis-dokumentenverwaltung-fuer-die-kommandozeile>`__.
 - The folks at `OSTechNix <https://www.ostechnix.com/>`__ have dedicated us a
   review, you may also check it out `here
   <https://www.ostechnix.com/papis-command-line-based-document-bibliography-manager/>`__.
@@ -39,10 +48,10 @@ Main features
    matter of seconds, also you can check the documentation
    `here <http://papis.readthedocs.io/en/latest/scihub.html>`__.
 -  Import from Zotero and other managers using
-   `papis-zotero <https://github.com/papis/papis-zotero>_`.
+   `papis-zotero <https://github.com/papis/papis-zotero>`__.
 -  Create custom scripts to help you achieve great tasks easily
    (`doc <http://papis.readthedocs.io/en/latest/scripting.html>`__).
--  Export documents into many formats (bibtex, yaml..)
+-  Export documents into many formats (bibtex, yaml, ...)
 -  Command-line granularity, all the power of a library at the tip of
    your fingers.
 
@@ -123,8 +132,6 @@ See the ``AUTHORS`` list for a list of authored commits.
    :target: https://coveralls.io/github/papis/papis?branch=master
 .. |Build_Status| image:: https://travis-ci.org/papis/papis.svg?branch=master
    :target: https://travis-ci.org/papis/papis
-.. |build_appveyor| image:: https://ci.appveyor.com/api/projects/status/ncklsgj2xep5fqwx/branch/master?svg=true
-   :target: https://ci.appveyor.com/project/alejandrogallo/papis/branch/master
 .. |Packaging_status| image:: https://repology.org/badge/vertical-allrepos/papis.svg
    :target: https://repology.org/metapackage/papis
 .. |Code_Quality| image:: https://img.shields.io/lgtm/grade/python/g/papis/papis.svg?logo=lgtm&logoWidth=18
@@ -137,6 +144,10 @@ See the ``AUTHORS`` list for a list of authored commits.
    :target: http://mypy-lang.org/
 .. |OpenHub| image:: https://www.openhub.net/p/papis/widgets/project_thin_badge.gif
    :target: https://www.openhub.net/p/papis
+.. |Contributors| image:: https://img.shields.io/github/contributors/papis/papis
+.. |ghbadge| image:: https://github.com/papis/papis/workflows/CI/badge.svg
+.. |zulip| image:: https://img.shields.io/badge/papis-join_chat-brightgreen.svg
+   :target: https://papis.zulipchat.com
 
 
 
@@ -151,22 +162,21 @@ Here is a list of similar software:
 - `pubs <https://github.com/pubs/pubs/>`__.
 
 
+Papis projects maintainers
+--------------------------
 
-License
--------
+If you find papis useful and want to maintain one of papis
+plugins, feel free to contact us. Right now some of papis projects
+and maintainers are the following
 
-Papis, a document manager
-Copyright © 2017 Alejandro Gallo
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+========================================================== =========================================================================================
+project                                                    maintainer(s)
+========================================================== =========================================================================================
+`papis <https://github.com/papis/papis-rofi/>`__ (core)    `alejandrogallo <https://alejandrogallo.github.io/>`__ `teto <https://github.com/teto>`__
+`papis-rofi <https://github.com/papis/papis-rofi/>`__      `Etn40ff <https://github.com/Etn40ff>`__
+`papis-dmenu <https://github.com/papis/papis-dmenu>`__     YOU?
+`papis-vim <https://github.com/papis/papis-vim>`__         YOU?
+`papis-zotero <https://github.com/papis/papis-zotero>`__   YOU?
+`papis-libgen <https://github.com/papis/papis-zotero>`__   YOU?
+`papis-firefox <https://github.com/papis/papis-firefox>`__ `wavefrontshaping <https://github.com/wavefrontshaping>`__
+========================================================== =========================================================================================

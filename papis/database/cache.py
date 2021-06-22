@@ -8,9 +8,10 @@ import papis.config
 import papis.format
 import papis.database.base
 import re
-import multiprocessing
 import time
 import sys
+
+
 from typing import List, Optional, Match, Dict, Tuple
 
 
@@ -90,18 +91,11 @@ def filter_documents(
                         for d in documents] if d is not None]
 
     else:
-        # Doing this multiprocessing in filtering does not seem
-        # to help much, I don't know if it's because I'm doing something
-        # wrong or it is really like this.
-        np = multiprocessing.cpu_count()
-        pool = multiprocessing.Pool(np)
-        logger.debug(
-            "Filtering {0} docs (search {1}) using {2} cores".format(
-                len(documents), search, np))
-        result = pool.map(papis.docmatcher.DocMatcher.return_if_match,
-                          documents)
-        pool.close()
-        pool.join()
+        logger.debug("Filtering {0} docs (search {1})".format(
+                     len(documents), search))
+        result = \
+            papis.utils.parmap(papis.docmatcher.DocMatcher.return_if_match,
+                               documents)
         filtered_docs = [d for d in result if d is not None]
     _delta = 1000 * time.time() - begin_t
     logger.debug("done ({0} ms) ({1} docs)".format(_delta, len(filtered_docs)))

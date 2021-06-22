@@ -1,9 +1,10 @@
 import papis.document
+import papis.importer
 import logging
 import isbnlib
 import click
 # See https://github.com/xlcnd/isbnlib for details
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 logger = logging.getLogger('papis:isbnlib')
 
@@ -25,15 +26,28 @@ def get_data(query: str = "",
 
 
 def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
-    """Convert data from isbnlib into papis formated data
+    """
+    Convert data from isbnlib into papis formated data
 
     :param data: Dictionary with data
     :type  data: dict
-    :returns: Dictionary with papis keynames
-
+    :returns: Dictionary with papis key names
     """
+    _k = papis.document.KeyConversionPair
+    key_conversion = [
+            _k("authors", [{
+                "key": "author_list",
+                "action": papis.document.split_authors_name
+                }]),
+            _k("isbn-13", [
+                {"key": "isbn", "action": None},
+                {"key": "isbn-13", "action": None},
+                ]),
+            ]
+
     data = {k.lower(): data[k] for k in data}
-    return data
+    return papis.document.keyconversion_to_data(
+            key_conversion, data, keep_unknown_keys=True)
 
 
 @click.command('isbn')
@@ -58,3 +72,26 @@ def explorer(ctx: click.core.Context, query: str, service: str) -> None:
     docs = [papis.document.from_data(data=d) for d in data]
     logger.info('{} documents found'.format(len(docs)))
     ctx.obj['documents'] += docs
+
+
+class Importer(papis.importer.Importer):
+
+    """Importer for ISBN identifiers through isbnlib."""
+
+    def __init__(self, uri: str) -> None:
+        super().__init__(name='isbn', uri=uri)
+
+    @classmethod
+    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+        if isbnlib.notisbn(uri):
+            return None
+        return Importer(uri=uri)
+
+    def fetch(self) -> None:
+        try:
+            data = get_data(self.uri)
+        except isbnlib.ISBNLibException:
+            pass
+        else:
+            if data:
+                self.ctx.data = data_to_papis(data[0])

@@ -86,7 +86,7 @@ general_settings = {
     "header-format": (
         "<ansired>{doc.html_escape[title]}</ansired>\n"
         " <ansigreen>{doc.html_escape[author]}</ansigreen>\n"
-        "  <blue>({doc.html_escape[year]})</blue> "
+        "  <ansiblue>({doc.html_escape[year]})</ansiblue> "
         "[<ansiyellow>{doc.html_escape[tags]}</ansiyellow>]"
     ),
 
@@ -113,6 +113,22 @@ general_settings = {
 
     "document-description-format": '{doc[title]} - {doc[author]}',
     "formater": "python",
+
+    # fzf options
+    "fzf-binary": "fzf",
+    "fzf-extra-flags": ["--ansi", "--multi", "-i"],
+    "fzf-extra-bindings": ["ctrl-s:jump"],
+    "fzf-header-format": ("{c.Fore.MAGENTA}"
+                          "{doc[title]:<70.70}"
+                          "{c.Style.RESET_ALL}"
+                          " :: "
+                          "{c.Fore.CYAN}"
+                          "{doc[author]:<20.20}"
+                          "{c.Style.RESET_ALL}"
+                          "{c.Fore.YELLOW}"
+                          "«{doc[year]:4}»"
+                          "{c.Style.RESET_ALL}"
+                          ":{doc[tags]}")
 }
 
 

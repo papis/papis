@@ -22,6 +22,7 @@ def get_default_settings() -> PapisConfigType:
         'move_up_while_info_window_active_key': 'c-p',
         'focus_command_line_key': 'tab',
         'edit_document_key': 'c-e',
+        'edit_notes_key': 'c-q',
         'open_document_key': 'c-o',
         'show_help_key': 'f1',
         'show_info_key': 's-tab',

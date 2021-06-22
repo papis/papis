@@ -189,10 +189,8 @@ def get_file_name(
         file_name_opt = os.path.basename(original_filepath)
 
     # Get a file name from the format `add-file-name`
-    file_name_base = papis.format.format(
-        file_name_opt,
-        papis.document.from_data(data)
-    )
+    file_name_base = papis.format.format(file_name_opt,
+                                         papis.document.from_data(data))
 
     if len(file_name_base) > basename_limit:
         logger.warning(
