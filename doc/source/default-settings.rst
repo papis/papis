@@ -655,7 +655,7 @@ The following configuration
 
     fzf-extra-flags = ["--ansi", "--multi", "-i",
                        "--preview", "echo {} | sed -r 's/~~/\\n/g; /^ *$/d' ",
-                       "--preview-window", "bottom:wrap:20%",
+                       "--preview-window", "bottom:wrap:20%%",
                        "--color", "preview-fg:#F6E6E4,preview-bg:#5B6D5B"]
 
     fzf-extra-bindings = ["ctrl-s:jump",
@@ -666,6 +666,9 @@ The following configuration
 will have unrestricted titles, author, journal etc fields against which the query will match and it will show
 in the ``fzf`` preview window a tidy description of the currently selected field by replacing the token ``~~``
 by a newline. You can try this out and play with ``fzf`` customizations.
+Please note that ``bottom:wrap:20%%`` has two ``%`` since the config file
+interpolator uses ``%`` as a reserved symbol, so it must be escaped
+by writing two of them.
     
 Other
 -----
