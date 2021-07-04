@@ -16,4 +16,4 @@ Here are some problems that users have come across often:
 
 
 For more information you can also check the
-`github faq <https://github.com/papis/papis/issues?utf8=%E2%9C%93&q=faq>`_ link.
+`github faq <https://github.com/papis/papis/issues?utf8=%E2%9C%93&q=label:faq>`_ link.
