@@ -67,8 +67,8 @@ And use like such: |asciicast|
 
 Cli
 ^^^
-.. click:: papis.commands.add:cli
-    :prog: papis add
+.. click:: papis.commands.bibtex:cli
+    :prog: papis bibtex
 
 """
 import os
