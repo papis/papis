@@ -6,12 +6,6 @@ This command helps to interact with `bib` files in your LaTeX projects.
 Examples
 ^^^^^^^^
 
-::
-
-    papis bibtex                            \
-      read new_papers.bib                   \ # Read bib file
-      cmd 'papis add --from-doi {doc[doi]}'   # For every entry run the command
-
 I use it for opening some papers for instance
 
 ::
@@ -37,7 +31,65 @@ or if I update some information in my papis ``yaml`` files then I can do
       update -f           \ # Update what has been read from papis library
       save new_papers.bib   # save everything to new_papers.bib, overwriting
 
-Maybe this is also interesting for you guys!
+Local configuration file
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you are working in a local folder where you have
+a bib file called ``main.bib``, you'll grow sick and tired
+of writing always ``read main.bib`` and  ``save main.bib``, so you can
+write a local configuration file ``.papis.config`` for ``papis bibtex``
+to read and write automatically
+
+::
+
+    [bibtex]
+    default-read-bibfile = main.bib
+    default-save-bibfile = main.bib
+    auto-read = True
+
+with this setup, you can just do
+
+::
+
+    papis bibtex add einstein save
+
+Check references quality
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+When you're collaborating with someone, you might come accross malformed
+or incomplete references. Most journals want to have all the ``doi``s
+and urls available. You can automate this diagnostic with
+
+For this you kan use the command ``doctor``
+
+::
+
+    papis bibtex read mybib.bib doctor
+
+Mostly I want to have only the references in my project's bib file
+that are actually cited in the latex file, you can check
+which references are not cited in the tex files by doing
+
+
+::
+
+    papis bibtex iscited -f main.tex -f chapter-2.tex
+
+and you can then filter them out using the command ``filter-cited``.
+
+To monitor the health of the bib project's file, I mostly have a
+target in the project's ``Makefile`` like
+
+.. code:: make
+
+    .PHONY: check-bib
+    check-bib:
+        papis bibtex iscited -f main.tex doctor
+
+it does not solve all problems under the sun, but it is really better than no
+check!
+
+
 
 Vim integration
 ^^^^^^^^^^^^^^^
@@ -360,7 +412,7 @@ def _unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
 def _doctor(ctx: click.Context, key: List[str]) -> None:
     """
     Check bibfile for correctness, missing keys etc.
-        e.g. papis bibtex -k title -k url -k doi
+        e.g. papis bibtex doctor -k title -k url -k doi
 
     """
     logger.info("Checking for existence of %s", ", ".join(key))
