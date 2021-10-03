@@ -19,6 +19,8 @@ use emacs-like hooks for some commands.
 ## papis picker
 - You can now pick several elements with the key binding `c-t`
 
+## `papis merge`
+- Add the command `papis merge` to merge documents in pairs.
 
 VERSION v0.11
 =============
