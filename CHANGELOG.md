@@ -16,6 +16,9 @@ use emacs-like hooks for some commands.
 - Add command `exec` to run python scripts in the environment of the
   papis executable.
 
+## papis picker
+- You can now pick several elements with the key binding `c-t`
+
 
 VERSION v0.11
 =============

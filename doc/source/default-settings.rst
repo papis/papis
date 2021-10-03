@@ -583,6 +583,9 @@ or inside the library sections prepending a ``tui-``,
 .. papis-config:: go_bottom_key
     :section: tui
 
+.. papis-config:: mark_key
+    :section: tui
+
 FZF integration
 ---------------
 

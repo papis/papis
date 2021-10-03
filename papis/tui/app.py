@@ -91,6 +91,10 @@ def get_keys_info() -> Dict[str, KeyInfo]:
                 'key': config.getstring('go_bottom_key', section='tui'),
                 'help': 'Go to the bottom of the list',
             },
+            "mark_key": {
+                'key': config.getstring('mark_key', section='tui'),
+                'help': 'Mark current item to be selected',
+            },
         }
     return _KEYS_INFO
 

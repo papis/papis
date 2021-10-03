@@ -28,6 +28,7 @@ def get_default_settings() -> PapisConfigType:
         'show_info_key': 's-tab',
         'go_top_key': 'home',
         'go_bottom_key': 'end',
+        'mark_key': 'c-t',
 
         "editmode": "emacs",
     })

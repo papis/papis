@@ -247,6 +247,8 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
 
     def get_selection(self) -> Sequence[Option]:
         """Get the selected item, if there is Any"""
+        if len(self.marks):
+            return [self.get_options()[m] for m in self.marks]
         if self.indices and self.current_index is not None:
             return [self.get_options()[self.current_index]]
         return []
