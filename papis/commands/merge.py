@@ -25,7 +25,7 @@ import papis.utils
 import papis.config
 import papis.cli
 import papis.database
-from papis.document import Document, to_dict
+from papis.document import Document, to_dict, from_folder
 import papis.format
 import papis.strings
 import papis.commands.rm as rm
@@ -77,9 +77,14 @@ def run(keep: Document,
               help="Do not erase any document",
               default=False,
               is_flag=True)
+@click.option("-o",
+              "--out",
+              help="Create the resulting document in this path",
+              default=None)
 @papis.cli.git_option(help="Merge in git")
 def cli(query: str,
         sort_field: Optional[str],
+        out: Optional[str],
         second: bool,
         git: bool,
         keep_both: bool,
@@ -138,4 +143,17 @@ def cli(query: str,
 
     keep = b if second else a
     erase = a if second else b
+
+    if out is not None:
+        os.makedirs(out, exist_ok=True)
+        keep = from_folder(out)
+        keep["files"] = []
+        for f in files:
+            shutil.copy(f, out)
+            keep["files"] += [os.path.basename(f)]
+        keep.update(data_a)
+        keep.save()
+        logger.info("saving the new document in %s", out)
+        return
+
     run(keep, erase, data_a, files, keep_both, git)
