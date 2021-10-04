@@ -107,14 +107,18 @@ def cli(query: str,
         logger.error("You have to pick exactly two documents!")
         return
 
+
     a = documents[0]
     data_a = to_dict(a)
-    data_a.pop("ref")
-    data_a.pop("files")
     b = documents[1]
     data_b = to_dict(b)
-    data_b.pop("ref")
-    data_b.pop("files")
+
+    to_pop = ["files"]
+    for d in [data_a, data_b]:
+        for key in to_pop:
+            if key in d:
+                d.pop(key)
+
     papis.utils.update_doc_from_data_interactively(data_a,
                                                    data_b,
                                                    papis.document.describe(b))
