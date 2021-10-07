@@ -172,9 +172,9 @@ def cli(ctx: click.Context, no_auto_read: bool) -> None:
         config.set('auto-read', 'False', section='bibtex')
 
     bibfile = config.get('default-read-bibfile', section='bibtex')
-    if (bool(config.getboolean('auto-read', section='bibtex')) and
-       bibfile and
-       os.path.exists(bibfile)):
+    if (bool(config.getboolean('auto-read', section='bibtex'))
+            and bibfile
+            and os.path.exists(bibfile)):
         logger.info("auto reading {0}".format(bibfile))
         explorer_mgr['bibtex'].plugin.callback(bibfile)
 

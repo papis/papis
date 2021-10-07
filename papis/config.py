@@ -151,12 +151,12 @@ class Configuration(configparser.ConfigParser):
         self.file_location = get_config_file()
         self.logger = logging.getLogger("Configuration")
         self.default_info = {
-          "papers": {
-            'dir': '~/Documents/papers'
-          },
-          get_general_settings_name(): {
-            'default-library': 'papers'
-          }
+            "papers": {
+                'dir': '~/Documents/papers'
+            },
+            get_general_settings_name(): {
+                'default-library': 'papers'
+            }
         }  # type: PapisConfigType
         self.initialize()
 

@@ -58,8 +58,8 @@ def prompt(text: Union[str, FormattedText],
                     for a in actions
                 ))
             )
-        )] +
-        ([
+        )]
+        + ([
             Window(
                 height=1, align=WindowAlign.LEFT,
                 always_hide_cursor=True,
@@ -117,12 +117,12 @@ def diffshow(texta: str,
     formatted_text = list(map(
         lambda line:
             # match line values
-            line.startswith('@') and ('fg:violet bg:ansiblack', line) or
-            line.startswith('+') and ('fg:ansigreen bg:ansiblack', line) or
-            line.startswith('-') and ('fg:ansired bg:ansiblack', line) or
-            line.startswith('?') and ('fg:ansiyellow bg:ansiblack', line) or
-            line.startswith('^^^') and ('bg:ansiblack fg:ansipurple', line) or
-            ('fg:ansiwhite', line), raw_text))
+            line.startswith('@') and ('fg:violet bg:ansiblack', line)
+            or line.startswith('+') and ('fg:ansigreen bg:ansiblack', line)
+            or line.startswith('-') and ('fg:ansired bg:ansiblack', line)
+            or line.startswith('?') and ('fg:ansiyellow bg:ansiblack', line)
+            or line.startswith('^^^') and ('bg:ansiblack fg:ansipurple', line)
+            or ('fg:ansiwhite', line), raw_text))
 
     prompt(title=title,
            text=formatted_text,

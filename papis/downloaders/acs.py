@@ -32,8 +32,8 @@ class Downloader(papis.downloaders.Downloader):
                 data['type'] = meta.attrs.get('content')
             elif meta.attrs.get('name') == 'dc.Subject':
                 data['note'] = meta.attrs.get('content')
-            elif (meta.attrs.get('name') == 'dc.Identifier' and
-                  meta.attrs.get('scheme') == 'doi'):
+            elif (meta.attrs.get('name') == 'dc.Identifier'
+                  and meta.attrs.get('scheme') == 'doi'):
                 data['doi'] = meta.attrs.get('content')
             elif meta.attrs.get('name') == 'dc.Publisher':
                 data['publisher'] = meta.attrs.get('content')

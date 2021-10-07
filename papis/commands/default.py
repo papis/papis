@@ -214,14 +214,14 @@ def run(verbose: bool,
     else:
         colorama.init()
 
-    log_format = (colorama.Fore.YELLOW +
-                  "%(levelname)s" +
-                  ":" +
-                  colorama.Fore.GREEN +
-                  "%(name)s" +
-                  colorama.Style.RESET_ALL +
-                  ":" +
-                  "%(message)s"
+    log_format = (colorama.Fore.YELLOW
+                  + "%(levelname)s"
+                  + ":"
+                  + colorama.Fore.GREEN
+                  + "%(name)s"
+                  + colorama.Style.RESET_ALL
+                  + ":"
+                  + "%(message)s"
                   )
     if verbose:
         log = "DEBUG"

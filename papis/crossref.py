@@ -298,8 +298,9 @@ class DoiFromPdfImporter(papis.importer.Importer):
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
         """The uri should be a filepath"""
         filepath = uri
-        if (os.path.isdir(filepath) or not os.path.exists(filepath) or
-                not papis.filetype.get_document_extension(filepath) == 'pdf'):
+        if (os.path.isdir(filepath) or not os.path.exists(filepath)
+                or not papis.filetype.get_document_extension(filepath) == 'pdf'
+                ):      # noqa: E124
             return None
         importer = DoiFromPdfImporter(filepath)
         importer.fetch()

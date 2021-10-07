@@ -10,11 +10,11 @@ __email__ = 'aamsgallo@gmail.com'
 if os.environ.get('PAPIS_DEBUG'):
     import logging
     log_format = (
-        '%(relativeCreated)d-' +
-        '%(levelname)s' +
-        ':' +
-        '%(name)s' +
-        ':' +
-        '%(message)s'
+        '%(relativeCreated)d-'
+        + '%(levelname)s'
+        + ':'
+        + '%(name)s'
+        + ':'
+        + '%(message)s'
     )
     logging.basicConfig(format=log_format, level=logging.DEBUG)
