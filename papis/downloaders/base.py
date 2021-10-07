@@ -1,5 +1,5 @@
 import re
-from typing import Any, List, Dict, Union, Pattern
+from typing import Any, List, Dict, Iterator, Tuple, Union, Pattern
 from typing_extensions import TypedDict
 
 import bs4
@@ -126,8 +126,9 @@ def parse_meta_authors(soup: bs4.BeautifulSoup) -> List[Dict[str, Any]]:
     affs = soup.find_all(
         name='meta',
         attrs={'name': 'citation_author_institution'})
+
     if affs and authors:
-        tuples = zip(authors, affs)
+        tuples = zip(authors, affs)  # type: Iterator[Tuple[Any, Any]]
     elif authors:
         tuples = ((a, None) for a in authors)
     else:

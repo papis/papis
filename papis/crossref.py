@@ -245,7 +245,7 @@ def doi_to_data(doi_string: str) -> Dict[str, Any]:
     '--max', '-m', '_ma', help='Maximum number of results', default=20)
 @click.option(
     '--filter', '-f', '_filters', help='Filters to apply', default=(),
-    type=(click.Choice(_filter_names), str),
+    type=(click.Choice(list(_filter_names)), str),
     multiple=True)
 @click.option(
     '--order', '-o', help='Order of appearance according to sorting',
