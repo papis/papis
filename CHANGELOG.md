@@ -22,6 +22,9 @@ use emacs-like hooks for some commands.
 ## `papis merge`
 - Add the command `papis merge` to merge documents in pairs.
 
+## `papis browse`
+- Add `-n` and `--print` to just print the url to be opened.
+
 VERSION v0.11
 =============
 
