@@ -112,7 +112,6 @@ def cli(query: str,
         logger.error("You have to pick exactly two documents!")
         return
 
-
     a = documents[0]
     data_a = to_dict(a)
     b = documents[1]
