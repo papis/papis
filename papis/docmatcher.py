@@ -129,9 +129,9 @@ def parse_query(query_string: str) -> List[List[str]]:
     ) ^ papis_value_word
 
     equal = (
-        pyparsing.ZeroOrMore(" ") +
-        pyparsing.Literal(':') +
         pyparsing.ZeroOrMore(" ")
+        + pyparsing.Literal(':')
+        + pyparsing.ZeroOrMore(" ")
     )
 
     papis_query = pyparsing.ZeroOrMore(

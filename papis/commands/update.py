@@ -96,8 +96,8 @@ def run(document: papis.document.Document,
               is_flag=True)
 @click.option("--from", "from_importer",
               help="Add document from a specific importer ({0})".format(
-                ", ".join(papis.importer.available_importers())
-                ),
+                  ", ".join(papis.importer.available_importers())
+              ),
               type=(click.Choice(papis.importer.available_importers()), str),
               nargs=2,
               multiple=True,

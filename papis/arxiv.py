@@ -306,8 +306,8 @@ class ArxividFromPdfImporter(papis.importer.Importer):
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
-        if (os.path.isdir(uri) or not os.path.exists(uri) or
-                not papis.filetype.get_document_extension(uri) == 'pdf'):
+        if (os.path.isdir(uri) or not os.path.exists(uri)
+                or not papis.filetype.get_document_extension(uri) == 'pdf'):
             return None
         importer = ArxividFromPdfImporter(uri=uri)
         importer.arxivid = pdf_to_arxivid(uri, maxlines=2000)

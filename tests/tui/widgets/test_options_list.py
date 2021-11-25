@@ -76,5 +76,5 @@ def test_basic():
 
 
 def test_match_against_regex():
-    assert match_against_regex(re.compile(r'.*he.*'), 'he', 2) == 2
-    assert match_against_regex(re.compile(r'hes'), 'he', 2) is None
+    assert match_against_regex(re.compile(r'.*he.*'), (2, 'he')) == 2
+    assert match_against_regex(re.compile(r'hes'), (2, 'he')) is None

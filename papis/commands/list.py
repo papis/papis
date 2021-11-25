@@ -186,8 +186,8 @@ def cli(
     logger = logging.getLogger('cli:list')
     documents = []  # type: List[papis.document.Document]
 
-    if (not libraries and not downloaders and
-            not _file and not info and not _dir):
+    if (not libraries and not downloaders
+            and not _file and not info and not _dir):
         _dir = True
 
     if not libraries and not downloaders:

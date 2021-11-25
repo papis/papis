@@ -1,4 +1,5 @@
 import logging
+from stevedore import ExtensionManager
 from typing import Optional, List, Dict, Any, Callable, Type
 import os.path
 
@@ -89,7 +90,7 @@ def _extension_name() -> str:
     return "papis.importer"
 
 
-def get_import_mgr() -> papis.plugin.ExtensionManager:
+def get_import_mgr() -> ExtensionManager:
     """Get the import manager
     :returns: Import manager
     """

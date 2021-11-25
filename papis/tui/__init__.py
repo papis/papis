@@ -5,9 +5,9 @@ PapisConfigType = Dict[str, Dict[str, Any]]
 def get_default_settings() -> PapisConfigType:
     return dict(tui={
         "status_line_format": (
-            "{selected_index}/{number_of_documents}  " +
-            "F1:help  " +
-            "c-l:redraw  "
+            "{selected_index}/{number_of_documents}  "
+            + "F1:help  "
+            + "c-l:redraw  "
         ),
 
         "status_line_style": 'bg:ansiwhite fg:ansiblack',

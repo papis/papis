@@ -16,15 +16,15 @@ import papis.format
 logger = logging.getLogger("bibtex")  # type: logging.Logger
 
 bibtex_types = [
-  "article", "book", "booklet", "conference", "inbook", "incollection",
-  "inproceedings", "manual", "mastersthesis", "misc", "phdthesis",
-  "proceedings", "techreport", "unpublished"
+    "article", "book", "booklet", "conference", "inbook", "incollection",
+    "inproceedings", "manual", "mastersthesis", "misc", "phdthesis",
+    "proceedings", "techreport", "unpublished"
 ] + papis.config.getlist('extra-bibtex-types')  # type: List[str]
 
 bibtex_type_converter = {
-  "conferencePaper": "inproceedings",
-  "journalArticle": "article",
-  "journal": "article"
+    "conferencePaper": "inproceedings",
+    "journalArticle": "article",
+    "journal": "article"
 }  # type: Dict[str, str]
 
 bibtex_keys = [
@@ -66,8 +66,8 @@ class Importer(papis.importer.Importer):
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
-        if (not os.path.exists(uri) or os.path.isdir(uri) or
-                papis.filetype.get_document_extension(uri) == 'pdf'):
+        if (not os.path.exists(uri) or os.path.isdir(uri)
+                or papis.filetype.get_document_extension(uri) == 'pdf'):
             return None
         importer = Importer(uri=uri)
         importer.fetch()

@@ -101,6 +101,7 @@ import papis.pick
 import papis.format
 import papis.crossref
 import papis.plugin
+from stevedore import ExtensionManager
 from typing import List, Optional, Union, Any, Dict  # noqa: ignore
 
 logger = logging.getLogger('explore')
@@ -114,7 +115,7 @@ def get_available_explorers() -> List[click.Command]:
     return papis.plugin.get_available_plugins(_extension_name())
 
 
-def get_explorer_mgr() -> papis.plugin.ExtensionManager:
+def get_explorer_mgr() -> ExtensionManager:
     return papis.plugin.get_extension_manager(_extension_name())
 
 

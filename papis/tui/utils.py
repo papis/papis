@@ -211,8 +211,8 @@ def select_range(options: List[Any],
         dirty_message="Range not valid, example: "
                       "0, 2, 3-10, {}, ...".format(", ".join(valid_keywords)),
         validator_function=lambda string:
-                string in valid_keywords or
-                len(set(get_range(string)) & set(possible_indices)) > 0)
+                string in valid_keywords
+                or len(set(get_range(string)) & set(possible_indices)) > 0)
 
     if selection in all_keywords:
         selection = ",".join(map(str, range(len(options))))

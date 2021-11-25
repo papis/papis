@@ -92,8 +92,7 @@ def cli(query: str,
                     "Enter directory  : (Tab completion enabled)\n"
                     "Current directory: ({dir})\n".format(
                         dir=document.get_main_folder_name()
-                    ) +
-                    ">  "
+                    ) + ">  "
                 ),
                 completer=completer,
                 complete_while_typing=True

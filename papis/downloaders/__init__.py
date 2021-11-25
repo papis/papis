@@ -61,8 +61,8 @@ class Downloader(papis.importer.Importer):
         papis.importer.Importer.__init__(self,
                                          uri=uri,
                                          ctx=ctx,
-                                         name=name or
-                                         os.path.basename(__file__))
+                                         name=name
+                                         or os.path.basename(__file__))
         self.logger = logging.getLogger("downloader:"+self.name)
         self.logger.debug("uri {0}".format(uri))
         self.expected_document_extension = None  # type: Optional[str]

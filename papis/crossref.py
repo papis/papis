@@ -245,7 +245,7 @@ def doi_to_data(doi_string: str) -> Dict[str, Any]:
     '--max', '-m', '_ma', help='Maximum number of results', default=20)
 @click.option(
     '--filter', '-f', '_filters', help='Filters to apply', default=(),
-    type=(click.Choice(_filter_names), str),
+    type=(click.Choice(list(_filter_names)), str),
     multiple=True)
 @click.option(
     '--order', '-o', help='Order of appearance according to sorting',
@@ -298,8 +298,9 @@ class DoiFromPdfImporter(papis.importer.Importer):
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
         """The uri should be a filepath"""
         filepath = uri
-        if (os.path.isdir(filepath) or not os.path.exists(filepath) or
-                not papis.filetype.get_document_extension(filepath) == 'pdf'):
+        if (os.path.isdir(filepath) or not os.path.exists(filepath)
+                or not papis.filetype.get_document_extension(filepath) == 'pdf'
+                ):      # noqa: E124
             return None
         importer = DoiFromPdfImporter(filepath)
         importer.fetch()

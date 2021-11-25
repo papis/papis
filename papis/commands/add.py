@@ -236,10 +236,10 @@ def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
             document_strings += fd.read(2000)
 
     md5 = hashlib.md5(
-        ''.join(document_paths).encode() +
-        str(data).encode() +
-        str(random.random()).encode() +
-        document_strings
+        ''.join(document_paths).encode()
+        + str(data).encode()
+        + str(random.random()).encode()
+        + document_strings
     ).hexdigest()
 
     result = md5 + author
@@ -386,9 +386,9 @@ def run(paths: List[str],
         logger.info("No document matching found already in the library")
     else:
         logger.warning(
-            colorama.Fore.RED +
-            "DUPLICATION WARNING" +
-            colorama.Style.RESET_ALL)
+            colorama.Fore.RED
+            + "DUPLICATION WARNING"
+            + colorama.Style.RESET_ALL)
         logger.warning(
             "The document beneath is in your library and it seems to match")
         logger.warning(
