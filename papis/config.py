@@ -544,7 +544,7 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
             raise Exception("Library '{0}' does not seem to exist"
                             "\n\n"
                             "To add a library simply write the following"
-                            "in your configuration file located at '{cpath}'"
+                            " in your configuration file located at '{cpath}'"
                             "\n\n"
                             "\t[{0}]\n"
                             "\tdir = path/to/your/{0}/folder"

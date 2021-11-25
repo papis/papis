@@ -71,7 +71,8 @@ from typing import Optional
 logger = logging.getLogger('browse')
 
 
-def run(document: papis.document.Document, browse: bool=True) -> Optional[str]:
+def run(document: papis.document.Document,
+        browse: bool = True) -> Optional[str]:
     """Browse document's url whenever possible and returns the url
 
     :document: Document object
