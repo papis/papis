@@ -203,6 +203,7 @@ setup(
             "worldscientific=papis.downloaders.worldscientific:Downloader",
             "fallback=papis.downloaders.fallback:Downloader",
             "arxiv=papis.arxiv:Downloader",
+            "projecteuclid=papis.downloaders.projecteuclid:Downloader",
         ],
         'papis.explorer': [
             "lib=papis.commands.explore:lib",
