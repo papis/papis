@@ -41,7 +41,6 @@ Cli
 """
 
 import click
-import colorama
 import logging
 
 import papis.utils
@@ -138,8 +137,8 @@ def cli(query: str,
         ctx = papis.importer.Context()
 
         logger.info('Updating '
-                    '{c.Back.WHITE}{c.Fore.BLACK}{0}{c.Style.RESET_ALL}'
-                    .format(papis.document.describe(document), c=colorama))
+                    '{c.Back.WHITE}{c.Fore.BLACK}%s{c.Style.RESET_ALL}',
+                    papis.document.describe(document))
 
         ctx.data.update(document)
         if set_tuples:

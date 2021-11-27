@@ -97,7 +97,6 @@ import hashlib
 import shutil
 
 import click
-import colorama
 
 import time
 import papis.api
@@ -384,9 +383,7 @@ def run(paths: List[str],
     except IndexError:
         logger.info("No document matching found already in the library")
     else:
-        logger.warning(
-            "%sDUPLICATION WARNING%s",
-            colorama.Fore.RED, colorama.Style.RESET_ALL)
+        logger.warning("{c.Fore.RED}DUPLICATION WARNING{c.Style.RESET_ALL}")
         logger.warning(
             "A document in the library seems to match the added one.")
         logger.warning(

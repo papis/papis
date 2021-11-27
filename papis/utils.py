@@ -9,8 +9,6 @@ import shlex
 import subprocess
 import time
 
-import colorama
-
 try:
     import multiprocessing.synchronize  # noqa: F401
     from multiprocessing import Pool
@@ -254,8 +252,8 @@ def get_matching_importer_or_downloader(matching_string: str
     _all_importers = list(_imps) + list(_downs)
     for importer_cls in _all_importers:
         logger.debug("trying with importer "
-                     "{c.Back.BLACK}{c.Fore.YELLOW}{name}{c.Style.RESET_ALL}"
-                     .format(c=colorama, name=importer_cls))
+                     "{c.Back.BLACK}{c.Fore.YELLOW}%s{c.Style.RESET_ALL}",
+                     importer_cls)
         try:
             importer = importer_cls.match(
                 matching_string)  # type: Optional[papis.importer.Importer]
@@ -263,10 +261,10 @@ def get_matching_importer_or_downloader(matching_string: str
             logger.error(e)
             continue
         if importer:
-            logger.info("{f} {c.Back.BLACK}{c.Fore.GREEN}matches {name}"
-                        "{c.Style.RESET_ALL}".format(f=matching_string,
-                                                     c=colorama,
-                                                     name=importer.name))
+            logger.info(
+                    "%s {c.Back.BLACK}{c.Fore.GREEN}"
+                    "matches %s{c.Style.RESET_ALL}",
+                    matching_string, importer.name)
             try:
                 importer.fetch()
             except Exception as e:

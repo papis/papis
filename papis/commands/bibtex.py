@@ -139,7 +139,6 @@ import papis.commands.browse
 import papis.commands.export
 import papis.bibtex
 import logging
-import colorama
 
 from typing import List, Optional
 
@@ -228,17 +227,15 @@ def _update(ctx: click.Context, _all: bool,
             libdoc = papis.utils.locate_document_in_lib(doc)
         except IndexError as e:
             logger.info(
-                '{c.Fore.YELLOW}{0}:'
-                '\n\t{c.Back.RED}{doc: <80.80}{c.Style.RESET_ALL}'
-                .format(e, doc=papis.document.describe(doc), c=colorama)
-            )
+                '{c.Fore.YELLOW}%s:'
+                '\n\t{c.Back.RED}%-80.80s{c.Style.RESET_ALL}',
+                e, papis.document.describe(doc))
         else:
             if fromdb:
                 logger.info(
                     'Updating \n\t{c.Fore.GREEN}'
-                    '{c.Back.BLACK}{doc: <80.80}{c.Style.RESET_ALL}'
-                    .format(doc=papis.document.describe(doc), c=colorama)
-                )
+                    '{c.Back.BLACK}%-80.80s{c.Style.RESET_ALL}',
+                    papis.document.describe(doc))
                 if keys:
                     docs[j].update(
                         {k: libdoc.get(k) for k in keys if libdoc.has(k)})
@@ -422,9 +419,8 @@ def _doctor(ctx: click.Context, key: List[str]) -> None:
               if keys]
 
     for j, (doc, keys) in enumerate(failed):
-        logger.info('{} {c.Back.BLACK}{c.Fore.RED}{doc: <80.80}'
-                    '{c.Style.RESET_ALL}'
-                    .format(j, doc=papis.document.describe(doc), c=colorama))
+        logger.info('%s {c.Back.BLACK}{c.Fore.RED}%-80.80s{c.Style.RESET_ALL}',
+                    j, papis.document.describe(doc))
         for k in keys:
             logger.info('\tmissing: %s', k)
 
@@ -477,9 +473,8 @@ def _iscited(ctx: click.Context, _files: List[str]) -> None:
     logger.info('%s documents not cited', len(unfound))
 
     for j, doc in enumerate(unfound):
-        logger.info('{} {c.Back.BLACK}{c.Fore.RED}{doc: <80.80}'
-                    '{c.Style.RESET_ALL}'
-                    .format(j, doc=papis.document.describe(doc), c=colorama))
+        logger.info('%s {c.Back.BLACK}{c.Fore.RED}%-80.80s{c.Style.RESET_ALL}',
+                    j, papis.document.describe(doc))
 
 
 @cli.command('import')
@@ -508,10 +503,10 @@ def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
         fileValue = None
         filepaths = []
         for k in ["file", "FILE"]:
-            logger.info('{} {c.Back.BLACK}{c.Fore.YELLOW}{doc: <80.80}'
-                        '{c.Style.RESET_ALL}'
-                        .format(j, doc=papis.document.describe(doc),
-                                c=colorama))
+            logger.info(
+                    '%s {c.Back.BLACK}{c.Fore.YELLOW}%-80.80s'
+                    '{c.Style.RESET_ALL}',
+                    j, papis.document.describe(doc))
             if doc.has(k):
                 fileValue = doc[k]
                 logger.info("\tKey '%s' exists", k)
@@ -521,16 +516,15 @@ def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
             logger.info("\t"
                         "{c.Back.YELLOW}{c.Fore.BLACK}"
                         "No pdf files will be imported"
-                        "{c.Style.RESET_ALL}".format(c=colorama))
+                        "{c.Style.RESET_ALL}")
         else:
             filepaths = [f for f in fileValue.split(":") if os.path.exists(f)]
 
         if not filepaths and fileValue is not None:
             logger.info("\t"
                         "{c.Back.BLACK}{c.Fore.RED}"
-                        "No valid file in \n"
-                        "{value}{c.Style.RESET_ALL}"
-                        .format(value=fileValue, c=colorama))
+                        "No valid file in \n%s{c.Style.RESET_ALL}",
+                        fileValue)
         else:
             logger.info("\tfound %s file(s)", len(filepaths))
 
