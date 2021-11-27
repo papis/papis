@@ -18,7 +18,6 @@ import papis.importer
 import papis.downloaders.base
 
 logger = logging.getLogger("crossref")  # type: logging.Logger
-logger.debug("importing")
 KeyConversionPair = papis.document.KeyConversionPair
 
 _filter_names = set([
@@ -202,7 +201,7 @@ def get_data(
         docs = [d["message"] for d in results]
     elif isinstance(results, dict):
         if 'message' not in results.keys():
-            logger.error("Error retrieving from xref: incorrect message")
+            logger.error("Error retrieving from crossref: incorrect message")
             return []
         message = results['message']
         if "items" in message.keys():
@@ -210,7 +209,7 @@ def get_data(
         else:
             docs = [message]
     else:
-        logger.error("Error retrieving from xref: incorrect message")
+        logger.error("Error retrieving from crossref: incorrect message")
         return []
     logger.debug("Retrieved %s documents", len(docs))
     return [
@@ -271,6 +270,7 @@ def explorer(
     """
     logger = logging.getLogger('explore:crossref')
     logger.info('Looking up...')
+
     data = get_data(
         query=query,
         author=author,
@@ -281,6 +281,7 @@ def explorer(
         order=order)
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj['documents'] += docs
+
     logger.info('%s documents found', len(docs))
 
 
@@ -306,15 +307,15 @@ class DoiFromPdfImporter(papis.importer.Importer):
         return importer if importer.doi else None
 
     def fetch(self) -> None:
-        self.logger.info("Trying to parse doi from file {0}".format(self.uri))
+        self.logger.info("Trying to parse DOI from file '%s'", self.uri)
         if self.ctx:
             return
         if not self.doi:
             self.doi = doi.pdf_to_doi(self.uri, maxlines=2000)
         if self.doi:
-            self.logger.info("Parsed doi {0}".format(self.doi))
+            self.logger.info("Parsed DOI: '%s'", self.doi)
             self.logger.warning(
-                "There is no guarantee that this doi is the one")
+                "There is no guarantee that this DOI is the correct one")
             importer = Importer(uri=self.doi)
             importer.fetch()
             self.ctx = importer.ctx
@@ -354,7 +355,7 @@ class Importer(papis.importer.Importer):
 
             if doc_url is not None:
                 self.logger.info(
-                    "Trying to download document from %s..", doc_url)
+                    "Trying to download document from '%s'..", doc_url)
                 session = requests.Session()
                 session.headers = requests.structures.CaseInsensitiveDict({
                     "user-agent": papis.config.getstring("user-agent")})
@@ -377,7 +378,7 @@ class Importer(papis.importer.Importer):
                             suffix=".{}".format(kind.extension),
                             delete=False) as f:
                         f.write(response.content)
-                        self.logger.debug("Saving in %s", f.name)
+                        self.logger.debug("Saving in '%s'", f.name)
                         self.ctx.files.append(f.name)
 
 
@@ -401,12 +402,12 @@ class FromCrossrefImporter(papis.importer.Importer):
         return None
 
     def fetch_data(self) -> None:
-        self.logger.info("querying '{0}' to crossref.org".format(self.uri))
+        self.logger.info("Querying '%s' to crossref.org", self.uri)
         docs = [
             papis.document.from_data(d)
             for d in get_data(query=self.uri)]
         if docs:
-            self.logger.info("got {0} matches, picking...".format(len(docs)))
+            self.logger.info("Got %d matches, picking...", len(docs))
             docs = list(papis.pick.pick_doc(docs))
             if not docs:
                 return

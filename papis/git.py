@@ -5,7 +5,7 @@ import os
 import shlex
 import logging
 
-logger = logging.getLogger("papis.git")
+logger = logging.getLogger("git")
 
 
 def _issue_git_command(path: str, cmd: str) -> None:
@@ -37,7 +37,7 @@ def commit(path: str, message: str) -> None:
     :returns: None
 
     """
-    logger.info('Commiting %s with message %s', path, message)
+    logger.info("Committing '%s' with message '%s'", path, message)
     cmd = 'git commit -m "{0}"'.format(message)
     _issue_git_command(path, cmd)
 
@@ -52,7 +52,7 @@ def add(path: str, resource: str) -> None:
     :returns: None
 
     """
-    logger.info('Adding %s', path)
+    logger.info("Adding '%s'", path)
     cmd = 'git add "{0}"'.format(resource)
     _issue_git_command(path, cmd)
 
@@ -67,7 +67,7 @@ def remove(path: str, resource: str, recursive: bool = False) -> None:
     :returns: None
 
     """
-    logger.info('Removing %s', path)
+    logger.info("Removing '%s'", path)
     # force removal always
     cmd = 'git rm -f {r} "{0}"'.format(resource, r="-r" if recursive else "")
     _issue_git_command(path, cmd)

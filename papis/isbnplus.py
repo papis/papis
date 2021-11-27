@@ -104,7 +104,7 @@ def get_data(
         {x: dict_params[x] for x in dict_params if dict_params[x]}
     )
     req_url = ISBNPLUS_BASEURL + "search?" + params
-    logger.debug("url = %s", req_url)
+    logger.debug("url = '%s'", req_url)
     url = urllib.request.Request(
         req_url,
         headers={'User-Agent': papis.config.getstring('user-agent')}
@@ -170,4 +170,5 @@ def explorer(ctx: click.core.Context,
         data = []
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj['documents'] += docs
+
     logger.info('%s documents found', len(docs))

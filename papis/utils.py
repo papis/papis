@@ -26,7 +26,6 @@ import papis.document
 import papis.database
 
 logger = logging.getLogger("utils")
-logger.debug("importing")
 
 A = TypeVar("A")
 B = TypeVar("B")
@@ -61,7 +60,7 @@ def general_open(file_name: str,
             default_opener = papis.config.get_default_opener()
         opener = default_opener
     cmd = shlex.split("{0} '{1}'".format(opener, file_name))
-    logger.debug("cmd:  %s", cmd)
+    logger.debug("cmd: %s", cmd)
     if wait:
         logger.debug("Waiting for process to finsih")
         subprocess.call(cmd)
@@ -95,13 +94,16 @@ def get_folders(folder: str) -> List[str]:
     :returns: List of folders containing an info file.
     :rtype: list
     """
-    logger.debug("Indexing folders in '{0}'".format(folder))
-    folders = list()
+    logger.debug("Indexing folders in '%s'", folder)
+
+    folders = []
     for root, dirnames, filenames in os.walk(folder):
         if os.path.exists(
                 os.path.join(root, papis.config.getstring('info-name'))):
             folders.append(root)
-    logger.debug("{0} valid folders retrieved".format(len(folders)))
+
+    logger.debug("%d valid folders retrieved", len(folders))
+
     return folders
 
 
@@ -209,10 +211,12 @@ def folders_to_documents(folders: List[str]) -> List[papis.document.Document]:
     :rtype:  list
 
     """
-    logger = logging.getLogger("utils:dir2doc")
+    logger = logging.getLogger("utils:folders_to_documents")
+
     begin_t = time.time()
     result = parmap(papis.document.from_folder, folders)
-    logger.debug("done in %.1f ms" % (1000*time.time()-1000*begin_t))
+
+    logger.debug("done in %.1f ms", 1000*(time.time() - begin_t))
     return result
 
 
@@ -242,8 +246,9 @@ def get_cache_home() -> str:
 
 def get_matching_importer_or_downloader(matching_string: str
                                         ) -> List[papis.importer.Importer]:
-    importers = []  # type: List[papis.importer.Importer]
     logger = logging.getLogger("utils:matcher")
+
+    importers = []  # type: List[papis.importer.Importer]
     _imps = papis.importer.get_importers()
     _downs = papis.downloaders.get_available_downloaders()
     _all_importers = list(_imps) + list(_downs)

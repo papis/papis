@@ -47,10 +47,10 @@ def pick(
     try:
         picker = get_picker(name)  # type: Type[Picker[Option]]
     except KeyError:
-        logger.error("Invalid picker (%s)", name)
+        logger.error("Invalid picker: %s", name)
         logger.error(
-            "Registered pickers are: %s",
-            papis.plugin.get_available_entrypoints(_extension_name()))
+                "Registered pickers are: %s",
+                papis.plugin.get_available_entrypoints(_extension_name()))
         return []
     else:
         return picker()(options,

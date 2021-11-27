@@ -50,7 +50,7 @@ def keyconversion_to_data(conversion_list: List[KeyConversionPair],
                 action = conv_data.get('action') or (lambda x: x)
                 new_data[papis_key] = action(papis_value)
             except Exception as ex:
-                logger.debug("Error while trying to parse %s (%s)",
+                logger.debug("Error while trying to parse '%s' (%s)",
                              papis_key, ex)
 
     if keep_unknown_keys:
@@ -235,9 +235,9 @@ class Document(Dict[str, Any]):
             data = papis.yaml.yaml_to_data(self.get_info_file(),
                                            raise_exception=True)
         except Exception as ex:
-            logger.error('Error reading yaml file in %s'
-                         '\nPlease check it!\n\n%s',
-                         self.get_info_file(), str(ex))
+            logger.error(
+                    "Error reading yaml file in '%s'. Please check it!\n%s",
+                    self.get_info_file(), ex)
         else:
             for key in data:
                 self[key] = data[key]
@@ -409,7 +409,7 @@ def sort(docs: List[Document], key: str, reverse: bool) -> List[Document]:
             # The key does not appear in the document, ensure
             # it comes last.
             return (sort_rankings["None"], zero_date, 0, '')
-    logger.debug("sorting %d documents", len(docs))
+    logger.debug("Sorting %d documents", len(docs))
     return sorted(docs, key=lambda d: _sort_for_key(key, d), reverse=reverse)
 
 

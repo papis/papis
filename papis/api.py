@@ -11,7 +11,6 @@ import papis.pick
 import papis.database
 
 logger = logging.getLogger("api")
-logger.debug("importing")
 
 
 def get_lib_name() -> str:
