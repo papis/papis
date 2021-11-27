@@ -59,7 +59,7 @@ class Downloader(papis.downloaders.Downloader):
         ))
 
         if not a:
-            self.logger.error('No document url in {0}'.format(second_url))
+            self.logger.error("No document url in '%s'", second_url)
             return None
 
         return str(a[0]['href'])
@@ -71,5 +71,5 @@ class Downloader(papis.downloaders.Downloader):
         'http://www.theses.fr/2014TOU30305.bib'
         """
         url = "http://www.theses.fr/{id}.bib".format(id=self.get_identifier())
-        self.logger.debug("[bibtex url] = %s" % url)
+        self.logger.debug("bibtex url = '%s'", url)
         return url

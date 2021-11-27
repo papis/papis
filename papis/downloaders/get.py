@@ -24,8 +24,7 @@ class Downloader(papis.downloaders.Downloader):
         if m:
             d = Downloader(url)
             extension = m.group(1)
-            d.logger.info(
-                'Expecting a document of type "{0}"'.format(extension))
+            d.logger.info("Expecting a document of type '%s'", extension)
             d.expected_document_extension = extension
             return d
         else:

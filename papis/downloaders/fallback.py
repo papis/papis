@@ -26,7 +26,7 @@ class Downloader(papis.downloaders.Downloader):
             _doi = self.ctx.data['doi']
             return str(_doi) if _doi else None
         soup = self._get_soup()
-        self.logger.info('trying to parse doi from url body...')
+        self.logger.info('Trying to parse doi from url body...')
         if soup:
             return doi.find_doi_in_text(str(soup))
         else:
@@ -35,7 +35,7 @@ class Downloader(papis.downloaders.Downloader):
     def get_document_url(self) -> Optional[str]:
         if 'pdf_url' in self.ctx.data:
             url = self.ctx.data.get('pdf_url')
-            self.logger.debug("got a pdf url = %s" % url)
+            self.logger.debug("Got a pdf url = '%s'", url)
             return url
         else:
             return None

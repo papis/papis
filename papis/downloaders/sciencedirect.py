@@ -68,8 +68,8 @@ class Downloader(papis.downloaders.Downloader):
         scripts = soup.find_all(name="script", attrs={'data-iso-key': '_0'})
         if scripts:
             rawdata = json.loads(scripts[0].text)
-            self.logger.debug(
-                "found {0} scripts data-iso-key".format(len(scripts)))
+            self.logger.debug("Found %d scripts data-iso-key", len(scripts))
+
             converted_data = papis.document.keyconversion_to_data(
                 script_keyconv, rawdata)
             data.update(converted_data["_article_data"])

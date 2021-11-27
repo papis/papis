@@ -71,7 +71,7 @@ class Downloader(papis.downloaders.Downloader):
             url = ("http://www.tandfonline.com/action/downloadCitation"
                    "?format=bibtex&cookieSet=1&doi={doi}"
                    .format(doi=self.ctx.data['doi']))
-            self.logger.debug("bibtex url = %s" % url)
+            self.logger.debug("bibtex url = '%s'", url)
             return url
         else:
             return None
@@ -80,7 +80,7 @@ class Downloader(papis.downloaders.Downloader):
         if 'doi' in self.ctx.data:
             durl = ("http://www.tandfonline.com/doi/pdf/{doi}"
                     .format(doi=self.ctx.data['doi']))
-            self.logger.debug("doc url = %s" % durl)
+            self.logger.debug("doc url = '%s'", durl)
             return durl
         else:
             return None

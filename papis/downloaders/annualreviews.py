@@ -22,7 +22,7 @@ class Downloader(papis.downloaders.Downloader):
         if 'doi' in self.ctx.data:
             doi = self.ctx.data['doi']
             url = "http://annualreviews.org/doi/pdf/{doi}".format(doi=doi)
-            self.logger.debug("doc url = %s" % url)
+            self.logger.debug("doc url = '%s'", url)
             return url
         else:
             return None
@@ -32,7 +32,7 @@ class Downloader(papis.downloaders.Downloader):
             url = ("http://annualreviews.org/action/downloadCitation"
                    "?format=bibtex&cookieSet=1&doi={doi}"
                    .format(doi=self.ctx.data['doi']))
-            self.logger.debug("bibtex url = %s" % url)
+            self.logger.debug("bibtex url = '%s'", url)
             return url
         else:
             return None
