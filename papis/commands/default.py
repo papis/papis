@@ -93,7 +93,7 @@ class MultiCommand(click.core.MultiCommand):
                 ))
             # return the match if there was only one match
             if len(matches) == 1:
-                self.logger.warning("I suppose you meant: '%s'", *matches)
+                self.logger.warning("I suppose you meant: '%s'", matches[0])
                 script = self.scripts[matches[0]]
             else:
                 return None
@@ -237,7 +237,7 @@ def run(verbose: bool,
         papis.config.reset_configuration()
 
     for pair in set_list:
-        logger.debug('Setting "{0}" to "{1}"'.format(*pair))
+        logger.debug("Setting '%s' to '%s'", *pair)
         papis.config.set(pair[0], pair[1])
 
     if pick_lib:

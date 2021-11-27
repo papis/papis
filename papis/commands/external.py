@@ -53,7 +53,9 @@ def external_cli(ctx: click.core.Context, flags: List[str]) -> None:
     path = script.path
     if not path:
         raise Exception("Path for script {} not found".format(script))
+
     cmd = [path] + list(flags)
-    logger.debug("Calling %s", cmd)
+    logger.debug("Calling '%s'", cmd)
+
     export_variables()
     subprocess.call(cmd)

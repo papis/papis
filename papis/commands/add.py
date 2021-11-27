@@ -129,8 +129,9 @@ class FromFolderImporter(papis.importer.Importer):
         return FromFolderImporter(uri=uri) if os.path.isdir(uri) else None
 
     def fetch(self) -> None:
+        self.logger.info("Importing from folder '%s'", self.uri)
+
         doc = papis.document.from_folder(self.uri)
-        self.logger.info('importing from folder {0}'.format(self.uri))
         self.ctx.data = papis.document.to_dict(doc)
         self.ctx.files = doc.get_files()
 
@@ -194,8 +195,7 @@ def get_file_name(
 
     if len(file_name_base) > basename_limit:
         logger.warning(
-            "Shortening the name {0} for portability".format(file_name_base)
-        )
+            "Shortening the file name '%s' for portability", file_name_base)
         file_name_base = file_name_base[0:basename_limit]
 
     # Remove extension from file_name_base, if any
@@ -286,6 +286,7 @@ def run(paths: List[str],
     """
 
     logger = logging.getLogger('add:run')
+
     # The folder name of the new document that will be created
     out_folder_name = None
     # The real paths of the documents to be added
@@ -322,9 +323,9 @@ def run(paths: List[str],
             subfolder or '',
             out_folder_name))
 
-    logger.info("The folder name is {0}".format(out_folder_name))
-    logger.debug("Folder path: {0}".format(out_folder_path))
-    logger.debug("File(s): {0}".format(in_documents_paths))
+    logger.info("The folder name is '%s'", out_folder_name)
+    logger.debug("Folder path: '%s'", out_folder_path)
+    logger.debug("File(s): %s", in_documents_paths)
 
     # First prepare everything in the temporary directory
     g = papis.utils.create_identifier(ascii_lowercase)
@@ -351,13 +352,11 @@ def run(paths: List[str],
         if link:
             in_file_abspath = os.path.abspath(in_file_path)
             logger.debug(
-                "[SYMLINK] '%s' to '%s'" %
-                (in_file_abspath, tmp_end_filepath))
+                "[SYMLINK] '%s' to '%s'", in_file_abspath, tmp_end_filepath)
             os.symlink(in_file_abspath, tmp_end_filepath)
         else:
             logger.debug(
-                "[CP] '%s' to '%s'" %
-                (in_file_path, tmp_end_filepath))
+                "[CP] '%s' to '%s'", in_file_path, tmp_end_filepath)
             shutil.copy(in_file_path, tmp_end_filepath)
 
     data['files'] = new_file_list
@@ -365,7 +364,7 @@ def run(paths: List[str],
     # reference building
     if data.get('ref') is None:
         data['ref'] = papis.bibtex.create_reference(data)
-        logger.info("Created reference [%s]", data['ref'])
+        logger.info("Created reference '%s'", data['ref'])
 
     tmp_document.update(data)
     tmp_document.save()
@@ -386,17 +385,13 @@ def run(paths: List[str],
         logger.info("No document matching found already in the library")
     else:
         logger.warning(
-            colorama.Fore.RED
-            + "DUPLICATION WARNING"
-            + colorama.Style.RESET_ALL)
+            "%sDUPLICATION WARNING%s",
+            colorama.Fore.RED, colorama.Style.RESET_ALL)
         logger.warning(
-            "The document beneath is in your library and it seems to match")
+            "A document in the library seems to match the added one.")
         logger.warning(
-            "the one that you're trying to add, "
-            "I will prompt you for confirmation")
-        logger.warning(
-            "(Hint) Use the update command if you just want to update"
-            " the info.")
+            "(Hint) Use the 'papis update' command to just update the info.")
+
         papis.tui.utils.text_area(
             'The following document is already in your library',
             papis.document.dump(found_document),
@@ -412,9 +407,8 @@ def run(paths: List[str],
             return
 
     logger.info(
-        "[MV] '%s' to '%s'" %
-        (tmp_document.get_main_folder(), out_folder_path)
-    )
+        "[MV] '%s' to '%s'", tmp_document.get_main_folder(), out_folder_path)
+
     # This also sets the folder of tmp_document
     papis.document.move(tmp_document, out_folder_path)
     papis.database.get().add(tmp_document)
@@ -550,13 +544,11 @@ def cli(
             logger.exception(e)
 
     if matching_importers:
-        logger.info('There are {0} possible matchings'
-                    .format(len(matching_importers)))
+        logger.info('There are %d possible matchings', len(matching_importers))
 
         for importer in matching_importers:
             if importer.ctx.data:
-                logger.info('Merging data from importer {0}'
-                            .format(importer.name))
+                logger.info('Merging data from importer %s', importer.name)
                 if batch:
                     ctx.data.update(importer.ctx.data)
                 else:
@@ -565,8 +557,9 @@ def cli(
                         importer.ctx.data,
                         str(importer))
             if importer.ctx.files:
-                logger.info('Got files {0} from importer {1}'
-                            .format(importer.ctx.files, importer.name))
+                logger.info(
+                        "Got files %s from importer '%s'",
+                        importer.ctx.files, importer.name)
                 for f in importer.ctx.files:
                     papis.utils.open_file(f)
                     _msg = "Use this file? (from {0})".format(importer.name)
@@ -574,7 +567,7 @@ def cli(
                         ctx.files.append(f)
 
     if not ctx:
-        logger.error('there is nothing to be added')
+        logger.error('There is nothing to be added')
         return
 
     if papis.config.getboolean("time-stamp"):

@@ -70,7 +70,7 @@ def _extension_name() -> str:
     return "papis.exporter"
 
 
-def run(documents: List[papis.document.Document], to_format: str,) -> str:
+def run(documents: List[papis.document.Document], to_format: str) -> str:
     """
     Exports several documents into something else.
 
@@ -123,7 +123,7 @@ def cli(query: str,
         documents = papis.database.get().query(query)
 
     if fmt and folder:
-        logger.warning("Only --folder flag will be considered")
+        logger.warning("Only --folder flag will be considered (--fmt ignored)")
 
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
@@ -146,7 +146,7 @@ def cli(query: str,
 
     if ret_string is not None and not folder:
         if out is not None:
-            logger.info("Dumping to {0}".format(out))
+            logger.info("Dumping to '%s'", out)
             with open(out, 'a+') as fd:
                 fd.write(ret_string)
         else:
@@ -163,9 +163,9 @@ def cli(query: str,
                 raise Exception(papis.strings.no_folder_attached_to_document)
             if not len(documents) == 1:
                 outdir = os.path.join(out, _doc_folder_name)
-            logger.info("Exporting doc {0} to {1}".format(
-                papis.document.describe(document), outdir
-            ))
+            logger.info(
+                    "Exporting doc '%s' to '%s'",
+                    papis.document.describe(document), outdir)
             shutil.copytree(_doc_folder, outdir)
 
 
@@ -199,8 +199,7 @@ def explorer(ctx: click.Context, fmt: str, out: str) -> None:
     if out is not None:
         with open(out, 'a+') as fd:
             logger.info(
-                "Writing {} documents' in {} into {}".format(
-                    len(docs), fmt, out))
+                "Writing %d documents in %s into '%s'", len(docs), fmt, out)
             fd.write(outstring)
     else:
         print(outstring)

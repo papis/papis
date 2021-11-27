@@ -25,6 +25,7 @@ def run(document: papis.document.Document,
         new_folder_path: str,
         git: bool = False) -> None:
     logger = logging.getLogger('mv:run')
+
     folder = document.get_main_folder()
     if not folder:
         raise Exception(papis.strings.no_folder_attached_to_document)
@@ -32,12 +33,14 @@ def run(document: papis.document.Document,
     cmd += ['mv', folder, new_folder_path]
     db = papis.database.get()
     logger.debug(cmd)
+
     subprocess.call(cmd)
     db.delete(document)
     new_document_folder = os.path.join(
         new_folder_path,
         os.path.basename(folder))
-    logger.debug("New document folder: {}".format(new_document_folder))
+    logger.debug("New document folder: '%s'", new_document_folder)
+
     document.set_folder(new_document_folder)
     db.add(document)
 
@@ -104,7 +107,7 @@ def cli(query: str,
     logger.info(new_folder)
 
     if not os.path.exists(new_folder):
-        logger.info("Creating path %s" % new_folder)
+        logger.info("Creating path %s", new_folder)
         os.makedirs(new_folder, mode=papis.config.getint('dir-umask') or 0o666)
 
     run(document, new_folder, git=git)

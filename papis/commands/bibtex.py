@@ -168,14 +168,14 @@ def cli(ctx: click.Context, no_auto_read: bool) -> None:
     ctx.obj = {'documents': []}
 
     if no_auto_read:
-        logger.info('Setting auto-read to False')
+        logger.info("Setting 'auto-read' to False")
         config.set('auto-read', 'False', section='bibtex')
 
     bibfile = config.get('default-read-bibfile', section='bibtex')
     if (bool(config.getboolean('auto-read', section='bibtex'))
             and bibfile
             and os.path.exists(bibfile)):
-        logger.info("auto reading {0}".format(bibfile))
+        logger.info("Auto-reading '%s'", bibfile)
         explorer_mgr['bibtex'].plugin.callback(bibfile)
 
 
@@ -335,7 +335,7 @@ def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
             print('Not saving..')
             return
     with open(bibfile, 'w+') as fd:
-        logger.info('Saving {1} documents in {0}..'.format(bibfile, len(docs)))
+        logger.info("Saving %d documents in '%s'", len(docs), bibfile)
         fd.write(papis.commands.export.run(docs, to_format='bibtex'))
 
 
@@ -386,18 +386,18 @@ def _unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
             if doc.get(key) == bottle.get(key):
                 indices.append(i)
                 duplis_docs.append(bottle)
-                logger.info('{}. repeated {} ⇒ {}'
-                            .format(len(duplis_docs), key, doc.get(key)))
+                logger.info(
+                        '%d repeated %s -> %s',
+                        len(duplis_docs), key, doc.get(key))
         docs = [d for (i, d) in enumerate(docs) if i not in indices]
 
-    logger.info("Unique   : {}".format(len(unique_docs)))
-    logger.info("Discarded: {}".format(len(duplis_docs)))
+    logger.info("Unique   : %d", len(unique_docs))
+    logger.info("Discarded: %d", len(duplis_docs))
 
     ctx.obj['documents'] = unique_docs
     if o:
         with open(o, 'w+') as f:
-            logger.info('Saving {1} documents in {0}..'
-                        .format(o, len(duplis_docs)))
+            logger.info("Saving %d documents in '%s'", len(duplis_docs), o)
             f.write(papis.commands.export.run(duplis_docs, to_format='bibtex'))
 
 
@@ -415,7 +415,7 @@ def _doctor(ctx: click.Context, key: List[str]) -> None:
         e.g. papis bibtex doctor -k title -k url -k doi
 
     """
-    logger.info("Checking for existence of %s", ", ".join(key))
+    logger.info("Checking for existence of keys %s", ", ".join(key))
 
     failed = [(d, keys) for d, keys in [(d, [k for k in key if not d.has(k)])
                                         for d in ctx.obj['documents']]
@@ -514,13 +514,13 @@ def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
                                 c=colorama))
             if doc.has(k):
                 fileValue = doc[k]
-                logger.info("\tkey '%s' exists", k)
+                logger.info("\tKey '%s' exists", k)
                 break
 
         if not fileValue:
             logger.info("\t"
                         "{c.Back.YELLOW}{c.Fore.BLACK}"
-                        "no pdf files will be imported"
+                        "No pdf files will be imported"
                         "{c.Style.RESET_ALL}".format(c=colorama))
         else:
             filepaths = [f for f in fileValue.split(":") if os.path.exists(f)]
@@ -528,7 +528,7 @@ def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
         if not filepaths and fileValue is not None:
             logger.info("\t"
                         "{c.Back.BLACK}{c.Fore.RED}"
-                        "I could not find a valid file in \n"
+                        "No valid file in \n"
                         "{value}{c.Style.RESET_ALL}"
                         .format(value=fileValue, c=colorama))
         else:

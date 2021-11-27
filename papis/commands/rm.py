@@ -106,7 +106,7 @@ def cli(query: str,
                 if not papis.tui.utils.confirm(
                         "Are you sure?", bottom_toolbar=tbar):
                     continue
-            logger.info("Removing %s..." % filepath)
+            logger.info("Removing '%s'...", filepath)
             run(document, filepath=filepath, git=git)
     else:
         for document in documents:
@@ -121,5 +121,6 @@ def cli(query: str,
                 if not papis.tui.utils.confirm(
                         "Are you sure?", bottom_toolbar=tbar):
                     continue
-            logger.warning("removing ...")
+
+            logger.warning("Removing ...")
             run(document, git=git)

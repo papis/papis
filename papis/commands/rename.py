@@ -34,7 +34,7 @@ def run(document: papis.document.Document,
     new_folder_path = os.path.join(subfolder, new_name)
 
     if os.path.exists(new_folder_path):
-        logger.warning("Path %s already exists" % new_folder_path)
+        logger.warning("Path '%s' already exists", new_folder_path)
         return
 
     cmd = ['git', '-C', folder] if git else []
@@ -49,7 +49,7 @@ def run(document: papis.document.Document,
             "Rename from {} to '{}'".format(folder, new_name))
 
     db.delete(document)
-    logger.debug("New document folder: {}".format(new_folder_path))
+    logger.debug("New document folder: '%s'", new_folder_path)
     document.set_folder(new_folder_path)
     db.add(document)
 

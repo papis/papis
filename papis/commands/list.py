@@ -88,7 +88,7 @@ def run(
 
     if template is not None:
         if not os.path.exists(template):
-            logger.error("Template file {} not found".format(template))
+            logger.error("Template file '%s' not found", template)
             return []
         with open(template) as fd:
             fmt = fd.read()

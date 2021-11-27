@@ -66,7 +66,7 @@ logger = logging.getLogger('run')
 
 
 def run(folder: str, command: List[str] = []) -> int:
-    logger.debug("Changing directory into %s", folder)
+    logger.debug("Changing directory to '%s'", folder)
     os.chdir(os.path.expanduser(folder))
     commandstr = " ".join(command)
     logger.debug("Command: %s", commandstr)
