@@ -15,7 +15,7 @@ import papis.importer
 import papis.plugin
 import papis.utils
 
-LOGGER = logging.getLogger("downloader")
+logger = logging.getLogger("downloader")
 
 
 def _extension_name() -> str:
@@ -348,13 +348,13 @@ def get_info_from_url(
 
     downloaders = get_matching_downloaders(url)
     if not downloaders:
-        LOGGER.warning("No matching downloader found for (%s)", url)
+        logger.warning("No matching downloader found for (%s)", url)
         return papis.importer.Context()
 
-    LOGGER.debug('Found %s matching downloaders', len(downloaders))
+    logger.debug('Found %s matching downloaders', len(downloaders))
     downloader = downloaders[0]
 
-    LOGGER.info("Using downloader '%s'", downloader)
+    logger.info("Using downloader '%s'", downloader)
     if downloader.expected_document_extension is None and \
             expected_doc_format is not None:
         downloader.expected_document_extension = expected_doc_format

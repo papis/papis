@@ -23,7 +23,7 @@ import papis.utils
 
 Option = TypeVar("Option")
 
-LOGGER = logging.getLogger('tui:widget:list')
+logger = logging.getLogger('tui:widget:list')
 
 
 def match_against_regex(
@@ -279,7 +279,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
             operator.add,
             [self.options_headers[i] for i in self.indices],
             [])  # type: List[Tuple[str, str]]
-        LOGGER.debug("Create items in %f", time.time() - _t)
+        logger.debug("Create items in %f", time.time() - _t)
         return internal_text
 
     def index_to_line(self, index: int) -> int:
@@ -295,7 +295,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         return self._indices_to_lines[index]
 
     def process_options(self) -> None:
-        LOGGER.debug('processing %s options', len(self.get_options()))
+        logger.debug('processing %s options', len(self.get_options()))
         self.marks = []
 
         def _get_linecount(_o: Option) -> int:
@@ -304,20 +304,20 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         self.options_headers_linecount = list(map(_get_linecount,
                                                   self.get_options()))
         self.max_entry_height = max(self.options_headers_linecount)
-        LOGGER.debug('processing headers')
+        logger.debug('processing headers')
         self.options_headers = []
         for _opt in self.get_options():
             prestring = self.header_filter(_opt) + '\n'
             try:
                 htmlobject = HTML(prestring).formatted_text
             except Exception as e:
-                LOGGER.error(
+                logger.error(
                     'Error processing html for \n %s \n %s', prestring, e)
                 htmlobject = [('fg:red', prestring)]
             self.options_headers += [htmlobject]
-        LOGGER.debug('got %s headers', len(self.options_headers))
-        LOGGER.debug('processing matchers')
+        logger.debug('got %s headers', len(self.options_headers))
+        logger.debug('processing matchers')
         self.options_matchers = list(
             map(self.match_filter, self.get_options()))
         self.indices = list(range(len(self.get_options())))
-        LOGGER.debug('got %s matchers', len(self.options_matchers))
+        logger.debug('got %s matchers', len(self.options_matchers))

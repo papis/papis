@@ -25,8 +25,8 @@ import papis.downloaders
 import papis.document
 import papis.database
 
-LOGGER = logging.getLogger("utils")
-LOGGER.debug("importing")
+logger = logging.getLogger("utils")
+logger.debug("importing")
 
 A = TypeVar("A")
 B = TypeVar("B")
@@ -61,12 +61,12 @@ def general_open(file_name: str,
             default_opener = papis.config.get_default_opener()
         opener = default_opener
     cmd = shlex.split("{0} '{1}'".format(opener, file_name))
-    LOGGER.debug("cmd:  %s", cmd)
+    logger.debug("cmd:  %s", cmd)
     if wait:
-        LOGGER.debug("Waiting for process to finsih")
+        logger.debug("Waiting for process to finsih")
         subprocess.call(cmd)
     else:
-        LOGGER.debug("Not waiting for process to finish")
+        logger.debug("Not waiting for process to finish")
         subprocess.Popen(
             cmd, shell=False,
             stdin=None, stdout=None, stderr=None, close_fds=True)
@@ -95,13 +95,13 @@ def get_folders(folder: str) -> List[str]:
     :returns: List of folders containing an info file.
     :rtype: list
     """
-    LOGGER.debug("Indexing folders in '{0}'".format(folder))
+    logger.debug("Indexing folders in '{0}'".format(folder))
     folders = list()
     for root, dirnames, filenames in os.walk(folder):
         if os.path.exists(
                 os.path.join(root, papis.config.getstring('info-name'))):
             folders.append(root)
-    LOGGER.debug("{0} valid folders retrieved".format(len(folders)))
+    logger.debug("{0} valid folders retrieved".format(len(folders)))
     return folders
 
 

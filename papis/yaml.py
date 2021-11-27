@@ -48,7 +48,6 @@ def yaml_to_data(
     :rtype:  dict
     :raises ValueError: If a yaml parsing error happens
     """
-    global logger
     with open(yaml_path) as fd:
         try:
             data = yaml.safe_load(fd)

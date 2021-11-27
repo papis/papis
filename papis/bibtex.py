@@ -161,7 +161,6 @@ def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
 
     # bibtexparser has too many debug messages to be useful
     logging.getLogger("bibtexparser.bparser").setLevel(logging.WARNING)
-    global logger
     if os.path.exists(bibtex):
         with open(bibtex) as fd:
             logger.debug("Reading in file %s" % bibtex)

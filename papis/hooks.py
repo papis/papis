@@ -6,7 +6,7 @@ import logging
 import papis.plugin
 
 
-LOGGER = logging.getLogger('hooks')
+logger = logging.getLogger('hooks')
 NON_STEVEDORE_HOOKS = {}  # type: Dict[str, List[Callable[[Any], None]]]
 
 
@@ -20,7 +20,7 @@ def get(name: str) -> ExtensionManager:
 
 def run(name: str, *args: Any, **kwargs: Any) -> None:
     full_name = _get_namespace(name)
-    LOGGER.debug("running hooks for %s", full_name)
+    logger.debug("running hooks for %s", full_name)
     for callback in papis.plugin.get_available_plugins(full_name):
         callback(*args, **kwargs)
     hooks = NON_STEVEDORE_HOOKS.get(full_name)
@@ -31,6 +31,6 @@ def run(name: str, *args: Any, **kwargs: Any) -> None:
 
 def add(name: str, fun: Callable[[Any], None]) -> None:
     full_name = _get_namespace(name)
-    LOGGER.debug("adding hook for %s", full_name)
+    logger.debug("adding hook for %s", full_name)
     hooks = NON_STEVEDORE_HOOKS.setdefault(full_name, [])
     hooks.append(fun)

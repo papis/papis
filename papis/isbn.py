@@ -11,7 +11,6 @@ logger = logging.getLogger('papis:isbnlib')
 
 def get_data(query: str = "",
              service: str = 'openl') -> List[Dict[str, Any]]:
-    global logger
     results = []  # type: List[Dict[str, Any]]
     logger.debug('Trying to retrieve isbn')
     isbn = isbnlib.isbn_from_words(query)

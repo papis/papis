@@ -62,14 +62,14 @@ import papis.config
 import papis.document
 import papis.database
 
-LOGGER = logging.getLogger('run')
+logger = logging.getLogger('run')
 
 
 def run(folder: str, command: List[str] = []) -> int:
-    LOGGER.debug("Changing directory into %s", folder)
+    logger.debug("Changing directory into %s", folder)
     os.chdir(os.path.expanduser(folder))
     commandstr = " ".join(command)
-    LOGGER.debug("Command: %s", commandstr)
+    logger.debug("Command: %s", commandstr)
     return os.system(commandstr)
 
 

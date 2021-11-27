@@ -78,7 +78,6 @@ def run(document: papis.document.Document,
     :document: Document object
 
     """
-    global logger
     url = None
     key = papis.config.getstring("browse-key")
 

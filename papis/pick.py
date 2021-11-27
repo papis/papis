@@ -8,7 +8,7 @@ import papis.config
 import papis.document
 import papis.plugin
 
-LOGGER = logging.getLogger("pick")
+logger = logging.getLogger("pick")
 T = TypeVar("T")
 Option = TypeVar("Option")
 
@@ -47,8 +47,8 @@ def pick(
     try:
         picker = get_picker(name)  # type: Type[Picker[Option]]
     except KeyError:
-        LOGGER.error("Invalid picker (%s)", name)
-        LOGGER.error(
+        logger.error("Invalid picker (%s)", name)
+        logger.error(
             "Registered pickers are: %s",
             papis.plugin.get_available_entrypoints(_extension_name()))
         return []

@@ -14,7 +14,7 @@ import papis.config
 import papis.commands
 
 
-LOGGER = logging.getLogger("external")
+logger = logging.getLogger("external")
 
 
 def get_command_help(path: str) -> str:
@@ -54,6 +54,6 @@ def external_cli(ctx: click.core.Context, flags: List[str]) -> None:
     if not path:
         raise Exception("Path for script {} not found".format(script))
     cmd = [path] + list(flags)
-    LOGGER.debug("Calling %s", cmd)
+    logger.debug("Calling %s", cmd)
     export_variables()
     subprocess.call(cmd)

@@ -17,8 +17,8 @@ import papis.document
 import papis.importer
 import papis.downloaders.base
 
-LOGGER = logging.getLogger("crossref")  # type: logging.Logger
-LOGGER.debug("importing")
+logger = logging.getLogger("crossref")  # type: logging.Logger
+logger.debug("importing")
 KeyConversionPair = papis.document.KeyConversionPair
 
 _filter_names = set([
@@ -195,14 +195,14 @@ def get_data(
     try:
         results = _get_crossref_works(filter=filters, **kwargs)
     except Exception as e:
-        LOGGER.error(e)
+        logger.error(e)
         return []
 
     if isinstance(results, list):
         docs = [d["message"] for d in results]
     elif isinstance(results, dict):
         if 'message' not in results.keys():
-            LOGGER.error("Error retrieving from xref: incorrect message")
+            logger.error("Error retrieving from xref: incorrect message")
             return []
         message = results['message']
         if "items" in message.keys():
@@ -210,9 +210,9 @@ def get_data(
         else:
             docs = [message]
     else:
-        LOGGER.error("Error retrieving from xref: incorrect message")
+        logger.error("Error retrieving from xref: incorrect message")
         return []
-    LOGGER.debug("Retrieved %s documents", len(docs))
+    logger.debug("Retrieved %s documents", len(docs))
     return [
         crossref_data_to_papis_data(d)
         for d in docs]
@@ -227,7 +227,6 @@ def doi_to_data(doi_string: str) -> Dict[str, Any]:
     :raises ValueError: If no data could be retrieved for the doi
 
     """
-    global LOGGER
     doi_string = doi.get_clean_doi(doi_string)
     results = get_data(dois=[doi_string])
     if results:
