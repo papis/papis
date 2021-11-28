@@ -89,7 +89,7 @@ class Database(papis.database.base.Database):
         writer = self.get_writer()
         self.add_document_with_writer(document, writer, schema_keys)
 
-        self.logger.debug("Commiting document..")
+        self.logger.debug("Committing document..")
         writer.commit()
 
     def update(self, document: papis.document.Document) -> None:
@@ -106,7 +106,7 @@ class Database(papis.database.base.Database):
             Database.get_id_key(),
             self.get_id_value(document))
 
-        self.logger.debug("Commiting deletion..")
+        self.logger.debug("Committing deletion..")
         writer.commit()
 
     def query_dict(
@@ -117,7 +117,7 @@ class Database(papis.database.base.Database):
         return self.query(query_string)
 
     def query(self, query_string: str) -> List[papis.document.Document]:
-        self.logger.debug("Querying '%s'", query_string)
+        self.logger.debug("Querying '%s'...", query_string)
 
         index = self.get_index()
         qp = whoosh.qparser.MultifieldParser(['title', 'author', 'tags'],
@@ -215,7 +215,7 @@ class Database(papis.database.base.Database):
         expensive and will be called only if no index is present, so
         at the time of building a brand new index.
         """
-        self.logger.debug('Indexing the library, this might take a while')
+        self.logger.debug('Indexing the library, this might take a while...')
         folders = sum(
                 [get_folders(d)
                     for d in self.get_dirs()], [])  # type: List[str]

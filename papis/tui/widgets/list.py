@@ -274,12 +274,12 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         where the tuples follow the FormattedText structure.
         """
         self.update_cursor()
-        _t = time.time()
+        begin_t = time.time()
         internal_text = functools.reduce(
             operator.add,
             [self.options_headers[i] for i in self.indices],
             [])  # type: List[Tuple[str, str]]
-        logger.debug("Created items in %f", time.time() - _t)
+        logger.debug("Created items in %.1f ms", 1000*(time.time() - begin_t))
         return internal_text
 
     def index_to_line(self, index: int) -> int:

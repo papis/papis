@@ -176,15 +176,14 @@ class Database(papis.database.base.Database):
             with open(cache_path, 'rb') as fd:
                 self.documents = pickle.load(fd)
         else:
-            self.logger.info('Indexing library, this might take a while')
+            self.logger.info('Indexing library, this might take a while...')
             folders = sum([
                 papis.utils.get_folders(d)
                 for d in self.get_dirs()], [])  # type: List[str]
             self.documents = papis.utils.folders_to_documents(folders)
             if use_cache:
                 self.save()
-        self.logger.debug(
-            "Loaded documents (%d documents)", len(self.documents))
+        self.logger.debug("Loaded %d documents", len(self.documents))
         return self.documents
 
     def add(self, document: papis.document.Document) -> None:

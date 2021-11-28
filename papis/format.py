@@ -12,7 +12,7 @@ logger = logging.getLogger("format")
 _FORMATER = None  # type: Optional[Formater]
 
 
-class InvalidFormatterValue(KeyError):
+class InvalidFormatterValue(Exception):
     pass
 
 

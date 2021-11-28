@@ -74,7 +74,7 @@ def stevedore_error_handler(manager: ExtensionManager,
 
 def _load_extensions(namespace: str) -> None:
     global MANAGERS
-    logger.debug("creating manager for %s", namespace)
+    logger.debug("Creating manager for %s", namespace)
     MANAGERS[namespace] = ExtensionManager(
         namespace=namespace,
         invoke_on_load=False,

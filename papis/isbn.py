@@ -11,7 +11,7 @@ logger = logging.getLogger('papis:isbnlib')
 
 def get_data(query: str = "",
              service: str = 'openl') -> List[Dict[str, Any]]:
-    logger.debug('Trying to retrieve isbn from query: %s', query)
+    logger.debug("Trying to retrieve isbn from query: '%s'", query)
 
     results = []  # type: List[Dict[str, Any]]
     isbn = isbnlib.isbn_from_words(query)
@@ -72,7 +72,7 @@ def explorer(ctx: click.core.Context, query: str, service: str) -> None:
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj['documents'] += docs
 
-    logger.info('%s documents found', len(docs))
+    logger.info('%d documents found', len(docs))
 
 
 class Importer(papis.importer.Importer):

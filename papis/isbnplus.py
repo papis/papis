@@ -115,7 +115,7 @@ def get_data(
     for book in root.find_all('book'):
         book_data = book_to_data(book)
         results.append(book_data)
-    logger.debug('%s records retrieved', len(results))
+    logger.debug('%d records retrieved', len(results))
     return results
 
 

@@ -60,7 +60,7 @@ def general_open(file_name: str,
     cmd = shlex.split("{0} '{1}'".format(opener, file_name))
     logger.debug("cmd: %s", cmd)
     if wait:
-        logger.debug("Waiting for process to finsih")
+        logger.debug("Waiting for process to finish")
         subprocess.call(cmd)
     else:
         logger.debug("Not waiting for process to finish")
@@ -214,7 +214,7 @@ def folders_to_documents(folders: List[str]) -> List[papis.document.Document]:
     begin_t = time.time()
     result = parmap(papis.document.from_folder, folders)
 
-    logger.debug("done in %.1f ms", 1000*(time.time() - begin_t))
+    logger.debug("Done in %.1f ms", 1000*(time.time() - begin_t))
     return result
 
 

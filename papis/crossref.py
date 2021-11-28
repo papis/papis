@@ -355,7 +355,7 @@ class Importer(papis.importer.Importer):
 
             if doc_url is not None:
                 self.logger.info(
-                    "Trying to download document from '%s'..", doc_url)
+                    "Trying to download document from '%s'", doc_url)
                 session = requests.Session()
                 session.headers = requests.structures.CaseInsensitiveDict({
                     "user-agent": papis.config.getstring("user-agent")})
