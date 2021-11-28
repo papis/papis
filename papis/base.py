@@ -76,7 +76,7 @@ def basedoc_to_papisdoc(basedoc: Dict[str, Any]) -> Dict[str, Any]:
         _key_translate("dcsubject", "tags", "m", lambda x: " ".join(x)),
         _key_translate("dcdoi", "doi", "m", lambda x: x[0]),
         _key_translate("dctype", "type", "m", lambda x: x[0].lower()),
-        _key_translate("dclang", "lang", "mutli", lambda x: x[0]),
+        _key_translate("dclang", "lang", "m", lambda x: x[0]),
     ]  # type: List[_key_translate]
     for kt in keys_translate:
         if kt.basekey not in basedoc.keys():

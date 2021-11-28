@@ -113,8 +113,8 @@ def explorer(ctx: click.core.Context, bibfile: str) -> None:
 
 
 def bibtexparser_entry_to_papis(entry: Dict[str, str]) -> Dict[str, str]:
-    """Convert keys of a bib entry in bibtexparser format to papis compatible
-    format.
+    """Convert keys of a bib entry in bibtexparser format to papis
+    compatible format.
 
     :param entry: Dictionary with keys of bibtexparser format.
     :type  entry: dict
@@ -221,7 +221,7 @@ def to_bibtex(document: papis.document.Document) -> str:
 
     :param document: Papis document
     :type  document: Document
-    :returns: String containing bibtex formating
+    :returns: String containing bibtex formatting
     :rtype:  str
 
     """

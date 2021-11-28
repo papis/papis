@@ -7,7 +7,7 @@ to compose urls out of these to open it.
 
 If none of the above work, then it will try to use a search engine with the
 document's information (using the ``browse-query-format``).  You can select
-wich search engine you want to use using the ``search-engine`` setting.
+which search engine you want to use using the ``search-engine`` setting.
 
 It uses the configuration option ``browse-key`` to form an url
 according to which key is given in the document. You can bypass this option

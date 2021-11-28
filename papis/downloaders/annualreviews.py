@@ -56,15 +56,15 @@ class Downloader(papis.downloaders.Downloader):
             afftext = affspan[0].text if affspan else ''
             fullname = re.sub(
                 ',', '', cleanregex.sub('', author.text.replace(afftext, '')))
-            splitted = re.split(r'\s+', fullname)
+            split_fullname = re.split(r'\s+', fullname)
             cafftext = re.sub(' ,', ',',
                               morespace.sub(' ', cleanregex.sub('', afftext)))
             if 'Reviewing Editor' in fullname:
                 data['editor'] = cleanregex.sub(
                     ' ', editorregex.sub('', fullname))
                 continue
-            given = splitted[0]
-            family = ' '.join(splitted[1:])
+            given = split_fullname[0]
+            family = ' '.join(split_fullname[1:])
             author_list.append(
                 dict(
                     given=given,

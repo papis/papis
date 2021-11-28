@@ -49,7 +49,7 @@ def general_open(file_name: str,
                  key: str,
                  default_opener: Optional[str] = None,
                  wait: bool = True) -> None:
-    """Wraper for openers
+    """Wrapper for openers
     """
     try:
         opener = papis.config.get(key)

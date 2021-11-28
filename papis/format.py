@@ -38,7 +38,7 @@ class Formater:
 
 class PythonFormater(Formater):
     """Construct a string using a pythonic format string and a document.
-    You can activate this formater by setting ``formater = python``.
+    You can activate this formatter by setting ``formater = python``.
     """
     def format(self,
                fmt: str,
@@ -56,7 +56,7 @@ class PythonFormater(Formater):
 
 class Jinja2Formater(Formater):
     """Construct a Jinja2 formated string.
-    You can activate this formater by setting ``formater = jinja2``.
+    You can activate this formatter by setting ``formater = jinja2``.
     """
 
     def __init__(self) -> None:
@@ -90,7 +90,7 @@ def _extension_name() -> str:
 
 
 def get_formater() -> Formater:
-    """Get the formater named 'name' declared as a plugin"""
+    """Get the formatter named 'name' declared as a plugin"""
     global _FORMATER
     if _FORMATER is None:
         name = papis.config.getstring("formater")
@@ -98,9 +98,9 @@ def get_formater() -> Formater:
             _FORMATER = papis.plugin.get_extension_manager(
                 _extension_name())[name].plugin()
         except KeyError:
-            logger.error("Invalid formater: %s", name)
+            logger.error("Invalid formatter: %s", name)
             raise InvalidFormatterValue(
-                "Registered formaters are: %s",
+                "Registered formatters are: %s",
                 papis.plugin.get_available_entrypoints(_extension_name()))
         logger.debug("Getting %s", name)
 

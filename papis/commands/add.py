@@ -2,7 +2,7 @@
 The add command is one of the central commands of the papis command line
 interface. It is a very versatile command with a fair amount of options.
 
-There are also customization settings availabe for this command, check out
+There are also customization settings available for this command, check out
 the :ref:`configuration page <add-command-options>` for add.
 
 Examples
@@ -272,14 +272,15 @@ def run(paths: List[str],
     :param subfolder: Folder within the library where the document's folder
         should be stored.
     :type  subfolder: str
-    :param confirm: Wether or not to ask user for confirmation before adding.
+    :param confirm: Whether or not to ask user for confirmation before adding.
     :type  confirm: bool
-    :param open_file: Wether or not to ask user for opening file before adding.
+    :param open_file: Whether or not to ask the user for opening the file
+        before adding.
     :type  open_file: bool
-    :param edit: Wether or not to ask user for editing the infor file
+    :param edit: Whether or not to ask user for editing the info file
         before adding.
     :type  edit: bool
-    :param git: Wether or not to ask user for committing before adding,
+    :param git: Whether or not to ask user for committing before adding,
         in the case of course that the library is a git repository.
     :type  git: bool
     """

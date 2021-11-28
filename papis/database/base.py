@@ -41,7 +41,8 @@ class Database(ABC):
             self,
             document: papis.document.Document,
             query_string: str) -> bool:
-        """Wether or not document matches query_string
+        """
+        Whether or not document matches query_string.
 
         :param document: Document to be matched
         :type  document: papis.document.Document

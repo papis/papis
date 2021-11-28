@@ -74,8 +74,8 @@ def run(documents: List[papis.document.Document], to_format: str) -> str:
     """
     Exports several documents into something else.
 
-    :param document: A ist of papis document
-    :type  document: [papis.document.Document]
+    :param documents: A list of papis documents
+    :type  documents: [papis.document.Document]
     :param to_format: what format to use
     :type  to_format: str
     """
