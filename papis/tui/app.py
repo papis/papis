@@ -22,7 +22,11 @@ from .widgets.list import Option, OptionsList
 from typing import (  # noqa: ignore
     Optional, Dict, Any, List, Callable, Tuple, Generic,
     Sequence)
-from typing_extensions import TypedDict
+
+try:
+    from typing import TypedDict  # Python 3.8+
+except ImportError:
+    from typing_extensions import TypedDict
 
 __all__ = [
     "Option",

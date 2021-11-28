@@ -71,7 +71,7 @@ setup(
         "pygments>=2.2.0",
         "stevedore>=1.30",
         "python-doi>=0.1.1",
-        "typing-extensions>=3.7",
+        "typing-extensions>=3.7 ; python_version<'3.8'",
         "lxml>=4.3.5 ; python_version>'3.5'",
         "python-slugify>=1.2.6 ; python_version>'3.4'",
     ],

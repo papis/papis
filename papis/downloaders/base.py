@@ -1,6 +1,10 @@
 import re
 from typing import Any, List, Dict, Iterator, Tuple, Union, Pattern
-from typing_extensions import TypedDict
+
+try:
+    from typing import TypedDict  # Python 3.8+
+except ImportError:
+    from typing_extensions import TypedDict
 
 import bs4
 
