@@ -21,7 +21,7 @@ class Downloader(papis.downloaders.Downloader):
 
     def get_doi(self) -> Optional[str]:
         url = self.uri
-        self.logger.debug('Parsing doi from {0}'.format(url))
+        self.logger.debug("Parsing DOI from '%s'", url)
         mdoi = re.match(r'.*/doi/(.*/[^?&%^$]*).*', url)
         if mdoi:
             doi = mdoi.group(1).replace("abs/", "").replace("full/", "")
@@ -37,11 +37,11 @@ class Downloader(papis.downloaders.Downloader):
     def get_document_url(self) -> Optional[str]:
         durl = ("https://www.worldscientific.com/doi/pdf/{doi}"
                 .format(doi=self.get_doi()))
-        self.logger.debug("[doc url] = %s" % durl)
+        self.logger.debug("doc url = '%s'", durl)
         return durl
 
     def get_bibtex_url(self) -> Optional[str]:
         url = "https://www.worldscientific.com/action/downloadCitation"\
               "?format=bibtex&cookieSet=1&doi=%s" % self.get_doi()
-        self.logger.debug("[bibtex url] = %s" % url)
+        self.logger.debug("bibtex url = '%s'", url)
         return url

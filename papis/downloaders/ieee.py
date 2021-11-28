@@ -44,7 +44,7 @@ class Downloader(papis.downloaders.Downloader):
         bib_url, values = self._get_bibtex_url()
         post_data = urllib.parse.urlencode(values).encode('ascii')
 
-        self.logger.debug("[bibtex url] = %s" % bib_url)
+        self.logger.debug("bibtex url = '%s'", bib_url)
 
         req = urllib.request.Request(bib_url, post_data)
         with urllib.request.urlopen(req) as response:
@@ -55,10 +55,10 @@ class Downloader(papis.downloaders.Downloader):
 
     def get_document_url(self) -> Optional[str]:
         identifier = self.get_identifier()
-        self.logger.debug("[paper id] = %s" % identifier)
+        self.logger.debug("paper id = '%s'", identifier)
         pdf_url = "{}{}{}".format(
             "http://ieeexplore.ieee.org/",
             "stampPDF/getPDF.jsp?tp=&isnumber=&arnumber=",
             identifier)
-        self.logger.debug("[pdf url] = %s" % pdf_url)
+        self.logger.debug("pdf url = '%s'", pdf_url)
         return pdf_url

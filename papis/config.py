@@ -10,7 +10,6 @@ from typing import Dict, Any, List, Optional, Callable  # noqa: ignore
 PapisConfigType = Dict[str, Dict[str, Any]]
 
 logger = logging.getLogger("config")
-logger.debug("importing")
 
 _CURRENT_LIBRARY = None  #: Current library in use
 _CONFIGURATION = None  # type: Optional[Configuration]
@@ -163,26 +162,25 @@ class Configuration(configparser.ConfigParser):
     def handle_includes(self) -> None:
         if "include" in self.keys():
             for name in self["include"]:
-                self.logger.debug("including %s" % name)
+                self.logger.debug("Including '%s'", name)
                 fullpath = os.path.expanduser(self.get("include", name))
                 if os.path.exists(fullpath):
                     self.read(fullpath)
                 else:
                     self.logger.warning(
-                        "{0} not included because it does not exist"
-                        .format(fullpath))
+                        "'%s' not included because it does not exist",
+                        fullpath)
 
     def initialize(self) -> None:
         if not os.path.exists(self.dir_location):
             self.logger.warning(
-                'Creating configuration folder in {0}'
-                .format(self.dir_location))
+                "Creating configuration folder in '%s'", self.dir_location)
             os.makedirs(self.dir_location)
         if not os.path.exists(self.scripts_location):
             os.makedirs(self.scripts_location)
         if os.path.exists(self.file_location):
             self.logger.debug(
-                'Reading configuration from {0}'.format(self.file_location))
+                "Reading configuration from '%s'", self.file_location)
             self.read(self.file_location)
             self.handle_includes()
         else:
@@ -191,12 +189,12 @@ class Configuration(configparser.ConfigParser):
                 for field in self.default_info[section]:
                     self[section][field] = self.default_info[section][field]
             with open(self.file_location, "w") as configfile:
-                self.logger.info('Creating config file at {0}'
-                                 .format(self.file_location))
+                self.logger.info(
+                        "Creating config file at '%s'", self.file_location)
                 self.write(configfile)
         configpy = get_configpy_file()
         if os.path.exists(configpy):
-            self.logger.debug('Executing {0}'.format(configpy))
+            self.logger.debug("Executing '%s'", configpy)
             with open(configpy) as fd:
                 exec(fd.read())
 
@@ -307,7 +305,7 @@ def get_config_file() -> str:
         config_file = _OVERRIDE_VARS["file"]
     else:
         config_file = os.path.join(get_config_folder(), "config")
-    logger.debug("Getting config file %s" % config_file)
+    logger.debug("Getting config file '%s'", config_file)
     return config_file
 
 
@@ -322,7 +320,7 @@ def set_config_file(filepath: str) -> None:
     """Override the main configuration file path
     """
     global _OVERRIDE_VARS
-    logger.debug("Setting config file to %s" % filepath)
+    logger.debug("Setting config file to '%s'", filepath)
     _OVERRIDE_VARS["file"] = filepath
 
 
@@ -500,7 +498,7 @@ def merge_configuration_from_path(path: Optional[str],
     """
     if path is None or not os.path.exists(path):
         return
-    logger.debug("Merging configuration from " + path)
+    logger.debug("Merging configuration from '%s'", path)
     configuration.read(path)
     configuration.handle_includes()
 
@@ -533,9 +531,9 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
     if libname not in config.keys():
         if os.path.isdir(libname):
             # Check if the path exists, then use this path as a new library
-            logger.warning("Since the path '{0}' exists, "
-                           "I'm interpreting it as a library"
-                           .format(libname))
+            logger.warning(
+                    "Since the path '%s' exists, interpreting it as a library",
+                    libname)
             library_obj = papis.library.from_paths([libname])
             name = library_obj.path_format()
             # the configuration object can only store strings

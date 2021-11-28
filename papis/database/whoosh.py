@@ -84,10 +84,12 @@ class Database(papis.database.base.Database):
 
     def add(self, document: papis.document.Document) -> None:
         schema_keys = self.get_schema_init_fields().keys()
-        self.logger.debug("adding document")
+
+        self.logger.debug("Adding document...")
         writer = self.get_writer()
         self.add_document_with_writer(document, writer, schema_keys)
-        self.logger.debug("commiting document..")
+
+        self.logger.debug("Committing document..")
         writer.commit()
 
     def update(self, document: papis.document.Document) -> None:
@@ -98,11 +100,13 @@ class Database(papis.database.base.Database):
 
     def delete(self, document: papis.document.Document) -> None:
         writer = self.get_writer()
-        self.logger.debug("deleting document..")
+
+        self.logger.debug("Deleting document..")
         writer.delete_by_term(
             Database.get_id_key(),
             self.get_id_value(document))
-        self.logger.debug("commiting deletion..")
+
+        self.logger.debug("Committing deletion..")
         writer.commit()
 
     def query_dict(
@@ -113,7 +117,8 @@ class Database(papis.database.base.Database):
         return self.query(query_string)
 
     def query(self, query_string: str) -> List[papis.document.Document]:
-        self.logger.debug('Query string %s' % query_string)
+        self.logger.debug("Querying '%s'...", query_string)
+
         index = self.get_index()
         qp = whoosh.qparser.MultifieldParser(['title', 'author', 'tags'],
                                              schema=self.get_schema())
@@ -164,7 +169,7 @@ class Database(papis.database.base.Database):
         """
         self.logger.debug('Creating index...')
         if not os.path.exists(self.index_dir):
-            self.logger.debug('Creating dir %s' % self.index_dir)
+            self.logger.debug("Creating index directory '%s'", self.index_dir)
             os.makedirs(self.index_dir)
         whoosh.index.create_in(self.index_dir, self.create_schema())
 
@@ -239,9 +244,9 @@ class Database(papis.database.base.Database):
             # aren't the same, then we have to rebuild the
             # database.
             if user_field_names != db_field_names:
+                self.logger.debug(
+                        "Rebuilding database because field names do not match")
                 self.rebuild()
-                self.logger.debug("Rebuilt database because field names"
-                                  "don't match")
             else:
                 # Otherwise, verify that the fields are
                 # all the same and rebuild if any have
@@ -249,9 +254,11 @@ class Database(papis.database.base.Database):
                 rebuilt_db = False
                 for field in user_field_names:
                     if user_fields[field] != db_fields[field]:
+                        self.logger.debug(
+                                "Rebuilding database because "
+                                "field types do not match")
+
                         self.rebuild()
-                        self.logger.debug("Rebuilt DB because field types"
-                                          " don't match")
                         rebuilt_db = True
                         break
 
@@ -297,7 +304,7 @@ class Database(papis.database.base.Database):
         :rtype:  whoosh.fields.Schema
         """
         from whoosh.fields import Schema
-        self.logger.debug('Creating schema')
+        self.logger.debug('Creating schema...')
         fields = self.get_schema_init_fields()
         schema = Schema(**fields)
         return schema
@@ -306,16 +313,17 @@ class Database(papis.database.base.Database):
         """Returns the arguments to be passed to the whoosh schema
         object instantiation found in the method `get_schema`.
         """
-        # This we need for the eval code beneath
         from whoosh.fields import TEXT, ID, KEYWORD, STORED  # noqa: F401
         # This part is non-negotiable
         fields = {Database.get_id_key(): ID(stored=True, unique=True)}
+
         # TODO: this is a security risk, find a way to fix it
         user_prototype = eval(
             papis.config.getstring('whoosh-schema-prototype'))  # KeysView[str]
         fields.update(user_prototype)
+
         fields_list = papis.config.getlist('whoosh-schema-fields')
         for field in fields_list:
             fields.update({field: TEXT(stored=True)})
-        # self.logger.debug('Schema prototype: {}'.format(fields))
+
         return fields

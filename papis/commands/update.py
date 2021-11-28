@@ -41,7 +41,6 @@ Cli
 """
 
 import click
-import colorama
 import logging
 
 import papis.utils
@@ -138,8 +137,8 @@ def cli(query: str,
         ctx = papis.importer.Context()
 
         logger.info('Updating '
-                    '{c.Back.WHITE}{c.Fore.BLACK}{0}{c.Style.RESET_ALL}'
-                    .format(papis.document.describe(document), c=colorama))
+                    '{c.Back.WHITE}{c.Fore.BLACK}%s{c.Style.RESET_ALL}',
+                    papis.document.describe(document))
 
         ctx.data.update(document)
         if set_tuples:
@@ -175,21 +174,20 @@ def cli(query: str,
 
         if matching_importers:
             logger.info(
-                'There are {0} possible matchings'
-                .format(len(matching_importers)))
+                'There are %d possible matchings', len(matching_importers))
 
             for importer in matching_importers:
                 if importer.ctx.data:
                     logger.info(
-                        'Merging data from importer {0}'.format(importer.name))
+                        "Merging data from importer '%s'", importer.name)
                     papis.utils.update_doc_from_data_interactively(
                         ctx.data,
                         importer.ctx.data,
                         str(importer))
                 if importer.ctx.files:
                     logger.info(
-                        'Got files {0} from importer {1}'
-                        .format(importer.ctx.files, importer.name))
+                        "Got files %s from importer '%s'",
+                        importer.ctx.files, importer.name)
                     for f in importer.ctx.files:
                         papis.utils.open_file(f)
                         if papis.tui.utils.confirm("Use this file?"):

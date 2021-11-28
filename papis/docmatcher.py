@@ -116,8 +116,8 @@ class DocMatcher(object):
 
 def parse_query(query_string: str) -> List[List[str]]:
     import pyparsing
-    logger = logging.getLogger('query_parser')
-    logger.debug('Parsing search')
+    logger = logging.getLogger('parse_query')
+    logger.debug("Parsing query: '%s'", query_string)
 
     papis_key_word = pyparsing.Word(pyparsing.alphanums + '-._/')
     papis_value_word = pyparsing.Word(pyparsing.alphanums + '-._/()')
@@ -143,5 +143,5 @@ def parse_query(query_string: str) -> List[List[str]]:
     )
     parsed = papis_query.parseString(query_string)  # type: List[List[str]]
 
-    logger.debug('Parsed query = %s' % parsed)
+    logger.debug("Parsed query: '%s'", parsed)
     return parsed

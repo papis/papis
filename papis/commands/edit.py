@@ -55,6 +55,7 @@ def edit_notes(document: papis.document.Document,
                git: bool = False) -> None:
     logger = logging.getLogger('edit:notes')
     logger.debug("Editing notes")
+
     if not document.has("notes"):
         document["notes"] = papis.config.getstring("notes-name")
         document.save()
@@ -64,7 +65,7 @@ def edit_notes(document: papis.document.Document,
     )
 
     if not os.path.exists(notes_path):
-        logger.debug("Creating {0}".format(notes_path))
+        logger.debug("Creating '%s'", notes_path)
         open(notes_path, "w+").close()
 
     papis.api.edit_file(notes_path)

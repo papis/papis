@@ -68,13 +68,13 @@ MANAGERS = dict()  # type: Dict[str, ExtensionManager]
 
 def stevedore_error_handler(manager: ExtensionManager,
                             entrypoint: str, exception: str) -> None:
-    logger.error("Error while loading entrypoint [%s]", entrypoint)
+    logger.error("Error while loading entrypoint '%s'", entrypoint)
     logger.error(exception)
 
 
 def _load_extensions(namespace: str) -> None:
     global MANAGERS
-    logger.debug("creating manager for {0}".format(namespace))
+    logger.debug("Creating manager for %s", namespace)
     MANAGERS[namespace] = ExtensionManager(
         namespace=namespace,
         invoke_on_load=False,

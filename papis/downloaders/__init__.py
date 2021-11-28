@@ -15,7 +15,7 @@ import papis.importer
 import papis.plugin
 import papis.utils
 
-LOGGER = logging.getLogger("downloader")
+logger = logging.getLogger("downloader")
 
 
 def _extension_name() -> str:
@@ -39,7 +39,7 @@ class Importer(papis.importer.Importer):
         )
 
     def fetch(self) -> None:
-        self.logger.info("attempting to import from url %s", self.uri)
+        self.logger.info("Attempting to import from url '%s'", self.uri)
         self.ctx = get_info_from_url(self.uri) or papis.importer.Context()
 
     def fetch_data(self) -> None:
@@ -63,8 +63,9 @@ class Downloader(papis.importer.Importer):
                                          ctx=ctx,
                                          name=name
                                          or os.path.basename(__file__))
-        self.logger = logging.getLogger("downloader:"+self.name)
-        self.logger.debug("uri {0}".format(uri))
+        self.logger = logging.getLogger("downloader:{}".format(self.name))
+        self.logger.debug("uri '%s'", uri)
+
         self.expected_document_extension = None  # type: Optional[str]
         self.priority = 1  # type: int
         self._soup = None  # type: Optional[bs4.BeautifulSoup]
@@ -130,7 +131,7 @@ class Downloader(papis.importer.Importer):
                 with tempfile.NamedTemporaryFile(
                         mode="wb+", delete=False) as f:
                     f.write(doc_rawdata)
-                    self.logger.info("Saving downloaded file in %s", f.name)
+                    self.logger.info("Saving downloaded file in '%s'", f.name)
                     self.ctx.files.append(f.name)
 
     def fetch(self) -> None:
@@ -191,7 +192,7 @@ class Downloader(papis.importer.Importer):
         if not url:
             return
         res = self.session.get(url, cookies=self.cookies)
-        self.logger.info("downloading bibtex from {0}".format(url))
+        self.logger.info("Downloading bibtex from '%s'", url)
         self.bibtex_data = res.content.decode()
 
     def get_document_url(self) -> Optional[str]:
@@ -246,7 +247,7 @@ class Downloader(papis.importer.Importer):
         url = self.get_document_url()
         if not url:
             return
-        self.logger.info("downloading file from {0}".format(url))
+        self.logger.info("Downloading file from '%s'", url)
         res = self.session.get(url, cookies=self.cookies)
         self.document_data = res.content
 
@@ -261,9 +262,9 @@ class Downloader(papis.importer.Importer):
         """
         def print_warning() -> None:
             self.logger.error(
-                "The downloaded data does not seem to be of"
-                "the correct type ({})"
-                .format(self.expected_document_extension))
+                "The downloaded data does not seem to be of "
+                "the correct type ('%s')",
+                self.expected_document_extension)
 
         if self.expected_document_extension is None:
             return True
@@ -275,8 +276,8 @@ class Downloader(papis.importer.Importer):
             return False
 
         self.logger.debug(
-            'retrieved kind of document seems to be {0}'
-            .format(retrieved_kind.mime))
+            "Retrieved kind of document seems to be '%s'",
+            retrieved_kind.mime)
 
         if not isinstance(self.expected_document_extension, list):
             expected_document_extensions = [self.expected_document_extension]
@@ -348,13 +349,13 @@ def get_info_from_url(
 
     downloaders = get_matching_downloaders(url)
     if not downloaders:
-        LOGGER.warning("No matching downloader found for (%s)", url)
+        logger.warning("No matching downloader found for '%s'", url)
         return papis.importer.Context()
 
-    LOGGER.debug('Found %s matching downloaders', len(downloaders))
+    logger.debug('Found %d matching downloaders', len(downloaders))
     downloader = downloaders[0]
 
-    LOGGER.info("Using downloader '%s'", downloader)
+    logger.info("Using downloader '%s'", downloader)
     if downloader.expected_document_extension is None and \
             expected_doc_format is not None:
         downloader.expected_document_extension = expected_doc_format

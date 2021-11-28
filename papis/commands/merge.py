@@ -49,10 +49,10 @@ def run(keep: Document,
             keep["files"] += [os.path.basename(f)]
     update.run(keep, data, git=git)
     if not keep_both:
-        logger.info("removing {}".format(erase))
+        logger.info("Removing '%s'", erase)
         rm.run(erase, git=git)
     else:
-        logger.info("keeping both documents")
+        logger.info("Keeping both documents")
 
 
 @click.command("merge")
@@ -109,7 +109,9 @@ def cli(query: str,
         documents += other_documents
 
     if len(documents) != 2:
-        logger.error("You have to pick exactly two documents!")
+        logger.error(
+                "You have to pick exactly two documents (picked %d)!",
+                len(documents))
         return
 
     a = documents[0]
@@ -152,7 +154,7 @@ def cli(query: str,
             keep["files"] += [os.path.basename(f)]
         keep.update(data_a)
         keep.save()
-        logger.info("saving the new document in %s", out)
+        logger.info("Saving the new document in '%s'", out)
         return
 
     run(keep, erase, data_a, files, keep_both, git)

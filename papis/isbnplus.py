@@ -69,7 +69,7 @@ import click
 import papis.config
 import papis.document
 
-LOGGER = logging.getLogger('isbnplus')
+logger = logging.getLogger('isbnplus')
 
 ISBNPLUS_KEY = "98a765346bc0ffee6ede527499b6a4ee"  # type: str
 ISBNPLUS_APPID = "4846a7d1"  # type: str
@@ -104,7 +104,7 @@ def get_data(
         {x: dict_params[x] for x in dict_params if dict_params[x]}
     )
     req_url = ISBNPLUS_BASEURL + "search?" + params
-    LOGGER.debug("url = %s", req_url)
+    logger.debug("url = '%s'", req_url)
     url = urllib.request.Request(
         req_url,
         headers={'User-Agent': papis.config.getstring('user-agent')}
@@ -115,7 +115,7 @@ def get_data(
     for book in root.find_all('book'):
         book_data = book_to_data(book)
         results.append(book_data)
-    LOGGER.debug('%s records retrieved', len(results))
+    logger.debug('%d records retrieved', len(results))
     return results
 
 
@@ -170,4 +170,5 @@ def explorer(ctx: click.core.Context,
         data = []
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj['documents'] += docs
+
     logger.info('%s documents found', len(docs))

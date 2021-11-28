@@ -29,7 +29,7 @@ class Downloader(papis.downloaders.Downloader):
         doi = self.get_doi()
         if doi:
             durl = 'https://iopscience.iop.org/article/{0}/pdf'.format(doi)
-            self.logger.debug("doc url = %s" % durl)
+            self.logger.debug("doc url = '%s'", durl)
             return durl
         else:
             return None
@@ -41,7 +41,7 @@ class Downloader(papis.downloaders.Downloader):
         doi = self.get_doi()
         if doi:
             article_id = doi.replace('10.1088/', '')
-            self.logger.debug("article_id = %s" % article_id)
+            self.logger.debug("article_id = '%s'", article_id)
             return article_id
         else:
             return None
@@ -55,7 +55,7 @@ class Downloader(papis.downloaders.Downloader):
                 "&exportFormat=iopexport_bib&exportType=abs"
                 "&navsubmit=Export%2Babstract"
             )
-            self.logger.debug("bibtex url = %s" % url)
+            self.logger.debug("bibtex url = '%s'", url)
             return url
         else:
             return None

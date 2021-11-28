@@ -57,7 +57,7 @@ def get_data(query: str = "") -> List[Dict[str, Any]]:
     params = urllib.parse.urlencode(dict_params)
     main_url = "https://dissem.in/api/search/?"
     req_url = main_url + params
-    logger.debug("url = {}".format(req_url))
+    logger.debug("url = '%s'", req_url)
     url = urllib.request.Request(
         req_url,
         headers={
@@ -84,7 +84,9 @@ def explorer(ctx: click.core.Context, query: str) -> None:
     """
     logger = logging.getLogger('explore:dissemin')
     logger.info('Looking up...')
+
     data = get_data(query=query)
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj['documents'] += docs
-    logger.info('{} documents found'.format(len(docs)))
+
+    logger.info('%s documents found', len(docs))

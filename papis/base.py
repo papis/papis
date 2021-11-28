@@ -13,32 +13,33 @@ from typing import Optional, Dict, Any, List, Callable, NamedTuple
 
 import click
 
-LOGGER = logging.getLogger('base')
+logger = logging.getLogger('base')
 
 
-def get_data(query: str = "", max: int = 20) -> List[Dict[str, Any]]:
+def get_data(query: str = "", hits: int = 20) -> List[Dict[str, Any]]:
     base_baseurl = (
         "https://api.base-search.net/"
         "cgi-bin/BaseHttpSearchInterface.fcgi/"
     )
 
-    LOGGER.warning('BASE engine in papis is experimental')
+    logger.warning('BASE engine in papis is experimental')
 
-    if max > 125:
-        LOGGER.error('BASE only allows a maximum of 125 hits')
-        max = 125
+    if hits > 125:
+        logger.error(
+                'BASE only allows a maximum of 125 hits, got %d hits', hits)
+        hits = 125
 
     dict_params = {
         "func": "PerformSearch",
         "query": query,
         "format": "json",
-        "hits": max,
+        "hits": hits,
     }
     params = urllib.parse.urlencode(
         {x: dict_params[x] for x in dict_params if dict_params[x]}
     )
     req_url = base_baseurl + "search?" + params
-    LOGGER.debug("url = " + req_url)
+    logger.debug("url = '%s'", req_url)
     url = urllib.request.Request(
         req_url,
         headers={
@@ -47,7 +48,7 @@ def get_data(query: str = "", max: int = 20) -> List[Dict[str, Any]]:
     )
     jsondoc = json.loads(urllib.request.urlopen(url).read().decode())
     docs = jsondoc.get('response').get('docs')
-    LOGGER.info("Retrieved {0} documents".format(len(docs)))
+    logger.info("Retrieved %d documents", len(docs))
     return list(map(basedoc_to_papisdoc, docs))
 
 
@@ -106,7 +107,9 @@ def explorer(ctx: click.core.Context, query: str) -> None:
     import papis.document
     logger = logging.getLogger('explore:base')
     logger.info('Looking up...')
+
     data = get_data(query=query)
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj['documents'] += docs
-    logger.info('{} documents found'.format(len(docs)))
+
+    logger.info('%d documents found', len(docs))

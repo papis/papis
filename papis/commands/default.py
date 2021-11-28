@@ -48,6 +48,12 @@ import click
 import click.core
 
 
+class ColoramaFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord) -> str:
+        record.msg = record.msg.format(c=colorama)
+        return super().format(record)
+
+
 class MultiCommand(click.core.MultiCommand):
 
     scripts = papis.commands.get_scripts()
@@ -93,7 +99,7 @@ class MultiCommand(click.core.MultiCommand):
                 ))
             # return the match if there was only one match
             if len(matches) == 1:
-                self.logger.warning("I suppose you meant: '%s'", *matches)
+                self.logger.warning("I suppose you meant: '%s'", matches[0])
                 script = self.scripts[matches[0]]
             else:
                 return None
@@ -225,11 +231,15 @@ def run(verbose: bool,
                   )
     if verbose:
         log = "DEBUG"
-        log_format = "%(relativeCreated)d-"+log_format
-    logging.basicConfig(level=getattr(logging, log),
-                        format=log_format,
-                        filename=logfile,
-                        filemode='w+' if logfile is not None else 'a')
+        log_format = "%(relativeCreated)d-{}".format(log_format)
+
+    if logfile is None:
+        handler = logging.StreamHandler()
+        handler.setFormatter(ColoramaFormatter(log_format))
+    else:
+        handler = logging.FileHandler(logfile, mode="a")
+
+    logging.basicConfig(level=getattr(logging, log), handlers=[handler])
     logger = logging.getLogger('default')
 
     if config:
@@ -237,7 +247,7 @@ def run(verbose: bool,
         papis.config.reset_configuration()
 
     for pair in set_list:
-        logger.debug('Setting "{0}" to "{1}"'.format(*pair))
+        logger.debug("Setting '%s' to '%s'", *pair)
         papis.config.set(pair[0], pair[1])
 
     if pick_lib:

@@ -8,8 +8,12 @@ from papis.document import Document
 
 
 FormatDocType = Union[Document, Dict[str, Any]]
-LOGGER = logging.getLogger("format")
+logger = logging.getLogger("format")
 _FORMATER = None  # type: Optional[Formater]
+
+
+class InvalidFormatterValue(Exception):
+    pass
 
 
 class Formater:
@@ -58,13 +62,12 @@ class Jinja2Formater(Formater):
     def __init__(self) -> None:
         try:
             import jinja2
-        except ImportError as exception:
-            LOGGER.exception("""
+        except ImportError:
+            logger.exception("""
             You're trying to format strings using jinja2
             Jinja2 is not installed by default, so just install it
                 pip3 install jinja2
             """)
-            str(exception)
         else:
             self.jinja2 = jinja2
 
@@ -95,11 +98,12 @@ def get_formater() -> Formater:
             _FORMATER = papis.plugin.get_extension_manager(
                 _extension_name())[name].plugin()
         except KeyError:
-            LOGGER.error("Invalid formater (%s)", name)
-            raise Exception(
+            logger.error("Invalid formater: %s", name)
+            raise InvalidFormatterValue(
                 "Registered formaters are: %s",
                 papis.plugin.get_available_entrypoints(_extension_name()))
-        LOGGER.debug("Getting {}".format(name))
+        logger.debug("Getting %s", name)
+
     return _FORMATER
 
 
