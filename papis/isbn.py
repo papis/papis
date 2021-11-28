@@ -26,7 +26,7 @@ def get_data(query: str = "",
 
 def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Convert data from isbnlib into papis formated data
+    Convert data from isbnlib into papis formatted data.
 
     :param data: Dictionary with data
     :type  data: dict

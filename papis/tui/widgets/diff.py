@@ -145,7 +145,7 @@ def diffdict(dicta: Dict[str, Any],
     :type  namea: str
     :param namea: Label to be shown for dictionary b
     :type  namea: str
-    :returns: A dictionary containig the base data of dicta plus data
+    :returns: A dictionary containing the base data of dicta plus data
         from dictb if this was chosen.
     :rtype:  return_type
     """

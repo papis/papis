@@ -252,7 +252,7 @@ Bibtex options
     .. note::
         Special characters will be replaced when generating the ``ref`` entry
         (e.g.  ``Ö → O``, ``.`` and other symbols will be striped from the
-        string). 
+        string).
 
     If you want to add some punctuation, dots (``.``) and underscores (``_``)
     can be escaped by a backslash. For example,
@@ -269,7 +269,7 @@ Bibtex options
     If set to ``True``, every time you run ``papis add``
     the flag ``--confirm`` will be added automatically. If is set to ``True``
     and you add it, i.e., you run ``papis add --confirm``, then it will
-    fave the contrary effect, i.e., it will not ask for confirmation.
+    have the contrary effect, i.e., it will not ask for confirmation.
 
 .. papis-config:: add-folder-name
     :default: empty string
@@ -290,7 +290,7 @@ Bibtex options
     If set to ``True``, every time you run ``papis add``
     the flag ``--interactive`` will be added automatically. If is set to
     ``True`` and you add it, i.e., you run ``papis add --interactive``, then it
-    will fave the contrary effect, i.e., it will not run in interactive mode.
+    will have the contrary effect, i.e., it will not run in interactive mode.
 
 .. papis-config:: add-edit
 
@@ -606,9 +606,9 @@ In comparison to the *built-in* papis tui the advantage of the fzf
 picker is that it is much faster, however a disadvantage is that it is
 restricted to one-line entries.
 Also it is important to notice that ``fzf`` will **only**
-match against what is shown on the terminal screen, as oposed to the papis
-matcher, that can match agains the **whole** title and **whole** author
-text since this is controled by the ``match-format`` setting.
+match against what is shown on the terminal screen, as opposed to the papis
+matcher, that can match against the **whole** title and **whole** author
+text since this is controlled by the ``match-format`` setting.
 However, for many uses it might not bother the user to have this limitation
 of fzf.
 
@@ -618,7 +618,7 @@ of fzf.
 
 .. papis-config:: fzf-extra-flags
 
-    Extra flags to be passed to fzf everytime it gets called.
+    Extra flags to be passed to fzf every time it gets called.
 
 .. papis-config:: fzf-extra-bindings
 
@@ -672,7 +672,7 @@ by a newline. You can try this out and play with ``fzf`` customizations.
 Please note that ``bottom:wrap:20%%`` has two ``%`` since the config file
 interpolator uses ``%`` as a reserved symbol, so it must be escaped
 by writing two of them.
-    
+
 Other
 -----
 
@@ -722,13 +722,13 @@ Other
 
 .. papis-config:: time-stamp
 
-  Wether or not to add a timestamp to a document when is being added to
+  Whether or not to add a timestamp to a document when is being added to
   papis. If documents have a timestamp, then they will be sortable
   using `--sort time-added` option.
 
 .. papis-config:: formater
 
-    The formating language in python can be configured through plugins.
+    The formatting language in python can be configured through plugins.
 
     .. autoclass:: papis.format.PythonFormater
 

@@ -227,7 +227,7 @@ class Database(papis.database.base.Database):
         writer.commit()
 
     def initialize(self) -> None:
-        """Function to be called everytime a database object is created.
+        """Function to be called every time a database object is created.
         It checks if an index exists, if not, it creates one and
         indexes the library.
 

@@ -150,7 +150,7 @@ def generate_profile_writing_function(profiler: cProfile.Profile,
 @click.option(
     "-l",
     "--lib",
-    help="Choose a library name or library path (unamed library)",
+    help="Choose a library name or library path (unnamed library)",
     default=lambda: papis.config.getstring("default-library"))
 @click.option(
     "-c",

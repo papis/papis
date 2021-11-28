@@ -42,7 +42,7 @@ def text_area(title: str,
     :type  lexer_name: str
     :param height: Max height of the text area
     :type  height: int
-    :param full_screen: Wether or not the text area should be full screen.
+    :param full_screen: Whether or not the text area should be full screen.
     :type  full_screen: bool
     """
     from prompt_toolkit import Application

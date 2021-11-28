@@ -11,14 +11,18 @@ class DocMatcher(object):
     module.
 
     The static methods are to be used as follows:
-    First the search string has to be set,
+    First the search string has to be set::
+
         DocMatcher.set_search(search_string)
-    and then the parse method should be called in order to decypher the
-    search_string,
+
+    and then the parse method should be called in order to decipher the
+    *search_string*::
+
         DocMatcher.parse()
-    Now the DocMatcher is ready to match documents with the input query
-    via the `return_if_match` method, which is used to parallelize the
-    matching.
+
+    Now the :class:`DocMatcher` is ready to match documents with the input
+    query via the :meth:`DocMatcher.return_if_match` method, which is used to
+    parallelize the matching.
     """
     search = ""  # type: str
     parsed_search = []  # type: List[Any]

@@ -7,7 +7,7 @@ Key             Description
 q               Keywords, search for everything
 p               Current page number, default is 1
 a               Keywords, search for Author
-c               Keywords, search for Catagory
+c               Keywords, search for Category
 s               Keywords, search for book series
 t               Keywords, search for book title
 order           published - return results by published years, newest first
@@ -20,7 +20,7 @@ app_id          Application ID, required, you can get your application ID after
 app_key         Application Key, required, you can get your application key
                 after login
 
-An example of sucessful returns:
+An example of successful returns:
 ================================
 
     <?xml version="1.0" encoding="UTF-8"?>

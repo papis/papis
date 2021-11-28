@@ -56,7 +56,7 @@ with this setup, you can just do
 Check references quality
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-When you're collaborating with someone, you might come accross malformed
+When you're collaborating with someone, you might come across malformed
 or incomplete references. Most journals want to have all the ``doi``s
 and urls available. You can automate this diagnostic with
 
@@ -187,7 +187,7 @@ cli.add_command(explorer_mgr['bibtex'].plugin, 'read')
 @papis.cli.all_option()
 @click.pass_context
 def _add(ctx: click.Context, query: str, _all: bool) -> None:
-    """Add a refrence to the bibtex file"""
+    """Add a reference to the bibtex file"""
     docs = papis.api.get_documents_in_lib(search=query)
     if not _all:
         docs = list(papis.api.pick_doc(docs))
