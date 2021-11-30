@@ -1,4 +1,4 @@
-import yaml
+import yaml                                 # lgtm [py/import-and-import-from]
 import logging
 import click
 import os
@@ -8,6 +8,13 @@ import papis.utils
 import papis.config
 import papis.importer
 import papis.document
+
+# NOTE: try to use the CLoader when possible, as it's a lot faster than the
+# python version, at least at the time of writing
+try:
+    from yaml import CSafeLoader as Loader
+except ImportError:
+    from yaml import SafeLoader as Loader  # type: ignore[misc]
 
 logger = logging.getLogger("yaml")
 
@@ -50,11 +57,12 @@ def yaml_to_data(
     """
     with open(yaml_path) as fd:
         try:
-            data = yaml.safe_load(fd)
+            data = yaml.load(fd, Loader=Loader)
         except Exception as e:
             if raise_exception:
                 raise ValueError(e)
-            logger.error("Yaml syntax error. %s", e)
+
+            logger.error("YAML syntax error. %s", e)
             return dict()
         else:
             assert isinstance(data, dict)
@@ -77,8 +85,9 @@ def explorer(ctx: click.Context, yamlfile: str) -> None:
     logger = logging.getLogger('explore:yaml')
     logger.info("Reading in yaml file '%s'", yamlfile)
 
-    docs = [papis.document.from_data(d)
-            for d in yaml.safe_load_all(open(yamlfile))]
+    with open(yamlfile) as fd:
+        docs = [papis.document.from_data(d)
+                for d in yaml.load_all(fd, Loader=Loader)]
     ctx.obj['documents'] += docs
 
     logger.info('%d documents found', len(docs))
