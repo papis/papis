@@ -47,9 +47,13 @@ Cli
     :prog: papis list
 """
 
-import logging
-import papis
 import os
+import logging
+from typing import List, Optional, Union, Sequence
+
+import click
+
+import papis
 import papis.utils
 import papis.strings
 import papis.config
@@ -59,9 +63,6 @@ import papis.downloaders
 import papis.cli
 import papis.pick
 import papis.format
-import click
-
-from typing import List, Optional, Union, Sequence
 
 logger = logging.getLogger('list')
 

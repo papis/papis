@@ -1,7 +1,7 @@
 import re
-import papis.downloaders.base
-import bs4
 from typing import Optional
+
+import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):
@@ -38,6 +38,8 @@ class Downloader(papis.downloaders.Downloader):
         >>> d.get_document_url()
         'https://pastel.archives-ouvertes.fr/tel-00005590v2/file/Cances.pdf'
         """
+        import bs4
+
         # TODO: Simplify this function for typing
         raw_data = self.session.get(self.uri).content.decode('utf-8')
         soup = bs4.BeautifulSoup(raw_data, "html.parser")

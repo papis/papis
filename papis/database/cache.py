@@ -1,18 +1,15 @@
-import pickle
-import logging
 import os
+import re
+import sys
+import logging
+from typing import List, Optional, Match, Dict, Tuple
+
 import papis.utils
 import papis.docmatcher
 import papis.document
 import papis.config
 import papis.format
 import papis.database.base
-import re
-import time
-import sys
-
-
-from typing import List, Optional, Match, Dict, Tuple
 
 
 logger = logging.getLogger("cache")
@@ -80,6 +77,8 @@ def filter_documents(
     papis.docmatcher.DocMatcher.set_search(search)
     papis.docmatcher.DocMatcher.parse()
     papis.docmatcher.DocMatcher.set_matcher(match_document)
+
+    import time
     begin_t = 1000 * time.time()
     # FIXME: find a better solution for this that works for both OSes
     if sys.platform == "win32":
@@ -173,6 +172,8 @@ class Database(papis.database.base.Database):
         if use_cache and os.path.exists(cache_path):
             self.logger.debug(
                 "Getting documents from cache in '%s'", cache_path)
+
+            import pickle
             with open(cache_path, 'rb') as fd:
                 self.documents = pickle.load(fd)
         else:
@@ -259,6 +260,7 @@ class Database(papis.database.base.Database):
         docs = self.get_documents()
         self.logger.debug('Saving %d documents...', len(docs))
 
+        import pickle
         path = self._get_cache_file_path()
         with open(path, "wb+") as fd:
             pickle.dump(docs, fd)

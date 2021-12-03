@@ -2,13 +2,10 @@ import re
 import os
 import logging
 import tempfile
-from typing import Set, List, Dict, Any, Optional, Tuple  # noqa: ignore
+from typing import Set, List, Dict, Any, Optional, Tuple, TYPE_CHECKING
 
-import requests
-import requests.structures
-import click
 import doi
-import habanero
+import click
 
 import papis.config
 import papis.pick
@@ -16,6 +13,10 @@ import papis.filetype
 import papis.document
 import papis.importer
 import papis.downloaders.base
+
+if TYPE_CHECKING:
+    import habanero
+
 
 logger = logging.getLogger("crossref")  # type: logging.Logger
 KeyConversionPair = papis.document.KeyConversionPair
@@ -158,8 +159,8 @@ def crossref_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
     return new_data
 
 
-def _get_crossref_works(
-        **kwargs: Any) -> habanero.request_class.Request:
+def _get_crossref_works(**kwargs: Any) -> "habanero.request_class.Request":
+    import habanero
     cr = habanero.Crossref()
     return cr.works(**kwargs)
 
@@ -356,7 +357,11 @@ class Importer(papis.importer.Importer):
             if doc_url is not None:
                 self.logger.info(
                     "Trying to download document from '%s'", doc_url)
+
+                import requests
                 session = requests.Session()
+
+                import requests.structures
                 session.headers = requests.structures.CaseInsensitiveDict({
                     "user-agent": papis.config.getstring("user-agent")})
 

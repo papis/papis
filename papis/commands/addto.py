@@ -16,21 +16,20 @@ Cli
 .. click:: papis.commands.addto:cli
     :prog: papis addto
 """
-from string import ascii_lowercase
 import os
-import shutil
+import logging
+from typing import List, Optional
+
+import click
+
 import papis.pick
 import papis.utils
 import papis.document
 import papis.git
 import papis.config
 import papis.commands.add
-import logging
 import papis.cli
-import click
 import papis.strings
-
-from typing import List, Optional
 
 
 def run(document: papis.document.Document,
@@ -38,6 +37,7 @@ def run(document: papis.document.Document,
         git: bool = False) -> None:
     logger = logging.getLogger('addto')
 
+    from string import ascii_lowercase
     g = papis.utils.create_identifier(ascii_lowercase)
     string_append = ''
 
@@ -82,6 +82,7 @@ def run(document: papis.document.Document,
                 "%s already exists, ignoring...", end_document_path)
             continue
 
+        import shutil
         logger.info("[CP] '%s' to '%s'", in_file_path, end_document_path)
         shutil.copy(in_file_path, end_document_path)
 

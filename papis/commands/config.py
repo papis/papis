@@ -35,10 +35,12 @@ Cli
 .. click:: papis.commands.config:cli
     :prog: papis config
 """
-import papis.commands
 import logging
-import click
 from typing import Optional
+
+import click
+
+import papis.commands
 
 
 def run(option_string: str) -> Optional[str]:

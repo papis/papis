@@ -59,15 +59,16 @@ An example of successful returns:
     </book>
     ...
 """
-import urllib.parse
-import urllib.request  # import urlencode
 import logging
-from typing import List, Dict, Any
+from typing import List, Dict, Any, TYPE_CHECKING
 
-import bs4
 import click
+
 import papis.config
 import papis.document
+
+if TYPE_CHECKING:
+    import bs4
 
 logger = logging.getLogger('isbnplus')
 
@@ -88,6 +89,9 @@ def get_data(
         app_id: str = ISBNPLUS_APPID,
         app_key: str = ISBNPLUS_KEY
         ) -> List[Dict[str, Any]]:
+    import urllib.parse
+    import urllib.request
+
     results = []
     dict_params = {
         "q": query,
@@ -110,6 +114,8 @@ def get_data(
         headers={'User-Agent': papis.config.getstring('user-agent')}
     )
     xmldoc = urllib.request.urlopen(url).read()
+
+    import bs4
     root = bs4.BeautifulSoup(xmldoc, 'html.parser')
 
     for book in root.find_all('book'):
@@ -119,7 +125,7 @@ def get_data(
     return results
 
 
-def book_to_data(booknode: bs4.Tag) -> Dict[str, Any]:
+def book_to_data(booknode: "bs4.Tag") -> Dict[str, Any]:
     """Convert book xml node into dictionary
 
     :booknode: Bs4 book node

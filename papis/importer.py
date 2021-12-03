@@ -1,10 +1,13 @@
-import logging
-from stevedore import ExtensionManager
-from typing import Optional, List, Dict, Any, Callable, Type
 import os.path
+import logging
+from typing import Optional, List, Dict, Any, Callable, Type, TYPE_CHECKING
 
 import papis
 import papis.plugin
+
+
+if TYPE_CHECKING:
+    from stevedore import ExtensionManager
 
 
 class Context:
@@ -90,7 +93,7 @@ def _extension_name() -> str:
     return "papis.importer"
 
 
-def get_import_mgr() -> ExtensionManager:
+def get_import_mgr() -> "ExtensionManager":
     """Get the import manager
     :returns: Import manager
     """

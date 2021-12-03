@@ -1,11 +1,12 @@
-import sys
 import os
-from os.path import expanduser
+import sys
+import logging
 import configparser
+from typing import Dict, Any, List, Optional, Callable  # noqa: ignore
+
 import papis.exceptions
 import papis.library
-import logging
-from typing import Dict, Any, List, Optional, Callable  # noqa: ignore
+
 
 PapisConfigType = Dict[str, Dict[str, Any]]
 
@@ -258,9 +259,9 @@ def get_config_home() -> str:
     """
     xdg_home = os.environ.get('XDG_CONFIG_HOME')
     if xdg_home:
-        return expanduser(xdg_home)
+        return os.path.expanduser(xdg_home)
     else:
-        return os.path.join(expanduser('~'), '.config')
+        return os.path.join(os.path.expanduser('~'), '.config')
 
 
 def get_config_dirs() -> List[str]:
@@ -277,7 +278,7 @@ def get_config_dirs() -> List[str]:
     # compatibility
     dirs += [
         os.path.join(get_config_home(), 'papis'),
-        os.path.join(expanduser('~'), '.papis')]
+        os.path.join(os.path.expanduser('~'), '.papis')]
     return dirs
 
 
@@ -549,10 +550,10 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
                             .format(libname, cpath=get_config_file()))
     else:
         try:
-            paths = [expanduser(config[libname]['dir'])]
+            paths = [os.path.expanduser(config[libname]['dir'])]
         except KeyError:
             try:
-                paths = eval(expanduser(config[libname].get('dirs')))
+                paths = eval(os.path.expanduser(config[libname].get('dirs')))
             except Exception as e:
                 raise Exception("To define a library you have to set either"
                                 " dir or dirs in the configuration file.\n"

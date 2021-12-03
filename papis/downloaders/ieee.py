@@ -1,8 +1,7 @@
 import re
-import urllib.parse
-import urllib.request
-import papis.downloaders.base
 from typing import Optional, Tuple, Dict
+
+import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):
@@ -41,6 +40,9 @@ class Downloader(papis.downloaders.Downloader):
         return bibtex_url, data
 
     def download_bibtex(self) -> None:
+        import urllib.parse
+        import urllib.request
+
         bib_url, values = self._get_bibtex_url()
         post_data = urllib.parse.urlencode(values).encode('ascii')
 

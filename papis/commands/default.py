@@ -27,11 +27,12 @@ Cli
 
 """
 import os
-import difflib
 import sys
 import logging
-from typing import Optional, Tuple, List, Callable
-import copy
+from typing import Optional, Tuple, List, Callable, TYPE_CHECKING
+
+import click
+import click.core
 
 import papis
 import papis.api
@@ -40,16 +41,13 @@ import papis.commands
 import papis.database
 import papis.cli
 
-import atexit
-import cProfile
-import pstats
-import colorama
-import click
-import click.core
+if TYPE_CHECKING:
+    import cProfile
 
 
 class ColoramaFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
+        import colorama
         record.msg = record.msg.format(c=colorama)
         return super().format(record)
 
@@ -87,16 +85,16 @@ class MultiCommand(click.core.MultiCommand):
         try:
             script = self.scripts[name]
         except KeyError:
+            import difflib
             matches = list(map(
                 str, difflib.get_close_matches(name, self.scripts, n=2)))
+
             self.logger.error(
                 '{c.Fore.RED}{c.Style.BRIGHT}{c.Back.BLACK}'
                 'did you mean {0}?'
-                '{c.Style.RESET_ALL}'
-                .format(
-                    ' or '.join(matches),
-                    c=colorama
-                ))
+                '{c.Style.RESET_ALL}',
+                ' or '.join(matches))
+
             # return the match if there was only one match
             if len(matches) == 1:
                 self.logger.warning("I suppose you meant: '%s'", matches[0])
@@ -106,10 +104,13 @@ class MultiCommand(click.core.MultiCommand):
 
         if script.plugin is not None:
             return script.plugin
+
         # If it gets here, it means that it is an external script
+        import copy
         from papis.commands.external import external_cli
-        from papis.commands.external import get_command_help
         cli = copy.copy(external_cli)
+
+        from papis.commands.external import get_command_help
         cli.context_settings['obj'] = script
         if script.path is not None:
             cli.help = get_command_help(script.path)
@@ -118,12 +119,13 @@ class MultiCommand(click.core.MultiCommand):
         return cli
 
 
-def generate_profile_writing_function(profiler: cProfile.Profile,
+def generate_profile_writing_function(profiler: "cProfile.Profile",
                                       filename: str) -> Callable[[], None]:
     def _on_finish() -> None:
         profiler.disable()
         profiler.create_stats()
         with open(filename, 'w') as output:
+            import pstats
             stats = pstats.Stats(profiler, stream=output)
             stats.sort_stats('time')
             stats.print_stats()
@@ -210,10 +212,14 @@ def run(verbose: bool,
         os.environ["PAPIS_NP"] = str(np)
 
     if profile:
+        import cProfile
         profiler = cProfile.Profile()
         profiler.enable()
+
+        import atexit
         atexit.register(generate_profile_writing_function(profiler, profile))
 
+    import colorama
     if color == "no" or (color == "auto" and not sys.stdout.isatty()):
         # Turn off colorama (strip escape sequences from the output)
         colorama.init(strip=True)

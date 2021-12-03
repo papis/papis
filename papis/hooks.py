@@ -1,9 +1,11 @@
-from typing import List, Dict, Any, Callable  # noqa: ignore
+from typing import List, Dict, Any, Callable, TYPE_CHECKING
 
-from stevedore import ExtensionManager
 import logging
 
 import papis.plugin
+
+if TYPE_CHECKING:
+    from stevedore import ExtensionManager
 
 
 logger = logging.getLogger('hooks')
@@ -14,7 +16,7 @@ def _get_namespace(name: str) -> str:
     return ("papis.hook.{}".format(name))
 
 
-def get(name: str) -> ExtensionManager:
+def get(name: str) -> "ExtensionManager":
     return papis.plugin.get_extension_manager(_get_namespace(name))
 
 

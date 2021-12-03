@@ -87,18 +87,13 @@ Cli
     :prog: papis add
 
 """
-from typing import List, Any, Optional, Dict, Tuple
-import logging
-from string import ascii_lowercase
 import os
 import re
-import tempfile
-import hashlib
-import shutil
+import logging
+from typing import List, Any, Optional, Dict, Tuple
 
 import click
 
-import time
 import papis.api
 import papis.pick
 import papis.utils
@@ -234,6 +229,7 @@ def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
         with open(docpath, 'rb') as fd:
             document_strings += fd.read(2000)
 
+    import hashlib
     md5 = hashlib.md5(
         ''.join(document_paths).encode()
         + str(data).encode()
@@ -284,7 +280,7 @@ def run(paths: List[str],
         in the case of course that the library is a git repository.
     :type  git: bool
     """
-
+    import tempfile
     logger = logging.getLogger('add:run')
 
     # The folder name of the new document that will be created
@@ -328,6 +324,7 @@ def run(paths: List[str],
     logger.debug("File(s): %s", in_documents_paths)
 
     # First prepare everything in the temporary directory
+    from string import ascii_lowercase
     g = papis.utils.create_identifier(ascii_lowercase)
     string_append = ''
     if file_name is not None:  # Use args if set
@@ -357,6 +354,8 @@ def run(paths: List[str],
         else:
             logger.debug(
                 "[CP] '%s' to '%s'", in_file_path, tmp_end_filepath)
+
+            import shutil
             shutil.copy(in_file_path, tmp_end_filepath)
 
     data['files'] = new_file_list
@@ -569,6 +568,7 @@ def cli(
         return
 
     if papis.config.getboolean("time-stamp"):
+        import time
         ctx.data['time-added'] = time.strftime(papis.strings.time_format)
 
     return run(

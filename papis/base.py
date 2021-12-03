@@ -5,10 +5,7 @@ For description refer to
 https://www.base-search.net/about/download/base_interface.pdf
 
 """
-import urllib.parse
-import urllib.request  # import urlencode
 import logging
-import json
 from typing import Optional, Dict, Any, List, Callable, NamedTuple
 
 import click
@@ -35,19 +32,26 @@ def get_data(query: str = "", hits: int = 20) -> List[Dict[str, Any]]:
         "format": "json",
         "hits": hits,
     }
+
+    import urllib.parse
     params = urllib.parse.urlencode(
         {x: dict_params[x] for x in dict_params if dict_params[x]}
     )
     req_url = base_baseurl + "search?" + params
     logger.debug("url = '%s'", req_url)
+
+    import urllib.request
     url = urllib.request.Request(
         req_url,
         headers={
             'User-Agent': 'papis'
         }
     )
+
+    import json
     jsondoc = json.loads(urllib.request.urlopen(url).read().decode())
     docs = jsondoc.get('response').get('docs')
+
     logger.info("Retrieved %d documents", len(docs))
     return list(map(basedoc_to_papisdoc, docs))
 

@@ -4,7 +4,6 @@ to be called by papis.
 """
 import os
 import re
-import subprocess
 import logging
 from typing import List
 
@@ -58,4 +57,6 @@ def external_cli(ctx: click.core.Context, flags: List[str]) -> None:
     logger.debug("Calling '%s'", cmd)
 
     export_variables()
+
+    import subprocess
     subprocess.call(cmd)

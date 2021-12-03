@@ -1,7 +1,7 @@
 import re
-import papis.downloaders.base
-
 from typing import Optional
+
+import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):

@@ -40,8 +40,10 @@ Cli
     :prog: papis update
 """
 
-import click
 import logging
+from typing import List, Dict, Tuple, Optional, Any
+
+import click
 
 import papis.utils
 import papis.tui.utils
@@ -54,8 +56,6 @@ import papis.format
 import papis.cli
 import papis.importer
 import papis.git
-
-from typing import List, Dict, Tuple, Optional, Any
 
 
 def _update_with_database(document: papis.document.Document) -> None:

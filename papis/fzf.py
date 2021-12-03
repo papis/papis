@@ -1,9 +1,7 @@
-from typing import Callable, Sequence, TypeVar, List, Optional, Generic
-from typing.re import Pattern
-from abc import ABC, abstractmethod
-import subprocess as sp
 import re
-import colorama
+from abc import ABC, abstractmethod
+from typing.re import Pattern
+from typing import Callable, Sequence, TypeVar, List, Optional, Generic
 
 import papis.pick
 import papis.config
@@ -89,6 +87,7 @@ class Picker(papis.pick.Picker[T]):
 
         def _header_filter(d: T) -> str:
             if isinstance(d, papis.document.Document):
+                import colorama
                 return papis.format.format(_fmt,
                                            d,
                                            additional=dict(c=colorama))
@@ -98,6 +97,7 @@ class Picker(papis.pick.Picker[T]):
         headers = [_header_filter(o) for o in options]
         docs = []  # type: Sequence[T]
 
+        import subprocess as sp
         with sp.Popen(command, stdin=sp.PIPE, stdout=sp.PIPE) as p:
             if p.stdin is not None:
                 with p.stdin as stdin:

@@ -1,7 +1,7 @@
 import re
-import papis.downloaders.fallback
-
 from typing import Optional
+
+import papis.downloaders.fallback
 
 
 class Downloader(papis.downloaders.fallback.Downloader):

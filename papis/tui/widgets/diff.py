@@ -1,4 +1,6 @@
-import difflib
+from typing import (
+    Dict, Any, List, Union, NamedTuple, Callable, Sequence)
+
 from prompt_toolkit import Application, print_formatted_text
 from prompt_toolkit.utils import Event
 from prompt_toolkit.layout.containers import HSplit, Window, WindowAlign
@@ -6,9 +8,6 @@ from prompt_toolkit.formatted_text import FormattedText, HTML
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.key_binding import KeyBindings
-
-from typing import (  # noqa: ignore
-    Dict, Any, List, Union, NamedTuple, Callable, Sequence)
 
 Action = NamedTuple('Action',
                     [
@@ -93,6 +92,7 @@ def diffshow(texta: str,
     assert(isinstance(texta, str))
     assert(isinstance(textb, str))
 
+    import difflib
     # diffs = difflib.unified_diff(
     #         str(texta).splitlines(keepends=True),
     #         str(textb).splitlines(keepends=True),

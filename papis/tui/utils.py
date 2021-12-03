@@ -1,5 +1,5 @@
-from typing import Optional, List, Callable, Any
 import re
+from typing import Optional, List, Callable, Any
 
 
 def confirm(prompt_string: str,

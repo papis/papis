@@ -125,9 +125,12 @@ Cli
 """
 import os
 import re
+import click
+import logging
+from typing import List, Optional
+
 import papis.api
 import papis.cli
-import click
 import papis.config as config
 import papis.utils
 import papis.tui.utils
@@ -138,9 +141,7 @@ import papis.commands.edit
 import papis.commands.browse
 import papis.commands.export
 import papis.bibtex
-import logging
 
-from typing import List, Optional
 
 logger = logging.getLogger('papis:bibtex')
 
