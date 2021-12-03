@@ -1,7 +1,9 @@
-import papis.config
-import papis.document
 import logging
 from typing import Optional, List, Any, Callable
+
+import papis.config
+import papis.document
+
 MATCHER_TYPE = Callable[[papis.document.Document, str, Optional[str]], Any]
 
 

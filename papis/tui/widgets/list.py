@@ -1,9 +1,7 @@
 import os
 import re
-import operator
-import functools
-import time
 import logging
+import functools
 from typing import (
     Optional, Any, List, Generic, Sequence,
     Callable, Tuple, Pattern, TypeVar)
@@ -273,6 +271,9 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         """Creates the body of the list, which is just a list of tuples,
         where the tuples follow the FormattedText structure.
         """
+        import time
+        import operator
+
         self.update_cursor()
         begin_t = time.time()
         internal_text = functools.reduce(

@@ -1,4 +1,5 @@
 from typing import Dict, Any
+
 PapisConfigType = Dict[str, Dict[str, Any]]
 
 

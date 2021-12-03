@@ -1,10 +1,11 @@
+# See https://github.com/xlcnd/isbnlib for details
+import logging
+from typing import Dict, Any, List, Optional
+
+import click
+
 import papis.document
 import papis.importer
-import logging
-import isbnlib
-import click
-# See https://github.com/xlcnd/isbnlib for details
-from typing import Dict, Any, List, Optional
 
 logger = logging.getLogger('papis:isbnlib')
 
@@ -13,6 +14,7 @@ def get_data(query: str = "",
              service: str = 'openl') -> List[Dict[str, Any]]:
     logger.debug("Trying to retrieve isbn from query: '%s'", query)
 
+    import isbnlib
     results = []  # type: List[Dict[str, Any]]
     isbn = isbnlib.isbn_from_words(query)
     data = isbnlib.meta(isbn, service=service)
@@ -84,11 +86,13 @@ class Importer(papis.importer.Importer):
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+        import isbnlib
         if isbnlib.notisbn(uri):
             return None
         return Importer(uri=uri)
 
     def fetch(self) -> None:
+        import isbnlib
         try:
             data = get_data(self.uri)
         except isbnlib.ISBNLibException:

@@ -6,8 +6,9 @@ Cli
     :prog: papis mv
 """
 import os
-import subprocess
 import logging
+from typing import Optional
+
 import click
 
 import papis.config
@@ -17,8 +18,6 @@ import papis.document
 import papis.cli
 import papis.pick
 import papis.strings
-
-from typing import Optional
 
 
 def run(document: papis.document.Document,
@@ -34,6 +33,7 @@ def run(document: papis.document.Document,
     db = papis.database.get()
     logger.debug(cmd)
 
+    import subprocess
     subprocess.call(cmd)
     db.delete(document)
     new_document_folder = os.path.join(

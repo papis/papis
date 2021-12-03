@@ -1,5 +1,4 @@
 import re
-import json
 from typing import Dict, Optional, Any, List
 
 import papis.downloaders
@@ -67,6 +66,7 @@ class Downloader(papis.downloaders.Downloader):
         soup = self._get_soup()
         scripts = soup.find_all(name="script", attrs={'data-iso-key': '_0'})
         if scripts:
+            import json
             rawdata = json.loads(scripts[0].text)
             self.logger.debug("Found %d scripts data-iso-key", len(scripts))
 

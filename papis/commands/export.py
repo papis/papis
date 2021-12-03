@@ -45,19 +45,20 @@ Cli
 .. click:: papis.commands.export:cli
     :prog: papis export
 """
-import papis
 import os
-import shutil
+import logging
+from typing import List, Optional
+
+import click
+
+import papis
 import papis.utils
 import papis.document
-import click
 import papis.cli
 import papis.api
 import papis.database
 import papis.strings
-import logging
 import papis.plugin
-from typing import List, Optional
 
 logger = logging.getLogger('cli:export')
 
@@ -154,6 +155,7 @@ def cli(query: str,
             print(ret_string)
         return
 
+    import shutil
     for document in documents:
         if folder:
             _doc_folder = document.get_main_folder()

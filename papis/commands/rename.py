@@ -6,9 +6,11 @@ Cli
     :prog: papis rename
 """
 import os
-import subprocess
 import logging
+from typing import Optional
+
 import click
+
 import papis.cli
 import papis.database
 import papis.strings
@@ -16,8 +18,6 @@ import papis.git
 import papis.pick
 import papis.document
 import papis.tui.utils
-
-from typing import Optional
 
 
 def run(document: papis.document.Document,
@@ -40,6 +40,7 @@ def run(document: papis.document.Document,
     cmd = ['git', '-C', folder] if git else []
     cmd += ['mv', folder, new_folder_path]
 
+    import subprocess
     logger.debug(cmd)
     subprocess.call(cmd)
 

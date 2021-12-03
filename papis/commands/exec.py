@@ -30,9 +30,10 @@ Cli
 .. click:: papis.commands.exec:cli
     :prog: papis exec
 """
-import click
 import sys
 from typing import List
+
+import click
 
 
 def run(_file: str) -> None:

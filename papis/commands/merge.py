@@ -12,11 +12,10 @@ Cli
     :prog: papis open
 """
 import os
-import os.path
 import logging
 from typing import Optional, List, Dict, Any
+
 import click
-import shutil
 
 import papis
 import papis.api
@@ -25,15 +24,15 @@ import papis.utils
 import papis.config
 import papis.cli
 import papis.database
-from papis.document import Document, to_dict, from_folder
+import papis.document
 import papis.format
 import papis.strings
-import papis.commands.rm as rm
-import papis.commands.update as update
+import papis.commands.rm
+import papis.commands.update
 
 
-def run(keep: Document,
-        erase: Document,
+def run(keep: papis.document.Document,
+        erase: papis.document.Document,
         data: Dict[str, Any],
         files: List[str],
         keep_both: bool,
@@ -44,13 +43,15 @@ def run(keep: Document,
     for f in files_to_move:
         to_folder = keep.get_main_folder()
         if to_folder:
+            import shutil
             logger.info("Moving %s", f)
             shutil.copy(f, to_folder)
             keep["files"] += [os.path.basename(f)]
-    update.run(keep, data, git=git)
+    papis.commands.update.run(keep, data, git=git)
+
     if not keep_both:
         logger.info("Removing '%s'", erase)
-        rm.run(erase, git=git)
+        papis.commands.rm.run(erase, git=git)
     else:
         logger.info("Keeping both documents")
 
@@ -115,9 +116,9 @@ def cli(query: str,
         return
 
     a = documents[0]
-    data_a = to_dict(a)
+    data_a = papis.document.to_dict(a)
     b = documents[1]
-    data_b = to_dict(b)
+    data_b = papis.document.to_dict(b)
 
     to_pop = ["files"]
     for d in [data_a, data_b]:
@@ -146,8 +147,10 @@ def cli(query: str,
     erase = a if second else b
 
     if out is not None:
+        import shutil
+
         os.makedirs(out, exist_ok=True)
-        keep = from_folder(out)
+        keep = papis.document.from_folder(out)
         keep["files"] = []
         for f in files:
             shutil.copy(f, out)

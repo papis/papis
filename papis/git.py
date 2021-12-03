@@ -1,8 +1,6 @@
 """This module serves as an lightweight interface for git related functions.
 """
-import subprocess
 import os
-import shlex
 import logging
 
 logger = logging.getLogger("git")
@@ -21,9 +19,13 @@ def _issue_git_command(path: str, cmd: str) -> None:
     assert isinstance(cmd, str)
     path = os.path.expanduser(path)
     assert os.path.exists(path)
+
+    import shlex
     split_cmd = shlex.split(cmd)
-    os.chdir(path)
     logger.debug(split_cmd)
+
+    import subprocess
+    os.chdir(path)
     subprocess.call(split_cmd)
 
 

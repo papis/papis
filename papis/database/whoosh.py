@@ -41,12 +41,7 @@ you will not be able to parse the publisher through a search.
 """
 import os
 import logging
-
-import whoosh
-import whoosh.index
-import whoosh.qparser
-from whoosh.fields import Schema, FieldType
-from whoosh.writing import IndexWriter
+from typing import List, Dict, Optional, Any, KeysView, TYPE_CHECKING
 
 import papis.config
 import papis.strings
@@ -55,7 +50,10 @@ import papis.database.base
 import papis.database.cache
 from papis.utils import get_cache_home, get_folders, folders_to_documents
 
-from typing import List, Dict, Optional, Any, KeysView
+if TYPE_CHECKING:
+    from whoosh.index import Index
+    from whoosh.fields import Schema, FieldType
+    from whoosh.writing import IndexWriter
 
 
 class Database(papis.database.base.Database):
@@ -119,6 +117,7 @@ class Database(papis.database.base.Database):
     def query(self, query_string: str) -> List[papis.document.Document]:
         self.logger.debug("Querying '%s'...", query_string)
 
+        import whoosh.qparser
         index = self.get_index()
         qp = whoosh.qparser.MultifieldParser(['title', 'author', 'tags'],
                                              schema=self.get_schema())
@@ -171,17 +170,19 @@ class Database(papis.database.base.Database):
         if not os.path.exists(self.index_dir):
             self.logger.debug("Creating index directory '%s'", self.index_dir)
             os.makedirs(self.index_dir)
+
+        import whoosh.index
         whoosh.index.create_in(self.index_dir, self.create_schema())
 
     def index_exists(self) -> Any:
-        """Check if index already exists in index_dir()
-        """
+        """Check if index already exists in :attr:`index_dir`."""
+        import whoosh.index
         return whoosh.index.exists_in(self.index_dir)
 
     def add_document_with_writer(
             self,
             document: papis.document.Document,
-            writer: IndexWriter,
+            writer: "IndexWriter",
             schema_keys: KeysView[str]) -> None:
         """Helper function that takes a writer and a dictionary
         containing the keys of the schema and adds the document to the writer.
@@ -273,15 +274,16 @@ class Database(papis.database.base.Database):
         self.create_index()
         self.do_indexing()
 
-    def get_index(self) -> whoosh.index.Index:
+    def get_index(self) -> "Index":
         """Gets the index for the current library
 
         :returns: Index
         :rtype:  whoosh.index
         """
+        import whoosh.index
         return whoosh.index.open_dir(self.index_dir)
 
-    def get_writer(self) -> IndexWriter:
+    def get_writer(self) -> "IndexWriter":
         """Gets the writer for the current library
 
         :returns: Writer
@@ -289,7 +291,7 @@ class Database(papis.database.base.Database):
         """
         return self.get_index().writer()
 
-    def get_schema(self) -> Schema:
+    def get_schema(self) -> "Schema":
         """Gets current schema
 
         :returns: Whoosch Schema
@@ -297,19 +299,19 @@ class Database(papis.database.base.Database):
         """
         return self.get_index().schema
 
-    def create_schema(self) -> Schema:
+    def create_schema(self) -> "Schema":
         """Creates and returns whoosh schema to be applied to the library
 
         :returns: Whoosch Schema
         :rtype:  whoosh.fields.Schema
         """
-        from whoosh.fields import Schema
         self.logger.debug('Creating schema...')
         fields = self.get_schema_init_fields()
-        schema = Schema(**fields)
-        return schema
 
-    def get_schema_init_fields(self) -> Dict[str, FieldType]:
+        from whoosh.fields import Schema
+        return Schema(**fields)
+
+    def get_schema_init_fields(self) -> Dict[str, "FieldType"]:
         """Returns the arguments to be passed to the whoosh schema
         object instantiation found in the method `get_schema`.
         """

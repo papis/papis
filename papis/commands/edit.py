@@ -7,8 +7,13 @@ Cli
 .. click:: papis.commands.edit:cli
     :prog: papis edit
 """
-import papis
 import os
+import logging
+from typing import Optional
+
+import click
+
+import papis
 import papis.hooks
 import papis.api
 import papis.pick
@@ -17,12 +22,8 @@ import papis.utils
 import papis.config
 import papis.database
 import papis.cli
-import click
-import logging
 import papis.strings
 import papis.git
-
-from typing import Optional
 
 
 def run(document: papis.document.Document,

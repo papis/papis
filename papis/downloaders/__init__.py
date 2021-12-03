@@ -1,12 +1,7 @@
-from typing import List, Optional, Any, Sequence, Type, Dict
-import logging
 import os
 import re
-import tempfile
-
-import requests
-import bs4
-import filetype
+import logging
+from typing import List, Optional, Any, Sequence, Type, Dict, TYPE_CHECKING
 
 import papis.bibtex
 import papis.config
@@ -14,6 +9,9 @@ import papis.document
 import papis.importer
 import papis.plugin
 import papis.utils
+
+if TYPE_CHECKING:
+    import bs4
 
 logger = logging.getLogger("downloader")
 
@@ -73,6 +71,7 @@ class Downloader(papis.importer.Importer):
         self.bibtex_data = None  # type: Optional[str]
         self.document_data = None  # type: Optional[bytes]
 
+        import requests
         self.session = requests.Session()  # type: requests.Session
         self.session.headers = requests.structures.CaseInsensitiveDict({
             'User-Agent': papis.config.getstring('user-agent')
@@ -128,6 +127,7 @@ class Downloader(papis.importer.Importer):
         else:
             doc_rawdata = self.get_document_data()
             if doc_rawdata and self.check_document_format():
+                import tempfile
                 with tempfile.NamedTemporaryFile(
                         mode="wb+", delete=False) as f:
                     f.write(doc_rawdata)
@@ -147,10 +147,12 @@ class Downloader(papis.importer.Importer):
         """Get body of the uri, this is also important for unittesting"""
         return self.session.get(self.uri).content
 
-    def _get_soup(self) -> bs4.BeautifulSoup:
+    def _get_soup(self) -> "bs4.BeautifulSoup":
         """Get body of the uri, this is also important for unittesting"""
         if self._soup:
             return self._soup
+
+        import bs4
         self._soup = bs4.BeautifulSoup(self._get_body(), features='lxml')
         return self._soup
 
@@ -269,6 +271,7 @@ class Downloader(papis.importer.Importer):
         if self.expected_document_extension is None:
             return True
 
+        import filetype
         retrieved_kind = filetype.guess(self.get_document_data())
 
         if retrieved_kind is None:

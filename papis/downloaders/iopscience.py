@@ -1,6 +1,7 @@
 import re
-import papis.downloaders.base
 from typing import Dict, Any, Optional
+
+import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):

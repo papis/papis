@@ -1,13 +1,11 @@
-from __future__ import unicode_literals
-from __future__ import absolute_import, division, print_function
-
+import os
 import string
 import logging
-import os
 from typing import Optional, List, Dict, Any
 
-import papis.config
 import click
+
+import papis.config
 import papis.importer
 import papis.filetype
 import papis.document

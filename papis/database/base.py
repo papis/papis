@@ -2,13 +2,13 @@
 Here the database abstraction for the libraries is defined.
 """
 
+from abc import ABC, abstractmethod
+from typing import Optional, List, Dict
+
 import papis.utils
 import papis.config
 import papis.library
 import papis.document
-
-from typing import Optional, List, Dict
-from abc import ABC, abstractmethod
 
 
 class Database(ABC):

@@ -1,3 +1,5 @@
+from typing import Any, List, Callable
+
 from prompt_toolkit.application import Application
 from prompt_toolkit.layout.processors import BeforeInput
 from prompt_toolkit.buffer import Buffer
@@ -10,8 +12,6 @@ from prompt_toolkit.layout.controls import (
 )
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.filters import has_focus
-import shlex
-from typing import Any, List, Callable
 
 
 class Command:
@@ -64,6 +64,7 @@ class CommandLinePrompt(ConditionalContainer):  # type: ignore
         )
 
     def trigger(self) -> None:
+        import shlex
         input_cmd = shlex.split(self.buf.text)
         if not input_cmd:
             return

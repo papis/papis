@@ -1,13 +1,9 @@
+import os
+import re
+import logging
 from itertools import count, product
 from typing import (Optional, List, Iterator, Any, Dict,
                     Union, Callable, TypeVar)
-import copy
-import logging
-import os
-import re
-import shlex
-import subprocess
-import time
 
 try:
     import multiprocessing.synchronize  # noqa: F401
@@ -57,8 +53,12 @@ def general_open(file_name: str,
         if default_opener is None:
             default_opener = papis.config.get_default_opener()
         opener = default_opener
+
+    import shlex
     cmd = shlex.split("{0} '{1}'".format(opener, file_name))
     logger.debug("cmd: %s", cmd)
+
+    import subprocess
     if wait:
         logger.debug("Waiting for process to finish")
         subprocess.call(cmd)
@@ -211,6 +211,7 @@ def folders_to_documents(folders: List[str]) -> List[papis.document.Document]:
     """
     logger = logging.getLogger("utils:folders_to_documents")
 
+    import time
     begin_t = time.time()
     result = parmap(papis.document.from_folder, folders)
 
@@ -277,8 +278,10 @@ def get_matching_importer_or_downloader(matching_string: str
 def update_doc_from_data_interactively(
         document: Union[papis.document.Document, Dict[str, Any]],
         data: Dict[str, Any], data_name: str) -> None:
-    import papis.tui.widgets.diff
+    import copy
     docdata = copy.copy(document)
+
+    import papis.tui.widgets.diff
     # do not compare some entries
     docdata.pop('files', None)
     docdata.pop('tags', None)

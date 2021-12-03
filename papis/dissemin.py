@@ -1,12 +1,10 @@
 import logging
-import urllib.request  # urlopen, Request
-import urllib.parse  # import urlencode
-import papis.config
-import json
-import click
-import papis.document
-
 from typing import List, Dict, Any
+
+import click
+
+import papis.config
+import papis.document
 
 logger = logging.getLogger('dissemin')
 
@@ -53,6 +51,9 @@ def get_data(query: str = "") -> List[Dict[str, Any]]:
     Get data using the dissemin API
     https://dissem.in/api/search/?q=pregroup
     """
+    import urllib.parse
+    import urllib.request
+
     dict_params = {"q": query}
     params = urllib.parse.urlencode(dict_params)
     main_url = "https://dissem.in/api/search/?"
@@ -65,6 +66,8 @@ def get_data(query: str = "") -> List[Dict[str, Any]]:
         }
     )
     jsondoc = urllib.request.urlopen(url).read().decode()
+
+    import json
     paperlist = json.loads(jsondoc)
     return sum([dissemindoc_to_papis(d) for d in paperlist['papers']], [])
 

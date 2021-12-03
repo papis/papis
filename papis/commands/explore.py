@@ -86,14 +86,17 @@ Cli
     :show-nested:
 """
 import os
+import logging
+from typing import List, Optional, Union, Any, Dict, TYPE_CHECKING
+
+import click
+
 import papis.tui.utils
 import papis.commands
 import papis.document
 import papis.config
 import papis.strings
 import papis.cli
-import click
-import logging
 import papis.commands.add
 import papis.commands.export
 import papis.api
@@ -101,8 +104,9 @@ import papis.pick
 import papis.format
 import papis.crossref
 import papis.plugin
-from stevedore import ExtensionManager
-from typing import List, Optional, Union, Any, Dict  # noqa: ignore
+
+if TYPE_CHECKING:
+    from stevedore import ExtensionManager
 
 logger = logging.getLogger('explore')
 
@@ -115,7 +119,7 @@ def get_available_explorers() -> List[click.Command]:
     return papis.plugin.get_available_plugins(_extension_name())
 
 
-def get_explorer_mgr() -> ExtensionManager:
+def get_explorer_mgr() -> "ExtensionManager":
     return papis.plugin.get_extension_manager(_extension_name())
 
 

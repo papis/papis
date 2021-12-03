@@ -1,8 +1,8 @@
-import logging
 import os
+import logging
 import functools
-from typing import Callable, TypeVar, Generic, Sequence, Type
 from abc import ABC, abstractmethod
+from typing import Callable, TypeVar, Generic, Sequence, Type
 
 import papis.config
 import papis.document

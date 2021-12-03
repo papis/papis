@@ -2,8 +2,6 @@
 """
 import os
 import re
-import datetime
-import shutil
 import logging
 from typing import (
     List, Dict, Any, Optional, Union, NamedTuple, Callable, Tuple)
@@ -307,6 +305,7 @@ def delete(document: Document) -> None:
     """
     folder = document.get_main_folder()
     if folder:
+        import shutil
         shutil.rmtree(folder)
 
 
@@ -346,6 +345,7 @@ def move(document: Document, path: str) -> None:
         )
     folder = document.get_main_folder()
     if folder:
+        import shutil
         shutil.move(folder, path)
         # Let us chmod it because it might come from a temp folder
         # and temp folders are per default 0o600
@@ -384,6 +384,7 @@ def sort(docs: List[Document], key: str, reverse: bool) -> List[Document]:
         for sort_type in sort_rankings:
             sort_rankings[sort_type] = -sort_rankings[sort_type]
 
+    import datetime
     zero_date = datetime.datetime.fromtimestamp(0)
 
     def _sort_for_key(key: str, doc: Document
@@ -432,6 +433,8 @@ def new(folder_path: str, data: Dict[str, Any],
     :raises FileExistsError: If folder_path exists
     """
     os.makedirs(folder_path)
+
+    import shutil
     doc = Document(folder=folder_path, data=data)
     doc['files'] = []
     for _file in files:

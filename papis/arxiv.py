@@ -17,14 +17,10 @@
 """
 import os
 import re
-import bs4
 import logging
-import urllib.request  # urlopen, Request
-import urllib.parse  # import urlencode
 from typing import Optional, List, Dict, Any
 
 import click
-import arxiv2bib
 
 import papis.filetype
 import papis.downloaders.base
@@ -64,6 +60,8 @@ def get_data(
         [key+':'+str(clean_params[key]) for key in clean_params]
     )
     logger.debug("query = '%s'", search_query)
+
+    import urllib.parse
     params = urllib.parse.urlencode(
         {
             'search_query': search_query,
@@ -74,6 +72,8 @@ def get_data(
     main_url = "http://arxiv.org/api/query?"
     req_url = main_url + params
     logger.debug("url = '%s'", req_url)
+
+    import urllib.request
     url = urllib.request.Request(
         req_url,
         headers={
@@ -81,6 +81,8 @@ def get_data(
         }
     )
     xmldoc = urllib.request.urlopen(url).read()
+
+    import bs4
     soup = bs4.BeautifulSoup(xmldoc, 'html.parser')
 
     entries = soup.find_all("entry")
@@ -107,10 +109,11 @@ def get_data(
 
 
 def validate_arxivid(arxivid: str) -> None:
-    from urllib.error import HTTPError, URLError
+    import urllib.request
     url = "https://arxiv.org/abs/{0}".format(arxivid)
     request = urllib.request.Request(url)
 
+    from urllib.error import HTTPError, URLError
     try:
         urllib.request.urlopen(request)
     except HTTPError:
@@ -260,8 +263,11 @@ class Downloader(papis.downloaders.Downloader):
         bib_url = self.get_bibtex_url()
         if not bib_url:
             return None
+
+        import arxiv2bib
         bibtex_cli = arxiv2bib.Cli([bib_url])
         bibtex_cli.run()
+
         self.logger.debug("bibtex_url = '%s'", bib_url)
         output = bibtex_cli.output  # List[str]
         data = ''.join(output).replace('\n', ' ')

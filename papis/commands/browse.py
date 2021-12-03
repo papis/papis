@@ -54,19 +54,20 @@ Cli
 .. click:: papis.commands.browse:cli
     :prog: papis browse
 """
+import logging
+from typing import Optional
+
+import click
+
 import papis
 import papis.utils
 import papis.config
 import papis.cli
 import papis.pick
-import click
 import papis.database
 import papis.strings
 import papis.document
-from urllib.parse import urlencode
-import logging
 
-from typing import Optional
 
 logger = logging.getLogger('browse')
 
@@ -97,6 +98,7 @@ def run(document: papis.document.Document,
 
     except KeyError:
         if not url or key == 'search-engine':
+            import urllib.parse
             params = {
                 'q': papis.format.format(
                     papis.config.getstring('browse-query-format'),
@@ -104,7 +106,7 @@ def run(document: papis.document.Document,
             }
             url = (papis.config.getstring('search-engine')
                    + '/?'
-                   + urlencode(params))
+                   + urllib.parse.urlencode(params))
 
     if browse:
         logger.info("Opening url '%s'", url)
