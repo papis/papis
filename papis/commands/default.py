@@ -47,8 +47,10 @@ if TYPE_CHECKING:
 
 class ColoramaFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
-        import colorama
-        record.msg = record.msg.format(c=colorama)
+        if isinstance(record.msg, str):
+            import colorama
+            record.msg = record.msg.format(c=colorama)
+
         return super().format(record)
 
 
