@@ -91,11 +91,13 @@ class MultiCommand(click.core.MultiCommand):
             matches = list(map(
                 str, difflib.get_close_matches(name, self.scripts, n=2)))
 
+            import colorama
             self.logger.error(
-                '{c.Fore.RED}{c.Style.BRIGHT}{c.Back.BLACK}'
-                'did you mean {0}?'
-                '{c.Style.RESET_ALL}',
-                ' or '.join(matches))
+                "{c.Fore.RED}{c.Style.BRIGHT}{c.Back.BLACK}"
+                "Command '{name}' is unknown! Did you mean '{matches}'?"
+                "{c.Style.RESET_ALL}"
+                .format(c=colorama, name=name, matches="' or '".join(matches))
+                )
 
             # return the match if there was only one match
             if len(matches) == 1:
