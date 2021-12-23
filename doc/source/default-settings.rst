@@ -123,7 +123,7 @@ Tools options
     As for now papis is not intended to detect the type of document to be opened
     and decide upon how to open the document. You should set this
     to the right program for the tool. If you are on linux you might want
-    to take a look at `ranger <http://ranger.nongnu.org>`_ or let
+    to take a look at `ranger <http://ranger.github.io>`_ or let
     the default handle it in your system.
     For mac users you might set this to ``open``.
 
