@@ -7,7 +7,7 @@ Key             Description
 q               Keywords, search for everything
 p               Current page number, default is 1
 a               Keywords, search for Author
-c               Keywords, search for Catagory
+c               Keywords, search for Category
 s               Keywords, search for book series
 t               Keywords, search for book title
 order           published - return results by published years, newest first
@@ -20,7 +20,7 @@ app_id          Application ID, required, you can get your application ID after
 app_key         Application Key, required, you can get your application key
                 after login
 
-An example of sucessful returns:
+An example of successful returns:
 ================================
 
     <?xml version="1.0" encoding="UTF-8"?>
@@ -59,17 +59,18 @@ An example of sucessful returns:
     </book>
     ...
 """
-import urllib.parse
-import urllib.request  # import urlencode
 import logging
-from typing import List, Dict, Any
+from typing import List, Dict, Any, TYPE_CHECKING
 
-import bs4
 import click
+
 import papis.config
 import papis.document
 
-LOGGER = logging.getLogger('isbnplus')
+if TYPE_CHECKING:
+    import bs4
+
+logger = logging.getLogger('isbnplus')
 
 ISBNPLUS_KEY = "98a765346bc0ffee6ede527499b6a4ee"  # type: str
 ISBNPLUS_APPID = "4846a7d1"  # type: str
@@ -88,6 +89,9 @@ def get_data(
         app_id: str = ISBNPLUS_APPID,
         app_key: str = ISBNPLUS_KEY
         ) -> List[Dict[str, Any]]:
+    import urllib.parse
+    import urllib.request
+
     results = []
     dict_params = {
         "q": query,
@@ -104,22 +108,24 @@ def get_data(
         {x: dict_params[x] for x in dict_params if dict_params[x]}
     )
     req_url = ISBNPLUS_BASEURL + "search?" + params
-    LOGGER.debug("url = %s", req_url)
+    logger.debug("url = '%s'", req_url)
     url = urllib.request.Request(
         req_url,
         headers={'User-Agent': papis.config.getstring('user-agent')}
     )
     xmldoc = urllib.request.urlopen(url).read()
+
+    import bs4
     root = bs4.BeautifulSoup(xmldoc, 'html.parser')
 
     for book in root.find_all('book'):
         book_data = book_to_data(book)
         results.append(book_data)
-    LOGGER.debug('%s records retrieved', len(results))
+    logger.debug('%d records retrieved', len(results))
     return results
 
 
-def book_to_data(booknode: bs4.Tag) -> Dict[str, Any]:
+def book_to_data(booknode: "bs4.Tag") -> Dict[str, Any]:
     """Convert book xml node into dictionary
 
     :booknode: Bs4 book node
@@ -170,4 +176,5 @@ def explorer(ctx: click.core.Context,
         data = []
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj['documents'] += docs
+
     logger.info('%s documents found', len(docs))

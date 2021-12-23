@@ -5,9 +5,11 @@ Cli
 .. click:: papis.commands.rm:cli
     :prog: papis rm
 """
-import click
-import logging
 import os
+import logging
+from typing import Optional
+
+import click
 
 import papis.pick
 import papis.tui.utils
@@ -16,8 +18,6 @@ import papis.cli
 import papis.strings
 import papis.database
 import papis.git
-
-from typing import Optional
 
 
 def run(document: papis.document.Document,
@@ -106,7 +106,7 @@ def cli(query: str,
                 if not papis.tui.utils.confirm(
                         "Are you sure?", bottom_toolbar=tbar):
                     continue
-            logger.info("Removing %s..." % filepath)
+            logger.info("Removing '%s'...", filepath)
             run(document, filepath=filepath, git=git)
     else:
         for document in documents:
@@ -121,5 +121,6 @@ def cli(query: str,
                 if not papis.tui.utils.confirm(
                         "Are you sure?", bottom_toolbar=tbar):
                     continue
-            logger.warning("removing ...")
+
+            logger.warning("Removing ...")
             run(document, git=git)

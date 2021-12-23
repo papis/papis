@@ -10,8 +10,7 @@ import papis.config
 import papis.pick
 import papis.database
 
-LOGGER = logging.getLogger("api")
-LOGGER.debug("importing")
+logger = logging.getLogger("api")
 
 
 def get_lib_name() -> str:

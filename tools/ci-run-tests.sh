@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 python -m pytest papis/ tests/ --cov=papis
-mypy papis
-flake8 papis
+python -m mypy papis
+python -m flake8 papis

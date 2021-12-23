@@ -1,7 +1,7 @@
 import re
-import papis.downloaders.base
-
 from typing import Optional
+
+import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):
@@ -21,7 +21,7 @@ class Downloader(papis.downloaders.Downloader):
 
     def get_doi(self) -> Optional[str]:
         url = self.uri
-        self.logger.info('Parsing doi from {0}'.format(url))
+        self.logger.info("Parsing DOI from '%s'", url)
         mdoi = re.match(r'.*/articles/([^/]+/[^/?&%^$]+).*', url)
         if mdoi:
             doi = mdoi.group(1)
@@ -31,11 +31,11 @@ class Downloader(papis.downloaders.Downloader):
     def get_document_url(self) -> Optional[str]:
         durl = ("https://www.frontiersin.org/articles/{doi}/pdf"
                 .format(doi=self.get_doi()))
-        self.logger.debug("[doc url] = %s" % durl)
+        self.logger.debug("doc url = '%s'", durl)
         return durl
 
     def get_bibtex_url(self) -> Optional[str]:
         url = ("https://www.frontiersin.org/articles/{doi}/bibTex"
                .format(doi=self.get_doi()))
-        self.logger.debug("[bibtex url] = %s" % url)
+        self.logger.debug("bibtex url = '%s'", url)
         return url

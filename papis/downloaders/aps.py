@@ -1,7 +1,7 @@
 import re
-import papis.downloaders.fallback
-
 from typing import Optional
+
+import papis.downloaders.fallback
 
 
 class Downloader(papis.downloaders.fallback.Downloader):
@@ -23,5 +23,5 @@ class Downloader(papis.downloaders.fallback.Downloader):
         burl = "{}?{}".format(
             re.sub(r'/abstract', r'/export', self.uri),
             "type=bibtex&download=true")
-        self.logger.debug("[bibtex url] = %s" % burl)
+        self.logger.debug("bibtex url = '%s'", burl)
         return burl

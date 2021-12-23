@@ -1,13 +1,11 @@
-from __future__ import unicode_literals
-from __future__ import absolute_import, division, print_function
-
+import os
 import string
 import logging
-import os
 from typing import Optional, List, Dict, Any
 
-import papis.config
 import click
+
+import papis.config
 import papis.importer
 import papis.filetype
 import papis.document
@@ -16,15 +14,15 @@ import papis.format
 logger = logging.getLogger("bibtex")  # type: logging.Logger
 
 bibtex_types = [
-  "article", "book", "booklet", "conference", "inbook", "incollection",
-  "inproceedings", "manual", "mastersthesis", "misc", "phdthesis",
-  "proceedings", "techreport", "unpublished"
+    "article", "book", "booklet", "conference", "inbook", "incollection",
+    "inproceedings", "manual", "mastersthesis", "misc", "phdthesis",
+    "proceedings", "techreport", "unpublished"
 ] + papis.config.getlist('extra-bibtex-types')  # type: List[str]
 
 bibtex_type_converter = {
-  "conferencePaper": "inproceedings",
-  "journalArticle": "article",
-  "journal": "article"
+    "conferencePaper": "inproceedings",
+    "journalArticle": "article",
+    "journal": "article"
 }  # type: Dict[str, str]
 
 bibtex_keys = [
@@ -66,8 +64,8 @@ class Importer(papis.importer.Importer):
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
-        if (not os.path.exists(uri) or os.path.isdir(uri) or
-                papis.filetype.get_document_extension(uri) == 'pdf'):
+        if (not os.path.exists(uri) or os.path.isdir(uri)
+                or papis.filetype.get_document_extension(uri) == 'pdf'):
             return None
         importer = Importer(uri=uri)
         importer.fetch()
@@ -75,13 +73,13 @@ class Importer(papis.importer.Importer):
 
     @papis.importer.cache
     def fetch(self: papis.importer.Importer) -> Any:
-        self.logger.info("Reading input file = %s" % self.uri)
+        self.logger.info("Reading input file = '%s'", self.uri)
         try:
             bib_data = bibtex_to_dict(self.uri)
             if len(bib_data) > 1:
                 self.logger.warning(
-                    'Your bibtex file contains more than one entry,'
-                    ' I will be taking the first entry')
+                    'The bibtex file contains more than one entry, '
+                    'only taking the first entry')
             if bib_data:
                 self.ctx.data = bib_data[0]
         except Exception as e:
@@ -102,17 +100,19 @@ def explorer(ctx: click.core.Context, bibfile: str) -> None:
 
     """
     logger = logging.getLogger('explore:bibtex')
-    logger.info('Reading in bibtex file {}'.format(bibfile))
+    logger.info("Reading in bibtex file '%s'", bibfile)
+
     docs = [
         papis.document.from_data(d)
         for d in bibtex_to_dict(bibfile)]
     ctx.obj['documents'] += docs
-    logger.info('{} documents found'.format(len(docs)))
+
+    logger.info('%d documents found', len(docs))
 
 
 def bibtexparser_entry_to_papis(entry: Dict[str, str]) -> Dict[str, str]:
-    """Convert keys of a bib entry in bibtexparser format to papis compatible
-    format.
+    """Convert keys of a bib entry in bibtexparser format to papis
+    compatible format.
 
     :param entry: Dictionary with keys of bibtexparser format.
     :type  entry: dict
@@ -161,10 +161,9 @@ def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
 
     # bibtexparser has too many debug messages to be useful
     logging.getLogger("bibtexparser.bparser").setLevel(logging.WARNING)
-    global logger
     if os.path.exists(bibtex):
         with open(bibtex) as fd:
-            logger.debug("Reading in file %s" % bibtex)
+            logger.debug("Reading in file '%s'", bibtex)
             text = fd.read()
     else:
         text = bibtex
@@ -203,7 +202,7 @@ def create_reference(doc: Dict[str, Any]) -> str:
             logger.error(e)
             ref = ""
 
-    logger.debug("generated ref=%s" % ref)
+    logger.debug("Generated 'ref = %s'", ref)
     if not ref:
         if doc.get('doi'):
             ref = doc['doi']
@@ -220,7 +219,7 @@ def to_bibtex(document: papis.document.Document) -> str:
 
     :param document: Papis document
     :type  document: Document
-    :returns: String containing bibtex formating
+    :returns: String containing bibtex formatting
     :rtype:  str
 
     """
@@ -238,7 +237,7 @@ def to_bibtex(document: papis.document.Document) -> str:
         bibtex_type = "article"
 
     ref = create_reference(document)
-    logger.debug("Used ref=%s" % ref)
+    logger.debug("Used 'ref = %s'", ref)
 
     bibtex_string += "@{type}{{{ref},\n".format(type=bibtex_type, ref=ref)
     for bibKey in list(document.keys()):
@@ -246,7 +245,7 @@ def to_bibtex(document: papis.document.Document) -> str:
             new_bibkey = bibtex_key_converter[bibKey]
             document[new_bibkey] = document[bibKey]
     for bibKey in sorted(document.keys()):
-        logger.debug('%s : %s' % (bibKey, document[bibKey]))
+        logger.debug("Bibtex entry: '%s: %s'", bibKey, document[bibKey])
         if bibKey in bibtex_keys:
             value = str(document[bibKey])
             if not papis.config.getboolean('bibtex-unicode'):
@@ -260,8 +259,8 @@ def to_bibtex(document: papis.document.Document) -> str:
                     )
                 elif journal_key not in document.keys():
                     logger.warning(
-                        "Key '{0}' is not present for ref={1}"
-                        .format(journal_key, document["ref"]))
+                            "Key '%s' is not present for ref '%s'",
+                            journal_key, document["ref"])
                     bibtex_string += "  %s = {%s},\n" % ('journal', value)
             else:
                 bibtex_string += "  %s = {%s},\n" % (bibKey, value)

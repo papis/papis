@@ -1,9 +1,7 @@
 import os
 import re
-import operator
-import functools
-import time
 import logging
+import functools
 from typing import (
     Optional, Any, List, Generic, Sequence,
     Callable, Tuple, Pattern, TypeVar)
@@ -23,7 +21,7 @@ import papis.utils
 
 Option = TypeVar("Option")
 
-LOGGER = logging.getLogger('tui:widget:list')
+logger = logging.getLogger('tui:widget:list')
 
 
 def match_against_regex(
@@ -247,6 +245,8 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
 
     def get_selection(self) -> Sequence[Option]:
         """Get the selected item, if there is Any"""
+        if len(self.marks):
+            return [self.get_options()[m] for m in self.marks]
         if self.indices and self.current_index is not None:
             return [self.get_options()[self.current_index]]
         return []
@@ -271,13 +271,16 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         """Creates the body of the list, which is just a list of tuples,
         where the tuples follow the FormattedText structure.
         """
+        import time
+        import operator
+
         self.update_cursor()
-        _t = time.time()
+        begin_t = time.time()
         internal_text = functools.reduce(
             operator.add,
             [self.options_headers[i] for i in self.indices],
             [])  # type: List[Tuple[str, str]]
-        LOGGER.debug("Create items in %f", time.time() - _t)
+        logger.debug("Created items in %.1f ms", 1000*(time.time() - begin_t))
         return internal_text
 
     def index_to_line(self, index: int) -> int:
@@ -293,7 +296,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         return self._indices_to_lines[index]
 
     def process_options(self) -> None:
-        LOGGER.debug('processing %s options', len(self.get_options()))
+        logger.debug('Processing %d options', len(self.get_options()))
         self.marks = []
 
         def _get_linecount(_o: Option) -> int:
@@ -302,20 +305,20 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         self.options_headers_linecount = list(map(_get_linecount,
                                                   self.get_options()))
         self.max_entry_height = max(self.options_headers_linecount)
-        LOGGER.debug('processing headers')
+        logger.debug('Processing headers')
         self.options_headers = []
         for _opt in self.get_options():
             prestring = self.header_filter(_opt) + '\n'
             try:
                 htmlobject = HTML(prestring).formatted_text
             except Exception as e:
-                LOGGER.error(
-                    'Error processing html for \n %s \n %s', prestring, e)
+                logger.error(
+                        'Error processing html for\n %s\n %s', prestring, e)
                 htmlobject = [('fg:red', prestring)]
             self.options_headers += [htmlobject]
-        LOGGER.debug('got %s headers', len(self.options_headers))
-        LOGGER.debug('processing matchers')
+        logger.debug('Got %d headers', len(self.options_headers))
+        logger.debug('Processing matchers')
         self.options_matchers = list(
             map(self.match_filter, self.get_options()))
         self.indices = list(range(len(self.get_options())))
-        LOGGER.debug('got %s matchers', len(self.options_matchers))
+        logger.debug('Got %d matchers', len(self.options_matchers))

@@ -1,8 +1,11 @@
 import re
-from typing import Any, List, Dict, Union, Pattern
-from typing_extensions import TypedDict
+from typing import (
+        Any, List, Dict, Iterator, Tuple, Union, Pattern, TYPE_CHECKING)
 
-import bs4
+try:
+    from typing import TypedDict  # Python 3.8+
+except ImportError:
+    from typing_extensions import TypedDict
 
 import papis.bibtex
 import papis.config
@@ -10,6 +13,8 @@ import papis.document
 import papis.importer
 import papis.utils
 
+if TYPE_CHECKING:
+    import bs4
 
 MetaEquivalence = TypedDict(
     "MetaEquivalence", {
@@ -99,7 +104,7 @@ meta_equivalences = [
 ]  # type: List[MetaEquivalence]
 
 
-def parse_meta_headers(soup: bs4.BeautifulSoup) -> Dict[str, Any]:
+def parse_meta_headers(soup: "bs4.BeautifulSoup") -> Dict[str, Any]:
     global meta_equivalences
     # metas = soup.find_all(name="meta")
     data = dict()  # type: Dict[str, Any]
@@ -117,7 +122,7 @@ def parse_meta_headers(soup: bs4.BeautifulSoup) -> Dict[str, Any]:
     return data
 
 
-def parse_meta_authors(soup: bs4.BeautifulSoup) -> List[Dict[str, Any]]:
+def parse_meta_authors(soup: "bs4.BeautifulSoup") -> List[Dict[str, Any]]:
     author_list = []  # type: List[Dict[str, Any]]
     authors = soup.find_all(name='meta', attrs={'name': 'citation_author'})
     if not authors:
@@ -126,8 +131,9 @@ def parse_meta_authors(soup: bs4.BeautifulSoup) -> List[Dict[str, Any]]:
     affs = soup.find_all(
         name='meta',
         attrs={'name': 'citation_author_institution'})
+
     if affs and authors:
-        tuples = zip(authors, affs)
+        tuples = zip(authors, affs)  # type: Iterator[Tuple[Any, Any]]
     elif authors:
         tuples = ((a, None) for a in authors)
     else:

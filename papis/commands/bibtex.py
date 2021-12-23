@@ -6,12 +6,6 @@ This command helps to interact with `bib` files in your LaTeX projects.
 Examples
 ^^^^^^^^
 
-::
-
-    papis bibtex                            \
-      read new_papers.bib                   \ # Read bib file
-      cmd 'papis add --from-doi {doc[doi]}'   # For every entry run the command
-
 I use it for opening some papers for instance
 
 ::
@@ -37,7 +31,65 @@ or if I update some information in my papis ``yaml`` files then I can do
       update -f           \ # Update what has been read from papis library
       save new_papers.bib   # save everything to new_papers.bib, overwriting
 
-Maybe this is also interesting for you guys!
+Local configuration file
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you are working in a local folder where you have
+a bib file called ``main.bib``, you'll grow sick and tired
+of writing always ``read main.bib`` and  ``save main.bib``, so you can
+write a local configuration file ``.papis.config`` for ``papis bibtex``
+to read and write automatically
+
+::
+
+    [bibtex]
+    default-read-bibfile = main.bib
+    default-save-bibfile = main.bib
+    auto-read = True
+
+with this setup, you can just do
+
+::
+
+    papis bibtex add einstein save
+
+Check references quality
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+When you're collaborating with someone, you might come across malformed
+or incomplete references. Most journals want to have all the ``doi``s
+and urls available. You can automate this diagnostic with
+
+For this you kan use the command ``doctor``
+
+::
+
+    papis bibtex read mybib.bib doctor
+
+Mostly I want to have only the references in my project's bib file
+that are actually cited in the latex file, you can check
+which references are not cited in the tex files by doing
+
+
+::
+
+    papis bibtex iscited -f main.tex -f chapter-2.tex
+
+and you can then filter them out using the command ``filter-cited``.
+
+To monitor the health of the bib project's file, I mostly have a
+target in the project's ``Makefile`` like
+
+.. code:: make
+
+    .PHONY: check-bib
+    check-bib:
+        papis bibtex iscited -f main.tex doctor
+
+it does not solve all problems under the sun, but it is really better than no
+check!
+
+
 
 Vim integration
 ^^^^^^^^^^^^^^^
@@ -67,15 +119,18 @@ And use like such: |asciicast|
 
 Cli
 ^^^
-.. click:: papis.commands.add:cli
-    :prog: papis add
+.. click:: papis.commands.bibtex:cli
+    :prog: papis bibtex
 
 """
 import os
 import re
+import click
+import logging
+from typing import List, Optional
+
 import papis.api
 import papis.cli
-import click
 import papis.config as config
 import papis.utils
 import papis.tui.utils
@@ -86,10 +141,7 @@ import papis.commands.edit
 import papis.commands.browse
 import papis.commands.export
 import papis.bibtex
-import logging
-import colorama
 
-from typing import List, Optional
 
 logger = logging.getLogger('papis:bibtex')
 
@@ -116,14 +168,14 @@ def cli(ctx: click.Context, no_auto_read: bool) -> None:
     ctx.obj = {'documents': []}
 
     if no_auto_read:
-        logger.info('Setting auto-read to False')
+        logger.info("Setting 'auto-read' to False")
         config.set('auto-read', 'False', section='bibtex')
 
     bibfile = config.get('default-read-bibfile', section='bibtex')
-    if (bool(config.getboolean('auto-read', section='bibtex')) and
-       bibfile and
-       os.path.exists(bibfile)):
-        logger.info("auto reading {0}".format(bibfile))
+    if (bool(config.getboolean('auto-read', section='bibtex'))
+            and bibfile
+            and os.path.exists(bibfile)):
+        logger.info("Auto-reading '%s'", bibfile)
         explorer_mgr['bibtex'].plugin.callback(bibfile)
 
 
@@ -136,7 +188,7 @@ cli.add_command(explorer_mgr['bibtex'].plugin, 'read')
 @papis.cli.all_option()
 @click.pass_context
 def _add(ctx: click.Context, query: str, _all: bool) -> None:
-    """Add a refrence to the bibtex file"""
+    """Add a reference to the bibtex file"""
     docs = papis.api.get_documents_in_lib(search=query)
     if not _all:
         docs = list(papis.api.pick_doc(docs))
@@ -176,17 +228,15 @@ def _update(ctx: click.Context, _all: bool,
             libdoc = papis.utils.locate_document_in_lib(doc)
         except IndexError as e:
             logger.info(
-                '{c.Fore.YELLOW}{0}:'
-                '\n\t{c.Back.RED}{doc: <80.80}{c.Style.RESET_ALL}'
-                .format(e, doc=papis.document.describe(doc), c=colorama)
-            )
+                '{c.Fore.YELLOW}%s:'
+                '\n\t{c.Back.RED}%-80.80s{c.Style.RESET_ALL}',
+                e, papis.document.describe(doc))
         else:
             if fromdb:
                 logger.info(
                     'Updating \n\t{c.Fore.GREEN}'
-                    '{c.Back.BLACK}{doc: <80.80}{c.Style.RESET_ALL}'
-                    .format(doc=papis.document.describe(doc), c=colorama)
-                )
+                    '{c.Back.BLACK}%-80.80s{c.Style.RESET_ALL}',
+                    papis.document.describe(doc))
                 if keys:
                     docs[j].update(
                         {k: libdoc.get(k) for k in keys if libdoc.has(k)})
@@ -283,7 +333,7 @@ def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
             print('Not saving..')
             return
     with open(bibfile, 'w+') as fd:
-        logger.info('Saving {1} documents in {0}..'.format(bibfile, len(docs)))
+        logger.info("Saving %d documents in '%s'", len(docs), bibfile)
         fd.write(papis.commands.export.run(docs, to_format='bibtex'))
 
 
@@ -334,18 +384,18 @@ def _unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
             if doc.get(key) == bottle.get(key):
                 indices.append(i)
                 duplis_docs.append(bottle)
-                logger.info('{}. repeated {} ⇒ {}'
-                            .format(len(duplis_docs), key, doc.get(key)))
+                logger.info(
+                        '%d repeated %s -> %s',
+                        len(duplis_docs), key, doc.get(key))
         docs = [d for (i, d) in enumerate(docs) if i not in indices]
 
-    logger.info("Unique   : {}".format(len(unique_docs)))
-    logger.info("Discarded: {}".format(len(duplis_docs)))
+    logger.info("Unique   : %d", len(unique_docs))
+    logger.info("Discarded: %d", len(duplis_docs))
 
     ctx.obj['documents'] = unique_docs
     if o:
         with open(o, 'w+') as f:
-            logger.info('Saving {1} documents in {0}..'
-                        .format(o, len(duplis_docs)))
+            logger.info("Saving %d documents in '%s'", len(duplis_docs), o)
             f.write(papis.commands.export.run(duplis_docs, to_format='bibtex'))
 
 
@@ -360,19 +410,18 @@ def _unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
 def _doctor(ctx: click.Context, key: List[str]) -> None:
     """
     Check bibfile for correctness, missing keys etc.
-        e.g. papis bibtex -k title -k url -k doi
+        e.g. papis bibtex doctor -k title -k url -k doi
 
     """
-    logger.info("Checking for existence of %s", ", ".join(key))
+    logger.info("Checking for existence of keys %s", ", ".join(key))
 
     failed = [(d, keys) for d, keys in [(d, [k for k in key if not d.has(k)])
                                         for d in ctx.obj['documents']]
               if keys]
 
     for j, (doc, keys) in enumerate(failed):
-        logger.info('{} {c.Back.BLACK}{c.Fore.RED}{doc: <80.80}'
-                    '{c.Style.RESET_ALL}'
-                    .format(j, doc=papis.document.describe(doc), c=colorama))
+        logger.info('%s {c.Back.BLACK}{c.Fore.RED}%-80.80s{c.Style.RESET_ALL}',
+                    j, papis.document.describe(doc))
         for k in keys:
             logger.info('\tmissing: %s', k)
 
@@ -425,9 +474,8 @@ def _iscited(ctx: click.Context, _files: List[str]) -> None:
     logger.info('%s documents not cited', len(unfound))
 
     for j, doc in enumerate(unfound):
-        logger.info('{} {c.Back.BLACK}{c.Fore.RED}{doc: <80.80}'
-                    '{c.Style.RESET_ALL}'
-                    .format(j, doc=papis.document.describe(doc), c=colorama))
+        logger.info('%s {c.Back.BLACK}{c.Fore.RED}%-80.80s{c.Style.RESET_ALL}',
+                    j, papis.document.describe(doc))
 
 
 @cli.command('import')
@@ -456,29 +504,28 @@ def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
         fileValue = None
         filepaths = []
         for k in ["file", "FILE"]:
-            logger.info('{} {c.Back.BLACK}{c.Fore.YELLOW}{doc: <80.80}'
-                        '{c.Style.RESET_ALL}'
-                        .format(j, doc=papis.document.describe(doc),
-                                c=colorama))
+            logger.info(
+                    '%s {c.Back.BLACK}{c.Fore.YELLOW}%-80.80s'
+                    '{c.Style.RESET_ALL}',
+                    j, papis.document.describe(doc))
             if doc.has(k):
                 fileValue = doc[k]
-                logger.info("\tkey '%s' exists", k)
+                logger.info("\tKey '%s' exists", k)
                 break
 
         if not fileValue:
             logger.info("\t"
                         "{c.Back.YELLOW}{c.Fore.BLACK}"
-                        "no pdf files will be imported"
-                        "{c.Style.RESET_ALL}".format(c=colorama))
+                        "No pdf files will be imported"
+                        "{c.Style.RESET_ALL}")
         else:
             filepaths = [f for f in fileValue.split(":") if os.path.exists(f)]
 
         if not filepaths and fileValue is not None:
             logger.info("\t"
                         "{c.Back.BLACK}{c.Fore.RED}"
-                        "I could not find a valid file in \n"
-                        "{value}{c.Style.RESET_ALL}"
-                        .format(value=fileValue, c=colorama))
+                        "No valid file in \n%s{c.Style.RESET_ALL}",
+                        fileValue)
         else:
             logger.info("\tfound %s file(s)", len(filepaths))
 

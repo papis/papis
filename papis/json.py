@@ -1,12 +1,13 @@
-import click
-import json
 import logging
 from typing import List
+
+import click
 
 import papis.document
 
 
 def exporter(documents: List[papis.document.Document]) -> str:
+    import json
     return json.dumps([papis.document.to_dict(doc) for doc in documents])
 
 
@@ -24,7 +25,10 @@ def explorer(ctx: click.Context, jsonfile: str) -> None:
 
     """
     logger = logging.getLogger('explore:json')
-    logger.info('Reading in json file {}'.format(jsonfile))
+    logger.info("Reading in json file '%s'", jsonfile)
+
+    import json
     docs = [papis.document.from_data(d) for d in json.load(open(jsonfile))]
     ctx.obj['documents'] += docs
-    logger.info('{} documents found'.format(len(docs)))
+
+    logger.info('%s documents found', len(docs))

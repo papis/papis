@@ -2,13 +2,10 @@ import re
 import os
 import logging
 import tempfile
-from typing import Set, List, Dict, Any, Optional, Tuple  # noqa: ignore
+from typing import Set, List, Dict, Any, Optional, Tuple, TYPE_CHECKING
 
-import requests
-import requests.structures
-import click
 import doi
-import habanero
+import click
 
 import papis.config
 import papis.pick
@@ -17,8 +14,11 @@ import papis.document
 import papis.importer
 import papis.downloaders.base
 
-LOGGER = logging.getLogger("crossref")  # type: logging.Logger
-LOGGER.debug("importing")
+if TYPE_CHECKING:
+    import habanero
+
+
+logger = logging.getLogger("crossref")  # type: logging.Logger
 KeyConversionPair = papis.document.KeyConversionPair
 
 _filter_names = set([
@@ -159,8 +159,8 @@ def crossref_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
     return new_data
 
 
-def _get_crossref_works(
-        **kwargs: Any) -> habanero.request_class.Request:
+def _get_crossref_works(**kwargs: Any) -> "habanero.request_class.Request":
+    import habanero
     cr = habanero.Crossref()
     return cr.works(**kwargs)
 
@@ -195,14 +195,14 @@ def get_data(
     try:
         results = _get_crossref_works(filter=filters, **kwargs)
     except Exception as e:
-        LOGGER.error(e)
+        logger.error(e)
         return []
 
     if isinstance(results, list):
         docs = [d["message"] for d in results]
     elif isinstance(results, dict):
         if 'message' not in results.keys():
-            LOGGER.error("Error retrieving from xref: incorrect message")
+            logger.error("Error retrieving from crossref: incorrect message")
             return []
         message = results['message']
         if "items" in message.keys():
@@ -210,9 +210,9 @@ def get_data(
         else:
             docs = [message]
     else:
-        LOGGER.error("Error retrieving from xref: incorrect message")
+        logger.error("Error retrieving from crossref: incorrect message")
         return []
-    LOGGER.debug("Retrieved %s documents", len(docs))
+    logger.debug("Retrieved %s documents", len(docs))
     return [
         crossref_data_to_papis_data(d)
         for d in docs]
@@ -227,7 +227,6 @@ def doi_to_data(doi_string: str) -> Dict[str, Any]:
     :raises ValueError: If no data could be retrieved for the doi
 
     """
-    global LOGGER
     doi_string = doi.get_clean_doi(doi_string)
     results = get_data(dois=[doi_string])
     if results:
@@ -245,7 +244,7 @@ def doi_to_data(doi_string: str) -> Dict[str, Any]:
     '--max', '-m', '_ma', help='Maximum number of results', default=20)
 @click.option(
     '--filter', '-f', '_filters', help='Filters to apply', default=(),
-    type=(click.Choice(_filter_names), str),
+    type=(click.Choice(list(_filter_names)), str),
     multiple=True)
 @click.option(
     '--order', '-o', help='Order of appearance according to sorting',
@@ -272,6 +271,7 @@ def explorer(
     """
     logger = logging.getLogger('explore:crossref')
     logger.info('Looking up...')
+
     data = get_data(
         query=query,
         author=author,
@@ -282,6 +282,7 @@ def explorer(
         order=order)
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj['documents'] += docs
+
     logger.info('%s documents found', len(docs))
 
 
@@ -298,23 +299,24 @@ class DoiFromPdfImporter(papis.importer.Importer):
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
         """The uri should be a filepath"""
         filepath = uri
-        if (os.path.isdir(filepath) or not os.path.exists(filepath) or
-                not papis.filetype.get_document_extension(filepath) == 'pdf'):
+        if (os.path.isdir(filepath) or not os.path.exists(filepath)
+                or not papis.filetype.get_document_extension(filepath) == 'pdf'
+                ):      # noqa: E124
             return None
         importer = DoiFromPdfImporter(filepath)
         importer.fetch()
         return importer if importer.doi else None
 
     def fetch(self) -> None:
-        self.logger.info("Trying to parse doi from file {0}".format(self.uri))
+        self.logger.info("Trying to parse DOI from file '%s'", self.uri)
         if self.ctx:
             return
         if not self.doi:
             self.doi = doi.pdf_to_doi(self.uri, maxlines=2000)
         if self.doi:
-            self.logger.info("Parsed doi {0}".format(self.doi))
+            self.logger.info("Parsed DOI: '%s'", self.doi)
             self.logger.warning(
-                "There is no guarantee that this doi is the one")
+                "There is no guarantee that this DOI is the correct one")
             importer = Importer(uri=self.doi)
             importer.fetch()
             self.ctx = importer.ctx
@@ -354,8 +356,12 @@ class Importer(papis.importer.Importer):
 
             if doc_url is not None:
                 self.logger.info(
-                    "Trying to download document from %s..", doc_url)
+                    "Trying to download document from '%s'", doc_url)
+
+                import requests
                 session = requests.Session()
+
+                import requests.structures
                 session.headers = requests.structures.CaseInsensitiveDict({
                     "user-agent": papis.config.getstring("user-agent")})
 
@@ -377,7 +383,7 @@ class Importer(papis.importer.Importer):
                             suffix=".{}".format(kind.extension),
                             delete=False) as f:
                         f.write(response.content)
-                        self.logger.debug("Saving in %s", f.name)
+                        self.logger.debug("Saving in '%s'", f.name)
                         self.ctx.files.append(f.name)
 
 
@@ -401,12 +407,12 @@ class FromCrossrefImporter(papis.importer.Importer):
         return None
 
     def fetch_data(self) -> None:
-        self.logger.info("querying '{0}' to crossref.org".format(self.uri))
+        self.logger.info("Querying '%s' to crossref.org", self.uri)
         docs = [
             papis.document.from_data(d)
             for d in get_data(query=self.uri)]
         if docs:
-            self.logger.info("got {0} matches, picking...".format(len(docs)))
+            self.logger.info("Got %d matches, picking...", len(docs))
             docs = list(papis.pick.pick_doc(docs))
             if not docs:
                 return

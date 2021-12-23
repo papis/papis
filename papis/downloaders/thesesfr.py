@@ -1,7 +1,7 @@
 import re
-import papis.downloaders.base
-import bs4
 from typing import Optional
+
+import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):
@@ -36,7 +36,10 @@ class Downloader(papis.downloaders.Downloader):
         'http://thesesups.ups-tlse.fr/2722/1/2014TOU30305.pdf'
         >>> d = Downloader("http://theses.fr/1998ENPC9815")
         >>> d.get_document_url()
+        'https://pastel.archives-ouvertes.fr/tel-00005590v2/file/Cances.pdf'
         """
+        import bs4
+
         # TODO: Simplify this function for typing
         raw_data = self.session.get(self.uri).content.decode('utf-8')
         soup = bs4.BeautifulSoup(raw_data, "html.parser")
@@ -53,12 +56,12 @@ class Downloader(papis.downloaders.Downloader):
         raw_data = self.session.get(second_url).content.decode('utf-8')
         soup = bs4.BeautifulSoup(raw_data, "html.parser")
         a = list(filter(
-            lambda t: re.match(r'.*pdf$', t['href']),
+            lambda t: re.match(r'.*pdf$', t.get('href', '')),
             soup.find_all('a')
         ))
 
         if not a:
-            self.logger.error('No document url in {0}'.format(second_url))
+            self.logger.error("No document url in '%s'", second_url)
             return None
 
         return str(a[0]['href'])
@@ -70,5 +73,5 @@ class Downloader(papis.downloaders.Downloader):
         'http://www.theses.fr/2014TOU30305.bib'
         """
         url = "http://www.theses.fr/{id}.bib".format(id=self.get_identifier())
-        self.logger.debug("[bibtex url] = %s" % url)
+        self.logger.debug("bibtex url = '%s'", url)
         return url

@@ -2,17 +2,19 @@
 """
 import os
 import re
-import datetime
-import shutil
 import logging
 from typing import (
     List, Dict, Any, Optional, Union, NamedTuple, Callable, Tuple)
-from typing_extensions import TypedDict
+
+try:
+    from typing import TypedDict  # Python 3.8+
+except ImportError:
+    from typing_extensions import TypedDict
 
 import papis.config
 import papis
 
-LOGGER = logging.getLogger("document")  # type: logging.Logger
+logger = logging.getLogger("document")  # type: logging.Logger
 
 KeyConversion = TypedDict(
     "KeyConversion", {"key": Optional[str],
@@ -50,7 +52,7 @@ def keyconversion_to_data(conversion_list: List[KeyConversionPair],
                 action = conv_data.get('action') or (lambda x: x)
                 new_data[papis_key] = action(papis_value)
             except Exception as ex:
-                LOGGER.debug("Error while trying to parse %s (%s)",
+                logger.debug("Error while trying to parse '%s' (%s)",
                              papis_key, ex)
 
     if keep_unknown_keys:
@@ -235,9 +237,9 @@ class Document(Dict[str, Any]):
             data = papis.yaml.yaml_to_data(self.get_info_file(),
                                            raise_exception=True)
         except Exception as ex:
-            LOGGER.error('Error reading yaml file in %s'
-                         '\nPlease check it!\n\n%s',
-                         self.get_info_file(), str(ex))
+            logger.error(
+                    "Error reading yaml file in '%s'. Please check it!\n%s",
+                    self.get_info_file(), ex)
         else:
             for key in data:
                 self[key] = data[key]
@@ -303,6 +305,7 @@ def delete(document: Document) -> None:
     """
     folder = document.get_main_folder()
     if folder:
+        import shutil
         shutil.rmtree(folder)
 
 
@@ -342,6 +345,7 @@ def move(document: Document, path: str) -> None:
         )
     folder = document.get_main_folder()
     if folder:
+        import shutil
         shutil.move(folder, path)
         # Let us chmod it because it might come from a temp folder
         # and temp folders are per default 0o600
@@ -380,6 +384,7 @@ def sort(docs: List[Document], key: str, reverse: bool) -> List[Document]:
         for sort_type in sort_rankings:
             sort_rankings[sort_type] = -sort_rankings[sort_type]
 
+    import datetime
     zero_date = datetime.datetime.fromtimestamp(0)
 
     def _sort_for_key(key: str, doc: Document
@@ -409,7 +414,7 @@ def sort(docs: List[Document], key: str, reverse: bool) -> List[Document]:
             # The key does not appear in the document, ensure
             # it comes last.
             return (sort_rankings["None"], zero_date, 0, '')
-    LOGGER.debug("sorting %d documents", len(docs))
+    logger.debug("Sorting %d documents", len(docs))
     return sorted(docs, key=lambda d: _sort_for_key(key, d), reverse=reverse)
 
 
@@ -428,6 +433,8 @@ def new(folder_path: str, data: Dict[str, Any],
     :raises FileExistsError: If folder_path exists
     """
     os.makedirs(folder_path)
+
+    import shutil
     doc = Document(folder=folder_path, data=data)
     doc['files'] = []
     for _file in files:

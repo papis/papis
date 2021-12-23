@@ -1,9 +1,6 @@
 from typing import Any, Dict, List, Optional
 
-import json
-import urllib
-import requests
-
+import papis
 import papis.importer
 import papis.document
 import papis.downloaders.base
@@ -72,6 +69,7 @@ def is_valid_pmid(pmid: str) -> bool:
     if not pmid.isdigit():
         return False
 
+    import urllib
     url = PUBMED_URL.format(pmid=pmid, database=PUBMED_DATABASE)
     request = urllib.request.Request(url)
 
@@ -87,7 +85,7 @@ def is_valid_pmid(pmid: str) -> bool:
 def get_data(query: str = "") -> Dict[str, Any]:
     # NOTE: being nice and using the project version as a user agent
     # as requested in https://api.ncbi.nlm.nih.gov/lit/ctxp
-    import papis
+    import requests
     headers = requests.structures.CaseInsensitiveDict({
         'user-agent': "papis/{}".format(papis.__version__)
         })
@@ -97,6 +95,7 @@ def get_data(query: str = "") -> Dict[str, Any]:
     response = session.get(PUBMED_URL.format(
         pmid=query.strip(), database=PUBMED_DATABASE))
 
+    import json
     return pubmed_data_to_papis_data(json.loads(response.content.decode()))
 
 

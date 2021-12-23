@@ -21,7 +21,9 @@ CLI Examples
 
 """
 import copy
+
 import click
+
 import papis.commands.run
 
 cli = copy.deepcopy(papis.commands.run.cli)

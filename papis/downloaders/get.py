@@ -1,6 +1,7 @@
 import re
-import papis.downloaders.base
 from typing import Optional
+
+import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):
@@ -24,8 +25,7 @@ class Downloader(papis.downloaders.Downloader):
         if m:
             d = Downloader(url)
             extension = m.group(1)
-            d.logger.info(
-                'Expecting a document of type "{0}"'.format(extension))
+            d.logger.info("Expecting a document of type '%s'", extension)
             d.expected_document_extension = extension
             return d
         else:

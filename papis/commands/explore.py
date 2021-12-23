@@ -86,14 +86,17 @@ Cli
     :show-nested:
 """
 import os
+import logging
+from typing import List, Optional, Union, Any, Dict, TYPE_CHECKING
+
+import click
+
 import papis.tui.utils
 import papis.commands
 import papis.document
 import papis.config
 import papis.strings
 import papis.cli
-import click
-import logging
 import papis.commands.add
 import papis.commands.export
 import papis.api
@@ -101,7 +104,9 @@ import papis.pick
 import papis.format
 import papis.crossref
 import papis.plugin
-from typing import List, Optional, Union, Any, Dict  # noqa: ignore
+
+if TYPE_CHECKING:
+    from stevedore import ExtensionManager
 
 logger = logging.getLogger('explore')
 
@@ -114,7 +119,7 @@ def get_available_explorers() -> List[click.Command]:
     return papis.plugin.get_available_plugins(_extension_name())
 
 
-def get_explorer_mgr() -> papis.plugin.ExtensionManager:
+def get_explorer_mgr() -> "ExtensionManager":
     return papis.plugin.get_extension_manager(_extension_name())
 
 
@@ -135,11 +140,13 @@ def lib(ctx: click.Context, query: str,
 
     """
     logger = logging.getLogger('explore:lib')
+
     if doc_folder:
         ctx.obj['documents'] += [papis.document.from_folder(doc_folder)]
     db = papis.database.get(library_name=library)
     docs = db.query(query)
-    logger.info('{} documents found'.format(len(docs)))
+    logger.info('%d documents found', len(docs))
+
     ctx.obj['documents'] += docs
     assert(isinstance(ctx.obj['documents'], list))
 
@@ -238,12 +245,10 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
 
     if os.path.exists(citations_file):
         if rmfile:
-            logger.info('Removing {0}'.format(citations_file))
+            logger.info("Removing citations file '%s'", citations_file)
             os.remove(citations_file)
         else:
-            logger.info(
-                'A citations file exists in {0}'.format(citations_file)
-            )
+            logger.info("A citations file exists in '%s'", citations_file)
             if papis.tui.utils.confirm('Do you want to use it?'):
                 # TODO: here it complains that papis.yaml.explorer.callback
                 #       None, somehow mypy does not get that.
@@ -256,14 +261,14 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
 
     dois = [d.get('doi') for d in doc['citations'] if d.get('doi')]
     if not dois:
-        logger.error('No dois retrieved from the document\'s information')
+        logger.error("No DOIs retrieved from the document's information")
         return
 
     if max_citations < 0:
         max_citations = len(dois)
     dois = dois[0:min(max_citations, len(dois))]
 
-    logger.info("%s citations found" % len(dois))
+    logger.info("%d citations found", len(dois))
     dois_with_data = [
     ]  # type: List[Union[papis.document.Document, Dict[str, Any]]]
     found_in_lib_dois = [
@@ -291,8 +296,8 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
     for doi in found_in_lib_dois:
         dois.remove(doi)
 
-    logger.info("Found {0} dois in library".format(len(found_in_lib_dois)))
-    logger.info("Fetching {} citations from crossref".format(len(dois)))
+    logger.info("Found %d DOIs in library", len(found_in_lib_dois))
+    logger.info("Fetching %d citations from crossref", len(dois))
 
     with tqdm.tqdm(iterable=dois) as progress:
         for doi in progress:
@@ -307,14 +312,12 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
 
     docs = [papis.document.Document(data=d) for d in dois_with_data]
     if save:
-        logger.info('Storing citations in "{0}"'.format(citations_file))
+        logger.info("Storing citations in '%s'", citations_file)
         with open(citations_file, 'a+') as fd:
             logger.info(
-                "Writing {} documents' yaml into {}".format(
-                    len(docs),
-                    citations_file
-                )
-            )
+                "Writing %d documents' yaml into '%s'",
+                len(docs), citations_file)
+
             yamldata = papis.commands.export.run(docs, to_format='yaml')
             fd.write(yamldata)
     ctx.obj['documents'] += docs
@@ -351,7 +354,7 @@ def cmd(ctx: click.Context, command: str) -> None:
     for doc in docs:
         fcommand = papis.format.format(command, doc)
         splitted_command = shlex.split(fcommand)
-        logger.info('Calling %s' % splitted_command)
+        logger.info("Calling '%s'", splitted_command)
         call(splitted_command)
 
 

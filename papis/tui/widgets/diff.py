@@ -1,4 +1,6 @@
-import difflib
+from typing import (
+    Dict, Any, List, Union, NamedTuple, Callable, Sequence)
+
 from prompt_toolkit import Application, print_formatted_text
 from prompt_toolkit.utils import Event
 from prompt_toolkit.layout.containers import HSplit, Window, WindowAlign
@@ -6,9 +8,6 @@ from prompt_toolkit.formatted_text import FormattedText, HTML
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.key_binding import KeyBindings
-
-from typing import (  # noqa: ignore
-    Dict, Any, List, Union, NamedTuple, Callable, Sequence)
 
 Action = NamedTuple('Action',
                     [
@@ -58,8 +57,8 @@ def prompt(text: Union[str, FormattedText],
                     for a in actions
                 ))
             )
-        )] +
-        ([
+        )]
+        + ([
             Window(
                 height=1, align=WindowAlign.LEFT,
                 always_hide_cursor=True,
@@ -93,6 +92,7 @@ def diffshow(texta: str,
     assert(isinstance(texta, str))
     assert(isinstance(textb, str))
 
+    import difflib
     # diffs = difflib.unified_diff(
     #         str(texta).splitlines(keepends=True),
     #         str(textb).splitlines(keepends=True),
@@ -117,12 +117,12 @@ def diffshow(texta: str,
     formatted_text = list(map(
         lambda line:
             # match line values
-            line.startswith('@') and ('fg:violet bg:ansiblack', line) or
-            line.startswith('+') and ('fg:ansigreen bg:ansiblack', line) or
-            line.startswith('-') and ('fg:ansired bg:ansiblack', line) or
-            line.startswith('?') and ('fg:ansiyellow bg:ansiblack', line) or
-            line.startswith('^^^') and ('bg:ansiblack fg:ansipurple', line) or
-            ('fg:ansiwhite', line), raw_text))
+            line.startswith('@') and ('fg:violet bg:ansiblack', line)
+            or line.startswith('+') and ('fg:ansigreen bg:ansiblack', line)
+            or line.startswith('-') and ('fg:ansired bg:ansiblack', line)
+            or line.startswith('?') and ('fg:ansiyellow bg:ansiblack', line)
+            or line.startswith('^^^') and ('bg:ansiblack fg:ansipurple', line)
+            or ('fg:ansiwhite', line), raw_text))
 
     prompt(title=title,
            text=formatted_text,
@@ -145,7 +145,7 @@ def diffdict(dicta: Dict[str, Any],
     :type  namea: str
     :param namea: Label to be shown for dictionary b
     :type  namea: str
-    :returns: A dictionary containig the base data of dicta plus data
+    :returns: A dictionary containing the base data of dicta plus data
         from dictb if this was chosen.
     :rtype:  return_type
     """

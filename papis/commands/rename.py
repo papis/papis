@@ -6,9 +6,11 @@ Cli
     :prog: papis rename
 """
 import os
-import subprocess
 import logging
+from typing import Optional
+
 import click
+
 import papis.cli
 import papis.database
 import papis.strings
@@ -16,8 +18,6 @@ import papis.git
 import papis.pick
 import papis.document
 import papis.tui.utils
-
-from typing import Optional
 
 
 def run(document: papis.document.Document,
@@ -34,12 +34,13 @@ def run(document: papis.document.Document,
     new_folder_path = os.path.join(subfolder, new_name)
 
     if os.path.exists(new_folder_path):
-        logger.warning("Path %s already exists" % new_folder_path)
+        logger.warning("Path '%s' already exists", new_folder_path)
         return
 
     cmd = ['git', '-C', folder] if git else []
     cmd += ['mv', folder, new_folder_path]
 
+    import subprocess
     logger.debug(cmd)
     subprocess.call(cmd)
 
@@ -49,7 +50,7 @@ def run(document: papis.document.Document,
             "Rename from {} to '{}'".format(folder, new_name))
 
     db.delete(document)
-    logger.debug("New document folder: {}".format(new_folder_path))
+    logger.debug("New document folder: '%s'", new_folder_path)
     document.set_folder(new_folder_path)
     db.add(document)
 

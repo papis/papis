@@ -17,14 +17,10 @@
 """
 import os
 import re
-import bs4
 import logging
-import urllib.request  # urlopen, Request
-import urllib.parse  # import urlencode
 from typing import Optional, List, Dict, Any
 
 import click
-import arxiv2bib
 
 import papis.filetype
 import papis.downloaders.base
@@ -63,7 +59,9 @@ def get_data(
     search_query = '+AND+'.join(
         [key+':'+str(clean_params[key]) for key in clean_params]
     )
-    logger.debug("query = " + search_query)
+    logger.debug("query = '%s'", search_query)
+
+    import urllib.parse
     params = urllib.parse.urlencode(
         {
             'search_query': search_query,
@@ -73,7 +71,9 @@ def get_data(
     )
     main_url = "http://arxiv.org/api/query?"
     req_url = main_url + params
-    logger.debug("url = " + req_url)
+    logger.debug("url = '%s'", req_url)
+
+    import urllib.request
     url = urllib.request.Request(
         req_url,
         headers={
@@ -81,6 +81,8 @@ def get_data(
         }
     )
     xmldoc = urllib.request.urlopen(url).read()
+
+    import bs4
     soup = bs4.BeautifulSoup(xmldoc, 'html.parser')
 
     entries = soup.find_all("entry")
@@ -107,10 +109,11 @@ def get_data(
 
 
 def validate_arxivid(arxivid: str) -> None:
-    from urllib.error import HTTPError, URLError
+    import urllib.request
     url = "https://arxiv.org/abs/{0}".format(arxivid)
     request = urllib.request.Request(url)
 
+    from urllib.error import HTTPError, URLError
     try:
         urllib.request.urlopen(request)
     except HTTPError:
@@ -208,6 +211,7 @@ def explorer(
     """
     logger = logging.getLogger('explore:arxiv')
     logger.info('Looking up...')
+
     data = get_data(
         query=query,
         author=author,
@@ -222,6 +226,7 @@ def explorer(
         max_results=max)
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj['documents'] += docs
+
     logger.info('%s documents found', len(docs))
 
 
@@ -258,18 +263,21 @@ class Downloader(papis.downloaders.Downloader):
         bib_url = self.get_bibtex_url()
         if not bib_url:
             return None
+
+        import arxiv2bib
         bibtex_cli = arxiv2bib.Cli([bib_url])
         bibtex_cli.run()
-        self.logger.debug("[bibtex url] = %s" % bib_url)
+
+        self.logger.debug("bibtex_url = '%s'", bib_url)
         output = bibtex_cli.output  # List[str]
         data = ''.join(output).replace('\n', ' ')
         self.bibtex_data = data
 
     def get_document_url(self) -> Optional[str]:
         arxivid = self._get_identifier()
-        self.logger.debug("arxivid %s" % arxivid)
+        self.logger.debug("arxivid = '%s'", arxivid)
         pdf_url = "https://arxiv.org/pdf/{arxivid}.pdf".format(arxivid=arxivid)
-        self.logger.debug("[pdf url] = %s" % pdf_url)
+        self.logger.debug("pdf_url = '%s'", pdf_url)
         return pdf_url
 
 
@@ -306,22 +314,21 @@ class ArxividFromPdfImporter(papis.importer.Importer):
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
-        if (os.path.isdir(uri) or not os.path.exists(uri) or
-                not papis.filetype.get_document_extension(uri) == 'pdf'):
+        if (os.path.isdir(uri) or not os.path.exists(uri)
+                or not papis.filetype.get_document_extension(uri) == 'pdf'):
             return None
         importer = ArxividFromPdfImporter(uri=uri)
         importer.arxivid = pdf_to_arxivid(uri, maxlines=2000)
         return importer if importer.arxivid else None
 
     def fetch(self) -> None:
-        self.logger.info(
-            "trying to parse arxivid from file {0}".format(self.uri))
+        self.logger.info("Trying to parse arxivid from file '%s'", self.uri)
         if not self.arxivid:
             self.arxivid = pdf_to_arxivid(self.uri, maxlines=2000)
         if self.arxivid:
-            self.logger.info("Parsed arxivid {0}".format(self.arxivid))
+            self.logger.info("Parsed arxivid '%s'", self.arxivid)
             self.logger.warning(
-                "There is no guarantee that this arxivid is the one")
+                    "There is no guarantee that this arxivid is the one")
             importer = Importer.match(self.arxivid)
             if importer:
                 importer.fetch()

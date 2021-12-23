@@ -16,27 +16,28 @@ Cli
 .. click:: papis.commands.addto:cli
     :prog: papis addto
 """
-from string import ascii_lowercase
 import os
-import shutil
+import logging
+from typing import List, Optional
+
+import click
+
 import papis.pick
 import papis.utils
 import papis.document
 import papis.git
 import papis.config
 import papis.commands.add
-import logging
 import papis.cli
-import click
 import papis.strings
-
-from typing import List, Optional
 
 
 def run(document: papis.document.Document,
         filepaths: List[str],
         git: bool = False) -> None:
     logger = logging.getLogger('addto')
+
+    from string import ascii_lowercase
     g = papis.utils.create_identifier(ascii_lowercase)
     string_append = ''
 
@@ -74,18 +75,15 @@ def run(document: papis.document.Document,
         if len(os.path.abspath(end_document_path)) >= 255:
             logger.warning(
                 'Length of absolute path is > 255 characters. '
-                'This may cause some issues with some pdf viewers'
-            )
+                'This may cause some issues with some pdf viewers')
 
         if os.path.exists(end_document_path):
             logger.warning(
-                "%s already exists, ignoring..." % end_document_path
-            )
+                "%s already exists, ignoring...", end_document_path)
             continue
-        logger.info(
-            "[CP] '%s' to '%s'" %
-            (in_file_path, end_document_path)
-        )
+
+        import shutil
+        logger.info("[CP] '%s' to '%s'", in_file_path, end_document_path)
         shutil.copy(in_file_path, end_document_path)
 
     if "files" not in document.keys():

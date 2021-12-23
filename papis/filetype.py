@@ -1,6 +1,5 @@
 import re
 import os
-import filetype
 
 
 def get_document_extension(document_path: str) -> str:
@@ -10,6 +9,7 @@ def get_document_extension(document_path: str) -> str:
     :returns: Extension (string)
 
     """
+    import filetype
     filetype.guess(document_path)
     kind = filetype.guess(document_path)
     if kind is None:

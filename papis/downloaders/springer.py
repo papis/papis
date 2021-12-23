@@ -1,7 +1,8 @@
 import re
+from typing import Optional, Any, Dict
+
 import papis.downloaders.base
 import papis.document
-from typing import Optional, Any, Dict
 
 
 class Downloader(papis.downloaders.Downloader):
@@ -59,7 +60,7 @@ class Downloader(papis.downloaders.Downloader):
             url = ("http://citation-needed.springer.com/v2/"
                    "references/{doi}?format=bibtex&amp;flavour=citation"
                    .format(doi=self.ctx.data['doi']))
-            self.logger.debug("bibtex url = %s" % url)
+            self.logger.debug("bibtex url = '%s'", url)
             return url
         else:
             return None
@@ -68,7 +69,7 @@ class Downloader(papis.downloaders.Downloader):
         if 'doi' in self.ctx.data:
             url = ("https://link.springer.com/content/pdf/"
                    "{doi}.pdf".format(doi=self.ctx.data['doi']))
-            self.logger.debug("doc url = %s" % url)
+            self.logger.debug("doc url = '%s'", url)
             return url
         else:
             return None

@@ -50,8 +50,8 @@ You can imagine that papis commands like ``rename`` and ``mv`` should also
 offer such functionality, and they indeed do through the ``--git`` flag.
 Go to their documentation for more information.
 
-Updating the libray
--------------------
+Updating the library
+--------------------
 
 You can use papis' simple ``git`` wrapper,
 

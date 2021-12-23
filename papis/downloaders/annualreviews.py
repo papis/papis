@@ -1,6 +1,7 @@
 import re
-import papis.downloaders.base
 from typing import Optional, Dict, Any
+
+import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):
@@ -22,7 +23,7 @@ class Downloader(papis.downloaders.Downloader):
         if 'doi' in self.ctx.data:
             doi = self.ctx.data['doi']
             url = "http://annualreviews.org/doi/pdf/{doi}".format(doi=doi)
-            self.logger.debug("doc url = %s" % url)
+            self.logger.debug("doc url = '%s'", url)
             return url
         else:
             return None
@@ -32,7 +33,7 @@ class Downloader(papis.downloaders.Downloader):
             url = ("http://annualreviews.org/action/downloadCitation"
                    "?format=bibtex&cookieSet=1&doi={doi}"
                    .format(doi=self.ctx.data['doi']))
-            self.logger.debug("bibtex url = %s" % url)
+            self.logger.debug("bibtex url = '%s'", url)
             return url
         else:
             return None
@@ -56,15 +57,15 @@ class Downloader(papis.downloaders.Downloader):
             afftext = affspan[0].text if affspan else ''
             fullname = re.sub(
                 ',', '', cleanregex.sub('', author.text.replace(afftext, '')))
-            splitted = re.split(r'\s+', fullname)
+            split_fullname = re.split(r'\s+', fullname)
             cafftext = re.sub(' ,', ',',
                               morespace.sub(' ', cleanregex.sub('', afftext)))
             if 'Reviewing Editor' in fullname:
                 data['editor'] = cleanregex.sub(
                     ' ', editorregex.sub('', fullname))
                 continue
-            given = splitted[0]
-            family = ' '.join(splitted[1:])
+            given = split_fullname[0]
+            family = ' '.join(split_fullname[1:])
             author_list.append(
                 dict(
                     given=given,

@@ -1,12 +1,7 @@
-from typing import List, Optional, Any, Sequence, Type, Dict
-import logging
 import os
 import re
-import tempfile
-
-import requests
-import bs4
-import filetype
+import logging
+from typing import List, Optional, Any, Sequence, Type, Dict, TYPE_CHECKING
 
 import papis.bibtex
 import papis.config
@@ -15,7 +10,10 @@ import papis.importer
 import papis.plugin
 import papis.utils
 
-LOGGER = logging.getLogger("downloader")
+if TYPE_CHECKING:
+    import bs4
+
+logger = logging.getLogger("downloader")
 
 
 def _extension_name() -> str:
@@ -39,7 +37,7 @@ class Importer(papis.importer.Importer):
         )
 
     def fetch(self) -> None:
-        self.logger.info("attempting to import from url %s", self.uri)
+        self.logger.info("Attempting to import from url '%s'", self.uri)
         self.ctx = get_info_from_url(self.uri) or papis.importer.Context()
 
     def fetch_data(self) -> None:
@@ -61,10 +59,11 @@ class Downloader(papis.importer.Importer):
         papis.importer.Importer.__init__(self,
                                          uri=uri,
                                          ctx=ctx,
-                                         name=name or
-                                         os.path.basename(__file__))
-        self.logger = logging.getLogger("downloader:"+self.name)
-        self.logger.debug("uri {0}".format(uri))
+                                         name=name
+                                         or os.path.basename(__file__))
+        self.logger = logging.getLogger("downloader:{}".format(self.name))
+        self.logger.debug("uri '%s'", uri)
+
         self.expected_document_extension = None  # type: Optional[str]
         self.priority = 1  # type: int
         self._soup = None  # type: Optional[bs4.BeautifulSoup]
@@ -72,6 +71,7 @@ class Downloader(papis.importer.Importer):
         self.bibtex_data = None  # type: Optional[str]
         self.document_data = None  # type: Optional[bytes]
 
+        import requests
         self.session = requests.Session()  # type: requests.Session
         self.session.headers = requests.structures.CaseInsensitiveDict({
             'User-Agent': papis.config.getstring('user-agent')
@@ -127,10 +127,11 @@ class Downloader(papis.importer.Importer):
         else:
             doc_rawdata = self.get_document_data()
             if doc_rawdata and self.check_document_format():
+                import tempfile
                 with tempfile.NamedTemporaryFile(
                         mode="wb+", delete=False) as f:
                     f.write(doc_rawdata)
-                    self.logger.info("Saving downloaded file in %s", f.name)
+                    self.logger.info("Saving downloaded file in '%s'", f.name)
                     self.ctx.files.append(f.name)
 
     def fetch(self) -> None:
@@ -146,10 +147,12 @@ class Downloader(papis.importer.Importer):
         """Get body of the uri, this is also important for unittesting"""
         return self.session.get(self.uri).content
 
-    def _get_soup(self) -> bs4.BeautifulSoup:
+    def _get_soup(self) -> "bs4.BeautifulSoup":
         """Get body of the uri, this is also important for unittesting"""
         if self._soup:
             return self._soup
+
+        import bs4
         self._soup = bs4.BeautifulSoup(self._get_body(), features='lxml')
         return self._soup
 
@@ -191,7 +194,7 @@ class Downloader(papis.importer.Importer):
         if not url:
             return
         res = self.session.get(url, cookies=self.cookies)
-        self.logger.info("downloading bibtex from {0}".format(url))
+        self.logger.info("Downloading bibtex from '%s'", url)
         self.bibtex_data = res.content.decode()
 
     def get_document_url(self) -> Optional[str]:
@@ -246,7 +249,7 @@ class Downloader(papis.importer.Importer):
         url = self.get_document_url()
         if not url:
             return
-        self.logger.info("downloading file from {0}".format(url))
+        self.logger.info("Downloading file from '%s'", url)
         res = self.session.get(url, cookies=self.cookies)
         self.document_data = res.content
 
@@ -261,13 +264,14 @@ class Downloader(papis.importer.Importer):
         """
         def print_warning() -> None:
             self.logger.error(
-                "The downloaded data does not seem to be of"
-                "the correct type ({})"
-                .format(self.expected_document_extension))
+                "The downloaded data does not seem to be of "
+                "the correct type ('%s')",
+                self.expected_document_extension)
 
         if self.expected_document_extension is None:
             return True
 
+        import filetype
         retrieved_kind = filetype.guess(self.get_document_data())
 
         if retrieved_kind is None:
@@ -275,8 +279,8 @@ class Downloader(papis.importer.Importer):
             return False
 
         self.logger.debug(
-            'retrieved kind of document seems to be {0}'
-            .format(retrieved_kind.mime))
+            "Retrieved kind of document seems to be '%s'",
+            retrieved_kind.mime)
 
         if not isinstance(self.expected_document_extension, list):
             expected_document_extensions = [self.expected_document_extension]
@@ -348,13 +352,13 @@ def get_info_from_url(
 
     downloaders = get_matching_downloaders(url)
     if not downloaders:
-        LOGGER.warning("No matching downloader found for (%s)", url)
+        logger.warning("No matching downloader found for '%s'", url)
         return papis.importer.Context()
 
-    LOGGER.debug('Found %s matching downloaders', len(downloaders))
+    logger.debug('Found %d matching downloaders', len(downloaders))
     downloader = downloaders[0]
 
-    LOGGER.info("Using downloader '%s'", downloader)
+    logger.info("Using downloader '%s'", downloader)
     if downloader.expected_document_extension is None and \
             expected_doc_format is not None:
         downloader.expected_document_extension = expected_doc_format

@@ -1,6 +1,7 @@
 import re
-import papis.downloaders.base
 from typing import Optional
+
+import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):
@@ -30,12 +31,12 @@ class Downloader(papis.downloaders.Downloader):
         # http://aip.scitation.org/doi/pdf/10.1063/1.4873138
         durl = ("http://aip.scitation.org/doi/pdf/{doi}"
                 .format(doi=self.get_doi()))
-        self.logger.debug("[doc url] = %s" % durl)
+        self.logger.debug("doc url = '%s'", durl)
         return durl
 
     def get_bibtex_url(self) -> Optional[str]:
         url = ("http://aip.scitation.org/action/downloadCitation"
                "?format=bibtex&cookieSet=1&doi={doi}"
                .format(doi=self.get_doi()))
-        self.logger.debug("[bibtex url] = %s" % url)
+        self.logger.debug("bibtex url = '%s'", url)
         return url

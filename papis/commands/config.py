@@ -35,14 +35,17 @@ Cli
 .. click:: papis.commands.config:cli
     :prog: papis config
 """
-import papis.commands
 import logging
-import click
 from typing import Optional
+
+import click
+
+import papis.commands
 
 
 def run(option_string: str) -> Optional[str]:
     logger = logging.getLogger('config:run')
+
     option = option_string.split(".")
     if len(option) == 1:
         key = option[0]
@@ -50,8 +53,10 @@ def run(option_string: str) -> Optional[str]:
     elif len(option) == 2:
         section = option[0]
         key = option[1]
-    logger.debug("key = %s, sec = %s" % (key, section))
+
+    logger.debug("key = %s, sec = %s", key, section)
     val = papis.config.get(key, section=section)
+
     return val
 
 
@@ -62,4 +67,5 @@ def cli(option: str) -> None:
     """Print configuration values"""
     logger = logging.getLogger('cli:config')
     logger.debug(option)
+
     click.echo(run(option))

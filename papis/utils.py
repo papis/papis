@@ -1,15 +1,9 @@
+import os
+import re
+import logging
 from itertools import count, product
 from typing import (Optional, List, Iterator, Any, Dict,
                     Union, Callable, TypeVar)
-import copy
-import logging
-import os
-import re
-import shlex
-import subprocess
-import time
-
-import colorama
 
 try:
     import multiprocessing.synchronize  # noqa: F401
@@ -25,8 +19,7 @@ import papis.downloaders
 import papis.document
 import papis.database
 
-LOGGER = logging.getLogger("utils")
-LOGGER.debug("importing")
+logger = logging.getLogger("utils")
 
 A = TypeVar("A")
 B = TypeVar("B")
@@ -52,7 +45,7 @@ def general_open(file_name: str,
                  key: str,
                  default_opener: Optional[str] = None,
                  wait: bool = True) -> None:
-    """Wraper for openers
+    """Wrapper for openers
     """
     try:
         opener = papis.config.get(key)
@@ -60,13 +53,17 @@ def general_open(file_name: str,
         if default_opener is None:
             default_opener = papis.config.get_default_opener()
         opener = default_opener
+
+    import shlex
     cmd = shlex.split("{0} '{1}'".format(opener, file_name))
-    LOGGER.debug("cmd:  %s", cmd)
+    logger.debug("cmd: %s", cmd)
+
+    import subprocess
     if wait:
-        LOGGER.debug("Waiting for process to finsih")
+        logger.debug("Waiting for process to finish")
         subprocess.call(cmd)
     else:
-        LOGGER.debug("Not waiting for process to finish")
+        logger.debug("Not waiting for process to finish")
         subprocess.Popen(
             cmd, shell=False,
             stdin=None, stdout=None, stderr=None, close_fds=True)
@@ -95,13 +92,16 @@ def get_folders(folder: str) -> List[str]:
     :returns: List of folders containing an info file.
     :rtype: list
     """
-    LOGGER.debug("Indexing folders in '{0}'".format(folder))
-    folders = list()
+    logger.debug("Indexing folders in '%s'", folder)
+
+    folders = []
     for root, dirnames, filenames in os.walk(folder):
         if os.path.exists(
                 os.path.join(root, papis.config.getstring('info-name'))):
             folders.append(root)
-    LOGGER.debug("{0} valid folders retrieved".format(len(folders)))
+
+    logger.debug("%d valid folders retrieved", len(folders))
+
     return folders
 
 
@@ -209,10 +209,13 @@ def folders_to_documents(folders: List[str]) -> List[papis.document.Document]:
     :rtype:  list
 
     """
-    logger = logging.getLogger("utils:dir2doc")
+    logger = logging.getLogger("utils:folders_to_documents")
+
+    import time
     begin_t = time.time()
     result = parmap(papis.document.from_folder, folders)
-    logger.debug("done in %.1f ms" % (1000*time.time()-1000*begin_t))
+
+    logger.debug("Done in %.1f ms", 1000*(time.time() - begin_t))
     return result
 
 
@@ -242,15 +245,16 @@ def get_cache_home() -> str:
 
 def get_matching_importer_or_downloader(matching_string: str
                                         ) -> List[papis.importer.Importer]:
-    importers = []  # type: List[papis.importer.Importer]
     logger = logging.getLogger("utils:matcher")
+
+    importers = []  # type: List[papis.importer.Importer]
     _imps = papis.importer.get_importers()
     _downs = papis.downloaders.get_available_downloaders()
     _all_importers = list(_imps) + list(_downs)
     for importer_cls in _all_importers:
         logger.debug("trying with importer "
-                     "{c.Back.BLACK}{c.Fore.YELLOW}{name}{c.Style.RESET_ALL}"
-                     .format(c=colorama, name=importer_cls))
+                     "{c.Back.BLACK}{c.Fore.YELLOW}%s{c.Style.RESET_ALL}",
+                     importer_cls)
         try:
             importer = importer_cls.match(
                 matching_string)  # type: Optional[papis.importer.Importer]
@@ -258,10 +262,10 @@ def get_matching_importer_or_downloader(matching_string: str
             logger.error(e)
             continue
         if importer:
-            logger.info("{f} {c.Back.BLACK}{c.Fore.GREEN}matches {name}"
-                        "{c.Style.RESET_ALL}".format(f=matching_string,
-                                                     c=colorama,
-                                                     name=importer.name))
+            logger.info(
+                    "%s {c.Back.BLACK}{c.Fore.GREEN}"
+                    "matches %s{c.Style.RESET_ALL}",
+                    matching_string, importer.name)
             try:
                 importer.fetch()
             except Exception as e:
@@ -274,8 +278,10 @@ def get_matching_importer_or_downloader(matching_string: str
 def update_doc_from_data_interactively(
         document: Union[papis.document.Document, Dict[str, Any]],
         data: Dict[str, Any], data_name: str) -> None:
-    import papis.tui.widgets.diff
+    import copy
     docdata = copy.copy(document)
+
+    import papis.tui.widgets.diff
     # do not compare some entries
     docdata.pop('files', None)
     docdata.pop('tags', None)

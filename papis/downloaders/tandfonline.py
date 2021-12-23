@@ -1,9 +1,8 @@
 import re
-import urllib.parse
+from typing import Optional, Any, Dict
 
 import papis.downloaders.base
 import papis.document
-from typing import Optional, Any, Dict
 
 
 class Downloader(papis.downloaders.Downloader):
@@ -46,6 +45,7 @@ class Downloader(papis.downloaders.Downloader):
             fullname = author.find_all('a', attrs={'class': 'entryAuthor'})
             fullname = fullname[0].get('href').split('/')[-1]
 
+            import urllib.parse
             fullname = urllib.parse.unquote_plus(fullname)
             family, given = re.split(r',\s+', fullname)
             given = self.re_add_dot.sub(r'\1.', given)
@@ -71,7 +71,7 @@ class Downloader(papis.downloaders.Downloader):
             url = ("http://www.tandfonline.com/action/downloadCitation"
                    "?format=bibtex&cookieSet=1&doi={doi}"
                    .format(doi=self.ctx.data['doi']))
-            self.logger.debug("bibtex url = %s" % url)
+            self.logger.debug("bibtex url = '%s'", url)
             return url
         else:
             return None
@@ -80,7 +80,7 @@ class Downloader(papis.downloaders.Downloader):
         if 'doi' in self.ctx.data:
             durl = ("http://www.tandfonline.com/doi/pdf/{doi}"
                     .format(doi=self.ctx.data['doi']))
-            self.logger.debug("doc url = %s" % durl)
+            self.logger.debug("doc url = '%s'", durl)
             return durl
         else:
             return None

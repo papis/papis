@@ -1,13 +1,14 @@
 from typing import Dict, Any
+
 PapisConfigType = Dict[str, Dict[str, Any]]
 
 
 def get_default_settings() -> PapisConfigType:
     return dict(tui={
         "status_line_format": (
-            "{selected_index}/{number_of_documents}  " +
-            "F1:help  " +
-            "c-l:redraw  "
+            "{selected_index}/{number_of_documents}  "
+            + "F1:help  "
+            + "c-l:redraw  "
         ),
 
         "status_line_style": 'bg:ansiwhite fg:ansiblack',
@@ -28,6 +29,7 @@ def get_default_settings() -> PapisConfigType:
         'show_info_key': 's-tab',
         'go_top_key': 'home',
         'go_bottom_key': 'end',
+        'mark_key': 'c-t',
 
         "editmode": "emacs",
     })

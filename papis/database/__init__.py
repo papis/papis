@@ -1,8 +1,9 @@
 import logging
-from typing import Optional, Dict  # noqa: ignore
+from typing import Optional, Dict
+
 from .base import Database
 from papis.library import Library
-LOGGER = logging.getLogger('database')
+logger = logging.getLogger('database')
 
 DATABASES = dict()  # type: Dict[str, Database]
 

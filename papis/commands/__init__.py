@@ -1,17 +1,19 @@
 import os
+import re
 import glob
+from typing import Dict, Optional, Union, NamedTuple
+
+from click.core import Command
+
+import papis.cli
 import papis.config
 import papis.plugin
-import re
-from click.core import Command
-from papis.cli import AliasedGroup
-from typing import Dict, Optional, Union, NamedTuple
 
 
 Script = NamedTuple("Script",
                     [("command_name", str),
                      ("path", Optional[str]),
-                     ("plugin", Union[None, Command, AliasedGroup])])
+                     ("plugin", Union[None, Command, papis.cli.AliasedGroup])])
 
 
 def get_external_scripts() -> Dict[str, Script]:

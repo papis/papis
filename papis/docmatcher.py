@@ -1,7 +1,9 @@
-import papis.config
-import papis.document
 import logging
 from typing import Optional, List, Any, Callable
+
+import papis.config
+import papis.document
+
 MATCHER_TYPE = Callable[[papis.document.Document, str, Optional[str]], Any]
 
 
@@ -11,14 +13,18 @@ class DocMatcher(object):
     module.
 
     The static methods are to be used as follows:
-    First the search string has to be set,
+    First the search string has to be set::
+
         DocMatcher.set_search(search_string)
-    and then the parse method should be called in order to decypher the
-    search_string,
+
+    and then the parse method should be called in order to decipher the
+    *search_string*::
+
         DocMatcher.parse()
-    Now the DocMatcher is ready to match documents with the input query
-    via the `return_if_match` method, which is used to parallelize the
-    matching.
+
+    Now the :class:`DocMatcher` is ready to match documents with the input
+    query via the :meth:`DocMatcher.return_if_match` method, which is used to
+    parallelize the matching.
     """
     search = ""  # type: str
     parsed_search = []  # type: List[Any]
@@ -116,8 +122,8 @@ class DocMatcher(object):
 
 def parse_query(query_string: str) -> List[List[str]]:
     import pyparsing
-    logger = logging.getLogger('query_parser')
-    logger.debug('Parsing search')
+    logger = logging.getLogger('parse_query')
+    logger.debug("Parsing query: '%s'", query_string)
 
     papis_key_word = pyparsing.Word(pyparsing.alphanums + '-._/')
     papis_value_word = pyparsing.Word(pyparsing.alphanums + '-._/()')
@@ -129,9 +135,9 @@ def parse_query(query_string: str) -> List[List[str]]:
     ) ^ papis_value_word
 
     equal = (
-        pyparsing.ZeroOrMore(" ") +
-        pyparsing.Literal(':') +
         pyparsing.ZeroOrMore(" ")
+        + pyparsing.Literal(':')
+        + pyparsing.ZeroOrMore(" ")
     )
 
     papis_query = pyparsing.ZeroOrMore(
@@ -143,5 +149,5 @@ def parse_query(query_string: str) -> List[List[str]]:
     )
     parsed = papis_query.parseString(query_string)  # type: List[List[str]]
 
-    logger.debug('Parsed query = %s' % parsed)
+    logger.debug("Parsed query: '%s'", parsed)
     return parsed

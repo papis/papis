@@ -98,7 +98,6 @@ def test_to_bibtex() -> None:
          "  author = {Fernandez, Gilgamesh},\n"
          "  journal = {jcp},\n"
          "  title = {Hello},\n"
-         "  type = {book},\n"
          "  year = {3200BCE},\n"
          "}\n")
     doc['journal_abbrev'] = 'j'
@@ -108,7 +107,6 @@ def test_to_bibtex() -> None:
          '  author = {Fernandez, Gilgamesh},\n'
          '  journal = {j},\n'
          '  title = {Hello},\n'
-         '  type = {book},\n'
          '  year = {3200BCE},\n'
          '}\n')
     del doc['title']
@@ -118,7 +116,6 @@ def test_to_bibtex() -> None:
         '@book{hello1992,\n'
         '  journal = {j},\n'
         '  author = {Fernandez, Gilgamesh},\n',
-        '  type = {book},\n'
         '  year = {3200BCE},\n'
         '}\n'
     )

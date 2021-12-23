@@ -22,7 +22,11 @@ from .widgets.list import Option, OptionsList
 from typing import (  # noqa: ignore
     Optional, Dict, Any, List, Callable, Tuple, Generic,
     Sequence)
-from typing_extensions import TypedDict
+
+try:
+    from typing import TypedDict  # Python 3.8+
+except ImportError:
+    from typing_extensions import TypedDict
 
 __all__ = [
     "Option",
@@ -90,6 +94,10 @@ def get_keys_info() -> Dict[str, KeyInfo]:
             "go_bottom_key": {
                 'key': config.getstring('go_bottom_key', section='tui'),
                 'help': 'Go to the bottom of the list',
+            },
+            "mark_key": {
+                'key': config.getstring('mark_key', section='tui'),
+                'help': 'Mark current item to be selected',
             },
         }
     return _KEYS_INFO

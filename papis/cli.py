@@ -1,11 +1,11 @@
+from typing import Optional, Any, Callable
+
 import click
 import click.core
 import click.types
 import click.decorators
 
 import papis.config
-import difflib
-from typing import Optional, Any, Callable
 
 
 DecoratorCallable = Callable[..., Any]
@@ -26,6 +26,8 @@ class AliasedGroup(click.core.Group):
         rv = click.core.Group.get_command(self, ctx, cmd_name)
         if rv is not None:
             return rv
+
+        import difflib
         matches = difflib.get_close_matches(
             cmd_name, self.list_commands(ctx), n=2)
         if not matches:

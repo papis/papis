@@ -47,9 +47,13 @@ Cli
     :prog: papis list
 """
 
-import logging
-import papis
 import os
+import logging
+from typing import List, Optional, Union, Sequence
+
+import click
+
+import papis
 import papis.utils
 import papis.strings
 import papis.config
@@ -59,9 +63,6 @@ import papis.downloaders
 import papis.cli
 import papis.pick
 import papis.format
-import click
-
-from typing import List, Optional, Union, Sequence
 
 logger = logging.getLogger('list')
 
@@ -88,7 +89,7 @@ def run(
 
     if template is not None:
         if not os.path.exists(template):
-            logger.error("Template file {} not found".format(template))
+            logger.error("Template file '%s' not found", template)
             return []
         with open(template) as fd:
             fmt = fd.read()
@@ -186,8 +187,8 @@ def cli(
     logger = logging.getLogger('cli:list')
     documents = []  # type: List[papis.document.Document]
 
-    if (not libraries and not downloaders and
-            not _file and not info and not _dir):
+    if (not libraries and not downloaders
+            and not _file and not info and not _dir):
         _dir = True
 
     if not libraries and not downloaders:

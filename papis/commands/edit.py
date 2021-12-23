@@ -7,8 +7,13 @@ Cli
 .. click:: papis.commands.edit:cli
     :prog: papis edit
 """
-import papis
 import os
+import logging
+from typing import Optional
+
+import click
+
+import papis
 import papis.hooks
 import papis.api
 import papis.pick
@@ -17,12 +22,8 @@ import papis.utils
 import papis.config
 import papis.database
 import papis.cli
-import click
-import logging
 import papis.strings
 import papis.git
-
-from typing import Optional
 
 
 def run(document: papis.document.Document,
@@ -55,6 +56,7 @@ def edit_notes(document: papis.document.Document,
                git: bool = False) -> None:
     logger = logging.getLogger('edit:notes')
     logger.debug("Editing notes")
+
     if not document.has("notes"):
         document["notes"] = papis.config.getstring("notes-name")
         document.save()
@@ -64,7 +66,7 @@ def edit_notes(document: papis.document.Document,
     )
 
     if not os.path.exists(notes_path):
-        logger.debug("Creating {0}".format(notes_path))
+        logger.debug("Creating '%s'", notes_path)
         open(notes_path, "w+").close()
 
     papis.api.edit_file(notes_path)

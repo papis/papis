@@ -2,13 +2,13 @@
 Here the database abstraction for the libraries is defined.
 """
 
+from abc import ABC, abstractmethod
+from typing import Optional, List, Dict
+
 import papis.utils
 import papis.config
 import papis.library
 import papis.document
-
-from typing import Optional, List, Dict
-from abc import ABC, abstractmethod
 
 
 class Database(ABC):
@@ -41,7 +41,8 @@ class Database(ABC):
             self,
             document: papis.document.Document,
             query_string: str) -> bool:
-        """Wether or not document matches query_string
+        """
+        Whether or not document matches query_string.
 
         :param document: Document to be matched
         :type  document: papis.document.Document

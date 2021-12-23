@@ -27,11 +27,12 @@ Cli
 
 """
 import os
-import difflib
 import sys
 import logging
-from typing import Optional, Tuple, List, Callable
-import copy
+from typing import Optional, Tuple, List, Callable, TYPE_CHECKING
+
+import click
+import click.core
 
 import papis
 import papis.api
@@ -40,12 +41,17 @@ import papis.commands
 import papis.database
 import papis.cli
 
-import atexit
-import cProfile
-import pstats
-import colorama
-import click
-import click.core
+if TYPE_CHECKING:
+    import cProfile
+
+
+class ColoramaFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord) -> str:
+        if isinstance(record.msg, str):
+            import colorama
+            record.msg = record.msg.format(c=colorama)
+
+        return super().format(record)
 
 
 class MultiCommand(click.core.MultiCommand):
@@ -81,29 +87,34 @@ class MultiCommand(click.core.MultiCommand):
         try:
             script = self.scripts[name]
         except KeyError:
+            import difflib
             matches = list(map(
                 str, difflib.get_close_matches(name, self.scripts, n=2)))
+
+            import colorama
             self.logger.error(
-                '{c.Fore.RED}{c.Style.BRIGHT}{c.Back.BLACK}'
-                'did you mean {0}?'
-                '{c.Style.RESET_ALL}'
-                .format(
-                    ' or '.join(matches),
-                    c=colorama
-                ))
+                "{c.Fore.RED}{c.Style.BRIGHT}{c.Back.BLACK}"
+                "Command '{name}' is unknown! Did you mean '{matches}'?"
+                "{c.Style.RESET_ALL}"
+                .format(c=colorama, name=name, matches="' or '".join(matches))
+                )
+
             # return the match if there was only one match
             if len(matches) == 1:
-                self.logger.warning("I suppose you meant: '%s'", *matches)
+                self.logger.warning("I suppose you meant: '%s'", matches[0])
                 script = self.scripts[matches[0]]
             else:
                 return None
 
         if script.plugin is not None:
             return script.plugin
+
         # If it gets here, it means that it is an external script
+        import copy
         from papis.commands.external import external_cli
-        from papis.commands.external import get_command_help
         cli = copy.copy(external_cli)
+
+        from papis.commands.external import get_command_help
         cli.context_settings['obj'] = script
         if script.path is not None:
             cli.help = get_command_help(script.path)
@@ -112,12 +123,13 @@ class MultiCommand(click.core.MultiCommand):
         return cli
 
 
-def generate_profile_writing_function(profiler: cProfile.Profile,
+def generate_profile_writing_function(profiler: "cProfile.Profile",
                                       filename: str) -> Callable[[], None]:
     def _on_finish() -> None:
         profiler.disable()
         profiler.create_stats()
         with open(filename, 'w') as output:
+            import pstats
             stats = pstats.Stats(profiler, stream=output)
             stats.sort_stats('time')
             stats.print_stats()
@@ -144,7 +156,7 @@ def generate_profile_writing_function(profiler: cProfile.Profile,
 @click.option(
     "-l",
     "--lib",
-    help="Choose a library name or library path (unamed library)",
+    help="Choose a library name or library path (unnamed library)",
     default=lambda: papis.config.getstring("default-library"))
 @click.option(
     "-c",
@@ -204,32 +216,40 @@ def run(verbose: bool,
         os.environ["PAPIS_NP"] = str(np)
 
     if profile:
+        import cProfile
         profiler = cProfile.Profile()
         profiler.enable()
+
+        import atexit
         atexit.register(generate_profile_writing_function(profiler, profile))
 
+    import colorama
     if color == "no" or (color == "auto" and not sys.stdout.isatty()):
         # Turn off colorama (strip escape sequences from the output)
         colorama.init(strip=True)
     else:
         colorama.init()
 
-    log_format = (colorama.Fore.YELLOW +
-                  "%(levelname)s" +
-                  ":" +
-                  colorama.Fore.GREEN +
-                  "%(name)s" +
-                  colorama.Style.RESET_ALL +
-                  ":" +
-                  "%(message)s"
+    log_format = (colorama.Fore.YELLOW
+                  + "%(levelname)s"
+                  + ":"
+                  + colorama.Fore.GREEN
+                  + "%(name)s"
+                  + colorama.Style.RESET_ALL
+                  + ":"
+                  + "%(message)s"
                   )
     if verbose:
         log = "DEBUG"
-        log_format = "%(relativeCreated)d-"+log_format
-    logging.basicConfig(level=getattr(logging, log),
-                        format=log_format,
-                        filename=logfile,
-                        filemode='w+' if logfile is not None else 'a')
+        log_format = "%(relativeCreated)d-{}".format(log_format)
+
+    if logfile is None:
+        handler = logging.StreamHandler()
+        handler.setFormatter(ColoramaFormatter(log_format))
+    else:
+        handler = logging.FileHandler(logfile, mode="a")
+
+    logging.basicConfig(level=getattr(logging, log), handlers=[handler])
     logger = logging.getLogger('default')
 
     if config:
@@ -237,7 +257,7 @@ def run(verbose: bool,
         papis.config.reset_configuration()
 
     for pair in set_list:
-        logger.debug('Setting "{0}" to "{1}"'.format(*pair))
+        logger.debug("Setting '%s' to '%s'", *pair)
         papis.config.set(pair[0], pair[1])
 
     if pick_lib:

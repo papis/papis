@@ -57,8 +57,10 @@ in the package if they have been declared in the entry points of
 the ``setup.py`` script of the named package.
 """
 import logging
-from stevedore import ExtensionManager
-from typing import List, Dict, Any  # noqa: ignore
+from typing import List, Dict, Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from stevedore import ExtensionManager
 
 logger = logging.getLogger("papis:plugin")
 
@@ -66,15 +68,17 @@ logger = logging.getLogger("papis:plugin")
 MANAGERS = dict()  # type: Dict[str, ExtensionManager]
 
 
-def stevedore_error_handler(manager: ExtensionManager,
+def stevedore_error_handler(manager: "ExtensionManager",
                             entrypoint: str, exception: str) -> None:
-    logger.error("Error while loading entrypoint [%s]", entrypoint)
+    logger.error("Error while loading entrypoint '%s'", entrypoint)
     logger.error(exception)
 
 
 def _load_extensions(namespace: str) -> None:
     global MANAGERS
-    logger.debug("creating manager for {0}".format(namespace))
+    logger.debug("Creating manager for %s", namespace)
+
+    from stevedore import ExtensionManager
     MANAGERS[namespace] = ExtensionManager(
         namespace=namespace,
         invoke_on_load=False,
@@ -84,7 +88,7 @@ def _load_extensions(namespace: str) -> None:
     )
 
 
-def get_extension_manager(namespace: str) -> ExtensionManager:
+def get_extension_manager(namespace: str) -> "ExtensionManager":
     global MANAGERS
     if not MANAGERS.get(namespace):
         _load_extensions(namespace)

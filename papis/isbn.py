@@ -1,25 +1,26 @@
+# See https://github.com/xlcnd/isbnlib for details
+import logging
+from typing import Dict, Any, List, Optional
+
+import click
+
 import papis.document
 import papis.importer
-import logging
-import isbnlib
-import click
-# See https://github.com/xlcnd/isbnlib for details
-from typing import Dict, Any, List, Optional
 
 logger = logging.getLogger('papis:isbnlib')
 
 
 def get_data(query: str = "",
              service: str = 'openl') -> List[Dict[str, Any]]:
-    global logger
+    logger.debug("Trying to retrieve isbn from query: '%s'", query)
+
+    import isbnlib
     results = []  # type: List[Dict[str, Any]]
-    logger.debug('Trying to retrieve isbn')
     isbn = isbnlib.isbn_from_words(query)
     data = isbnlib.meta(isbn, service=service)
     if data is None:
         return results
     else:
-        logger.debug('Trying to retrieve isbn')
         assert(isinstance(data, dict))
         results.append(data_to_papis(data))
         return results
@@ -27,7 +28,7 @@ def get_data(query: str = "",
 
 def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Convert data from isbnlib into papis formated data
+    Convert data from isbnlib into papis formatted data.
 
     :param data: Dictionary with data
     :type  data: dict
@@ -68,10 +69,12 @@ def explorer(ctx: click.core.Context, query: str, service: str) -> None:
     """
     logger = logging.getLogger('explore:isbn')
     logger.info('Looking up...')
+
     data = get_data(query=query, service=service)
     docs = [papis.document.from_data(data=d) for d in data]
-    logger.info('{} documents found'.format(len(docs)))
     ctx.obj['documents'] += docs
+
+    logger.info('%d documents found', len(docs))
 
 
 class Importer(papis.importer.Importer):
@@ -83,11 +86,13 @@ class Importer(papis.importer.Importer):
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+        import isbnlib
         if isbnlib.notisbn(uri):
             return None
         return Importer(uri=uri)
 
     def fetch(self) -> None:
+        import isbnlib
         try:
             data = get_data(self.uri)
         except isbnlib.ISBNLibException:
