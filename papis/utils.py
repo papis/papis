@@ -34,7 +34,8 @@ def parmap(f: Callable[[A], B],
            xs: List[A],
            np: Optional[int] = None) -> List[B]:
     """
-    todo: enable multiprocessing support for darwin (py3.6+)
+    todo: enable multiprocessing support for darwin (py3.6+) ...
+    todo: ... see https://github.com/papis/papis/issues/323
     """
     if has_multiprocessing() and sys.platform != 'darwin':
         np = np or os.cpu_count()
