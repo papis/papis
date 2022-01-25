@@ -1,4 +1,5 @@
 import os
+import sys
 import re
 import logging
 from itertools import count, product
@@ -32,7 +33,11 @@ def has_multiprocessing() -> bool:
 def parmap(f: Callable[[A], B],
            xs: List[A],
            np: Optional[int] = None) -> List[B]:
-    if has_multiprocessing():
+    """
+    todo: enable multiprocessing support for darwin (py3.6+) ...
+    todo: ... see https://github.com/papis/papis/issues/323
+    """
+    if has_multiprocessing() and sys.platform != 'darwin':
         np = np or os.cpu_count()
         np = int(os.environ.get("PAPIS_NP", str(np)))
         with Pool(np) as pool:
