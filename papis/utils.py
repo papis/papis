@@ -33,6 +33,9 @@ def has_multiprocessing() -> bool:
 def parmap(f: Callable[[A], B],
            xs: List[A],
            np: Optional[int] = None) -> List[B]:
+    """
+    todo: enable multiprocessing support for darwin (py3.6+)
+    """
     if has_multiprocessing() and sys.platform != 'darwin':
         np = np or os.cpu_count()
         np = int(os.environ.get("PAPIS_NP", str(np)))
