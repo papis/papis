@@ -12,6 +12,13 @@ import re
 import os
 import glob
 
+# NOTE: try to use the CLoader when possible, as it's a lot faster than the
+# python version, at least at the time of writing
+try:
+    from yaml import CSafeLoader as Loader
+except ImportError:
+    from yaml import SafeLoader as Loader  # type: ignore[misc]
+
 
 class TestRun(unittest.TestCase):
 
@@ -45,7 +52,7 @@ class TestRun(unittest.TestCase):
         with open(yamlfile, 'w+') as fd:
             fd.write(string)
         with open(yamlfile) as fd:
-            data = list(yaml.load_all(fd))
+            data = list(yaml.load_all(fd, Loader=Loader))
         self.assertTrue(data is not None)
         self.assertTrue(len(list(data)) > 0)
 
