@@ -266,8 +266,7 @@ def to_bibtex(document: papis.document.Document) -> str:
             else:
                 bibtex_string += bibtex_keyval_fmt % (bibKey, value)
     # Handle file for zotero exporting
-    if ("file" not in document.keys()
-            and papis.config.getboolean("bibtex-export-zotero-file")
+    if (papis.config.getboolean("bibtex-export-zotero-file")
             and len(document.get_files())):
         bibtex_string += bibtex_keyval_fmt % ("file",
                                               ";".join(document.get_files()))
