@@ -240,6 +240,7 @@ def to_bibtex(document: papis.document.Document) -> str:
     logger.debug("Used 'ref = %s'", ref)
 
     bibtex_string += "@{type}{{{ref},\n".format(type=bibtex_type, ref=ref)
+    bibtex_keyval_fmt = "  %s = {%s},\n"
     for bibKey in list(document.keys()):
         if bibKey in bibtex_key_converter:
             new_bibkey = bibtex_key_converter[bibKey]
@@ -253,7 +254,7 @@ def to_bibtex(document: papis.document.Document) -> str:
             if bibKey == 'journal':
                 journal_key = papis.config.getstring('bibtex-journal-key')
                 if journal_key in document.keys():
-                    bibtex_string += "  %s = {%s},\n" % (
+                    bibtex_string += bibtex_keyval_fmt % (
                         'journal',
                         unicode_to_latex(str(document[journal_key]))
                     )
@@ -261,9 +262,14 @@ def to_bibtex(document: papis.document.Document) -> str:
                     logger.warning(
                             "Key '%s' is not present for ref '%s'",
                             journal_key, document["ref"])
-                    bibtex_string += "  %s = {%s},\n" % ('journal', value)
+                    bibtex_string += bibtex_keyval_fmt % ('journal', value)
             else:
-                bibtex_string += "  %s = {%s},\n" % (bibKey, value)
+                bibtex_string += bibtex_keyval_fmt % (bibKey, value)
+    # Handle file for zotero exporting
+    if (papis.config.getboolean("bibtex-export-zotero-file")
+            and len(document.get_files())):
+        bibtex_string += bibtex_keyval_fmt % ("file",
+                                              ";".join(document.get_files()))
     bibtex_string += "}\n"
     return bibtex_string
 
