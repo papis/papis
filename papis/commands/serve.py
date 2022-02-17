@@ -385,6 +385,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         docs = docs or papis.api.get_all_documents_in_lib(libname)
         page = render_index(docs, libname)
         self.wfile.write(bytes(page, "utf-8"))
+        self.wfile.flush()
 
     def page_tags(self, libname: Optional[str] = None) -> None:
         self.send_response(200)
@@ -402,6 +403,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                                 libname=libname,
                                 placeholder="tags")
         self.wfile.write(bytes(page, "utf-8"))
+        self.wfile.flush()
 
     def page_libraries(self) -> None:
         self.send_response(200)
@@ -410,6 +412,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
         page = render_libraries()
         self.wfile.write(bytes(page, "utf-8"))
+        self.wfile.flush()
 
     def page_document(self, libname: str, ref: str) -> None:
         self.send_response(200)
@@ -424,6 +427,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
         page = render_document(libname, docs[0])
         self.wfile.write(bytes(page, "utf-8"))
+        self.wfile.flush()
 
     def get_libraries(self) -> None:
         logger.info("getting libraries")
@@ -479,6 +483,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self._header_html()
         self.end_headers()
         self.wfile.write(bytes(page, "utf-8"))
+        self.wfile.flush()
 
     def get_document_format(self, libname: str, query: str, fmt: str) -> None:
         docs = papis.api.get_documents_in_lib(libname, query)
@@ -502,6 +507,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
             with open(path, "rb") as f:
                 self.wfile.write(f.read())
+            self.wfile.flush()
         else:
             raise Exception("File {} does not exist".format(path))
 
