@@ -455,7 +455,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.serve_documents(docs)
 
     def serve_documents(self, docs: List[papis.document.Document]) -> None:
-        """Serve a list of documents and set the files attribute to
+        """
+        Serve a list of documents and set the files attribute to
         the full paths so that the user can reach them.
         """
         logger.info("serving %s documents", len(docs))
@@ -554,9 +555,14 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 @click.option("-p", "--port",
               help="Port to listen to",
               default=8888, type=int)
-@click.option("--address", "--host", help="Address to bind", default="")
+@click.option("--address",
+              "--host",
+              help="Address to bind",
+              default="localhost")
 def cli(address: str, port: int) -> None:
-    """Start a papis server"""
+    """
+    Start a papis server
+    """
     server_address = (address, port)
     logger.info("starting server in address https://%s:%s",
                 address or "localhost",
