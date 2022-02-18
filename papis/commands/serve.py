@@ -570,7 +570,7 @@ def cli(address: str, port: int) -> None:
     Start a papis server
     """
     server_address = (address, port)
-    logger.info("starting server in address https://%s:%s",
+    logger.info("starting server in address http://%s:%s",
                 address or "localhost",
                 port)
     logger.info("press Ctrl-C to exit")
