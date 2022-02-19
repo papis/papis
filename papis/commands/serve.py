@@ -5,7 +5,7 @@ import json
 import logging
 import http.server
 import urllib.parse
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 import functools
 
 import papis.api
@@ -219,6 +219,13 @@ def render_document(libname: str, doc: papis.document.Document) -> str:
             )
 
 
+def get_tag_list(tags: Union[str, List[str]]) -> List[str]:
+    if isinstance(tags, list):
+        return tags
+    else:
+        return tags.split()
+
+
 def render_tag(tag: str, libname: str) -> str:
     return """
     <a class="badge bg-dark papis-tag"
@@ -270,7 +277,7 @@ def render_document_item(libname: str,
                                 </span></br>
                                 """,
                                 tags="".join(map(tag_renderer,
-                                                 doc["tags"].split())))
+                                                 get_tag_list(doc["tags"]))))
             + render_if_doc_has("year",
                                 """
                                 <span class="badge bg-primary papis-year">
@@ -394,7 +401,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
         libname = libname or papis.api.get_lib_name()
         docs = papis.api.get_all_documents_in_lib(libname)
-        tags_of_tags = [d["tags"].split() for d in docs]
+        tags_of_tags = [get_tag_list(d["tags"]) for d in docs]
         tags = sorted(set(tag
                           for _tags in tags_of_tags
                           for tag in _tags))
