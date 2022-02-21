@@ -19,7 +19,7 @@ import papis.crossref
 logger = logging.getLogger("papis:server")
 
 
-TAGS_SPLIT_RX = re.compile("\s*[,\s]\s*")
+TAGS_SPLIT_RX = re.compile(r"\s*[,\s]\s*")
 HEADER_TEMPLATE = """
 <head>
 <title>{placeholder} Papis web</title>
