@@ -19,6 +19,7 @@ import papis.crossref
 logger = logging.getLogger("papis:server")
 
 
+TAGS_SPLIT_RX = re.compile("\s*[,\s]\s*")
 HEADER_TEMPLATE = """
 <head>
 <title>{placeholder} Papis web</title>
@@ -223,7 +224,7 @@ def get_tag_list(tags: Union[str, List[str]]) -> List[str]:
     if isinstance(tags, list):
         return tags
     else:
-        return tags.split()
+        return TAGS_SPLIT_RX.split(tags)
 
 
 def render_tag(tag: str, libname: str) -> str:
