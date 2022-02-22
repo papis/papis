@@ -29,7 +29,7 @@ import papis.git
 def run(document: papis.document.Document,
         wait: bool = True,
         git: bool = False) -> None:
-    database = papis.database.get()
+    logger = logging.getLogger('run:edit')
     info_file_path = document.get_info_file()
     if not info_file_path:
         raise Exception(papis.strings.no_folder_attached_to_document)
@@ -39,10 +39,11 @@ def run(document: papis.document.Document,
     _new_dict = papis.document.to_dict(document)
 
     # If nothing changed there is nothing else to be done
-    if _old_dict != _new_dict:
+    if _old_dict == _new_dict:
+        logger.debug("old and new are equal, doing nothing")
         return
 
-    database.update(document)
+    papis.database.get().update(document)
     papis.hooks.run("on_edit_done")
     if git:
         papis.git.add_and_commit_resource(

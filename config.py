@@ -113,7 +113,6 @@ general_settings = {
 
     "document-description-format": '{doc[title]} - {doc[author]}',
     "formater": "python",
-
 }
 
 
