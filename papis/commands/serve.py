@@ -44,7 +44,7 @@ HEADER_TEMPLATE = """
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
 </head>
-"""
+"""  # noqa: E501
 
 NAVBAR_TEMPLATE = """
 <nav class="navbar navbar-expand-md navbar-light bg-light">
@@ -232,7 +232,9 @@ def render_document(libname: str, doc: papis.document.Document) -> str:
                  </div>
 
                  </li>
-                 """.format(key=key, val=val) for key, val in doc.items()
+                 """.format(key=key, val=val)
+                 for key, val in doc.items()
+                 if not isinstance(val, list) or isinstance(val, dict)
                 )
             + "</ol></form></body>"
             )
@@ -359,10 +361,8 @@ def render_index(docs: List[papis.document.Document],
                  libname: str,
                  placeholder: str = "query") -> str:
     libfolder = papis.config.get_lib_from_name(libname).paths[0]
-    documents = ("\n".join([render_document_item(libname, libfolder, d) for d in docs]))
-                #  .join(map(functools.partial(render_document_item,
-                #                              libname,
-                #                              libfolder), docs)))
+    documents = "\n".join(render_document_item(libname, libfolder, d)
+                          for d in docs)
     return (INDEX_TEMPLATE
             .format(documents=documents,
                     placeholder=placeholder,
