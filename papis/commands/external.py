@@ -1,6 +1,7 @@
 """
 This module define the entry point for external scripts
 to be called by papis.
+
 """
 import os
 import re
@@ -17,8 +18,7 @@ logger = logging.getLogger("external")
 
 
 def get_command_help(path: str) -> str:
-    """Get help string from external commands
-    """
+    """Get help string from external commands."""
     magic_word = papis.config.getstring("scripts-short-help-regex")
     with open(path, 'r') as _fd:
         for line in _fd:
@@ -29,7 +29,8 @@ def get_command_help(path: str) -> str:
 
 
 def export_variables() -> None:
-    """Export environment variables so that external script can access to
+    """
+    Export environment variables so that external script can access to
     the information
     """
     os.environ["PAPIS_LIB"] = papis.config.get_lib().name
@@ -46,8 +47,7 @@ def export_variables() -> None:
 @click.argument("flags", nargs=-1)
 @click.pass_context
 def external_cli(ctx: click.core.Context, flags: List[str]) -> None:
-    """Actual papis command to call the external command
-    """
+    """Actual papis command to call the external command"""
     script = ctx.obj  # type: papis.commands.Script
     path = script.path
     if not path:
