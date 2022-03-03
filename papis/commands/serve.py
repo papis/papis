@@ -5,13 +5,16 @@ import json
 import logging
 import http.server
 import urllib.parse
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional, Union, Tuple
 import functools
+import cgi
 
 import papis.api
+import papis.cli
 import papis.config
 import papis.document
 import papis.commands.add
+import papis.commands.update
 import papis.commands.export
 import papis.crossref
 
@@ -19,6 +22,8 @@ import papis.crossref
 logger = logging.getLogger("papis:server")
 
 
+USE_GIT = False  # type: bool
+TAGS_SPLIT_RX = re.compile(r"\s*[,\s]\s*")
 HEADER_TEMPLATE = """
 <head>
 <title>{placeholder} Papis web</title>
@@ -39,8 +44,11 @@ HEADER_TEMPLATE = """
   src='https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js'
   integrity='sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ'
   crossorigin='anonymous'></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
 </head>
-"""
+"""  # noqa: E501
 
 NAVBAR_TEMPLATE = """
 <nav class="navbar navbar-expand-md navbar-light bg-light">
@@ -111,10 +119,25 @@ INDEX_TEMPLATE = (
                        placeholder="{placeholder}">
             </form>
             </h3>
-            <ol class="list-group">
-                {documents}
-            </ol>
+            <table border="1" class="display" id="pub_table">
+                <thead style='display:none;'>
+                    <tr style="text-align: right;">
+                    <th>info</th>
+                    <th>data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {documents}
+                </tbody>
+            </table>
         </div>
+        <script type="text/javascript">
+            $(document).ready(function(){{
+                $('#pub_table').DataTable( {{
+                    "bSort": false
+                }} )
+            ;}});
+            </script>'
     </body>
 </html>
 """)
@@ -194,8 +217,10 @@ def render_document(libname: str, doc: papis.document.Document) -> str:
                 <div class="container">
                 <h1>{doc[title]}</h1>
                 <h3>{doc[author]:.80}</h3>
-                <form method="post"
+                <form method="POST"
                       action="/library/{libname}/document/ref:{doc[ref]}">
+                <input type="submit" class="form-control button">
+                </input>
                 <ol class="list-group">
               """.format(doc=doc, libname=libname)
             + "\n".join(
@@ -206,14 +231,14 @@ def render_document(libname: str, doc: papis.document.Document) -> str:
                            placeholder="{val}"
                            name="{key}"
                            id="{key}"
-                           style="height: 100px">
-                   {val}
-                 </textarea>
+                           style="height: 100px">{val}</textarea>
                  <label for="{key}">{key}</label>
                  </div>
 
                  </li>
-                 """.format(key=key, val=val) for key, val in doc.items()
+                 """.format(key=key, val=val)
+                 for key, val in doc.items()
+                 if not isinstance(val, list) or isinstance(val, dict)
                 )
             + "</ol></form></body>"
             )
@@ -223,7 +248,7 @@ def get_tag_list(tags: Union[str, List[str]]) -> List[str]:
     if isinstance(tags, list):
         return tags
     else:
-        return tags.split()
+        return TAGS_SPLIT_RX.split(tags)
 
 
 def render_tag(tag: str, libname: str) -> str:
@@ -250,8 +275,7 @@ def render_document_item(libname: str,
 
     tag_renderer = functools.partial(render_tag, libname=libname)
 
-    return (("""<li class="list-group-item d-md-flex d-sm-block \
-                           justify-content-md-between align-items-start">
+    return (("""<tr><td>
                   <div class="ms-2 me-auto">
                     <div class="fw-bold">{doc[title]}</div>
                       {doc[author]}<br>
@@ -266,8 +290,8 @@ def render_document_item(libname: str,
                                                    libname,
                                                    libfolder))
             + """
-                </div>
-                <div class="me-2 d-block align-self-end">
+                </td>
+                <td>
               """
             + render_if_doc_has("tags",
                                 """
@@ -332,7 +356,7 @@ def render_document_item(libname: str,
                                 """)
             + """
                 </ul>
-            </div>
+            </td></tr>
             </li>
             """)
 
@@ -341,10 +365,8 @@ def render_index(docs: List[papis.document.Document],
                  libname: str,
                  placeholder: str = "query") -> str:
     libfolder = papis.config.get_lib_from_name(libname).paths[0]
-    documents = ("\n"
-                 .join(map(functools.partial(render_document_item,
-                                             libname,
-                                             libfolder), docs)))
+    documents = "\n".join(render_document_item(libname, libfolder, d)
+                          for d in docs)
     return (INDEX_TEMPLATE
             .format(documents=documents,
                     placeholder=placeholder,
@@ -374,9 +396,6 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self._header_json()
         self.end_headers()
         self._send_json({"message": msg})
-
-    def do_POST(self) -> None:
-        return
 
     def page_query(self, libname: str, query: str) -> None:
         docs = papis.api.get_documents_in_lib(libname, query)
@@ -519,6 +538,47 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         else:
             raise Exception("File {} does not exist".format(path))
 
+    def do_ROUTES(self, routes: List[Tuple[str, Any]]) -> None:
+        try:
+            for route, method in routes:
+                m = re.match(route, self.path)
+                if m:
+                    method(*m.groups(), **m.groupdict())
+                    return
+        except Exception as e:
+            self._send_json_error(400, str(e))
+        else:
+            self._send_json_error(404,
+                                  "Server path {0} not understood"
+                                  .format(self.path))
+
+    def update_page_document(self, libname: str, ref: str) -> None:
+        global USE_GIT
+        db = papis.database.get(libname)
+        form = cgi.FieldStorage(
+            fp=self.rfile,
+            headers=self.headers,  # type: ignore
+            environ={'REQUEST_METHOD': 'POST'}
+        )
+        docs = db.query_dict(dict(ref=ref))
+        if not docs:
+            raise Exception("Document with ref %s not "
+                            "found in the database" % ref)
+        doc = docs[0]
+        result = dict()
+        for key in form:
+            result[key] = form.getvalue(key)
+        papis.commands.update.run(doc, result, git=USE_GIT)
+        back_url = self.headers.get("Referer", "/library")
+        self.redirect(back_url)
+
+    def do_POST(self) -> None:
+        routes = [
+            ("^/library/?([^/]+)?/document/ref:(.*)$",
+                self.update_page_document),
+        ]
+        self.do_ROUTES(routes)
+
     def do_GET(self) -> None:
         routes = [
             # html serving
@@ -549,18 +609,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
             ("^/api/library/([^/]+)/document/([^/]+)/format/([^/]+)$",
                 self.get_document_format),
         ]
-        try:
-            for route, method in routes:
-                m = re.match(route, self.path)
-                if m:
-                    method(*m.groups(), **m.groupdict())  # type: ignore
-                    return
-        except Exception as e:
-            self._send_json_error(400, str(e))
-        else:
-            self._send_json_error(404,
-                                  "Server path {0} not understood"
-                                  .format(self.path))
+        self.do_ROUTES(routes)
 
 
 @click.command('serve')
@@ -568,14 +617,17 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 @click.option("-p", "--port",
               help="Port to listen to",
               default=8888, type=int)
+@papis.cli.git_option(help="Add changes made to the info file")
 @click.option("--address",
               "--host",
               help="Address to bind",
               default="localhost")
-def cli(address: str, port: int) -> None:
+def cli(address: str, port: int, git: bool) -> None:
     """
     Start a papis server
     """
+    global USE_GIT
+    USE_GIT = git
     server_address = (address, port)
     logger.info("starting server in address http://%s:%s",
                 address or "localhost",
