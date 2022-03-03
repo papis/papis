@@ -1,7 +1,9 @@
 ---
 exclude_paths:
-- 'tests/**'
-- Dockerfile
-- tools/**
-- **.md
-- scripts/shell_completion/**
+- "/tests/**"
+- "/tests/*"
+- "/tests/**/*"
+- "/Dockerfile"
+- "/tools/**"
+- "/*.md"
+- "/scripts/shell_completion/**"
