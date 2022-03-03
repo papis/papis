@@ -5,13 +5,16 @@ import json
 import logging
 import http.server
 import urllib.parse
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional, Union, Tuple
 import functools
+import cgi
 
 import papis.api
+import papis.cli
 import papis.config
 import papis.document
 import papis.commands.add
+import papis.commands.update
 import papis.commands.export
 import papis.crossref
 
@@ -19,6 +22,7 @@ import papis.crossref
 logger = logging.getLogger("papis:server")
 
 
+USE_GIT = False  # type: bool
 TAGS_SPLIT_RX = re.compile(r"\s*[,\s]\s*")
 HEADER_TEMPLATE = """
 <head>
@@ -213,8 +217,10 @@ def render_document(libname: str, doc: papis.document.Document) -> str:
                 <div class="container">
                 <h1>{doc[title]}</h1>
                 <h3>{doc[author]:.80}</h3>
-                <form method="post"
+                <form method="POST"
                       action="/library/{libname}/document/ref:{doc[ref]}">
+                <input type="submit" class="form-control button">
+                </input>
                 <ol class="list-group">
               """.format(doc=doc, libname=libname)
             + "\n".join(
@@ -225,9 +231,7 @@ def render_document(libname: str, doc: papis.document.Document) -> str:
                            placeholder="{val}"
                            name="{key}"
                            id="{key}"
-                           style="height: 100px">
-                   {val}
-                 </textarea>
+                           style="height: 100px">{val}</textarea>
                  <label for="{key}">{key}</label>
                  </div>
 
@@ -393,9 +397,6 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self._send_json({"message": msg})
 
-    def do_POST(self) -> None:
-        return
-
     def page_query(self, libname: str, query: str) -> None:
         docs = papis.api.get_documents_in_lib(libname, query)
         self.page_main(libname, docs)
@@ -537,6 +538,47 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         else:
             raise Exception("File {} does not exist".format(path))
 
+    def do_ROUTES(self, routes: List[Tuple[str, Any]]) -> None:
+        try:
+            for route, method in routes:
+                m = re.match(route, self.path)
+                if m:
+                    method(*m.groups(), **m.groupdict())
+                    return
+        except Exception as e:
+            self._send_json_error(400, str(e))
+        else:
+            self._send_json_error(404,
+                                  "Server path {0} not understood"
+                                  .format(self.path))
+
+    def update_page_document(self, libname: str, ref: str) -> None:
+        global USE_GIT
+        db = papis.database.get(libname)
+        form = cgi.FieldStorage(
+            fp=self.rfile,
+            headers=self.headers,  # type: ignore
+            environ={'REQUEST_METHOD': 'POST'}
+        )
+        docs = db.query_dict(dict(ref=ref))
+        if not docs:
+            raise Exception("Document with ref %s not "
+                            "found in the database" % ref)
+        doc = docs[0]
+        result = dict()
+        for key in form:
+            result[key] = form.getvalue(key)
+        papis.commands.update.run(doc, result, git=USE_GIT)
+        back_url = self.headers.get("Referer", "/library")
+        self.redirect(back_url)
+
+    def do_POST(self) -> None:
+        routes = [
+            ("^/library/?([^/]+)?/document/ref:(.*)$",
+                self.update_page_document),
+        ]
+        self.do_ROUTES(routes)
+
     def do_GET(self) -> None:
         routes = [
             # html serving
@@ -567,18 +609,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
             ("^/api/library/([^/]+)/document/([^/]+)/format/([^/]+)$",
                 self.get_document_format),
         ]
-        try:
-            for route, method in routes:
-                m = re.match(route, self.path)
-                if m:
-                    method(*m.groups(), **m.groupdict())  # type: ignore
-                    return
-        except Exception as e:
-            self._send_json_error(400, str(e))
-        else:
-            self._send_json_error(404,
-                                  "Server path {0} not understood"
-                                  .format(self.path))
+        self.do_ROUTES(routes)
 
 
 @click.command('serve')
@@ -586,14 +617,17 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 @click.option("-p", "--port",
               help="Port to listen to",
               default=8888, type=int)
+@papis.cli.git_option(help="Add changes made to the info file")
 @click.option("--address",
               "--host",
               help="Address to bind",
               default="localhost")
-def cli(address: str, port: int) -> None:
+def cli(address: str, port: int, git: bool) -> None:
     """
     Start a papis server
     """
+    global USE_GIT
+    USE_GIT = git
     server_address = (address, port)
     logger.info("starting server in address http://%s:%s",
                 address or "localhost",
