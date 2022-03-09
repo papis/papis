@@ -41,7 +41,7 @@ Examples
     .. code::
 
         papis -l machine-learning add \\
-            --from url https://arxiv.org/abs/1712.03134
+            --from arxiv https://arxiv.org/abs/1712.03134
 
 - If you do not want copy the original pdfs into the library, you can
   also tell papis to just create a link to them, for example
@@ -71,6 +71,7 @@ Examples
     .. code::
 
         papis add journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.156401
+        papis add https://arxiv.org/abs/1712.03134
 
 
 Examples in python

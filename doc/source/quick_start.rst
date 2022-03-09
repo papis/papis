@@ -145,7 +145,6 @@ you can issue one of these commands
 ::
 
   papis add https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.124.171801/
-  papis add --from url https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.124.171801/
   papis add --from doi 10.1103/PhysRevLett.124.171801/
 
 Here you can see it in action using the smart matching first alternative
