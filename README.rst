@@ -101,7 +101,7 @@ Now open one for example, or edit them
 
 ::
 
-    papis export --all --bibtex > mylib.bib
+    papis export --all --format bibtex > mylib.bib
 
 |superquickstartsvg2|
 
