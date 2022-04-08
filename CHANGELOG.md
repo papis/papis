@@ -25,6 +25,10 @@ use emacs-like hooks for some commands.
 ## `papis browse`
 - Add `-n` and `--print` to just print the url to be opened.
 
+## Downloaders
+
+- Add an `acm` downloader
+
 VERSION v0.11
 =============
 

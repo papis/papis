@@ -189,6 +189,7 @@ setup(
         ],
         'papis.downloader': [
             "acs=papis.downloaders.acs:Downloader",
+            "acm=papis.downloaders.acm:Downloader",
             "annualreviews=papis.downloaders.annualreviews:Downloader",
             "citeseerx=papis.downloaders.citeseerx:Downloader",
             "aps=papis.downloaders.aps:Downloader",
