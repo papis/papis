@@ -446,6 +446,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         db.clear()
         db.initialize()
 
+    @ok_html
+    def page_tags(self, libname: Optional[str] = None) -> None:
         libname = libname or papis.api.get_lib_name()
         docs = papis.api.get_all_documents_in_lib(libname)
         tags_of_tags = [get_tag_list(d["tags"]) for d in docs]
@@ -459,20 +461,14 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(bytes(page, "utf-8"))
         self.wfile.flush()
 
+    @ok_html
     def page_libraries(self) -> None:
-        self.send_response(200)
-        self._header_html()
-        self.end_headers()
-
         page = render_libraries()
         self.wfile.write(bytes(page, "utf-8"))
         self.wfile.flush()
 
+    @ok_html
     def page_document(self, libname: str, ref: str) -> None:
-        self.send_response(200)
-        self._header_html()
-        self.end_headers()
-
         docs = papis.api.get_documents_in_lib(libname, ref)
         if len(docs) > 1:
             raise Exception("More than one document match %s", ref)
