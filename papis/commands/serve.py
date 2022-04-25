@@ -5,7 +5,7 @@ import json
 import logging
 import http.server
 import urllib.parse
-from typing import Any, List, Optional, Union, Tuple
+from typing import Any, List, Optional, Union, Tuple, Callable
 import functools
 import cgi
 
@@ -110,6 +110,10 @@ INDEX_TEMPLATE = (
         <div class="container">
             <h1>
                 Papis library: <code>{libname}</code>
+                <a href="/library/{libname}/clear_cache">
+                    <i class="fa fa-refresh"
+                       data-bs-toggle="tooltip"
+                       title="Clear cache"></i></a>
             </h1>
             <h3>
             <form action="/library/{libname}/query" method="GET">
@@ -373,6 +377,28 @@ def render_index(docs: List[papis.document.Document],
                     libname=libname))
 
 
+AnyFn = Callable[..., Any]
+
+
+# Decorators
+def redirecting(to: str) -> AnyFn:
+    def wrapper(fn: AnyFn) -> AnyFn:
+        def wrapped(self: Any, *args: Any, **kwargs: Any) -> None:
+            fn(self, *args, **kwargs)
+            self.redirect(to)
+        return wrapped
+    return wrapper
+
+
+def ok_html(fn: AnyFn) -> AnyFn:
+    def wrapped(self: Any, *args: Any, **kwargs: Any) -> Any:
+        self.send_response(200)
+        self._header_html()
+        self.end_headers()
+        return fn(self, *args, **kwargs)
+    return wrapped
+
+
 class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
     def log_message(self, fmt: str, *args: Any) -> None:
@@ -413,10 +439,12 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(bytes(page, "utf-8"))
         self.wfile.flush()
 
-    def page_tags(self, libname: Optional[str] = None) -> None:
-        self.send_response(200)
-        self._header_html()
-        self.end_headers()
+    @ok_html
+    @redirecting("/library")
+    def clear_cache(self, libname: str) -> None:
+        db = papis.database.get(libname)
+        db.clear()
+        db.initialize()
 
         libname = libname or papis.api.get_lib_name()
         docs = papis.api.get_all_documents_in_lib(libname)
@@ -596,6 +624,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.page_tags),
             ("^/library/([^/]+)/file/(.+)$",
                 self.send_local_document_file),
+            ("^/library/([^/]+)/clear_cache$",
+                self.clear_cache),
             ("^/api/library$",
                 self.get_libraries),
 
