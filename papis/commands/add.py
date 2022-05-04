@@ -213,17 +213,11 @@ def get_file_name(
 
     return filename
 
-
-def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
-    """Folder name where the document will be stored.
-
-    :data: Data parsed for the actual document
-    :document_paths: Path of the document
-
-    """
+def get_hash_for_file(data:Dict[str, Any], document_paths: List[str]) -> str:
+    """Unique Hash for document that will be stored.
+        :data: Data parsed for the actual document
+        """
     import random
-    author = "-{:.20}".format(data["author"])\
-             if "author" in data.keys() else ""
 
     document_strings = b''
     for docpath in document_paths:
@@ -238,11 +232,22 @@ def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
         + document_strings
     ).hexdigest()
 
-    result = md5 + author
+    return md5
+
+def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
+    """Folder name where the document will be stored.
+
+    :data: Data parsed for the actual document
+    :document_paths: Path of the document
+
+    """
+    import random
+    author = "-{:.20}".format(data["author"])\
+             if "author" in data.keys() else ""
+    result = get_hash_for_file(data,document_paths) + author
     result = papis.utils.clean_document_name(result)
 
     return result
-
 
 def run(paths: List[str],
         data: Dict[str, Any] = dict(),
@@ -304,14 +309,18 @@ def run(paths: List[str],
 
     tmp_document = papis.document.Document(temp_dir)
 
-    if not folder_name:
-        out_folder_name = get_hash_folder(data, in_documents_paths)
-        logger.info("Got an automatic folder name")
-    else:
-        temp_doc = papis.document.Document(data=data)
-        out_folder_name = papis.format.format(folder_name, temp_doc)
-        out_folder_name = papis.utils.clean_document_name(out_folder_name)
-        del temp_doc
+    # by default add-folder-name is doc["hash"] now, but user could change
+    if not in_documents_paths and "hash" in papis.config.get("add-folder-name"):
+        raise IOError('hash cannot be computed without file')
+
+    if in_documents_paths :
+       gen_hash = get_hash_for_file(data, in_documents_paths)
+       data["hash"] = gen_hash
+
+    temp_doc = papis.document.Document(data=data)
+    out_folder_name = papis.format.format(folder_name, temp_doc)
+    out_folder_name = papis.utils.clean_document_name(out_folder_name)
+    del temp_doc
 
     data["files"] = in_documents_names
     out_folder_path = os.path.expanduser(
@@ -378,6 +387,25 @@ def run(paths: List[str],
         tmp_document.load()
 
     # Duplication checking
+    logger.info("Checking if this hash is already in the library")
+    try:
+        found_hash = papis.utils.locate_hash_in_lib(tmp_document)
+    except IndexError:
+        logger.info("No hash matching found already in the library")
+    else:
+        logger.warning("{c.Fore.RED}DUPLICATION WARNING{c.Style.RESET_ALL}")
+        logger.warning(
+            "A document with this hash in the library seems to match the added one.")
+        logger.warning(
+            "(Hint) Use the 'papis update' command to just update the info.")
+
+        papis.tui.utils.text_area(
+            'The following hash is already in your library',
+            papis.document.dump(found_hash),
+            lexer_name='yaml',
+            height=20)
+        confirm = True
+
     logger.info("Checking if this document is already in the library")
     try:
         found_document = papis.utils.locate_document_in_lib(tmp_document)

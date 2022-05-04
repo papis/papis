@@ -53,7 +53,7 @@ general_settings = {
     "use-git": False,
 
     "add-confirm": False,
-    "add-folder-name": "",
+    "add-folder-name": "{doc[hash]}",
     "add-file-name": None,
     "add-interactive": False,
     "add-edit": False,
@@ -103,9 +103,10 @@ general_settings = {
     '"title": TEXT(stored=True),\n'
     '"year": TEXT(stored=True),\n'
     '"tags": TEXT(stored=True),\n'
+    '"hash": TEXT(stored=True),\n'
     '}',
 
-    'unique-document-keys': "['doi','ref','isbn','isbn10','url','doc_url']",
+    'unique-document-keys': "['doi','ref','isbn','isbn10','url', 'doc_url']",
 
     "downloader-proxy": None,
     "bibtex-unicode": False,

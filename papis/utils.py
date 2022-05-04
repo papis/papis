@@ -152,6 +152,25 @@ def clean_document_name(doc_path: str) -> str:
         word_boundary=True,
         regex_pattern=regex_pattern))
 
+def locate_hash_in_lib(document: papis.document.Document,
+                           library: Optional[str] = None
+                           ) -> papis.document.Document:
+    """Try to figure out if a hash is already in a library
+
+    :param document: Document to be searched for
+    :type  document: papis.document.Document
+    :param library: Name of a valid papis library
+    :type  library: str
+    :returns: Document in library if found
+    :rtype:  papis.document.Document
+    :raises IndexError: Whenever document is not found in the library
+    """
+    db = papis.database.get(library_name=library)
+    docs = db.query_dict(dict(hash=document["hash"]))
+    if docs:
+        return docs[0]
+
+    raise IndexError("Document not found in library")
 
 def locate_document_in_lib(document: papis.document.Document,
                            library: Optional[str] = None
