@@ -1,5 +1,6 @@
 papis/deps/*
 .vim-run
+.idea/
 
 doc/build/
 #Vim swap files
