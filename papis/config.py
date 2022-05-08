@@ -53,7 +53,7 @@ general_settings = {
     "use-git": False,
 
     "add-confirm": False,
-    "add-folder-name": "{doc[hash]}",
+    "add-folder-name": "{doc[uuid]}",
     "add-file-name": None,
     "add-interactive": False,
     "add-edit": False,

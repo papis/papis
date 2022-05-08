@@ -109,6 +109,9 @@ import papis.downloaders
 import papis.git
 import papis.format
 
+import uuid
+import hashlib
+
 logger = logging.getLogger('add')  # type: logging.Logger
 
 
@@ -213,10 +216,13 @@ def get_file_name(
 
     return filename
 
-def get_hash_for_file(data:Dict[str, Any], document_paths: List[str]) -> str:
-    """Unique Hash for document that will be stored.
-        :data: Data parsed for the actual document
-        """
+def get_hash_folder(data:Dict[str, Any], document_paths: List[str]) -> str:
+    """Folder name where the document will be stored.
+
+    :data: Data parsed for the actual document
+    :document_paths: Path of the document
+
+    """
     import random
 
     document_strings = b''
@@ -224,7 +230,6 @@ def get_hash_for_file(data:Dict[str, Any], document_paths: List[str]) -> str:
         with open(docpath, 'rb') as fd:
             document_strings += fd.read(2000)
 
-    import hashlib
     md5 = hashlib.md5(
         ''.join(document_paths).encode()
         + str(data).encode()
@@ -234,20 +239,38 @@ def get_hash_for_file(data:Dict[str, Any], document_paths: List[str]) -> str:
 
     return md5
 
-def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
-    """Folder name where the document will be stored.
+def get_hash_file(document_paths : str) -> str:
+    """Hash string corresponding to file.
 
-    :data: Data parsed for the actual document
-    :document_paths: Path of the document
+        :document_paths: Path of the document
 
-    """
-    import random
-    author = "-{:.20}".format(data["author"])\
-             if "author" in data.keys() else ""
-    result = get_hash_for_file(data,document_paths) + author
-    result = papis.utils.clean_document_name(result)
+        """
 
-    return result
+    hashObj = hashlib.sha256()
+
+    with open(document_paths, 'rb') as file:
+        # read file in chunks and update hash
+        chunk = 0
+        while chunk != b'':
+            chunk = file.read(1024)
+            hashObj.update(chunk)
+
+    return hashObj.hexdigest()
+
+def generate_folder_name(folder_name : str, in_documents_paths: List[str], data:Dict[str, Any]) -> (Dict[str, Any],str):
+
+    # by default add-folder-name is doc["uuid"] now
+    data["uuid"] = str(uuid.uuid4())
+
+    if "hash" in papis.config.getstring('add-folder-name'):
+        data["hash"] = get_hash_folder(data, in_documents_paths)
+
+    temp_doc = papis.document.Document(data=data)
+
+    out_folder_name = papis.format.format(folder_name, temp_doc)
+    out_folder_name = papis.utils.clean_document_name(out_folder_name)
+    del temp_doc
+    return (data, out_folder_name)
 
 def run(paths: List[str],
         data: Dict[str, Any] = dict(),
@@ -309,20 +332,10 @@ def run(paths: List[str],
 
     tmp_document = papis.document.Document(temp_dir)
 
-    # by default add-folder-name is doc["hash"] now, but user could change
-    if not in_documents_paths and "hash" in papis.config.get("add-folder-name"):
-        raise IOError('hash cannot be computed without file')
-
-    if in_documents_paths :
-       gen_hash = get_hash_for_file(data, in_documents_paths)
-       data["hash"] = gen_hash
-
-    temp_doc = papis.document.Document(data=data)
-    out_folder_name = papis.format.format(folder_name, temp_doc)
-    out_folder_name = papis.utils.clean_document_name(out_folder_name)
-    del temp_doc
+    data, out_folder_name = generate_folder_name(folder_name, in_documents_paths,data)
 
     data["files"] = in_documents_names
+
     out_folder_path = os.path.expanduser(
         os.path.join(
             papis.config.get_lib_dirs()[0],
@@ -340,6 +353,7 @@ def run(paths: List[str],
     if file_name is not None:  # Use args if set
         papis.config.set("add-file-name", file_name)
     new_file_list = []
+    new_file_hash_list = []
 
     for in_file_path in in_documents_paths:
 
@@ -368,7 +382,13 @@ def run(paths: List[str],
             import shutil
             shutil.copy(in_file_path, tmp_end_filepath)
 
+        #new_file_hash_list.append(get_hash_file(tmp_end_filepath))
+
+        #logger.debug("File(s) hash: %s", new_file_hash_list)
+
+
     data['files'] = new_file_list
+    data['files_hash'] = new_file_hash_list
 
     # reference building
     if data.get('ref') is None:
@@ -386,27 +406,27 @@ def run(paths: List[str],
         logger.info("Loading the changes made by editing")
         tmp_document.load()
 
-    # Duplication checking
-    logger.info("Checking if this hash is already in the library")
-    try:
-        found_hash = papis.utils.locate_hash_in_lib(tmp_document)
-    except IndexError:
-        logger.info("No hash matching found already in the library")
-    else:
-        logger.warning("{c.Fore.RED}DUPLICATION WARNING{c.Style.RESET_ALL}")
-        logger.warning(
-            "A document with this hash in the library seems to match the added one.")
-        logger.warning(
-            "(Hint) Use the 'papis update' command to just update the info.")
-
-        papis.tui.utils.text_area(
-            'The following hash is already in your library',
-            papis.document.dump(found_hash),
-            lexer_name='yaml',
-            height=20)
-        confirm = True
-
-    logger.info("Checking if this document is already in the library")
+    # # Duplication checking
+    # logger.info("Checking if this hash is already in the library")
+    # try:
+    #     found_hash = papis.utils.locate_hash_in_lib(tmp_document)
+    # except IndexError:
+    #     logger.info("No hash matching found already in the library")
+    # else:
+    #     logger.warning("{c.Fore.RED}DUPLICATION WARNING{c.Style.RESET_ALL}")
+    #     logger.warning(
+    #         "A document with this hash in the library seems to match the added one.")
+    #     logger.warning(
+    #         "(Hint) Use the 'papis update' command to just update the info.")
+    #
+    #     papis.tui.utils.text_area(
+    #         'The following hash is already in your library',
+    #         papis.document.dump(found_hash),
+    #         lexer_name='yaml',
+    #         height=20)
+    #     confirm = True
+    #
+    # logger.info("Checking if this document is already in the library")
     try:
         found_document = papis.utils.locate_document_in_lib(tmp_document)
     except IndexError:
@@ -434,6 +454,9 @@ def run(paths: List[str],
 
     logger.info(
         "[MV] '%s' to '%s'", tmp_document.get_main_folder(), out_folder_path)
+
+    logger.warning(
+        "Out folder path '%s'", out_folder_path)
 
     # This also sets the folder of tmp_document
     papis.document.move(tmp_document, out_folder_path)

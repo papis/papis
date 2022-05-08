@@ -10,7 +10,7 @@ import papis.crossref
 from papis.commands.add import (
     run, cli,
     get_file_name,
-    get_hash_folder
+    generate_folder_name
 )
 from tests import (
     create_random_pdf, create_random_file, create_random_epub,
@@ -19,33 +19,41 @@ from tests import (
 from papis.filetype import get_document_extension
 
 
-def test_get_hash_folder():
+def test_get_computer_folder_name():
     path = tempfile.mktemp(prefix='papis-get_name-')
     open(path, 'w+').close()
     data = dict(author='don quijote de la mancha')
 
-    hh = get_hash_folder(data, [path])
+    papis.config.set(
+        'add-folder-name',
+        '{doc[hash]}-{doc[author]:.20}'
+    )
+
+    folder_name = papis.config.get("add-folder-name")
+
+    data, hh = generate_folder_name(folder_name,[path],data)
+    print(hh)
     assert re.match(r'.*-don-quijote-de-la-ma$', hh) is not None
 
-    three_files_hh = get_hash_folder(data, [path, path, path])
+    data, three_files_hh = generate_folder_name(folder_name,[path, path, path],data)
     assert re.match(r'.*-don-quijote-de-la-ma$', three_files_hh) is not None
     assert not three_files_hh == hh
 
     # Without data
-    no_files_hh = get_hash_folder(data, [])
+    data, no_files_hh = generate_folder_name(folder_name, [], data)
     assert re.match(r'.*-don-quijote-de-la-ma$', no_files_hh) is not None
     assert not no_files_hh == hh
 
     data = dict()
-    hh = get_hash_folder(data, [path])
+    data, hh = generate_folder_name(folder_name, [path], data)
     assert re.match(r'.*-don-quijote-de-la-ma$', hh) is None
 
     path = tempfile.mktemp(prefix='papis-get_name-')
     open(path, 'w+').close()
-    newhh = get_hash_folder(data, [path])
+    data, newhh = generate_folder_name(folder_name,[path],data)
     assert not hh == newhh
 
-    newnewhh = get_hash_folder(data, [path])
+    data, newnewhh = generate_folder_name(folder_name, [path],data)
     assert not newnewhh == newhh
 
 
@@ -106,7 +114,8 @@ class TestRun(unittest.TestCase):
         try:
             run(
                 [path],
-                data=dict(author='Bohm', title='My effect')
+                data=dict(author='Bohm', title='My effect'),
+                folder_name = papis.config.getstring('add-folder-name')
             )
             self.assertTrue(False)
         except IOError:
@@ -115,8 +124,10 @@ class TestRun(unittest.TestCase):
     def test_nofile_add(self):
         run(
             [],
-            data=dict(author='Evangelista', title='MRCI')
+            data=dict(author='Evangelista', title='MRCI'),
+            folder_name=papis.config.getstring('add-folder-name')
         )
+
         db = papis.database.get()
         docs = db.query_dict(dict(author="Evangelista"))
         self.assertTrue(len(docs) == 1)
@@ -143,7 +154,9 @@ class TestRun(unittest.TestCase):
         for p in paths:
             open(p, 'w+').close()
 
-        run(paths, data=data)
+        run(paths,
+            data=data,
+            folder_name=papis.config.getstring('add-folder-name'))
 
         db = papis.database.get()
         docs = db.query_dict(dict(author="Kutzelnigg, Werner"))
@@ -151,7 +164,6 @@ class TestRun(unittest.TestCase):
         doc = docs[0]
         self.assertTrue(doc is not None)
         self.assertTrue(len(doc.get_files()) == number_of_files)
-
 
 class TestCli(tests.cli.TestCli):
 
