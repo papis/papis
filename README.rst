@@ -11,6 +11,7 @@ Papis
 |Packaging_status|
 
 |zulip|
+|libera|
 
 Description
 -----------
@@ -148,6 +149,8 @@ See the ``AUTHORS`` list for a list of authored commits.
 .. |ghbadge| image:: https://github.com/papis/papis/workflows/CI/badge.svg
 .. |zulip| image:: https://img.shields.io/badge/papis-join_chat-brightgreen.svg
    :target: https://papis.zulipchat.com
+.. |libera| image:: https://img.shields.io/badge/irc-%23papis-green
+   :target: https://kiwiirc.com/client/irc.libera.chat/#papis
 
 
 
