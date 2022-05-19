@@ -335,6 +335,17 @@ Bibtex options
     is the default name of the notes file, which by default is supposed
     to be a TeX file.
 
+.. papis-config:: notes-template
+
+    In ``papis edit`` you can edit notes about the document. ``notes-template``
+    is the path to a template, that will be loaded and formated using the
+    ``formater``. This can be useful to enforce the same style in the notes
+    for all documents.
+
+    Default value is set to ``""``, which will return an empty notes file. If
+    no file is found at the path to the template, then also an empty notes file
+    will be generated.
+
 .. _marks-options:
 
 Marks

@@ -48,6 +48,7 @@ general_settings = {
                         or os.environ.get('VISUAL')
                         or get_default_opener(),
     "notes-name": "notes.tex",
+    "notes-template": "",
     "use-cache": True,
     "cache-dir": None,
     "use-git": False,
