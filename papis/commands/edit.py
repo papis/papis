@@ -53,6 +53,21 @@ def run(document: papis.document.Document,
                 papis.document.describe(document)))
 
 
+def create_notes(document: papis.document.Document,
+                 notes_path: str) -> None:
+
+    templ_path = os.path.expanduser(papis.config.getstring("notes-template"))
+    templ_out = ""
+
+    if os.path.exists(templ_path):
+        with open(templ_path, 'r') as f:
+            templ_src = f.read()
+            templ_out = papis.format.format(templ_src, document)
+
+    with open(notes_path, 'w+') as f:
+        f.write(templ_out)
+
+
 def edit_notes(document: papis.document.Document,
                git: bool = False) -> None:
     logger = logging.getLogger('edit:notes')
@@ -68,7 +83,7 @@ def edit_notes(document: papis.document.Document,
 
     if not os.path.exists(notes_path):
         logger.debug("Creating '%s'", notes_path)
-        open(notes_path, "w+").close()
+        create_notes(document, notes_path)
 
     papis.api.edit_file(notes_path)
     if git:
