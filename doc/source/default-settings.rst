@@ -333,14 +333,17 @@ Bibtex options
 
     In ``papis edit`` you can edit notes about the document. ``notes-name``
     is the default name of the notes file, which by default is supposed
-    to be a TeX file.
+    to be a TeX file. The ``notes-name`` is formated by the ``formater``, so
+    that the filename of notes can be dynamically defined, e.g.:  ::
+    
+        notes-name = notes_{doc[title]:.15}.tex
 
 .. papis-config:: notes-template
 
-    In ``papis edit`` you can edit notes about the document. ``notes-template``
-    is the path to a template, that will be loaded and formated using the
-    ``formater``. This can be useful to enforce the same style in the notes
-    for all documents.
+    When editing notes for the first time, a preliminary note will be generated
+    based on a template. The path to this template is specified by
+    ``notes-template``. The template will then be formated by ``formater``.
+    This can be useful to enforce the same style in the notes for all documents.
 
     Default value is set to ``""``, which will return an empty notes file. If
     no file is found at the path to the template, then also an empty notes file
