@@ -24,6 +24,7 @@ import papis.database
 import papis.cli
 import papis.strings
 import papis.git
+import papis.format
 
 
 def run(document: papis.document.Document,
