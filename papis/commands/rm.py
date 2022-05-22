@@ -50,7 +50,7 @@ def run(document: papis.document.Document,
             papis.git.remove(_doc_folder, notespath)
             papis.git.add(_doc_folder, document.get_info_file())
             papis.git.commit(_doc_folder,
-                             "Remove notes file '{}'".format(filepath))
+                             "Remove notes file '{}'".format(notespath))
 
     # if neither files nor notes were deleted -> delete whole document
     if not (filepath or notespath):
