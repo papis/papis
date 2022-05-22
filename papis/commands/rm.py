@@ -22,6 +22,7 @@ import papis.git
 
 def run(document: papis.document.Document,
         filepath: Optional[str] = None,
+        notespath: Optional[str] = None,
         git: bool = False) -> None:
     """Main method to the rm command
     """
@@ -29,6 +30,7 @@ def run(document: papis.document.Document,
     _doc_folder = document.get_main_folder()
     if not _doc_folder:
         raise Exception(papis.strings.no_folder_attached_to_document)
+
     if filepath is not None:
         os.remove(filepath)
         document['files'].remove(os.path.basename(filepath))
@@ -38,7 +40,20 @@ def run(document: papis.document.Document,
             papis.git.remove(_doc_folder, filepath)
             papis.git.add(_doc_folder, document.get_info_file())
             papis.git.commit(_doc_folder, "Remove file '{0}'".format(filepath))
-    else:
+
+    if notespath is not None:
+        os.remove(notespath)
+        del document["notes"]
+        document.save()
+        db.update(document)
+        if git:
+            papis.git.remove(_doc_folder, notespath)
+            papis.git.add(_doc_folder, document.get_info_file())
+            papis.git.commit(_doc_folder,
+                             "Remove notes file '{}'".format(filepath))
+
+    # if neither files nor notes were deleted -> delete whole document
+    if not (filepath or notespath):
         if git:
             _topfolder = os.path.dirname(os.path.abspath(_doc_folder))
             papis.git.remove(_doc_folder, _doc_folder, recursive=True)
@@ -63,6 +78,11 @@ def run(document: papis.document.Document,
     is_flag=True,
     default=False)
 @click.option(
+    "-n", "--notes", "_notes",
+    help="Remove the notes file from a document instead of the whole folder",
+    is_flag=True,
+    default=False)
+@click.option(
     "-f", "--force",
     help="Do not confirm removal",
     is_flag=True,
@@ -71,12 +91,13 @@ def run(document: papis.document.Document,
 def cli(query: str,
         git: bool,
         _file: bool,
+        _notes: bool,
         force: bool,
         _all: bool,
         doc_folder: str,
         sort_field: Optional[str],
         sort_reverse: bool) -> None:
-    """Delete a document or a file"""
+    """Delete a document, a file, or a notes-file"""
 
     if doc_folder:
         documents = [papis.document.from_folder(doc_folder)]
@@ -108,7 +129,24 @@ def cli(query: str,
                     continue
             logger.info("Removing '%s'...", filepath)
             run(document, filepath=filepath, git=git)
-    else:
+
+    if _notes:
+        for document in documents:
+            if not document.has("notes"):
+                continue
+            notespath = os.path.join(
+                str(document.get_main_folder()),
+                document["notes"]
+            )
+            if not force:
+                tbar = 'The file {0} would be removed'.format(notespath)
+                if not papis.tui.utils.confirm(
+                        "Are you sure?", bottom_toolbar=tbar):
+                    continue
+            logger.info("Removing '%s'...", notespath)
+            run(document, notespath=notespath, git=git)
+    
+    if not (_file or _notes):
         for document in documents:
             if not force:
                 tbar = 'The folder {0} would be removed'.format(
