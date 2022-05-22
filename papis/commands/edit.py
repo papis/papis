@@ -74,10 +74,13 @@ def edit_notes(document: papis.document.Document,
     logger = logging.getLogger('edit:notes')
     logger.debug("Editing notes")
 
+    db = papis.database.get()
     if not document.has("notes"):
         notes_name = papis.config.getstring("notes-name")
         document["notes"] = papis.format.format(notes_name, document)
         document.save()
+        db.update(document)
+
     notes_path = os.path.join(
         str(document.get_main_folder()),
         document["notes"]
