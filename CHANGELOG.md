@@ -1,6 +1,9 @@
 VERSION v0.12
 =============
 
+Many issues were resolved and new (and old) contributors
+made the following changes possible.
+
 ## Add hook infrastructure
 A basic hook infrastructure has been added to be able to
 use emacs-like hooks for some commands.
@@ -18,6 +21,8 @@ use emacs-like hooks for some commands.
 
 ## papis picker
 - You can now pick several elements with the key binding `c-t`
+- Add support for fzf picker,
+  check out the [documentation](https://papis.readthedocs.io/en/latest/configuration.html#fzf-integration).
 
 ## `papis merge`
 - Add the command `papis merge` to merge documents in pairs.
@@ -28,6 +33,26 @@ use emacs-like hooks for some commands.
 ## Downloaders
 
 - Add an `acm` downloader
+- Add an `Project Euclid` downloader
+
+## Notes
+
+Now you can remove notes files with `papis rm --notes`
+or have templates for the notes.
+Check out the
+[notes-template variable](https://papis.readthedocs.io/en/latest/configuration.html#config-settings-notes-template).
+
+## Web application `papis serve`
+- The new, simple and experimental web application is available
+  through the `papis serve` command.
+  Feel free to make suggestions.
+
+## MacOS
+- disable multiprocessing by default on mac due to lack of performance and source
+  of strange behaviour.
+  
+## Community
+- usage of github discussions and #papis channel on libera.
 
 VERSION v0.11
 =============
