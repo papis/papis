@@ -113,7 +113,22 @@ find help messages in all commands:
     papis -h
     papis add -h
 
+If you so prefer, you can also browse your papers using the web application
+
+::
+
+   papis serve
+
+|webapp-einstein|
+
 AND MUCH, MUCH MORE!
+
+Contact
+-------
+
+Feel free to use issues, github discussions,
+our `IRC libera channel <https://kiwiirc.com/client/irc.libera.chat/#papis>`__
+or our `zulip channel <https://papis.zulipchat.com>`__.
 
 Authors
 -------
@@ -125,6 +140,7 @@ See the ``AUTHORS`` list for a list of authored commits.
 .. |superquickstartsvg1| image:: https://papis.github.io/images/superquickstart1.svg
 .. |superquickstartsvg2| image:: https://papis.github.io/images/superquickstart2.svg
 .. |quickstartsvg| image:: https://papis.github.io/images/quick.svg
+.. |webapp-einstein| image:: https://papis.github.io/images/web-app-einstein.jpg
 .. |Pypi| image:: https://badge.fury.io/py/papis.svg
    :target: https://badge.fury.io/py/papis
 .. |RTD| image:: https://readthedocs.org/projects/papis/badge/?version=latest
@@ -179,6 +195,7 @@ project                                                    maintainer(s)
 `papis-rofi <https://github.com/papis/papis-rofi/>`__      `Etn40ff <https://github.com/Etn40ff>`__
 `papis-dmenu <https://github.com/papis/papis-dmenu>`__     YOU?
 `papis-vim <https://github.com/papis/papis-vim>`__         YOU?
+`papis-emacs <https://github.com/papis/papis.el>`__        `alejandrogallo <https://alejandrogallo.github.io/>`__
 `papis-zotero <https://github.com/papis/papis-zotero>`__   YOU?
 `papis-libgen <https://github.com/papis/papis-zotero>`__   YOU?
 `papis-firefox <https://github.com/papis/papis-firefox>`__ `wavefrontshaping <https://github.com/wavefrontshaping>`__
