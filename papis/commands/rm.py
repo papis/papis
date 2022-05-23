@@ -97,7 +97,9 @@ def cli(query: str,
         doc_folder: str,
         sort_field: Optional[str],
         sort_reverse: bool) -> None:
-    """Delete a document, a file, or a notes-file"""
+    """
+    Delete a document, a file, or a notes-file
+    """
 
     if doc_folder:
         documents = [papis.document.from_folder(doc_folder)]
@@ -145,7 +147,7 @@ def cli(query: str,
                     continue
             logger.info("Removing '%s'...", notespath)
             run(document, notespath=notespath, git=git)
-    
+
     if not (_file or _notes):
         for document in documents:
             if not force:
