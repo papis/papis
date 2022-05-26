@@ -28,8 +28,21 @@ class DocMatcher(object):
     """
     search = ""  # type: str
     parsed_search = []  # type: List[Any]
-    doc_format = '{%s[DOC_KEY]}' % (papis.config.getstring('format-doc-name'))
     logger = logging.getLogger('DocMatcher')
+
+    formater = papis.config.getstring("formater")
+    if formater == "python":
+        doc_format = '{%s[DOC_KEY]}' % (
+            papis.config.getstring('format-doc-name'))
+
+    elif formater == "jinja2":
+        doc_format = '{{%s["DOC_KEY"]}}' % (
+            papis.config.getstring('format-doc-name'))
+
+    else:
+        doc_format = ''
+        logger.error(f"doc_format not implemented for {formater=}")
+
     matcher = None  # type: Optional[MATCHER_TYPE]
 
     @classmethod
