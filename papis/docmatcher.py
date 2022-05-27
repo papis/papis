@@ -41,7 +41,7 @@ class DocMatcher(object):
 
     else:
         doc_format = ''
-        logger.error(f"doc_format not implemented for {formater=}")
+        logger.error("doc_format not implemented for formater='%s'", formater)
 
     matcher = None  # type: Optional[MATCHER_TYPE]
 
