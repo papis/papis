@@ -79,7 +79,7 @@ General settings
     like in format strings such as ``match-format`` or ``header-format``.
     For instance, if you are managing videos, you might want to
     set this option to ``vid`` in order to set  the ``header-format`` to
-    ``{doc[title]} - {doc[director]} - {doc[duration]}``.
+    ``{vid[title]} - {vid[director]} - {vid[duration]}``.
 
 .. papis-config:: match-format
 
@@ -335,7 +335,7 @@ Bibtex options
     is the default name of the notes file, which by default is supposed
     to be a TeX file. The ``notes-name`` is formated by the ``formater``, so
     that the filename of notes can be dynamically defined, e.g.:  ::
-    
+
         notes-name = notes_{doc[title]:.15}.tex
 
 .. papis-config:: notes-template
