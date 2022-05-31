@@ -475,6 +475,11 @@ def run(paths: List[str],
     help="List all available papis importers",
     default=False,
     is_flag=True)
+@click.option(
+    "--force-download", "--fd", "force_download",
+    help="Download file with importer even if local file is passed",
+    default=False,
+    is_flag=True)
 def cli(
         files: List[str],
         set_list: List[Tuple[str, str]],
@@ -488,7 +493,8 @@ def cli(
         edit: bool,
         git: bool,
         link: bool,
-        list_importers: bool) -> None:
+        list_importers: bool,
+        force_download: bool) -> None:
 
     if list_importers:
         import_mgr = papis.importer.get_import_mgr()
@@ -554,7 +560,7 @@ def cli(
                         ctx.data,
                         importer.ctx.data,
                         str(importer))
-            if importer.ctx.files:
+            if importer.ctx.files and (not files or force_download):
                 logger.info(
                         "Got files %s from importer '%s'",
                         importer.ctx.files, importer.name)
