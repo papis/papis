@@ -424,18 +424,20 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self._send_json({"message": msg})
 
     def page_query(self, libname: str, query: str) -> None:
-        docs = papis.api.get_documents_in_lib(libname, query)
-        self.page_main(libname, docs)
+        cleaned_query = urllib.parse.unquote(query)
+        docs = papis.api.get_documents_in_lib(libname, cleaned_query)
+        self.page_main(libname, docs, cleaned_query)
 
     def page_main(self,
                   libname: Optional[str] = None,
-                  docs: List[papis.document.Document] = []) -> None:
+                  docs: List[papis.document.Document] = [],
+                  query: Optional[str] = None) -> None:
         self.send_response(200)
         self._header_html()
         self.end_headers()
         libname = libname or papis.api.get_lib_name()
         docs = docs or papis.api.get_all_documents_in_lib(libname)
-        page = render_index(docs, libname)
+        page = render_index(docs, libname, placeholder=query or "main")
         self.wfile.write(bytes(page, "utf-8"))
         self.wfile.flush()
 
