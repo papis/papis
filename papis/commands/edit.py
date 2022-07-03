@@ -77,7 +77,8 @@ def edit_notes(document: papis.document.Document,
     db = papis.database.get()
     if not document.has("notes"):
         notes_name = papis.config.getstring("notes-name")
-        document["notes"] = papis.format.format(notes_name, document)
+        notes_name = papis.format.format(notes_name, document)
+        document["notes"] = papis.utils.clean_document_name(notes_name)
         document.save()
         db.update(document)
 
