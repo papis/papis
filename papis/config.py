@@ -55,6 +55,7 @@ general_settings = {
 
     "add-confirm": False,
     "add-folder-name": "",
+    "add-subfolder": "",
     "add-file-name": None,
     "add-interactive": False,
     "add-edit": False,

@@ -91,6 +91,7 @@ Cli
 import os
 import re
 import logging
+import pathlib
 from typing import List, Any, Optional, Dict, Tuple
 
 import click
@@ -304,21 +305,38 @@ def run(paths: List[str],
 
     tmp_document = papis.document.Document(temp_dir)
 
+    base_path = pathlib.Path(papis.config.get_lib_dirs()[0]).expanduser()
+    out_folder_path = base_path
+
+    if subfolder:
+        out_folder_path /= pathlib.Path(subfolder)
+
     if not folder_name:
         out_folder_name = get_hash_folder(data, in_documents_paths)
         logger.info("Got an automatic folder name")
     else:
         temp_doc = papis.document.Document(data=data)
-        out_folder_name = papis.format.format(folder_name, temp_doc)
-        out_folder_name = papis.utils.clean_document_name(out_folder_name)
+        temp_path = out_folder_path / pathlib.Path(folder_name)
+        components: List[str] = []
+        assert temp_path.is_relative_to(out_folder_path)
+        while temp_path != out_folder_path and temp_path.is_relative_to(out_folder_path):
+            path_component = temp_path.name
+            component_formatted = papis.format.format(path_component, temp_doc)
+            component_cleaned = papis.utils.clean_document_name(component_formatted)
+            components.insert(0, component_cleaned)
+            # continue with parent path component
+            temp_path = temp_path.parent
+        # components are formatted in reverse order, so we add then now in the
+        # right order to the path
+        for c in components:
+            out_folder_path /= c
+
         del temp_doc
 
+    if not out_folder_path.is_relative_to(base_path):
+        raise ValueError("formatting produced path outside of library")
+
     data["files"] = in_documents_names
-    out_folder_path = os.path.expanduser(
-        os.path.join(
-            papis.config.get_lib_dirs()[0],
-            subfolder or '',
-            out_folder_name))
 
     logger.info("The folder name is '%s'", out_folder_name)
     logger.debug("Folder path: '%s'", out_folder_path)
@@ -430,7 +448,7 @@ def run(paths: List[str],
 @click.option(
     "-d", "--subfolder",
     help="Subfolder in the library",
-    default="")
+    default=lambda: papis.config.getstring('add-subfolder'))
 @click.option(
     "--folder-name",
     help="Name for the document's folder (papis format)",
