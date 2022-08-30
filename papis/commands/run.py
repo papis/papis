@@ -62,10 +62,13 @@ import papis.config
 import papis.document
 import papis.database
 
-logger = logging.getLogger('run')
+logger = logging.getLogger("run")
 
 
-def run(folder: str, command: List[str] = []) -> int:
+def run(folder: str, command: Optional[List[str]] = None) -> int:
+    if command is None:
+        command = []
+
     logger.debug("Changing directory to '%s'", folder)
     os.chdir(os.path.expanduser(folder))
     commandstr = " ".join(command)
@@ -74,9 +77,9 @@ def run(folder: str, command: List[str] = []) -> int:
 
 
 @click.command("run", context_settings=dict(ignore_unknown_options=True))
-@click.help_option('--help', '-h')
+@click.help_option("--help", "-h")
 @click.option(
-    '--pick', '-p',
+    "--pick", "-p",
     help="Give a query to pick a document to run the command in its folder",
     metavar="<QUERY>",
     type=str,
@@ -85,7 +88,7 @@ def run(folder: str, command: List[str] = []) -> int:
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @click.option(
-    '--prefix',
+    "--prefix",
     default=None,
     type=str,
     metavar="<PREFIX>",

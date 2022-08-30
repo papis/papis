@@ -9,8 +9,8 @@ class Downloader(papis.downloaders.Downloader):
     def __init__(self, url: str):
         papis.downloaders.Downloader.__init__(
             self, url, name="frontiersin")
-        self.expected_document_extension = 'pdf'
-        self.cookies = {'gdpr': 'true'}
+        self.expected_document_extension = "pdf"
+        self.cookies = {"gdpr": "true"}
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
@@ -22,7 +22,7 @@ class Downloader(papis.downloaders.Downloader):
     def get_doi(self) -> Optional[str]:
         url = self.uri
         self.logger.info("Parsing DOI from '%s'", url)
-        mdoi = re.match(r'.*/articles/([^/]+/[^/?&%^$]+).*', url)
+        mdoi = re.match(r".*/articles/([^/]+/[^/?&%^$]+).*", url)
         if mdoi:
             doi = mdoi.group(1)
             return doi

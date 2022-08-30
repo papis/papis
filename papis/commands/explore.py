@@ -108,7 +108,7 @@ import papis.plugin
 if TYPE_CHECKING:
     from stevedore import ExtensionManager
 
-logger = logging.getLogger('explore')
+logger = logging.getLogger("explore")
 
 
 def _extension_name() -> str:
@@ -123,12 +123,12 @@ def get_explorer_mgr() -> "ExtensionManager":
     return papis.plugin.get_extension_manager(_extension_name())
 
 
-@click.command('lib')
+@click.command("lib")
 @click.pass_context
-@click.help_option('--help', '-h')
+@click.help_option("--help", "-h")
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
-@click.option('--library', '-l', default=None, help='Papis library to look')
+@click.option("--library", "-l", default=None, help="Papis library to look")
 def lib(ctx: click.Context, query: str,
         doc_folder: str, library: Optional[str]) -> None:
     """
@@ -139,26 +139,26 @@ def lib(ctx: click.Context, query: str,
         papis lib -l books einstein pick
 
     """
-    logger = logging.getLogger('explore:lib')
+    logger = logging.getLogger("explore:lib")
 
     if doc_folder:
-        ctx.obj['documents'] += [papis.document.from_folder(doc_folder)]
+        ctx.obj["documents"] += [papis.document.from_folder(doc_folder)]
     db = papis.database.get(library_name=library)
     docs = db.query(query)
-    logger.info('%d documents found', len(docs))
+    logger.info("%d documents found", len(docs))
 
-    ctx.obj['documents'] += docs
-    assert isinstance(ctx.obj['documents'], list)
+    ctx.obj["documents"] += docs
+    assert isinstance(ctx.obj["documents"], list)
 
 
-@click.command('pick')
+@click.command("pick")
 @click.pass_context
-@click.help_option('--help', '-h')
+@click.help_option("--help", "-h")
 @click.option(
-    '--number', '-n',
+    "--number", "-n",
     type=int,
     default=None,
-    help='Pick automatically the n-th document'
+    help="Pick automatically the n-th document"
 )
 def pick(ctx: click.Context, number: Optional[int]) -> None:
     """
@@ -169,22 +169,22 @@ def pick(ctx: click.Context, number: Optional[int]) -> None:
     papis explore bibtex lib.bib pick
 
     """
-    docs = ctx.obj['documents']
+    docs = ctx.obj["documents"]
     if number is not None:
         docs = [docs[number - 1]]
     picked_docs = papis.pick.pick_doc(docs)
     if not picked_docs:
-        ctx.obj['documents'] = []
+        ctx.obj["documents"] = []
         return
-    ctx.obj['documents'] = picked_docs
-    assert isinstance(ctx.obj['documents'], list)
+    ctx.obj["documents"] = picked_docs
+    assert isinstance(ctx.obj["documents"], list)
 
 
-@click.command('citations')
+@click.command("citations")
 @click.pass_context
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
-@click.help_option('--help', '-h')
+@click.help_option("--help", "-h")
 @click.option(
     "--save", "-s",
     is_flag=True,
@@ -199,7 +199,7 @@ def pick(ctx: click.Context, number: Optional[int]) -> None:
 )
 @click.option(
     "--max-citations", "-m", default=-1,
-    help='Number of citations to be retrieved'
+    help="Number of citations to be retrieved"
 )
 def citations(ctx: click.Context, query: str, doc_folder: str,
               max_citations: int, save: bool, rmfile: bool) -> None:
@@ -216,7 +216,7 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
     import tqdm
     import colorama
     import papis.yaml
-    logger = logging.getLogger('explore:citations')
+    logger = logging.getLogger("explore:citations")
 
     if doc_folder is not None:
         documents = [papis.document.from_folder(doc_folder)]
@@ -241,7 +241,7 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
     if not _main_folder:
         return
 
-    citations_file = os.path.join(_main_folder, 'citations.yaml')
+    citations_file = os.path.join(_main_folder, "citations.yaml")
 
     if os.path.exists(citations_file):
         if rmfile:
@@ -249,17 +249,17 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
             os.remove(citations_file)
         else:
             logger.info("A citations file exists in '%s'", citations_file)
-            if papis.tui.utils.confirm('Do you want to use it?'):
+            if papis.tui.utils.confirm("Do you want to use it?"):
                 # TODO: here it complains that papis.yaml.explorer.callback
                 #       None, somehow mypy does not get that.
                 papis.yaml.explorer.callback(citations_file)  # type: ignore
                 return
 
-    if not doc.has('citations') or doc['citations'] == []:
-        logger.warning('No citations found')
+    if not doc.has("citations") or doc["citations"] == []:
+        logger.warning("No citations found")
         return
 
-    dois = [d.get('doi') for d in doc['citations'] if d.get('doi')]
+    dois = [d.get("doi") for d in doc["citations"] if d.get("doi")]
     if not dois:
         logger.error("No DOIs retrieved from the document's information")
         return
@@ -280,16 +280,16 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
             citation = db.query_dict(dict(doi=doi))
             if citation:
                 progress.set_description(
-                    '{c.Fore.GREEN}{c.Back.BLACK}'
-                    '{0: <22.22}'
-                    '{c.Style.RESET_ALL}'
+                    "{c.Fore.GREEN}{c.Back.BLACK}"
+                    "{0: <22.22}"
+                    "{c.Style.RESET_ALL}"
                     .format(doi, c=colorama)
                 )
                 dois_with_data.append(citation[0])
                 found_in_lib_dois.append(doi)
             else:
                 progress.set_description(
-                    '{c.Fore.RED}{c.Back.BLACK}{0: <22.22}{c.Style.RESET_ALL}'
+                    "{c.Fore.RED}{c.Back.BLACK}{0: <22.22}{c.Style.RESET_ALL}"
                     .format(doi, c=colorama)
                 )
 
@@ -303,7 +303,7 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
         for doi in progress:
             data = papis.crossref.get_data(dois=[doi])
             progress.set_description(
-                '{c.Fore.GREEN}{c.Back.BLACK}{0: <22.22}{c.Style.RESET_ALL}'
+                "{c.Fore.GREEN}{c.Back.BLACK}{0: <22.22}{c.Style.RESET_ALL}"
                 .format(doi, c=colorama)
             )
             if data:
@@ -313,14 +313,14 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
     docs = [papis.document.Document(data=d) for d in dois_with_data]
     if save:
         logger.info("Storing citations in '%s'", citations_file)
-        with open(citations_file, 'a+') as fd:
+        with open(citations_file, "a+") as fd:
             logger.info(
                 "Writing %d documents' yaml into '%s'",
                 len(docs), citations_file)
 
-            yamldata = papis.commands.export.run(docs, to_format='yaml')
+            yamldata = papis.commands.export.run(docs, to_format="yaml")
             fd.write(yamldata)
-    ctx.obj['documents'] += docs
+    ctx.obj["documents"] += docs
 
 
 @click.command("add")
@@ -331,10 +331,10 @@ def add(ctx: click.Context) -> None:
         papis.commands.add.run([], d)
 
 
-@click.command('cmd')
+@click.command("cmd")
 @click.pass_context
-@click.help_option('--help', '-h')
-@click.argument('command', type=str)
+@click.help_option("--help", "-h")
+@click.argument("command", type=str)
 def cmd(ctx: click.Context, command: str) -> None:
     """
     Run a general command on the document list
@@ -349,8 +349,8 @@ def cmd(ctx: click.Context, command: str) -> None:
     """
     from subprocess import call
     import shlex
-    logger = logging.getLogger('explore:cmd')
-    docs = ctx.obj['documents']
+    logger = logging.getLogger("explore:cmd")
+    docs = ctx.obj["documents"]
     for doc in docs:
         fcommand = papis.format.format(command, doc)
         splitted_command = shlex.split(fcommand)
@@ -361,13 +361,13 @@ def cmd(ctx: click.Context, command: str) -> None:
 @click.group("explore",
              cls=papis.cli.AliasedGroup,
              invoke_without_command=False, chain=True)
-@click.help_option('--help', '-h')
+@click.help_option("--help", "-h")
 @click.pass_context
 def cli(ctx: click.Context) -> None:
     """
     Explore new documents using a variety of resources
     """
-    ctx.obj = {'documents': []}
+    ctx.obj = {"documents": []}
 
 
 for _explorer in get_available_explorers():

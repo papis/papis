@@ -42,11 +42,11 @@ def keyconversion_to_data(conversion_list: List[KeyConversionPair],
             continue
 
         for conv_data in key_pair.list:
-            papis_key = conv_data.get('key') or foreign_key  # type: str
+            papis_key = conv_data.get("key") or foreign_key  # type: str
             papis_value = data[foreign_key]
 
             try:
-                action = conv_data.get('action') or (lambda x: x)
+                action = conv_data.get("action") or (lambda x: x)
                 new_data[papis_key] = action(papis_value)
             except Exception as ex:
                 logger.debug("Error while trying to parse '%s' (%s)",
@@ -58,8 +58,8 @@ def keyconversion_to_data(conversion_list: List[KeyConversionPair],
                 continue
             new_data[key] = value
 
-    if 'author_list' in new_data:
-        new_data['author'] = author_list_to_author(new_data)
+    if "author_list" in new_data:
+        new_data["author"] = author_list_to_author(new_data)
 
     return new_data
 
@@ -67,18 +67,18 @@ def keyconversion_to_data(conversion_list: List[KeyConversionPair],
 def author_list_to_author(data: Dict[str, Any]) -> str:
     """Convert a list of authors into a single author string.
     """
-    author = ''
-    separator = papis.config.get('multiple-authors-separator')
-    separator_fmt = papis.config.get('multiple-authors-format')
+    author = ""
+    separator = papis.config.get("multiple-authors-separator")
+    separator_fmt = papis.config.get("multiple-authors-format")
     if separator is None or separator_fmt is None:
         raise Exception(
             "You have to define 'multiple-author-separator'"
             " and 'multiple-author-format'")
-    if 'author_list' in data:
+    if "author_list" in data:
         author = (
             separator.join([
                 separator_fmt.format(au=author)
-                for author in data['author_list']
+                for author in data["author_list"]
             ])
         )
     return author
@@ -120,10 +120,10 @@ class DocHtmlEscaped(Dict[str, Any]):
     def __getitem__(self, key: str) -> str:
         return (
             str(self.__doc[key])
-            .replace('&', '&amp;')
-            .replace('<', '&lt;')
-            .replace('>', '&gt;')
-            .replace('"', '&quot;'))
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace('"', "&quot;"))
 
 
 class Document(Dict[str, Any]):
@@ -172,7 +172,7 @@ class Document(Dict[str, Any]):
         self._folder = folder
         self._info_file_path = os.path.join(
             folder,
-            papis.config.getstring('info-name'))
+            papis.config.getstring("info-name"))
         self.subfolder = (self._folder
                               .replace(os.path.expanduser("~"), "")
                               .replace("/", " "))
@@ -215,7 +215,7 @@ class Document(Dict[str, Any]):
         :returns: List of full file paths
         :rtype:  list
         """
-        if not self.has('files'):
+        if not self.has("files"):
             return []
         files = (self["files"]
                  if isinstance(self["files"], list)
@@ -234,8 +234,8 @@ class Document(Dict[str, Any]):
                                            raise_exception=True)
         except Exception as ex:
             logger.error(
-                    "Error reading yaml file in '%s'. Please check it!\n%s",
-                    self.get_info_file(), ex)
+                "Error reading yaml file in '%s'. Please check it!\n%s",
+                self.get_info_file(), ex)
         else:
             for key in data:
                 self[key] = data[key]
@@ -309,7 +309,7 @@ def describe(document: Union[Document, Dict[str, Any]]) -> str:
     using the document-description-format
     """
     return papis.format.format(
-        papis.config.getstring('document-description-format'),
+        papis.config.getstring("document-description-format"),
         document)
 
 
@@ -344,7 +344,7 @@ def move(document: Document, path: str) -> None:
         shutil.move(folder, path)
         # Let us chmod it because it might come from a temp folder
         # and temp folders are per default 0o600
-        os.chmod(path, papis.config.getint('dir-umask') or 0o600)
+        os.chmod(path, papis.config.getint("dir-umask") or 0o600)
         document.set_folder(path)
 
 
@@ -385,7 +385,7 @@ def sort(docs: List[Document], key: str, reverse: bool) -> List[Document]:
     def _sort_for_key(key: str, doc: Document
                       ) -> Tuple[int, datetime.datetime, int, str]:
         if key in doc:
-            if key == 'time-added':
+            if key == "time-added":
                 try:
                     date_value = \
                         datetime.datetime.strptime(str(doc[key]),
@@ -408,13 +408,13 @@ def sort(docs: List[Document], key: str, reverse: bool) -> List[Document]:
         else:
             # The key does not appear in the document, ensure
             # it comes last.
-            return (sort_rankings["None"], zero_date, 0, '')
+            return (sort_rankings["None"], zero_date, 0, "")
     logger.debug("Sorting %d documents", len(docs))
     return sorted(docs, key=lambda d: _sort_for_key(key, d), reverse=reverse)
 
 
 def new(folder_path: str, data: Dict[str, Any],
-        files: List[str] = []) -> Document:
+        files: Optional[List[str]] = None) -> Document:
     """
     Creates a document at a given folder with data and
     some existing files.
@@ -427,13 +427,16 @@ def new(folder_path: str, data: Dict[str, Any],
     :type  files: list(str)
     :raises FileExistsError: If folder_path exists
     """
+    if files is None:
+        files = []
+
     os.makedirs(folder_path)
 
     import shutil
     doc = Document(folder=folder_path, data=data)
-    doc['files'] = []
+    doc["files"] = []
     for _file in files:
         shutil.copy(_file, os.path.join(folder_path))
-        doc['files'].append(os.path.basename(_file))
+        doc["files"].append(os.path.basename(_file))
     doc.save()
     return doc

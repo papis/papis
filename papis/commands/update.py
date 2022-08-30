@@ -64,11 +64,14 @@ def _update_with_database(document: papis.document.Document) -> None:
 
 
 def run(document: papis.document.Document,
-        data: Dict[str, Any] = dict(),
+        data: Optional[Dict[str, Any]] = None,
         git: bool = False) -> None:
+    if data is None:
+        data = {}
+
     # Keep the ref the same, otherwise issues can be caused when
     # writing LaTeX documents and all the ref's change
-    data['ref'] = document['ref']
+    data["ref"] = document["ref"]
     document.update(data)
     _update_with_database(document)
     folder = document.get_main_folder()
@@ -83,7 +86,7 @@ def run(document: papis.document.Document,
 
 
 @click.command("update")
-@click.help_option('--help', '-h')
+@click.help_option("--help", "-h")
 @papis.cli.git_option()
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
@@ -116,7 +119,7 @@ def cli(query: str,
         sort_reverse: bool,
         set_tuples: List[Tuple[str, str]],) -> None:
     """Update a document from a given library."""
-    logger = logging.getLogger('cli:update')
+    logger = logging.getLogger("cli:update")
 
     if doc_folder:
         documents = [papis.document.from_folder(doc_folder)]
@@ -136,8 +139,8 @@ def cli(query: str,
     for document in documents:
         ctx = papis.importer.Context()
 
-        logger.info('Updating '
-                    '{c.Back.WHITE}{c.Fore.BLACK}%s{c.Style.RESET_ALL}',
+        logger.info("Updating "
+                    "{c.Back.WHITE}{c.Fore.BLACK}%s{c.Style.RESET_ALL}",
                     papis.document.describe(document))
 
         ctx.data.update(document)
@@ -180,7 +183,7 @@ def cli(query: str,
 
         if matching_importers:
             logger.info(
-                'There are %d possible matchings', len(matching_importers))
+                "There are %d possible matchings", len(matching_importers))
 
             for importer in matching_importers:
                 if importer.ctx.data:

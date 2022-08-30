@@ -93,7 +93,7 @@ def run(document: papis.document.Document,
         opener: Optional[str] = None,
         folder: bool = False,
         mark: bool = False) -> None:
-    logger = logging.getLogger('open:run')
+    logger = logging.getLogger("open:run")
     if opener is not None:
         papis.config.set("opentool", opener)
 
@@ -127,9 +127,9 @@ def run(document: papis.document.Document,
                     if not _mark_opener:
                         raise Exception("mark-opener-format not set")
                     opener = papis.format.format(
-                            _mark_opener,
-                            papis.document.from_data(mark_dict[0]),
-                            doc_key=_mark_name)
+                        _mark_opener,
+                        papis.document.from_data(mark_dict[0]),
+                        doc_key=_mark_name)
                     logger.info("Setting opener to '%s'", opener)
                     papis.config.set("opentool", opener)
         files = document.get_files()
@@ -142,7 +142,7 @@ def run(document: papis.document.Document,
 
 
 @click.command("open")
-@click.help_option('-h', '--help')
+@click.help_option("-h", "--help")
 @papis.cli.query_option()
 @papis.cli.sort_option()
 @papis.cli.doc_folder_option()
@@ -162,14 +162,14 @@ def run(document: papis.document.Document,
     "-m",
     "--mark/--no-mark",
     help="Open mark",
-    default=lambda: True if papis.config.get('open-mark') else False)
+    default=lambda: True if papis.config.get("open-mark") else False)
 def cli(query: str, doc_folder: str, tool: str, folder: bool,
         sort_field: Optional[str], sort_reverse: bool, _all: bool,
         mark: bool) -> None:
     """Open document from a given library"""
     if tool:
         papis.config.set("opentool", tool)
-    logger = logging.getLogger('cli:run')
+    logger = logging.getLogger("cli:run")
 
     if doc_folder:
         documents = [papis.document.from_folder(doc_folder)]

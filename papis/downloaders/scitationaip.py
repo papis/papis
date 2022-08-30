@@ -9,7 +9,7 @@ class Downloader(papis.downloaders.Downloader):
     def __init__(self, url: str):
         papis.downloaders.Downloader.__init__(
             self, url, name="scitationaip")
-        self.expected_document_extension = 'pdf'
+        self.expected_document_extension = "pdf"
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
@@ -20,7 +20,7 @@ class Downloader(papis.downloaders.Downloader):
             return None
 
     def get_doi(self) -> Optional[str]:
-        mdoi = re.match(r'.*/doi/(.*/[^?&%^$]*).*', self.uri)
+        mdoi = re.match(r".*/doi/(.*/[^?&%^$]*).*", self.uri)
         if mdoi:
             doi = mdoi.group(1).replace("abs/", "").replace("full/", "")
             return doi

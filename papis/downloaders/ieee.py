@@ -8,7 +8,7 @@ class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str):
         papis.downloaders.Downloader.__init__(self, url, name="ieee")
-        self.expected_document_extension = 'pdf'
+        self.expected_document_extension = "pdf"
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
@@ -24,18 +24,18 @@ class Downloader(papis.downloaders.Downloader):
 
     def get_identifier(self) -> str:
         url = self.uri
-        return re.sub(r'^.*ieeexplore\.ieee\.org/document/(.*)\/', r'\1', url)
+        return re.sub(r"^.*ieeexplore\.ieee\.org/document/(.*)\/", r"\1", url)
 
     def _get_bibtex_url(self) -> Tuple[str, Dict[str, str]]:
         identifier = self.get_identifier()
         bibtex_url = \
-            'http://ieeexplore.ieee.org/xpl/downloadCitations?reload=true'
+            "http://ieeexplore.ieee.org/xpl/downloadCitations?reload=true"
         data = {
-            'recordIds': identifier,
-            'citations-format': 'citation-and-abstract',
-            'download-format': 'download-bibtex',
-            'x': '0',
-            'y': '0'
+            "recordIds": identifier,
+            "citations-format": "citation-and-abstract",
+            "download-format": "download-bibtex",
+            "x": "0",
+            "y": "0"
         }
         return bibtex_url, data
 
@@ -44,15 +44,15 @@ class Downloader(papis.downloaders.Downloader):
         import urllib.request
 
         bib_url, values = self._get_bibtex_url()
-        post_data = urllib.parse.urlencode(values).encode('ascii')
+        post_data = urllib.parse.urlencode(values).encode("ascii")
 
         self.logger.debug("bibtex url = '%s'", bib_url)
 
         req = urllib.request.Request(bib_url, post_data)
         with urllib.request.urlopen(req) as response:
             data = response.read()
-            text = data.decode('utf-8')
-            text = text.replace('<br>', '')
+            text = data.decode("utf-8")
+            text = text.replace("<br>", "")
             self.bibtex_data = text
 
     def get_document_url(self) -> Optional[str]:

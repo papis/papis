@@ -27,13 +27,13 @@ class Importer(papis.importer.Importer):
     """
 
     def __init__(self, **kwargs: Any):
-        papis.importer.Importer.__init__(self, name='url', **kwargs)
+        papis.importer.Importer.__init__(self, name="url", **kwargs)
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
         return (
             Importer(uri=uri)
-            if re.match(' *http(s)?.*', uri) is not None
+            if re.match(" *http(s)?.*", uri) is not None
             else None
         )
 
@@ -56,7 +56,10 @@ class Downloader(papis.importer.Importer):
     def __init__(self,
                  uri: str = "",
                  name: str = "",
-                 ctx: papis.importer.Context = papis.importer.Context()):
+                 ctx: Optional[papis.importer.Context] = None):
+        if ctx is None:
+            ctx = papis.importer.Context()
+
         papis.importer.Importer.__init__(self,
                                          uri=uri,
                                          ctx=ctx,
@@ -75,13 +78,13 @@ class Downloader(papis.importer.Importer):
         import requests
         self.session = requests.Session()  # type: requests.Session
         self.session.headers = requests.structures.CaseInsensitiveDict({
-            'User-Agent': papis.config.getstring('user-agent')
+            "User-Agent": papis.config.getstring("user-agent")
         })
-        proxy = papis.config.get('downloader-proxy')
+        proxy = papis.config.get("downloader-proxy")
         if proxy is not None:
             self.session.proxies = {
-                'http': proxy,
-                'https': proxy,
+                "http": proxy,
+                "https": proxy,
             }
         self.cookies = {}  # type: Dict[str, str]
 
@@ -117,7 +120,7 @@ class Downloader(papis.importer.Importer):
         except NotImplementedError:
             pass
         else:
-            self.ctx.data['doi'] = doi
+            self.ctx.data["doi"] = doi
 
     def fetch_files(self) -> None:
         # get documents
@@ -140,7 +143,7 @@ class Downloader(papis.importer.Importer):
         self.fetch_files()
 
     @classmethod
-    def match(cls, url: str) -> Optional['Downloader']:
+    def match(cls, url: str) -> Optional["Downloader"]:
         raise NotImplementedError(
             "Matching uri not implemented for this importer")
 
@@ -156,12 +159,12 @@ class Downloader(papis.importer.Importer):
         import bs4
         self._soup = bs4.BeautifulSoup(
             self._get_body(),
-            features='html.parser' if sys.version_info.minor < 6 else "lxml")
+            features="html.parser" if sys.version_info.minor < 6 else "lxml")
 
         return self._soup
 
     def __str__(self) -> str:
-        return 'Downloader({0}, uri={1})'.format(self.name, self.uri)
+        return "Downloader({0}, uri={1})".format(self.name, self.uri)
 
     def get_bibtex_url(self) -> Optional[str]:
         """It returns the urls that is to be access to download
@@ -359,7 +362,7 @@ def get_info_from_url(
         logger.warning("No matching downloader found for '%s'", url)
         return papis.importer.Context()
 
-    logger.debug('Found %d matching downloaders', len(downloaders))
+    logger.debug("Found %d matching downloaders", len(downloaders))
     downloader = downloaders[0]
 
     logger.info("Using downloader '%s'", downloader)

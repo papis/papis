@@ -10,7 +10,7 @@ from typing import Optional, Dict, Any, List, Callable, NamedTuple
 
 import click
 
-logger = logging.getLogger('base')
+logger = logging.getLogger("base")
 
 
 def get_data(query: str = "", hits: int = 20) -> List[Dict[str, Any]]:
@@ -19,11 +19,11 @@ def get_data(query: str = "", hits: int = 20) -> List[Dict[str, Any]]:
         "cgi-bin/BaseHttpSearchInterface.fcgi/"
     )
 
-    logger.warning('BASE engine in papis is experimental')
+    logger.warning("BASE engine in papis is experimental")
 
     if hits > 125:
         logger.error(
-                'BASE only allows a maximum of 125 hits, got %d hits', hits)
+            "BASE only allows a maximum of 125 hits, got %d hits", hits)
         hits = 125
 
     dict_params = {
@@ -44,13 +44,13 @@ def get_data(query: str = "", hits: int = 20) -> List[Dict[str, Any]]:
     url = urllib.request.Request(
         req_url,
         headers={
-            'User-Agent': 'papis'
+            "User-Agent": "papis"
         }
     )
 
     import json
     jsondoc = json.loads(urllib.request.urlopen(url).read().decode())
-    docs = jsondoc.get('response').get('docs')
+    docs = jsondoc.get("response").get("docs")
 
     logger.info("Retrieved %d documents", len(docs))
     return list(map(basedoc_to_papisdoc, docs))
@@ -95,10 +95,10 @@ def basedoc_to_papisdoc(basedoc: Dict[str, Any]) -> Dict[str, Any]:
     return doc
 
 
-@click.command('base')
+@click.command("base")
 @click.pass_context
-@click.help_option('--help', '-h')
-@click.option('--query', '-q', default=None)
+@click.help_option("--help", "-h")
+@click.option("--query", "-q", default=None)
 def explorer(ctx: click.core.Context, query: str) -> None:
     """
     Look for documents on the BielefeldAcademicSearchEngine
@@ -109,11 +109,11 @@ def explorer(ctx: click.core.Context, query: str) -> None:
 
     """
     import papis.document
-    logger = logging.getLogger('explore:base')
-    logger.info('Looking up...')
+    logger = logging.getLogger("explore:base")
+    logger.info("Looking up...")
 
     data = get_data(query=query)
     docs = [papis.document.from_data(data=d) for d in data]
-    ctx.obj['documents'] += docs
+    ctx.obj["documents"] += docs
 
-    logger.info('%d documents found', len(docs))
+    logger.info("%d documents found", len(docs))

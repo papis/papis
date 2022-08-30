@@ -101,12 +101,12 @@ INDEX_TEMPLATE = (
     """
     <html>
     """
-    + HEADER_TEMPLATE +
-    """
+    + HEADER_TEMPLATE
+    + """
     <body>
     """
-    + NAVBAR_TEMPLATE +
-    """
+    + NAVBAR_TEMPLATE
+    + """
         <div class="container">
             <h1>
                 Papis library: <code>{libname}</code>
@@ -151,12 +151,12 @@ TAGS_PAGE = (
     """
     <html>
     """
-    + HEADER_TEMPLATE +
-    """
+    + HEADER_TEMPLATE
+    + """
     <body>
     """
-    + NAVBAR_TEMPLATE +
-    """
+    + NAVBAR_TEMPLATE
+    + """
         <div class="container">
             <h1>
                 TAGS
@@ -228,22 +228,22 @@ def render_document(libname: str, doc: papis.document.Document) -> str:
                 <ol class="list-group">
               """.format(doc=doc, libname=libname)
             + "\n".join(
-                 """
-                 <li class="list-group-item">
-                 <div class="form-floating">
-                 <textarea class="form-control"
-                           placeholder="{val}"
-                           name="{key}"
-                           id="{key}"
-                           style="height: 100px">{val}</textarea>
-                 <label for="{key}">{key}</label>
-                 </div>
+                """
+                <li class="list-group-item">
+                <div class="form-floating">
+                <textarea class="form-control"
+                        placeholder="{val}"
+                        name="{key}"
+                        id="{key}"
+                        style="height: 100px">{val}</textarea>
+                <label for="{key}">{key}</label>
+                </div>
 
-                 </li>
-                 """.format(key=key, val=val)
-                 for key, val in doc.items()
-                 if not isinstance(val, list) or isinstance(val, dict)
-                )
+                </li>
+                """.format(key=key, val=val)
+                for key, val in doc.items()
+                if not isinstance(val, list) or isinstance(val, dict)
+            )
             + "</ol></form></body>"
             )
 
@@ -430,8 +430,11 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
     def page_main(self,
                   libname: Optional[str] = None,
-                  docs: List[papis.document.Document] = [],
+                  docs: Optional[List[papis.document.Document]] = None,
                   query: Optional[str] = None) -> None:
+        if docs is None:
+            docs = []
+
         self.send_response(200)
         self._header_html()
         self.end_headers()
@@ -564,7 +567,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         else:
             raise Exception("File {} does not exist".format(path))
 
-    def do_ROUTES(self, routes: List[Tuple[str, Any]]) -> None:
+    def do_ROUTES(self, routes: List[Tuple[str, Any]]) -> None:     # noqa: N802
         try:
             for route, method in routes:
                 m = re.match(route, self.path)
@@ -584,7 +587,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         form = cgi.FieldStorage(
             fp=self.rfile,
             headers=self.headers,
-            environ={'REQUEST_METHOD': 'POST'}
+            environ={"REQUEST_METHOD": "POST"}
         )
         docs = db.query_dict(dict(ref=ref))
         if not docs:
@@ -598,14 +601,14 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         back_url = self.headers.get("Referer", "/library")
         self.redirect(back_url)
 
-    def do_POST(self) -> None:
+    def do_POST(self) -> None:                                      # noqa: N802
         routes = [
             ("^/library/?([^/]+)?/document/ref:(.*)$",
                 self.update_page_document),
         ]
         self.do_ROUTES(routes)
 
-    def do_GET(self) -> None:
+    def do_GET(self) -> None:                                       # noqa: N802
         routes = [
             # html serving
             ("^/$",
@@ -640,8 +643,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.do_ROUTES(routes)
 
 
-@click.command('serve')
-@click.help_option('-h', '--help')
+@click.command("serve")
+@click.help_option("-h", "--help")
 @click.option("-p", "--port",
               help="Port to listen to",
               default=8888, type=int)

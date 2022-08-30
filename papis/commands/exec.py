@@ -42,7 +42,7 @@ def run(_file: str) -> None:
 
 
 @click.command("exec", context_settings=dict(ignore_unknown_options=True))
-@click.help_option('--help', '-h')
+@click.help_option("--help", "-h")
 @click.argument("python_file")
 @click.argument("args", nargs=-1)
 def cli(python_file: str, args: List[str]) -> None:

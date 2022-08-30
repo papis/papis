@@ -38,7 +38,7 @@ def run(keep: papis.document.Document,
         keep_both: bool,
         git: bool = False) -> None:
 
-    logger = logging.getLogger('merge:run')
+    logger = logging.getLogger("merge:run")
     files_to_move = set(files) - set(keep.get_files())
     for f in files_to_move:
         to_folder = keep.get_main_folder()
@@ -57,7 +57,7 @@ def run(keep: papis.document.Document,
 
 
 @click.command("merge")
-@click.help_option('-h', '--help')
+@click.help_option("-h", "--help")
 @papis.cli.query_option()
 @papis.cli.sort_option()
 @click.option("-s",
@@ -92,7 +92,7 @@ def cli(query: str,
         sort_reverse: bool,
         pick: bool) -> None:
     """Merge two documents from a given library"""
-    logger = logging.getLogger('cli:merge')
+    logger = logging.getLogger("cli:merge")
 
     documents = papis.database.get().query(query)
 
@@ -111,8 +111,8 @@ def cli(query: str,
 
     if len(documents) != 2:
         logger.error(
-                "You have to pick exactly two documents (picked %d)!",
-                len(documents))
+            "You have to pick exactly two documents (picked %d)!",
+            len(documents))
         return
 
     a = documents[0]

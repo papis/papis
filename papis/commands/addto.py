@@ -35,17 +35,17 @@ import papis.strings
 def run(document: papis.document.Document,
         filepaths: List[str],
         git: bool = False) -> None:
-    logger = logging.getLogger('addto')
+    logger = logging.getLogger("addto")
 
     from string import ascii_lowercase
     g = papis.utils.create_identifier(ascii_lowercase)
-    string_append = ''
+    string_append = ""
 
     _doc_folder = document.get_main_folder()
     if not _doc_folder:
         raise Exception("Document does not have a folder attached")
 
-    for i in range(len(document.get_files())):
+    for _ in range(len(document.get_files())):
         string_append = next(g)
 
     new_file_list = []
@@ -74,8 +74,8 @@ def run(document: papis.document.Document,
         # Check if the absolute file path is > 255 characters
         if len(os.path.abspath(end_document_path)) >= 255:
             logger.warning(
-                'Length of absolute path is > 255 characters. '
-                'This may cause some issues with some pdf viewers')
+                "Length of absolute path is > 255 characters. "
+                "This may cause some issues with some pdf viewers")
 
         if os.path.exists(end_document_path):
             logger.warning(
@@ -88,7 +88,7 @@ def run(document: papis.document.Document,
 
     if "files" not in document:
         document["files"] = []
-    document['files'] += new_file_list
+    document["files"] += new_file_list
     document.save()
     papis.database.get().update(document)
     if git:
@@ -100,7 +100,7 @@ def run(document: papis.document.Document,
 
 
 @click.command("addto")
-@click.help_option('--help', '-h')
+@click.help_option("--help", "-h")
 @papis.cli.query_option()
 @papis.cli.git_option(help="Add and commit files")
 @papis.cli.sort_option()
@@ -122,7 +122,7 @@ def cli(query: str,
         doc_folder: str,
         sort_reverse: bool) -> None:
     """Add files to an existing document"""
-    logger = logging.getLogger('cli:addto')
+    logger = logging.getLogger("cli:addto")
 
     if doc_folder:
         documents = [papis.document.from_folder(doc_folder)]

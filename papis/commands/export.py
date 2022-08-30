@@ -60,7 +60,7 @@ import papis.database
 import papis.strings
 import papis.plugin
 
-logger = logging.getLogger('cli:export')
+logger = logging.getLogger("cli:export")
 
 
 def available_formats() -> List[str]:
@@ -87,7 +87,7 @@ def run(documents: List[papis.document.Document], to_format: str) -> str:
 
 
 @click.command("export")
-@click.help_option('--help', '-h')
+@click.help_option("--help", "-h")
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
 @papis.cli.sort_option()
@@ -148,7 +148,7 @@ def cli(query: str,
     if ret_string is not None and not folder:
         if out is not None:
             logger.info("Dumping to '%s'", out)
-            with open(out, 'a+') as fd:
+            with open(out, "a+") as fd:
                 fd.write(ret_string)
         else:
             logger.info("Dumping to stdout")
@@ -166,14 +166,14 @@ def cli(query: str,
             if not len(documents) == 1:
                 outdir = os.path.join(out, _doc_folder_name)
             logger.info(
-                    "Exporting doc '%s' to '%s'",
-                    papis.document.describe(document), outdir)
+                "Exporting doc '%s' to '%s'",
+                papis.document.describe(document), outdir)
             shutil.copytree(_doc_folder, outdir)
 
 
-@click.command('export')
+@click.command("export")
 @click.pass_context
-@click.help_option('--help', '-h')
+@click.help_option("--help", "-h")
 @click.option(
     "-f", "--format", "fmt",
     help="Format for the document",
@@ -194,12 +194,12 @@ def explorer(ctx: click.Context, fmt: str, out: str) -> None:
     papis explore crossref -m 200 -a 'Schrodinger' export --yaml lib.yaml
 
     """
-    logger = logging.getLogger('explore:yaml')
-    docs = ctx.obj['documents']
+    logger = logging.getLogger("explore:yaml")
+    docs = ctx.obj["documents"]
 
     outstring = run(docs, to_format=fmt)
     if out is not None:
-        with open(out, 'a+') as fd:
+        with open(out, "a+") as fd:
             logger.info(
                 "Writing %d documents in %s into '%s'", len(docs), fmt, out)
             fd.write(outstring)

@@ -11,7 +11,7 @@ class Downloader(papis.downloaders.fallback.Downloader):
             self,
             uri=url,
             name="aps")
-        self.expected_document_extension = 'pdf'
+        self.expected_document_extension = "pdf"
         self.priority = 10
 
     @classmethod
@@ -21,7 +21,7 @@ class Downloader(papis.downloaders.fallback.Downloader):
 
     def get_bibtex_url(self) -> Optional[str]:
         burl = "{}?{}".format(
-            re.sub(r'/abstract', r'/export', self.uri),
+            re.sub(r"/abstract", r"/export", self.uri),
             "type=bibtex&download=true")
         self.logger.debug("bibtex url = '%s'", burl)
         return burl

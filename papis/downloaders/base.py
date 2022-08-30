@@ -1,6 +1,6 @@
 import re
 from typing import (
-        Any, List, Dict, Iterator, Tuple, Union, Pattern, TYPE_CHECKING)
+    Any, List, Dict, Iterator, Tuple, Union, Pattern, TYPE_CHECKING)
 
 from typing_extensions import TypedDict
 
@@ -106,28 +106,28 @@ def parse_meta_headers(soup: "bs4.BeautifulSoup") -> Dict[str, Any]:
     # metas = soup.find_all(name="meta")
     data = dict()  # type: Dict[str, Any]
     for equiv in meta_equivalences:
-        elements = soup.find_all(equiv['tag'], attrs=equiv["attrs"])
+        elements = soup.find_all(equiv["tag"], attrs=equiv["attrs"])
         if elements:
             value = elements[0].attrs.get("content")
-            data[equiv["key"]] = str(value).replace('\r', '')
+            data[equiv["key"]] = str(value).replace("\r", "")
 
     author_list = parse_meta_authors(soup)
     if author_list:
-        data['author_list'] = author_list
-        data['author'] = papis.document.author_list_to_author(data)
+        data["author_list"] = author_list
+        data["author"] = papis.document.author_list_to_author(data)
 
     return data
 
 
 def parse_meta_authors(soup: "bs4.BeautifulSoup") -> List[Dict[str, Any]]:
     author_list = []  # type: List[Dict[str, Any]]
-    authors = soup.find_all(name='meta', attrs={'name': 'citation_author'})
+    authors = soup.find_all(name="meta", attrs={"name": "citation_author"})
     if not authors:
         authors = soup.find_all(
-            name='meta', attrs={'name': re.compile('dc.creator', re.I)})
+            name="meta", attrs={"name": re.compile("dc.creator", re.I)})
     affs = soup.find_all(
-        name='meta',
-        attrs={'name': 'citation_author_institution'})
+        name="meta",
+        attrs={"name": "citation_author_institution"})
 
     if affs and authors:
         tuples = zip(authors, affs)  # type: Iterator[Tuple[Any, Any]]
@@ -137,12 +137,12 @@ def parse_meta_authors(soup: "bs4.BeautifulSoup") -> List[Dict[str, Any]]:
         return []
 
     for t in tuples:
-        fullname = t[0].get('content')
-        affiliation = [dict(name=t[1].get('content'))] if t[1] else []
-        fullnames = re.split(r'\s+', fullname)
+        fullname = t[0].get("content")
+        affiliation = [dict(name=t[1].get("content"))] if t[1] else []
+        fullnames = re.split(r"\s+", fullname)
         author_list.append(dict(
             given=fullnames[0],
-            family=' '.join(fullnames[1:]),
+            family=" ".join(fullnames[1:]),
             affiliation=affiliation,
         ))
     return author_list

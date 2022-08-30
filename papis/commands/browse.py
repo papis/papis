@@ -69,7 +69,7 @@ import papis.strings
 import papis.document
 
 
-logger = logging.getLogger('browse')
+logger = logging.getLogger("browse")
 
 
 def run(document: papis.document.Document,
@@ -84,12 +84,12 @@ def run(document: papis.document.Document,
 
     try:
         if "doi" == key:
-            url = 'https://doi.org/{}'.format(document['doi'])
+            url = "https://doi.org/{}".format(document["doi"])
         elif "ads" == key:
-            url = ('https://ui.adsabs.harvard.edu/abs/%22{}%22'
-                   .format(document['doi']))
+            url = ("https://ui.adsabs.harvard.edu/abs/%22{}%22"
+                   .format(document["doi"]))
         elif "isbn" == key:
-            url = 'https://isbnsearch.org/isbn/{}'.format(document['isbn'])
+            url = "https://isbnsearch.org/isbn/{}".format(document["isbn"])
         else:
             url = document[key]
 
@@ -97,15 +97,15 @@ def run(document: papis.document.Document,
             raise KeyError()
 
     except KeyError:
-        if not url or key == 'search-engine':
+        if not url or key == "search-engine":
             import urllib.parse
             params = {
-                'q': papis.format.format(
-                    papis.config.getstring('browse-query-format'),
+                "q": papis.format.format(
+                    papis.config.getstring("browse-query-format"),
                     document)
             }
-            url = (papis.config.getstring('search-engine')
-                   + '/?'
+            url = (papis.config.getstring("search-engine")
+                   + "/?"
                    + urllib.parse.urlencode(params))
 
     if browse:
@@ -117,14 +117,14 @@ def run(document: papis.document.Document,
 
 
 @click.command("browse")
-@click.help_option('--help', '-h')
+@click.help_option("--help", "-h")
 @papis.cli.query_option()
 @papis.cli.sort_option()
-@click.option('-k', '--key', default='',
-              help='Use the value of the document\'s key to open in'
-                   ' the browser, e.g. doi, url, doc_url ...')
-@click.option('-n', '--print', "_print", default=False, is_flag=True,
-              help='Just print out the url, do not open it with browser')
+@click.option("-k", "--key", default="",
+              help="Use the value of the document's key to open in"
+                   " the browser, e.g. doi, url, doc_url ...")
+@click.option("-n", "--print", "_print", default=False, is_flag=True,
+              help="Just print out the url, do not open it with browser")
 @papis.cli.all_option()
 @papis.cli.doc_folder_option()
 def cli(query: str,
@@ -141,7 +141,7 @@ def cli(query: str,
     else:
         documents = papis.database.get().query(query)
 
-    logger = logging.getLogger('cli:browse')
+    logger = logging.getLogger("cli:browse")
 
     if len(documents) == 0:
         logger.warning(papis.strings.no_documents_retrieved_message)
@@ -156,7 +156,7 @@ def cli(query: str,
         documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     if len(key):
-        papis.config.set('browse-key', key)
+        papis.config.set("browse-key", key)
 
     logger.info("Using key '%s'", papis.config.get("browse-key"))
 

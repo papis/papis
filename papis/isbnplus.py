@@ -70,7 +70,7 @@ import papis.document
 if TYPE_CHECKING:
     import bs4
 
-logger = logging.getLogger('isbnplus')
+logger = logging.getLogger("isbnplus")
 
 ISBNPLUS_KEY = "98a765346bc0ffee6ede527499b6a4ee"  # type: str
 ISBNPLUS_APPID = "4846a7d1"  # type: str
@@ -111,17 +111,17 @@ def get_data(
     logger.debug("url = '%s'", req_url)
     url = urllib.request.Request(
         req_url,
-        headers={'User-Agent': papis.config.getstring('user-agent')}
+        headers={"User-Agent": papis.config.getstring("user-agent")}
     )
     xmldoc = urllib.request.urlopen(url).read()
 
     import bs4
-    root = bs4.BeautifulSoup(xmldoc, 'html.parser')
+    root = bs4.BeautifulSoup(xmldoc, "html.parser")
 
-    for book in root.find_all('book'):
+    for book in root.find_all("book"):
         book_data = book_to_data(book)
         results.append(book_data)
-    logger.debug('%d records retrieved', len(results))
+    logger.debug("%d records retrieved", len(results))
     return results
 
 
@@ -151,12 +151,12 @@ def book_to_data(booknode: "bs4.Tag") -> Dict[str, Any]:
     return book
 
 
-@click.command('isbnplus')
+@click.command("isbnplus")
 @click.pass_context
-@click.help_option('--help', '-h')
-@click.option('--query', '-q', default="", type=str)
-@click.option('--author', '-a', default="", type=str)
-@click.option('--title', '-t', default="", type=str)
+@click.help_option("--help", "-h")
+@click.option("--query", "-q", default="", type=str)
+@click.option("--author", "-a", default="", type=str)
+@click.option("--title", "-t", default="", type=str)
 def explorer(ctx: click.core.Context,
              query: str, author: str, title: str) -> None:
     """
@@ -167,14 +167,14 @@ def explorer(ctx: click.core.Context,
     papis explore isbnplus -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
 
     """
-    logger = logging.getLogger('explore:isbnplus')
-    logger.info('Looking up...')
+    logger = logging.getLogger("explore:isbnplus")
+    logger.info("Looking up...")
     try:
         data = get_data(query=query, author=author, title=title)
     except Exception as e:
         logger.error(e)
         data = []
     docs = [papis.document.from_data(data=d) for d in data]
-    ctx.obj['documents'] += docs
+    ctx.obj["documents"] += docs
 
-    logger.info('%s documents found', len(docs))
+    logger.info("%s documents found", len(docs))

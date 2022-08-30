@@ -35,7 +35,7 @@ class AliasedGroup(click.core.Group):
         elif len(matches) == 1:
             return click.core.Group.get_command(self, ctx, str(matches[0]))
         else:
-            ctx.fail('Too many matches: {0}'.format(matches))
+            ctx.fail("Too many matches: {}".format(matches))
             return None
 
 
@@ -43,19 +43,19 @@ def query_option(**attrs: DecoratorArgs) -> DecoratorCallable:
     """Adds a ``query`` argument as a decorator"""
     def decorator(f: DecoratorCallable) -> Any:
         attrs.setdefault(
-            'default',
-            lambda: papis.config.get('default-query-string'))
-        return click.decorators.argument('query', **attrs)(f)
+            "default",
+            lambda: papis.config.get("default-query-string"))
+        return click.decorators.argument("query", **attrs)(f)
     return decorator
 
 
 def sort_option(**attrs: DecoratorArgs) -> DecoratorCallable:
     """Adds a ``sort`` argument as a decorator"""
     def decorator(f: DecoratorCallable) -> Any:
-        attrs.setdefault('default', lambda: papis.config.get('sort-field'))
-        attrs.setdefault('help', 'Sort documents with respect to FIELD')
-        attrs.setdefault('metavar', 'FIELD')
-        sort_f = click.decorators.option('--sort', "sort_field", **attrs)
+        attrs.setdefault("default", lambda: papis.config.get("sort-field"))
+        attrs.setdefault("help", "Sort documents with respect to FIELD")
+        attrs.setdefault("metavar", "FIELD")
+        sort_f = click.decorators.option("--sort", "sort_field", **attrs)
         reverse_f = click.decorators.option(
             "--reverse", "sort_reverse",
             help="Reverse sort order", is_flag=True)
@@ -66,20 +66,20 @@ def sort_option(**attrs: DecoratorArgs) -> DecoratorCallable:
 def doc_folder_option(**attrs: DecoratorArgs) -> DecoratorCallable:
     """Adds a ``document folder`` argument as a decorator"""
     def decorator(f: DecoratorCallable) -> Any:
-        attrs.setdefault('default', None)
-        attrs.setdefault('type', click.types.Path(exists=True))
-        attrs.setdefault('help', 'Apply action to a document path')
-        return click.decorators.option('--doc-folder', **attrs)(f)
+        attrs.setdefault("default", None)
+        attrs.setdefault("type", click.types.Path(exists=True))
+        attrs.setdefault("help", "Apply action to a document path")
+        return click.decorators.option("--doc-folder", **attrs)(f)
     return decorator
 
 
 def all_option(**attrs: DecoratorArgs) -> DecoratorCallable:
     """Adds a ``query`` argument as a decorator"""
     def decorator(f: DecoratorCallable) -> Any:
-        attrs.setdefault('default', False)
-        attrs.setdefault('is_flag', True)
-        attrs.setdefault('help', 'Apply action to all matching documents')
-        return click.decorators.option('-a', '--all', '_all', **attrs)(f)
+        attrs.setdefault("default", False)
+        attrs.setdefault("is_flag", True)
+        attrs.setdefault("help", "Apply action to all matching documents")
+        return click.decorators.option("-a", "--all", "_all", **attrs)(f)
     return decorator
 
 
@@ -89,10 +89,10 @@ def git_option(
     """Adds a ``git`` option as a decorator"""
     def decorator(f: DecoratorCallable) -> Any:
         attrs.setdefault(
-            'default',
-            lambda: True if papis.config.get('use-git') else False)
-        attrs.setdefault('help', help)
-        return click.decorators.option('--git/--no-git', **attrs)(f)
+            "default",
+            lambda: True if papis.config.get("use-git") else False)
+        attrs.setdefault("help", help)
+        return click.decorators.option("--git/--no-git", **attrs)(f)
     return decorator
 
 
@@ -131,6 +131,6 @@ def bypass(
     group.add_command(command, command_name)
 
     def _decorator(new_callback: Callable[..., Any]) -> None:
-        setattr(command, "bypassed", command.callback)
+        command.bypassed = command.callback     # type: ignore[attr-defined]
         command.callback = new_callback
     return _decorator

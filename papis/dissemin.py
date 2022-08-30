@@ -6,19 +6,19 @@ import click
 import papis.config
 import papis.document
 
-logger = logging.getLogger('dissemin')
+logger = logging.getLogger("dissemin")
 
 
 def dissemin_authors_to_papis_authors(data: Dict[str, Any]) -> Dict[str, Any]:
     new_data = dict()  # type: Dict[str, Any]
-    if 'authors' in data:
+    if "authors" in data:
         authors = []
-        for author in data['authors']:
+        for author in data["authors"]:
             # keys = ('first', 'last')
             authors.append(
                 dict(
-                    given_name=author['name']['first'],
-                    surname=author['name']['last']
+                    given_name=author["name"]["first"],
+                    surname=author["name"]["last"]
                 )
             )
         new_data["author_list"] = authors
@@ -30,16 +30,16 @@ def dissemin_authors_to_papis_authors(data: Dict[str, Any]) -> Dict[str, Any]:
 def dissemindoc_to_papis(data: Dict[str, Any]) -> List[Dict[str, Any]]:
     common_data = dict()
     result = []
-    common_data['title'] = data.get('title')
-    common_data['type'] = data.get('type')
+    common_data["title"] = data.get("title")
+    common_data["type"] = data.get("type")
     common_data.update(dissemin_authors_to_papis_authors(data))
-    for record in data['records']:
+    for record in data["records"]:
         new_data = dict()
         new_data.update(common_data)
         new_data.update(record)
-        new_data['doc_url'] = new_data.get('pdf_url')
-        new_data['url'] = new_data.get('splash_url')
-        new_data['tags'] = new_data.get('keywords')
+        new_data["doc_url"] = new_data.get("pdf_url")
+        new_data["url"] = new_data.get("splash_url")
+        new_data["tags"] = new_data.get("keywords")
 
         new_data = {key: new_data[key] for key in new_data if new_data[key]}
         result.append(new_data)
@@ -62,20 +62,20 @@ def get_data(query: str = "") -> List[Dict[str, Any]]:
     url = urllib.request.Request(
         req_url,
         headers={
-            'User-Agent': str(papis.config.get('user-agent'))
+            "User-Agent": str(papis.config.get("user-agent"))
         }
     )
     jsondoc = urllib.request.urlopen(url).read().decode()
 
     import json
     paperlist = json.loads(jsondoc)
-    return sum([dissemindoc_to_papis(d) for d in paperlist['papers']], [])
+    return sum([dissemindoc_to_papis(d) for d in paperlist["papers"]], [])
 
 
-@click.command('dissemin')
+@click.command("dissemin")
 @click.pass_context
-@click.help_option('--help', '-h')
-@click.option('--query', '-q', default="", type=str)
+@click.help_option("--help", "-h")
+@click.option("--query", "-q", default="", type=str)
 def explorer(ctx: click.core.Context, query: str) -> None:
     """
     Look for documents on dissem.in
@@ -85,11 +85,11 @@ def explorer(ctx: click.core.Context, query: str) -> None:
     papis explore dissemin -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
 
     """
-    logger = logging.getLogger('explore:dissemin')
-    logger.info('Looking up...')
+    logger = logging.getLogger("explore:dissemin")
+    logger.info("Looking up...")
 
     data = get_data(query=query)
     docs = [papis.document.from_data(data=d) for d in data]
-    ctx.obj['documents'] += docs
+    ctx.obj["documents"] += docs
 
-    logger.info('%s documents found', len(docs))
+    logger.info("%s documents found", len(docs))

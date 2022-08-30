@@ -58,7 +58,7 @@ class MultiCommand(click.core.MultiCommand):
 
     scripts = papis.commands.get_scripts()
     scripts.update(papis.commands.get_external_scripts())
-    logger = logging.getLogger('multicommand')
+    logger = logging.getLogger("multicommand")
 
     def list_commands(self, ctx: click.core.Context) -> List[str]:
         """List all matched commands in the command folder and in path
@@ -115,7 +115,7 @@ class MultiCommand(click.core.MultiCommand):
         cli = copy.copy(external_cli)
 
         from papis.commands.external import get_command_help
-        cli.context_settings['obj'] = script
+        cli.context_settings["obj"] = script
         if script.path is not None:
             cli.help = get_command_help(script.path)
         cli.name = script.command_name
@@ -128,10 +128,10 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
     def _on_finish() -> None:
         profiler.disable()
         profiler.create_stats()
-        with open(filename, 'w') as output:
+        with open(filename, "w") as output:
             import pstats
             stats = pstats.Stats(profiler, stream=output)
-            stats.sort_stats('time')
+            stats.sort_stats("time")
             stats.print_stats()
 
     return _on_finish
@@ -140,7 +140,7 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
 @click.group(
     cls=MultiCommand,
     invoke_without_command=True)
-@click.help_option('--help', '-h')
+@click.help_option("--help", "-h")
 @click.version_option(version=papis.__version__)
 @click.option(
     "-v",
@@ -250,7 +250,7 @@ def run(verbose: bool,
         handler = logging.FileHandler(logfile, mode="a")
 
     logging.basicConfig(level=getattr(logging, log), handlers=[handler])
-    logger = logging.getLogger('default')
+    logger = logging.getLogger("default")
 
     if config:
         papis.config.set_config_file(config)

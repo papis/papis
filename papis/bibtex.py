@@ -17,7 +17,7 @@ bibtex_types = [
     "article", "book", "booklet", "conference", "inbook", "incollection",
     "inproceedings", "manual", "mastersthesis", "misc", "phdthesis",
     "proceedings", "techreport", "unpublished"
-] + papis.config.getlist('extra-bibtex-types')  # type: List[str]
+] + papis.config.getlist("extra-bibtex-types")  # type: List[str]
 
 bibtex_type_converter = {
     "conferencePaper": "inproceedings",
@@ -39,7 +39,7 @@ bibtex_keys = [
     "publisher", "pubstate", "school", "series", "subtitle", "title",
     "translator", "titleaddon", "url", "urldate", "venue", "version",
     "volume", "volumes", "year",
-] + papis.config.getlist('extra-bibtex-keys')  # type: List[str]
+] + papis.config.getlist("extra-bibtex-keys")  # type: List[str]
 
 bibtex_key_converter = {
     "abstractNote": "abstract",
@@ -52,7 +52,7 @@ bibtex_key_converter = {
 
 
 def exporter(documents: List[papis.document.Document]) -> str:
-    return '\n'.join(to_bibtex(document) for document in documents)
+    return "\n".join(to_bibtex(document) for document in documents)
 
 
 class Importer(papis.importer.Importer):
@@ -60,12 +60,12 @@ class Importer(papis.importer.Importer):
     """Importer that parses a bibtex files"""
 
     def __init__(self, **kwargs: Any):
-        papis.importer.Importer.__init__(self, name='bibtex', **kwargs)
+        papis.importer.Importer.__init__(self, name="bibtex", **kwargs)
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
         if (not os.path.exists(uri) or os.path.isdir(uri)
-                or papis.filetype.get_document_extension(uri) == 'pdf'):
+                or papis.filetype.get_document_extension(uri) == "pdf"):
             return None
         importer = Importer(uri=uri)
         importer.fetch()
@@ -78,18 +78,18 @@ class Importer(papis.importer.Importer):
             bib_data = bibtex_to_dict(self.uri)
             if len(bib_data) > 1:
                 self.logger.warning(
-                    'The bibtex file contains more than one entry, '
-                    'only taking the first entry')
+                    "The bibtex file contains more than one entry, "
+                    "only taking the first entry")
             if bib_data:
                 self.ctx.data = bib_data[0]
         except Exception as e:
             self.logger.debug(e)
 
 
-@click.command('bibtex')
+@click.command("bibtex")
 @click.pass_context
-@click.argument('bibfile', type=click.Path(exists=True))
-@click.help_option('--help', '-h')
+@click.argument("bibfile", type=click.Path(exists=True))
+@click.help_option("--help", "-h")
 def explorer(ctx: click.core.Context, bibfile: str) -> None:
     """
     Import documents from a bibtex file
@@ -99,15 +99,15 @@ def explorer(ctx: click.core.Context, bibfile: str) -> None:
     papis explore bibtex lib.bib pick
 
     """
-    logger = logging.getLogger('explore:bibtex')
+    logger = logging.getLogger("explore:bibtex")
     logger.info("Reading in bibtex file '%s'", bibfile)
 
     docs = [
         papis.document.from_data(d)
         for d in bibtex_to_dict(bibfile)]
-    ctx.obj['documents'] += docs
+    ctx.obj["documents"] += docs
 
-    logger.info('%d documents found', len(docs))
+    logger.info("%d documents found", len(docs))
 
 
 def bibtexparser_entry_to_papis(entry: Dict[str, str]) -> Dict[str, str]:
@@ -154,10 +154,10 @@ def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
     from bibtexparser.bparser import BibTexParser
 
     parser = BibTexParser(
-            common_strings=True,
-            ignore_nonstandard_types=False,
-            homogenize_fields=False,
-            interpolate_strings=True)
+        common_strings=True,
+        ignore_nonstandard_types=False,
+        homogenize_fields=False,
+        interpolate_strings=True)
 
     # bibtexparser has too many debug messages to be useful
     logging.getLogger("bibtexparser.bparser").setLevel(logging.WARNING)
@@ -177,13 +177,13 @@ def ref_cleanup(ref: str) -> str:
     Function to cleanup references to be acceptable for latex
     """
     import slugify
-    allowed_characters = r'([^a-zA-Z0-9._]+|(?<!\\)[._])'
+    allowed_characters = r"([^a-zA-Z0-9._]+|(?<!\\)[._])"
     return string.capwords(str(slugify.slugify(
-               ref,
-               lowercase=False,
-               word_boundary=False,
-               separator=" ",
-               regex_pattern=allowed_characters))).replace(" ", "")
+        ref,
+        lowercase=False,
+        word_boundary=False,
+        separator=" ",
+        regex_pattern=allowed_characters))).replace(" ", "")
 
 
 def create_reference(doc: Dict[str, Any]) -> str:
@@ -194,7 +194,7 @@ def create_reference(doc: Dict[str, Any]) -> str:
     # Check first if the paper has a reference
     if doc.get("ref"):
         return str(doc["ref"])
-    elif papis.config.get('ref-format'):
+    elif papis.config.get("ref-format"):
         try:
             ref = papis.format.format(papis.config.getstring("ref-format"),
                                       doc)
@@ -204,8 +204,8 @@ def create_reference(doc: Dict[str, Any]) -> str:
 
     logger.debug("Generated 'ref = %s'", ref)
     if not ref:
-        if doc.get('doi'):
-            ref = doc['doi']
+        if doc.get("doi"):
+            ref = doc["doi"]
         else:
             # Just try to get something out of the data
             ref = "{:.30}".format(
@@ -241,30 +241,32 @@ def to_bibtex(document: papis.document.Document) -> str:
 
     bibtex_string += "@{type}{{{ref},\n".format(type=bibtex_type, ref=ref)
     bibtex_keyval_fmt = "  %s = {%s},\n"
-    for bibKey in document:
-        if bibKey in bibtex_key_converter:
-            new_bibkey = bibtex_key_converter[bibKey]
-            document[new_bibkey] = document[bibKey]
-    for bibKey in sorted(document):
-        logger.debug("Bibtex entry: '%s: %s'", bibKey, document[bibKey])
-        if bibKey in bibtex_keys:
-            value = str(document[bibKey])
-            if not papis.config.getboolean('bibtex-unicode'):
+    for bib_key in document:
+        if bib_key in bibtex_key_converter:
+            new_bibkey = bibtex_key_converter[bib_key]
+            document[new_bibkey] = document[bib_key]
+
+    for bib_key in sorted(document):
+        logger.debug("Bibtex entry: '%s: %s'", bib_key, document[bib_key])
+        if bib_key in bibtex_keys:
+            value = str(document[bib_key])
+            if not papis.config.getboolean("bibtex-unicode"):
                 value = unicode_to_latex(value)
-            if bibKey == 'journal':
-                journal_key = papis.config.getstring('bibtex-journal-key')
+            if bib_key == "journal":
+                journal_key = papis.config.getstring("bibtex-journal-key")
                 if journal_key in document:
                     bibtex_string += bibtex_keyval_fmt % (
-                        'journal',
+                        "journal",
                         unicode_to_latex(str(document[journal_key]))
                     )
                 elif journal_key not in document:
                     logger.warning(
-                            "Key '%s' is not present for ref '%s'",
-                            journal_key, document["ref"])
-                    bibtex_string += bibtex_keyval_fmt % ('journal', value)
+                        "Key '%s' is not present for ref '%s'",
+                        journal_key, document["ref"])
+                    bibtex_string += bibtex_keyval_fmt % ("journal", value)
             else:
-                bibtex_string += bibtex_keyval_fmt % (bibKey, value)
+                bibtex_string += bibtex_keyval_fmt % (bib_key, value)
+
     # Handle file for zotero exporting
     if (papis.config.getboolean("bibtex-export-zotero-file")
             and len(document.get_files())):

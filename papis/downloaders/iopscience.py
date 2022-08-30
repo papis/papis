@@ -10,26 +10,26 @@ class Downloader(papis.downloaders.Downloader):
         papis.downloaders.Downloader.__init__(self,
                                               url,
                                               name="iopscience")
-        self.expected_document_extension = 'pdf'
+        self.expected_document_extension = "pdf"
         self.priority = 10
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
-        url = re.sub(r'/pdf', '', url)
+        url = re.sub(r"/pdf", "", url)
         if re.match(r".*iopscience\.iop\.org.*", url):
             return Downloader(url)
         else:
             return None
 
     def get_doi(self) -> Optional[str]:
-        return self.ctx.data.get('doi')
+        return self.ctx.data.get("doi")
 
     def get_document_url(self) -> Optional[str]:
-        if 'pdf_url' in self.ctx.data:
-            return self.ctx.data.get('pdf_url')
+        if "pdf_url" in self.ctx.data:
+            return self.ctx.data.get("pdf_url")
         doi = self.get_doi()
         if doi:
-            durl = 'https://iopscience.iop.org/article/{0}/pdf'.format(doi)
+            durl = "https://iopscience.iop.org/article/{0}/pdf".format(doi)
             self.logger.debug("doc url = '%s'", durl)
             return durl
         else:
@@ -41,7 +41,7 @@ class Downloader(papis.downloaders.Downloader):
         """
         doi = self.get_doi()
         if doi:
-            article_id = doi.replace('10.1088/', '')
+            article_id = doi.replace("10.1088/", "")
             self.logger.debug("article_id = '%s'", article_id)
             return article_id
         else:
@@ -66,7 +66,7 @@ class Downloader(papis.downloaders.Downloader):
         soup = self._get_soup()
         data.update(papis.downloaders.base.parse_meta_headers(soup))
         abstract_nodes = soup.find_all(
-                'div', attrs={'class': 'wd-jnl-art-abstract'})
+            "div", attrs={"class": "wd-jnl-art-abstract"})
         if abstract_nodes:
-            data['abstract'] = ' '.join(a.text for a in abstract_nodes)
+            data["abstract"] = " ".join(a.text for a in abstract_nodes)
         return data

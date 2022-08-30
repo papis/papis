@@ -30,8 +30,8 @@ class DocMatcher(object):
     """
     search = ""  # type: str
     parsed_search = None  # type: pyparsing.ParseResults
-    doc_format = '{%s[DOC_KEY]}' % (papis.config.getstring('format-doc-name'))
-    logger = logging.getLogger('DocMatcher')
+    doc_format = "{%s[DOC_KEY]}" % (papis.config.getstring("format-doc-name"))
+    logger = logging.getLogger("DocMatcher")
     matcher = None  # type: Optional[MATCHER_TYPE]
 
     @classmethod
@@ -67,7 +67,7 @@ class DocMatcher(object):
                 sformat = None
             elif len(parsed) == 3:
                 search = parsed[2]
-                sformat = cls.doc_format.replace('DOC_KEY', parsed[0])
+                sformat = cls.doc_format.replace("DOC_KEY", parsed[0])
 
             if cls.matcher is not None:
                 match = doc if cls.matcher(doc, search, sformat) else None
@@ -123,16 +123,16 @@ class DocMatcher(object):
 
 def parse_query(query_string: str) -> "pyparsing.ParseResults":
     import pyparsing
-    logger = logging.getLogger('parse_query')
+    logger = logging.getLogger("parse_query")
     logger.debug("Parsing query: '%s'", query_string)
 
-    papis_key_word = pyparsing.Word(pyparsing.alphanums + '-._/')
-    papis_value_word = pyparsing.Word(pyparsing.alphanums + '-._/()')
+    papis_key_word = pyparsing.Word(pyparsing.alphanums + "-._/")
+    papis_value_word = pyparsing.Word(pyparsing.alphanums + "-._/()")
 
     papis_value = pyparsing.QuotedString(
-        quoteChar='"', escChar='\\', escQuote='\\'
+        quoteChar='"', escChar="\\", escQuote="\\"
     ) ^ pyparsing.QuotedString(
-        quoteChar="'", escChar='\\', escQuote='\\'
+        quoteChar="'", escChar="\\", escQuote="\\"
     ) ^ papis_value_word
 
     equal = (

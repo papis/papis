@@ -60,8 +60,8 @@ class Database(papis.database.base.Database):
 
     def __init__(self, library: Optional[papis.library.Library] = None):
         papis.database.base.Database.__init__(self, library)
-        self.logger = logging.getLogger('db:whoosh')
-        self.cache_dir = os.path.join(get_cache_home(), 'database', 'whoosh')
+        self.logger = logging.getLogger("db:whoosh")
+        self.cache_dir = os.path.join(get_cache_home(), "database", "whoosh")
         self.index_dir = os.path.expanduser(
             os.path.join(
                 self.cache_dir,
@@ -72,12 +72,12 @@ class Database(papis.database.base.Database):
         self.initialize()
 
     def get_backend_name(self) -> str:
-        return 'whoosh'
+        return "whoosh"
 
     def clear(self) -> None:
         import shutil
         if self.index_exists():
-            self.logger.warning('Clearing the database')
+            self.logger.warning("Clearing the database")
             shutil.rmtree(self.index_dir)
 
     def add(self, document: papis.document.Document) -> None:
@@ -110,8 +110,7 @@ class Database(papis.database.base.Database):
     def query_dict(
             self, dictionary: Dict[str, str]) -> List[papis.document.Document]:
         query_string = " AND ".join(
-            ["{}:\"{}\" ".format(key, val)
-                for key, val in dictionary.items()])
+            ['{}:"{}" '.format(key, val) for key, val in dictionary.items()])
         return self.query(query_string)
 
     def query(self, query_string: str) -> List[papis.document.Document]:
@@ -119,7 +118,7 @@ class Database(papis.database.base.Database):
 
         import whoosh.qparser
         index = self.get_index()
-        qp = whoosh.qparser.MultifieldParser(['title', 'author', 'tags'],
+        qp = whoosh.qparser.MultifieldParser(["title", "author", "tags"],
                                              schema=self.get_schema())
         qp.add_plugin(whoosh.qparser.FuzzyTermPlugin())
         query = qp.parse(query_string)
@@ -132,7 +131,7 @@ class Database(papis.database.base.Database):
         return documents
 
     def get_all_query_string(self) -> str:
-        return '*'
+        return "*"
 
     def get_all_documents(self) -> List[papis.document.Document]:
         return self.query(self.get_all_query_string())
@@ -144,7 +143,7 @@ class Database(papis.database.base.Database):
         :returns: key identifier
         :rtype:  str
         """
-        return 'whoosh_id_'
+        return "whoosh_id_"
 
     def get_id_value(self, document: papis.document.Document) -> str:
         """Get the value that is stored in the unique key identifier
@@ -166,7 +165,7 @@ class Database(papis.database.base.Database):
         """Create a brand new index, notice that if an index already
         exists it will delete it and create a new one.
         """
-        self.logger.debug('Creating index...')
+        self.logger.debug("Creating index...")
         if not os.path.exists(self.index_dir):
             self.logger.debug("Creating index directory '%s'", self.index_dir)
             os.makedirs(self.index_dir)
@@ -199,13 +198,7 @@ class Database(papis.database.base.Database):
             database Schema
         :type  schema_keys: dict
         """
-        doc_d = dict()
-        doc_d.update(
-            {
-                k: str(document[k]) or ''
-                for k in schema_keys
-            }
-        )
+        doc_d = {k: str(document[k]) or "" for k in schema_keys}
         doc_d[Database.get_id_key()] = self.get_id_value(document)
         writer.add_document(**doc_d)
 
@@ -216,10 +209,9 @@ class Database(papis.database.base.Database):
         expensive and will be called only if no index is present, so
         at the time of building a brand new index.
         """
-        self.logger.debug('Indexing the library, this might take a while...')
-        folders = sum(
-                [get_folders(d)
-                    for d in self.get_dirs()], [])  # type: List[str]
+        self.logger.debug("Indexing the library, this might take a while...")
+        folders = sum([
+            get_folders(d) for d in self.get_dirs()], [])  # type: List[str]
         documents = folders_to_documents(folders)
         schema_keys = self.get_schema_init_fields().keys()
         writer = self.get_writer()
@@ -246,7 +238,7 @@ class Database(papis.database.base.Database):
             # database.
             if user_field_names != db_field_names:
                 self.logger.debug(
-                        "Rebuilding database because field names do not match")
+                    "Rebuilding database because field names do not match")
                 self.rebuild()
             else:
                 # Otherwise, verify that the fields are
@@ -256,15 +248,15 @@ class Database(papis.database.base.Database):
                 for field in user_field_names:
                     if user_fields[field] != db_fields[field]:
                         self.logger.debug(
-                                "Rebuilding database because "
-                                "field types do not match")
+                            "Rebuilding database because "
+                            "field types do not match")
 
                         self.rebuild()
                         rebuilt_db = True
                         break
 
                 if not rebuilt_db:
-                    self.logger.debug('Initialized index found for library')
+                    self.logger.debug("Initialized index found for library")
                     return
         self.create_index()
         self.do_indexing()
@@ -305,7 +297,7 @@ class Database(papis.database.base.Database):
         :returns: Whoosch Schema
         :rtype:  whoosh.fields.Schema
         """
-        self.logger.debug('Creating schema...')
+        self.logger.debug("Creating schema...")
         fields = self.get_schema_init_fields()
 
         from whoosh.fields import Schema
@@ -321,10 +313,10 @@ class Database(papis.database.base.Database):
 
         # TODO: this is a security risk, find a way to fix it
         user_prototype = eval(
-            papis.config.getstring('whoosh-schema-prototype'))  # KeysView[str]
+            papis.config.getstring("whoosh-schema-prototype"))  # KeysView[str]
         fields.update(user_prototype)
 
-        fields_list = papis.config.getlist('whoosh-schema-fields')
+        fields_list = papis.config.getlist("whoosh-schema-fields")
         for field in fields_list:
             fields.update({field: TEXT(stored=True)})
 

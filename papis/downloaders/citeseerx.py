@@ -13,7 +13,7 @@ class Downloader(papis.downloaders.fallback.Downloader):
         papis.downloaders.fallback.Downloader.__init__(self,
                                                        uri=url,
                                                        name="citeseerx")
-        self.expected_document_extension = 'pdf'
+        self.expected_document_extension = "pdf"
         self.priority = 10
 
     @classmethod
