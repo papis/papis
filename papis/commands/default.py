@@ -68,7 +68,7 @@ class MultiCommand(click.core.MultiCommand):
         >>> len(rv) > 0
         True
         """
-        _rv = list(self.scripts.keys())
+        _rv = list(self.scripts)
         _rv.sort()
         return _rv
 

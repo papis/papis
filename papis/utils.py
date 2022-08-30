@@ -197,7 +197,7 @@ def locate_document(
     assert comparing_keys is not None
     for d in documents:
         for key in comparing_keys:
-            if key in document.keys() and key in d.keys():
+            if key in document and key in d:
                 if re.match(document[key], d[key], re.I):
                     return d
     return None

@@ -86,7 +86,7 @@ def run(document: papis.document.Document,
         logger.info("[CP] '%s' to '%s'", in_file_path, end_document_path)
         shutil.copy(in_file_path, end_document_path)
 
-    if "files" not in document.keys():
+    if "files" not in document:
         document["files"] = []
     document['files'] += new_file_list
     document.save()

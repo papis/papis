@@ -200,8 +200,7 @@ class Document(Dict[str, Any]):
         # FIXME: fix circular import in papis.yaml
         import papis.yaml
         papis.yaml.data_to_yaml(self.get_info_file(),
-                                {key: self[key]
-                                 for key in self.keys() if self[key]})
+                                {key: self[key] for key in self if self[key]})
 
     def get_info_file(self) -> str:
         """Get full path for the info file
@@ -273,7 +272,7 @@ def to_dict(document: Document) -> Dict[str, Any]:
     :rtype:  dict
     """
     result = dict()
-    for key in document.keys():
+    for key in document:
         result[key] = document[key]
     return result
 
@@ -289,10 +288,9 @@ def dump(document: Document) -> str:
     >>> dump(doc)
     'title:   Hello World\\n'
     """
-    string = ""
-    for i in document.keys():
-        string += str(i)+":   "+str(document[i])+"\n"
-    return string
+    return "".join([
+        "{}:   {}".format(key, value) for key, value in document.items()
+        ]) + "\n"
 
 
 def delete(document: Document) -> None:
@@ -386,7 +384,7 @@ def sort(docs: List[Document], key: str, reverse: bool) -> List[Document]:
 
     def _sort_for_key(key: str, doc: Document
                       ) -> Tuple[int, datetime.datetime, int, str]:
-        if key in doc.keys():
+        if key in doc:
             if key == 'time-added':
                 try:
                     date_value = \
