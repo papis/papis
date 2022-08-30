@@ -595,11 +595,18 @@ def get_lib() -> papis.library.Library:
     if os.environ.get('PAPIS_LIB'):
         set_lib_from_name(os.environ['PAPIS_LIB'])
     if _CURRENT_LIBRARY is None:
-        # Do not put papis.config.get because get is a special function
-        # that also needs the library to see if some key was overridden!
+        # NOTE: this cannot use `general_get` (cyclic dependency), so we have
+        # to handle the `default-library` not being present in the user config
         config = papis.config.get_configuration()
-        lib = config.get(papis.config.get_general_settings_name(),
-                         'default-library')
+        settings_name = get_general_settings_name()
+
+        settings = config[settings_name]
+        if "default-library" in settings:
+            lib = settings["default-library"]
+        else:
+            default_settings = get_default_settings()[settings_name]
+            lib = default_settings["default-library"]
+
         set_lib_from_name(lib)
     assert(isinstance(_CURRENT_LIBRARY, papis.library.Library))
     return _CURRENT_LIBRARY
