@@ -11,7 +11,7 @@ logger = logging.getLogger('dissemin')
 
 def dissemin_authors_to_papis_authors(data: Dict[str, Any]) -> Dict[str, Any]:
     new_data = dict()  # type: Dict[str, Any]
-    if 'authors' in data.keys():
+    if 'authors' in data:
         authors = []
         for author in data['authors']:
             # keys = ('first', 'last')

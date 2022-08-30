@@ -222,8 +222,7 @@ def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
 
     """
     import random
-    author = "-{:.20}".format(data["author"])\
-             if "author" in data.keys() else ""
+    author = "-{:.20}".format(data["author"]) if "author" in data else ""
 
     document_strings = b''
     for docpath in document_paths:

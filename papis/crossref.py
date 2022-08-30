@@ -134,7 +134,7 @@ key_conversion = [
         "key": "citations",
         "action": lambda cs: [
             {key.lower(): c[key]
-                for key in set(c.keys()) - set(("key", "doi-asserted-by"))}
+                for key in set(c) - {"key", "doi-asserted-by"}}
             for c in cs
         ]
     }]),
@@ -179,7 +179,7 @@ def get_data(
     assert sort in _sort_values, 'Sort value not valid'
     assert order in _order_values, 'Sort value not valid'
     if filters:
-        if not set(filters.keys()) & _filter_names == set(filters.keys()):
+        if not set(filters) & _filter_names == set(filters):
             raise Exception(
                 'Filter keys must be one of {0}'
                 .format(','.join(_filter_names))
@@ -201,11 +201,11 @@ def get_data(
     if isinstance(results, list):
         docs = [d["message"] for d in results]
     elif isinstance(results, dict):
-        if 'message' not in results.keys():
+        if 'message' not in results:
             logger.error("Error retrieving from crossref: incorrect message")
             return []
         message = results['message']
-        if "items" in message.keys():
+        if "items" in message:
             docs = message['items']
         else:
             docs = [message]

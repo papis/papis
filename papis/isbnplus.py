@@ -146,7 +146,7 @@ def book_to_data(booknode: "bs4.Tag") -> Dict[str, Any]:
         if len(val_list):
             book[key] = val_list[0].text
     for key_pair in keys_translate:
-        if key_pair[0] in book.keys():
+        if key_pair[0] in book:
             book[key_pair[1]] = book[key_pair[0]]
     return book
 

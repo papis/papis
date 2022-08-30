@@ -164,7 +164,7 @@ class Configuration(configparser.ConfigParser):
         self.initialize()
 
     def handle_includes(self) -> None:
-        if "include" in self.keys():
+        if "include" in self:
             for name in self["include"]:
                 self.logger.debug("Including '%s'", name)
                 fullpath = os.path.expanduser(self.get("include", name))
@@ -246,8 +246,8 @@ def register_default_settings(settings_dictionary: PapisConfigType) -> None:
     default_settings = get_default_settings()
     # we do a for loop because apparently the OrderedDict removes all
     # key-val fields after updating, so we have to do it by hand
-    for section in settings_dictionary.keys():
-        if section in default_settings.keys():
+    for section in settings_dictionary:
+        if section in default_settings:
             default_settings[section].update(settings_dictionary[section])
         else:
             default_settings[section] = settings_dictionary[section]
@@ -383,9 +383,9 @@ def general_get(key: str, section: Optional[str] = None,
     for extra in sections:
         sec = extra[0]
         whole_key = extra[1]
-        if sec not in config.keys():
+        if sec not in config:
             continue
-        if whole_key in config[sec].keys():
+        if whole_key in config[sec]:
             value = method(sec, whole_key)
 
     if value is None:
@@ -516,7 +516,7 @@ def set_lib(library: papis.library.Library) -> None:
     """
     global _CURRENT_LIBRARY
     config = get_configuration()
-    if library.name not in config.keys():
+    if library.name not in config:
         config[library.name] = dict(dirs=str(library.paths))
     _CURRENT_LIBRARY = library
 
@@ -532,7 +532,7 @@ def set_lib_from_name(libname: str) -> None:
 
 def get_lib_from_name(libname: str) -> papis.library.Library:
     config = get_configuration()
-    if libname not in config.keys():
+    if libname not in config:
         if os.path.isdir(libname):
             # Check if the path exists, then use this path as a new library
             logger.warning(

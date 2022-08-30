@@ -228,10 +228,10 @@ def to_bibtex(document: papis.document.Document) -> str:
     bibtex_type = ""
 
     # First the type, article ....
-    if "type" in document.keys():
+    if "type" in document:
         if document["type"] in bibtex_types:
             bibtex_type = document["type"]
-        elif document["type"] in bibtex_type_converter.keys():
+        elif document["type"] in bibtex_type_converter:
             bibtex_type = bibtex_type_converter[document["type"]]
     if not bibtex_type:
         bibtex_type = "article"
@@ -241,11 +241,11 @@ def to_bibtex(document: papis.document.Document) -> str:
 
     bibtex_string += "@{type}{{{ref},\n".format(type=bibtex_type, ref=ref)
     bibtex_keyval_fmt = "  %s = {%s},\n"
-    for bibKey in list(document.keys()):
+    for bibKey in document:
         if bibKey in bibtex_key_converter:
             new_bibkey = bibtex_key_converter[bibKey]
             document[new_bibkey] = document[bibKey]
-    for bibKey in sorted(document.keys()):
+    for bibKey in sorted(document):
         logger.debug("Bibtex entry: '%s: %s'", bibKey, document[bibKey])
         if bibKey in bibtex_keys:
             value = str(document[bibKey])
@@ -253,12 +253,12 @@ def to_bibtex(document: papis.document.Document) -> str:
                 value = unicode_to_latex(value)
             if bibKey == 'journal':
                 journal_key = papis.config.getstring('bibtex-journal-key')
-                if journal_key in document.keys():
+                if journal_key in document:
                     bibtex_string += bibtex_keyval_fmt % (
                         'journal',
                         unicode_to_latex(str(document[journal_key]))
                     )
-                elif journal_key not in document.keys():
+                elif journal_key not in document:
                     logger.warning(
                             "Key '%s' is not present for ref '%s'",
                             journal_key, document["ref"])
