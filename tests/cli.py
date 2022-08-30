@@ -9,7 +9,7 @@ class TestCli(unittest.TestCase):
     cli = None
 
     @classmethod
-    def setUpClass(self):
+    def setUpClass(cls):
         tests.setup_test_library()
 
     def setUp(self):
@@ -25,6 +25,6 @@ class TestCli(unittest.TestCase):
         self.assertTrue(self.cli is not None)
 
     def do_test_help(self):
-        for flag in ['-h', '--help']:
+        for flag in ["-h", "--help"]:
             result = self.invoke([flag])
             self.assertFalse(len(result.output) == 0)

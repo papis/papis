@@ -1,21 +1,18 @@
-import papis.bibtex
-import json
-import yaml
-import tempfile
 import unittest
-import tests
-import tests.cli
+
+import papis.bibtex
 import papis.config
 import papis.document
-from papis.commands.open import run, cli
-import re
-import os
+import papis.commands.open
+
+import tests
+import tests.cli
 
 
 class TestRun(unittest.TestCase):
 
     @classmethod
-    def setUpClass(self):
+    def setUpClass(cls):
         tests.setup_test_library()
 
     def get_docs(self):
@@ -25,7 +22,7 @@ class TestRun(unittest.TestCase):
 
 class TestCli(tests.cli.TestCli):
 
-    cli = cli
+    cli = papis.commands.open.cli
 
     def test_main(self):
         self.do_test_cli_function_exists()
@@ -33,23 +30,23 @@ class TestCli(tests.cli.TestCli):
 
     def test_tool(self):
         result = self.invoke([
-            'doc without files'
+            "doc without files"
         ])
         self.assertTrue(result.exit_code == 0)
 
         result = self.invoke([
-            'Krishnamurti',
-            '--tool', 'nonexistingcommand'
+            "Krishnamurti",
+            "--tool", "nonexistingcommand"
         ])
         self.assertTrue(result.exit_code != 0)
 
         result = self.invoke([
-            'Krishnamurti',
-            '--tool', 'nonexistingcommand', '--folder'
+            "Krishnamurti",
+            "--tool", "nonexistingcommand", "--folder"
         ])
         self.assertTrue(result.exit_code != 0)
 
         result = self.invoke([
-            'Krishnamurti', '--mark', '--all', '--tool', 'dir'
+            "Krishnamurti", "--mark", "--all", "--tool", "dir"
         ])
         # self.assertTrue(result.exit_code == 0)

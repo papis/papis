@@ -1,9 +1,6 @@
-import papis.bibtex
-import unittest
-import tests
-import papis.config
 from papis.commands.git import cli
-import os
+
+import tests
 
 
 class TestCli(tests.cli.TestCli):
@@ -16,6 +13,6 @@ class TestCli(tests.cli.TestCli):
 
     def test_simple(self):
         result = self.invoke([
-            'init'
+            "init"
         ])
         self.assertTrue(result.exit_code == 0)

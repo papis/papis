@@ -6,26 +6,28 @@ import time
 
 def test_context():
     ctx = Context()
-    assert(ctx.data == dict())
-    assert(ctx.files == [])
-    assert(not ctx)
-    ctx.files = ['a']
-    assert(ctx)
+    assert ctx.data == {}
+    assert ctx.files == []
+    assert not ctx
+
+    ctx.files = ["a"]
+    assert ctx
+
     ctx.files = []
-    ctx.data['key'] = 42
-    assert(ctx)
+    ctx.data["key"] = 42
+    assert ctx
+
     ctx = Context()
-    assert(not ctx)
+    assert not ctx
 
 
 def test_cache():
-
-    data = {'time': time.time()}
+    data = {"time": time.time()}
 
     class SimpleImporter(Importer):
 
-        def __init__(self, uri='', **kwargs):
-            Importer.__init__(self, uri=uri, name='SimpleImporter', **kwargs)
+        def __init__(self, uri="", **kwargs):
+            Importer.__init__(self, uri=uri, name="SimpleImporter", **kwargs)
 
         @classmethod
         def match(cls, uri):
@@ -36,21 +38,21 @@ def test_cache():
         @cache
         def fetch(self):
             time.sleep(.1)
-            self.ctx.data = {'time': time.time()}
+            self.ctx.data = {"time": time.time()}
 
     importer = SimpleImporter()
     importer.fetch()
-    assert(importer.ctx)
-    assert(not importer.ctx.data['time'] == data['time'])
+    assert importer.ctx
+    assert not importer.ctx.data["time"] == data["time"]
 
-    importer = SimpleImporter.match('uri')
+    importer = SimpleImporter.match("uri")
     importer.fetch()
-    assert(importer.ctx.data['time'] == data['time'])
+    assert importer.ctx.data["time"] == data["time"]
 
 
 def test_get_importer():
     names = available_importers()
-    assert(isinstance(names, list))
-    assert(names)
+    assert isinstance(names, list)
+    assert names
     for name in names:
-        assert(get_importer_by_name(name) is not None)
+        assert get_importer_by_name(name) is not None

@@ -1,15 +1,17 @@
 import os
 import unittest
-import tests
 import tempfile
+
 import papis.database
-from papis.commands.mv import run
+import papis.commands.mv
+
+import tests
 
 
 class Test(unittest.TestCase):
 
     @classmethod
-    def setUpClass(self):
+    def setUpClass(cls):
         tests.setup_test_library()
 
     def get_docs(self):
@@ -19,10 +21,10 @@ class Test(unittest.TestCase):
     def test_simple_update(self):
         docs = self.get_docs()
         document = docs[0]
-        title = document['title']
+        title = document["title"]
         new_dir = tempfile.mkdtemp()
         self.assertTrue(os.path.exists(new_dir))
-        run(document, new_dir)
+        papis.commands.mv.run(document, new_dir)
         docs = papis.database.get().query_dict(dict(title=title))
         self.assertTrue(len(docs) == 1)
         self.assertEqual(os.path.dirname(docs[0].get_main_folder()), new_dir)

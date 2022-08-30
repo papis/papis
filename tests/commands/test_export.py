@@ -23,7 +23,7 @@ except ImportError:
 class TestRun(unittest.TestCase):
 
     @classmethod
-    def setUpClass(self):
+    def setUpClass(cls):
         tests.setup_test_library()
 
     def get_docs(self):
@@ -32,24 +32,24 @@ class TestRun(unittest.TestCase):
 
     def test_bibtex(self):
         docs = self.get_docs()
-        string = run(docs, to_format='bibtex')
+        string = run(docs, to_format="bibtex")
         self.assertTrue(len(string) > 0)
         data = papis.bibtex.bibtex_to_dict(string)
         self.assertTrue(len(data) > 0)
 
     def test_json(self):
         docs = self.get_docs()
-        string = run(docs, to_format='json')
+        string = run(docs, to_format="json")
         self.assertTrue(len(string) > 0)
         data = json.loads(string)
         self.assertTrue(len(data) > 0)
 
     def test_yaml(self):
         docs = self.get_docs()
-        string = run(docs, to_format='yaml')
+        string = run(docs, to_format="yaml")
         self.assertTrue(len(string) > 0)
         yamlfile = tempfile.mktemp()
-        with open(yamlfile, 'w+') as fd:
+        with open(yamlfile, "w+") as fd:
             fd.write(string)
         with open(yamlfile) as fd:
             data = list(yaml.load_all(fd, Loader=Loader))
@@ -69,81 +69,81 @@ class TestCli(tests.cli.TestCli):
 
         # output stdout
         result = self.invoke([
-            'krishnamurti', '--format', 'json'
+            "krishnamurti", "--format", "json"
         ])
         self.assertTrue(result.exit_code == 0)
         data = json.loads(result.stdout_bytes.decode())
-        assert(isinstance(data, list))
-        assert(len(data) == 1)
-        assert(re.match(r'.*Krishnamurti.*', data[0]['author']) is not None)
+        assert isinstance(data, list)
+        assert len(data) == 1
+        assert re.match(r".*Krishnamurti.*", data[0]["author"]) is not None
 
         # output stdout
         outfile = tempfile.mktemp()
         self.assertTrue(not os.path.exists(outfile))
         result = self.invoke([
-            'Krishnamurti', '--format', 'json', '--out', outfile
+            "Krishnamurti", "--format", "json", "--out", outfile
         ])
         self.assertTrue(result.exit_code == 0)
         self.assertTrue(os.path.exists(outfile))
 
         with open(outfile) as fd:
             data = json.load(fd)
-            assert(isinstance(data, list))
-            assert(len(data) == 1)
-            assert(re.match(r'.*Krishnamurti.*', data[0]['author']) is not None)
+            assert isinstance(data, list)
+            assert len(data) == 1
+            assert re.match(r".*Krishnamurti.*", data[0]["author"]) is not None
 
     def test_yaml(self):
 
         # output stdout
         result = self.invoke([
-            'krishnamurti', '--format', 'yaml'
+            "krishnamurti", "--format", "yaml"
         ])
         self.assertTrue(result.exit_code == 0)
         data = yaml.safe_load(result.stdout_bytes)
-        assert(re.match(r'.*Krishnamurti.*', data['author']) is not None)
+        assert re.match(r".*Krishnamurti.*", data["author"]) is not None
 
         # output stdout
         outfile = tempfile.mktemp()
         self.assertTrue(not os.path.exists(outfile))
         result = self.invoke([
-            'Krishnamurti', '--format', 'yaml', '--out', outfile
+            "Krishnamurti", "--format", "yaml", "--out", outfile
         ])
         self.assertTrue(result.exit_code == 0)
         self.assertTrue(os.path.exists(outfile))
 
         with open(outfile) as fd:
             data = yaml.safe_load(fd.read())
-            assert(data is not None)
-            assert(re.match(r'.*Krishnamurti.*', data['author']) is not None)
+            assert data is not None
+            assert re.match(r".*Krishnamurti.*", data["author"]) is not None
 
     def test_folder(self):
         outdir = tempfile.mktemp()
         self.assertTrue(not os.path.exists(outdir))
         # output stdout
-        result = self.invoke(['krishnamurti', '--folder', '--out', outdir])
+        result = self.invoke(["krishnamurti", "--folder", "--out", outdir])
         self.assertTrue(os.path.exists(outdir))
         self.assertTrue(os.path.isdir(outdir))
         self.assertTrue(result.exit_code == 0)
-        self.assertTrue(result.stdout_bytes == b'')
+        self.assertTrue(result.stdout_bytes == b"")
         doc = papis.document.from_folder(outdir)
         self.assertTrue(doc is not None)
-        assert(re.match(r'.*Krishnamurti.*', doc['author']) is not None)
+        assert re.match(r".*Krishnamurti.*", doc["author"]) is not None
 
     def test_folder_all(self):
         outdir = tempfile.mktemp()
         self.assertTrue(not os.path.exists(outdir))
         # output stdout
-        result = self.invoke(['--all', '--folder', '--out', outdir])
+        result = self.invoke(["--all", "--folder", "--out", outdir])
         self.assertTrue(os.path.exists(outdir))
         self.assertTrue(os.path.isdir(outdir))
         self.assertTrue(result.exit_code == 0)
-        self.assertTrue(result.stdout_bytes == b'')
-        dirs = glob.glob(os.path.join(outdir, '*'))
+        self.assertTrue(result.stdout_bytes == b"")
+        dirs = glob.glob(os.path.join(outdir, "*"))
         self.assertTrue(len(dirs) > 1)
-        for l in dirs:
-            self.assertTrue(os.path.exists(l))
-            self.assertTrue(os.path.isdir(l))
+        for d in dirs:
+            self.assertTrue(os.path.exists(d))
+            self.assertTrue(os.path.isdir(d))
 
     def test_no_documents(self):
-        result = self.invoke(['-f', 'bibtex', '__no_document__'])
+        result = self.invoke(["-f", "bibtex", "__no_document__"])
         self.assertTrue(result.exit_code == 0)

@@ -10,22 +10,22 @@ logging.basicConfig(level=logging.DEBUG)
 class TestCommand(unittest.TestCase):
 
     def test_simple(self):
-        self.assertTrue(run('editor') == papis.config.get('editor'))
-        self.assertTrue(run('settings.editor') == papis.config.get('editor'))
+        self.assertTrue(run("editor") == papis.config.get("editor"))
+        self.assertTrue(run("settings.editor") == papis.config.get("editor"))
         self.assertTrue(
-            run('papers.dir') ==
-            papis.config.get('dir', section='papers')
+            run("papers.dir")
+            == papis.config.get("dir", section="papers")
         )
 
 
 class TestDefaultConfiguration(unittest.TestCase):
 
     @classmethod
-    def setUpClass(self):
+    def setUpClass(cls):
         pass
 
     @classmethod
-    def tearDownClass(self):
+    def tearDownClass(cls):
         pass
 
     def test_default_config(self):
@@ -42,10 +42,10 @@ class TestDefaultConfiguration(unittest.TestCase):
 
     def test_set_lib(self):
         try:
-            lib = 'non-existing-library'
+            lib = "non-existing-library"
             self.assertFalse(os.path.exists(lib))
             papis.config.set_lib(lib)
-        except:
+        except Exception:
             self.assertTrue(True)
         else:
             self.assertTrue(False)
