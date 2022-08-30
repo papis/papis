@@ -20,28 +20,28 @@ from papis.filetype import get_document_extension
 
 
 def test_get_hash_folder():
-    path = tempfile.mktemp(prefix='papis-get_name-')
-    open(path, 'w+').close()
-    data = dict(author='don quijote de la mancha')
+    path = tempfile.mktemp(prefix="papis-get_name-")
+    open(path, "w+").close()
+    data = dict(author="don quijote de la mancha")
 
     hh = get_hash_folder(data, [path])
-    assert re.match(r'.*-don-quijote-de-la-ma$', hh) is not None
+    assert re.match(r".*-don-quijote-de-la-ma$", hh) is not None
 
     three_files_hh = get_hash_folder(data, [path, path, path])
-    assert re.match(r'.*-don-quijote-de-la-ma$', three_files_hh) is not None
+    assert re.match(r".*-don-quijote-de-la-ma$", three_files_hh) is not None
     assert not three_files_hh == hh
 
     # Without data
     no_files_hh = get_hash_folder(data, [])
-    assert re.match(r'.*-don-quijote-de-la-ma$', no_files_hh) is not None
+    assert re.match(r".*-don-quijote-de-la-ma$", no_files_hh) is not None
     assert not no_files_hh == hh
 
     data = dict()
     hh = get_hash_folder(data, [path])
-    assert re.match(r'.*-don-quijote-de-la-ma$', hh) is None
+    assert re.match(r".*-don-quijote-de-la-ma$", hh) is None
 
-    path = tempfile.mktemp(prefix='papis-get_name-')
-    open(path, 'w+').close()
+    path = tempfile.mktemp(prefix="papis-get_name-")
+    open(path, "w+").close()
     newhh = get_hash_folder(data, [path])
     assert not hh == newhh
 
@@ -54,50 +54,50 @@ class TestGetFileName(unittest.TestCase):
         tests.setup_test_library()
 
     def test_get_file_name(self):
-        pdf = create_random_pdf(suffix='.pdf')
-        path = create_random_file(prefix='papis-get_name-')
+        pdf = create_random_pdf(suffix=".pdf")
+        path = create_random_file(prefix="papis-get_name-")
 
-        assert(papis.config.get('add-file-name') is None)
-        filename = get_file_name(dict(title='blah'), path, suffix='3')
-        assert(re.match(r'^papis-get-name-.*\.data$', filename) is not None)
+        assert papis.config.get("add-file-name") is None
+        filename = get_file_name(dict(title="blah"), path, suffix="3")
+        assert re.match(r"^papis-get-name-.*\.data$", filename) is not None
         # With suffix
-        filename = get_file_name(dict(title='blah'), pdf, suffix='3')
-        assert(len(re.split('[.]pdf', filename)) == 2)
+        filename = get_file_name(dict(title="blah"), pdf, suffix="3")
+        assert len(re.split("[.]pdf", filename)) == 2
         # Without suffix
-        filename = get_file_name(dict(title='blah'), pdf)
-        assert(len(re.split('[.]pdf', filename)) == 2)
+        filename = get_file_name(dict(title="blah"), pdf)
+        assert len(re.split("[.]pdf", filename)) == 2
 
         papis.config.set(
-            'add-file-name',
-            '{doc[title]} {doc[author]} {doc[yeary]}'
+            "add-file-name",
+            "{doc[title]} {doc[author]} {doc[yeary]}"
         )
 
-        filename = get_file_name(dict(title='blah'), path, suffix='2')
-        assert filename == 'blah-2.data'
+        filename = get_file_name(dict(title="blah"), path, suffix="2")
+        assert filename == "blah-2.data"
 
-        filename = get_file_name(dict(title='b' * 200), path, suffix='2')
-        assert filename == 'b' * 150 + '-2.data'
+        filename = get_file_name(dict(title="b" * 200), path, suffix="2")
+        assert filename == "b" * 150 + "-2.data"
 
         filename = get_file_name(
-            dict(title='blah'), create_random_pdf(suffix='.pdf'), suffix='2'
+            dict(title="blah"), create_random_pdf(suffix=".pdf"), suffix="2"
         )
-        assert filename == 'blah-2.pdf'
+        assert filename == "blah-2.pdf"
 
         filename = get_file_name(
-            dict(title='blah'), create_random_pdf(), suffix='2'
+            dict(title="blah"), create_random_pdf(), suffix="2"
         )
-        assert filename == 'blah-2.pdf'
+        assert filename == "blah-2.pdf"
 
         filename = get_file_name(
-            dict(title='blah'), create_random_file(suffix='.yaml'), suffix='2'
+            dict(title="blah"), create_random_file(suffix=".yaml"), suffix="2"
         )
-        assert filename == 'blah-2.yaml'
+        assert filename == "blah-2.yaml"
 
 
 class TestRun(unittest.TestCase):
 
     @classmethod
-    def setUpClass(self):
+    def setUpClass(cls):
         tests.setup_test_library()
 
     def test_nofile_exception(self):
@@ -106,7 +106,7 @@ class TestRun(unittest.TestCase):
         try:
             run(
                 [path],
-                data=dict(author='Bohm', title='My effect')
+                data=dict(author="Bohm", title="My effect")
             )
             self.assertTrue(False)
         except IOError:
@@ -115,7 +115,7 @@ class TestRun(unittest.TestCase):
     def test_nofile_add(self):
         run(
             [],
-            data=dict(author='Evangelista', title='MRCI')
+            data=dict(author="Evangelista", title="MRCI")
         )
         db = papis.database.get()
         docs = db.query_dict(dict(author="Evangelista"))
@@ -141,7 +141,7 @@ class TestRun(unittest.TestCase):
         number_of_files = 10
         paths = [tempfile.mktemp() for i in range(number_of_files)]
         for p in paths:
-            open(p, 'w+').close()
+            open(p, "w+").close()
 
         run(paths, data=data)
 
@@ -163,9 +163,9 @@ class TestCli(tests.cli.TestCli):
 
     def test_set(self):
         result = self.invoke([
-            '-s', 'author', 'Bertrand Russell',
-            '-b',
-            '--set', 'title', 'Principia'
+            "-s", "author", "Bertrand Russell",
+            "-b",
+            "--set", "title", "Principia"
         ])
         self.assertTrue(result.exit_code == 0)
         db = papis.database.get()
@@ -176,46 +176,49 @@ class TestCli(tests.cli.TestCli):
     def test_link(self):
         pdf = create_random_pdf()
         result = self.invoke([
-            '-s', 'author', 'Plato',
-            '--set', 'title', 'Republic',
-            '-b',
-            '--link', pdf
+            "-s", "author", "Plato",
+            "--set", "title", "Republic",
+            "-b",
+            "--link", pdf
         ])
-        #self.assertTrue(result.exit_code == 0)
+        self.assertTrue(result is not None)
+        # self.assertTrue(result.exit_code == 0)
+
         db = papis.database.get()
         docs = db.query_dict(dict(author="Plato"))
         self.assertTrue(len(docs) == 1)
+
         doc = docs[0]
         self.assertTrue(len(doc.get_files()) == 1)
         self.assertTrue(os.path.islink(doc.get_files()[0]))
 
-    @patch('papis.utils.open_file', lambda x: None)
-    @patch('papis.tui.utils.confirm', lambda x: True)
+    @patch("papis.utils.open_file", lambda x: None)
+    @patch("papis.tui.utils.confirm", lambda x: True)
     @patch(
-        'papis.utils.update_doc_from_data_interactively',
+        "papis.utils.update_doc_from_data_interactively",
         lambda ctxdata, impdata, string: ctxdata.update(impdata))
-    @patch('papis.utils.open_file', lambda x: None)
+    @patch("papis.utils.open_file", lambda x: None)
     def test_name_and_from_folder(self):
-        pdf = create_random_pdf(suffix='.pdf')
+        pdf = create_random_pdf(suffix=".pdf")
         result = self.invoke([
-            '-s', 'author', 'Aristoteles',
-            '--set', 'title', '"The apology of socrates"',
-            '-b',
-            '--folder-name', 'the_apology', pdf
+            "-s", "author", "Aristoteles",
+            "--set", "title", '"The apology of socrates"',
+            "-b",
+            "--folder-name", "the_apology", pdf
         ])
         self.assertTrue(result.exit_code == 0)
         db = papis.database.get()
         docs = db.query_dict(dict(author="Aristoteles"))
         self.assertTrue(len(docs) == 1)
         doc = docs[0]
-        assert(os.path.basename(doc.get_main_folder()) == 'the-apology')
-        assert(len(doc.get_files()) == 1)
+        assert os.path.basename(doc.get_main_folder()) == "the-apology"
+        assert len(doc.get_files()) == 1
         gotpdf = doc.get_files()[0]
-        assert(len(re.split(r'[.]pdf', pdf)) == 2)
-        assert(len(re.split(r'[.]pdf', gotpdf)) == 2)
+        assert len(re.split(r"[.]pdf", pdf)) == 2
+        assert len(re.split(r"[.]pdf", gotpdf)) == 2
 
         result = self.invoke([
-            '--from', 'folder', doc.get_main_folder()
+            "--from", "folder", doc.get_main_folder()
         ])
         # FIXME: this is not working I don't know why
         #        I get <Result UnsupportedOperation('fileno')>
@@ -223,10 +226,10 @@ class TestCli(tests.cli.TestCli):
         # docs = db.query_dict(dict(author="Aristoteles"))
         # self.assertTrue(len(docs) == 2)
 
-    @patch('papis.utils.open_file', lambda x: None)
-    @patch('papis.tui.utils.confirm', lambda x: True)
+    @patch("papis.utils.open_file", lambda x: None)
+    @patch("papis.tui.utils.confirm", lambda x: True)
     @patch(
-        'papis.utils.update_doc_from_data_interactively',
+        "papis.utils.update_doc_from_data_interactively",
         lambda ctxdata, impdata, string: ctxdata.update(impdata))
     def test_with_bibtex(self):
         bibstring = """
@@ -241,12 +244,13 @@ class TestCli(tests.cli.TestCli):
         """
         bibfile = tempfile.mktemp()
         pdf = create_random_pdf()
-        with open(bibfile, 'w+') as fd:
+        with open(bibfile, "w+") as fd:
             fd.write(bibstring)
 
-        self.assertTrue(get_document_extension(pdf) == 'pdf')
+        self.assertTrue(get_document_extension(pdf) == "pdf")
 
-        result = self.invoke([pdf, '--from', 'bibtex', bibfile])
+        result = self.invoke([pdf, "--from", "bibtex", bibfile])
+        self.assertTrue(result is not None)
 
         db = papis.database.get()
         docs = db.query_dict(
@@ -261,13 +265,13 @@ class TestCli(tests.cli.TestCli):
         # This is the original pdf file, it should still be there
         self.assertTrue(os.path.exists(pdf))
         # and it should still be apdf
-        self.assertTrue(get_document_extension(pdf) == 'pdf')
-        self.assertTrue(get_document_extension(doc.get_files()[0]) == 'pdf')
+        self.assertTrue(get_document_extension(pdf) == "pdf")
+        self.assertTrue(get_document_extension(doc.get_files()[0]) == "pdf")
 
-    @patch('papis.utils.open_file', lambda x: None)
-    @patch('papis.tui.utils.confirm', lambda x: True)
+    @patch("papis.utils.open_file", lambda x: None)
+    @patch("papis.tui.utils.confirm", lambda x: True)
     @patch(
-        'papis.utils.update_doc_from_data_interactively',
+        "papis.utils.update_doc_from_data_interactively",
         lambda ctxdata, impdata, string: ctxdata.update(impdata))
     def test_from_yaml(self):
         yamlstring = (
@@ -276,68 +280,69 @@ class TestCli(tests.cli.TestCli):
         )
         yamlfile = tempfile.mktemp()
         epub = create_random_epub()
-        with open(yamlfile, 'w+') as fd:
+        with open(yamlfile, "w+") as fd:
             fd.write(yamlstring)
 
-        self.assertTrue(get_document_extension(epub) == 'epub')
+        self.assertTrue(get_document_extension(epub) == "epub")
 
         result = self.invoke([
-            epub, '--from', 'yaml', yamlfile
+            epub, "--from", "yaml", yamlfile
         ])
+        self.assertTrue(result is not None)
 
         db = papis.database.get()
         docs = db.query_dict({"author": "Tolkien"})
         self.assertTrue(len(docs) == 1)
         doc = docs[0]
         self.assertTrue(len(doc.get_files()) == 1)
-        self.assertTrue(get_document_extension(doc.get_files()[0]) == 'epub')
+        self.assertTrue(get_document_extension(doc.get_files()[0]) == "epub")
         # This is the original epub file, it should still be there
         self.assertTrue(os.path.exists(epub))
         # and it should still be an epub
-        self.assertTrue(get_document_extension(epub) == 'epub')
+        self.assertTrue(get_document_extension(epub) == "epub")
 
-    #@patch(
-        #'papis.crossref.get_data',
-        #lambda **x: [
-            #{"author": "Kant", "doi": "1/1", "doc_url": "https://nourl"}])
-    #@patch(
-        #'papis.downloaders.get_downloader',
-        #lambda url, downloader:
-            #tests.MockDownloader(
-                #bibtex_data=' ',
-                #document_data='%PDF-1.5%\n'.encode()))
-    #@patch('papis.utils.open_file', lambda x: None)
-    #@patch(
-        #'papis.utils.update_doc_from_data_interactively',
-        #lambda ctxdata, impdata, string: ctxdata.update(impdata))
-    #@patch('papis.utils.confirm', lambda x: True)
-    #def test_from_doi(self):
-        #result = self.invoke([
-            #'--from', 'doi', '10.1112/plms/s2-42.1.0',
-            #'--confirm', '--open'
-        #])
-        #self.assertTrue(result.exit_code == 0)
-        #db = papis.database.get()
-        #docs = db.query_dict({"author": "Kant"})
-        #self.assertTrue(len(docs) == 1)
-        #doc = docs[0]
-        ## one file at least was retrieved
-        #self.assertTrue(len(doc.get_files()) == 1)
-        ## it has the pdf ending
-        #self.assertTrue(len(re.split('.pdf', doc.get_files()[0])) == 2)
+    # @patch(
+    #     "papis.crossref.get_data",
+    #     lambda **x: [
+    #         {"author": "Kant", "doi": "1/1", "doc_url": "https://nourl"}])
+    # @patch(
+    #     "papis.downloaders.get_downloader",
+    #     lambda url, downloader:
+    #         tests.MockDownloader(
+    #             bibtex_data=" ",
+    #             document_data="%PDF-1.5%\n".encode()))
+    # @patch("papis.utils.open_file", lambda x: None)
+    # @patch(
+    #     "papis.utils.update_doc_from_data_interactively",
+    #     lambda ctxdata, impdata, string: ctxdata.update(impdata))
+    # @patch('papis.utils.confirm', lambda x: True)
+    # def test_from_doi(self):
+    #     result = self.invoke([
+    #         "--from", "doi", "10.1112/plms/s2-42.1.0",
+    #         "--confirm", "--open"
+    #     ])
+    #     self.assertTrue(result.exit_code == 0)
+    #     db = papis.database.get()
+    #     docs = db.query_dict({"author": "Kant"})
+    #     self.assertTrue(len(docs) == 1)
+    #     doc = docs[0]
+    #     # one file at least was retrieved
+    #     self.assertTrue(len(doc.get_files()) == 1)
+    #     # it has the pdf ending
+    #     self.assertTrue(len(re.split(".pdf", doc.get_files()[0])) == 2)
 
-    @patch('papis.utils.open_file', lambda x: None)
-    @patch('papis.tui.utils.confirm', lambda x: True)
+    @patch("papis.utils.open_file", lambda x: None)
+    @patch("papis.tui.utils.confirm", lambda x: True)
     @patch(
-        'papis.utils.update_doc_from_data_interactively',
+        "papis.utils.update_doc_from_data_interactively",
         lambda ctxdata, impdata, string: ctxdata.update(impdata))
-    @patch('papis.tui.utils.text_area', lambda *x, **y: True)
+    @patch("papis.tui.utils.text_area", lambda *x, **y: True)
     def test_from_lib(self):
         newdoc = create_real_document({"author": "Lindgren"})
-        self.assertEqual(newdoc['author'], 'Lindgren')
+        self.assertEqual(newdoc["author"], "Lindgren")
         folder = newdoc.get_main_folder()
         self.assertTrue(os.path.exists(folder))
         self.assertTrue(os.path.exists(newdoc.get_info_file()))
         result = self.invoke([
-            '--confirm', '--from', 'lib', newdoc.get_main_folder(), '--open' ])
+            "--confirm", "--from", "lib", newdoc.get_main_folder(), "--open"])
         self.assertTrue(result.exit_code == 0)

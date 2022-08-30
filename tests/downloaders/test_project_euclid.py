@@ -18,7 +18,8 @@ def test_1():
     #     down.fetch()
     #     f.write(down.get_bibtex_data())
 
-    with patch.object(down, "get_bibtex_data",
+    with patch.object(
+            down, "get_bibtex_data",
             lambda: get_resource("projecteuclid_1.bib")):
         down.fetch()
 

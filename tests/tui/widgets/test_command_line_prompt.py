@@ -1,50 +1,44 @@
-from prompt_toolkit.layout.containers import to_container
-from prompt_toolkit.key_binding import KeyBindings
-
-from papis.tui.widgets.command_line_prompt import *
-from papis.tui.widgets import *
+from papis.tui.widgets.command_line_prompt import Command, CommandLinePrompt
 
 
 def test_simple_command():
-    cmd = Command('test', lambda c: 1+1)
-    assert(cmd.app is not None)
+    cmd = Command("test", lambda c: 1 + 1)
+    assert cmd.app is not None
     r = cmd.run(cmd)
-    assert(r == 2)
-    assert(cmd.names == ['test'])
+    assert r == 2
+    assert cmd.names == ["test"]
 
-    cmd = Command('test', lambda c: 1+1, aliases=['t', 'e'])
-    assert(cmd.names == ['test', 't', 'e'])
-
+    cmd = Command("test", lambda c: 1 + 1, aliases=["t", "e"])
+    assert cmd.names == ["test", "t", "e"]
 
 
 def test_commandlineprompt():
-    cmds = [Command('test', lambda c: 1+1)]
+    cmds = [Command("test", lambda c: 1 + 1)]
     prompt = CommandLinePrompt(commands=cmds)
-    prompt.text = 'test'
+    prompt.text = "test"
     re = prompt.trigger()
-    assert(re is None)
+    assert re is None
     try:
-        prompt.text = 'est'
+        prompt.text = "est"
         e = prompt.trigger()
     except Exception as e:
-        assert(str(e) == 'No command found (est)')
+        assert str(e) == "No command found (est)"
     else:
-        assert(False)
+        assert False        # noqa: B011
 
-    prompt.text = ''
-    assert(prompt.trigger() is None)
+    prompt.text = ""
+    assert prompt.trigger() is None
 
-    prompt.commands = 2*[Command('test', lambda c: 1+1)]
+    prompt.commands = 2 * [Command("test", lambda c: 1 + 1)]
 
-    prompt.text = 'sdf asldfj dsafds'
+    prompt.text = "sdf asldfj dsafds"
     prompt.clear()
-    assert(prompt.text == '')
+    assert prompt.text == ""
 
-    prompt.text = 'test'
+    prompt.text = "test"
     try:
         prompt.trigger()
-    except Exception as e:
-        assert(str(e) == 'More than one command matches the input')
+    except Exception as e:  # noqa: F841
+        assert str(e) == "More than one command matches the input"
     else:
-        assert(False)
-
+        assert False        # noqa: B011

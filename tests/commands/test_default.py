@@ -12,12 +12,12 @@ class TestCli(tests.cli.TestCli):
 
     def test_version(self):
         result = self.invoke([
-            '--version'
+            "--version"
         ])
         self.assertTrue(result.exit_code == 0)
 
     # def test_set(self):
-        # result = self.invoke([
-            # '--set', 'something', '42'
-        # ])
-        # self.assertTrue(result.exit_code == 0)
+    #     result = self.invoke([
+    #         "--set", "something", "42"
+    #     ])
+    #     self.assertTrue(result.exit_code == 0)

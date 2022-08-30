@@ -1,145 +1,146 @@
-from papis.config import *
-from papis.config import _CONFIGURATION
 import os
 import re
 import sys
 import pytest
 import tempfile
+
 import papis.exceptions
+import papis.config
+from papis.config import _CONFIGURATION
 
 
 def test_default_opener():
     if sys.platform.startswith("darwin"):
-        assert get_default_opener() == 'open'
+        assert papis.config.get_default_opener() == "open"
     elif sys.platform.startswith("win"):
-        assert get_default_opener() == 'start'
+        assert papis.config.get_default_opener() == "start"
     else:
-        assert get_default_opener() == 'xdg-open'
+        assert papis.config.get_default_opener() == "xdg-open"
 
 
 @pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
 def test_get_config_home():
-    os.environ['XDG_CONFIG_HOME'] = '/tmp'
-    assert get_config_home() == '/tmp'
-    del os.environ['XDG_CONFIG_HOME']
-    assert re.match(r'.+config', get_config_home()) is not None
+    os.environ["XDG_CONFIG_HOME"] = "/tmp"
+    assert papis.config.get_config_home() == "/tmp"
+    del os.environ["XDG_CONFIG_HOME"]
+    assert re.match(r".+config", papis.config.get_config_home()) is not None
 
 
 @pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
 def test_get_config_dirs():
-    tmpdir = '/tmp'
-    os.environ['XDG_CONFIG_HOME'] = tmpdir
-    if os.environ.get('XDG_CONFIG_DIRS') is not None:
-        del os.environ['XDG_CONFIG_DIRS']
-    dirs = get_config_dirs()
-    assert os.environ.get('XDG_CONFIG_DIRS') is None
+    tmpdir = "/tmp"
+    os.environ["XDG_CONFIG_HOME"] = tmpdir
+    if os.environ.get("XDG_CONFIG_DIRS") is not None:
+        del os.environ["XDG_CONFIG_DIRS"]
+    dirs = papis.config.get_config_dirs()
+    assert os.environ.get("XDG_CONFIG_DIRS") is None
     assert len(dirs) == 2
-    assert os.path.join('/', 'tmp', 'papis') == dirs[0]
+    assert os.path.join("/", "tmp", "papis") == dirs[0]
 
-    os.environ['XDG_CONFIG_DIRS'] = '/etc/:/usr/local/etc'
-    os.environ['XDG_CONFIG_HOME'] = '~'
-    dirs = get_config_dirs()
+    os.environ["XDG_CONFIG_DIRS"] = "/etc/:/usr/local/etc"
+    os.environ["XDG_CONFIG_HOME"] = "~"
+    dirs = papis.config.get_config_dirs()
     assert len(dirs) == 4
-    assert os.path.abspath('/etc/papis') == os.path.abspath(dirs[0])
-    assert os.path.abspath('/usr/local/etc/papis') == os.path.abspath(dirs[1])
-    assert (os.path.abspath(os.path.expanduser('~/papis'))
+    assert os.path.abspath("/etc/papis") == os.path.abspath(dirs[0])
+    assert os.path.abspath("/usr/local/etc/papis") == os.path.abspath(dirs[1])
+    assert (os.path.abspath(os.path.expanduser("~/papis"))
             == os.path.abspath(dirs[2]))
-    assert (os.path.abspath(os.path.expanduser('~/.papis'))
+    assert (os.path.abspath(os.path.expanduser("~/.papis"))
             == os.path.abspath(dirs[3]))
 
 
 @pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
 def test_get_config_folder():
-    os.environ['XDG_CONFIG_HOME'] = tempfile.mkdtemp()
-    configpath = os.path.join(os.environ['XDG_CONFIG_HOME'], 'papis')
+    os.environ["XDG_CONFIG_HOME"] = tempfile.mkdtemp()
+    configpath = os.path.join(os.environ["XDG_CONFIG_HOME"], "papis")
     if not os.path.exists(configpath):
         os.mkdir(configpath)
-    assert get_config_folder() == configpath
+    assert papis.config.get_config_folder() == configpath
 
 
 @pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
 def test_get_config_file():
-    os.environ['XDG_CONFIG_HOME'] = tempfile.mkdtemp()
-    configpath = os.path.join(get_config_folder(), 'config')
-    assert configpath == get_config_file()
+    os.environ["XDG_CONFIG_HOME"] = tempfile.mkdtemp()
+    configpath = os.path.join(papis.config.get_config_folder(), "config")
+    assert configpath == papis.config.get_config_file()
 
 
 @pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
 def test_get_configpy_file():
-    os.environ['XDG_CONFIG_HOME'] = tempfile.mkdtemp()
-    configpath = os.path.join(get_config_folder(), 'config.py')
-    assert configpath == get_configpy_file()
-    assert(os.environ['XDG_CONFIG_HOME'] in configpath)
+    os.environ["XDG_CONFIG_HOME"] = tempfile.mkdtemp()
+    configpath = os.path.join(papis.config.get_config_folder(), "config.py")
+    assert configpath == papis.config.get_configpy_file()
+    assert os.environ["XDG_CONFIG_HOME"] in configpath
 
 
 def test_set_config_file():
     configfile = tempfile.mktemp()
-    set_config_file(configfile)
-    assert get_config_file() == configfile
+    papis.config.set_config_file(configfile)
+    assert papis.config.get_config_file() == configfile
 
 
 def test_get_scripts_folder():
-    ccfolder = get_config_folder()
-    assert os.path.join(ccfolder, 'scripts') == get_scripts_folder()
+    ccfolder = papis.config.get_config_folder()
+    assert os.path.join(ccfolder, "scripts") == papis.config.get_scripts_folder()
 
 
 def test_set():
-    set('nonexistenkey', 'rofi')
-    assert get('nonexistenkey') == 'rofi'
+    papis.config.set("nonexistenkey", "rofi")
+    assert papis.config.get("nonexistenkey") == "rofi"
 
-    set('super_key_', 'adams', section='nonexistent')
-    assert get('super_key_', section='nonexistent') == 'adams'
+    papis.config.set("super_key_", "adams", section="nonexistent")
+    assert papis.config.get("super_key_", section="nonexistent") == "adams"
 
 
 def test_get():
-    settings = get_general_settings_name()
+    settings = papis.config.get_general_settings_name()
 
-    set('test_get', 'value1')
-    assert get('test_get') == 'value1'
-    assert get('test_get', section=settings) == 'value1'
+    papis.config.set("test_get", "value1")
+    assert papis.config.get("test_get") == "value1"
+    assert papis.config.get("test_get", section=settings) == "value1"
 
-    set('test_get', 'value42', section=get_lib_name())
-    assert 'value42' == get('test_get')
-    assert 'value42' == get('test_get', section=get_lib_name())
-    assert 'value1' == get('test_get', section=settings)
+    papis.config.set("test_get", "value42", section=papis.config.get_lib_name())
+    assert "value42" == papis.config.get("test_get")
+    assert "value42" == papis.config.get(
+        "test_get", section=papis.config.get_lib_name())
+    assert "value1" == papis.config.get("test_get", section=settings)
 
-    set('test_getint', '42')
-    assert getint('test_getint') == 42
-    assert getint('test_getint', section=settings) == 42
-    assert type(getint('test_getint', section=settings)) is int
+    papis.config.set("test_getint", "42")
+    assert papis.config.getint("test_getint") == 42
+    assert papis.config.getint("test_getint", section=settings) == 42
+    assert type(papis.config.getint("test_getint", section=settings)) is int
 
-    set('test_getfloat', '3.14')
-    assert getfloat('test_getfloat') == 3.14
-    assert getfloat('test_getfloat', section=settings) == 3.14
-    assert type(getfloat('test_getfloat', section=settings)) is float
+    papis.config.set("test_getfloat", "3.14")
+    assert papis.config.getfloat("test_getfloat") == 3.14
+    assert papis.config.getfloat("test_getfloat", section=settings) == 3.14
+    assert type(papis.config.getfloat("test_getfloat", section=settings)) is float
 
-    set('test_getbool', 'True')
-    assert getboolean('test_getbool') == True
-    assert getboolean('test_getbool', section=settings) == True
-    set('test_getbool', 'False')
-    assert getboolean('test_getbool') == False
-    assert getboolean('test_getbool', section=settings) == False
+    papis.config.set("test_getbool", "True")
+    assert papis.config.getboolean("test_getbool") is True
+    assert papis.config.getboolean("test_getbool", section=settings) is True
+    papis.config.set("test_getbool", "False")
+    assert papis.config.getboolean("test_getbool") is False
+    assert papis.config.getboolean("test_getbool", section=settings) is False
 
-    try:
-        get('_unknown_key')
-    except papis.exceptions.DefaultSettingValueMissing:
-        assert True
-    else:
-        assert False
+    import pytest
+    with pytest.raises(papis.exceptions.DefaultSettingValueMissing):
+        papis.config.get("_unknown_key")
 
 
 def test_get_configuration():
-    settings = get_general_settings_name()
-    config = get_configuration()
-    assert type(config) is Configuration
+    settings = papis.config.get_general_settings_name()
+    config = papis.config.get_configuration()
+    assert type(config) is papis.config.Configuration
     assert settings in config.keys()
     assert id(_CONFIGURATION) == id(config)
 
 
 def test_get_configuration_2():
+    global _CONFIGURATION
     _CONFIGURATION = None
-    config = get_configuration()
-    assert type(config) is Configuration
+
+    config = papis.config.get_configuration()
+    assert type(config) is papis.config.Configuration
 
 
 def test_merge_configuration_from_path():
@@ -151,118 +152,107 @@ def test_merge_configuration_from_path():
 some-nice-setting = 42
 some-other-setting = mandragora
         """)
-    config = get_configuration()
-    try:
-        get('some-nice-setting')
-    except papis.exceptions.DefaultSettingValueMissing:
-        assert True
-    else:
-        assert False
+    config = papis.config.get_configuration()
 
-    set('some-nice-setting', 'what-is-the-question')
-    assert get('some-nice-setting') == 'what-is-the-question'
+    with pytest.raises(papis.exceptions.DefaultSettingValueMissing):
+        papis.config.get("some-nice-setting")
 
-    merge_configuration_from_path(configpath, config)
-    assert get('some-nice-setting') == '42'
-    assert get('some-other-setting') == 'mandragora'
+    papis.config.set("some-nice-setting", "what-is-the-question")
+    assert papis.config.get("some-nice-setting") == "what-is-the-question"
+
+    papis.config.merge_configuration_from_path(configpath, config)
+    assert papis.config.get("some-nice-setting") == "42"
+    assert papis.config.get("some-other-setting") == "mandragora"
 
 
 def test_set_lib_from_path():
     lib = tempfile.mkdtemp()
     assert os.path.exists(lib)
-    set_lib_from_name(lib)
-    assert get_lib_name() == lib
+    papis.config.set_lib_from_name(lib)
+    assert papis.config.get_lib_name() == lib
 
 
 def test_set_lib_from_real_lib():
     libdir = tempfile.mkdtemp()
-    libname = 'test-set-lib'
-    set('dir', libdir, section=libname)
+    libname = "test-set-lib"
+    papis.config.set("dir", libdir, section=libname)
     assert os.path.exists(libdir)
-    set_lib_from_name(libname)
-    assert get_lib_name() == libname
+    papis.config.set_lib_from_name(libname)
+    assert papis.config.get_lib_name() == libname
 
 
 def test_reset_configuration():
-    set('test_reset_configuration', 'mordor')
-    assert get('test_reset_configuration') == 'mordor'
-    config = reset_configuration()
-    assert type(config) is Configuration
-    try:
-        get('test_reset_configuration')
-    except papis.exceptions.DefaultSettingValueMissing:
-        assert True
-    else:
-        assert False
+    papis.config.set("test_reset_configuration", "mordor")
+    assert papis.config.get("test_reset_configuration") == "mordor"
+    config = papis.config.reset_configuration()
+    assert type(config) is papis.config.Configuration
+
+    with pytest.raises(papis.exceptions.DefaultSettingValueMissing):
+        papis.config.get("test_reset_configuration")
 
 
 def test_get_default_settings():
-    import collections
-    assert(type(get_default_settings()) is dict)
-    assert(get_default_settings()['settings']['mvtool'] == 'mv')
+    assert type(papis.config.get_default_settings()) is dict
+    assert papis.config.get_default_settings()["settings"]["mvtool"] == "mv"
 
 
 def test_register_default_settings():
     papis.config.register_default_settings(
-        {'scihub': { 'command': 'open'}}
+        {"scihub": {"command": "open"}}
     )
-    assert(papis.config.get('command', section='scihub') == 'open')
+    assert papis.config.get("command", section="scihub") == "open"
 
-    papis.config.set('scihub-command', 'edit')
-    assert(papis.config.get('command', section='scihub') == 'edit')
+    papis.config.set("scihub-command", "edit")
+    assert papis.config.get("command", section="scihub") == "edit"
 
-    options = {'settings': { 'hubhub': 42, 'default-library': 'mag' }}
+    options = {"settings": {"hubhub": 42, "default-library": "mag"}}
     papis.config.register_default_settings(options)
 
-    assert(papis.config.get('hubhub') == 42)
-    assert(papis.config.get('info-name') is not None)
-    assert(not papis.config.get('default-library') == 'mag')
-    assert(
-        papis.config.get_default_settings()['settings']['default-library']
-        == 'mag')
+    assert papis.config.get("hubhub") == 42
+    assert papis.config.get("info-name") is not None
+    assert not papis.config.get("default-library") == "mag"
+    assert (
+        papis.config.get_default_settings()["settings"]["default-library"]
+        == "mag")
 
 
 def test_get_list():
-    papis.config.set('super-key-list', [1,2,3,4])
-    assert(papis.config.get('super-key-list') == '[1, 2, 3, 4]')
-    assert(papis.config.getlist('super-key-list') == ['1','2','3','4'])
+    papis.config.set("super-key-list", [1, 2, 3, 4])
+    assert papis.config.get("super-key-list") == "[1, 2, 3, 4]"
+    assert papis.config.getlist("super-key-list") == ["1", "2", "3", "4"]
 
-    papis.config.set('super-key-list', ['asdf',2,3,4])
-    assert(papis.config.get('super-key-list') == "['asdf', 2, 3, 4]")
-    assert(papis.config.getlist('super-key-list') == ['asdf','2','3','4'])
+    papis.config.set("super-key-list", ["asdf", 2, 3, 4])
+    assert papis.config.get("super-key-list") == "['asdf', 2, 3, 4]"
+    assert papis.config.getlist("super-key-list") == ["asdf", "2", "3", "4"]
 
-    papis.config.set('super-key-list', ['asdf',2,3,4])
-    assert(papis.config.get('super-key-list') == "['asdf', 2, 3, 4]")
-    assert(papis.config.getlist('super-key-list') == ['asdf','2','3','4'])
+    papis.config.set("super-key-list", ["asdf", 2, 3, 4])
+    assert papis.config.get("super-key-list") == "['asdf', 2, 3, 4]"
+    assert papis.config.getlist("super-key-list") == ["asdf", "2", "3", "4"]
 
-    papis.config.set('super-key-list', "['asdf',2,3,4]")
-    assert(papis.config.get('super-key-list') == "['asdf',2,3,4]")
-    assert(papis.config.getlist('super-key-list') == ['asdf','2','3','4'])
+    papis.config.set("super-key-list", "['asdf',2,3,4]")
+    assert papis.config.get("super-key-list") == "['asdf',2,3,4]"
+    assert papis.config.getlist("super-key-list") == ["asdf", "2", "3", "4"]
 
-    papis.config.set('super-key-list', "[asdf,2,3,4]")
-    assert(papis.config.get('super-key-list') == "[asdf,2,3,4]")
+    papis.config.set("super-key-list", "[asdf,2,3,4]")
+    assert papis.config.get("super-key-list") == "[asdf,2,3,4]"
     try:
-        papis.config.getlist('super-key-list') == "[asdf,'2','3','4']"
+        assert papis.config.getlist("super-key-list") == "[asdf,'2','3','4']"
     except SyntaxError as e:
-        assert(
+        assert (
             str(e) == (
-            "The key 'super-key-list' must be a valid python "
-            "object\n\tname 'asdf' is not defined"
+                "The key 'super-key-list' must be a valid python "
+                "object\n\tname 'asdf' is not defined"
             )
         )
-    else:
-        assert(False)
 
-    papis.config.set('super-key-list', "2")
-    assert(papis.config.get('super-key-list') == "2")
-    assert(papis.config.getint('super-key-list') == 2)
+    papis.config.set("super-key-list", "2")
+    assert papis.config.get("super-key-list") == "2"
+    assert papis.config.getint("super-key-list") == 2
     try:
-        papis.config.getlist('super-key-list') == "[asdf,2,3,4]"
+        assert papis.config.getlist("super-key-list") == "[asdf,2,3,4]"
     except SyntaxError as e:
-        assert(
+        assert (
             str(e) == (
-            "The key 'super-key-list' must be a valid python list"
+                "The key 'super-key-list' must be a valid python list"
             )
         )
-    else:
-        assert(False)

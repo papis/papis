@@ -13,7 +13,7 @@ def test_get_available_downloaders():
 
 
 def test_get_downloader():
-    down = get_matching_downloaders('arXiv:1701.08223v2')
+    down = get_matching_downloaders("arXiv:1701.08223v2")
     assert down is not None
     assert len(down) >= 1
-    assert down[0].name == 'arxiv'
+    assert down[0].name == "arxiv"
