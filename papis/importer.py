@@ -37,7 +37,7 @@ class Importer:
         self.logger = logging.getLogger("importer:{}".format(self.name))
 
     @classmethod
-    def match(cls, uri: str) -> Optional['Importer']:
+    def match(cls, uri: str) -> Optional["Importer"]:
         """This method should be called to know if a given uri matches
         the importer or not.
 
@@ -56,7 +56,7 @@ class Importer:
             "Matching uri not implemented for this importer")
 
     @classmethod
-    def match_data(cls, data: Dict[str, Any]) -> Optional['Importer']:
+    def match_data(cls, data: Dict[str, Any]) -> Optional["Importer"]:
         """Get a dictionary of data and try to decide if there is
         a valid uri in it.
 
@@ -86,7 +86,7 @@ class Importer:
         raise NotImplementedError()
 
     def __str__(self) -> str:
-        return 'Importer({0}, uri={1})'.format(self.name, self.uri)
+        return "Importer({}, uri={})".format(self.name, self.uri)
 
 
 def _extension_name() -> str:

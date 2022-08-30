@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from stevedore import ExtensionManager
 
 
-logger = logging.getLogger('hooks')
+logger = logging.getLogger("hooks")
 NON_STEVEDORE_HOOKS = {}  # type: Dict[str, List[Callable[[Any], None]]]
 
 

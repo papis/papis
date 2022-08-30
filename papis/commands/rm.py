@@ -33,7 +33,7 @@ def run(document: papis.document.Document,
 
     if filepath is not None:
         os.remove(filepath)
-        document['files'].remove(os.path.basename(filepath))
+        document["files"].remove(os.path.basename(filepath))
         document.save()
         db.update(document)
         if git:
@@ -67,7 +67,7 @@ def run(document: papis.document.Document,
 
 
 @click.command("rm")
-@click.help_option('-h', '--help')
+@click.help_option("-h", "--help")
 @papis.cli.query_option()
 @papis.cli.git_option(help="Remove in git")
 @papis.cli.sort_option()
@@ -109,7 +109,7 @@ def cli(query: str,
     if sort_field:
         documents = papis.document.sort(documents, sort_field, sort_reverse)
 
-    logger = logging.getLogger('cli:rm')
+    logger = logging.getLogger("cli:rm")
 
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
@@ -125,7 +125,7 @@ def cli(query: str,
                 continue
             filepath = filepaths[0]
             if not force:
-                tbar = 'The file {0} would be removed'.format(filepath)
+                tbar = "The file {0} would be removed".format(filepath)
                 if not papis.tui.utils.confirm(
                         "Are you sure?", bottom_toolbar=tbar):
                     continue
@@ -141,7 +141,7 @@ def cli(query: str,
                 document["notes"]
             )
             if not force:
-                tbar = 'The file {0} would be removed'.format(notespath)
+                tbar = "The file {0} would be removed".format(notespath)
                 if not papis.tui.utils.confirm(
                         "Are you sure?", bottom_toolbar=tbar):
                     continue
@@ -151,13 +151,13 @@ def cli(query: str,
     if not (_file or _notes):
         for document in documents:
             if not force:
-                tbar = 'The folder {0} would be removed'.format(
+                tbar = "The folder {0} would be removed".format(
                     document.get_main_folder())
                 logger.warning("This document will be removed, check it")
                 papis.tui.utils.text_area(
                     title=tbar,
                     text=papis.document.dump(document),
-                    lexer_name='yaml')
+                    lexer_name="yaml")
                 if not papis.tui.utils.confirm(
                         "Are you sure?", bottom_toolbar=tbar):
                     continue

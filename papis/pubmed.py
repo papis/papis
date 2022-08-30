@@ -102,8 +102,8 @@ def get_data(query: str = "") -> Dict[str, Any]:
 class Importer(papis.importer.Importer):
     """Importer downloading data from a pubmed id"""
 
-    def __init__(self, uri: str = ''):
-        papis.importer.Importer.__init__(self, name='pubmed', uri=uri)
+    def __init__(self, uri: str = ""):
+        papis.importer.Importer.__init__(self, name="pubmed", uri=uri)
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:

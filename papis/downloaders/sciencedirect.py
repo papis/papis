@@ -51,7 +51,7 @@ class Downloader(papis.downloaders.Downloader):
     def __init__(self, url: str):
         papis.downloaders.Downloader.__init__(
             self, url, name="sciencedirect")
-        self.expected_document_extension = 'pdf'
+        self.expected_document_extension = "pdf"
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
@@ -64,7 +64,7 @@ class Downloader(papis.downloaders.Downloader):
         global script_keyconv
         data = dict()  # type: Dict[str, Any]
         soup = self._get_soup()
-        scripts = soup.find_all(name="script", attrs={'data-iso-key': '_0'})
+        scripts = soup.find_all(name="script", attrs={"data-iso-key": "_0"})
         if scripts:
             import json
             rawdata = json.loads(scripts[0].text)
@@ -77,5 +77,5 @@ class Downloader(papis.downloaders.Downloader):
             #       way
             # data.update(converted_data["_abstract_data"])
             # data.update(converted_data["_author_data"])
-            data['author'] = papis.document.author_list_to_author(data)
+            data["author"] = papis.document.author_list_to_author(data)
         return data

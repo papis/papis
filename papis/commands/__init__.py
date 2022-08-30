@@ -17,7 +17,7 @@ Script = NamedTuple("Script",
 
 
 def get_external_scripts() -> Dict[str, Script]:
-    regex = re.compile('.*papis-([^ .]+)$')
+    regex = re.compile(".*papis-([^ .]+)$")
     paths = []
     scripts = {}
     paths.append(papis.config.get_scripts_folder())

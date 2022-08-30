@@ -30,7 +30,7 @@ import papis.format
 def run(document: papis.document.Document,
         wait: bool = True,
         git: bool = False) -> None:
-    logger = logging.getLogger('run:edit')
+    logger = logging.getLogger("run:edit")
     info_file_path = document.get_info_file()
     if not info_file_path:
         raise Exception(papis.strings.no_folder_attached_to_document)
@@ -61,17 +61,17 @@ def create_notes(document: papis.document.Document,
     templ_out = ""
 
     if os.path.exists(templ_path):
-        with open(templ_path, 'r') as f:
+        with open(templ_path, "r") as f:
             templ_src = f.read()
             templ_out = papis.format.format(templ_src, document)
 
-    with open(notes_path, 'w+') as f:
+    with open(notes_path, "w+") as f:
         f.write(templ_out)
 
 
 def edit_notes(document: papis.document.Document,
                git: bool = False) -> None:
-    logger = logging.getLogger('edit:notes')
+    logger = logging.getLogger("edit:notes")
     logger.debug("Editing notes")
 
     db = papis.database.get()
@@ -101,7 +101,7 @@ def edit_notes(document: papis.document.Document,
 
 
 @click.command("edit")
-@click.help_option('-h', '--help')
+@click.help_option("-h", "--help")
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
 @papis.cli.git_option(help="Add changes made to the info file")
@@ -128,7 +128,7 @@ def cli(query: str,
         sort_reverse: bool) -> None:
     """Edit document information from a given library"""
 
-    logger = logging.getLogger('cli:edit')
+    logger = logging.getLogger("cli:edit")
 
     if doc_folder:
         documents = [papis.document.from_folder(doc_folder)]
@@ -139,7 +139,7 @@ def cli(query: str,
         documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     if editor is not None:
-        papis.config.set('editor', editor)
+        papis.config.set("editor", editor)
 
     if not _all:
         documents = list(papis.pick.pick_doc(documents))

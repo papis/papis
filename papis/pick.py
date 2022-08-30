@@ -50,8 +50,8 @@ def pick(
     except KeyError:
         logger.error("Invalid picker: %s", name)
         logger.error(
-                "Registered pickers are: %s",
-                papis.plugin.get_available_entrypoints(_extension_name()))
+            "Registered pickers are: %s",
+            papis.plugin.get_available_entrypoints(_extension_name()))
         return []
     else:
         return picker()(options,
@@ -62,14 +62,14 @@ def pick(
 
 def pick_doc(
         documents: Sequence[papis.document.Document]
-     ) -> Sequence[papis.document.Document]:
+        ) -> Sequence[papis.document.Document]:
     """Pick a document from documents with the correct formatting
 
     :documents: List of documents
     :returns: Document
 
     """
-    header_format_path = papis.config.get('header-format-file')
+    header_format_path = papis.config.get("header-format-file")
     if header_format_path is not None:
         with open(os.path.expanduser(header_format_path)) as _fd:
             header_format = _fd.read().rstrip()

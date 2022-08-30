@@ -37,7 +37,7 @@ def parmap(f: Callable[[A], B],
     todo: enable multiprocessing support for darwin (py3.6+) ...
     todo: ... see https://github.com/papis/papis/issues/323
     """
-    if has_multiprocessing() and sys.platform != 'darwin':
+    if has_multiprocessing() and sys.platform != "darwin":
         np = np or os.cpu_count()
         np = int(os.environ.get("PAPIS_NP", str(np)))
         with Pool(np) as pool:
@@ -100,9 +100,9 @@ def get_folders(folder: str) -> List[str]:
     logger.debug("Indexing folders in '%s'", folder)
 
     folders = []
-    for root, dirnames, filenames in os.walk(folder):
+    for root, _, _ in os.walk(folder):
         if os.path.exists(
-                os.path.join(root, papis.config.getstring('info-name'))):
+                os.path.join(root, papis.config.getstring("info-name"))):
             folders.append(root)
 
     logger.debug("%d valid folders retrieved", len(folders))
@@ -129,7 +129,7 @@ def create_identifier(input_list: str) -> Iterator[str]:
     """
     for n in count(1):
         for s in product(input_list, repeat=n):
-            yield ''.join(s)
+            yield "".join(s)
 
 
 def clean_document_name(doc_path: str) -> str:
@@ -144,7 +144,7 @@ def clean_document_name(doc_path: str) -> str:
 
     """
     import slugify
-    regex_pattern = r'[^a-z0-9.]+'
+    regex_pattern = r"[^a-z0-9.]+"
     return str(slugify.slugify(
         os.path.basename(doc_path),
         word_boundary=True,
@@ -165,7 +165,7 @@ def locate_document_in_lib(document: papis.document.Document,
     :raises IndexError: Whenever document is not found in the library
     """
     db = papis.database.get(library_name=library)
-    comparing_keys = papis.config.getlist('unique-document-keys')
+    comparing_keys = papis.config.getlist("unique-document-keys")
     assert comparing_keys is not None
 
     for k in comparing_keys:
@@ -193,7 +193,7 @@ def locate_document(
     """
     # if these keys exist in the documents, then check those first
     # TODO: find a way to really match well titles and author
-    comparing_keys = papis.config.getlist('unique-document-keys')
+    comparing_keys = papis.config.getlist("unique-document-keys")
     assert comparing_keys is not None
     for d in documents:
         for key in comparing_keys:
@@ -218,7 +218,7 @@ def folders_to_documents(folders: List[str]) -> List[papis.document.Document]:
     begin_t = time.time()
     result = parmap(papis.document.from_folder, folders)
 
-    logger.debug("Done in %.1f ms", 1000*(time.time() - begin_t))
+    logger.debug("Done in %.1f ms", 1000 * (time.time() - begin_t))
     return result
 
 
@@ -230,16 +230,16 @@ def get_cache_home() -> str:
     :rtype:  str
 
     """
-    user_defined = papis.config.get('cache-dir')
+    user_defined = papis.config.get("cache-dir")
     if user_defined is not None:
         path = os.path.expanduser(user_defined)
     else:
         path = os.path.expanduser(
-            os.path.join(str(os.environ.get('XDG_CACHE_HOME')), 'papis')
+            os.path.join(str(os.environ.get("XDG_CACHE_HOME")), "papis")
         ) if os.environ.get(
-            'XDG_CACHE_HOME'
+            "XDG_CACHE_HOME"
         ) else os.path.expanduser(
-            os.path.join('~', '.cache', 'papis')
+            os.path.join("~", ".cache", "papis")
         )
     if not os.path.exists(path):
         os.makedirs(path)
@@ -266,9 +266,9 @@ def get_matching_importer_or_downloader(matching_string: str
             continue
         if importer:
             logger.info(
-                    "%s {c.Back.BLACK}{c.Fore.GREEN}"
-                    "matches %s{c.Style.RESET_ALL}",
-                    matching_string, importer.name)
+                "%s {c.Back.BLACK}{c.Fore.GREEN}"
+                "matches %s{c.Style.RESET_ALL}",
+                matching_string, importer.name)
             try:
                 importer.fetch()
             except Exception as e:
@@ -286,13 +286,13 @@ def update_doc_from_data_interactively(
 
     import papis.tui.widgets.diff
     # do not compare some entries
-    docdata.pop('files', None)
-    docdata.pop('tags', None)
+    docdata.pop("files", None)
+    docdata.pop("tags", None)
     document.update(papis.tui.widgets.diff.diffdict(
-                        docdata,
-                        data,
-                        namea=papis.document.describe(document),
-                        nameb=data_name))
+                    docdata,
+                    data,
+                    namea=papis.document.describe(document),
+                    nameb=data_name))
 
 
 def is_relative_to(path: str, other: str) -> bool:

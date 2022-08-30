@@ -52,9 +52,9 @@ class MessageToolbar(ConditionalContainer):  # type: ignore
 class InfoWindow(ConditionalContainer):  # type: ignore
     # TODO: add stubs to be able to remove type ignore above
 
-    def __init__(self, lexer_name: str = 'yaml') -> None:
+    def __init__(self, lexer_name: str = "yaml") -> None:
         self.buf = Buffer()
-        self.buf.text = ''
+        self.buf.text = ""
         self.lexer = PygmentsLexer(find_lexer_class_by_name(lexer_name))
         self.window = HSplit([
             HorizontalLine(),
@@ -81,7 +81,7 @@ class HelpWindow(ConditionalContainer):  # type: ignore
 
     def __init__(self) -> None:
         self.text_control = FormattedTextControl(
-            text=HTML('')
+            text=HTML("")
         )
         self.window = Window(
             content=self.text_control,

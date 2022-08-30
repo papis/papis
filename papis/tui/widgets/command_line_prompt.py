@@ -1,4 +1,4 @@
-from typing import Any, List, Callable
+from typing import Any, List, Callable, Optional
 
 from prompt_toolkit.application import Application
 from prompt_toolkit.layout.processors import BeforeInput
@@ -24,8 +24,11 @@ class Command:
     def __init__(
             self,
             name: str,
-            run: Callable[['Command'], Any],
-            aliases: List[str] = []):
+            run: Callable[["Command"], Any],
+            aliases: Optional[List[str]] = None):
+        if aliases is None:
+            aliases = []
+
         self.name = name
         self.run = run
         self.aliases = aliases
@@ -44,17 +47,20 @@ class CommandLinePrompt(ConditionalContainer):  # type: ignore
     A vim-like command line prompt widget.
     It's supposed to be instantiated only once.
     """
-    def __init__(self, commands: List[Command] = []):
+    def __init__(self, commands: Optional[List[Command]] = None):
+        if commands is None:
+            commands = []
+
         self.commands = commands
         wc = WordCompleter(sum([c.names for c in commands], []))
         self.buf = Buffer(
             completer=wc, complete_while_typing=True
         )
-        self.buf.text = ''
+        self.buf.text = ""
         self.window = Window(
             content=BufferControl(
                 buffer=self.buf,
-                input_processors=[BeforeInput(':')]
+                input_processors=[BeforeInput(":")]
             ),
             height=1
         )
@@ -72,15 +78,15 @@ class CommandLinePrompt(ConditionalContainer):  # type: ignore
         cmds = list(filter(lambda c: name in c.names, self.commands))
 
         if len(cmds) > 1:
-            raise Exception('More than one command matches the input')
+            raise Exception("More than one command matches the input")
         elif len(cmds) == 0:
-            raise Exception('No command found ({0})'.format(name))
+            raise Exception("No command found ({0})".format(name))
 
         input_cmd.pop(0)
         cmds[0].run(cmds[0], *input_cmd)
 
     def clear(self) -> None:
-        self.text = ''
+        self.text = ""
 
     @property
     def text(self) -> Any:

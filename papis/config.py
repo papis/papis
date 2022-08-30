@@ -25,9 +25,9 @@ _OVERRIDE_VARS = {
 def get_default_opener() -> str:
     """Get the default file opener for the current system
     """
-    if sys.platform.startswith('darwin'):
+    if sys.platform.startswith("darwin"):
         return "open"
-    elif os.name == 'nt':
+    elif os.name == "nt":
         return "start"
     else:
         return "xdg-open"
@@ -41,11 +41,11 @@ general_settings = {
 
     "opentool": get_default_opener(),
     "dir-umask": 0o755,
-    "browser": os.environ.get('BROWSER') or get_default_opener(),
+    "browser": os.environ.get("BROWSER") or get_default_opener(),
     "picktool": "papis",
     "mvtool": "mv",
-    "editor": os.environ.get('EDITOR')
-                        or os.environ.get('VISUAL')
+    "editor": os.environ.get("EDITOR")
+                        or os.environ.get("VISUAL")
                         or get_default_opener(),
     "notes-name": "notes.tex",
     "notes-template": "",
@@ -61,10 +61,10 @@ general_settings = {
     "add-edit": False,
     "add-open": False,
 
-    "browse-key": 'url',
+    "browse-key": "url",
     "browse-query-format": "{doc[title]} {doc[author]}",
     "search-engine": "https://duckduckgo.com",
-    "user-agent": 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)',
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)",
     "scripts-short-help-regex": ".*papis-short-help: *(.*)",
     "info-name": "info.yaml",
     "doc-url-key-name": "doc_url",
@@ -77,7 +77,7 @@ general_settings = {
     "mark-opener-format": get_default_opener(),
 
     "file-browser": get_default_opener(),
-    "bibtex-journal-key": 'journal',
+    "bibtex-journal-key": "journal",
     "bibtex-export-zotero-file": False,
     "extra-bibtex-keys": "[]",
     "extra-bibtex-types": "[]",
@@ -100,21 +100,21 @@ general_settings = {
 
     "whoosh-schema-fields": "['doi']",
     "whoosh-schema-prototype":
-    '{\n'
+    "{\n"
     '"author": TEXT(stored=True),\n'
     '"title": TEXT(stored=True),\n'
     '"year": TEXT(stored=True),\n'
     '"tags": TEXT(stored=True),\n'
-    '}',
+    "}",
 
-    'unique-document-keys': "['doi','ref','isbn','isbn10','url','doc_url']",
+    "unique-document-keys": "['doi','ref','isbn','isbn10','url','doc_url']",
 
     "downloader-proxy": None,
     "bibtex-unicode": False,
 
     "time-stamp": True,
 
-    "document-description-format": '{doc[title]} - {doc[author]}',
+    "document-description-format": "{doc[title]} - {doc[author]}",
     "formater": "python",
 
     # fzf options
@@ -155,10 +155,10 @@ class Configuration(configparser.ConfigParser):
         self.logger = logging.getLogger("Configuration")
         self.default_info = {
             "papers": {
-                'dir': '~/Documents/papers'
+                "dir": "~/Documents/papers"
             },
             get_general_settings_name(): {
-                'default-library': 'papers'
+                "default-library": "papers"
             }
         }  # type: PapisConfigType
         self.initialize()
@@ -194,7 +194,7 @@ class Configuration(configparser.ConfigParser):
                     self[section][field] = self.default_info[section][field]
             with open(self.file_location, "w") as configfile:
                 self.logger.info(
-                        "Creating config file at '%s'", self.file_location)
+                    "Creating config file at '%s'", self.file_location)
                 self.write(configfile)
         configpy = get_configpy_file()
         if os.path.exists(configpy):
@@ -260,11 +260,11 @@ def get_config_home() -> str:
     :returns: Configuration base directory
     :rtype:  str
     """
-    xdg_home = os.environ.get('XDG_CONFIG_HOME')
+    xdg_home = os.environ.get("XDG_CONFIG_HOME")
     if xdg_home:
         return os.path.expanduser(xdg_home)
     else:
-        return os.path.join(os.path.expanduser('~'), '.config')
+        return os.path.join(os.path.expanduser("~"), ".config")
 
 
 def get_config_dirs() -> List[str]:
@@ -273,15 +273,15 @@ def get_config_dirs() -> List[str]:
     """
     dirs = []  # type: List[str]
     # get_config_home should also be included on top of XDG_CONFIG_DIRS
-    if os.environ.get('XDG_CONFIG_DIRS') is not None:
+    if os.environ.get("XDG_CONFIG_DIRS") is not None:
         dirs += [
-            os.path.join(d, 'papis') for d in
-            os.environ.get('XDG_CONFIG_DIRS', '').split(':')]
+            os.path.join(d, "papis") for d in
+            os.environ.get("XDG_CONFIG_DIRS", "").split(":")]
     # Take XDG_CONFIG_HOME and $HOME/.papis for backwards
     # compatibility
     dirs += [
-        os.path.join(get_config_home(), 'papis'),
-        os.path.join(os.path.expanduser('~'), '.papis')]
+        os.path.join(get_config_home(), "papis"),
+        os.path.join(os.path.expanduser("~"), ".papis")]
     return dirs
 
 
@@ -297,7 +297,7 @@ def get_config_folder() -> str:
         if os.path.exists(config_dir):
             return config_dir
     # If no folder is found, then get the config home
-    return os.path.join(get_config_home(), 'papis')
+    return os.path.join(get_config_home(), "papis")
 
 
 def get_config_file() -> str:
@@ -536,8 +536,8 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
         if os.path.isdir(libname):
             # Check if the path exists, then use this path as a new library
             logger.warning(
-                    "Since the path '%s' exists, interpreting it as a library",
-                    libname)
+                "Since the path '%s' exists, interpreting it as a library",
+                libname)
             library_obj = papis.library.from_paths([libname])
             name = library_obj.path_format()
             # the configuration object can only store strings
@@ -553,10 +553,10 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
                             .format(libname, cpath=get_config_file()))
     else:
         try:
-            paths = [os.path.expanduser(config[libname]['dir'])]
+            paths = [os.path.expanduser(config[libname]["dir"])]
         except KeyError:
             try:
-                paths = eval(os.path.expanduser(config[libname].get('dirs')))
+                paths = eval(os.path.expanduser(config[libname].get("dirs")))
             except Exception as e:
                 raise Exception("To define a library you have to set either"
                                 " dir or dirs in the configuration file.\n"
@@ -592,8 +592,8 @@ def get_lib() -> papis.library.Library:
     :rtype:  papis.library.Library
     """
     global _CURRENT_LIBRARY
-    if os.environ.get('PAPIS_LIB'):
-        set_lib_from_name(os.environ['PAPIS_LIB'])
+    if os.environ.get("PAPIS_LIB"):
+        set_lib_from_name(os.environ["PAPIS_LIB"])
     if _CURRENT_LIBRARY is None:
         # NOTE: this cannot use `general_get` (cyclic dependency), so we have
         # to handle the `default-library` not being present in the user config

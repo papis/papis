@@ -109,7 +109,7 @@ import papis.downloaders
 import papis.git
 import papis.format
 
-logger = logging.getLogger('add')  # type: logging.Logger
+logger = logging.getLogger("add")  # type: logging.Logger
 
 
 class FromFolderImporter(papis.importer.Importer):
@@ -117,7 +117,7 @@ class FromFolderImporter(papis.importer.Importer):
     """Importer that gets files and data from a valid papis folder"""
 
     def __init__(self, **kwargs: Any):
-        papis.importer.Importer.__init__(self, name='folder', **kwargs)
+        papis.importer.Importer.__init__(self, name="folder", **kwargs)
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
@@ -138,7 +138,7 @@ class FromLibImporter(papis.importer.Importer):
     """
 
     def __init__(self, **kwargs: Any):
-        papis.importer.Importer.__init__(self, name='lib', **kwargs)
+        papis.importer.Importer.__init__(self, name="lib", **kwargs)
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
@@ -178,7 +178,7 @@ def get_file_name(
     """
 
     basename_limit = 150
-    file_name_opt = papis.config.get('add-file-name')
+    file_name_opt = papis.config.get("add-file-name")
     ext = papis.filetype.get_document_extension(original_filepath)
 
     if file_name_opt is None:
@@ -196,7 +196,7 @@ def get_file_name(
     # Remove extension from file_name_base, if any
     file_name_base = re.sub(
         r"([.]{0})?$".format(ext),
-        '',
+        "",
         file_name_base
     )
 
@@ -209,9 +209,7 @@ def get_file_name(
     )
 
     # Adding the recognised extension
-    filename = filename_basename + '.' + ext
-
-    return filename
+    return "{}.{}".format(filename_basename, ext)
 
 
 def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
@@ -224,14 +222,14 @@ def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
     import random
     author = "-{:.20}".format(data["author"]) if "author" in data else ""
 
-    document_strings = b''
+    document_strings = b""
     for docpath in document_paths:
-        with open(docpath, 'rb') as fd:
+        with open(docpath, "rb") as fd:
             document_strings += fd.read(2000)
 
     import hashlib
     md5 = hashlib.md5(
-        ''.join(document_paths).encode()
+        "".join(document_paths).encode()
         + str(data).encode()
         + str(random.random()).encode()
         + document_strings
@@ -244,7 +242,7 @@ def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
 
 
 def run(paths: List[str],
-        data: Dict[str, Any] = dict(),
+        data: Optional[Dict[str, Any]] = None,
         folder_name: Optional[str] = None,
         file_name: Optional[str] = None,
         subfolder: Optional[str] = None,
@@ -281,8 +279,11 @@ def run(paths: List[str],
         in the case of course that the library is a git repository.
     :type  git: bool
     """
+    if data is None:
+        data = {}
+
     import tempfile
-    logger = logging.getLogger('add:run')
+    logger = logging.getLogger("add:run")
 
     # The real paths of the documents to be added
     in_documents_paths = paths
@@ -293,7 +294,7 @@ def run(paths: List[str],
 
     for p in in_documents_paths:
         if not os.path.exists(p):
-            raise IOError('Document %s not found' % p)
+            raise IOError("Document {} not found".format(p))
 
     in_documents_names = [
         papis.utils.clean_document_name(doc_path)
@@ -346,7 +347,7 @@ def run(paths: List[str],
     # First prepare everything in the temporary directory
     from string import ascii_lowercase
     g = papis.utils.create_identifier(ascii_lowercase)
-    string_append = ''
+    string_append = ""
     if file_name is not None:  # Use args if set
         papis.config.set("add-file-name", file_name)
     new_file_list = []
@@ -378,12 +379,12 @@ def run(paths: List[str],
             import shutil
             shutil.copy(in_file_path, tmp_end_filepath)
 
-    data['files'] = new_file_list
+    data["files"] = new_file_list
 
     # reference building
-    if data.get('ref') is None:
-        data['ref'] = papis.bibtex.create_reference(data)
-        logger.info("Created reference '%s'", data['ref'])
+    if "ref" not in data:
+        data["ref"] = papis.bibtex.create_reference(data)
+        logger.info("Created reference '%s'", data["ref"])
 
     tmp_document.update(data)
     tmp_document.save()
@@ -410,9 +411,9 @@ def run(paths: List[str],
             "(Hint) Use the 'papis update' command to just update the info.")
 
         papis.tui.utils.text_area(
-            'The following document is already in your library',
+            "The following document is already in your library",
             papis.document.dump(found_document),
-            lexer_name='yaml',
+            lexer_name="yaml",
             height=20)
         confirm = True
 
@@ -420,7 +421,7 @@ def run(paths: List[str],
         for d_path in tmp_document.get_files():
             papis.utils.open_file(d_path)
     if confirm:
-        if not papis.tui.utils.confirm('Really add?'):
+        if not papis.tui.utils.confirm("Really add?"):
             return
 
     logger.info(
@@ -431,7 +432,7 @@ def run(paths: List[str],
     papis.database.get().add(tmp_document)
     if git:
         papis.git.add_and_commit_resource(
-            str(tmp_document.get_main_folder()), '.',
+            str(tmp_document.get_main_folder()), ".",
             "Add document '{0}'".format(papis.document.describe(tmp_document)))
 
 
@@ -439,7 +440,7 @@ def run(paths: List[str],
     "add",
     help="Add a document into a given library"
 )
-@click.help_option('--help', '-h')
+@click.help_option("--help", "-h")
 @click.argument("files", type=str, nargs=-1)
 @click.option(
     "-s", "--set", "set_list",
@@ -449,7 +450,7 @@ def run(paths: List[str],
 @click.option(
     "-d", "--subfolder",
     help="Subfolder in the library",
-    default=lambda: papis.config.getstring('add-subfolder'))
+    default=lambda: papis.config.getstring("add-subfolder"))
 @click.option(
     "-p", "--pick-subfolder",
     help="Pick from existing subfolders",
@@ -458,7 +459,7 @@ def run(paths: List[str],
 @click.option(
     "--folder-name",
     help="Name for the document's folder (papis format)",
-    default=lambda: papis.config.getstring('add-folder-name'))
+    default=lambda: papis.config.getstring("add-folder-name"))
 @click.option(
     "--file-name",
     help="File name for the document (papis format)",
@@ -479,15 +480,15 @@ def run(paths: List[str],
 @click.option(
     "--confirm/--no-confirm",
     help="Ask to confirm before adding to the collection",
-    default=lambda: True if papis.config.get('add-confirm') else False)
+    default=lambda: True if papis.config.get("add-confirm") else False)
 @click.option(
     "--open/--no-open", "open_file",
     help="Open file before adding document",
-    default=lambda: True if papis.config.get('add-open') else False)
+    default=lambda: True if papis.config.get("add-open") else False)
 @click.option(
     "--edit/--no-edit",
     help="Edit info file before adding document",
-    default=lambda: True if papis.config.get('add-edit') else False)
+    default=lambda: True if papis.config.get("add-edit") else False)
 @click.option(
     "--link/--no-link",
     help="Instead of copying the file to the library, create a link to"
@@ -530,7 +531,7 @@ def cli(
         return
 
     from_importer = list(from_importer)
-    logger = logging.getLogger('cli:add')
+    logger = logging.getLogger("cli:add")
 
     data = dict()
     for data_set in set_list:
@@ -573,11 +574,11 @@ def cli(
             logger.exception(e)
 
     if matching_importers:
-        logger.info('There are %d possible matchings', len(matching_importers))
+        logger.info("There are %d possible matchings", len(matching_importers))
 
         for importer in matching_importers:
             if importer.ctx.data:
-                logger.info('Merging data from importer %s', importer.name)
+                logger.info("Merging data from importer %s", importer.name)
                 if batch:
                     ctx.data.update(importer.ctx.data)
                 else:
@@ -587,8 +588,8 @@ def cli(
                         str(importer))
             if importer.ctx.files and (not files or force_download):
                 logger.info(
-                        "Got files %s from importer '%s'",
-                        importer.ctx.files, importer.name)
+                    "Got files %s from importer '%s'",
+                    importer.ctx.files, importer.name)
                 for f in importer.ctx.files:
                     papis.utils.open_file(f)
                     _msg = "Use this file? (from {0})".format(importer.name)
@@ -596,12 +597,12 @@ def cli(
                         ctx.files.append(f)
 
     if not ctx:
-        logger.error('There is nothing to be added')
+        logger.error("There is nothing to be added")
         return
 
     if papis.config.getboolean("time-stamp"):
         import time
-        ctx.data['time-added'] = time.strftime(papis.strings.time_format)
+        ctx.data["time-added"] = time.strftime(papis.strings.time_format)
 
     base_path = (
         papis.pick.pick_subfolder_from_lib(papis.config.get_lib_name())[0]

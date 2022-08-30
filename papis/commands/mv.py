@@ -23,13 +23,13 @@ import papis.strings
 def run(document: papis.document.Document,
         new_folder_path: str,
         git: bool = False) -> None:
-    logger = logging.getLogger('mv:run')
+    logger = logging.getLogger("mv:run")
 
     folder = document.get_main_folder()
     if not folder:
         raise Exception(papis.strings.no_folder_attached_to_document)
-    cmd = ['git', '-C', folder] if git else []
-    cmd += ['mv', folder, new_folder_path]
+    cmd = ["git", "-C", folder] if git else []
+    cmd += ["mv", folder, new_folder_path]
     db = papis.database.get()
     logger.debug(cmd)
 
@@ -46,7 +46,7 @@ def run(document: papis.document.Document,
 
 
 @click.command("mv")
-@click.help_option('--help', '-h')
+@click.help_option("--help", "-h")
 @papis.cli.query_option()
 @papis.cli.git_option()
 @papis.cli.sort_option()
@@ -61,7 +61,7 @@ def cli(query: str,
     import prompt_toolkit
     import prompt_toolkit.completion
 
-    logger = logging.getLogger('cli:mv')
+    logger = logging.getLogger("cli:mv")
 
     if doc_folder:
         documents = [papis.document.from_folder(doc_folder)]
@@ -108,6 +108,6 @@ def cli(query: str,
 
     if not os.path.exists(new_folder):
         logger.info("Creating path %s", new_folder)
-        os.makedirs(new_folder, mode=papis.config.getint('dir-umask') or 0o666)
+        os.makedirs(new_folder, mode=papis.config.getint("dir-umask") or 0o666)
 
     run(document, new_folder, git=git)

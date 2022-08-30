@@ -14,7 +14,7 @@ def get_document_extension(document_path: str) -> str:
     kind = filetype.guess(document_path)
     if kind is None:
         m = re.match(r"^.*\.([^.]+)$", os.path.basename(document_path))
-        return m.group(1) if m else 'data'
+        return m.group(1) if m else "data"
     else:
         assert isinstance(kind.extension, str)
         return kind.extension

@@ -21,7 +21,7 @@ import papis.utils
 
 Option = TypeVar("Option")
 
-logger = logging.getLogger('tui:widget:list')
+logger = logging.getLogger("tui:widget:list")
 
 
 def match_against_regex(
@@ -48,11 +48,16 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
             header_filter: Callable[[Option], str] = str,
             match_filter: Callable[[Option], str] = str,
             custom_filter: Optional[Callable[[str], bool]] = None,
-            search_buffer: Buffer = Buffer(multiline=False),
-            cpu_count: int = os.cpu_count()):
+            search_buffer: Optional[Buffer] = None,
+            cpu_count: Optional[int] = None):
+        if search_buffer is None:
+            search_buffer = Buffer(multiline=False)
+
+        if cpu_count is None:
+            cpu_count = os.cpu_count()
 
         self.search_buffer = search_buffer
-        self.last_query_text = ''  # type: str
+        self.last_query_text = ""  # type: str
         self.search_buffer.on_text_changed += self.update
 
         self.header_filter = header_filter
@@ -118,13 +123,13 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         current_line = self.index_to_line(self.current_index)
         if (0 <= line - current_line
                 < self.options_headers_linecount[self.current_index]):
-            return [('class:options_list.selected_margin', '|')]
+            return [("class:options_list.selected_margin", "|")]
         else:
             marked_clines = [self.index_to_line(i) for i in self.marks]
             if line in marked_clines:
-                return [('class:options_list.marked_margin', '#')]
+                return [("class:options_list.marked_margin", "#")]
             else:
-                return [('class:options_list.unselected_margin', ' ')]
+                return [("class:options_list.unselected_margin", " ")]
 
     def toggle_mark_current_selection(self) -> None:
         if self.current_index in self.marks:
@@ -198,13 +203,13 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         """Get and form the regular expression out of the query text"""
         cleaned_search = (
             self.query_text
-            .replace('(', '\\(')
-            .replace(')', '\\)')
-            .replace('+', '\\+')
-            .replace('[', '\\[')
-            .replace(']', '\\]')
+            .replace("(", "\\(")
+            .replace(")", "\\)")
+            .replace("+", "\\+")
+            .replace("[", "\\[")
+            .replace("]", "\\]")
         )
-        return re.compile(r".*"+re.sub(r"\s+", ".*", cleaned_search), re.I)
+        return re.compile(r".*" + re.sub(r"\s+", ".*", cleaned_search), re.I)
 
     def update(self, *args: Any) -> None:
         """Update the state"""
@@ -280,7 +285,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
             operator.add,
             [self.options_headers[i] for i in self.indices],
             [])  # type: List[Tuple[str, str]]
-        logger.debug("Created items in %.1f ms", 1000*(time.time() - begin_t))
+        logger.debug("Created items in %.1f ms", 1000 * (time.time() - begin_t))
         return internal_text
 
     def index_to_line(self, index: int) -> int:
@@ -296,29 +301,29 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         return self._indices_to_lines[index]
 
     def process_options(self) -> None:
-        logger.debug('Processing %d options', len(self.get_options()))
+        logger.debug("Processing %d options", len(self.get_options()))
         self.marks = []
 
         def _get_linecount(_o: Option) -> int:
-            return len(self.header_filter(_o).split('\n'))
+            return len(self.header_filter(_o).split("\n"))
 
         self.options_headers_linecount = list(map(_get_linecount,
                                                   self.get_options()))
         self.max_entry_height = max(self.options_headers_linecount)
-        logger.debug('Processing headers')
+        logger.debug("Processing headers")
         self.options_headers = []
         for _opt in self.get_options():
-            prestring = self.header_filter(_opt) + '\n'
+            prestring = self.header_filter(_opt) + "\n"
             try:
                 htmlobject = HTML(prestring).formatted_text
             except Exception as e:
                 logger.error(
-                        'Error processing html for\n %s\n %s', prestring, e)
-                htmlobject = [('fg:red', prestring)]
+                    "Error processing html for\n %s\n %s", prestring, e)
+                htmlobject = [("fg:red", prestring)]
             self.options_headers += [htmlobject]
-        logger.debug('Got %d headers', len(self.options_headers))
-        logger.debug('Processing matchers')
+        logger.debug("Got %d headers", len(self.options_headers))
+        logger.debug("Processing matchers")
         self.options_matchers = list(
             map(self.match_filter, self.get_options()))
         self.indices = list(range(len(self.get_options())))
-        logger.debug('Got %d matchers', len(self.options_matchers))
+        logger.debug("Got %d matchers", len(self.options_matchers))

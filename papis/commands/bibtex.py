@@ -142,21 +142,21 @@ import papis.commands.export
 import papis.bibtex
 
 
-logger = logging.getLogger('papis:bibtex')
+logger = logging.getLogger("papis:bibtex")
 
 
-config.register_default_settings({'bibtex': {
-    'default-read-bibfile': '',
-    'auto-read': '',
-    'default-save-bibfile': ''
+config.register_default_settings({"bibtex": {
+    "default-read-bibfile": "",
+    "auto-read": "",
+    "default-save-bibfile": ""
 }})
 
 explorer_mgr = explore.get_explorer_mgr()
 
 
 @click.group("bibtex", cls=papis.cli.AliasedGroup, chain=True)
-@click.help_option('-h', '--help')
-@click.option('--noar', '--no-auto-read', 'no_auto_read',
+@click.help_option("-h", "--help")
+@click.option("--noar", "--no-auto-read", "no_auto_read",
               default=False,
               is_flag=True,
               help="Do not auto read even if the configuration file says it")
@@ -164,26 +164,26 @@ explorer_mgr = explore.get_explorer_mgr()
 def cli(ctx: click.Context, no_auto_read: bool) -> None:
     """A papis script to interact with bibtex files"""
     global explorer_mgr
-    ctx.obj = {'documents': []}
+    ctx.obj = {"documents": []}
 
     if no_auto_read:
         logger.info("Setting 'auto-read' to False")
-        config.set('auto-read', 'False', section='bibtex')
+        config.set("auto-read", "False", section="bibtex")
 
-    bibfile = config.get('default-read-bibfile', section='bibtex')
-    if (bool(config.getboolean('auto-read', section='bibtex'))
+    bibfile = config.get("default-read-bibfile", section="bibtex")
+    if (bool(config.getboolean("auto-read", section="bibtex"))
             and bibfile
             and os.path.exists(bibfile)):
         logger.info("Auto-reading '%s'", bibfile)
-        explorer_mgr['bibtex'].plugin.callback(bibfile)
+        explorer_mgr["bibtex"].plugin.callback(bibfile)
 
 
-cli.add_command(explorer_mgr['bibtex'].plugin, 'read')
+cli.add_command(explorer_mgr["bibtex"].plugin, "read")
 
 
-@cli.command('add')
+@cli.command("add")
 @papis.cli.query_option()
-@click.help_option('-h', '--help')
+@click.help_option("-h", "--help")
 @papis.cli.all_option()
 @click.pass_context
 def _add(ctx: click.Context, query: str, _all: bool) -> None:
@@ -191,29 +191,29 @@ def _add(ctx: click.Context, query: str, _all: bool) -> None:
     docs = papis.api.get_documents_in_lib(search=query)
     if not _all:
         docs = list(papis.api.pick_doc(docs))
-    ctx.obj['documents'].extend(docs)
+    ctx.obj["documents"].extend(docs)
 
 
-@cli.command('update')
-@click.help_option('-h', '--help')
+@cli.command("update")
+@click.help_option("-h", "--help")
 @papis.cli.all_option()
-@click.option('--from', '-f', 'fromdb',
+@click.option("--from", "-f", "fromdb",
               show_default=True,
-              help='Update the document from the library',
+              help="Update the document from the library",
               default=False, is_flag=True)
-@click.option('-t', '--to',
-              help='Update the library document from retrieved document',
+@click.option("-t", "--to",
+              help="Update the library document from retrieved document",
               show_default=True,
               default=False, is_flag=True)
-@click.option('-k', '--keys',
-              help='Update only given keys (can be given multiple times)',
+@click.option("-k", "--keys",
+              help="Update only given keys (can be given multiple times)",
               type=str,
               multiple=True)
 @click.pass_context
 def _update(ctx: click.Context, _all: bool,
             fromdb: bool, to: bool, keys: List[str]) -> None:
     """Update documents from and to the library"""
-    docs = click.get_current_context().obj['documents']
+    docs = click.get_current_context().obj["documents"]
     picked_doc = None
     if not _all:
         picked_docs = papis.api.pick_doc(docs)
@@ -227,29 +227,29 @@ def _update(ctx: click.Context, _all: bool,
             libdoc = papis.utils.locate_document_in_lib(doc)
         except IndexError as e:
             logger.info(
-                '{c.Fore.YELLOW}%s:'
-                '\n\t{c.Back.RED}%-80.80s{c.Style.RESET_ALL}',
+                "{c.Fore.YELLOW}%s:"
+                "\n\t{c.Back.RED}%-80.80s{c.Style.RESET_ALL}",
                 e, papis.document.describe(doc))
         else:
             if fromdb:
                 logger.info(
-                    'Updating \n\t{c.Fore.GREEN}'
-                    '{c.Back.BLACK}%-80.80s{c.Style.RESET_ALL}',
+                    "Updating \n\t{c.Fore.GREEN}"
+                    "{c.Back.BLACK}%-80.80s{c.Style.RESET_ALL}",
                     papis.document.describe(doc))
                 if keys:
                     docs[j].update(
                         {k: libdoc.get(k) for k in keys if libdoc.has(k)})
                 else:
                     docs[j] = libdoc
-    click.get_current_context().obj['documents'] = docs
+    click.get_current_context().obj["documents"] = docs
 
 
-@cli.command('open')
-@click.help_option('-h', '--help')
+@cli.command("open")
+@click.help_option("-h", "--help")
 @click.pass_context
 def _open(ctx: click.Context) -> None:
     """Open a document in the documents list"""
-    docs = ctx.obj['documents']
+    docs = ctx.obj["documents"]
     docs = papis.api.pick_doc(docs)
     if not docs:
         return
@@ -257,16 +257,16 @@ def _open(ctx: click.Context) -> None:
     papis.commands.open.run(doc)
 
 
-@cli.command('edit')
-@click.help_option('-h', '--help')
-@click.option('-l', '--lib',
+@cli.command("edit")
+@click.help_option("-h", "--help")
+@click.option("-l", "--lib",
               show_default=True,
-              help='Edit document in papis library',
+              help="Edit document in papis library",
               default=False, is_flag=True)
 @click.pass_context
 def _edit(ctx: click.Context, lib: bool) -> None:
     """edit a document in the documents list"""
-    docs = ctx.obj['documents']
+    docs = ctx.obj["documents"]
     docs = papis.api.pick_doc(docs)
     if not docs:
         return
@@ -274,13 +274,13 @@ def _edit(ctx: click.Context, lib: bool) -> None:
     papis.commands.edit.run(doc)
 
 
-@cli.command('browse')
-@click.help_option('-h', '--help')
-@click.option('-k', '--key', default=None, help="doi, url, ...")
+@cli.command("browse")
+@click.help_option("-h", "--help")
+@click.option("-k", "--key", default=None, help="doi, url, ...")
 @click.pass_context
 def _browse(ctx: click.Context, key: Optional[str]) -> None:
     """browse a document in the documents list"""
-    docs = papis.api.pick_doc(ctx.obj['documents'])
+    docs = papis.api.pick_doc(ctx.obj["documents"])
     if key:
         config.set("browse-key", key)
     if not docs:
@@ -289,87 +289,87 @@ def _browse(ctx: click.Context, key: Optional[str]) -> None:
         papis.commands.browse.run(d)
 
 
-@cli.command('rm')
-@click.help_option('-h', '--help')
+@cli.command("rm")
+@click.help_option("-h", "--help")
 @click.pass_context
 def _rm(ctx: click.Context) -> None:
     """Remove a document from the documents list"""
-    print('Sorry, TODO...')
+    print("Sorry, TODO...")
 
 
-@cli.command('ref')
-@click.help_option('-h', '--help')
-@click.option('-o', '--out', help='Output ref to a file', default=None)
+@cli.command("ref")
+@click.help_option("-h", "--help")
+@click.option("-o", "--out", help="Output ref to a file", default=None)
 @click.pass_context
 def _ref(ctx: click.Context, out: Optional[str]) -> None:
     """Print the reference for a document"""
-    docs = ctx.obj['documents']
+    docs = ctx.obj["documents"]
     docs = papis.api.pick_doc(docs)
     if not docs:
         return
     ref = docs[0]["ref"]
     if out:
-        with open(out, 'w+') as fd:
+        with open(out, "w+") as fd:
             fd.write(ref)
     else:
         print(ref)
 
 
-@cli.command('save')
-@click.help_option('-h', '--help')
+@cli.command("save")
+@click.help_option("-h", "--help")
 @click.argument(
-    'bibfile',
-    default=lambda: config.get('default-save-bibfile', section='bibtex'),
+    "bibfile",
+    default=lambda: config.get("default-save-bibfile", section="bibtex"),
     required=True, type=click.Path())
-@click.option('-f', '--force', default=False, is_flag=True)
+@click.option("-f", "--force", default=False, is_flag=True)
 @click.pass_context
 def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
     """Save the documents imported in bibtex format"""
-    docs = ctx.obj['documents']
+    docs = ctx.obj["documents"]
     if not force:
-        c = papis.tui.utils.confirm('Are you sure you want to save?')
+        c = papis.tui.utils.confirm("Are you sure you want to save?")
         if not c:
-            print('Not saving..')
+            print("Not saving..")
             return
-    with open(bibfile, 'w+') as fd:
+    with open(bibfile, "w+") as fd:
         logger.info("Saving %d documents in '%s'", len(docs), bibfile)
-        fd.write(papis.commands.export.run(docs, to_format='bibtex'))
+        fd.write(papis.commands.export.run(docs, to_format="bibtex"))
 
 
-@cli.command('sort')
-@click.help_option('-h', '--help')
-@click.option('-k', '--key',
+@cli.command("sort")
+@click.help_option("-h", "--help")
+@click.option("-k", "--key",
               help="Field to order it",
               default=None,
               type=str,
               required=True)
-@click.option('-r', '--reverse',
+@click.option("-r", "--reverse",
               help="Reverse the order",
               default=False,
               is_flag=True)
 @click.pass_context
 def _sort(ctx: click.Context, key: Optional[str], reverse: bool) -> None:
     """Sort documents"""
-    docs = ctx.obj['documents']
-    ctx.obj['documents'] = list(sorted(docs,
+    docs = ctx.obj["documents"]
+    ctx.obj["documents"] = list(sorted(docs,
                                        key=lambda d: str(d[key]),
                                        reverse=reverse))
 
 
-@cli.command('unique')
-@click.help_option('-h', '--help')
-@click.option('-k', '--key',
+@cli.command("unique")
+@click.help_option("-h", "--help")
+@click.option("-k", "--key",
               help="Field to test for uniqueness, default is ref",
               default="ref",
               type=str)
-@click.option('-o',
+@click.option("-o",
               help="Output the discarded documents to a file",
               default=None,
               type=str)
 @click.pass_context
 def _unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
     """Remove repetitions"""
-    docs = ctx.obj['documents']
+    docs = ctx.obj["documents"]
     unique_docs = []
     duplis_docs = []
 
@@ -384,23 +384,23 @@ def _unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
                 indices.append(i)
                 duplis_docs.append(bottle)
                 logger.info(
-                        '%d repeated %s -> %s',
-                        len(duplis_docs), key, doc.get(key))
+                    "%d repeated %s -> %s",
+                    len(duplis_docs), key, doc.get(key))
         docs = [d for (i, d) in enumerate(docs) if i not in indices]
 
     logger.info("Unique   : %d", len(unique_docs))
     logger.info("Discarded: %d", len(duplis_docs))
 
-    ctx.obj['documents'] = unique_docs
+    ctx.obj["documents"] = unique_docs
     if o:
-        with open(o, 'w+') as f:
+        with open(o, "w+") as f:
             logger.info("Saving %d documents in '%s'", len(duplis_docs), o)
-            f.write(papis.commands.export.run(duplis_docs, to_format='bibtex'))
+            f.write(papis.commands.export.run(duplis_docs, to_format="bibtex"))
 
 
-@cli.command('doctor')
-@click.help_option('-h', '--help')
-@click.option('-k', '--key',
+@cli.command("doctor")
+@click.help_option("-h", "--help")
+@click.option("-k", "--key",
               help="Field to test for uniqueness, default is ref",
               multiple=True,
               default=("doi", "url", "year", "title", "author"),
@@ -415,19 +415,19 @@ def _doctor(ctx: click.Context, key: List[str]) -> None:
     logger.info("Checking for existence of keys %s", ", ".join(key))
 
     failed = [(d, keys) for d, keys in [(d, [k for k in key if not d.has(k)])
-                                        for d in ctx.obj['documents']]
+                                        for d in ctx.obj["documents"]]
               if keys]
 
     for j, (doc, keys) in enumerate(failed):
-        logger.info('%s {c.Back.BLACK}{c.Fore.RED}%-80.80s{c.Style.RESET_ALL}',
+        logger.info("%s {c.Back.BLACK}{c.Fore.RED}%-80.80s{c.Style.RESET_ALL}",
                     j, papis.document.describe(doc))
         for k in keys:
-            logger.info('\tmissing: %s', k)
+            logger.info("\tmissing: %s", k)
 
 
-@cli.command('filter-cited')
-@click.help_option('-h', '--help')
-@click.option('-f', '--file', '_files',
+@cli.command("filter-cited")
+@click.help_option("-h", "--help")
+@click.option("-f", "--file", "_files",
               help="Text file to check for references",
               multiple=True, required=True, type=str)
 @click.pass_context
@@ -442,17 +442,17 @@ def _filter_cited(ctx: click.Context, _files: List[str]) -> None:
     for f in _files:
         with open(f) as fd:
             text = fd.read()
-            for doc in ctx.obj['documents']:
+            for doc in ctx.obj["documents"]:
                 if re.search(doc["ref"], text):
                     found.append(doc)
 
-    logger.info('%s documents cited', len(found))
+    logger.info("%s documents cited", len(found))
     ctx.obj["documents"] = found
 
 
-@cli.command('iscited')
-@click.help_option('-h', '--help')
-@click.option('-f', '--file', '_files',
+@cli.command("iscited")
+@click.help_option("-h", "--help")
+@click.option("-f", "--file", "_files",
               help="Text file to check for references",
               multiple=True, required=True, type=str)
 @click.pass_context
@@ -466,20 +466,20 @@ def _iscited(ctx: click.Context, _files: List[str]) -> None:
     for f in _files:
         with open(f) as fd:
             text = fd.read()
-            for doc in ctx.obj['documents']:
+            for doc in ctx.obj["documents"]:
                 if not re.search(doc["ref"], text):
                     unfound.append(doc)
 
-    logger.info('%s documents not cited', len(unfound))
+    logger.info("%s documents not cited", len(unfound))
 
     for j, doc in enumerate(unfound):
-        logger.info('%s {c.Back.BLACK}{c.Fore.RED}%-80.80s{c.Style.RESET_ALL}',
+        logger.info("%s {c.Back.BLACK}{c.Fore.RED}%-80.80s{c.Style.RESET_ALL}",
                     j, papis.document.describe(doc))
 
 
-@cli.command('import')
-@click.help_option('-h', '--help')
-@click.option('-o', '--out', help="Out folder to export", default=None)
+@cli.command("import")
+@click.help_option("-h", "--help")
+@click.option("-o", "--out", help="Out folder to export", default=None)
 @papis.cli.all_option()
 @click.pass_context
 def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
@@ -488,7 +488,7 @@ def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
     Import documents to papis
         e.g. papis bibtex read mybib.bib import
     """
-    docs = ctx.obj['documents']
+    docs = ctx.obj["documents"]
 
     if not _all:
         docs = papis.api.pick_doc(docs)
@@ -500,31 +500,31 @@ def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
         config.set_lib_from_name(out)
 
     for j, doc in enumerate(docs):
-        fileValue = None
+        file_value = None
         filepaths = []
         for k in ["file", "FILE"]:
             logger.info(
-                    '%s {c.Back.BLACK}{c.Fore.YELLOW}%-80.80s'
-                    '{c.Style.RESET_ALL}',
-                    j, papis.document.describe(doc))
+                "%s {c.Back.BLACK}{c.Fore.YELLOW}%-80.80s"
+                "{c.Style.RESET_ALL}",
+                j, papis.document.describe(doc))
             if doc.has(k):
-                fileValue = doc[k]
+                file_value = doc[k]
                 logger.info("\tKey '%s' exists", k)
                 break
 
-        if not fileValue:
+        if not file_value:
             logger.info("\t"
                         "{c.Back.YELLOW}{c.Fore.BLACK}"
                         "No pdf files will be imported"
                         "{c.Style.RESET_ALL}")
         else:
-            filepaths = [f for f in fileValue.split(":") if os.path.exists(f)]
+            filepaths = [f for f in file_value.split(":") if os.path.exists(f)]
 
-        if not filepaths and fileValue is not None:
+        if not filepaths and file_value is not None:
             logger.info("\t"
                         "{c.Back.BLACK}{c.Fore.RED}"
                         "No valid file in \n%s{c.Style.RESET_ALL}",
-                        fileValue)
+                        file_value)
         else:
             logger.info("\tfound %s file(s)", len(filepaths))
 

@@ -28,7 +28,7 @@ def data_to_yaml(yaml_path: str, data: Dict[str, Any]) -> None:
     :param data: Data in a dictionary
     :type  data: dict
     """
-    with open(yaml_path, 'w+') as fd:
+    with open(yaml_path, "w+") as fd:
         yaml.dump(
             data,
             fd,
@@ -69,10 +69,10 @@ def yaml_to_data(
             return data
 
 
-@click.command('yaml')
+@click.command("yaml")
 @click.pass_context
-@click.argument('yamlfile', type=click.Path(exists=True))
-@click.help_option('--help', '-h')
+@click.argument("yamlfile", type=click.Path(exists=True))
+@click.help_option("--help", "-h")
 def explorer(ctx: click.Context, yamlfile: str) -> None:
     """
     Import documents from a yaml file
@@ -82,15 +82,15 @@ def explorer(ctx: click.Context, yamlfile: str) -> None:
     papis explore yaml lib.yaml pick
 
     """
-    logger = logging.getLogger('explore:yaml')
+    logger = logging.getLogger("explore:yaml")
     logger.info("Reading in yaml file '%s'", yamlfile)
 
     with open(yamlfile) as fd:
         docs = [papis.document.from_data(d)
                 for d in yaml.load_all(fd, Loader=Loader)]
-    ctx.obj['documents'] += docs
+    ctx.obj["documents"] += docs
 
-    logger.info('%d documents found', len(docs))
+    logger.info("%d documents found", len(docs))
 
 
 class Importer(papis.importer.Importer):
@@ -98,7 +98,7 @@ class Importer(papis.importer.Importer):
     """Importer that parses a yaml file"""
 
     def __init__(self, uri: str) -> None:
-        papis.importer.Importer.__init__(self, name='yaml', uri=uri)
+        papis.importer.Importer.__init__(self, name="yaml", uri=uri)
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:

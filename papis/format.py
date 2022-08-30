@@ -21,7 +21,7 @@ class Formater:
                fmt: str,
                doc: FormatDocType,
                doc_key: str = "",
-               additional: Dict[str, Any] = {}) -> str:
+               additional: Optional[Dict[str, Any]] = None) -> str:
         """
         :param fmt: Python-like format string.
         :type  fmt: str
@@ -44,7 +44,10 @@ class PythonFormater(Formater):
                fmt: str,
                doc: FormatDocType,
                doc_key: str = "",
-               additional: Dict[str, Any] = {}) -> str:
+               additional: Optional[Dict[str, Any]] = None) -> str:
+        if additional is None:
+            additional = {}
+
         doc_name = doc_key or papis.config.getstring("format-doc-name")
         fdoc = Document()
         fdoc.update(doc)
@@ -75,7 +78,10 @@ class Jinja2Formater(Formater):
                fmt: str,
                doc: FormatDocType,
                doc_key: str = "",
-               additional: Dict[str, Any] = {}) -> str:
+               additional: Optional[Dict[str, Any]] = None) -> str:
+        if additional is None:
+            additional = {}
+
         doc_name = doc_key or papis.config.getstring("format-doc-name")
         try:
             return str(self.jinja2
@@ -110,6 +116,6 @@ def get_formater() -> Formater:
 def format(fmt: str,
            doc: FormatDocType,
            doc_key: str = "",
-           additional: Dict[str, Any] = {}) -> str:
+           additional: Optional[Dict[str, Any]] = None) -> str:
     formater = get_formater()
     return formater.format(fmt, doc, doc_key=doc_key, additional=additional)
