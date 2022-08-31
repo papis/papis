@@ -10,10 +10,10 @@ import glob
 from setuptools import setup, find_packages
 import papis
 
-with open('README.rst') as fd:
+with open("README.rst") as fd:
     long_description = fd.read()
 
-if sys.platform == 'win32':
+if sys.platform == "win32":
     data_files = []
 else:
     data_files = [
@@ -41,17 +41,17 @@ else:
 
     ]
 
-included_packages = ['papis'] + ['papis.' + p for p in find_packages('papis')]
+included_packages = ["papis"] + ["papis." + p for p in find_packages("papis")]
 
 setup(
-    name='papis',
+    name="papis",
     version=papis.__version__,
-    maintainer='Alejandro Gallo',
-    maintainer_email='aamsgallo@gmail.com',
+    maintainer="Alejandro Gallo",
+    maintainer_email="aamsgallo@gmail.com",
     author=papis.__author__,
     author_email=papis.__email__,
     license=papis.__license__,
-    url='https://github.com/papis/papis',
+    url="https://github.com/papis/papis",
     install_requires=[
         "requests>=2.11.1",
         "filetype>=1.0.1",
@@ -77,29 +77,29 @@ setup(
         "lxml>=4.3.5 ; python_version>'3.5'",
         "python-slugify>=1.2.6 ; python_version>'3.4'",
     ],
-    python_requires='>=3.5',
+    python_requires=">=3.5",
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'Environment :: Console',
-        'Intended Audience :: Developers',
-        'Intended Audience :: Education',
-        'Intended Audience :: Science/Research',
-        'Intended Audience :: End Users/Desktop',
-        'Intended Audience :: System Administrators',
-        'Natural Language :: English',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-        'Operating System :: MacOS',
-        'Operating System :: POSIX',
-        'Operating System :: Unix',
-        'Operating System :: Microsoft',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: 3.10',
-        'Topic :: Utilities',
+        "Development Status :: 4 - Beta",
+        "Environment :: Console",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Education",
+        "Intended Audience :: Science/Research",
+        "Intended Audience :: End Users/Desktop",
+        "Intended Audience :: System Administrators",
+        "Natural Language :: English",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "Operating System :: MacOS",
+        "Operating System :: POSIX",
+        "Operating System :: Unix",
+        "Operating System :: Microsoft",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Topic :: Utilities",
     ],
     extras_require=dict(
         # List additional groups of dependencies here (e.g. development
@@ -110,23 +110,23 @@ setup(
             "Whoosh>=2.7.4",
         ],
         develop=[
-            'sphinx-click',
-            'sphinx_rtd_theme',
-            'pytest-cov',
-            'mypy>=0.7',
+            "sphinx-click",
+            "sphinx_rtd_theme",
+            "pytest-cov",
+            "mypy>=0.7",
         ]
     ),
     description=(
-        'Powerful and highly extensible command-line based document '
-        'and bibliography manager'
+        "Powerful and highly extensible command-line based document "
+        "and bibliography manager"
     ),
     long_description=long_description,
     keywords=[
-        'document', 'crossref', 'libgen', 'scihub', 'physics', 'mathematics',
-        'books', 'papers', 'science', 'research',
-        'bibtex', 'latex', 'command-line', 'tui', 'biblatex', 'pubmed', 'ieee',
-        'reference manager', 'mendeley', 'zotero', 'elsevier',
-        'cli', 'biliography', 'datasheets', 'bibtex'
+        "document", "crossref", "libgen", "scihub", "physics", "mathematics",
+        "books", "papers", "science", "research",
+        "bibtex", "latex", "command-line", "tui", "biblatex", "pubmed", "ieee",
+        "reference manager", "mendeley", "zotero", "elsevier",
+        "cli", "biliography", "datasheets", "bibtex"
     ],
     package_data=dict(
         papis=[
@@ -136,39 +136,39 @@ setup(
     data_files=data_files,
     packages=included_packages,
     entry_points={
-        'console_scripts': [
-            'papis=papis.commands.default:run',
+        "console_scripts": [
+            "papis=papis.commands.default:run",
         ],
-        "papis.hook.on_edit_done" : [
+        "papis.hook.on_edit_done": [
         ],
-        'papis.exporter': [
-            'bibtex=papis.bibtex:exporter',
-            'json=papis.json:exporter',
-            'yaml=papis.yaml:exporter',
+        "papis.exporter": [
+            "bibtex=papis.bibtex:exporter",
+            "json=papis.json:exporter",
+            "yaml=papis.yaml:exporter",
         ],
-        'papis.importer': [
-            'bibtex=papis.bibtex:Importer',
-            'yaml=papis.yaml:Importer',
-            'doi=papis.crossref:Importer',
-            'crossref=papis.crossref:FromCrossrefImporter',
-            'pdf2doi=papis.crossref:DoiFromPdfImporter',
+        "papis.importer": [
+            "bibtex=papis.bibtex:Importer",
+            "yaml=papis.yaml:Importer",
+            "doi=papis.crossref:Importer",
+            "crossref=papis.crossref:FromCrossrefImporter",
+            "pdf2doi=papis.crossref:DoiFromPdfImporter",
             # 'url=papis.downloaders:Importer',
-            'arxiv=papis.arxiv:Importer',
-            'pdf2arxivid=papis.arxiv:ArxividFromPdfImporter',
-            'pmid=papis.pubmed:Importer',
-            'lib=papis.commands.add:FromLibImporter',
-            'folder=papis.commands.add:FromFolderImporter',
-            'isbn=papis.isbn:Importer',
+            "arxiv=papis.arxiv:Importer",
+            "pdf2arxivid=papis.arxiv:ArxividFromPdfImporter",
+            "pmid=papis.pubmed:Importer",
+            "lib=papis.commands.add:FromLibImporter",
+            "folder=papis.commands.add:FromFolderImporter",
+            "isbn=papis.isbn:Importer",
         ],
-        'papis.picker': [
-            'papis=papis.tui.picker:Picker',
-            'fzf=papis.fzf:Picker',
+        "papis.picker": [
+            "papis=papis.tui.picker:Picker",
+            "fzf=papis.fzf:Picker",
         ],
-        'papis.format': [
-            'python=papis.format:PythonFormater',
-            'jinja2=papis.format:Jinja2Formater',
+        "papis.format": [
+            "python=papis.format:PythonFormater",
+            "jinja2=papis.format:Jinja2Formater",
         ],
-        'papis.command': [
+        "papis.command": [
             "add=papis.commands.add:cli",
             "addto=papis.commands.addto:cli",
             "bibtex=papis.commands.bibtex:cli",
@@ -189,7 +189,7 @@ setup(
             "serve=papis.commands.serve:cli",
             "update=papis.commands.update:cli",
         ],
-        'papis.downloader': [
+        "papis.downloader": [
             "acs=papis.downloaders.acs:Downloader",
             "acm=papis.downloaders.acm:Downloader",
             "annualreviews=papis.downloaders.annualreviews:Downloader",
@@ -211,7 +211,7 @@ setup(
             "arxiv=papis.arxiv:Downloader",
             "projecteuclid=papis.downloaders.projecteuclid:Downloader",
         ],
-        'papis.explorer': [
+        "papis.explorer": [
             "lib=papis.commands.explore:lib",
             "add=papis.commands.explore:add",
             "citations=papis.commands.explore:citations",
@@ -229,5 +229,5 @@ setup(
             "bibtex=papis.bibtex:explorer",
         ]
     },
-    platforms=['linux', 'osx', 'win32'],
+    platforms=["linux", "osx", "win32"],
 )
