@@ -286,8 +286,6 @@ def run(paths: List[str],
     import tempfile
     logger = logging.getLogger('add:run')
 
-    # The folder name of the new document that will be created
-    out_folder_name = None
     # The real paths of the documents to be added
     in_documents_paths = paths
     # The basenames of the documents to be added
@@ -315,6 +313,7 @@ def run(paths: List[str],
 
     if not folder_name:
         out_folder_name = get_hash_folder(data, in_documents_paths)
+        out_folder_path = out_folder_path / out_folder_name
         logger.info("Got an automatic folder name")
     else:
         temp_doc = papis.document.Document(data=data)
@@ -340,8 +339,7 @@ def run(paths: List[str],
 
     data["files"] = in_documents_names
 
-    logger.info("The folder name is '%s'", out_folder_name)
-    logger.debug("Folder path: '%s'", out_folder_path)
+    logger.info("Folder path: '%s'", out_folder_path)
     logger.debug("File(s): %s", in_documents_paths)
 
     # First prepare everything in the temporary directory
