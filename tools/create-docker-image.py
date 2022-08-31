@@ -11,17 +11,17 @@ import shlex
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-p', help='Python version',
+        "-p", help="Python version",
         choices=map(
             lambda x: "{0}.{1}".format(*x),
-            zip(it.repeat(3), range(3,8))))
+            zip(it.repeat(3), range(3, 8))))
     parser.add_argument("dockerfile")
     parser.add_argument(
         "--norun",
         help="Do not run the command, just print", action="store_true")
     args = parser.parse_args()
 
-    assert(os.path.exists(args.dockerfile)), 'Dockerfile does not exist'
+    assert os.path.exists(args.dockerfile), "Dockerfile does not exist"
     folder = os.path.abspath(os.path.dirname(args.dockerfile))
 
     command = (
