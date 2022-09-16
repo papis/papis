@@ -196,7 +196,7 @@ project                                                    maintainer(s)
 `papis-dmenu <https://github.com/papis/papis-dmenu>`__     YOU?
 `papis-vim <https://github.com/papis/papis-vim>`__         YOU?
 `papis-emacs <https://github.com/papis/papis.el>`__        `alejandrogallo <https://alejandrogallo.github.io/>`__
-`papis-zotero <https://github.com/papis/papis-zotero>`__   YOU?
+`papis-zotero <https://github.com/papis/papis-zotero>`__   `lennonhill <https://github.com/lennonhill>`__
 `papis-libgen <https://github.com/papis/papis-zotero>`__   YOU?
 `papis-firefox <https://github.com/papis/papis-firefox>`__ `wavefrontshaping <https://github.com/wavefrontshaping>`__
 ========================================================== =========================================================================================

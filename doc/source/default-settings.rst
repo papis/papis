@@ -277,7 +277,9 @@ Bibtex options
     Default name for the folder of newly added documents. For example, if you want
     the folder of your documents to be named after the format
     ``author-title`` then you should set it to
-    the papis format: ``{doc[author]}-{doc[title]}``.
+    the papis format: ``{doc[author]}-{doc[title]}``. You can create formatted
+    subfolders by using path separators (i.e., ``/``) in this format string, e.g., 
+    ``{doc[year]} / {doc[title]}``.
     Per default a hash followed by the author name is created.
 
 .. papis-config:: add-file-name
@@ -307,6 +309,12 @@ Bibtex options
     ``True`` and you add something, i.e., you run ``papis add --open``, then it
     will have the contrary effect, i.e., it will not open the attached files
     before adding the document to the library.
+
+.. papis-config:: add-subfolder
+    :default: empty string
+
+    Configure a default for the ``--subfolder`` command line option. Note that, this setting is not
+    allowed to contain formatting options. However, one can also specify nested sub-folders.
 
 ``papis browse`` options
 ------------------------

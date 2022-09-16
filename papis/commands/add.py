@@ -91,6 +91,7 @@ Cli
 import os
 import re
 import logging
+import pathlib
 from typing import List, Any, Optional, Dict, Tuple
 
 import click
@@ -249,6 +250,7 @@ def run(paths: List[str],
         folder_name: Optional[str] = None,
         file_name: Optional[str] = None,
         subfolder: Optional[str] = None,
+        base_path: Optional[pathlib.Path] = None,
         confirm: bool = False,
         open_file: bool = False,
         edit: bool = False,
@@ -284,8 +286,6 @@ def run(paths: List[str],
     import tempfile
     logger = logging.getLogger('add:run')
 
-    # The folder name of the new document that will be created
-    out_folder_name = None
     # The real paths of the documents to be added
     in_documents_paths = paths
     # The basenames of the documents to be added
@@ -304,24 +304,42 @@ def run(paths: List[str],
 
     tmp_document = papis.document.Document(temp_dir)
 
+    if base_path is None:
+        base_path = pathlib.Path(papis.config.get_lib_dirs()[0]).expanduser()
+    out_folder_path = base_path
+
+    if subfolder:
+        out_folder_path /= pathlib.Path(subfolder)
+
     if not folder_name:
         out_folder_name = get_hash_folder(data, in_documents_paths)
+        out_folder_path = out_folder_path / out_folder_name
         logger.info("Got an automatic folder name")
     else:
         temp_doc = papis.document.Document(data=data)
-        out_folder_name = papis.format.format(folder_name, temp_doc)
-        out_folder_name = papis.utils.clean_document_name(out_folder_name)
+        temp_path = out_folder_path / pathlib.Path(folder_name)
+        components: List[str] = []
+        assert temp_path.is_relative_to(out_folder_path)
+        while temp_path != out_folder_path and temp_path.is_relative_to(out_folder_path):
+            path_component = temp_path.name
+            component_formatted = papis.format.format(path_component, temp_doc)
+            component_cleaned = papis.utils.clean_document_name(component_formatted)
+            components.insert(0, component_cleaned)
+            # continue with parent path component
+            temp_path = temp_path.parent
+        # components are formatted in reverse order, so we add then now in the
+        # right order to the path
+        for c in components:
+            out_folder_path /= c
+
         del temp_doc
 
-    data["files"] = in_documents_names
-    out_folder_path = os.path.expanduser(
-        os.path.join(
-            papis.config.get_lib_dirs()[0],
-            subfolder or '',
-            out_folder_name))
+    if not out_folder_path.is_relative_to(base_path):
+        raise ValueError("formatting produced path outside of library")
 
-    logger.info("The folder name is '%s'", out_folder_name)
-    logger.debug("Folder path: '%s'", out_folder_path)
+    data["files"] = in_documents_names
+
+    logger.info("Folder path: '%s'", out_folder_path)
     logger.debug("File(s): %s", in_documents_paths)
 
     # First prepare everything in the temporary directory
@@ -430,7 +448,12 @@ def run(paths: List[str],
 @click.option(
     "-d", "--subfolder",
     help="Subfolder in the library",
-    default="")
+    default=lambda: papis.config.getstring('add-subfolder'))
+@click.option(
+    "-p", "--pick-subfolder",
+    help="Pick from existing subfolders",
+    is_flag=True,
+    default=False)
 @click.option(
     "--folder-name",
     help="Name for the document's folder (papis format)",
@@ -484,6 +507,7 @@ def cli(
         files: List[str],
         set_list: List[Tuple[str, str]],
         subfolder: str,
+        pick_subfolder: bool,
         folder_name: str,
         file_name: Optional[str],
         from_importer: List[Tuple[str, str]],
@@ -578,12 +602,17 @@ def cli(
         import time
         ctx.data['time-added'] = time.strftime(papis.strings.time_format)
 
+    base_path = pathlib.Path(
+        papis.pick.pick_subfolder_from_lib(papis.config.get_lib_name())[0]
+    ) if pick_subfolder else None
+
     return run(
         ctx.files,
         data=ctx.data,
         folder_name=folder_name,
         file_name=file_name,
         subfolder=subfolder,
+        base_path=base_path,
         confirm=confirm,
         open_file=open_file,
         edit=edit,

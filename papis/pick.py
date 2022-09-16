@@ -7,6 +7,7 @@ from typing import Callable, TypeVar, Generic, Sequence, Type
 import papis.config
 import papis.document
 import papis.plugin
+import papis.api
 
 logger = logging.getLogger("pick")
 T = TypeVar("T")
@@ -80,3 +81,24 @@ def pick_doc(
     return pick(documents,
                 header_filter=header_filter,
                 match_filter=match_filter)
+
+
+def pick_subfolder_from_lib(lib: str) -> Sequence[str]:
+    """Pick a subfolder from all existings subfolders in library
+
+    Args:
+        lib (str): Library to search for subfolders
+
+    Returns:
+        Sequence[str]: Paths to subfolder
+    """
+    documents = papis.api.get_all_documents_in_lib(lib)
+
+    # find all folders containing documents
+    folders = [os.path.dirname(str(d.get_main_folder())) for d in documents]
+    folders.append(*papis.config.get_lib_dirs())
+
+    # remove duplicates and sort paths
+    folders = sorted([*set(folders)])
+
+    return pick(folders)
