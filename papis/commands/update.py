@@ -143,9 +143,8 @@ def cli(query: str,
         ctx.data.update(document)
         if set_tuples:
             processed_tuples = {}
-            for tuple in set_tuples:
-                key = tuple[0]
-                value = papis.format.format(tuple[1], document)
+            for key, value in set_tuples:
+                value = papis.format.format(value, document)
                 if key == "notes":
                     value = papis.utils.clean_document_name(value)
                     processed_tuples[key] = value
