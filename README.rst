@@ -195,6 +195,7 @@ project                                                    maintainer(s)
 `papis-rofi <https://github.com/papis/papis-rofi/>`__      `Etn40ff <https://github.com/Etn40ff>`__
 `papis-dmenu <https://github.com/papis/papis-dmenu>`__     YOU?
 `papis-vim <https://github.com/papis/papis-vim>`__         YOU?
+`papis.nvim <https://github.com/jghauser/papis.nvim>`__    `Julian Hauser <https://github.com/jghauser>`__
 `papis-emacs <https://github.com/papis/papis.el>`__        `alejandrogallo <https://alejandrogallo.github.io/>`__
 `papis-zotero <https://github.com/papis/papis-zotero>`__   `lennonhill <https://github.com/lennonhill>`__
 `papis-libgen <https://github.com/papis/papis-zotero>`__   YOU?
