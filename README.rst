@@ -25,7 +25,9 @@ Learn more:
 
 - Take a look at the `documentation <http://papis.readthedocs.io/en/latest/>`__!
 - Blog post about getting paper's references with ``papis explore``
-  `here <https://alejandrogallo.github.io/blog/get-paper-references.html>`__.
+  `here <https://alejandrogallo.github.io/blog/posts/getting-paper-references-with-papis/>`__.
+- Blog post about using papis with zotero and SyncThing
+  `here <http://nicolasshu.com/zotero_and_papis.html>`__.
 - GNU/Linux Switzerland wrote about papis
   `here <https://gnulinux.ch/papis-dokumentenverwaltung-fuer-die-kommandozeile>`__.
 - The folks at `OSTechNix <https://www.ostechnix.com/>`__ have dedicated us a
@@ -191,7 +193,7 @@ and maintainers are the following
 ========================================================== =========================================================================================
 project                                                    maintainer(s)
 ========================================================== =========================================================================================
-`papis <https://github.com/papis/papis-rofi/>`__ (core)    `alejandrogallo <https://alejandrogallo.github.io/>`__ `teto <https://github.com/teto>`__
+`papis <https://github.com/papis/papis-rofi/>`__ (core)    `Alejandro Gallo <https://alejandrogallo.github.io/>`__ `teto <https://github.com/teto>`__ `Julian Hauser <https://github.com/jghauser>`__ `Alex Fikl <https://github.com/alexfikl>`__
 `papis-rofi <https://github.com/papis/papis-rofi/>`__      `Etn40ff <https://github.com/Etn40ff>`__
 `papis-dmenu <https://github.com/papis/papis-dmenu>`__     YOU?
 `papis-vim <https://github.com/papis/papis-vim>`__         YOU?
