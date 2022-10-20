@@ -22,6 +22,7 @@ command-line interface (*CLI*) is heavily tailored after
    commands
    web-application
    gui
+   editors
    hooks
    scripting
    api
