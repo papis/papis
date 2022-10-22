@@ -83,7 +83,7 @@ Cli
 ^^^
 .. click:: papis.commands.explore:cli
     :prog: papis explore
-    :show-nested:
+    :nested: full
 """
 import os
 import logging
