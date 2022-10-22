@@ -283,7 +283,7 @@ Bibtex options
 .. papis-config:: add-file-name
 
     Same as ``add-folder-name``, but for files, not folders. If it is not set,
-    the names of the files will be cleaned and taken `as-is`.
+    the names of the files will be cleaned and taken ``as-is``.
 
 .. papis-config:: add-interactive
 
@@ -321,7 +321,7 @@ Bibtex options
 
     This command provides the key that is used to generate the
     url. For users that run ``papis add --from-doi``, setting browse-key
-    to ``doi`` constructs the url from dx.doi.org/DOI, providing a
+    to ``doi`` constructs the url from ``dx.doi.org/<DOI>``, providing a
     much more accurate url.
 
     Default value is set to ``url``. If you need functionality
@@ -743,7 +743,7 @@ Other
 
   Whether or not to add a timestamp to a document when is being added to
   papis. If documents have a timestamp, then they will be sortable
-  using `--sort time-added` option.
+  using ``--sort time-added`` option.
 
 .. papis-config:: formater
 
