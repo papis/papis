@@ -12,13 +12,12 @@ Right now there are three types of databases that the user can use:
       database-backend = papis
       use-cache = False
 
-- Simple cache based database
-  - Configuration option
+- Simple cache based database.
     ::
 
       database-backend = papis
 
-- `Whoosh <https://whoosh.readthedocs.io/en/latest>`_  based database.
+- `Whoosh <https://whoosh.readthedocs.io/en/latest>`__  based database.
     ::
 
       database-backend = whoosh
@@ -82,7 +81,6 @@ language. At the moment it is not possible to do an ``OR``.
 If you need this, you should consider using the
 `Whoosh database`_.
 
-
 For illustration, here are some examples:
 
   - Open documents where the author key matches 'albert' (ignoring case) and
@@ -128,7 +126,7 @@ Whoosh database
 ---------------
 
 Papis has also the possibility to use the blazing fast and pure python
-`Whoosh library <https://whoosh.readthedocs.io/en/latest>`_.
+`Whoosh library <https://whoosh.readthedocs.io/en/latest>`__.
 Its performance is orders of magnitude better than the crude cache based
 database.
 
@@ -178,4 +176,4 @@ will give papers of einstein in the year 1905 together with all papers
 where einstein appears in the title.
 
 You can read more about the whoosh query language
-`here <https://whoosh.readthedocs.io/en/latest/querylang.html>`_.
+`here <https://whoosh.readthedocs.io/en/latest/querylang.html>`__.

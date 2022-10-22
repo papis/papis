@@ -112,9 +112,8 @@ def match_document(
     :param search: A valid search string
     :type  search: str
     :param match_format: Python-like format string.
-        (`see <
-            https://docs.python.org/2/library/string.html#format-string-syntax
-        >`_)
+        (`see here
+        <https://docs.python.org/2/library/string.html#format-string-syntax>`__)
     :type  match_format: str
     :returns: Non false if matches, true-ish if it does match.
 

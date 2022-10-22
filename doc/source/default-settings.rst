@@ -123,7 +123,7 @@ Tools options
     As for now papis is not intended to detect the type of document to be opened
     and decide upon how to open the document. You should set this
     to the right program for the tool. If you are on linux you might want
-    to take a look at `ranger <http://ranger.github.io>`_ or let
+    to take a look at `ranger <http://ranger.github.io>`__ or let
     the default handle it in your system.
     For mac users you might set this to ``open``.
 
@@ -190,9 +190,7 @@ Bibtex options
     [mylib]
     extra-bibtex-types = ["wikipedia", "video", "song"]
 
-  See
-  `bibtex
-  reference <http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`_.
+  See `bibtex reference <http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`__.
 
 .. papis-config:: multiple-authors-format
 
@@ -278,14 +276,14 @@ Bibtex options
     the folder of your documents to be named after the format
     ``author-title`` then you should set it to
     the papis format: ``{doc[author]}-{doc[title]}``. You can create formatted
-    subfolders by using path separators (i.e., ``/``) in this format string, e.g., 
+    subfolders by using path separators (i.e., ``/``) in this format string, e.g.,
     ``{doc[year]} / {doc[title]}``.
     Per default a hash followed by the author name is created.
 
 .. papis-config:: add-file-name
 
     Same as ``add-folder-name``, but for files, not folders. If it is not set,
-    the names of the files will be cleaned and taken `as-is`.
+    the names of the files will be cleaned and taken ``as-is``.
 
 .. papis-config:: add-interactive
 
@@ -323,7 +321,7 @@ Bibtex options
 
     This command provides the key that is used to generate the
     url. For users that run ``papis add --from-doi``, setting browse-key
-    to ``doi`` constructs the url from dx.doi.org/DOI, providing a
+    to ``doi`` constructs the url from ``dx.doi.org/<DOI>``, providing a
     much more accurate url.
 
     Default value is set to ``url``. If you need functionality
@@ -436,7 +434,7 @@ Downloaders
 
     There is the possibility of download papers using a proxy.
     To know more you can checkout this
-    `link <http://docs.python-requests.org/en/master/user/advanced/#proxies>`_.
+    `link <http://docs.python-requests.org/en/master/user/advanced/#proxies>`__.
 
 Databases
 ---------
@@ -467,7 +465,7 @@ Databases
 
     The backend to use in the database. As for now papis supports
     the own database system ``papis`` and
-    `whoosh <https://whoosh.readthedocs.io/en/latest/>`_.
+    `whoosh <https://whoosh.readthedocs.io/en/latest/>`__.
 
 .. papis-config:: use-cache
 
@@ -492,7 +490,7 @@ Databases
 .. papis-config:: whoosh-schema-prototype
 
     This is the model for the whoosh schema, check
-    `the documentation <https://whoosh.readthedocs.io/en/latest/schema.html/>`_
+    `the documentation <https://whoosh.readthedocs.io/en/latest/schema.html/>`__
     for more information.
 
 Terminal user interface (picker)
@@ -534,7 +532,7 @@ or inside the library sections prepending a ``tui-``,
     Examples are ``fg:#ff00aa bg:black`` etc...
     More information can be found
     `here
-    <https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/styling.html/>`_
+    <https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/styling.html/>`__
     .
 
 .. papis-config:: message_toolbar_style
@@ -611,12 +609,11 @@ or inside the library sections prepending a ``tui-``,
 FZF integration
 ---------------
 
-From version `0.12 <https://github.com/papis/papis/issues/334>`_
+From version `0.12 <https://github.com/papis/papis/issues/334>`__
 papis ships with an *out-of-the-box*
-`fzf <https://github.com/junegunn/fzf>`_ integration for the picker.  A
+`fzf <https://github.com/junegunn/fzf>`__ integration for the picker.  A
 minimal terminal user interface is provided and together with options
-for its customization.
-You can set the picktool to ``fzf`` by setting
+for its customization. You can set the picktool to ``fzf`` by setting
 
 .. code:: ini
 
@@ -658,7 +655,7 @@ of fzf.
     ``c`` which contains the package ``colorama`` in it.
     Refer to the ``colorama`` documentation to see which colors
     are available
-    `here <https://github.com/tartley/colorama/blob/master/colorama/ansi.py#L49>`_.
+    `here <https://github.com/tartley/colorama/blob/master/colorama/ansi.py#L49>`__.
     For instance, if you want the title in red you would put in your
     ``fzf-header-format``
 
@@ -746,7 +743,7 @@ Other
 
   Whether or not to add a timestamp to a document when is being added to
   papis. If documents have a timestamp, then they will be sortable
-  using `--sort time-added` option.
+  using ``--sort time-added`` option.
 
 .. papis-config:: formater
 

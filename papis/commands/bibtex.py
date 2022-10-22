@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 r"""
 
-This command helps to interact with `bib` files in your LaTeX projects.
+This command helps to interact with ``bib`` files in your LaTeX projects.
 
 Examples
 ^^^^^^^^
@@ -96,7 +95,7 @@ Vim integration
 
 Right now, you can easily use it from vim with these simple lines
 
-.. code:: vimscript
+.. code:: vim
 
     function! PapisBibtexRef()
       let l:temp = tempname()

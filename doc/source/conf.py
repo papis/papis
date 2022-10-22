@@ -45,9 +45,14 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
+    'sphinx.ext.intersphinx',
     'sphinx.ext.inheritance_diagram',
     'sphinx_click.ext',
 ]
+
+intersphinx_mapping = {
+    "https://docs.python.org/3/": None,
+}
 
 # Exec directive {{{ #
 
@@ -118,7 +123,6 @@ class PapisConfig(Directive):
         source = self.state_machine.input_lines.source(
             self.lineno - self.state_machine.input_offset - 1)
 
-
         lines = []
         lines.append("")
         lines.append(".. _config-{section}-{key}:"
@@ -133,7 +137,7 @@ class PapisConfig(Directive):
             for lindef in default.split('\n'):
                 lines.append(3*"    " + lindef)
         else:
-            lines.append("    - **Default**: ``{value}``"
+            lines.append("    - **Default**: ``{value!r}``"
                          .format(value=default))
         lines.append("")
 
@@ -188,7 +192,10 @@ release = version
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = []
+exclude_patterns = [
+    "commands/*.rst",
+    "default-settings.rst",
+]
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.

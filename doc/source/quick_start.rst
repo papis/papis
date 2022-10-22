@@ -64,7 +64,7 @@ Adding the first document
 -------------------------
 
 If you don't have any special pdf lying around let me choose one for you:
-`link <https://www.gutenberg.org/files/28233/28233-pdf.pdf?session_id=8cecccb488f337378d5826ba1f31984f612f7ff5/>`_.
+`link <https://www.gutenberg.org/files/28233/28233-pdf.pdf?session_id=8cecccb488f337378d5826ba1f31984f612f7ff5/>`__.
 You can download this document and we are going to add it into the ``papers``
 library.
 
@@ -108,7 +108,7 @@ If you open the ``info.yaml`` file you will see the following contents:
 
 This file is all that papis uses to store the information of your newly added
 document. It is stored in a nicely readable `yaml
-<https://en.wikipedia.org/wiki/YAML/>`_ format.
+<https://en.wikipedia.org/wiki/YAML/>`__ format.
 
 Now you already have your first document, and.. you can open it!
 Just do
@@ -138,7 +138,7 @@ desired paper very easily.
 
 Of course papis shines really in other areas, for instance imagine
 you are browsing this paper
-`prl paper <https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.124.171801/>`_
+`prl paper <https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.124.171801/>`__
 and you want to add it to your library, as of version ``v0.9``
 you can issue one of these commands
 
