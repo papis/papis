@@ -45,9 +45,14 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
+    'sphinx.ext.intersphinx',
     'sphinx.ext.inheritance_diagram',
     'sphinx_click.ext',
 ]
+
+intersphinx_mapping = {
+    "https://docs.python.org/3/": None,
+}
 
 # Exec directive {{{ #
 
