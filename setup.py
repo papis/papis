@@ -22,7 +22,7 @@ else:
             "README.rst",
             "CHANGELOG.md",
             "AUTHORS",
-            "LICENSE.txt",
+            "LICENSE",
         ]),
 
         ("etc/bash_completion.d/", [
