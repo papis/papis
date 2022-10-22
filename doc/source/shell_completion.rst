@@ -1,5 +1,5 @@
 Shell auto-completion
-====================
+=====================
 
 Papis has a bash auto-completion script that comes installed
 when you install papis with ``pip3``.
