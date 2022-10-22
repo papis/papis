@@ -4,7 +4,7 @@ The ``info.yaml`` file
 At the heart of papis there is the information file. The info file contains
 all information about the documents.
 
-It uses the `yaml <http://www.yaml.org/start.html>`_ syntax to store
+It uses the `yaml <http://www.yaml.org/start.html>`__ syntax to store
 information, which is a very human-readable language.
 It is quite format-free:
 `papis` does not assume that any special information should be there.

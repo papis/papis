@@ -2,8 +2,7 @@
 General architecture
 --------------------
 
-Papis uses the package
-`stevedore <https://github.com/openstack/stevedore/>`_
+Papis uses the package `stevedore <https://github.com/openstack/stevedore/>`__
 for general plugin management.
 
 The only papis module invoking ``stevedore`` should be

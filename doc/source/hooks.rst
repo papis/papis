@@ -1,4 +1,3 @@
-=====
 Hooks
 =====
 
@@ -8,7 +7,7 @@ and plugin writers can also tap into this functionality.
 
 A hook is declared in the same way as a plugin, in fact
 they are implemented in the same way within the
-`stevedore <https://github.com/openstack/stevedore>`_ plugin.
+`stevedore <https://github.com/openstack/stevedore>`__ plugin.
 
 1 Writing hooks as a user
 -------------------------
