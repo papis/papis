@@ -12,8 +12,7 @@ Right now there are three types of databases that the user can use:
       database-backend = papis
       use-cache = False
 
-- Simple cache based database
-  - Configuration option
+- Simple cache based database.
     ::
 
       database-backend = papis
