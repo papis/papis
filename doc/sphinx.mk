@@ -5,7 +5,7 @@ ENV ?= env
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
-SPHINXBUILD   = ../$(ENV)/bin/sphinx-build
+SPHINXBUILD   ?= python $(shell which sphinx-build)
 PAPER         =
 BUILDDIR      = build
 
