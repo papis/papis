@@ -24,6 +24,7 @@ command-line interface (*CLI*) is heavily tailored after
    gui
    editors
    hooks
+   document
    scripting
    api
    plugins
