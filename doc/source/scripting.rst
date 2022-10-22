@@ -124,7 +124,8 @@ Useful links
 ------------
 
 - `Get paper references with papis <https://alejandrogallo.github.io/blog/get-paper-references.html>`__
-  .. code:: sh
+
+    .. code:: sh
 
         citget() {
             query=$1
