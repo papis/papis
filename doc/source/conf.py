@@ -123,7 +123,6 @@ class PapisConfig(Directive):
         source = self.state_machine.input_lines.source(
             self.lineno - self.state_machine.input_offset - 1)
 
-
         lines = []
         lines.append("")
         lines.append(".. _config-{section}-{key}:"
@@ -138,7 +137,7 @@ class PapisConfig(Directive):
             for lindef in default.split('\n'):
                 lines.append(3*"    " + lindef)
         else:
-            lines.append("    - **Default**: ``{value}``"
+            lines.append("    - **Default**: ``{value!r}``"
                          .format(value=default))
         lines.append("")
 
