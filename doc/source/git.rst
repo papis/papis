@@ -2,8 +2,8 @@ Git
 ===
 
 Papis is conceived to work well with the tool `git`, this would also work with
-`mercurial <https://www.mercurial-scm.org/>`_
-or `subversion <https://subversion.apache.org/>`_.
+`mercurial <https://www.mercurial-scm.org/>`__
+or `subversion <https://subversion.apache.org/>`__.
 
 Here you will find a description of a possible workflow using git with papis.
 This is not the only workflow, but it is the most obvious.

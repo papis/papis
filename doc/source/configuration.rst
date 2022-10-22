@@ -4,7 +4,7 @@ Configuration file
 ==================
 
 Papis uses a configuration file in
-`*INI* <https://en.wikipedia.org/wiki/INI_file>`_  format.
+`*INI* <https://en.wikipedia.org/wiki/INI_file>`__  format.
 
 The basic configuration unit is a library.
 Imagine you want to have a library called ``papers`` and
@@ -157,7 +157,7 @@ then every time that you use this library papis will also source this
 configuration file.
 
 An example of a project using a local configuration file can be seen
-`here <https://github.com/alejandrogallo/datasheets/blob/master/.papis.config/>`_
+`here <https://github.com/alejandrogallo/datasheets/blob/master/.papis.config/>`__
 , where the repository includes documents for component datasheets
 and every time ``papis`` is using that library the ``.papis.config``
 file is also read and some settings will be getting overridden.

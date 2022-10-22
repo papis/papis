@@ -121,9 +121,7 @@ def create_identifier(input_list: str) -> Iterator[str]:
     >>> next(m)
     'a'
 
-    (`see <
-        https://stackoverflow.com/questions/14381940/
-        >`_)
+    (`see here <https://stackoverflow.com/questions/14381940/>`__)
 
     :param input_list: list to iterate over
     :type  input_list: list

@@ -16,7 +16,7 @@ To install this script you can install the project
 instructions therein to import a bibliography file into papis.
 
 You can also take a look at the
-`zotero2papis <https://github.com/nicolasshu/zotero2papis>`_ project
+`zotero2papis <https://github.com/nicolasshu/zotero2papis>`__ project
 in order to see a different workflow
 and different implementation of a converter script.
 `This <http://nicolasshu.com/zotero_and_papis.html>`__ blogpost

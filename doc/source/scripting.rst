@@ -123,7 +123,7 @@ This is an example of using papis with the window manager `i3`.
 Useful links
 ------------
 
-- `Get paper references with papis <https://alejandrogallo.github.io/blog/get-paper-references.html`_
+- `Get paper references with papis <https://alejandrogallo.github.io/blog/get-paper-references.html>`__
   .. code:: sh
 
         citget() {
@@ -135,5 +135,5 @@ Useful links
                 cmd "papis add --from doi {doc[doi]} $@"
         }
 
-            
+
 
