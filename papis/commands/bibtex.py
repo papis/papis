@@ -96,7 +96,7 @@ Vim integration
 
 Right now, you can easily use it from vim with these simple lines
 
-.. code:: vimscript
+.. code:: vim
 
     function! PapisBibtexRef()
       let l:temp = tempname()
