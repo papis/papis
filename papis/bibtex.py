@@ -1,7 +1,7 @@
 import os
 import string
 import logging
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Iterator
 
 import click
 
@@ -52,7 +52,7 @@ bibtex_key_converter = {
 
 
 def exporter(documents: List[papis.document.Document]) -> str:
-    return "\n".join(to_bibtex(document) for document in documents)
+    return "\n".join(to_bibtex_multiple(documents))
 
 
 class Importer(papis.importer.Importer):
@@ -210,6 +210,17 @@ def create_reference(doc: Dict[str, Any]) -> str:
     return ref_cleanup(ref)
 
 
+def to_bibtex_multiple(documents: List[papis.document.Document]) -> Iterator[str]:
+    for doc in documents:
+        bib = to_bibtex(doc)
+        if not bib:
+            logger.warning("Skipping document export: '%s'",
+                           doc.get_info_file())
+            continue
+
+        yield bib
+
+
 def to_bibtex(document: papis.document.Document) -> str:
     """Create a bibtex string from document's information
 
@@ -220,16 +231,29 @@ def to_bibtex(document: papis.document.Document) -> str:
     bibtex_string = ""
     bibtex_type = ""
 
-    # First the type, article ....
+    # determine bibtex type
     if "type" in document:
         if document["type"] in bibtex_types:
             bibtex_type = document["type"]
         elif document["type"] in bibtex_type_converter:
             bibtex_type = bibtex_type_converter[document["type"]]
+        else:
+            logger.error("BibTeX type '%s' not valid: '%s'",
+                         document["type"],
+                         document.get_info_file())
+            return ""
+
     if not bibtex_type:
         bibtex_type = "article"
 
+    # determine ref value
     ref = create_reference(document)
+    if not ref:
+        logger.error("No valid ref found for document: '%s'",
+                     document.get_info_file())
+
+        return ""
+
     logger.debug("Used 'ref = %s'", ref)
 
     bibtex_string += "@{type}{{{ref},\n".format(type=bibtex_type, ref=ref)
