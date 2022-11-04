@@ -1,17 +1,8 @@
 Papis
 =====
 
-|Build_Status| |ghbadge| |Coveralls| |RTD|
-|Code_Quality|
-|PyPI-Versions| |MYPY-CHECKED| |PyPI-Downloads|
-|Contributors| |zenodo_badge| |OpenHub|
-
-
-|Pypi|
-|Packaging_status|
-
-|zulip|
-|libera|
+|Build_Status| |ghbadge| |Coveralls| |RTD| |Code_Quality|
+|zenodo_badge|
 
 Description
 -----------
