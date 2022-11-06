@@ -1,196 +1,165 @@
 Papis
 =====
 
-|Build_Status| |ghbadge| |Coveralls| |RTD| |Code_Quality|
-|zenodo_badge|
+|Build_Status| |ghbadge| |Coveralls| |RTD| |Code_Quality| |zenodo_badge|
 
-Description
------------
+Papis is a powerful and highly extensible CLI document and bibliography manager.
 
-Papis is a powerful and highly extensible command-line based document
-and bibliography manager.
+|first_glance|
 
-|quickstartsvg|
+With Papis, you can search your library for books and papers, add documents and notes, import and export to and from other formats, and much much more. Papis uses a human-readable and easily hackable `.yaml` file to store each entry's bibliographical data. It strives to be easy to use while providing a wide range of features. And for those who still want more, Papis makes it easy to write scripts that extend its features even further.
 
-Learn more:
+Features
+--------
 
-- Take a look at the `documentation <http://papis.readthedocs.io/en/latest/>`__!
-- Blog post about getting paper's references with ``papis explore``
-  `here <https://alejandrogallo.github.io/blog/posts/getting-paper-references-with-papis/>`__.
-- Blog post about using papis with zotero and SyncThing
-  `here <http://nicolasshu.com/zotero_and_papis.html>`__.
-- GNU/Linux Switzerland wrote about papis
-  `here <https://gnulinux.ch/papis-dokumentenverwaltung-fuer-die-kommandozeile>`__.
-- The folks at `OSTechNix <https://www.ostechnix.com/>`__ have dedicated us a
-  review, you may also check it out `here
-  <https://www.ostechnix.com/papis-command-line-based-document-bibliography-manager/>`__.
-- A review in Spanish is also available at `ubunlog
-  <https://ubunlog.com/papis-administrador-documentos/>`__.
+- **Add documents** and automatically fetch metadata with *crossref*.
+- **Search** your files by author, title, tags, and so on.
+- **Synchronize** your library with whatever software you're already using.
+- **Share** your documents with colleagues without having to force some proprietary service onto them.
+- **Import** your existing files from Zotero and other bibliography managers.
+- **Export** your files to bibtex and other formats.
+- **Integrate with your editor** with plugins for (Neo)vim and Emacs.
+- **TUIs** make it easy to get a quick overview of your library.
+- **Use the web app** when the CLI doesn't quite cut it (for example on your tablet).
+- **Hacking** Papis is easy! Use the API to easily create your own custom python scripts.
 
-Main features
--------------
+Quick tour
+----------
 
--  Synchronizing of documents: put your documents in some folder and
-   synchronize it using the tools you love: git, dropbox, rsync,
-   OwnCloud, Google Drive ... whatever.
--  Share libraries with colleagues without forcing them to open an
-   account, nowhere, never.
--  Download directly paper information from *DOI* number via *Crossref*.
--  (optional) **scihub** support, use the example papis script
-   ``examples/scripts/papis-scihub`` to download papers from scihub and
-   add them to your library with all the relevant information, in a
-   matter of seconds, also you can check the documentation
-   `here <http://papis.readthedocs.io/en/latest/scihub.html>`__.
--  Import from Zotero and other managers using
-   `papis-zotero <https://github.com/papis/papis-zotero>`__.
--  Create custom scripts to help you achieve great tasks easily
-   (`doc <http://papis.readthedocs.io/en/latest/scripting.html>`__).
--  Export documents into many formats (bibtex, yaml, ...)
--  Command-line granularity, all the power of a library at the tip of
-   your fingers.
+Install Papis with pip (or `an alternative form of installation <https://papis.readthedocs.io/en/latest/install.html>`__):
 
-Contributing
-------------
+.. code:: bash
 
-Contributions are very welcome! Take a look at the files
-``CONTRIBUTING.md`` for general rules, ``ROADMAP.md`` for possible
-contribution topics and ``HACKING.md`` for additional code-related
-information.
+    pip install papis
 
-Super quick start
------------------
+Let's download a couple of documents:
 
-Install papis with pip3
-
-::
-
-    sudo pip3 install papis
-
-Let us download a couple of documents
-
-::
+.. code:: bash
 
     wget http://www.gnu.org/s/libc/manual/pdf/libc.pdf
     wget http://www.ams.org/notices/201304/rnoti-p434.pdf
 
-Now add them to the (defaultly created) library, you can set
-any keyword you like already when adding documents, for instance
-you can set the year `--set year 2018` or tags for organizing
-`--set tags programming`,
+We can now add these to the (default) library. This will automatically query for the metadata associated with the `doi`.
 
-::
+.. code:: bash
 
-    papis add libc.pdf --set author "Sandra Loosemore" --set title "GNU C reference manual" --set year 2018 --set tags programming --confirm
-    # Get paper information automatically via de DOI
-    papis add --from doi 10.1090/noti963 --set tags programming rnoti-p434.pdf
+    papis add --from doi 10.1090/noti963 rnoti-p434.pdf
 
-Now open one for example, or edit them
+|add|
 
-::
+You can also use `--set` to add information:
+
+.. code:: bash
+
+    papis add libc.pdf --set author "Sandra Loosemore" \
+                       --set title "GNU C reference manual" \
+                       --set year 2018 \
+                       --set tags programming \
+                       --confirm
+
+Now open an attached file or edit an entry:
+
+.. code:: bash
 
     papis open
     papis edit
 
-|superquickstartsvg1| Or edit them and export them to bibtex
 
-::
+|edit|
+
+Or export them to bibtex:
+
+.. code:: bash
 
     papis export --all --format bibtex > mylib.bib
 
-|superquickstartsvg2|
+|bibtex_export|
 
-find help messages in all commands:
+All Papis commands come with help messages:
 
-::
+.. code:: bash
 
-    papis -h
-    papis add -h
+    papis -h      # General help
+    papis add -h  # Help with a specific Papis command
 
-If you so prefer, you can also browse your papers using the web application
+Installation & setup
+--------------------
 
-::
+Information about installation and setup can be found in the docs, for example in the these sections:
 
-   papis serve
+- `Installation <https://papis.readthedocs.io/en/latest/install.html>`__
+- `Configuration <https://papis.readthedocs.io/en/latest/configuration.html>`__
+- `Editor integration <https://papis.readthedocs.io/en/latest/editors.html>`__
+- Information about `info.yamls <https://papis.readthedocs.io/en/latest/info_file.html>`__ and the `library structure <https://papis.readthedocs.io/en/latest/library_structure.html>`__
 
-|webapp-einstein|
+Questions?
+----------
 
-AND MUCH, MUCH MORE!
+Feel free to ask questions in the `GitHub discussions <https://github.com/papis/papis/discussions>`__ — we're more than happy to help. If you've found a bug, please `open an issue <https://github.com/papis/papis/issues>`__ and help us make Papis even better!
 
-Contact
--------
+Contributing
+------------
 
-Feel free to use issues, github discussions,
-our `IRC libera channel <https://kiwiirc.com/client/irc.libera.chat/#papis>`__
-or our `zulip channel <https://papis.zulipchat.com>`__.
+Contributions are very welcome! Take a look at `CONTRIBUTING.md <https://github.com/papis/papis/blob/master/CONTRIBUTING.md>`__ for general rules and `HACKING.md <https://github.com/papis/papis/blob/master/HACKING.md>`__ for additional code-related information. There are also a number of `additional projects <The Papis ecosystem>`__ that you can check out, contribute to, or even help maintain :wink:.
 
-Authors
--------
+Reviews and blog posts
+----------------------
 
-See the ``AUTHORS`` list for a list of authored commits.
+- `Blog post <https://alejandrogallo.github.io/blog/posts/getting-paper-references-with-papis/>`__ about getting a paper's references with ``papis explore``.
+- `Blog post <http://nicolasshu.com/zotero_and_papis.html>`__ about using Papis with Zotero and Syncthing.
+- GNU/Linux Switzerland `wrote about Papis <https://gnulinux.ch/papis-dokumentenverwaltung-fuer-die-kommandozeile>`__. *(in German)*
+- The folks at OSTechNix wrote a review of `Papis 
+  <https://www.ostechnix.com/papis-command-line-based-document-bibliography-manager/>`__.
+- A `review of Papis <https://ubunlog.com/papis-administrador-documentos/>`__ by Ubunlog. *(in Spanish)*
+  
 
-.. |zenodo_badge| image:: https://zenodo.org/badge/82691622.svg
-   :target: https://zenodo.org/badge/latestdoi/82691622
-.. |superquickstartsvg1| image:: https://papis.github.io/images/superquickstart1.svg
-.. |superquickstartsvg2| image:: https://papis.github.io/images/superquickstart2.svg
-.. |quickstartsvg| image:: https://papis.github.io/images/quick.svg
-.. |webapp-einstein| image:: https://papis.github.io/images/web-app-einstein.jpg
-.. |Pypi| image:: https://badge.fury.io/py/papis.svg
-   :target: https://badge.fury.io/py/papis
-.. |RTD| image:: https://readthedocs.org/projects/papis/badge/?version=latest
-   :target: http://papis.readthedocs.io/en/latest/?badge=latest
-.. |Coveralls| image:: https://coveralls.io/repos/github/papis/papis/badge.svg?branch=master
-   :target: https://coveralls.io/github/papis/papis?branch=master
-.. |Build_Status| image:: https://travis-ci.org/papis/papis.svg?branch=master
-   :target: https://travis-ci.org/papis/papis
-.. |Packaging_status| image:: https://repology.org/badge/vertical-allrepos/papis.svg
-   :target: https://repology.org/metapackage/papis
-.. |Code_Quality| image:: https://img.shields.io/lgtm/grade/python/g/papis/papis.svg?logo=lgtm&logoWidth=18
-   :target: https://lgtm.com/projects/g/papis/papis/context:python
-.. |PyPI-Downloads| image:: https://img.shields.io/pypi/dm/papis.svg?label=pypi%20downloads&logo=python&logoColor=white
-   :target: https://pypi.org/project/papis
-.. |PyPI-Versions| image:: https://img.shields.io/pypi/pyversions/papis.svg?logo=python&logoColor=white
-   :target: https://pypi.org/project/papis
-.. |MYPY-CHECKED| image:: http://www.mypy-lang.org/static/mypy_badge.svg
-   :target: http://mypy-lang.org/
-.. |OpenHub| image:: https://www.openhub.net/p/papis/widgets/project_thin_badge.gif
-   :target: https://www.openhub.net/p/papis
-.. |Contributors| image:: https://img.shields.io/github/contributors/papis/papis
-.. |ghbadge| image:: https://github.com/papis/papis/workflows/CI/badge.svg
-.. |zulip| image:: https://img.shields.io/badge/papis-join_chat-brightgreen.svg
-   :target: https://papis.zulipchat.com
-.. |libera| image:: https://img.shields.io/badge/irc-%23papis-green
-   :target: https://kiwiirc.com/client/irc.libera.chat/#papis
+The Papis ecosystem
+-------------------
 
+Papis has grown over the years and there are now a number of projects that extend Papis' features or integrate it with other software.
 
+========================================================== =========================================================================================
+Project                                                    Maintained by 
+========================================================== =========================================================================================
+`papis <https://github.com/papis/papis-rofi/>`__ (core)    `Alejandro Gallo <https://alejandrogallo.github.io/>`__, `teto <https://github.com/teto>`__, `Julian Hauser <https://github.com/jghauser>`__, `Alex Fikl <https://github.com/alexfikl>`__
+`papis-rofi <https://github.com/papis/papis-rofi/>`__      `Etn40ff <https://github.com/Etn40ff>`__
+`papis-dmenu <https://github.com/papis/papis-dmenu>`__     you?
+`papis-vim <https://github.com/papis/papis-vim>`__         you?
+`papis.nvim <https://github.com/jghauser/papis.nvim>`__    `Julian Hauser <https://github.com/jghauser>`__
+`papis-emacs <https://github.com/papis/papis.el>`__        `Alejandro Gallo <https://alejandrogallo.github.io/>`__
+`papis-zotero <https://github.com/papis/papis-zotero>`__   `lennonhill <https://github.com/lennonhill>`__
+`papis-libgen <https://github.com/papis/papis-zotero>`__   you?
+`papis-firefox <https://github.com/papis/papis-firefox>`__ `wavefrontshaping <https://github.com/wavefrontshaping>`__
+========================================================== =========================================================================================
 
 Related software
 ----------------
 
-Here is a list of similar software:
+Papis isn't the only fish in the pond. You might also be interested in:
 
-- `Mendeley <https://www.mendeley.com/>`__ Proprietary.
-- `Zotero <https://www.zotero.org/>`__ FOSS
-- `Xapers <https://finestructure.net/xapers/>`__.
-- `pubs <https://github.com/pubs/pubs/>`__.
+- `bibman <https://codeberg.org/KMIJPH/bibman>`__ (opensource)
+- `cobib <https://github.com/mrossinek/cobib>`__ (opensource)
+- `jabref <https://www.jabref.org/>`__ (opensource)
+- `Mendeley <https://www.mendeley.com/>`__ (proprietary)
+- `pubs <https://github.com/pubs/pubs/>`__ (opensource)
+- `Xapers <https://finestructure.net/xapers/>`__ (opensource)
+- `Zotero <https://www.zotero.org/>`__ (opensource)
 
 
-Papis projects maintainers
---------------------------
 
-If you find papis useful and want to maintain one of papis
-plugins, feel free to contact us. Right now some of papis projects
-and maintainers are the following
+.. |Build_Status| image:: https://travis-ci.org/papis/papis.svg?branch=master
+   :target: https://travis-ci.org/papis/papis
+.. |ghbadge| image:: https://github.com/papis/papis/workflows/CI/badge.svg
+.. |Coveralls| image:: https://coveralls.io/repos/github/papis/papis/badge.svg?branch=master
+   :target: https://coveralls.io/github/papis/papis?branch=master
+.. |RTD| image:: https://readthedocs.org/projects/papis/badge/?version=latest
+   :target: http://papis.readthedocs.io/en/latest/?badge=latest
+.. |Code_Quality| image:: https://img.shields.io/lgtm/grade/python/g/papis/papis.svg?logo=lgtm&logoWidth=18
+   :target: https://lgtm.com/projects/g/papis/papis/context:python
+.. |zenodo_badge| image:: https://zenodo.org/badge/82691622.svg
+   :target: https://zenodo.org/badge/latestdoi/82691622
 
-========================================================== =========================================================================================
-project                                                    maintainer(s)
-========================================================== =========================================================================================
-`papis <https://github.com/papis/papis-rofi/>`__ (core)    `Alejandro Gallo <https://alejandrogallo.github.io/>`__ `teto <https://github.com/teto>`__ `Julian Hauser <https://github.com/jghauser>`__ `Alex Fikl <https://github.com/alexfikl>`__
-`papis-rofi <https://github.com/papis/papis-rofi/>`__      `Etn40ff <https://github.com/Etn40ff>`__
-`papis-dmenu <https://github.com/papis/papis-dmenu>`__     YOU?
-`papis-vim <https://github.com/papis/papis-vim>`__         YOU?
-`papis.nvim <https://github.com/jghauser/papis.nvim>`__    `Julian Hauser <https://github.com/jghauser>`__
-`papis-emacs <https://github.com/papis/papis.el>`__        `alejandrogallo <https://alejandrogallo.github.io/>`__
-`papis-zotero <https://github.com/papis/papis-zotero>`__   `lennonhill <https://github.com/lennonhill>`__
-`papis-libgen <https://github.com/papis/papis-zotero>`__   YOU?
-`papis-firefox <https://github.com/papis/papis-firefox>`__ `wavefrontshaping <https://github.com/wavefrontshaping>`__
-========================================================== =========================================================================================
+.. |first_glance| image:: https://mis.julianhauser.com/s/QRL4HdoLeX6ifwF/download/first_glance.gif
+.. |edit| image:: https://mis.julianhauser.com/s/dfEkDnbrYcPmDA3/download/edit.gif
+.. |bibtex_export| image:: https://mis.julianhauser.com/s/2SGPeLgYa6x7SAf/download/bibtex_export.gif
+.. |add| image:: https://mis.julianhauser.com/s/YWgnfx3J2PZ7nd5/download/add.gif
