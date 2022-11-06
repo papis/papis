@@ -118,7 +118,7 @@ The Papis ecosystem
 
 Papis has grown over the years and there are now a number of projects that extend Papis' features or integrate it with other software.
 
-.. list-table:: Papis projects
+.. list-table::
    :widths: 33 67
    :header-rows: 1
 
