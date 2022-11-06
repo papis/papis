@@ -118,19 +118,40 @@ The Papis ecosystem
 
 Papis has grown over the years and there are now a number of projects that extend Papis' features or integrate it with other software.
 
-========================================================== =========================================================================================
-Project                                                    Maintained by 
-========================================================== =========================================================================================
-`papis <https://github.com/papis/papis-rofi/>`__ (core)    `Alejandro Gallo <https://alejandrogallo.github.io/>`__, `teto <https://github.com/teto>`__, `Julian Hauser <https://github.com/jghauser>`__, `Alex Fikl <https://github.com/alexfikl>`__
-`papis-rofi <https://github.com/papis/papis-rofi/>`__      `Etn40ff <https://github.com/Etn40ff>`__
-`papis-dmenu <https://github.com/papis/papis-dmenu>`__     you?
-`papis-vim <https://github.com/papis/papis-vim>`__         you?
-`papis.nvim <https://github.com/jghauser/papis.nvim>`__    `Julian Hauser <https://github.com/jghauser>`__
-`papis-emacs <https://github.com/papis/papis.el>`__        `Alejandro Gallo <https://alejandrogallo.github.io/>`__
-`papis-zotero <https://github.com/papis/papis-zotero>`__   `lennonhill <https://github.com/lennonhill>`__
-`papis-libgen <https://github.com/papis/papis-zotero>`__   you?
-`papis-firefox <https://github.com/papis/papis-firefox>`__ `wavefrontshaping <https://github.com/wavefrontshaping>`__
-========================================================== =========================================================================================
+.. list-table:: Papis projects
+   :widths: 33 67
+   :header-rows: 1
+
+   * - Project
+     - Maintained by
+
+   * - `papis (core) <https://github.com/papis/papis-rofi/>`__
+     - `Alejandro Gallo <https://alejandrogallo.github.io/>`__, `teto <https://github.com/teto>`__, `Julian Hauser <https://github.com/jghauser>`__, `Alex Fikl <https://github.com/alexfikl>`__
+
+   * - `papis-rofi <https://github.com/papis/papis-rofi/>`__
+     - `Etn40ff <https://github.com/Etn40ff>`__
+   
+   * - `papis-dmenu <https://github.com/papis/papis-dmenu>`__
+     - you?
+
+   * - `papis-vim <https://github.com/papis/papis-vim>`__
+     - you?
+
+   * - `papis.nvim <https://github.com/jghauser/papis.nvim>`__
+     - `Julian Hauser <https://github.com/jghauser>`__
+
+   * - `papis-emacs <https://github.com/papis/papis.el>`__
+     - `Alejandro Gallo <https://alejandrogallo.github.io/>`__
+
+   * - `papis-zotero <https://github.com/papis/papis-zotero>`__
+     - `lennonhill <https://github.com/lennonhill>`__
+
+   * - `papis-libgen <https://github.com/papis/papis-zotero>`__
+     - you?
+
+   * - `papis-firefox <https://github.com/papis/papis-firefox>`__
+     - `wavefrontshaping <https://github.com/wavefrontshaping>`__
+
 
 Related software
 ----------------
