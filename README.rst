@@ -1,7 +1,7 @@
 Papis
 =====
 
-|Build_Status| |ghbadge| |Coveralls| |RTD| |Code_Quality| |zenodo_badge|
+|ghbadge| |Coveralls| |RTD| |Code_Quality| |Pypi| |zenodo_badge|
 
 Papis is a powerful and highly extensible CLI document and bibliography manager.
 
@@ -12,7 +12,7 @@ With Papis, you can search your library for books and papers, add documents and 
 Features
 --------
 
-- **Add documents** and automatically fetch metadata with *crossref*.
+- **Add documents** and automatically fetch their metadata.
 - **Search** your files by author, title, tags, and so on.
 - **Synchronize** your library with whatever software you're already using.
 - **Share** your documents with colleagues without having to force some proprietary service onto them.
@@ -90,7 +90,6 @@ Information about installation and setup can be found in the docs, for example i
 - `Installation <https://papis.readthedocs.io/en/latest/install.html>`__
 - `Configuration <https://papis.readthedocs.io/en/latest/configuration.html>`__
 - `Editor integration <https://papis.readthedocs.io/en/latest/editors.html>`__
-- Information about `info.yamls <https://papis.readthedocs.io/en/latest/info_file.html>`__ and the `library structure <https://papis.readthedocs.io/en/latest/library_structure.html>`__
 
 Questions?
 ----------
@@ -177,6 +176,8 @@ Papis isn't the only fish in the pond. You might also be interested in:
    :target: http://papis.readthedocs.io/en/latest/?badge=latest
 .. |Code_Quality| image:: https://img.shields.io/lgtm/grade/python/g/papis/papis.svg?logo=lgtm&logoWidth=18
    :target: https://lgtm.com/projects/g/papis/papis/context:python
+.. |Pypi| image:: https://badge.fury.io/py/papis.svg
+   :target: https://badge.fury.io/py/papis
 .. |zenodo_badge| image:: https://zenodo.org/badge/82691622.svg
    :target: https://zenodo.org/badge/latestdoi/82691622
 
