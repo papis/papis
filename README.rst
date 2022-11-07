@@ -177,7 +177,7 @@ Papis isn't the only fish in the pond. You might also be interested in:
 .. |Code_Quality| image:: https://img.shields.io/lgtm/grade/python/g/papis/papis.svg?logo=lgtm&logoWidth=18
    :target: https://lgtm.com/projects/g/papis/papis/context:python
 .. |Pypi| image:: https://badge.fury.io/py/papis.svg
-   :target: https://badge.fury.io/py/papis
+   :target: https://pypi.org/project/papis/
 .. |zenodo_badge| image:: https://zenodo.org/badge/82691622.svg
    :target: https://zenodo.org/badge/latestdoi/82691622
 
