@@ -26,7 +26,7 @@ Features
 Quick tour
 ----------
 
-Install Papis with pip (or `an alternative form of installation <https://papis.readthedocs.io/en/latest/install.html>`__):
+Install Papis with pip (or `one of the alternatives <https://papis.readthedocs.io/en/latest/install.html>`__):
 
 .. code:: bash
 
