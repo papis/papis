@@ -17,7 +17,7 @@ Features
 - **Synchronize** your library with whatever software you're already using.
 - **Share** your documents with colleagues without having to force some proprietary service onto them.
 - **Import** your existing files from `Zotero <https://www.zotero.org/>`__ and other bibliography managers.
-- **Export** your files to bibtex and other formats.
+- **Export** your files to BibTeX and other formats.
 - **Integrate with your editor** with plugins for (Neo)vim and Emacs.
 - **TUIs** make it easy to get a quick overview of your library.
 - **Use the web app** when the CLI doesn't quite cut it (for example on your tablet).
