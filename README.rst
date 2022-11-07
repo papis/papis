@@ -97,11 +97,6 @@ Questions?
 
 The `docs <https://papis.readthedocs.io/en/latest/>`__ cover Papis' features and discuss possible work flows. If you still have questions, head to our `GitHub discussions <https://github.com/papis/papis/discussions>`__ — we're more than happy to help. If you've found a bug, please `open an issue <https://github.com/papis/papis/issues>`__ and help make Papis even better!
 
-Contributing
-------------
-
-Contributions are very welcome! Take a look at `CONTRIBUTING.md <https://github.com/papis/papis/blob/master/CONTRIBUTING.md>`__ for general rules and `HACKING.md <https://github.com/papis/papis/blob/master/HACKING.md>`__ for additional code-related information. There are also a number of `additional projects <The Papis ecosystem>`__ that you can check out, contribute to, or even help maintain :wink:.
-
 Reviews and blog posts
 ----------------------
 
@@ -152,6 +147,10 @@ Papis has grown over the years and there are now a number of projects that exten
    * - `papis-firefox <https://github.com/papis/papis-firefox>`__
      - `wavefrontshaping <https://github.com/wavefrontshaping>`__
 
+Contributing
+------------
+
+Contributions are very welcome! Take a look at `CONTRIBUTING.md <https://github.com/papis/papis/blob/master/CONTRIBUTING.md>`__ for general rules and `HACKING.md <https://github.com/papis/papis/blob/master/HACKING.md>`__ for additional code-related information.
 
 Related software
 ----------------
