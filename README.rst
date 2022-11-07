@@ -16,7 +16,7 @@ Features
 - **Search** your files by author, title, tags, and so on.
 - **Synchronize** your library with whatever software you're already using.
 - **Share** your documents with colleagues without having to force some proprietary service onto them.
-- **Import** your existing files from Zotero and other bibliography managers.
+- **Import** your existing files from `Zotero <https://www.zotero.org/>`__ and other bibliography managers.
 - **Export** your files to bibtex and other formats.
 - **Integrate with your editor** with plugins for (Neo)vim and Emacs.
 - **TUIs** make it easy to get a quick overview of your library.
