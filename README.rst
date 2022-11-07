@@ -97,17 +97,6 @@ Questions?
 
 The `docs <https://papis.readthedocs.io/en/latest/>`__ cover Papis' features and discuss possible work flows. If you still have questions, head to our `GitHub discussions <https://github.com/papis/papis/discussions>`__ — we're more than happy to help. If you've found a bug, please `open an issue <https://github.com/papis/papis/issues>`__ and help make Papis even better!
 
-Reviews and blog posts
-----------------------
-
-- `Blog post <https://alejandrogallo.github.io/blog/posts/getting-paper-references-with-papis/>`__ about getting a paper's references with ``papis explore``.
-- `Blog post <http://nicolasshu.com/zotero_and_papis.html>`__ about using Papis with Zotero and Syncthing.
-- GNU/Linux Switzerland `wrote about Papis <https://gnulinux.ch/papis-dokumentenverwaltung-fuer-die-kommandozeile>`__. *(in German)*
-- The folks at OSTechNix wrote a review of `Papis 
-  <https://www.ostechnix.com/papis-command-line-based-document-bibliography-manager/>`__.
-- A `review of Papis <https://ubunlog.com/papis-administrador-documentos/>`__ by Ubunlog. *(in Spanish)*
-  
-
 The Papis ecosystem
 -------------------
 
@@ -151,6 +140,16 @@ Contributing
 ------------
 
 Contributions are very welcome! Take a look at `CONTRIBUTING.md <https://github.com/papis/papis/blob/master/CONTRIBUTING.md>`__ for general rules and `HACKING.md <https://github.com/papis/papis/blob/master/HACKING.md>`__ for additional code-related information.
+
+Reviews and blog posts
+----------------------
+
+- `Blog post <https://alejandrogallo.github.io/blog/posts/getting-paper-references-with-papis/>`__ about getting a paper's references with ``papis explore``.
+- `Blog post <http://nicolasshu.com/zotero_and_papis.html>`__ about using Papis with Zotero and Syncthing.
+- GNU/Linux Switzerland `wrote about Papis <https://gnulinux.ch/papis-dokumentenverwaltung-fuer-die-kommandozeile>`__. *(in German)*
+- The folks at OSTechNix wrote a review of `Papis 
+  <https://www.ostechnix.com/papis-command-line-based-document-bibliography-manager/>`__.
+- A `review of Papis <https://ubunlog.com/papis-administrador-documentos/>`__ by Ubunlog. *(in Spanish)*
 
 Related software
 ----------------
