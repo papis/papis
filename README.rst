@@ -13,11 +13,11 @@ Features
 --------
 
 - **Add documents** and automatically fetch their metadata.
-- **Search** your files by author, title, tags, and so on.
+- **Search** by author, title, tags, and so on.
 - **Synchronize** your library with whatever software you're already using.
 - **Share** your documents with colleagues without having to force some proprietary service onto them.
-- **Import** your existing files from `Zotero <https://www.zotero.org/>`__ and other bibliography managers.
-- **Export** your files to BibTeX and other formats.
+- **Import** your data from other bibliography managers.
+- **Export** to BibTeX and other formats.
 - **Integrate with your editor** with plugins for (Neo)vim and Emacs.
 - **TUIs** make it easy to get a quick overview of your library.
 - **Use the web app** when the CLI doesn't quite cut it (for example on your tablet).
@@ -89,6 +89,7 @@ Information about installation and setup can be found in the `docs <https://papi
 
 - `Installation <https://papis.readthedocs.io/en/latest/install.html>`__
 - `Configuration <https://papis.readthedocs.io/en/latest/configuration.html>`__
+- `Import <https://papis.readthedocs.io/en/latest/importing.html>`__
 - `Editor integration <https://papis.readthedocs.io/en/latest/editors.html>`__
 
 Questions?
