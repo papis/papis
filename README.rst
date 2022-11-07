@@ -85,7 +85,7 @@ All Papis commands come with help messages:
 Installation & setup
 --------------------
 
-Information about installation and setup can be found in the docs, for example in the these sections:
+Information about installation and setup can be found in the `docs <https://papis.readthedocs.io/en/latest/>`__, for example in the these sections:
 
 - `Installation <https://papis.readthedocs.io/en/latest/install.html>`__
 - `Configuration <https://papis.readthedocs.io/en/latest/configuration.html>`__
@@ -94,7 +94,7 @@ Information about installation and setup can be found in the docs, for example i
 Questions?
 ----------
 
-Feel free to ask questions in the `GitHub discussions <https://github.com/papis/papis/discussions>`__ — we're more than happy to help. If you've found a bug, please `open an issue <https://github.com/papis/papis/issues>`__ and help us make Papis even better!
+The `docs <https://papis.readthedocs.io/en/latest/>`__ cover Papis' features and discuss possible work flows. If you still have questions, head to our `GitHub discussions <https://github.com/papis/papis/discussions>`__ — we're more than happy to help. If you've found a bug, please `open an issue <https://github.com/papis/papis/issues>`__ and help make Papis even better!
 
 Contributing
 ------------
