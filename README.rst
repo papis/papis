@@ -75,6 +75,16 @@ Or export them to bibtex:
 
 |bibtex_export|
 
+Papis also includes a web app that you can start with:
+
+.. code:: bash
+
+    papis serve
+
+You can then open the indicated address (`http://localhost:8888`) in your browser.
+
+|web_app|
+
 All Papis commands come with help messages:
 
 .. code:: bash
@@ -184,3 +194,4 @@ Papis isn't the only fish in the pond. You might also be interested in:
 .. |edit| image:: https://mis.julianhauser.com/s/dfEkDnbrYcPmDA3/download/edit.gif
 .. |bibtex_export| image:: https://mis.julianhauser.com/s/2SGPeLgYa6x7SAf/download/bibtex_export.gif
 .. |add| image:: https://mis.julianhauser.com/s/YWgnfx3J2PZ7nd5/download/add.gif
+.. |web_app| image:: https://papis.github.io/images/web_app.jpg
