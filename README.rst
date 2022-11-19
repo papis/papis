@@ -190,8 +190,8 @@ Papis isn't the only fish in the pond. You might also be interested in:
 .. |zenodo_badge| image:: https://zenodo.org/badge/82691622.svg
    :target: https://zenodo.org/badge/latestdoi/82691622
 
-.. |first_glance| image:: https://mis.julianhauser.com/s/QRL4HdoLeX6ifwF/download/first_glance.gif
-.. |edit| image:: https://mis.julianhauser.com/s/dfEkDnbrYcPmDA3/download/edit.gif
-.. |bibtex_export| image:: https://mis.julianhauser.com/s/2SGPeLgYa6x7SAf/download/bibtex_export.gif
-.. |add| image:: https://mis.julianhauser.com/s/YWgnfx3J2PZ7nd5/download/add.gif
+.. |first_glance| image:: https://papis.github.io/images/first_glance.gif
+.. |edit| image:: https://papis.github.io/images/edit.gif
+.. |bibtex_export| image:: https://papis.github.io/images/bibtex_export.gif
+.. |add| image:: https://papis.github.io/images/add.gif
 .. |web_app| image:: https://papis.github.io/images/web_app.jpg
