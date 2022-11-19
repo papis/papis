@@ -92,7 +92,7 @@ class Downloader(papis.importer.Importer):
         # Try with get_data
         try:
             data = self.get_data()
-            assert(isinstance(data, dict))
+            assert isinstance(data, dict)
         except NotImplementedError:
             pass
         else:
@@ -238,8 +238,8 @@ class Downloader(papis.importer.Importer):
         return self.document_data
 
     def download_document(self) -> None:
-        """Document downloader, it should try to download document information from
-        the url provided by ``get_document_url``.
+        """Document downloader, it should try to download document information
+        from the url provided by ``get_document_url``.
 
         It sets the ``document_data`` attribute if it succeeds.
 

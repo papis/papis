@@ -102,7 +102,7 @@ class DocMatcher(object):
             used. False if the `cls.search` class attribute is to be used.
         :type  search: str
         :returns: Parsed query
-        :rtype:  list
+
         >>> print(DocMatcher.parse('hello author : einstein'))
         [['hello'], ['author', ':', 'einstein']]
         >>> print(DocMatcher.parse(''))

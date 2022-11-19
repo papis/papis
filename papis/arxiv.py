@@ -95,7 +95,7 @@ def get_data(
         data["published"] = entry.find("published").get_text()
         published = data.get("published")
         if published:
-            assert(isinstance(published, str))
+            assert isinstance(published, str)
             data["year"] = published[0:4]
         data["title"] = entry.find("title").get_text().replace("\n", " ")
         data["author"] = ", ".join(

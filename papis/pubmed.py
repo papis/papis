@@ -87,7 +87,7 @@ def get_data(query: str = "") -> Dict[str, Any]:
     # as requested in https://api.ncbi.nlm.nih.gov/lit/ctxp
     import requests
     headers = requests.structures.CaseInsensitiveDict({
-        'user-agent': "papis/{}".format(papis.__version__)
+        "user-agent": "papis/{}".format(papis.__version__)
         })
 
     session = requests.Session()

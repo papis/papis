@@ -608,7 +608,7 @@ def get_lib() -> papis.library.Library:
             lib = default_settings["default-library"]
 
         set_lib_from_name(lib)
-    assert(isinstance(_CURRENT_LIBRARY, papis.library.Library))
+    assert isinstance(_CURRENT_LIBRARY, papis.library.Library)
     return _CURRENT_LIBRARY
 
 

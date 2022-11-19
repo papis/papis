@@ -148,7 +148,7 @@ def lib(ctx: click.Context, query: str,
     logger.info('%d documents found', len(docs))
 
     ctx.obj['documents'] += docs
-    assert(isinstance(ctx.obj['documents'], list))
+    assert isinstance(ctx.obj['documents'], list)
 
 
 @click.command('pick')
@@ -177,7 +177,7 @@ def pick(ctx: click.Context, number: Optional[int]) -> None:
         ctx.obj['documents'] = []
         return
     ctx.obj['documents'] = picked_docs
-    assert(isinstance(ctx.obj['documents'], list))
+    assert isinstance(ctx.obj['documents'], list)
 
 
 @click.command('citations')
@@ -307,7 +307,7 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
                 .format(doi, c=colorama)
             )
             if data:
-                assert(isinstance(data, list))
+                assert isinstance(data, list)
                 dois_with_data.extend(data)
 
     docs = [papis.document.Document(data=d) for d in dois_with_data]

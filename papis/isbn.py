@@ -21,7 +21,7 @@ def get_data(query: str = "",
     if data is None:
         return results
     else:
-        assert(isinstance(data, dict))
+        assert isinstance(data, dict)
         results.append(data_to_papis(data))
         return results
 
