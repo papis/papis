@@ -1,5 +1,5 @@
 import re
-from typing import Optional, Any, Dict
+from typing import Optional, Any, Dict, List
 
 import papis.downloaders.base
 import papis.document
@@ -22,7 +22,7 @@ class Downloader(papis.downloaders.Downloader):
         data = dict()
         soup = self._get_soup()
         metas = soup.find_all(name="meta")
-        author_list = []
+        author_list = []    # type: List[Dict[str, Any]]
         for meta in metas:
             if meta.attrs.get('name') == 'citation_title':
                 data['title'] = meta.attrs.get('content')
