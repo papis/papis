@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import logging
 from typing import List, Optional, Any, Sequence, Type, Dict, TYPE_CHECKING
 
@@ -153,7 +154,10 @@ class Downloader(papis.importer.Importer):
             return self._soup
 
         import bs4
-        self._soup = bs4.BeautifulSoup(self._get_body(), features='lxml')
+        self._soup = bs4.BeautifulSoup(
+            self._get_body(),
+            features='html.parser' if sys.version_info.minor < 6 else "lxml")
+
         return self._soup
 
     def __str__(self) -> str:
