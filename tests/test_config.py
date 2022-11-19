@@ -1,25 +1,23 @@
 from papis.config import *
 from papis.config import _CONFIGURATION
 import os
-import sys
 import re
+import sys
+import pytest
 import tempfile
 import papis.exceptions
 
 
 def test_default_opener():
-    plat = sys.platform
-    sys.platform = 'darwin v01'
-    assert(get_default_opener() == 'open')
-    sys.platform = plat
-    osname = os.name
-    os.name = 'nt'
-    assert(get_default_opener() == 'start')
-    os.name = 'posix'
-    assert(get_default_opener() == 'xdg-open')
-    os.name = osname
+    if sys.platform.startswith("darwin"):
+        assert get_default_opener() == 'open'
+    elif sys.platform.startswith("win"):
+        assert get_default_opener() == 'start'
+    else:
+        assert get_default_opener() == 'xdg-open'
 
 
+@pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
 def test_get_config_home():
     os.environ['XDG_CONFIG_HOME'] = '/tmp'
     assert get_config_home() == '/tmp'
@@ -27,6 +25,7 @@ def test_get_config_home():
     assert re.match(r'.+config', get_config_home()) is not None
 
 
+@pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
 def test_get_config_dirs():
     tmpdir = '/tmp'
     os.environ['XDG_CONFIG_HOME'] = tmpdir
@@ -49,6 +48,7 @@ def test_get_config_dirs():
             == os.path.abspath(dirs[3]))
 
 
+@pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
 def test_get_config_folder():
     os.environ['XDG_CONFIG_HOME'] = tempfile.mkdtemp()
     configpath = os.path.join(os.environ['XDG_CONFIG_HOME'], 'papis')
@@ -57,11 +57,14 @@ def test_get_config_folder():
     assert get_config_folder() == configpath
 
 
+@pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
 def test_get_config_file():
     os.environ['XDG_CONFIG_HOME'] = tempfile.mkdtemp()
     configpath = os.path.join(get_config_folder(), 'config')
     assert configpath == get_config_file()
 
+
+@pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
 def test_get_configpy_file():
     os.environ['XDG_CONFIG_HOME'] = tempfile.mkdtemp()
     configpath = os.path.join(get_config_folder(), 'config.py')

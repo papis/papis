@@ -1,19 +1,23 @@
 import os
+import sys
+import pytest
 import tempfile
-import papis.config
-import tests
 from unittest.mock import patch
-import papis.commands.add
+
+import papis.config
 import papis.database
 import papis.document
-from papis.document import from_data
+import papis.commands.add
 from papis.utils import (
     get_cache_home, create_identifier, locate_document,
     general_open, clean_document_name,
 )
 from papis.filetype import get_document_extension
 
+import tests
 
+
+@pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
 def test_get_cache_home():
     os.environ["XDG_CACHE_HOME"] = '~/.cache'
     assert(
@@ -52,6 +56,7 @@ def test_create_identifier():
         assert(output[i] == expected[i])
 
 
+@pytest.mark.skipif(sys.platform != "linux", reason="uses linux tools")
 def test_general_open_with_spaces():
     filename = tempfile.mktemp("File with at least a couple of spaces")
 
@@ -73,7 +78,7 @@ def test_general_open_with_spaces():
 
 
 def test_locate_document():
-
+    from papis.document import from_data
     docs = [
         from_data(dict(doi='10.1021/ct5004252', title='Hello world')),
         from_data(

@@ -17,6 +17,7 @@
 """
 import os
 import re
+import sys
 import logging
 from typing import Optional, List, Dict, Any
 
@@ -83,7 +84,9 @@ def get_data(
     xmldoc = urllib.request.urlopen(url).read()
 
     import bs4
-    soup = bs4.BeautifulSoup(xmldoc, 'html.parser')
+    soup = bs4.BeautifulSoup(
+        xmldoc,
+        features='html.parser' if sys.version_info.minor < 6 else "lxml-xml")
 
     entries = soup.find_all("entry")
     for entry in entries:

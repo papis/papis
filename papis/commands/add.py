@@ -91,7 +91,6 @@ Cli
 import os
 import re
 import logging
-import pathlib
 from typing import List, Any, Optional, Dict, Tuple
 
 import click
@@ -250,7 +249,7 @@ def run(paths: List[str],
         folder_name: Optional[str] = None,
         file_name: Optional[str] = None,
         subfolder: Optional[str] = None,
-        base_path: Optional[pathlib.Path] = None,
+        base_path: Optional[str] = None,
         confirm: bool = False,
         open_file: bool = False,
         edit: bool = False,
@@ -305,36 +304,39 @@ def run(paths: List[str],
     tmp_document = papis.document.Document(temp_dir)
 
     if base_path is None:
-        base_path = pathlib.Path(papis.config.get_lib_dirs()[0]).expanduser()
+        base_path = os.path.expanduser(papis.config.get_lib_dirs()[0])
     out_folder_path = base_path
 
     if subfolder:
-        out_folder_path /= pathlib.Path(subfolder)
+        out_folder_path = os.path.join(out_folder_path, subfolder)
 
     if not folder_name:
         out_folder_name = get_hash_folder(data, in_documents_paths)
-        out_folder_path = out_folder_path / out_folder_name
+        out_folder_path = os.path.join(out_folder_path, out_folder_name)
         logger.info("Got an automatic folder name")
     else:
         temp_doc = papis.document.Document(data=data)
-        temp_path = out_folder_path / pathlib.Path(folder_name)
-        components: List[str] = []
-        assert temp_path.is_relative_to(out_folder_path)
-        while temp_path != out_folder_path and temp_path.is_relative_to(out_folder_path):
-            path_component = temp_path.name
-            component_formatted = papis.format.format(path_component, temp_doc)
-            component_cleaned = papis.utils.clean_document_name(component_formatted)
+        temp_path = os.path.join(out_folder_path, folder_name)
+        components = []     # type: List[str]
+        while (
+                temp_path != out_folder_path
+                and papis.utils.is_relative_to(temp_path, out_folder_path)):
+            path_component = os.path.basename(temp_path)
+
+            component_cleaned = papis.utils.clean_document_name(
+                papis.format.format(path_component, temp_doc))
             components.insert(0, component_cleaned)
+
             # continue with parent path component
-            temp_path = temp_path.parent
+            temp_path = os.path.dirname(temp_path)
+
         # components are formatted in reverse order, so we add then now in the
         # right order to the path
-        for c in components:
-            out_folder_path /= c
+        out_folder_path = os.path.join(out_folder_path, *components)
 
         del temp_doc
 
-    if not out_folder_path.is_relative_to(base_path):
+    if not papis.utils.is_relative_to(out_folder_path, base_path):
         raise ValueError("formatting produced path outside of library")
 
     data["files"] = in_documents_names
@@ -602,7 +604,7 @@ def cli(
         import time
         ctx.data['time-added'] = time.strftime(papis.strings.time_format)
 
-    base_path = pathlib.Path(
+    base_path = (
         papis.pick.pick_subfolder_from_lib(papis.config.get_lib_name())[0]
     ) if pick_subfolder else None
 

@@ -293,3 +293,12 @@ def update_doc_from_data_interactively(
                         data,
                         namea=papis.document.describe(document),
                         nameb=data_name))
+
+
+def is_relative_to(path: str, other: str) -> bool:
+    # TODO: switch to pathlib.Path.is_relative_to for python >=3.9
+    try:
+        os.path.relpath(path, start=other)
+        return True
+    except ValueError:
+        return False
