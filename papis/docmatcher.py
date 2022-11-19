@@ -1,10 +1,12 @@
 import logging
-from typing import Optional, List, Any, Callable
+from typing import Optional, Any, Callable, TYPE_CHECKING
 
 import papis.config
 import papis.document
 
 MATCHER_TYPE = Callable[[papis.document.Document, str, Optional[str]], Any]
+if TYPE_CHECKING:
+    import pyparsing
 
 
 class DocMatcher(object):
@@ -27,7 +29,7 @@ class DocMatcher(object):
     parallelize the matching.
     """
     search = ""  # type: str
-    parsed_search = []  # type: List[Any]
+    parsed_search = None  # type: pyparsing.ParseResults
     doc_format = '{%s[DOC_KEY]}' % (papis.config.getstring('format-doc-name'))
     logger = logging.getLogger('DocMatcher')
     matcher = None  # type: Optional[MATCHER_TYPE]
@@ -45,21 +47,20 @@ class DocMatcher(object):
         >>> from papis.database.cache import match_document
         >>> doc = papis.document.from_data(dict(title='einstein'))
         >>> DocMatcher.set_matcher(match_document)
-        >>> DocMatcher.parse('einste')
-        ([(['einste'], {})], {})
+        >>> result = DocMatcher.parse('einste')
         >>> DocMatcher.return_if_match(doc) is not None
         True
-        >>> DocMatcher.parse('heisenberg')
-        ([(['heisenberg'], {})], {})
+        >>> result = DocMatcher.parse('heisenberg')
         >>> DocMatcher.return_if_match(doc) is not None
         False
-        >>> DocMatcher.parse('title : ein')
-        ([(['title', ':', 'ein'], {})], {})
+        >>> result = DocMatcher.parse('title : ein')
         >>> DocMatcher.return_if_match(doc) is not None
         True
-
         """
         match = None
+        if cls.parsed_search is None:
+            return match
+
         for parsed in cls.parsed_search:
             if len(parsed) == 1:
                 search = parsed[0]
@@ -92,7 +93,7 @@ class DocMatcher(object):
         cls.matcher = matcher
 
     @classmethod
-    def parse(cls, search: Optional[str] = None) -> List[List[str]]:
+    def parse(cls, search: Optional[str] = None) -> "pyparsing.ParseResults":
         """Parse the main query text. This method will also set the
         class attribute `parsed_search` to the parsed query, and it will
         return it too.
@@ -120,7 +121,7 @@ class DocMatcher(object):
         return cls.parsed_search
 
 
-def parse_query(query_string: str) -> List[List[str]]:
+def parse_query(query_string: str) -> "pyparsing.ParseResults":
     import pyparsing
     logger = logging.getLogger('parse_query')
     logger.debug("Parsing query: '%s'", query_string)
@@ -147,7 +148,7 @@ def parse_query(query_string: str) -> List[List[str]]:
             ) + papis_value
         )
     )
-    parsed = papis_query.parseString(query_string)  # type: List[List[str]]
-
+    parsed = papis_query.parseString(query_string)
     logger.debug("Parsed query: '%s'", parsed)
+
     return parsed

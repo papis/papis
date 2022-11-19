@@ -244,7 +244,7 @@ def run(verbose: bool,
         log_format = "%(relativeCreated)d-{}".format(log_format)
 
     if logfile is None:
-        handler = logging.StreamHandler()
+        handler = logging.StreamHandler()       # type: logging.Handler
         handler.setFormatter(ColoramaFormatter(log_format))
     else:
         handler = logging.FileHandler(logfile, mode="a")

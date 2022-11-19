@@ -2,10 +2,7 @@ import re
 from typing import (
         Any, List, Dict, Iterator, Tuple, Union, Pattern, TYPE_CHECKING)
 
-try:
-    from typing import TypedDict  # Python 3.8+
-except ImportError:
-    from typing_extensions import TypedDict
+from typing_extensions import TypedDict
 
 import papis.bibtex
 import papis.config

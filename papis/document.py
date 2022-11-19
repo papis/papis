@@ -6,10 +6,7 @@ import logging
 from typing import (
     List, Dict, Any, Optional, Union, NamedTuple, Callable, Tuple)
 
-try:
-    from typing import TypedDict  # Python 3.8+
-except ImportError:
-    from typing_extensions import TypedDict
+from typing_extensions import TypedDict
 
 import papis.config
 import papis

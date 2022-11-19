@@ -583,7 +583,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         db = papis.database.get(libname)
         form = cgi.FieldStorage(
             fp=self.rfile,
-            headers=self.headers,  # type: ignore
+            headers=self.headers,
             environ={'REQUEST_METHOD': 'POST'}
         )
         docs = db.query_dict(dict(ref=ref))

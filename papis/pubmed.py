@@ -91,7 +91,7 @@ def get_data(query: str = "") -> Dict[str, Any]:
         })
 
     session = requests.Session()
-    session.headers = headers
+    session.headers = headers       # type: ignore[assignment]
     response = session.get(PUBMED_URL.format(
         pmid=query.strip(), database=PUBMED_DATABASE))
 
