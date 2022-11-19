@@ -7,7 +7,7 @@ Papis is a powerful and highly extensible CLI document and bibliography manager.
 
 |first_glance|
 
-With Papis, you can search your library for books and papers, add documents and notes, import and export to and from other formats, and much much more. Papis uses a human-readable and easily hackable `.yaml` file to store each entry's bibliographical data. It strives to be easy to use while providing a wide range of features. And for those who still want more, Papis makes it easy to write scripts that extend its features even further.
+With Papis, you can search your library for books and papers, add documents and notes, import and export to and from other formats, and much much more. Papis uses a human-readable and easily hackable ``.yaml`` file to store each entry's bibliographical data. It strives to be easy to use while providing a wide range of features. And for those who still want more, Papis makes it easy to write scripts that extend its features even further.
 
 Features
 --------
@@ -39,7 +39,7 @@ Let's download a couple of documents:
     wget http://www.gnu.org/s/libc/manual/pdf/libc.pdf
     wget http://www.ams.org/notices/201304/rnoti-p434.pdf
 
-We can now add these to the (default) library. This will automatically query for the metadata associated with the `doi`.
+We can now add these to the (default) library. This will automatically query for the metadata associated with the ``doi``.
 
 .. code:: bash
 
@@ -47,7 +47,7 @@ We can now add these to the (default) library. This will automatically query for
 
 |add|
 
-You can also use `--set` to add information:
+You can also use ``--set`` to add information:
 
 .. code:: bash
 
@@ -81,7 +81,7 @@ Papis also includes a web app that you can start with:
 
     papis serve
 
-You can then open the indicated address (`http://localhost:8888`) in your browser.
+You can then open the indicated address (``http://localhost:8888``) in your browser.
 
 |web_app|
 
@@ -112,10 +112,10 @@ Reviews and blog posts
 
 - `Blog post <https://alejandrogallo.github.io/blog/posts/getting-paper-references-with-papis/>`__ about getting a paper's references with ``papis explore``.
 - `Blog post <http://nicolasshu.com/zotero_and_papis.html>`__ about using Papis with Zotero and Syncthing.
-- GNU/Linux Switzerland `wrote about Papis <https://gnulinux.ch/papis-dokumentenverwaltung-fuer-die-kommandozeile>`__. *(in German)*
+- GNU/Linux Switzerland `wrote about Papis <https://gnulinux.ch/papis-dokumentenverwaltung-fuer-die-kommandozeile>`__ *(in German)*.
 - The folks at OSTechNix wrote a review of `Papis 
   <https://www.ostechnix.com/papis-command-line-based-document-bibliography-manager/>`__.
-- A `review of Papis <https://ubunlog.com/papis-administrador-documentos/>`__ by Ubunlog. *(in Spanish)*
+- A `review of Papis <https://ubunlog.com/papis-administrador-documentos/>`__ by Ubunlog *(in Spanish)*.
   
 Contributing
 ------------
