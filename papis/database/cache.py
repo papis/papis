@@ -191,10 +191,10 @@ class Database(papis.database.base.Database):
 
         docs = self.get_documents()
         docs.append(document)
-        assert(docs[-1].get_main_folder() == document.get_main_folder())
+        assert docs[-1].get_main_folder() == document.get_main_folder()
         _folder = document.get_main_folder()
-        assert(_folder is not None)
-        assert(os.path.exists(_folder))
+        assert _folder is not None
+        assert os.path.exists(_folder)
         self.save()
 
     def update(self, document: papis.document.Document) -> None:
@@ -271,7 +271,7 @@ class Database(papis.database.base.Database):
             self,
             document: papis.document.Document
             ) -> List[Tuple[int, papis.document.Document]]:
-        assert(isinstance(document, papis.document.Document))
+        assert isinstance(document, papis.document.Document)
         result = list(filter(
             lambda d: d[1].get_main_folder() == document.get_main_folder(),
             enumerate(self.get_documents())))

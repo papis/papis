@@ -176,8 +176,8 @@ def get_data(
         order: str = "desc") -> List[Dict[str, Any]]:
     global _filter_names
     global _sort_values
-    assert(sort in _sort_values), 'Sort value not valid'
-    assert(order in _order_values), 'Sort value not valid'
+    assert sort in _sort_values, 'Sort value not valid'
+    assert order in _order_values, 'Sort value not valid'
     if filters:
         if not set(filters.keys()) & _filter_names == set(filters.keys()):
             raise Exception(

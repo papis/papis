@@ -32,8 +32,8 @@ def prompt(text: Union[str, FormattedText],
     :type  actions: [Action]
     :param kwargs: kwargs to prompt_toolkit application class
     """
-    assert(isinstance(actions, list))
-    assert(type(title) == str)
+    assert isinstance(actions, list)
+    assert type(title) == str
 
     kb = KeyBindings()
 
@@ -88,9 +88,9 @@ def diffshow(texta: str,
     :param textb: To text
     :type  textb: str
     """
-    assert(isinstance(actions, list))
-    assert(isinstance(texta, str))
-    assert(isinstance(textb, str))
+    assert isinstance(actions, list)
+    assert isinstance(texta, str)
+    assert isinstance(textb, str)
 
     import difflib
     # diffs = difflib.unified_diff(

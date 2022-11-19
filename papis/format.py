@@ -33,7 +33,7 @@ class Formater:
         :returns: Formated string
         :rtype: str
         """
-        ...
+        raise NotImplementedError
 
 
 class PythonFormater(Formater):

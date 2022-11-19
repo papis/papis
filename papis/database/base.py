@@ -17,7 +17,7 @@ class Database(ABC):
 
     def __init__(self, library: Optional[papis.library.Library] = None):
         self.lib = library or papis.config.get_lib()
-        assert(isinstance(self.lib, papis.library.Library))
+        assert isinstance(self.lib, papis.library.Library)
 
     @abstractmethod
     def initialize(self) -> None:
