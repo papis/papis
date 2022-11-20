@@ -100,7 +100,7 @@ def run(doc: papis.document.Document, tests: List[str]) -> List[Error]:
     """
     results = []  # type: List[Error]
     for test in tests:
-        results += REGISTERED_TESTS[test].operate(doc)
+        results.extend(REGISTERED_TESTS[test].operate(doc))
     return results
 
 
