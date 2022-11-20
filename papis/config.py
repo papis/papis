@@ -61,6 +61,10 @@ general_settings = {
     "add-edit": False,
     "add-open": False,
 
+    # papis-doctor configuration
+    "doctor-default-tests": ["files", "keys"],
+    "doctor-keys-test": ["title", "author", "ref"],
+
     "browse-key": "url",
     "browse-query-format": "{doc[title]} {doc[author]}",
     "search-engine": "https://duckduckgo.com",
