@@ -32,7 +32,7 @@ Test = NamedTuple("Test", [("name", str),
                            ("operate", TestFn),
                            ("suggest_cmd", Callable[[Error], str])])
 
-logger = logging.getLogger('doctor')
+logger = logging.getLogger("doctor")
 
 
 def register_test(name: str, test: Test) -> None:
@@ -105,17 +105,17 @@ def run(doc: papis.document.Document, tests: List[str]) -> List[Error]:
 
 
 @click.command("doctor")
-@click.help_option('--help', '-h')
+@click.help_option("--help", "-h")
 @papis.cli.query_option()
 @papis.cli.sort_option()
-@click.option('-t', '--tests', "_tests",
+@click.option("-t", "--tests", "_tests",
               default=lambda: papis.config.getlist("doctor-default-tests"),
               multiple=True,
-              help=('Tests to run on every document, possible values: {}'
+              help=("Tests to run on every document, possible values: {}"
                     .format(REGISTERED_TESTS)))
-@click.option('--json', "_json", default=False, is_flag=True,
+@click.option("--json", "_json", default=False, is_flag=True,
               help="Output the results in json format")
-@click.option('--suggest', "suggest", default=False, is_flag=True,
+@click.option("--suggest", "suggest", default=False, is_flag=True,
               help="Suggest commands to be run for resolution")
 @papis.cli.all_option()
 @papis.cli.doc_folder_option()
