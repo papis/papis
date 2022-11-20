@@ -98,3 +98,4 @@ ENV/
 .ropeproject
 changes
 *~
+/.dir-locals.el
