@@ -2,7 +2,7 @@
 The doctor command checks for the overall health of your
 library.
 
-There are many tests implemented and some others that you
+There are many checks implemented and some others that you
 can add yourself through the python configuration file.
 """
 
@@ -27,24 +27,24 @@ Error = NamedTuple("Error", [("name", str),
                              ("path", str),
                              ("msg", str),
                              ])
-TestFn = Callable[[papis.document.Document], List[Error]]
-Test = NamedTuple("Test", [("name", str),
-                           ("operate", TestFn),
-                           ("suggest_cmd", Callable[[Error], str])])
+CheckFn = Callable[[papis.document.Document], List[Error]]
+Check = NamedTuple("Check", [("name", str),
+                             ("operate", CheckFn),
+                             ("suggest_cmd", Callable[[Error], str])])
 
 logger = logging.getLogger("doctor")
 
 
-def register_test(name: str, test: Test) -> None:
+def register_check(name: str, check: Check) -> None:
     """
-    Register a test.
+    Register a check.
     To be used by users in their configuration files
     for example.
     """
-    REGISTERED_TESTS[name] = test
+    REGISTERED_CHECKS[name] = check
 
 
-def files_test(doc: papis.document.Document) -> List[Error]:
+def files_check(doc: papis.document.Document) -> List[Error]:
     """
     It checks wether the files of a document actually exist in the
     filesystem.
@@ -60,12 +60,12 @@ def files_test(doc: papis.document.Document) -> List[Error]:
     return results
 
 
-def keys_test(doc: papis.document.Document) -> List[Error]:
+def keys_check(doc: papis.document.Document) -> List[Error]:
     """
     It checks wether the keys provided in the configuration
-    option ``doctor-keys-test`` exit in the document.
+    option ``doctor-keys-check`` exit in the document.
     """
-    keys = papis.config.getlist("doctor-keys-test")
+    keys = papis.config.getlist("doctor-keys-check")
     folder = doc.get_main_folder()
     results = []  # type: List[Error]
     for k in keys:
@@ -76,31 +76,31 @@ def keys_test(doc: papis.document.Document) -> List[Error]:
     return results
 
 
-REGISTERED_TESTS = {
-    "files": Test(operate=files_test,
-                  name="test",
-                  suggest_cmd=lambda e:
-                  """
+REGISTERED_CHECKS = {
+    "files": Check(operate=files_check,
+                   name="check",
+                   suggest_cmd=lambda e:
+                   """
                   papis edit --doc-folder {}
                   """.format(e.path)),
-    "keys": Test(operate=keys_test,
-                 name="keys",
-                 suggest_cmd=lambda e:
-                 """
+    "keys": Check(operate=keys_check,
+                  name="keys",
+                  suggest_cmd=lambda e:
+                  """
                  papis update --doc-folder {}
                  """.format(e.path)),
-}  # type: Dict[str, Test]
+}  # type: Dict[str, Check]
 
 
-def run(doc: papis.document.Document, tests: List[str]) -> List[Error]:
+def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
     """
-    Runner for doctor. It runs all the tests given by the test
-    argument, and it gets the test from the global REGISTERED_TESTS
+    Runner for doctor. It runs all the checks given by the check
+    argument, and it gets the check from the global REGISTERED_CHECKS
     dictionary.
     """
     results = []  # type: List[Error]
-    for test in tests:
-        results.extend(REGISTERED_TESTS[test].operate(doc))
+    for check in checks:
+        results.extend(REGISTERED_CHECKS[check].operate(doc))
     return results
 
 
@@ -108,11 +108,11 @@ def run(doc: papis.document.Document, tests: List[str]) -> List[Error]:
 @click.help_option("--help", "-h")
 @papis.cli.query_option()
 @papis.cli.sort_option()
-@click.option("-t", "--tests", "_tests",
-              default=lambda: papis.config.getlist("doctor-default-tests"),
+@click.option("-t", "--checks", "_checks",
+              default=lambda: papis.config.getlist("doctor-default-checks"),
               multiple=True,
-              help=("Tests to run on every document, possible values: {}"
-                    .format(", ".join(t.name for t in REGISTERED_TESTS)))
+              help=("Checks to run on every document, possible values: {}"
+                    .format(", ".join(REGISTERED_CHECKS.keys()))))
 @click.option("--json", "_json", default=False, is_flag=True,
               help="Output the results in json format")
 @click.option("--suggest", "suggest", default=False, is_flag=True,
@@ -121,7 +121,7 @@ def run(doc: papis.document.Document, tests: List[str]) -> List[Error]:
 @papis.cli.doc_folder_option()
 def cli(query: str, doc_folder: str,
         sort_field: Optional[str], sort_reverse: bool, _all: bool,
-        _tests: List[str],
+        _checks: List[str],
         _json: bool,
         suggest: bool) -> None:
     """Check for common problems in documents"""
@@ -142,11 +142,11 @@ def cli(query: str, doc_folder: str,
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
-    logger.debug("Running tests: %s", _tests)
+    logger.debug("Running checks: %s", _checks)
 
     errors = []  # type: List[Error]
     for doc in documents:
-        errors += run(doc, _tests)
+        errors += run(doc, _checks)
 
     if errors:
         logger.warning("%s errors found", len(errors))
@@ -156,7 +156,7 @@ def cli(query: str, doc_folder: str,
                                   dict(msg=e.msg,
                                        path=e.path,
                                        name=e.name,
-                                       suggestion=REGISTERED_TESTS[e.name]
+                                       suggestion=REGISTERED_CHECKS[e.name]
                                        .suggest_cmd(e)),
                                   errors))))
         return
@@ -165,5 +165,5 @@ def cli(query: str, doc_folder: str,
         print("{e.name} {e.msg} {e.path}".format(e=error))
         if suggest:
             print("Suggestion:\n\t{}\n"
-                  .format(REGISTERED_TESTS[error.name]
+                  .format(REGISTERED_CHECKS[error.name]
                           .suggest_cmd(error)))

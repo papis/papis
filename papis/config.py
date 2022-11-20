@@ -62,8 +62,8 @@ general_settings = {
     "add-open": False,
 
     # papis-doctor configuration
-    "doctor-default-tests": ["files", "keys"],
-    "doctor-keys-test": ["title", "author", "ref"],
+    "doctor-default-checks": ["files", "keys"],
+    "doctor-keys-check": ["title", "author", "ref"],
 
     "browse-key": "url",
     "browse-query-format": "{doc[title]} {doc[author]}",
