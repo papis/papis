@@ -112,7 +112,7 @@ def run(doc: papis.document.Document, tests: List[str]) -> List[Error]:
               default=lambda: papis.config.getlist("doctor-default-tests"),
               multiple=True,
               help=("Tests to run on every document, possible values: {}"
-                    .format(REGISTERED_TESTS)))
+                    .format(", ".join(t.name for t in REGISTERED_TESTS)))
 @click.option("--json", "_json", default=False, is_flag=True,
               help="Output the results in json format")
 @click.option("--suggest", "suggest", default=False, is_flag=True,
