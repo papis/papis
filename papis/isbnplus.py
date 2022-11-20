@@ -88,7 +88,7 @@ def get_data(query: str = "",
              app_id: str = ISBNPLUS_APPID,
              app_key: str = ISBNPLUS_KEY
              ) -> List[Dict[str, Any]]:
-    "Get documents from isbnplus"
+    """Get documents from isbnplus"""
 
     results = []
     dict_params = {
