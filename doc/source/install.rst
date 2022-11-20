@@ -84,8 +84,7 @@ or download the
 `zip file <https://github.com/papis/papis/archive/master.zip>`__.
 
 
-Go inside of the ``papis`` source folder and you can either use the ``Makefile``
-or install it with ``python3``.
+Go inside of the ``papis`` source folder and you can install it with ``python3``.
 
 The general command that you have to hit is by using the ``setup.py`` script:
 
