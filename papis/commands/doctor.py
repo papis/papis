@@ -55,7 +55,7 @@ def test_files(doc: papis.document.Document) -> List[Error]:
     for _f in files:
         if not os.path.exists(_f):
             results.append(Error(name="files",
-                                 path=folder,
+                                 path=folder or "",
                                  msg=_f))
     return results
 
@@ -71,7 +71,7 @@ def test_keys(doc: papis.document.Document) -> List[Error]:
     for k in keys:
         if k not in doc or len(doc[k]) == 0:
             results.append(Error(name="keys",
-                                 path=folder,
+                                 path=folder or "",
                                  msg=k))
     return results
 
@@ -123,7 +123,7 @@ def cli(query: str, doc_folder: str,
         sort_field: Optional[str], sort_reverse: bool, _all: bool,
         _tests: List[str],
         _json: bool,
-        suggest: bool):
+        suggest: bool) -> None:
     """Check for common problems in documents"""
 
     # handle doc_folder
