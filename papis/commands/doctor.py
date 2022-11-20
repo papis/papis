@@ -44,7 +44,7 @@ def register_test(name: str, test: Test) -> None:
     REGISTERED_TESTS[name] = test
 
 
-def test_files(doc: papis.document.Document) -> List[Error]:
+def files_test(doc: papis.document.Document) -> List[Error]:
     """
     It checks wether the files of a document actually exist in the
     filesystem.
@@ -60,7 +60,7 @@ def test_files(doc: papis.document.Document) -> List[Error]:
     return results
 
 
-def test_keys(doc: papis.document.Document) -> List[Error]:
+def keys_test(doc: papis.document.Document) -> List[Error]:
     """
     It checks wether the keys provided in the configuration
     option ``doctor-keys-test`` exit in the document.
@@ -77,13 +77,13 @@ def test_keys(doc: papis.document.Document) -> List[Error]:
 
 
 REGISTERED_TESTS = {
-    "files": Test(operate=test_files,
+    "files": Test(operate=files_test,
                   name="test",
                   suggest_cmd=lambda e:
                   """
                   papis edit --doc-folder {}
                   """.format(e.path)),
-    "keys": Test(operate=test_keys,
+    "keys": Test(operate=keys_test,
                  name="keys",
                  suggest_cmd=lambda e:
                  """
