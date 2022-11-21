@@ -124,9 +124,10 @@ Cli
 """
 import os
 import re
-import click
 import logging
-from typing import List, Optional
+
+from typing import List, Optional, Tuple
+import click
 
 import papis.api
 import papis.cli
@@ -139,6 +140,7 @@ import papis.commands.open
 import papis.commands.edit
 import papis.commands.browse
 import papis.commands.export
+from papis.commands.update import _update_with_database
 import papis.bibtex
 
 
@@ -151,7 +153,7 @@ config.register_default_settings({"bibtex": {
     "default-save-bibfile": ""
 }})
 
-explorer_mgr = explore.get_explorer_mgr()
+EXPLORER_MGR = explore.get_explorer_mgr()
 
 
 @click.group("bibtex", cls=papis.cli.AliasedGroup, chain=True)
@@ -163,7 +165,7 @@ explorer_mgr = explore.get_explorer_mgr()
 @click.pass_context
 def cli(ctx: click.Context, no_auto_read: bool) -> None:
     """A papis script to interact with bibtex files"""
-    global explorer_mgr
+    global EXPLORER_MGR
     ctx.obj = {"documents": []}
 
     if no_auto_read:
@@ -175,10 +177,10 @@ def cli(ctx: click.Context, no_auto_read: bool) -> None:
             and bibfile
             and os.path.exists(bibfile)):
         logger.info("Auto-reading '%s'", bibfile)
-        explorer_mgr["bibtex"].plugin.callback(bibfile)
+        EXPLORER_MGR["bibtex"].plugin.callback(bibfile)
 
 
-cli.add_command(explorer_mgr["bibtex"].plugin, "read")
+cli.add_command(EXPLORER_MGR["bibtex"].plugin, "read")
 
 
 @cli.command("add")
@@ -259,19 +261,44 @@ def _open(ctx: click.Context) -> None:
 
 @cli.command("edit")
 @click.help_option("-h", "--help")
-@click.option("-l", "--lib",
-              show_default=True,
-              help="Edit document in papis library",
-              default=False, is_flag=True)
+@click.option("-s", "--set", "set_tuples",
+              help="Update document's information with key value."
+              "The value can be a papis format.",
+              multiple=True,
+              type=(str, str),)
+@papis.cli.all_option()
 @click.pass_context
-def _edit(ctx: click.Context, lib: bool) -> None:
-    """edit a document in the documents list"""
+def _edit(ctx: click.Context,
+          set_tuples: List[Tuple[str, str]],
+          _all: bool) -> None:
+    """
+    Tries to find the document in the list around
+    the library and then edits it.
+
+    Examples:
+
+        papis bibtex read article.bib edit --set __proj focal-point --all
+
+    """
+    not_found = 0
     docs = ctx.obj["documents"]
-    docs = papis.api.pick_doc(docs)
     if not docs:
         return
-    doc = papis.utils.locate_document_in_lib(docs[0])
-    papis.commands.edit.run(doc)
+    if not _all:
+        docs = papis.api.pick_doc(docs)
+    for doc in docs:
+        try:
+            located = papis.utils.locate_document_in_lib(doc)
+            if set_tuples:
+                for k, v in set_tuples:
+                    located[k] = papis.format.format(v, doc)
+                _update_with_database(located)
+            else:
+                papis.commands.edit.run(located)
+        except IndexError:
+            not_found += 1
+            logger.warning("not found: %s", papis.document.describe(doc))
+    logger.info("found %s from %s", len(docs) - not_found, len(docs))
 
 
 @cli.command("browse")
@@ -374,7 +401,7 @@ def _unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
     duplis_docs = []
 
     while True:
-        if not len(docs):
+        if len(docs) == 0:
             break
         doc = docs.pop(0)
         unique_docs.append(doc)
