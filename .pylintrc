@@ -415,8 +415,10 @@ disable=raw-checker-failed,
         suppressed-message,
         useless-suppression,
         consider-using-f-string,
+        unspecified-encoding,
         deprecated-pragma,
-        use-symbolic-message-instead
+        use-symbolic-message-instead,
+	consider-using-from-import
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
