@@ -241,7 +241,7 @@ def to_bibtex(document: papis.document.Document) -> str:
 
     bibtex_string += "@{type}{{{ref},\n".format(type=bibtex_type, ref=ref)
     bibtex_keyval_fmt = "  %s = {%s},\n"
-    for bib_key in document:
+    for bib_key in list(document.keys()):
         if bib_key in bibtex_key_converter:
             new_bibkey = bibtex_key_converter[bib_key]
             document[new_bibkey] = document[bib_key]
