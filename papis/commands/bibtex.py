@@ -133,6 +133,7 @@ import papis.api
 import papis.cli
 import papis.config as config
 import papis.utils
+import papis.format
 import papis.tui.utils
 import papis.commands.explore as explore
 import papis.commands.add
@@ -291,7 +292,7 @@ def _edit(ctx: click.Context,
             located = papis.utils.locate_document_in_lib(doc)
             if set_tuples:
                 for k, v in set_tuples:
-                    located[k] = papis.format.format(v, doc)
+                    located[k] = papis.format.format(v, located)
                 _update_with_database(located)
             else:
                 papis.commands.edit.run(located)
