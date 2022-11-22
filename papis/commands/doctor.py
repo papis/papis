@@ -10,6 +10,7 @@ import logging
 import os
 import json
 from typing import Optional, List, NamedTuple, Callable, Dict
+import collections
 
 import click
 
@@ -76,19 +77,42 @@ def keys_check(doc: papis.document.Document) -> List[Error]:
     return results
 
 
+DUPLICATED_KEYS_SEEN = collections.defaultdict(list)  # type: Dict[str, List[str]]
+
+
+def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
+    """
+    Check for duplicated keys in `doctor-duplicated-keys-check`
+    """
+    keys = papis.config.getlist("doctor-duplicated-keys-check")
+    folder = doc.get_main_folder()
+    results = []  # type: List[Error]
+    for key in keys:
+        if doc[key] in DUPLICATED_KEYS_SEEN[key]:
+            results.append(Error(name="duplicated-keys",
+                                 msg=key,
+                                 path=folder or ""))
+        else:
+            DUPLICATED_KEYS_SEEN[key].append(str(doc[key]))
+    return results
+
+
 REGISTERED_CHECKS = {
     "files": Check(operate=files_check,
                    name="check",
                    suggest_cmd=lambda e:
                    """
-                  papis edit --doc-folder {}
-                  """.format(e.path)),
+                   papis edit --doc-folder {}
+                   """.format(e.path)),
     "keys": Check(operate=keys_check,
                   name="keys",
                   suggest_cmd=lambda e:
                   """
-                 papis update --doc-folder {}
-                 """.format(e.path)),
+                  papis update --doc-folder {}
+                  """.format(e.path)),
+    "duplicated-keys": Check(operate=duplicated_keys_check,
+                             name="duplicated-keys",
+                             suggest_cmd=lambda e: ""),
 }  # type: Dict[str, Check]
 
 
@@ -120,7 +144,8 @@ def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
 @papis.cli.all_option()
 @papis.cli.doc_folder_option()
 def cli(query: str, doc_folder: str,
-        sort_field: Optional[str], sort_reverse: bool, _all: bool,
+        sort_field: Optional[str], sort_reverse: bool,
+        _all: bool,
         _checks: List[str],
         _json: bool,
         suggest: bool) -> None:
