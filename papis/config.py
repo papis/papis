@@ -61,6 +61,21 @@ general_settings = {
     "add-edit": False,
     "add-open": False,
 
+    # papis-serve configuration
+    "serve-user-css": [],
+    "serve-user-js": [],
+    "serve-font-awesome-css": ("https://cdnjs.cloudflare.com/ajax/"
+                               + "libs/font-awesome/6.0.0/css/all.min.css"),
+    "serve-bootstrap-css": ("https://cdn.jsdelivr.net/npm/"
+                            + "bootstrap@5.1.1/dist/css/bootstrap.min.css"),
+    "serve-bootstrap-js": ("https://cdn.jsdelivr.net/npm/"
+                           + "bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"),
+    "serve-jquery-js": "https://code.jquery.com/jquery-3.6.0.min.js",
+    "serve-jquery.dataTables-js": ("https://cdn.datatables.net/"
+                                   + "1.11.4/js/jquery.dataTables.js"),
+    "serve-jquery.dataTables-css": ("https://cdn.datatables.net/"
+                                    + "1.11.4/css/jquery.dataTables.css"),
+
     "browse-key": "url",
     "browse-query-format": "{doc[title]} {doc[author]}",
     "search-engine": "https://duckduckgo.com",
@@ -132,7 +147,7 @@ general_settings = {
                           "«{doc[year]:4}»"
                           "{c.Style.RESET_ALL}"
                           ":{doc[tags]}")
-}
+}  # type: Dict[str, Any]
 
 
 def get_general_settings_name() -> str:
