@@ -1,4 +1,3 @@
-import click
 import re
 import os
 import json
@@ -8,6 +7,9 @@ import urllib.parse
 from typing import Any, List, Optional, Union, Tuple, Callable
 import functools
 import cgi
+
+import click
+import dominate.tags as t
 
 import papis.api
 import papis.cli
@@ -24,357 +26,295 @@ logger = logging.getLogger("papis:server")
 
 USE_GIT = False  # type: bool
 TAGS_SPLIT_RX = re.compile(r"\s*[,\s]\s*")
-HEADER_TEMPLATE = """
-<head>
-<title>{placeholder} Papis web</title>
-<meta charset='UTF-8'>
-<meta name='apple-mobile-web-app-capable' content='yes'>
-<meta name='viewport' content='width=device-width, initial-scale=1'>
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-  integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
-  crossorigin="anonymous" referrerpolicy="no-referrer" />
-<link
-  href='https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css'
-  rel='stylesheet'
-  integrity='sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU'
-  crossorigin='anonymous'>
-<script
-  src='https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js'
-  integrity='sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ'
-  crossorigin='anonymous'></script>
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
-</head>
-"""  # noqa: E501
-
-NAVBAR_TEMPLATE = """
-<nav class="navbar navbar-expand-md navbar-light bg-light">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Papis</a>
-    <button class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-            aria-controls="navbarNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link active"
-             aria-current="page"
-             href="/library/{libname}">
-            All
-         </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link"
-             href="/library/{libname}/tags">
-            Tags
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link"
-             href="/libraries">
-            Libraries
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link"
-             href="#">
-            Explore
-          </a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
-"""
 
 
-INDEX_TEMPLATE = (
+def _fa(name: str) -> str:
     """
-    <html>
+    Font awesome wrapper
     """
-    + HEADER_TEMPLATE
-    + """
-    <body>
+    return "fa fa-" + name
+
+
+def _icon(name: str) -> t.html_tag:
+    return t.i(cls=_fa(name))
+
+
+def _container() -> t.html_tag:
+    return t.div(cls="container")
+
+
+def _header(pretitle: str, extra: Optional[t.html_tag] = None) -> t.html_tag:
+    head = t.head()
+    with head:
+        t.title("{} Papis web".format(pretitle))
+        t.meta(name="apple-mobile-web-app-capable", content="yes")
+        t.meta(charset="UTF-8")
+        t.meta(name="apple-mobile-web-app-capable", content="yes")
+        t.meta(name="viewport", content="width=device-width, initial-scale=1")
+
+        t.link(rel="stylesheet",
+               href=papis.config.getstring("serve-font-awesome-css"),
+               crossorigin="anonymous",
+               referrerpolicy="no-referrer")
+        t.link(href=papis.config.getstring("serve-bootstrap-css"),
+               rel="stylesheet",
+               crossorigin="anonymous")
+        t.script(src=papis.config.getstring("serve-bootstrap-js"),
+                 crossorigin="anonymous")
+        t.script(type="text/javascript",
+                 src=papis.config.getstring("serve-jquery-js"))
+        t.link(rel="stylesheet",
+               type="text/css",
+               href=papis.config.getstring("serve-jquery.dataTables-css"))
+        t.script(type="text/javascript",
+                 charset="utf8",
+                 src=papis.config.getstring("serve-jquery.dataTables-js"))
+
+        for href in papis.config.getlist("serve-user-css"):
+            t.link(rel="stylesheet", type="text/css", href=href)
+
+        for src in papis.config.getlist("serve-user-js"):
+            t.script(type="text/javascript", src=src)
+
+    if extra is not None:
+        head.add(extra)
+
+    return head
+
+
+def _navbar(libname: str) -> t.html_tag:
+
+    def _li(title: str, href: str, active: bool = False) -> t.html_tag:
+        with t.li(cls="nav-item") as result:
+            t.a(title,
+                cls="nav-link" + (" active" if active else ""),
+                aria_current="page",
+                href=href)
+        return result
+
+    with t.nav(cls="navbar navbar-expand-md navbar-light bg-light") as nav:
+        with t.div(cls="container-fluid"):
+
+            t.a("Papis", href="#", cls="navbar-brand")
+
+            but = t.button(cls="navbar-toggler",
+                           type="button",
+                           data_bs_toggle="collapse",
+                           data_bs_target="#navbarNav",
+                           aria_controls="navbarNav",
+                           aria_expanded="false",
+                           aria_label="Toggle navigation")
+            with but:
+                t.span(cls="navbar-toggler-icon")
+
+            with t.div(id="navbarNav"):
+                t.attr(cls="collapse navbar-collapse")
+                with t.ul(cls="navbar-nav"):
+                    _li("All", "/library/{libname}".format(libname=libname),
+                        active=True)
+                    _li("Tags",
+                        "/library/{libname}/tags".format(libname=libname))
+                    _li("Libraries", "/libraries")
+                    _li("Explore", "#")
+
+    return nav
+
+
+def _clear_cache(libname: str) -> t.html_tag:
+    result = t.a(href="/library/{libname}/clear_cache".format(libname=libname))
+    with result:
+        t.i(cls=_fa("refresh"),
+            data_bs_toggle="tooltip",
+            title="Clear Cache")
+    return result
+
+
+def _index(pretitle: str,
+           libname: str,
+           libfolder: str,
+           query: str,
+           documents: List[papis.document.Document]) -> t.html_tag:
+    with t.html() as result:
+        _header(pretitle)
+        with t.body():
+            _navbar(libname=libname)
+            with _container():
+                with t.h1("Papis library: "):
+                    t.code(libname)
+                    _clear_cache(libname)
+                with t.h3():
+                    with t.form(method="GET",
+                                action=("/library/{libname}/query"
+                                        .format(libname=libname))):
+                        t.input_(cls="form-control",
+                                 type="text",
+                                 name="q",
+                                 placeholder=query)
+                with t.table(border="1", cls="display", id="pub_table"):
+                    with t.thead(style="display:none"):
+                        with t.tr(style="text-align: right;"):
+                            t.th("info")
+                            t.th("data")
+                    with t.tbody():
+                        for doc in documents:
+                            _document_item(libname=libname,
+                                           libfolder=libfolder,
+                                           doc=doc)
+                t.script("""$(document).ready(function(){
+                                $('#pub_table').DataTable({'bSort': false});
+                            });""")
+    return result
+
+
+def _tags(pretitle: str, libname: str, tags: List[str]) -> t.html_tag:
+    with t.html() as result:
+        _header(pretitle)
+        with t.body():
+            _navbar(libname=libname)
+            with _container():
+                t.h1("TAGS")
+                with _container():
+                    for tag in tags:
+                        _tag(tag=tag, libname=libname)
+    return result
+
+
+def _doc_files(files: List[str], libname: str, libfolder: str) -> t.html_tag:
+    with t.div() as result:
+        for _f in files:
+            t.a(cls=_fa("file"),
+                href=("/library/{libname}/file/{0}"
+                      .format(_f.replace(libfolder + "/", ""),
+                              libname=libname)))
+    return result
+
+
+def _libraries(libname: str) -> t.html_tag:
+    with t.html() as result:
+        _header("Libraries")
+        with t.body():
+            _navbar(libname=libname)
+            with _container():
+                t.h1("Library selection")
+                with t.ol(cls="list-group"):
+                    libs = papis.api.get_libraries()
+                    for lib in libs:
+                        with t.a(href="/library/{}".format(lib)):
+                            t.attr(cls="list-group-item list-group-item-action")
+                            _icon("book")
+                            t.span(lib)
+    return result
+
+
+def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
+    with t.html() as result:
+        _header(doc["title"])
+        with t.body():
+            _navbar(libname=libname)
+            with _container():
+                t.h1(doc["title"])
+                t.h3("{:.80}".format(doc["title"]),
+                     style="font-style: italic")
+                with t.form(method="POST",
+                            action=("/library/{libname}/document/ref:{doc[ref]}"
+                                    .format(doc=doc, libname=libname))):
+                    t.input_(cls="form-control button",
+                             type="submit")
+                    with t.ol(cls="list-group"):
+                        for key, val in doc.items():
+                            if isinstance(val, (list, dict)):
+                                continue
+                            with t.li(cls="list-group-item"):
+                                with t.div(cls="form-floating"):
+                                    t.textarea(val,
+                                               cls="form-control",
+                                               placeholder=str(val),
+                                               name=key,
+                                               id=key,
+                                               style="height: 100px")
+                                    t.label(key, _for=key)
+    return result
+
+
+def ensure_tags_list(tags: Union[str, List[str]]) -> List[str]:
     """
-    + NAVBAR_TEMPLATE
-    + """
-        <div class="container">
-            <h1>
-                Papis library: <code>{libname}</code>
-                <a href="/library/{libname}/clear_cache">
-                    <i class="fa fa-refresh"
-                       data-bs-toggle="tooltip"
-                       title="Clear cache"></i></a>
-            </h1>
-            <h3>
-            <form action="/library/{libname}/query" method="GET">
-                <input class="form-control"
-                       type="text"
-                       name="q"
-                       placeholder="{placeholder}">
-            </form>
-            </h3>
-            <table border="1" class="display" id="pub_table">
-                <thead style='display:none;'>
-                    <tr style="text-align: right;">
-                    <th>info</th>
-                    <th>data</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {documents}
-                </tbody>
-            </table>
-        </div>
-        <script type="text/javascript">
-            $(document).ready(function(){{
-                $('#pub_table').DataTable( {{
-                    "bSort": false
-                }} )
-            ;}});
-            </script>'
-    </body>
-</html>
-""")
-
-
-TAGS_PAGE = (
+    Ensure getting a list of tags to render them.
     """
-    <html>
-    """
-    + HEADER_TEMPLATE
-    + """
-    <body>
-    """
-    + NAVBAR_TEMPLATE
-    + """
-        <div class="container">
-            <h1>
-                TAGS
-            </h1>
-            <div class="container">
-                {tags}
-            </div>
-        </div>
-    </body>
-</html>
-    """)
-
-
-def render_navbar(libname: str, placeholder: str = "") -> str:
-    return NAVBAR_TEMPLATE.format(**locals())
-
-
-def render_files(files: List[str], libname: str, libfolder: str) -> str:
-    return ("\n"
-            .join("""
-                  <a class='fa fa-file' href="/library/{libname}/file/{0}">
-                  </a>
-                  """
-                  .format(k.replace(libfolder + "/", ""),
-                          libname=libname)
-                  for k in files))
-
-
-def render_libraries() -> str:
-    libs = papis.api.get_libraries()
-    return ("<html>"
-            + HEADER_TEMPLATE
-            + """
-                <body>
-              """
-            + render_navbar(libs[0])
-            + """
-                <div class="container">
-                <h1>Library selection</h1>
-                <ol class="list-group">
-              """
-            + "\n".join(
-                """
-                <a href="/library/{0}"
-                   class="list-group-item list-group-item-action">
-                    <i class="fa fa-book"></i>
-                    {0}
-                </a>
-                """.format(lib) for lib in libs)
-            + "</ol></body>"
-            )
-
-
-def render_document(libname: str, doc: papis.document.Document) -> str:
-    return ("<html>"
-            + HEADER_TEMPLATE.format(placeholder="")
-            + """
-                <body>
-              """
-            + render_navbar(libname, doc["ref"])
-            + """
-                <div class="container">
-                <h1>{doc[title]}</h1>
-                <h3>{doc[author]:.80}</h3>
-                <form method="POST"
-                      action="/library/{libname}/document/ref:{doc[ref]}">
-                <input type="submit" class="form-control button">
-                </input>
-                <ol class="list-group">
-              """.format(doc=doc, libname=libname)
-            + "\n".join(
-                """
-                <li class="list-group-item">
-                <div class="form-floating">
-                <textarea class="form-control"
-                        placeholder="{val}"
-                        name="{key}"
-                        id="{key}"
-                        style="height: 100px">{val}</textarea>
-                <label for="{key}">{key}</label>
-                </div>
-
-                </li>
-                """.format(key=key, val=val)
-                for key, val in doc.items()
-                if not isinstance(val, list) or isinstance(val, dict)
-            )
-            + "</ol></form></body>"
-            )
-
-
-def get_tag_list(tags: Union[str, List[str]]) -> List[str]:
     if isinstance(tags, list):
         return tags
-    else:
-        return TAGS_SPLIT_RX.split(tags)
+    return TAGS_SPLIT_RX.split(tags)
 
 
-def render_tag(tag: str, libname: str) -> str:
-    return """
-    <a class="badge bg-dark papis-tag"
-       href="/library/{libname}/query?q=tags:{0}">
-        {0}
-    </a>
-    """.format(tag, libname=libname)
+def _tag(tag: str, libname: str) -> t.html_tag:
+    return t.a(tag,
+               cls="badge bg-dark papis-tag",
+               href=("/library/{libname}/query?q=tags:{0}"
+                     .format(tag, libname=libname)))
 
 
-def render_document_item(libname: str,
-                         libfolder: str,
-                         doc: papis.document.Document) -> str:
+def _document_item(libname: str,
+                   libfolder: str,
+                   doc: papis.document.Document) -> t.html_tag:
+    with t.tr() as result:
+        with t.td():
 
-    def render_if_doc_has(key: str,
-                          fmt: str,
-                          default: str = "",
-                          **kws: Any) -> str:
-        if key in doc:
-            return fmt.format(doc=doc, **kws)
-        else:
-            return default.format(doc=doc, **kws)
+            with t.div(cls="ms-2 me-auto"):
+                t.div(doc["title"], cls="fw-bold")
+                t.span(doc["author"])
+                t.br()
+                if doc.has("journal"):
+                    _icon("book-open")
+                    t.span(doc["journal"])
+                    t.br()
+                if doc.has("files"):
+                    _doc_files(files=doc.get_files(),
+                               libname=libname,
+                               libfolder=libfolder)
 
-    tag_renderer = functools.partial(render_tag, libname=libname)
+        with t.td():
 
-    return (("""<tr><td>
-                  <div class="ms-2 me-auto">
-                    <div class="fw-bold">{doc[title]}</div>
-                      {doc[author]}<br>
-             """.format(doc=doc))
-            + render_if_doc_has("journal",
-                                """<i class="fa fa-book-open"></i>
-                                {doc[journal]} <br>
-                                """)
-            + render_if_doc_has("files",
-                                "{files}",
-                                files=render_files(doc.get_files(),
-                                                   libname,
-                                                   libfolder))
-            + """
-                </td>
-                <td>
-              """
-            + render_if_doc_has("tags",
-                                """
-                                <span class="papis-tags">
-                                <i class="fa fa-tag"></i>
-                                {tags}
-                                </span></br>
-                                """,
-                                tags="".join(map(tag_renderer,
-                                                 get_tag_list(doc["tags"]))))
-            + render_if_doc_has("year",
-                                """
-                                <span class="badge bg-primary papis-year">
-                                {doc[year]}
-                                </span>
-                                """,
-                                default="""
-                                <span class="badge bg-danger papis-year">
-                                    ????
-                                </span>
-                                """)
-            + render_if_doc_has("ref",
-                                """
-                                <a class="badge bg-dark" \
-                            href="/library/{libname}/document/ref:{doc[ref]}">
-                                    {doc[ref]}
-                                </a>
-                                """,
-                                libname=libname)
-            + """<ul class="list-group list-group-horizontal">"""
-            + render_if_doc_has("url",
-                                """
-                                <a href="{doc[url]}"
-                                   class="list-group-item \
-                                          list-group-item-action"
-                                   target="_blank">
-                                    url
-                                </a>
-                                """)
-            + render_if_doc_has("doi",
-                                """
-                                <a href="https://doi.org/{doc[doi]}"
-                                    class="list-group-item \
-                                           list-group-item-action"
-                                    target="_blank">
-                                    doi
-                                </a>
-                                <a
-                             href="https://ui.adsabs.harvard.edu/abs/{doc[doi]}"
-                                    class="list-group-item
-                                           list-group-item-action"
-                                    target="_blank">
-                                    ads
-                                </a>
-                                <a
-            href="https://ui.adsabs.harvard.edu/abs/{doc[doi]}/exportcitation"
-                                    class="list-group-item \
-                                           list-group-item-action"
-                                    target="_blank">
-                                    ads/cit
-                                </a>
-                                """)
-            + """
-                </ul>
-            </td></tr>
-            </li>
-            """)
+            if doc.has("tags"):
+                with t.span(cls="papis-tags"):
+                    _icon("tag")
+                    for tag in ensure_tags_list(doc["tags"]):
+                        _tag(tag=tag, libname=libname)
+                    t.br()
 
+            if doc.has("year"):
+                t.span(doc["year"], cls="badge bg-primary papis-year")
+            else:
+                t.span("????", cls="badge bg-danger papis-year")
 
-def render_index(docs: List[papis.document.Document],
-                 libname: str,
-                 placeholder: str = "query") -> str:
-    libfolder = papis.config.get_lib_from_name(libname).paths[0]
-    documents = "\n".join(render_document_item(libname, libfolder, d)
-                          for d in docs)
-    return (INDEX_TEMPLATE
-            .format(documents=documents,
-                    placeholder=placeholder,
-                    libname=libname))
+            if doc.has("ref"):
+                t.a(doc["ref"],
+                    cls="badge bg-dark",
+                    href=("/library/{libname}/document/ref:{ref}"
+                          .format(ref=doc["ref"],
+                                  libname=libname)))
+
+            with t.ul(cls="list-group list-group-horizontal"):
+                if doc.has("url"):
+                    t.a("url",
+                        href=doc["url"],
+                        cls="list-group-item list-group-item-action",
+                        target="_blank")
+                if doc.has("doi"):
+                    t.a("doi",
+                        href="https://doi.org/{}".format(doc["doi"]),
+                        cls="list-group-item list-group-item-action",
+                        target="_blank")
+                    t.a("ads",
+                        href=("https://ui.adsabs.harvard.edu/abs/{}"
+                              .format(doc["doi"])),
+                        cls="list-group-item list-group-item-action",
+                        target="_blank")
+                    t.a("ads/cit",
+                        href=("https://ui.adsabs.harvard.edu/abs/{}/{}"
+                              .format(doc["doi"], "exportcitation")),
+                        cls="list-group-item list-group-item-action",
+                        target="_blank")
+
+    return result
 
 
 AnyFn = Callable[..., Any]
@@ -382,6 +322,9 @@ AnyFn = Callable[..., Any]
 
 # Decorators
 def redirecting(to: str) -> AnyFn:
+    """
+    Decorator to redirect http requests easily.
+    """
     def wrapper(fn: AnyFn) -> AnyFn:
         def wrapped(self: Any, *args: Any, **kwargs: Any) -> None:
             fn(self, *args, **kwargs)
@@ -390,16 +333,23 @@ def redirecting(to: str) -> AnyFn:
     return wrapper
 
 
-def ok_html(fn: AnyFn) -> AnyFn:
+def ok_html(fun: AnyFn) -> AnyFn:
+    """
+    Decorator to assert that the response is html code
+    """
     def wrapped(self: Any, *args: Any, **kwargs: Any) -> Any:
         self.send_response(200)
-        self._header_html()
+        self.send_header_html()
         self.end_headers()
-        return fn(self, *args, **kwargs)
+        return fun(self, *args, **kwargs)
     return wrapped
 
 
 class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
+
+    """
+    The main request handler of the papis web application.
+    """
 
     def log_message(self, fmt: str, *args: Any) -> None:
         logger.info(fmt, *args)
@@ -410,15 +360,18 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     def _header_json(self) -> None:
         self.send_header("Content-Type", "application/json")
 
-    def _header_html(self) -> None:
+    def send_header_html(self) -> None:
+        """
+        Say that the content sent is html
+        """
         self.send_header("Content-Type", "text/html")
 
     def _send_json(self, data: Any) -> None:
-        d = json.dumps(data)
-        self.wfile.write(bytes(d, "utf-8"))
+        data = json.dumps(data)
+        self.wfile.write(bytes(data, "utf-8"))
 
     def _send_json_error(self, code: int, msg: str) -> None:
-        self.send_response(400)
+        self.send_response(code)
         self._header_json()
         self.end_headers()
         self._send_json({"message": msg})
@@ -436,12 +389,17 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
             docs = []
 
         self.send_response(200)
-        self._header_html()
+        self.send_header_html()
         self.end_headers()
         libname = libname or papis.api.get_lib_name()
         docs = docs or papis.api.get_all_documents_in_lib(libname)
-        page = render_index(docs, libname, placeholder=query or "main")
-        self.wfile.write(bytes(page, "utf-8"))
+        libfolder = papis.config.get_lib_from_name(libname).paths[0]
+        page = _index(documents=docs,
+                      libname=libname,
+                      libfolder=libfolder,
+                      pretitle=query or "HOME",
+                      query=query or "insert query...")
+        self.wfile.write(bytes(str(page), "utf-8"))
         self.wfile.flush()
 
     @ok_html
@@ -455,33 +413,33 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     def page_tags(self, libname: Optional[str] = None) -> None:
         libname = libname or papis.api.get_lib_name()
         docs = papis.api.get_all_documents_in_lib(libname)
-        tags_of_tags = [get_tag_list(d["tags"]) for d in docs]
+        tags_of_tags = [ensure_tags_list(d["tags"]) for d in docs]
         tags = sorted(set(tag
                           for _tags in tags_of_tags
                           for tag in _tags))
-        tag_renderer = functools.partial(render_tag, libname=libname)
-        page = TAGS_PAGE.format(tags="".join(map(tag_renderer, tags)),
-                                libname=libname,
-                                placeholder="tags")
-        self.wfile.write(bytes(page, "utf-8"))
+        page = _tags(libname=libname,
+                     pretitle="TAGS",
+                     tags=tags)
+        self.wfile.write(bytes(str(page), "utf-8"))
         self.wfile.flush()
 
     @ok_html
     def page_libraries(self) -> None:
-        page = render_libraries()
-        self.wfile.write(bytes(page, "utf-8"))
+        libname = papis.api.get_lib_name()
+        page = _libraries(libname=libname)
+        self.wfile.write(bytes(str(page), "utf-8"))
         self.wfile.flush()
 
     @ok_html
     def page_document(self, libname: str, ref: str) -> None:
         docs = papis.api.get_documents_in_lib(libname, ref)
         if len(docs) > 1:
-            raise Exception("More than one document match %s", ref)
-        elif len(docs) == 0:
-            raise Exception("No document found with ref %s", ref)
+            raise Exception("More than one document match {}".format(ref))
+        if len(docs) == 0:
+            raise Exception("No document found with ref '{}'".format(ref))
 
-        page = render_document(libname, docs[0])
-        self.wfile.write(bytes(page, "utf-8"))
+        page = _document_view(libname=libname, doc=docs[0])
+        self.wfile.write(bytes(str(page), "utf-8"))
         self.wfile.flush()
 
     def get_libraries(self) -> None:
@@ -536,7 +494,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                   </head>
                 """.format(url=url))
         self.send_response(code)
-        self._header_html()
+        self.send_header_html()
         self.end_headers()
         self.wfile.write(bytes(page, "utf-8"))
         self.wfile.flush()
@@ -582,7 +540,6 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                                   .format(self.path))
 
     def update_page_document(self, libname: str, ref: str) -> None:
-        global USE_GIT
         db = papis.database.get(libname)
         form = cgi.FieldStorage(
             fp=self.rfile,
@@ -594,7 +551,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
             raise Exception("Document with ref %s not "
                             "found in the database" % ref)
         doc = docs[0]
-        result = dict()
+        result = {}
         for key in form:
             result[key] = form.getvalue(key)
         papis.commands.update.run(doc, result, git=USE_GIT)
