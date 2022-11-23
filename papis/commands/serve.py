@@ -4,9 +4,10 @@ import json
 import logging
 import http.server
 import urllib.parse
-from typing import Any, List, Optional, Union, Tuple, Callable
+from typing import Any, List, Optional, Union, Tuple, Callable, Dict
 import functools
 import cgi
+import collections
 
 import click
 import dominate.tags as t
@@ -26,6 +27,7 @@ logger = logging.getLogger("papis:server")
 
 USE_GIT = False  # type: bool
 TAGS_SPLIT_RX = re.compile(r"\s*[,\s]\s*")
+TAGS_LIST = {}  # type: Dict[str, Optional[Dict[str, int]]]
 
 
 def _fa(name: str) -> str:
@@ -166,15 +168,26 @@ def _index(pretitle: str,
     return result
 
 
-def _tags(pretitle: str, libname: str, tags: List[str]) -> t.html_tag:
+def _tag(tag: str, libname: str) -> t.html_tag:
+    return t.a(tag,
+               cls="badge bg-dark papis-tag",
+               href=("/library/{libname}/query?q=tags:{0}"
+                     .format(tag, libname=libname)))
+
+
+def _tags(pretitle: str, libname: str, tags: Dict[str, int]) -> t.html_tag:
     with t.html() as result:
         _header(pretitle)
         with t.body():
             _navbar(libname=libname)
             with _container():
-                t.h1("TAGS")
+                with t.h1("TAGS"):
+                    with t.a(href="/library/{}/tags/refresh".format(libname)):
+                        _icon("refresh")
                 with _container():
-                    for tag in tags:
+                    for tag in sorted(tags,
+                                      key=lambda k: tags[k],
+                                      reverse=True):
                         _tag(tag=tag, libname=libname)
     return result
 
@@ -200,7 +213,8 @@ def _libraries(libname: str) -> t.html_tag:
                     libs = papis.api.get_libraries()
                     for lib in libs:
                         with t.a(href="/library/{}".format(lib)):
-                            t.attr(cls="list-group-item list-group-item-action")
+                            t.attr(cls="list-group-item "
+                                   "list-group-item-action")
                             _icon("book")
                             t.span(lib)
     return result
@@ -216,7 +230,8 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                 t.h3("{:.80}".format(doc["title"]),
                      style="font-style: italic")
                 with t.form(method="POST",
-                            action=("/library/{libname}/document/ref:{doc[ref]}"
+                            action=("/library/{libname}/"
+                                    "document/ref:{doc[ref]}"
                                     .format(doc=doc, libname=libname))):
                     t.input_(cls="form-control button",
                              type="submit")
@@ -243,13 +258,6 @@ def ensure_tags_list(tags: Union[str, List[str]]) -> List[str]:
     if isinstance(tags, list):
         return tags
     return TAGS_SPLIT_RX.split(tags)
-
-
-def _tag(tag: str, libname: str) -> t.html_tag:
-    return t.a(tag,
-               cls="badge bg-dark papis-tag",
-               href=("/library/{libname}/query?q=tags:{0}"
-                     .format(tag, libname=libname)))
 
 
 def _document_item(libname: str,
@@ -411,17 +419,27 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
     @ok_html
     def page_tags(self, libname: Optional[str] = None) -> None:
+        global TAGS_LIST
         libname = libname or papis.api.get_lib_name()
         docs = papis.api.get_all_documents_in_lib(libname)
-        tags_of_tags = [ensure_tags_list(d["tags"]) for d in docs]
-        tags = sorted(set(tag
-                          for _tags in tags_of_tags
-                          for tag in _tags))
+        tags_of_tags = [tag
+                        for d in docs
+                        for tag in ensure_tags_list(d["tags"])]
+        if TAGS_LIST.get(libname) is None:
+            TAGS_LIST[libname] = collections.defaultdict(int)
+            for tag in tags_of_tags:
+                TAGS_LIST[libname][tag] += 1  # type: ignore
         page = _tags(libname=libname,
                      pretitle="TAGS",
-                     tags=tags)
+                     tags=TAGS_LIST[libname] or {})
         self.wfile.write(bytes(str(page), "utf-8"))
         self.wfile.flush()
+
+    @ok_html
+    def page_tags_refresh(self, libname: Optional[str] = None) -> None:
+        libname = libname or papis.api.get_lib_name()
+        TAGS_LIST[libname] = None
+        self.redirect("/library/{}/tags".format(libname))
 
     @ok_html
     def page_libraries(self) -> None:
@@ -525,7 +543,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         else:
             raise Exception("File {} does not exist".format(path))
 
-    def do_ROUTES(self, routes: List[Tuple[str, Any]]) -> None:     # noqa: N802
+    def do_ROUTES(self,
+                  routes: List[Tuple[str, Any]]) -> None:
         try:
             for route, method in routes:
                 m = re.match(route, self.path)
@@ -558,14 +577,14 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         back_url = self.headers.get("Referer", "/library")
         self.redirect(back_url)
 
-    def do_POST(self) -> None:                                      # noqa: N802
+    def do_POST(self) -> None:
         routes = [
             ("^/library/?([^/]+)?/document/ref:(.*)$",
                 self.update_page_document),
         ]
         self.do_ROUTES(routes)
 
-    def do_GET(self) -> None:                                       # noqa: N802
+    def do_GET(self) -> None:
         routes = [
             # html serving
             ("^/$",
@@ -580,6 +599,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.page_document),
             ("^/library/([^/]+)/tags$",
                 self.page_tags),
+            ("^/library/([^/]+)/tags/refresh$",
+                self.page_tags_refresh),
             ("^/library/([^/]+)/file/(.+)$",
                 self.send_local_document_file),
             ("^/library/([^/]+)/clear_cache$",
