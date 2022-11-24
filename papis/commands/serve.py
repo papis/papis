@@ -29,6 +29,7 @@ USE_GIT = False  # type: bool
 TAGS_SPLIT_RX = re.compile(r"\s*[,\s]\s*")
 TAGS_LIST = {}  # type: Dict[str, Optional[Dict[str, int]]]
 QUERY_PLACEHOLDER = "insert query..."
+PAPIS_FILE_ICON_CLASS = "papis-file-icon"
 
 
 def _fa(name: str) -> str:
@@ -219,16 +220,6 @@ def _tags(pretitle: str, libname: str, tags: Dict[str, int]) -> t.html_tag:
     return result
 
 
-def _doc_files(files: List[str], libname: str, libfolder: str) -> t.html_tag:
-    with t.div() as result:
-        for _f in files:
-            t.a(cls=_fa("file"),
-                href=("/library/{libname}/file/{0}"
-                      .format(_f.replace(libfolder + "/", ""),
-                              libname=libname)))
-    return result
-
-
 def _libraries(libname: str) -> t.html_tag:
     with t.html() as result:
         _header("Libraries")
@@ -244,6 +235,24 @@ def _libraries(libname: str) -> t.html_tag:
                                    "list-group-item-action")
                             _icon("book")
                             t.span(lib)
+    return result
+
+
+def _doc_files_icons(files: List[str],
+                     libname: str,
+                     libfolder: str) -> t.html_tag:
+    with t.div() as result:
+        for _f in files:
+            with t.a():
+                t.attr(cls=PAPIS_FILE_ICON_CLASS)
+                t.attr(data_toggle="tooltip")
+                t.attr(data_placement="bottom")
+                t.attr(style="font-size: 1.5em")
+                t.attr(title=os.path.basename(_f))
+                t.attr(href="/library/{libname}/file/{0}"
+                       .format(_f.replace(libfolder + "/", ""),
+                               libname=libname))
+                _icon("file-pdf" if _f.endswith("pdf") else "file")
     return result
 
 
@@ -290,11 +299,19 @@ def ensure_tags_list(tags: Union[str, List[str]]) -> List[str]:
 def _document_item(libname: str,
                    libfolder: str,
                    doc: papis.document.Document) -> t.html_tag:
+
+    doc_link = ("/library/{libname}/document/ref:{ref}"
+                .format(ref=doc["ref"],
+                        libname=libname))
+
     with t.tr() as result:
         with t.td():
 
             with t.div(cls="ms-2 me-auto"):
-                t.div(doc["title"], cls="fw-bold")
+                with t.div(cls="fw-bold"):
+                    with t.a(href=doc_link):
+                        _icon("arrow-right")
+                    t.span(doc["title"])
                 t.span(doc["author"])
                 t.br()
                 if doc.has("journal"):
@@ -302,9 +319,9 @@ def _document_item(libname: str,
                     t.span(doc["journal"])
                     t.br()
                 if doc.has("files"):
-                    _doc_files(files=doc.get_files(),
-                               libname=libname,
-                               libfolder=libfolder)
+                    _doc_files_icons(files=doc.get_files(),
+                                     libname=libname,
+                                     libfolder=libfolder)
 
         with t.td():
 
@@ -323,9 +340,7 @@ def _document_item(libname: str,
             if doc.has("ref"):
                 t.a(doc["ref"],
                     cls="badge bg-dark",
-                    href=("/library/{libname}/document/ref:{ref}"
-                          .format(ref=doc["ref"],
-                                  libname=libname)))
+                    href=doc_link)
 
             with t.ul(cls="list-group list-group-horizontal"):
                 if doc.has("url"):
