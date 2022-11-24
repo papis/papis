@@ -71,10 +71,14 @@ general_settings = {
     "serve-bootstrap-js": ("https://cdn.jsdelivr.net/npm/"
                            + "bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"),
     "serve-jquery-js": "https://code.jquery.com/jquery-3.6.0.min.js",
-    "serve-jquery.dataTables-js": ("https://cdn.datatables.net/"
-                                   + "1.11.4/js/jquery.dataTables.js"),
     "serve-jquery.dataTables-css": ("https://cdn.datatables.net/"
-                                    + "1.11.4/css/jquery.dataTables.css"),
+                                    "v/bs5/dt-1.13.1/kt-2.8.0/"
+                                    "sc-2.0.7/sb-1.4.0/datatables.min.css"),
+    "serve-jquery.dataTables-js": ("https://cdn.datatables.net/"
+                                   "v/bs5/dt-1.13.1/kt-2.8.0/"
+                                   "sc-2.0.7/sb-1.4.0/datatables.min.js"),
+
+    "serve-empty-query-get-all-documents": True,
 
     "browse-key": "url",
     "browse-query-format": "{doc[title]} {doc[author]}",
