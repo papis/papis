@@ -28,6 +28,7 @@ logger = logging.getLogger("papis:server")
 USE_GIT = False  # type: bool
 TAGS_SPLIT_RX = re.compile(r"\s*[,\s]\s*")
 TAGS_LIST = {}  # type: Dict[str, Optional[Dict[str, int]]]
+QUERY_PLACEHOLDER = "insert query..."
 
 
 def _fa(name: str) -> str:
@@ -131,6 +132,28 @@ def _clear_cache(libname: str) -> t.html_tag:
     return result
 
 
+def _jquery_table(libname: str,
+                  libfolder: str,
+                  documents: List[papis.document.Document]) -> t.html_tag:
+    script = """
+    $(document).ready(function(){
+        $('#pub_table').DataTable({'bSort': false});
+    });
+    """
+    with t.table(border="1", cls="display", id="pub_table") as result:
+        with t.thead(style="display:none"):
+            with t.tr(style="text-align: right;"):
+                t.th("info")
+                t.th("data")
+        with t.tbody():
+            for doc in documents:
+                _document_item(libname=libname,
+                               libfolder=libfolder,
+                               doc=doc)
+        t.script(script)
+    return result
+
+
 def _index(pretitle: str,
            libname: str,
            libfolder: str,
@@ -151,20 +174,24 @@ def _index(pretitle: str,
                         t.input_(cls="form-control",
                                  type="text",
                                  name="q",
+                                 value=(""
+                                        if query == QUERY_PLACEHOLDER
+                                        else query),
                                  placeholder=query)
-                with t.table(border="1", cls="display", id="pub_table"):
-                    with t.thead(style="display:none"):
-                        with t.tr(style="text-align: right;"):
-                            t.th("info")
-                            t.th("data")
-                    with t.tbody():
-                        for doc in documents:
-                            _document_item(libname=libname,
-                                           libfolder=libfolder,
-                                           doc=doc)
-                t.script("""$(document).ready(function(){
-                                $('#pub_table').DataTable({'bSort': false});
-                            });""")
+                # Add a couple of friendlier messages
+                if not documents:
+                    if query == QUERY_PLACEHOLDER:
+                        with t.h4(cls="alert alert-success"):
+                            _icon("search")
+                            t.span("Place your query")
+                    else:
+                        with t.h4(cls="alert alert-warning"):
+                            _icon("database")
+                            t.span("Ups! I didn't find {}".format(query))
+                else:
+                    _jquery_table(libname=libname,
+                                  libfolder=libfolder,
+                                  documents=documents)
     return result
 
 
@@ -400,13 +427,15 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.send_header_html()
         self.end_headers()
         libname = libname or papis.api.get_lib_name()
-        docs = docs or papis.api.get_all_documents_in_lib(libname)
+        if len(docs) == 0:
+            if papis.config.getboolean("serve-empty-query-get-all-documents"):
+                docs = papis.api.get_all_documents_in_lib(libname)
         libfolder = papis.config.get_lib_from_name(libname).paths[0]
         page = _index(documents=docs,
                       libname=libname,
                       libfolder=libfolder,
                       pretitle=query or "HOME",
-                      query=query or "insert query...")
+                      query=query or QUERY_PLACEHOLDER)
         self.wfile.write(bytes(str(page), "utf-8"))
         self.wfile.flush()
 
