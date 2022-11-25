@@ -482,7 +482,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self._send_json({"message": msg})
 
     def page_query(self, libname: str, query: str) -> None:
-        cleaned_query = urllib.parse.unquote(query)
+        cleaned_query = urllib.parse.unquote_plus(query)
         docs = papis.api.get_documents_in_lib(libname, cleaned_query)
         self.page_main(libname, docs, cleaned_query)
 
