@@ -403,8 +403,7 @@ def _document_item(libname: str,
                 if doc.has("doi"):
                     quoted_doi = (urllib
                                   .parse
-                                  .quote(":" + doc["doi"])
-                                  .replace("/", "%2F"))
+                                  .quote(":" + doc["doi"], safe=""))
                     url_link("doi",
                              "https://doi.org/{}".format(doc["doi"]))
                     url_link("ads",
