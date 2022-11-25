@@ -343,26 +343,33 @@ def _document_item(libname: str,
                     href=doc_link)
 
             with t.ul(cls="list-group list-group-horizontal"):
+
+                def url_link(title: str, href: str) -> t.html_tag:
+                    return t.a(title,
+                               href=href,
+                               cls="list-group-item list-group-item-action",
+                               target="_blank")
+
                 if doc.has("url"):
-                    t.a("url",
-                        href=doc["url"],
-                        cls="list-group-item list-group-item-action",
-                        target="_blank")
+                    url_link("url", doc["url"])
                 if doc.has("doi"):
-                    t.a("doi",
-                        href="https://doi.org/{}".format(doc["doi"]),
-                        cls="list-group-item list-group-item-action",
-                        target="_blank")
-                    t.a("ads",
-                        href=("https://ui.adsabs.harvard.edu/abs/{}"
-                              .format(doc["doi"])),
-                        cls="list-group-item list-group-item-action",
-                        target="_blank")
-                    t.a("ads/cit",
-                        href=("https://ui.adsabs.harvard.edu/abs/{}/{}"
-                              .format(doc["doi"], "exportcitation")),
-                        cls="list-group-item list-group-item-action",
-                        target="_blank")
+                    quoted_doi = (urllib
+                                  .parse
+                                  .quote(":" + doc["doi"])
+                                  .replace("/", "%2F"))
+                    url_link("doi",
+                             "https://doi.org/{}".format(doc["doi"]))
+                    url_link("ads",
+                             "https://ui.adsabs.harvard.edu/search/q=doi{}"
+                             .format(quoted_doi))
+                else:
+                    quoted_title = urllib.parse.quote(doc["title"])
+                    url_link("xref",
+                             "https://search.crossref.org/?q={}&from_ui=yes"
+                             .format(quoted_title))
+                    url_link("ads",
+                             "https://ui.adsabs.harvard.edu/search/q=title:{}"
+                             .format(quoted_title))
 
     return result
 
