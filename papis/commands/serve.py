@@ -24,6 +24,9 @@ import papis.crossref
 
 logger = logging.getLogger("papis:server")
 
+# types
+HtmlGiver = Callable[[], t.html_tag]
+
 
 USE_GIT = False  # type: bool
 TAGS_SPLIT_RX = re.compile(r"\s*[,\s]\s*")
@@ -45,6 +48,15 @@ def _icon(name: str) -> t.html_tag:
 
 def _container() -> t.html_tag:
     return t.div(cls="container")
+
+
+def _modal(body: HtmlGiver, id: str) -> t.html_tag:
+    with t.div(cls="modal fade", tabindex="-1", id=id) as rst:
+        with t.div(cls="modal-dialog"):
+            with t.div(cls="modal-content"):
+                with t.div(cls="modal-body"):
+                    body()
+    return rst
 
 
 def _header(pretitle: str, extra: Optional[t.html_tag] = None) -> t.html_tag:
@@ -246,8 +258,8 @@ def _doc_files_icons(files: List[str],
         for _f in files:
             with t.a():
                 t.attr(cls=PAPIS_FILE_ICON_CLASS)
-                t.attr(data_toggle="tooltip")
-                t.attr(data_placement="bottom")
+                t.attr(data_bs_toggle="tooltip")
+                t.attr(data_bs_placement="bottom")
                 t.attr(style="font-size: 1.5em")
                 t.attr(title=os.path.basename(_f))
                 t.attr(href="/library/{libname}/file/{0}"
@@ -319,13 +331,48 @@ def _document_item(libname: str,
                     _icon("book-open")
                     t.span(doc["journal"])
                     t.br()
+
                 if doc.has("files"):
                     _doc_files_icons(files=doc.get_files(),
                                      libname=libname,
                                      libfolder=libfolder)
 
-        with t.td():
+                if doc.has("citations"):
+                    citations_id = "citatios{}".format(id(doc))
+                    with t.a():
+                        t.attr(data_bs_toggle="modal",
+                               cls="",
+                               aria_expanded="false",
+                               href="#" + citations_id,
+                               role="button")
+                        _icon("list")
+                        t.span("citations")
 
+                    def body() -> t.html_tag:
+                        with t.ul(cls="list-group") as result:
+                            for cit in doc["citations"]:
+                                with t.li():
+                                    t.attr(cls=("list-group-item"))
+                                    for key in ["title",
+                                                "author",
+                                                "year",
+                                                "publisher"]:
+                                        if key in cit:
+                                            t.span(cit[key])
+                                    if "doi" in cit:
+                                        t.a("doi",
+                                            target="_blank",
+                                            href=("https://doi.org/{}"
+                                                  .format(cit["doi"])))
+                                    if "url" in cit:
+                                        t.a("url",
+                                            target="_blank",
+                                            href=doc["url"])
+                        return result
+
+                    _modal(body=body, id=citations_id)
+
+        with t.td():
             if doc.has("tags"):
                 with t.span(cls="papis-tags"):
                     _icon("hashtag")
