@@ -35,15 +35,19 @@ QUERY_PLACEHOLDER = "insert query..."
 PAPIS_FILE_ICON_CLASS = "papis-file-icon"
 
 
-def _fa(name: str) -> str:
+def _fa(name: str, namespace: str = "fa") -> str:
     """
     Font awesome wrapper
     """
-    return "fa fa-" + name
+    return namespace + " fa-" + name
 
 
-def _icon(name: str) -> t.html_tag:
-    return t.i(cls=_fa(name))
+def _flex(where: str, cls: str = "", **kwargs: Any) -> t.html_tag:
+    return t.div(cls=cls + " d-flex justify-content-" + where, **kwargs)
+
+
+def _icon(name: str, namespace: str = "fa") -> t.html_tag:
+    return t.i(cls=_fa(name, namespace=namespace))
 
 
 def _container() -> t.html_tag:
@@ -68,10 +72,11 @@ def _header(pretitle: str, extra: Optional[t.html_tag] = None) -> t.html_tag:
         t.meta(name="apple-mobile-web-app-capable", content="yes")
         t.meta(name="viewport", content="width=device-width, initial-scale=1")
 
-        t.link(rel="stylesheet",
-               href=papis.config.getstring("serve-font-awesome-css"),
-               crossorigin="anonymous",
-               referrerpolicy="no-referrer")
+        for awesome in papis.config.getlist("serve-font-awesome-css"):
+            t.link(rel="stylesheet",
+                   href=awesome,
+                   crossorigin="anonymous",
+                   referrerpolicy="no-referrer")
         t.link(href=papis.config.getstring("serve-bootstrap-css"),
                rel="stylesheet",
                crossorigin="anonymous")
@@ -270,33 +275,101 @@ def _doc_files_icons(files: List[str],
 
 
 def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
+    """
+    View of a single document to edit the information of the yaml file,
+    and maybe in the future to update the information.
+    """
+    input_types = {
+        # "string": default
+        "textarea": ["abstract"],
+        "number": ["year", "volume", "month", "issue"],
+    }
     with t.html() as result:
         _header(doc["title"])
         with t.body():
             _navbar(libname=libname)
             with _container():
-                t.h1(doc["title"])
-                t.h3("{:.80}".format(doc["title"]),
+                t.h3(doc["title"])
+                t.h5("{:.80}, {}".format(doc["author"], doc["year"]),
                      style="font-style: italic")
-                with t.form(method="POST",
-                            action=("/library/{libname}/"
-                                    "document/ref:{doc[ref]}"
-                                    .format(doc=doc, libname=libname))):
-                    t.input_(cls="form-control button",
-                             type="submit")
-                    with t.ol(cls="list-group"):
+                with _container():
+                    # urls block
+                    with _flex("between"):
+                        with _flex("begin"):
+                            t.a("@{}".format(doc["ref"]),
+                                href="#",
+                                cls="btn btn-outline-success")
+                        with _flex("center"):
+                            t.button("Submit to edit",
+                                     form="edit-form",
+                                     cls="btn btn-success",
+                                     type="submit")
+                        with _flex("end"):
+                            with t.div(cls="btn-group",
+                                       role="group",
+                                       aria_label=("List of external "
+                                                   "links to the document")):
+                                if "doi" in doc:
+                                    with t.a(href=("https://doi.org/{}"
+                                                   .format(doc["doi"])),
+                                             target="_blank",
+                                             cls="btn btn-outline-danger"):
+                                        _icon("check-circle")
+                                        t.span("doi")
+                                if "url" in doc:
+                                    with t.a(href="{}".format(doc["url"]),
+                                             target="_blank",
+                                             cls="btn btn-outline-danger"):
+                                        _icon("external-link")
+                                        t.span("url")
+                                with t.a(href=("https://duckduckgo.com/?q={}"
+                                               .format(urllib
+                                                       .parse
+                                                       .quote(papis.document
+                                                              .describe(doc),
+                                                              safe=""))),
+                                         target="_blank",
+                                         cls="btn btn-outline-danger"):
+                                    _icon("globe", namespace="fa-solid")
+                                    t.span("ddg")
+
+                    t.br()
+
+                    # the said form
+                    with t.form(method="POST",
+                                id="edit-form",
+                                action=("/library/{libname}/"
+                                        "document/ref:{doc[ref]}"
+                                        .format(doc=doc, libname=libname))):
                         for key, val in doc.items():
                             if isinstance(val, (list, dict)):
                                 continue
-                            with t.li(cls="list-group-item"):
-                                with t.div(cls="form-floating"):
+                            with t.div(cls="input-group mb-3"):
+                                t.label(key,
+                                        cls="input-group-text",
+                                        _for=key)
+                                if key in input_types["textarea"]:
                                     t.textarea(val,
                                                cls="form-control",
                                                placeholder=str(val),
                                                name=key,
-                                               id=key,
                                                style="height: 100px")
-                                    t.label(key, _for=key)
+                                elif key in input_types["number"]:
+                                    t.input_(value=val,
+                                             cls="form-control",
+                                             name=key,
+                                             placeholder=str(val),
+                                             type="number")
+                                else:
+                                    t.input_(value=val,
+                                             cls="form-control",
+                                             name=key,
+                                             placeholder=str(val),
+                                             type="text")
+
+                                with t.label(cls="input-group-text",
+                                             _for=key):
+                                    _icon("close")
     return result
 
 
@@ -611,6 +684,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 """.format(url=url))
         self.send_response(code)
         self.send_header_html()
+        self.send_header("Location", url)
         self.end_headers()
         self.wfile.write(bytes(page, "utf-8"))
         self.wfile.flush()

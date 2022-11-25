@@ -64,8 +64,13 @@ general_settings = {
     # papis-serve configuration
     "serve-user-css": [],
     "serve-user-js": [],
-    "serve-font-awesome-css": ("https://cdnjs.cloudflare.com/ajax/"
-                               + "libs/font-awesome/6.0.0/css/all.min.css"),
+    "serve-font-awesome-css": [("https://cdnjs.cloudflare.com/ajax/"
+                               "libs/font-awesome/6.2.1/css/all.min.css"),
+                               ("https://cdnjs.cloudflare.com/ajax/"
+                                "libs/font-awesome/6.2.1/css/brands.min.css"),
+                               ("https://cdnjs.cloudflare.com/ajax/"
+                                "libs/font-awesome/6.2.1/css/solid.min.css"),
+                               ],
     "serve-bootstrap-css": ("https://cdn.jsdelivr.net/npm/"
                             + "bootstrap@5.1.1/dist/css/bootstrap.min.css"),
     "serve-bootstrap-js": ("https://cdn.jsdelivr.net/npm/"
