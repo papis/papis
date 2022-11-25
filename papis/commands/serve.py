@@ -327,7 +327,7 @@ def _document_item(libname: str,
 
             if doc.has("tags"):
                 with t.span(cls="papis-tags"):
-                    _icon("tag")
+                    _icon("hashtag")
                     for tag in ensure_tags_list(doc["tags"]):
                         _tag(tag=tag, libname=libname)
                     t.br()
@@ -338,9 +338,9 @@ def _document_item(libname: str,
                 t.span("????", cls="badge bg-danger papis-year")
 
             if doc.has("ref"):
-                t.a(doc["ref"],
-                    cls="badge bg-dark",
-                    href=doc_link)
+                with t.a(cls="badge bg-success", href=doc_link):
+                    _icon("at")
+                    t.span(doc["ref"])
 
             with t.ul(cls="list-group list-group-horizontal"):
 
