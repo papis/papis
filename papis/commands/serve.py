@@ -642,7 +642,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         else:
             raise Exception("File {} does not exist".format(path))
 
-    def do_ROUTES(self,
+    def do_ROUTES(self,                     # noqa: N802
                   routes: List[Tuple[str, Any]]) -> None:
         try:
             for route, method in routes:
@@ -676,14 +676,14 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         back_url = self.headers.get("Referer", "/library")
         self.redirect(back_url)
 
-    def do_POST(self) -> None:
+    def do_POST(self) -> None:              # noqa: N802
         routes = [
             ("^/library/?([^/]+)?/document/ref:(.*)$",
                 self.update_page_document),
         ]
         self.do_ROUTES(routes)
 
-    def do_GET(self) -> None:
+    def do_GET(self) -> None:               # noqa: N802
         routes = [
             # html serving
             ("^/$",
