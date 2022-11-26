@@ -82,7 +82,6 @@ def run(
     """Main method to the list command
 
     :returns: List different objects
-    :rtype:  list
     """
     if downloaders:
         return [str(d) for d in papis.downloaders.get_available_downloaders()]

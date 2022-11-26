@@ -45,9 +45,7 @@ class Database(ABC):
         Whether or not document matches query_string.
 
         :param document: Document to be matched
-        :type  document: papis.document.Document
         :param query_string: Query string
-        :type  query_string: str
         """
         raise NotImplementedError("Match not defined for this class")
 

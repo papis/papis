@@ -132,14 +132,11 @@ def pdf_to_arxivid(
     is the correct one.
 
     :param filepath: Path to the pdf file
-    :type  filepath: str
     :param maxlines: Maximum number of lines that should be checked
         For some documnets, it would spend a long time trying to look for
         a arxivid, and arxivids in the middle of documents don't tend to be the
         correct arxivid of the document.
-    :type  maxlines: int
     :returns: arxivid or None
-    :rtype:  str or None
     """
     with open(filepath, "rb") as fd:
         for j, line in enumerate(fd):
