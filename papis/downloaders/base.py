@@ -104,7 +104,7 @@ meta_equivalences = [
 def parse_meta_headers(soup: "bs4.BeautifulSoup") -> Dict[str, Any]:
     global meta_equivalences
     # metas = soup.find_all(name="meta")
-    data = dict()  # type: Dict[str, Any]
+    data = {}  # type: Dict[str, Any]
     for equiv in meta_equivalences:
         elements = soup.find_all(equiv["tag"], attrs=equiv["attrs"])
         if elements:

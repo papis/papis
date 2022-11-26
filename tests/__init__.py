@@ -111,7 +111,7 @@ def setup_test_library() -> None:
     """Set-up a test library for tests
     """
     config = papis.config.get_configuration()
-    config["settings"] = dict()
+    config["settings"] = {}
     folder = tempfile.mkdtemp(prefix="papis-test-library-")
     libname = get_test_lib_name()
     lib = papis.library.Library(libname, [folder])

@@ -62,7 +62,7 @@ class Downloader(papis.downloaders.Downloader):
 
     def get_data(self) -> Dict[str, Any]:
         global script_keyconv
-        data = dict()  # type: Dict[str, Any]
+        data = {}  # type: Dict[str, Any]
         soup = self._get_soup()
         scripts = soup.find_all(name="script", attrs={"data-iso-key": "_0"})
         if scripts:

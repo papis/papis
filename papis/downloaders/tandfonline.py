@@ -22,7 +22,7 @@ class Downloader(papis.downloaders.Downloader):
                 if re.match(r".*tandfonline.com.*", url) else None)
 
     def get_data(self) -> Dict[str, Any]:
-        data = dict()
+        data = {}
         soup = self._get_soup()
         data.update(papis.downloaders.base.parse_meta_headers(soup))
 

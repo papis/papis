@@ -90,10 +90,8 @@ def get_data(
 
     entries = soup.find_all("entry")
     for entry in entries:
-        data = dict()
-        data["abstract"] = entry.find("summary").get_text().replace(
-            "\n", " "
-        )
+        data = {}
+        data["abstract"] = entry.find("summary").get_text().replace("\n", " ")
         data["url"] = entry.find("id").get_text()
         data["published"] = entry.find("published").get_text()
         published = data.get("published")

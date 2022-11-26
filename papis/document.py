@@ -33,7 +33,7 @@ def keyconversion_to_data(conversion_list: List[KeyConversionPair],
     writing a KeyConversionPair to be input to this function.
     """
 
-    new_data = dict()
+    new_data = {}
 
     for key_pair in conversion_list:
 
@@ -101,7 +101,7 @@ def split_authors_name(
             given = " ".join(parts["first"])
             family = " ".join(parts["von"] + parts["last"] + parts["jr"])
 
-            author_list.append(dict(family=family, given=given))
+            author_list.append({"family": family, "given": given})
 
     return author_list
 
@@ -271,10 +271,7 @@ def to_dict(document: Document) -> Dict[str, Any]:
     :returns: Python dictionary
     :rtype:  dict
     """
-    result = dict()
-    for key in document:
-        result[key] = document[key]
-    return result
+    return {key: document[key] for key in document}
 
 
 def dump(document: Document) -> str:

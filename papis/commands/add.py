@@ -533,7 +533,7 @@ def cli(
     from_importer = list(from_importer)
     logger = logging.getLogger("cli:add")
 
-    data = dict()
+    data = {}
     for data_set in set_list:
         data[data_set[0]] = data_set[1]
 
