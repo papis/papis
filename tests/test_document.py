@@ -19,25 +19,29 @@ from tests import create_random_file
 def test_new() -> None:
     nfiles = 10
     files = [create_random_file(suffix=".{}".format(i)) for i in range(nfiles)]
-    tmp = os.path.join(tempfile.mkdtemp(), "doc")
-    doc = new(tmp, {"author": "hello"}, files)
 
-    assert os.path.exists(doc.get_main_folder())
-    assert doc.get_main_folder() == tmp
-    assert len(doc["files"]) == nfiles
-    assert len(doc.get_files()) == nfiles
+    with tempfile.TemporaryDirectory() as d:
+        tmp = os.path.join(d, "doc")
+        doc = new(tmp, {"author": "hello"}, files)
 
-    for i in range(nfiles):
-        assert doc["files"][i].endswith(str(i))
-        assert not os.path.exists(doc["files"][i])
-        assert os.path.exists(doc.get_files()[i])
+        assert os.path.exists(doc.get_main_folder())
+        assert doc.get_main_folder() == tmp
+        assert len(doc["files"]) == nfiles
+        assert len(doc.get_files()) == nfiles
 
-    tmp = os.path.join(tempfile.mkdtemp(), "doc")
-    doc = new(tmp, {"author": "hello"}, [])
-    assert os.path.exists(doc.get_main_folder())
-    assert doc.get_main_folder() == tmp
-    assert len(doc["files"]) == 0
-    assert len(doc.get_files()) == 0
+        for i in range(nfiles):
+            assert doc["files"][i].endswith(str(i))
+            assert not os.path.exists(doc["files"][i])
+            assert os.path.exists(doc.get_files()[i])
+
+    with tempfile.TemporaryDirectory() as d:
+        tmp = os.path.join(d, "doc")
+        doc = new(tmp, {"author": "hello"}, [])
+
+        assert os.path.exists(doc.get_main_folder())
+        assert doc.get_main_folder() == tmp
+        assert len(doc["files"]) == 0
+        assert len(doc.get_files()) == 0
 
 
 def test_from_data() -> None:
@@ -133,11 +137,10 @@ def test_pickle() -> None:
         from_data({"title": "Hello World"}),
         from_data({"author": "Turing"}),
     ]
-    filepath = tempfile.mktemp()
-    with open(filepath, "wb+") as fd:
-        pickle.dump(docs, fd)
 
-    with open(filepath, "rb") as fd:
+    with tempfile.TemporaryFile() as fd:
+        pickle.dump(docs, fd)
+        fd.seek(0)
         gotdocs = pickle.load(fd)
 
     assert gotdocs[0]["title"] == docs[0]["title"]

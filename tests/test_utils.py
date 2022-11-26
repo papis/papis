@@ -29,9 +29,10 @@ def test_get_cache_home():
     assert get_cache_home() == os.path.abspath(
         os.path.expanduser(os.path.join("~/.cache", "papis")))
 
-    tmp = os.path.join(tempfile.mkdtemp(), "blah")
-    papis.config.set("cache-dir", tmp)
-    assert get_cache_home() == tmp
+    with tempfile.TemporaryDirectory() as d:
+        tmp = os.path.join(d, "blah")
+        papis.config.set("cache-dir", tmp)
+        assert get_cache_home() == tmp
 
 
 def test_create_identifier():
@@ -54,10 +55,10 @@ def test_create_identifier():
 
 @pytest.mark.skipif(sys.platform != "linux", reason="uses linux tools")
 def test_general_open_with_spaces():
-    filename = tempfile.mktemp("File with at least a couple of spaces")
-
-    with open(filename, "w+") as fd:
-        fd.write("Some content")
+    suffix = "File with at least a couple of spaces"
+    with tempfile.NamedTemporaryFile("w", suffix=suffix, delete=False) as f:
+        filename = f.name
+        f.write("Some content")
 
     assert os.path.exists(filename)
 
@@ -70,7 +71,9 @@ def test_general_open_with_spaces():
 
     with open(filename) as fd:
         content = fd.read()
-        assert content == "Sume cuntent"
+
+    assert content == "Sume cuntent"
+    os.unlink(filename)
 
 
 def test_locate_document():

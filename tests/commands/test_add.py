@@ -20,9 +20,10 @@ from papis.filetype import get_document_extension
 
 
 def test_get_hash_folder():
-    path = tempfile.mktemp(prefix="papis-get_name-")
-    open(path, "w+").close()
     data = dict(author="don quijote de la mancha")
+
+    with tempfile.NamedTemporaryFile(prefix="papis-get-name-", delete=False) as f:
+        path = f.name
 
     hh = get_hash_folder(data, [path])
     assert re.match(r".*-don-quijote-de-la-ma$", hh) is not None
@@ -39,14 +40,17 @@ def test_get_hash_folder():
     data = {}
     hh = get_hash_folder(data, [path])
     assert re.match(r".*-don-quijote-de-la-ma$", hh) is None
+    os.unlink(path)
 
-    path = tempfile.mktemp(prefix="papis-get_name-")
-    open(path, "w+").close()
+    with tempfile.NamedTemporaryFile(prefix="papis-get-name-", delete=False) as f:
+        path = f.name
+
     newhh = get_hash_folder(data, [path])
     assert not hh == newhh
 
     newnewhh = get_hash_folder(data, [path])
     assert not newnewhh == newhh
+    os.unlink(path)
 
 
 class TestGetFileName(unittest.TestCase):
@@ -101,11 +105,9 @@ class TestRun(unittest.TestCase):
         tests.setup_test_library()
 
     def test_nofile_exception(self):
-        path = tempfile.mktemp()
-        self.assertTrue(not os.path.exists(path))
         try:
             run(
-                [path],
+                ["/path/does/not/exist.pdf"],
                 data=dict(author="Bohm", title="My effect")
             )
             self.assertTrue(False)
@@ -139,18 +141,21 @@ class TestRun(unittest.TestCase):
             "ref": "2FJT2E3A"
         }
         number_of_files = 10
-        paths = [tempfile.mktemp() for i in range(number_of_files)]
-        for p in paths:
-            open(p, "w+").close()
+        with tempfile.TemporaryDirectory() as d:
+            paths = []
+            for i in range(number_of_files):
+                paths.append(os.path.join(d, str(i)))
+                with open(paths[-1], "w+"):
+                    pass
 
-        run(paths, data=data)
+            run(paths, data=data)
 
-        db = papis.database.get()
-        docs = db.query_dict(dict(author="Kutzelnigg, Werner"))
-        self.assertTrue(len(docs) == 1)
-        doc = docs[0]
-        self.assertTrue(doc is not None)
-        self.assertTrue(len(doc.get_files()) == number_of_files)
+            db = papis.database.get()
+            docs = db.query_dict(dict(author="Kutzelnigg, Werner"))
+            self.assertTrue(len(docs) == 1)
+            doc = docs[0]
+            self.assertTrue(doc is not None)
+            self.assertTrue(len(doc.get_files()) == number_of_files)
 
 
 class TestCli(tests.cli.TestCli):
@@ -242,11 +247,11 @@ class TestCli(tests.cli.TestCli):
           year = { 1905 },
         }
         """
-        bibfile = tempfile.mktemp()
-        pdf = create_random_pdf()
-        with open(bibfile, "w+") as fd:
-            fd.write(bibstring)
+        with tempfile.NamedTemporaryFile("w", delete=False) as f:
+            bibfile = f.name
+            f.write(bibstring)
 
+        pdf = create_random_pdf()
         self.assertTrue(get_document_extension(pdf) == "pdf")
 
         result = self.invoke([pdf, "--from", "bibtex", bibfile])
@@ -264,9 +269,10 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(len(doc.get_files()) == 1)
         # This is the original pdf file, it should still be there
         self.assertTrue(os.path.exists(pdf))
-        # and it should still be apdf
+        # and it should still be a pdf
         self.assertTrue(get_document_extension(pdf) == "pdf")
         self.assertTrue(get_document_extension(doc.get_files()[0]) == "pdf")
+        os.unlink(bibfile)
 
     @patch("papis.utils.open_file", lambda x: None)
     @patch("papis.tui.utils.confirm", lambda x: True)
@@ -278,11 +284,12 @@ class TestCli(tests.cli.TestCli):
             "title: The lord of the rings\n"
             "author: Tolkien\n"
         )
-        yamlfile = tempfile.mktemp()
-        epub = create_random_epub()
-        with open(yamlfile, "w+") as fd:
-            fd.write(yamlstring)
 
+        with tempfile.NamedTemporaryFile("w", delete=False) as f:
+            yamlfile = f.name
+            f.write(yamlstring)
+
+        epub = create_random_epub()
         self.assertTrue(get_document_extension(epub) == "epub")
 
         result = self.invoke([
@@ -300,6 +307,7 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(os.path.exists(epub))
         # and it should still be an epub
         self.assertTrue(get_document_extension(epub) == "epub")
+        os.unlink(yamlfile)
 
     # @patch(
     #     "papis.crossref.get_data",
