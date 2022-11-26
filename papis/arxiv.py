@@ -170,13 +170,13 @@ def find_arxivid_in_text(text: str) -> Optional[str]:
         ), re.I
     )
     miter = regex.finditer(text)
-    try:
+
+    from contextlib import suppress
+    with suppress(StopIteration):
         m = next(miter)
         if m:
-            arxivid = m.group("arxivid")
-            return arxivid
-    except StopIteration:
-        pass
+            return m.group("arxivid")
+
     return None
 
 

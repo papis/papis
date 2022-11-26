@@ -155,29 +155,29 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         """Move the cursor up whenever possible"""
         if self.current_index is None:
             return None
-        try:
+
+        from contextlib import suppress
+        with suppress(ValueError):
             index = self.indices.index(self.current_index)
             index -= 1
             if index < 0:
                 self.current_index = self.indices[-1]
             else:
                 self.current_index = self.indices[index]
-        except ValueError:
-            pass
 
     def move_down(self) -> None:
         """Move the cursor down whenever possible"""
         if self.current_index is None:
             return None
-        try:
+
+        from contextlib import suppress
+        with suppress(ValueError):
             index = self.indices.index(self.current_index)
             index += 1
             if index >= len(self.indices):
                 self.current_index = self.indices[0]
             else:
                 self.current_index = self.indices[index]
-        except ValueError:
-            pass
 
     def go_top(self) -> None:
         """Go to top whenever possible"""

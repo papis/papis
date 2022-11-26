@@ -70,14 +70,13 @@ class Importer:
         """
         can return a dict to update the document with
         """
-        try:
+        from contextlib import suppress
+
+        with suppress(NotImplementedError):
             self.fetch_data()
-        except NotImplementedError:
-            pass
-        try:
+
+        with suppress(NotImplementedError):
             self.fetch_files()
-        except NotImplementedError:
-            pass
 
     def fetch_data(self) -> None:
         raise NotImplementedError()
