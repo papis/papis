@@ -381,16 +381,15 @@ def sort(docs: List[Document], key: str, reverse: bool) -> List[Document]:
 
     def _sort_for_key(key: str, doc: Document
                       ) -> Tuple[int, datetime.datetime, int, str]:
+        from contextlib import suppress
         if key in doc:
             if key == "time-added":
-                try:
+                with suppress(ValueError):
                     date_value = \
                         datetime.datetime.strptime(str(doc[key]),
                                                    papis.strings.time_format)
                     return (sort_rankings["date"],
                             date_value, 0, str(doc[key]))
-                except ValueError:
-                    pass
 
             if str(doc[key]).isdigit():
                 return (sort_rankings["int"],
