@@ -274,7 +274,7 @@ class Database(papis.database.base.Database):
         result = list(filter(
             lambda d: d[1].get_main_folder() == document.get_main_folder(),
             enumerate(self.get_documents())))
-        if len(result) == 0:
+        if not result:
             raise Exception(
                 "The document passed could not be found in the library")
         return result

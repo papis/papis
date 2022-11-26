@@ -426,10 +426,10 @@ def _document_item(libname: str,
                             for cit in doc["citations"]:
                                 with t.li():
                                     t.attr(cls=("list-group-item"))
-                                    for key in ["title",
+                                    for key in ("title",
                                                 "author",
                                                 "year",
-                                                "publisher"]:
+                                                "publisher"):
                                         if key in cit:
                                             t.span(cit[key])
                                     if "doi" in cit:
@@ -623,8 +623,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     def page_document(self, libname: str, ref: str) -> None:
         docs = papis.api.get_documents_in_lib(libname, ref)
         if len(docs) > 1:
-            raise Exception("More than one document match {}".format(ref))
-        if len(docs) == 0:
+            raise Exception("More than one document matched ref '{}'".format(ref))
+        if not docs:
             raise Exception("No document found with ref '{}'".format(ref))
 
         page = _document_view(libname=libname, doc=docs[0])
@@ -700,7 +700,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
     def send_local_document_file(self, libname: str, localpath: str) -> None:
         libfolder = papis.config.get_lib_from_name(libname).paths[0]
-        path = os.path.join(str(libfolder), localpath)
+        path = os.path.join(libfolder, localpath)
         print(libname)
         print(localpath)
         print(libfolder)

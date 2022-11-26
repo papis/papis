@@ -79,7 +79,7 @@ class CommandLinePrompt(ConditionalContainer):  # type: ignore
 
         if len(cmds) > 1:
             raise Exception("More than one command matches the input")
-        elif len(cmds) == 0:
+        elif not cmds:
             raise Exception("No command found ({0})".format(name))
 
         input_cmd.pop(0)

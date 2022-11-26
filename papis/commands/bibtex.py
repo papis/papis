@@ -530,7 +530,7 @@ def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
     for j, doc in enumerate(docs):
         file_value = None
         filepaths = []
-        for k in ["file", "FILE"]:
+        for k in ("file", "FILE"):
             logger.info(
                 "%s {c.Back.BLACK}{c.Fore.YELLOW}%-80.80s"
                 "{c.Style.RESET_ALL}",

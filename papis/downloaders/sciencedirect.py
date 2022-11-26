@@ -8,11 +8,13 @@ _K = papis.document.KeyConversionPair
 
 
 def _page_to_pages(data: List[Dict[str, str]]) -> str:
-    if len(data) == 0:
+    if not data:
         raise RuntimeError("No data to turn to pages")
+
     x = data[0]
-    if not {"first-page", "last-page"} & x.keys():
+    if "first-page" not in x or "last-page" not in x:
         raise RuntimeError("first-page and last-page not found")
+
     return "{0}--{1}".format(x["first-page"], x["last-page"])
 
 
