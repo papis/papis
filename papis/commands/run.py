@@ -76,7 +76,7 @@ def run(folder: str, command: Optional[List[str]] = None) -> int:
     return os.system(commandstr)
 
 
-@click.command("run", context_settings=dict(ignore_unknown_options=True))
+@click.command("run", context_settings={"ignore_unknown_options": True})
 @click.help_option("--help", "-h")
 @click.option(
     "--pick", "-p",

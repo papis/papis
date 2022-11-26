@@ -90,7 +90,7 @@ class Picker(papis.pick.Picker[T]):
                 import colorama
                 return papis.format.format(_fmt,
                                            d,
-                                           additional=dict(c=colorama))
+                                           additional={"c": colorama})
             else:
                 return header_filter(d)
 

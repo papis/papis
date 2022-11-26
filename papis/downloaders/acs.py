@@ -45,12 +45,11 @@ class Downloader(papis.downloaders.Downloader):
         if articles:
             article = articles[0]
             for author in article.find_all(name="a", attrs={"id": "authors"}):
-                author_list.append(
-                    dict(
-                        given=author.text.split(" ")[0],
-                        family=" ".join(author.text.split(" ")[1:]),
-                        affiliation=[]
-                    )
+                author_list.append({
+                    "given": author.text.split(" ")[0],
+                    "family": " ".join(author.text.split(" ")[1:]),
+                    "affiliation": []
+                    }
                 )
             year = article.find_all(
                 name="span", attrs={"class": "citation_year"})
@@ -69,7 +68,8 @@ class Downloader(papis.downloaders.Downloader):
                 for aff in affiliations[0].find_all(name="div"):
                     for author in author_list:
                         author["affiliation"].append(
-                            dict(name=aff.text.replace("\n", " ")))
+                            {"name": aff.text.replace("\n", " ")}
+                            )
 
         data["author_list"] = author_list
         data["author"] = papis.document.author_list_to_author(data)

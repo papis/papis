@@ -648,7 +648,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self._ok()
         self._header_json()
         self.end_headers()
-        self._send_json(dict(name=lib.name, paths=lib.paths))
+        self._send_json({"name": lib.name, "paths": lib.paths})
 
     def get_all_documents(self, libname: str) -> None:
         docs = papis.api.get_all_documents_in_lib(libname)
@@ -737,7 +737,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
             headers=self.headers,
             environ={"REQUEST_METHOD": "POST"}
         )
-        docs = db.query_dict(dict(ref=ref))
+        docs = db.query_dict({"ref": ref})
         if not docs:
             raise Exception("Document with ref %s not "
                             "found in the database" % ref)

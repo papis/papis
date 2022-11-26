@@ -138,11 +138,11 @@ def parse_meta_authors(soup: "bs4.BeautifulSoup") -> List[Dict[str, Any]]:
 
     for t in tuples:
         fullname = t[0].get("content")
-        affiliation = [dict(name=t[1].get("content"))] if t[1] else []
+        affiliation = [{"name": t[1].get("content")}] if t[1] else []
         fullnames = re.split(r"\s+", fullname)
-        author_list.append(dict(
-            given=fullnames[0],
-            family=" ".join(fullnames[1:]),
-            affiliation=affiliation,
-        ))
+        author_list.append({
+            "given": fullnames[0],
+            "family": " ".join(fullnames[1:]),
+            "affiliation": affiliation,
+            })
     return author_list

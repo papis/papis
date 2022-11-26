@@ -39,7 +39,7 @@ class Downloader(papis.downloaders.Downloader):
 
                 affiliation = self.re_comma.sub(
                     ", ", self.re_clean.sub("", affiliation))
-                affiliation = [dict(name=affiliation)]
+                affiliation = [{"name": affiliation}]
 
             # find href="/author/escaped_fullname"
             fullname = author.find_all("a", attrs={"class": "entryAuthor"})
@@ -53,10 +53,10 @@ class Downloader(papis.downloaders.Downloader):
             if "Reviewing Editor" in author.text:
                 data["editor"] = (
                     papis.config.getstring("multiple-authors-format")
-                    .format(au=dict(family=family, given=given)))
+                    .format(au={"family": family, "given": given}))
                 continue
 
-            new_author = dict(given=given, family=family)
+            new_author = {"given": given, "family": family}
             if affiliation:
                 new_author["affiliation"] = affiliation
             author_list.append(new_author)

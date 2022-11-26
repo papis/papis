@@ -39,16 +39,17 @@ class Downloader(papis.downloaders.Downloader):
             elif meta.attrs.get("name") == "citation_author":
                 fnam = meta.attrs.get("content")
                 fnams = re.split(r"\s+", fnam)
-                author_list.append(
-                    dict(
-                        given=fnams[0],
-                        family=" ".join(fnams[1:]),
-                        affiliation=[]))
+                author_list.append({
+                    "given": fnams[0],
+                    "family": " ".join(fnams[1:]),
+                    "affiliation": []
+                    })
             elif meta.attrs.get("name") == "citation_author_institution":
                 if not author_list:
                     continue
                 author_list[-1]["affiliation"].append(
-                    dict(name=meta.attrs.get("content")))
+                    {"name": meta.attrs.get("content")}
+                    )
 
         data["author_list"] = author_list
         data["author"] = papis.document.author_list_to_author(data)

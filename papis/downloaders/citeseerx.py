@@ -31,7 +31,7 @@ class Downloader(papis.downloaders.fallback.Downloader):
                         jid=self.jsessionid))
 
     def download_bibtex(self) -> None:
-        bibtex = self._get_soup().find_all(attrs=dict(id="bibtex"))
+        bibtex = self._get_soup().find_all(attrs={"id": "bibtex"})
         if not bibtex:
             return None
         self.bibtex_data = ("\n".join(e.text for e in bibtex[0].find_all("p"))
