@@ -236,7 +236,7 @@ def get_default_settings() -> PapisConfigType:
     # We use an OrderedDict so that the first entry will always be the general
     # settings, also good for automatic documentation
     if _DEFAULT_SETTINGS is None:
-        _DEFAULT_SETTINGS = dict()
+        _DEFAULT_SETTINGS = {}
         _DEFAULT_SETTINGS.update({
             get_general_settings_name(): general_settings,
         })

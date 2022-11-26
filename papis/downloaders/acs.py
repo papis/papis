@@ -19,7 +19,7 @@ class Downloader(papis.downloaders.Downloader):
         return Downloader(url) if re.match(r".*acs.org.*", url) else None
 
     def get_data(self) -> Dict[str, Any]:
-        data = dict()  # type: Dict[str, Any]
+        data = {}  # type: Dict[str, Any]
         soup = self._get_soup()
         metas = soup.find_all(name="meta")
         data.setdefault("abstract", "")

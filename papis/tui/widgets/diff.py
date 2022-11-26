@@ -155,7 +155,7 @@ def diffdict(dicta: Dict[str, Any],
     :rtype:  return_type
     """
 
-    rdict = dict()
+    rdict = {}
 
     options = {
         "add": False,
@@ -206,7 +206,7 @@ def diffdict(dicta: Dict[str, Any],
         actions=actions)
 
     if options["cancel"] or options["quit"]:
-        return dict()
+        return {}
     elif options["add_all"]:
         rdict.update(dicta)
         rdict.update(dictb)
@@ -233,7 +233,7 @@ def diffdict(dicta: Dict[str, Any],
             actions=actions)
 
         if options["cancel"]:
-            return dict()
+            return {}
         elif options["add"]:
             rdict[key] = dictb.get(key, dicta.get(key))
         elif options["quit"]:

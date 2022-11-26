@@ -6,7 +6,7 @@ from papis.library import Library
 
 logger = logging.getLogger("database")
 
-DATABASES = dict()  # type: Dict[Library, Database]
+DATABASES = {}  # type: Dict[Library, Database]
 
 
 def get(library_name: Optional[str] = None) -> Database:
@@ -42,4 +42,4 @@ def get_all_query_string() -> str:
 
 def clear_cached() -> None:
     global DATABASES
-    DATABASES = dict()
+    DATABASES = {}

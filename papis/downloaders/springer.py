@@ -19,7 +19,7 @@ class Downloader(papis.downloaders.Downloader):
                 if re.match(r".*link\.springer.com.*", url) else None)
 
     def get_data(self) -> Dict[str, Any]:
-        data = dict()
+        data = {}
         soup = self._get_soup()
         metas = soup.find_all(name="meta")
         author_list = []    # type: List[Dict[str, Any]]

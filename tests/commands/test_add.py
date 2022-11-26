@@ -36,7 +36,7 @@ def test_get_hash_folder():
     assert re.match(r".*-don-quijote-de-la-ma$", no_files_hh) is not None
     assert not no_files_hh == hh
 
-    data = dict()
+    data = {}
     hh = get_hash_folder(data, [path])
     assert re.match(r".*-don-quijote-de-la-ma$", hh) is None
 

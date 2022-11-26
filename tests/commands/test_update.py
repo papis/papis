@@ -34,7 +34,7 @@ class Test(unittest.TestCase):
         docs = self.get_docs()
         self.assertTrue(docs)
         doc = docs[0]
-        data = dict()
+        data = {}
         data["tags"] = "test_data"
         run(doc, data=data)
         docs = db.query_dict(dict(tags="test_data"))

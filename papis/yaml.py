@@ -63,7 +63,7 @@ def yaml_to_data(
                 raise ValueError(e)
 
             logger.error("YAML syntax error. %s", e)
-            return dict()
+            return {}
         else:
             assert isinstance(data, dict)
             return data

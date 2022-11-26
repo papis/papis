@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 class Context:
     def __init__(self) -> None:
-        self.data = dict()  # type: Dict[str, Any]
+        self.data = {}   # type: Dict[str, Any]
         self.files = []  # type: List[str]
 
     def __bool__(self) -> bool:

@@ -62,7 +62,7 @@ class Downloader(papis.downloaders.Downloader):
             return None
 
     def get_data(self) -> Dict[str, Any]:
-        data = dict()
+        data = {}
         soup = self._get_soup()
         data.update(papis.downloaders.base.parse_meta_headers(soup))
         abstract_nodes = soup.find_all(
