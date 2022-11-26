@@ -66,12 +66,11 @@ class Downloader(papis.downloaders.Downloader):
                 continue
             given = split_fullname[0]
             family = " ".join(split_fullname[1:])
-            author_list.append(
-                dict(
-                    given=given,
-                    family=family,
-                    affiliation=[dict(name=cafftext)] if cafftext else []
-                )
+            author_list.append({
+                "given": given,
+                "family": family,
+                "affiliation": [{"name": cafftext}] if cafftext else []
+                }
             )
 
         data["author_list"] = author_list

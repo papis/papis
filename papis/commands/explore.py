@@ -277,7 +277,7 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
     logger.info("Checking which citations are already in the library")
     with tqdm.tqdm(iterable=dois) as progress:
         for doi in progress:
-            citation = db.query_dict(dict(doi=doi))
+            citation = db.query_dict({"doi": doi})
             if citation:
                 progress.set_description(
                     "{c.Fore.GREEN}{c.Back.BLACK}"

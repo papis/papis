@@ -541,7 +541,7 @@ def set_lib(library: papis.library.Library) -> None:
     global _CURRENT_LIBRARY
     config = get_configuration()
     if library.name not in config:
-        config[library.name] = dict(dirs=str(library.paths))
+        config[library.name] = {"dirs": str(library.paths)}
     _CURRENT_LIBRARY = library
 
 
@@ -565,7 +565,7 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
             library_obj = papis.library.from_paths([libname])
             name = library_obj.path_format()
             # the configuration object can only store strings
-            config[name] = dict(dirs=str(library_obj.paths))
+            config[name] = {"dirs": str(library_obj.paths)}
         else:
             raise Exception("Library '{0}' does not seem to exist"
                             "\n\n"

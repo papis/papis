@@ -189,14 +189,17 @@ def get_data(
                 "Filter keys must be one of {0}"
                 .format(",".join(_filter_names))
             )
-    data = dict(
-        query=query, query_author=author,
-        ids=dois,
-        query_title=title, limit=max_results
-    )
+    data = {
+        "query": query,
+        "query_author": author,
+        "ids": dois,
+        "query_title": title,
+        "limit": max_results
+        }
+
     kwargs = {key: data[key] for key in data if data[key]}
     if not dois:
-        kwargs.update(dict(sort=sort, order=order))
+        kwargs.update({"sort": sort, "order": order})
     try:
         results = _get_crossref_works(filter=filters, **kwargs)
     except Exception as e:

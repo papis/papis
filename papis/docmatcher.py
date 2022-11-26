@@ -45,7 +45,7 @@ class DocMatcher(object):
 
         >>> import papis.document
         >>> from papis.database.cache import match_document
-        >>> doc = papis.document.from_data(dict(title='einstein'))
+        >>> doc = papis.document.from_data({'title': 'einstein'})
         >>> DocMatcher.set_matcher(match_document)
         >>> result = DocMatcher.parse('einste')
         >>> DocMatcher.return_if_match(doc) is not None

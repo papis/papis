@@ -110,7 +110,7 @@ class DocHtmlEscaped(Dict[str, Any]):
     """
     Small helper class to escape html elements.
 
-    >>> DocHtmlEscaped(from_data(dict(title='> >< int & "" "')))['title']
+    >>> DocHtmlEscaped(from_data({"title": '> >< int & "" "'}))['title']
     '&gt; &gt;&lt; int &amp; &quot;&quot; &quot;'
     """
 
