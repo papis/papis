@@ -172,7 +172,6 @@ class Downloader(papis.importer.Importer):
         downloader, or otherwise it will raise an exception.
 
         :returns: Bibtex url
-        :rtype:  str
         """
         raise NotImplementedError(
             "Getting bibtex url not implemented for this downloader")
@@ -182,7 +181,6 @@ class Downloader(papis.importer.Importer):
         and if not download it and return the data in utf-8 format.
 
         :returns: Bibtex data in utf-8 format
-        :rtype:  str
         """
         if not self.bibtex_data:
             self.download_bibtex()
@@ -193,9 +191,6 @@ class Downloader(papis.importer.Importer):
         the url provided by ``get_bibtex_url``.
 
         It sets the ``bibtex_data`` attribute if it succeeds.
-
-        :returns: Nothing
-        :rtype:  None
         """
         url = self.get_bibtex_url()
         if not url:
@@ -210,7 +205,6 @@ class Downloader(papis.importer.Importer):
         downloader, or otherwise it will raise an exception.
 
         :returns: Document url
-        :rtype:  str
         """
         raise NotImplementedError(
             "Getting bibtex url not implemented for this downloader")
@@ -228,7 +222,6 @@ class Downloader(papis.importer.Importer):
         raise an exception.
 
         :returns: Document doi
-        :rtype:  str
         """
         raise NotImplementedError(
             "Getting document url not implemented for this downloader")
@@ -238,7 +231,6 @@ class Downloader(papis.importer.Importer):
         and if not download it and return the data in binary format.
 
         :returns: Document data in binary format
-        :rtype:  str
         """
         if not self.document_data:
             self.download_document()
@@ -249,9 +241,6 @@ class Downloader(papis.importer.Importer):
         from the url provided by ``get_document_url``.
 
         It sets the ``document_data`` attribute if it succeeds.
-
-        :returns: Nothing
-        :rtype:  None
         """
         url = self.get_document_url()
         if not url:
@@ -267,7 +256,6 @@ class Downloader(papis.importer.Importer):
         correct.
 
         :returns: True if it is of the right type, else otherwise
-        :rtype:  bool
         """
         def print_warning() -> None:
             self.logger.error(
@@ -312,9 +300,7 @@ def get_matching_downloaders(url: str) -> Sequence[Downloader]:
     The first elements have the higher priority
 
     :param url: Url to be matched against
-    :type  url: str
     :returns: A list of sorted downloaders
-    :rtype: list
     """
     print(get_available_downloaders())
     _maybe_matches = [
@@ -334,9 +320,7 @@ def get_downloader_by_name(name: str) -> Type[Downloader]:
     """Get a downloader by its name
 
     :param name: Name of the downloader
-    :type  name: str
     :returns: A downloader class
-    :rtype:  papis.Downloader
     """
     downloader_class = papis.plugin.get_extension_manager(
         _extension_name())[name].plugin  # type: Type[Downloader]
@@ -350,11 +334,8 @@ def get_info_from_url(
     """Get information directly from url
 
     :param url: Url of the resource
-    :type  url: str
     :param expected_doc_format: override the doc format of the document
-    :type  expected_doc_format: str
     :returns: Context object
-    :rtype:  papis.importer.Context or None
     """
 
     downloaders = get_matching_downloaders(url)

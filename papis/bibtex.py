@@ -115,9 +115,7 @@ def bibtexparser_entry_to_papis(entry: Dict[str, str]) -> Dict[str, str]:
     compatible format.
 
     :param entry: Dictionary with keys of bibtexparser format.
-    :type  entry: dict
     :returns: Dictionary with keys of papis format.
-
     """
 
     _k = papis.document.KeyConversionPair
@@ -146,10 +144,8 @@ def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
         { type: "article ...", "ref": "example1960etAl", author:" ..."}
 
     :param bibtex: Bibtex file path or bibtex information in string format.
-    :type  bibtex: str
     :returns: Dictionary with bibtex information with keys that bibtex
         formally recognizes.
-    :rtype:  list
     """
     from bibtexparser.bparser import BibTexParser
 
@@ -218,10 +214,7 @@ def to_bibtex(document: papis.document.Document) -> str:
     """Create a bibtex string from document's information
 
     :param document: Papis document
-    :type  document: Document
     :returns: String containing bibtex formatting
-    :rtype:  str
-
     """
     logger = logging.getLogger("document:bibtex")
     bibtex_string = ""

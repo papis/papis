@@ -16,10 +16,20 @@ from prompt_toolkit.filters import has_focus
 
 class Command:
     """
-    :param name: Name of the command
-    :type  name: parameter_type
-    :param run: A callable object where the first argument is the cmd itself.
-    :type  run: callable
+    .. attribute:: name
+
+        Name of the command
+
+    .. attribute:: run
+
+        A callable object where the first argument is the cmd itself.
+
+    .. attribute:: aliases
+
+        A list of aliases for the command.
+
+    .. attribute:: app
+    .. attribute:: names
     """
     def __init__(
             self,

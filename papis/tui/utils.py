@@ -8,12 +8,8 @@ def confirm(prompt_string: str,
     """Confirm with user input
 
     :param prompt_string: Question or text that the user gets.
-    :type  prompt_string: str
     :param yes: If yes should be the default.
-    :type  yes: bool
     :returns: True if go ahead, False if stop
-    :rtype:  bool
-
     """
     result = prompt(prompt_string,
                     bottom_toolbar=bottom_toolbar,
@@ -34,16 +30,11 @@ def text_area(title: str,
     Small implementation of an editor/pager for small pieces of text.
 
     :param title: Title of the text_area
-    :type  title: str
     :param text: Editable text
-    :type  text: str
     :param lexer_name: If the editable text should be highlighted with
         some kind of grammar, examples are ``yaml``, ``python`` ...
-    :type  lexer_name: str
     :param height: Max height of the text area
-    :type  height: int
     :param full_screen: Whether or not the text area should be full screen.
-    :type  full_screen: bool
     """
     from prompt_toolkit import Application
     from prompt_toolkit.enums import EditingMode
@@ -146,12 +137,8 @@ def prompt(
     """Prompt user for input
 
     :param prompt_string: Question or text that the user gets.
-    :type  prompt_string: str
     :param default: Default value to give if the user does not input anything
-    :type  default: str
     :returns: User input or default
-    :rtype:  bool
-
     """
     import prompt_toolkit
     import prompt_toolkit.validation

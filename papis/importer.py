@@ -27,9 +27,7 @@ class Importer:
                  ctx: Optional[Context] = None):
         """
         :param uri: uri
-        :type  uri: str
         :param name: Name of the importer
-        :type  name: str
         """
         self.ctx = ctx or Context()  # type: Context
         self.uri = uri  # type: str
@@ -50,7 +48,6 @@ class Importer:
         falsely otherwise.
 
         :param uri: uri where the document should be retrieved from.
-        :type  uri: str
         """
         raise NotImplementedError(
             "Matching uri not implemented for this importer")
@@ -61,7 +58,6 @@ class Importer:
         a valid uri in it.
 
         :param data: Data to look into
-        :type  data: dict
         """
         raise NotImplementedError(
             "Matching data not implemented for this importer")
@@ -102,7 +98,6 @@ def get_import_mgr() -> "ExtensionManager":
 def available_importers() -> List[str]:
     """Get the available importer names.
     :returns: List of importer names
-    :rtype:  list(str)
     """
     return papis.plugin.get_available_entrypoints(_extension_name())
 
@@ -116,9 +111,7 @@ def get_importers() -> List[Type[Importer]]:
 def get_importer_by_name(name: str) -> Type[Importer]:
     """Get importer by name
     :param name: Name of the importer
-    :type  name: str
     :returns: The importer
-    :rtype:  Importer
     """
     imp = get_import_mgr()[name].plugin  # type: Type[Importer]
     return imp

@@ -31,7 +31,6 @@ def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
     Convert data from isbnlib into papis formatted data.
 
     :param data: Dictionary with data
-    :type  data: dict
     :returns: Dictionary with papis key names
     """
     _k = papis.document.KeyConversionPair

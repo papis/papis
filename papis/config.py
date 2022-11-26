@@ -162,7 +162,6 @@ general_settings = {
 def get_general_settings_name() -> str:
     """Get the section name of the general settings
     :returns: Section's name
-    :rtype:  str
     >>> get_general_settings_name()
     'settings'
     """
@@ -265,7 +264,6 @@ def register_default_settings(settings_dictionary: PapisConfigType) -> None:
         papis.config.get('command', section='hubation')
 
     :param settings_dictionary: A dictionary with settings
-    :type  settings_dictionary: dict
     """
     default_settings = get_default_settings()
     # we do a for loop because apparently the OrderedDict removes all
@@ -282,7 +280,6 @@ def get_config_home() -> str:
     files should be stored.
 
     :returns: Configuration base directory
-    :rtype:  str
     """
     xdg_home = os.environ.get("XDG_CONFIG_HOME")
     if xdg_home:
@@ -375,10 +372,6 @@ def general_get(key: str, section: Optional[str] = None,
 
     :param data_type: The data type that should be expected for the value of
         the variable.
-    :type  data_type: DataType, e.g. int, src ...
-    :param default: Default value for the configuration variable if it is not
-        set.
-    :type  default: It should be the same that ``data_type``
     :param extras: List of tuples containing section and prefixes
     """
     # Init main variables
@@ -475,7 +468,6 @@ def getlist(key: str, section: Optional[str] = None) -> List[str]:
     """List getter
 
     :returns: A python list
-    :rtype:  list
     :raises SyntaxError: Whenever the parsed syntax is either not a valid
         python object or a valid python list.
     """
@@ -501,7 +493,6 @@ def get_configuration() -> Configuration:
     ever be configured.
 
     :returns: Configuration object
-    :rtype:  papis.config.Configuration
     """
     global _CONFIGURATION
     if _CONFIGURATION is None:
@@ -520,9 +511,7 @@ def merge_configuration_from_path(path: Optional[str],
     to the information of the configuration object stored in `configuration`.
 
     :param path: Path to the configuration file
-    :type  path: str
     :param configuration: Configuration object
-    :type  configuration: papis.config.Configuration
     """
     if path is None or not os.path.exists(path):
         return
@@ -535,8 +524,6 @@ def set_lib(library: papis.library.Library) -> None:
     """Set library
 
     :param library: Library object
-    :type  library: papis.library.Library
-
     """
     global _CURRENT_LIBRARY
     config = get_configuration()
@@ -549,7 +536,6 @@ def set_lib_from_name(libname: str) -> None:
     """Set library, notice that in principle library can be a full path.
 
     :param libname: Name of the library or some path to a folder
-    :type  libname: str
     """
     set_lib(get_lib_from_name(libname))
 
@@ -597,7 +583,6 @@ def get_lib_dirs() -> List[str]:
     """Get the directories of the current library
 
     :returns: A list of paths
-    :rtype:  list
     """
     return get_lib().paths
 
@@ -613,7 +598,6 @@ def get_lib() -> papis.library.Library:
     library name (or path) that will be taken as a default.
 
     :returns: Current library
-    :rtype:  papis.library.Library
     """
     global _CURRENT_LIBRARY
     if os.environ.get("PAPIS_LIB"):
@@ -640,7 +624,6 @@ def reset_configuration() -> Configuration:
     """Destroys existing configuration and returns a new one.
 
     :returns: Configuration object
-    :rtype:  papis.config.Configuration
     """
     global _CONFIGURATION
     _CONFIGURATION = None

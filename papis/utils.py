@@ -79,10 +79,7 @@ def open_file(file_path: str, wait: bool = True) -> None:
     handle file_path.
 
     :param file_path: File path to be handled.
-    :type  file_path: str
     :param wait: Wait for the completion of the opener program to continue
-    :type  wait: bool
-
     """
     general_open(file_name=file_path, key="opentool", wait=wait)
 
@@ -93,9 +90,7 @@ def get_folders(folder: str) -> List[str]:
     file.
 
     :param folder: Folder to look into.
-    :type  folder: str
     :returns: List of folders containing an info file.
-    :rtype: list
     """
     logger.debug("Indexing folders in '%s'", folder)
 
@@ -124,8 +119,6 @@ def create_identifier(input_list: str) -> Iterator[str]:
     (`see here <https://stackoverflow.com/questions/14381940/>`__)
 
     :param input_list: list to iterate over
-    :type  input_list: list
-
     """
     for n in count(1):
         for s in product(input_list, repeat=n):
@@ -138,10 +131,7 @@ def clean_document_name(doc_path: str) -> str:
     It will also turn chinese, french, russian etc into ascii characters.
 
     :param doc_path: Path of a document.
-    :type  doc_path: str
     :returns: Basename of the path cleaned
-    :rtype:  str
-
     """
     import slugify
     regex_pattern = r"[^a-z0-9.]+"
@@ -157,11 +147,8 @@ def locate_document_in_lib(document: papis.document.Document,
     """Try to figure out if a document is already in a library
 
     :param document: Document to be searched for
-    :type  document: papis.document.Document
     :param library: Name of a valid papis library
-    :type  library: str
     :returns: Document in library if found
-    :rtype:  papis.document.Document
     :raises IndexError: Whenever document is not found in the library
     """
     db = papis.database.get(library_name=library)
@@ -185,11 +172,8 @@ def locate_document(
     """Try to figure out if a document is already within a list of documents.
 
     :param document: Document to be searched for
-    :type  document: papis.document.Document
     :param documents: Documents to search in
-    :type  documents: list
     :returns: papis document if it is found
-
     """
     # if these keys exist in the documents, then check those first
     # TODO: find a way to really match well titles and author
@@ -207,10 +191,7 @@ def folders_to_documents(folders: List[str]) -> List[papis.document.Document]:
     """Turn folders into documents, this step is quite critical for performance
 
     :param folders: List of folder paths.
-    :type  folders: list
     :returns: List of document objects.
-    :rtype:  list
-
     """
     logger = logging.getLogger("utils:folders_to_documents")
 
@@ -227,8 +208,6 @@ def get_cache_home() -> str:
     ``cache-dir`` configuration setting. It is ``XDG`` standard compatible.
 
     :returns: Full path for cache main folder
-    :rtype:  str
-
     """
     user_defined = papis.config.get("cache-dir")
     if user_defined is not None:

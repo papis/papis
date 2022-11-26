@@ -230,10 +230,8 @@ def doi_to_data(doi_string: str) -> Dict[str, Any]:
     """Search through crossref and get a dictionary containing the data
 
     :param doi_string: Doi identificator or an url with some doi
-    :type  doi_string: str
     :returns: Dictionary containing the data
     :raises ValueError: If no data could be retrieved for the doi
-
     """
     doi_string = doi.get_clean_doi(doi_string)
     results = get_data(dois=[doi_string])

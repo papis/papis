@@ -24,14 +24,10 @@ class Formater:
                additional: Optional[Dict[str, Any]] = None) -> str:
         """
         :param fmt: Python-like format string.
-        :type  fmt: str
         :param doc: Papis document
-        :type  doc: FormatDocType
         :param doc_key: Name of the document in the format string
-        :type  doc: str
         :param additional: Additional named keys available to the format string
         :returns: Formated string
-        :rtype: str
         """
         raise NotImplementedError
 

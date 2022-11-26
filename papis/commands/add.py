@@ -166,15 +166,10 @@ def get_file_name(
     """Generates file name for the document
 
     :param data: Data parsed for the actual document
-    :type  data: dict
     :param original_filepath: The full path to the original file
-    :type  original_filepath: str
     :param suffix: Possible suffix to be appended to the file without
         its extension.
-    :type  suffix: str
     :returns: New file name
-    :rtype:  str
-
     """
 
     basename_limit = 150
@@ -255,29 +250,20 @@ def run(paths: List[str],
         ) -> None:
     """
     :param paths: Paths to the documents to be added
-    :type  paths: []
     :param data: Data for the document to be added.
         If more data is to be retrieved from other sources, the data dictionary
         will be updated from these sources.
-    :type  data: dict
     :param folder_name: Name of the folder where the document will be stored
-    :type  folder_name: str
     :param file_name: File name of the document's files to be stored.
-    :type  file_name: str
     :param subfolder: Folder within the library where the document's folder
         should be stored.
-    :type  subfolder: str
     :param confirm: Whether or not to ask user for confirmation before adding.
-    :type  confirm: bool
     :param open_file: Whether or not to ask the user for opening the file
         before adding.
-    :type  open_file: bool
     :param edit: Whether or not to ask user for editing the info file
         before adding.
-    :type  edit: bool
     :param git: Whether or not to ask user for committing before adding,
         in the case of course that the library is a git repository.
-    :type  git: bool
     """
     if data is None:
         data = {}
