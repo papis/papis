@@ -176,7 +176,7 @@ def prompt(
                                    bottom_toolbar=bottom_toolbar,
                                    validate_while_typing=True)
 
-    return str(result) if result else default
+    return result or default
 
 
 def get_range(range_str: str) -> List[int]:

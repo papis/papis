@@ -204,7 +204,7 @@ def get_file_name(
     filename_basename = papis.utils.clean_document_name(
         "{}{}".format(
             file_name_base,
-            "-" + suffix if len(suffix) > 0 else ""
+            "-" + suffix if suffix else ""
         )
     )
 
@@ -530,14 +530,12 @@ def cli(
                 text=re.sub(r"[ \n]+", " ", import_mgr[n].plugin.__doc__)))
         return
 
-    from_importer = list(from_importer)
     logger = logging.getLogger("cli:add")
 
     data = {}
     for data_set in set_list:
         data[data_set[0]] = data_set[1]
 
-    files = list(files)
     ctx = papis.importer.Context()
     ctx.files = [f for f in files if os.path.exists(f)]
     ctx.data.update(data)

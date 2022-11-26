@@ -104,8 +104,8 @@ def diffshow(texta: str,
     #         fromfile=namea, tofile=nameb)
 
     diffs = difflib.ndiff(
-        str(texta).splitlines(keepends=True),
-        str(textb).splitlines(keepends=True),)
+        texta.splitlines(keepends=True),
+        textb.splitlines(keepends=True),)
 
     _diffs = list(diffs)
     if len(_diffs) == 1:

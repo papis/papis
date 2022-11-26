@@ -121,7 +121,7 @@ def cli(query: str,
     data_b = papis.document.to_dict(b)
 
     to_pop = ["files"]
-    for d in [data_a, data_b]:
+    for d in (data_a, data_b):
         for key in to_pop:
             if key in d:
                 d.pop(key)
