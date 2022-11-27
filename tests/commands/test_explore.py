@@ -20,13 +20,13 @@ class TestCli(tests.cli.TestCli):
         result = self.invoke([
             "cmd", "ls"
         ])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
 
     def test_lib(self):
         result = self.invoke([
             "lib", "krishnamurti"
         ])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
 
     def test_export_bibtex(self):
         with tempfile.NamedTemporaryFile(delete=False) as f:
@@ -35,7 +35,7 @@ class TestCli(tests.cli.TestCli):
         result = self.invoke([
             "lib", "krishnamurti", "export", "--format", "bibtex", "-o", path
         ])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
         self.assertTrue(os.path.exists(path))
 
         with open(path) as fd:
@@ -59,7 +59,7 @@ class TestCli(tests.cli.TestCli):
         result = self.invoke([
             "lib", "krishnamurti", "export", "--format", "yaml", "-o", path
         ])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
         self.assertTrue(os.path.exists(path))
 
         with open(path) as fd:
@@ -84,10 +84,10 @@ class TestCli(tests.cli.TestCli):
             "citations", "krishnamurti", "export", "--format", "json", "--out",
             path
         ])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
 
         with open(path) as fd:
             yaml = fd.read()
 
-        self.assertTrue(yaml == "[]")
+        self.assertEqual(yaml, "[]")
         os.unlink(path)

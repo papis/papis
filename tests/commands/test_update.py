@@ -47,7 +47,7 @@ class TestCli(tests.cli.TestCli):
 
     def test_1_no_documents(self):
         result = self.invoke(["__no_document__"])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
 
     def test_1_main(self):
         self.do_test_cli_function_exists()
@@ -60,7 +60,7 @@ class TestCli(tests.cli.TestCli):
             "-s", "isbn", "92130123",
             "--set", "doi", "10.213.phys.rev/213",
         ])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
         docs = db.query_dict(dict(author="krishnamurti"))
         self.assertTrue(docs)
         self.assertEqual(docs[0]["doi"], "10.213.phys.rev/213")
@@ -73,21 +73,21 @@ class TestCli(tests.cli.TestCli):
             "-s", "doi", "",
             "--set", "isbn", "",
         ])
-        self.assertTrue(result is not None)
-        # self.assertTrue(result.exit_code == 0)
+        self.assertIsNot(result, None)
+        # self.assertEqual(result.exit_code, 0)
 
         docs = db.query_dict(dict(author="krishnamurti"))
-        self.assertTrue(len(docs) == 1)
+        self.assertEqual(len(docs), 1)
         self.assertTrue(docs[0].has("doi"))
         self.assertTrue(docs[0].has("isbn"))
-        self.assertTrue(not docs[0].get("doi"))
-        self.assertTrue(not docs[0].get("isbn"))
+        self.assertFalse(docs[0].get("doi"))
+        self.assertFalse(docs[0].get("isbn"))
 
     # def test_8_yaml(self):
     #     yamlpath = _get_resource_file("russell.yaml")
     #     result = self.invoke([
     #         "krishnamurti", "--from", "yaml", yamlpath])
-    #     self.assertTrue(result is not None)
+    #     self.assertIsNot(result, None)
 
     #     db = papis.database.get()
     #     docs = db.query_dict(dict(author="krishnamurti"))
@@ -98,7 +98,7 @@ class TestCli(tests.cli.TestCli):
     #     db = papis.database.get()
     #     bibpath = _get_resource_file("wannier.bib")
     #     result = self.invoke(["krishnamurti", "--from", "bibtex", bibpath])
-    #     self.assertTrue(result.exit_code == 0)
+    #     self.assertEqual(result.exit_code, 0)
     #     docs = db.query_dict(dict(author="krishnamurti"))
     #     self.assertTrue(docs)
     #     self.assertTrue(re.match(r".*Krishnamurti.*", docs[0]["author"]))
@@ -108,4 +108,4 @@ class TestCli(tests.cli.TestCli):
     #     result = self.invoke([
     #         "krishnamurti", "--from", "bibtex", yamlpath
     #     ])
-    #     self.assertTrue(result.exit_code == 0)
+    #     self.assertEqual(result.exit_code, 0)
