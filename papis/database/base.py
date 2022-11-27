@@ -21,11 +21,11 @@ class Database(ABC):
 
     @abstractmethod
     def initialize(self) -> None:
-        ...
+        pass
 
     @abstractmethod
     def get_backend_name(self) -> str:
-        ...
+        pass
 
     def get_lib(self) -> str:
         """Get library name
@@ -51,33 +51,33 @@ class Database(ABC):
 
     @abstractmethod
     def clear(self) -> None:
-        ...
+        pass
 
     @abstractmethod
     def add(self, document: papis.document.Document) -> None:
-        ...
+        pass
 
     @abstractmethod
     def update(self, document: papis.document.Document) -> None:
-        ...
+        pass
 
     @abstractmethod
     def delete(self, document: papis.document.Document) -> None:
-        ...
+        pass
 
     @abstractmethod
     def query(self, query_string: str) -> List[papis.document.Document]:
-        ...
+        pass
 
     @abstractmethod
     def query_dict(
             self, query: Dict[str, str]) -> List[papis.document.Document]:
-        ...
+        pass
 
     @abstractmethod
     def get_all_documents(self) -> List[papis.document.Document]:
-        ...
+        pass
 
     @abstractmethod
     def get_all_query_string(self) -> str:
-        ...
+        pass
