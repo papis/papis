@@ -26,7 +26,7 @@ class Test(unittest.TestCase):
         self.assertTrue(os.path.exists(new_dir))
         papis.commands.mv.run(document, new_dir)
         docs = papis.database.get().query_dict(dict(title=title))
-        self.assertTrue(len(docs) == 1)
+        self.assertEqual(len(docs), 1)
         self.assertEqual(os.path.dirname(docs[0].get_main_folder()), new_dir)
         self.assertEqual(
             docs[0].get_main_folder(),

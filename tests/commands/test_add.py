@@ -121,10 +121,10 @@ class TestRun(unittest.TestCase):
         )
         db = papis.database.get()
         docs = db.query_dict(dict(author="Evangelista"))
-        self.assertTrue(len(docs) == 1)
+        self.assertEqual(len(docs), 1)
         doc = docs[0]
-        self.assertTrue(doc is not None)
-        self.assertTrue(len(doc.get_files()) == 0)
+        self.assertIsNot(doc, None)
+        self.assertEqual(len(doc.get_files()), 0)
 
     def test_add_with_data(self):
         data = {
@@ -152,10 +152,10 @@ class TestRun(unittest.TestCase):
 
             db = papis.database.get()
             docs = db.query_dict(dict(author="Kutzelnigg, Werner"))
-            self.assertTrue(len(docs) == 1)
+            self.assertEqual(len(docs), 1)
             doc = docs[0]
-            self.assertTrue(doc is not None)
-            self.assertTrue(len(doc.get_files()) == number_of_files)
+            self.assertIsNot(doc, None)
+            self.assertEqual(len(doc.get_files()), number_of_files)
 
 
 class TestCli(tests.cli.TestCli):
@@ -172,11 +172,11 @@ class TestCli(tests.cli.TestCli):
             "-b",
             "--set", "title", "Principia"
         ])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
         db = papis.database.get()
         docs = db.query_dict(dict(author="Bertrand Russell"))
-        self.assertTrue(len(docs) == 1)
-        self.assertTrue(len(docs[0].get_files()) == 0)
+        self.assertEqual(len(docs), 1)
+        self.assertEqual(len(docs[0].get_files()), 0)
 
     def test_link(self):
         pdf = create_random_pdf()
@@ -186,15 +186,15 @@ class TestCli(tests.cli.TestCli):
             "-b",
             "--link", pdf
         ])
-        self.assertTrue(result is not None)
-        # self.assertTrue(result.exit_code == 0)
+        self.assertIsNot(result, None)
+        # self.assertEqual(result.exit_code, 0)
 
         db = papis.database.get()
         docs = db.query_dict(dict(author="Plato"))
-        self.assertTrue(len(docs) == 1)
+        self.assertEqual(len(docs), 1)
 
         doc = docs[0]
-        self.assertTrue(len(doc.get_files()) == 1)
+        self.assertEqual(len(doc.get_files()), 1)
         self.assertTrue(os.path.islink(doc.get_files()[0]))
 
     @patch("papis.utils.open_file", lambda x: None)
@@ -211,13 +211,16 @@ class TestCli(tests.cli.TestCli):
             "-b",
             "--folder-name", "the_apology", pdf
         ])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
+
         db = papis.database.get()
         docs = db.query_dict(dict(author="Aristoteles"))
-        self.assertTrue(len(docs) == 1)
+        self.assertEqual(len(docs), 1)
+
         doc = docs[0]
         assert os.path.basename(doc.get_main_folder()) == "the-apology"
         assert len(doc.get_files()) == 1
+
         gotpdf = doc.get_files()[0]
         assert len(re.split(r"[.]pdf", pdf)) == 2
         assert len(re.split(r"[.]pdf", gotpdf)) == 2
@@ -227,9 +230,9 @@ class TestCli(tests.cli.TestCli):
         ])
         # FIXME: this is not working I don't know why
         #        I get <Result UnsupportedOperation('fileno')>
-        # self.assertTrue(result.exit_code == 0)
+        # self.assertEqual(result.exit_code, 0)
         # docs = db.query_dict(dict(author="Aristoteles"))
-        # self.assertTrue(len(docs) == 2)
+        # self.assertEqual(len(docs), 2)
 
     @patch("papis.utils.open_file", lambda x: None)
     @patch("papis.tui.utils.confirm", lambda x: True)
@@ -252,10 +255,10 @@ class TestCli(tests.cli.TestCli):
             f.write(bibstring)
 
         pdf = create_random_pdf()
-        self.assertTrue(get_document_extension(pdf) == "pdf")
+        self.assertEqual(get_document_extension(pdf), "pdf")
 
         result = self.invoke([pdf, "--from", "bibtex", bibfile])
-        self.assertTrue(result is not None)
+        self.assertIsNot(result, None)
 
         db = papis.database.get()
         docs = db.query_dict(
@@ -264,14 +267,14 @@ class TestCli(tests.cli.TestCli):
                 title="Elektrodynamik bewegter"
             )
         )
-        self.assertTrue(len(docs) == 1)
+        self.assertEqual(len(docs), 1)
         doc = docs[0]
-        self.assertTrue(len(doc.get_files()) == 1)
+        self.assertEqual(len(doc.get_files()), 1)
         # This is the original pdf file, it should still be there
         self.assertTrue(os.path.exists(pdf))
-        # and it should still be a pdf
-        self.assertTrue(get_document_extension(pdf) == "pdf")
-        self.assertTrue(get_document_extension(doc.get_files()[0]) == "pdf")
+        # and it should still be apdf
+        self.assertEqual(get_document_extension(pdf), "pdf")
+        self.assertEqual(get_document_extension(doc.get_files()[0]), "pdf")
         os.unlink(bibfile)
 
     @patch("papis.utils.open_file", lambda x: None)
@@ -290,23 +293,23 @@ class TestCli(tests.cli.TestCli):
             f.write(yamlstring)
 
         epub = create_random_epub()
-        self.assertTrue(get_document_extension(epub) == "epub")
+        self.assertEqual(get_document_extension(epub), "epub")
 
         result = self.invoke([
             epub, "--from", "yaml", yamlfile
         ])
-        self.assertTrue(result is not None)
+        self.assertIsNot(result, None)
 
         db = papis.database.get()
         docs = db.query_dict({"author": "Tolkien"})
-        self.assertTrue(len(docs) == 1)
+        self.assertEqual(len(docs), 1)
         doc = docs[0]
-        self.assertTrue(len(doc.get_files()) == 1)
-        self.assertTrue(get_document_extension(doc.get_files()[0]) == "epub")
+        self.assertEqual(len(doc.get_files()), 1)
+        self.assertEqual(get_document_extension(doc.get_files()[0]), "epub")
         # This is the original epub file, it should still be there
         self.assertTrue(os.path.exists(epub))
         # and it should still be an epub
-        self.assertTrue(get_document_extension(epub) == "epub")
+        self.assertEqual(get_document_extension(epub), "epub")
         os.unlink(yamlfile)
 
     # @patch(
@@ -329,15 +332,15 @@ class TestCli(tests.cli.TestCli):
     #         "--from", "doi", "10.1112/plms/s2-42.1.0",
     #         "--confirm", "--open"
     #     ])
-    #     self.assertTrue(result.exit_code == 0)
+    #     self.assertEqual(result.exit_code, 0)
     #     db = papis.database.get()
     #     docs = db.query_dict({"author": "Kant"})
-    #     self.assertTrue(len(docs) == 1)
+    #     self.assertEqual(len(docs), 1)
     #     doc = docs[0]
     #     # one file at least was retrieved
-    #     self.assertTrue(len(doc.get_files()) == 1)
+    #     self.assertEqual(len(doc.get_files()), 1)
     #     # it has the pdf ending
-    #     self.assertTrue(len(re.split(".pdf", doc.get_files()[0])) == 2)
+    #     self.assertEqual(len(re.split(".pdf", doc.get_files()[0])), 2)
 
     @patch("papis.utils.open_file", lambda x: None)
     @patch("papis.tui.utils.confirm", lambda x: True)
@@ -353,4 +356,4 @@ class TestCli(tests.cli.TestCli):
         self.assertTrue(os.path.exists(newdoc.get_info_file()))
         result = self.invoke([
             "--confirm", "--from", "lib", newdoc.get_main_folder(), "--open"])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)

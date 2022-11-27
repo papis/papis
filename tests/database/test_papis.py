@@ -15,12 +15,12 @@ class Test(tests.database.DatabaseTest):
         tests.database.DatabaseTest.setUpClass()
 
     def test_backend_name(self):
-        self.assertTrue(papis.config.get("database-backend") == "papis")
+        self.assertEqual(papis.config.get("database-backend"), "papis")
 
     def test_query(self):
         database = papis.database.get()
         docs = database.query(".")
-        self.assertTrue(len(docs) > 0)
+        self.assertGreater(len(docs), 0)
 
     def test_cache_path(self):
         database = papis.database.get()

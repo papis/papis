@@ -29,31 +29,29 @@ class DatabaseTest(unittest.TestCase):
 
     def test_get_lib(self):
         database = papis.database.get()
-        self.assertTrue(database.get_lib() == papis.config.get_lib_name())
+        self.assertEqual(database.get_lib(), papis.config.get_lib_name())
 
     def test_get_dir(self):
         database = papis.database.get()
-        self.assertTrue(
-            database.get_dirs() == papis.config.get_lib_dirs()
-        )
+        self.assertEqual(database.get_dirs(), papis.config.get_lib_dirs())
 
     def test_check_database(self):
         database = papis.database.get()
-        self.assertTrue(database is not None)
-        self.assertTrue(database.get_lib() == tests.get_test_lib_name())
+        self.assertIsNot(database, None)
+        self.assertEqual(database.get_lib(), tests.get_test_lib_name())
 
     def test_update(self):
         database = papis.database.get()
         doc = database.get_all_documents()[0]
-        self.assertTrue(doc is not None)
+        self.assertIsNot(doc, None)
         doc["title"] = "test_update test"
         doc.save()
         database.update(doc)
         docs = database.query_dict({"title": "test_update test"})
-        self.assertTrue(len(docs) == 1)
+        self.assertEqual(len(docs), 1)
         doc = docs[0]
-        self.assertTrue(doc is not None)
-        self.assertTrue(doc["title"] == "test_update test")
+        self.assertIsNot(doc, None)
+        self.assertEqual(doc["title"], "test_update test")
 
     def test_query_dict(self):
         database = papis.database.get()
@@ -64,20 +62,20 @@ class DatabaseTest(unittest.TestCase):
         docs = database.query_dict(
             {"title": doc["title"], "author": doc["author"]}
         )
-        self.assertTrue(len(docs) == 1)
+        self.assertEqual(len(docs), 1)
 
     def test_delete(self):
         database = papis.database.get()
         docs = database.get_all_documents()
 
         ndocs = len(docs)
-        self.assertTrue(ndocs > 1)
+        self.assertGreater(ndocs, 1)
 
         database.delete(docs[0])
         docs = database.get_all_documents()
 
         ndocs_after_delete = len(docs)
-        self.assertTrue(ndocs - ndocs_after_delete == 1)
+        self.assertEqual(ndocs - ndocs_after_delete, 1)
 
     def test_initialize(self):
         # trying to initialize again should do nothing
@@ -86,7 +84,7 @@ class DatabaseTest(unittest.TestCase):
     def test_get_all_documents(self):
         database = papis.database.get()
         docs = database.get_all_documents()
-        self.assertTrue(len(docs) > 0)
+        self.assertGreater(len(docs), 0)
 
     def test_add(self):
         database = papis.database.get()
@@ -125,7 +123,7 @@ class DatabaseTest(unittest.TestCase):
         )
 
     def test_backend_name(self):
-        self.assertTrue(papis.database.get().get_backend_name() is not None)
+        self.assertIsNot(papis.database.get().get_backend_name(), None)
 
     def test_backend(self):
         self.assertEqual(

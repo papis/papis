@@ -15,16 +15,15 @@ class TestCli(unittest.TestCase):
     def setUp(self):
         from click.testing import CliRunner
         self.runner = CliRunner()
-        self.assertTrue(
-            papis.config.get_lib_name() == tests.get_test_lib_name())
+        self.assertEqual(papis.config.get_lib_name(), tests.get_test_lib_name())
 
     def invoke(self, *args, **kwargs):
         return self.runner.invoke(self.cli, *args, **kwargs)
 
     def do_test_cli_function_exists(self):
-        self.assertTrue(self.cli is not None)
+        self.assertIsNot(self.cli, None)
 
     def do_test_help(self):
         for flag in ["-h", "--help"]:
             result = self.invoke([flag])
-            self.assertFalse(len(result.output) == 0)
+            self.assertNotEqual(len(result.output), 0)
