@@ -17,17 +17,22 @@ import tests
 
 
 @pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
-def test_get_cache_home():
-    os.environ["XDG_CACHE_HOME"] = "~/.cache"
-    assert get_cache_home() == os.path.expanduser(
-        os.path.join(os.environ["XDG_CACHE_HOME"], "papis"))
+def test_get_cache_home(monkeypatch):
+    tmpdir = tempfile.gettempdir()
 
-    os.environ["XDG_CACHE_HOME"] = os.path.abspath("/tmp/.cache")
-    assert get_cache_home() == os.path.abspath("/tmp/.cache/papis")
-    assert os.path.exists(get_cache_home())
-    del os.environ["XDG_CACHE_HOME"]
-    assert get_cache_home() == os.path.abspath(
-        os.path.expanduser(os.path.join("~/.cache", "papis")))
+    with monkeypatch.context() as m:
+        m.delenv("XDG_CACHE_HOME", raising=False)
+        assert get_cache_home() == os.path.join(os.path.expanduser("~/.cache"), "papis")
+
+    with monkeypatch.context() as m:
+        m.setenv("XDG_CACHE_HOME", os.path.expanduser("~/.cache"))
+        assert get_cache_home() == os.path.join(os.environ["XDG_CACHE_HOME"], "papis")
+
+    with monkeypatch.context() as m:
+        m.setenv("XDG_CACHE_HOME", os.path.join(tmpdir, ".cache"))
+
+        assert get_cache_home() == os.path.join(tmpdir, ".cache", "papis")
+        assert os.path.exists(get_cache_home())
 
     with tempfile.TemporaryDirectory() as d:
         tmp = os.path.join(d, "blah")
