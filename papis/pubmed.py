@@ -23,6 +23,14 @@ type_converter = {
 }   # type: Dict[str, str]
 
 
+def handle_pubmed_pages(pages: str) -> str:
+    # returned data is in the form 561-7 meaning 562-567
+    start, end = [x.strip() for x in pages.split("-")]
+    end = "{}{}".format(start[:max(0, len(start) - len(end))], end)
+
+    return "{}--{}".format(start, end)
+
+
 KeyConversionPair = papis.document.KeyConversionPair
 key_conversion = [
     KeyConversionPair("container-title", [{"key": "journal", "action": None}]),
@@ -33,7 +41,7 @@ key_conversion = [
     KeyConversionPair("ISSN", [{"key": "issn", "action": None}]),
     KeyConversionPair("DOI", [{"key": "doi", "action": None}]),
     KeyConversionPair("page", [
-        {"key": "pages", "action": lambda x: handle_pubmed_pages(x)}
+        {"key": "pages", "action": handle_pubmed_pages}
         ]),
     KeyConversionPair("type", [
         {"key": "type", "action": lambda x: type_converter.get(x, "misc")}
@@ -47,14 +55,6 @@ key_conversion = [
     KeyConversionPair("title", [papis.document.EmptyKeyConversion]),
     KeyConversionPair("publisher", [papis.document.EmptyKeyConversion]),
 ]   # type: List[KeyConversionPair]
-
-
-def handle_pubmed_pages(pages: str) -> str:
-    # returned data is in the form 561-7 meaning 562-567
-    start, end = [x.strip() for x in pages.split("-")]
-    end = "{}{}".format(start[:max(0, len(start) - len(end))], end)
-
-    return "{}--{}".format(start, end)
 
 
 def pubmed_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:

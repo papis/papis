@@ -33,7 +33,8 @@ class Test(unittest.TestCase):
         filename = "test.txt"
         path = os.path.join(doc.get_main_folder(), filename)
 
-        open(path, "w+").close()
+        with open(path, "w+"):
+            pass
         self.assertTrue(os.path.exists(path))
 
         doc["files"] = [filename]

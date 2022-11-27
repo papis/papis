@@ -237,9 +237,6 @@ def get_commands(app: Application) -> Tuple[List[Command], KeyBindings]:
         event.app.layout.focus(app.help_window.window)
         event.app.message_toolbar.text = "Press q to quit"
 
-    # def _echo(cmd, *args) -> None:
-        # cmd.app.message_toolbar.text = ' '.join(args)
-
     @kb.add(keys_info["show_info_key"]["key"],  # type: ignore
             filter=~has_focus(app.info_window))
     def info(cmd: Command) -> None:

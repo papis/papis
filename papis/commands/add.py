@@ -592,7 +592,7 @@ def cli(
         papis.pick.pick_subfolder_from_lib(papis.config.get_lib_name())[0]
     ) if pick_subfolder else None
 
-    return run(
+    run(
         ctx.files,
         data=ctx.data,
         folder_name=folder_name,
