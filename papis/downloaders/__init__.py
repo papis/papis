@@ -283,8 +283,9 @@ class Downloader(papis.importer.Importer):
             "Retrieved kind of document seems to be '%s'",
             retrieved_kind.mime)
 
-        if not isinstance(self.expected_document_extension, list):
-            expected_document_extensions = [self.expected_document_extension]
+        expected_document_extensions = self.expected_document_extension
+        if not isinstance(expected_document_extensions, list):
+            expected_document_extensions = [expected_document_extensions]
 
         if retrieved_kind.extension in expected_document_extensions:
             return True
