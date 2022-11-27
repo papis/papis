@@ -35,7 +35,7 @@ class Command:
             self,
             name: str,
             run: Callable[["Command"], Any],
-            aliases: Optional[List[str]] = None):
+            aliases: Optional[List[str]] = None) -> None:
         if aliases is None:
             aliases = []
 
@@ -57,7 +57,7 @@ class CommandLinePrompt(ConditionalContainer):  # type: ignore
     A vim-like command line prompt widget.
     It's supposed to be instantiated only once.
     """
-    def __init__(self, commands: Optional[List[Command]] = None):
+    def __init__(self, commands: Optional[List[Command]] = None) -> None:
         if commands is None:
             commands = []
 

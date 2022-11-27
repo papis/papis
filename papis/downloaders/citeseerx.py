@@ -9,7 +9,7 @@ class Downloader(papis.downloaders.fallback.Downloader):
     BASE = "https://citeseerx.ist.psu.edu"
     jsessionid = "012341666D7AD1C5C931FC0CFBA34BFA"
 
-    def __init__(self, url: str):
+    def __init__(self, url: str) -> None:
         super().__init__(
             url, "citeseerx",
             expected_document_extension="pdf",

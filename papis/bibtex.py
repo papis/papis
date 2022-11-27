@@ -59,7 +59,7 @@ class Importer(papis.importer.Importer):
 
     """Importer that parses a bibtex files"""
 
-    def __init__(self, **kwargs: Any):
+    def __init__(self, **kwargs: Any) -> None:
         papis.importer.Importer.__init__(self, name="bibtex", **kwargs)
 
     @classmethod

@@ -58,7 +58,7 @@ if TYPE_CHECKING:
 
 class Database(papis.database.base.Database):
 
-    def __init__(self, library: Optional[papis.library.Library] = None):
+    def __init__(self, library: Optional[papis.library.Library] = None) -> None:
         papis.database.base.Database.__init__(self, library)
         self.logger = logging.getLogger("db:whoosh")
         self.cache_dir = os.path.join(get_cache_home(), "database", "whoosh")

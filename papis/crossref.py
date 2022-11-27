@@ -430,7 +430,7 @@ class FromCrossrefImporter(papis.importer.Importer):
 
 class Downloader(papis.downloaders.Downloader):
 
-    def __init__(self, uri: str):
+    def __init__(self, uri: str) -> None:
         super().__init__(uri=uri, name="doi")
 
     @classmethod

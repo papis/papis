@@ -136,7 +136,7 @@ class Document(Dict[str, Any]):
     _info_file_path = ""  # type: str
 
     def __init__(self, folder: Optional[str] = None,
-                 data: Optional[Dict[str, Any]] = None):
+                 data: Optional[Dict[str, Any]] = None) -> None:
         self._folder = None  # type: Optional[str]
 
         if folder is not None:

@@ -283,7 +283,7 @@ class Picker(Application, Generic[Option]):  # type: ignore
             options: Sequence[Option],
             default_index: int = 0,
             header_filter: Callable[[Option], str] = str,
-            match_filter: Callable[[Option], str] = str):
+            match_filter: Callable[[Option], str] = str) -> None:
 
         self.info_window = InfoWindow()
         self.help_window = HelpWindow()
