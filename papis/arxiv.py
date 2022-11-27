@@ -233,8 +233,7 @@ def explorer(
 class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str):
-        papis.downloaders.Downloader.__init__(self, uri=url, name="arxiv")
-        self.expected_document_extension = "pdf"
+        super().__init__(uri=url, name="arxiv", expected_document_extension="pdf")
         self.arxivid = None  # type: Optional[str]
 
     @classmethod

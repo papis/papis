@@ -11,10 +11,11 @@ class Downloader(papis.downloaders.Downloader):
     re_add_dot = re.compile(r"(\b\w\b)")
 
     def __init__(self, url: str):
-        papis.downloaders.Downloader.__init__(
-            self, url, name="tandfonline")
-        self.expected_document_extension = "pdf"
-        self.priority = 10
+        super().__init__(
+            url, name="tandfonline",
+            expected_document_extension="pdf",
+            priority=10,
+            )
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:

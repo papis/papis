@@ -6,10 +6,15 @@ import papis.downloaders.base
 
 class Downloader(papis.downloaders.Downloader):
 
-    def __init__(self, uri: str, name: str = "fallback"):
-        papis.downloaders.Downloader.__init__(
-            self, uri=uri, name=name)
-        self.priority = -1
+    def __init__(self, uri: str, name: str = "fallback",
+                 expected_document_extension: Optional[str] = None,
+                 priority: int = -1,
+                 ):
+        super().__init__(
+            uri, name,
+            expected_document_extension=expected_document_extension,
+            priority=priority,
+            )
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:

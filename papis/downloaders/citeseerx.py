@@ -10,11 +10,11 @@ class Downloader(papis.downloaders.fallback.Downloader):
     jsessionid = "012341666D7AD1C5C931FC0CFBA34BFA"
 
     def __init__(self, url: str):
-        papis.downloaders.fallback.Downloader.__init__(self,
-                                                       uri=url,
-                                                       name="citeseerx")
-        self.expected_document_extension = "pdf"
-        self.priority = 10
+        super().__init__(
+            url, "citeseerx",
+            expected_document_extension="pdf",
+            priority=10,
+            )
 
     @classmethod
     def match(cls,

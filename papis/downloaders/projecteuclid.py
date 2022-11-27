@@ -8,10 +8,11 @@ class Downloader(papis.downloaders.fallback.Downloader):
     _BIBTEX_URL = "https://projecteuclid.org/citation/download/citation-{}.bib"
 
     def __init__(self, url: str) -> None:
-        super().__init__(uri=url, name="projecteuclid")
-
-        self.expected_document_extension = "pdf"
-        self.priority = 10
+        super().__init__(
+            uri=url, name="projecteuclid",
+            expected_document_extension="pdf",
+            priority=10,
+            )
 
     @classmethod
     def match(cls, url: str) -> Optional["Downloader"]:

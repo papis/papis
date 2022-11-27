@@ -56,20 +56,26 @@ class Downloader(papis.importer.Importer):
     def __init__(self,
                  uri: str = "",
                  name: str = "",
-                 ctx: Optional[papis.importer.Context] = None):
+                 ctx: Optional[papis.importer.Context] = None,
+                 expected_document_extension: Optional[str] = None,
+                 cookies: Optional[Dict[str, str]] = None,
+                 priority: int = 1,
+                 ) -> None:
         if ctx is None:
             ctx = papis.importer.Context()
 
-        papis.importer.Importer.__init__(self,
-                                         uri=uri,
-                                         ctx=ctx,
-                                         name=name
-                                         or os.path.basename(__file__))
+        if cookies is None:
+            cookies = {}
+
+        super().__init__(
+            uri=uri,
+            ctx=ctx,
+            name=name or os.path.basename(__file__))
         self.logger = logging.getLogger("downloader:{}".format(self.name))
         self.logger.debug("uri '%s'", uri)
 
-        self.expected_document_extension = None  # type: Optional[str]
-        self.priority = 1  # type: int
+        self.expected_document_extension = expected_document_extension
+        self.priority = priority
         self._soup = None  # type: Optional[bs4.BeautifulSoup]
 
         self.bibtex_data = None  # type: Optional[str]
@@ -86,7 +92,7 @@ class Downloader(papis.importer.Importer):
                 "http": proxy,
                 "https": proxy,
             }
-        self.cookies = {}  # type: Dict[str, str]
+        self.cookies = cookies
 
     def fetch_data(self) -> None:
         """
