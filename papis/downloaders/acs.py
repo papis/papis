@@ -8,11 +8,12 @@ import papis.document
 class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str):
-        papis.downloaders.Downloader.__init__(self, url, name="acs")
-        self.expected_document_extension = "pdf"
-        # It seems to be necessary so that acs lets us download the bibtex
-        self.cookies = {"gdpr": "true"}
-        self.priority = 10
+        super().__init__(
+            url, "acs",
+            expected_document_extension="pdf",
+            cookies={"gdpr": "true"},
+            priority=10,
+            )
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:

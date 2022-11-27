@@ -7,8 +7,7 @@ import papis.downloaders.base
 class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str):
-        papis.downloaders.Downloader.__init__(self, url, name="thesesfr")
-        self.expected_document_extension = "pdf"
+        super().__init__(url, name="thesesfr", expected_document_extension="pdf")
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:

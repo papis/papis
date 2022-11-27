@@ -7,9 +7,11 @@ import papis.downloaders.fallback
 class Downloader(papis.downloaders.fallback.Downloader):
 
     def __init__(self, url: str):
-        papis.downloaders.fallback.Downloader.__init__(self, url, name="hal")
-        self.expected_document_extension = "pdf"
-        self.priority = 10
+        super().__init__(
+            url, name="hal",
+            expected_document_extension="pdf",
+            priority=10,
+            )
 
     @classmethod
     def match(

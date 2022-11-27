@@ -431,7 +431,7 @@ class FromCrossrefImporter(papis.importer.Importer):
 class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, uri: str):
-        papis.downloaders.Downloader.__init__(self, uri=uri, name="doi")
+        super().__init__(uri=uri, name="doi")
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.downloaders.Downloader]:

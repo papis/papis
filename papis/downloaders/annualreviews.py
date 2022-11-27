@@ -7,10 +7,11 @@ import papis.downloaders.base
 class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str):
-        papis.downloaders.Downloader.__init__(
-            self, url, name="annualreviews")
-        self.expected_document_extension = "pdf"
-        self.priority = 10
+        super().__init__(
+            url, "annualreviews",
+            expected_document_extension="pdf",
+            priority=10,
+            )
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
