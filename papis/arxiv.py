@@ -232,7 +232,7 @@ def explorer(
 
 class Downloader(papis.downloaders.Downloader):
 
-    def __init__(self, url: str):
+    def __init__(self, url: str) -> None:
         super().__init__(uri=url, name="arxiv", expected_document_extension="pdf")
         self.arxivid = None  # type: Optional[str]
 
@@ -284,7 +284,7 @@ class Importer(papis.importer.Importer):
 
     """Importer accepting an arxiv id and downloading files and data"""
 
-    def __init__(self, uri: str):
+    def __init__(self, uri: str) -> None:
         papis.importer.Importer.__init__(self, name="arxiv", uri=uri)
         aid = find_arxivid_in_text(uri)
         self.downloader = Downloader("https://arxiv.org/abs/{}".format(aid))
@@ -307,7 +307,7 @@ class ArxividFromPdfImporter(papis.importer.Importer):
 
     """Importer parsing an arxivid from a pdf file"""
 
-    def __init__(self, uri: str):
+    def __init__(self, uri: str) -> None:
         papis.importer.Importer.__init__(self, name="pdf2arxivid", uri=uri)
         self.arxivid = None  # type: Optional[str]
 

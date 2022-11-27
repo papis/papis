@@ -116,7 +116,7 @@ class FromFolderImporter(papis.importer.Importer):
 
     """Importer that gets files and data from a valid papis folder"""
 
-    def __init__(self, **kwargs: Any):
+    def __init__(self, **kwargs: Any) -> None:
         papis.importer.Importer.__init__(self, name="folder", **kwargs)
 
     @classmethod
@@ -137,7 +137,7 @@ class FromLibImporter(papis.importer.Importer):
     and data
     """
 
-    def __init__(self, **kwargs: Any):
+    def __init__(self, **kwargs: Any) -> None:
         papis.importer.Importer.__init__(self, name="lib", **kwargs)
 
     @classmethod

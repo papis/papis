@@ -10,7 +10,7 @@ class Downloader(papis.downloaders.Downloader):
     re_comma = re.compile(r"(\s*,\s*)")
     re_add_dot = re.compile(r"(\b\w\b)")
 
-    def __init__(self, url: str):
+    def __init__(self, url: str) -> None:
         super().__init__(
             url, name="tandfonline",
             expected_document_extension="pdf",

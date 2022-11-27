@@ -6,9 +6,9 @@ import papis.downloaders.fallback
 
 class Downloader(papis.downloaders.fallback.Downloader):
 
-    def __init__(self, url: str):
-        super.__init__(
-            url, "aps",
+    def __init__(self, url: str) -> None:
+        super().__init__(
+            url, name="aps",
             expected_document_extension="pdf",
             priority=10,
             )

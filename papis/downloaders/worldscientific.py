@@ -6,7 +6,7 @@ import papis.downloaders.base
 
 class Downloader(papis.downloaders.Downloader):
 
-    def __init__(self, url: str):
+    def __init__(self, url: str) -> None:
         super().__init__(
             url, "worldscientific",
             expected_document_extension="pdf",

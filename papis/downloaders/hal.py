@@ -6,7 +6,7 @@ import papis.downloaders.fallback
 
 class Downloader(papis.downloaders.fallback.Downloader):
 
-    def __init__(self, url: str):
+    def __init__(self, url: str) -> None:
         super().__init__(
             url, name="hal",
             expected_document_extension="pdf",

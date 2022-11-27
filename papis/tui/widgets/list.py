@@ -49,7 +49,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
             match_filter: Callable[[Option], str] = str,
             custom_filter: Optional[Callable[[str], bool]] = None,
             search_buffer: Optional[Buffer] = None,
-            cpu_count: Optional[int] = None):
+            cpu_count: Optional[int] = None) -> None:
         if search_buffer is None:
             search_buffer = Buffer(multiline=False)
 

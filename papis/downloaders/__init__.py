@@ -2,7 +2,7 @@ import os
 import re
 import sys
 import logging
-from typing import List, Optional, Any, Sequence, Type, Dict, TYPE_CHECKING
+from typing import List, Optional, Any, Sequence, Type, Dict, Union, TYPE_CHECKING
 
 import papis.bibtex
 import papis.config
@@ -26,7 +26,7 @@ class Importer(papis.importer.Importer):
     """Importer that tries to get data and files from implemented downloaders
     """
 
-    def __init__(self, **kwargs: Any):
+    def __init__(self, **kwargs: Any) -> None:
         papis.importer.Importer.__init__(self, name="url", **kwargs)
 
     @classmethod
@@ -57,7 +57,7 @@ class Downloader(papis.importer.Importer):
                  uri: str = "",
                  name: str = "",
                  ctx: Optional[papis.importer.Context] = None,
-                 expected_document_extension: Optional[str] = None,
+                 expected_document_extension: Optional[Union[str, List[str]]] = None,
                  cookies: Optional[Dict[str, str]] = None,
                  priority: int = 1,
                  ) -> None:
@@ -283,9 +283,10 @@ class Downloader(papis.importer.Importer):
             "Retrieved kind of document seems to be '%s'",
             retrieved_kind.mime)
 
-        expected_document_extensions = self.expected_document_extension
-        if not isinstance(expected_document_extensions, list):
-            expected_document_extensions = [expected_document_extensions]
+        if isinstance(self.expected_document_extension, list):
+            expected_document_extensions = self.expected_document_extension
+        else:
+            expected_document_extensions = [self.expected_document_extension]
 
         if retrieved_kind.extension in expected_document_extensions:
             return True

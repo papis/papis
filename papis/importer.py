@@ -24,7 +24,7 @@ class Importer:
     """This is the base class for every importer"""
 
     def __init__(self, uri: str = "", name: str = "",
-                 ctx: Optional[Context] = None):
+                 ctx: Optional[Context] = None) -> None:
         """
         :param uri: uri
         :param name: Name of the importer

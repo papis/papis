@@ -1,5 +1,5 @@
 import doi
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List, Union
 
 import papis.downloaders.base
 
@@ -7,9 +7,9 @@ import papis.downloaders.base
 class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, uri: str, name: str = "fallback",
-                 expected_document_extension: Optional[str] = None,
+                 expected_document_extension: Optional[Union[str, List[str]]] = None,
                  priority: int = -1,
-                 ):
+                 ) -> None:
         super().__init__(
             uri, name,
             expected_document_extension=expected_document_extension,
