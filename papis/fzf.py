@@ -24,7 +24,7 @@ class Command(ABC, Generic[T]):
 
     @abstractmethod
     def run(self, docs: Sequence[T]) -> Sequence[T]:
-        ...
+        pass
 
 
 class Choose(Command[T]):
