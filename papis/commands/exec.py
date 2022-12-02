@@ -9,8 +9,8 @@ This command tries to mend this issue by allowing the user to write a
 python script and run it using the correct environment where papis is
 installed.
 
-CLI Examples
-^^^^^^^^^^^^
+Examples
+^^^^^^^^
 
     - Run the code in the file ``my-script.py`` and pass it the
       arguments arg1 and arg2
@@ -25,11 +25,13 @@ CLI Examples
 
         papis exec my-script.py -- -h
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.exec:cli
     :prog: papis exec
 """
+
 import sys
 from typing import List
 

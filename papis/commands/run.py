@@ -1,8 +1,8 @@
 r"""
 This command is useful to issue commands in the directory of your library.
 
-CLI Examples
-^^^^^^^^^^^^
+Examples
+^^^^^^^^
 
     - List files in your directory
 
@@ -45,11 +45,13 @@ CLI Examples
           papis run -a -- sed -i "s/^note:/_note:/" info.yaml
 
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.run:cli
     :prog: papis run
 """
+
 import os
 import logging
 from typing import List, Optional

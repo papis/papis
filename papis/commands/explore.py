@@ -79,12 +79,14 @@ picked document gets fed into the ``papis scihub`` command which tries to
 download the document using ``scihub``, and also this very document is tried to
 be opened by firefox (in case the document does have a ``url``).
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.explore:cli
     :prog: papis explore
     :nested: full
 """
+
 import os
 import logging
 from typing import List, Optional, Union, Any, Dict, TYPE_CHECKING

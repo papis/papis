@@ -1,10 +1,11 @@
 """
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
 
-Cli
-^^^
 .. click:: papis.commands.mv:cli
     :prog: papis mv
 """
+
 import os
 import logging
 from typing import Optional

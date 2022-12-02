@@ -66,11 +66,13 @@ Examples
         papis open --mark bohm
 
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.open:cli
     :prog: papis open
 """
+
 import os
 import logging
 from typing import Optional

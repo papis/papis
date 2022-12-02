@@ -82,12 +82,13 @@ in a more effective way in python scripts,
 
 .. autofunction:: papis.commands.add.run
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.add:cli
     :prog: papis add
-
 """
+
 import os
 import re
 import logging

@@ -1,5 +1,4 @@
 """
-
 Examples
 ^^^^^^^^
 
@@ -19,13 +18,13 @@ Examples
 
         papis --pick-lib open 'einstein relativity'
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.default:run
     :prog: papis
-    :commands: []
-
 """
+
 import os
 import sys
 import logging

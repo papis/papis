@@ -6,11 +6,13 @@ pass the ``--pick`` flag to pick twice for the documents.
 
 TODO: Write more documentation
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.merge:cli
     :prog: papis open
 """
+
 import os
 import logging
 from typing import Optional, List, Dict, Any

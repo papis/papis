@@ -40,11 +40,13 @@ or export all of them
     party apps.
 
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.export:cli
     :prog: papis export
 """
+
 import os
 import logging
 from typing import List, Optional
