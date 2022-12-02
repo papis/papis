@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-#
-# papis documentation build configuration file, created by
-# sphinx-quickstart on Fri May 12 00:56:29 2017.
-#
 # This file is execfile()d with the current directory set to its
 # containing dir.
 #
@@ -12,23 +7,17 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import re
-import sys
 import os
-
-# Find the directory with papis installed
-sys.path.append(
-    os.path.join(
-        os.path.dirname(__file__),
-        "..", ".."
-    )
-)
+import sys
 import papis
+import docutils
+
+from docutils.parsers.rst import Directive
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-# sys.path.insert(0, os.path.abspath('.'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 # -- General configuration ------------------------------------------------
 
@@ -39,30 +28,23 @@ import papis
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
-    'sphinx.ext.todo',
-    'sphinx.ext.coverage',
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.inheritance_diagram',
-    'sphinx_click.ext',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.doctest",
+    "sphinx.ext.todo",
+    "sphinx.ext.coverage",
+    "sphinx.ext.ifconfig",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.inheritance_diagram",
+    "sphinx_click.ext",
 ]
 
 intersphinx_mapping = {
     "https://docs.python.org/3/": None,
 }
 
-# Exec directive {{{ #
 
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
-
-from docutils.parsers.rst import Directive
-import docutils
+# Exec directive {{{
 
 class ExecDirective(Directive):
     """Execute the specified python code and insert the output into the
@@ -70,10 +52,10 @@ class ExecDirective(Directive):
     has_content = True
 
     def run(self):
-        oldStdout, sys.stdout = sys.stdout, StringIO()
+        stdout_old, sys.stdout = sys.stdout, StringIO()
 
         tab_width = self.options.get(
-            'tab-width',
+            "tab-width",
             self.state.document.settings.tab_width
         )
         source = self.state_machine.input_lines.source(
@@ -81,7 +63,7 @@ class ExecDirective(Directive):
         )
 
         try:
-            exec('\n'.join(self.content))
+            exec("\n".join(self.content))
             text = sys.stdout.getvalue()
             lines = docutils.statemachine.string2lines(
                 text,
@@ -95,33 +77,33 @@ class ExecDirective(Directive):
                 docutils.nodes.error(
                     None,
                     docutils.nodes.paragraph(
-                        text = "Unable to execute python code at %s:%d:" % (
+                        text="Unable to execute python code at {}:{}:".format(
                             os.path.basename.basename(source), self.lineno
                         )
                     ),
-                    docutils.nodes.paragraph(text = str(sys.exc_info()[1]))
+                    docutils.nodes.paragraph(text=str(sys.exc_info()[1]))
                 )
             ]
         finally:
-            sys.stdout = oldStdout
+            sys.stdout = stdout_old
+
 
 class PapisConfig(Directive):
     has_content = True
     optional_arguments = 3
     required_arguments = 1
-    option_spec = dict(default=str, section=str, description=str)
+    option_spec = {"default": str, "section": str, "description": str}
     add_index = True
+
     def run(self):
         import papis.config
         key = self.arguments[0]
         section = self.options.get(
-            'section',
+            "section",
             papis.config.get_general_settings_name())
         default = self.options.get(
-            'default',
+            "default",
             papis.config.get_default_settings().get(section).get(key))
-        source = self.state_machine.input_lines.source(
-            self.lineno - self.state_machine.input_offset - 1)
 
         lines = []
         lines.append("")
@@ -130,45 +112,50 @@ class PapisConfig(Directive):
         lines.append("")
         lines.append("**{key}** (config-{section}-{key}_)"
                      .format(section=section, key=key))
-        if '\n' in str(default):
+
+        if "\n" in str(default):
             lines.append("    - **Default**: ")
             lines.append("        .. code::")
             lines.append("")
-            for lindef in default.split('\n'):
-                lines.append(3*"    " + lindef)
+            for lindef in default.split("\n"):
+                lines.append(3 * "    " + lindef)
         else:
             lines.append("    - **Default**: ``{value!r}``"
                          .format(value=default))
         lines.append("")
 
-        newViewList = docutils.statemachine.ViewList(lines)
-        self.content = newViewList + self.content
+        view = docutils.statemachine.ViewList(lines)
+        self.content = view + self.content
 
         node = docutils.nodes.paragraph()
         node.document = self.state.document
         self.state.nested_parse(self.content, self.content_offset, node)
+
         return node.children
 
+
 def setup(app):
-    app.add_directive('exec', ExecDirective)
-    app.add_directive('papis-config', PapisConfig)
+    app.add_directive("exec", ExecDirective)
+    app.add_directive("papis-config", PapisConfig)
+
+
 # }}} Exec directive #
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # The suffix of source filenames.
-source_suffix = '.rst'
+source_suffix = ".rst"
 
 # The encoding of source files.
-#source_encoding = 'utf-8-sig'
+# source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General information about the project.
-project = u'papis'
-copyright = u'2017, Alejandro Gallo'
+project = u"papis"
+copyright = u"2017, Alejandro Gallo"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -182,13 +169,13 @@ release = version
 
 # The language for content autogenerated by Sphinx. Refer to documentation
 # for a list of supported languages.
-#language = None
+# language = None
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
-#today = ''
+# today = ''
 # Else, today_fmt is used as the format for a strftime call.
-#today_fmt = '%B %d, %Y'
+# today_fmt = '%B %d, %Y'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -199,58 +186,57 @@ exclude_patterns = [
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
-#default_role = None
+# default_role = None
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
-#add_function_parentheses = True
+# add_function_parentheses = True
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
-#add_module_names = True
+# add_module_names = True
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
-#show_authors = False
+# show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # A list of ignored prefixes for module index sorting.
-#modindex_common_prefix = []
+# modindex_common_prefix = []
 
 # If true, keep warnings as "system message" paragraphs in the built documents.
-#keep_warnings = False
-
+# keep_warnings = False
 
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
+# html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-#html_theme_path = []
+# html_theme_path = []
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-#html_title = None
+# html_title = None
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
-#html_short_title = None
+# html_short_title = None
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-#html_logo = None
+# html_logo = None
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-#html_favicon = None
+# html_favicon = None
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -260,141 +246,137 @@ html_theme = 'sphinx_rtd_theme'
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
 # directly to the root of the documentation.
-#html_extra_path = []
+# html_extra_path = []
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
-#html_last_updated_fmt = '%b %d, %Y'
+# html_last_updated_fmt = '%b %d, %Y'
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
-#html_use_smartypants = True
+# html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-#html_sidebars = {}
+# html_sidebars = {}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
-#html_additional_pages = {}
+# html_additional_pages = {}
 
 # If false, no module index is generated.
-#html_domain_indices = True
+# html_domain_indices = True
 
 # If false, no index is generated.
-#html_use_index = True
+# html_use_index = True
 
 # If true, the index is split into individual pages for each letter.
-#html_split_index = False
+# html_split_index = False
 
 # If true, links to the reST sources are added to the pages.
-#html_show_sourcelink = True
+# html_show_sourcelink = True
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
-#html_show_sphinx = True
+# html_show_sphinx = True
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
-#html_show_copyright = True
+# html_show_copyright = True
 
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
 # base URL from which the finished HTML is served.
-#html_use_opensearch = ''
+# html_use_opensearch = ''
 
 # This is the file name suffix for HTML files (e.g. ".xhtml").
-#html_file_suffix = None
+# html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'papisdoc'
-
+htmlhelp_basename = "papisdoc"
 
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    # 'papersize': 'letterpaper',
 
-# The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    # 'pointsize': '10pt',
 
-# Additional stuff for the LaTeX preamble.
-#'preamble': '',
+    # Additional stuff for the LaTeX preamble.
+    # 'preamble': '',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'papis.tex', u'papis Documentation',
-   u'Alejandro Gallo', 'manual'),
+    ("index", "papis.tex", u"papis Documentation", u"Alejandro Gallo", "manual"),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-#latex_logo = None
+# latex_logo = None
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.
-#latex_use_parts = False
+# latex_use_parts = False
 
 # If true, show page references after internal links.
-#latex_show_pagerefs = False
+# latex_show_pagerefs = False
 
 # If true, show URL addresses after external links.
-#latex_show_urls = False
+# latex_show_urls = False
 
 # Documents to append as an appendix to all manuals.
-#latex_appendices = []
+# latex_appendices = []
 
 # If false, no module index is generated.
-#latex_domain_indices = True
-
+# latex_domain_indices = True
 
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'papis', u'Papis Documentation',
-     [u'Alejandro Gallo'], 1),
-    ('configuration', 'papis-config', u'Papis Configuration',
-     [u'Alejandro Gallo'], 1),
-    ('commands/add', 'papis-add', u'add command',
-        ['Alejandro Gallo'], 1),
-    ('commands/addto', 'papis-addto', u'addto command',
-        ['Alejandro Gallo'], 1),
-    ('commands/browse', 'papis-browse', u'browse command',
-        ['Alejandro Gallo'], 1),
-    ('commands/config', 'papis-config', u'config command',
-        ['Alejandro Gallo'], 1),
-    ('commands/default', 'papis-default', u'default command',
-        ['Alejandro Gallo'], 1),
-    ('commands/edit', 'papis-edit', u'edit command',
-        ['Alejandro Gallo'], 1),
-    ('commands/explore', 'papis-explore', u'explore command',
-        ['Alejandro Gallo'], 1),
-    ('commands/export', 'papis-export', u'export command',
-        ['Alejandro Gallo'], 1),
-    ('commands/git', 'papis-git', u'git command',
-        ['Alejandro Gallo'], 1),
-    ('commands/list', 'papis-list', u'list command',
-        ['Alejandro Gallo'], 1),
-    ('commands/mv', 'papis-mv', u'mv command',
-        ['Alejandro Gallo'], 1),
-    ('commands/open', 'papis-open', u'open command',
-        ['Alejandro Gallo'], 1),
-    ('commands/rename', 'papis-rename', u'rename command',
-        ['Alejandro Gallo'], 1),
-    ('commands/rm', 'papis-rm', u'rm command',
-        ['Alejandro Gallo'], 1),
-    ('commands/run', 'papis-run', u'run command',
-        ['Alejandro Gallo'], 1),
-    ('commands/update', 'papis-update', u'update command',
-        ['Alejandro Gallo'], 1),
+    ("index", "papis", u"Papis Documentation",
+     [u"Alejandro Gallo"], 1),
+    ("configuration", "papis-config", u"Papis Configuration",
+     [u"Alejandro Gallo"], 1),
+    ("commands/add", "papis-add", u"add command",
+     ["Alejandro Gallo"], 1),
+    ("commands/addto", "papis-addto", u"addto command",
+     ["Alejandro Gallo"], 1),
+    ("commands/browse", "papis-browse", u"browse command",
+     ["Alejandro Gallo"], 1),
+    ("commands/config", "papis-config", u"config command",
+     ["Alejandro Gallo"], 1),
+    ("commands/default", "papis-default", u"default command",
+     ["Alejandro Gallo"], 1),
+    ("commands/edit", "papis-edit", u"edit command",
+     ["Alejandro Gallo"], 1),
+    ("commands/explore", "papis-explore", u"explore command",
+     ["Alejandro Gallo"], 1),
+    ("commands/export", "papis-export", u"export command",
+     ["Alejandro Gallo"], 1),
+    ("commands/git", "papis-git", u"git command",
+     ["Alejandro Gallo"], 1),
+    ("commands/list", "papis-list", u"list command",
+     ["Alejandro Gallo"], 1),
+    ("commands/mv", "papis-mv", u"mv command",
+     ["Alejandro Gallo"], 1),
+    ("commands/open", "papis-open", u"open command",
+     ["Alejandro Gallo"], 1),
+    ("commands/rename", "papis-rename", u"rename command",
+     ["Alejandro Gallo"], 1),
+    ("commands/rm", "papis-rm", u"rm command",
+     ["Alejandro Gallo"], 1),
+    ("commands/run", "papis-run", u"run command",
+     ["Alejandro Gallo"], 1),
+    ("commands/update", "papis-update", u"update command",
+     ["Alejandro Gallo"], 1),
 ]
 
 # If true, show URL addresses after external links.
-#man_show_urls = False
-
+# man_show_urls = False
 
 # -- Options for Texinfo output {{{1 ------------------------------------------
 
@@ -402,30 +384,29 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'papis', u'papis Documentation',
-   u'Alejandro Gallo', 'papis', 'One line description of project.',
-   'Miscellaneous'),
+    ("index", "papis", u"papis Documentation",
+     u"Alejandro Gallo", "papis", "One line description of project.",
+     "Miscellaneous"),
 ]
 
 # Documents to append as an appendix to all manuals.
-#texinfo_appendices = []
+# texinfo_appendices = []
 
 # If false, no module index is generated.
-#texinfo_domain_indices = True
+# texinfo_domain_indices = True
 
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
-#texinfo_show_urls = 'footnote'
+# texinfo_show_urls = 'footnote'
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
-#texinfo_no_detailmenu = False
-
+# texinfo_no_detailmenu = False
 
 # -- Options for Epub output {{{1 --------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'papis'
-epub_author = u'Alejandro Gallo'
-epub_publisher = u'Alejandro Gallo'
-epub_copyright = u'2017, Alejandro Gallo'
+epub_title = u"papis"
+epub_author = u"Alejandro Gallo"
+epub_publisher = u"Alejandro Gallo"
+epub_copyright = u"2017, Alejandro Gallo"
 # A list of files that should not be packed into the epub file.
-epub_exclude_files = ['search.html']
+epub_exclude_files = ["search.html"]
