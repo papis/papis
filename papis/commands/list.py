@@ -1,8 +1,8 @@
 """
 This command is to list contents of a library.
 
-CLI Examples
-^^^^^^^^^^^^
+Examples
+^^^^^^^^
 
 - List all document files associated will all entries:
 
@@ -41,8 +41,9 @@ CLI Examples
         src="https://asciinema.org/a/QZTBZ3tFfyk9WQuJ9WWB2UpSw.js"
         id="asciicast-QZTBZ3tFfyk9WQuJ9WWB2UpSw" async></script>
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.list:cli
     :prog: papis list
 """

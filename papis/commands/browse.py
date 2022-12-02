@@ -49,11 +49,13 @@ to be a valid url, I guess at this point you'll know what you're doing.
 This is the default, it will do a search-engine search with the data of your
 paper and hopefully you'll find it.
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.browse:cli
     :prog: papis browse
 """
+
 import logging
 from typing import Optional
 

@@ -13,6 +13,7 @@ import papis
 import docutils
 
 from docutils.parsers.rst import Directive
+from sphinx_click.ext import ClickDirective
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -45,6 +46,13 @@ intersphinx_mapping = {
 
 
 # Exec directive {{{
+
+class CustomClickDirective(ClickDirective):
+    def run(self):
+        sections = super().run()
+
+        # NOTE: just remove the title section so we can add our own
+        return sections[0].children[1:]
 
 
 class PapisConfig(Directive):
@@ -94,6 +102,7 @@ class PapisConfig(Directive):
 
 
 def setup(app):
+    app.add_directive("click", CustomClickDirective, override=True)
     app.add_directive("papis-config", PapisConfig)
 
 

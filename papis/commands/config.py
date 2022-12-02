@@ -30,11 +30,13 @@ it with
 
 You can find a list of all available settings in the configuration section.
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.config:cli
     :prog: papis config
 """
+
 import logging
 from typing import Optional
 
