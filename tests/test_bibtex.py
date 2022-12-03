@@ -80,3 +80,60 @@ def test_clean_ref() -> None:
             (r"Albert_Ein\_stein\.1923.b", "AlbertEin_stein.1923B"),
             ]:
         assert rc == papis.bibtex.ref_cleanup(r)
+
+
+def test_to_bibtex_wrong_type() -> None:
+    """Test no BibTeX entry is constructed for incorrect types."""
+
+    doc = papis.document.from_data({
+        "type": "fictional",
+        "ref": "MyDocument",
+        "author": "Albert Einstein",
+        "title": "The Theory of Everything",
+        "journal": "Nature",
+        "year": 2350
+        })
+
+    result = papis.bibtex.to_bibtex(doc)
+    assert not result
+
+
+def test_to_bibtex_no_ref() -> None:
+    """Test no BibTeX entry is constructed for invalid references."""
+    doc = papis.document.from_data({
+        "type": "techreport",
+        "author": "Albert Einstein",
+        "title": "The Theory of Everything",
+        "journal": "Nature",
+        "year": 2350,
+        })
+
+    # NOTE: this seems to be one of the few ways to fail the ref construction,
+    # i.e. set it to some invalid characters.
+    papis.config.set("ref-format", "--")
+
+    result = papis.bibtex.to_bibtex(doc)
+    assert not result
+
+
+def test_to_bibtex_formatting() -> None:
+    """Test formatting for the `to_bibtex` function."""
+    doc = papis.document.from_data({
+        "type": "techreport",
+        "author": "Albert Einstein",
+        "title": "The Theory of Everything",
+        "journal": "Nature",
+        "year": 2350,
+        "ref": "MyDocument"
+        })
+
+    expected_bibtex = (
+        "@techreport{MyDocument,\n"
+        + "  author = {Albert Einstein},\n"
+        + "  journal = {Nature},\n"
+        + "  title = {The Theory of Everything},\n"
+        + "  year = {2350},\n"
+        + "}\n"
+        )
+
+    assert papis.bibtex.to_bibtex(doc) == expected_bibtex
