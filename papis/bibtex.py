@@ -117,7 +117,7 @@ bibtex_key_converter = {
 
 
 def exporter(documents: List[papis.document.Document]) -> str:
-    return "\n".join(to_bibtex_multiple(documents))
+    return "\n\n".join(to_bibtex_multiple(documents))
 
 
 class Importer(papis.importer.Importer):
@@ -286,14 +286,12 @@ def to_bibtex_multiple(documents: List[papis.document.Document]) -> Iterator[str
         yield bib
 
 
-def to_bibtex(document: papis.document.Document) -> str:
+def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
     """Create a bibtex string from document's information
 
     :param document: Papis document
     :returns: String containing bibtex formatting
     """
-    logger = logging.getLogger("document:bibtex")
-    bibtex_string = ""
     bibtex_type = ""
 
     # determine bibtex type
@@ -321,41 +319,43 @@ def to_bibtex(document: papis.document.Document) -> str:
 
     logger.debug("Used 'ref = %s'", ref)
 
-    bibtex_string += "@{type}{{{ref},\n".format(type=bibtex_type, ref=ref)
-    bibtex_keyval_fmt = "  %s = {%s},\n"
-    for bib_key in list(document.keys()):
-        if bib_key in bibtex_key_converter:
-            new_bibkey = bibtex_key_converter[bib_key]
-            document[new_bibkey] = document[bib_key]
+    from bibtexparser.latexenc import string_to_latex
 
-    for bib_key in sorted(document):
-        logger.debug("Bibtex entry: '%s: %s'", bib_key, document[bib_key])
-        if bib_key in bibtex_keys:
-            value = str(document[bib_key])
-            if not papis.config.getboolean("bibtex-unicode"):
-                value = unicode_to_latex(value)
-            if bib_key == "journal":
-                journal_key = papis.config.getstring("bibtex-journal-key")
-                if journal_key in document:
-                    bibtex_string += bibtex_keyval_fmt % (
-                        "journal",
-                        unicode_to_latex(str(document[journal_key]))
-                    )
-                elif journal_key not in document:
-                    logger.warning(
-                        "Key '%s' is not present for ref '%s'",
-                        journal_key, document["ref"])
-                    bibtex_string += bibtex_keyval_fmt % ("journal", value)
+    # process keys
+    supports_unicode = papis.config.getboolean("bibtex-unicode")
+    journal_key = papis.config.getstring("bibtex-journal-key")
+    lines = ["{}".format(ref)]
+
+    for key in sorted(document):
+        bib_key = bibtex_key_converter.get(key, key)
+        if bib_key not in bibtex_keys:
+            continue
+
+        bib_value = str(document[bib_key])
+        logger.debug("BibTeX entry: '%s: %s'", bib_key, bib_value)
+
+        if bib_key == "journal":
+            if journal_key in document:
+                bib_value = str(document[journal_key])
             else:
-                bibtex_string += bibtex_keyval_fmt % (bib_key, value)
+                logger.warning(
+                    "Key '%s' is not present for ref '%s'",
+                    journal_key, document["ref"])
+
+            bib_value = string_to_latex(bib_value)
+
+        if not supports_unicode:
+            bib_value = unicode_to_latex(bib_value)
+
+        lines.append("{} = {{{}}}".format(bib_key, bib_value))
 
     # Handle file for zotero exporting
     if (papis.config.getboolean("bibtex-export-zotero-file")
-            and len(document.get_files())):
-        bibtex_string += bibtex_keyval_fmt % ("file",
-                                              ";".join(document.get_files()))
-    bibtex_string += "}\n"
-    return bibtex_string
+            and document.get_files()):
+        lines.append("{} = {{{}}}".format("file", ";".join(document.get_files())))
+
+    separator = ",\n" + " " * indent
+    return "@{type}{{{keys},\n}}".format(type=bibtex_type, keys=separator.join(lines))
 
 
 def unicode_to_latex(text: str) -> str:

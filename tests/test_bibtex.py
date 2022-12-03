@@ -133,7 +133,7 @@ def test_to_bibtex_formatting() -> None:
         + "  journal = {Nature},\n"
         + "  title = {The Theory of Everything},\n"
         + "  year = {2350},\n"
-        + "}\n"
+        + "}"
         )
 
     assert papis.bibtex.to_bibtex(doc) == expected_bibtex
