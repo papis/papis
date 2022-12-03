@@ -99,7 +99,7 @@ def test_to_bibtex() -> None:
         "  journal = {jcp},\n"
         "  title = {Hello},\n"
         "  year = {3200BCE},\n"
-        "}\n")
+        "}")
     doc["journal_abbrev"] = "j"
     assert papis.bibtex.to_bibtex(doc) == (
         "@book{HelloFernan3200bce,\n"
@@ -107,7 +107,7 @@ def test_to_bibtex() -> None:
         "  journal = {j},\n"
         "  title = {Hello},\n"
         "  year = {3200BCE},\n"
-        "}\n")
+        "}")
     del doc["title"]
 
     doc["ref"] = "hello1992"
@@ -116,7 +116,7 @@ def test_to_bibtex() -> None:
         "  author = {Fernandez, Gilgamesh},\n"
         "  journal = {j},\n"
         "  year = {3200BCE},\n"
-        "}\n")
+        "}")
 
 
 def test_to_json() -> None:
