@@ -8,6 +8,7 @@ can add yourself through the python configuration file.
 
 import logging
 import os
+import re
 import json
 from typing import Optional, List, NamedTuple, Callable, Dict
 import collections
@@ -22,27 +23,32 @@ import papis.pick
 import papis.database
 import papis.strings
 import papis.document
+from papis.commands.edit import run as edit_run
 
 
 Error = NamedTuple("Error", [("name", str),
                              ("path", str),
+                             ("payload", str),
                              ("msg", str),
+                             ("suggestion_cmd", str),
+                             ("fix_action", Callable[[], None]),
+                             ("doc", Optional[papis.document.Document]),
                              ])
 CheckFn = Callable[[papis.document.Document], List[Error]]
 Check = NamedTuple("Check", [("name", str),
                              ("operate", CheckFn),
-                             ("suggest_cmd", Callable[[Error], str])])
+                             ])
 
 logger = logging.getLogger("doctor")
 
 
-def register_check(name: str, check: Check) -> None:
+def register_check(name: str, check_function: CheckFn) -> None:
     """
     Register a check.
     To be used by users in their configuration files
     for example.
     """
-    REGISTERED_CHECKS[name] = check
+    REGISTERED_CHECKS[name] = Check(name=name, operate=check_function)
 
 
 def files_check(doc: papis.document.Document) -> List[Error]:
@@ -53,11 +59,31 @@ def files_check(doc: papis.document.Document) -> List[Error]:
     files = doc.get_files()
     results = []  # type: List[Error]
     folder = doc.get_main_folder()
+
+    def _fix(_file: str) -> None:
+        """
+        Files fixer function, it will remove the bad file.
+        Notice that for now it only works if the file name is not of
+        the form 'subdirectory/file' but only 'file'.
+        """
+        _db = papis.database.get()
+        basename = os.path.basename(_file)
+        if basename in doc["files"]:
+            doc["files"].remove(basename)
+        doc.save()
+        _db.update(doc)
+
     for _f in files:
         if not os.path.exists(_f):
             results.append(Error(name="files",
                                  path=folder or "",
-                                 msg=_f))
+                                 msg=("File '{}' declared but does not exist"
+                                      .format(_f)),
+                                 suggestion_cmd=("papis edit --doc-folder {}"
+                                                 .format(folder)),
+                                 fix_action=lambda: _fix(_f),
+                                 payload=_f,
+                                 doc=doc))
     return results
 
 
@@ -73,11 +99,60 @@ def keys_check(doc: papis.document.Document) -> List[Error]:
         if k not in doc or len(doc[k]) == 0:
             results.append(Error(name="keys",
                                  path=folder or "",
-                                 msg=k))
+                                 msg=("Key '{}' does not exist"
+                                      .format(k)),
+                                 suggestion_cmd=("papis edit --doc-folder {}"
+                                                 .format(folder)),
+                                 fix_action=lambda: None,
+                                 payload=k,
+                                 doc=doc))
     return results
 
 
-DUPLICATED_KEYS_SEEN = collections.defaultdict(list)  # type: Dict[str, List[str]]
+def refs_check(doc: papis.document.Document) -> List[Error]:
+    """
+    It checks that a ref exists and if not it
+    tries to create one according to the ref-format configuration
+    if the user chooses to fix it.
+    """
+    folder = doc.get_main_folder()
+    bad_symbols = re.compile(r"[ ,{}\[\]@#`']")
+
+    def _fix() -> None:
+        ref = papis.bibtex.create_reference(doc, force=True)
+        _db = papis.database.get()
+        logger.info("Setting ref '%s' in '%s'",
+                    ref,
+                    papis.document.describe(doc))
+        doc["ref"] = ref
+        doc.save()
+        _db.update(doc)
+
+    if not doc["ref"] or not str(doc["ref"]).strip():
+        return [Error(name="refs",
+                      path=folder or "",
+                      msg="Reference missing.",
+                      suggestion_cmd=("papis edit --doc-folder {}"
+                                      .format(folder)),
+                      fix_action=_fix,
+                      payload="",
+                      doc=doc)]
+    m = bad_symbols.findall(str(doc["ref"]))
+    if m:
+        return [Error(name="refs",
+                      path=folder or "",
+                      msg=("Bad characters ({}) found in reference."
+                           .format(set(list(m)))),
+                      suggestion_cmd=("papis edit --doc-folder {}"
+                                      .format(folder)),
+                      fix_action=_fix,
+                      payload="",
+                      doc=doc)]
+    return []
+
+
+DUPLICATED_KEYS_SEEN \
+    = collections.defaultdict(list)  # type: Dict[str, List[str]]
 
 
 def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
@@ -90,29 +165,56 @@ def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
     for key in keys:
         if doc[key] in DUPLICATED_KEYS_SEEN[key]:
             results.append(Error(name="duplicated-keys",
-                                 msg=key,
-                                 path=folder or ""))
+                                 msg=("Key '{}' is duplicated."
+                                      .format(key)),
+                                 suggestion_cmd="",
+                                 payload=key,
+                                 fix_action=lambda: None,
+                                 path=folder or "",
+                                 doc=doc))
         else:
             DUPLICATED_KEYS_SEEN[key].append(str(doc[key]))
     return results
 
 
+def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
+    """
+    Check that the types are compatible with bibtex or biblatex
+    type descriptors.
+    """
+    types = papis.bibtex.bibtex_types
+    folder = doc.get_main_folder()
+    results = []
+    if doc["type"] not in types:
+        results.append(Error(name="bibtex_types",
+                             path=folder or "",
+                             msg=("Document type '{}' is not"
+                                  " a valid bibtex type"
+                                  .format(doc["type"])),
+                             suggestion_cmd=("papis edit --doc-folder {}"
+                                             .format(folder)),
+                             fix_action=lambda: None,
+                             payload=doc["type"],
+                             doc=doc))
+    return results
+
+
 REGISTERED_CHECKS = {
-    "files": Check(operate=files_check,
-                   name="check",
-                   suggest_cmd=lambda e:
-                   """
-                   papis edit --doc-folder {}
-                   """.format(e.path)),
-    "keys": Check(operate=keys_check,
-                  name="keys",
-                  suggest_cmd=lambda e:
-                  """
-                  papis update --doc-folder {}
-                  """.format(e.path)),
-    "duplicated-keys": Check(operate=duplicated_keys_check,
-                             name="duplicated-keys",
-                             suggest_cmd=lambda e: ""),
+    "files":
+    Check(operate=files_check,
+          name="check"),
+    "keys":
+    Check(operate=keys_check,
+          name="keys"),
+    "duplicated-keys":
+    Check(operate=duplicated_keys_check,
+          name="duplicated-keys"),
+    "bibtex-type":
+    Check(operate=bibtex_type_check,
+          name="bibtex-type"),
+    "refs":
+    Check(operate=refs_check,
+          name="refs"),
 }  # type: Dict[str, Check]
 
 
@@ -137,15 +239,31 @@ def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
               multiple=True,
               help=("Checks to run on every document, possible values: {}"
                     .format(", ".join(REGISTERED_CHECKS.keys()))))
-@click.option("--json", "_json", default=False, is_flag=True,
+@click.option("--json", "_json",
+              default=False, is_flag=True,
               help="Output the results in json format")
-@click.option("--suggest", "suggest", default=False, is_flag=True,
+@click.option("--fix",
+              default=False, is_flag=True,
+              help="Auto fix the errors with the auto fixer mechanism")
+@click.option("-s", "--suggest",
+              default=False, is_flag=True,
               help="Suggest commands to be run for resolution")
+@click.option("-e", "--explain",
+              default=False, is_flag=True,
+              help="Give a short message for the reason of the error")
+@click.option("--edit",
+              default=False, is_flag=True,
+              help="Edit every file with the edit command.")
 @papis.cli.all_option()
 @papis.cli.doc_folder_option()
-def cli(query: str, doc_folder: str,
-        sort_field: Optional[str], sort_reverse: bool,
+def cli(query: str,
+        doc_folder: str,
+        sort_field: Optional[str],
+        sort_reverse: bool,
         _all: bool,
+        fix: bool,
+        edit: bool,
+        explain: bool,
         _checks: List[str],
         _json: bool,
         suggest: bool) -> None:
@@ -178,17 +296,25 @@ def cli(query: str, doc_folder: str,
 
     if _json:
         print(json.dumps(list(map(lambda e:
-                                  dict(msg=e.msg,
+                                  dict(msg=e.payload,
                                        path=e.path,
                                        name=e.name,
-                                       suggestion=REGISTERED_CHECKS[e.name]
-                                       .suggest_cmd(e)),
+                                       suggestion=e.suggestion_cmd),
                                   errors))))
         return
 
     for error in errors:
-        print("{e.name} {e.msg} {e.path}".format(e=error))
+        print("{e.name}\t{e.payload}\t{e.path}".format(e=error))
+        if explain:
+            print("\tReason: {}"
+                  .format(error.msg))
         if suggest:
-            print("Suggestion:\n\t{}\n"
-                  .format(REGISTERED_CHECKS[error.name]
-                          .suggest_cmd(error)))
+            print("\tSuggestion: {}"
+                  .format(error.suggestion_cmd))
+        if fix:
+            logger.warning("Fixing...")
+            error.fix_action()
+        if edit:
+            input("Press any key to edit...")
+            if error.doc:
+                edit_run(error.doc)
