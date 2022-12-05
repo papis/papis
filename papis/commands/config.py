@@ -74,12 +74,19 @@ def run(option_string: str) -> Optional[str]:
         section = option[0]
         key = option[1]
     else:
-        raise ValueError("unrecognized option: {}".format(option_string))
+        logger.error(
+            "options should be in a <section>.<key> or <key> format: got '%s'",
+            option_string)
+        return None
 
     logger.debug("key = %s, sec = %s", key, section)
-    val = papis.config.get(key, section=section)
 
-    return val
+    try:
+        return papis.config.get(key, section=section)
+    except papis.exceptions.DefaultSettingValueMissing as exc:
+        logger.error("\n%s", str(exc).strip("\n"))
+
+    return None
 
 
 @click.command("config")
