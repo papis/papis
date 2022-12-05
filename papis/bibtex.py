@@ -186,13 +186,13 @@ def ref_cleanup(ref: str) -> str:
         regex_pattern=allowed_characters))).replace(" ", "")
 
 
-def create_reference(doc: Dict[str, Any]) -> str:
+def create_reference(doc: Dict[str, Any], force: bool = False) -> str:
     """
     Try to create a sane reference for the document
     """
     ref = ""
     # Check first if the paper has a reference
-    if doc.get("ref"):
+    if doc.get("ref") and not force:
         return str(doc["ref"])
     elif papis.config.get("ref-format"):
         try:
