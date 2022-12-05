@@ -60,18 +60,22 @@ def files_check(doc: papis.document.Document) -> List[Error]:
     results = []  # type: List[Error]
     folder = doc.get_main_folder()
 
-    def _fix(_file: str) -> None:
+    def _fix(_file: str) -> Callable[[], None]:
         """
         Files fixer function, it will remove the bad file.
         Notice that for now it only works if the file name is not of
         the form 'subdirectory/file' but only 'file'.
         """
-        _db = papis.database.get()
-        basename = os.path.basename(_file)
-        if basename in doc["files"]:
-            doc["files"].remove(basename)
-        doc.save()
-        _db.update(doc)
+
+        def __fix() -> None:
+            _db = papis.database.get()
+            basename = os.path.basename(_file)
+            if basename in doc["files"]:
+                doc["files"].remove(basename)
+            doc.save()
+            _db.update(doc)
+
+        return __fix
 
     for _f in files:
         if not os.path.exists(_f):
@@ -81,7 +85,7 @@ def files_check(doc: papis.document.Document) -> List[Error]:
                                       .format(_f)),
                                  suggestion_cmd=("papis edit --doc-folder {}"
                                                  .format(folder)),
-                                 fix_action=lambda: _fix(_f),
+                                 fix_action=_fix(_f),
                                  payload=_f,
                                  doc=doc))
     return results
