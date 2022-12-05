@@ -238,19 +238,13 @@ def general_get(key: str, section: Optional[str] = None,
         the variable.
     :param extras: List of tuples containing section and prefixes
     """
-    # Init main variables
-    method = None  # type: Optional[Callable[[Any, Any], Any]]
-    value = None  # type: Optional[Any]
     config = get_configuration()
     libname = get_lib_name()
     global_section = get_general_settings_name()
-    specialized_key = section + "-" + key if section is not None else key
-    extras = [(section, key)] if section is not None else []
-    sections = [(global_section, specialized_key)] +\
-        extras + [(libname, specialized_key)]
     default_settings = get_default_settings()
 
     # Check data type for setting getter method
+    method = None  # type: Optional[Callable[[Any, Any], Any]]
     if data_type == int:
         method = config.getint
     elif data_type == float:
@@ -260,26 +254,50 @@ def general_get(key: str, section: Optional[str] = None,
     else:
         method = config.get
 
+    # NOTE: configuration settings are given in two formats (where <section>
+    # and <key> are given as arguments)
+    #
+    # 1. As a key under the `global_section`
+    #
+    #   [settings]
+    #   <section>-<key> = value
+    #
+    # 2. In a separate section
+    #
+    #   [<section>]
+    #   <key> = value
+    #
+    # 3. As a key under the current library section
+    #
+    #   [lib]
+    #   <section>-<key> = value
+    #
+    # If the <section> is not given, then only the general and library settings
+    # are checked.
+
+    qualified_key = key if section is None else "{}-{}".format(section, key)
+    candidate_sections = (
+        # NOTE: these are in overwriting order: general < custom < lib
+        [(global_section, qualified_key)]
+        + ([] if section is None else [(section, key)])
+        + [(libname, qualified_key)]
+        )
+
     # Try to get key's value from configuration
-    for extra in sections:
-        sec = extra[0]
-        whole_key = extra[1]
-        if sec not in config:
+    value = None  # type: Optional[Any]
+    for section_name, key_name in candidate_sections:
+        if section_name not in config:
             continue
-        if whole_key in config[sec]:
-            value = method(sec, whole_key)
+
+        if key_name in config[section_name]:
+            value = method(section_name, key_name)
 
     if value is None:
         try:
-            default = default_settings[
-                section or global_section
-            ][
-                specialized_key if section is None else key
-            ]
-        except KeyError:
-            raise papis.exceptions.DefaultSettingValueMissing(key)
-        else:
-            return default
+            return default_settings[section or global_section][key]
+        except KeyError as exc:
+            raise papis.exceptions.DefaultSettingValueMissing(qualified_key) from exc
+
     return value
 
 
