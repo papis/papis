@@ -10,11 +10,12 @@ class Downloader(papis.downloaders.Downloader):
     re_comma = re.compile(r"(\s*,\s*)")
     re_add_dot = re.compile(r"(\b\w\b)")
 
-    def __init__(self, url: str):
-        papis.downloaders.Downloader.__init__(
-            self, url, name="tandfonline")
-        self.expected_document_extension = "pdf"
-        self.priority = 10
+    def __init__(self, url: str) -> None:
+        super().__init__(
+            url, name="tandfonline",
+            expected_document_extension="pdf",
+            priority=10,
+            )
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
@@ -22,7 +23,7 @@ class Downloader(papis.downloaders.Downloader):
                 if re.match(r".*tandfonline.com.*", url) else None)
 
     def get_data(self) -> Dict[str, Any]:
-        data = dict()
+        data = {}
         soup = self._get_soup()
         data.update(papis.downloaders.base.parse_meta_headers(soup))
 
@@ -39,7 +40,7 @@ class Downloader(papis.downloaders.Downloader):
 
                 affiliation = self.re_comma.sub(
                     ", ", self.re_clean.sub("", affiliation))
-                affiliation = [dict(name=affiliation)]
+                affiliation = [{"name": affiliation}]
 
             # find href="/author/escaped_fullname"
             fullname = author.find_all("a", attrs={"class": "entryAuthor"})
@@ -53,10 +54,10 @@ class Downloader(papis.downloaders.Downloader):
             if "Reviewing Editor" in author.text:
                 data["editor"] = (
                     papis.config.getstring("multiple-authors-format")
-                    .format(au=dict(family=family, given=given)))
+                    .format(au={"family": family, "given": given}))
                 continue
 
-            new_author = dict(given=given, family=family)
+            new_author = {"given": given, "family": family}
             if affiliation:
                 new_author["affiliation"] = affiliation
             author_list.append(new_author)

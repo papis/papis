@@ -12,11 +12,11 @@ class Test(tests.database.DatabaseTest):
         tests.database.DatabaseTest.setUpClass()
 
     def test_backend_name(self):
-        self.assertTrue(papis.config.get("database-backend") == "whoosh")
+        self.assertEqual(papis.config.get("database-backend"), "whoosh")
 
     def test_query(self):
         # The database is existing right now, which means that the
         # test library is in place and therefore we have some documents
         database = papis.database.get()
         docs = database.query("*")
-        self.assertTrue(len(docs) > 0)
+        self.assertGreater(len(docs), 0)

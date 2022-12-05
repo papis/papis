@@ -9,12 +9,12 @@ class Downloader(papis.downloaders.fallback.Downloader):
     BASE = "https://citeseerx.ist.psu.edu"
     jsessionid = "012341666D7AD1C5C931FC0CFBA34BFA"
 
-    def __init__(self, url: str):
-        papis.downloaders.fallback.Downloader.__init__(self,
-                                                       uri=url,
-                                                       name="citeseerx")
-        self.expected_document_extension = "pdf"
-        self.priority = 10
+    def __init__(self, url: str) -> None:
+        super().__init__(
+            url, "citeseerx",
+            expected_document_extension="pdf",
+            priority=10,
+            )
 
     @classmethod
     def match(cls,
@@ -31,7 +31,7 @@ class Downloader(papis.downloaders.fallback.Downloader):
                         jid=self.jsessionid))
 
     def download_bibtex(self) -> None:
-        bibtex = self._get_soup().find_all(attrs=dict(id="bibtex"))
+        bibtex = self._get_soup().find_all(attrs={"id": "bibtex"})
         if not bibtex:
             return None
         self.bibtex_data = ("\n".join(e.text for e in bibtex[0].find_all("p"))

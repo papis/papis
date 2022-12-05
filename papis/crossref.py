@@ -189,14 +189,17 @@ def get_data(
                 "Filter keys must be one of {0}"
                 .format(",".join(_filter_names))
             )
-    data = dict(
-        query=query, query_author=author,
-        ids=dois,
-        query_title=title, limit=max_results
-    )
+    data = {
+        "query": query,
+        "query_author": author,
+        "ids": dois,
+        "query_title": title,
+        "limit": max_results
+        }
+
     kwargs = {key: data[key] for key in data if data[key]}
     if not dois:
-        kwargs.update(dict(sort=sort, order=order))
+        kwargs.update({"sort": sort, "order": order})
     try:
         results = _get_crossref_works(filter=filters, **kwargs)
     except Exception as e:
@@ -227,10 +230,8 @@ def doi_to_data(doi_string: str) -> Dict[str, Any]:
     """Search through crossref and get a dictionary containing the data
 
     :param doi_string: Doi identificator or an url with some doi
-    :type  doi_string: str
     :returns: Dictionary containing the data
     :raises ValueError: If no data could be retrieved for the doi
-
     """
     doi_string = doi.get_clean_doi(doi_string)
     results = get_data(dois=[doi_string])
@@ -429,8 +430,8 @@ class FromCrossrefImporter(papis.importer.Importer):
 
 class Downloader(papis.downloaders.Downloader):
 
-    def __init__(self, uri: str):
-        papis.downloaders.Downloader.__init__(self, uri=uri, name="doi")
+    def __init__(self, uri: str) -> None:
+        super().__init__(uri=uri, name="doi")
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.downloaders.Downloader]:

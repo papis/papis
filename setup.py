@@ -76,6 +76,7 @@ setup(
         "typing-extensions>=3.7 ; python_version<'3.8'",
         "lxml>=4.3.5 ; python_version>'3.5'",
         "python-slugify>=1.2.6 ; python_version>'3.4'",
+        "dominate",
     ],
     python_requires=">=3.5",
     classifiers=[
@@ -114,7 +115,9 @@ setup(
             "sphinx_rtd_theme",
             "pytest-cov",
             "mypy>=0.7",
-        ]
+            "types-PyYAML",
+            "types-requests",
+        ],
     ),
     description=(
         "Powerful and highly extensible command-line based document "
@@ -122,16 +125,34 @@ setup(
     ),
     long_description=long_description,
     keywords=[
-        "document", "crossref", "libgen", "scihub", "physics", "mathematics",
-        "books", "papers", "science", "research",
-        "bibtex", "latex", "command-line", "tui", "biblatex", "pubmed", "ieee",
-        "reference manager", "mendeley", "zotero", "elsevier",
-        "cli", "biliography", "datasheets", "bibtex"
+        "document",
+        "crossref",
+        "libgen",
+        "scihub",
+        "physics",
+        "mathematics",
+        "books",
+        "papers",
+        "science",
+        "research",
+        "bibtex",
+        "latex",
+        "command-line",
+        "tui",
+        "biblatex",
+        "pubmed",
+        "ieee",
+        "reference manager",
+        "mendeley",
+        "zotero",
+        "elsevier",
+        "cli",
+        "biliography",
+        "datasheets",
+        "bibtex",
     ],
     package_data=dict(
-        papis=[
-            "py.typed"
-        ],
+        papis=["py.typed"],
     ),
     data_files=data_files,
     packages=included_packages,

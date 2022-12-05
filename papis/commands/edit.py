@@ -144,7 +144,7 @@ def cli(query: str,
     if not _all:
         documents = list(papis.pick.pick_doc(documents))
 
-    if len(documents) == 0:
+    if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 

@@ -32,21 +32,22 @@ class TestCli(tests.cli.TestCli):
         result = self.invoke([
             "doc without files"
         ])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
 
         result = self.invoke([
             "Krishnamurti",
             "--tool", "nonexistingcommand"
         ])
-        self.assertTrue(result.exit_code != 0)
+        self.assertNotEqual(result.exit_code, 0)
 
         result = self.invoke([
             "Krishnamurti",
             "--tool", "nonexistingcommand", "--folder"
         ])
-        self.assertTrue(result.exit_code != 0)
+        self.assertNotEqual(result.exit_code, 0)
 
         result = self.invoke([
             "Krishnamurti", "--mark", "--all", "--tool", "dir"
         ])
-        # self.assertTrue(result.exit_code == 0)
+        self.assertIsNot(result, None)
+        # self.assertEqual(result.exit_code, 0)

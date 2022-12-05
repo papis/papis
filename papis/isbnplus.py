@@ -60,15 +60,15 @@ An example of successful returns:
     ...
 """
 import logging
-from typing import List, Dict, Any, TYPE_CHECKING
+from typing import List, Dict, Any
+import urllib.parse
+import urllib.request
 
 import click
+import bs4
 
 import papis.config
 import papis.document
-
-if TYPE_CHECKING:
-    import bs4
 
 logger = logging.getLogger("isbnplus")
 
@@ -78,19 +78,17 @@ ISBNPLUS_BASEURL = "https://api-2445581351187.apicast.io:443/"  # type: str
 # ISBNPLUS_BASEURL = "https://api-2445581351187.apicast.io/"  # type: str
 
 
-def get_data(
-        query: str = "",
-        page: int = 1,
-        author: str = "",
-        category: str = "",
-        series: str = "",
-        title: str = "",
-        order: str = "isbn",
-        app_id: str = ISBNPLUS_APPID,
-        app_key: str = ISBNPLUS_KEY
-        ) -> List[Dict[str, Any]]:
-    import urllib.parse
-    import urllib.request
+def get_data(query: str = "",
+             page: int = 1,
+             author: str = "",
+             category: str = "",
+             series: str = "",
+             title: str = "",
+             order: str = "isbn",
+             app_id: str = ISBNPLUS_APPID,
+             app_key: str = ISBNPLUS_KEY
+             ) -> List[Dict[str, Any]]:
+    """Get documents from isbnplus"""
 
     results = []
     dict_params = {
@@ -104,18 +102,19 @@ def get_data(
         "app_id": app_id,
         "app_key": app_key
     }
-    params = urllib.parse.urlencode(
-        {x: dict_params[x] for x in dict_params if dict_params[x]}
-    )
+    params = urllib.parse.urlencode({x: v
+                                     for x, v in dict_params.items()
+                                     if v})
     req_url = ISBNPLUS_BASEURL + "search?" + params
     logger.debug("url = '%s'", req_url)
     url = urllib.request.Request(
         req_url,
         headers={"User-Agent": papis.config.getstring("user-agent")}
     )
-    xmldoc = urllib.request.urlopen(url).read()
 
-    import bs4
+    with urllib.request.urlopen(url) as req:
+        xmldoc = req.read()
+
     root = bs4.BeautifulSoup(xmldoc, "html.parser")
 
     for book in root.find_all("book"):
@@ -132,7 +131,7 @@ def book_to_data(booknode: "bs4.Tag") -> Dict[str, Any]:
     :returns: Dictionary containing its data
 
     """
-    book = dict()
+    book = {}
     keys_translate = [
         ("published_year", "year"), ("link", "url"),
     ]
@@ -167,14 +166,14 @@ def explorer(ctx: click.core.Context,
     papis explore isbnplus -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
 
     """
-    logger = logging.getLogger("explore:isbnplus")
-    logger.info("Looking up...")
+    _logger = logging.getLogger("explore:isbnplus")
+    _logger.info("Looking up...")
     try:
         data = get_data(query=query, author=author, title=title)
-    except Exception as e:
-        logger.error(e)
+    except Exception as ex:
+        _logger.error(ex)
         data = []
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 
-    logger.info("%s documents found", len(docs))
+    _logger.info("%s documents found", len(docs))

@@ -66,6 +66,30 @@ general_settings = {
     "doctor-keys-check": ["title", "author", "ref"],
     "doctor-duplicated-keys-check": ["ref"],
 
+    # papis-serve configuration
+    "serve-user-css": [],
+    "serve-user-js": [],
+    "serve-font-awesome-css": [("https://cdnjs.cloudflare.com/ajax/"
+                               "libs/font-awesome/6.2.1/css/all.min.css"),
+                               ("https://cdnjs.cloudflare.com/ajax/"
+                                "libs/font-awesome/6.2.1/css/brands.min.css"),
+                               ("https://cdnjs.cloudflare.com/ajax/"
+                                "libs/font-awesome/6.2.1/css/solid.min.css"),
+                               ],
+    "serve-bootstrap-css": ("https://cdn.jsdelivr.net/npm/"
+                            "bootstrap@5.1.1/dist/css/bootstrap.min.css"),
+    "serve-bootstrap-js": ("https://cdn.jsdelivr.net/npm/"
+                           "bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"),
+    "serve-jquery-js": "https://code.jquery.com/jquery-3.6.0.min.js",
+    "serve-jquery.dataTables-css": ("https://cdn.datatables.net/"
+                                    "v/bs5/dt-1.13.1/kt-2.8.0/"
+                                    "sc-2.0.7/sb-1.4.0/datatables.min.css"),
+    "serve-jquery.dataTables-js": ("https://cdn.datatables.net/"
+                                   "v/bs5/dt-1.13.1/kt-2.8.0/"
+                                   "sc-2.0.7/sb-1.4.0/datatables.min.js"),
+
+    "serve-empty-query-get-all-documents": True,
+
     "browse-key": "url",
     "browse-query-format": "{doc[title]} {doc[author]}",
     "search-engine": "https://duckduckgo.com",
@@ -137,13 +161,12 @@ general_settings = {
                           "«{doc[year]:4}»"
                           "{c.Style.RESET_ALL}"
                           ":{doc[tags]}")
-}
+}  # type: Dict[str, Any]
 
 
 def get_general_settings_name() -> str:
     """Get the section name of the general settings
     :returns: Section's name
-    :rtype:  str
     >>> get_general_settings_name()
     'settings'
     """
@@ -217,7 +240,7 @@ def get_default_settings() -> PapisConfigType:
     # We use an OrderedDict so that the first entry will always be the general
     # settings, also good for automatic documentation
     if _DEFAULT_SETTINGS is None:
-        _DEFAULT_SETTINGS = dict()
+        _DEFAULT_SETTINGS = {}
         _DEFAULT_SETTINGS.update({
             get_general_settings_name(): general_settings,
         })
@@ -246,7 +269,6 @@ def register_default_settings(settings_dictionary: PapisConfigType) -> None:
         papis.config.get('command', section='hubation')
 
     :param settings_dictionary: A dictionary with settings
-    :type  settings_dictionary: dict
     """
     default_settings = get_default_settings()
     # we do a for loop because apparently the OrderedDict removes all
@@ -263,7 +285,6 @@ def get_config_home() -> str:
     files should be stored.
 
     :returns: Configuration base directory
-    :rtype:  str
     """
     xdg_home = os.environ.get("XDG_CONFIG_HOME")
     if xdg_home:
@@ -356,10 +377,6 @@ def general_get(key: str, section: Optional[str] = None,
 
     :param data_type: The data type that should be expected for the value of
         the variable.
-    :type  data_type: DataType, e.g. int, src ...
-    :param default: Default value for the configuration variable if it is not
-        set.
-    :type  default: It should be the same that ``data_type``
     :param extras: List of tuples containing section and prefixes
     """
     # Init main variables
@@ -456,7 +473,6 @@ def getlist(key: str, section: Optional[str] = None) -> List[str]:
     """List getter
 
     :returns: A python list
-    :rtype:  list
     :raises SyntaxError: Whenever the parsed syntax is either not a valid
         python object or a valid python list.
     """
@@ -482,7 +498,6 @@ def get_configuration() -> Configuration:
     ever be configured.
 
     :returns: Configuration object
-    :rtype:  papis.config.Configuration
     """
     global _CONFIGURATION
     if _CONFIGURATION is None:
@@ -501,9 +516,7 @@ def merge_configuration_from_path(path: Optional[str],
     to the information of the configuration object stored in `configuration`.
 
     :param path: Path to the configuration file
-    :type  path: str
     :param configuration: Configuration object
-    :type  configuration: papis.config.Configuration
     """
     if path is None or not os.path.exists(path):
         return
@@ -516,13 +529,11 @@ def set_lib(library: papis.library.Library) -> None:
     """Set library
 
     :param library: Library object
-    :type  library: papis.library.Library
-
     """
     global _CURRENT_LIBRARY
     config = get_configuration()
     if library.name not in config:
-        config[library.name] = dict(dirs=str(library.paths))
+        config[library.name] = {"dirs": str(library.paths)}
     _CURRENT_LIBRARY = library
 
 
@@ -530,7 +541,6 @@ def set_lib_from_name(libname: str) -> None:
     """Set library, notice that in principle library can be a full path.
 
     :param libname: Name of the library or some path to a folder
-    :type  libname: str
     """
     set_lib(get_lib_from_name(libname))
 
@@ -546,7 +556,7 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
             library_obj = papis.library.from_paths([libname])
             name = library_obj.path_format()
             # the configuration object can only store strings
-            config[name] = dict(dirs=str(library_obj.paths))
+            config[name] = {"dirs": str(library_obj.paths)}
         else:
             raise Exception("Library '{0}' does not seem to exist"
                             "\n\n"
@@ -578,7 +588,6 @@ def get_lib_dirs() -> List[str]:
     """Get the directories of the current library
 
     :returns: A list of paths
-    :rtype:  list
     """
     return get_lib().paths
 
@@ -594,7 +603,6 @@ def get_lib() -> papis.library.Library:
     library name (or path) that will be taken as a default.
 
     :returns: Current library
-    :rtype:  papis.library.Library
     """
     global _CURRENT_LIBRARY
     if os.environ.get("PAPIS_LIB"):
@@ -621,7 +629,6 @@ def reset_configuration() -> Configuration:
     """Destroys existing configuration and returns a new one.
 
     :returns: Configuration object
-    :rtype:  papis.config.Configuration
     """
     global _CONFIGURATION
     _CONFIGURATION = None

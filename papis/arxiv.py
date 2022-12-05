@@ -90,10 +90,8 @@ def get_data(
 
     entries = soup.find_all("entry")
     for entry in entries:
-        data = dict()
-        data["abstract"] = entry.find("summary").get_text().replace(
-            "\n", " "
-        )
+        data = {}
+        data["abstract"] = entry.find("summary").get_text().replace("\n", " ")
         data["url"] = entry.find("id").get_text()
         data["published"] = entry.find("published").get_text()
         published = data.get("published")
@@ -134,14 +132,11 @@ def pdf_to_arxivid(
     is the correct one.
 
     :param filepath: Path to the pdf file
-    :type  filepath: str
     :param maxlines: Maximum number of lines that should be checked
         For some documnets, it would spend a long time trying to look for
         a arxivid, and arxivids in the middle of documents don't tend to be the
         correct arxivid of the document.
-    :type  maxlines: int
     :returns: arxivid or None
-    :rtype:  str or None
     """
     with open(filepath, "rb") as fd:
         for j, line in enumerate(fd):
@@ -172,13 +167,13 @@ def find_arxivid_in_text(text: str) -> Optional[str]:
         ), re.I
     )
     miter = regex.finditer(text)
-    try:
+
+    from contextlib import suppress
+    with suppress(StopIteration):
         m = next(miter)
         if m:
-            arxivid = m.group("arxivid")
-            return arxivid
-    except StopIteration:
-        pass
+            return m.group("arxivid")
+
     return None
 
 
@@ -237,9 +232,8 @@ def explorer(
 
 class Downloader(papis.downloaders.Downloader):
 
-    def __init__(self, url: str):
-        papis.downloaders.Downloader.__init__(self, uri=url, name="arxiv")
-        self.expected_document_extension = "pdf"
+    def __init__(self, url: str) -> None:
+        super().__init__(uri=url, name="arxiv", expected_document_extension="pdf")
         self.arxivid = None  # type: Optional[str]
 
     @classmethod
@@ -290,7 +284,7 @@ class Importer(papis.importer.Importer):
 
     """Importer accepting an arxiv id and downloading files and data"""
 
-    def __init__(self, uri: str):
+    def __init__(self, uri: str) -> None:
         papis.importer.Importer.__init__(self, name="arxiv", uri=uri)
         aid = find_arxivid_in_text(uri)
         self.downloader = Downloader("https://arxiv.org/abs/{}".format(aid))
@@ -313,7 +307,7 @@ class ArxividFromPdfImporter(papis.importer.Importer):
 
     """Importer parsing an arxivid from a pdf file"""
 
-    def __init__(self, uri: str):
+    def __init__(self, uri: str) -> None:
         papis.importer.Importer.__init__(self, name="pdf2arxivid", uri=uri)
         self.arxivid = None  # type: Optional[str]
 

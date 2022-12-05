@@ -7,11 +7,12 @@ import papis.document
 
 class Downloader(papis.downloaders.Downloader):
 
-    def __init__(self, url: str):
-        papis.downloaders.Downloader.__init__(
-            self, url, name="springer")
-        self.expected_document_extension = "pdf"
-        self.priority = 10
+    def __init__(self, url: str) -> None:
+        super().__init__(
+            url, name="springer",
+            expected_document_extension="pdf",
+            priority=10,
+            )
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
@@ -19,7 +20,7 @@ class Downloader(papis.downloaders.Downloader):
                 if re.match(r".*link\.springer.com.*", url) else None)
 
     def get_data(self) -> Dict[str, Any]:
-        data = dict()
+        data = {}
         soup = self._get_soup()
         metas = soup.find_all(name="meta")
         author_list = []    # type: List[Dict[str, Any]]
@@ -39,16 +40,17 @@ class Downloader(papis.downloaders.Downloader):
             elif meta.attrs.get("name") == "citation_author":
                 fnam = meta.attrs.get("content")
                 fnams = re.split(r"\s+", fnam)
-                author_list.append(
-                    dict(
-                        given=fnams[0],
-                        family=" ".join(fnams[1:]),
-                        affiliation=[]))
+                author_list.append({
+                    "given": fnams[0],
+                    "family": " ".join(fnams[1:]),
+                    "affiliation": []
+                    })
             elif meta.attrs.get("name") == "citation_author_institution":
                 if not author_list:
                     continue
                 author_list[-1]["affiliation"].append(
-                    dict(name=meta.attrs.get("content")))
+                    {"name": meta.attrs.get("content")}
+                    )
 
         data["author_list"] = author_list
         data["author"] = papis.document.author_list_to_author(data)

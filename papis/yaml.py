@@ -24,9 +24,7 @@ def data_to_yaml(yaml_path: str, data: Dict[str, Any]) -> None:
     Save data to yaml at path outpath
 
     :param yaml_path: Path to a yaml file
-    :type  yaml_path: str
     :param data: Data in a dictionary
-    :type  data: dict
     """
     with open(yaml_path, "w+") as fd:
         yaml.dump(
@@ -50,9 +48,7 @@ def yaml_to_data(
     Convert a yaml file into a dictionary using the yaml module.
 
     :param yaml_path: Path to a yaml file
-    :type  yaml_path: str
     :returns: Dictionary containing the info of the yaml file
-    :rtype:  dict
     :raises ValueError: If a yaml parsing error happens
     """
     with open(yaml_path) as fd:
@@ -63,7 +59,7 @@ def yaml_to_data(
                 raise ValueError(e)
 
             logger.error("YAML syntax error. %s", e)
-            return dict()
+            return {}
         else:
             assert isinstance(data, dict)
             return data

@@ -143,7 +143,7 @@ def cli(query: str,
 
     logger = logging.getLogger("cli:browse")
 
-    if len(documents) == 0:
+    if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
@@ -155,7 +155,7 @@ def cli(query: str,
     if sort_field:
         documents = papis.document.sort(documents, sort_field, sort_reverse)
 
-    if len(key):
+    if key:
         papis.config.set("browse-key", key)
 
     logger.info("Using key '%s'", papis.config.get("browse-key"))

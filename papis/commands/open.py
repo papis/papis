@@ -133,7 +133,7 @@ def run(document: papis.document.Document,
                     logger.info("Setting opener to '%s'", opener)
                     papis.config.set("opentool", opener)
         files = document.get_files()
-        if len(files) == 0:
+        if not files:
             logger.error("The document chosen has no files attached")
             return
         files_to_open = papis.api.pick(files, header_filter=os.path.basename)

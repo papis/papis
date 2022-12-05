@@ -6,11 +6,12 @@ import papis.downloaders.base
 
 class Downloader(papis.downloaders.Downloader):
 
-    def __init__(self, url: str):
-        papis.downloaders.Downloader.__init__(
-            self, url, name="annualreviews")
-        self.expected_document_extension = "pdf"
-        self.priority = 10
+    def __init__(self, url: str) -> None:
+        super().__init__(
+            url, "annualreviews",
+            expected_document_extension="pdf",
+            priority=10,
+            )
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
@@ -39,7 +40,7 @@ class Downloader(papis.downloaders.Downloader):
             return None
 
     def get_data(self) -> Dict[str, Any]:
-        data = dict()
+        data = {}
         soup = self._get_soup()
         data.update(papis.downloaders.base.parse_meta_headers(soup))
 
@@ -66,12 +67,11 @@ class Downloader(papis.downloaders.Downloader):
                 continue
             given = split_fullname[0]
             family = " ".join(split_fullname[1:])
-            author_list.append(
-                dict(
-                    given=given,
-                    family=family,
-                    affiliation=[dict(name=cafftext)] if cafftext else []
-                )
+            author_list.append({
+                "given": given,
+                "family": family,
+                "affiliation": [{"name": cafftext}] if cafftext else []
+                }
             )
 
         data["author_list"] = author_list

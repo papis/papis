@@ -15,4 +15,4 @@ class TestCli(tests.cli.TestCli):
         result = self.invoke([
             "init"
         ])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)

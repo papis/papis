@@ -63,7 +63,7 @@ def basedoc_to_papisdoc(basedoc: Dict[str, Any]) -> Dict[str, Any]:
     :returns: Dictionary containing its data
 
     """
-    doc = dict()
+    doc = {}
     _action_type = Optional[Callable[[List[str]], str]]
     _key_translate = NamedTuple("_key_translate", [("basekey", str),
                                                    ("papiskey", str),
@@ -82,6 +82,7 @@ def basedoc_to_papisdoc(basedoc: Dict[str, Any]) -> Dict[str, Any]:
         _key_translate("dctype", "type", "m", lambda x: x[0].lower()),
         _key_translate("dclang", "lang", "m", lambda x: x[0]),
     ]  # type: List[_key_translate]
+
     for kt in keys_translate:
         if kt.basekey not in basedoc:
             continue

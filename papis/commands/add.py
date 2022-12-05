@@ -116,7 +116,7 @@ class FromFolderImporter(papis.importer.Importer):
 
     """Importer that gets files and data from a valid papis folder"""
 
-    def __init__(self, **kwargs: Any):
+    def __init__(self, **kwargs: Any) -> None:
         papis.importer.Importer.__init__(self, name="folder", **kwargs)
 
     @classmethod
@@ -137,7 +137,7 @@ class FromLibImporter(papis.importer.Importer):
     and data
     """
 
-    def __init__(self, **kwargs: Any):
+    def __init__(self, **kwargs: Any) -> None:
         papis.importer.Importer.__init__(self, name="lib", **kwargs)
 
     @classmethod
@@ -166,15 +166,10 @@ def get_file_name(
     """Generates file name for the document
 
     :param data: Data parsed for the actual document
-    :type  data: dict
     :param original_filepath: The full path to the original file
-    :type  original_filepath: str
     :param suffix: Possible suffix to be appended to the file without
         its extension.
-    :type  suffix: str
     :returns: New file name
-    :rtype:  str
-
     """
 
     basename_limit = 150
@@ -204,7 +199,7 @@ def get_file_name(
     filename_basename = papis.utils.clean_document_name(
         "{}{}".format(
             file_name_base,
-            "-" + suffix if len(suffix) > 0 else ""
+            "-" + suffix if suffix else ""
         )
     )
 
@@ -255,29 +250,20 @@ def run(paths: List[str],
         ) -> None:
     """
     :param paths: Paths to the documents to be added
-    :type  paths: []
     :param data: Data for the document to be added.
         If more data is to be retrieved from other sources, the data dictionary
         will be updated from these sources.
-    :type  data: dict
     :param folder_name: Name of the folder where the document will be stored
-    :type  folder_name: str
     :param file_name: File name of the document's files to be stored.
-    :type  file_name: str
     :param subfolder: Folder within the library where the document's folder
         should be stored.
-    :type  subfolder: str
     :param confirm: Whether or not to ask user for confirmation before adding.
-    :type  confirm: bool
     :param open_file: Whether or not to ask the user for opening the file
         before adding.
-    :type  open_file: bool
     :param edit: Whether or not to ask user for editing the info file
         before adding.
-    :type  edit: bool
     :param git: Whether or not to ask user for committing before adding,
         in the case of course that the library is a git repository.
-    :type  git: bool
     """
     if data is None:
         data = {}
@@ -530,14 +516,12 @@ def cli(
                 text=re.sub(r"[ \n]+", " ", import_mgr[n].plugin.__doc__)))
         return
 
-    from_importer = list(from_importer)
     logger = logging.getLogger("cli:add")
 
-    data = dict()
+    data = {}
     for data_set in set_list:
         data[data_set[0]] = data_set[1]
 
-    files = list(files)
     ctx = papis.importer.Context()
     ctx.files = [f for f in files if os.path.exists(f)]
     ctx.data.update(data)
@@ -608,7 +592,7 @@ def cli(
         papis.pick.pick_subfolder_from_lib(papis.config.get_lib_name())[0]
     ) if pick_subfolder else None
 
-    return run(
+    run(
         ctx.files,
         data=ctx.data,
         folder_name=folder_name,

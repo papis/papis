@@ -34,25 +34,25 @@ class TestCli(tests.cli.TestCli):
         tests.setup_test_library()
 
     def test_run_function_exists(self):
-        self.assertTrue(run is not None)
+        self.assertIsNot(run, None)
 
     @patch("papis.utils.general_open", lambda *x, **y: None)
     def test_key_doi(self):
         result = self.invoke([
             "krishnamurti", "-k", "doi"
         ])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
 
     def test_no_documents(self):
         result = self.invoke(["__no_document__"])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
 
     @patch("papis.utils.general_open", lambda *x, **y: None)
     def test_key_doi_all(self):
         result = self.invoke([
             "-k", "doi", "--all"
         ])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
 
     @patch("papis.utils.general_open", lambda *x, **y: None)
     @patch("papis.pick.pick_doc", lambda x: [])
@@ -60,4 +60,4 @@ class TestCli(tests.cli.TestCli):
         result = self.invoke([
             "krishnamurti", "-k", "doi"
         ])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)

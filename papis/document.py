@@ -33,7 +33,7 @@ def keyconversion_to_data(conversion_list: List[KeyConversionPair],
     writing a KeyConversionPair to be input to this function.
     """
 
-    new_data = dict()
+    new_data = {}
 
     for key_pair in conversion_list:
 
@@ -101,7 +101,7 @@ def split_authors_name(
             given = " ".join(parts["first"])
             family = " ".join(parts["von"] + parts["last"] + parts["jr"])
 
-            author_list.append(dict(family=family, given=given))
+            author_list.append({"family": family, "given": given})
 
     return author_list
 
@@ -110,7 +110,7 @@ class DocHtmlEscaped(Dict[str, Any]):
     """
     Small helper class to escape html elements.
 
-    >>> DocHtmlEscaped(from_data(dict(title='> >< int & "" "')))['title']
+    >>> DocHtmlEscaped(from_data({"title": '> >< int & "" "'}))['title']
     '&gt; &gt;&lt; int &amp; &quot;&quot; &quot;'
     """
 
@@ -136,7 +136,7 @@ class Document(Dict[str, Any]):
     _info_file_path = ""  # type: str
 
     def __init__(self, folder: Optional[str] = None,
-                 data: Optional[Dict[str, Any]] = None):
+                 data: Optional[Dict[str, Any]] = None) -> None:
         self._folder = None  # type: Optional[str]
 
         if folder is not None:
@@ -167,7 +167,6 @@ class Document(Dict[str, Any]):
         """Set document's folder. The info_file path will be accordingly set.
 
         :param folder: Folder where the document will be stored, full path.
-        :type  folder: str
         """
         self._folder = folder
         self._info_file_path = os.path.join(
@@ -205,7 +204,6 @@ class Document(Dict[str, Any]):
     def get_info_file(self) -> str:
         """Get full path for the info file
         :returns: Full path for the info file
-        :rtype: str
         """
         return self._info_file_path
 
@@ -213,7 +211,6 @@ class Document(Dict[str, Any]):
         """Get the files linked to the document, if any.
 
         :returns: List of full file paths
-        :rtype:  list
         """
         if not self.has("files"):
             return []
@@ -245,20 +242,16 @@ def from_folder(folder_path: str) -> Document:
     """Construct a document object from a folder
 
     :param folder_path: Full path to a valid papis folder
-    :type  folder_path: str
     :returns: A papis document
-    :rtype:  papis.document.Document
     """
     return Document(folder=folder_path)
 
 
 def to_json(document: Document) -> str:
     """Export information into a json string
-    :param document: Papis document
-    :type  document: Document
-    :returns: Json formatted info file
-    :rtype:  str
 
+    :param document: Papis document
+    :returns: Json formatted info file
     """
     import json
     return json.dumps(to_dict(document))
@@ -266,23 +259,18 @@ def to_json(document: Document) -> str:
 
 def to_dict(document: Document) -> Dict[str, Any]:
     """Gets a python dictionary with the information of the document
+
     :param document: Papis document
-    :type  document: Document
     :returns: Python dictionary
-    :rtype:  dict
     """
-    result = dict()
-    for key in document:
-        result[key] = document[key]
-    return result
+    return {key: document[key] for key in document}
 
 
 def dump(document: Document) -> str:
     """Return information string without any obvious format
+
     :param document: Papis document
-    :type  document: Document
     :returns: String with document's information
-    :rtype:  str
 
     >>> doc = from_data({'title': 'Hello World'})
     >>> dump(doc)
@@ -295,8 +283,8 @@ def dump(document: Document) -> str:
 
 def delete(document: Document) -> None:
     """This function deletes a document from disk.
+
     :param document: Papis document
-    :type  document: papis.document.Document
     """
     folder = document.get_main_folder()
     if folder:
@@ -317,10 +305,9 @@ def move(document: Document, path: str) -> None:
     """This function moves a document to path, it supposes that
     the document exists in the location ``document.get_main_folder()``.
     Warning: This method will change the folder in the document object too.
+
     :param document: Papis document
-    :type  document: papis.document.Document
     :param path: Full path where the document will be moved to
-    :type  path: str
 
     >>> doc = from_data({'title': 'Hello World'})
     >>> doc.set_folder('path/to/folder')
@@ -352,9 +339,7 @@ def from_data(data: Dict[str, Any]) -> Document:
     """Construct a document object from a data dictionary.
 
     :param data: Data to be copied to a new document
-    :type  data: dict
     :returns: A papis document
-    :rtype:  papis.document.Document
     """
     return Document(data=data)
 
@@ -384,16 +369,15 @@ def sort(docs: List[Document], key: str, reverse: bool) -> List[Document]:
 
     def _sort_for_key(key: str, doc: Document
                       ) -> Tuple[int, datetime.datetime, int, str]:
+        from contextlib import suppress
         if key in doc:
             if key == "time-added":
-                try:
+                with suppress(ValueError):
                     date_value = \
                         datetime.datetime.strptime(str(doc[key]),
                                                    papis.strings.time_format)
                     return (sort_rankings["date"],
                             date_value, 0, str(doc[key]))
-                except ValueError:
-                    pass
 
             if str(doc[key]).isdigit():
                 return (sort_rankings["int"],
@@ -420,11 +404,8 @@ def new(folder_path: str, data: Dict[str, Any],
     some existing files.
 
     :param folder_path: A folder path, if non existing it will be created
-    :type  folder_path: str
     :param data: Dictionary with key and values to be updated
-    :type  data: dict
     :param files: Existing paths for files
-    :type  files: list(str)
     :raises FileExistsError: If folder_path exists
     """
     if files is None:

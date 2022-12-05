@@ -16,16 +16,26 @@ from prompt_toolkit.filters import has_focus
 
 class Command:
     """
-    :param name: Name of the command
-    :type  name: parameter_type
-    :param run: A callable object where the first argument is the cmd itself.
-    :type  run: callable
+    .. attribute:: name
+
+        Name of the command
+
+    .. attribute:: run
+
+        A callable object where the first argument is the cmd itself.
+
+    .. attribute:: aliases
+
+        A list of aliases for the command.
+
+    .. attribute:: app
+    .. attribute:: names
     """
     def __init__(
             self,
             name: str,
             run: Callable[["Command"], Any],
-            aliases: Optional[List[str]] = None):
+            aliases: Optional[List[str]] = None) -> None:
         if aliases is None:
             aliases = []
 
@@ -47,7 +57,7 @@ class CommandLinePrompt(ConditionalContainer):  # type: ignore
     A vim-like command line prompt widget.
     It's supposed to be instantiated only once.
     """
-    def __init__(self, commands: Optional[List[Command]] = None):
+    def __init__(self, commands: Optional[List[Command]] = None) -> None:
         if commands is None:
             commands = []
 
@@ -79,7 +89,7 @@ class CommandLinePrompt(ConditionalContainer):  # type: ignore
 
         if len(cmds) > 1:
             raise Exception("More than one command matches the input")
-        elif len(cmds) == 0:
+        elif not cmds:
             raise Exception("No command found ({0})".format(name))
 
         input_cmd.pop(0)

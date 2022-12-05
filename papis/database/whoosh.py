@@ -58,7 +58,7 @@ if TYPE_CHECKING:
 
 class Database(papis.database.base.Database):
 
-    def __init__(self, library: Optional[papis.library.Library] = None):
+    def __init__(self, library: Optional[papis.library.Library] = None) -> None:
         papis.database.base.Database.__init__(self, library)
         self.logger = logging.getLogger("db:whoosh")
         self.cache_dir = os.path.join(get_cache_home(), "database", "whoosh")
@@ -141,7 +141,6 @@ class Database(papis.database.base.Database):
         """Get the unique key identifier name of the documents in the database
 
         :returns: key identifier
-        :rtype:  str
         """
         return "whoosh_id_"
 
@@ -151,9 +150,7 @@ class Database(papis.database.base.Database):
         just the path of the documents.
 
         :param document: Papis document
-        :type  document: papis.document.Document
         :returns: Path for the document
-        :rtype:  str
         """
         _folder = document.get_main_folder()
         if _folder is None:
@@ -191,12 +188,9 @@ class Database(papis.database.base.Database):
         separately.
 
         :param document: Papis document
-        :type  document: papis.document.Document
         :param writer: Whoosh writer
-        :type  writer: whoosh.writing.IndexWriter
         :param schema_keys: Dictionary containing the defining keys of the
             database Schema
-        :type  schema_keys: dict
         """
         doc_d = {k: str(document[k]) or "" for k in schema_keys}
         doc_d[Database.get_id_key()] = self.get_id_value(document)
@@ -268,34 +262,22 @@ class Database(papis.database.base.Database):
 
     def get_index(self) -> "Index":
         """Gets the index for the current library
-
-        :returns: Index
-        :rtype:  whoosh.index
         """
         import whoosh.index
         return whoosh.index.open_dir(self.index_dir)
 
     def get_writer(self) -> "IndexWriter":
         """Gets the writer for the current library
-
-        :returns: Writer
-        :rtype:  whoosh.writer
         """
         return self.get_index().writer()
 
     def get_schema(self) -> "Schema":
         """Gets current schema
-
-        :returns: Whoosch Schema
-        :rtype:  whoosh.fields.Schema
         """
         return self.get_index().schema
 
     def create_schema(self) -> "Schema":
         """Creates and returns whoosh schema to be applied to the library
-
-        :returns: Whoosch Schema
-        :rtype:  whoosh.fields.Schema
         """
         self.logger.debug("Creating schema...")
         fields = self.get_schema_init_fields()

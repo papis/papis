@@ -15,17 +15,17 @@ class Database(ABC):
     """Abstract class for the database backends
     """
 
-    def __init__(self, library: Optional[papis.library.Library] = None):
+    def __init__(self, library: Optional[papis.library.Library] = None) -> None:
         self.lib = library or papis.config.get_lib()
         assert isinstance(self.lib, papis.library.Library)
 
     @abstractmethod
     def initialize(self) -> None:
-        ...
+        pass
 
     @abstractmethod
     def get_backend_name(self) -> str:
-        ...
+        pass
 
     def get_lib(self) -> str:
         """Get library name
@@ -45,41 +45,39 @@ class Database(ABC):
         Whether or not document matches query_string.
 
         :param document: Document to be matched
-        :type  document: papis.document.Document
         :param query_string: Query string
-        :type  query_string: str
         """
         raise NotImplementedError("Match not defined for this class")
 
     @abstractmethod
     def clear(self) -> None:
-        ...
+        pass
 
     @abstractmethod
     def add(self, document: papis.document.Document) -> None:
-        ...
+        pass
 
     @abstractmethod
     def update(self, document: papis.document.Document) -> None:
-        ...
+        pass
 
     @abstractmethod
     def delete(self, document: papis.document.Document) -> None:
-        ...
+        pass
 
     @abstractmethod
     def query(self, query_string: str) -> List[papis.document.Document]:
-        ...
+        pass
 
     @abstractmethod
     def query_dict(
             self, query: Dict[str, str]) -> List[papis.document.Document]:
-        ...
+        pass
 
     @abstractmethod
     def get_all_documents(self) -> List[papis.document.Document]:
-        ...
+        pass
 
     @abstractmethod
     def get_all_query_string(self) -> str:
-        ...
+        pass

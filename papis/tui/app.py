@@ -237,9 +237,6 @@ def get_commands(app: Application) -> Tuple[List[Command], KeyBindings]:
         event.app.layout.focus(app.help_window.window)
         event.app.message_toolbar.text = "Press q to quit"
 
-    # def _echo(cmd, *args) -> None:
-        # cmd.app.message_toolbar.text = ' '.join(args)
-
     @kb.add(keys_info["show_info_key"]["key"],  # type: ignore
             filter=~has_focus(app.info_window))
     def info(cmd: Command) -> None:
@@ -286,7 +283,7 @@ class Picker(Application, Generic[Option]):  # type: ignore
             options: Sequence[Option],
             default_index: int = 0,
             header_filter: Callable[[Option], str] = str,
-            match_filter: Callable[[Option], str] = str):
+            match_filter: Callable[[Option], str] = str) -> None:
 
         self.info_window = InfoWindow()
         self.help_window = HelpWindow()
