@@ -274,11 +274,17 @@ def dump(document: Document) -> str:
 
     >>> doc = from_data({'title': 'Hello World'})
     >>> dump(doc)
-    'title:   Hello World\\n'
+    'title:     Hello World'
     """
-    return "".join([
-        "{}:   {}".format(key, value) for key, value in document.items()
-        ]) + "\n"
+    # NOTE: this tries to align all the values to the next multiple of 4 of the
+    # longest key length, for a minimum of visual consistency
+    width = max(len(key) for key in document)
+    width = (width // 4 + 2) * 4 - 1
+
+    return "\n".join([
+        "{:{}}{}".format("{}:".format(key), width, value)
+        for key, value in sorted(document.items())
+        ])
 
 
 def delete(document: Document) -> None:

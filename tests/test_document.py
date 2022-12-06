@@ -146,3 +146,22 @@ def test_sort() -> None:
     ]
     sdocs = papis.document.sort(docs, key="year", reverse=False)
     assert sdocs[0] == docs[1]
+
+
+def test_dump() -> None:
+    doc = papis.document.from_data({
+        "author": "Turing, Alan",
+        "title": "Computing machinery and intelligence",
+        "year": 1950,
+        "some-longer-key": "value",
+        })
+
+    result = papis.document.dump(doc)
+    expected_result = (
+        "author:            Turing, Alan\n"
+        "some-longer-key:   value\n"
+        "title:             Computing machinery and intelligence\n"
+        "year:              1950"
+        )
+
+    assert result == expected_result
