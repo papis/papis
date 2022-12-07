@@ -63,8 +63,9 @@ general_settings = {
 
     # papis-doctor configuration
     "doctor-default-checks": ["files", "keys", "duplicated-keys"],
-    "doctor-keys-check": ["title", "author", "ref"],
-    "doctor-duplicated-keys-check": ["ref"],
+    "doctor-keys-exist-keys": ["title", "author", "ref"],
+    "doctor-duplicated-keys-keys": ["ref"],
+    "doctor-html-codes-keys": ["title", "author", "abstract", "journal"],
 
     # papis-serve configuration
     "serve-user-css": [],

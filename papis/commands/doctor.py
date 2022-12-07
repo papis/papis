@@ -51,6 +51,9 @@ def register_check(name: str, check_function: CheckFn) -> None:
     REGISTERED_CHECKS[name] = Check(name=name, operate=check_function)
 
 
+FILES_CHECK_NAME = "files"
+
+
 def files_check(doc: papis.document.Document) -> List[Error]:
     """
     It checks wether the files of a document actually exist in the
@@ -79,7 +82,7 @@ def files_check(doc: papis.document.Document) -> List[Error]:
 
     for _f in files:
         if not os.path.exists(_f):
-            results.append(Error(name="files",
+            results.append(Error(name=FILES_CHECK_NAME,
                                  path=folder or "",
                                  msg=("File '{}' declared but does not exist"
                                       .format(_f)),
@@ -91,17 +94,20 @@ def files_check(doc: papis.document.Document) -> List[Error]:
     return results
 
 
+KEYS_EXIST_CHECK_NAME = "keys-exist"
+
+
 def keys_check(doc: papis.document.Document) -> List[Error]:
     """
     It checks wether the keys provided in the configuration
     option ``doctor-keys-check`` exit in the document.
     """
-    keys = papis.config.getlist("doctor-keys-check")
+    keys = papis.config.getlist("doctor-keys-exist-keys")
     folder = doc.get_main_folder()
     results = []  # type: List[Error]
     for k in keys:
         if k not in doc or len(doc[k]) == 0:
-            results.append(Error(name="keys",
+            results.append(Error(name=KEYS_EXIST_CHECK_NAME,
                                  path=folder or "",
                                  msg=("Key '{}' does not exist"
                                       .format(k)),
@@ -111,6 +117,9 @@ def keys_check(doc: papis.document.Document) -> List[Error]:
                                  payload=k,
                                  doc=doc))
     return results
+
+
+REFS_CHECK_NAME = "refs"
 
 
 def refs_check(doc: papis.document.Document) -> List[Error]:
@@ -133,7 +142,7 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
         _db.update(doc)
 
     if not doc["ref"] or not str(doc["ref"]).strip():
-        return [Error(name="refs",
+        return [Error(name=REFS_CHECK_NAME,
                       path=folder or "",
                       msg="Reference missing.",
                       suggestion_cmd=("papis edit --doc-folder {}"
@@ -143,7 +152,7 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
                       doc=doc)]
     m = bad_symbols.findall(str(doc["ref"]))
     if m:
-        return [Error(name="refs",
+        return [Error(name=REFS_CHECK_NAME,
                       path=folder or "",
                       msg=("Bad characters ({}) found in reference."
                            .format(set(list(m)))),
@@ -157,18 +166,19 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
 
 DUPLICATED_KEYS_SEEN \
     = collections.defaultdict(list)  # type: Dict[str, List[str]]
+DUPLICATED_KEYS_NAME = "duplicated-keys"
 
 
 def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
     """
     Check for duplicated keys in `doctor-duplicated-keys-check`
     """
-    keys = papis.config.getlist("doctor-duplicated-keys-check")
+    keys = papis.config.getlist("doctor-duplicated-keys-keys")
     folder = doc.get_main_folder()
     results = []  # type: List[Error]
     for key in keys:
         if doc[key] in DUPLICATED_KEYS_SEEN[key]:
-            results.append(Error(name="duplicated-keys",
+            results.append(Error(name=DUPLICATED_KEYS_NAME,
                                  msg=("Key '{}' is duplicated."
                                       .format(key)),
                                  suggestion_cmd="",
@@ -181,6 +191,9 @@ def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
     return results
 
 
+BIBTEX_TYPE_CHECK_NAME = "bibtex-type"
+
+
 def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
     """
     Check that the types are compatible with bibtex or biblatex
@@ -190,7 +203,7 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
     folder = doc.get_main_folder()
     results = []
     if doc["type"] not in types:
-        results.append(Error(name="bibtex_types",
+        results.append(Error(name=BIBTEX_TYPE_CHECK_NAME,
                              path=folder or "",
                              msg=("Document type '{}' is not"
                                   " a valid bibtex type"
@@ -203,23 +216,12 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
     return results
 
 
-REGISTERED_CHECKS = {
-    "files":
-    Check(operate=files_check,
-          name="check"),
-    "keys":
-    Check(operate=keys_check,
-          name="keys"),
-    "duplicated-keys":
-    Check(operate=duplicated_keys_check,
-          name="duplicated-keys"),
-    "bibtex-type":
-    Check(operate=bibtex_type_check,
-          name="bibtex-type"),
-    "refs":
-    Check(operate=refs_check,
-          name="refs"),
-}  # type: Dict[str, Check]
+REGISTERED_CHECKS = {}  # type: Dict[str, Check]
+register_check(FILES_CHECK_NAME, files_check)
+register_check(KEYS_EXIST_CHECK_NAME, keys_check)
+register_check(DUPLICATED_KEYS_NAME, duplicated_keys_check)
+register_check(BIBTEX_TYPE_CHECK_NAME, bibtex_type_check)
+register_check(REFS_CHECK_NAME, refs_check)
 
 
 def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
