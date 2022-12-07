@@ -52,6 +52,10 @@ def register_check(name: str, check_function: CheckFn) -> None:
     REGISTERED_CHECKS[name] = Check(name=name, operate=check_function)
 
 
+def registered_checks_names() -> List[str]:
+    return list(REGISTERED_CHECKS.keys())
+
+
 FILES_CHECK_NAME = "files"
 
 
@@ -225,7 +229,6 @@ def html_codes_check(doc: papis.document.Document) -> List[Error]:
     """
     Checks that the keys in "doctor-html-code-keys" do not contain
     any html codes like &amp; etc.
-    It can provide a fix by just translating them into unicode.
     """
     results = []
     folder = doc.get_main_folder()
@@ -288,7 +291,7 @@ def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
               default=lambda: papis.config.getlist("doctor-default-checks"),
               multiple=True,
               help=("Checks to run on every document, possible values: {}"
-                    .format(", ".join(REGISTERED_CHECKS.keys()))))
+                    .format(", ".join(registered_checks_names()))))
 @click.option("--json", "_json",
               default=False, is_flag=True,
               help="Output the results in json format")

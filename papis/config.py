@@ -62,7 +62,7 @@ general_settings = {
     "add-open": False,
 
     # papis-doctor configuration
-    "doctor-default-checks": ["files", "keys", "duplicated-keys"],
+    "doctor-default-checks": ["files", "keys-exist", "duplicated-keys"],
     "doctor-keys-exist-keys": ["title", "author", "ref"],
     "doctor-duplicated-keys-keys": ["ref"],
     "doctor-html-codes-keys": ["title", "author", "abstract", "journal"],
