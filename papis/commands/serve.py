@@ -384,6 +384,24 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                                 with t.label(cls="input-group-text",
                                              _for=key):
                                     _icon("close")
+                        # end for
+
+                        with t.div(cls="input-group mb-3"):
+                            t.input_(placeholder="New key",
+                                     name="newkey-name",
+                                     value="",
+                                     cls="input-group-text",
+                                     _for="newkey-value")
+                            t.input_(value="",
+                                     cls="form-control",
+                                     name="newkey-value",
+                                     placeholder="New value",
+                                     type="text")
+                            with t.button(cls="input-group-text bg-success",
+                                          form="edit-form",
+                                          type="submit"):
+                                _icon("plus")
+
     return result
 
 
@@ -758,7 +776,10 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         doc = docs[0]
         result = {}
         for key in form:
-            result[key] = form.getvalue(key)
+            if key == "newkey-name":
+                result[form.getvalue("newkey-name")] = form.getvalue("newkey-value")
+            else:
+                result[key] = form.getvalue(key)
         papis.commands.update.run(doc, result, git=USE_GIT)
         back_url = self.headers.get("Referer", "/library")
         self.redirect(back_url)
