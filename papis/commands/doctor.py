@@ -12,6 +12,7 @@ import re
 import json
 from typing import Optional, List, NamedTuple, Callable, Dict
 import collections
+import html
 
 import click
 
@@ -216,12 +217,55 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
     return results
 
 
+HTML_CODE_REGEX = re.compile(r"&[a-z_A-Z0-9]+;")
+HTML_CODES_CHECK_NAME = "html-codes"
+
+
+def html_codes_check(doc: papis.document.Document) -> List[Error]:
+    """
+    Checks that the keys in "doctor-html-code-keys" do not contain
+    any html codes like &amp; etc.
+    It can provide a fix by just translating them into unicode.
+    """
+    results = []
+    folder = doc.get_main_folder()
+
+    def _fix(key: str) -> Callable[[], None]:
+
+        def __fix() -> None:
+            db = papis.database.get()
+            val = html.unescape(doc[key])
+            logger.info("Setting '%s' to '%s'", key, val)
+            doc[key] = val
+            doc.save()
+            db.update(doc)
+
+        return __fix
+
+    for key in papis.config.getlist("doctor-html-codes-keys"):
+        if doc[key]:
+            m = HTML_CODE_REGEX.findall(str(doc[key]))
+            if m:
+                results.append(Error(name=HTML_CODES_CHECK_NAME,
+                                     path=folder or "",
+                                     msg=("Field '{}' contains html codes '{}'"
+                                          .format(key, m)),
+                                     suggestion_cmd=("papis edit "
+                                                     "--doc-folder {}"
+                                                     .format(folder)),
+                                     fix_action=_fix(key),
+                                     payload=key,
+                                     doc=doc))
+    return results
+
+
 REGISTERED_CHECKS = {}  # type: Dict[str, Check]
 register_check(FILES_CHECK_NAME, files_check)
 register_check(KEYS_EXIST_CHECK_NAME, keys_check)
 register_check(DUPLICATED_KEYS_NAME, duplicated_keys_check)
 register_check(BIBTEX_TYPE_CHECK_NAME, bibtex_type_check)
 register_check(REFS_CHECK_NAME, refs_check)
+register_check(HTML_CODES_CHECK_NAME, html_codes_check)
 
 
 def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
