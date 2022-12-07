@@ -19,6 +19,7 @@ import papis.document
 import papis.commands.add
 import papis.commands.update
 import papis.commands.export
+import papis.commands.doctor
 import papis.crossref
 
 
@@ -284,6 +285,8 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
         "textarea": ["abstract"],
         "number": ["year", "volume", "month", "issue"],
     }
+    checks = papis.commands.doctor.registered_checks_names()
+    errors = papis.commands.doctor.run(doc, checks)
     with t.html() as result:
         _header(doc["title"])
         with t.body():
@@ -292,6 +295,17 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                 t.h3(doc["title"])
                 t.h5("{:.80}, {}".format(doc["author"], doc["year"]),
                      style="font-style: italic")
+                for error in errors:
+                    with t.div(cls=("alert alert-danger "
+                                    "alert-dismissible fade show"),
+                               role="alert"):
+                        _icon("stethoscope")
+                        t.span(error.msg)
+                        t.button(type="button",
+                                 cls="btn-close",
+                                 data_bs_dismiss="alert",
+                                 aria_label="Close")
+
                 with _container():
                     # urls block
                     with _flex("between"):
