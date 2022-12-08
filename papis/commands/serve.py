@@ -402,6 +402,13 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                 t.h3(doc["title"])
                 t.h5("{:.80}, {}".format(doc["author"], doc["year"]),
                      style="font-style: italic")
+                tags = doc["tags"]
+                if tags:
+                    with t.p():
+                        with t.span(cls="papis-tags"):
+                            _icon("hashtag")
+                            for tag in ensure_tags_list(tags):
+                                _tag(tag=tag, libname=libname)
                 for error in errors:
                     with t.div(cls=("alert alert-danger "
                                     "alert-dismissible fade show"),
