@@ -184,9 +184,10 @@ def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
     for key in keys:
         if doc[key] in DUPLICATED_KEYS_SEEN[key]:
             results.append(Error(name=DUPLICATED_KEYS_NAME,
-                                 msg=("Key '{}' is duplicated."
-                                      .format(key)),
-                                 suggestion_cmd="",
+                                 msg=("Key '{}' is duplicated ({})."
+                                      .format(key, doc[key])),
+                                 suggestion_cmd=("papis edit {}:'{}'"
+                                                 .format(key, doc[key])),
                                  payload=key,
                                  fix_action=lambda: None,
                                  path=folder or "",
