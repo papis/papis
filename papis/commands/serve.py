@@ -858,6 +858,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 newkey = str(form.getvalue("newkey-name"))
                 newval = form.getvalue("newkey-value")
                 result[newkey] = newval
+            elif key == "newkey-value":
+                pass
             else:
                 result[key] = form.getvalue(key)
         papis.commands.update.run(doc, result, git=USE_GIT)
