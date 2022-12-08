@@ -35,6 +35,7 @@ TAGS_SPLIT_RX = re.compile(r"\s*[,\s]\s*")
 TAGS_LIST = {}  # type: Dict[str, Optional[Dict[str, int]]]
 QUERY_PLACEHOLDER = "insert query..."
 PAPIS_FILE_ICON_CLASS = "papis-file-icon"
+PAPIS_TAG_CLASS = "papis-tags"
 
 
 def _fa(name: str, namespace: str = "fa") -> str:
@@ -263,6 +264,17 @@ def _libraries(libname: str) -> t.html_tag:
     return result
 
 
+def _file_icon(filepath: str) -> t.html_tag:
+    return _icon("file-pdf" if filepath.endswith("pdf") else "file")
+
+
+def _file_server_path(localpath: str,
+                      libfolder: str,
+                      libname: str) -> str:
+    return ("/library/{libname}/file/{0}"
+            .format(localpath.replace(libfolder + "/", ""),
+                    libname=libname))
+
 def _doc_files_icons(files: List[str],
                      libname: str,
                      libfolder: str) -> t.html_tag:
@@ -274,10 +286,8 @@ def _doc_files_icons(files: List[str],
                 t.attr(data_bs_placement="bottom")
                 t.attr(style="font-size: 1.5em")
                 t.attr(title=os.path.basename(_f))
-                t.attr(href="/library/{libname}/file/{0}"
-                       .format(_f.replace(libfolder + "/", ""),
-                               libname=libname))
-                _icon("file-pdf" if _f.endswith("pdf") else "file")
+                t.attr(href=_file_server_path(_f, libfolder, libname))
+                _file_icon(_f)
     return result
 
 
@@ -405,7 +415,7 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                 tags = doc["tags"]
                 if tags:
                     with t.p():
-                        with t.span(cls="papis-tags"):
+                        with t.span(cls=PAPIS_TAG_CLASS):
                             _icon("hashtag")
                             for tag in ensure_tags_list(tags):
                                 _tag(tag=tag, libname=libname)
@@ -422,20 +432,23 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
 
                 with t.ul(cls="nav nav-tabs"):
 
-                    def _tab_element(content: str,
+                    def _tab_element(content: Callable[[], t.html_tag],
                                      href: str,
                                      active: bool = False) -> t.html_tag:
                         with t.li(cls="active nav-item") as result:
-                            t.a(content,
-                                cls="nav-link" + (" active" if active else ""),
-                                aria_current="page",
-                                href=href,
-                                data_bs_toggle="tab")
+                            with t.a(cls="nav-link" + (" active"
+                                                       if active
+                                                       else ""),
+                                     aria_current="page",
+                                     href=href,
+                                     data_bs_toggle="tab"):
+                                content()
                         return result
 
-                    _tab_element("Form", "#main-form-tab", active=True)
-                    _tab_element("info.yaml", "#yaml-form-tab")
-                    _tab_element("Bibtex", "#bibtex-form-tab")
+                    _tab_element(lambda: t.span("Form"),
+                                 "#main-form-tab", active=True)
+                    _tab_element(lambda: t.span("info.yaml"), "#yaml-form-tab")
+                    _tab_element(lambda: t.span("Bibtex"), "#bibtex-form-tab")
 
                 t.br()
 
@@ -564,7 +577,7 @@ def _document_item(libname: str,
 
         with t.td():
             if doc.has("tags"):
-                with t.span(cls="papis-tags"):
+                with t.span(cls=PAPIS_TAG_CLASS):
                     _icon("hashtag")
                     for tag in ensure_tags_list(doc["tags"]):
                         _tag(tag=tag, libname=libname)
