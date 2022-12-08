@@ -777,7 +777,9 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         result = {}
         for key in form:
             if key == "newkey-name":
-                result[form.getvalue("newkey-name")] = form.getvalue("newkey-value")
+                newkey = str(form.getvalue("newkey-name"))
+                newval = form.getvalue("newkey-value")
+                result[newkey] = newval
             else:
                 result[key] = form.getvalue(key)
         papis.commands.update.run(doc, result, git=USE_GIT)
