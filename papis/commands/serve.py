@@ -11,6 +11,7 @@ import collections
 
 import click
 import dominate.tags as t
+import dominate.util as tu
 
 import papis.api
 import papis.cli
@@ -280,16 +281,117 @@ def _doc_files_icons(files: List[str],
     return result
 
 
-def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
-    """
-    View of a single document to edit the information of the yaml file,
-    and maybe in the future to update the information.
-    """
+def _document_view_main_form(libname: str,
+                             doc: papis.document.Document) -> t.html_tag:
     input_types = {
         # "string": default
         "textarea": ["abstract"],
         "number": ["year", "volume", "month", "issue"],
     }
+    with t.div(cls="") as result:
+        # urls block
+        with _flex("between"):
+            with _flex("begin"):
+                t.a("@{}".format(doc["ref"]),
+                    href="#",
+                    cls="btn btn-outline-success")
+            with _flex("center"):
+                t.button("Submit to edit",
+                         form="edit-form",
+                         cls="btn btn-success",
+                         type="submit")
+            with _flex("end"):
+                with t.div(cls="btn-group",
+                           role="group",
+                           aria_label=("List of external "
+                                       "links to the document")):
+                    if "doi" in doc:
+                        with t.a(href=("https://doi.org/{}"
+                                       .format(doc["doi"])),
+                                 target="_blank",
+                                 cls="btn btn-outline-danger"):
+                            _icon("check-circle")
+                            t.span("doi")
+                    if "url" in doc:
+                        with t.a(href="{}".format(doc["url"]),
+                                 target="_blank",
+                                 cls="btn btn-outline-danger"):
+                            _icon("external-link")
+                            t.span("url")
+                    with t.a(href=("https://duckduckgo.com/?q={}"
+                                   .format(urllib
+                                           .parse
+                                           .quote(papis.document
+                                                  .describe(doc),
+                                                  safe=""))),
+                             target="_blank",
+                             cls="btn btn-outline-danger"):
+                        _icon("globe", namespace="fa-solid")
+                        t.span("ddg")
+
+        t.br()
+
+        # the said form
+        with t.form(method="POST",
+                    id="edit-form",
+                    action=("/library/{libname}/"
+                            "document/ref:{doc[ref]}"
+                            .format(doc=doc, libname=libname))):
+            for key, val in doc.items():
+                if isinstance(val, (list, dict)):
+                    continue
+                with t.div(cls="input-group mb-3"):
+                    t.label(key,
+                            cls="input-group-text",
+                            _for=key)
+                    if key in input_types["textarea"]:
+                        t.textarea(val,
+                                   cls="form-control",
+                                   placeholder=str(val),
+                                   name=key,
+                                   style="height: 100px")
+                    elif key in input_types["number"]:
+                        t.input_(value=val,
+                                 cls="form-control",
+                                 name=key,
+                                 placeholder=str(val),
+                                 type="number")
+                    else:
+                        t.input_(value=val,
+                                 cls="form-control",
+                                 name=key,
+                                 placeholder=str(val),
+                                 type="text")
+
+                    with t.label(cls="input-group-text",
+                                 _for=key):
+                        _icon("close")
+            # end for
+
+            with t.div(cls="input-group mb-3"):
+                t.input_(placeholder="New key",
+                         name="newkey-name",
+                         value="",
+                         cls="input-group-text",
+                         _for="newkey-value")
+                t.input_(value="",
+                         cls="form-control",
+                         name="newkey-value",
+                         placeholder="New value",
+                         type="text")
+                with t.button(cls="input-group-text bg-success",
+                              form="edit-form",
+                              type="submit"):
+                    _icon("plus")
+
+    return result
+
+
+def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
+    """
+    View of a single document to edit the information of the yaml file,
+    and maybe in the future to update the information.
+    """
     checks = papis.commands.doctor.registered_checks_names()
     errors = papis.commands.doctor.run(doc, checks)
     with t.html() as result:
@@ -311,101 +413,72 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                                  data_bs_dismiss="alert",
                                  aria_label="Close")
 
-                with _container():
-                    # urls block
-                    with _flex("between"):
-                        with _flex("begin"):
-                            t.a("@{}".format(doc["ref"]),
-                                href="#",
-                                cls="btn btn-outline-success")
-                        with _flex("center"):
-                            t.button("Submit to edit",
-                                     form="edit-form",
-                                     cls="btn btn-success",
-                                     type="submit")
-                        with _flex("end"):
-                            with t.div(cls="btn-group",
-                                       role="group",
-                                       aria_label=("List of external "
-                                                   "links to the document")):
-                                if "doi" in doc:
-                                    with t.a(href=("https://doi.org/{}"
-                                                   .format(doc["doi"])),
-                                             target="_blank",
-                                             cls="btn btn-outline-danger"):
-                                        _icon("check-circle")
-                                        t.span("doi")
-                                if "url" in doc:
-                                    with t.a(href="{}".format(doc["url"]),
-                                             target="_blank",
-                                             cls="btn btn-outline-danger"):
-                                        _icon("external-link")
-                                        t.span("url")
-                                with t.a(href=("https://duckduckgo.com/?q={}"
-                                               .format(urllib
-                                                       .parse
-                                                       .quote(papis.document
-                                                              .describe(doc),
-                                                              safe=""))),
-                                         target="_blank",
-                                         cls="btn btn-outline-danger"):
-                                    _icon("globe", namespace="fa-solid")
-                                    t.span("ddg")
+                with t.ul(cls="nav nav-tabs"):
 
-                    t.br()
+                    def _tab_element(content: str,
+                                     href: str,
+                                     active: bool = False) -> t.html_tag:
+                        with t.li(cls="active nav-item") as result:
+                            t.a(content,
+                                cls="nav-link" + (" active" if active else ""),
+                                aria_current="page",
+                                href=href,
+                                data_bs_toggle="tab")
+                        return result
 
-                    # the said form
-                    with t.form(method="POST",
-                                id="edit-form",
-                                action=("/library/{libname}/"
-                                        "document/ref:{doc[ref]}"
-                                        .format(doc=doc, libname=libname))):
-                        for key, val in doc.items():
-                            if isinstance(val, (list, dict)):
-                                continue
-                            with t.div(cls="input-group mb-3"):
-                                t.label(key,
-                                        cls="input-group-text",
-                                        _for=key)
-                                if key in input_types["textarea"]:
-                                    t.textarea(val,
-                                               cls="form-control",
-                                               placeholder=str(val),
-                                               name=key,
-                                               style="height: 100px")
-                                elif key in input_types["number"]:
-                                    t.input_(value=val,
-                                             cls="form-control",
-                                             name=key,
-                                             placeholder=str(val),
-                                             type="number")
-                                else:
-                                    t.input_(value=val,
-                                             cls="form-control",
-                                             name=key,
-                                             placeholder=str(val),
-                                             type="text")
+                    _tab_element("Form", "#main-form-tab", active=True)
+                    _tab_element("info.yaml", "#yaml-form-tab")
+                    _tab_element("Bibtex", "#bibtex-form-tab")
 
-                                with t.label(cls="input-group-text",
-                                             _for=key):
-                                    _icon("close")
-                        # end for
+                t.br()
 
-                        with t.div(cls="input-group mb-3"):
-                            t.input_(placeholder="New key",
-                                     name="newkey-name",
-                                     value="",
-                                     cls="input-group-text",
-                                     _for="newkey-value")
-                            t.input_(value="",
-                                     cls="form-control",
-                                     name="newkey-value",
-                                     placeholder="New value",
-                                     type="text")
-                            with t.button(cls="input-group-text bg-success",
-                                          form="edit-form",
-                                          type="submit"):
-                                _icon("plus")
+                with t.div(cls="tab-content"):
+                    with t.div(id="main-form-tab",
+                               role="tabpanel",
+                               aria_labelledby="main-form",
+                               cls="tab-pane fade show active"):
+                        _document_view_main_form(libname, doc)
+
+                    with t.div(id="yaml-form-tab",
+                               role="tabpanel",
+                               aria_labelledby="yaml-form",
+                               cls="tab-pane fade"):
+                        _yaml_id = "info-yaml-source"
+                        with t.form(id="yaml-form"):
+                            with open(doc.get_info_file()) as f:
+                                yaml_string = f.read()
+                                t.div(yaml_string,
+                                      id=_yaml_id,
+                                      width="100%",
+                                      height=100,
+                                      style="min-height: 500px",
+                                      cls="form-control")
+                        _script = """
+                            let editor = ace.edit("{}");
+                            editor.session.setMode("ace/mode/yaml");
+                        """.format(_yaml_id)
+                        t.script(tu.raw(_script),
+                                 charset="utf-8",
+                                 type="text/javascript")
+
+                    with t.div(id="bibtex-form-tab",
+                               role="tabpanel",
+                               aria_labelledby="bibtex-form",
+                               cls="tab-pane fade"):
+                        _bibtex_id = "bibtex-source"
+                        t.div(papis.bibtex.to_bibtex(doc),
+                              id=_bibtex_id,
+                              width="100%",
+                              height=100,
+                              style="min-height: 500px",
+                              cls="form-control")
+                        _script = """
+                            let bib_editor = ace.edit("{}");
+                            bib_editor.session.setMode("ace/mode/bibtex");
+                        """.format(_bibtex_id)
+                        t.script(tu.raw(_script),
+                                 charset="utf-8",
+                                 type="text/javascript")
 
     return result
 
