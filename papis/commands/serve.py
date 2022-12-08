@@ -93,6 +93,11 @@ def _header(pretitle: str, extra: Optional[t.html_tag] = None) -> t.html_tag:
                  charset="utf8",
                  src=papis.config.getstring("serve-jquery.dataTables-js"))
 
+        for src in papis.config.getlist("serve-ace-urls"):
+            t.script(type="text/javascript",
+                     charset="utf8",
+                     src=src)
+
         for href in papis.config.getlist("serve-user-css"):
             t.link(rel="stylesheet", type="text/css", href=href)
 
