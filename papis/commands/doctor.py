@@ -252,7 +252,7 @@ def html_codes_check(doc: papis.document.Document) -> List[Error]:
             if m:
                 results.append(Error(name=HTML_CODES_CHECK_NAME,
                                      path=folder or "",
-                                     msg=("Field '{}' contains html codes '{}'"
+                                     msg=("Field '{}' contains html codes {}"
                                           .format(key, m)),
                                      suggestion_cmd=("papis edit "
                                                      "--doc-folder {}"
