@@ -471,7 +471,7 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                             _icon("hashtag")
                             for tag in ensure_tags_list(tags):
                                 _tag(tag=tag, libname=libname)
-                    for i, fpath in enumerate(doc.get_files()):
+                    for fpath in doc.get_files():
                         with t.a(href=_file_server_path(fpath,
                                                         libfolder,
                                                         libname)):
