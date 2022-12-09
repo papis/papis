@@ -73,7 +73,7 @@ def _modal(body: HtmlGiver, id: str) -> t.html_tag:
 
 
 def _main_html_document(pretitle: str) -> t.html_tag:
-    with dominate.document() as result:
+    with dominate.document(title=None) as result:
         with result.head:
             _header(pretitle)
     return result
