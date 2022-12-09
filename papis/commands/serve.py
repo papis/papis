@@ -10,6 +10,7 @@ import cgi
 import collections
 
 import click
+import dominate
 import dominate.tags as t
 import dominate.util as tu
 
@@ -53,6 +54,11 @@ def _icon(name: str, namespace: str = "fa") -> t.html_tag:
     return t.i(cls=_fa(name, namespace=namespace))
 
 
+def _icon_span(icon_name: str, text: str) -> None:
+    _icon(icon_name)
+    t.span(text)
+
+
 def _container() -> t.html_tag:
     return t.div(cls="container")
 
@@ -64,6 +70,13 @@ def _modal(body: HtmlGiver, id: str) -> t.html_tag:
                 with t.div(cls="modal-body"):
                     body()
     return rst
+
+
+def _main_html_document(pretitle: str) -> t.html_tag:
+    with dominate.document() as result:
+        with result.head:
+            _header(pretitle)
+    return result
 
 
 def _header(pretitle: str, extra: Optional[t.html_tag] = None) -> t.html_tag:
@@ -405,9 +418,8 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
     """
     checks = papis.commands.doctor.registered_checks_names()
     errors = papis.commands.doctor.run(doc, checks)
-    with t.html() as result:
-        _header(doc["title"])
-        with t.body():
+    with _main_html_document(doc["title"]) as result:
+        with result.body:
             _navbar(libname=libname)
             with _container():
                 t.h3(doc["title"])

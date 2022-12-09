@@ -88,6 +88,14 @@ general_settings = {
     "serve-jquery.dataTables-js": ("https://cdn.datatables.net/"
                                    "v/bs5/dt-1.13.1/kt-2.8.0/"
                                    "sc-2.0.7/sb-1.4.0/datatables.min.js"),
+    "serve-katex-css": ("https://cdn.jsdelivr.net/npm/"
+                        "katex@0.16.4/dist/katex.min.css"),
+    "serve-katex-js": ("https://cdn.jsdelivr.net/npm/"
+                       "katex@0.16.4/dist/katex.min.js"),
+    "serve-katex-auto-render-js":
+    ("https://cdn.jsdelivr.net/npm/"
+     "katex@0.16.4/dist/contrib/auto-render.min.js"),
+
     "serve-ace-urls": [("https://cdnjs.cloudflare.com/ajax/libs/ace/"
                         "1.13.2/ace.min.js"),
                        ("https://cdnjs.cloudflare.com/ajax/libs/ace/"
