@@ -63,8 +63,8 @@ def _container() -> t.html_tag:
     return t.div(cls="container")
 
 
-def _modal(body: HtmlGiver, id: str) -> t.html_tag:
-    with t.div(cls="modal fade", tabindex="-1", id=id) as rst:
+def _modal(body: HtmlGiver, id_: str) -> t.html_tag:
+    with t.div(cls="modal fade", tabindex="-1", id=id_) as rst:
         with t.div(cls="modal-dialog"):
             with t.div(cls="modal-content"):
                 with t.div(cls="modal-body"):
@@ -391,9 +391,7 @@ def _document_view_main_form(libname: str,
         # the said form
         with t.form(method="POST",
                     id="edit-form",
-                    action=("/library/{libname}/"
-                            "document/ref:{doc[ref]}"
-                            .format(doc=doc, libname=libname))):
+                    action=doc_server_path(libname, doc)):
             for key, val in doc.items():
                 if isinstance(val, (list, dict)):
                     continue
@@ -566,13 +564,20 @@ def ensure_tags_list(tags: Union[str, List[str]]) -> List[str]:
     return TAGS_SPLIT_RX.split(tags)
 
 
+def doc_server_path(libname: str, doc: papis.document.Document) -> str:
+    """
+    The server path for a document, it might change in the future
+    """
+    # TODO: probably we should quote the ref (and later unquote)?
+    return "/library/{libname}/document/ref:{ref}".format(ref=doc["ref"],
+                                                          libname=libname)
+
+
 def _document_item(libname: str,
                    libfolder: str,
                    doc: papis.document.Document) -> t.html_tag:
 
-    doc_link = ("/library/{libname}/document/ref:{ref}"
-                .format(ref=doc["ref"],
-                        libname=libname))
+    doc_link = doc_server_path(libname, doc)
 
     with t.tr() as result:
         with t.td():
@@ -627,7 +632,7 @@ def _document_item(libname: str,
                                             href=doc["url"])
                         return result
 
-                    _modal(body=body, id=citations_id)
+                    _modal(body=body, id_=citations_id)
 
         with t.td():
             if doc.has("tags"):
@@ -901,6 +906,10 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_ROUTES(self,                     # noqa: N802
                   routes: List[Tuple[str, Any]]) -> None:
+        """
+        Performs the actions of the given routes and dispatches a 404
+        page if there is an error.
+        """
         try:
             for route, method in routes:
                 m = re.match(route, self.path)
@@ -941,6 +950,9 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.redirect(back_url)
 
     def do_POST(self) -> None:              # noqa: N802
+        """
+        HTTP POST route definitions
+        """
         routes = [
             ("^/library/?([^/]+)?/document/ref:(.*)$",
                 self.update_page_document),
@@ -948,6 +960,9 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.do_ROUTES(routes)
 
     def do_GET(self) -> None:               # noqa: N802
+        """
+        HTTP GET route definitions
+        """
         routes = [
             # html serving
             ("^/$",
