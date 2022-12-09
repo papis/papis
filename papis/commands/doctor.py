@@ -160,7 +160,7 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
         return [Error(name=REFS_CHECK_NAME,
                       path=folder or "",
                       msg=("Bad characters ({}) found in reference."
-                           .format(set(list(m)))),
+                           .format(set(m))),
                       suggestion_cmd=("papis edit --doc-folder {}"
                                       .format(folder)),
                       fix_action=_fix,
@@ -182,7 +182,7 @@ def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
     folder = doc.get_main_folder()
     results = []  # type: List[Error]
     for key in keys:
-        if doc[key] in DUPLICATED_KEYS_SEEN[key]:
+        if str(doc[key]) in DUPLICATED_KEYS_SEEN[key]:
             results.append(Error(name=DUPLICATED_KEYS_NAME,
                                  msg=("Key '{}' is duplicated ({})."
                                       .format(key, doc[key])),
@@ -252,7 +252,7 @@ def html_codes_check(doc: papis.document.Document) -> List[Error]:
             if m:
                 results.append(Error(name=HTML_CODES_CHECK_NAME,
                                      path=folder or "",
-                                     msg=("Field '{}' contains html codes '{}'"
+                                     msg=("Field '{}' contains html codes {}"
                                           .format(key, m)),
                                      suggestion_cmd=("papis edit "
                                                      "--doc-folder {}"
@@ -369,6 +369,6 @@ def cli(query: str,
             logger.warning("Fixing...")
             error.fix_action()
         if edit:
-            input("Press any key to edit...")
             if error.doc:
+            	input("Press any key to edit...")
                 edit_run(error.doc)
