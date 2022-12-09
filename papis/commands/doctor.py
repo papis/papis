@@ -160,7 +160,7 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
         return [Error(name=REFS_CHECK_NAME,
                       path=folder or "",
                       msg=("Bad characters ({}) found in reference."
-                           .format(set(list(m)))),
+                           .format(set(m))),
                       suggestion_cmd=("papis edit --doc-folder {}"
                                       .format(folder)),
                       fix_action=_fix,
