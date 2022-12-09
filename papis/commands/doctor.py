@@ -291,8 +291,8 @@ def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
 @click.option("-t", "--checks", "_checks",
               default=lambda: papis.config.getlist("doctor-default-checks"),
               multiple=True,
-              help=("Checks to run on every document, possible values: {}"
-                    .format(", ".join(registered_checks_names()))))
+              type=click.Choice(registered_checks_names()),
+              help=("Checks to run on every document."))
 @click.option("--json", "_json",
               default=False, is_flag=True,
               help="Output the results in json format")

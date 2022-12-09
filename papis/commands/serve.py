@@ -275,6 +275,7 @@ def _file_server_path(localpath: str,
             .format(localpath.replace(libfolder + "/", ""),
                     libname=libname))
 
+
 def _doc_files_icons(files: List[str],
                      libname: str,
                      libfolder: str) -> t.html_tag:
