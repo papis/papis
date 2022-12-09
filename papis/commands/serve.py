@@ -118,52 +118,47 @@ document.addEventListener('DOMContentLoaded', () => {
              type="text/javascript")
 
 
-def _header(pretitle: str, extra: Optional[t.html_tag] = None) -> t.html_tag:
-    head = t.head()
-    with head:
-        t.title("{} Papis web".format(pretitle))
-        t.meta(name="apple-mobile-web-app-capable", content="yes")
-        t.meta(charset="UTF-8")
-        t.meta(name="apple-mobile-web-app-capable", content="yes")
-        t.meta(name="viewport", content="width=device-width, initial-scale=1")
+def _header(pretitle: str) -> None:
+    t.title("{} Papis web".format(pretitle))
+    t.meta(name="apple-mobile-web-app-capable", content="yes")
+    t.meta(charset="UTF-8")
+    t.meta(name="apple-mobile-web-app-capable", content="yes")
+    t.meta(name="viewport", content="width=device-width, initial-scale=1")
 
-        for awesome in papis.config.getlist("serve-font-awesome-css"):
-            t.link(rel="stylesheet",
-                   href=awesome,
-                   crossorigin="anonymous",
-                   referrerpolicy="no-referrer")
-        t.link(href=papis.config.getstring("serve-bootstrap-css"),
-               rel="stylesheet",
-               crossorigin="anonymous")
-        t.script(type="text/javascript",
-                 src=papis.config.getstring("serve-bootstrap-js"),
-                 crossorigin="anonymous")
-        t.script(type="text/javascript",
-                 src=papis.config.getstring("serve-jquery-js"))
+    for awesome in papis.config.getlist("serve-font-awesome-css"):
         t.link(rel="stylesheet",
-               type="text/css",
-               href=papis.config.getstring("serve-jquery.dataTables-css"))
+               href=awesome,
+               crossorigin="anonymous",
+               referrerpolicy="no-referrer")
+
+    t.link(href=papis.config.getstring("serve-bootstrap-css"),
+           rel="stylesheet",
+           crossorigin="anonymous")
+    t.script(type="text/javascript",
+             src=papis.config.getstring("serve-bootstrap-js"),
+             crossorigin="anonymous")
+    t.script(type="text/javascript",
+             src=papis.config.getstring("serve-jquery-js"))
+    t.link(rel="stylesheet",
+           type="text/css",
+           href=papis.config.getstring("serve-jquery.dataTables-css"))
+    t.script(type="text/javascript",
+             charset="utf8",
+             src=papis.config.getstring("serve-jquery.dataTables-js"))
+
+    _katex_header()
+
+    for src in papis.config.getlist("serve-ace-urls"):
         t.script(type="text/javascript",
                  charset="utf8",
-                 src=papis.config.getstring("serve-jquery.dataTables-js"))
+                 src=src)
 
-        _katex_header()
 
-        for src in papis.config.getlist("serve-ace-urls"):
-            t.script(type="text/javascript",
-                     charset="utf8",
-                     src=src)
+    for href in papis.config.getlist("serve-user-css"):
+        t.link(rel="stylesheet", type="text/css", href=href)
 
-        for href in papis.config.getlist("serve-user-css"):
-            t.link(rel="stylesheet", type="text/css", href=href)
-
-        for src in papis.config.getlist("serve-user-js"):
-            t.script(type="text/javascript", src=src)
-
-    if extra is not None:
-        head.add(extra)
-
-    return head
+    for src in papis.config.getlist("serve-user-js"):
+        t.script(type="text/javascript", src=src)
 
 
 def _navbar(libname: str) -> t.html_tag:
