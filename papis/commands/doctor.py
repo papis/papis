@@ -368,7 +368,6 @@ def cli(query: str,
         if fix:
             logger.warning("Fixing...")
             error.fix_action()
-        if edit:
-            if error.doc:
-            	input("Press any key to edit...")
-                edit_run(error.doc)
+        if edit and error.doc:
+            input("Press any key to edit...")
+            edit_run(error.doc)
