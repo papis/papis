@@ -240,9 +240,8 @@ def _index(pretitle: str,
            libfolder: str,
            query: str,
            documents: List[papis.document.Document]) -> t.html_tag:
-    with t.html() as result:
-        _header(pretitle)
-        with t.body():
+    with _main_html_document(pretitle) as result:
+        with result.body:
             _navbar(libname=libname)
             with _container():
                 with t.h1("Papis library: "):
@@ -284,9 +283,8 @@ def _tag(tag: str, libname: str) -> t.html_tag:
 
 
 def _tags(pretitle: str, libname: str, tags: Dict[str, int]) -> t.html_tag:
-    with t.html() as result:
-        _header(pretitle)
-        with t.body():
+    with _main_html_document(pretitle) as result:
+        with result.body:
             _navbar(libname=libname)
             with _container():
                 with t.h1("TAGS"):
@@ -301,9 +299,8 @@ def _tags(pretitle: str, libname: str, tags: Dict[str, int]) -> t.html_tag:
 
 
 def _libraries(libname: str) -> t.html_tag:
-    with t.html() as result:
-        _header("Libraries")
-        with t.body():
+    with _main_html_document("Libraries") as result:
+        with result.body:
             _navbar(libname=libname)
             with _container():
                 t.h1("Library selection")
