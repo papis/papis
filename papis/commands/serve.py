@@ -79,6 +79,45 @@ def _main_html_document(pretitle: str) -> t.html_tag:
     return result
 
 
+def _katex_header() -> t.html_tag:
+    """
+    Everything connected to Katex
+    """
+    t.link(rel="stylesheet",
+           type="text/css",
+           href=papis.config.getstring("serve-katex-css"))
+    t.script(type="text/javascript",
+             charset="utf8",
+             defer=True,
+             src=papis.config.getstring("serve-katex-js"))
+    t.script(type="text/javascript",
+             charset="utf8",
+             defer=True,
+             src=papis.config.getstring("serve-katex-auto-render-js"))
+    katex_script = r"""
+document.addEventListener('DOMContentLoaded', () => {
+    renderMathInElement(document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "$", right: "$", display: false},
+            {left: "\\(", right: "\\)", display: false},
+            {left: "\\begin{equation}", right: "\\end{equation}",
+             display: true},
+            {left: "\\begin{align}", right: "\\end{align}", display: true},
+            {left: "\\begin{alignat}", right: "\\end{alignat}", display: true},
+            {left: "\\begin{gather}", right: "\\end{gather}", display: true},
+            {left: "\\begin{CD}", right: "\\end{CD}", display: true},
+            {left: "\\[", right: "\\]", display: true}
+        ],
+    });
+});
+
+        """
+    t.script(tu.raw(katex_script),
+             charset="utf8",
+             type="text/javascript")
+
+
 def _header(pretitle: str, extra: Optional[t.html_tag] = None) -> t.html_tag:
     head = t.head()
     with head:
@@ -107,6 +146,8 @@ def _header(pretitle: str, extra: Optional[t.html_tag] = None) -> t.html_tag:
         t.script(type="text/javascript",
                  charset="utf8",
                  src=papis.config.getstring("serve-jquery.dataTables-js"))
+
+        _katex_header()
 
         for src in papis.config.getlist("serve-ace-urls"):
             t.script(type="text/javascript",
@@ -460,7 +501,8 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
 
                     _tab_element(lambda: t.span("Form"),
                                  "#main-form-tab", active=True)
-                    _tab_element(lambda: t.span("info.yaml"), "#yaml-form-tab")
+                    _tab_element(lambda: _icon_span("circle-info", "info.yaml"),
+                                 "#yaml-form-tab")
                     _tab_element(lambda: t.span("Bibtex"), "#bibtex-form-tab")
 
                 t.br()
