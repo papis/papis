@@ -456,6 +456,7 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
     """
     checks = papis.commands.doctor.registered_checks_names()
     errors = papis.commands.doctor.run(doc, checks)
+    libfolder = papis.config.get_lib_from_name(libname).paths[0]
     with _main_html_document(doc["title"]) as result:
         with result.body:
             _navbar(libname=libname)
@@ -464,12 +465,18 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                 t.h5("{:.80}, {}".format(doc["author"], doc["year"]),
                      style="font-style: italic")
                 tags = doc["tags"]
-                if tags:
-                    with t.p():
+                with _flex("between"):
+                    if tags:
                         with t.span(cls=PAPIS_TAG_CLASS):
                             _icon("hashtag")
                             for tag in ensure_tags_list(tags):
                                 _tag(tag=tag, libname=libname)
+                    for i, fpath in enumerate(doc.get_files()):
+                        with t.a(href=_file_server_path(fpath,
+                                                        libfolder,
+                                                        libname)):
+                            _file_icon(fpath)
+                            t.span(os.path.basename(fpath))
                 for error in errors:
                     with t.div(cls=("alert alert-danger "
                                     "alert-dismissible fade show"),
