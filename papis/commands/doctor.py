@@ -369,6 +369,6 @@ def cli(query: str,
             logger.warning("Fixing...")
             error.fix_action()
         if edit:
-            input("Press any key to edit...")
             if error.doc:
+            	input("Press any key to edit...")
                 edit_run(error.doc)
