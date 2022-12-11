@@ -482,7 +482,8 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
 
                 with t.ul(cls="nav nav-tabs"):
 
-                    def _tab_element(content: Callable[[], t.html_tag],
+                    def _tab_element(content: Callable[..., t.html_tag],
+                                     args: List[Any],
                                      href: str,
                                      active: bool = False) -> t.html_tag:
                         with t.li(cls="active nav-item") as result:
@@ -492,16 +493,19 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                                      aria_current="page",
                                      href=href,
                                      data_bs_toggle="tab"):
-                                content()
+                                content(*args)
                         return result
 
-                    _tab_element(lambda: t.span("Form"),
+                    _tab_element(t.span,
+                                 ["Form"],
                                  "#main-form-tab", active=True)
-                    _tab_element(lambda: _icon_span("circle-info", "info.yaml"),
+                    _tab_element(_icon_span,
+                                 ["circle-info", "info.yaml"],
                                  "#yaml-form-tab")
-                    _tab_element(lambda: t.span("Bibtex"), "#bibtex-form-tab")
+                    _tab_element(t.span, ["Bibtex"], "#bibtex-form-tab")
                     for i, fpath in enumerate(doc.get_files()):
-                        _tab_element(lambda: _file_icon(fpath),
+                        _tab_element(_file_icon,
+                                     [fpath],
                                      "#file-tab-{}".format(i))
 
                 t.br()
@@ -561,7 +565,7 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                                                                 libfolder,
                                                                 libname)
                         _file_path = urllib.parse.quote(_unquoted_file_path,
-                                                        safe='')
+                                                        safe="")
                         viewer_path = ("/static/pdfjs/web/viewer.html?file={}"
                                        .format(_file_path))
 
