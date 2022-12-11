@@ -555,18 +555,34 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                                  type="text/javascript")
 
                     for i, fpath in enumerate(doc.get_files()):
-                        _file_path = urllib.parse.quote(
-                            _file_server_path(fpath,
-                                              libfolder,
-                                              libname),
-                            safe='')
+                        if not fpath.endswith("pdf"):
+                            continue
+                        _unquoted_file_path = _file_server_path(fpath,
+                                                                libfolder,
+                                                                libname)
+                        _file_path = urllib.parse.quote(_unquoted_file_path,
+                                                        safe='')
                         viewer_path = ("/static/pdfjs/web/viewer.html?file={}"
                                        .format(_file_path))
-                        _icon("out")
+
                         with t.div(id="file-tab-{}".format(i),
                                    role="tabpanel",
                                    aria_labelledby="bibtex-form",
                                    cls="tab-pane fade"):
+
+                            with _flex("center"):
+                                with t.div(cls="btn-group", role="group"):
+                                    with t.a(href=viewer_path,
+                                             cls="btn btn-outline-success",
+                                             target="_blank"):
+                                        _icon_span("square-arrow-up-right",
+                                                   "Open in new window")
+                                    with t.a(href=_unquoted_file_path,
+                                             cls="btn btn-outline-success",
+                                             target="_blank"):
+                                        _icon_span("download",
+                                                   "Download")
+
                             t.iframe(src=viewer_path,
                                      width="100%",
                                      height="800")
