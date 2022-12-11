@@ -588,6 +588,7 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                                                    "Download")
 
                             t.iframe(src=viewer_path,
+                                     style="resize: vertical",
                                      width="100%",
                                      height="800")
     return result
