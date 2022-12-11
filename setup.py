@@ -117,6 +117,9 @@ setup(
             "mypy>=0.7",
             "types-PyYAML",
             "types-requests",
+            "flake8",
+            "pylint",
+            "python-lsp-server",
         ],
     ),
     description=(
