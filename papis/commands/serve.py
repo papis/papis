@@ -153,7 +153,6 @@ def _header(pretitle: str) -> None:
                  charset="utf8",
                  src=src)
 
-
     for href in papis.config.getlist("serve-user-css"):
         t.link(rel="stylesheet", type="text/css", href=href)
 
@@ -501,6 +500,9 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                     _tab_element(lambda: _icon_span("circle-info", "info.yaml"),
                                  "#yaml-form-tab")
                     _tab_element(lambda: t.span("Bibtex"), "#bibtex-form-tab")
+                    for i, fpath in enumerate(doc.get_files()):
+                        _tab_element(lambda: _file_icon(fpath),
+                                     "#file-tab-{}".format(i))
 
                 t.br()
 
@@ -552,6 +554,22 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                                  charset="utf-8",
                                  type="text/javascript")
 
+                    for i, fpath in enumerate(doc.get_files()):
+                        _file_path = urllib.parse.quote(
+                            _file_server_path(fpath,
+                                              libfolder,
+                                              libname),
+                            safe='')
+                        viewer_path = ("/static/pdfjs/web/viewer.html?file={}"
+                                       .format(_file_path))
+                        _icon("out")
+                        with t.div(id="file-tab-{}".format(i),
+                                   role="tabpanel",
+                                   aria_labelledby="bibtex-form",
+                                   cls="tab-pane fade"):
+                            t.iframe(src=viewer_path,
+                                     width="100%",
+                                     height="800")
     return result
 
 
@@ -812,7 +830,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     def page_document(self, libname: str, ref: str) -> None:
         docs = papis.api.get_documents_in_lib(libname, ref)
         if len(docs) > 1:
-            raise Exception("More than one document matched ref '{}'".format(ref))
+            raise Exception("More than one document matched ref '{}'"
+                            .format(ref))
         if not docs:
             raise Exception("No document found with ref '{}'".format(ref))
 
@@ -949,6 +968,27 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         back_url = self.headers.get("Referer", "/library")
         self.redirect(back_url)
 
+    def serve_static(self, static_path: str, params: str) -> None:
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            "static",
+                            urllib.parse.unquote_plus(static_path))
+        if os.path.exists(path):
+            self._ok()
+            if path.endswith("svg"):
+                self.send_header("Content-Type", "image/svg+xml")
+            elif path.endswith("pdf"):
+                self.send_header("Content-Type", "application/pdf")
+            elif path.endswith("png"):
+                self.send_header("Content-Type", "image/png")
+            elif path.endswith("gif"):
+                self.send_header("Content-Type", "image/gif")
+            self.end_headers()
+            with open(path, "rb") as f:
+                self.wfile.write(f.read())
+                self.wfile.flush()
+        else:
+            raise Exception("File {} does not exist".format(path))
+
     def do_POST(self) -> None:              # noqa: N802
         """
         HTTP POST route definitions
@@ -983,6 +1023,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.send_local_document_file),
             ("^/library/([^/]+)/clear_cache$",
                 self.clear_cache),
+            ("^/static/([^?]*)(.*)$",
+                self.serve_static),
             ("^/api/library$",
                 self.get_libraries),
 
