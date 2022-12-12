@@ -688,42 +688,6 @@ def _document_item(libname: str,
                     _doc_files_icons(files=doc.get_files(),
                                      libname=libname,
                                      libfolder=libfolder)
-
-                if doc.has("citations"):
-                    citations_id = "citatios{}".format(id(doc))
-                    with t.a():
-                        t.attr(data_bs_toggle="modal",
-                               cls="",
-                               aria_expanded="false",
-                               href="#" + citations_id,
-                               role="button")
-                        _icon("list")
-                        t.span("citations")
-
-                    def body() -> t.html_tag:
-                        with t.ul(cls="list-group") as result:
-                            for cit in doc["citations"]:
-                                with t.li():
-                                    t.attr(cls=("list-group-item"))
-                                    for key in ("title",
-                                                "author",
-                                                "year",
-                                                "publisher"):
-                                        if key in cit:
-                                            t.span(cit[key])
-                                    if "doi" in cit:
-                                        t.a("doi",
-                                            target="_blank",
-                                            href=("https://doi.org/{}"
-                                                  .format(cit["doi"])))
-                                    if "url" in cit:
-                                        t.a("url",
-                                            target="_blank",
-                                            href=doc["url"])
-                        return result
-
-                    _modal(body=body, id_=citations_id)
-
         with t.td():
             if doc.has("tags"):
                 with t.span(cls=PAPIS_TAG_CLASS):
