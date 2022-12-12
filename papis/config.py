@@ -106,6 +106,13 @@ general_settings = {
 
     "serve-empty-query-get-all-documents": True,
 
+    # timeline options
+    "serve-enable-timeline": False,
+    "serve-timeline-js": ("https://cdn.knightlab.com/libs/timeline3/"
+                          "latest/js/timeline.js"),
+    "serve-timeline-css": ("https://cdn.knightlab.com/libs/timeline3/"
+                           "latest/css/timeline.css"),
+
     "browse-key": "url",
     "browse-query-format": "{doc[title]} {doc[author]}",
     "search-engine": "https://duckduckgo.com",

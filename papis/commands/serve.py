@@ -148,6 +148,14 @@ def _header(pretitle: str) -> None:
 
     _katex_header()
 
+    if papis.config.getboolean("serve-enable-timeline"):
+        t.link(rel="stylesheet",
+               type="text/css",
+               href=papis.config.getstring("serve-timeline-css"))
+        t.script(type="text/javascript",
+                 charset="utf8",
+                 src=papis.config.getstring("serve-timeline-js"))
+
     for src in papis.config.getlist("serve-ace-urls"):
         t.script(type="text/javascript",
                  charset="utf8",
@@ -229,6 +237,28 @@ def _jquery_table(libname: str,
     return result
 
 
+def _timeline(documents: List[papis.document.Document],
+              libname: str) -> None:
+    t.div(id="timeline", style="width: 100%; height: 300px;")
+
+    def _make_text(d: papis.document.Document) -> str:
+        _text = papis.document.describe(d)
+        _href = doc_server_path(libname, d)
+        return r"<a href='{}'>{}</a>".format(_href, _text)
+
+    json_data = [{"text": {"text": _make_text(d)},
+                  "start_date": {"year": d["year"]}}
+                 for d in documents if d.has("year")]
+    t.script(tu.raw("""
+    let timeline =  new TL.Timeline('timeline',
+                                    {{'events': {} }},
+                                    {{
+                                      timenav_height_percentage: 80,
+                                      width: "100%"
+                                    }})
+    """.format(json_data)))
+
+
 def _index(pretitle: str,
            libname: str,
            libfolder: str,
@@ -263,6 +293,8 @@ def _index(pretitle: str,
                             _icon("database")
                             t.span("Ups! I didn't find {}".format(query))
                 else:
+                    if papis.config.getboolean("serve-enable-timeline"):
+                        _timeline(documents, libname)
                     _jquery_table(libname=libname,
                                   libfolder=libfolder,
                                   documents=documents)
