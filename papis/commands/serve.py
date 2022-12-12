@@ -220,10 +220,18 @@ def _jquery_table(libname: str,
                   documents: List[papis.document.Document]) -> t.html_tag:
     script = """
     $(document).ready(function(){
-        $('#pub_table').DataTable({'bSort': false});
+        $('#pub_table').DataTable({
+            'bSort': false,
+            'language': {
+                'info': "Page _PAGE_ of _PAGES_",
+                'search': 'Filter results:'
+            }
+        });
     });
     """
-    with t.table(border="1", cls="display", id="pub_table") as result:
+    with t.table(border="1",
+                 style="width: '100%'",
+                 cls="display", id="pub_table") as result:
         with t.thead(style="display:none"):
             with t.tr(style="text-align: right;"):
                 t.th("info")
