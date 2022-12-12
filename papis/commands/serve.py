@@ -255,7 +255,10 @@ def _timeline(documents: List[papis.document.Document],
         return r"<a href='{}'>{}</a>".format(_href, _text)
 
     json_data = [{"text": {"text": _make_text(d)},
-                  "start_date": {"year": d["year"]}}
+                  "start_date": {"year": d["year"],
+                                 "month": d["month"]
+                                 if isinstance(d["month"], int)
+                                 else 1}}
                  for d in documents if d.has("year")]
     t.script(tu.raw("""
     let timeline =  new TL.Timeline('timeline',
