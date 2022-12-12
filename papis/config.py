@@ -107,6 +107,7 @@ general_settings = {
     "serve-empty-query-get-all-documents": True,
 
     # timeline options
+    "serve-timeline-max": 500,
     "serve-enable-timeline": False,
     "serve-timeline-js": ("https://cdn.knightlab.com/libs/timeline3/"
                           "latest/js/timeline.js"),

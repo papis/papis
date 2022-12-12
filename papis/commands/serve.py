@@ -50,13 +50,25 @@ def _flex(where: str, cls: str = "", **kwargs: Any) -> t.html_tag:
     return t.div(cls=cls + " d-flex justify-content-" + where, **kwargs)
 
 
+def _alert(node: t.html_tag, type_: str, **kwargs: Any) -> t.html_tag:
+    with node(cls=("alert alert-{} ".format(type_)
+                   + "alert-dismissible fade show"),
+              role="alert",
+              **kwargs) as result:
+        t.button(type="button",
+                 cls="btn-close",
+                 data_bs_dismiss="alert",
+                 aria_label="Close")
+    return result
+
+
 def _icon(name: str, namespace: str = "fa") -> t.html_tag:
     return t.i(cls=_fa(name, namespace=namespace))
 
 
-def _icon_span(icon_name: str, text: str) -> None:
+def _icon_span(icon_name: str, text: str, *fmt: Any, **kfmt: Any) -> None:
     _icon(icon_name)
-    t.span(text)
+    t.span(text.format(*fmt, **kfmt))
 
 
 def _container() -> t.html_tag:
@@ -296,16 +308,24 @@ def _index(pretitle: str,
                 # Add a couple of friendlier messages
                 if not documents:
                     if query == QUERY_PLACEHOLDER:
-                        with t.h4(cls="alert alert-success"):
-                            _icon("search")
-                            t.span("Place your query")
+                        with _alert(t.h4, "success"):
+                            _icon_span("search", "Place your query")
                     else:
-                        with t.h4(cls="alert alert-warning"):
-                            _icon("database")
-                            t.span("Ups! I didn't find {}".format(query))
+                        with _alert(t.h4, "warning"):
+                            _icon_span("database",
+                                       "Ups! I didn't find for '{}'", query)
                 else:
                     if papis.config.getboolean("serve-enable-timeline"):
-                        _timeline(documents, libname)
+                        if (len(documents)
+                            < (papis.config.getint("serve-timeline-max")
+                               or 500)):
+                            _timeline(documents, libname)
+                        else:
+                            with _alert(t.p, "warning"):
+                                _icon_span("warning",
+                                           "Too many documents ({}) for "
+                                           "a timeline to be useful",
+                                           len(documents))
                     _jquery_table(libname=libname,
                                   libfolder=libfolder,
                                   documents=documents)
@@ -487,15 +507,8 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                                                         libname)):
                             _file_icon(fpath)
                 for error in errors:
-                    with t.div(cls=("alert alert-danger "
-                                    "alert-dismissible fade show"),
-                               role="alert"):
-                        _icon("stethoscope")
-                        t.span(error.msg)
-                        t.button(type="button",
-                                 cls="btn-close",
-                                 data_bs_dismiss="alert",
-                                 aria_label="Close")
+                    with _alert(t.div, "danger"):
+                        _icon_span("stethoscope", error.msg)
 
                 with t.ul(cls="nav nav-tabs"):
 
@@ -508,6 +521,7 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                                                        if active
                                                        else ""),
                                      aria_current="page",
+                                     id="selector-" + href.replace("#", ""),
                                      href=href,
                                      data_bs_toggle="tab"):
                                 content(*args)
