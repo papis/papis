@@ -241,7 +241,7 @@ def _jquery_table(libname: str,
                 _document_item(libname=libname,
                                libfolder=libfolder,
                                doc=doc)
-        t.script(script)
+        t.script(tu.raw(script))
     return result
 
 
@@ -397,33 +397,7 @@ def _document_view_main_form(libname: str,
                          cls="btn btn-success",
                          type="submit")
             with _flex("end"):
-                with t.div(cls="btn-group",
-                           role="group",
-                           aria_label=("List of external "
-                                       "links to the document")):
-                    if "doi" in doc:
-                        with t.a(href=("https://doi.org/{}"
-                                       .format(doc["doi"])),
-                                 target="_blank",
-                                 cls="btn btn-outline-danger"):
-                            _icon("check-circle")
-                            t.span("doi")
-                    if "url" in doc:
-                        with t.a(href="{}".format(doc["url"]),
-                                 target="_blank",
-                                 cls="btn btn-outline-danger"):
-                            _icon("external-link")
-                            t.span("url")
-                    with t.a(href=("https://duckduckgo.com/?q={}"
-                                   .format(urllib
-                                           .parse
-                                           .quote(papis.document
-                                                  .describe(doc),
-                                                  safe=""))),
-                             target="_blank",
-                             cls="btn btn-outline-danger"):
-                        _icon("globe", namespace="fa-solid")
-                        t.span("ddg")
+                _links_btn_group(doc, small=False)
 
         t.br()
 
@@ -508,7 +482,6 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                                                         libfolder,
                                                         libname)):
                             _file_icon(fpath)
-                            t.span(os.path.basename(fpath))
                 for error in errors:
                     with t.div(cls=("alert alert-danger "
                                     "alert-dismissible fade show"),
@@ -652,6 +625,44 @@ def doc_server_path(libname: str, doc: papis.document.Document) -> str:
                                                           libname=libname)
 
 
+def _links_btn_group(doc: papis.document.Document, small: bool = True) -> None:
+    with t.div(cls="btn-group", role="group"):
+
+        def url_link(icon: str, title: str, href: str) -> None:
+            with t.a(href=href,
+                     cls="btn btn-outline-primary" + (" btn-sm"
+                                                      if small
+                                                      else ""),
+                     target="_blank"):
+                _icon_span(icon, title)
+
+        if doc.has("url"):
+            url_link("external-link", "url", doc["url"])
+        if doc.has("doi"):
+            quoted_doi = urllib.parse.quote(doc["doi"], safe="")
+            url_link("check-circle", "doi",
+                     "https://doi.org/{}".format(doc["doi"]))
+            url_link("database", "ads",
+                     "https://ui.adsabs.harvard.edu/search/q=doi:{}"
+                     .format(quoted_doi))
+            if not doc.has("files"):
+                url_link("lock-open", "unp",
+                         "https://unpaywall.org/{}".format(doc["doi"]))
+        else:
+            quoted_title = urllib.parse.quote(doc["title"])
+            url_link("crosshairs", "xref",
+                     "https://search.crossref.org/?q={}&from_ui=yes"
+                     .format(quoted_title))
+            url_link("database", "ads",
+                     "https://ui.adsabs.harvard.edu/search/q=title:{}"
+                     .format(quoted_title))
+
+        url_link("globe", "ddg",
+                 "https://duckduckgo.com/?q={}"
+                 .format(urllib.parse.quote(papis.document.describe(doc),
+                                            safe="")))
+
+
 def _document_item(libname: str,
                    libfolder: str,
                    doc: papis.document.Document) -> t.html_tag:
@@ -724,40 +735,14 @@ def _document_item(libname: str,
             if doc.has("year"):
                 t.span(doc["year"], cls="badge bg-primary papis-year")
             else:
-                t.span("????", cls="badge bg-danger papis-year")
-
+                t.span("!!!!", cls="badge bg-danger papis-year")
+            t.br()
             if doc.has("ref"):
                 with t.a(cls="badge bg-success", href=doc_link):
                     _icon("at")
                     t.span(doc["ref"])
-
-            with t.ul(cls="list-group list-group-horizontal"):
-
-                def url_link(title: str, href: str) -> t.html_tag:
-                    return t.a(title,
-                               href=href,
-                               cls="list-group-item list-group-item-action",
-                               target="_blank")
-
-                if doc.has("url"):
-                    url_link("url", doc["url"])
-                if doc.has("doi"):
-                    quoted_doi = (urllib
-                                  .parse
-                                  .quote(":" + doc["doi"], safe=""))
-                    url_link("doi",
-                             "https://doi.org/{}".format(doc["doi"]))
-                    url_link("ads",
-                             "https://ui.adsabs.harvard.edu/search/q=doi{}"
-                             .format(quoted_doi))
-                else:
-                    quoted_title = urllib.parse.quote(doc["title"])
-                    url_link("xref",
-                             "https://search.crossref.org/?q={}&from_ui=yes"
-                             .format(quoted_title))
-                    url_link("ads",
-                             "https://ui.adsabs.harvard.edu/search/q=title:{}"
-                             .format(quoted_title))
+            t.br()
+            _links_btn_group(doc)
 
     return result
 
