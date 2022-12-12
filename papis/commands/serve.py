@@ -465,6 +465,7 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
     libfolder = papis.config.get_lib_from_name(libname).paths[0]
     with _main_html_document(doc["title"]) as result:
         with result.body:
+            _click_tab_selector_link_in_url()
             _navbar(libname=libname)
             with _container():
                 t.h3(doc["title"])
@@ -616,11 +617,24 @@ def ensure_tags_list(tags: Union[str, List[str]]) -> List[str]:
     return TAGS_SPLIT_RX.split(tags)
 
 
+def _click_tab_selector_link_in_url() -> None:
+    t.script(tu.raw("""
+    window.addEventListener('load', () => {
+        try {
+            let url = window.location.href.split('#').pop();
+            document.querySelector('#selector-'+url).click();
+        } catch {}
+    });
+    """))
+
+
 def doc_server_path(libname: str, doc: papis.document.Document) -> str:
     """
     The server path for a document, it might change in the future
     """
     # TODO: probably we should quote the ref (and later unquote)?
+    if not doc["ref"]:
+        return "#"
     return "/library/{libname}/document/ref:{ref}".format(ref=doc["ref"],
                                                           libname=libname)
 
