@@ -252,37 +252,47 @@ def run(verbose: bool,
     logging.basicConfig(level=getattr(logging, log), handlers=[handler])
     logger = logging.getLogger("default")
 
+    # NOTE: order of the configurations is intentional based on priority
+    #
+    #   4. default hardcoded settings in `papis/config.py`
+    #   3. global papis configuration file, e.g. `~/.config/papis/config`
+    #   2. library local configuration file, e.g. `LIBDIR/.config`
+    #   1. command-line arguments, e.g. `--set opentool firefox`
+
+    # read in configuration file
     if config:
         papis.config.set_config_file(config)
         papis.config.reset_configuration()
 
-    for pair in set_list:
-        logger.debug("Setting '%s' to '%s'", *pair)
-        papis.config.set(pair[0], pair[1])
-
+    # read in configuration from current library
     if pick_lib:
-        _picked_libs = papis.pick.pick(papis.api.get_libraries())
-        if _picked_libs:
-            lib = _picked_libs[0]
+        picked_libs = papis.pick.pick(papis.api.get_libraries())
+        if picked_libs:
+            lib = picked_libs[0]
 
     papis.config.set_lib_from_name(lib)
     library = papis.config.get_lib()
 
     if not library.paths:
-        raise Exception("Library '{0}' does not have any existing folders"
-                        " attached to it, please define and create the paths"
-                        .format(lib))
+        raise RuntimeError(
+            "Library '{}' does not have any existing folders attached to it, "
+            "please define and create the paths"
+            .format(lib))
 
+    # Now the library should be set, let us check if there is a
+    # local configuration file there, and if there is one, then
+    # merge its contents
+    local_config_file = papis.config.getstring("local-config-file")
     for path in library.paths:
-        # Now the library should be set, let us check if there is a
-        # local configuration file there, and if there is one, then
-        # merge its contents
-        local_config_file = os.path.expanduser(
-            os.path.join(path,
-                         papis.config.getstring("local-config-file")))
+        local_config_path = os.path.expanduser(os.path.join(path, local_config_file))
         papis.config.merge_configuration_from_path(
-            local_config_file,
+            local_config_path,
             papis.config.get_configuration())
+
+    # read in configuration from command-line
+    for pair in set_list:
+        logger.debug("Setting '%s' to '%s'", *pair)
+        papis.config.set(pair[0], pair[1])
 
     if clear_cache:
         papis.database.get().clear()
