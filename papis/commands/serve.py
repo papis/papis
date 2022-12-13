@@ -674,7 +674,7 @@ def _links_btn_group(doc: papis.document.Document, small: bool = True) -> None:
             url_link("check-circle", "doi",
                      "https://doi.org/{}".format(doc["doi"]))
             url_link("database", "ads",
-                     "https://ui.adsabs.harvard.edu/search/q=doi:{}"
+                     "https://ui.adsabs.harvard.edu/abs/{}"
                      .format(quoted_doi))
             if not doc.has("files"):
                 url_link("lock-open", "unp",
