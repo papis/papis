@@ -137,6 +137,15 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
     return _on_finish
 
 
+def _disable_color(color: str = "auto") -> bool:
+    return (
+        color == "no"
+        or (color == "auto" and not sys.stdout.isatty())
+        # NOTE: https://no-color.org/
+        or (color == "auto" and "NO_COLOR" in os.environ)
+        )
+
+
 @click.group(
     cls=MultiCommand,
     invoke_without_command=True)
@@ -163,7 +172,7 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
     "--config",
     help="Configuration file to use",
     type=click.Path(exists=True),
-    default=None,)
+    default=None)
 @click.option(
     "--pick-lib",
     help="Pick library to use",
@@ -179,7 +188,7 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
     type=(str, str),
     multiple=True,
     help="Set key value, e.g., "
-         "--set info-name information.yaml  --set opentool evince",)
+         "--set info-name information.yaml --set opentool evince")
 @click.option(
     "--color",
     type=click.Choice(["always", "auto", "no"]),
@@ -224,7 +233,7 @@ def run(verbose: bool,
         atexit.register(generate_profile_writing_function(profiler, profile))
 
     import colorama
-    if color == "no" or (color == "auto" and not sys.stdout.isatty()):
+    if _disable_color(color):
         # Turn off colorama (strip escape sequences from the output)
         colorama.init(strip=True)
     else:
@@ -239,6 +248,7 @@ def run(verbose: bool,
                   + ":"
                   + "%(message)s"
                   )
+
     if verbose:
         log = "DEBUG"
         log_format = "%(relativeCreated)d-{}".format(log_format)
