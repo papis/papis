@@ -66,6 +66,11 @@ general_settings = {
     "doctor-keys-exist-keys": ["title", "author", "ref"],
     "doctor-duplicated-keys-keys": ["ref"],
     "doctor-html-codes-keys": ["title", "author", "abstract", "journal"],
+    "doctor-key-type-check-keys": [("year", "int"),
+                                   ("month", "int"),
+                                   ("files", "list"),
+                                   ("notes", "str"),
+                                   ("author_list", "list")],
 
     # papis-serve configuration
     "serve-user-css": [],

@@ -222,6 +222,34 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
     return results
 
 
+KEY_TYPE_CHECK_NAME = "key-type-check"
+
+
+def key_type_check(doc: papis.document.Document) -> List[Error]:
+    """
+    Check the type of some keys.
+    """
+    results = []
+    folder = doc.get_main_folder()
+    keys = [eval(tup) for tup in
+            papis.config.getlist("doctor-key-type-check-keys")]
+    for key, typstr in keys:
+        typ = eval(typstr)
+        if doc.has(key) and not isinstance(doc[key], typ):
+            results.append(Error(name=KEY_TYPE_CHECK_NAME,
+                                 path=folder or "",
+                                 msg=("Key '{}'({}) should be of type '{}'"
+                                      " but found '{}'"
+                                      .format(key, doc[key],
+                                              typ, type(doc[key]))),
+                                 suggestion_cmd=("papis edit --doc-folder {}"
+                                                 .format(folder)),
+                                 fix_action=lambda: None,
+                                 payload=key,
+                                 doc=doc))
+    return results
+
+
 HTML_CODE_REGEX = re.compile(r"&[a-z_A-Z0-9]+;")
 HTML_CODES_CHECK_NAME = "html-codes"
 
@@ -270,6 +298,7 @@ register_check(DUPLICATED_KEYS_NAME, duplicated_keys_check)
 register_check(BIBTEX_TYPE_CHECK_NAME, bibtex_type_check)
 register_check(REFS_CHECK_NAME, refs_check)
 register_check(HTML_CODES_CHECK_NAME, html_codes_check)
+register_check(KEY_TYPE_CHECK_NAME, key_type_check)
 
 
 def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
