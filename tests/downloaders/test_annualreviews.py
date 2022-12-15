@@ -1,36 +1,60 @@
-from unittest.mock import patch
+import os
+import pytest
 
 import papis.downloaders
 from papis.downloaders.annualreviews import Downloader
 
-from tests.downloaders import get_resource, get_json_resource
-
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-
-def test_match():
-    assert Downloader.match(
-        "http://anualreviews.org/doi/pdf/"
-        "10.1146/annurev-conmatphys-031214-014726"
-    ) is False
-
-    assert Downloader.match(
-        "http://annualreviews.org/doi/pdf/"
-        "10.1146/annurev-conmatphys-031214-014726"
+ANNUAL_REVIEWS_URLS = (
+    "https://www.annualreviews.org/doi/10.1146/annurev-conmatphys-031214-014726",
     )
 
 
-def test_1():
-    url = ("https://www.annualreviews.org/doi/10.1146/"
-           "annurev-conmatphys-031214-014726")
-    down = papis.downloaders.get_downloader(url)
-    assert down.name == "annualreviews"
-    with patch.object(down, "_get_body", lambda: get_resource("annualreviews_1.html")):
-        with patch.object(down, "download_document", lambda: None):
-            down.fetch()
-            # with open("annualreviews_1_out.json", "w+") as f:
-            #     import json
-            #     json.dump(down.ctx.data, f)
-            correct_data = get_json_resource("annualreviews_1_out.json")
-            assert down.ctx.data == correct_data
+def test_annual_review_match() -> None:
+    valid_urls = (
+        "https://www.annualreviews.org",
+        "http://www.annualreviews.org",
+        "https://www.annualreviews.org/some/link/false",
+        ) + ANNUAL_REVIEWS_URLS
+
+    invalid_urls = (
+        "https://www.annualreviews.com",
+        "https://www.yearlyreviews.com",
+        )
+
+    for url in valid_urls:
+        assert isinstance(Downloader.match(url), Downloader)
+
+    for url in invalid_urls:
+        assert Downloader.match(url) is None
+
+
+@pytest.mark.skip(reason="annualreviews.org disallows web scrapers")
+@pytest.mark.parametrize("url", ANNUAL_REVIEWS_URLS)
+def test_annual_review_fetch(monkeypatch, url: str) -> None:
+    cls = papis.downloaders.get_downloader_by_name("annualreviews")
+    assert cls is Downloader
+
+    down = cls.match(url)
+    assert down is not None
+
+    uid = os.path.basename(url).replace("-", "_")
+    infile = "AnnualReview_{}.html".format(uid)
+    outfile = "AnnualReview_{}_Out.json".format(uid)
+
+    from tests.downloaders import get_remote_resource, get_local_resource
+
+    with monkeypatch.context() as m:
+        m.setattr(down, "_get_body", get_remote_resource(infile, url))
+        m.setattr(down, "download_document", lambda: None)
+
+        # NOTE: bibtex add some extra fields, so we just disable it for the test
+        m.setattr(down, "download_bibtex", lambda: None)
+
+        down.fetch()
+        extracted_data = down.ctx.data
+        expected_data = get_local_resource(outfile, extracted_data)
+
+        assert extracted_data == expected_data
