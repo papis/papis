@@ -37,7 +37,9 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install
       run: |
-        ./tools/ci-install.sh
+        python -m pip install --upgrade pip setuptools wheel
+        python -m pip install -e .[develop]
+        python -m pip install -e .[optional]
       shell: bash
     - name: Run tests, mypy and linting
       run: ./tools/ci-run-tests.sh
