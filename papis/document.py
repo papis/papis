@@ -45,12 +45,19 @@ def keyconversion_to_data(conversion_list: List[KeyConversionPair],
             papis_key = conv_data.get("key") or foreign_key  # type: str
             papis_value = data[foreign_key]
 
-            try:
-                action = conv_data.get("action") or (lambda x: x)
-                new_data[papis_key] = action(papis_value)
-            except Exception as ex:
-                logger.debug("Error while trying to parse '%s' (%s)",
-                             papis_key, ex)
+            action = conv_data.get("action")
+            if action:
+                try:
+                    new_value = action(papis_value)
+                except Exception as ex:
+                    logger.debug("Error while trying to parse '%s' (%s)",
+                                 papis_key, ex)
+                    new_value = None
+            else:
+                new_value = papis_value
+
+            if new_value:
+                new_data[papis_key] = new_value
 
     if keep_unknown_keys:
         for key, value in data.items():
