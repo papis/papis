@@ -120,7 +120,7 @@ setup(
             "pep8-naming; python_version>='3.6'",
             "pep8-naming<0.13.0; python_version<'3.6'",
             "pylint",
-            "python-lsp-server",
+            "python-lsp-server; python_version>='3.6'",
             "pytest",
             "pytest-cov",
             "python-coveralls",
