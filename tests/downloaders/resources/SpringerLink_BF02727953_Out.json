@@ -1,0 +1,42 @@
+{
+  "abstract": "The classical configuration space of a system of identical particles is examined. Due to the identification of points which are related by permutations of particle indices, it is essentially different, globally, from the Cartesian product of the one-particle spaces. This fact is explicity taken into account in a quantization of the theory. As a consequence, no symmetry constraints on the wave functions and the observables need to be postulated. The two possibilities, corresponding to symmetric and antisymmetric wave functions, appear in a natural way in the formalism. But this is only the case in which the particles move in three- or higher-dimensional space. In one and two dimensions a continuum of possible intermediate cases connects the boson and fermion cases. The effect of particle spin in the present formalism is discussed.",
+  "author": "J. M., Leinaas, and J., Myrheim,",
+  "author_list": [
+    {
+      "affiliation": [
+        {
+          "name": "Department of Physics, University of Oslo, Oslo"
+        }
+      ],
+      "family": "J. M.",
+      "given": "Leinaas,"
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Department of Physics, University of Oslo, Oslo"
+        }
+      ],
+      "family": "J.",
+      "given": "Myrheim,"
+    }
+  ],
+  "date": "2007-10-23",
+  "doi": "10.1007/BF02727953",
+  "firstpage": "1",
+  "issn": "1826-9877",
+  "issue": "1",
+  "journal": "Il Nuovo Cimento B (1971-1996)",
+  "journal_abbrev": "Nuovo Cim B",
+  "keywords": "Physics, general",
+  "language": "En",
+  "lastpage": "23",
+  "online_date": "2007/10/23",
+  "pdf_url": "https://link.springer.com/content/pdf/10.1007/BF02727953.pdf",
+  "publication_date": "1977/01",
+  "publisher": "Springer",
+  "title": "On the theory of identical particles",
+  "type": "OriginalPaper",
+  "url": "https://link.springer.com/article/10.1007/BF02727953",
+  "volume": "37"
+}
