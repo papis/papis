@@ -56,6 +56,9 @@ def keyconversion_to_data(conversion_list: List[KeyConversionPair],
             else:
                 new_value = papis_value
 
+            if isinstance(new_value, str):
+                new_value = new_value.strip()
+
             if new_value:
                 new_data[papis_key] = new_value
 
