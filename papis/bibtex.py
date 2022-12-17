@@ -1,7 +1,7 @@
 import os
 import string
 import logging
-from typing import Optional, List, Dict, Any, Iterator
+from typing import Optional, List, FrozenSet, Dict, Any, Iterator
 
 import click
 
@@ -13,34 +13,99 @@ import papis.format
 
 logger = logging.getLogger("bibtex")  # type: logging.Logger
 
-bibtex_types = [
-    "article", "book", "booklet", "conference", "inbook", "incollection",
-    "inproceedings", "manual", "mastersthesis", "misc", "phdthesis",
-    "proceedings", "techreport", "unpublished"
-] + papis.config.getlist("extra-bibtex-types")  # type: List[str]
+# NOTE: see the BibLaTeX docs for an up to date list of types and keys:
+#   https://ctan.org/pkg/biblatex?lang=en
 
+bibtex_types = frozenset([
+    # regular types (Section 2.1.1)
+    "article",
+    "book", "mvbook", "inbook", "bookinbook", "suppbook", "booklet",
+    "collection", "mvcollection", "incollection", "suppcollection",
+    "dataset",
+    "manual",
+    "misc",
+    "online",
+    "patent",
+    "periodical", "suppperiodical",
+    "proceedings", "mvproceedings", "inproceedings",
+    "reference", "mvreference", "inreference",
+    "report",
+    # "set",
+    "software",
+    "thesis",
+    "unpublished",
+    # "xdata",
+    # "custom[a-f]",
+    # non-standard types (Section 2.1.3)
+    "artwork",
+    "audio",
+    "bibnote",
+    "commentary",
+    "image",
+    "juristiction",
+    "legislation",
+    "legal",
+    "letter",
+    "movie",
+    "music",
+    "performance",
+    "review",
+    "standard",
+    "video",
+    # type aliases (Section 2.1.2)
+    "conference", "electronic", "masterthesis", "phdthesis", "techreport", "www",
+]) | frozenset(papis.config.getlist("extra-bibtex-types"))  # type: FrozenSet[str]
+
+# Zotero translator fields, see also
+#   https://github.com/zotero/zotero-schema
+#   https://github.com/papis/papis/pull/121
 bibtex_type_converter = {
     "conferencePaper": "inproceedings",
     "journalArticle": "article",
-    "journal": "article"
+    "journal": "article",
 }  # type: Dict[str, str]
 
-bibtex_keys = [
-    "addendum", "address", "afterword", "annotator", "annote", "author",
-    "bookauthor", "booksubtitle", "booktitle", "booktitleaddon", "chapter",
-    "commentator", "crossref", "date", "doi", "edition", "editor", "editora",
-    "editorb", "editorc", "eid", "eprint", "eprintclass", "eprinttype",
-    "eventdate", "eventtitle", "eventtitleaddon", "foreword", "holder",
-    "howpublished", "institution", "introduction", "isbn", "isrn",
-    "issn", "issue", "issuesubtitle", "issuetitle", "journal",
-    "journalsubtitle", "journaltitle", "key", "language", "location",
-    "mainsubtitle", "maintitle", "maintitleaddon", "month", "note",
-    "number", "organization", "origlanguage", "pages", "pagetotal", "part",
-    "publisher", "pubstate", "school", "series", "subtitle", "title",
-    "translator", "titleaddon", "url", "urldate", "venue", "version",
+bibtex_keys = frozenset([
+    # data fields (Section 2.2.2)
+    "abstract", "addendum", "afterword", "annotation", "annotator", "author",
+    "authortype", "bookauthor", "bookpagination", "booksubtitle", "booktitle",
+    "booktitleaddon", "chapter", "commentator", "date", "doi", "edition",
+    "editor", "editora", "editorb", "editorc", "editortype", "editoratype",
+    "editorbtype", "editorctype", "eid", "entrysubtype", "eprint", "eprintclass",
+    "eprinttype", "eventdate", "eventtitle", "eventtitleaddon", "file",
+    "foreword", "holder", "howpublished", "indextitle", "institution",
+    "introduction", "isan", "isbn", "ismn", "isrn", "issn", "issue",
+    "issuesubtitle", "issuetitle", "issuetitleaddon", "iswc", "journalsubtitle",
+    "journaltitle", "journaltitleaddon", "label", "language", "library",
+    "location", "mainsubtitle", "maintitle", "maintitleaddon", "month",
+    "nameaddon", "note", "number", "organization", "origdate", "origlanguage",
+    "origlocation", "origpublisher", "origtitle", "pages", "pagetotal",
+    "pagination", "part", "publisher", "pubstate", "reprinttitle",
+    "series", "shortauthor", "shorteditor", "shorthand", "shorthandintro",
+    "shortjournal", "shortseries", "shorttitle", "subtitle", "title",
+    "titleaddon", "translator", "url", "urldate", "venue", "version",
     "volume", "volumes", "year",
-] + papis.config.getlist("extra-bibtex-keys")  # type: List[str]
+    # special fields (Section 2.2.3)
+    "crossref", "entryset", "execute", "gender", "langid", "langidopts",
+    "ids", "indexsorttitle", "keywords", "options", "presort", "related",
+    "relatedoptions", "relatedtype", "relatedstring", "sortkey", "sortname",
+    "sortshorthand", "sorttitle", "sortyear", "xdata", "xref",
+    # custom fields (Section 2.3.4)
+    # name[a-c]
+    # name[a-c]type
+    # list[a-f]
+    # user[a-f]
+    # verb[a-c]
+    # field aliases (Section 2.2.5)
+    "address", "annote", "archiveprefix", "journal", "key", "pdf",
+    "primaryclass", "school"
+    # fields that we ignore
+    # type,
+]) | frozenset(papis.config.getlist("extra-bibtex-keys"))  # type: FrozenSet[str]
 
+# Zotero translator fields, see also
+#   https://github.com/zotero/zotero-schema
+#   https://github.com/papis/papis/pull/121
 bibtex_key_converter = {
     "abstractNote": "abstract",
     "university": "school",
