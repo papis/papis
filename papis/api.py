@@ -168,3 +168,12 @@ def doi_to_data(doi: str) -> Dict[str, Any]:
     """
     import papis.crossref
     return papis.crossref.doi_to_data(doi)
+
+
+def save_doc(doc: papis.document.Document) -> None:
+    """
+    Save doc in memory and in disk through the current database.
+    """
+    db = papis.database.get()
+    doc.save()
+    db.update(doc)
