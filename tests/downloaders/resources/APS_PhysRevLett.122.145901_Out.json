@@ -3,65 +3,37 @@
   "author": "Nomura, T. and Zhang, X.-X. and Zherlitsyn, S. and Wosnitza, J. and Tokura, Y. and Nagaosa, N. and Seki, S.",
   "author_list": [
     {
-      "affiliation": [
-        {
-          "name": "Hochfeld-Magnetlabor Dresden (HLD-EMFL), Helmholtz-Zentrum Dresden-Rossendorf, 01328 Dresden, Germany"
-        }
-      ],
+      "affiliation": [],
       "family": "Nomura",
       "given": "T."
     },
     {
-      "affiliation": [
-        {
-          "name": "Department of Applied Physics, The University of Tokyo, Tokyo 113-8656, Japan"
-        }
-      ],
+      "affiliation": [],
       "family": "Zhang",
       "given": "X.-X."
     },
     {
-      "affiliation": [
-        {
-          "name": "Quantum Matter Institute, University of British Columbia, Vancouver BC V6T 1Z4, Canada"
-        }
-      ],
+      "affiliation": [],
       "family": "Zherlitsyn",
       "given": "S."
     },
     {
-      "affiliation": [
-        {
-          "name": "Hochfeld-Magnetlabor Dresden (HLD-EMFL), Helmholtz-Zentrum Dresden-Rossendorf, 01328 Dresden, Germany"
-        }
-      ],
+      "affiliation": [],
       "family": "Wosnitza",
       "given": "J."
     },
     {
-      "affiliation": [
-        {
-          "name": "Hochfeld-Magnetlabor Dresden (HLD-EMFL), Helmholtz-Zentrum Dresden-Rossendorf, 01328 Dresden, Germany"
-        }
-      ],
+      "affiliation": [],
       "family": "Tokura",
       "given": "Y."
     },
     {
-      "affiliation": [
-        {
-          "name": "Institut für Festkörper-und Materialphysik, TU-Dresden, 01062 Dresden, Germany"
-        }
-      ],
+      "affiliation": [],
       "family": "Nagaosa",
       "given": "N."
     },
     {
-      "affiliation": [
-        {
-          "name": "Department of Applied Physics, The University of Tokyo, Tokyo 113-8656, Japan"
-        }
-      ],
+      "affiliation": [],
       "family": "Seki",
       "given": "S."
     }
