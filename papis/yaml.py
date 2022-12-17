@@ -1,8 +1,9 @@
-import yaml                                 # lgtm [py/import-and-import-from]
 import logging
-import click
 import os
 from typing import Optional, List, Dict, Any
+
+import yaml                                 # lgtm [py/import-and-import-from]
+import click
 
 import papis.utils
 import papis.config
@@ -17,6 +18,7 @@ except ImportError:
     from yaml import SafeLoader as Loader  # type: ignore[assignment]
 
 logger = logging.getLogger("yaml")
+YAML_LOADER = Loader
 
 
 def data_to_yaml(yaml_path: str, data: Dict[str, Any]) -> None:
@@ -35,6 +37,9 @@ def data_to_yaml(yaml_path: str, data: Dict[str, Any]) -> None:
 
 
 def exporter(documents: List[papis.document.Document]) -> str:
+    """
+    Returns a yaml string containing all documents in the input list.
+    """
     string = yaml.dump_all(
         [papis.document.to_dict(document) for document in documents],
         allow_unicode=True)
@@ -56,8 +61,7 @@ def yaml_to_data(
             data = yaml.load(fd, Loader=Loader)
         except Exception as e:
             if raise_exception:
-                raise ValueError(e)
-
+                raise ValueError(e) from e
             logger.error("YAML syntax error. %s", e)
             return {}
         else:
@@ -78,15 +82,15 @@ def explorer(ctx: click.Context, yamlfile: str) -> None:
     papis explore yaml lib.yaml pick
 
     """
-    logger = logging.getLogger("explore:yaml")
-    logger.info("Reading in yaml file '%s'", yamlfile)
+    _logger = logging.getLogger("explore:yaml")
+    _logger.info("Reading in yaml file '%s'", yamlfile)
 
     with open(yamlfile) as fd:
         docs = [papis.document.from_data(d)
                 for d in yaml.load_all(fd, Loader=Loader)]
     ctx.obj["documents"] += docs
 
-    logger.info("%d documents found", len(docs))
+    _logger.info("%d documents found", len(docs))
 
 
 class Importer(papis.importer.Importer):
