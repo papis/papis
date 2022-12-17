@@ -7,7 +7,6 @@ Cli
 .. click:: papis.commands.edit:cli
     :prog: papis edit
 """
-import os
 import logging
 from typing import Optional
 
@@ -25,6 +24,7 @@ import papis.cli
 import papis.strings
 import papis.git
 import papis.format
+import papis.notes
 
 
 def run(document: papis.document.Document,
@@ -54,50 +54,21 @@ def run(document: papis.document.Document,
                 papis.document.describe(document)))
 
 
-def create_notes(document: papis.document.Document,
-                 notes_path: str) -> None:
-
-    templ_path = os.path.expanduser(papis.config.getstring("notes-template"))
-    templ_out = ""
-
-    if os.path.exists(templ_path):
-        with open(templ_path, "r") as f:
-            templ_src = f.read()
-            templ_out = papis.format.format(templ_src, document)
-
-    with open(notes_path, "w+") as f:
-        f.write(templ_out)
-
-
 def edit_notes(document: papis.document.Document,
                git: bool = False) -> None:
     logger = logging.getLogger("edit:notes")
     logger.debug("Editing notes")
-
-    db = papis.database.get()
-    if not document.has("notes"):
-        notes_name = papis.config.getstring("notes-name")
-        notes_name = papis.format.format(notes_name, document)
-        document["notes"] = papis.utils.clean_document_name(notes_name)
-        document.save()
-        db.update(document)
-
-    notes_path = os.path.join(
-        str(document.get_main_folder()),
-        document["notes"]
-    )
-
-    if not os.path.exists(notes_path):
-        logger.debug("Creating '%s'", notes_path)
-        create_notes(document, notes_path)
-
+    notes_path = papis.notes.notes_path_ensured(document)
     papis.api.edit_file(notes_path)
     if git:
-        papis.git.add_and_commit_resource(
-            str(document.get_main_folder()),
-            str(document.get_info_file()),
-            "Update notes for '{0}'".format(
-                papis.document.describe(document)))
+        msg = ("Update notes for '{0}'"
+               .format(papis.document.describe(document)))
+        folder = document.get_main_folder()
+        if folder:
+            papis.git.add_and_commit_resources(folder,
+                                               [notes_path,
+                                                document.get_info_file()],
+                                               msg)
 
 
 @click.command("edit")
