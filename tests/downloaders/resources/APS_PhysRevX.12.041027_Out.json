@@ -1,6 +1,6 @@
 {
   "abstract": "Turbulent dynamos efficiently generate folded magnetic fields that, at small plasma resistivity and viscosity, are disrupted by resistive tearing and plasmoid formation.",
-  "author": "K. Galishnikova, Alisa and W. Kunz, Matthew and A. Schekochihin, Alexander",
+  "author": "Galishnikova, Alisa K. and Kunz, Matthew W. and Schekochihin, Alexander A.",
   "author_list": [
     {
       "affiliation": [
@@ -8,8 +8,8 @@
           "name": "Department of Astrophysical Sciences, Princeton University, 4 Ivy Lane, Princeton, New Jersey 08544, USA"
         }
       ],
-      "family": "K. Galishnikova",
-      "given": "Alisa"
+      "family": "Galishnikova",
+      "given": "Alisa K."
     },
     {
       "affiliation": [
@@ -17,8 +17,8 @@
           "name": "Department of Astrophysical Sciences, Princeton University, 4 Ivy Lane, Princeton, New Jersey 08544, USA and Princeton Plasma Physics Laboratory, P.O. Box 451, Princeton, New Jersey 08543, USA"
         }
       ],
-      "family": "W. Kunz",
-      "given": "Matthew"
+      "family": "Kunz",
+      "given": "Matthew W."
     },
     {
       "affiliation": [
@@ -26,8 +26,8 @@
           "name": "The Rudolf Peierls Centre for Theoretical Physics, University of Oxford, Clarendon Laboratory, Parks Road, Oxford, OX1 3PU, United Kingdom and Merton College, Oxford OX1 4JD, United Kingdom"
         }
       ],
-      "family": "A. Schekochihin",
-      "given": "Alexander"
+      "family": "Schekochihin",
+      "given": "Alexander A."
     }
   ],
   "doi": "10.1103/PhysRevX.12.041027",
