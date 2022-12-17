@@ -28,7 +28,13 @@ class Downloader(papis.downloaders.Downloader):
 
     def get_data(self) -> Dict[str, Any]:
         soup = self._get_soup()
-        return papis.downloaders.base.parse_meta_headers(soup)
+        data = papis.downloaders.base.parse_meta_headers(soup)
+
+        if "publication_date" in data:
+            dates = data["publication_date"].split("/")
+            data["year"] = dates[0]
+
+        return data
 
     def get_bibtex_url(self) -> Optional[str]:
         if "doi" in self.ctx.data:
