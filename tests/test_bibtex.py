@@ -119,7 +119,7 @@ def test_to_bibtex_no_ref() -> None:
 def test_to_bibtex_formatting() -> None:
     """Test formatting for the `to_bibtex` function."""
     doc = papis.document.from_data({
-        "type": "techreport",
+        "type": "report",
         "author": "Albert Einstein",
         "title": "The Theory of Everything",
         "journal": "Nature",
@@ -128,7 +128,7 @@ def test_to_bibtex_formatting() -> None:
         })
 
     expected_bibtex = (
-        "@techreport{MyDocument,\n"
+        "@report{MyDocument,\n"
         + "  author = {Albert Einstein},\n"
         + "  journal = {Nature},\n"
         + "  title = {The Theory of Everything},\n"
