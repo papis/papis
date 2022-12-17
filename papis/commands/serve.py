@@ -115,7 +115,10 @@ document.addEventListener('DOMContentLoaded', () => {
             {left: "\\(", right: "\\)", display: false},
             {left: "\\begin{equation}", right: "\\end{equation}",
              display: true},
+            {left: "\\begin{equation*}", right: "\\end{equation*}",
+             display: true},
             {left: "\\begin{align}", right: "\\end{align}", display: true},
+            {left: "\\begin{align*}", right: "\\end{align*}", display: true},
             {left: "\\begin{alignat}", right: "\\end{alignat}", display: true},
             {left: "\\begin{gather}", right: "\\end{gather}", display: true},
             {left: "\\begin{CD}", right: "\\end{CD}", display: true},
@@ -538,6 +541,8 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                         _tab_element(_file_icon,
                                      [fpath],
                                      "#file-tab-{}".format(i))
+                    _tab_element(_icon_span, ["note", "Notes"],
+                                 "#notes-tab")
 
                 t.br()
 
@@ -585,6 +590,42 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                             let bib_editor = ace.edit("{}");
                             bib_editor.session.setMode("ace/mode/bibtex");
                         """.format(_bibtex_id)
+                        t.script(tu.raw(_script),
+                                 charset="utf-8",
+                                 type="text/javascript")
+
+                    with t.div(id="notes-tab",
+                               role="tabpanel",
+                               aria_labelledby="notes-form",
+                               cls="tab-pane fade"):
+                        _notes_id = "notes-source"
+                        _notes_content = ""
+                        # TODO add org mode somehow and check extensions
+                        _notes_extension = "markdown"
+                        if doc.has("notes"):
+                            filepath = os.path.join(doc.get_main_folder()
+                                                    or "",
+                                                    doc["notes"])
+                            if os.path.exists(filepath):
+                                with open(filepath) as _fd:
+                                    _notes_content = _fd.read()
+
+                        t.p(_notes_content,
+                            id=_notes_id,
+                            width="100%",
+                            height=100,
+                            style="min-height: 500px")
+
+                        _script = """
+                        let notes_editor = ace.edit("{}");
+                        ace.require('ace/ext/settings_menu').init(notes_editor);
+                        ace.config.loadModule('ace/ext/keybinding_menu',
+                                              (module) =>  {{
+                                                  module.init(notes_editor);
+                                              }});
+                        notes_editor.setKeyboardHandler('ace/keyboard/vim');
+                        notes_editor.session.setMode("ace/mode/{}");
+                        """.format(_notes_id, _notes_extension)
                         t.script(tu.raw(_script),
                                  charset="utf-8",
                                  type="text/javascript")
