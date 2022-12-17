@@ -9,6 +9,7 @@ import functools
 import cgi
 import collections
 
+import yaml
 import click
 import dominate
 import dominate.tags as t
@@ -23,6 +24,7 @@ import papis.commands.update
 import papis.commands.export
 import papis.commands.doctor
 import papis.crossref
+import papis.notes
 
 
 logger = logging.getLogger("papis:server")
@@ -489,6 +491,15 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
     checks = papis.commands.doctor.registered_checks_names()
     errors = papis.commands.doctor.run(doc, checks)
     libfolder = papis.config.get_lib_from_name(libname).paths[0]
+
+    def has_citations() -> List[Dict[Any, Any]]:
+        fpath = os.path.join(doc.get_main_folder() or "",
+                             "citations.yaml")
+        if not os.path.exists(fpath):
+            return []
+        with open(fpath, "r") as _fd:
+            return list(yaml.load_all(_fd, Loader=papis.yaml.YAML_LOADER))
+
     with _main_html_document(doc["title"]) as result:
         with result.body:
             _click_tab_selector_link_in_url()
@@ -541,6 +552,7 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                         _tab_element(_file_icon,
                                      [fpath],
                                      "#file-tab-{}".format(i))
+                    _tab_element(t.span, ["Citations"], "#citations-tab")
                     _tab_element(_icon_span, ["note", "Notes"],
                                  "#notes-tab")
 
@@ -661,6 +673,35 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                                      style="resize: vertical",
                                      width="100%",
                                      height="800")
+
+                    with t.div(id="citations-tab",
+                               role="tabpanel",
+                               aria_labelledby="citations-tab",
+                               cls="tab-pane fade"):
+                        citations = has_citations()
+                        if citations:
+                            with t.ol(cls="list-group"):
+                                with t.li(cls="list-group-item"):
+                                    for cit in citations:
+                                        _document_item(libname, libfolder,
+                                                       papis.document
+                                                       .from_data(cit))
+                        else:
+                            if doc.has("doi"):
+                                quoted_doi = urllib.parse.quote(doc["doi"],
+                                                                safe="")
+                                ads = ("https://ui.adsabs.harvard.edu/"
+                                       "abs/{}/references"
+                                       .format(quoted_doi))
+                                t.a("Provided by ads", href=ads)
+                                t.iframe(src=ads,
+                                         width="100%",
+                                         height="500",
+                                         style="width: '100%'")
+                            else:
+                                with _alert(t.h3, "danger"):
+                                    _icon_span("error",
+                                               "No citations available")
     return result
 
 
@@ -1044,7 +1085,9 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 pass
             else:
                 result[key] = form.getvalue(key)
-        papis.commands.update.run(doc, result, git=USE_GIT)
+        papis.commands.update.run(document=doc,
+                                  data=result,
+                                  git=USE_GIT)
         back_url = self.headers.get("Referer", "/library")
         self.redirect(back_url)
 

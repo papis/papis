@@ -102,11 +102,25 @@ general_settings = {
      "katex@0.16.4/dist/contrib/auto-render.min.js"),
 
     "serve-ace-urls": [("https://cdnjs.cloudflare.com/ajax/libs/ace/"
-                        "1.13.2/ace.min.js"),
+                        "1.14.0/ace.min.js"),
                        ("https://cdnjs.cloudflare.com/ajax/libs/ace/"
-                        "1.13.2/mode-yaml.min.js"),
+                        "1.14.0/mode-yaml.min.js"),
                        ("https://cdnjs.cloudflare.com/ajax/libs/ace/"
-                        "1.13.2/mode-bibtex.min.js")
+                        "1.14.0/mode-bibtex.min.js"),
+                       ("https://cdnjs.cloudflare.com/ajax/libs/ace/"
+                        "1.14.0/mode-markdown.min.js"),
+                       ("https://cdnjs.cloudflare.com/ajax/libs/ace/"
+                        "1.14.0/mode-latex.min.js"),
+                       ("https://cdnjs.cloudflare.com/ajax/libs/ace/"
+                        "1.14.0/ext-textarea.min.js"),
+                       ("https://cdnjs.cloudflare.com/ajax/libs/ace/"
+                        "1.14.0/ext-settings_menu.min.js"),
+                       ("https://cdnjs.cloudflare.com/ajax/libs/ace/"
+                        "1.14.0/ext-keybinding_menu.min.js"),
+                       ("https://cdnjs.cloudflare.com/ajax/libs/ace/"
+                        "1.14.0/keybinding-vim.min.js"),
+                       ("https://cdnjs.cloudflare.com/ajax/libs/ace/"
+                        "1.14.0/keybinding-emacs.min.js"),
                        ],
 
     "serve-empty-query-get-all-documents": True,
