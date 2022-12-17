@@ -602,10 +602,8 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                         _notes_content = ""
                         # TODO add org mode somehow and check extensions
                         _notes_extension = "markdown"
-                        if doc.has("notes"):
-                            filepath = os.path.join(doc.get_main_folder()
-                                                    or "",
-                                                    doc["notes"])
+                        if papis.notes.has_notes(doc):
+                            filepath = papis.notes.notes_path(doc)
                             if os.path.exists(filepath):
                                 with open(filepath) as _fd:
                                     _notes_content = _fd.read()
