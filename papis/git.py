@@ -2,6 +2,7 @@
 """
 import os
 import logging
+from typing import List
 
 logger = logging.getLogger("git")
 
@@ -68,4 +69,14 @@ def add_and_commit_resource(path: str, resource: str, message: str) -> None:
     :param message: Commit message
     """
     add(path, resource)
+    commit(path, message)
+
+
+def add_and_commit_resources(path: str,
+                             resources: List[str],
+                             message: str) -> None:
+    """Adds and commits a resources.
+    """
+    for resource in resources:
+        add(path, resource)
     commit(path, message)
