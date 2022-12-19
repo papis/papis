@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Optional, List, Dict, Any, Iterable
+from typing import Optional, List, Dict, Any, Sequence
 
 import yaml                                 # lgtm [py/import-and-import-from]
 import click
@@ -37,7 +37,7 @@ def data_to_yaml(yaml_path: str, data: Dict[str, Any]) -> None:
 
 
 def yaml_to_list(yaml_path: str,
-                 raise_exception: bool = False) -> Iterable[Dict[str, Any]]:
+                 raise_exception: bool = False) -> Sequence[Dict[str, Any]]:
     """
     Analogous to yaml_to_data but using load_all to read everything.
     """
@@ -49,6 +49,11 @@ def yaml_to_list(yaml_path: str,
             raise ValueError(e) from e
         logger.error("YAML syntax error. %s")
         return []
+
+
+def list_to_path(data: Sequence[Dict[str, Any]], filepath: str) -> None:
+    with open(filepath, "w+") as fdd:
+        yaml.dump_all(data, fdd)
 
 
 def exporter(documents: List[papis.document.Document]) -> str:
