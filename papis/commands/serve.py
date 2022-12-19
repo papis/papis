@@ -4,12 +4,11 @@ import json
 import logging
 import http.server
 import urllib.parse
-from typing import Any, List, Optional, Union, Tuple, Callable, Dict
+from typing import Any, List, Optional, Union, Tuple, Callable, Dict, Sequence
 import functools
 import cgi
 import collections
 
-import yaml
 import click
 import dominate
 import dominate.tags as t
@@ -25,6 +24,7 @@ import papis.commands.export
 import papis.commands.doctor
 import papis.crossref
 import papis.notes
+import papis.citations
 
 
 logger = logging.getLogger("papis:server")
@@ -262,11 +262,12 @@ def _jquery_table(libname: str,
     return result
 
 
-def _timeline(documents: List[papis.document.Document],
-              libname: str) -> None:
-    t.div(id="timeline", style="width: 100%; height: 300px;")
+def _timeline(documents: Sequence[Dict[str, Any]],
+              libname: str,
+              _id: str) -> None:
+    t.div(id=_id, style="width: 100%; height: 300px;")
 
-    def _make_text(d: papis.document.Document) -> str:
+    def _make_text(d: Dict[str, Any]) -> str:
         _text = papis.document.describe(d)
         _href = doc_server_path(libname, d)
         return r"<a href='{}'>{}</a>".format(_href, _text)
@@ -274,17 +275,18 @@ def _timeline(documents: List[papis.document.Document],
     json_data = [{"text": {"text": _make_text(d)},
                   "start_date": {"year": d["year"],
                                  "month": d["month"]
-                                 if isinstance(d["month"], int)
+                                 if "month" in d
+                                 and isinstance(d["month"], int)
                                  else 1}}
-                 for d in documents if d.has("year")]
+                 for d in documents if "year" in d]
     t.script(tu.raw("""
-    let timeline =  new TL.Timeline('timeline',
-                                    {{'events': {} }},
-                                    {{
-                                      timenav_height_percentage: 80,
-                                      width: "100%"
-                                    }})
-    """.format(json_data)))
+    new TL.Timeline('{}',
+                    {{'events': {} }},
+                    {{
+                      timenav_height_percentage: 80,
+                      width: "100%"
+                    }})
+    """.format(_id, json_data)))
 
 
 def _index(pretitle: str,
@@ -324,7 +326,9 @@ def _index(pretitle: str,
                         if (len(documents)
                             < (papis.config.getint("serve-timeline-max")
                                or 500)):
-                            _timeline(documents, libname)
+                            _timeline(documents,
+                                      libname,
+                                      "main-index-timeline")
                         else:
                             with _alert(t.p, "warning"):
                                 _icon_span("warning",
@@ -483,6 +487,43 @@ def _document_view_main_form(libname: str,
     return result
 
 
+def _render_citations(doc: papis.document.Document,
+                      libname: str,
+                      libfolder: str) -> None:
+
+    with t.form(action=fetch_citations_server_path(libname, doc), method="GET"):
+        with t.button(cls="btn btn-success",
+                      type="submit"):
+            _icon_span("cloud-bolt", "Fetch citations")
+
+    if papis.citations.has_citations(doc):
+        citations = papis.citations.get_citations(doc)
+        if papis.config.getboolean("serve-enable-timeline"):
+            _timeline(citations,
+                      libname,
+                      "main-citations-timeline")
+        with t.ol(cls="list-group"):
+            with t.li(cls="list-group-item"):
+                for cit in citations:
+                    _document_item(libname,
+                                   libfolder,
+                                   papis.document.from_data(cit))
+    else:
+        if doc.has("doi"):
+            quoted_doi = urllib.parse.quote(doc["doi"], safe="")
+            ads = ("https://ui.adsabs.harvard.edu/abs/{}/references"
+                   .format(quoted_doi))
+            t.a("Provided by ads", href=ads)
+            t.iframe(src=ads,
+                     width="100%",
+                     height="500",
+                     style="width: '100%'")
+        else:
+            with _alert(t.h3, "danger"):
+                _icon_span("error",
+                           "No citations available")
+
+
 def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
     """
     View of a single document to edit the information of the yaml file,
@@ -491,14 +532,6 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
     checks = papis.commands.doctor.registered_checks_names()
     errors = papis.commands.doctor.run(doc, checks)
     libfolder = papis.config.get_lib_from_name(libname).paths[0]
-
-    def has_citations() -> List[Dict[Any, Any]]:
-        fpath = os.path.join(doc.get_main_folder() or "",
-                             "citations.yaml")
-        if not os.path.exists(fpath):
-            return []
-        with open(fpath, "r") as _fd:
-            return list(yaml.load_all(_fd, Loader=papis.yaml.YAML_LOADER))
 
     with _main_html_document(doc["title"]) as result:
         with result.body:
@@ -678,30 +711,7 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                                role="tabpanel",
                                aria_labelledby="citations-tab",
                                cls="tab-pane fade"):
-                        citations = has_citations()
-                        if citations:
-                            with t.ol(cls="list-group"):
-                                with t.li(cls="list-group-item"):
-                                    for cit in citations:
-                                        _document_item(libname, libfolder,
-                                                       papis.document
-                                                       .from_data(cit))
-                        else:
-                            if doc.has("doi"):
-                                quoted_doi = urllib.parse.quote(doc["doi"],
-                                                                safe="")
-                                ads = ("https://ui.adsabs.harvard.edu/"
-                                       "abs/{}/references"
-                                       .format(quoted_doi))
-                                t.a("Provided by ads", href=ads)
-                                t.iframe(src=ads,
-                                         width="100%",
-                                         height="500",
-                                         style="width: '100%'")
-                            else:
-                                with _alert(t.h3, "danger"):
-                                    _icon_span("error",
-                                               "No citations available")
+                        _render_citations(doc, libname, libfolder)
     return result
 
 
@@ -725,15 +735,21 @@ def _click_tab_selector_link_in_url() -> None:
     """))
 
 
-def doc_server_path(libname: str, doc: papis.document.Document) -> str:
+def doc_server_path(libname: str, doc: Dict[str, Any]) -> str:
     """
     The server path for a document, it might change in the future
     """
     # TODO: probably we should quote the ref (and later unquote)?
-    if not doc["ref"]:
+    if "ref" not in doc:
         return "#"
     return "/library/{libname}/document/ref:{ref}".format(ref=doc["ref"],
                                                           libname=libname)
+
+def fetch_citations_server_path(libname: str, doc: Dict[str, Any]) -> str:
+    if "ref" not in doc:
+        return "#"
+    return ("/library/{libname}/document/fetch-citations/ref:{ref}"
+            .format(ref=doc["ref"], libname=libname))
 
 
 def _links_btn_group(doc: papis.document.Document, small: bool = True) -> None:
@@ -960,6 +976,20 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(bytes(str(page), "utf-8"))
         self.wfile.flush()
 
+    @ok_html
+    def fetch_citations(self, libname: str, ref: str) -> None:
+        docs = papis.api.get_documents_in_lib(libname, ref)
+        if len(docs) > 1:
+            raise Exception("More than one document matched ref '{}'"
+                            .format(ref))
+        if not docs:
+            raise Exception("No document found with ref '{}'".format(ref))
+
+        doc = docs[0]
+        papis.citations.fetch_and_save_citations(doc)
+        back_url = self.headers.get("Referer", "/library")
+        self.redirect(back_url)
+
     def get_libraries(self) -> None:
         logger.info("getting libraries")
         libs = papis.api.get_libraries()
@@ -1138,6 +1168,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.page_query),
             ("^/library/?([^/]+)?/document/(ref:.*)$",
                 self.page_document),
+            ("^/library/?([^/]+)?/document/fetch-citations/(ref:.*)$",
+                self.fetch_citations),
             ("^/library/([^/]+)/tags$",
                 self.page_tags),
             ("^/library/([^/]+)/tags/refresh$",
