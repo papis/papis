@@ -1,10 +1,11 @@
 """
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
 
-Cli
-^^^
 .. click:: papis.commands.rename:cli
     :prog: papis rename
 """
+
 import os
 import logging
 from typing import Optional

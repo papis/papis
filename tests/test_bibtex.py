@@ -9,29 +9,31 @@ import papis.document
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
+BIBTEX_RESOURCES = os.path.join(os.path.dirname(__file__), "resources", "bibtex")
+
 
 def test_bibtex_to_dict():
-    bibpath = os.path.join(os.path.dirname(__file__),
-                           "resources", "bibtex", "1.bib")
+    bibpath = os.path.join(BIBTEX_RESOURCES, "1.bib")
     bibs = papis.bibtex.bibtex_to_dict(bibpath)
-    keys = ["title",
-            "author",
-            "journal",
-            "abstract",
-            "volume",
-            "issue",
-            "pages",
-            "numpages",
-            "year",
-            "month",
-            "publisher",
-            "doi",
-            "url"]
+    expected_keys = {
+        "title",
+        "author",
+        "journal",
+        "abstract",
+        "volume",
+        "issue",
+        "pages",
+        "numpages",
+        "year",
+        "month",
+        "publisher",
+        "doi",
+        "url",
+        }
 
     assert len(bibs) == 1
     for bib in bibs:
-        for key in keys:
-            assert key in bib
+        assert not (expected_keys - bib.keys())
 
     assert bib["type"] == "article"
     assert re.match(r".*Rev.*", bib["journal"])
@@ -39,22 +41,21 @@ def test_bibtex_to_dict():
 
 
 def test_bibkeys_exist():
+    assert hasattr(papis.bibtex, "bibtex_keys")
     assert len(papis.bibtex.bibtex_keys) != 0
 
 
 def test_bibtypes_exist():
+    assert hasattr(papis.bibtex, "bibtex_types")
     assert len(papis.bibtex.bibtex_types) != 0
 
 
 @pytest.mark.parametrize("bibfile", ["1.bib", "2.bib", "3.bib"])
 def test_author_list_conversion(bibfile, overwrite=False):
     jsonfile = "{}_out.json".format(os.path.splitext(bibfile)[0])
-    bibpath = os.path.join(
-        os.path.dirname(__file__),
-        "resources", "bibtex", bibfile)
-    jsonpath = os.path.join(
-        os.path.dirname(__file__),
-        "resources", "bibtex", jsonfile)
+
+    bibpath = os.path.join(BIBTEX_RESOURCES, bibfile)
+    jsonpath = os.path.join(BIBTEX_RESOURCES, jsonfile)
 
     bib = papis.bibtex.bibtex_to_dict(bibpath)[0]
     if overwrite or not os.path.exists(jsonpath):
@@ -73,10 +74,66 @@ def test_author_list_conversion(bibfile, overwrite=False):
 
 
 def test_clean_ref() -> None:
-    for (r, rc) in [("Einstein über etwas und so 1923",
-                     "EinsteinUberEtwasUndSo1923"),
-                    ("Äöasf () : Aλבert Eιنς€in",
-                     "AoasfAlbertEinseurin"),
-                    ("Albert_Ein\_stein\.1923.b",
-                     "AlbertEin_stein.1923B")]:
+    for (r, rc) in [
+            ("Einstein über etwas und so 1923", "EinsteinUberEtwasUndSo1923"),
+            ("Äöasf () : Aλבert Eιنς€in", "AoasfAlbertEinseurin"),
+            (r"Albert_Ein\_stein\.1923.b", "AlbertEin_stein.1923B"),
+            ]:
         assert rc == papis.bibtex.ref_cleanup(r)
+
+
+def test_to_bibtex_wrong_type() -> None:
+    """Test no BibTeX entry is constructed for incorrect types."""
+
+    doc = papis.document.from_data({
+        "type": "fictional",
+        "ref": "MyDocument",
+        "author": "Albert Einstein",
+        "title": "The Theory of Everything",
+        "journal": "Nature",
+        "year": 2350
+        })
+
+    result = papis.bibtex.to_bibtex(doc)
+    assert not result
+
+
+def test_to_bibtex_no_ref() -> None:
+    """Test no BibTeX entry is constructed for invalid references."""
+    doc = papis.document.from_data({
+        "type": "techreport",
+        "author": "Albert Einstein",
+        "title": "The Theory of Everything",
+        "journal": "Nature",
+        "year": 2350,
+        })
+
+    # NOTE: this seems to be one of the few ways to fail the ref construction,
+    # i.e. set it to some invalid characters.
+    papis.config.set("ref-format", "--")
+
+    result = papis.bibtex.to_bibtex(doc)
+    assert not result
+
+
+def test_to_bibtex_formatting() -> None:
+    """Test formatting for the `to_bibtex` function."""
+    doc = papis.document.from_data({
+        "type": "report",
+        "author": "Albert Einstein",
+        "title": "The Theory of Everything",
+        "journal": "Nature",
+        "year": 2350,
+        "ref": "MyDocument"
+        })
+
+    expected_bibtex = (
+        "@report{MyDocument,\n"
+        + "  author = {Albert Einstein},\n"
+        + "  journal = {Nature},\n"
+        + "  title = {The Theory of Everything},\n"
+        + "  year = {2350},\n"
+        + "}"
+        )
+
+    assert papis.bibtex.to_bibtex(doc) == expected_bibtex

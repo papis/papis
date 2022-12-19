@@ -14,13 +14,18 @@ class Downloader(papis.downloaders.fallback.Downloader):
             )
 
     @classmethod
-    def match(
-            cls, url: str) -> Optional[papis.downloaders.fallback.Downloader]:
+    def match(cls, url: str) -> Optional[papis.downloaders.fallback.Downloader]:
         return Downloader(url) if re.match(r".*aps.org.*", url) else None
 
     def get_bibtex_url(self) -> Optional[str]:
-        burl = "{}?{}".format(
-            re.sub(r"/abstract", r"/export", self.uri),
-            "type=bibtex&download=true")
-        self.logger.debug("bibtex url = '%s'", burl)
-        return burl
+        url = "{}?type=bibtex&download=true".format(
+            self.uri.replace("/abstract", "/export"))
+        self.logger.debug("bibtex url = '%s'", url)
+
+        return url
+
+    def get_document_url(self) -> Optional[str]:
+        url = self.uri.replace("/abstract", "/pdf")
+        self.logger.debug("pdf url = '%s'", url)
+
+        return url

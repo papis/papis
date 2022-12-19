@@ -1,0 +1,52 @@
+{
+  "abstract": "A chiral material exposed to a magnetic field allows phonons to travel faster in one direction than another, an effect that might be used to create an acoustic diode.",
+  "author": "Nomura, T. and Zhang, X.-X. and Zherlitsyn, S. and Wosnitza, J. and Tokura, Y. and Nagaosa, N. and Seki, S.",
+  "author_list": [
+    {
+      "affiliation": [],
+      "family": "Nomura",
+      "given": "T."
+    },
+    {
+      "affiliation": [],
+      "family": "Zhang",
+      "given": "X.-X."
+    },
+    {
+      "affiliation": [],
+      "family": "Zherlitsyn",
+      "given": "S."
+    },
+    {
+      "affiliation": [],
+      "family": "Wosnitza",
+      "given": "J."
+    },
+    {
+      "affiliation": [],
+      "family": "Tokura",
+      "given": "Y."
+    },
+    {
+      "affiliation": [],
+      "family": "Nagaosa",
+      "given": "N."
+    },
+    {
+      "affiliation": [],
+      "family": "Seki",
+      "given": "S."
+    }
+  ],
+  "doi": "10.1103/PhysRevLett.122.145901",
+  "firstpage": "145901",
+  "issue": "14",
+  "journal": "Physical Review Letters",
+  "journal_abbrev": "Phys. Rev. Lett.",
+  "pdf_url": "http://link.aps.org/pdf/10.1103/PhysRevLett.122.145901",
+  "publisher": "American Physical Society",
+  "title": "Phonon Magnetochiral Effect",
+  "type": "article",
+  "url": "https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.122.145901",
+  "volume": "122"
+}

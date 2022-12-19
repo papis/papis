@@ -120,29 +120,35 @@ def parse_meta_headers(soup: "bs4.BeautifulSoup") -> Dict[str, Any]:
 
 
 def parse_meta_authors(soup: "bs4.BeautifulSoup") -> List[Dict[str, Any]]:
-    author_list = []  # type: List[Dict[str, Any]]
+    # find author tags
     authors = soup.find_all(name="meta", attrs={"name": "citation_author"})
     if not authors:
         authors = soup.find_all(
             name="meta", attrs={"name": re.compile("dc.creator", re.I)})
+
+    if not authors:
+        return []
+
+    # find affiliation tags
     affs = soup.find_all(
         name="meta",
         attrs={"name": "citation_author_institution"})
 
-    if affs and authors:
-        tuples = zip(authors, affs)  # type: Iterator[Tuple[Any, Any]]
-    elif authors:
-        tuples = ((a, None) for a in authors)
+    if affs and len(authors) == len(affs):
+        authors_and_affs = zip(authors, affs)  # type: Iterator[Tuple[Any, Any]]
     else:
-        return []
+        authors_and_affs = ((a, None) for a in authors)
 
-    for t in tuples:
-        fullname = t[0].get("content")
-        affiliation = [{"name": t[1].get("content")}] if t[1] else []
-        fullnames = re.split(r"\s+", fullname)
+    # convert to papis author format
+    author_list = []  # type: List[Dict[str, Any]]
+    for author, aff in authors_and_affs:
+        fullname, = papis.document.split_authors_name([author.get("content")])
+        affiliation = [{"name": aff.get("content")}] if aff else []
+
         author_list.append({
-            "given": fullnames[0],
-            "family": " ".join(fullnames[1:]),
+            "given": fullname["given"],
+            "family": fullname["family"],
             "affiliation": affiliation,
             })
+
     return author_list

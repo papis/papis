@@ -1,9 +1,9 @@
 """This command edits the information of the documents.
 The editor used is defined by the ``editor`` configuration setting.
 
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
 
-Cli
-^^^
 .. click:: papis.commands.edit:cli
     :prog: papis edit
 """

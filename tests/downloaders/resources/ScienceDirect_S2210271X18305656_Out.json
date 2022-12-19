@@ -1,0 +1,25 @@
+{
+  "abstract": "This work presents an implementation of the original orbital-free Hohenberg-Kohn density functional theory in a form that is able to predict chemical …",
+  "author": "Finzel, Kati",
+  "author_list": [
+    {
+      "affiliation": [],
+      "family": "Finzel",
+      "given": "Kati"
+    }
+  ],
+  "doi": "10.1016/j.comptc.2018.10.004",
+  "firstpage": "50",
+  "issn": "2210-271X",
+  "journal": "Computational and Theoretical Chemistry",
+  "lastpage": "55",
+  "online_date": "2018/10/22",
+  "pages": "50-55",
+  "publication_date": "2018/11/15",
+  "publisher": "Elsevier",
+  "title": "Chemical bonding without orbitals",
+  "type": "article",
+  "url": "https://www.sciencedirect.com/science/article/abs/pii/S2210271X18305656",
+  "volume": "1144",
+  "year": "2018"
+}

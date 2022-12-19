@@ -1,5 +1,4 @@
 r"""
-
 This command helps to interact with ``bib`` files in your LaTeX projects.
 
 Examples
@@ -116,12 +115,13 @@ And use like such: |asciicast|
 .. |asciicast| image:: https://asciinema.org/a/8KbLQJSVYVYNXHVF3wgcxx5Cp.svg
    :target: https://asciinema.org/a/8KbLQJSVYVYNXHVF3wgcxx5Cp
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.bibtex:cli
     :prog: papis bibtex
-
 """
+
 import os
 import re
 import logging

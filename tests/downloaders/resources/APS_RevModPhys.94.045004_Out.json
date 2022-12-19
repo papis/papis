@@ -1,0 +1,80 @@
+{
+  "abstract": "Understanding the structure and function of both energy and matter is a fundamental goal in science. Various spatiotemporal probes have been developed from electromagnetic waves spanning the entire range of the spectrum to neutrons and charged particles such as electrons. With the development of highly controlled, shorter electron bunches, retrieving dynamic structural information from solid-state and gas-phase samples is now possible at timescales that resolve atomic motion and length scales that resolve atomic positions in even the lightest elements. In this review advances in the generation, manipulation, and characterization of ultrashort electron beams are described.",
+  "author": "Filippetto, D. and Musumeci, P. and Li, R. K. and Siwick, B. J. and Otto, M. R. and Centurion, M. and Nunes, J. P. F.",
+  "author_list": [
+    {
+      "affiliation": [
+        {
+          "name": "Lawrence Berkeley National Laboratory, Berkeley, California 94720, USA"
+        }
+      ],
+      "family": "Filippetto",
+      "given": "D."
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Department of Physics and Astronomy, University of California at Los Angeles, Los Angeles, California 90095, USA"
+        }
+      ],
+      "family": "Musumeci",
+      "given": "P."
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Department of Engineering Physics, Tsinghua University, Beijing 100084, China and Key Laboratory of Particle and Radiation Imaging, Tsinghua University, Ministry of Education, Beijing 100084, China"
+        }
+      ],
+      "family": "Li",
+      "given": "R. K."
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Centre for the Physics of Materials, Department of Physics and Department of Chemistry, McGill University, Montreal, Quebec H3A 2T8, Canada"
+        }
+      ],
+      "family": "Siwick",
+      "given": "B. J."
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Centre for the Physics of Materials, Department of Physics and Department of Chemistry, McGill University, Montreal, Quebec H3A 2T8, Canada"
+        }
+      ],
+      "family": "Otto",
+      "given": "M. R."
+    },
+    {
+      "affiliation": [
+        {
+          "name": "University of Nebraska-Lincoln, 855 North 16th Street, Lincoln, Nebraska 68588, USA"
+        }
+      ],
+      "family": "Centurion",
+      "given": "M."
+    },
+    {
+      "affiliation": [
+        {
+          "name": "University of Nebraska-Lincoln, 855 North 16th Street, Lincoln, Nebraska 68588, USA"
+        }
+      ],
+      "family": "Nunes",
+      "given": "J. P. F."
+    }
+  ],
+  "doi": "10.1103/RevModPhys.94.045004",
+  "firstpage": "045004",
+  "issue": "4",
+  "journal": "Reviews of Modern Physics",
+  "journal_abbrev": "Rev. Mod. Phys.",
+  "pdf_url": "http://link.aps.org/pdf/10.1103/RevModPhys.94.045004",
+  "publisher": "American Physical Society",
+  "title": "Ultrafast electron diffraction: Visualizing dynamic states of matter",
+  "type": "article",
+  "url": "https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.94.045004",
+  "volume": "94"
+}

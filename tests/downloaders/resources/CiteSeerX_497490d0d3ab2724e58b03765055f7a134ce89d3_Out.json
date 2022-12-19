@@ -1,0 +1,12 @@
+{
+  "abstract": "The λ-calculus is considered an useful mathematical tool in the study of programming languages. However, if one uses βη-conversion to prove equivalence of programs, then a gross simplification 1 is introduced. We give a calculus based on a categorical semantics for computations, which provides a correct basis for proving equivalence of programs, independent from any specific computational model.",
+  "author": "Moggi, Eugenio",
+  "author_list": [
+    {
+      "family": "Moggi",
+      "given": "Eugenio"
+    }
+  ],
+  "title": "Computational lambda-calculus and monads",
+  "year": "0"
+}

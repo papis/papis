@@ -34,8 +34,9 @@ and add the tag of ``physics`` to all papers tagged as ``classics``
 
         papis update --all --set tags '{doc[tags]} physics' einstein
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.update:cli
     :prog: papis update
 """
