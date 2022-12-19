@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union, Tuple, Callable, Dict, Sequence
+from typing import Any, Callable
 
 import dominate.tags as t
 

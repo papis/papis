@@ -10,7 +10,6 @@ import cgi
 import collections
 
 import click
-import dominate
 import dominate.tags as t
 import dominate.util as tu
 
@@ -26,7 +25,8 @@ import papis.crossref
 import papis.notes
 import papis.citations
 
-import papis.web.latex
+import papis.web.header
+import papis.web.navbar
 import papis.web.timeline
 import papis.web.paths as wp
 import papis.web.html as wh
@@ -42,108 +42,11 @@ PAPIS_FILE_ICON_CLASS = "papis-file-icon"
 PAPIS_TAG_CLASS = "papis-tags"
 
 
-def _main_html_document(pretitle: str) -> t.html_tag:
-    with dominate.document(title=None) as result:
-        with result.head:
-            _header(pretitle)
-    return result
-
-
-def _header(pretitle: str) -> None:
-    t.title("{} Papis web".format(pretitle))
-    t.meta(name="apple-mobile-web-app-capable", content="yes")
-    t.meta(charset="UTF-8")
-    t.meta(name="apple-mobile-web-app-capable", content="yes")
-    t.meta(name="viewport", content="width=device-width, initial-scale=1")
-
-    for awesome in papis.config.getlist("serve-font-awesome-css"):
-        t.link(rel="stylesheet",
-               href=awesome,
-               crossorigin="anonymous",
-               referrerpolicy="no-referrer")
-
-    t.link(href=papis.config.getstring("serve-bootstrap-css"),
-           rel="stylesheet",
-           crossorigin="anonymous")
-    t.script(type="text/javascript",
-             src=papis.config.getstring("serve-bootstrap-js"),
-             crossorigin="anonymous")
-    t.script(type="text/javascript",
-             src=papis.config.getstring("serve-jquery-js"))
-    t.link(rel="stylesheet",
-           type="text/css",
-           href=papis.config.getstring("serve-jquery.dataTables-css"))
-    t.script(type="text/javascript",
-             charset="utf8",
-             src=papis.config.getstring("serve-jquery.dataTables-js"))
-
-    papis.web.latex.katex_header()
-
-    if papis.config.getboolean("serve-enable-timeline"):
-        t.link(rel="stylesheet",
-               type="text/css",
-               href=papis.config.getstring("serve-timeline-css"))
-        t.script(type="text/javascript",
-                 charset="utf8",
-                 src=papis.config.getstring("serve-timeline-js"))
-
-    for src in papis.config.getlist("serve-ace-urls"):
-        t.script(type="text/javascript",
-                 charset="utf8",
-                 src=src)
-
-    for href in papis.config.getlist("serve-user-css"):
-        t.link(rel="stylesheet", type="text/css", href=href)
-
-    for src in papis.config.getlist("serve-user-js"):
-        t.script(type="text/javascript", src=src)
-
-
-def _navbar(libname: str) -> t.html_tag:
-
-    def _li(title: str, href: str, active: bool = False) -> t.html_tag:
-        with t.li(cls="nav-item") as result:
-            t.a(title,
-                cls="nav-link" + (" active" if active else ""),
-                aria_current="page",
-                href=href)
-        return result
-
-    with t.nav(cls="navbar navbar-expand-md navbar-light bg-light") as nav:
-        with t.div(cls="container-fluid"):
-
-            t.a("Papis", href="#", cls="navbar-brand")
-
-            but = t.button(cls="navbar-toggler",
-                           type="button",
-                           data_bs_toggle="collapse",
-                           data_bs_target="#navbarNav",
-                           aria_controls="navbarNav",
-                           aria_expanded="false",
-                           aria_label="Toggle navigation")
-            with but:
-                t.span(cls="navbar-toggler-icon")
-
-            with t.div(id="navbarNav"):
-                t.attr(cls="collapse navbar-collapse")
-                with t.ul(cls="navbar-nav"):
-                    _li("All", "/library/{libname}".format(libname=libname),
-                        active=True)
-                    _li("Tags",
-                        "/library/{libname}/tags".format(libname=libname))
-                    _li("Libraries", "/libraries")
-                    _li("Explore", "#")
-
-    return nav
-
-
-def _clear_cache(libname: str) -> t.html_tag:
-    result = t.a(href="/library/{libname}/clear_cache".format(libname=libname))
-    with result:
+def _clear_cache(libname: str) -> None:
+    with t.a(href="/library/{libname}/clear_cache".format(libname=libname)):
         t.i(cls=wh.fa("refresh"),
             data_bs_toggle="tooltip",
             title="Clear Cache")
-    return result
 
 
 def _jquery_table(libname: str,
@@ -181,10 +84,10 @@ def _index(pretitle: str,
            libfolder: str,
            query: str,
            documents: List[papis.document.Document]) -> t.html_tag:
-    with _main_html_document(pretitle) as result:
+    with papis.web.header.main_html_document(pretitle) as result:
         with result.body:
-            _navbar(libname=libname)
-            with _container():
+            papis.web.navbar.navbar(libname=libname)
+            with wh.container():
                 with t.h1("Papis library: "):
                     t.code(libname)
                     _clear_cache(libname)
@@ -235,9 +138,9 @@ def _tag(tag: str, libname: str) -> t.html_tag:
 
 
 def _tags(pretitle: str, libname: str, tags: Dict[str, int]) -> t.html_tag:
-    with _main_html_document(pretitle) as result:
+    with papis.web.header.main_html_document(pretitle) as result:
         with result.body:
-            _navbar(libname=libname)
+            papis.web.navbar.navbar(libname=libname)
             with wh.container():
                 with t.h1("TAGS"):
                     with t.a(href="/library/{}/tags/refresh".format(libname)):
@@ -251,9 +154,9 @@ def _tags(pretitle: str, libname: str, tags: Dict[str, int]) -> t.html_tag:
 
 
 def _libraries(libname: str) -> t.html_tag:
-    with _main_html_document("Libraries") as result:
+    with papis.web.header.main_html_document("Libraries") as result:
         with result.body:
-            _navbar(libname=libname)
+            papis.web.navbar.navbar(libname=libname)
             with wh.container():
                 t.h1("Library selection")
                 with t.ol(cls="list-group"):
@@ -407,10 +310,10 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
     errors = papis.commands.doctor.run(doc, checks)
     libfolder = papis.config.get_lib_from_name(libname).paths[0]
 
-    with _main_html_document(doc["title"]) as result:
+    with papis.web.header.main_html_document(doc["title"]) as result:
         with result.body:
             _click_tab_selector_link_in_url()
-            _navbar(libname=libname)
+            papis.web.navbar.navbar(libname=libname)
             with wh.container():
                 t.h3(doc["title"])
                 t.h5("{:.80}, {}".format(doc["author"], doc["year"]),
