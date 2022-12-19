@@ -4,7 +4,7 @@ import json
 import logging
 import http.server
 import urllib.parse
-from typing import Any, List, Optional, Union, Tuple, Callable, Dict
+from typing import Any, List, Optional, Tuple, Callable, Dict
 import functools
 import cgi
 import collections
@@ -31,15 +31,16 @@ import papis.web.timeline
 import papis.web.paths as wp
 import papis.web.html as wh
 
+import papis.web.libraries
+import papis.web.tags
+
 
 logger = logging.getLogger("papis:server")
 
 USE_GIT = False  # type: bool
-TAGS_SPLIT_RX = re.compile(r"\s*[,\s]\s*")
 TAGS_LIST = {}  # type: Dict[str, Optional[Dict[str, int]]]
 QUERY_PLACEHOLDER = "insert query..."
 PAPIS_FILE_ICON_CLASS = "papis-file-icon"
-PAPIS_TAG_CLASS = "papis-tags"
 
 
 def _clear_cache(libname: str) -> None:
@@ -127,46 +128,6 @@ def _index(pretitle: str,
                     _jquery_table(libname=libname,
                                   libfolder=libfolder,
                                   documents=documents)
-    return result
-
-
-def _tag(tag: str, libname: str) -> t.html_tag:
-    return t.a(tag,
-               cls="badge bg-dark papis-tag",
-               href=("/library/{libname}/query?q=tags:{0}"
-                     .format(tag, libname=libname)))
-
-
-def _tags(pretitle: str, libname: str, tags: Dict[str, int]) -> t.html_tag:
-    with papis.web.header.main_html_document(pretitle) as result:
-        with result.body:
-            papis.web.navbar.navbar(libname=libname)
-            with wh.container():
-                with t.h1("TAGS"):
-                    with t.a(href="/library/{}/tags/refresh".format(libname)):
-                        wh.icon("refresh")
-                with wh.container():
-                    for tag in sorted(tags,
-                                      key=lambda k: tags[k],
-                                      reverse=True):
-                        _tag(tag=tag, libname=libname)
-    return result
-
-
-def _libraries(libname: str) -> t.html_tag:
-    with papis.web.header.main_html_document("Libraries") as result:
-        with result.body:
-            papis.web.navbar.navbar(libname=libname)
-            with wh.container():
-                t.h1("Library selection")
-                with t.ol(cls="list-group"):
-                    libs = papis.api.get_libraries()
-                    for lib in libs:
-                        with t.a(href="/library/{}".format(lib)):
-                            t.attr(cls="list-group-item "
-                                   "list-group-item-action")
-                            wh.icon("book")
-                            t.span(lib)
     return result
 
 
@@ -321,10 +282,7 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                 tags = doc["tags"]
                 with wh.flex("between"):
                     if tags:
-                        with t.span(cls=PAPIS_TAG_CLASS):
-                            wh.icon("hashtag")
-                            for tag in ensure_tags_list(tags):
-                                _tag(tag=tag, libname=libname)
+                        papis.web.tags.tags_list_div(tags, libname)
                     for fpath in doc.get_files():
                         with t.a(href=wp.file_server_path(fpath,
                                                           libfolder,
@@ -491,15 +449,6 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
     return result
 
 
-def ensure_tags_list(tags: Union[str, List[str]]) -> List[str]:
-    """
-    Ensure getting a list of tags to render them.
-    """
-    if isinstance(tags, list):
-        return tags
-    return TAGS_SPLIT_RX.split(tags)
-
-
 def _click_tab_selector_link_in_url() -> None:
     t.script(tu.raw("""
     window.addEventListener('load', () => {
@@ -576,11 +525,8 @@ def _document_item(libname: str,
                                      libfolder=libfolder)
         with t.td():
             if doc.has("tags"):
-                with t.span(cls=PAPIS_TAG_CLASS):
-                    wh.icon("hashtag")
-                    for tag in ensure_tags_list(doc["tags"]):
-                        _tag(tag=tag, libname=libname)
-                    t.br()
+                papis.web.tags.tags_list_div(doc["tags"], libname)
+                t.br()
 
             if doc.has("year"):
                 t.span(doc["year"], cls="badge bg-primary papis-year")
@@ -698,14 +644,16 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         docs = papis.api.get_all_documents_in_lib(libname)
         tags_of_tags = [tag
                         for d in docs
-                        for tag in ensure_tags_list(d["tags"])]
+                        for tag in papis.web.tags.ensure_tags_list(d["tags"])]
         if TAGS_LIST.get(libname) is None:
             TAGS_LIST[libname] = collections.defaultdict(int)
             for tag in tags_of_tags:
                 TAGS_LIST[libname][tag] += 1  # type: ignore
-        page = _tags(libname=libname,
-                     pretitle="TAGS",
-                     tags=TAGS_LIST[libname] or {})
+
+        page = papis.web.tags.html(libname=libname,
+                                   pretitle="TAGS",
+                                   tags=TAGS_LIST[libname] or {})
+
         self.wfile.write(bytes(str(page), "utf-8"))
         self.wfile.flush()
 
@@ -718,7 +666,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     @ok_html
     def page_libraries(self) -> None:
         libname = papis.api.get_lib_name()
-        page = _libraries(libname=libname)
+        page = papis.web.libraries.html(libname=libname)
         self.wfile.write(bytes(str(page), "utf-8"))
         self.wfile.flush()
 
