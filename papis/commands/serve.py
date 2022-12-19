@@ -4,7 +4,7 @@ import json
 import logging
 import http.server
 import urllib.parse
-from typing import Any, List, Optional, Union, Tuple, Callable, Dict, Sequence
+from typing import Any, List, Optional, Union, Tuple, Callable, Dict
 import functools
 import cgi
 import collections
@@ -26,12 +26,13 @@ import papis.crossref
 import papis.notes
 import papis.citations
 
+import papis.web.latex
+import papis.web.timeline
+import papis.web.paths as wp
+import papis.web.html as wh
+
 
 logger = logging.getLogger("papis:server")
-
-# types
-HtmlGiver = Callable[[], t.html_tag]
-
 
 USE_GIT = False  # type: bool
 TAGS_SPLIT_RX = re.compile(r"\s*[,\s]\s*")
@@ -41,98 +42,11 @@ PAPIS_FILE_ICON_CLASS = "papis-file-icon"
 PAPIS_TAG_CLASS = "papis-tags"
 
 
-def _fa(name: str, namespace: str = "fa") -> str:
-    """
-    Font awesome wrapper
-    """
-    return namespace + " fa-" + name
-
-
-def _flex(where: str, cls: str = "", **kwargs: Any) -> t.html_tag:
-    return t.div(cls=cls + " d-flex justify-content-" + where, **kwargs)
-
-
-def _alert(node: t.html_tag, type_: str, **kwargs: Any) -> t.html_tag:
-    with node(cls=("alert alert-{} ".format(type_)
-                   + "alert-dismissible fade show"),
-              role="alert",
-              **kwargs) as result:
-        t.button(type="button",
-                 cls="btn-close",
-                 data_bs_dismiss="alert",
-                 aria_label="Close")
-    return result
-
-
-def _icon(name: str, namespace: str = "fa") -> t.html_tag:
-    return t.i(cls=_fa(name, namespace=namespace))
-
-
-def _icon_span(icon_name: str, text: str, *fmt: Any, **kfmt: Any) -> None:
-    _icon(icon_name)
-    t.span(text.format(*fmt, **kfmt))
-
-
-def _container() -> t.html_tag:
-    return t.div(cls="container")
-
-
-def _modal(body: HtmlGiver, id_: str) -> t.html_tag:
-    with t.div(cls="modal fade", tabindex="-1", id=id_) as rst:
-        with t.div(cls="modal-dialog"):
-            with t.div(cls="modal-content"):
-                with t.div(cls="modal-body"):
-                    body()
-    return rst
-
-
 def _main_html_document(pretitle: str) -> t.html_tag:
     with dominate.document(title=None) as result:
         with result.head:
             _header(pretitle)
     return result
-
-
-def _katex_header() -> t.html_tag:
-    """
-    Everything connected to Katex
-    """
-    t.link(rel="stylesheet",
-           type="text/css",
-           href=papis.config.getstring("serve-katex-css"))
-    t.script(type="text/javascript",
-             charset="utf8",
-             defer=True,
-             src=papis.config.getstring("serve-katex-js"))
-    t.script(type="text/javascript",
-             charset="utf8",
-             defer=True,
-             src=papis.config.getstring("serve-katex-auto-render-js"))
-    katex_script = r"""
-document.addEventListener('DOMContentLoaded', () => {
-    renderMathInElement(document.body, {
-        delimiters: [
-            {left: "$$", right: "$$", display: true},
-            {left: "$", right: "$", display: false},
-            {left: "\\(", right: "\\)", display: false},
-            {left: "\\begin{equation}", right: "\\end{equation}",
-             display: true},
-            {left: "\\begin{equation*}", right: "\\end{equation*}",
-             display: true},
-            {left: "\\begin{align}", right: "\\end{align}", display: true},
-            {left: "\\begin{align*}", right: "\\end{align*}", display: true},
-            {left: "\\begin{alignat}", right: "\\end{alignat}", display: true},
-            {left: "\\begin{gather}", right: "\\end{gather}", display: true},
-            {left: "\\begin{CD}", right: "\\end{CD}", display: true},
-            {left: "\\[", right: "\\]", display: true}
-        ],
-    });
-});
-
-        """
-    t.script(tu.raw(katex_script),
-             charset="utf8",
-             type="text/javascript")
 
 
 def _header(pretitle: str) -> None:
@@ -163,7 +77,7 @@ def _header(pretitle: str) -> None:
              charset="utf8",
              src=papis.config.getstring("serve-jquery.dataTables-js"))
 
-    _katex_header()
+    papis.web.latex.katex_header()
 
     if papis.config.getboolean("serve-enable-timeline"):
         t.link(rel="stylesheet",
@@ -226,7 +140,7 @@ def _navbar(libname: str) -> t.html_tag:
 def _clear_cache(libname: str) -> t.html_tag:
     result = t.a(href="/library/{libname}/clear_cache".format(libname=libname))
     with result:
-        t.i(cls=_fa("refresh"),
+        t.i(cls=wh.fa("refresh"),
             data_bs_toggle="tooltip",
             title="Clear Cache")
     return result
@@ -262,33 +176,6 @@ def _jquery_table(libname: str,
     return result
 
 
-def _timeline(documents: Sequence[Dict[str, Any]],
-              libname: str,
-              _id: str) -> None:
-    t.div(id=_id, style="width: 100%; height: 300px;")
-
-    def _make_text(d: Dict[str, Any]) -> str:
-        _text = papis.document.describe(d)
-        _href = doc_server_path(libname, d)
-        return r"<a href='{}'>{}</a>".format(_href, _text)
-
-    json_data = [{"text": {"text": _make_text(d)},
-                  "start_date": {"year": d["year"],
-                                 "month": d["month"]
-                                 if "month" in d
-                                 and isinstance(d["month"], int)
-                                 else 1}}
-                 for d in documents if "year" in d]
-    t.script(tu.raw("""
-    new TL.Timeline('{}',
-                    {{'events': {} }},
-                    {{
-                      timenav_height_percentage: 80,
-                      width: "100%"
-                    }})
-    """.format(_id, json_data)))
-
-
 def _index(pretitle: str,
            libname: str,
            libfolder: str,
@@ -303,8 +190,7 @@ def _index(pretitle: str,
                     _clear_cache(libname)
                 with t.h3():
                     with t.form(method="GET",
-                                action=("/library/{libname}/query"
-                                        .format(libname=libname))):
+                                action=wp.query_path(libname)):
                         t.input_(cls="form-control",
                                  type="text",
                                  name="q",
@@ -315,26 +201,26 @@ def _index(pretitle: str,
                 # Add a couple of friendlier messages
                 if not documents:
                     if query == QUERY_PLACEHOLDER:
-                        with _alert(t.h4, "success"):
-                            _icon_span("search", "Place your query")
+                        with wh.alert(t.h4, "success"):
+                            wh.icon_span("search", "Place your query")
                     else:
-                        with _alert(t.h4, "warning"):
-                            _icon_span("database",
-                                       "Ups! I didn't find for '{}'", query)
+                        with wh.alert(t.h4, "warning"):
+                            wh.icon_span("database",
+                                         "Ups! I didn't find for '{}'", query)
                 else:
                     if papis.config.getboolean("serve-enable-timeline"):
                         if (len(documents)
                             < (papis.config.getint("serve-timeline-max")
                                or 500)):
-                            _timeline(documents,
-                                      libname,
-                                      "main-index-timeline")
+                            papis.web.timeline.widget(documents,
+                                                      libname,
+                                                      "main-index-timeline")
                         else:
-                            with _alert(t.p, "warning"):
-                                _icon_span("warning",
-                                           "Too many documents ({}) for "
-                                           "a timeline to be useful",
-                                           len(documents))
+                            with wh.alert(t.p, "warning"):
+                                wh.icon_span("warning",
+                                             "Too many documents ({}) for "
+                                             "a timeline to be useful",
+                                             len(documents))
                     _jquery_table(libname=libname,
                                   libfolder=libfolder,
                                   documents=documents)
@@ -352,11 +238,11 @@ def _tags(pretitle: str, libname: str, tags: Dict[str, int]) -> t.html_tag:
     with _main_html_document(pretitle) as result:
         with result.body:
             _navbar(libname=libname)
-            with _container():
+            with wh.container():
                 with t.h1("TAGS"):
                     with t.a(href="/library/{}/tags/refresh".format(libname)):
-                        _icon("refresh")
-                with _container():
+                        wh.icon("refresh")
+                with wh.container():
                     for tag in sorted(tags,
                                       key=lambda k: tags[k],
                                       reverse=True):
@@ -368,7 +254,7 @@ def _libraries(libname: str) -> t.html_tag:
     with _main_html_document("Libraries") as result:
         with result.body:
             _navbar(libname=libname)
-            with _container():
+            with wh.container():
                 t.h1("Library selection")
                 with t.ol(cls="list-group"):
                     libs = papis.api.get_libraries()
@@ -376,21 +262,9 @@ def _libraries(libname: str) -> t.html_tag:
                         with t.a(href="/library/{}".format(lib)):
                             t.attr(cls="list-group-item "
                                    "list-group-item-action")
-                            _icon("book")
+                            wh.icon("book")
                             t.span(lib)
     return result
-
-
-def _file_icon(filepath: str) -> t.html_tag:
-    return _icon("file-pdf" if filepath.endswith("pdf") else "file")
-
-
-def _file_server_path(localpath: str,
-                      libfolder: str,
-                      libname: str) -> str:
-    return ("/library/{libname}/file/{0}"
-            .format(localpath.replace(libfolder + "/", ""),
-                    libname=libname))
 
 
 def _doc_files_icons(files: List[str],
@@ -404,8 +278,8 @@ def _doc_files_icons(files: List[str],
                 t.attr(data_bs_placement="bottom")
                 t.attr(style="font-size: 1.5em")
                 t.attr(title=os.path.basename(_f))
-                t.attr(href=_file_server_path(_f, libfolder, libname))
-                _file_icon(_f)
+                t.attr(href=wp.file_server_path(_f, libfolder, libname))
+                wh.file_icon(_f)
     return result
 
 
@@ -418,17 +292,17 @@ def _document_view_main_form(libname: str,
     }
     with t.div(cls="") as result:
         # urls block
-        with _flex("between"):
-            with _flex("begin"):
+        with wh.flex("between"):
+            with wh.flex("begin"):
                 t.a("@{}".format(doc["ref"]),
                     href="#",
                     cls="btn btn-outline-success")
-            with _flex("center"):
+            with wh.flex("center"):
                 t.button("Submit to edit",
                          form="edit-form",
                          cls="btn btn-success",
                          type="submit")
-            with _flex("end"):
+            with wh.flex("end"):
                 _links_btn_group(doc, small=False)
 
         t.br()
@@ -436,7 +310,7 @@ def _document_view_main_form(libname: str,
         # the said form
         with t.form(method="POST",
                     id="edit-form",
-                    action=doc_server_path(libname, doc)):
+                    action=wp.doc_server_path(libname, doc)):
             for key, val in doc.items():
                 if isinstance(val, (list, dict)):
                     continue
@@ -465,7 +339,7 @@ def _document_view_main_form(libname: str,
 
                     with t.label(cls="input-group-text",
                                  _for=key):
-                        _icon("close")
+                        wh.icon("close")
             # end for
 
             with t.div(cls="input-group mb-3"):
@@ -482,7 +356,7 @@ def _document_view_main_form(libname: str,
                 with t.button(cls="input-group-text bg-success",
                               form="edit-form",
                               type="submit"):
-                    _icon("plus")
+                    wh.icon("plus")
 
     return result
 
@@ -491,17 +365,18 @@ def _render_citations(doc: papis.document.Document,
                       libname: str,
                       libfolder: str) -> None:
 
-    with t.form(action=fetch_citations_server_path(libname, doc), method="GET"):
+    with t.form(action=wp.fetch_citations_server_path(libname, doc),
+                method="GET"):
         with t.button(cls="btn btn-success",
                       type="submit"):
-            _icon_span("cloud-bolt", "Fetch citations")
+            wh.icon_span("cloud-bolt", "Fetch citations")
 
     if papis.citations.has_citations(doc):
         citations = papis.citations.get_citations(doc)
         if papis.config.getboolean("serve-enable-timeline"):
-            _timeline(citations,
-                      libname,
-                      "main-citations-timeline")
+            papis.web.timeline.widget(citations,
+                                      libname,
+                                      "main-citations-timeline")
         with t.ol(cls="list-group"):
             with t.li(cls="list-group-item"):
                 for cit in citations:
@@ -519,9 +394,8 @@ def _render_citations(doc: papis.document.Document,
                      height="500",
                      style="width: '100%'")
         else:
-            with _alert(t.h3, "danger"):
-                _icon_span("error",
-                           "No citations available")
+            with wh.alert(t.h3, "danger"):
+                wh.icon_span("error", "No citations available")
 
 
 def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
@@ -537,25 +411,25 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
         with result.body:
             _click_tab_selector_link_in_url()
             _navbar(libname=libname)
-            with _container():
+            with wh.container():
                 t.h3(doc["title"])
                 t.h5("{:.80}, {}".format(doc["author"], doc["year"]),
                      style="font-style: italic")
                 tags = doc["tags"]
-                with _flex("between"):
+                with wh.flex("between"):
                     if tags:
                         with t.span(cls=PAPIS_TAG_CLASS):
-                            _icon("hashtag")
+                            wh.icon("hashtag")
                             for tag in ensure_tags_list(tags):
                                 _tag(tag=tag, libname=libname)
                     for fpath in doc.get_files():
-                        with t.a(href=_file_server_path(fpath,
-                                                        libfolder,
-                                                        libname)):
-                            _file_icon(fpath)
+                        with t.a(href=wp.file_server_path(fpath,
+                                                          libfolder,
+                                                          libname)):
+                            wh.file_icon(fpath)
                 for error in errors:
-                    with _alert(t.div, "danger"):
-                        _icon_span("stethoscope", error.msg)
+                    with wh.alert(t.div, "danger"):
+                        wh.icon_span("stethoscope", error.msg)
 
                 with t.ul(cls="nav nav-tabs"):
 
@@ -577,16 +451,16 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                     _tab_element(t.span,
                                  ["Form"],
                                  "#main-form-tab", active=True)
-                    _tab_element(_icon_span,
+                    _tab_element(wh.icon_span,
                                  ["circle-info", "info.yaml"],
                                  "#yaml-form-tab")
                     _tab_element(t.span, ["Bibtex"], "#bibtex-form-tab")
                     for i, fpath in enumerate(doc.get_files()):
-                        _tab_element(_file_icon,
+                        _tab_element(wh.file_icon,
                                      [fpath],
                                      "#file-tab-{}".format(i))
                     _tab_element(t.span, ["Citations"], "#citations-tab")
-                    _tab_element(_icon_span, ["note", "Notes"],
+                    _tab_element(wh.icon_span, ["note", "Notes"],
                                  "#notes-tab")
 
                 t.br()
@@ -676,9 +550,9 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                     for i, fpath in enumerate(doc.get_files()):
                         if not fpath.endswith("pdf"):
                             continue
-                        _unquoted_file_path = _file_server_path(fpath,
-                                                                libfolder,
-                                                                libname)
+                        _unquoted_file_path = wp.file_server_path(fpath,
+                                                                  libfolder,
+                                                                  libname)
                         _file_path = urllib.parse.quote(_unquoted_file_path,
                                                         safe="")
                         viewer_path = ("/static/pdfjs/web/viewer.html?file={}"
@@ -689,18 +563,17 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                                    aria_labelledby="bibtex-form",
                                    cls="tab-pane fade"):
 
-                            with _flex("center"):
+                            with wh.flex("center"):
                                 with t.div(cls="btn-group", role="group"):
                                     with t.a(href=viewer_path,
                                              cls="btn btn-outline-success",
                                              target="_blank"):
-                                        _icon_span("square-arrow-up-right",
-                                                   "Open in new window")
+                                        wh.icon_span("square-arrow-up-right",
+                                                     "Open in new window")
                                     with t.a(href=_unquoted_file_path,
                                              cls="btn btn-outline-success",
                                              target="_blank"):
-                                        _icon_span("download",
-                                                   "Download")
+                                        wh.icon_span("download", "Download")
 
                             t.iframe(src=viewer_path,
                                      style="resize: vertical",
@@ -735,23 +608,6 @@ def _click_tab_selector_link_in_url() -> None:
     """))
 
 
-def doc_server_path(libname: str, doc: Dict[str, Any]) -> str:
-    """
-    The server path for a document, it might change in the future
-    """
-    # TODO: probably we should quote the ref (and later unquote)?
-    if "ref" not in doc:
-        return "#"
-    return "/library/{libname}/document/ref:{ref}".format(ref=doc["ref"],
-                                                          libname=libname)
-
-def fetch_citations_server_path(libname: str, doc: Dict[str, Any]) -> str:
-    if "ref" not in doc:
-        return "#"
-    return ("/library/{libname}/document/fetch-citations/ref:{ref}"
-            .format(ref=doc["ref"], libname=libname))
-
-
 def _links_btn_group(doc: papis.document.Document, small: bool = True) -> None:
     with t.div(cls="btn-group", role="group"):
 
@@ -761,7 +617,7 @@ def _links_btn_group(doc: papis.document.Document, small: bool = True) -> None:
                                                       if small
                                                       else ""),
                      target="_blank"):
-                _icon_span(icon, title)
+                wh.icon_span(icon, title)
 
         if doc.has("url"):
             url_link("external-link", "url", doc["url"])
@@ -794,7 +650,7 @@ def _document_item(libname: str,
                    libfolder: str,
                    doc: papis.document.Document) -> t.html_tag:
 
-    doc_link = doc_server_path(libname, doc)
+    doc_link = wp.doc_server_path(libname, doc)
 
     with t.tr() as result:
         with t.td():
@@ -802,12 +658,12 @@ def _document_item(libname: str,
             with t.div(cls="ms-2 me-auto"):
                 with t.div(cls="fw-bold"):
                     with t.a(href=doc_link):
-                        _icon("arrow-right")
+                        wh.icon("arrow-right")
                     t.span(doc["title"])
                 t.span(doc["author"])
                 t.br()
                 if doc.has("journal"):
-                    _icon("book-open")
+                    wh.icon("book-open")
                     t.span(doc["journal"])
                     t.br()
 
@@ -818,7 +674,7 @@ def _document_item(libname: str,
         with t.td():
             if doc.has("tags"):
                 with t.span(cls=PAPIS_TAG_CLASS):
-                    _icon("hashtag")
+                    wh.icon("hashtag")
                     for tag in ensure_tags_list(doc["tags"]):
                         _tag(tag=tag, libname=libname)
                     t.br()
@@ -830,7 +686,7 @@ def _document_item(libname: str,
             t.br()
             if doc.has("ref"):
                 with t.a(cls="badge bg-success", href=doc_link):
-                    _icon("at")
+                    wh.icon("at")
                     t.span(doc["ref"])
             t.br()
             _links_btn_group(doc)
@@ -1060,10 +916,6 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     def send_local_document_file(self, libname: str, localpath: str) -> None:
         libfolder = papis.config.get_lib_from_name(libname).paths[0]
         path = os.path.join(libfolder, localpath)
-        print(libname)
-        print(localpath)
-        print(libfolder)
-        print(path)
         if os.path.exists(path):
             self._ok()
             self.send_header("Content-Type", "application/pdf")
@@ -1166,10 +1018,10 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.page_libraries),
             ("^/library/?([^/]+)?/query[?]q=(.*)$",
                 self.page_query),
-            ("^/library/?([^/]+)?/document/(ref:.*)$",
-                self.page_document),
             ("^/library/?([^/]+)?/document/fetch-citations/(ref:.*)$",
                 self.fetch_citations),
+            ("^/library/?([^/]+)?/document/(ref:.*)$",
+                self.page_document),
             ("^/library/([^/]+)/tags$",
                 self.page_tags),
             ("^/library/([^/]+)/tags/refresh$",
