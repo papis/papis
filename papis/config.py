@@ -125,6 +125,10 @@ general_settings = {
 
     "serve-empty-query-get-all-documents": True,
 
+    # citations configuration
+    "citations-file-name": "citations.yaml",
+    "cited-by-file-name": "cited-by.yaml",
+
     # timeline options
     "serve-timeline-max": 500,
     "serve-enable-timeline": False,
