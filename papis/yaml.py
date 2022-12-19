@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Iterable
 
 import yaml                                 # lgtm [py/import-and-import-from]
 import click
@@ -34,6 +34,21 @@ def data_to_yaml(yaml_path: str, data: Dict[str, Any]) -> None:
             fd,
             allow_unicode=papis.config.getboolean("info-allow-unicode"),
             default_flow_style=False)
+
+
+def yaml_to_list(yaml_path: str,
+                 raise_exception: bool = False) -> Iterable[Dict[str, Any]]:
+    """
+    Analogous to yaml_to_data but using load_all to read everything.
+    """
+    try:
+        with open(yaml_path) as fdd:
+            return list(yaml.load_all(fdd, Loader=Loader))
+    except Exception as e:
+        if raise_exception:
+            raise ValueError(e) from e
+        logger.error("YAML syntax error. %s")
+        return []
 
 
 def exporter(documents: List[papis.document.Document]) -> str:
