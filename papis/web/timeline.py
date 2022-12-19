@@ -1,19 +1,13 @@
+"""
+This file creates a timeline of documents with year and possibly month
+information.
+"""
 from typing import Any, Dict, Sequence
 
 import dominate.tags as t
 import dominate.util as tu
 
-import papis.api
-import papis.cli
-import papis.config
 import papis.document
-import papis.commands.add
-import papis.commands.update
-import papis.commands.export
-import papis.commands.doctor
-import papis.crossref
-import papis.notes
-import papis.citations
 
 import papis.web.paths as wp
 
@@ -21,6 +15,9 @@ import papis.web.paths as wp
 def widget(documents: Sequence[Dict[str, Any]],
            libname: str,
            _id: str) -> None:
+    """
+    Creates a div element and a script with the timeline API used.
+    """
     t.div(id=_id, style="width: 100%; height: 300px;")
 
     def _make_text(d: Dict[str, Any]) -> str:
