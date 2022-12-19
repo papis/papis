@@ -27,10 +27,14 @@ import papis.citations
 
 import papis.web.header
 import papis.web.navbar
-import papis.web.timeline
 import papis.web.paths as wp
 import papis.web.html as wh
 
+# widgets
+import papis.web.timeline
+import papis.web.notes
+
+# views
 import papis.web.libraries
 import papis.web.tags
 
@@ -378,35 +382,7 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                                role="tabpanel",
                                aria_labelledby="notes-form",
                                cls="tab-pane fade"):
-                        _notes_id = "notes-source"
-                        _notes_content = ""
-                        # TODO add org mode somehow and check extensions
-                        _notes_extension = "markdown"
-                        if papis.notes.has_notes(doc):
-                            filepath = papis.notes.notes_path(doc)
-                            if os.path.exists(filepath):
-                                with open(filepath) as _fd:
-                                    _notes_content = _fd.read()
-
-                        t.p(_notes_content,
-                            id=_notes_id,
-                            width="100%",
-                            height=100,
-                            style="min-height: 500px")
-
-                        _script = """
-                        let notes_editor = ace.edit("{}");
-                        ace.require('ace/ext/settings_menu').init(notes_editor);
-                        ace.config.loadModule('ace/ext/keybinding_menu',
-                                              (module) =>  {{
-                                                  module.init(notes_editor);
-                                              }});
-                        notes_editor.setKeyboardHandler('ace/keyboard/vim');
-                        notes_editor.session.setMode("ace/mode/{}");
-                        """.format(_notes_id, _notes_extension)
-                        t.script(tu.raw(_script),
-                                 charset="utf-8",
-                                 type="text/javascript")
+                        papis.web.notes.widget(libname, doc)
 
                     for i, fpath in enumerate(doc.get_files()):
                         if not fpath.endswith("pdf"):
@@ -694,8 +670,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
         doc = docs[0]
         papis.citations.fetch_and_save_citations(doc)
-        back_url = self.headers.get("Referer", "/library")
-        self.redirect(back_url)
+        self._redirect_back()
 
     def get_libraries(self) -> None:
         logger.info("getting libraries")
@@ -755,6 +730,10 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(bytes(page, "utf-8"))
         self.wfile.flush()
 
+    def _redirect_back(self) -> None:
+        back_url = self.headers.get("Referer", "/library")
+        self.redirect(back_url)
+
     def get_document_format(self, libname: str, query: str, fmt: str) -> None:
         docs = papis.api.get_documents_in_lib(libname, query)
         fmts = papis.commands.export.run(docs, fmt)
@@ -796,18 +775,32 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                                   "Server path {0} not understood"
                                   .format(self.path))
 
-    def update_page_document(self, libname: str, ref: str) -> None:
+    def _get_document(self, libname: str, ref: str) -> papis.document.Document:
         db = papis.database.get(libname)
-        form = cgi.FieldStorage(
-            fp=self.rfile,
-            headers=self.headers,
-            environ={"REQUEST_METHOD": "POST"}
-        )
         docs = db.query_dict({"ref": ref})
         if not docs:
             raise Exception("Document with ref %s not "
                             "found in the database" % ref)
-        doc = docs[0]
+        return docs[0]
+
+    def _get_form(self, method: str = "POST") -> cgi.FieldStorage:
+        return cgi.FieldStorage(fp=self.rfile,
+                                headers=self.headers,
+                                environ={"REQUEST_METHOD": method})
+
+    def update_notes(self, libname: str, ref: str) -> None:
+        doc = self._get_document(libname, ref)
+        form = self._get_form("POST")
+        new_notes = form.getvalue("value")
+        notes_path = papis.notes.notes_path(doc)
+        with open(notes_path, "w+") as fdr:
+            fdr.write(new_notes)
+        self._redirect_back()
+
+    def update_page_document(self, libname: str, ref: str) -> None:
+        doc = self._get_document(libname, ref)
+        form = self._get_form("POST")
+
         result = {}
         for key in form:
             if key == "newkey-name":
@@ -821,8 +814,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         papis.commands.update.run(document=doc,
                                   data=result,
                                   git=USE_GIT)
-        back_url = self.headers.get("Referer", "/library")
-        self.redirect(back_url)
+        self._redirect_back()
 
     def serve_static(self, static_path: str, params: str) -> None:
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -852,6 +844,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         routes = [
             ("^/library/?([^/]+)?/document/ref:(.*)$",
                 self.update_page_document),
+            ("^/library/?([^/]+)?/document/notes/ref:(.*)$",
+                self.update_notes),
         ]
         self.do_ROUTES(routes)
 

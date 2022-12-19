@@ -1,6 +1,10 @@
 from typing import Dict, Any
 
 
+def _ref(doc: Dict[str, Any]) -> str:
+    return "ref:{ref}".format(ref=doc["ref"])
+
+
 def query_path(libname: str) -> str:
     """
     Path for submiting queries.
@@ -14,8 +18,18 @@ def fetch_citations_server_path(libname: str, doc: Dict[str, Any]) -> str:
     """
     if "ref" not in doc:
         return "#"
-    return ("/library/{libname}/document/fetch-citations/ref:{ref}"
-            .format(ref=doc["ref"], libname=libname))
+    return ("/library/{libname}/document/fetch-citations/{ref}"
+            .format(ref=_ref(doc), libname=libname))
+
+
+def update_notes(libname: str, doc: Dict[str, Any]) -> str:
+    """
+    Path for fetching citations for papers
+    """
+    if "ref" not in doc:
+        return "#"
+    return ("/library/{libname}/document/notes/{ref}"
+            .format(ref=_ref(doc), libname=libname))
 
 
 def doc_server_path(libname: str, doc: Dict[str, Any]) -> str:
@@ -25,8 +39,8 @@ def doc_server_path(libname: str, doc: Dict[str, Any]) -> str:
     # TODO: probably we should quote the ref (and later unquote)?
     if "ref" not in doc:
         return "#"
-    return "/library/{libname}/document/ref:{ref}".format(ref=doc["ref"],
-                                                          libname=libname)
+    return "/library/{libname}/document/{ref}".format(ref=_ref(doc),
+                                                      libname=libname)
 
 
 def file_server_path(localpath: str,
