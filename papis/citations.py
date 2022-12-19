@@ -12,6 +12,7 @@ import papis.yaml
 from papis.document import Document, to_dict
 
 
+Citations = Sequence[Dict[str, Any]]
 LOGGER = logging.getLogger("citations")
 
 
@@ -82,13 +83,17 @@ def fetch_citations(doc: Document) -> List[Dict[str, Any]]:
     return dois_with_data
 
 
-def fetch_and_save_citations(doc: Document) -> None:
+def save_citations(doc: Document, citations: Citations) -> None:
     file_path = get_citations_file(doc)
     if not file_path:
         return
+    papis.yaml.list_to_path(citations, file_path)
+
+
+def fetch_and_save_citations(doc: Document) -> None:
     citations = fetch_citations(doc)
     if citations:
-        papis.yaml.list_to_path(citations, file_path)
+        save_citations(doc, citations)
 
 
 def get_citations_file(doc: Document) -> Optional[str]:
@@ -106,7 +111,7 @@ def has_citations(doc: Document) -> bool:
     return os.path.exists(file_path)
 
 
-def get_citations(doc: Document) -> Sequence[Dict[str, Any]]:
+def get_citations(doc: Document) -> Citations:
     if has_citations(doc):
         file_path = get_citations_file(doc)
         if not file_path:

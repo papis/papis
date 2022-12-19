@@ -73,6 +73,10 @@ Examples
         papis add journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.156401
         papis add https://arxiv.org/abs/1712.03134
 
+- You can also download citations alongside the information of the
+  paper if the papers is able to obtain a ``doi`` identifier.  You can
+  pass the ``--fetch-citations`` flag in order to create a
+  ``citations.yaml`` file.
 
 Examples in python
 ^^^^^^^^^^^^^^^^^^
@@ -109,6 +113,7 @@ import papis.strings
 import papis.downloaders
 import papis.git
 import papis.format
+import papis.citations
 
 logger = logging.getLogger("add")  # type: logging.Logger
 
@@ -247,8 +252,8 @@ def run(paths: List[str],
         open_file: bool = False,
         edit: bool = False,
         git: bool = False,
-        link: bool = False
-        ) -> None:
+        link: bool = False,
+        citations: papis.citations.Citations = []) -> None:
     """
     :param paths: Paths to the documents to be added
     :param data: Data for the document to be added.
@@ -404,6 +409,9 @@ def run(paths: List[str],
             height=20)
         confirm = True
 
+    if citations:
+        papis.citations.save_citations(tmp_document, citations)
+
     if open_file:
         for d_path in tmp_document.get_files():
             papis.utils.open_file(d_path)
@@ -492,8 +500,11 @@ def run(paths: List[str],
     help="Download file with importer even if local file is passed",
     default=False,
     is_flag=True)
-def cli(
-        files: List[str],
+@click.option("--fetch-citations",
+              help="Fetch citations from doi",
+              default=lambda: papis.config.getboolean("add-fetch-citations"),
+              is_flag=True)
+def cli(files: List[str],
         set_list: List[Tuple[str, str]],
         subfolder: str,
         pick_subfolder: bool,
@@ -507,7 +518,11 @@ def cli(
         git: bool,
         link: bool,
         list_importers: bool,
-        force_download: bool) -> None:
+        force_download: bool,
+        fetch_citations: bool) -> None:
+    """
+    Command line interface for papis-add.
+    """
 
     if list_importers:
         import_mgr = papis.importer.get_import_mgr()
@@ -593,8 +608,18 @@ def cli(
         papis.pick.pick_subfolder_from_lib(papis.config.get_lib_name())[0]
     ) if pick_subfolder else None
 
-    run(
-        ctx.files,
+    if fetch_citations:
+        try:
+            logger.info("Fetching citations")
+            citations = papis.citations.fetch_citations(
+                papis.document.from_data(ctx.data))
+        except ValueError:
+            logger.warning("could not fetch any meaningful citations")
+            citations = []
+    else:
+        citations = []
+
+    run(ctx.files,
         data=ctx.data,
         folder_name=folder_name,
         file_name=file_name,
@@ -604,4 +629,5 @@ def cli(
         open_file=open_file,
         edit=edit,
         git=git,
-        link=link)
+        link=link,
+        citations=citations)
