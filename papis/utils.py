@@ -277,3 +277,7 @@ def update_doc_from_data_interactively(
 
 def is_relative_to(path: str, other: str) -> bool:
     return pathlib.Path(path).is_relative_to(other)
+
+
+def paths_are_identical(path: str, other: str) -> bool:
+    return pathlib.Path(path) == pathlib.Path(other)

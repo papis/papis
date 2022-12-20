@@ -306,7 +306,7 @@ def run(paths: List[str],
         temp_path = os.path.join(out_folder_path, folder_name)
         components = []     # type: List[str]
         while (
-                temp_path != out_folder_path
+                not papis.utils.paths_are_identical(temp_path, out_folder_path)
                 and papis.utils.is_relative_to(temp_path, out_folder_path)):
             path_component = os.path.basename(temp_path)
 
