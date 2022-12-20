@@ -60,6 +60,7 @@ general_settings = {
     "add-interactive": False,
     "add-edit": False,
     "add-open": False,
+    "add-fetch-citations": False,
 
     # papis-doctor configuration
     "doctor-default-checks": ["files", "keys-exist", "duplicated-keys"],

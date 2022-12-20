@@ -8,12 +8,19 @@ import papis.document
 
 import papis.web.paths as wp
 import papis.web.html as wh
+import papis.web.ace
 
 
 def widget(libname: str, doc: papis.document.Document) -> None:
     _notes_id = "notes-source"
     _notes_input_id = "notes-input-source"
     _notes_content = ""
+    editor_name = "notes_editor"
+    onsubmit_name = "update_notes_text_form"
+    onsubmit_body = papis.web.ace.make_onsubmit_function(onsubmit_name,
+                                                         editor_name,
+                                                         _notes_input_id)
+
     # TODO add org mode somehow and check extensions
     _notes_extension = "markdown"
     if papis.notes.has_notes(doc):
@@ -25,14 +32,14 @@ def widget(libname: str, doc: papis.document.Document) -> None:
     with wh.flex("center"):
         with t.form(method="POST",
                     cls="p-3",
-                    onsubmit="update_notes_text_form()",
+                    onsubmit="{}()".format(onsubmit_name),
                     action=wp.update_notes(libname, doc)):
             t.textarea(type="text",
                        id=_notes_input_id,
                        style="display: none;",
                        name="value",
                        value=_notes_content)
-            with t.button(cls="btn btn-success"):
+            with t.button(cls="btn btn-success", type="submit"):
                 wh.icon_span("check", "update notes")
 
     t.p(_notes_content,
@@ -42,22 +49,21 @@ def widget(libname: str, doc: papis.document.Document) -> None:
         style="min-height: 500px")
 
     _script = """
-let notes_editor = ace.edit("{editor_id}");
-ace.require('ace/ext/settings_menu').init(notes_editor);
+let {editor} = ace.edit("{editor_id}");
+ace.require('ace/ext/settings_menu').init({editor});
 ace.config.loadModule('ace/ext/keybinding_menu',
                         (module) =>  {{
-                            module.init(notes_editor);
+                            module.init({editor});
                         }});
-notes_editor.setKeyboardHandler('ace/keyboard/vim');
-notes_editor.session.setMode("ace/mode/{ext}");
+{editor}.setKeyboardHandler('ace/keyboard/vim');
+{editor}.session.setMode("ace/mode/{ext}");
 
-function update_notes_text_form() {{
-    let input = document.querySelector("#{}");
-    input.value = notes_editor.getValue();
-}}
-    """.format(_notes_input_id,
+{onsubmit}
+    """.format(onsubmit=onsubmit_body,
+               editor=editor_name,
                ext=_notes_extension,
                editor_id=_notes_id)
+
     t.script(tu.raw(_script),
              charset="utf-8",
              type="text/javascript")

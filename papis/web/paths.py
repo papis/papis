@@ -24,11 +24,21 @@ def fetch_citations_server_path(libname: str, doc: Dict[str, Any]) -> str:
 
 def update_notes(libname: str, doc: Dict[str, Any]) -> str:
     """
-    Path for fetching citations for papers
+    Path for updating the notes of the paper
     """
     if "ref" not in doc:
         return "#"
     return ("/library/{libname}/document/notes/{ref}"
+            .format(ref=_ref(doc), libname=libname))
+
+
+def update_info(libname: str, doc: Dict[str, Any]) -> str:
+    """
+    Path for updating the info yaml file itself
+    """
+    if "ref" not in doc:
+        return "#"
+    return ("/library/{libname}/document/info/{ref}"
             .format(ref=_ref(doc), libname=libname))
 
 

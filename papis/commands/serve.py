@@ -8,6 +8,7 @@ from typing import Any, List, Optional, Tuple, Callable, Dict
 import functools
 import cgi
 import collections
+import tempfile
 
 import click
 import dominate.tags as t
@@ -33,6 +34,7 @@ import papis.web.html as wh
 # widgets
 import papis.web.timeline
 import papis.web.notes
+import papis.web.info
 
 # views
 import papis.web.libraries
@@ -341,23 +343,7 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                                role="tabpanel",
                                aria_labelledby="yaml-form",
                                cls="tab-pane fade"):
-                        _yaml_id = "info-yaml-source"
-                        with t.form(id="yaml-form"):
-                            with open(doc.get_info_file()) as f:
-                                yaml_string = f.read()
-                                t.div(yaml_string,
-                                      id=_yaml_id,
-                                      width="100%",
-                                      height=100,
-                                      style="min-height: 500px",
-                                      cls="form-control")
-                        _script = """
-                            let editor = ace.edit("{}");
-                            editor.session.setMode("ace/mode/yaml");
-                        """.format(_yaml_id)
-                        t.script(tu.raw(_script),
-                                 charset="utf-8",
-                                 type="text/javascript")
+                        papis.web.info.widget(doc, libname)
 
                     with t.div(id="bibtex-form-tab",
                                role="tabpanel",
@@ -797,6 +783,39 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
             fdr.write(new_notes)
         self._redirect_back()
 
+    def update_info(self, libname: str, ref: str) -> None:
+        """
+        It updates the information by the provided form.
+
+        It first checks that the yaml is readable by using
+        yaml_to_data function. If it is succesfull it supposes
+        it is a correct yaml, it overwrites the old yaml
+        and updates the database and the document with it.
+        """
+        doc = self._get_document(libname, ref)
+        form = self._get_form("POST")
+        new_info = form.getvalue("value")
+        info_path = doc.get_info_file()
+
+        logger.info("checking syntax of the yaml")
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as fdr:
+            fdr.write(new_info)
+        try:
+            papis.yaml.yaml_to_data(fdr.name, raise_exception=True)
+        except ValueError as e:
+            self._send_json_error(404, "Error in yaml: {}".format(e))
+            os.unlink(fdr.name)
+            return
+        else:
+            os.unlink(fdr.name)
+            logger.info("info text seems ok")
+            with open(info_path, "w+") as _fdr:
+                _fdr.write(new_info)
+            doc.load()
+            papis.api.save_doc(doc)
+            self._redirect_back()
+            return
+
     def update_page_document(self, libname: str, ref: str) -> None:
         doc = self._get_document(libname, ref)
         form = self._get_form("POST")
@@ -846,6 +865,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.update_page_document),
             ("^/library/?([^/]+)?/document/notes/ref:(.*)$",
                 self.update_notes),
+            ("^/library/?([^/]+)?/document/info/ref:(.*)$",
+                self.update_info),
         ]
         self.do_ROUTES(routes)
 
