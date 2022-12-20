@@ -1,0 +1,20 @@
+{
+  "abstract": "We study the convergence of discretization schemes for the adjoint equation arising in the adjoint-based derivative computation for optimal boundary control problems governed by entropy solutions of conservation laws. As boundary control we consider piecewise continuously differentiable controls with possible discontinuities at switching times, where the smooth parts as well as the switching times serve as controls. The derivative of tracking-type objective functionals with respect to the smooth controls and the switching times can then be represented by an adjoint-based formula. The main difficulties arise from the fact that the correct adjoint state is the reversible solution of a transport equation with discontinuous coefficient and boundary conditions that lead in general to discontinuous adjoints. Moreover, the solution of the adjoint equation is non-unique and the so-called reversible solution leads to the correct adjoint-based derivative representation.\n\nWe study discrete adjoint schemes of monotone difference schemes in conservation form such as Engquist-Osher or Lax-Friedrichs scheme. We also allow that the state is computed by another numerical scheme satisfying certain convergence properties. We proof convergence results of the discrete adjoint to the reversible solution.",
+  "author": "Schäfer Aguilar, Paloma and Ulbrich, Stefan",
+  "author_list": [
+    {
+      "affiliation": [],
+      "family": "Schäfer Aguilar",
+      "given": "Paloma"
+    },
+    {
+      "affiliation": [],
+      "family": "Ulbrich",
+      "given": "Stefan"
+    }
+  ],
+  "language": "eng",
+  "pdf_url": "https://opus4.kobv.de/opus4-trr154/files/481/SchaeferAguilarUlbrichpapernumadjoint.pdf",
+  "title": "Convergence of numerical adjoint schemes arising from optimal boundary control problems of hyperbolic conservation laws",
+  "url": "https://opus4.kobv.de/opus4-trr154/frontdoor/index/index/docId/481"
+}
