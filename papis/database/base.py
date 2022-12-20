@@ -9,6 +9,7 @@ import papis.utils
 import papis.config
 import papis.library
 import papis.document
+import papis.id
 
 
 class Database(ABC):
@@ -81,3 +82,38 @@ class Database(ABC):
     @abstractmethod
     def get_all_query_string(self) -> str:
         pass
+
+    def find_by_id(self, identifier: str) -> Optional[papis.document.Document]:
+        results = self.query_dict({Database.get_id_key(): identifier})
+        if len(results) > 1:
+            raise ValueError("More than one document matches the unique id '{}'"
+                             .format(identifier))
+        if results:
+            return results[0]
+        return None
+
+    @staticmethod
+    def get_id_key() -> str:
+        """
+        Get the unique key identifier name of the documents in the database
+        """
+        return papis.id.key_name()
+
+    def maybe_compute_id(self, doc: papis.document.Document) -> None:
+        """
+        Compute a papis id for the document doc.
+        If the document has already an id, then ignore the document,
+        and it *will not check for duplications*.
+        Otherwise it will try to create a new id that is unique in this
+        database and update the document yaml accordignly.
+        """
+        key_name = papis.id.key_name()
+        if doc.has(key_name):
+            return
+        while True:
+            new_id = papis.id.compute_an_id(doc)
+            other_docs = self.query_dict({key_name: new_id})
+            if not other_docs:
+                break
+        doc[key_name] = new_id
+        doc.save()

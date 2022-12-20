@@ -166,10 +166,13 @@ class Database(papis.database.base.Database):
                 self.documents = pickle.load(fd)
         else:
             self.logger.info("Indexing library, this might take a while...")
-            folders = sum([
-                papis.utils.get_folders(d)
-                for d in self.get_dirs()], [])  # type: List[str]
+            folders = sum([papis.utils.get_folders(d)
+                           for d in self.get_dirs()],
+                          [])  # type: List[str]
             self.documents = papis.utils.folders_to_documents(folders)
+            self.logger.debug("maybe computing papis ids")
+            for doc in self.documents:
+                self.maybe_compute_id(doc)
             if use_cache:
                 self.save()
         self.logger.debug("Loaded %d documents", len(self.documents))
@@ -179,6 +182,7 @@ class Database(papis.database.base.Database):
         self.logger.debug("Adding document...")
 
         docs = self.get_documents()
+        self.maybe_compute_id(document)
         docs.append(document)
         assert docs[-1].get_main_folder() == document.get_main_folder()
         _folder = document.get_main_folder()
@@ -208,9 +212,9 @@ class Database(papis.database.base.Database):
         docs.pop(index)
         self.save()
 
-    def match(
-            self, document: papis.document.Document,
-            query_string: str) -> bool:
+    def match(self,
+              document: papis.document.Document,
+              query_string: str) -> bool:
         return bool(match_document(document, query_string))
 
     def clear(self) -> None:
@@ -220,8 +224,8 @@ class Database(papis.database.base.Database):
         if os.path.exists(cache_path):
             os.remove(cache_path)
 
-    def query_dict(
-            self, dictionary: Dict[str, str]) -> List[papis.document.Document]:
+    def query_dict(self,
+                   dictionary: Dict[str, str]) -> List[papis.document.Document]:
         query_string = " ".join(
             ['{}:"{}" '.format(key, val) for key, val in dictionary.items()])
         return self.query(query_string)
