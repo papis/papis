@@ -126,7 +126,8 @@ class Downloader(papis.importer.Importer):
         except NotImplementedError:
             pass
         else:
-            self.ctx.data["doi"] = doi
+            if doi:
+                self.ctx.data["doi"] = doi
 
     def fetch_files(self) -> None:
         # get documents
