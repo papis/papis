@@ -276,7 +276,15 @@ def update_doc_from_data_interactively(
 
 
 def is_relative_to(path: str, other: str) -> bool:
-    return pathlib.Path(path).is_relative_to(other)
+    if sys.version_info >= (3, 9):
+        return pathlib.Path(path).is_relative_to(other)
+    # This should lead to the same result as the above for older versions of
+    # python.
+    else:
+        try:
+            return not os.path.relpath(path, start=other).startswith("..")
+        except ValueError:
+            return False
 
 
 def paths_are_identical(path: str, other: str) -> bool:
