@@ -1,0 +1,34 @@
+{
+  "abstract": "We prove that an n×n random matrix G with independent entries is completely delocalized. Suppose that the entries of G have zero means, variances uniformly bounded below, and a uniform tail decay of exponential type. Then with high probability all unit eigenvectors of G have all coordinates of magnitude O(n−1/2), modulo logarithmic corrections. This comes as a consequence of a new, geometric approach to delocalization for random matrices.",
+  "author": "Rudelson, Mark and Vershynin, Roman",
+  "author_list": [
+    {
+      "affiliation": [],
+      "family": "Rudelson",
+      "given": "Mark"
+    },
+    {
+      "affiliation": [],
+      "family": "Vershynin",
+      "given": "Roman"
+    }
+  ],
+  "date": "2015-10-01",
+  "doi": "10.1215/00127094-3129809",
+  "firstpage": "2507",
+  "issn": "0012-7094",
+  "issue": "13",
+  "journal": "Duke Mathematical Journal",
+  "journal_abbrev": "dmj",
+  "keywords": "15B52; 60B20; delocalization of eigenvectors; random matrices; rotation-invariant ensembles",
+  "language": "en",
+  "lastpage": "2538",
+  "pdf_url": "https://projecteuclid.org/journals/duke-mathematical-journal/volume-164/issue-13/Delocalization-of-eigenvectors-of-random-matrices-with-independent-entries/10.1215/00127094-3129809.pdf",
+  "publication_date": "2015/10",
+  "publisher": "Duke University Press",
+  "title": "Delocalization of eigenvectors of random matrices with independent entries",
+  "type": "Text",
+  "url": "https://projecteuclid.org/journals/duke-mathematical-journal/volume-164/issue-13/Delocalization-of-eigenvectors-of-random-matrices-with-independent-entries/10.1215/00127094-3129809.full",
+  "volume": "164",
+  "year": "2015-10-01"
+}
