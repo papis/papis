@@ -31,7 +31,7 @@ def test_annual_review_match() -> None:
         assert Downloader.match(url) is None
 
 
-@pytest.mark.skip(reason="annualreviews.org disallows web scrapers")
+@pytest.mark.skip(reason="annualreviews.org disallows web scrapers (cloudflare)")
 @pytest.mark.parametrize("url", ANNUAL_REVIEWS_URLS)
 def test_annual_review_fetch(monkeypatch, url: str) -> None:
     cls = papis.downloaders.get_downloader_by_name("annualreviews")
