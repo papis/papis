@@ -253,7 +253,7 @@ def run(paths: List[str],
         edit: bool = False,
         git: bool = False,
         link: bool = False,
-        citations: papis.citations.Citations = []) -> None:
+        citations: papis.citations.Citations = ()) -> None:
     """
     :param paths: Paths to the documents to be added
     :param data: Data for the document to be added.
