@@ -107,8 +107,8 @@ class Database(papis.database.base.Database):
         self.logger.debug("Committing deletion..")
         writer.commit()
 
-    def query_dict(
-            self, dictionary: Dict[str, str]) -> List[papis.document.Document]:
+    def query_dict(self,
+                   dictionary: Dict[str, str]) -> List[papis.document.Document]:
         query_string = " AND ".join(
             ['{}:"{}" '.format(key, val) for key, val in dictionary.items()])
         return self.query(query_string)
@@ -126,7 +126,7 @@ class Database(papis.database.base.Database):
             results = searcher.search(query, limit=None)
             self.logger.debug(results)
             documents = [
-                papis.document.from_folder(r.get(Database.get_id_key()))
+                papis.document.from_folder(r.get("papis-folder"))
                 for r in results]
         return documents
 
@@ -136,22 +136,16 @@ class Database(papis.database.base.Database):
     def get_all_documents(self) -> List[papis.document.Document]:
         return self.query(self.get_all_query_string())
 
-    @staticmethod
-    def get_id_key() -> str:
-        """Get the unique key identifier name of the documents in the database
-
-        :returns: key identifier
-        """
-        return "whoosh_id_"
-
     def get_id_value(self, document: papis.document.Document) -> str:
         """Get the value that is stored in the unique key identifier
-        of the documents in the database. In the case of papis this is
-        just the path of the documents.
+        of the documents in the database.
 
         :param document: Papis document
-        :returns: Path for the document
+        :returns: The papis-id
         """
+        return str(document[self.get_id_key()])
+
+    def _get_doc_folder(self, document: papis.document.Document) -> str:
         _folder = document.get_main_folder()
         if _folder is None:
             raise Exception(papis.strings.no_folder_attached_to_document)
@@ -175,11 +169,10 @@ class Database(papis.database.base.Database):
         import whoosh.index
         return whoosh.index.exists_in(self.index_dir)
 
-    def add_document_with_writer(
-            self,
-            document: papis.document.Document,
-            writer: "IndexWriter",
-            schema_keys: KeysView[str]) -> None:
+    def add_document_with_writer(self,
+                                 document: papis.document.Document,
+                                 writer: "IndexWriter",
+                                 schema_keys: KeysView[str]) -> None:
         """Helper function that takes a writer and a dictionary
         containing the keys of the schema and adds the document to the writer.
         Notice that this function does only two things, creating a suitable
@@ -192,8 +185,13 @@ class Database(papis.database.base.Database):
         :param schema_keys: Dictionary containing the defining keys of the
             database Schema
         """
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        # maybe_compute_id overwrites the info file, so put it before
+        # anything else, else you'll get `papis-folder` on your info.yaml
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        self.maybe_compute_id(document)
+        document["papis-folder"] = self._get_doc_folder(document)
         doc_d = {k: str(document[k]) or "" for k in schema_keys}
-        doc_d[Database.get_id_key()] = self.get_id_value(document)
         writer.add_document(**doc_d)
 
     def do_indexing(self) -> None:
@@ -291,7 +289,8 @@ class Database(papis.database.base.Database):
         """
         from whoosh.fields import TEXT, ID, KEYWORD, STORED  # noqa: F401
         # This part is non-negotiable
-        fields = {Database.get_id_key(): ID(stored=True, unique=True)}
+        fields = {Database.get_id_key(): ID(stored=True, unique=True),
+                  "papis-folder": TEXT(stored=True)}
 
         # TODO: this is a security risk, find a way to fix it
         user_prototype = eval(
