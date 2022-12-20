@@ -114,7 +114,7 @@ setup(
         "develop": [
             "sphinx-click",
             "sphinx_rtd_theme",
-            "flake8<6",
+            "flake8",
             "flake8-quotes",
             "flake8-bugbear",
             "pep8-naming; python_version>='3.6'",
