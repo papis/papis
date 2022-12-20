@@ -1,0 +1,30 @@
+{
+  "abstract": "Des calculs récents de la densité électronique dans les alliages prévoient que le déplacement de Knight des noyaux de la matrice n'est pratiquement pas affecté par la substitution d'atomes en soluté, même à assez fortes concentrations.",
+  "author": "Friedel, Jacques",
+  "author_list": [
+    {
+      "affiliation": [],
+      "family": "Friedel",
+      "given": "Jacques"
+    }
+  ],
+  "date": "1955",
+  "doi": "10.1051/jphysrad:01955001606044400",
+  "firstpage": "444-445",
+  "issue": "6",
+  "journal": "J. Phys. Radium",
+  "journal_abbrev": "J. Phys. Radium",
+  "keywords": [
+    "alloys",
+    "nuclear magnetic resonance"
+  ],
+  "language": "fr",
+  "online_date": "1955/01/01",
+  "pdf_url": "https://hal.archives-ouvertes.fr/jpa-00235190/document",
+  "publication_date": "1955",
+  "title": "Déplacement de Knight dans les alliages",
+  "type": "journal",
+  "url": "https://hal.archives-ouvertes.fr/jpa-00235190",
+  "volume": "16",
+  "year": "1955"
+}
