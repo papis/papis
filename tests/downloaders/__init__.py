@@ -1,5 +1,7 @@
 import os
 import json
+import tempfile
+import functools
 
 from typing import Any, Callable, Dict, Optional
 
@@ -20,6 +22,24 @@ def get_resource(name: str) -> str:
 
 def get_json_resource(name: str) -> Any:
     return json.loads(get_resource(name))
+
+
+def with_default_config(fn):
+    import papis.config
+
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        with tempfile.NamedTemporaryFile(mode="w") as config:
+            papis.config.set_config_file(config.name)
+            papis.config.reset_configuration()
+
+            result = fn(*args, **kwargs)
+
+            papis.config.set_config_file(None)
+
+        return result
+
+    return wrapper
 
 
 def get_remote_resource(

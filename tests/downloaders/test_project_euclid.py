@@ -4,6 +4,8 @@ import pytest
 import papis.downloaders
 from papis.downloaders.projecteuclid import Downloader
 
+import tests.downloaders as testlib
+
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -18,6 +20,7 @@ PROJECT_EUCLID_URLS = (
     )
 
 
+@testlib.with_default_config
 @pytest.mark.parametrize("url", PROJECT_EUCLID_URLS)
 def test_project_euclid_fetch(monkeypatch, url: str) -> None:
     cls = papis.downloaders.get_downloader_by_name("projecteuclid")
@@ -30,10 +33,8 @@ def test_project_euclid_fetch(monkeypatch, url: str) -> None:
     infile = "ProjectEuclid_{}.html".format(uid)
     outfile = "ProjectEuclid_{}_Out.json".format(uid)
 
-    from tests.downloaders import get_remote_resource, get_local_resource
-
     with monkeypatch.context() as m:
-        m.setattr(down, "_get_body", get_remote_resource(infile, url))
+        m.setattr(down, "_get_body", testlib.get_remote_resource(infile, url))
         m.setattr(down, "download_document", lambda: None)
 
         # NOTE: bibtex add some extra fields, so we just disable it for the test
@@ -41,6 +42,6 @@ def test_project_euclid_fetch(monkeypatch, url: str) -> None:
 
         down.fetch()
         extracted_data = down.ctx.data
-        expected_data = get_local_resource(outfile, extracted_data)
+        expected_data = testlib.get_local_resource(outfile, extracted_data)
 
         assert extracted_data == expected_data
