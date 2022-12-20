@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     
@@ -45,7 +44,23 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta property="fb:app_id" content="534542813234464">
 
-                        <link rel="stylesheet" href="/css/6fea5db-c328992.css" media="screen">
+                    <style>
+    .legacy-b2-wrap {
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+        color: #333333;
+        /*background-color: #ffffff;*/
+        box-sizing: unset;
+    }
+
+    .legacy-b2-wrap .row {
+        margin: unset;
+        display: inherit;
+    }
+</style>
+    <link rel="stylesheet" href="/css/01fda25-ce2b303.css" media="screen">
 
 <!--[if lt IE 9]>
     <link rel="stylesheet" href="/assets/css/ie8.css" media="screen">
@@ -56,14 +71,19 @@
 <![endif]-->
 
     <style media="screen">html, body { height: 100%; }</style>
+                <link rel="stylesheet" href="https://cdn.peerj.com/webpack/13.4927ba8e.css"><link rel="stylesheet" href="https://cdn.peerj.com/webpack/peerj-app.04e2890d.css">
     
 
-    <link rel="stylesheet" href="/css/a0c1a2c-8765845.css" media="screen">
+    <link rel="stylesheet" href="/css/a0c1a2c-d3ef651.css" media="screen">
 
-    <link rel="stylesheet" href="/css/be477b9-0eccf4f.css" media="screen">
+    <link rel="stylesheet" href="/css/be477b9-9aa139d.css" media="screen">
         <link rel="stylesheet" href="/css/3e4ba6d-c134b5f.css" media="print">
-    <script src="/js/36e5d51-2d7025c.js"></script>
-<!--[if lt IE 9]>
+    <script src="/js/f67db00-8264f27.js"></script>
+<script src="/assets/js/mixpanel.js" defer></script>
+
+
+<script src="/assets/js/polyfills/includes.js"></script>
+<script src="/assets/js/polyfills/startsWith.js"></script><!--[if lt IE 9]>
 <script src="/assets/js/html5shiv.js"></script>
 
 <![endif]-->
@@ -93,7 +113,8 @@
     };
 </script>
 
-    <script>
+    
+<script>
     var campaign_keywords = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
     var kw = '';
     var lastUtms = {};
@@ -153,6 +174,8 @@
                 if (preprint) {
                     eventName = 'Viewed-preprint';
                 }
+
+                data['ip-hash'] = '8361a8ca33ac1e4914397d4e02440af5';
                 mixpanel.track(eventName, data);
             }
         }
@@ -161,51 +184,13 @@
     function sectionListViewEvent() {
             }
 </script>
-    <script>
-        // User agrees to terms on signup, so Mixpanel is OK
-        // On submit, update mixpanel distinct id
-        var form = $('#authentication-container');
-        if (form.length) {
-            form.submit(function (e) {
-                mixpanel.init('776a79e14e8f05a81ca92536c83f08b4', {
-                    'secure_cookie': true,
-                    loaded: function (mixpanel) {
-                        var mixpanelId = $('#fos_user_registration_form_mixpanelId');
 
-                        var distinctId = $.cookie('pj_mp_distinct');
-                        if (!distinctId) {
-                            distinctId = mixpanel.get_distinct_id();
-                        }
-                        mixpanelId[0].value = distinctId;
-                    }
-                });
-            });
-        }
 
-        // If logged out then check if consented to analytics cookies (if applicable to country)
-        // Run through cookieConsent only
-        PeerJ.Com.Mixpanel = new function() {
-            this.leadView = function() {
-                mixpanel.init('776a79e14e8f05a81ca92536c83f08b4', {
-                    'secure_cookie': true,
-                    loaded: function (mixpanel) {
-                        setTimeout(function () {
-                            articlePageEvent();
 
-                            sectionListViewEvent();
 
-                            
-                                                    }, 1000);
-                    }
-                });
-            }
-        };
 
-        campaignParams();
-        updatePreregCookie('pj_prereg_campaign', 'utm_campaign-first');
-        updatePreregCookie('pj_prereg_content', 'utm_content-first');
-        updatePreregCookie('pj_prereg_term', 'utm_term-first');
-    </script>
+
+
 
 
 
@@ -214,7 +199,23 @@ pushpad('init', 5977, {hostname: 'peerj.com'});
 </script>
     
     <link rel="search" type="application/opensearchdescription+xml" href="https://peerj.com/articles/osd.xml" title="PeerJ">
-    
+
+            <script>
+    PeerJ.Com.GoogleTagManager = {
+        init: function(){
+
+            var tagManagerAccount = 'GTM-KGDWL2J';
+
+                                        
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer',tagManagerAccount);
+
+        }
+    }
+</script>        
 
 
                     
@@ -260,8 +261,8 @@ pushpad('init', 5977, {hostname: 'peerj.com'});
                                             }
         };
     </script>
-    <script src="/js/8548491-3bd215b.js"></script>
-        
+    
+    <script src="/js/8548491-6e0bf01.js"></script>        
 <link rel="apple-touch-icon" sizes="57x57" href="https://d2pdyyx74uypu5.cloudfront.net/images/favicon/peerj/apple-icon-57x57.png">
 <link rel="apple-touch-icon" sizes="60x60" href="https://d2pdyyx74uypu5.cloudfront.net/images/favicon/peerj/apple-icon-60x60.png">
 <link rel="apple-touch-icon" sizes="72x72" href="https://d2pdyyx74uypu5.cloudfront.net/images/favicon/peerj/apple-icon-72x72.png">
@@ -280,135 +281,100 @@ pushpad('init', 5977, {hostname: 'peerj.com'});
 <meta name="msapplication-TileColor" content="#ffffff">
 <meta name="msapplication-TileImage" content="https://d2pdyyx74uypu5.cloudfront.net/images/favicon/peerj/ms-icon-144x144.png">
 <meta name="msapplication-config" content="https://d2pdyyx74uypu5.cloudfront.net/images/favicon/peerj/browserconfig.xml">
-<meta name="theme-color" content="#ffffff"></head>
+<meta name="theme-color" content="#ffffff">
+    <noscript>
+        <style type="text/css">
+        #wrap {
+            display: block;
+            padding-left: 0;
+            margin-top: 17px;
+        }
+        </style>
+    </noscript>
+</head>
 
-<body  class="">
+<body         class=""
+        data-mp="776a79e14e8f05a81ca92536c83f08b4"
+        data-mp-debug=""
+        data-controllerVars=""
+>
+
     
-                <!-- FreshDesk variable (TODO: move elsewhere) -->
+    <div class="legacy-b2-wrap">
+        <div id="wrap" >
+            
+            
+            <div id="nav-pad"></div>
 
-<nav class="navbar navbar-fixed-top navbar-inverse navbar-alpha" role="navigation"><div class="navbar-inner"><!-- .btn-navbar is used as the toggle for collapsed navbar content --><a class="btn btn-navbar pull-right" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a><!-- logo --><ul class="nav pull-left nav-sections nav-journal"><li class="dropdown"><a href="/" class="dropdown-toggle  "
-                   data-toggle="dropdown"><span id="navJournalTitle">PeerJ Journals</span><b class="caret"></b></a><ul class="dropdown-menu"><li role="presentation" class="dropdown-header">Peer-reviewed</li><li><a href="/">PeerJ – the Journal of Life &amp; Environmental Sciences</a></li><li><a href="/computer-science/">PeerJ Computer Science</a></li><li><a href="/chemistry/">PeerJ Physical Chemistry</a></li><li><a href="/chemistry/">PeerJ Organic Chemistry</a></li><li><a href="/chemistry/">PeerJ Inorganic Chemistry</a></li><li><a href="/chemistry/">PeerJ Analytical Chemistry</a></li><li><a href="/chemistry/">PeerJ Materials Science</a></li><li role="presentation" class="dropdown-header">Preprints</li><li><a href="/preprints-search/" class="nav-li-preprints">PeerJ Preprints</a></li><li class="divider"></li><li><a href="https://peerj.org/" target="_blank">Visit PeerJ.org and get involved</a></li></ul></li></ul><!-- mobile-only top nav items --><ul class="nav pull-left nav-about-phone hidden-desktop"><li class="dropdown"><a tabindex="-1" href="#" class="dropdown-toggle"
-       data-toggle="dropdown">About <b class="caret"></b></a><ul class="dropdown-menu"><li id="about-overview"><a href="/benefits/">PeerJ Journals Overview</a></li><li id="about-faq"><a href="/about/FAQ/">PeerJ Journals FAQ</a></li><li id="about-what-publish"><a href="/about/publications/">What we publish</a></li><li id="5yrs-publishing"><a href="/benefits/peerj-5-years/">5 Years publishing</a></li><li class="divider"></li><li role="presentation" class="dropdown-header">Solutions for authors</li><li id="about-reputation"><a href="/benefits/reputation/">Reputation</a></li><li id="about-peer-review"><a href="/benefits/peer-review-timeline/">High quality peer review</a></li><li id="about-speed"><a href="/benefits/fast-publishing/">Fast publishing</a></li><li id="about-impact"><a href="/benefits/indexing-and-impact-factor/">Indexing and Impact Factor</a></li><li id="about-readership"><a href="/benefits/broad-audience/">Global readership</a></li><li id="about-features"><a href="/benefits/peerj-feature-comparison/">Feature comparison</a></li><li id="about-cost"><a href="/benefits/reduced-cost-publishing/">Reduced cost publishing</a></li><li id="about-feedback"><a href="/benefits/feedback/">Author feedback</a></li><li id="about-ecr-benefits"><a href="/benefits/early-career-researchers/">Early career researcher benefits</a></li><li id="about-senior-researcher-benefits"><a href="/benefits/senior-researchers/">Senior researcher benefits</a></li><li id="about-open-review"><a href="/benefits/review-history-and-peer-review/">Open review (optional)</a></li><li id="about-rebuttal"><a href="/benefits/academic-rebuttal-letters/">Rebuttal letters</a></li></ul></li><li><!-- checkout items --></li><li><!-- notifications --></li></ul><!-- sections --><ul class="nav pull-left nav-collapse nav-sections nav-sections-main collapse search-hide"><li class="dropdown"><a tabindex="-1" href="#" class="dropdown-toggle"
-                       data-toggle="dropdown">Sections <b class="caret"></b></a><ul class="dropdown-menu"><li><a href="/sections/">About the journal Sections</a></li><li class="divider"></li><li><a href="/sections/aquatic-biology/">Aquatic Biology</a></li><li><a href="/sections/biochemistry-biophysics-molecular-biology/">Biochemistry, Biophysics and Molecular Biology</a></li><li><a href="/sections/biodiversity-conservation/">Biodiversity and Conservation</a></li><li><a href="/sections/bioinformatics-genomics/">Bioinformatics and Genomics</a></li><li><a href="/sections/brain-cognition/">Brain and Cognition</a></li><li><a href="/sections/ecology/">Ecology</a></li><li><a href="/sections/environ-sci/">Environmental Science</a></li><li><a href="/sections/microbiology/">Microbiology</a></li><li><a href="/sections/paleontology-evolutionary-science/">Paleontology and Evolutionary Science</a></li><li><a href="/sections/plant-biology/">Plant Biology</a></li><li><a href="/sections/zoological-science/">Zoological Science</a></li></ul></li><li class="dropdown visible-desktop"><a tabindex="-1" href="#" class="dropdown-toggle"
-       data-toggle="dropdown">About <b class="caret"></b></a><ul class="dropdown-menu"><li id="about-overview"><a href="/benefits/">PeerJ Journals Overview</a></li><li id="about-faq"><a href="/about/FAQ/">PeerJ Journals FAQ</a></li><li id="about-what-publish"><a href="/about/publications/">What we publish</a></li><li id="5yrs-publishing"><a href="/benefits/peerj-5-years/">5 Years publishing</a></li><li class="divider"></li><li role="presentation" class="dropdown-header">Solutions for authors</li><li id="about-reputation"><a href="/benefits/reputation/">Reputation</a></li><li id="about-peer-review"><a href="/benefits/peer-review-timeline/">High quality peer review</a></li><li id="about-speed"><a href="/benefits/fast-publishing/">Fast publishing</a></li><li id="about-impact"><a href="/benefits/indexing-and-impact-factor/">Indexing and Impact Factor</a></li><li id="about-readership"><a href="/benefits/broad-audience/">Global readership</a></li><li id="about-features"><a href="/benefits/peerj-feature-comparison/">Feature comparison</a></li><li id="about-cost"><a href="/benefits/reduced-cost-publishing/">Reduced cost publishing</a></li><li id="about-feedback"><a href="/benefits/feedback/">Author feedback</a></li><li id="about-ecr-benefits"><a href="/benefits/early-career-researchers/">Early career researcher benefits</a></li><li id="about-senior-researcher-benefits"><a href="/benefits/senior-researchers/">Senior researcher benefits</a></li><li id="about-open-review"><a href="/benefits/review-history-and-peer-review/">Open review (optional)</a></li><li id="about-rebuttal"><a href="/benefits/academic-rebuttal-letters/">Rebuttal letters</a></li></ul></li><!-- more --><li class="dropdown"><a href="#" class="dropdown-toggle"
-                   data-toggle="dropdown">More <b class="caret"></b></a><ul class="dropdown-menu" role="menu" aria-labelledby="dLabel"><li><a href="/subjects/">Subjects</a></li><li class="dropdown-submenu hidden-phone"><a tabindex="-1" href="#">Search articles</a><ul class="dropdown-menu"><li role="presentation" class="dropdown-header">Advanced search of articles & preprints</li><li><a tabindex="-1" href="/articles/?journal=peerj&amp;discipline=medicine">PeerJ - Medicine articles</a></li><li><a tabindex="-1" href="/articles/?journal=peerj&amp;discipline=biology">PeerJ - Biology & Life science articles</a></li><li class="divider"></li><li><a tabindex="-1" href="/articles/?journal=cs">PeerJ Computer Science</a></li><li class="divider"></li><li><a tabindex="-1" href="/preprints-search/?type=preprint">PeerJ Preprints</a></li></ul></li><li class="dropdown-submenu hidden-phone"><a tabindex="-1" href="#">Table of contents</a><ul class="dropdown-menu"><li role="presentation" class="dropdown-header">Table of Contents - current and archives</li><li><a tabindex="-1" href="/medicine/">PeerJ - Medicine articles</a></li><li><a tabindex="-1" href="/biology/">PeerJ - Biology & Life science articles</a></li><li><a tabindex="-1" href="/environment/">PeerJ - Environmental Science articles</a></li><li><a tabindex="-1" href="/general/">PeerJ - General bio (stats, legal, policy, edu)</a></li><li class="divider"></li><li><a tabindex="-1" href="/cs/">PeerJ Computer Science</a></li><li class="divider"></li><li><a tabindex="-1" href="/preprints/">PeerJ Preprints</a></li></ul></li><li><a href="/academic-boards/advisors/">Academic advisors</a></li><li><a href="/reviewer-match/">Volunteer to review</a></li><li><a href="/collections/">Collections</a></li><li><a href="/jobs/">Job listings</a></li><li><a href="/questions/">Discussions</a></li><li><a href="https://peerj.com/blog/">Blog</a></li><li><a href="/pricing/institutions/">Institutional plans</a></li><li><a href="/about/reviews/">Reviews and awards</a></li><li><a href="/spread-the-word/">Spread the word</a></li><li><a href="/about/">Who are we?</a></li><li><a href="/about/contact/">Contact</a></li></ul></li></ul><!-- search --><div class="nav nav-collapse collapse pull-right nav-search"><form class="navbar-search" action="/search/"><input name="q" type="search"
-                       data-autocomplete-url="/search/"
-                       class="search-query" placeholder="Search"><!--<i class="icon-search"></i>--></form></div><ul class="nav pull-right nav-collapse collapse search-hide nav-utilities"><!-- login desktop --><li><a id="front-page-login" href="/login">Login</a></li></ul><ul class="nav pull-right search-hide nav-shifter"></ul><!-- for authors, my manuscripts --><ul class="nav nav-center nav-collapse collapse search-hide pull-right"><!-- for authors --><li class="dropdown nav-authors"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i
-                        class="icon-info4 icon-large nav-icon icomoon"></i><span class="visible-wide">AUTHORS</span><b class="caret"></b></a><ul class="dropdown-menu"><li><a href="/benefits/">Peer Journals Overview</a></li><li><a href="/about/author-instructions/">Submission Guidelines</a></li><li><a href="/subjects/">Subject Areas</a></li><li><a href="/academic-boards/">Editorial Board</a></li><li><a href="/about/editorial-criteria/">Editorial Criteria</a></li><li><a href="/pricing/">Pricing</a></li><li><a href="/about/FAQ/">General FAQ</a></li><li><a href="/computer-science/faq-cs/">Computer Science FAQ</a></li><li><a href="/about/aims-and-scope/">Aims and Scope</a></li><li><a href="/about/author-interviews/">Author Interviews</a></li><li><a href="/about/policies-and-procedures/">Policies and Procedures</a></li><!--<li><a href="#">Why PeerJ?</a></li>--></ul></li><!-- my manuscripts --><!-- note: dropdown classes used just to maintain display --><li class="nav-manuscripts dropdown"><a href="/new/" class="dropdown-toggle"><span>SUBMIT ARTICLE</span></a></li></ul></div></nav>
-    
-        <div class="item-top-navbar">
-    <div class="item-top-navbar-inner">
-        <div class="container-fluid">
-            <div class="row-fluid">
-                <div class="span12">
-                       <div class="item-metrics-counts-top-nav article-item-metrics-counts">
-                                                                                                        <span class="article-item-metrics-count visible-all">
-                                        <span data-count="citations">6</span>
-                                        <span class="article-item-metrics-label">Citations</span>
-                                    </span>
-                                
-                            <span class="article-item-metrics-count">
-                                <span data-count="views-html">&nbsp;</span>
-                                <span class="article-item-metrics-label">Views</span>
-                            </span>
+            
+            <div class="container">
 
-                            <span class="article-item-metrics-count">
-                                <span data-count="views-pdf">&nbsp;</span>
-                                <span class="article-item-metrics-label">Downloads</span>
-                            </span>
-                       </div>
+                <noscript class="js-disabled-warning">
+                    <div class="alert alert-danger">
+                        <i class="icon icon-warning-sign"></i> Javascript is disabled in your browser. Please <a href="https://www.enable-javascript.com" target="_blank">enable Javascript</a> to view PeerJ.
+                    </div>
+                </noscript>
+
+                
+    <div class="row publication-jsondata" data-publication-meta="{&quot;publicationId&quot;:&quot;4886&quot;,&quot;Article-section&quot;:&quot;Aquatic Biology&quot;,&quot;journal&quot;:&quot;PeerJ&quot;,&quot;published&quot;:&quot;2018-05-24 08:25:30&quot;,&quot;preprint&quot;:false,&quot;publicationSubjects&quot;:[&quot;Animal Behavior&quot;,&quot;Ecology&quot;,&quot;Marine Biology&quot;],&quot;publicationInstitutions&quot;:[&quot;Dalhousie University&quot;],&quot;publicationTop20Institution&quot;:false,&quot;publicationInstitutionPlan&quot;:false}">
+        <!-- Left sidebar -->
+        <div class="span1 article-sidebar">
+            <div class="article-sidebar-left">
+                <div class="sidebar-box sidebar-box--journal">
+                    <a href="/" class="sidebar-box--journal-mask"></a>
+                    <img src="https://d2pdyyx74uypu5.cloudfront.net/images/article/logos/article-logo-peerj.png">
                 </div>
-            </div>
-        </div>
+
+                <div id="btn-view-tweets" class="sidebar-box sidebar-box--tweet" style="display:none;">
+                    <div class="text-center"><span id="tweet-count-container"></span> <i class="icon-twitter"></i></div>
+                </div>
+
+                <a href="#related-research" class="sidebar-box sidebar-box--related text-center">
+                    Related research
+                    <i class="icon-angle-down"></i>
+                </a>
+
+                <!-- mobile only -->
+                <div class="item-leftside-actions">
+                     <div class="sidebar-box sidebar-box--action js-download-modal-trigger">Download</div>
+
+
+                     
+  
+                        
+<div class="sidebar-box sidebar-box--social visible-desktop">
+    <div class="sidebar-box--social-title">Share</div>
+    <div class="d-flex">
+        <a class="pj-socialism tw-soc" href="http://twitter.com/share?url&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F&amp;via&#x3D;PeerJLife&amp;text&#x3D;Diver&#x25;20disturbance&#x25;20of&#x25;20reef&#x25;20fishes&amp;related&#x3D;" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Twitter</a>
+        <a class="pj-socialism fb-soc" href="http://www.facebook.com/sharer.php?u&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Facebook</a>
+        <a class="pj-socialism em-soc" href="mailto:?Subject&#x3D;Relevant&#x25;20research&#x25;20paper&#x25;20in&#x25;20PeerJ&#x25;20Life&#x25;20&#x25;26&#x25;20Environment&amp;Body&#x3D;Reef&#x25;20fish&#x25;20communities&#x25;20are&#x25;20spooked&#x25;20by&#x25;20scuba&#x25;20surveys&#x25;20and&#x25;20may&#x25;20take&#x25;20hours&#x25;20to&#x25;20recover&#x25;20https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Email</a>
     </div>
 </div>
 
-    <div id="wrap">
-
-        
-
-        <div id="nav-pad"></div>
-
-        
-        <div class="container">
-
-            <noscript class="js-disabled-warning">
-                <div class="alert alert-danger">
-                    <i class="icon icon-warning-sign"></i> Javascript is disabled in your browser. Please <a href="https://www.enable-javascript.com" target="_blank">enable Javascript</a> to view PeerJ.
-                </div>
-            </noscript>
-
-                <div class="row publication-jsondata" data-publication-meta="{&quot;publicationId&quot;:&quot;4886&quot;,&quot;published&quot;:&quot;2018-05-24 08:25:30&quot;,&quot;preprint&quot;:false,&quot;publicationSubjects&quot;:[&quot;Animal Behavior&quot;,&quot;Ecology&quot;,&quot;Marine Biology&quot;],&quot;publicationInstitutions&quot;:[&quot;Dalhousie University&quot;],&quot;publicationTop20Institution&quot;:false,&quot;publicationInstitutionPlan&quot;:false}">
-
-        <!-- Left sidebar -->
-        <div class="span1 article-sidebar">
-                            <a href="/" class="publication-label">
-                    <div class="publication-prefix">PeerJ</div>
-                </a>
-                                        <div id="btn-view-tweets" class="publication-label tweet-sidebar-box">
-                    <div class="publication-prefix">View 53 tweets <i class="icon-twitter"></i></div>
-                </div>
-            
-            <a href="#related-research" class="publication-label related-sidebar-box">
-                <div class="publication-prefix">Related research <i class="icon-angle-down"></i></div>
-            </a>
-
-            <div class="peer-reviewed visible-phone">
-                <i class="icon-ok"></i> PEER-REVIEWED
-            </div>
-
-            <!-- mobile only -->
-            <div class="item-leftside-actions">
-                 <div class="btn-group hidden-desktop">
-    <a href="#" class="btn publication-label publication-label-general publication-label-right dropdown-toggle" data-toggle="dropdown">Download</a>
-
-    <ul class="dropdown-menu download-button-dropdown">
-                                <li><a href="/articles/4886.pdf" class="article-download-pdf">PDF (1.7MB)</a></li>
-                <li><a href="http://www.mendeley.com/import/?doi=10.7717/peerj.4886">Save to Mendeley</a></li>
-            <li><a href="http://www.readcube.com/articles/10.7717/peerj.4886">Read in ReadCube</a></li>
-                <li><a href="/articles/4886.ris" class="article-download-ris">RIS</a></li>
-        <li><a href="/articles/4886.xml" class="article-download-xml">XML</a></li>
-        <li><a href="/articles/4886.bib" class="article-download-bibtex">BibTeX</a></li>
-    </ul></div>
-
-                 <div id="notification-actions-mobile" class="notification-actions-btn hidden-desktop" data-href="/following/publication/5041/">
-    <span class="follow-btn publication-label publication-label-general publication-label-middle" id="item-left-follow-btn"
-    title="Receive article updates" data-toggle="tooltip" data-success-modal="#followModal"
-    data-href="/follow/publication/5041/0/">
-    <span class="button_text_follow">Follow</span></span>
-</div>
-
-                 
-  
-                        <ul class="unstyled article-sidebar-social visible-desktop" data-spy="affix" data-offset-top="0" data-offset-bottom="180">
-    <li>
-        <a class="pj-socialism tw-soc" href="http://twitter.com/share?url&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F&amp;via&#x3D;thePeerJ&amp;text&#x3D;Diver&#x25;20disturbance&#x25;20of&#x25;20reef&#x25;20fishes&amp;related&#x3D;ma_macneil" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Twitter</a>
-    </li>
-    <li>
-        <a class="pj-socialism fb-soc" href="http://www.facebook.com/sharer.php?u&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Facebook</a>
-    </li>
-    <li>
-        <a class="pj-socialism em-soc" href="mailto:?Subject&#x3D;Relevant&#x25;20research&#x25;20paper&#x25;20in&#x25;20PeerJ&amp;Body&#x3D;Reef&#x25;20fish&#x25;20communities&#x25;20are&#x25;20spooked&#x25;20by&#x25;20scuba&#x25;20surveys&#x25;20and&#x25;20may&#x25;20take&#x25;20hours&#x25;20to&#x25;20recover&#x25;20https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Email</a>
-    </li>
-</ul>
-
-<div class="btn-group hidden-desktop">
-    <a href="#" class="btn btn-share publication-label publication-label-general publication-label-left dropdown-toggle" data-toggle="dropdown">Share</a>
+<div class="hidden-desktop sidebar-box--action-container btn-group">
+    <a href="#" style="color: #7a7a7a !important;" class="sidebar-box sidebar-box--action btn-share dropdown-toggle" data-toggle="dropdown">Share</a>
 
     <ul class="dropdown-menu">
         <li>
-            <a href="http://twitter.com/share?url&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F&amp;via&#x3D;thePeerJ&amp;text&#x3D;Diver&#x25;20disturbance&#x25;20of&#x25;20reef&#x25;20fishes&amp;related&#x3D;ma_macneil" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Twitter</a>
+            <a href="http://twitter.com/share?url&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F&amp;via&#x3D;PeerJLife&amp;text&#x3D;Diver&#x25;20disturbance&#x25;20of&#x25;20reef&#x25;20fishes&amp;related&#x3D;" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Twitter</a>
         </li>
         <li>
             <a href="http://www.facebook.com/sharer.php?u&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Facebook</a>
         </li>
         <li>
-            <a href="mailto:?Subject&#x3D;Relevant&#x25;20research&#x25;20paper&#x25;20in&#x25;20PeerJ&amp;Body&#x3D;Reef&#x25;20fish&#x25;20communities&#x25;20are&#x25;20spooked&#x25;20by&#x25;20scuba&#x25;20surveys&#x25;20and&#x25;20may&#x25;20take&#x25;20hours&#x25;20to&#x25;20recover&#x25;20https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Email</a>
+            <a href="mailto:?Subject&#x3D;Relevant&#x25;20research&#x25;20paper&#x25;20in&#x25;20PeerJ&#x25;20Life&#x25;20&#x25;26&#x25;20Environment&amp;Body&#x3D;Reef&#x25;20fish&#x25;20communities&#x25;20are&#x25;20spooked&#x25;20by&#x25;20scuba&#x25;20surveys&#x25;20and&#x25;20may&#x25;20take&#x25;20hours&#x25;20to&#x25;20recover&#x25;20https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Email</a>
         </li>
     </ul>
 </div>
 
-                            </div>
+                                    </div>
+
+            </div>
+
+            <div class="peer-reviewed visible-phone">
+                <i class="icon-ok"></i> PEER-REVIEWED
+            </div>
+
         </div>
 
         <div id="annotations-sidebar" class="span5"></div>
@@ -417,7 +383,7 @@ pushpad('init', 5977, {hostname: 'peerj.com'});
         <div id="article-item-middle" class="span7"
              data-ms-type-entity="articles" data-ms-type-id="research-article" data-ms-type-text="Research-article">
             
-                            <div id="article-tweets-container">
+            <div id="article-tweets-container">
     <div class="row-fluid article-tweets-header">
         <div class="span9">
             <h2><em>Reef fish communities are spooked by scuba surveys and may take hours to recover</em></h2>
@@ -426,409 +392,22 @@ pushpad('init', 5977, {hostname: 'peerj.com'});
                             <div class="btn btn-inverse pull-right" id="btn-view-article"><span class="icon-file"></span> View article</div>
                     </div>
     </div>
-    <div class="tweet-items">        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/714510053731074048/jdjREEpm_normal.jpg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=562635111" target="_blank"><strong>Tyler Eddy</strong> <span class="twitter-handle">@tyzissou</span></a>
-                <span class="item-tweet-date">54 days ago</span>
-            </div>
-            <div>@Nasolituratus Also this one on transect survey method: https://t.co/yWk8m9BU9u</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/tyzissou/status/1098200672636416002" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/tyzissou/status/1098200672636416002" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/tyzissou/status/1098200672636416002" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/454677921081196544/h3btoOpw_normal.jpeg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=308132707" target="_blank"><strong>Emily Darling</strong> <span class="twitter-handle">@emilysdarling</span></a>
-                <span class="item-tweet-date">306 days ago</span>
-            </div>
-            <div>RT @buzzgoatley: More evidence to show how important your fish census methods are. Laying a tape first is a #fieldworkfail. Diver disturban…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/emilysdarling/status/1006906092314681344" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/emilysdarling/status/1006906092314681344" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/emilysdarling/status/1006906092314681344" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/3186629175/945c2f68635fbedb15cf6f5a2ce080e3_normal.jpeg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=1135929740" target="_blank"><strong>Co.Co.Dive</strong> <span class="twitter-handle">@cocodivemiri</span></a>
-                <span class="item-tweet-date">315 days ago</span>
-            </div>
-            <div>Spotted on Reddit: Reef fish communities are spooked by scuba surveys and may take hours to recover | https://t.co/UIw5KSUuLF</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/cocodivemiri/status/1003768382724898817" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/cocodivemiri/status/1003768382724898817" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/cocodivemiri/status/1003768382724898817" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/780071905302835200/d1D86Ft__normal.jpg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=3497183486" target="_blank"><strong>Kim Birnie-Gauvin</strong> <span class="twitter-handle">@kbg_conserv</span></a>
-                <span class="item-tweet-date">319 days ago</span>
-            </div>
-            <div>RT @fiskeforbrains: Emslieet al. 2018 - Reef fish communities are spooked by scuba surveys and may take hours to recover https://t.co/P72hH…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/kbg_conserv/status/1002192148765331456" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/kbg_conserv/status/1002192148765331456" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/kbg_conserv/status/1002192148765331456" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/578336295849586688/Sp24uALw_normal.png"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=3017080681" target="_blank"><strong>susie crick</strong> <span class="twitter-handle">@susiecrick</span></a>
-                <span class="item-tweet-date">319 days ago</span>
-            </div>
-            <div>RT @fiskeforbrains: Emslieet al. 2018 - Reef fish communities are spooked by scuba surveys and may take hours to recover https://t.co/P72hH…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/susiecrick/status/1002046293072527360" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/susiecrick/status/1002046293072527360" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/susiecrick/status/1002046293072527360" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/555888706125443074/jbyufe4R_normal.jpeg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=2984747772" target="_blank"><strong>Vinicius Giglio</strong> <span class="twitter-handle">@vjgiglio</span></a>
-                <span class="item-tweet-date">319 days ago</span>
-            </div>
-            <div>RT @buzzgoatley: More evidence to show how important your fish census methods are. Laying a tape first is a #fieldworkfail. Diver disturban…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/vjgiglio/status/1001986325183070213" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/vjgiglio/status/1001986325183070213" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/vjgiglio/status/1001986325183070213" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/791379399807422465/g8dVTBTC_normal.jpg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=1584847632" target="_blank"><strong>Tom Bridge</strong> <span class="twitter-handle">@TomBridge07</span></a>
-                <span class="item-tweet-date">320 days ago</span>
-            </div>
-            <div>RT @buzzgoatley: More evidence to show how important your fish census methods are. Laying a tape first is a #fieldworkfail. Diver disturban…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/TomBridge07/status/1001976493298405376" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/TomBridge07/status/1001976493298405376" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/TomBridge07/status/1001976493298405376" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/817814996608552960/jSwEWyxK_normal.jpg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=66182591" target="_blank"><strong>Dr. David Shiffman</strong> <span class="twitter-handle">@WhySharksMatter</span></a>
-                <span class="item-tweet-date">320 days ago</span>
-            </div>
-            <div>RT @fiskeforbrains: Emslieet al. 2018 - Reef fish communities are spooked by scuba surveys and may take hours to recover https://t.co/P72hH…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/WhySharksMatter/status/1001834979196743685" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/WhySharksMatter/status/1001834979196743685" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/WhySharksMatter/status/1001834979196743685" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/484180377796243457/hRRfG3b8_normal.jpeg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=2596979101" target="_blank"><strong>Fish Thinkers</strong> <span class="twitter-handle">@fish_thinkers</span></a>
-                <span class="item-tweet-date">320 days ago</span>
-            </div>
-            <div>RT @fiskeforbrains: Emslieet al. 2018 - Reef fish communities are spooked by scuba surveys and may take hours to recover https://t.co/P72hH…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/fish_thinkers/status/1001727669019561984" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/fish_thinkers/status/1001727669019561984" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/fish_thinkers/status/1001727669019561984" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/378800000749010403/42598e3e028852340d8a39eb6e715440_normal.jpeg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=2183720741" target="_blank"><strong>sergi taboada</strong> <span class="twitter-handle">@SergiTaboada</span></a>
-                <span class="item-tweet-date">321 days ago</span>
-            </div>
-            <div>RT @buzzgoatley: More evidence to show how important your fish census methods are. Laying a tape first is a #fieldworkfail. Diver disturban…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/SergiTaboada/status/1001327904121335808" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/SergiTaboada/status/1001327904121335808" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/SergiTaboada/status/1001327904121335808" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/955988128283508736/c1MnzQF1_normal.jpg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=133966869" target="_blank"><strong>Johnny</strong> <span class="twitter-handle">@thejohnnyshark</span></a>
-                <span class="item-tweet-date">321 days ago</span>
-            </div>
-            <div>Emslie, M. J. et al. (2018). Reef fish communities are spooked by scuba surveys and may take hours to recover, 1–17. https://t.co/k2HjluIHTJ</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/thejohnnyshark/status/1001285464207179776" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/thejohnnyshark/status/1001285464207179776" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/thejohnnyshark/status/1001285464207179776" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/896726260889595905/fUdcD0ts_normal.jpg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=2930027739" target="_blank"><strong>Matt Tietbohl</strong> <span class="twitter-handle">@WhyOceansMATTer</span></a>
-                <span class="item-tweet-date">322 days ago</span>
-            </div>
-            <div>RT @buzzgoatley: More evidence to show how important your fish census methods are. Laying a tape first is a #fieldworkfail. Diver disturban…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/WhyOceansMATTer/status/1001189974107148289" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/WhyOceansMATTer/status/1001189974107148289" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/WhyOceansMATTer/status/1001189974107148289" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/891897699401912320/5mIhUeru_normal.jpg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=761285407" target="_blank"><strong>Michelle</strong> <span class="twitter-handle">@Dr_MTaylor</span></a>
-                <span class="item-tweet-date">322 days ago</span>
-            </div>
-            <div>RT @buzzgoatley: More evidence to show how important your fish census methods are. Laying a tape first is a #fieldworkfail. Diver disturban…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/Dr_MTaylor/status/1001079888621834240" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/Dr_MTaylor/status/1001079888621834240" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/Dr_MTaylor/status/1001079888621834240" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/607255345409323008/m8Z_jlJa_normal.jpg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=227678041" target="_blank"><strong>Aaron MacNeil</strong> <span class="twitter-handle">@ma_macneil</span></a>
-                <span class="item-tweet-date">322 days ago</span>
-            </div>
-            <div>RT @buzzgoatley: More evidence to show how important your fish census methods are. Laying a tape first is a #fieldworkfail. Diver disturban…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/ma_macneil/status/1001040070936285184" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/ma_macneil/status/1001040070936285184" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/ma_macneil/status/1001040070936285184" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/994861423544201224/ifHUxiCo_normal.jpg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=3292068836" target="_blank"><strong>George Short</strong> <span class="twitter-handle">@CrabsandCrafts</span></a>
-                <span class="item-tweet-date">322 days ago</span>
-            </div>
-            <div>RT @buzzgoatley: More evidence to show how important your fish census methods are. Laying a tape first is a #fieldworkfail. Diver disturban…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/CrabsandCrafts/status/1001004904159301632" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/CrabsandCrafts/status/1001004904159301632" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/CrabsandCrafts/status/1001004904159301632" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/425895992286662657/radJ9sem_normal.jpeg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=46837858" target="_blank"><strong>WWF Marinebuddies</strong> <span class="twitter-handle">@marinebuddies</span></a>
-                <span class="item-tweet-date">322 days ago</span>
-            </div>
-            <div>RT @abdhabibi: para penyelam, jangan bikin takut ikan ya. ntar data kalian malah bisa jadi bias lohh cc @ReefCheckIndo @marinebuddies  RT @…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/marinebuddies/status/1000963700151341058" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/marinebuddies/status/1000963700151341058" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/marinebuddies/status/1000963700151341058" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/619079120438177792/HH3BhFBO_normal.jpg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=262433512" target="_blank"><strong>Kingsley Griffin</strong> <span class="twitter-handle">@Griffin_KJ</span></a>
-                <span class="item-tweet-date">323 days ago</span>
-            </div>
-            <div>RT @buzzgoatley: More evidence to show how important your fish census methods are. Laying a tape first is a #fieldworkfail. Diver disturban…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/Griffin_KJ/status/1000852112916467712" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/Griffin_KJ/status/1000852112916467712" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/Griffin_KJ/status/1000852112916467712" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/563799439765016576/657bOFX6_normal.jpeg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=847289161" target="_blank"><strong>Samantha Andrews</strong> <span class="twitter-handle">@OceanOculus</span></a>
-                <span class="item-tweet-date">323 days ago</span>
-            </div>
-            <div>RT @buzzgoatley: More evidence to show how important your fish census methods are. Laying a tape first is a #fieldworkfail. Diver disturban…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/OceanOculus/status/1000828809707483136" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/OceanOculus/status/1000828809707483136" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/OceanOculus/status/1000828809707483136" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/945759109126803456/rX6Z7ajo_normal.jpg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=1318263654" target="_blank"><strong>Dr Dan Exton</strong> <span class="twitter-handle">@DanExton</span></a>
-                <span class="item-tweet-date">323 days ago</span>
-            </div>
-            <div>RT @buzzgoatley: More evidence to show how important your fish census methods are. Laying a tape first is a #fieldworkfail. Diver disturban…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/DanExton/status/1000809790283632642" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/DanExton/status/1000809790283632642" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/DanExton/status/1000809790283632642" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/958080612186902528/A-iaUX9-_normal.jpg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=724881236045484032" target="_blank"><strong>James Ducker</strong> <span class="twitter-handle">@ElasmoMania</span></a>
-                <span class="item-tweet-date">323 days ago</span>
-            </div>
-            <div>RT @buzzgoatley: More evidence to show how important your fish census methods are. Laying a tape first is a #fieldworkfail. Diver disturban…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/ElasmoMania/status/1000808849870336001" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/ElasmoMania/status/1000808849870336001" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/ElasmoMania/status/1000808849870336001" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/826623657480892418/g411_Sys_normal.jpg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=826062374977155072" target="_blank"><strong>José Luis Menéndez J</strong> <span class="twitter-handle">@Biol77</span></a>
-                <span class="item-tweet-date">323 days ago</span>
-            </div>
-            <div>RT @buzzgoatley: More evidence to show how important your fish census methods are. Laying a tape first is a #fieldworkfail. Diver disturban…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/Biol77/status/1000772117304983552" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/Biol77/status/1000772117304983552" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/Biol77/status/1000772117304983552" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/914889631421931525/CznWlWzA_normal.jpg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=289330810" target="_blank"><strong>Austin Humphries</strong> <span class="twitter-handle">@ATHumphries</span></a>
-                <span class="item-tweet-date">323 days ago</span>
-            </div>
-            <div>RT @buzzgoatley: More evidence to show how important your fish census methods are. Laying a tape first is a #fieldworkfail. Diver disturban…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/ATHumphries/status/1000735492915200011" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/ATHumphries/status/1000735492915200011" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/ATHumphries/status/1000735492915200011" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/783392717984436224/qi0-tII0_normal.jpg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=836335968" target="_blank"><strong>Reem Al Mealla</strong> <span class="twitter-handle">@rmealla</span></a>
-                <span class="item-tweet-date">323 days ago</span>
-            </div>
-            <div>RT @buzzgoatley: More evidence to show how important your fish census methods are. Laying a tape first is a #fieldworkfail. Diver disturban…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/rmealla/status/1000701260960542725" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/rmealla/status/1000701260960542725" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/rmealla/status/1000701260960542725" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/731744008385400832/vSqR2-FG_normal.jpg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=3327999896" target="_blank"><strong>Paloma Matis</strong> <span class="twitter-handle">@paloma_matis</span></a>
-                <span class="item-tweet-date">323 days ago</span>
-            </div>
-            <div>RT @buzzgoatley: More evidence to show how important your fish census methods are. Laying a tape first is a #fieldworkfail. Diver disturban…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/paloma_matis/status/1000643442366599168" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/paloma_matis/status/1000643442366599168" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/paloma_matis/status/1000643442366599168" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
-        <div class="row-fluid tweet-item">
-        <div class="span1 offset1"><img src="https://pbs.twimg.com/profile_images/946408519288451073/MPeW2yBx_normal.jpg"></div>
-        <div class="span8">
-            <div>
-                <a class="twitter-profile-url" href="https://twitter.com/intent/user/?user_id=756434832889110529" target="_blank"><strong>David Feary</strong> <span class="twitter-handle">@david_feary</span></a>
-                <span class="item-tweet-date">323 days ago</span>
-            </div>
-            <div>RT @buzzgoatley: More evidence to show how important your fish census methods are. Laying a tape first is a #fieldworkfail. Diver disturban…</div>
-            <div class="item-tweet-cta">
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/david_feary/status/1000626770498945024" target="_blank"><i class="icon-comment-alt"></i> reply</a></span>
-                <span class="item-tweet-cta-action"><a href="https://twitter.com/david_feary/status/1000626770498945024" target="_blank"><i class="icon-retweet"></i> retweet</a></span>
-                <span><a href="https://twitter.com/david_feary/status/1000626770498945024" target="_blank"><i class="icon-heart-empty"></i> like</a></span>
-            </div>
-        </div>
-    </div>
 
-<div class="tweet-pagination pagination">
-    
-	<ul>
-    
-                        <li class="active"><a href="#">1</a></li>
-        
-                        <li>
-            	<a href="/articles/4886/tweets/?page=2" class="page">2</a>
-            </li>
-        
-                        <li>
-            	<a href="/articles/4886/tweets/?page=3" class="page">3</a>
-            </li>
-        
-    
-            <li>
-        	<a href="/articles/4886/tweets/?page=2">Next</a>
-        </li>
-        </ul>
+    <div class="tweet-items">
+            </div>
 
-    <hr>
-</div></div>
-</div>            
-            <div id="article-main-container">
-                <div>
-                    <span class="peer-reviewed hidden-phone"><i class="icon-ok"></i> PEER-REVIEWED</span>
-                                            <span><a href="/sections/aquatic-biology/">Aquatic Biology section <span class="icon-angle-right"></span></a></span>
+
+</div>
+
+            <div id="article-main-container" data-group="" data-groupId="" data-groupName="">
+                
+                <div class="article-section-breadcrumb">
+                                            <span class="icon-angle-left"></span>
+                        <span>
+                            <a href="/sections/aquatic-biology/latest/">
+                                <span class="article-section-breadcrumb-name">Aquatic Biology</span>
+                            </a>
+                        </span>
                                     </div>
 
 
@@ -1627,7 +1206,6 @@ pushpad('init', 5977, {hostname: 'peerj.com'});
 </footer></article>
             </div>
 
-
             <div id="related-research"></div>
 
             <!-- annotations -->
@@ -1656,7 +1234,7 @@ pushpad('init', 5977, {hostname: 'peerj.com'});
                    data-target="#annotation-question-create-container"
                    rel="nofollow"
                    href="/questions.form?format=html&amp;target=articles/4886&amp;_counts=1"><i class="icon-plus"></i> Ask a question</a>
-                <div class="help-block annotation-learn-more"><a href="/about/FAQ/academic-contribution/" target="_blank">Learn more about Q&amp;A</a></div>
+                <div class="help-block annotation-learn-more"><a href="/contributions/about/" target="_blank">Learn more about Q&amp;A</a></div>
                 <div class="annotation-form-container"
                      id="annotation-question-create-container"></div>
                     </div>
@@ -1693,55 +1271,43 @@ pushpad('init', 5977, {hostname: 'peerj.com'});
         </div>
 
         <!-- Right sidebar -->
-        <div class="span3 offset1 article-sidebar visible-desktop">
-                <div id="article-sidebar-main-content" data-todo-href="/todos/24129/">
-                    <div class="dimensions-stats-container">
+        <div class="span3 offset1 article-sidebar">
+                <div id="article-sidebar-main-content" class="mt-4" data-todo-href="/todos/24129/">
+                    <div class="dimensions-stats-container visible-desktop">
             <span class="__dimensions_badge_embed__" data-doi="10.7717/peerj.4886" data-hide-zero-citations="true" data-legend="always" data-style="small_circle"></span>
         </div>
     
     
-        <div class="row-fluid item-action-buttons article-sidebar-item">
+        <div class="row-fluid item-action-buttons article-sidebar-item visible-desktop">
             <div class="span12">
-                <a href="/benefits/" class="author-quote article-author-quote-link">
-    <div class="author-quote-text">
-        <span class="lead-in">I published in PeerJ</span> and it is very fast, has good editors, has consistently given good quality and rigorous reviews of my work, and produces visually appealing manuscripts.</div>
-    <div class="author-quote-details">
-        <span class="author-quote-name">Matthew Jackson</span><br>
-        PeerJ author
-    </div>
-</a>                                    <div class="article-free-publishing-cta">
-    <div class="article-free-publishing-cta-title">Publish Free in 2019</div>
-    <div class="article-free-publishing-cta-subline">Chemistry & Computer Science</div>
-    <a href="https://peerj.com/blog/post/115284881305/free-open-access-publishing-for-chemistry-and-computer-science-subject-areas" class="btn btn-article article-free-publishing-cta-btn">
-        Learn more
-    </a>
-</div>                                <div class="btn-group download-button-group">
-    <a href="#" class="btn btn-article btn-download btn-success dropdown-toggle" data-toggle="dropdown">
-        Download <i class="icon-caret-down btn-article-icon"></i>     </a>
 
-<ul class="dropdown-menu download-button-dropdown">
-                                <li><a href="/articles/4886.pdf" class="article-download-pdf">PDF (1.7MB)</a></li>
-                <li><a href="http://www.mendeley.com/import/?doi=10.7717/peerj.4886">Save to Mendeley</a></li>
-            <li><a href="http://www.readcube.com/articles/10.7717/peerj.4886">Read in ReadCube</a></li>
-                <li><a href="/articles/4886.ris" class="article-download-ris">RIS</a></li>
-        <li><a href="/articles/4886.xml" class="article-download-xml">XML</a></li>
-        <li><a href="/articles/4886.bib" class="article-download-bibtex">BibTeX</a></li>
-    </ul>
-</div>                <!--<div class="content-cta-intro-text">Want alerts from articles like this?</div>-->
-<div id="content-alert-link" class="content-alert-link-btn" data-href="/content-alert/?aid=24129">
-    <i class="icon-envelope btn-content-alert-icon"></i>Content <div class="content-alert-btn-lastword">Alert<div
-                class="content-cta-new-badge">NEW</div></div>
+                
+                                                                <div data-clone="#expertrxiv-related" data-source="/expertrxiv/related?subjectIds=2,16,24&amp;subjects=Animal%20Behavior,%20Ecology,%20Marine%20Biology"></div>
+                    
+                                
+                                                                                                                        <div class="article-ctas">
+                    <div id="download-modal-trigger" class="js-download-modal-trigger btn btn-article btn-download btn-success mb-3  ">
+    Download
+</div>                    <!--<div class="content-cta-intro-text">Want alerts from articles like this?</div>-->
+<div class="content-alert-link-btn content-alert-link" data-href="/content-alert/?aid=24129">
+    <div class="content-alert-button-label">
+        <i class="icon-envelope btn-content-alert-icon"></i>
+        Content <div class="content-alert-btn-lastword">Alert</div>
+    </div>
+    <div class="content-alert-button-loading" style="display:none;"><i class="icon-spin icon-spinner"></i> Loading...</div>
 </div>
     <div class="content-cta-help-text">
         Just enter your email
     </div>
-                            </div>
+                <div>
+                                
+            </div>
         </div>
     
     
                 
         
-        <nav class="article-sidebar-block">
+        <nav class="article-sidebar-block visible-desktop">
         <div class="sidebar-heading">
             <i class="icon-wrench"></i> Tools & info
         </div>
@@ -1752,7 +1318,7 @@ pushpad('init', 5977, {hostname: 'peerj.com'});
                 </li>
             
                             
-                                                        <li><a href="/articles/4886/citations/" data-toggle="modal" data-target="#citing-modal">See citing articles <span class="metric-counter citation-item-count">6</span></a></li>
+                                                        <li><a href="/articles/4886/citations/" data-toggle="modal" data-target="#citing-modal">See citing articles <span class="metric-counter citation-item-count">47</span></a></li>
                             
             
             <li><a href="#questions">Ask questions
@@ -1769,22 +1335,39 @@ pushpad('init', 5977, {hostname: 'peerj.com'});
                     </ul>
     </nav>
 
-        
+        <span class="visible-desktop"></span>
+
+    <div id="related-research-sidebar visible-desktop"></div>
+
 </div>
-<nav class="article-sidebar-block follow" >
+<nav class="article-sidebar-block follow visible-desktop">
             <div class="sidebar-heading">
             <i class="icon-list-ul"></i> Outline
         </div>
         <div class="article-navigation"></div>
+            
+                            
+                        <div class="mt-5">
+            <div id="peerj-vue-user-impact-widget"
+                 class="mt-6"
+                 data-min-cite="8"
+                 data-hide-title="1"
+                 data-sticky-editor="1"
+                 data-editor="10274"
+                 data-section="aquatic-biology"
+                 data-subject="[&quot;animal-behavior&quot;,&quot;ecology&quot;,&quot;marine-biology&quot;]"
+                 data-query="{&quot;journal&quot;:&quot;peerj&quot;,&quot;key&quot;:&quot;4886&quot;,&quot;relatedAuthors&quot;:1,&quot;randomize&quot;:1}"
+            ></div>
+        </div>
+        
     <div id="top-return" class="top-return">
         <i class="icon-arrow-up"></i> Return to top
-    </div>
-            <div data-clone="#mobile-featured-jobs" data-source="/jobs/featured/?subjects=Animal+Behavior%2C+Ecology%2C+Marine+Biology"></div>
-    </nav>
+    </div>    
+</nav>
 
-<div class="subjects-navigation"></div>
+<div class="subjects-navigation visible-desktop"></div>
 
-    <div id="article-identifiers">
+    <div id="article-identifiers visible-desktop">
         <span class="article-meta-name">PubMed</span>
         <a href="https://www.ncbi.nlm.nih.gov/pubmed/29844998"
            id="article-identifier-pmid" target="_blank">29844998</a>
@@ -1792,10 +1375,83 @@ pushpad('init', 5977, {hostname: 'peerj.com'});
         </div>
     </div>
 
+        
+<style>
+    .modal-loading-container{
+        display:flex;
+        justify-content:center;
+        color:#999;
+        padding:3rem;
+    }
+</style>
+
+<div id="download-article-modal" class="modal hide fade peer-review-article" style="">
+
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>Download article</h3>
+    </div>
+
+    <div class="modal-body">
+        <div id="download-article-modal-loading" class="modal-loading-container" style="display:none;">
+            <i class="icon-spin icon-3x icon-spinner"></i>
+        </div>
+        <div id="download-article-modal-body">
+                    <div id="download-modal-buttons-container">
+        <div class="download-modal-article-title">Reef fish communities are spooked by scuba surveys and may take hours to recover</div>
+            <div class="mt-2 download-buttons">
+                                                                                <a target="_blank" download data-format="PDF" data-download-confirm-text="PDF downloaded" href="https://peerj.com/articles/4886.pdf" target="_blank" class="btn btn-primary js-download-btn btn-block btn-large mb-2 "><i class="icon-cloud-download mr-1"></i> PDF (1.7MB)</a>
+                                                    <a target="_blank" data-download-confirm-text="Mendeley opened" href="http://www.mendeley.com/import/?doi=10.7717/peerj.4886" class="btn btn-primary js-download-btn btn-block btn-large mb-2"><i class="icon-cloud-download mr-1"></i> Save to Mendeley</a>
+                                    <a target="_blank" data-download-confirm-text="Readcube article opened" href="http://www.readcube.com/articles/10.7717/peerj.4886" class="btn btn-primary js-download-btn btn-block btn-large mb-2"><i class="icon-cloud-download mr-1"></i> Read in ReadCube</a>
+                                                    <a target="_blank" data-format="RIS" data-download-confirm-text="RIS file downloaded" href="https://peerj.com/articles/4886.ris" class="btn btn-primary js-download-btn btn-block btn-large mb-2 "><i class="icon-cloud-download mr-1"></i> RIS</a>
+                    <a target="_blank" data-format="XML" data-download-confirm-text="XML file downloaded" href="https://peerj.com/articles/4886.xml" class="btn btn-primary js-download-btn btn-block btn-large mb-2 "><i class="icon-cloud-download mr-1"></i> XML</a>
+                    <a target="_blank" data-format="BibText" data-download-confirm-text="BibText file downloaded" href="https://peerj.com/articles/4886.bib" class="btn btn-primary js-download-btn btn-block btn-large mb-2 "><i class="icon-cloud-download mr-1"></i> BibTeX</a>
+                
+            </div>
+        </div>
+
+        <div id="download-modal-downloading-message" style="display:none;">
+            <div class="text-center pt-4 pb-4">
+                <div>
+                    <strong>Your download will start in a moment...</strong>
+                </div>
+                <div class="btn btn-secondary mt-4 js-close-download-modal">Close</div>
+            </div>
+        </div>
+        <div id="download-modal-signup-container" style="display:none;">
+                            <div class="download-modal-cta-container hub">
+    <div class="download-modal-confirm hub">
+        <div class="download-modal-confirm-title">
+            <i class="icon-tickcircle downloaded-tick"></i> <span class="download-modal-confirm-title-text hub"></span>
+            <i class="icon-chevron-down show-download-link"></i>
+        </div>
+        <a class="article-modal-download-url" href=""></a>
+    </div>
+    <div style="overflow: hidden;">
+        <iframe id="sib-hub-form" width="100%" height="550" src="https://e2ebb866.sibforms.com/serve/MUIEANyXTfC2MHlzZxjBkKl_kZGwrMnUcrpfzGto2aGfbntI98TP10PaKb0vojLadCAd39k02PyAUMZSXA5XFyiMcjOnUDgelQPyqmvPjP62STK0cDmUL0MGi_0sSYv2OJJ5RxuS85tF-UVE2tvWh-iQMqPeB6G7OZQnyiWF8DTc2vTjvL3z8ZZpkgE4NYgX5LQBCc6CilMLkzhp" frameborder="0" scrolling="no" allowfullscreen style="display: block;margin-left: auto;margin-right: auto;max-width: 100%;"></iframe>
+    </div>
+    <div id="download-subscribe-error-container" class="mb-2 text-center text-error" style="display:none;"></div>
+    <a href="#" class="btn btn-block btn-link btn-large btn-modal-close js-close-download-modal mb-2">
+        Close
+    </a>
+</div>                    </div>        
+            </div>
+    </div>
+
+    <div class="modal-footer" style="display:none;">
+        <div class="pull-right">
+                    </div>
+
+                    <span class="submit-copy submit-copy-btn btn cancel pull-left" id="modal-cancel" data-dismiss="modal">
+                Cancel
+            </span>
+            </div>
+</div>
+
         <div id="ajax-form"></div>
 
     <!-- Flag Modal -->
-        <div id="flagModal" class="modal hide" style="max-height:none">
+        <div id="flagModal" class="legacy-b2-wrap modal hide" style="max-height:none">
       <div class="modal-header" style="text-align: center">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h3 class="slim">Report a problem</h3>
@@ -1877,7 +1533,7 @@ pushpad('init', 5977, {hostname: 'peerj.com'});
                     <p>
                     <em>Note: You are now also subscribed to the subject areas of this publication</em>
                     and will receive updates in the daily or weekly email digests if turned on.
-                    You can <a href="/settings/details/">add specific subject areas</a> through your profile settings.
+                    You can <a href="/settings/details">add specific subject areas</a> through your profile settings.
                     </p>
                 </div>
             </div>
@@ -1930,44 +1586,30 @@ pushpad('init', 5977, {hostname: 'peerj.com'});
 
         <div class="row-fluid">
                             <div class="span8">
-                    <h3 style="margin-bottom:10px">Social referrals <small>unique visitors</small></h3>
-                                            <div class="row-fluid" style="font-size: 16px; color: #444; border-bottom: 1px solid #ccc; margin-bottom: 5px;">
-                            <div class="span8" style="min-height:0">Twitter</div>
-                            <div class="span3" style="text-align:right;min-height:0">152</div>
-                        </div>
-                                            <div class="row-fluid" style="font-size: 16px; color: #444; border-bottom: 1px solid #ccc; margin-bottom: 5px;">
-                            <div class="span8" style="min-height:0">Facebook</div>
-                            <div class="span3" style="text-align:right;min-height:0">130</div>
-                        </div>
-                                            <div class="row-fluid" style="font-size: 16px; color: #444; border-bottom: 1px solid #ccc; margin-bottom: 5px;">
-                            <div class="span8" style="min-height:0">Reddit</div>
-                            <div class="span3" style="text-align:right;min-height:0">85</div>
-                        </div>
-                                        
-                    <h3 style="margin:30px 0 10px 0">Top referrals <small>unique visitors</small></h3>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <div class="row-fluid" style="font-size: 16px;  color: #444; border-bottom: 1px solid #ccc; margin-bottom: 5px;">
+                                        <h3 style="margin:30px 0 10px 0">Top referrals <small>unique visitors</small></h3>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <div class="row-fluid" style="font-size: 16px;  color: #444; border-bottom: 1px solid #ccc; margin-bottom: 5px;">
                             <div class="span8" style="min-height:0">
                                                                     From bookmark or typed URL
                                                             </div>
-                            <div class="span3" style="text-align:right;min-height:0">1,962</div>
+                            <div class="span3" style="text-align:right;min-height:0">3,740</div>
                         </div>
                                             <div class="row-fluid" style="font-size: 16px;  color: #444; border-bottom: 1px solid #ccc; margin-bottom: 5px;">
                             <div class="span8" style="min-height:0">
                                                                     Google search
                                                             </div>
-                            <div class="span3" style="text-align:right;min-height:0">198</div>
+                            <div class="span3" style="text-align:right;min-height:0">622</div>
                         </div>
                                             <div class="row-fluid" style="font-size: 16px;  color: #444; border-bottom: 1px solid #ccc; margin-bottom: 5px;">
                             <div class="span8" style="min-height:0">
                                                                     Twitter
                                                             </div>
-                            <div class="span3" style="text-align:right;min-height:0">152</div>
+                            <div class="span3" style="text-align:right;min-height:0">181</div>
                         </div>
                                             <div class="row-fluid" style="font-size: 16px;  color: #444; border-bottom: 1px solid #ccc; margin-bottom: 5px;">
                             <div class="span8" style="min-height:0">
                                                                     From PeerJ Content Alert Emails
                                                             </div>
-                            <div class="span3" style="text-align:right;min-height:0">24</div>
+                            <div class="span3" style="text-align:right;min-height:0">25</div>
                         </div>
                                             <div class="row-fluid" style="font-size: 16px;  color: #444; border-bottom: 1px solid #ccc; margin-bottom: 5px;">
                             <div class="span8" style="min-height:0">
@@ -1979,7 +1621,7 @@ pushpad('init', 5977, {hostname: 'peerj.com'});
                             <div class="span8" style="min-height:0">
                                                                     Yahoo search
                                                             </div>
-                            <div class="span3" style="text-align:right;min-height:0">3</div>
+                            <div class="span3" style="text-align:right;min-height:0">4</div>
                         </div>
                                                         </div>
             
@@ -1990,13 +1632,13 @@ pushpad('init', 5977, {hostname: 'peerj.com'});
     
                         <ul class="unstyled">
     <li>
-        <a class="pj-socialism tw-soc" href="http://twitter.com/share?url&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F&amp;via&#x3D;thePeerJ&amp;text&#x3D;Diver&#x25;20disturbance&#x25;20of&#x25;20reef&#x25;20fishes&amp;related&#x3D;ma_macneil" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Twitter</a>
+        <a class="pj-socialism tw-soc" href="http://twitter.com/share?url&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F&amp;via&#x3D;PeerJLife&amp;text&#x3D;Diver&#x25;20disturbance&#x25;20of&#x25;20reef&#x25;20fishes&amp;related&#x3D;" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Twitter</a>
     </li>
     <li>
         <a class="pj-socialism fb-soc" href="http://www.facebook.com/sharer.php?u&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Facebook</a>
     </li>
     <li>
-        <a class="pj-socialism em-soc" href="mailto:?Subject&#x3D;Relevant&#x25;20research&#x25;20paper&#x25;20in&#x25;20PeerJ&amp;Body&#x3D;Reef&#x25;20fish&#x25;20communities&#x25;20are&#x25;20spooked&#x25;20by&#x25;20scuba&#x25;20surveys&#x25;20and&#x25;20may&#x25;20take&#x25;20hours&#x25;20to&#x25;20recover&#x25;20https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Email</a>
+        <a class="pj-socialism em-soc" href="mailto:?Subject&#x3D;Relevant&#x25;20research&#x25;20paper&#x25;20in&#x25;20PeerJ&#x25;20Life&#x25;20&#x25;26&#x25;20Environment&amp;Body&#x3D;Reef&#x25;20fish&#x25;20communities&#x25;20are&#x25;20spooked&#x25;20by&#x25;20scuba&#x25;20surveys&#x25;20and&#x25;20may&#x25;20take&#x25;20hours&#x25;20to&#x25;20recover&#x25;20https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Email</a>
     </li>
 </ul>                
                 <h3 style="margin-bottom:10px;margin-top:10px">Metrics</h3>
@@ -2043,117 +1685,108 @@ pushpad('init', 5977, {hostname: 'peerj.com'});
 
     <!-- Graphical abstract modal -->
     
-        </div>
 
-        
-                <div id="push"></div>
-    </div>
+            </div>
 
-    <footer id="footer">
-        <div class="foot">
-            <div class="container">
-                
-                                    <div class="row">
-	<div class="span7">
-		<b>About us -</b> <a href="/about/" class="aboutLink" data-target="team">PeerJ team</a>
-		| <a href="/about/publications/" class="aboutLink" data-target="journals">Our publications</a> |
-		<a href="/benefits/">Benefits</a> | <a
-		href="/about/partnerships/" class="aboutLink" data-target="partnership">Partnerships</a> | <a
-		href="/about/endorsements/" class="aboutLink" data-target="endorsements">Endorsements</a>
-		 <i class="icon-trophy"></i> <a href="/about/reviews/" class="aboutLink" data-target="reviews">Awards</a>
-	</div>
-	<div class="span5">
-		<b>Resources -</b> <a href="/about/FAQ/">FAQ</a> | <a
-		href="/about/careers/">Careers</a> | <a href="/about/press/">Press
-		room</a> | <a href="/about/terms/">Terms of use</a> | <a
-		href="/about/privacy/">Privacy</a> | <a
-		href="/about/contact/" class="aboutLink" data-target="contact">Contact</a>
-	</div>
-	<div class="span7">
-		<b>Academic boards -</b> <a href="/academic-boards/advisors/">Advisors</a> | <a
-		href="/academic-boards/editors/">Editors</a> |
-		<a href="/academic-boards/subjects/">Subject areas</a>
-	</div>
-	<div class="span5">
-		<b>Follow us -</b>
-		<a href="https://peerj.com/blog/">PeerJ blog</a> |
-		<a href="http://twitter.com/thePeerJ/" title="Follow on Twitter" data-toggle="tooltip">Twitter</a>
-		|
-		<a href="http://facebook.com/thePeerJ/" title="Follow on Facebook" data-toggle="tooltip">Facebook</a>
-		|
-		<a href="http://www.linkedin.com/company/peerj" title="Follow on LinkedIn" data-toggle="tooltip">LinkedIn</a>
-		|
-        <a href="http://www.pinterest.com/thepeerj/boards/" title="Follow on Pinterest" data-toggle="tooltip">Pinterest</a>
-	</div>
-	<div class="span7">
-		<b>Submission guides -</b>
-		<a href="/about/aims-and-scope"><em>PeerJ</em> (life - bio - med)</a> |
-		<a href="/about/aims-and-scope/cs"><em>Computer Science</em></a> |
-		<a href="/about/aims-and-scope/chemistry"><em>Chemistry</em></a> |
-		<a href="/about/preprints/scope-and-instructions/"><em>PeerJ Preprints</em> instructions</a>
-	</div>
-	<div class="span5">
-		<b>Spread the word</b> -
-		<a href="/spread-the-word/activities/">Activities</a> |
-		<a href="/spread-the-word/resources/">Resources</a>
-	</div>
-    <div class="span7">&nbsp;</div>
-    <div class="span5">
-	<b>PeerJ feeds <i class="icon-rss"></i> - </b>
-	<a href="/articles/index.atom" rel="alternate" title="Articles (Atom)" type="application/atom+xml">Atom</a> |
-	<a href="/articles/index.rss1">RSS 1.0</a> |
-	<a href="/articles/index.rss2">RSS 2.0</a> |
-	<a href="/articles/index.json">JSON</a>
-	<br>
+            
+                        <div id="push"></div>
 
-	<b>PeerJ Computer Science feeds <i class="icon-rss"></i> - </b>
-	<a href="/articles/index.atom?journal=cs" rel="alternate" title="PeerJ Computer Science articles (Atom)" type="application/atom+xml">Atom</a> |
-	<a href="/articles/index.rss1?journal=cs">RSS 1.0</a> |
-	<a href="/articles/index.rss2?journal=cs">RSS 2.0</a> |
-	<a href="/articles/index.json?journal=cs">JSON</a>
-	<br>
-
-        <b>PeerJ Preprint feeds <i class="icon-rss"></i> - </b>
-        <a href="/preprints/index.atom" rel="alternate" title="Preprints (Atom)" type="application/atom+xml">Atom</a> |
-        <a href="/preprints/index.rss1">RSS 1.0</a> |
-        <a href="/preprints/index.rss2">RSS 2.0</a> |
-        <a href="/preprints/index.json">JSON</a>
-        <br>
-
-        <b>Archives - </b>
-        <a href="/archives/" rel="archives">PeerJ</a> |
-        <a href="/archives/?journal=cs" rel="archives">PeerJ Computer Science</a> |
-        <a href="/archives-preprints/" rel="archives">PeerJ Preprints</a>
-    </div>
-
-</div>
-
-<div id="fb-root"></div>
-                
-                <div class="row" style="margin-top:10px;font-size:12px">
-    <div class="span12" style="color:#888">
-        
-        <div>
-            <span style="margin-right:7px"><span style="font-style:italic">PeerJ</span> ISSN: 2167-8359</span>
-            <span style="margin-right:7px"><span style="font-style:italic">PeerJ Comput. Sci.</span> ISSN: 2376-5992</span>
-            <span><span style="font-style:italic">PeerJ Preprints</span> ISSN: 2167-9843</span>
         </div>
     </div>
+                                        <div id="vue-peerj-core-app"
+     data-betaTesting="1"
+     data-isDarkTheme="false"
+     data-mercure="https://sse.peerj.com/.well-known/mercure"
+     data-userRoleData="{&quot;isAdmin&quot;:false,&quot;isStaff&quot;:false,&quot;_roles&quot;:[],&quot;_me&quot;:[]}"
+     data-api="https://peerj.com/api/v2"
+     data-imagePrefix="https://d2pdyyx74uypu5.cloudfront.net/"
+     data-groupFilesPrefix="https://group-files.peerj.com/"
+     data-groupFilesRoot=""
+     data-userImagePrefix="https://s3.amazonaws.com/peerj_prod_upload/images/profile"
+     data-articleBasePrefix="https://dfzljdn9uc3pi.cloudfront.net/"
+     data-recaptchaKey="6LcklyQUAAAAAGWmGpOk76ha4H0b229a5GSVahJr"
+>
 </div>
+                    <header id="header-skeleton" class="px-sm text-left shadow-sm v-sheet theme--light v-toolbar v-toolbar--flat v-app-bar v-app-bar--fixed" data-booted="true" style="height: 75px; margin-top: 0px; transform: translateY(0px); left: 0px; right: 0px; background: #fff; color: #FFF"><div class="v-toolbar__content" style="height: 75px;"><button type="button" class="v-app-bar__nav-icon v-btn v-btn--icon v-btn--round theme--light v-size--default"><span class="v-btn__content"><i aria-hidden="true" aria-haspopup="true" aria-expanded="false" class="v-icon notranslate mdi mdi-view-dashboard theme--light" style="color: #FFF"></i><span class="v-tooltip"></span></span></button>
+
+            <div class="d-flex"><div>   </div></div></div></header>
+
+
+
+
+        
+            <div class="item-top-navbar">
+    <div class="item-top-navbar-inner">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span12">
+                       <div class="item-metrics-counts-top-nav article-item-metrics-counts">
+                                                                                                        <span class="article-item-metrics-count visible-all">
+                                        <span data-count="citations">47</span>
+                                        <span class="article-item-metrics-label">Citations</span>
+                                    </span>
+                                
+                            <span class="article-item-metrics-count">
+                                <span data-count="views-html">&nbsp;</span>
+                                <span class="article-item-metrics-label">Views</span>
+                            </span>
+
+                            <span class="article-item-metrics-count">
+                                <span data-count="views-pdf">&nbsp;</span>
+                                <span class="article-item-metrics-label">Downloads</span>
+                            </span>
+                       </div>
+                </div>
             </div>
         </div>
-    </footer>
+    </div>
+</div>
 
-        <div id="alerts" data-async-alerts="/alerts/"></div>
+            
+    
 
-                    <script src="/js/43ae152-beb35bf.js"></script>    
+        <div id="alerts" class="legacy-b2-wrap" data-async-alerts="/alerts/"></div>
 
-    <script src="/js/5d3c493-9fa8266.js"></script>
+                    <script src="/js/8d39319-c4c97cf.js"></script>
+                <script src="https://cdn.peerj.com/webpack/runtime.f1ddacd9.js"></script><script src="https://cdn.peerj.com/webpack/9.505e7a2a.js"></script><script src="https://cdn.peerj.com/webpack/13.efca11e7.js"></script><script src="https://cdn.peerj.com/webpack/peerj-app.fe629a0f.js"></script>
+    
 
-    <script src="/js/c1dacd9-d184eca.js"></script>
+    <script src="/js/5d3c493-193ec0b.js"></script>
+
+    <script src="/js/c1dacd9-e4301db.js"></script>
         <!--[if gt IE 8]><!-->
         <script src="/assets/js/highlight/highlight.pack.js"></script>
 
+                <script>
+            (function(){
+
+                function initTweets(){
+                    //Get count
+                    var tweetCountUrl = '/articles/4886/tweet-count/';
+                    $.get(tweetCountUrl, function(response){
+                        if(response.count){
+                            $('#tweet-count-container').html('View ' + response.count + ' tweet' + (response.count > 1 ? 's' : ''));
+                            $('#btn-view-tweets').fadeIn(200);
+                        }
+                    });
+
+                    //Get first page
+                    $('.tweet-items').html('Loading...');
+                    var tweetsPageUrl = '/articles/4886/tweets/';
+                    $.get(tweetsPageUrl, function(response){
+                        if(response.html){
+                            $('.tweet-items').html(response.html);
+                            $("html, body").animate({scrollTop: 0}, 500);
+                        }
+                    });
+                }
+
+                setTimeout(initTweets, 2500);
+
+            })();
+        </script>
+
+                
         <script>
             $(function () {
                 // syntax highlighting for code blocks
@@ -2185,13 +1818,21 @@ pushpad('init', 5977, {hostname: 'peerj.com'});
         </script>
     <!--<![endif]-->
 
-    <!-- initialise the follow button -->
     <script>
+        //initialise the follow button
         $(function() {
             PeerJ.Event.Follow.init();
         });
+
+        //Show citations modal if query param exists
+        var urlParams = new URLSearchParams(window.location.search);
+        if(urlParams.has('citations')){
+            $('#citing-modal').modal('show');
+        }
+
     </script>
 
+        
     
 <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
@@ -2213,12 +1854,22 @@ pushpad('init', 5977, {hostname: 'peerj.com'});
     MathJax.Ajax.config.root = "/bundles/peerjmathjax/MathJax/";
 </script>
 
-<script async defer src="/bundles/peerjmathjax/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML,Safe&noContrib"></script>
+<script src="/bundles/peerjmathjax/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML,Safe&noContrib"></script>
 
-    <script src="/assets/js/trendmd/trendmd.min.js"></script>
-    <script type="text/javascript">TrendMD.register({journal_id: 52926, element: '#related-research', track_id: null});</script>
+    <script defer src='https://js.trendmd.com/trendmd.min.js' data-trendmdconfig='{"journal_id":"52926","element":"#related-research"}'></script>
+    <script defer src='https://js.trendmd.com/trendmd.min.js' data-trendmdconfig='{"journal_id":"52926","element":"#related-research-sidebar"}'></script>
     <script async src="https://badge.dimensions.ai/badge.js" charset="utf-8"></script>
 
-    <div id="content-alert-container"></div>
+    <div class="legacy-b2-wrap">
+        <div id="content-alert-container"></div>
+        <div id="toast-container"></div>
+
+            <link rel="dns-prefetch" href="https://d2pdyyx74uypu5.cloudfront.net/">
+    <link rel="dns-prefetch" href="http://static.peerj.com/">
+<link rel="dns-prefetch" href="https://doi.org">
+
+                
+
+            </div>
 </body>
 </html>
