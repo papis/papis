@@ -104,7 +104,7 @@ settings = {
                         "1.14.0/keybinding-emacs.min.js"),
                        ],
 
-    "serve-empty-query-get-all-documents": True,
+    "serve-empty-query-get-all-documents": False,
 
     # citations configuration
     "citations-file-name": "citations.yaml",

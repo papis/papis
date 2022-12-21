@@ -103,6 +103,11 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         docs = papis.api.get_documents_in_lib(libname, cleaned_query)
         self.page_main(libname, docs, cleaned_query)
 
+    def page_serve_all(self, libname: str) -> None:
+        self._handle_lib(libname)
+        docs = papis.api.get_all_documents_in_lib(libname)
+        self.page_main(libname, docs, "All documents")
+
     def page_main(self,
                   libname: Optional[str] = None,
                   docs: Optional[List[papis.document.Document]] = None,
@@ -431,6 +436,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.page_main),
             ("^/libraries$",
                 self.page_libraries),
+            ("^/library/?([^/]+)?/all$",
+                self.page_serve_all),
             ("^/library/?([^/]+)?/query[?]q=(.*)$",
                 self.page_query),
             ("^/library/?([^/]+)?/document/([a-z0-9]+)$",

@@ -29,11 +29,12 @@ def navbar(libname: str) -> t.html_tag:
             with t.div(id="navbarNav"):
                 t.attr(cls="collapse navbar-collapse")
                 with t.ul(cls="navbar-nav"):
-                    _li("All", "/library/{libname}".format(libname=libname),
+                    _li("Search", "/library/{libname}".format(libname=libname),
                         active=True)
+                    _li("All",
+                        "/library/{libname}/all".format(libname=libname))
                     _li("Tags",
                         "/library/{libname}/tags".format(libname=libname))
                     _li("Libraries", "/libraries")
-                    _li("Explore", "#")
 
     return nav
