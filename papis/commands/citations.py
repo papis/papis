@@ -3,9 +3,10 @@ See ../../doc/source/commands/citations.rst
 
 papis citations --fetch-citations
 """
-import click
 from typing import Optional
 import logging
+
+import click
 
 import papis.cli
 import papis.document
