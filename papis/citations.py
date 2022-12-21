@@ -232,3 +232,12 @@ def fetch_and_save_cited_by_from_database(doc: Document) -> None:
     file_path = get_cited_by_file(doc)
     if citations and file_path:
         papis.yaml.list_to_path(citations, file_path)
+
+
+def get_cited_by(doc: Document) -> Citations:
+    if has_cited_by(doc):
+        file_path = get_cited_by_file(doc)
+        if not file_path:
+            return []
+        return papis.yaml.yaml_to_list(file_path)
+    return []

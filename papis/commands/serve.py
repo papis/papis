@@ -233,20 +233,24 @@ def _document_view_main_form(libname: str,
 
 def _render_citations(doc: papis.document.Document,
                       libname: str,
-                      libfolder: str) -> None:
+                      libfolder: str,
+                      timeline_id: str,
+                      fetch_path: Callable[[str, Dict[str, Any]], str],
+                      checker: Callable[[papis.document.Document], bool],
+                      getter: Callable[[papis.document.Document],
+                                       papis.citations.Citations],
+                      ads_fmt: str) -> None:
 
-    with t.form(action=wp.fetch_citations_server_path(libname, doc),
+    with t.form(action=fetch_path(libname, doc),
                 method="POST"):
         with t.button(cls="btn btn-success",
                       type="submit"):
             wh.icon_span("cloud-bolt", "Fetch citations")
 
-    if papis.citations.has_citations(doc):
-        citations = papis.citations.get_citations(doc)
+    if checker(doc):
+        citations = getter(doc)
         if papis.config.getboolean("serve-enable-timeline"):
-            papis.web.timeline.widget(citations,
-                                      libname,
-                                      "main-citations-timeline")
+            papis.web.timeline.widget(citations, libname, timeline_id)
         with t.ol(cls="list-group"):
             with t.li(cls="list-group-item"):
                 for cit in citations:
@@ -256,8 +260,7 @@ def _render_citations(doc: papis.document.Document,
     else:
         if doc.has("doi"):
             quoted_doi = urllib.parse.quote(doc["doi"], safe="")
-            ads = ("https://ui.adsabs.harvard.edu/abs/{}/references"
-                   .format(quoted_doi))
+            ads = ads_fmt.format(doi=quoted_doi)
             t.a("Provided by ads", href=ads)
             t.iframe(src=ads,
                      width="100%",
@@ -327,6 +330,7 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                                      [fpath],
                                      "#file-tab-{}".format(i))
                     _tab_element(t.span, ["Citations"], "#citations-tab")
+                    _tab_element(t.span, ["Cited by"], "#cited-by-tab")
                     _tab_element(wh.icon_span, ["note", "Notes"],
                                  "#notes-tab")
 
@@ -407,7 +411,32 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                                role="tabpanel",
                                aria_labelledby="citations-tab",
                                cls="tab-pane fade"):
-                        _render_citations(doc, libname, libfolder)
+                        _render_citations(
+                            doc,
+                            libname,
+                            libfolder,
+                            timeline_id="main-citations-timeline",
+                            fetch_path=wp.fetch_citations_server_path,
+                            checker=papis.citations.has_citations,
+                            getter=papis.citations.get_citations,
+                            ads_fmt=("https://ui.adsabs.harvard.edu/abs/"
+                                     "{doi}/references"))
+
+                    with t.div(id="cited-by-tab",
+                               role="tabpanel",
+                               aria_labelledby="cited-by-tab",
+                               cls="tab-pane fade"):
+                        _render_citations(
+                            doc,
+                            libname,
+                            libfolder,
+                            timeline_id="main-cited-by-timeline",
+                            fetch_path=wp.fetch_cited_by_server_path,
+                            checker=papis.citations.has_cited_by,
+                            getter=papis.citations.get_cited_by,
+                            ads_fmt=("https://ui.adsabs.harvard.edu/abs/"
+                                     "{doi}/citations"))
+
     return result
 
 
@@ -651,6 +680,12 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         papis.citations.fetch_and_save_citations(doc)
         self._redirect_back()
 
+    @ok_html
+    def fetch_cited_by(self, libname: str, papis_id: str) -> None:
+        doc = self._get_document(libname, papis_id)
+        papis.citations.fetch_and_save_cited_by_from_database(doc)
+        self._redirect_back()
+
     def get_libraries(self) -> None:
         logger.info("getting libraries")
         libs = papis.api.get_libraries()
@@ -870,6 +905,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.update_info),
             ("^/library/?([^/]+)?/document/fetch-citations/([a-z0-9]+)$",
                 self.fetch_citations),
+            ("^/library/?([^/]+)?/document/fetch-cited-by/([a-z0-9]+)$",
+                self.fetch_cited_by),
         ]
         self.process_routes(routes)
 

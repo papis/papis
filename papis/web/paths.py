@@ -34,7 +34,19 @@ def fetch_citations_server_path(libname: str, doc: Dict[str, Any]) -> str:
     Path for fetching citations for papers.
     """
     return format_if_has_id(doc,
-                            "/library/{libname}/document/fetch-citations/{ref}",
+                            "/library/{libname}/document/"
+                            "fetch-citations/{ref}",
+                            ref=_ref(doc),
+                            libname=libname)
+
+
+def fetch_cited_by_server_path(libname: str, doc: Dict[str, Any]) -> str:
+    """
+    Path for fetching cited-by type citations for papers
+    """
+    return format_if_has_id(doc,
+                            "/library/{libname}/document/"
+                            "fetch-cited-by/{ref}",
                             ref=_ref(doc),
                             libname=libname)
 
