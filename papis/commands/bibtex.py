@@ -135,6 +135,7 @@ import papis.config as config
 import papis.utils
 import papis.format
 import papis.tui.utils
+import papis.commands
 import papis.commands.explore as explore
 import papis.commands.add
 import papis.commands.open
@@ -157,7 +158,7 @@ config.register_default_settings({"bibtex": {
 EXPLORER_MGR = explore.get_explorer_mgr()
 
 
-@click.group("bibtex", cls=papis.cli.AliasedGroup, chain=True)
+@click.group("bibtex", cls=papis.commands.AliasedGroup, chain=True)
 @click.help_option("-h", "--help")
 @click.option("--noar", "--no-auto-read", "no_auto_read",
               default=False,

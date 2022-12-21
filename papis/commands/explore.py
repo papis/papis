@@ -369,7 +369,7 @@ def cmd(ctx: click.Context, command: str) -> None:
 
 
 @click.group("explore",
-             cls=papis.cli.AliasedGroup,
+             cls=papis.commands.AliasedGroup,
              invoke_without_command=False, chain=True)
 @click.help_option("--help", "-h")
 @click.pass_context
