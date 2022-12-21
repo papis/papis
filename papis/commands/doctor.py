@@ -352,18 +352,11 @@ def cli(query: str,
         suggest: bool) -> None:
     """Check for common problems in documents"""
 
-    # handle doc_folder
-    if doc_folder:
-        documents = [papis.document.from_folder(doc_folder)]
-    else:
-        documents = papis.database.get().query(query)
-
-    if not _all:
-        documents = [doc for doc in papis.pick.pick_doc(documents) if doc]
-
-    if sort_field:
-        documents = papis.document.sort(documents, sort_field, sort_reverse)
-
+    documents = papis.cli.handle_doc_folder_query_all_sort(query,
+                                                           doc_folder,
+                                                           sort_field,
+                                                           sort_reverse,
+                                                           _all)
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
         return

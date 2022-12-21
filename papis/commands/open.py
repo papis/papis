@@ -164,7 +164,7 @@ def run(document: papis.document.Document,
     "-m",
     "--mark/--no-mark",
     help="Open mark",
-    default=lambda: True if papis.config.get("open-mark") else False)
+    default=lambda: papis.config.getboolean("open-mark"))
 def cli(query: str, doc_folder: str, tool: str, folder: bool,
         sort_field: Optional[str], sort_reverse: bool, _all: bool,
         mark: bool) -> None:
@@ -173,20 +173,14 @@ def cli(query: str, doc_folder: str, tool: str, folder: bool,
         papis.config.set("opentool", tool)
     logger = logging.getLogger("cli:run")
 
-    if doc_folder:
-        documents = [papis.document.from_folder(doc_folder)]
-    else:
-        documents = papis.database.get().query(query)
-
-    if sort_field:
-        documents = papis.document.sort(documents, sort_field, sort_reverse)
-
+    documents = papis.cli.handle_doc_folder_query_all_sort(query,
+                                                           doc_folder,
+                                                           sort_field,
+                                                           sort_reverse,
+                                                           _all)
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
-
-    if not _all:
-        documents = [d for d in papis.pick.pick_doc(documents)]
 
     for document in documents:
         run(document, folder=folder, mark=mark)

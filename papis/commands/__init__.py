@@ -2,18 +2,44 @@ import os
 import re
 import glob
 from typing import Dict, Optional, Union, NamedTuple
+import difflib
 
-from click.core import Command
+import click.core
 
-import papis.cli
 import papis.config
 import papis.plugin
+
+
+class AliasedGroup(click.core.Group):
+    """
+    This group command is taken from
+        http://click.palletsprojects.com/en/5.x/advanced/#command-aliases
+    and is to be used for groups with aliases
+    """
+
+    def get_command(self,
+                    ctx: click.core.Context,
+                    cmd_name: str) -> Optional[click.core.Command]:
+        rv = click.core.Group.get_command(self, ctx, cmd_name)
+        if rv is not None:
+            return rv
+
+        matches = difflib.get_close_matches(
+            cmd_name, self.list_commands(ctx), n=2)
+        if not matches:
+            return None
+        if len(matches) == 1:
+            return click.core.Group.get_command(self, ctx, str(matches[0]))
+        ctx.fail("Too many matches: {}".format(matches))
+        return None
 
 
 Script = NamedTuple("Script",
                     [("command_name", str),
                      ("path", Optional[str]),
-                     ("plugin", Union[None, Command, papis.cli.AliasedGroup])])
+                     ("plugin", Union[None,
+                                      click.core.Command,
+                                      AliasedGroup])])
 
 
 def get_external_scripts() -> Dict[str, Script]:

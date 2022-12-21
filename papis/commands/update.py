@@ -122,19 +122,13 @@ def cli(query: str,
     """Update a document from a given library."""
     logger = logging.getLogger("cli:update")
 
-    if doc_folder:
-        documents = [papis.document.from_folder(doc_folder)]
-    else:
-        documents = papis.database.get().query(query)
-
-    if sort_field:
-        documents = papis.document.sort(documents, sort_field, sort_reverse)
-
-    if not _all:
-        documents = list(papis.pick.pick_doc(documents))
-
+    documents = papis.cli.handle_doc_folder_query_all_sort(query,
+                                                           doc_folder,
+                                                           sort_field,
+                                                           sort_reverse,
+                                                           _all)
     if not documents:
-        logger.error(papis.strings.no_documents_retrieved_message)
+        logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
     for document in documents:
