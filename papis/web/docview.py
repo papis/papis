@@ -1,5 +1,4 @@
 from typing import Any, List, Callable
-import urllib.parse
 
 import dominate.tags as t
 import dominate.util as tu
