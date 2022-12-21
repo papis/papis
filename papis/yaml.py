@@ -53,7 +53,7 @@ def yaml_to_list(yaml_path: str,
 
 def list_to_path(data: Sequence[Dict[str, Any]], filepath: str) -> None:
     with open(filepath, "w+") as fdd:
-        yaml.dump_all(data, fdd)
+        yaml.dump_all(data, fdd, allow_unicode=True)
 
 
 def exporter(documents: List[papis.document.Document]) -> str:

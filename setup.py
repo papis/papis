@@ -221,6 +221,7 @@ setup(
             "serve=papis.commands.serve:cli",
             "update=papis.commands.update:cli",
             "doctor=papis.commands.doctor:cli",
+            "citations=papis.commands.citations:cli",
         ],
         "papis.downloader": [
             "acs=papis.downloaders.acs:Downloader",
