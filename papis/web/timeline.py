@@ -20,10 +20,13 @@ def widget(documents: Sequence[Dict[str, Any]],
     """
     t.div(id=_id, style="width: 100%; height: 300px;")
 
-    def _make_text(d: Dict[str, Any]) -> str:
-        _text = papis.document.describe(d)
-        _href = wp.doc_server_path(libname, d)
-        return r"<a href='{}'>{}</a>".format(_href, _text)
+    def _make_text(_d: Dict[str, Any]) -> str:
+        _text = papis.document.describe(_d)
+        _href = wp.doc_server_path(libname, _d)
+        if _href:
+            return (r"<a href='{}'>{}<i class='fa fa-check'></i></a>"
+                    .format(_href, _text))
+        return _text
 
     json_data = [{"text": {"text": _make_text(d)},
                   "start_date": {"year": d["year"],
