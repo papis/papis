@@ -122,7 +122,7 @@ def exporter(documents: List[papis.document.Document]) -> str:
 
 class Importer(papis.importer.Importer):
 
-    """Importer that parses a bibtex files"""
+    """Importer that parses BibTeX files"""
 
     def __init__(self, **kwargs: Any) -> None:
         papis.importer.Importer.__init__(self, name="bibtex", **kwargs)
