@@ -61,7 +61,7 @@ FILES_CHECK_NAME = "files"
 
 def files_check(doc: papis.document.Document) -> List[Error]:
     """
-    It checks wether the files of a document actually exist in the
+    It checks whether the files of a document actually exist in the
     filesystem.
     """
     files = doc.get_files()
@@ -104,7 +104,7 @@ KEYS_EXIST_CHECK_NAME = "keys-exist"
 
 def keys_check(doc: papis.document.Document) -> List[Error]:
     """
-    It checks wether the keys provided in the configuration
+    It checks whether the keys provided in the configuration
     option ``doctor-keys-check`` exit in the document.
     """
     keys = papis.config.getlist("doctor-keys-exist-keys")

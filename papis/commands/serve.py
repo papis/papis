@@ -789,7 +789,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         It updates the information by the provided form.
 
         It first checks that the yaml is readable by using
-        yaml_to_data function. If it is succesfull it supposes
+        yaml_to_data function. If it is successful it supposes
         it is a correct yaml, it overwrites the old yaml
         and updates the database and the document with it.
         """

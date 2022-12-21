@@ -42,7 +42,7 @@ bibtex_types = frozenset([
     "bibnote",
     "commentary",
     "image",
-    "juristiction",
+    "jurisdiction",
     "legislation",
     "legal",
     "letter",

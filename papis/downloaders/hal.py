@@ -5,7 +5,7 @@ import papis.downloaders.fallback
 
 
 class Downloader(papis.downloaders.fallback.Downloader):
-    # NOTE: this only advertizes subdomains maintained by CCSD
+    # NOTE: this only advertises subdomains maintained by CCSD
     # https://www.ccsd.cnrs.fr/2022/06/hal-archives-ouvertes-fr-va-devenir-hal-science/
 
     # TODO: a list of other domains seems to be available at
