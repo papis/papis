@@ -236,7 +236,7 @@ def _render_citations(doc: papis.document.Document,
                       libfolder: str) -> None:
 
     with t.form(action=wp.fetch_citations_server_path(libname, doc),
-                method="GET"):
+                method="POST"):
         with t.button(cls="btn btn-success",
                       type="submit"):
             wh.icon_span("cloud-bolt", "Fetch citations")
@@ -565,6 +565,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self._send_json({"message": msg})
 
     def page_query(self, libname: str, query: str) -> None:
+        self._handle_lib(libname)
         cleaned_query = urllib.parse.unquote_plus(query)
         docs = papis.api.get_documents_in_lib(libname, cleaned_query)
         self.page_main(libname, docs, cleaned_query)
@@ -576,10 +577,12 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         if docs is None:
             docs = []
 
+        libname = libname or papis.api.get_lib_name()
+        self._handle_lib(libname)
+
         self.send_response(200)
         self.send_header_html()
         self.end_headers()
-        libname = libname or papis.api.get_lib_name()
         if len(docs) == 0:
             if papis.config.getboolean("serve-empty-query-get-all-documents"):
                 docs = papis.api.get_all_documents_in_lib(libname)
@@ -595,6 +598,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     @ok_html
     @redirecting("/library")
     def clear_cache(self, libname: str) -> None:
+        self._handle_lib(libname)
         db = papis.database.get(libname)
         db.clear()
         db.initialize()
@@ -603,6 +607,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     def page_tags(self, libname: Optional[str] = None) -> None:
         global TAGS_LIST
         libname = libname or papis.api.get_lib_name()
+        self._handle_lib(libname)
         docs = papis.api.get_all_documents_in_lib(libname)
         tags_of_tags = [tag
                         for d in docs
@@ -622,6 +627,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     @ok_html
     def page_tags_refresh(self, libname: Optional[str] = None) -> None:
         libname = libname or papis.api.get_lib_name()
+        self._handle_lib(libname)
         TAGS_LIST[libname] = None
         self.redirect("/library/{}/tags".format(libname))
 
@@ -633,28 +639,15 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.wfile.flush()
 
     @ok_html
-    def page_document(self, libname: str, ref: str) -> None:
-        docs = papis.api.get_documents_in_lib(libname, ref)
-        if len(docs) > 1:
-            raise Exception("More than one document matched ref '{}'"
-                            .format(ref))
-        if not docs:
-            raise Exception("No document found with ref '{}'".format(ref))
-
-        page = _document_view(libname=libname, doc=docs[0])
+    def page_document(self, libname: str, papis_id: str) -> None:
+        doc = self._get_document(libname, papis_id)
+        page = _document_view(libname=libname, doc=doc)
         self.wfile.write(bytes(str(page), "utf-8"))
         self.wfile.flush()
 
     @ok_html
-    def fetch_citations(self, libname: str, ref: str) -> None:
-        docs = papis.api.get_documents_in_lib(libname, ref)
-        if len(docs) > 1:
-            raise Exception("More than one document matched ref '{}'"
-                            .format(ref))
-        if not docs:
-            raise Exception("No document found with ref '{}'".format(ref))
-
-        doc = docs[0]
+    def fetch_citations(self, libname: str, papis_id: str) -> None:
+        doc = self._get_document(libname, papis_id)
         papis.citations.fetch_and_save_citations(doc)
         self._redirect_back()
 
@@ -678,10 +671,12 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self._send_json({"name": lib.name, "paths": lib.paths})
 
     def get_all_documents(self, libname: str) -> None:
+        self._handle_lib(libname)
         docs = papis.api.get_all_documents_in_lib(libname)
         self.serve_documents(docs)
 
     def get_query(self, libname: str, query: str) -> None:
+        self._handle_lib(libname)
         cleaned_query = urllib.parse.unquote(query)
         logger.info("Querying in lib %s for <%s>", libname, cleaned_query)
         docs = papis.api.get_documents_in_lib(libname, cleaned_query)
@@ -742,8 +737,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         else:
             raise Exception("File {} does not exist".format(path))
 
-    def do_ROUTES(self,                     # noqa: N802
-                  routes: List[Tuple[str, Any]]) -> None:
+    def process_routes(self,
+                       routes: List[Tuple[str, Any]]) -> None:
         """
         Performs the actions of the given routes and dispatches a 404
         page if there is an error.
@@ -761,21 +756,27 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                                   "Server path {0} not understood"
                                   .format(self.path))
 
-    def _get_document(self, libname: str, ref: str) -> papis.document.Document:
+    def _handle_lib(self, libname: str) -> None:
+        papis.api.set_lib_from_name(libname)
+
+    def _get_document(self,
+                      libname: str,
+                      papis_id: str) -> papis.document.Document:
+        self._handle_lib(libname)
         db = papis.database.get(libname)
-        docs = db.query_dict({"ref": ref})
-        if not docs:
+        doc = db.find_by_id(papis_id)
+        if not doc:
             raise Exception("Document with ref %s not "
-                            "found in the database" % ref)
-        return docs[0]
+                            "found in the database" % papis_id)
+        return doc
 
     def _get_form(self, method: str = "POST") -> cgi.FieldStorage:
         return cgi.FieldStorage(fp=self.rfile,
                                 headers=self.headers,
                                 environ={"REQUEST_METHOD": method})
 
-    def update_notes(self, libname: str, ref: str) -> None:
-        doc = self._get_document(libname, ref)
+    def update_notes(self, libname: str, papis_id: str) -> None:
+        doc = self._get_document(libname, papis_id)
         form = self._get_form("POST")
         new_notes = form.getvalue("value")
         notes_path = papis.notes.notes_path(doc)
@@ -783,7 +784,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
             fdr.write(new_notes)
         self._redirect_back()
 
-    def update_info(self, libname: str, ref: str) -> None:
+    def update_info(self, libname: str, papis_id: str) -> None:
         """
         It updates the information by the provided form.
 
@@ -792,7 +793,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         it is a correct yaml, it overwrites the old yaml
         and updates the database and the document with it.
         """
-        doc = self._get_document(libname, ref)
+        doc = self._get_document(libname, papis_id)
         form = self._get_form("POST")
         new_info = form.getvalue("value")
         info_path = doc.get_info_file()
@@ -816,8 +817,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
             self._redirect_back()
             return
 
-    def update_page_document(self, libname: str, ref: str) -> None:
-        doc = self._get_document(libname, ref)
+    def update_page_document(self, libname: str, papis_id: str) -> None:
+        doc = self._get_document(libname, papis_id)
         form = self._get_form("POST")
 
         result = {}
@@ -861,14 +862,16 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         HTTP POST route definitions
         """
         routes = [
-            ("^/library/?([^/]+)?/document/ref:(.*)$",
+            ("^/library/?([^/]+)?/document/([a-z0-9]+)$",
                 self.update_page_document),
-            ("^/library/?([^/]+)?/document/notes/ref:(.*)$",
+            ("^/library/?([^/]+)?/document/notes/([a-z0-9]+)$",
                 self.update_notes),
-            ("^/library/?([^/]+)?/document/info/ref:(.*)$",
+            ("^/library/?([^/]+)?/document/info/([a-z0-9]+)$",
                 self.update_info),
+            ("^/library/?([^/]+)?/document/fetch-citations/([a-z0-9]+)$",
+                self.fetch_citations),
         ]
-        self.do_ROUTES(routes)
+        self.process_routes(routes)
 
     def do_GET(self) -> None:               # noqa: N802
         """
@@ -884,9 +887,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.page_libraries),
             ("^/library/?([^/]+)?/query[?]q=(.*)$",
                 self.page_query),
-            ("^/library/?([^/]+)?/document/fetch-citations/(ref:.*)$",
-                self.fetch_citations),
-            ("^/library/?([^/]+)?/document/(ref:.*)$",
+            ("^/library/?([^/]+)?/document/([a-z0-9]+)$",
                 self.page_document),
             ("^/library/([^/]+)/tags$",
                 self.page_tags),
@@ -898,10 +899,10 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.clear_cache),
             ("^/static/([^?]*)(.*)$",
                 self.serve_static),
-            ("^/api/library$",
-                self.get_libraries),
 
             # JSON API
+            ("^/api/library$",
+                self.get_libraries),
             ("^/api/library/([^/]+)$",
                 self.get_library),
             ("^/api/library/([^/]+)/document$",
@@ -911,7 +912,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
             ("^/api/library/([^/]+)/document/([^/]+)/format/([^/]+)$",
                 self.get_document_format),
         ]
-        self.do_ROUTES(routes)
+        self.process_routes(routes)
 
 
 @click.command("serve")

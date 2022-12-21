@@ -76,3 +76,22 @@ def key_name() -> str:
     Reserved key name for databases and documents.
     """
     return "papis_id"
+
+
+def has_id(doc: Dict[str, Any]) -> bool:
+    """
+    Checks if a dictionary is potentially an identified papis
+    document.
+    """
+    return key_name() in doc
+
+
+def get(doc: Dict[str, Any]) -> str:
+    """
+    Get the id from a document.
+    """
+    if not has_id(doc):
+        raise ValueError("No '{}' found in '{}'"
+                         .format(key_name(),
+                                 papis.document.describe(doc)))
+    return str(doc[key_name()])

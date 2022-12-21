@@ -114,6 +114,7 @@ import papis.downloaders
 import papis.git
 import papis.format
 import papis.citations
+import papis.id
 
 logger = logging.getLogger("add")  # type: logging.Logger
 
@@ -133,6 +134,7 @@ class FromFolderImporter(papis.importer.Importer):
         self.logger.info("Importing from folder '%s'", self.uri)
 
         doc = papis.document.from_folder(self.uri)
+        del doc[papis.id.key_name()]
         self.ctx.data = papis.document.to_dict(doc)
         self.ctx.files = doc.get_files()
 
