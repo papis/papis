@@ -294,7 +294,7 @@ def explorer(
 
 class DoiFromPdfImporter(papis.importer.Importer):
 
-    """Importer parsing a doi from a pdf file"""
+    """Importer parsing a DOI from a PDF file and importing data from Crossref"""
 
     def __init__(self, uri: str) -> None:
         """The uri should be a filepath"""
@@ -330,7 +330,7 @@ class DoiFromPdfImporter(papis.importer.Importer):
 
 class Importer(papis.importer.Importer):
 
-    """Importer getting files and data form a doi through crossref.org"""
+    """Importer getting files and data from a DOI through Crossref"""
 
     def __init__(self, uri: str) -> None:
         papis.importer.Importer.__init__(self, name="doi", uri=uri)
@@ -395,7 +395,7 @@ class Importer(papis.importer.Importer):
 
 class FromCrossrefImporter(papis.importer.Importer):
 
-    """Importer that gets data from querying to crossref"""
+    """Importer that gets data from querying Crossref"""
 
     def __init__(self, uri: str) -> None:
         papis.importer.Importer.__init__(self, uri=uri, name="crossref")

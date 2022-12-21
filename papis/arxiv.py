@@ -282,7 +282,7 @@ class Downloader(papis.downloaders.Downloader):
 
 class Importer(papis.importer.Importer):
 
-    """Importer accepting an arxiv id and downloading files and data"""
+    """Importer accepting an arXiv ID and downloading files and data"""
 
     def __init__(self, uri: str) -> None:
         papis.importer.Importer.__init__(self, name="arxiv", uri=uri)
@@ -305,7 +305,7 @@ class Importer(papis.importer.Importer):
 
 class ArxividFromPdfImporter(papis.importer.Importer):
 
-    """Importer parsing an arxivid from a pdf file"""
+    """Importer parsing an arXiv ID from a PDF file"""
 
     def __init__(self, uri: str) -> None:
         papis.importer.Importer.__init__(self, name="pdf2arxivid", uri=uri)

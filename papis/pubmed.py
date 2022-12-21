@@ -100,7 +100,8 @@ def get_data(query: str = "") -> Dict[str, Any]:
 
 
 class Importer(papis.importer.Importer):
-    """Importer downloading data from a pubmed id"""
+
+    """Importer downloading data from a PubMed ID"""
 
     def __init__(self, uri: str = "") -> None:
         papis.importer.Importer.__init__(self, name="pubmed", uri=uri)

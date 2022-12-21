@@ -78,7 +78,7 @@ def explorer(ctx: click.core.Context, query: str, service: str) -> None:
 
 class Importer(papis.importer.Importer):
 
-    """Importer for ISBN identifiers through isbnlib."""
+    """Importer for ISBN identifiers through isbnlib"""
 
     def __init__(self, uri: str) -> None:
         super().__init__(name="isbn", uri=uri)
