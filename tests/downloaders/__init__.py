@@ -24,7 +24,7 @@ def get_json_resource(name: str) -> Any:
     return json.loads(get_resource(name))
 
 
-def with_default_config(fn):
+def with_default_config(fn: Callable[..., Any]) -> Callable[..., Any]:
     import papis.config
 
     @functools.wraps(fn)

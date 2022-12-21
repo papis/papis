@@ -5,6 +5,8 @@ from typing import Callable
 import papis.downloaders
 from papis.downloaders.citeseerx import Downloader
 
+import tests.downloaders as testlib
+
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -18,15 +20,14 @@ def get_citeseerx_resource(
         filename: str, url: str,
         force: bool = False,
         ) -> Callable[[], bytes]:
-    from tests.downloaders import get_remote_resource
-
     pid = os.path.basename(url)
-    return get_remote_resource(
+    return testlib.get_remote_resource(
         filename, Downloader.API_URL,
         params={"paper_id": pid},
         headers={"token": "undefined", "referer": url})
 
 
+@testlib.with_default_config
 @pytest.mark.parametrize("url", CITESEERX_URLS)
 def test_citeseerx_fetch(monkeypatch, url: str) -> None:
     cls = papis.downloaders.get_downloader_by_name("citeseerx")
@@ -35,11 +36,9 @@ def test_citeseerx_fetch(monkeypatch, url: str) -> None:
     down = cls.match(url)
     assert down is not None
 
-    uid = os.path.basename(url).replace("-", "_")
+    uid = os.path.basename(url)
     infile = "CiteSeerX_{}.json".format(uid)
     outfile = "CiteSeerX_{}_Out.json".format(uid)
-
-    from tests.downloaders import get_local_resource
 
     with monkeypatch.context() as m:
         m.setattr(down, "_get_raw_data", get_citeseerx_resource(infile, url))
@@ -47,6 +46,6 @@ def test_citeseerx_fetch(monkeypatch, url: str) -> None:
 
         down.fetch()
         extracted_data = down.ctx.data
-        expected_data = get_local_resource(outfile, extracted_data)
+        expected_data = testlib.get_local_resource(outfile, extracted_data)
 
         assert extracted_data == expected_data
