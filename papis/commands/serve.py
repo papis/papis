@@ -243,9 +243,16 @@ def _render_citations(doc: papis.document.Document,
 
     with t.form(action=fetch_path(libname, doc),
                 method="POST"):
-        with t.button(cls="btn btn-success",
-                      type="submit"):
-            wh.icon_span("cloud-bolt", "Fetch citations")
+        with t.div(cls="btn-group", role="group"):
+            with t.button(cls="btn btn-success",
+                          type="submit"):
+                wh.icon_span("cloud-bolt", "Fetch citations")
+            if doc.has("doi"):
+                quoted_doi = urllib.parse.quote(doc["doi"], safe="")
+                with t.a(cls="btn btn-primary",
+                         target="_blank",
+                         href=ads_fmt.format(doi=quoted_doi)):
+                    wh.icon_span("globe", "ads")
 
     if checker(doc):
         citations = getter(doc)
