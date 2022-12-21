@@ -6,20 +6,21 @@ import tempfile
 
 import papis.exceptions
 import papis.config
+import papis.defaults
 from papis.config import _CONFIGURATION
 
 
-def test_default_opener():
+def test_default_opener() -> None:
     if sys.platform.startswith("darwin"):
-        assert papis.config.get_default_opener() == "open"
+        assert papis.defaults.get_default_opener() == "open"
     elif sys.platform.startswith("win"):
-        assert papis.config.get_default_opener() == "start"
+        assert papis.defaults.get_default_opener() == "start"
     else:
-        assert papis.config.get_default_opener() == "xdg-open"
+        assert papis.defaults.get_default_opener() == "xdg-open"
 
 
 @pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
-def test_get_config_home(monkeypatch):
+def test_get_config_home(monkeypatch) -> None:
     tmpdir = tempfile.gettempdir()
 
     with monkeypatch.context() as m:
@@ -32,7 +33,7 @@ def test_get_config_home(monkeypatch):
 
 
 @pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
-def test_get_config_dirs(monkeypatch):
+def test_get_config_dirs(monkeypatch) -> None:
     tmpdir = tempfile.gettempdir()
 
     with monkeypatch.context() as m:
@@ -57,7 +58,7 @@ def test_get_config_dirs(monkeypatch):
 
 
 @pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
-def test_get_config_folder(monkeypatch):
+def test_get_config_folder(monkeypatch) -> None:
     with tempfile.TemporaryDirectory() as d:
         with monkeypatch.context() as m:
             m.setenv("XDG_CONFIG_HOME", d)
@@ -68,7 +69,7 @@ def test_get_config_folder(monkeypatch):
 
 
 @pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
-def test_get_config_file(monkeypatch):
+def test_get_config_file(monkeypatch) -> None:
     with tempfile.TemporaryDirectory() as d:
         with monkeypatch.context() as m:
             m.setenv("XDG_CONFIG_HOME", d)
@@ -86,18 +87,18 @@ def test_get_configpy_file(monkeypatch):
             assert os.environ["XDG_CONFIG_HOME"] in configpath
 
 
-def test_set_config_file():
+def test_set_config_file() -> None:
     with tempfile.NamedTemporaryFile() as f:
         papis.config.set_config_file(f.name)
         assert papis.config.get_config_file() == f.name
 
 
-def test_get_scripts_folder():
+def test_get_scripts_folder() -> None:
     ccfolder = papis.config.get_config_folder()
     assert os.path.join(ccfolder, "scripts") == papis.config.get_scripts_folder()
 
 
-def test_set():
+def test_set() -> None:
     papis.config.set("nonexistenkey", "rofi")
     assert papis.config.get("nonexistenkey") == "rofi"
 
@@ -105,7 +106,7 @@ def test_set():
     assert papis.config.get("super_key_", section="nonexistent") == "adams"
 
 
-def test_get():
+def test_get() -> None:
     settings = papis.config.get_general_settings_name()
 
     papis.config.set("test_get", "value1")
@@ -140,7 +141,7 @@ def test_get():
         papis.config.get("_unknown_key")
 
 
-def test_get_configuration():
+def test_get_configuration() -> None:
     settings = papis.config.get_general_settings_name()
     config = papis.config.get_configuration()
     assert type(config) is papis.config.Configuration
@@ -148,7 +149,7 @@ def test_get_configuration():
     assert id(_CONFIGURATION) == id(config)
 
 
-def test_get_configuration_2():
+def test_get_configuration_2() -> None:
     global _CONFIGURATION
     _CONFIGURATION = None
 
@@ -156,7 +157,7 @@ def test_get_configuration_2():
     assert type(config) is papis.config.Configuration
 
 
-def test_merge_configuration_from_path():
+def test_merge_configuration_from_path() -> None:
     with tempfile.NamedTemporaryFile("w+", delete=False) as configfile:
         configpath = configfile.name
         configfile.write("""
@@ -180,14 +181,14 @@ some-other-setting = mandragora
     os.unlink(configpath)
 
 
-def test_set_lib_from_path():
+def test_set_lib_from_path() -> None:
     with tempfile.TemporaryDirectory() as lib:
         assert os.path.exists(lib)
         papis.config.set_lib_from_name(lib)
         assert papis.config.get_lib_name() == lib
 
 
-def test_set_lib_from_real_lib():
+def test_set_lib_from_real_lib() -> None:
     with tempfile.TemporaryDirectory() as libdir:
         libname = "test-set-lib"
         papis.config.set("dir", libdir, section=libname)
@@ -197,7 +198,7 @@ def test_set_lib_from_real_lib():
         assert papis.config.get_lib_name() == libname
 
 
-def test_reset_configuration():
+def test_reset_configuration() -> None:
     papis.config.set("test_reset_configuration", "mordor")
     assert papis.config.get("test_reset_configuration") == "mordor"
     config = papis.config.reset_configuration()
@@ -207,12 +208,12 @@ def test_reset_configuration():
         papis.config.get("test_reset_configuration")
 
 
-def test_get_default_settings():
+def test_get_default_settings() -> None:
     assert type(papis.config.get_default_settings()) is dict
     assert papis.config.get_default_settings()["settings"]["mvtool"] == "mv"
 
 
-def test_register_default_settings():
+def test_register_default_settings() -> None:
     papis.config.register_default_settings(
         {"scihub": {"command": "open"}}
     )
@@ -232,7 +233,7 @@ def test_register_default_settings():
         == "mag")
 
 
-def test_get_list():
+def test_get_list() -> None:
     papis.config.set("super-key-list", [1, 2, 3, 4])
     assert papis.config.get("super-key-list") == "[1, 2, 3, 4]"
     assert papis.config.getlist("super-key-list") == ["1", "2", "3", "4"]
