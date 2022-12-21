@@ -24,6 +24,7 @@ import papis.crossref
 import papis.notes
 import papis.citations
 
+import papis.web.static
 import papis.web.libraries
 import papis.web.tags
 import papis.web.docview
@@ -375,10 +376,13 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self._redirect_back()
 
     def serve_static(self, static_path: str, params: str) -> None:
-        path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                            "static",
-                            urllib.parse.unquote_plus(static_path))
-        if os.path.exists(path):
+        folders = papis.web.static.static_paths()
+        partial_path = urllib.parse.unquote_plus(static_path)
+        for folder in folders:
+            path = os.path.join(folder, partial_path)
+            if not os.path.exists(path):
+                continue
+
             self._ok()
             if path.endswith("svg"):
                 self.send_header("Content-Type", "image/svg+xml")
@@ -388,12 +392,13 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.send_header("Content-Type", "image/png")
             elif path.endswith("gif"):
                 self.send_header("Content-Type", "image/gif")
+
             self.end_headers()
             with open(path, "rb") as f:
                 self.wfile.write(f.read())
                 self.wfile.flush()
-        else:
-            raise Exception("File {} does not exist".format(path))
+            return
+        raise Exception("File {} does not exist".format(path))
 
     def do_POST(self) -> None:              # noqa: N802
         """
