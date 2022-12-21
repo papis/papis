@@ -329,16 +329,20 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                                  ["Form"],
                                  "#main-form-tab", active=True)
                     _tab_element(wh.icon_span,
-                                 ["circle-info", "info.yaml"],
+                                 ["file-alt", "info.yaml"],
                                  "#yaml-form-tab")
                     _tab_element(t.span, ["Bibtex"], "#bibtex-form-tab")
                     for i, fpath in enumerate(doc.get_files()):
                         _tab_element(wh.file_icon,
                                      [fpath],
                                      "#file-tab-{}".format(i))
-                    _tab_element(t.span, ["Citations"], "#citations-tab")
-                    _tab_element(t.span, ["Cited by"], "#cited-by-tab")
-                    _tab_element(wh.icon_span, ["note", "Notes"],
+                    _tab_element(wh.icon_span,
+                                 ["compress-alt", "Citations"],
+                                 "#citations-tab")
+                    _tab_element(wh.icon_span,
+                                 ["expand-alt", "Cited by"],
+                                 "#cited-by-tab")
+                    _tab_element(wh.icon_span, ["file-edit", "Notes"],
                                  "#notes-tab")
 
                 t.br()
@@ -382,37 +386,45 @@ def _document_view(libname: str, doc: papis.document.Document) -> t.html_tag:
                         papis.web.notes.widget(libname, doc)
 
                     for i, fpath in enumerate(doc.get_files()):
-                        if not fpath.endswith("pdf"):
-                            continue
                         _unquoted_file_path = wp.file_server_path(fpath,
                                                                   libfolder,
                                                                   libname)
                         _file_path = urllib.parse.quote(_unquoted_file_path,
                                                         safe="")
-                        viewer_path = ("/static/pdfjs/web/viewer.html?file={}"
-                                       .format(_file_path))
 
                         with t.div(id="file-tab-{}".format(i),
                                    role="tabpanel",
                                    aria_labelledby="bibtex-form",
                                    cls="tab-pane fade"):
 
-                            with wh.flex("center"):
-                                with t.div(cls="btn-group", role="group"):
-                                    with t.a(href=viewer_path,
-                                             cls="btn btn-outline-success",
-                                             target="_blank"):
-                                        wh.icon_span("square-arrow-up-right",
-                                                     "Open in new window")
-                                    with t.a(href=_unquoted_file_path,
-                                             cls="btn btn-outline-success",
-                                             target="_blank"):
-                                        wh.icon_span("download", "Download")
+                            if fpath.endswith("pdf"):
+                                viewer_path = ("/static/pdfjs/web/"
+                                               "viewer.html?file={}"
+                                               .format(_file_path))
 
-                            t.iframe(src=viewer_path,
-                                     style="resize: vertical",
-                                     width="100%",
-                                     height="800")
+                                with wh.flex("center"):
+                                    with t.div(cls="btn-group", role="group"):
+                                        with t.a(href=viewer_path,
+                                                 cls="btn btn-outline-success",
+                                                 target="_blank"):
+                                            wh.icon_span(
+                                                "square-arrow-up-right",
+                                                "Open in new window")
+                                        with t.a(href=_unquoted_file_path,
+                                                 cls="btn btn-outline-success",
+                                                 target="_blank"):
+                                            wh.icon_span("download",
+                                                         "Download")
+
+                                t.iframe(src=viewer_path,
+                                         style="resize: vertical",
+                                         width="100%",
+                                         height="800")
+
+                            elif (fpath.endswith("png")
+                                  or fpath.endswith("jpg")):
+                                with t.div():
+                                    t.img(src=_unquoted_file_path)
 
                     with t.div(id="citations-tab",
                                role="tabpanel",

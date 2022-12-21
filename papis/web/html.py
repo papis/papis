@@ -52,4 +52,10 @@ def modal(body: HtmlGiver, id_: str) -> t.html_tag:
 
 
 def file_icon(filepath: str) -> t.html_tag:
-    return icon("file-pdf" if filepath.endswith("pdf") else "file")
+    if filepath.endswith("pdf"):
+        return icon("file-pdf")
+    if (filepath.endswith("jpg")
+        or filepath.endswith("png")
+        or filepath.endswith("gif")):
+        return icon("file-image")
+    return icon("file")
