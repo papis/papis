@@ -14,7 +14,7 @@ def format_if_has_id(doc: Dict[str, Any],
                      *args: Any,
                      **kwargs: Any) -> str:
     """
-    Formats the strig fmt only if doc has the papis_id key, since th
+    Formats the string *fmt* only if *doc* has the ``papis_id`` key, since the
     path requires it.
     """
     if papis.id.has_id(doc):
@@ -31,7 +31,7 @@ def query_path(libname: str) -> str:
 
 def fetch_citations_server_path(libname: str, doc: Dict[str, Any]) -> str:
     """
-    Path for fetching citations for papers
+    Path for fetching citations for papers.
     """
     return format_if_has_id(doc,
                             "/library/{libname}/document/fetch-citations/{ref}",
@@ -41,7 +41,7 @@ def fetch_citations_server_path(libname: str, doc: Dict[str, Any]) -> str:
 
 def update_notes(libname: str, doc: Dict[str, Any]) -> str:
     """
-    Path for updating the notes of the paper
+    Path for updating the notes of the paper.
     """
     return format_if_has_id(doc,
                             "/library/{libname}/document/notes/{ref}",
@@ -51,7 +51,7 @@ def update_notes(libname: str, doc: Dict[str, Any]) -> str:
 
 def update_info(libname: str, doc: Dict[str, Any]) -> str:
     """
-    Path for updating the info yaml file itself
+    Path for updating the ``info.yaml`` file itself.
     """
     return format_if_has_id(doc,
                             "/library/{libname}/document/info/{ref}",
@@ -61,7 +61,7 @@ def update_info(libname: str, doc: Dict[str, Any]) -> str:
 
 def doc_server_path(libname: str, doc: Dict[str, Any]) -> str:
     """
-    The server path for a document, it might change in the future
+    The server path for a document (it might change in the future).
     """
     return format_if_has_id(doc,
                             "/library/{libname}/document/{ref}",
@@ -73,7 +73,7 @@ def file_server_path(localpath: str,
                      libfolder: str,
                      libname: str) -> str:
     """
-    Path for associated files of documents
+    Path for associated files of documents.
     """
     return ("/library/{libname}/file/{0}"
             .format(localpath.replace(libfolder + "/", ""),
