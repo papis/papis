@@ -46,7 +46,7 @@ def fetch_citations(doc: Document) -> List[Dict[str, Any]]:
                              "in '{}' due to lack of doi "
                              .format(doc))
 
-    dois = [str(d.get("doi")) for d in metadata_citations
+    dois = [str(d.get("doi")).lower() for d in metadata_citations
             if "doi" in d]
     LOGGER.info("%d citations found to query", len(dois))
 
@@ -59,7 +59,7 @@ def fetch_citations(doc: Document) -> List[Dict[str, Any]]:
     dois_with_data = get_citations_from_database(dois)
 
     for data in dois_with_data:
-        doi = data.get("doi")
+        doi = data.get("doi", "").lower()
         if doi:
             dois.remove(doi)
 
@@ -114,11 +114,11 @@ def update_and_save_citations_from_database_from_doc(doc: Document) -> None:
 
 def update_citations_from_database(citations: Citations) -> Citations:
     new_citations = []  # type: List[Dict[str, Any]]
-    dois = [str(c.get("doi")) for c in citations
+    dois = [str(c.get("doi")).lower() for c in citations
             if "doi" in c]
     new_data_list = get_citations_from_database(dois)
     for data in new_data_list:
-        doi = data.get("doi")
+        doi = data.get("doi", "").lower()
         if doi:
             dois.remove(doi)
     new_citations.extend(new_data_list)
