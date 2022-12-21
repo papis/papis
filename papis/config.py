@@ -5,7 +5,6 @@ from typing import Dict, Any, List, Optional, Callable  # noqa: ignore
 
 import papis.exceptions
 import papis.library
-import papis.defaults
 
 
 PapisConfigType = Dict[str, Dict[str, Any]]
@@ -94,6 +93,7 @@ def get_default_settings() -> PapisConfigType:
     in papis.
 
     """
+    import papis.defaults
     global _DEFAULT_SETTINGS
     # We use an OrderedDict so that the first entry will always be the general
     # settings, also good for automatic documentation
