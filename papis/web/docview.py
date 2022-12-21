@@ -13,6 +13,7 @@ import papis.web.header
 import papis.web.notes
 import papis.web.info
 import papis.web.citations
+import papis.web.pdfjs
 
 
 def _click_tab_selector_link_in_url() -> None:
@@ -137,37 +138,14 @@ def html(libname: str, doc: papis.document.Document) -> t.html_tag:
                         _unquoted_file_path = wp.file_server_path(fpath,
                                                                   libfolder,
                                                                   libname)
-                        _file_path = urllib.parse.quote(_unquoted_file_path,
-                                                        safe="")
 
                         with t.div(id="file-tab-{}".format(i),
                                    role="tabpanel",
-                                   aria_labelledby="bibtex-form",
+                                   aria_labelledby="file-tab",
                                    cls="tab-pane fade"):
 
                             if fpath.endswith("pdf"):
-                                viewer_path = ("/static/pdfjs/web/"
-                                               "viewer.html?file={}"
-                                               .format(_file_path))
-
-                                with wh.flex("center"):
-                                    with t.div(cls="btn-group", role="group"):
-                                        with t.a(href=viewer_path,
-                                                 cls="btn btn-outline-success",
-                                                 target="_blank"):
-                                            wh.icon_span(
-                                                "square-arrow-up-right",
-                                                "Open in new window")
-                                        with t.a(href=_unquoted_file_path,
-                                                 cls="btn btn-outline-success",
-                                                 target="_blank"):
-                                            wh.icon_span("download",
-                                                         "Download")
-
-                                t.iframe(src=viewer_path,
-                                         style="resize: vertical",
-                                         width="100%",
-                                         height="800")
+                                papis.web.pdfjs.widget(_unquoted_file_path)
 
                             elif (fpath.endswith("png")
                                   or fpath.endswith("jpg")):

@@ -29,6 +29,7 @@ import papis.web.libraries
 import papis.web.tags
 import papis.web.docview
 import papis.web.search
+import papis.web.pdfjs
 
 
 logger = logging.getLogger("papis:server")
@@ -477,6 +478,10 @@ def cli(address: str, port: int, git: bool) -> None:
     global USE_GIT
     USE_GIT = git
     server_address = (address, port)
+
+    if not papis.web.pdfjs.detect_pdfjs():
+        logger.warning(papis.web.pdfjs.error_message())
+
     logger.info("starting server in address http://%s:%s",
                 address or "localhost",
                 port)
