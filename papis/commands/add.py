@@ -312,6 +312,10 @@ def run(paths: List[str],
         temp_doc = papis.document.Document(data=data)
         temp_path = os.path.join(out_folder_path, folder_name)
         components = []     # type: List[str]
+
+        temp_path = os.path.normpath(temp_path)
+        out_folder_path = os.path.normpath(out_folder_path)
+
         while (
                 temp_path != out_folder_path
                 and papis.utils.is_relative_to(temp_path, out_folder_path)):
