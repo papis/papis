@@ -4,6 +4,8 @@ import pytest
 import papis.downloaders
 from papis.downloaders.tandfonline import Downloader
 
+import tests.downloaders as testlib
+
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -31,6 +33,7 @@ def test_tandfonline_match():
         assert Downloader.match(url) is None
 
 
+@testlib.with_default_config
 @pytest.mark.parametrize("url", TANDFONLINE_URLS)
 def test_tandfonline_fetch(monkeypatch, url: str) -> None:
     cls = papis.downloaders.get_downloader_by_name("tandfonline")
@@ -39,14 +42,12 @@ def test_tandfonline_fetch(monkeypatch, url: str) -> None:
     down = cls.match(url)
     assert down is not None
 
-    uid = os.path.basename(url).replace("-", "_")
+    uid = os.path.basename(url)
     infile = "TFOnline_{}.html".format(uid)
     outfile = "TFOnline_{}_Out.json".format(uid)
 
-    from tests.downloaders import get_remote_resource, get_local_resource
-
     with monkeypatch.context() as m:
-        m.setattr(down, "_get_body", get_remote_resource(infile, url))
+        m.setattr(down, "_get_body", testlib.get_remote_resource(infile, url))
         m.setattr(down, "download_document", lambda: None)
 
         # NOTE: bibtex add some extra fields, so we just disable it for the test
@@ -54,6 +55,6 @@ def test_tandfonline_fetch(monkeypatch, url: str) -> None:
 
         down.fetch()
         extracted_data = down.ctx.data
-        expected_data = get_local_resource(outfile, extracted_data)
+        expected_data = testlib.get_local_resource(outfile, extracted_data)
 
         assert extracted_data == expected_data
