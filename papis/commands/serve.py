@@ -118,12 +118,12 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
             if papis.config.getboolean("serve-empty-query-get-all-documents"):
                 docs = papis.api.get_all_documents_in_lib(libname)
         libfolder = papis.config.get_lib_from_name(libname).paths[0]
+        placeholder = papis.web.search.QUERY_PLACEHOLDER
         page = papis.web.search.html(documents=docs,
                                      libname=libname,
                                      libfolder=libfolder,
                                      pretitle=query or "HOME",
-                                     query=(query or
-                                            papis.web.search.QUERY_PLACEHOLDER))
+                                     query=query or placeholder)
         self.wfile.write(bytes(str(page), "utf-8"))
         self.wfile.flush()
 

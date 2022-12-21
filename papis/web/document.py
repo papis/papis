@@ -1,6 +1,6 @@
 import os
 import urllib.parse
-from typing import Any, List, Optional, Tuple, Callable, Dict
+from typing import List
 
 import dominate.tags as t
 
