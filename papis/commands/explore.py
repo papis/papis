@@ -87,9 +87,9 @@ Command-line Interface
     :nested: full
 """
 
-import os
 import logging
-from typing import List, Optional, Union, Any, Dict, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING
+import shlex
 
 import click
 
@@ -106,11 +106,10 @@ import papis.pick
 import papis.format
 import papis.crossref
 import papis.plugin
+import papis.citations
 
 if TYPE_CHECKING:
     from stevedore import ExtensionManager
-
-logger = logging.getLogger("explore")
 
 
 def _extension_name() -> str:
@@ -118,6 +117,9 @@ def _extension_name() -> str:
 
 
 def get_available_explorers() -> List[click.Command]:
+    """
+    Gets all exporters registered.
+    """
     return papis.plugin.get_available_plugins(_extension_name())
 
 
@@ -156,12 +158,10 @@ def lib(ctx: click.Context, query: str,
 @click.command("pick")
 @click.pass_context
 @click.help_option("--help", "-h")
-@click.option(
-    "--number", "-n",
-    type=int,
-    default=None,
-    help="Pick automatically the n-th document"
-)
+@click.option("--number", "-n",
+              type=int,
+              default=None,
+              help="Pick automatically the n-th document")
 def pick(ctx: click.Context, number: Optional[int]) -> None:
     """
     Pick a document from the retrieved documents
@@ -187,25 +187,14 @@ def pick(ctx: click.Context, number: Optional[int]) -> None:
 @papis.cli.query_option()
 @papis.cli.doc_folder_option()
 @click.help_option("--help", "-h")
+@click.option("-b",
+              "--cited-by",
+              default=False,
+              is_flag=True,
+              help="Use the cited-by citations")
 @papis.cli.all_option()
-@click.option(
-    "--save", "-s",
-    is_flag=True,
-    default=False,
-    help="Store the citations in the document's folder for later use"
-)
-@click.option(
-    "--rmfile",
-    is_flag=True,
-    default=False,
-    help="Remove the stored citations file"
-)
-@click.option(
-    "--max-citations", "-m", default=-1,
-    help="Number of citations to be retrieved"
-)
 def citations(ctx: click.Context, query: str, doc_folder: str,
-              max_citations: int, save: bool, rmfile: bool,
+              cited_by: bool,
               _all: bool) -> None:
     """
     Query the citations of a paper
@@ -217,9 +206,6 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
         papis explore citations 'einstein' export --format yaml einstein.yaml
 
     """
-    import tqdm
-    import colorama
-    import papis.yaml
     logger = logging.getLogger("explore:citations")
 
     if doc_folder is not None:
@@ -227,110 +213,23 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
     else:
         documents = papis.api.get_documents_in_lib(papis.config.get_lib_name(),
                                                    search=query)
+    if not _all:
+        documents = list(papis.pick.pick_doc(documents))
 
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
-    if not _all:
-        documents = list(papis.pick.pick_doc(documents))
+    for document in documents:
+        logger.debug("exploring %s", papis.document.describe(document))
+        if cited_by:
+            _citations = papis.citations.get_cited_by(document)
+        else:
+            _citations = papis.citations.get_citations(document)
 
-    if not documents:
-        return
+        logger.debug("got %s citations", len(_citations))
 
-    db = papis.database.get()
-
-    for _i, doc in enumerate(documents):
-        logger.info("[%d/%d] Fetching citations for %s",
-                    _i, len(documents), papis.document.describe(doc))
-        _main_folder = doc.get_main_folder()
-        if not _main_folder:
-            continue
-
-        citations_file = os.path.join(_main_folder, "citations.yaml")
-
-        if os.path.exists(citations_file):
-            if rmfile:
-                logger.info("Removing citations file '%s'", citations_file)
-                os.remove(citations_file)
-            else:
-                logger.info("A citations file exists in '%s'", citations_file)
-                if papis.tui.utils.confirm("Do you want to use it?"):
-                    # TODO: here it complains that papis.yaml.explorer.callback
-                    #       None, somehow mypy does not get that.
-                    papis.yaml.explorer.callback(citations_file)  # type: ignore
-                    continue
-
-        if not doc.has("citations") or doc["citations"] == []:
-            logger.warning("No citations found")
-            continue
-
-        dois = [d.get("doi") for d in doc["citations"] if d.get("doi")]
-        if not dois:
-            logger.error("No DOIs retrieved from the document's information")
-            continue
-
-        if max_citations < 0:
-            max_citations = len(dois)
-        dois = dois[0:min(max_citations, len(dois))]
-
-        logger.info("%d citations found", len(dois))
-        dois_with_data = [
-        ]  # type: List[Union[papis.document.Document, Dict[str, Any]]]
-        found_in_lib_dois = [
-        ]  # type: List[Union[papis.document.Document, Dict[str, Any]]]
-
-        logger.info("Checking which citations are already in the library")
-        with tqdm.tqdm(iterable=dois) as progress:
-            for doi in progress:
-                citation = db.query_dict({"doi": doi})
-                if citation:
-                    progress.set_description(
-                        "{c.Fore.GREEN}{c.Back.BLACK}"
-                        "{0: <22.22}"
-                        "{c.Style.RESET_ALL}"
-                        .format(doi, c=colorama)
-                    )
-                    dois_with_data.append(citation[0])
-                    found_in_lib_dois.append(doi)
-                else:
-                    progress.set_description("{c.Fore.RED}{c.Back.BLACK}"
-                                             "{0: <22.22}{c.Style.RESET_ALL}"
-                                             .format(doi, c=colorama))
-
-        for doi in found_in_lib_dois:
-            dois.remove(doi)
-
-        logger.info("Found %d DOIs in library", len(found_in_lib_dois))
-        logger.info("Fetching %d citations from crossref", len(dois))
-
-        with tqdm.tqdm(iterable=dois) as progress:
-            for doi in progress:
-                data = papis.crossref.get_data(dois=[doi])
-                progress.set_description("{c.Fore.GREEN}{c.Back.BLACK}"
-                                         "{0: <22.22}{c.Style.RESET_ALL}"
-                                         .format(doi, c=colorama))
-                if data:
-                    assert isinstance(data, list)
-                    dois_with_data.extend(data)
-
-        new_docs = [papis.document.Document(data=d) for d in dois_with_data]
-        for cit in new_docs:
-            # do not save citations again from the citations
-            if "citations" in cit:
-                cit.pop("citations")
-        if save:
-            logger.info("Storing citations in '%s'", citations_file)
-            with open(citations_file, "a+") as fd:
-                logger.info(
-                    "Writing %d documents' yaml into '%s'",
-                    len(new_docs), citations_file)
-
-                yamldata = papis.commands.export.run(new_docs,
-                                                     to_format="yaml")
-                fd.write(yamldata)
-
-        ctx.obj["documents"] += new_docs
+        ctx.obj["documents"].extend(_citations)
 
 
 @click.command("add")
@@ -358,7 +257,6 @@ def cmd(ctx: click.Context, command: str) -> None:
 
     """
     from subprocess import call
-    import shlex
     logger = logging.getLogger("explore:cmd")
     docs = ctx.obj["documents"]
     for doc in docs:
