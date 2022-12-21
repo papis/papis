@@ -357,6 +357,21 @@ Bibtex options
 
 .. _marks-options:
 
+
+Citations options
+-----------------
+
+You can change the name of the citation files, however we discourage this.
+
+.. papis-config:: citations-file-name
+
+    The name of the file to store the citations of the documents.
+
+.. papis-config:: cited-by-file-name
+
+    The name of the file to store the citations to the document.
+
+
 Marks
 -----
 
