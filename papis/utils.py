@@ -19,6 +19,7 @@ import papis.importer
 import papis.downloaders
 import papis.document
 import papis.database
+import papis.defaults
 
 logger = logging.getLogger("utils")
 
@@ -56,7 +57,7 @@ def general_open(file_name: str,
         opener = papis.config.get(key)
     except papis.exceptions.DefaultSettingValueMissing:
         if default_opener is None:
-            default_opener = papis.config.get_default_opener()
+            default_opener = papis.defaults.get_default_opener()
         opener = default_opener
 
     import shlex
