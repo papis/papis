@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Optional, Sequence
+from typing import Dict, Any, List, Optional, Sequence, Tuple
 import logging
 import os
 
@@ -9,10 +9,12 @@ import papis.config
 import papis.database
 import papis.crossref
 import papis.yaml
+import papis.utils
 from papis.document import Document, to_dict
 
 
-Citations = Sequence[Dict[str, Any]]
+Citation = Dict[str, Any]
+Citations = Sequence[Citation]
 LOGGER = logging.getLogger("citations")
 
 
@@ -166,3 +168,67 @@ def get_citations(doc: Document) -> Citations:
             return []
         return papis.yaml.yaml_to_list(file_path)
     return []
+
+# =============================================================================
+# CITED BY FUNCTIONS
+# =============================================================================
+
+
+def get_cited_by_file(doc: Document) -> Optional[str]:
+    folder = doc.get_main_folder()
+    file_name = papis.config.getstring("cited-by-file-name")
+    if not folder:
+        return None
+    return os.path.join(folder, file_name)
+
+
+def has_cited_by(doc: Document) -> bool:
+    file_path = get_cited_by_file(doc)
+    if not file_path:
+        return False
+    return os.path.exists(file_path)
+
+
+def save_cited_by(doc: Document, citations: Citations) -> None:
+    file_path = get_citations_file(doc)
+    if not file_path:
+        return
+    papis.yaml.list_to_path(citations, file_path)
+
+
+def _cites_me_p(doi_doc: Tuple[str, Document]) -> Optional[Citation]:
+    doi, doc = doi_doc
+    if not has_citations(doc):
+        return None
+    citations = get_citations(doc)
+    found = [c for c in citations
+             if c.get("doi", "").lower() == doi]
+    if found:
+        return to_dict(doc)
+    return None
+
+
+def fetch_cited_by_from_database(cit: Citation) -> Citations:
+    doi = str(cit.get("doi", "")).lower()
+    if not doi:
+        return []
+
+    result = []  # type: List[Citation]
+    db = papis.database.get()
+    documents = db.get_all_documents()
+
+    # NOTE: using parmap makes it around 2.5x faster with an ssd
+    # in a 2k documents library
+    result = [d for d in papis.utils.parmap(_cites_me_p,
+                                            [(doi, x) for x in documents])
+              if d is not None]
+
+    _delete_citations_key(result)
+    return result
+
+
+def fetch_and_save_cited_by_from_database(doc: Document) -> None:
+    citations = fetch_cited_by_from_database(doc)
+    file_path = get_cited_by_file(doc)
+    if citations and file_path:
+        papis.yaml.list_to_path(citations, file_path)

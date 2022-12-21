@@ -10,22 +10,35 @@ import logging
 import papis.cli
 import papis.document
 from papis.citations import (has_citations,
+                             has_cited_by,
                              update_and_save_citations_from_database_from_doc,
-                             fetch_and_save_citations)
+                             fetch_and_save_citations,
+                             fetch_and_save_cited_by_from_database)
 
 
 @click.command("citations")
 @click.help_option("--help", "-h")
 @papis.cli.query_option()
 @papis.cli.sort_option()
-@click.option("-c", "--fetch-citations",
-              default=False, is_flag=True,
+@click.option("-c",
+              "--fetch-citations",
+              default=False,
+              is_flag=True,
               help="Fetch and save citations")
-@click.option("-d", "--update-from-database",
-              default=False, is_flag=True,
+@click.option("-d",
+              "--update-from-database",
+              default=False,
+              is_flag=True,
               help="Fetch and save citations")
-@click.option("-f", "--force",
-              default=False, is_flag=True,
+@click.option("-f",
+              "--force",
+              default=False,
+              is_flag=True,
+              help="Force action")
+@click.option("-b",
+              "--fetch-cited-by",
+              default=False,
+              is_flag=True,
               help="Force action")
 @papis.cli.all_option()
 @papis.cli.doc_folder_option()
@@ -36,6 +49,7 @@ def cli(query: str,
         _all: bool,
         force: bool,
         fetch_citations: bool,
+        fetch_cited_by: bool,
         update_from_database: bool) -> None:
     """Check for common problems in documents"""
 
@@ -47,15 +61,25 @@ def cli(query: str,
                                                            sort_reverse,
                                                            _all)
 
-    for document in documents:
+    for i, document in enumerate(documents):
         _has_citations_p = has_citations(document)
+        _has_cited_by_p = has_cited_by(document)
         if fetch_citations:
             if _has_citations_p and force or not _has_citations_p:
-                logger.info("fetching citations for %s",
+                logger.info("[%d/%d] fetching citations for %s",
+                            i + 1, len(documents),
                             papis.document.describe(document))
                 fetch_and_save_citations(document)
         if update_from_database:
             if _has_citations_p:
-                logger.info("updating citations from library for %s",
+                logger.info("[%d/%d] updating citations from library for %s",
+                            i + 1, len(documents),
                             papis.document.describe(document))
                 update_and_save_citations_from_database_from_doc(document)
+        if fetch_cited_by:
+            if _has_cited_by_p and force or not _has_cited_by_p:
+                logger.info("[%d/%d] fetching cited-by "
+                            "references from library for %s",
+                            i + 1, len(documents),
+                            papis.document.describe(document))
+                fetch_and_save_cited_by_from_database(document)
