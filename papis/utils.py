@@ -285,7 +285,3 @@ def is_relative_to(path: str, other: str) -> bool:
             return not os.path.relpath(path, start=other).startswith("..")
         except ValueError:
             return False
-
-
-def paths_are_identical(path: str, other: str) -> bool:
-    return pathlib.Path(path) == pathlib.Path(other)
