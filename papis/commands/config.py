@@ -56,16 +56,17 @@ Command-line Interface
 """
 
 import logging
-from typing import Optional
+from typing import List, Optional
 
 import click
 
+import papis.config
 import papis.commands
+
+logger = logging.getLogger("config:run")
 
 
 def run(option_string: str) -> Optional[str]:
-    logger = logging.getLogger("config:run")
-
     option = option_string.split(".")
     key = section = None
     if len(option) == 1:
@@ -91,10 +92,12 @@ def run(option_string: str) -> Optional[str]:
 
 @click.command("config")
 @click.help_option("--help", "-h")
-@click.argument("option")
-def cli(option: str) -> None:
+@click.argument("options", nargs=-1)
+def cli(options: List[str]) -> None:
     """Print configuration values"""
-    logger = logging.getLogger("cli:config")
-    logger.debug(option)
+    logger.debug("Config options: %s", options)
 
-    click.echo(run(option))
+    for option in options:
+        value = run(option)
+        if value is not None:
+            click.echo("{} = {}".format(option, value))
