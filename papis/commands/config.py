@@ -103,7 +103,6 @@ def cli(options: List[str],
     import colorama
 
     logger.debug("config options: %s", options)
-    logger.info("Configuration file: '%s'", papis.config.get_config_file())
 
     def format(key: str, value: Any) -> str:
         return (
@@ -118,12 +117,19 @@ def cli(options: List[str],
                 logger.error("Section '%s' has no defaults", option)
                 continue
 
-            click.echo("")
             click.echo("[{}]".format(option))
             for key, value in defaults[option].items():
                 click.echo(format(key, value))
+
+            if option != options[-1]:
+                click.echo("")
     else:
-        for option in options:
-            value = run(option)
-            if value is not None:
-                click.echo(format(option, value))
+        if len(options) == 1:
+            # NOTE: a single option is printed directly for a bit of backwards
+            # compatiblity and easier use in shell scripts, so remove with care!
+            click.echo(run(options[0]))
+        else:
+            for option in options:
+                value = run(option)
+                if value is not None:
+                    click.echo(format(option, value))
