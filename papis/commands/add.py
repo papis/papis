@@ -568,14 +568,15 @@ def cli(files: List[str],
             "Select matching importers (for instance 0, 1, 3-10, a, all...)")
         matching_importers = [matching_importers[i] for i in _range]
 
-    for importer_tuple in from_importer:
+    for name, resource in from_importer:
         try:
-            importer_name = importer_tuple[0]
-            resource = importer_tuple[1]
-            importer = import_mgr[importer_name].plugin(uri=resource)
-            importer.fetch()
-            if importer.ctx:
-                matching_importers.append(importer)
+            importer = import_mgr[name].plugin.match(resource)
+            if importer is not None:
+                importer.fetch()
+                if importer.ctx:
+                    matching_importers.append(importer)
+            else:
+                logger.error("Importer '%s' does not match '%s'", name, resource)
         except Exception as e:
             logger.exception(e)
 
