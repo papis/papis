@@ -27,7 +27,7 @@ class Importer(papis.importer.Importer):
     """
 
     def __init__(self, **kwargs: Any) -> None:
-        papis.importer.Importer.__init__(self, name="url", **kwargs)
+        super().__init__(name="url", **kwargs)
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:

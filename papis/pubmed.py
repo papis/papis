@@ -104,7 +104,7 @@ class Importer(papis.importer.Importer):
     """Importer downloading data from a PubMed ID"""
 
     def __init__(self, uri: str = "") -> None:
-        papis.importer.Importer.__init__(self, name="pubmed", uri=uri)
+        super().__init__(name="pubmed", uri=uri)
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:

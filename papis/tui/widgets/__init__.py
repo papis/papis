@@ -31,7 +31,7 @@ class MessageToolbar(ConditionalContainer):  # type: ignore
     def __init__(self, style: str = "") -> None:
         self.message = None
         self.text_control = FormattedTextControl(text="")
-        super(MessageToolbar, self).__init__(
+        super().__init__(
             content=Window(
                 style=style,
                 content=self.text_control,
@@ -62,7 +62,7 @@ class InfoWindow(ConditionalContainer):  # type: ignore
                 content=BufferControl(buffer=self.buf, lexer=self.lexer)
             )
         ], height=Dimension(min=5, max=20, weight=1))
-        super(InfoWindow, self).__init__(
+        super().__init__(
             content=self.window,
             filter=has_focus(self)
         )
@@ -88,7 +88,7 @@ class HelpWindow(ConditionalContainer):  # type: ignore
             always_hide_cursor=True,
             align=WindowAlign.LEFT
         )
-        super(HelpWindow, self).__init__(
+        super().__init__(
             content=self.window,
             filter=has_focus(self.window)
         )

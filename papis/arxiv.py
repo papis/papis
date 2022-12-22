@@ -298,7 +298,7 @@ class Importer(papis.importer.Importer):
 
         uri = "{}/{}".format(ARXIV_ABS_URL, aid)
 
-        papis.importer.Importer.__init__(self, name="arxiv", uri=uri)
+        super().__init__(name="arxiv", uri=uri)
         self.downloader = Downloader(uri)
 
     @classmethod
@@ -324,7 +324,7 @@ class ArxividFromPdfImporter(papis.importer.Importer):
     """Importer parsing an arXiv ID from a PDF file"""
 
     def __init__(self, uri: str) -> None:
-        papis.importer.Importer.__init__(self, name="pdf2arxivid", uri=uri)
+        super().__init__(name="pdf2arxivid", uri=uri)
         self.arxivid = None  # type: Optional[str]
 
     @classmethod

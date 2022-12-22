@@ -336,7 +336,7 @@ class Picker(Application, Generic[Option]):  # type: ignore
 
         self.layout = Layout(_root_container)
 
-        super(Picker, self).__init__(
+        super().__init__(
             input=None,
             output=None,
             editing_mode=EditingMode.EMACS
