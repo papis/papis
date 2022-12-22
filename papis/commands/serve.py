@@ -1,4 +1,5 @@
 import re
+import shutil
 import os
 import json
 import logging
@@ -23,12 +24,15 @@ import papis.commands.doctor
 import papis.crossref
 import papis.notes
 import papis.citations
+import papis.smart_importer
 
 import papis.web.static
 import papis.web.libraries
 import papis.web.tags
 import papis.web.docview
 import papis.web.search
+import papis.web.add
+
 import papis.web.pdfjs
 
 
@@ -141,6 +145,12 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         db = papis.database.get(libname)
         db.clear()
         db.initialize()
+
+    @ok_html
+    def page_add(self, libname: str) -> None:
+        page = papis.web.add.html(libname=libname)
+        self.wfile.write(bytes(str(page), "utf-8"))
+        self.wfile.flush()
 
     @ok_html
     def page_tags(self, libname: Optional[str] = None) -> None:
@@ -329,6 +339,59 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
             fdr.write(new_notes)
         self._redirect_back()
 
+    def add_document(self, libname: str) -> None:
+        form = self._get_form("POST")
+        doi = form.getvalue("doi")
+        url = form.getvalue("url")
+        info = form.getvalue("info")
+        files = []  # type: List[str]
+        importers = []  # type: List[Optional[papis.importer.Importer]]
+        pdf = form["pdf"]
+        if pdf.filename:
+            logger.info("Handling pdf document")
+            with tempfile.NamedTemporaryFile(mode="bw+",
+                                             suffix=".pdf",
+                                             delete=False) as fdr:
+                fdr.write(pdf.file.read())
+                files.append(fdr.name)
+        if not doi:
+            logger.info("handling pdf doi")
+            importers.append(papis.crossref.DoiFromPdfImporter.match(fdr.name))
+        else:
+            logger.info("handling doi")
+            importers.append(papis.crossref.Importer.match(doi))
+        if url:
+            logger.info("handling url")
+            importers.extend(papis.smart_importer
+                             .get_matching_importer_or_downloader(url))
+        if info:
+            logger.info("handling info")
+            with tempfile.NamedTemporaryFile(mode="w+",
+                                             suffix=".yaml",
+                                             delete=False) as fdr2:
+                # fdr2.write(info)
+                pass
+            importers.append(papis.yaml.Importer(fdr2.name))
+
+        data = {}
+        for importer in importers:
+            if not importer:
+                logger.info("no importer %s", importer)
+                continue
+            logger.info("fetching %s", importer)
+            importer.fetch()
+            if importer.ctx.data:
+                data.update(importer.ctx.data)
+            if importer.ctx.files and not files:
+                files.extend(importer.ctx.data)
+        temp_dir = tempfile.mkdtemp()
+        for f in files:
+            shutil.move(f, temp_dir)
+        shutil.move(fdr2.name, temp_dir)
+        doc = papis.document.Document(folder=temp_dir)
+        print(doc)
+        self._redirect_back()
+
     def update_info(self, libname: str, papis_id: str) -> None:
         """
         It updates the information by the provided form.
@@ -413,6 +476,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         routes = [
             ("^/library/?([^/]+)?/document/([a-z0-9]+)$",
                 self.update_page_document),
+            ("^/library/?([^/]+)?/add$",
+                self.add_document),
             ("^/library/?([^/]+)?/document/notes/([a-z0-9]+)$",
                 self.update_notes),
             ("^/library/?([^/]+)?/document/info/([a-z0-9]+)$",
@@ -442,6 +507,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.page_query),
             ("^/library/?([^/]+)?/document/([a-z0-9]+)$",
                 self.page_document),
+            ("^/library/([^/]+)/add$",
+                self.page_add),
             ("^/library/([^/]+)/tags$",
                 self.page_tags),
             ("^/library/([^/]+)/tags/refresh$",

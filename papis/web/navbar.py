@@ -33,6 +33,8 @@ def navbar(libname: str) -> t.html_tag:
                         active=True)
                     _li("All",
                         "/library/{libname}/all".format(libname=libname))
+                    _li("Add",
+                        "/library/{libname}/add".format(libname=libname))
                     _li("Tags",
                         "/library/{libname}/tags".format(libname=libname))
                     _li("Libraries", "/libraries")
