@@ -33,7 +33,8 @@ def get_general_settings_name() -> str:
 class Configuration(configparser.ConfigParser):
 
     def __init__(self) -> None:
-        configparser.ConfigParser.__init__(self)
+        super().__init__()
+
         self.dir_location = get_config_folder()
         self.scripts_location = get_scripts_folder()
         self.file_location = get_config_file()

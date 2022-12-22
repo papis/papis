@@ -105,7 +105,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
 
         self.update()
 
-        super(OptionsList, self).__init__(
+        super().__init__(
             content=self.content_window,
             filter=(
                 custom_filter

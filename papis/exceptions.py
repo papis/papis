@@ -18,4 +18,4 @@ class DefaultSettingValueMissing(Exception):
 
     Don't forget to check the documentation.
         """.format(key)
-        super(DefaultSettingValueMissing, self).__init__(message)
+        super().__init__(message)

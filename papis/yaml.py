@@ -118,7 +118,7 @@ class Importer(papis.importer.Importer):
     """Importer that parses a yaml file"""
 
     def __init__(self, uri: str) -> None:
-        papis.importer.Importer.__init__(self, name="yaml", uri=uri)
+        super().__init__(name="yaml", uri=uri)
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:

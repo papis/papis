@@ -125,7 +125,7 @@ class Importer(papis.importer.Importer):
     """Importer that parses BibTeX files"""
 
     def __init__(self, **kwargs: Any) -> None:
-        papis.importer.Importer.__init__(self, name="bibtex", **kwargs)
+        super().__init__(name="bibtex", **kwargs)
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:

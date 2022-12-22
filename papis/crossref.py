@@ -298,7 +298,7 @@ class DoiFromPdfImporter(papis.importer.Importer):
 
     def __init__(self, uri: str) -> None:
         """The uri should be a filepath"""
-        papis.importer.Importer.__init__(self, name="pdf2doi", uri=uri)
+        super().__init__(name="pdf2doi", uri=uri)
         self.doi = None  # type: Optional[str]
 
     @classmethod
@@ -333,7 +333,7 @@ class Importer(papis.importer.Importer):
     """Importer getting files and data from a DOI through Crossref"""
 
     def __init__(self, uri: str) -> None:
-        papis.importer.Importer.__init__(self, name="doi", uri=uri)
+        super().__init__(name="doi", uri=uri)
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
@@ -398,7 +398,7 @@ class FromCrossrefImporter(papis.importer.Importer):
     """Importer that gets data from querying Crossref"""
 
     def __init__(self, uri: str) -> None:
-        papis.importer.Importer.__init__(self, uri=uri, name="crossref")
+        super().__init__(uri=uri, name="crossref")
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:

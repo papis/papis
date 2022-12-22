@@ -141,7 +141,8 @@ def get_regex_from_search(search: str) -> str:
 class Database(papis.database.base.Database):
 
     def __init__(self, library: Optional[papis.library.Library] = None) -> None:
-        papis.database.base.Database.__init__(self, library)
+        super().__init__(library)
+
         self.logger = logging.getLogger("db:cache")
         self.documents = None  # type: Optional[List[papis.document.Document]]
         self.initialize()

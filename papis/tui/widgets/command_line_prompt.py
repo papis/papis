@@ -74,7 +74,7 @@ class CommandLinePrompt(ConditionalContainer):  # type: ignore
             ),
             height=1
         )
-        super(CommandLinePrompt, self).__init__(
+        super().__init__(
             content=self.window,
             filter=has_focus(self.window)
         )
