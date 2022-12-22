@@ -26,7 +26,9 @@ def _click_tab_selector_link_in_url() -> None:
     """))
 
 
-def html(libname: str, doc: papis.document.Document) -> t.html_tag:
+def html(libname: str,
+         doc: papis.document.Document,
+         is_temp_document: bool = False) -> t.html_tag:
     """
     View of a single document to edit the information of the yaml file,
     and maybe in the future to update the information.
@@ -73,9 +75,11 @@ def html(libname: str, doc: papis.document.Document) -> t.html_tag:
                                 content(*args)
                         return result
 
-                    _tab_element(t.span,
-                                 ["Form"],
-                                 "#main-form-tab", active=True)
+                    # do not show the form if it is a temporal document
+                    if not is_temp_document:
+                        _tab_element(t.span,
+                                     ["Form"],
+                                     "#main-form-tab", active=True)
                     _tab_element(wh.icon_span,
                                  ["file-alt", "info.yaml"],
                                  "#yaml-form-tab")
@@ -90,17 +94,21 @@ def html(libname: str, doc: papis.document.Document) -> t.html_tag:
                     _tab_element(wh.icon_span,
                                  ["expand-alt", "Cited by"],
                                  "#cited-by-tab")
-                    _tab_element(wh.icon_span, ["file-edit", "Notes"],
-                                 "#notes-tab")
+                    if not is_temp_document:
+                        _tab_element(wh.icon_span,
+                                     ["file-edit", "Notes"],
+                                     "#notes-tab")
 
                 t.br()
 
                 with t.div(cls="tab-content"):
-                    with t.div(id="main-form-tab",
-                               role="tabpanel",
-                               aria_labelledby="main-form",
-                               cls="tab-pane fade show active"):
-                        papis.web.docform.html(libname, doc)
+
+                    if not is_temp_document:
+                        with t.div(id="main-form-tab",
+                                   role="tabpanel",
+                                   aria_labelledby="main-form",
+                                   cls="tab-pane fade show active"):
+                            papis.web.docform.html(libname, doc)
 
                     with t.div(id="yaml-form-tab",
                                role="tabpanel",
@@ -127,11 +135,12 @@ def html(libname: str, doc: papis.document.Document) -> t.html_tag:
                                  charset="utf-8",
                                  type="text/javascript")
 
-                    with t.div(id="notes-tab",
-                               role="tabpanel",
-                               aria_labelledby="notes-form",
-                               cls="tab-pane fade"):
-                        papis.web.notes.widget(libname, doc)
+                    if not is_temp_document:
+                        with t.div(id="notes-tab",
+                                   role="tabpanel",
+                                   aria_labelledby="notes-form",
+                                   cls="tab-pane fade"):
+                            papis.web.notes.widget(libname, doc)
 
                     for i, fpath in enumerate(doc.get_files()):
                         _unquoted_file_path = wp.file_server_path(fpath,
