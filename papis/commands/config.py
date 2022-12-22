@@ -56,7 +56,7 @@ Command-line Interface
 """
 
 import logging
-from typing import List, Optional
+from typing import Any, List, Optional
 
 import click
 
@@ -93,11 +93,37 @@ def run(option_string: str) -> Optional[str]:
 @click.command("config")
 @click.help_option("--help", "-h")
 @click.argument("options", nargs=-1)
-def cli(options: List[str]) -> None:
+@click.option(
+    "--list-defaults", "list_defaults",
+    help="List all default configuration settings in the given section",
+    default=False, is_flag=True)
+def cli(options: List[str],
+        list_defaults: bool) -> None:
     """Print configuration values"""
-    logger.debug("Config options: %s", options)
+    import colorama
 
-    for option in options:
-        value = run(option)
-        if value is not None:
-            click.echo("{} = {}".format(option, value))
+    logger.debug("config options: %s", options)
+    logger.info("Configuration file: '%s'", papis.config.get_config_file())
+
+    def format(key: str, value: Any) -> str:
+        return (
+            "{c.Style.BRIGHT}{key}{c.Style.NORMAL} "
+            "= {c.Fore.GREEN}{value!r}{c.Style.RESET_ALL}"
+            .format(c=colorama, key=key, value=value))
+
+    if list_defaults:
+        defaults = papis.config.get_default_settings()
+        for option in options:
+            if option not in defaults:
+                logger.error("Section '%s' has no defaults", option)
+                continue
+
+            click.echo("")
+            click.echo("[{}]".format(option))
+            for key, value in defaults[option].items():
+                click.echo(format(key, value))
+    else:
+        for option in options:
+            value = run(option)
+            if value is not None:
+                click.echo(format(option, value))
