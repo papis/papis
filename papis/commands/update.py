@@ -58,6 +58,8 @@ import papis.cli
 import papis.importer
 import papis.git
 
+logger = logging.getLogger(__name__)
+
 
 def _update_with_database(document: papis.document.Document) -> None:
     document.save()
@@ -120,7 +122,6 @@ def cli(query: str,
         sort_reverse: bool,
         set_tuples: List[Tuple[str, str]],) -> None:
     """Update a document from a given library."""
-    logger = logging.getLogger("cli:update")
 
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,

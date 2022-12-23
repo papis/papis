@@ -147,8 +147,7 @@ import papis.commands.export
 from papis.commands.update import _update_with_database
 import papis.bibtex
 
-
-logger = logging.getLogger("papis:bibtex")
+logger = logging.getLogger(__name__)
 
 
 config.register_default_settings({"bibtex": {

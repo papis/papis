@@ -17,8 +17,8 @@ import papis.downloaders.base
 if TYPE_CHECKING:
     import habanero
 
+logger = logging.getLogger(__name__)
 
-logger = logging.getLogger("crossref")  # type: logging.Logger
 KeyConversionPair = papis.document.KeyConversionPair
 
 _filter_names = set([
@@ -275,7 +275,6 @@ def explorer(
     papis explore crossref -a 'Albert einstein' pick export --bibtex lib.bib
 
     """
-    logger = logging.getLogger("explore:crossref")
     logger.info("Looking up...")
 
     data = get_data(

@@ -70,8 +70,7 @@ import papis.database
 import papis.strings
 import papis.document
 
-
-logger = logging.getLogger("browse")
+logger = logging.getLogger(__name__)
 
 
 def run(document: papis.document.Document,
@@ -137,9 +136,6 @@ def cli(query: str,
         sort_field: Optional[str],
         sort_reverse: bool) -> None:
     """Open document's url in a browser"""
-
-    logger = logging.getLogger("cli:browse")
-
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,
                                                            sort_field,

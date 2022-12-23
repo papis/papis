@@ -111,6 +111,8 @@ import papis.citations
 if TYPE_CHECKING:
     from stevedore import ExtensionManager
 
+logger = logging.getLogger(__name__)
+
 
 def _extension_name() -> str:
     return "papis.explorer"
@@ -143,7 +145,6 @@ def lib(ctx: click.Context, query: str,
         papis lib -l books einstein pick
 
     """
-    logger = logging.getLogger("explore:lib")
 
     if doc_folder:
         ctx.obj["documents"] += [papis.document.from_folder(doc_folder)]
@@ -206,8 +207,6 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
         papis explore citations 'einstein' export --format yaml einstein.yaml
 
     """
-    logger = logging.getLogger("explore:citations")
-
     if doc_folder is not None:
         documents = [papis.document.from_folder(doc_folder)]
     else:
@@ -257,7 +256,6 @@ def cmd(ctx: click.Context, command: str) -> None:
 
     """
     from subprocess import call
-    logger = logging.getLogger("explore:cmd")
     docs = ctx.obj["documents"]
     for doc in docs:
         fcommand = papis.format.format(command, doc)

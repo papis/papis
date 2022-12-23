@@ -13,8 +13,7 @@ import click
 import papis.config
 import papis.commands
 
-
-logger = logging.getLogger("external")
+logger = logging.getLogger(__name__)
 
 
 def get_command_help(path: str) -> str:

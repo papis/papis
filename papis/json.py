@@ -5,6 +5,8 @@ import click
 
 import papis.document
 
+logger = logging.getLogger(__name__)
+
 
 def exporter(documents: List[papis.document.Document]) -> str:
     import json
@@ -24,7 +26,6 @@ def explorer(ctx: click.Context, jsonfile: str) -> None:
     papis explore json lib.json pick
 
     """
-    logger = logging.getLogger("explore:json")
     logger.info("Reading in json file '%s'", jsonfile)
 
     import json

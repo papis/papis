@@ -43,6 +43,8 @@ import papis.cli
 if TYPE_CHECKING:
     import cProfile
 
+logger = logging.getLogger(__name__)
+
 
 class ColoramaFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
@@ -259,7 +261,6 @@ def run(verbose: bool,
         handler = logging.FileHandler(logfile, mode="a")
 
     logging.basicConfig(level=getattr(logging, log), handlers=[handler])
-    logger = logging.getLogger("default")
 
     # NOTE: order of the configurations is intentional based on priority
     #

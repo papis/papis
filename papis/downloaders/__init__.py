@@ -14,7 +14,7 @@ import papis.utils
 if TYPE_CHECKING:
     import bs4
 
-logger = logging.getLogger("downloader")
+logger = logging.getLogger(__name__)
 
 
 def _extension_name() -> str:
@@ -71,7 +71,7 @@ class Downloader(papis.importer.Importer):
             uri=uri,
             ctx=ctx,
             name=name or os.path.basename(__file__))
-        self.logger = logging.getLogger("downloader:{}".format(self.name))
+        self.logger = logging.getLogger("downloader.{}".format(self.name))
         self.logger.debug("uri '%s'", uri)
 
         self.expected_document_extension = expected_document_extension

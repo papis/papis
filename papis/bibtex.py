@@ -11,7 +11,7 @@ import papis.filetype
 import papis.document
 import papis.format
 
-logger = logging.getLogger("bibtex")  # type: logging.Logger
+logger = logging.getLogger(__name__)
 
 # NOTE: see the BibLaTeX docs for an up to date list of types and keys:
 #   https://ctan.org/pkg/biblatex?lang=en
@@ -168,7 +168,6 @@ def explorer(ctx: click.core.Context, bibfile: str) -> None:
     papis explore bibtex lib.bib pick
 
     """
-    logger = logging.getLogger("explore:bibtex")
     logger.info("Reading in bibtex file '%s'", bibfile)
 
     docs = [
@@ -216,16 +215,16 @@ def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
     :returns: Dictionary with bibtex information with keys that bibtex
         formally recognizes.
     """
-    from bibtexparser.bparser import BibTexParser
+    # bibtexparser has too many debug messages to be useful
+    logging.getLogger("bibtexparser.bparser").setLevel(logging.WARNING)
 
+    from bibtexparser.bparser import BibTexParser
     parser = BibTexParser(
         common_strings=True,
         ignore_nonstandard_types=False,
         homogenize_fields=False,
         interpolate_strings=True)
 
-    # bibtexparser has too many debug messages to be useful
-    logging.getLogger("bibtexparser.bparser").setLevel(logging.WARNING)
     if os.path.exists(bibtex):
         with open(bibtex) as fd:
             logger.debug("Reading in file '%s'", bibtex)

@@ -22,7 +22,7 @@ import papis.document
 import papis.database
 import papis.defaults
 
-logger = logging.getLogger("utils")
+logger = logging.getLogger(__name__)
 
 A = TypeVar("A")
 B = TypeVar("B")
@@ -195,8 +195,6 @@ def folders_to_documents(folders: List[str]) -> List[papis.document.Document]:
     :param folders: List of folder paths.
     :returns: List of document objects.
     """
-    logger = logging.getLogger("utils:folders_to_documents")
-
     import time
     begin_t = time.time()
     result = parmap(papis.document.from_folder, folders)
@@ -229,8 +227,6 @@ def get_cache_home() -> str:
 
 def get_matching_importer_or_downloader(matching_string: str
                                         ) -> List[papis.importer.Importer]:
-    logger = logging.getLogger("utils:matcher")
-
     importers = []  # type: List[papis.importer.Importer]
     _imps = papis.importer.get_importers()
     _downs = papis.downloaders.get_available_downloaders()
@@ -247,8 +243,7 @@ def get_matching_importer_or_downloader(matching_string: str
             continue
         if importer:
             logger.info(
-                "%s {c.Back.BLACK}{c.Fore.GREEN}"
-                "matches %s{c.Style.RESET_ALL}",
+                "%s {c.Back.BLACK}{c.Fore.GREEN}matches %s{c.Style.RESET_ALL}",
                 matching_string, importer.name)
             try:
                 importer.fetch()

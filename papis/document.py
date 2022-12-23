@@ -11,7 +11,7 @@ from typing_extensions import TypedDict
 import papis.config
 import papis
 
-logger = logging.getLogger("document")  # type: logging.Logger
+logger = logging.getLogger(__name__)
 
 KeyConversion = TypedDict(
     "KeyConversion", {"key": Optional[str],

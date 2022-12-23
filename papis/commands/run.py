@@ -64,7 +64,7 @@ import papis.config
 import papis.document
 import papis.database
 
-logger = logging.getLogger("run")
+logger = logging.getLogger(__name__)
 
 
 def run(folder: str, command: Optional[List[str]] = None) -> int:

@@ -62,7 +62,7 @@ import papis.database
 import papis.strings
 import papis.plugin
 
-logger = logging.getLogger("cli:export")
+logger = logging.getLogger(__name__)
 
 
 def available_formats() -> List[str]:
@@ -186,7 +186,6 @@ def explorer(ctx: click.Context, fmt: str, out: str) -> None:
     papis explore crossref -m 200 -a 'Schrodinger' export --yaml lib.yaml
 
     """
-    logger = logging.getLogger("explore:yaml")
     docs = ctx.obj["documents"]
 
     outstring = run(docs, to_format=fmt)

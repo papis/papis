@@ -6,9 +6,9 @@ import papis.plugin
 import papis.document
 from papis.document import Document
 
+logger = logging.getLogger(__name__)
 
 FormatDocType = Union[Document, Dict[str, Any]]
-logger = logging.getLogger("format")
 _FORMATER = None  # type: Optional[Formater]
 
 

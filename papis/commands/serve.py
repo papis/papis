@@ -32,7 +32,7 @@ import papis.web.search
 import papis.web.pdfjs
 
 
-logger = logging.getLogger("papis:server")
+logger = logging.getLogger(__name__)
 
 USE_GIT = False  # type: bool
 TAGS_LIST = {}  # type: Dict[str, Optional[Dict[str, int]]]

@@ -4,7 +4,7 @@ import os
 import logging
 from typing import List
 
-logger = logging.getLogger("git")
+logger = logging.getLogger(__name__)
 
 
 def _issue_git_command(path: str, cmd: str) -> None:

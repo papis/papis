@@ -20,11 +20,12 @@ import papis.pick
 import papis.document
 import papis.tui.utils
 
+logger = logging.getLogger(__name__)
+
 
 def run(document: papis.document.Document,
         new_name: str, git: bool = False) -> None:
     db = papis.database.get()
-    logger = logging.getLogger("rename:run")
     folder = document.get_main_folder()
 
     if not folder:
@@ -68,8 +69,6 @@ def cli(query: str,
         doc_folder: str,
         sort_reverse: bool) -> None:
     """Rename entry"""
-    logger = logging.getLogger("cli:rename")
-
     documents = papis.cli.handle_doc_folder_query_sort(query,
                                                        doc_folder,
                                                        sort_field,

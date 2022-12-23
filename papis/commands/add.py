@@ -116,7 +116,7 @@ import papis.format
 import papis.citations
 import papis.id
 
-logger = logging.getLogger("add")  # type: logging.Logger
+logger = logging.getLogger(__name__)
 
 
 class FromFolderImporter(papis.importer.Importer):
@@ -277,7 +277,6 @@ def run(paths: List[str],
         data = {}
 
     import tempfile
-    logger = logging.getLogger("add:run")
 
     # The real paths of the documents to be added
     in_documents_paths = paths
@@ -537,8 +536,6 @@ def cli(files: List[str],
                 name=n,
                 text=re.sub(r"[ \n]+", " ", import_mgr[n].plugin.__doc__)))
         return
-
-    logger = logging.getLogger("cli:add")
 
     data = {}
     for data_set in set_list:

@@ -33,12 +33,12 @@ import papis.commands.add
 import papis.cli
 import papis.strings
 
+logger = logging.getLogger(__name__)
+
 
 def run(document: papis.document.Document,
         filepaths: List[str],
         git: bool = False) -> None:
-    logger = logging.getLogger("addto")
-
     from string import ascii_lowercase
     g = papis.utils.create_identifier(ascii_lowercase)
     string_append = ""
@@ -124,8 +124,6 @@ def cli(query: str,
         doc_folder: str,
         sort_reverse: bool) -> None:
     """Add files to an existing document"""
-    logger = logging.getLogger("cli:addto")
-
     if doc_folder:
         documents = [papis.document.from_folder(doc_folder)]
     else:

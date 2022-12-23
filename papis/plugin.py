@@ -61,8 +61,7 @@ from typing import List, Dict, Any, TYPE_CHECKING
 if TYPE_CHECKING:
     from stevedore import ExtensionManager
 
-logger = logging.getLogger("papis:plugin")
-
+logger = logging.getLogger(__name__)
 
 MANAGERS = {}  # type: Dict[str, ExtensionManager]
 
@@ -74,7 +73,6 @@ def stevedore_error_handler(manager: "ExtensionManager",
 
 
 def _load_extensions(namespace: str) -> None:
-    global MANAGERS
     logger.debug("Creating manager for %s", namespace)
 
     from stevedore import ExtensionManager

@@ -4,9 +4,12 @@ from typing import Optional, Any, Callable, TYPE_CHECKING
 import papis.config
 import papis.document
 
-MATCHER_TYPE = Callable[[papis.document.Document, str, Optional[str]], Any]
 if TYPE_CHECKING:
     import pyparsing
+
+logger = logging.getLogger(__name__)
+
+MATCHER_TYPE = Callable[[papis.document.Document, str, Optional[str]], Any]
 
 
 class DocMatcher(object):
@@ -31,7 +34,6 @@ class DocMatcher(object):
     search = ""  # type: str
     parsed_search = None  # type: pyparsing.ParseResults
     doc_format = "{%s[DOC_KEY]}" % (papis.config.getstring("format-doc-name"))
-    logger = logging.getLogger("DocMatcher")
     matcher = None  # type: Optional[MATCHER_TYPE]
 
     @classmethod
@@ -120,7 +122,6 @@ class DocMatcher(object):
 
 def parse_query(query_string: str) -> "pyparsing.ParseResults":
     import pyparsing
-    logger = logging.getLogger("parse_query")
     logger.debug("Parsing query: '%s'", query_string)
 
     papis_key_word = pyparsing.Word(pyparsing.alphanums + "-._/")

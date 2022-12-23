@@ -55,13 +55,14 @@ if TYPE_CHECKING:
     from whoosh.fields import Schema, FieldType
     from whoosh.writing import IndexWriter
 
+logger = logging.getLogger(__name__)
+
 
 class Database(papis.database.base.Database):
 
     def __init__(self, library: Optional[papis.library.Library] = None) -> None:
         super().__init__(library)
 
-        self.logger = logging.getLogger("db:whoosh")
         self.cache_dir = os.path.join(get_cache_home(), "database", "whoosh")
         self.index_dir = os.path.expanduser(
             os.path.join(
@@ -78,17 +79,17 @@ class Database(papis.database.base.Database):
     def clear(self) -> None:
         import shutil
         if self.index_exists():
-            self.logger.warning("Clearing the database")
+            logger.warning("Clearing the database")
             shutil.rmtree(self.index_dir)
 
     def add(self, document: papis.document.Document) -> None:
         schema_keys = self.get_schema_init_fields().keys()
 
-        self.logger.debug("Adding document...")
+        logger.debug("Adding document...")
         writer = self.get_writer()
         self.add_document_with_writer(document, writer, schema_keys)
 
-        self.logger.debug("Committing document..")
+        logger.debug("Committing document..")
         writer.commit()
 
     def update(self, document: papis.document.Document) -> None:
@@ -100,12 +101,12 @@ class Database(papis.database.base.Database):
     def delete(self, document: papis.document.Document) -> None:
         writer = self.get_writer()
 
-        self.logger.debug("Deleting document..")
+        logger.debug("Deleting document..")
         writer.delete_by_term(
             Database.get_id_key(),
             self.get_id_value(document))
 
-        self.logger.debug("Committing deletion..")
+        logger.debug("Committing deletion..")
         writer.commit()
 
     def query_dict(self,
@@ -115,7 +116,7 @@ class Database(papis.database.base.Database):
         return self.query(query_string)
 
     def query(self, query_string: str) -> List[papis.document.Document]:
-        self.logger.debug("Querying '%s'...", query_string)
+        logger.debug("Querying '%s'...", query_string)
 
         import whoosh.qparser
         index = self.get_index()
@@ -125,7 +126,7 @@ class Database(papis.database.base.Database):
         query = qp.parse(query_string)
         with index.searcher() as searcher:
             results = searcher.search(query, limit=None)
-            self.logger.debug(results)
+            logger.debug(results)
             documents = [
                 papis.document.from_folder(r.get("papis-folder"))
                 for r in results]
@@ -157,9 +158,9 @@ class Database(papis.database.base.Database):
         """Create a brand new index, notice that if an index already
         exists it will delete it and create a new one.
         """
-        self.logger.debug("Creating index...")
+        logger.debug("Creating index...")
         if not os.path.exists(self.index_dir):
-            self.logger.debug("Creating index directory '%s'", self.index_dir)
+            logger.debug("Creating index directory '%s'", self.index_dir)
             os.makedirs(self.index_dir)
 
         import whoosh.index
@@ -202,7 +203,7 @@ class Database(papis.database.base.Database):
         expensive and will be called only if no index is present, so
         at the time of building a brand new index.
         """
-        self.logger.debug("Indexing the library, this might take a while...")
+        logger.debug("Indexing the library, this might take a while...")
         folders = sum([
             get_folders(d) for d in self.get_dirs()], [])  # type: List[str]
         documents = folders_to_documents(folders)
@@ -230,8 +231,7 @@ class Database(papis.database.base.Database):
             # aren't the same, then we have to rebuild the
             # database.
             if user_field_names != db_field_names:
-                self.logger.debug(
-                    "Rebuilding database because field names do not match")
+                logger.debug("Rebuilding database because field names do not match")
                 self.rebuild()
             else:
                 # Otherwise, verify that the fields are
@@ -240,16 +240,15 @@ class Database(papis.database.base.Database):
                 rebuilt_db = False
                 for field in user_field_names:
                     if user_fields[field] != db_fields[field]:
-                        self.logger.debug(
-                            "Rebuilding database because "
-                            "field types do not match")
+                        logger.debug(
+                            "Rebuilding database because field types do not match")
 
                         self.rebuild()
                         rebuilt_db = True
                         break
 
                 if not rebuilt_db:
-                    self.logger.debug("Initialized index found for library")
+                    logger.debug("Initialized index found for library")
                     return
         self.create_index()
         self.do_indexing()
@@ -278,7 +277,7 @@ class Database(papis.database.base.Database):
     def create_schema(self) -> "Schema":
         """Creates and returns whoosh schema to be applied to the library
         """
-        self.logger.debug("Creating schema...")
+        logger.debug("Creating schema...")
         fields = self.get_schema_init_fields()
 
         from whoosh.fields import Schema

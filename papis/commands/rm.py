@@ -20,6 +20,8 @@ import papis.strings
 import papis.database
 import papis.git
 
+logger = logging.getLogger(__name__)
+
 
 def run(document: papis.document.Document,
         filepath: Optional[str] = None,
@@ -101,7 +103,6 @@ def cli(query: str,
     """
     Delete a document, a file, or a notes-file
     """
-    logger = logging.getLogger("cli:rm")
 
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,

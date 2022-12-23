@@ -26,6 +26,7 @@ import papis.strings
 import papis.document
 from papis.commands.edit import run as edit_run
 
+logger = logging.getLogger(__name__)
 
 Error = NamedTuple("Error", [("name", str),
                              ("path", str),
@@ -39,8 +40,6 @@ CheckFn = Callable[[papis.document.Document], List[Error]]
 Check = NamedTuple("Check", [("name", str),
                              ("operate", CheckFn),
                              ])
-
-logger = logging.getLogger("doctor")
 
 
 def register_check(name: str, check_function: CheckFn) -> None:
