@@ -63,7 +63,7 @@ import click
 import papis.config
 import papis.commands
 
-logger = logging.getLogger("config:run")
+logger = logging.getLogger(__name__)
 
 
 def run(option_string: str) -> Optional[str]:
@@ -75,15 +75,19 @@ def run(option_string: str) -> Optional[str]:
         section = option[0]
         key = option[1]
     else:
+        raise ValueError("unsupported option format: '{}'".format(option_string))
+
+    logger.debug("key = %s, sec = %s", key, section)
+    return papis.config.get(key, section=section)
+
+
+def _run_with_log(option_string: str) -> Optional[str]:
+    try:
+        return run(option_string)
+    except ValueError:
         logger.error(
             "options should be in a <section>.<key> or <key> format: got '%s'",
             option_string)
-        return None
-
-    logger.debug("key = %s, sec = %s", key, section)
-
-    try:
-        return papis.config.get(key, section=section)
     except papis.exceptions.DefaultSettingValueMissing as exc:
         logger.error("\n%s", str(exc).strip("\n"))
 
@@ -127,9 +131,9 @@ def cli(options: List[str],
         if len(options) == 1:
             # NOTE: a single option is printed directly for a bit of backwards
             # compatiblity and easier use in shell scripts, so remove with care!
-            click.echo(run(options[0]))
+            click.echo(_run_with_log(options[0]))
         else:
             for option in options:
-                value = run(option)
+                value = _run_with_log(option)
                 if value is not None:
                     click.echo(format(option, value))
