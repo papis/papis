@@ -1,6 +1,12 @@
+"""
+A set of utilities for working with BibTeX and BibLaTeX (as described in
+the `manual`_).
+
+.. _manual: https://ctan.org/pkg/biblatex?lang=en
+"""
 import os
 import string
-from typing import Optional, List, FrozenSet, Dict, Any, Iterator
+from typing import Optional, List, Dict, Any, Iterator
 
 import click
 
@@ -13,7 +19,7 @@ import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
-#: Regular BibTeX types (Section 2.1.1)
+#: Regular BibLaTeX types (`Section 2.1.1 <manual_>`_).
 bibtex_standard_types = frozenset([
     "article",
     "book", "mvbook", "inbook", "bookinbook", "suppbook", "booklet",
@@ -35,7 +41,7 @@ bibtex_standard_types = frozenset([
     # "custom[a-f]",
 ])
 
-#: Type aliases (Section 2.1.2)
+#: BibLaTeX type aliases (`Section 2.1.2 <manual_>`_).
 bibtex_type_aliases = {
     "conference": "inproceedings",
     "electronic": "online",
@@ -45,7 +51,7 @@ bibtex_type_aliases = {
     "www": "online",
 }
 
-#: Non-standard types (Section 2.1.3)
+#: Non-standard BibLaTeX types (`Section 2.1.3 <manual_>`_).
 bibtex_non_standard_types = frozenset([
     "artwork",
     "audio",
@@ -64,15 +70,15 @@ bibtex_non_standard_types = frozenset([
     "video",
 ])
 
-#: A set of known BibLaTeX types (as described in Section 2.1 of the
-#: `manual <https://ctan.org/pkg/biblatex?lang=en>`__). These types can be
-#: extended with :ref:`config-settings-extra-bibtex-types`.
+#: A set of known BibLaTeX types (as described in Section 2.1 of the `manual`_).
+#: These types are a union of the types above and can be extended with
+#: :ref:`config-settings-extra-bibtex-types`.
 bibtex_types = (
     bibtex_standard_types | frozenset(bibtex_type_aliases) | bibtex_non_standard_types
     | frozenset(papis.config.getlist("extra-bibtex-types")))
 
 
-#: Data fields (Section 2.2.2)
+#: BibLaTeX data fields (`Section 2.2.2 <manual_>`_).
 bibtex_standard_keys = frozenset([
     "abstract", "addendum", "afterword", "annotation", "annotator", "author",
     "authortype", "bookauthor", "bookpagination", "booksubtitle", "booktitle",
@@ -96,7 +102,7 @@ bibtex_standard_keys = frozenset([
     # type,
 ])
 
-#: Field aliases (Section 2.2.5)
+#: BibLaTeX field aliases (`Section 2.2.5 <manual_>`_).
 bibtex_key_aliases = {
     "address": "location",
     "annote": "annotation",
@@ -108,7 +114,7 @@ bibtex_key_aliases = {
     "school": "institution",
 }
 
-#: Special fields (Section 2.2.3)
+#: Special BibLaTeX fields (`Section 2.2.3 <manual_>`_).
 bibtex_special_keys = frozenset([
     "crossref", "entryset", "execute", "gender", "langid", "langidopts",
     "ids", "indexsorttitle", "keywords", "options", "presort", "related",
@@ -122,12 +128,63 @@ bibtex_special_keys = frozenset([
     # verb[a-c]
 ])
 
-#: A set of known BibLaTeX fields (as described in Section 2.2 of the
-#: `manual <https://ctan.org/pkg/biblatex?lang=en>`__). These types can be
+#: A set of known BibLaTeX fields (as described in Section 2.2 of the `manual`_).
+#: These fields are a union of the above fields and can be extended with
 #: extended with :ref:`config-settings-extra-bibtex-keys`.
 bibtex_keys = (
     bibtex_standard_keys | frozenset(bibtex_key_aliases) | bibtex_special_keys
     | frozenset(papis.config.getlist("extra-bibtex-keys")))
+
+#: A mapping of supported BibLaTeX entry types (see :data:`bibtex_types`) to
+#: BibLaTeX fields (see :data:`bibtex_keys`). Each value is a tuple of disjoint
+#: sets that can contain multiple fields required for the particular type, e.g.
+#: an article may require either a ``year`` or a ``date`` field.
+bibtex_type_required_keys = {
+    None: (),
+    # regular types (Section 2.1.1)
+    "article": (
+        {"author"}, {"title"}, {"journaltitle", "eprinttype"}, {"year", "date"}),
+    "book": ({"author"}, {"title"}, {"year", "date"}),
+    "inbook": ({"author"}, {"title"}, {"booktitle"}, {"year", "date"}),
+    "booklet": ({"author", "editor"}, {"title"}, {"year", "date"}),
+    "collection": ({"editor"}, {"title"}, {"year", "date"}),
+    "incollection": (
+        {"author"}, {"title"}, {"editor"}, {"booktitle"}, {"year", "date"}),
+    "manual": ({"author", "editor"}, {"title"}, {"year", "date"}),
+    "misc": ({"author", "editor"}, {"title"}, {"year", "date"}),
+    "online": (
+        {"author", "editor"}, {"title"}, {"year", "date"}, {"doi", "eprint", "url"}),
+    "patent": ({"author"}, {"title"}, {"number"}, {"year", "date"}),
+    "periodical": ({"editor"}, {"title"}, {"year", "date"}),
+    "proceedings": ({"title"}, {"year", "date"}),
+    "inproceedings": ({"author"}, {"title"}, {"booktitle"}, {"year", "date"}),
+    "dataset": ({"author", "editor"}, {"title"}, {"year", "date"}),
+    "report": ({"author"}, {"title"}, {"type"}, {"institution"}, {"year", "date"}),
+    # "set": (),
+    "thesis": ({"author"}, {"title"}, {"type"}, {"institution"}, {"year", "date"}),
+    "unpublished": ({"author"}, {"title"}, {"year", "date"}),
+    # field aliases (Section 2.1.2)
+    # NOTE: use the `bibtex_type_aliases` dict to replace before looking here
+    # non-standard type (Section 2.1.3)
+    # NOTE: these have no required keys
+}
+
+#: A mapping for additional BibLaTeX types that have the same required fields. This
+#: mapping can be used to convert types before looking into
+#: :data:`bibtex_type_required_keys`.
+bibtex_type_required_keys_aliases = {
+    "mvbook": "book",
+    "bookinbook": "inbook",
+    "suppbook": "book",
+    "mvcollection": "collection",
+    "suppcollection": "collection",
+    "suppperiodical": "periodical",
+    "mvproceedings": "proceedings",
+    "reference": "collection",
+    "mvreference": "collection",
+    "inreference": "incollection",
+    "software": "misc",
+}
 
 # NOTE: Zotero translator fields are defined in
 #   https://github.com/zotero/zotero-schema
@@ -189,7 +246,7 @@ bibtex_key_converter: Dict[str, str] = {
 
 #: A set of BibLaTeX fields to ignore when exporting from the Papis database.
 #: These can be extended with :ref:`config-settings-bibtex-ignore-keys`.
-bibtex_ignore_keys: FrozenSet[str] = (
+bibtex_ignore_keys = (
     frozenset(papis.config.getlist("bibtex-ignore-keys"))
 )
 
