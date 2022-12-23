@@ -32,6 +32,7 @@ from typing import Optional, Tuple, List, Callable, TYPE_CHECKING
 
 import click
 import click.core
+import colorama
 
 import papis
 import papis.api
@@ -45,12 +46,25 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+LEVEL_TO_COLOR = {
+    "CRITICAL": colorama.Style.BRIGHT + colorama.Fore.RED,
+    "ERROR": colorama.Style.BRIGHT + colorama.Fore.RED,
+    "WARNING": colorama.Style.BRIGHT + colorama.Fore.YELLOW,
+    "INFO": colorama.Fore.CYAN,
+    "DEBUG": colorama.Fore.WHITE,
+}
+
 
 class ColoramaFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
         if isinstance(record.msg, str):
-            import colorama
             record.msg = record.msg.format(c=colorama)
+
+        if record.levelname in LEVEL_TO_COLOR:
+            record.levelname = "{}{}{}".format(
+                LEVEL_TO_COLOR[record.levelname],
+                record.levelname,
+                colorama.Style.RESET_ALL)
 
         return super().format(record)
 
@@ -92,7 +106,6 @@ class MultiCommand(click.core.MultiCommand):
             matches = list(map(
                 str, difflib.get_close_matches(name, self.scripts, n=2)))
 
-            import colorama
             self.logger.error(
                 "{c.Fore.RED}{c.Style.BRIGHT}{c.Back.BLACK}"
                 "Command '{name}' is unknown! Did you mean '{matches}'?"
@@ -233,7 +246,6 @@ def run(verbose: bool,
         import atexit
         atexit.register(generate_profile_writing_function(profiler, profile))
 
-    import colorama
     if _disable_color(color):
         # Turn off colorama (strip escape sequences from the output)
         colorama.init(strip=True)
