@@ -46,7 +46,12 @@ configuration settings. These can be accessed through
 
 You can find a list of all available settings in the configuration section
 at :ref:`general-settings`. Commands and other plugins can define their own
-settings, which are documented separately.
+settings, which are documented separately. To list the default values in a
+given section, use
+
+.. code::
+
+    papis config --list-defaults bibtex
 
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -98,10 +103,15 @@ def _run_with_log(option_string: str) -> Optional[str]:
 @click.help_option("--help", "-h")
 @click.argument("options", nargs=-1)
 @click.option(
+    "--json", "_json",
+    help="Print multiple settings in a JSON format",
+    default=False, is_flag=True)
+@click.option(
     "--list-defaults", "list_defaults",
     help="List all default configuration settings in the given section",
     default=False, is_flag=True)
 def cli(options: List[str],
+        _json: bool,
         list_defaults: bool) -> None:
     """Print configuration values"""
     import colorama
@@ -114,6 +124,13 @@ def cli(options: List[str],
             "= {c.Fore.GREEN}{value!r}{c.Style.RESET_ALL}"
             .format(c=colorama, key=key, value=value))
 
+    if not list_defaults and len(options) == 1:
+        # NOTE: a single option is printed directly for a bit of backwards
+        # compatiblity and easier use in shell scripts, so remove with care!
+        click.echo(_run_with_log(options[0]))
+        return
+
+    json_result = {}
     if list_defaults:
         defaults = papis.config.get_default_settings()
         for option in options:
@@ -121,19 +138,26 @@ def cli(options: List[str],
                 logger.error("Section '%s' has no defaults", option)
                 continue
 
-            click.echo("[{}]".format(option))
-            for key, value in defaults[option].items():
-                click.echo(format(key, value))
+            if _json:
+                json_result[option] = defaults[option]
+            else:
+                click.echo("[{}]".format(option))
+                for key, value in defaults[option].items():
+                    click.echo(format(key, value))
 
-            if option != options[-1]:
-                click.echo("")
+                if option != options[-1]:
+                    click.echo("")
     else:
-        if len(options) == 1:
-            # NOTE: a single option is printed directly for a bit of backwards
-            # compatiblity and easier use in shell scripts, so remove with care!
-            click.echo(_run_with_log(options[0]))
-        else:
-            for option in options:
-                value = _run_with_log(option)
-                if value is not None:
-                    click.echo(format(option, value))
+        for option in options:
+            value = _run_with_log(option)
+            if value is None:
+                continue
+
+            if _json:
+                json_result[option] = value
+            else:
+                click.echo(format(option, value))
+
+    if _json:
+        import json
+        click.echo(json.dumps(json_result, indent=2))
