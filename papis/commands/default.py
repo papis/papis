@@ -66,6 +66,9 @@ class ColoramaFormatter(logging.Formatter):
                 record.levelname,
                 colorama.Style.RESET_ALL)
 
+        if record.name.startswith("papis."):
+            record.name = record.name[6:]
+
         return super().format(record)
 
 
@@ -252,19 +255,19 @@ def run(verbose: bool,
     else:
         colorama.init()
 
-    log_format = (colorama.Fore.YELLOW
+    log_format = ("["
                   + "%(levelname)s"
-                  + ":"
+                  + "] "
                   + colorama.Fore.GREEN
                   + "%(name)s"
                   + colorama.Style.RESET_ALL
-                  + ":"
+                  + ": "
                   + "%(message)s"
                   )
 
     if verbose:
         log = "DEBUG"
-        log_format = "%(relativeCreated)d-{}".format(log_format)
+        log_format = "[%(relativeCreated)d] {}".format(log_format)
 
     if logfile is None:
         handler = logging.StreamHandler()       # type: logging.Handler
