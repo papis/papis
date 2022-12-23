@@ -361,6 +361,132 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
     return []
 
 
+BIBLATEX_TYPE_ALIAS_CHECK_NAME = "biblatex-type-alias"
+
+
+def biblatex_type_alias_check(doc: papis.document.Document) -> List[Error]:
+    """
+    Check that the BibLaTeX type of the document is not a known alias.
+
+    The aliases are described by :data:`~papis.bibtex.bibtex_type_aliases`.
+
+    :returns: an error if the type of the document is an alias.
+    """
+    import papis.bibtex
+    from papis.api import save_doc
+    folder = doc.get_main_folder() or ""
+
+    def make_fixer(value: str) -> FixFn:
+        def fixer() -> None:
+            logger.info("[FIX] Setting 'type' to '%s'", value)
+            doc["type"] = value
+            save_doc(doc)
+
+        return fixer
+
+    errors = bibtex_type_check(doc)
+    if errors:
+        return errors
+
+    bib_type = doc["type"]
+    bib_type_base = papis.bibtex.bibtex_type_aliases.get(bib_type)
+    if bib_type is not None and bib_type_base is not None:
+        return [Error(name=BIBLATEX_TYPE_ALIAS_CHECK_NAME,
+                      path=folder,
+                      msg=("Document type '{}' is an alias for '{}' in BibLaTeX."
+                           .format(bib_type, bib_type_base)),
+                      suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                      fix_action=make_fixer(bib_type_base),
+                      payload=bib_type,
+                      doc=doc)]
+
+    return []
+
+
+BIBLATEX_KEY_ALIAS_CHECK_NAME = "biblatex-key-alias"
+
+
+def biblatex_key_alias_check(doc: papis.document.Document) -> List[Error]:
+    """
+    Check that no BibLaTeX keys in the document are known aliases.
+
+    The aliases are described by :data:`~papis.bibtex.bibtex_key_aliases`. Note
+    that these keys can also be converted on export to BibLaTeX.
+
+    :returns: an error for each key of the document that is an alias.
+    """
+    import papis.bibtex
+    from papis.api import save_doc
+    folder = doc.get_main_folder() or ""
+
+    def make_fixer(key: str) -> FixFn:
+        def fixer() -> None:
+            new_key = papis.bibtex.bibtex_key_aliases[key]
+            logger.info("[FIX] Renaming key '%s' to '%s'", key, new_key)
+            doc[new_key] = doc[key]
+            del doc[key]
+            save_doc(doc)
+
+        return fixer
+
+    # NOTE: `journal` is a key that papis relies on and we do not want to rename it
+    aliases = papis.bibtex.bibtex_key_aliases.copy()
+    del aliases["journal"]
+
+    return [Error(name=BIBLATEX_KEY_ALIAS_CHECK_NAME,
+                  path=folder,
+                  msg=("Document key '{}' is an alias for '{}' in BibLaTeX."
+                       .format(key, aliases[key])),
+                  suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                  fix_action=make_fixer(key),
+                  payload=key,
+                  doc=doc)
+            for key in doc if key in aliases]
+
+
+BIBLATEX_REQUIRED_KEYS_CHECK_NAME = "biblatex-required-keys"
+
+
+def biblatex_required_keys_check(doc: papis.document.Document) -> List[Error]:
+    """
+    Check that required BibLaTeX keys are part of the document based on its type.
+
+    The required keys are described by :data:`papis.bibtex.bibtex_type_required_keys`.
+    Note that most BibLaTeX processors will be quite forgiving if these keys are
+    missing.
+
+    :returns: an error for each key of the document that is missing.
+    """
+    import papis.bibtex
+    folder = doc.get_main_folder() or ""
+
+    errors = bibtex_type_check(doc)
+    if errors:
+        return errors
+
+    # translate bibtex type
+    bib_type = doc["type"]
+    bib_type = papis.bibtex.bibtex_type_aliases.get(bib_type, bib_type)
+
+    if bib_type not in papis.bibtex.bibtex_type_required_keys:
+        bib_type = papis.bibtex.bibtex_type_required_keys_aliases.get(bib_type)
+
+    required_keys = papis.bibtex.bibtex_type_required_keys[bib_type]
+    aliases = {v: k for k, v in papis.bibtex.bibtex_key_aliases.items()}
+
+    return [Error(name=BIBLATEX_REQUIRED_KEYS_CHECK_NAME,
+                  path=folder,
+                  msg=("Document of type '{}' requires one of the keys ['{}'] "
+                       "to be compatible with BibLaTeX."
+                       .format(bib_type, "', '".join(keys))),
+                  suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                  fix_action=lambda: None,
+                  payload=",".join(keys),
+                  doc=doc)
+            for keys in required_keys
+            if not any(key in doc or aliases.get(key) in doc for key in keys)]
+
+
 KEY_TYPE_CHECK_NAME = "key-type"
 
 
@@ -554,6 +680,9 @@ register_check(FILES_CHECK_NAME, files_check)
 register_check(KEYS_EXIST_CHECK_NAME, keys_exist_check)
 register_check(DUPLICATED_KEYS_NAME, duplicated_keys_check)
 register_check(BIBTEX_TYPE_CHECK_NAME, bibtex_type_check)
+register_check(BIBLATEX_TYPE_ALIAS_CHECK_NAME, biblatex_type_alias_check)
+register_check(BIBLATEX_KEY_ALIAS_CHECK_NAME, biblatex_key_alias_check)
+register_check(BIBLATEX_REQUIRED_KEYS_CHECK_NAME, biblatex_required_keys_check)
 register_check(REFS_CHECK_NAME, refs_check)
 register_check(HTML_CODES_CHECK_NAME, html_codes_check)
 register_check(HTML_TAGS_CHECK_NAME, html_tags_check)
