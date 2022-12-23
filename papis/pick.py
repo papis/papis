@@ -8,7 +8,8 @@ import papis.config
 import papis.document
 import papis.plugin
 
-logger = logging.getLogger("pick")
+logger = logging.getLogger(__name__)
+
 T = TypeVar("T")
 Option = TypeVar("Option")
 

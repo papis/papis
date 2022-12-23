@@ -11,7 +11,7 @@ import papis.config
 import papis.pick
 import papis.database
 
-logger = logging.getLogger("api")
+logger = logging.getLogger(__name__)
 
 
 def get_lib_name() -> str:

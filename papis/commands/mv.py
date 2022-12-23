@@ -20,11 +20,12 @@ import papis.cli
 import papis.pick
 import papis.strings
 
+logger = logging.getLogger(__name__)
+
 
 def run(document: papis.document.Document,
         new_folder_path: str,
         git: bool = False) -> None:
-    logger = logging.getLogger("mv:run")
 
     folder = document.get_main_folder()
     if not folder:
@@ -61,8 +62,6 @@ def cli(query: str,
     # Leave this imports here for performance
     import prompt_toolkit
     import prompt_toolkit.completion
-
-    logger = logging.getLogger("cli:mv")
 
     documents = papis.cli.handle_doc_folder_query_sort(query,
                                                        doc_folder,

@@ -32,7 +32,7 @@ class Importer:
         self.ctx = ctx or Context()  # type: Context
         self.uri = uri  # type: str
         self.name = name or os.path.basename(__file__)  # type: str
-        self.logger = logging.getLogger("importer:{}".format(self.name))
+        self.logger = logging.getLogger("importer.{}".format(self.name))
 
     @classmethod
     def match(cls, uri: str) -> Optional["Importer"]:

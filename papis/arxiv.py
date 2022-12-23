@@ -28,7 +28,7 @@ import papis.downloaders.base
 import papis.config
 
 
-logger = logging.getLogger("arxiv")
+logger = logging.getLogger(__name__)
 
 ARXIV_API_URL = "http://arxiv.org/api/query"
 ARXIV_ABS_URL = "https://arxiv.org/abs"
@@ -212,7 +212,6 @@ def explorer(
         papis explore arxiv -a '"John Smith"' pick
 
     """
-    logger = logging.getLogger("explore:arxiv")
     logger.info("Looking up...")
 
     data = get_data(

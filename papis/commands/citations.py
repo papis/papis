@@ -16,6 +16,8 @@ from papis.citations import (has_citations,
                              fetch_and_save_citations,
                              fetch_and_save_cited_by_from_database)
 
+logger = logging.getLogger(__name__)
+
 
 @click.command("citations")
 @click.help_option("--help", "-h")
@@ -52,10 +54,7 @@ def cli(query: str,
         fetch_citations: bool,
         fetch_cited_by: bool,
         update_from_database: bool) -> None:
-    """Check for common problems in documents"""
-
-    logger = logging.getLogger("cli:citations")
-
+    """Handle document citations"""
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,
                                                            sort_field,

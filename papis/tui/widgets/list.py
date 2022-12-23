@@ -18,10 +18,9 @@ from prompt_toolkit.filters import has_focus
 
 import papis.utils
 
+logger = logging.getLogger(__name__)
 
 Option = TypeVar("Option")
-
-logger = logging.getLogger("tui:widget:list")
 
 
 def match_against_regex(

@@ -17,7 +17,8 @@ try:
 except ImportError:
     from yaml import SafeLoader as Loader  # type: ignore[assignment]
 
-logger = logging.getLogger("yaml")
+logger = logging.getLogger(__name__)
+
 YAML_LOADER = Loader
 
 
@@ -102,15 +103,14 @@ def explorer(ctx: click.Context, yamlfile: str) -> None:
     papis explore yaml lib.yaml pick
 
     """
-    _logger = logging.getLogger("explore:yaml")
-    _logger.info("Reading in yaml file '%s'", yamlfile)
+    logger.info("Reading in yaml file '%s'", yamlfile)
 
     with open(yamlfile) as fd:
         docs = [papis.document.from_data(d)
                 for d in yaml.load_all(fd, Loader=Loader)]
     ctx.obj["documents"] += docs
 
-    _logger.info("%d documents found", len(docs))
+    logger.info("%d documents found", len(docs))
 
 
 class Importer(papis.importer.Importer):

@@ -12,7 +12,7 @@ import papis.format
 import papis.database.base
 
 
-logger = logging.getLogger("cache")
+logger = logging.getLogger(__name__)
 
 
 def get_cache_file_name(directory: str) -> str:
@@ -67,7 +67,6 @@ def filter_documents(
     False
 
     """
-    logger = logging.getLogger("filter")
     papis.docmatcher.DocMatcher.set_search(search)
     papis.docmatcher.DocMatcher.parse()
     papis.docmatcher.DocMatcher.set_matcher(match_document)
@@ -143,7 +142,6 @@ class Database(papis.database.base.Database):
     def __init__(self, library: Optional[papis.library.Library] = None) -> None:
         super().__init__(library)
 
-        self.logger = logging.getLogger("db:cache")
         self.documents = None  # type: Optional[List[papis.document.Document]]
         self.initialize()
 
@@ -159,28 +157,27 @@ class Database(papis.database.base.Database):
         use_cache = papis.config.getboolean("use-cache")
         cache_path = self._get_cache_file_path()
         if use_cache and os.path.exists(cache_path):
-            self.logger.debug(
-                "Getting documents from cache in '%s'", cache_path)
+            logger.debug("Getting documents from cache in '%s'", cache_path)
 
             import pickle
             with open(cache_path, "rb") as fd:
                 self.documents = pickle.load(fd)
         else:
-            self.logger.info("Indexing library, this might take a while...")
+            logger.info("Indexing library, this might take a while...")
             folders = sum([papis.utils.get_folders(d)
                            for d in self.get_dirs()],
                           [])  # type: List[str]
             self.documents = papis.utils.folders_to_documents(folders)
-            self.logger.debug("maybe computing papis ids")
+            logger.debug("maybe computing papis ids")
             for doc in self.documents:
                 self.maybe_compute_id(doc)
             if use_cache:
                 self.save()
-        self.logger.debug("Loaded %d documents", len(self.documents))
+        logger.debug("Loaded %d documents", len(self.documents))
         return self.documents
 
     def add(self, document: papis.document.Document) -> None:
-        self.logger.debug("Adding document...")
+        logger.debug("Adding document...")
 
         docs = self.get_documents()
         self.maybe_compute_id(document)
@@ -194,7 +191,7 @@ class Database(papis.database.base.Database):
     def update(self, document: papis.document.Document) -> None:
         if not papis.config.getboolean("use-cache"):
             return
-        self.logger.debug("Updating document...")
+        logger.debug("Updating document...")
 
         docs = self.get_documents()
         result = self._locate_document(document)
@@ -205,7 +202,7 @@ class Database(papis.database.base.Database):
     def delete(self, document: papis.document.Document) -> None:
         if not papis.config.getboolean("use-cache"):
             return
-        self.logger.debug("Deleting document...")
+        logger.debug("Deleting document...")
 
         docs = self.get_documents()
         result = self._locate_document(document)
@@ -220,7 +217,7 @@ class Database(papis.database.base.Database):
 
     def clear(self) -> None:
         cache_path = self._get_cache_file_path()
-        self.logger.warning("Clearing cache at '%s'", cache_path)
+        logger.warning("Clearing cache at '%s'", cache_path)
 
         if os.path.exists(cache_path):
             os.remove(cache_path)
@@ -232,7 +229,7 @@ class Database(papis.database.base.Database):
         return self.query(query_string)
 
     def query(self, query_string: str) -> List[papis.document.Document]:
-        self.logger.debug("Querying '%s'...", query_string)
+        logger.debug("Querying '%s'...", query_string)
 
         docs = self.get_documents()
         # This makes it faster, if it's the all query string, return everything
@@ -250,7 +247,7 @@ class Database(papis.database.base.Database):
 
     def save(self) -> None:
         docs = self.get_documents()
-        self.logger.debug("Saving %d documents...", len(docs))
+        logger.debug("Saving %d documents...", len(docs))
 
         import pickle
         path = self._get_cache_file_path()

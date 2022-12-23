@@ -7,7 +7,7 @@ import click
 import papis.document
 import papis.importer
 
-logger = logging.getLogger("papis:isbnlib")
+logger = logging.getLogger(__name__)
 
 
 def get_data(query: str = "",
@@ -66,7 +66,6 @@ def explorer(ctx: click.core.Context, query: str, service: str) -> None:
     papis explore isbn -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
 
     """
-    logger = logging.getLogger("explore:isbn")
     logger.info("Looking up...")
 
     data = get_data(query=query, service=service)

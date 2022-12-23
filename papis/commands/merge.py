@@ -32,6 +32,8 @@ import papis.strings
 import papis.commands.rm
 import papis.commands.update
 
+logger = logging.getLogger(__name__)
+
 
 def run(keep: papis.document.Document,
         erase: papis.document.Document,
@@ -40,7 +42,6 @@ def run(keep: papis.document.Document,
         keep_both: bool,
         git: bool = False) -> None:
 
-    logger = logging.getLogger("merge:run")
     files_to_move = set(files) - set(keep.get_files())
     for f in files_to_move:
         to_folder = keep.get_main_folder()
@@ -94,8 +95,6 @@ def cli(query: str,
         sort_reverse: bool,
         pick: bool) -> None:
     """Merge two documents from a given library"""
-    logger = logging.getLogger("cli:merge")
-
     documents = papis.database.get().query(query)
 
     if sort_field:

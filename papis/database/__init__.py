@@ -4,7 +4,7 @@ from typing import Optional, Dict
 from .base import Database
 from papis.library import Library
 
-logger = logging.getLogger("database")
+logger = logging.getLogger(__name__)
 
 DATABASES = {}  # type: Dict[Library, Database]
 

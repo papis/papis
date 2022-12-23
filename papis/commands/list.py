@@ -65,7 +65,7 @@ import papis.cli
 import papis.pick
 import papis.format
 
-logger = logging.getLogger("list")
+logger = logging.getLogger(__name__)
 
 
 def run(
@@ -183,8 +183,6 @@ def cli(
         libraries: bool,
         sort_field: Optional[str], sort_reverse: bool) -> None:
     """List documents' properties"""
-
-    logger = logging.getLogger("cli:list")
     documents = []  # type: List[papis.document.Document]
 
     if (not libraries and not downloaders
