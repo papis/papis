@@ -25,11 +25,8 @@ def prompt(text: Union[str, FormattedText],
     """A simple and extensible prompt helper routine
 
     :param text: Text to be printed before the prompt, it can be formatted text
-    :type  text: str or FormattedText
     :param title: Title to be shown in a bottom bar
-    :type  title: str
     :param actions: A list of Actions as defined in `Action`.
-    :type  actions: [Action]
     :param kwargs: kwargs to prompt_toolkit application class
     """
     if actions is None:
@@ -86,9 +83,7 @@ def diffshow(texta: str,
     """Show the difference of texta and textb with a prompt.
 
     :param texta: From text
-    :type  texta: str
     :param textb: To text
-    :type  textb: str
     """
     if actions is None:
         actions = []
@@ -104,8 +99,8 @@ def diffshow(texta: str,
     #         fromfile=namea, tofile=nameb)
 
     diffs = difflib.ndiff(
-        str(texta).splitlines(keepends=True),
-        str(textb).splitlines(keepends=True),)
+        texta.splitlines(keepends=True),
+        textb.splitlines(keepends=True),)
 
     _diffs = list(diffs)
     if len(_diffs) == 1:
@@ -143,19 +138,14 @@ def diffdict(dicta: Dict[str, Any],
     Compute the difference of two dictionaries.
 
     :param dicta: Base dictionary
-    :type  dicta: dict
     :param dictb: Dictionary with the differences that the result might add
-    :type  dictb: dict
     :param namea: Label to be shown for dictionary a
-    :type  namea: str
     :param namea: Label to be shown for dictionary b
-    :type  namea: str
     :returns: A dictionary containing the base data of dicta plus data
         from dictb if this was chosen.
-    :rtype:  return_type
     """
 
-    rdict = dict()
+    rdict = {}
 
     options = {
         "add": False,
@@ -206,7 +196,7 @@ def diffdict(dicta: Dict[str, Any],
         actions=actions)
 
     if options["cancel"] or options["quit"]:
-        return dict()
+        return {}
     elif options["add_all"]:
         rdict.update(dicta)
         rdict.update(dictb)
@@ -233,7 +223,7 @@ def diffdict(dicta: Dict[str, Any],
             actions=actions)
 
         if options["cancel"]:
-            return dict()
+            return {}
         elif options["add"]:
             rdict[key] = dictb.get(key, dicta.get(key))
         elif options["quit"]:

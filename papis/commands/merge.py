@@ -6,11 +6,13 @@ pass the ``--pick`` flag to pick twice for the documents.
 
 TODO: Write more documentation
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.merge:cli
     :prog: papis open
 """
+
 import os
 import logging
 from typing import Optional, List, Dict, Any
@@ -121,7 +123,7 @@ def cli(query: str,
     data_b = papis.document.to_dict(b)
 
     to_pop = ["files"]
-    for d in [data_a, data_b]:
+    for d in (data_a, data_b):
         for key in to_pop:
             if key in d:
                 d.pop(key)

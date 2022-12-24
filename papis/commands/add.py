@@ -73,6 +73,10 @@ Examples
         papis add journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.156401
         papis add https://arxiv.org/abs/1712.03134
 
+- You can also download citations alongside the information of the
+  paper if the papers is able to obtain a ``doi`` identifier.  You can
+  pass the ``--fetch-citations`` flag in order to create a
+  ``citations.yaml`` file.
 
 Examples in python
 ^^^^^^^^^^^^^^^^^^
@@ -82,12 +86,13 @@ in a more effective way in python scripts,
 
 .. autofunction:: papis.commands.add.run
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.add:cli
     :prog: papis add
-
 """
+
 import os
 import re
 import logging
@@ -108,6 +113,8 @@ import papis.strings
 import papis.downloaders
 import papis.git
 import papis.format
+import papis.citations
+import papis.id
 
 logger = logging.getLogger("add")  # type: logging.Logger
 
@@ -116,8 +123,8 @@ class FromFolderImporter(papis.importer.Importer):
 
     """Importer that gets files and data from a valid papis folder"""
 
-    def __init__(self, **kwargs: Any):
-        papis.importer.Importer.__init__(self, name="folder", **kwargs)
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(name="folder", **kwargs)
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
@@ -127,6 +134,7 @@ class FromFolderImporter(papis.importer.Importer):
         self.logger.info("Importing from folder '%s'", self.uri)
 
         doc = papis.document.from_folder(self.uri)
+        del doc[papis.id.key_name()]
         self.ctx.data = papis.document.to_dict(doc)
         self.ctx.files = doc.get_files()
 
@@ -137,8 +145,8 @@ class FromLibImporter(papis.importer.Importer):
     and data
     """
 
-    def __init__(self, **kwargs: Any):
-        papis.importer.Importer.__init__(self, name="lib", **kwargs)
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(name="lib", **kwargs)
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
@@ -166,15 +174,10 @@ def get_file_name(
     """Generates file name for the document
 
     :param data: Data parsed for the actual document
-    :type  data: dict
     :param original_filepath: The full path to the original file
-    :type  original_filepath: str
     :param suffix: Possible suffix to be appended to the file without
         its extension.
-    :type  suffix: str
     :returns: New file name
-    :rtype:  str
-
     """
 
     basename_limit = 150
@@ -204,7 +207,7 @@ def get_file_name(
     filename_basename = papis.utils.clean_document_name(
         "{}{}".format(
             file_name_base,
-            "-" + suffix if len(suffix) > 0 else ""
+            "-" + suffix if suffix else ""
         )
     )
 
@@ -251,33 +254,24 @@ def run(paths: List[str],
         open_file: bool = False,
         edit: bool = False,
         git: bool = False,
-        link: bool = False
-        ) -> None:
+        link: bool = False,
+        citations: papis.citations.Citations = ()) -> None:
     """
     :param paths: Paths to the documents to be added
-    :type  paths: []
     :param data: Data for the document to be added.
         If more data is to be retrieved from other sources, the data dictionary
         will be updated from these sources.
-    :type  data: dict
     :param folder_name: Name of the folder where the document will be stored
-    :type  folder_name: str
     :param file_name: File name of the document's files to be stored.
-    :type  file_name: str
     :param subfolder: Folder within the library where the document's folder
         should be stored.
-    :type  subfolder: str
     :param confirm: Whether or not to ask user for confirmation before adding.
-    :type  confirm: bool
     :param open_file: Whether or not to ask the user for opening the file
         before adding.
-    :type  open_file: bool
     :param edit: Whether or not to ask user for editing the info file
         before adding.
-    :type  edit: bool
     :param git: Whether or not to ask user for committing before adding,
         in the case of course that the library is a git repository.
-    :type  git: bool
     """
     if data is None:
         data = {}
@@ -318,6 +312,10 @@ def run(paths: List[str],
         temp_doc = papis.document.Document(data=data)
         temp_path = os.path.join(out_folder_path, folder_name)
         components = []     # type: List[str]
+
+        temp_path = os.path.normpath(temp_path)
+        out_folder_path = os.path.normpath(out_folder_path)
+
         while (
                 temp_path != out_folder_path
                 and papis.utils.is_relative_to(temp_path, out_folder_path)):
@@ -417,6 +415,9 @@ def run(paths: List[str],
             height=20)
         confirm = True
 
+    if citations:
+        papis.citations.save_citations(tmp_document, citations)
+
     if open_file:
         for d_path in tmp_document.get_files():
             papis.utils.open_file(d_path)
@@ -505,8 +506,11 @@ def run(paths: List[str],
     help="Download file with importer even if local file is passed",
     default=False,
     is_flag=True)
-def cli(
-        files: List[str],
+@click.option("--fetch-citations",
+              help="Fetch citations from doi",
+              default=lambda: papis.config.getboolean("add-fetch-citations"),
+              is_flag=True)
+def cli(files: List[str],
         set_list: List[Tuple[str, str]],
         subfolder: str,
         pick_subfolder: bool,
@@ -520,7 +524,11 @@ def cli(
         git: bool,
         link: bool,
         list_importers: bool,
-        force_download: bool) -> None:
+        force_download: bool,
+        fetch_citations: bool) -> None:
+    """
+    Command line interface for papis-add.
+    """
 
     if list_importers:
         import_mgr = papis.importer.get_import_mgr()
@@ -530,14 +538,12 @@ def cli(
                 text=re.sub(r"[ \n]+", " ", import_mgr[n].plugin.__doc__)))
         return
 
-    from_importer = list(from_importer)
     logger = logging.getLogger("cli:add")
 
-    data = dict()
+    data = {}
     for data_set in set_list:
         data[data_set[0]] = data_set[1]
 
-    files = list(files)
     ctx = papis.importer.Context()
     ctx.files = [f for f in files if os.path.exists(f)]
     ctx.data.update(data)
@@ -608,8 +614,18 @@ def cli(
         papis.pick.pick_subfolder_from_lib(papis.config.get_lib_name())[0]
     ) if pick_subfolder else None
 
-    return run(
-        ctx.files,
+    if fetch_citations:
+        try:
+            logger.info("Fetching citations")
+            citations = papis.citations.fetch_citations(
+                papis.document.from_data(ctx.data))
+        except ValueError:
+            logger.warning("could not fetch any meaningful citations")
+            citations = []
+    else:
+        citations = []
+
+    run(ctx.files,
         data=ctx.data,
         folder_name=folder_name,
         file_name=file_name,
@@ -619,4 +635,5 @@ def cli(
         open_file=open_file,
         edit=edit,
         git=git,
-        link=link)
+        link=link,
+        citations=citations)

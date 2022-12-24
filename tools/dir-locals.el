@@ -17,4 +17,5 @@
                                        flycheck-python-pylint-executable
                                        (format "%s/env/bin/pylint" root))))
                  (mode . flycheck)
+                 (mode . company)
                  (flycheck-pycheckers-checkers . (mypy3 flake8)))))

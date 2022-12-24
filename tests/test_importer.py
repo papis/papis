@@ -27,7 +27,7 @@ def test_cache():
     class SimpleImporter(Importer):
 
         def __init__(self, uri="", **kwargs):
-            Importer.__init__(self, uri=uri, name="SimpleImporter", **kwargs)
+            super().__init__(uri=uri, name="SimpleImporter", **kwargs)
 
         @classmethod
         def match(cls, uri):

@@ -22,30 +22,33 @@ class MockDownloader(Downloader):
 
 
 def create_random_pdf(suffix: str = "", prefix: str = "") -> str:
-    tempf = tempfile.mktemp(suffix=suffix, prefix=prefix)
-    with open(tempf, "wb+") as fd:
+    with tempfile.NamedTemporaryFile(suffix=suffix, prefix=prefix, delete=False) as fd:
         fd.write("%PDF-1.5%\n".encode())
-    return tempf
+
+    return fd.name
 
 
 def create_random_epub(suffix: str = "", prefix: str = "") -> str:
-    tempf = tempfile.mktemp(suffix=suffix, prefix=prefix)
-    buf = [0x50, 0x4B, 0x3, 0x4]
-    buf += [0x00 for i in range(26)]
-    buf += [0x6D, 0x69, 0x6D, 0x65, 0x74, 0x79, 0x70, 0x65, 0x61, 0x70,
-            0x70, 0x6C, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6F, 0x6E, 0x2F,
-            0x65, 0x70, 0x75, 0x62, 0x2B, 0x7A, 0x69, 0x70]
-    buf += [0x00 for i in range(1)]
-    with open(tempf, "wb+") as fd:
+    buf = bytearray(
+        [0x50, 0x4B, 0x3, 0x4]
+        + [0x00 for i in range(26)]
+        + [0x6D, 0x69, 0x6D, 0x65, 0x74, 0x79, 0x70, 0x65, 0x61, 0x70,
+           0x70, 0x6C, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6F, 0x6E, 0x2F,
+           0x65, 0x70, 0x75, 0x62, 0x2B, 0x7A, 0x69, 0x70]
+        + [0x00 for i in range(1)]
+        )
+
+    with tempfile.NamedTemporaryFile(suffix=suffix, prefix=prefix, delete=False) as fd:
         fd.write(bytearray(buf))
-    return tempf
+
+    return fd.name
 
 
 def create_random_file(suffix: str = "", prefix: str = "") -> str:
-    tempf = tempfile.mktemp(suffix=suffix, prefix=prefix)
-    with open(tempf, "wb+") as fd:
+    with tempfile.NamedTemporaryFile(suffix=suffix, prefix=prefix, delete=False) as fd:
         fd.write("hello".encode())
-    return tempf
+
+    return fd.name
 
 
 def create_real_document(
@@ -111,7 +114,7 @@ def setup_test_library() -> None:
     """Set-up a test library for tests
     """
     config = papis.config.get_configuration()
-    config["settings"] = dict()
+    config["settings"] = {}
     folder = tempfile.mkdtemp(prefix="papis-test-library-")
     libname = get_test_lib_name()
     lib = papis.library.Library(libname, [folder])

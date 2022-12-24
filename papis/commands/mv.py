@@ -1,10 +1,11 @@
 """
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
 
-Cli
-^^^
 .. click:: papis.commands.mv:cli
     :prog: papis mv
 """
+
 import os
 import logging
 from typing import Optional
@@ -63,22 +64,15 @@ def cli(query: str,
 
     logger = logging.getLogger("cli:mv")
 
-    if doc_folder:
-        documents = [papis.document.from_folder(doc_folder)]
-    else:
-        documents = papis.database.get().query(query)
-
+    documents = papis.cli.handle_doc_folder_query_sort(query,
+                                                       doc_folder,
+                                                       sort_field,
+                                                       sort_reverse)
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
-    if sort_field:
-        documents = papis.document.sort(documents, sort_field, sort_reverse)
-
-    docs = papis.pick.pick_doc(documents)
-    if not docs:
-        return
-    document = docs[0]
+    document = documents[0]
 
     lib_dir = os.path.expanduser(papis.config.get_lib_dirs()[0])
 
@@ -104,7 +98,7 @@ def cli(query: str,
         logger.error(e)
         return
 
-    logger.info(new_folder)
+    logger.info("new folder is '%s'", new_folder)
 
     if not os.path.exists(new_folder):
         logger.info("Creating path %s", new_folder)

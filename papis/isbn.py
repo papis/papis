@@ -31,7 +31,6 @@ def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
     Convert data from isbnlib into papis formatted data.
 
     :param data: Dictionary with data
-    :type  data: dict
     :returns: Dictionary with papis key names
     """
     _k = papis.document.KeyConversionPair
@@ -79,7 +78,7 @@ def explorer(ctx: click.core.Context, query: str, service: str) -> None:
 
 class Importer(papis.importer.Importer):
 
-    """Importer for ISBN identifiers through isbnlib."""
+    """Importer for ISBN identifiers through isbnlib"""
 
     def __init__(self, uri: str) -> None:
         super().__init__(name="isbn", uri=uri)

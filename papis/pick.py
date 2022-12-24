@@ -24,7 +24,7 @@ class Picker(ABC, Generic[T]):
             match_filter: Callable[[T], str],
             default_index: int = 0
             ) -> Sequence[T]:
-        ...
+        pass
 
 
 def _extension_name() -> str:

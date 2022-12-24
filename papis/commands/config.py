@@ -30,11 +30,13 @@ it with
 
 You can find a list of all available settings in the configuration section.
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.config:cli
     :prog: papis config
 """
+
 import logging
 from typing import Optional
 
@@ -47,12 +49,14 @@ def run(option_string: str) -> Optional[str]:
     logger = logging.getLogger("config:run")
 
     option = option_string.split(".")
+    key = section = None
     if len(option) == 1:
         key = option[0]
-        section = None
     elif len(option) == 2:
         section = option[0]
         key = option[1]
+    else:
+        raise ValueError("unrecognized option: {}".format(option_string))
 
     logger.debug("key = %s, sec = %s", key, section)
     val = papis.config.get(key, section=section)

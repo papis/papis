@@ -19,3 +19,4 @@ Commands
 .. include:: commands/rm.rst
 .. include:: commands/run.rst
 .. include:: commands/update.rst
+.. include:: commands/citations.rst

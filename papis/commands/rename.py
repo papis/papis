@@ -1,10 +1,11 @@
 """
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
 
-Cli
-^^^
 .. click:: papis.commands.rename:cli
     :prog: papis rename
 """
+
 import os
 import logging
 from typing import Optional
@@ -67,28 +68,20 @@ def cli(query: str,
         doc_folder: str,
         sort_reverse: bool) -> None:
     """Rename entry"""
-
-    if doc_folder:
-        documents = [papis.document.from_folder(doc_folder)]
-    else:
-        documents = papis.database.get().query(query)
-
-    if sort_field:
-        documents = papis.document.sort(documents, sort_field, sort_reverse)
-
     logger = logging.getLogger("cli:rename")
 
+    documents = papis.cli.handle_doc_folder_query_sort(query,
+                                                       doc_folder,
+                                                       sort_field,
+                                                       sort_reverse)
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
-    docs = papis.pick.pick_doc(documents)
-    if not docs:
         return
-
-    document = docs[0]
+    document = documents[0]
 
     new_name = papis.tui.utils.prompt(
         "Enter new folder name:\n"
         ">",
-        default=document.get_main_folder_name() or ""
-    )
+        default=document.get_main_folder_name() or "")
+
     run(document, new_name, git=git)

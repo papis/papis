@@ -18,12 +18,12 @@ class Test(unittest.TestCase):
         db = papis.database.get()
         docs = db.get_all_documents()
         ndocs = len(docs)
-        self.assertTrue(ndocs > 0)
+        self.assertGreater(ndocs, 0)
         doc = docs[0]
         papis.commands.rm.run(doc)
         docs = db.get_all_documents()
         ndocs_after_delete = len(docs)
-        self.assertTrue(ndocs > ndocs_after_delete)
+        self.assertGreater(ndocs, ndocs_after_delete)
 
     def test_rm_documents_file(self):
         db = papis.database.get()
@@ -33,19 +33,20 @@ class Test(unittest.TestCase):
         filename = "test.txt"
         path = os.path.join(doc.get_main_folder(), filename)
 
-        open(path, "w+").close()
+        with open(path, "w+"):
+            pass
         self.assertTrue(os.path.exists(path))
 
         doc["files"] = [filename]
         doc.save()
 
         papis.commands.rm.run(doc, filepath=path)
-        self.assertTrue(not os.path.exists(path))
+        self.assertFalse(os.path.exists(path))
 
         doc = db.query_dict(dict(title=title))[0]
-        self.assertTrue(doc is not None)
-        self.assertTrue(doc["title"] == title)
-        self.assertTrue(len(doc.get_files()) == 0)
+        self.assertIsNot(doc, None)
+        self.assertEqual(doc["title"], title)
+        self.assertEqual(len(doc.get_files()), 0)
 
 
 class TestCli(tests.cli.TestCli):
@@ -54,17 +55,17 @@ class TestCli(tests.cli.TestCli):
 
     def test_1_no_documents(self):
         result = self.invoke(["__no_document__"])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
 
     @patch("papis.pick.pick_doc", lambda x: [])
     def test_2_no_doc_picked(self):
         result = self.invoke(["turing"])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
 
     def test_3_force(self):
         db = papis.database.get()
         result = self.invoke(["krishnamurti", "--force"])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
         docs = db.query_dict(dict(author="krish"))
         self.assertFalse(docs)
 
@@ -74,9 +75,9 @@ class TestCli(tests.cli.TestCli):
     def test_4_confirm(self):
         db = papis.database.get()
         docs = db.query_dict(dict(author="popper"))
-        self.assertTrue(len(docs) == 1)
+        self.assertEqual(len(docs), 1)
         result = self.invoke(["popper"])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
         docs = db.query_dict(dict(author="popper"))
         self.assertTrue(docs)
 
@@ -86,9 +87,9 @@ class TestCli(tests.cli.TestCli):
     def test_5_confirm_true(self):
         db = papis.database.get()
         docs = db.query_dict(dict(author="popper"))
-        self.assertTrue(len(docs) == 1)
+        self.assertEqual(len(docs), 1)
         result = self.invoke(["popper"])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
         docs = db.query_dict(dict(author="popper"))
         self.assertFalse(docs)
 
@@ -98,17 +99,17 @@ class TestCli(tests.cli.TestCli):
     def test_7_confirm_file_nopick(self):
         db = papis.database.get()
         docs = db.query_dict(dict(author="turing"))
-        self.assertTrue(len(docs) == 1)
+        self.assertEqual(len(docs), 1)
         nfiles = len(docs[0].get_files())
-        self.assertTrue(nfiles > 0)
+        self.assertGreater(nfiles, 0)
 
         result = self.invoke(["turing", "--file"])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
 
         docs = db.query_dict(dict(author="turing"))
-        self.assertTrue(len(docs) == 1)
+        self.assertEqual(len(docs), 1)
         nfiles_after = len(docs[0].get_files())
-        self.assertTrue(nfiles == nfiles_after)
+        self.assertEqual(nfiles, nfiles_after)
 
     @patch("papis.tui.utils.confirm", lambda *x, **y: False)
     @patch("papis.pick.pick_doc", lambda x: [x[0]] if x else [])
@@ -116,17 +117,17 @@ class TestCli(tests.cli.TestCli):
     def test_6_confirm_file(self):
         db = papis.database.get()
         docs = db.query_dict(dict(author="turing"))
-        self.assertTrue(len(docs) == 1)
+        self.assertEqual(len(docs), 1)
         nfiles = len(docs[0].get_files())
-        self.assertTrue(nfiles > 0)
+        self.assertGreater(nfiles, 0)
 
         result = self.invoke(["turing", "--file"])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
 
         docs = db.query_dict(dict(author="turing"))
-        self.assertTrue(len(docs) == 1)
+        self.assertEqual(len(docs), 1)
         nfiles_after = len(docs[0].get_files())
-        self.assertTrue(nfiles == nfiles_after)
+        self.assertEqual(nfiles, nfiles_after)
 
     @patch("papis.tui.utils.confirm", lambda *x, **y: True)
     @patch("papis.pick.pick_doc", lambda x: [x[0]] if x else [])
@@ -134,25 +135,25 @@ class TestCli(tests.cli.TestCli):
     def test_confirm_true_file(self):
         db = papis.database.get()
         docs = db.query_dict(dict(author="turing"))
-        self.assertTrue(len(docs) == 1)
+        self.assertEqual(len(docs), 1)
         nfiles = len(docs[0].get_files())
-        self.assertTrue(nfiles > 0)
+        self.assertGreater(nfiles, 0)
 
         result = self.invoke(["turing", "--file"])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
 
         docs = db.query_dict(dict(author="turing"))
-        self.assertTrue(len(docs) == 1)
+        self.assertEqual(len(docs), 1)
         nfiles_after = len(docs[0].get_files())
-        self.assertTrue(nfiles == nfiles_after + 1)
+        self.assertEqual(nfiles, nfiles_after + 1)
 
     def test_rm_all(self):
         db = papis.database.get()
         docs = db.query_dict(dict(author="test_author"))
-        self.assertTrue(len(docs) == 2)
+        self.assertEqual(len(docs), 2)
 
         result = self.invoke(["test_author", "--all", "--force"])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
 
         docs = db.query_dict(dict(author="test_author"))
-        self.assertTrue(len(docs) == 0)
+        self.assertEqual(len(docs), 0)

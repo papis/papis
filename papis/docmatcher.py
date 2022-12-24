@@ -41,11 +41,10 @@ class DocMatcher(object):
         """Use the attribute `cls.parsed_search` to match the `doc` document
         to the previously parsed query.
         :param doc: Papis document to match against.
-        :type  doc: papis.document.Document
 
         >>> import papis.document
         >>> from papis.database.cache import match_document
-        >>> doc = papis.document.from_data(dict(title='einstein'))
+        >>> doc = papis.document.from_data({'title': 'einstein'})
         >>> DocMatcher.set_matcher(match_document)
         >>> result = DocMatcher.parse('einste')
         >>> DocMatcher.return_if_match(doc) is not None
@@ -98,10 +97,8 @@ class DocMatcher(object):
         class attribute `parsed_search` to the parsed query, and it will
         return it too.
         :param cls: The class object, since it is a static method
-        :type  cls: object
         :param search: Search text string if a custom search string is to be
             used. False if the `cls.search` class attribute is to be used.
-        :type  search: str
         :returns: Parsed query
 
         >>> print(DocMatcher.parse('hello author : einstein'))

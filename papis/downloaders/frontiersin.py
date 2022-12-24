@@ -6,11 +6,12 @@ import papis.downloaders.base
 
 class Downloader(papis.downloaders.Downloader):
 
-    def __init__(self, url: str):
-        papis.downloaders.Downloader.__init__(
-            self, url, name="frontiersin")
-        self.expected_document_extension = "pdf"
-        self.cookies = {"gdpr": "true"}
+    def __init__(self, url: str) -> None:
+        super().__init__(
+            url, name="frontiersin",
+            expected_document_extension="pdf",
+            cookies={"gdpr": "true"},
+            )
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
