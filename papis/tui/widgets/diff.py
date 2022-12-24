@@ -122,11 +122,11 @@ def diffshow(texta: str,
     formatted_text = list(map(
         lambda line:
             # match line values
-            line.startswith("@") and ("fg:violet bg:ansiblack", line)
+            line.startswith("@") and ("fg:ansimagenta bg:ansiblack", line)
             or line.startswith("+") and ("fg:ansigreen bg:ansiblack", line)
             or line.startswith("-") and ("fg:ansired bg:ansiblack", line)
             or line.startswith("?") and ("fg:ansiyellow bg:ansiblack", line)
-            or line.startswith("^^^") and ("bg:ansiblack fg:ansipurple", line)
+            or line.startswith("^^^") and ("bg:ansiblack fg:ansimagenta", line)
             or ("fg:ansiwhite", line), raw_text))
 
     prompt(title=title,

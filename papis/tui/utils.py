@@ -80,7 +80,7 @@ def text_area(title: str,
     pygment_lexer = find_lexer_class_by_name(lexer_name)
     lexer = PygmentsLexer(pygment_lexer)
     text_window = Window(height=text_height,
-                         style="bg:black fg:ansiwhite",
+                         style="bg:ansiblack fg:ansiwhite",
                          content=BufferControl(buffer=buffer1, lexer=lexer))
 
     root_container = HSplit([
@@ -166,7 +166,7 @@ def prompt(
 
     fragments = [
         ("", prompt_string),
-        ("fg:red", " ({0})".format(default)),
+        ("fg:ansired", " ({0})".format(default)),
         ("", ": "),
     ]
 
