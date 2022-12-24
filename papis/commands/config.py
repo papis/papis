@@ -19,7 +19,7 @@ If you wanted to see which ``dir`` the ``books`` library uses, you would do:
 
     papis -l books config dir
 
-With ``-l``, Papis selects a specific library (here, the "books" library). The 
+With ``-l``, Papis selects a specific library (here, the "books" library). The
 rest works just as above.
 
 Settings from a specific section in the configuration file can also be
@@ -32,18 +32,20 @@ example, if your ``books`` library is configured as a section, you can do:
 
 This is equivalent to the above ``papis -l books config dir`` command.
 
-For a more complex example, the :ref:`Bibtex` command has its own
-configuration settings. These can be accessed through
+The same notation can also be used to access configuration settings specific
+to Papis commands. For example, the :ref:`Bibtex` command's settings can be
+accessed with:
 
 .. code::
 
     papis config bibtex.default-read-bibfile
-    > main.bib
 
 You can find a list of all available settings in the configuration section
 at :ref:`general-settings`. Commands and other plugins can define their own
-settings, which are documented separately. To list the default values in a
-given section, use
+settings, which are documented separately.
+
+You can also use ``config`` to find out about some section's default
+settings:
 
 .. code::
 
