@@ -49,11 +49,13 @@ to be a valid url, I guess at this point you'll know what you're doing.
 This is the default, it will do a search-engine search with the data of your
 paper and hopefully you'll find it.
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.browse:cli
     :prog: papis browse
 """
+
 import logging
 from typing import Optional
 
@@ -136,26 +138,18 @@ def cli(query: str,
         sort_reverse: bool) -> None:
     """Open document's url in a browser"""
 
-    if doc_folder:
-        documents = [papis.document.from_folder(doc_folder)]
-    else:
-        documents = papis.database.get().query(query)
-
     logger = logging.getLogger("cli:browse")
 
-    if len(documents) == 0:
+    documents = papis.cli.handle_doc_folder_query_all_sort(query,
+                                                           doc_folder,
+                                                           sort_field,
+                                                           sort_reverse,
+                                                           _all)
+    if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
-    if not _all:
-        documents = list(papis.pick.pick_doc(documents))
-        if not documents:
-            return
-
-    if sort_field:
-        documents = papis.document.sort(documents, sort_field, sort_reverse)
-
-    if len(key):
+    if key:
         papis.config.set("browse-key", key)
 
     logger.info("Using key '%s'", papis.config.get("browse-key"))

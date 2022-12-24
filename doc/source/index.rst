@@ -19,6 +19,8 @@ command-line interface (*CLI*) is heavily tailored after
    info_file
    library_structure
    database_structure
+   papis_id
+   citations
    commands
    web-application
    gui

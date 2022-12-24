@@ -135,7 +135,7 @@ Papis has grown over the years and there are now a number of projects that exten
      - Maintained by
 
    * - `papis (core) <https://github.com/papis/papis-rofi/>`__
-     - `Alejandro Gallo <https://alejandrogallo.github.io/>`__, `teto <https://github.com/teto>`__, `Julian Hauser <https://github.com/jghauser>`__, `Alex Fikl <https://github.com/alexfikl>`__
+     - `Alejandro Gallo <https://alejandrogallo.github.io/>`__, `Julian Hauser <https://github.com/jghauser>`__, `Alex Fikl <https://github.com/alexfikl>`__
 
    * - `papis-rofi <https://github.com/papis/papis-rofi/>`__
      - `Etn40ff <https://github.com/Etn40ff>`__

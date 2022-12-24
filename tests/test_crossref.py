@@ -1,4 +1,6 @@
 import os
+import pytest
+
 from unittest.mock import patch
 import json
 from papis.crossref import (
@@ -16,6 +18,7 @@ def _get_test_json(filename):
         return json.load(fd)
 
 
+@pytest.mark.xfail(reason="crossref times out quite often")
 def test_get_data():
     data = get_data(
         author="Albert Einstein",

@@ -1,0 +1,34 @@
+{
+  "abstract": "The renormalization group method of Chen, Goldenfeld, and Oono offers a comprehensive approach to formally computing asymptotic expansions of the solutions to singular perturbation problems and multi-scale problems. In particular, the RG method applies to a broad array of problems customarily treated with disparate methods, such as the method of multiple scales, boundary layer theory, matched asymptotic expansions, Poincare-Lindstedt theory, the WKBJ method with and without turning points, the method of averaging, and others. For problems in which the expansions are in powers of the small parameter, it has been shown that the RG method leads to uniformly valid asymptotic expansions of the solutions. In addition, it has been shown that the RG condition constitutes an invariance condition, that the RG method is effectively a resummation technique, and that it is equivalent to normal form theory for certain broad classes of perturbed ordinary differential equations. However, there has not yet been an analysis of the validity of the RG method, i.e.,i> a demonstration that it leads to uniformly valid asymptotic expansions, for problems in which the expansions also involve logarithms of the small parameter as gauge functions. The aim of this article is to provide this justification of the RG method. In particular, we extend the approach developed in DeVille, et ali>. Physica D 237 no. 8, 1029 {-}1052] from the classes of autonomous and non-autonomous perturbations considered there to include the non-autonomous systems subject to singular perturbations for which the solutions involve logarithmic gauge functions. This framework is built upon the relationship between the RG method and normal form theory. We apply the RG method to three successively-more complex examples and also elucidate the common general features.",
+  "author": "Holzer, Matt and Kaper, Tasso J.",
+  "author_list": [
+    {
+      "affiliation": [],
+      "family": "Holzer",
+      "given": "Matt"
+    },
+    {
+      "affiliation": [],
+      "family": "Kaper",
+      "given": "Tasso J."
+    }
+  ],
+  "date": "2014-03-01",
+  "doi": "10.57262/ade/1391109086",
+  "firstpage": "245",
+  "issn": "1079-9389",
+  "issue": "3/4",
+  "journal": "Advances in Differential Equations",
+  "journal_abbrev": "ade",
+  "keywords": "34C20; 34E05; 34E15; 37G05; 70K45",
+  "language": "en",
+  "lastpage": "282",
+  "pdf_url": "https://projecteuclid.org/journals/advances-in-differential-equations/volume-19/issue-3_2f_4/An-analysis-of-the-renormalization-group-method-for-asymptotic-expansions/ade/1391109086.pdf",
+  "publication_date": "2014/03",
+  "publisher": "Khayyam Publishing, Inc.",
+  "title": "An analysis of the renormalization group method for asymptotic expansions with logarithmic switchback terms",
+  "type": "Text",
+  "url": "https://projecteuclid.org/journals/advances-in-differential-equations/volume-19/issue-3_2f_4/An-analysis-of-the-renormalization-group-method-for-asymptotic-expansions/ade/1391109086.full",
+  "volume": "19",
+  "year": "2014-03-01"
+}

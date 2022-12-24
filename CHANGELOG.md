@@ -1,3 +1,26 @@
+VERSION v0.13
+=============
+
+## NEW `papis_id` special key in `info.yaml`
+
+In order to make plugin writing easier we have decided to introduce
+a `papis_id` key in the document's info files.
+
+**Important**: When you update to this new version,
+clear the cache of the database backend that you're using
+
+```sh
+papis --cc
+```
+
+## NEW `papis doctor` command
+
+## Major improvements to the web application
+
+## Project's README improvement
+
+## Improvements to `bibtex` export
+
 VERSION v0.12
 =============
 

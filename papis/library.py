@@ -5,7 +5,7 @@ from typing import List
 
 class Library:
 
-    def __init__(self, name: str, paths: List[str]):
+    def __init__(self, name: str, paths: List[str]) -> None:
         """Create a Library object."""
         self.name = name
         self.paths = sum(

@@ -24,6 +24,6 @@ class Test(unittest.TestCase):
         new_name = "Some title with spaces too"
         run(document, new_name)
         docs = papis.database.get().query_dict(dict(title=title))
-        self.assertTrue(len(docs) == 1)
+        self.assertEqual(len(docs), 1)
         self.assertEqual(docs[0].get_main_folder_name(), new_name)
         self.assertTrue(os.path.exists(docs[0].get_main_folder()))

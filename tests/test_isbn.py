@@ -4,6 +4,7 @@ import pytest
 import papis.isbn
 
 
+@pytest.mark.xfail(reason="sometimes makes too many requests")
 def test_get_data():
     mattuck = papis.isbn.get_data(query="Mattuck feynan diagrams")
     assert mattuck

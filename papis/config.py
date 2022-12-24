@@ -1,5 +1,4 @@
 import os
-import sys
 import logging
 import configparser
 from typing import Dict, Any, List, Optional, Callable  # noqa: ignore
@@ -22,127 +21,9 @@ _OVERRIDE_VARS = {
 }  # type: Dict[str, Optional[str]]
 
 
-def get_default_opener() -> str:
-    """Get the default file opener for the current system
-    """
-    if sys.platform.startswith("darwin"):
-        return "open"
-    elif os.name == "nt":
-        return "start"
-    else:
-        return "xdg-open"
-
-
-general_settings = {
-    "local-config-file": ".papis.config",
-    "database-backend": "papis",
-    "default-query-string": ".",
-    "sort-field": None,
-
-    "opentool": get_default_opener(),
-    "dir-umask": 0o755,
-    "browser": os.environ.get("BROWSER") or get_default_opener(),
-    "picktool": "papis",
-    "mvtool": "mv",
-    "editor": os.environ.get("EDITOR")
-                        or os.environ.get("VISUAL")
-                        or get_default_opener(),
-    "notes-name": "notes.tex",
-    "notes-template": "",
-    "use-cache": True,
-    "cache-dir": None,
-    "use-git": False,
-
-    "add-confirm": False,
-    "add-folder-name": "",
-    "add-subfolder": "",
-    "add-file-name": None,
-    "add-interactive": False,
-    "add-edit": False,
-    "add-open": False,
-
-    # papis-doctor configuration
-    "doctor-default-checks": ["files", "keys"],
-    "doctor-keys-check": ["title", "author", "ref"],
-
-    "browse-key": "url",
-    "browse-query-format": "{doc[title]} {doc[author]}",
-    "search-engine": "https://duckduckgo.com",
-    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)",
-    "scripts-short-help-regex": ".*papis-short-help: *(.*)",
-    "info-name": "info.yaml",
-    "doc-url-key-name": "doc_url",
-
-    "open-mark": False,
-    "mark-key-name": "marks",
-    "mark-format-name": "mark",
-    "mark-header-format": "{mark[name]} - {mark[value]}",
-    "mark-match-format": "{mark[name]} - {mark[value]}",
-    "mark-opener-format": get_default_opener(),
-
-    "file-browser": get_default_opener(),
-    "bibtex-journal-key": "journal",
-    "bibtex-export-zotero-file": False,
-    "extra-bibtex-keys": "[]",
-    "extra-bibtex-types": "[]",
-    "default-library": "papers",
-    "format-doc-name": "doc",
-    "match-format":
-        "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
-    "header-format-file": None,
-    "header-format": (
-        "<ansired>{doc.html_escape[title]}</ansired>\n"
-        " <ansigreen>{doc.html_escape[author]}</ansigreen>\n"
-        "  <ansiblue>({doc.html_escape[year]})</ansiblue> "
-        "[<ansiyellow>{doc.html_escape[tags]}</ansiyellow>]"
-    ),
-
-    "info-allow-unicode": True,
-    "ref-format": "{doc[title]:.15} {doc[author]:.6} {doc[year]}",
-    "multiple-authors-separator": " and ",
-    "multiple-authors-format": "{au[family]}, {au[given]}",
-
-    "whoosh-schema-fields": "['doi']",
-    "whoosh-schema-prototype":
-    "{\n"
-    '"author": TEXT(stored=True),\n'
-    '"title": TEXT(stored=True),\n'
-    '"year": TEXT(stored=True),\n'
-    '"tags": TEXT(stored=True),\n'
-    "}",
-
-    "unique-document-keys": "['doi','ref','isbn','isbn10','url','doc_url']",
-
-    "downloader-proxy": None,
-    "bibtex-unicode": False,
-
-    "time-stamp": True,
-
-    "document-description-format": "{doc[title]} - {doc[author]}",
-    "formater": "python",
-
-    # fzf options
-    "fzf-binary": "fzf",
-    "fzf-extra-flags": ["--ansi", "--multi", "-i"],
-    "fzf-extra-bindings": ["ctrl-s:jump"],
-    "fzf-header-format": ("{c.Fore.MAGENTA}"
-                          "{doc[title]:<70.70}"
-                          "{c.Style.RESET_ALL}"
-                          " :: "
-                          "{c.Fore.CYAN}"
-                          "{doc[author]:<20.20}"
-                          "{c.Style.RESET_ALL}"
-                          "{c.Fore.YELLOW}"
-                          "«{doc[year]:4}»"
-                          "{c.Style.RESET_ALL}"
-                          ":{doc[tags]}")
-}
-
-
 def get_general_settings_name() -> str:
     """Get the section name of the general settings
     :returns: Section's name
-    :rtype:  str
     >>> get_general_settings_name()
     'settings'
     """
@@ -152,7 +33,8 @@ def get_general_settings_name() -> str:
 class Configuration(configparser.ConfigParser):
 
     def __init__(self) -> None:
-        configparser.ConfigParser.__init__(self)
+        super().__init__()
+
         self.dir_location = get_config_folder()
         self.scripts_location = get_scripts_folder()
         self.file_location = get_config_file()
@@ -212,13 +94,14 @@ def get_default_settings() -> PapisConfigType:
     in papis.
 
     """
+    import papis.defaults
     global _DEFAULT_SETTINGS
     # We use an OrderedDict so that the first entry will always be the general
     # settings, also good for automatic documentation
     if _DEFAULT_SETTINGS is None:
-        _DEFAULT_SETTINGS = dict()
+        _DEFAULT_SETTINGS = {}
         _DEFAULT_SETTINGS.update({
-            get_general_settings_name(): general_settings,
+            get_general_settings_name(): papis.defaults.settings,
         })
         import papis.tui
         _DEFAULT_SETTINGS.update(papis.tui.get_default_settings())
@@ -245,7 +128,6 @@ def register_default_settings(settings_dictionary: PapisConfigType) -> None:
         papis.config.get('command', section='hubation')
 
     :param settings_dictionary: A dictionary with settings
-    :type  settings_dictionary: dict
     """
     default_settings = get_default_settings()
     # we do a for loop because apparently the OrderedDict removes all
@@ -262,7 +144,6 @@ def get_config_home() -> str:
     files should be stored.
 
     :returns: Configuration base directory
-    :rtype:  str
     """
     xdg_home = os.environ.get("XDG_CONFIG_HOME")
     if xdg_home:
@@ -355,10 +236,6 @@ def general_get(key: str, section: Optional[str] = None,
 
     :param data_type: The data type that should be expected for the value of
         the variable.
-    :type  data_type: DataType, e.g. int, src ...
-    :param default: Default value for the configuration variable if it is not
-        set.
-    :type  default: It should be the same that ``data_type``
     :param extras: List of tuples containing section and prefixes
     """
     # Init main variables
@@ -455,7 +332,6 @@ def getlist(key: str, section: Optional[str] = None) -> List[str]:
     """List getter
 
     :returns: A python list
-    :rtype:  list
     :raises SyntaxError: Whenever the parsed syntax is either not a valid
         python object or a valid python list.
     """
@@ -481,7 +357,6 @@ def get_configuration() -> Configuration:
     ever be configured.
 
     :returns: Configuration object
-    :rtype:  papis.config.Configuration
     """
     global _CONFIGURATION
     if _CONFIGURATION is None:
@@ -500,9 +375,7 @@ def merge_configuration_from_path(path: Optional[str],
     to the information of the configuration object stored in `configuration`.
 
     :param path: Path to the configuration file
-    :type  path: str
     :param configuration: Configuration object
-    :type  configuration: papis.config.Configuration
     """
     if path is None or not os.path.exists(path):
         return
@@ -515,13 +388,11 @@ def set_lib(library: papis.library.Library) -> None:
     """Set library
 
     :param library: Library object
-    :type  library: papis.library.Library
-
     """
     global _CURRENT_LIBRARY
     config = get_configuration()
     if library.name not in config:
-        config[library.name] = dict(dirs=str(library.paths))
+        config[library.name] = {"dirs": str(library.paths)}
     _CURRENT_LIBRARY = library
 
 
@@ -529,7 +400,6 @@ def set_lib_from_name(libname: str) -> None:
     """Set library, notice that in principle library can be a full path.
 
     :param libname: Name of the library or some path to a folder
-    :type  libname: str
     """
     set_lib(get_lib_from_name(libname))
 
@@ -545,7 +415,7 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
             library_obj = papis.library.from_paths([libname])
             name = library_obj.path_format()
             # the configuration object can only store strings
-            config[name] = dict(dirs=str(library_obj.paths))
+            config[name] = {"dirs": str(library_obj.paths)}
         else:
             raise Exception("Library '{0}' does not seem to exist"
                             "\n\n"
@@ -577,7 +447,6 @@ def get_lib_dirs() -> List[str]:
     """Get the directories of the current library
 
     :returns: A list of paths
-    :rtype:  list
     """
     return get_lib().paths
 
@@ -593,7 +462,6 @@ def get_lib() -> papis.library.Library:
     library name (or path) that will be taken as a default.
 
     :returns: Current library
-    :rtype:  papis.library.Library
     """
     global _CURRENT_LIBRARY
     if os.environ.get("PAPIS_LIB"):
@@ -620,7 +488,6 @@ def reset_configuration() -> Configuration:
     """Destroys existing configuration and returns a new one.
 
     :returns: Configuration object
-    :rtype:  papis.config.Configuration
     """
     global _CONFIGURATION
     _CONFIGURATION = None

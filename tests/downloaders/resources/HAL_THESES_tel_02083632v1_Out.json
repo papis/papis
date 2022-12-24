@@ -1,0 +1,30 @@
+{
+  "abstract": "This thesis falls within graph theory, and deals more precisely with graph coloring problems. In this thesis, we use and develop the discharging method, a counting argument that makes strong advantage of the graph structure. This method is decisive in the proof of the Four Color Theorem. We first give an illustrated overview of the discharging tools that are used for this work: nice methods that we apply, and handy tricks that we develop. In particular, we present the main ideas in a global discharging argument. In the realm of list edge coloring, we most notably prove that the weak List Coloring Conjecture is true for planar graphs of maximum degree 8 (i.e. that they are edge 9-choosable), thus improving over a result of Borodin from 1990. We finally present our results about square coloring, where the goal is to color the vertices in such a way that two vertices that are adjacent or have a common neighbor receive different colors. We look in particular into sufficient conditions on the density of a graph (i.e. the maximum average degree of a subgraph) for its square to be colorable with few colors.",
+  "author": "Bonamy, Marthe",
+  "author_list": [
+    {
+      "affiliation": [
+        {
+          "name": "Algorithmes, Graphes et Combinatoire"
+        }
+      ],
+      "family": "Bonamy",
+      "given": "Marthe"
+    }
+  ],
+  "date": "2015/02/09",
+  "institution": "Université de Montpellier",
+  "keywords": [
+    "graph theory",
+    "coloring"
+  ],
+  "language": "en",
+  "online_date": "2019/03/29",
+  "pdf_url": "https://theses.hal.science/tel-02083632/document",
+  "publication_date": "2015/02/09",
+  "publisher": "Université de Montpellier",
+  "title": "Global discharging methods for coloring problems in graphs",
+  "type": "phdthesis",
+  "url": "https://theses.hal.science/tel-02083632",
+  "year": "2015/02/09"
+}

@@ -1,0 +1,31 @@
+{
+  "abstract": "The Cr2 potential energy curve is obtained by treating the dynamical correlation energy terms using a CI procedure based on determinants, equivalent t…",
+  "author": "Mitrushenkov, Alexander O. and Palmieri, Paolo",
+  "author_list": [
+    {
+      "affiliation": [],
+      "family": "Mitrushenkov",
+      "given": "Alexander O."
+    },
+    {
+      "affiliation": [],
+      "family": "Palmieri",
+      "given": "Paolo"
+    }
+  ],
+  "doi": "10.1016/S0009-2614(97)04014-1",
+  "firstpage": "285",
+  "issn": "0009-2614",
+  "issue": "4-6",
+  "journal": "Chemical Physics Letters",
+  "lastpage": "290",
+  "online_date": "1998/04/14",
+  "pages": "285-290",
+  "publication_date": "1997/10/31",
+  "publisher": "North-Holland",
+  "title": "Epstein-Nesbet second-order perturbation treatment of dynamical electron correlation and ground state potential energy curve of Cr2",
+  "type": "article",
+  "url": "https://www.sciencedirect.com/science/article/abs/pii/S0009261497040141",
+  "volume": "278",
+  "year": "1997"
+}

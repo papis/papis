@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		
+		
+<script type="text/javascript">(window.NREUM||(NREUM={})).init={privacy:{cookies_enabled:true},ajax:{deny_list:["bam.nr-data.net"]},distributed_tracing:{enabled:true}};(window.NREUM||(NREUM={})).loader_config={agentID:"1732689343",accountID:"917877",trustKey:"917877",xpid:"XQcAWVFUGwIHV1NUDwYAX1Q=",licenseKey:"b2bfaae1b6",applicationID:"1732687790"};/*! For license information please see nr-loader-spa-1220.min.js.LICENSE.txt */
+!function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):"object"==typeof exports?exports.NRBA=t():e.NRBA=t()}(self,(function(){return function(){var e,t,n={9034:function(e,t,n){"use strict";var r=n(4168);t.Z=(0,r.ky)(16)},5973:function(e,t,n){"use strict";n.d(t,{I:function(){return r}});var r=0,o=navigator.userAgent.match(/Firefox[\/\s](\d+\.\d+)/);o&&(r=+o[1])},4280:function(e,t,n){"use strict";n.d(t,{H:function(){return o}});var r=document.createElement("div");r.innerHTML="\x3c!--[if lte IE 6]><div></div><![endif]--\x3e\x3c!--[if lte IE 7]><div></div><![endif]--\x3e\x3c!--[if lte IE 8]><div></div><![endif]--\x3e\x3c!--[if lte IE 9]><div></div><![endif]--\x3e";var o,i=r.getElementsByTagName("div").length;o=4===i?6:3===i?7:2===i?8:1===i?9:0},5955:function(e,t,n){"use strict";n.d(t,{I:function(){return r}});var r=function(e,t){var n=this;return e&&"object"==typeof e?t&&"object"==typeof t?(Object.assign(this,t),void Object.entries(e).forEach((function(e){var t=e[0],r=e[1];n[t]=r}))):console.error("setting a Configurable requires a model to set its initial properties"):console.error("setting a Configurable requires an object as input")}},441:function(e,t,n){"use strict";n.d(t,{C:function(){return c},L:function(){return u}});var r=n(1424),o=n(5955),i={beacon:r.ce.beacon,errorBeacon:r.ce.errorBeacon,licenseKey:void 0,applicationID:void 0,sa:void 0,queueTime:void 0,applicationTime:void 0,ttGuid:void 0,user:void 0,account:void 0,product:void 0,extra:void 0,jsAttributes:{},userAttributes:void 0,atts:void 0,transactionName:void 0,tNamePlain:void 0},a={};function c(e){if(!e)throw new Error("All info objects require an agent identifier!");if(!a[e])throw new Error("Info for "+e+" was never set");return a[e]}function u(e,t){if(!e)throw new Error("All info objects require an agent identifier!");a[e]=new o.I(t,i),(0,r.Qy)(e,a[e],"info")}},1476:function(e,t,n){"use strict";n.d(t,{Dg:function(){return u},Mt:function(){return s},P_:function(){return c}});var r=n(1424),o=n(5955),i={privacy:{cookies_enabled:!0},ajax:{deny_list:void 0,enabled:!0},distributed_tracing:{enabled:void 0,exclude_newrelic_header:void 0,cors_use_newrelic_header:void 0,cors_use_tracecontext_headers:void 0,allowed_origins:void 0},ssl:void 0,obfuscate:void 0,jserrors:{enabled:!0},metrics:{enabled:!0},page_action:{enabled:!0},page_view_event:{enabled:!0},page_view_timing:{enabled:!0},session_trace:{enabled:!0},spa:{enabled:!0}},a={};function c(e){if(!e)throw new Error("All configuration objects require an agent identifier!");if(!a[e])throw new Error("Configuration for "+e+" was never set");return a[e]}function u(e,t){if(!e)throw new Error("All configuration objects require an agent identifier!");a[e]=new o.I(t,i),(0,r.Qy)(e,a[e],"config")}function s(e,t){if(!e)throw new Error("All configuration objects require an agent identifier!");var n=c(e);if(n){for(var r=t.split("."),o=0;o<r.length-1;o++)if("object"!=typeof(n=n[r[o]]))return;n=n[r[r.length-1]]}return n}},2085:function(e,t,n){"use strict";n.d(t,{Y:function(){return r}});var r=(0,n(1424).mF)().o},1220:function(e,t,n){"use strict";n.d(t,{O:function(){return w},s:function(){return O}});var r={};n.r(r),n.d(r,{agent:function(){return a},match:function(){return f},version:function(){return c}});var o=n(4280),i=n(6959),a=null,c=null;if(navigator.userAgent){var u=navigator.userAgent,s=u.match(/Version\/(\S+)\s+Safari/);s&&-1===u.indexOf("Chrome")&&-1===u.indexOf("Chromium")&&(a="Safari",c=s[1])}function f(e,t){if(!a)return!1;if(e!==a)return!1;if(!t)return!0;if(!c)return!1;for(var n=c.split("."),r=t.split("."),o=0;o<r.length;o++)if(r[o]!==n[o])return!1;return!0}var d=n(5955),l=n(1424),p=n(4168),h=window.sessionStorage,v="NRBA_SESSION_ID";var m=n(1476),g=window.XMLHttpRequest,y=g&&g.prototype,b={};function w(e){if(!e)throw new Error("All runtime objects require an agent identifier!");if(!b[e])throw new Error("Runtime for "+e+" was never set");return b[e]}function O(e,t){if(!e)throw new Error("All runtime objects require an agent identifier!");var n,a;b[e]=new d.I(t,(n=e,{customTransaction:void 0,disabled:!1,features:{},maxBytes:6===o.H?2e3:3e4,offset:(0,i.yf)(),onerror:void 0,origin:""+window.location,ptid:void 0,releaseIds:{},sessionId:!0===(0,m.Mt)(n,"privacy.cookies_enabled")?(null===(a=h.getItem(v))&&(a=(0,p.ky)(16),h.setItem(v,a)),a):"0",xhrWrappable:g&&y&&y.addEventListener&&!/CriOS/.test(navigator.userAgent),userAgent:r})),(0,l.Qy)(e,b[e],"runtime")}},158:function(e,t,n){"use strict";n.d(t,{q:function(){return r}});var r=["1220","PROD"].filter((function(e){return e})).join(".")},3707:function(e,t,n){"use strict";n.d(t,{w:function(){return o}});var r={agentIdentifier:""},o=function(e){var t=this;if("object"!=typeof e)return console.error("shared context requires an object as input");this.sharedContext={},Object.assign(this.sharedContext,r),Object.entries(e).forEach((function(e){var n=e[0],o=e[1];Object.keys(r).includes(n)&&(t.sharedContext[n]=o)}))}},1776:function(e,t,n){"use strict";n.d(t,{c:function(){return f},ee:function(){return r}});var r,o=n(1424),i=n(4217),a=n(357),c="nr@context",u=(0,o.fP)();function s(){}function f(e){return(0,i.X)(e,c,d)}function d(){return new s}function l(){(r.backlog.api||r.backlog.feature)&&(r.aborted=!0,r.backlog={})}u.ee?r=u.ee:(r=function e(t,n){var o={},u={},f={},p={on:m,addEventListener:m,removeEventListener:g,emit:v,get:b,listeners:y,context:h,buffer:w,abort:l,aborted:!1,isBuffering:O,debugId:n,backlog:t&&t.backlog?t.backlog:{}};return p;function h(e){return e&&e instanceof s?e:e?(0,i.X)(e,c,d):d()}function v(e,n,o,i,a){if(!1!==a&&(a=!0),!r.aborted||i){t&&a&&t.emit(e,n,o);for(var c=h(o),s=y(e),f=s.length,d=0;d<f;d++)s[d].apply(c,n);var l=x()[u[e]];return l&&l.push([p,e,n,c]),c}}function m(e,t){o[e]=y(e).concat(t)}function g(e,t){var n=o[e];if(n)for(var r=0;r<n.length;r++)n[r]===t&&n.splice(r,1)}function y(e){return o[e]||[]}function b(t){return f[t]=f[t]||e(p,t)}function w(e,t){var n=x();p.aborted||(0,a.D)(e,(function(e,r){t=t||"feature",u[r]=t,t in n||(n[t]=[])}))}function O(e){return!!x()[u[e]]}function x(){return p.backlog}}(void 0,"globalEE"),u.ee=r)},7361:function(e,t,n){"use strict";n.d(t,{E:function(){return r},p:function(){return o}});var r=n(1776).ee.get("handle");function o(e,t,n,o,i){i?(i.buffer([e],o),i.emit(e,t,n)):(r.buffer([e],o),r.emit(e,t,n))}},3350:function(e,t,n){"use strict";n.d(t,{X:function(){return i}});var r=n(7361);i.on=a;var o=i.handlers={};function i(e,t,n,i){a(i||r.E,o,e,t,n)}function a(e,t,n,o,i){i||(i="feature"),e||(e=r.E);var a=t[i]=t[i]||{};(a[n]=a[n]||[]).push([e,o])}},4408:function(e,t,n){"use strict";n.d(t,{m:function(){return i}});var r=!1;try{var o=Object.defineProperty({},"passive",{get:function(){r=!0}});window.addEventListener("testPassive",null,o),window.removeEventListener("testPassive",null,o)}catch(e){}function i(e){return r?{passive:!0,capture:!!e}:!!e}},4168:function(e,t,n){"use strict";function r(){var e=null,t=0,n=window.crypto||window.msCrypto;function r(){return e?15&e[t++]:16*Math.random()|0}n&&n.getRandomValues&&(e=n.getRandomValues(new Uint8Array(31)));for(var o,i="xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx",a="",c=0;c<i.length;c++)a+="x"===(o=i[c])?r().toString(16):"y"===o?(o=3&r()|8).toString(16):o;return a}function o(){return a(16)}function i(){return a(32)}function a(e){var t=null,n=0,r=window.crypto||window.msCrypto;r&&r.getRandomValues&&Uint8Array&&(t=r.getRandomValues(new Uint8Array(31)));for(var o=[],i=0;i<e;i++)o.push(a().toString(16));return o.join("");function a(){return t?15&t[n++]:16*Math.random()|0}}n.d(t,{Ht:function(){return i},M:function(){return o},Rl:function(){return r},ky:function(){return a}})},6959:function(e,t,n){"use strict";n.d(t,{nb:function(){return u},os:function(){return s},yf:function(){return c},zO:function(){return a}});var r=n(2364),o=(new Date).getTime(),i=o;function a(){return r.G&&performance.now?Math.round(performance.now()):(o=Math.max((new Date).getTime(),o))-i}function c(){return o}function u(e){i=e}function s(){return i}},2364:function(e,t,n){"use strict";n.d(t,{G:function(){return r}});var r=void 0!==window.performance&&window.performance.timing&&void 0!==window.performance.timing.navigationStart},1793:function(e,t,n){"use strict";function r(e){var t,n=0;for(t=0;t<e.length;t++)n+=(t+1)*e.charCodeAt(t);return Math.abs(n)}n.d(t,{v:function(){return s},s:function(){return u}});var o=n(6972),i=n(5973),a=n(6959),c=n(2364),u=!0;function s(e){var t=function(){if(i.I&&i.I<9)return;if(c.G)return u=!1,window.performance.timing.navigationStart}()||function(){for(var e=document.cookie.split(" "),t=0;t<e.length;t++)if(0===e[t].indexOf("NREUM=")){for(var n,o,i,a,c=e[t].substring("NREUM=".length).split("&"),u=0;u<c.length;u++)0===c[u].indexOf("s=")?i=c[u].substring(2):0===c[u].indexOf("p=")?";"===(o=c[u].substring(2)).charAt(o.length-1)&&(o=o.substr(0,o.length-1)):0===c[u].indexOf("r=")&&";"===(n=c[u].substring(2)).charAt(n.length-1)&&(n=n.substr(0,n.length-1));if(n){var s=r(document.referrer);(a=s==n)||(a=r(document.location.href)==n&&s==o)}if(a&&i){if((new Date).getTime()-i>6e4)return;return i}}}();t&&((0,o.B)(e,"starttime",t),(0,a.nb)(t))}},6972:function(e,t,n){"use strict";n.d(t,{B:function(){return i},L:function(){return a}});var r=n(6959),o={};function i(e,t,n){void 0===n&&(n=(0,r.zO)()+(0,r.os)()),o[e]=o[e]||{},o[e][t]=n}function a(e,t,n,r){var i,a,c=e.sharedContext.agentIdentifier,u=null==(i=o[c])?void 0:i[n],s=null==(a=o[c])?void 0:a[r];void 0!==u&&void 0!==s&&e.store("measures",t,{value:s-u})}},7001:function(e,t,n){"use strict";n.d(t,{e:function(){return o}});var r={};function o(e){if(e in r)return r[e];if(0===(e||"").indexOf("data:"))return{protocol:"data"};var t=document.createElement("a"),n=window.location,o={};t.href=e,o.port=t.port;var i=t.href.split("://");!o.port&&i[1]&&(o.port=i[1].split("/")[0].split("@").pop().split(":")[1]),o.port&&"0"!==o.port||(o.port="https"===i[0]?"443":"80"),o.hostname=t.hostname||n.hostname,o.pathname=t.pathname,o.protocol=i[0],"/"!==o.pathname.charAt(0)&&(o.pathname="/"+o.pathname);var a=!t.protocol||":"===t.protocol||t.protocol===n.protocol,c=t.hostname===document.domain&&t.port===n.port;return o.sameOrigin=a&&(!t.hostname||c),"/"===o.pathname&&(r[e]=o),o}},7299:function(e,t,n){"use strict";n.d(t,{T:function(){return a}});var r=window,o=r;function i(){return o}var a={isFileProtocol:function(){var e=i(),t=!(!e.location||!e.location.protocol||"file:"!==e.location.protocol);t&&(a.supportabilityMetricSent=!0);return t},supportabilityMetricSent:!1}},847:function(e,t,n){"use strict";n.d(t,{K:function(){return a}});var r=n(1220),o=n(1476),i=["ajax","jserrors","metrics","page_action","page_view_event","page_view_timing","session_trace","spa"];function a(e){var t={};return i.forEach((function(n){t[n]=function(e,t){return!0!==(0,r.O)(t).disabled&&!1!==(0,o.Mt)(t,e+".enabled")}(n,e)})),t}},5023:function(e,t,n){"use strict";n.d(t,{W:function(){return o}});var r=n(1776),o=function(e,t,n){void 0===n&&(n=[]),this.agentIdentifier=e,this.aggregator=t,this.ee=r.ee.get(e),this.externalFeatures=n}},4217:function(e,t,n){"use strict";n.d(t,{X:function(){return o}});var r=Object.prototype.hasOwnProperty;function o(e,t,n){if(r.call(e,t))return e[t];var o=n();if(Object.defineProperty&&Object.keys)try{return Object.defineProperty(e,t,{value:o,writable:!0,enumerable:!1}),o}catch(e){}return e[t]=o,o}},357:function(e,t,n){"use strict";n.d(t,{D:function(){return o}});var r=Object.prototype.hasOwnProperty;function o(e,t){var n=[],o="",i=0;for(o in e)r.call(e,o)&&(n[i]=t(o,e[o]),i+=1);return n}},603:function(e,t,n){"use strict";n.d(t,{$c:function(){return s},Ng:function(){return f},RR:function(){return u}});var r=n(1476),o=n(3707),i=n(7299);function a(e,t){return a=Object.setPrototypeOf?Object.setPrototypeOf.bind():function(e,t){return e.__proto__=t,e},a(e,t)}var c={regex:/^file:\/\/(.*)/,replacement:"file://OBFUSCATED"},u=function(e){var t,n;function r(t){return e.call(this,t)||this}n=e,(t=r).prototype=Object.create(n.prototype),t.prototype.constructor=t,a(t,n);var o=r.prototype;return o.shouldObfuscate=function(){return s(this.sharedContext.agentIdentifier).length>0},o.obfuscateString=function(e){if(!e||"string"!=typeof e)return e;for(var t=s(this.sharedContext.agentIdentifier),n=e,r=0;r<t.length;r++){var o=t[r].regex,i=t[r].replacement||"*";n=n.replace(o,i)}return n},r}(o.w);function s(e){var t=[],n=(0,r.Mt)(e,"obfuscate")||[];return t=t.concat(n),i.T.isFileProtocol()&&t.push(c),t}function f(e){for(var t=!1,n=!1,r=0;r<e.length;r++){"regex"in e[r]?"string"!=typeof e[r].regex&&e[r].regex.constructor!==RegExp&&(console&&console.warn&&console.warn('An obfuscation replacement rule contains a "regex" value with an invalid type (must be a string or RegExp)'),n=!0):(console&&console.warn&&console.warn('An obfuscation replacement rule was detected missing a "regex" value.'),n=!0);var o=e[r].replacement;o&&"string"!=typeof o&&(console&&console.warn&&console.warn('An obfuscation replacement rule contains a "replacement" value with an invalid type (must be a string)'),t=!0)}return!t&&!n}},1424:function(e,t,n){"use strict";n.d(t,{EZ:function(){return u},Qy:function(){return c},ce:function(){return o},fP:function(){return i},gG:function(){return s},mF:function(){return a}});var r=n(6959),o={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net"};function i(){return window.NREUM||(window.NREUM={}),void 0===window.newrelic&&(window.newrelic=window.NREUM),window.NREUM}function a(){var e=i();if(!e.o){var t=window,n=t.XMLHttpRequest;e.o={ST:setTimeout,SI:t.setImmediate,CT:clearTimeout,XHR:n,REQ:t.Request,EV:t.Event,PR:t.Promise,MO:t.MutationObserver,FETCH:t.fetch}}return e}function c(e,t,n){var o,a,c=i(),u=c.initializedAgents||{},s=u[e]||{};return Object.keys(s).length||(s.initializedAt={ms:(0,r.zO)(),date:new Date}),c.initializedAgents=Object.assign({},u,((a={})[e]=Object.assign({},s,((o={})[n]=t,o)),a)),c}function u(e,t){i()[e]=t}function s(){var e,t;return e=i(),t=e.info||{},e.info=Object.assign({beacon:o.beacon,errorBeacon:o.errorBeacon},t),function(){var e=i(),t=e.init||{};e.init=Object.assign({},t)}(),a(),function(){var e=i(),t=e.loader_config||{};e.loader_config=Object.assign({},t)}(),i()}},5098:function(e,t,n){"use strict";function r(){return"PerformanceObserver"in window&&"function"==typeof window.PerformanceObserver}n.d(t,{W:function(){return r}})},8539:function(e){e.exports=function(e,t,n){t||(t=0),void 0===n&&(n=e?e.length:0);for(var r=-1,o=n-t||0,i=Array(o<0?0:o);++r<o;)i[r]=e[t+r];return i}},8118:function(e){e.exports=function(e,t,n){t||(t=0),void 0===n&&(n=e?e.length:0);for(var r=-1,o=n-t||0,i=Array(o<0?0:o);++r<o;)i[r]=e[t+r];return i}}},r={};function o(e){var t=r[e];if(void 0!==t)return t.exports;var i=r[e]={exports:{}};return n[e](i,i.exports,o),i.exports}o.m=n,o.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return o.d(t,{a:t}),t},o.d=function(e,t){for(var n in t)o.o(t,n)&&!o.o(e,n)&&Object.defineProperty(e,n,{enumerable:!0,get:t[n]})},o.f={},o.e=function(e){return Promise.all(Object.keys(o.f).reduce((function(t,n){return o.f[n](e,t),t}),[]))},o.u=function(e){return e+"."+o.h().slice(0,8)+"-1220.js"},o.h=function(){return"2d6a2503b7f18a5b77dd"},o.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},e={},t="NRBA:",o.l=function(n,r,i,a){if(e[n])e[n].push(r);else{var c,u;if(void 0!==i)for(var s=document.getElementsByTagName("script"),f=0;f<s.length;f++){var d=s[f];if(d.getAttribute("src")==n||d.getAttribute("data-webpack")==t+i){c=d;break}}c||(u=!0,(c=document.createElement("script")).charset="utf-8",c.timeout=120,o.nc&&c.setAttribute("nonce",o.nc),c.setAttribute("data-webpack",t+i),c.src=n),e[n]=[r];var l=function(t,r){c.onerror=c.onload=null,clearTimeout(p);var o=e[n];if(delete e[n],c.parentNode&&c.parentNode.removeChild(c),o&&o.forEach((function(e){return e(r)})),t)return t(r)},p=setTimeout(l.bind(null,void 0,{type:"timeout",target:c}),12e4);c.onerror=l.bind(null,c.onerror),c.onload=l.bind(null,c.onload),u&&document.head.appendChild(c)}},o.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},o.p="https://js-agent.newrelic.com/",function(){var e={997:0,898:0};o.f.j=function(t,n){var r=o.o(e,t)?e[t]:void 0;if(0!==r)if(r)n.push(r[2]);else{var i=new Promise((function(n,o){r=e[t]=[n,o]}));n.push(r[2]=i);var a=o.p+o.u(t),c=new Error;o.l(a,(function(n){if(o.o(e,t)&&(0!==(r=e[t])&&(e[t]=void 0),r)){var i=n&&("load"===n.type?"missing":n.type),a=n&&n.target&&n.target.src;c.message="Loading chunk "+t+" failed.\n("+i+": "+a+")",c.name="ChunkLoadError",c.type=i,c.request=a,r[1](c)}}),"chunk-"+t,t)}};var t=function(t,n){var r,i,a=n[0],c=n[1],u=n[2],s=0;if(a.some((function(t){return 0!==e[t]}))){for(r in c)o.o(c,r)&&(o.m[r]=c[r]);if(u)u(o)}for(t&&t(n);s<a.length;s++)i=a[s],o.o(e,i)&&e[i]&&e[i][0](),e[i]=0},n=self.webpackChunkNRBA=self.webpackChunkNRBA||[];n.forEach(t.bind(null,0)),n.push=t.bind(null,n.push.bind(n))}();var i={};return function(){"use strict";o.r(i);var e=o(4408),t=window,n=t.document;function r(e){"complete"===n.readyState&&e()}function a(o){r(o),n.addEventListener?t.addEventListener("load",o,(0,e.m)(!1)):t.attachEvent("onload",o)}function c(t){r(t),n.addEventListener?n.addEventListener("DOMContentLoaded",t,(0,e.m)(!1)):n.attachEvent("onreadystatechange",r)}var u=o(1776);function s(){s=function(){return e};var e={},t=Object.prototype,n=t.hasOwnProperty,r="function"==typeof Symbol?Symbol:{},o=r.iterator||"@@iterator",i=r.asyncIterator||"@@asyncIterator",a=r.toStringTag||"@@toStringTag";function c(e,t,n){return Object.defineProperty(e,t,{value:n,enumerable:!0,configurable:!0,writable:!0}),e[t]}try{c({},"")}catch(e){c=function(e,t,n){return e[t]=n}}function u(e,t,n,r){var o=t&&t.prototype instanceof l?t:l,i=Object.create(o.prototype),a=new j(r||[]);return i._invoke=function(e,t,n){var r="suspendedStart";return function(o,i){if("executing"===r)throw new Error("Generator is already running");if("completed"===r){if("throw"===o)throw i;return _()}for(n.method=o,n.arg=i;;){var a=n.delegate;if(a){var c=O(a,n);if(c){if(c===d)continue;return c}}if("next"===n.method)n.sent=n._sent=n.arg;else if("throw"===n.method){if("suspendedStart"===r)throw r="completed",n.arg;n.dispatchException(n.arg)}else"return"===n.method&&n.abrupt("return",n.arg);r="executing";var u=f(e,t,n);if("normal"===u.type){if(r=n.done?"completed":"suspendedYield",u.arg===d)continue;return{value:u.arg,done:n.done}}"throw"===u.type&&(r="completed",n.method="throw",n.arg=u.arg)}}}(e,n,a),i}function f(e,t,n){try{return{type:"normal",arg:e.call(t,n)}}catch(e){return{type:"throw",arg:e}}}e.wrap=u;var d={};function l(){}function p(){}function h(){}var v={};c(v,o,(function(){return this}));var m=Object.getPrototypeOf,g=m&&m(m(P([])));g&&g!==t&&n.call(g,o)&&(v=g);var y=h.prototype=l.prototype=Object.create(v);function b(e){["next","throw","return"].forEach((function(t){c(e,t,(function(e){return this._invoke(t,e)}))}))}function w(e,t){function r(o,i,a,c){var u=f(e[o],e,i);if("throw"!==u.type){var s=u.arg,d=s.value;return d&&"object"==typeof d&&n.call(d,"__await")?t.resolve(d.__await).then((function(e){r("next",e,a,c)}),(function(e){r("throw",e,a,c)})):t.resolve(d).then((function(e){s.value=e,a(s)}),(function(e){return r("throw",e,a,c)}))}c(u.arg)}var o;this._invoke=function(e,n){function i(){return new t((function(t,o){r(e,n,t,o)}))}return o=o?o.then(i,i):i()}}function O(e,t){var n=e.iterator[t.method];if(void 0===n){if(t.delegate=null,"throw"===t.method){if(e.iterator.return&&(t.method="return",t.arg=void 0,O(e,t),"throw"===t.method))return d;t.method="throw",t.arg=new TypeError("The iterator does not provide a 'throw' method")}return d}var r=f(n,e.iterator,t.arg);if("throw"===r.type)return t.method="throw",t.arg=r.arg,t.delegate=null,d;var o=r.arg;return o?o.done?(t[e.resultName]=o.value,t.next=e.nextLoc,"return"!==t.method&&(t.method="next",t.arg=void 0),t.delegate=null,d):o:(t.method="throw",t.arg=new TypeError("iterator result is not an object"),t.delegate=null,d)}function x(e){var t={tryLoc:e[0]};1 in e&&(t.catchLoc=e[1]),2 in e&&(t.finallyLoc=e[2],t.afterLoc=e[3]),this.tryEntries.push(t)}function E(e){var t=e.completion||{};t.type="normal",delete t.arg,e.completion=t}function j(e){this.tryEntries=[{tryLoc:"root"}],e.forEach(x,this),this.reset(!0)}function P(e){if(e){var t=e[o];if(t)return t.call(e);if("function"==typeof e.next)return e;if(!isNaN(e.length)){var r=-1,i=function t(){for(;++r<e.length;)if(n.call(e,r))return t.value=e[r],t.done=!1,t;return t.value=void 0,t.done=!0,t};return i.next=i}}return{next:_}}function _(){return{value:void 0,done:!0}}return p.prototype=h,c(y,"constructor",h),c(h,"constructor",p),p.displayName=c(h,a,"GeneratorFunction"),e.isGeneratorFunction=function(e){var t="function"==typeof e&&e.constructor;return!!t&&(t===p||"GeneratorFunction"===(t.displayName||t.name))},e.mark=function(e){return Object.setPrototypeOf?Object.setPrototypeOf(e,h):(e.__proto__=h,c(e,a,"GeneratorFunction")),e.prototype=Object.create(y),e},e.awrap=function(e){return{__await:e}},b(w.prototype),c(w.prototype,i,(function(){return this})),e.AsyncIterator=w,e.async=function(t,n,r,o,i){void 0===i&&(i=Promise);var a=new w(u(t,n,r,o),i);return e.isGeneratorFunction(n)?a:a.next().then((function(e){return e.done?e.value:a.next()}))},b(y),c(y,a,"Generator"),c(y,o,(function(){return this})),c(y,"toString",(function(){return"[object Generator]"})),e.keys=function(e){var t=[];for(var n in e)t.push(n);return t.reverse(),function n(){for(;t.length;){var r=t.pop();if(r in e)return n.value=r,n.done=!1,n}return n.done=!0,n}},e.values=P,j.prototype={constructor:j,reset:function(e){if(this.prev=0,this.next=0,this.sent=this._sent=void 0,this.done=!1,this.delegate=null,this.method="next",this.arg=void 0,this.tryEntries.forEach(E),!e)for(var t in this)"t"===t.charAt(0)&&n.call(this,t)&&!isNaN(+t.slice(1))&&(this[t]=void 0)},stop:function(){this.done=!0;var e=this.tryEntries[0].completion;if("throw"===e.type)throw e.arg;return this.rval},dispatchException:function(e){if(this.done)throw e;var t=this;function r(n,r){return a.type="throw",a.arg=e,t.next=n,r&&(t.method="next",t.arg=void 0),!!r}for(var o=this.tryEntries.length-1;o>=0;--o){var i=this.tryEntries[o],a=i.completion;if("root"===i.tryLoc)return r("end");if(i.tryLoc<=this.prev){var c=n.call(i,"catchLoc"),u=n.call(i,"finallyLoc");if(c&&u){if(this.prev<i.catchLoc)return r(i.catchLoc,!0);if(this.prev<i.finallyLoc)return r(i.finallyLoc)}else if(c){if(this.prev<i.catchLoc)return r(i.catchLoc,!0)}else{if(!u)throw new Error("try statement without catch or finally");if(this.prev<i.finallyLoc)return r(i.finallyLoc)}}}},abrupt:function(e,t){for(var r=this.tryEntries.length-1;r>=0;--r){var o=this.tryEntries[r];if(o.tryLoc<=this.prev&&n.call(o,"finallyLoc")&&this.prev<o.finallyLoc){var i=o;break}}i&&("break"===e||"continue"===e)&&i.tryLoc<=t&&t<=i.finallyLoc&&(i=null);var a=i?i.completion:{};return a.type=e,a.arg=t,i?(this.method="next",this.next=i.finallyLoc,d):this.complete(a)},complete:function(e,t){if("throw"===e.type)throw e.arg;return"break"===e.type||"continue"===e.type?this.next=e.arg:"return"===e.type?(this.rval=this.arg=e.arg,this.method="return",this.next="end"):"normal"===e.type&&t&&(this.next=t),d},finish:function(e){for(var t=this.tryEntries.length-1;t>=0;--t){var n=this.tryEntries[t];if(n.finallyLoc===e)return this.complete(n.completion,n.afterLoc),E(n),d}},catch:function(e){for(var t=this.tryEntries.length-1;t>=0;--t){var n=this.tryEntries[t];if(n.tryLoc===e){var r=n.completion;if("throw"===r.type){var o=r.arg;E(n)}return o}}throw new Error("illegal catch attempt")},delegateYield:function(e,t,n){return this.delegate={iterator:P(e),resultName:t,nextLoc:n},"next"===this.method&&(this.arg=void 0),d}},e}function f(e,t,n,r,o,i,a){try{var c=e[i](a),u=c.value}catch(e){return void n(e)}c.done?t(u):Promise.resolve(u).then(r,o)}var d=0;function l(e){var t;(t=s().mark((function t(){var n,r;return s().wrap((function(t){for(;;)switch(t.prev=t.next){case 0:if(!d++){t.next=2;break}return t.abrupt("return");case 2:return t.prev=2,t.next=5,o.e(552).then(o.bind(o,5552));case 5:return n=t.sent,r=n.aggregator,t.next=9,r(e);case 9:t.next=15;break;case 11:t.prev=11,t.t0=t.catch(2),console.error("Failed to successfully load all aggregators. Aborting...\n",t.t0),u.ee.abort();case 15:case"end":return t.stop()}}),t,null,[[2,11]])})),function(){var e=this,n=arguments;return new Promise((function(r,o){var i=t.apply(e,n);function a(e){f(i,r,o,a,c,"next",e)}function c(e){f(i,r,o,a,c,"throw",e)}a(void 0)}))})()}var p=o(9034),h=o(7361),v=o(6959),m=o(6972),g=o(1793),y=o(5023);function b(e,t){return b=Object.setPrototypeOf?Object.setPrototypeOf.bind():function(e,t){return e.__proto__=t,e},b(e,t)}var w,O,x,E=function(e){var t,n;function r(t){var n;return n=e.call(this,t)||this,(0,g.v)(t),(0,m.B)(t,"firstbyte",(0,v.yf)()),a((function(){return n.measureWindowLoaded()})),c((function(){return n.measureDomContentLoaded()})),n}n=e,(t=r).prototype=Object.create(n.prototype),t.prototype.constructor=t,b(t,n);var o=r.prototype;return o.measureWindowLoaded=function(){var e=(0,v.zO)();(0,m.B)(this.agentIdentifier,"onload",e+(0,v.os)()),(0,h.p)("timing",["load",e],void 0,void 0,this.ee)},o.measureDomContentLoaded=function(){(0,m.B)(this.agentIdentifier,"domContent",(0,v.zO)()+(0,v.os)())},r}(y.W);void 0!==document.hidden?(w="hidden",O="visibilitychange",x="visibilityState"):void 0!==document.msHidden?(w="msHidden",O="msvisibilitychange"):void 0!==document.webkitHidden&&(w="webkitHidden",O="webkitvisibilitychange",x="webkitVisibilityState");var j=o(1476),P=o(2085);function _(e,t){return _=Object.setPrototypeOf?Object.setPrototypeOf.bind():function(e,t){return e.__proto__=t,e},_(e,t)}var L=function(t){var n,r;function o(n){var r,o;if((r=t.call(this,n)||this).pageHiddenTime="hidden"===document.visibilityState?-1:1/0,r.performanceObserver,r.lcpPerformanceObserver,r.clsPerformanceObserver,r.fiRecorded=!1,!r.isEnabled())return function(e){if(void 0===e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return e}(r);if("PerformanceObserver"in window&&"function"==typeof window.PerformanceObserver){r.performanceObserver=new PerformanceObserver((function(){var e;return(e=r).perfObserver.apply(e,arguments)}));try{r.performanceObserver.observe({entryTypes:["paint"]})}catch(e){}r.lcpPerformanceObserver=new PerformanceObserver((function(){var e;return(e=r).lcpObserver.apply(e,arguments)}));try{r.lcpPerformanceObserver.observe({entryTypes:["largest-contentful-paint"]})}catch(e){}r.clsPerformanceObserver=new PerformanceObserver((function(){var e;return(e=r).clsObserver.apply(e,arguments)}));try{r.clsPerformanceObserver.observe({type:"layout-shift",buffered:!0})}catch(e){}}if("addEventListener"in document){r.fiRecorded=!1;["click","keydown","mousedown","pointerdown","touchstart"].forEach((function(t){document.addEventListener(t,(function(){var e;return(e=r).captureInteraction.apply(e,arguments)}),(0,e.m)(!1))}))}return o=function(){var e;return(e=r).captureVisibilityChange.apply(e,arguments)},"addEventListener"in document&&O&&document.addEventListener(O,(function(){x&&document[x]?o(document[x]):document[w]?o("hidden"):o("visible")}),(0,e.m)(!1)),r}r=t,(n=o).prototype=Object.create(r.prototype),n.prototype.constructor=n,_(n,r);var i=o.prototype;return i.isEnabled=function(){return!1!==(0,j.Mt)(this.agentIdentifier,"page_view_timing.enabled")},i.perfObserver=function(e,t){var n=this;e.getEntries().forEach((function(e){"first-paint"===e.name?(0,h.p)("timing",["fp",Math.floor(e.startTime)],void 0,void 0,n.ee):"first-contentful-paint"===e.name&&(0,h.p)("timing",["fcp",Math.floor(e.startTime)],void 0,void 0,n.ee)}))},i.lcpObserver=function(e,t){var n=e.getEntries();if(n.length>0){var r=n[n.length-1];if(this.pageHiddenTime<r.startTime)return;var o=[r],i=this.addConnectionAttributes({});i&&o.push(i),(0,h.p)("lcp",o,void 0,void 0,this.ee)}},i.clsObserver=function(e){var t=this;e.getEntries().forEach((function(e){e.hadRecentInput||(0,h.p)("cls",[e],void 0,void 0,t.ee)}))},i.addConnectionAttributes=function(e){var t=navigator.connection||navigator.mozConnection||navigator.webkitConnection;if(t)return t.type&&(e["net-type"]=t.type),t.effectiveType&&(e["net-etype"]=t.effectiveType),t.rtt&&(e["net-rtt"]=t.rtt),t.downlink&&(e["net-dlink"]=t.downlink),e},i.captureInteraction=function(e){if(e instanceof P.Y.EV&&!this.fiRecorded){var t=Math.round(e.timeStamp),n={type:e.type};this.addConnectionAttributes(n),t<=(0,v.zO)()?n.fid=(0,v.zO)()-t:t>(0,v.os)()&&t<=Date.now()?(t-=(0,v.os)(),n.fid=(0,v.zO)()-t):t=(0,v.zO)(),this.fiRecorded=!0,(0,h.p)("timing",["fi",t,n],void 0,void 0,this.ee)}},i.captureVisibilityChange=function(e){"hidden"===e&&(this.pageHiddenTime=(0,v.zO)(),(0,h.p)("pageHide",[this.pageHiddenTime],void 0,void 0,this.ee))},o}(y.W),T=o(3350),C="React",S="Angular",I="AngularJS",R="Backbone",k="Ember",A="Vue",H="Meteor",N="Zepto",z="Jquery";function M(){var e=[];try{(function(){try{if(window.React||window.ReactDOM||window.ReactRedux)return!0;if(document.querySelector("[data-reactroot], [data-reactid]"))return!0;for(var e=document.querySelectorAll("body > div"),t=0;t<e.length;t++)if(Object.keys(e[t]).indexOf("_reactRootContainer")>=0)return!0;return!1}catch(e){return!1}})()&&e.push(C),function(){try{return!!window.angular||(!!document.querySelector(".ng-binding, [ng-app], [data-ng-app], [ng-controller], [data-ng-controller], [ng-repeat], [data-ng-repeat]")||!!document.querySelector('script[src*="angular.js"], script[src*="angular.min.js"]'))}catch(e){return!1}}()&&e.push(I),function(){try{return!!(window.hasOwnProperty("ng")&&window.ng.hasOwnProperty("coreTokens")&&window.ng.coreTokens.hasOwnProperty("NgZone"))||!!document.querySelectorAll("[ng-version]").length}catch(e){return!1}}()&&e.push(S),window.Backbone&&e.push(R),window.Ember&&e.push(k),window.Vue&&e.push(A),window.Meteor&&e.push(H),window.Zepto&&e.push(N),window.jQuery&&e.push(z)}catch(e){}return e}var D=o(7299),q=o(603),B=o(158);function F(e,t){return F=Object.setPrototypeOf?Object.setPrototypeOf.bind():function(e,t){return e.__proto__=t,e},F(e,t)}var G=function(e){var t,n;function r(t){var n;return(n=e.call(this,t)||this).singleChecks(),(0,T.X)("record-supportability",(function(){var e;return(e=n).recordSupportability.apply(e,arguments)}),void 0,n.ee),(0,T.X)("record-custom",(function(){var e;return(e=n).recordCustom.apply(e,arguments)}),void 0,n.ee),n}n=e,(t=r).prototype=Object.create(n.prototype),t.prototype.constructor=t,F(t,n);var o=r.prototype;return o.recordSupportability=function(e,t){var n=["sm",e,{name:e},t];return(0,h.p)("storeMetric",n,null,void 0,this.ee),n},o.recordCustom=function(e,t){var n=["cm",e,{name:e},t];return(0,h.p)("storeEventMetrics",n,null,void 0,this.ee),n},o.singleChecks=function(){var e=this;this.recordSupportability("Generic/Version/"+B.q+"/Detected"),c((function(){M().forEach((function(t){e.recordSupportability("Framework/"+t+"/Detected")}))})),D.T.isFileProtocol()&&(this.recordSupportability("Generic/FileProtocol/Detected"),D.T.supportabilityMetricSent=!0);var t=(0,q.$c)(this.agentIdentifier);t.length>0&&this.recordSupportability("Generic/Obfuscate/Detected"),t.length>0&&!(0,q.Ng)(t)&&this.recordSupportability("Generic/Obfuscate/Invalid")},r}(y.W),U=o(1220),X=o(4217),Z=o(8118),W=o.n(Z),V=o(357),Y=window,Q="fetch-",K="fetch-body-",J=["arrayBuffer","blob","json","text","formData"],$=Y.Request,ee=Y.Response,te="prototype",ne="nr@context",re={};function oe(e){var t=function(e){return(e||u.ee).get("fetch")}(e);if(!($&&ee&&window.fetch))return t;if(re[t.debugId])return t;function n(e,n,r){var o=e[n];"function"==typeof o&&(e[n]=function(){var e,n=W()(arguments),i={};t.emit(r+"before-start",[n],i),i[ne]&&i[ne].dt&&(e=i[ne].dt);var a=o.apply(this,n);return t.emit(r+"start",[n,e],a),a.then((function(e){return t.emit(r+"end",[null,e],a),e}),(function(e){throw t.emit(r+"end",[e],a),e}))})}return re[t.debugId]=!0,(0,V.D)(J,(function(e,t){n($[te],t,K),n(ee[te],t,K)})),n(Y,"fetch",Q),t.on("fetch-end",(function(e,n){var r=this;if(n){var o=n.headers.get("content-length");null!==o&&(r.rxSize=o),t.emit("fetch-done",[null,n],r)}else t.emit("fetch-done",[e],r)})),t}var ie="nr@original",ae=Object.prototype.hasOwnProperty,ce=!1;function ue(e,t){return e||(e=u.ee),n.inPlace=function(e,t,r,o,i){r||(r="");var a,c,u,s="-"===r.charAt(0);for(u=0;u<t.length;u++)c=t[u],de(a=e[c])||(e[c]=n(a,s?c+r:r,o,c,i))},n.flag=ie,n;function n(t,n,o,i,a){return de(t)?t:(n||(n=""),c[ie]=t,fe(t,c,e),c);function c(){var c,u,s,f;try{u=this,c=W()(arguments),s="function"==typeof o?o(c,u):o||{}}catch(t){se([t,"",[c,u,i],s],e)}r(n+"start",[c,u,i],s,a);try{return f=t.apply(u,c)}catch(e){throw r(n+"err",[c,u,e],s,a),e}finally{r(n+"end",[c,u,f],s,a)}}}function r(n,r,o,i){if(!ce||t){var a=ce;ce=!0;try{e.emit(n,r,o,t,i)}catch(t){se([t,n,r,o],e)}ce=a}}}function se(e,t){t||(t=u.ee);try{t.emit("internal-error",e)}catch(e){}}function fe(e,t,n){if(Object.defineProperty&&Object.keys)try{return Object.keys(e).forEach((function(n){Object.defineProperty(t,n,{get:function(){return e[n]},set:function(t){return e[n]=t,t}})})),t}catch(e){se([e],n)}for(var r in e)ae.call(e,r)&&(t[r]=e[r]);return t}function de(e){return!(e&&e instanceof Function&&e.apply&&!e[ie])}function le(e,t,n){var r=e[t];e[t]=function(e,t){var n=t(e);return n[ie]=e,fe(e,n,u.ee),n}(r,n)}function pe(){for(var e=arguments.length,t=new Array(e),n=0;n<e;++n)t[n]=arguments[n];return t}var he={};function ve(e){var t=function(e){return(e||u.ee).get("timer")}(e);if(he[t.debugId])return t;he[t.debugId]=!0;var n=ue(t),r="setTimeout",o="setInterval",i="clearTimeout",a="-start";return n.inPlace(window,[r,"setImmediate"],"setTimeout-"),n.inPlace(window,[o],"setInterval-"),n.inPlace(window,[i,"clearImmediate"],"clearTimeout-"),t.on(o+a,(function(e,t,r){e[0]=n(e[0],"fn-",null,r)})),t.on(r+a,(function(e,t,r){this.method=r,this.timerDuration=isNaN(e[1])?0:+e[1],e[0]=n(e[0],"fn-",this,r)})),t}var me={};function ge(e){var t=function(e){return(e||u.ee).get("raf")}(e);if(me[t.debugId])return t;me[t.debugId]=!0;var n=ue(t);return n.inPlace(window,["requestAnimationFrame","mozRequestAnimationFrame","webkitRequestAnimationFrame","msRequestAnimationFrame"],"raf-"),t.on("raf-start",(function(e){e[0]=n(e[0],"fn-")})),t}var ye={};function be(e){var t=function(e){return(e||u.ee).get("history")}(e);if(ye[t.debugId])return t;ye[t.debugId]=!0;var n=ue(t),r=window.history&&window.history.constructor&&window.history.constructor.prototype,o=window.history;return r&&r.pushState&&r.replaceState&&(o=r),n.inPlace(o,["pushState","replaceState"],"-"),t}var we={};function Oe(t){var n=function(e){return(e||u.ee).get("jsonp")}(t);if(we[n.debugId])return n;we[n.debugId]=!0;var r=ue(n),o=/[?&](?:callback|cb)=([^&#]+)/,i=/(.*)\.([^.]+)/,a=/^(\w+)(\.|$)(.*)$/,c=["appendChild","insertBefore","replaceChild"];function s(e,t){var n=e.match(a),r=n[1],o=n[3];return o?s(o,t[r]):t[r]}return"addEventListener"in window&&(Node&&Node.prototype&&Node.prototype.appendChild?r.inPlace(Node.prototype,c,"dom-"):(r.inPlace(HTMLElement.prototype,c,"dom-"),r.inPlace(HTMLHeadElement.prototype,c,"dom-"),r.inPlace(HTMLBodyElement.prototype,c,"dom-"))),n.on("dom-start",(function(t){!function(t){if(!t||"string"!=typeof t.nodeName||"script"!==t.nodeName.toLowerCase())return;if("function"!=typeof t.addEventListener)return;var a=(c=t.src,u=c.match(o),u?u[1]:null);var c,u;if(!a)return;var f=function(e){var t=e.match(i);if(t&&t.length>=3)return{key:t[2],parent:s(t[1],window)};return{key:e,parent:window}}(a);if("function"!=typeof f.parent[f.key])return;var d={};function l(){n.emit("jsonp-end",[],d),t.removeEventListener("load",l,(0,e.m)(!1)),t.removeEventListener("error",p,(0,e.m)(!1))}function p(){n.emit("jsonp-error",[],d),n.emit("jsonp-end",[],d),t.removeEventListener("load",l,(0,e.m)(!1)),t.removeEventListener("error",p,(0,e.m)(!1))}r.inPlace(f.parent,[f.key],"cb-",d),t.addEventListener("load",l,(0,e.m)(!1)),t.addEventListener("error",p,(0,e.m)(!1)),n.emit("new-jsonp",[t.src],d)}(t[0])})),n}var xe={};function Ee(e){var t=function(e){return(e||u.ee).get("mutation")}(e);if(xe[t.debugId])return t;xe[t.debugId]=!0;var n=ue(t),r=P.Y.MO;return r&&(window.MutationObserver=function(e){return this instanceof r?new r(n(e,"fn-")):r.apply(this,arguments)},MutationObserver.prototype=r.prototype),t}var je={};function Pe(e){var t=function(e){return(e||u.ee).get("promise")}(e);if(je[t.debugId])return t;je[t.debugId]=!0;var n=u.c,r=ue(t),o=P.Y.PR;return o&&function(){function e(e){var n=t.context(),i=r(e,"executor-",n,null,!1),a=new o(i);return t.context(a).getCtx=function(){return n},a}window.Promise=e,["all","race"].forEach((function(e){var n=o[e];o[e]=function(r){var i=!1;(0,V.D)(r,(function(t,n){Promise.resolve(n).then(c("all"===e),c(!1))}));var a=n.apply(o,arguments);return o.resolve(a);function c(e){return function(){t.emit("propagate",[null,!i],a,!1,!1),i=i||!e}}}})),["resolve","reject"].forEach((function(e){var n=o[e];o[e]=function(e){var r=n.apply(o,arguments);return e!==r&&t.emit("propagate",[e,!0],r,!1,!1),r}})),o.prototype.catch=function(e){return this.then(null,e)},Object.assign(o.prototype,{constructor:{value:e}}),(0,V.D)(Object.getOwnPropertyNames(o),(function(t,n){try{e[n]=o[n]}catch(e){}})),le(o.prototype,"then",(function(e){return function(){var o=this,i=pe.apply(this,arguments),a=n(o);a.promise=o,i[0]=r(i[0],"cb-",a,null,!1),i[1]=r(i[1],"cb-",a,null,!1);var c=e.apply(this,i);return a.nextPromise=c,t.emit("propagate",[o,!0],c,!1,!1),c}})),t.on("executor-start",(function(e){e[0]=r(e[0],"resolve-",this,null,!1),e[1]=r(e[1],"resolve-",this,null,!1)})),t.on("executor-err",(function(e,t,n){e[1](n)})),t.on("cb-end",(function(e,n,r){t.emit("propagate",[r,!0],this.nextPromise,!1,!1)})),t.on("propagate",(function(e,n,r){this.getCtx&&!n||(this.getCtx=function(){if(e instanceof Promise)var n=t.context(e);return n&&n.getCtx?n.getCtx():this})})),e.toString=function(){return""+o}}(),t}var _e={};function Le(e){var t=function(e){return(e||u.ee).get("events")}(e);if(_e[t.debugId])return t;_e[t.debugId]=!0;var n=ue(t,!0),r=XMLHttpRequest,o="addEventListener",i="removeEventListener";function a(e){for(var t=e;t&&!t.hasOwnProperty(o);)t=Object.getPrototypeOf(t);t&&c(t)}function c(e){n.inPlace(e,[o,i],"-",s)}function s(e,t){return e[1]}return"getPrototypeOf"in Object?(a(document),a(window),a(r.prototype)):r.prototype.hasOwnProperty(o)&&(c(window),c(r.prototype)),t.on("addEventListener-start",(function(e,t){var r=e[1];if(null!==r&&("function"==typeof r||"object"==typeof r)){var o=(0,X.X)(r,"nr@wrapped",(function(){var e={object:function(){if("function"!=typeof r.handleEvent)return;return r.handleEvent.apply(r,arguments)},function:r}[typeof r];return e?n(e,"fn-",null,e.name||"anonymous"):r}));this.wrapped=e[1]=o}})),t.on("removeEventListener-start",(function(e){e[1]=this.wrapped||e[1]})),t}var Te={};function Ce(t){var n=t||u.ee,r=function(e){return(e||u.ee).get("xhr")}(n);if(Te[r.debugId])return r;Te[r.debugId]=!0,Le(n);var o=ue(r),i=P.Y.XHR,a=P.Y.MO,c=P.Y.PR,s=P.Y.SI,f="readystatechange",d=["onload","onerror","onabort","onloadstart","onloadend","onprogress","ontimeout"],l=[],p=window.XMLHttpRequest.listeners,h=window.XMLHttpRequest=function(t){var n=new i(t);function o(){try{r.emit("new-xhr",[n],n),n.addEventListener(f,m,(0,e.m)(!1))}catch(e){console.error(e);try{r.emit("internal-error",[e])}catch(e){}}}return this.listeners=p?[].concat(p,[o]):[o],this.listeners.forEach((function(e){return e()})),n};function v(e,t){o.inPlace(t,["onreadystatechange"],"fn-",O)}function m(){var e=this,t=r.context(e);e.readyState>3&&!t.resolved&&(t.resolved=!0,r.emit("xhr-resolved",[],e)),o.inPlace(e,d,"fn-",O)}if(function(e,t){for(var n in e)t[n]=e[n]}(i,h),h.prototype=i.prototype,o.inPlace(h.prototype,["open","send"],"-xhr-",O),r.on("send-xhr-start",(function(e,t){v(e,t),function(e){l.push(e),a&&(g?g.then(w):s?s(w):(y=-y,b.data=y))}(t)})),r.on("open-xhr-start",v),a){var g=c&&c.resolve();if(!s&&!c){var y=1,b=document.createTextNode(y);new a(w).observe(b,{characterData:!0})}}else n.on("fn-end",(function(e){e[0]&&e[0].type===f||w()}));function w(){for(var e=0;e<l.length;e++)v(0,l[e]);l.length&&(l=[])}function O(e,t){return t}return r}function Se(e){return Le(e)}function Ie(e){return oe(e)}function Re(e){return be(e)}function ke(e){return ge(e)}function Ae(e){return ve(e)}function He(e){return Ce(e)}function Ne(e,t){return Ne=Object.setPrototypeOf?Object.setPrototypeOf.bind():function(e,t){return e.__proto__=t,e},Ne(e,t)}var ze="nr@seenError",Me=function(e){var t,n;function r(t){var n;(n=e.call(this,t)||this).skipNext=0,n.handleErrors=!1,n.origOnerror=window.onerror;var r=function(e){if(void 0===e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return e}(n),o=(0,U.O)(n.agentIdentifier);o.features.err=!0,r.ee.on("fn-start",(function(e,t,n){r.handleErrors&&(r.skipNext+=1)})),r.ee.on("fn-err",(function(e,t,n){r.handleErrors&&!n[ze]&&((0,X.X)(n,ze,(function(){return!0})),this.thrown=!0,qe(n,void 0,r.ee))})),r.ee.on("fn-end",(function(){r.handleErrors&&!this.thrown&&r.skipNext>0&&(r.skipNext-=1)})),r.ee.on("internal-error",(function(e){(0,h.p)("ierr",[e,(0,v.zO)(),!0],void 0,void 0,r.ee)}));var i=window.onerror;window.onerror=function(){var e;return i&&i.apply(void 0,arguments),(e=n).onerrorHandler.apply(e,arguments),!1};try{window.addEventListener("unhandledrejection",(function(e){var t=new Error(""+e.reason);(0,h.p)("err",[t,(0,v.zO)(),!1,{unhandledPromiseRejection:1}],void 0,void 0,n.ee)}))}catch(e){}try{throw new Error}catch(e){"stack"in e&&(Ae(n.ee),ke(n.ee),"addEventListener"in window&&Se(n.ee),o.xhrWrappable&&He(n.ee),r.handleErrors=!0)}return n}return n=e,(t=r).prototype=Object.create(n.prototype),t.prototype.constructor=t,Ne(t,n),r.prototype.onerrorHandler=function(e,t,n,r,o){try{this.skipNext?this.skipNext-=1:qe(o||new De(e,t,n),!0,this.ee)}catch(e){try{(0,h.p)("ierr",[e,(0,v.zO)(),!0],void 0,void 0,this.ee)}catch(e){}}return"function"==typeof this.origOnerror&&this.origOnerror.apply(this,W()(arguments))},r}(y.W);function De(e,t,n){this.message=e||"Uncaught error with no additional information",this.sourceURL=t,this.line=n}function qe(e,t,n){var r=t?null:(0,v.zO)();(0,h.p)("err",[e,r],void 0,void 0,n)}var Be=o(1424),Fe=o(5955),Ge={accountID:void 0,trustKey:void 0,agentID:void 0,licenseKey:void 0,applicationID:void 0,xpid:void 0},Ue={};function Xe(e){if(!e)throw new Error("All loader-config objects require an agent identifier!");if(!Ue[e])throw new Error("LoaderConfig for "+e+" was never set");return Ue[e]}var Ze=1;function We(e){var t=typeof e;return!e||"object"!==t&&"function"!==t?-1:e===window?0:(0,X.X)(e,"nr@id",(function(){return Ze++}))}var Ve=o(5973);function Ye(e){if("string"==typeof e&&e.length)return e.length;if("object"==typeof e){if("undefined"!=typeof ArrayBuffer&&e instanceof ArrayBuffer&&e.byteLength)return e.byteLength;if("undefined"!=typeof Blob&&e instanceof Blob&&e.size)return e.size;if(!("undefined"!=typeof FormData&&e instanceof FormData))try{return JSON.stringify(e).length}catch(e){return}}}var Qe=o(7001),Ke=o(4168),Je=function(){function e(e){this.agentIdentifier=e,this.generateTracePayload=this.generateTracePayload.bind(this),this.shouldGenerateTrace=this.shouldGenerateTrace.bind(this)}var t=e.prototype;return t.generateTracePayload=function(e){if(!this.shouldGenerateTrace(e))return null;var t=Xe(this.agentIdentifier);if(!t)return null;var n=(t.accountID||"").toString()||null,r=(t.agentID||"").toString()||null,o=(t.trustKey||"").toString()||null;if(!n||!r)return null;var i=(0,Ke.M)(),a=(0,Ke.Ht)(),c=Date.now(),u={spanId:i,traceId:a,timestamp:c};return(e.sameOrigin||this.isAllowedOrigin(e)&&this.useTraceContextHeadersForCors())&&(u.traceContextParentHeader=this.generateTraceContextParentHeader(i,a),u.traceContextStateHeader=this.generateTraceContextStateHeader(i,c,n,r,o)),(e.sameOrigin&&!this.excludeNewrelicHeader()||!e.sameOrigin&&this.isAllowedOrigin(e)&&this.useNewrelicHeaderForCors())&&(u.newrelicHeader=this.generateTraceHeader(i,a,c,n,r,o)),u},t.generateTraceContextParentHeader=function(e,t){return"00-"+t+"-"+e+"-01"},t.generateTraceContextStateHeader=function(e,t,n,r,o){return o+"@nr=0-1-"+n+"-"+r+"-"+e+"----"+t},t.generateTraceHeader=function(e,t,n,r,o,i){if(!("btoa"in window&&"function"==typeof window.btoa))return null;var a={v:[0,1],d:{ty:"Browser",ac:r,ap:o,id:e,tr:t,ti:n}};return i&&r!==i&&(a.d.tk=i),btoa(JSON.stringify(a))},t.shouldGenerateTrace=function(e){return this.isDtEnabled()&&this.isAllowedOrigin(e)},t.isAllowedOrigin=function(e){var t=!1,n={};if((0,j.Mt)(this.agentIdentifier,"distributed_tracing")&&(n=(0,j.P_)(this.agentIdentifier).distributed_tracing),e.sameOrigin)t=!0;else if(n.allowed_origins instanceof Array)for(var r=0;r<n.allowed_origins.length;r++){var o=(0,Qe.e)(n.allowed_origins[r]);if(e.hostname===o.hostname&&e.protocol===o.protocol&&e.port===o.port){t=!0;break}}return t},t.isDtEnabled=function(){var e=(0,j.Mt)(this.agentIdentifier,"distributed_tracing");return!!e&&!!e.enabled},t.excludeNewrelicHeader=function(){var e=(0,j.Mt)(this.agentIdentifier,"distributed_tracing");return!!e&&!!e.exclude_newrelic_header},t.useNewrelicHeaderForCors=function(){var e=(0,j.Mt)(this.agentIdentifier,"distributed_tracing");return!!e&&!1!==e.cors_use_newrelic_header},t.useTraceContextHeadersForCors=function(){var e=(0,j.Mt)(this.agentIdentifier,"distributed_tracing");return!!e&&!!e.cors_use_tracecontext_headers},e}();function $e(e,t){return $e=Object.setPrototypeOf?Object.setPrototypeOf.bind():function(e,t){return e.__proto__=t,e},$e(e,t)}var et=["load","error","abort","timeout"],tt=et.length,nt=P.Y.REQ,rt=window.XMLHttpRequest,ot=function(t){var n,r;function o(n){var r;r=t.call(this,n)||this;var o=(0,U.O)(r.agentIdentifier);return!o.xhrWrappable||o.disabled?function(e){if(void 0===e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return e}(r):(o.features.xhr=!0,r.dt=new Je(r.agentIdentifier),r.handler=function(e,t,n,o){return(0,h.p)(e,t,n,o,r.ee)},r.wrappedFetch=Ie(r.ee),He(r.ee),function(t,n,r,o){function i(t){var n=this;n.totalCbs=0,n.called=0,n.cbTime=0,n.end=O,n.ended=!1,n.xhrGuids={},n.lastSize=null,n.loadCaptureCalled=!1,n.params=this.params||{},n.metrics=this.metrics||{},t.addEventListener("load",(function(e){E(n,t)}),(0,e.m)(!1)),Ve.I&&(Ve.I>34||Ve.I<10)||t.addEventListener("progress",(function(e){n.lastSize=e.loaded}),(0,e.m)(!1))}function a(e){this.params={method:e[0]},x(this,e[1]),this.metrics={}}function c(e,n){var r=Xe(t);"xpid"in r&&this.sameOrigin&&n.setRequestHeader("X-NewRelic-ID",r.xpid);var i=o.generateTracePayload(this.parsedOrigin);if(i){var a=!1;i.newrelicHeader&&(n.setRequestHeader("newrelic",i.newrelicHeader),a=!0),i.traceContextParentHeader&&(n.setRequestHeader("traceparent",i.traceContextParentHeader),i.traceContextStateHeader&&n.setRequestHeader("tracestate",i.traceContextStateHeader),a=!0),a&&(this.dt=i)}}function u(t,r){var o=this.metrics,i=t[0],a=this;if(o&&i){var c=Ye(i);c&&(o.txSize=c)}this.startTime=(0,v.zO)(),this.listener=function(e){try{"abort"!==e.type||a.loadCaptureCalled||(a.params.aborted=!0),("load"!==e.type||a.called===a.totalCbs&&(a.onloadCalled||"function"!=typeof r.onload))&&a.end(r)}catch(e){try{n.emit("internal-error",[e])}catch(e){}}};for(var u=0;u<tt;u++)r.addEventListener(et[u],this.listener,(0,e.m)(!1))}function s(e,t,n){this.cbTime+=e,t?this.onloadCalled=!0:this.called+=1,this.called!==this.totalCbs||!this.onloadCalled&&"function"==typeof n.onload||this.end(n)}function f(e,t){var n=""+We(e)+!!t;this.xhrGuids&&!this.xhrGuids[n]&&(this.xhrGuids[n]=!0,this.totalCbs+=1)}function d(e,t){var n=""+We(e)+!!t;this.xhrGuids&&this.xhrGuids[n]&&(delete this.xhrGuids[n],this.totalCbs-=1)}function l(){this.endTime=(0,v.zO)()}function p(e,t){t instanceof rt&&"load"===e[0]&&n.emit("xhr-load-added",[e[1],e[2]],t)}function h(e,t){t instanceof rt&&"load"===e[0]&&n.emit("xhr-load-removed",[e[1],e[2]],t)}function m(e,t,n){t instanceof rt&&("onload"===n&&(this.onload=!0),("load"===(e[0]&&e[0].type)||this.onload)&&(this.xhrCbStart=(0,v.zO)()))}function g(e,t){this.xhrCbStart&&n.emit("xhr-cb-time",[(0,v.zO)()-this.xhrCbStart,this.onload,t],t)}function y(e){var t,n=e[1]||{};"string"==typeof e[0]?t=e[0]:e[0]&&e[0].url?t=e[0].url:window.URL&&e[0]&&e[0]instanceof URL&&(t=e[0].href),t&&(this.parsedOrigin=(0,Qe.e)(t),this.sameOrigin=this.parsedOrigin.sameOrigin);var r=o.generateTracePayload(this.parsedOrigin);if(r&&(r.newrelicHeader||r.traceContextParentHeader))if("string"==typeof e[0]||window.URL&&e[0]&&e[0]instanceof URL){var i={};for(var a in n)i[a]=n[a];i.headers=new Headers(n.headers||{}),c(i.headers,r)&&(this.dt=r),e.length>1?e[1]=i:e.push(i)}else e[0]&&e[0].headers&&c(e[0].headers,r)&&(this.dt=r);function c(e,t){var n=!1;return t.newrelicHeader&&(e.set("newrelic",t.newrelicHeader),n=!0),t.traceContextParentHeader&&(e.set("traceparent",t.traceContextParentHeader),t.traceContextStateHeader&&e.set("tracestate",t.traceContextStateHeader),n=!0),n}}function b(e,t){this.params={},this.metrics={},this.startTime=(0,v.zO)(),this.dt=t,e.length>=1&&(this.target=e[0]),e.length>=2&&(this.opts=e[1]);var n,r=this.opts||{},o=this.target;"string"==typeof o?n=o:"object"==typeof o&&o instanceof nt?n=o.url:window.URL&&"object"==typeof o&&o instanceof URL&&(n=o.href),x(this,n);var i=(""+(o&&o instanceof nt&&o.method||r.method||"GET")).toUpperCase();this.params.method=i,this.txSize=Ye(r.body)||0}function w(e,t){var n;this.endTime=(0,v.zO)(),this.params||(this.params={}),this.params.status=t?t.status:0,"string"==typeof this.rxSize&&this.rxSize.length>0&&(n=+this.rxSize);var o={txSize:this.txSize,rxSize:n,duration:(0,v.zO)()-this.startTime};r("xhr",[this.params,o,this.startTime,this.endTime,"fetch"],this)}function O(e){var t=this.params,n=this.metrics;if(!this.ended){this.ended=!0;for(var o=0;o<tt;o++)e.removeEventListener(et[o],this.listener,!1);t.aborted||(n.duration=(0,v.zO)()-this.startTime,this.loadCaptureCalled||4!==e.readyState?null==t.status&&(t.status=0):E(this,e),n.cbTime=this.cbTime,r("xhr",[t,n,this.startTime,this.endTime,"xhr"],this))}}function x(e,t){var n=(0,Qe.e)(t),r=e.params;r.hostname=n.hostname,r.port=n.port,r.protocol=n.protocol,r.host=n.hostname+":"+n.port,r.pathname=n.pathname,e.parsedOrigin=n,e.sameOrigin=n.sameOrigin}function E(e,t){e.params.status=t.status;var n=function(e,t){var n=e.responseType;return"json"===n&&null!==t?t:"arraybuffer"===n||"blob"===n||"json"===n?Ye(e.response):"text"===n||""===n||void 0===n?Ye(e.responseText):void 0}(t,e.lastSize);if(n&&(e.metrics.rxSize=n),e.sameOrigin){var r=t.getResponseHeader("X-NewRelic-App-Data");r&&(e.params.cat=r.split(", ").pop())}e.loadCaptureCalled=!0}n.on("new-xhr",i),n.on("open-xhr-start",a),n.on("open-xhr-end",c),n.on("send-xhr-start",u),n.on("xhr-cb-time",s),n.on("xhr-load-added",f),n.on("xhr-load-removed",d),n.on("xhr-resolved",l),n.on("addEventListener-end",p),n.on("removeEventListener-end",h),n.on("fn-end",g),n.on("fetch-before-start",y),n.on("fetch-start",b),n.on("fn-start",m),n.on("fetch-done",w)}(r.agentIdentifier,r.ee,r.handler,r.dt),r)}return r=t,(n=o).prototype=Object.create(r.prototype),n.prototype.constructor=n,$e(n,r),o}(y.W);var it=o(5098);function at(e,t){return at=Object.setPrototypeOf?Object.setPrototypeOf.bind():function(e,t){return e.__proto__=t,e},at(e,t)}var ct="addEventListener",ut="resourcetimingbufferfull",st="bstResource",ft="-start",dt="-end",lt="fn-start",pt="fn-end",ht="bstTimer",vt="pushState",mt=P.Y.EV,gt=function(t){var n,r;function o(n){var r;if(r=t.call(this,n)||this,!(window.performance&&window.performance.timing&&window.performance.getEntriesByType))return function(e){if(void 0===e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return e}(r);(0,U.O)(r.agentIdentifier).features.stn=!0;var o=r.ee;function i(e){if((0,h.p)(st,[window.performance.getEntriesByType("resource")],void 0,void 0,o),window.performance.clearResourceTimings)try{window.performance.removeEventListener(ut,i,!1)}catch(e){}else try{window.performance.removeEventListener("webkitresourcetimingbufferfull",i,!1)}catch(e){}}return r.timerEE=Ae(r.ee),r.rafEE=ke(r.ee),Re(r.ee),Se(r.ee),r.ee.on(lt,(function(e,t){e[0]instanceof mt&&(this.bstStart=(0,v.zO)())})),r.ee.on(pt,(function(e,t){var n=e[0];n instanceof mt&&(0,h.p)("bst",[n,t,this.bstStart,(0,v.zO)()],void 0,void 0,o)})),r.timerEE.on(lt,(function(e,t,n){this.bstStart=(0,v.zO)(),this.bstType=n})),r.timerEE.on(pt,(function(e,t){(0,h.p)(ht,[t,this.bstStart,(0,v.zO)(),this.bstType],void 0,void 0,o)})),r.rafEE.on(lt,(function(){this.bstStart=(0,v.zO)()})),r.rafEE.on(pt,(function(e,t){(0,h.p)(ht,[t,this.bstStart,(0,v.zO)(),"requestAnimationFrame"],void 0,void 0,o)})),r.ee.on(vt+ft,(function(e){this.time=(0,v.zO)(),this.startPath=location.pathname+location.hash})),r.ee.on(vt+dt,(function(e){(0,h.p)("bstHist",[location.pathname+location.hash,this.startPath,this.time],void 0,void 0,o)})),(0,it.W)()?((0,h.p)(st,[window.performance.getEntriesByType("resource")],void 0,void 0,o),function(){var e=new PerformanceObserver((function(e,t){var n=e.getEntries();(0,h.p)(st,[n],void 0,void 0,o)}));try{e.observe({entryTypes:["resource"]})}catch(e){}}()):ct in window.performance&&(window.performance.clearResourceTimings?window.performance.addEventListener(ut,i,(0,e.m)(!1)):window.performance.addEventListener("webkitresourcetimingbufferfull",i,(0,e.m)(!1))),document.addEventListener("scroll",r.noOp,(0,e.m)(!1)),document.addEventListener("keypress",r.noOp,(0,e.m)(!1)),document.addEventListener("click",r.noOp,(0,e.m)(!1)),r}return r=t,(n=o).prototype=Object.create(r.prototype),n.prototype.constructor=n,at(n,r),o.prototype.noOp=function(e){},o}(y.W);function yt(e,t){return yt=Object.setPrototypeOf?Object.setPrototypeOf.bind():function(e,t){return e.__proto__=t,e},yt(e,t)}var bt=function(e){var t,n;function r(t){var n;return n=e.call(this,t)||this,(0,U.O)(n.agentIdentifier).features.ins=!0,n}return n=e,(t=r).prototype=Object.create(n.prototype),t.prototype.constructor=t,yt(t,n),r}(y.W);function wt(e,t){return wt=Object.setPrototypeOf?Object.setPrototypeOf.bind():function(e,t){return e.__proto__=t,e},wt(e,t)}var Ot="fn-start",xt="fn-end",Et="cb-start",jt="cb-end",Pt=window,_t=Pt.location,Lt=function(t){var n,r;function o(n){var r;r=t.call(this,n)||this;var o=(0,U.O)(r.agentIdentifier);if(!Pt.addEventListener||!o.xhrWrappable||o.disabled)return function(e){if(void 0===e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return e}(r);o.features.spa=!0;var i,a=0,c=r.ee.get("tracer"),u=Oe(r.ee),s=function(e){return Pe(e)}(r.ee),f=Se(r.ee),d=Ae(r.ee),l=He(r.ee),p=Ie(r.ee),h=Re(r.ee),m=function(e){return Ee(e)}(r.ee);function g(e,t){h.emit("newURL",[""+_t,t])}function y(){a++,i=_t.hash,this["fn-start"]=(0,v.zO)()}function b(){a--,_t.hash!==i&&g(0,!0);var e=(0,v.zO)();this.jsTime=~~this.jsTime+e-this["fn-start"],this["fn-end"]=e}function w(e,t){e.on(t,(function(){this[t]=(0,v.zO)()}))}return r.ee.on(Ot,y),s.on(Et,y),u.on(Et,y),r.ee.on(xt,b),s.on(jt,b),u.on(jt,b),r.ee.buffer([Ot,xt,"xhr-resolved"]),f.buffer([Ot]),d.buffer(["setTimeout-end","clearTimeout-start",Ot]),l.buffer([Ot,"new-xhr","send-xhr-start"]),p.buffer(["fetch-start","fetch-done","fetch-body-start","fetch-body-end"]),h.buffer(["newURL"]),m.buffer([Ot]),s.buffer(["propagate",Et,jt,"executor-err","resolve-start"]),c.buffer([Ot,"no-fn-start"]),u.buffer(["new-jsonp","cb-start","jsonp-error","jsonp-end"]),w(p,"fetch-start"),w(p,"fetch-done"),w(u,"new-jsonp"),w(u,"jsonp-end"),w(u,"cb-start"),h.on("pushState-end",g),h.on("replaceState-end",g),Pt.addEventListener("hashchange",g,(0,e.m)(!0)),Pt.addEventListener("load",g,(0,e.m)(!0)),Pt.addEventListener("popstate",(function(){g(0,a>1)}),(0,e.m)(!0)),r}return r=t,(n=o).prototype=Object.create(r.prototype),n.prototype.constructor=n,wt(n,r),o}(y.W),Tt=o(847),Ct=o(8539),St=o.n(Ct),It=o(441);var Rt=!1;new Promise((function(e,t){if(Rt)e(Rt);else{var n=(0,Be.gG)();try{(0,It.L)(p.Z,n.info),(0,j.Dg)(p.Z,n.init),function(e,t){if(!e)throw new Error("All loader-config objects require an agent identifier!");Ue[e]=new Fe.I(t,Ge),(0,Be.Qy)(e,Ue[e],"loader_config")}(p.Z,n.loader_config),(0,U.s)(p.Z,{}),function(e){var t=(0,Be.fP)(),n=u.ee.get(e),r=n.get("tracer"),o="api-",i="api-ixn-";function a(){}(0,V.D)(["setErrorHandler","finished","addToTrace","inlineHit","addRelease"],(function(e,n){t[n]=s(o,n,!0,"api")})),t.addPageAction=s(o,"addPageAction",!0),t.setCurrentRouteName=s(o,"routeName",!0),t.setPageViewName=function(t,n){if("string"==typeof t)return"/"!==t.charAt(0)&&(t="/"+t),(0,U.O)(e).customTransaction=(n||"http://custom.transaction")+t,s(o,"setPageViewName",!0,"api")()},t.setCustomAttribute=function(t,n){var r,i=(0,It.C)(e);return(0,It.L)(e,Object.assign({},i,{jsAttributes:Object.assign({},i.jsAttributes,(r={},r[t]=n,r))})),s(o,"setCustomAttribute",!0,"api")()},t.interaction=function(){return(new a).get()};var c=a.prototype={createTracer:function(e,t){var o={},i=this,a="function"==typeof t;return(0,h.p)("api-ixn-tracer",[(0,v.zO)(),e,o],i,void 0,n),function(){if(r.emit((a?"":"no-")+"fn-start",[(0,v.zO)(),i,a],o),a)try{return t.apply(this,arguments)}catch(e){throw r.emit("fn-err",[arguments,this,"string"==typeof e?new Error(e):e],o),e}finally{r.emit("fn-end",[(0,v.zO)()],o)}}}};function s(e,t,r,o){return function(){return(0,h.p)("record-supportability",["API/"+t+"/called"],void 0,void 0,n),(0,h.p)(e+t,[(0,v.zO)()].concat(St()(arguments)),r?null:this,o,n),r?void 0:this}}(0,V.D)("actionText,setName,setAttribute,save,ignore,onEnd,getContext,end,get".split(","),(function(e,t){c[t]=s(i,t)})),t.noticeError=function(e,t){"string"==typeof e&&(e=new Error(e)),(0,h.p)("record-supportability",["API/noticeError/called"],void 0,void 0,n),(0,h.p)("err",[e,(0,v.zO)(),!1,t],void 0,void 0,n)}}(p.Z),e(Rt=!0)}catch(e){t(e)}}})).then((function(){var e,t,n,r=(0,Tt.K)(p.Z);r.page_view_event&&new E(p.Z),r.page_view_timing&&new L(p.Z),r.metrics&&new G(p.Z),r.jserrors&&new Me(p.Z),r.ajax&&new ot(p.Z),r.session_trace&&new gt(p.Z),r.page_action&&new bt(p.Z),r.spa&&new Lt(p.Z),e="spa",t?setTimeout((function(){return l(e)}),n||1e3):a((function(){return l(e)}))}))}(),i}()}));</script><script>
+			function DeferJS(src) {
+			function downloadJSAtOnload() {
+			var element = document.createElement("script");
+			element.src = src;
+			document.body.appendChild(element);
+			}
+			if (window.addEventListener)
+			window.addEventListener("load", downloadJSAtOnload, false);
+			else if (window.attachEvent)
+			window.attachEvent("onload", downloadJSAtOnload);
+			else window.onload = downloadJSAtOnload;
+			}
+		</script>
+		<script type="text/javascript">
+    (function() {
+        let config = {"SHOW_REFERENCE_ENTITLEMENT":"false"} || {};
+        window.config = { ...config, ...window.config};
+    })();
+</script><script>
+				DeferJS("https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js");
+			</script>
+		<script>
+				DeferJS("https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js");
+			</script>
+		<script>
+				DeferJS("https://badge.dimensions.ai/badge.js");
+			</script>
+		<script>
+				DeferJS("https://badge.dimensions.ai/badge.js");
+			</script>
+		<script>
+				DeferJS("https://badge.dimensions.ai/badge.js");
+			</script>
+		<script>
+			var _urconfig = { sid: "defc3a7d-4b34-4b6f-ad1c-0716e0a05a65", aip: 0, usePageProtocol: false };
+			(function (d, s)
+			
+			{ var js = d.createElement(s), sc = d.getElementsByTagName(s)[0]; js.src = "https://hit.uptrendsdata.com/rum.min.js"; js.async = "async"; sc.parentNode.insertBefore(js, sc); }
+			(document, "script"));
+		</script>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="robots" content="noarchive">
+		<title>Magnetic Temperature Scale in the 2 K to 30 K Range - IOPscience</title>
+			<meta name="citation_journal_title" content="Metrologia"></meta><meta name="citation_journal_abbrev" content="Metrologia"></meta><meta name="citation_issn" content="0026-1394"></meta><meta name="citation_publisher" content="IOP Publishing"></meta><meta name="citation_author" content="D N Astrov"></meta><meta name="citation_author_institution" content="The Physico-Technical and Radio-Technical Measurements Institute (PRMI), Moscow, USSR"></meta><meta name="citation_author" content="V A Pavlov"></meta><meta name="citation_author_institution" content="The Physico-Technical and Radio-Technical Measurements Institute (PRMI), Moscow, USSR"></meta><meta name="citation_author" content="V T Shkraba"></meta><meta name="citation_author_institution" content="The Physico-Technical and Radio-Technical Measurements Institute (PRMI), Moscow, USSR"></meta><meta name="citation_title" content="Magnetic Temperature Scale in the 2 K to 30 K Range"></meta><meta name="citation_online_date" content="1976/10/01"></meta><meta name="citation_volume" content="12"></meta><meta name="citation_issue" content="4"></meta><meta name="citation_firstpage" content="143"></meta><meta name="citation_doi" content="10.1088/0026-1394/12/4/002"></meta><meta name="citation_abstract_html_url" content="https://iopscience.iop.org/article/10.1088/0026-1394/12/4/002/meta"></meta><meta name="citation_pdf_url" content="https://iopscience.iop.org/article/10.1088/0026-1394/12/4/002/pdf"></meta><meta name="citation_xml_url" content="https://iopscience.iop.org/article/10.1088/0026-1394/12/4/002/xml"></meta><meta name="citation_fulltext_html_url" content="https://iopscience.iop.org/article/10.1088/0026-1394/12/4/002"></meta><meta name="citation_language" content="en"></meta><meta name="citation_reference" content="citation_journal_title=Metrologia; citation_volume=5; citation_issue=4; citation_publication_date=1969; citation_firstpage=111;"/>
+<meta name="citation_reference" content="citation_journal_title=Metrologia; citation_volume=4; citation_issue=2; citation_publication_date=1968; citation_firstpage=47;"/>
+<meta name="citation_reference" content="citation_journal_title=Science; citation_volume=150; citation_issue=3693; citation_publication_date=1965; citation_firstpage=155; citation_doi=10.1126/science.150.3693.155;"/>
+<meta name="citation_reference" content="citation_journal_title=Izmeritelnaya Tekhnika; citation_volume=7; citation_publication_date=1973; citation_firstpage=3;"/>
+<meta name="citation_reference" content="citation_title=Comite Consultatif de Thermometrie; citation_publication_date=1967;"/>
+<meta name="citation_reference" content="citation_journal_title=Metrologia; citation_volume=8; citation_issue=2; citation_publication_date=1972; citation_firstpage=46;"/>
+<meta name="citation_reference" content="citation_title=Comite Consultatif de Thermometrie; citation_publication_date=1971;"/>
+<meta name="citation_reference" content="citation_journal_title=Izmeritelnaya Tekhnika; citation_volume=2; citation_publication_date=1971; citation_firstpage=63;"/>
+<meta name="citation_reference" content="citation_title=Alternating Current Bridge Methods; citation_publication_date=1932;"/>
+<meta name="citation_reference" content="citation_journal_title=Izmeritelnaya Tekhnika; citation_volume=6; citation_publication_date=1973; citation_firstpage=3;"/>
+<meta name="citation_reference" content="citation_journal_title=Izmeritelnaya Tekhnika; citation_volume=4; citation_publication_date=1973; citation_firstpage=5;"/>
+<meta name="citation_reference" content="citation_title=Temperature, Its Measurement and Control in Science and Industry; citation_publication_date=1972; citation_volume=4;"/>
+<meta name="dc.creator" content=" D N Astrov"></meta><meta name="dc.creator" content=" V A Pavlov"></meta><meta name="dc.creator" content=" V T Shkraba"></meta><meta name="dc.publisher" content="IOP Publishing" lang="en"></meta><meta name="dc.date" content="1976-10-01" scheme="W3CDTF"></meta><meta name="dc.type" content="Text" scheme="DCMIType"></meta><meta name="dc.format" content="text/html" scheme="IMT"></meta><meta name="dc.identifier" content="doi:10.1088/0026-1394/12/4/002"></meta><meta name="dc.language" content="en"></meta><meta name="asset_type" content="article"><meta name="asset_id" content="10__1088_0026-1394_12_4_002"><meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0">
+		<!-- Note Gridset ref 35089 -->
+<link rel="stylesheet" href="https://static.iopscience.com/2.98.0/css/critical-styles.min.css" type="text/css" />
+<link rel="stylesheet" href="https://static.iopscience.com/2.98.0/css/main-styles.min.css" media="print" onload="this.media='all'">
+
+<!--[if lte IE 10]>
+<link rel="stylesheet" href="https://static.iopscience.com/2.98.0/css/gridset-ie-lte8.css" type="text/css" />
+<![endif]-->
+<!-- Google Tag Manager -->
+<script type="text/javascript">
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push(
+        {'gtm.start': new Date().getTime(),event:'gtm.js'}
+        );var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-M73Z4W');
+    </script>
+<!-- End Google Tag Manager --><!-- Google Scholar Universal Casa -->
+    <script src="https://scholar.google.com/scholar_js/casa.js" async></script>
+    <!-- End Google Scholar Universal Casa -->
+<script>
+		/*  Cutting the mustard - http://responsivenews.co.uk/post/18948466399/cutting-the-mustard */
+		
+		/* Below is the original if statement, from the link above. I have amended it to turn of JS on all IE browsers less than 10.
+		This is due to a function in the iop.jquery.toolbar line 35/36. Uses .remove which is not native js supported in IE9 or lower */
+		/*if('querySelector' in document
+		&& 'localStorage' in window
+		&& 'addEventListener' in window)*/
+		
+		/* This is the updated selector, taken from: https://justmarkup.com/log/2015/02/26/cut-the-mustard-revisited/ */
+		if('visibilityState' in document) {
+		
+		/*! loadJS: load a JS. We are loading this command straight away, before the body loads, so that IF a user has JS enabled, their show hide panels will automatically be closed. */
+		/* If this isn't here, then these panels appear open while the page is loading, then when the js loads at the bottom of the page, they are shut. So the users sees open content, then hidden after a second or 2 when the js is loaded. Not nice */
+		document.write("<style>.reveal-content{display:none;}.search-res-filter .reveal-content{display:block;}</style>");
+		}
+		</script>
+		<script>var __uzdbm_1 = "0a5ef14f-4dc8-4c48-9b03-38defb0eac22";var __uzdbm_2 = "Yzk1MGFmM2UtODQyNy00NTgzLTg0MDgtNDFhNGI3ZjBhNGM5JDg0LjExNy4yMDEuMzk=";</script> <script>(function(w, d, e, u, c, g, a, b){ w["SSJSConnectorObj"] = {ss_cid : c, domain_info: "auto"}; a = d.createElement(e); a.async = true; a.src = u; b = d.getElementsByTagName(e)[0]; b.parentNode.insertBefore(a, b); })(window,document,"script","https://cdn.perfdrive.com/aperture/aperture.js","a1c3","ssConf");</script></head>
+	<body itemscope itemtype="http://schema.org/Organization" class="issn-0026-1394">
+    <a id="back-to-top-target" tabindex="-1"></a>
+    <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M73Z4W"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) --><div class="cookies-banner-wrap" id="cookieBanner">
+    <div class="cookies-banner cf">
+        This site uses cookies. By continuing to use this site you agree to our use of cookies. To find out more, see our
+        <a href="http://ioppublishing.org/privacyPolicy">Privacy and Cookies</a> policy.
+        <span role="button" tabindex="0" class="fa-icon cookies-banner-close"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z"></path></svg><span class="offscreen-hidden">Close this notification</span></span>
+    </div>
+</div><!-- Start Production toolbar -->
+<!-- End Production toolbar --><!-- Start Downtime Banner -->
+<!-- End Downtime Banner --><!-- Header tile starts -->
+<header role="banner" data-nav-group>
+	<div class="accessibility" style="display: none;">
+	    <p><strong>Accessibility Links</strong></p>
+	    <ul>
+	        <li><a href="#page-content">Skip to content</a></li>
+	        <li><a href="/search#contentCol">Skip to search IOPscience</a></li>
+	        <li><a href="/journals#contentCol">Skip to Journals list</a></li>
+	        <li><a href="/page/accessibility#contentCol">Accessibility help</a></li>
+	    </ul>
+	</div>
+    <div class="wrapper dgh-showgrid tgh-showgrid cf" name="contentCol">
+
+        <div id="mobile-header" class="ta-hide da-hide wd-mobile-nav">
+            <a title="Menu" href="#sidr-main" id="simple-menu" class="icon-menu"></a>
+        </div>
+
+        <a href="/" itemprop="url" class="header-logo wd-header-graphic">
+            <meta itemprop="name" content="IOPscience">
+            <svg height="15" width="100">
+                <image xlink:href="https://static.iopscience.com/2.98.0/img/iops-logo.svg" src="https://static.iopscience.com/2.98.0/img/iops-logo.png" height="15" width="100" border="0" itemprop="logo" />
+            </svg>
+            <span class="offscreen-hidden">IOP Science home</span>
+        </a>
+
+        <section role="region" aria-label="Accessibility links">
+            <div class="accessibility-skip-links">
+                <ul>
+                    <li>
+                        <a class="btn btn-default" href="#skip-to-content-link-target">Skip to content</a>
+                    </li>
+                    <li>
+                        <a class="btn btn-default" id="accessibility-help" href="/page/accessibility#skip-to-content-link-target">Accessibility Help</a>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <nav role="navigation" id="sidr" class="m-hide wd-main-nav" aria-label="Site">
+            <button class="nav-top-link-drop-down nav-item nav-search" data-nav-trigger="articlelookup" aria-expanded="false" aria-controls="nav-dropdown-articlelookup">
+                <img src="https://static.iopscience.com/2.98.0/img/icon-search.svg" alt="">
+                <span class="offscreen-hidden">Search</span>
+            </button>
+            <div class="nav-journals nav-item wd-nav-journal">
+                <a class="nav-top-link-drop-down" href="/journals" data-nav-trigger="journals">Journals<span class="icon-arrow-down"></span></a>
+
+                <div class="nav-drop-down wd-nav-journal-dd" data-nav-item="journals">
+                    <a href="/journals">
+                        Journals list
+                        <div class="m-hide">Browse more than 100 science journal titles</div>
+                    </a>
+
+                    <a href="/page/subjects">
+                        Subject collections
+                        <div class="m-hide">Read the very best research published in IOP journals</div>
+                    </a>
+
+                    <a href="/journals?type=partner#js-tab-pubpart">
+                        Publishing partners
+                        <div class="m-hide">Partner organisations and publications</div>
+                    </a>
+
+                    <a href="/info/page/openaccess">
+                        Open access
+                        <div class="m-hide">IOP Publishing open access policy guide</div>
+                    </a>
+
+                    <a href="/conference-series">
+                        IOP Conference Series
+                        <div class="m-hide">Read open access proceedings from science conferences worldwide</div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-books nav-item wd-nav-books">
+                <a href="/books" class="nav-top-link">Books</a>
+            </div>
+
+            <div class="nav-publishing-support nav-item wd-publishing-support">
+                    <a href="https://publishingsupport.iopscience.iop.org" class="nav-top-link">Publishing Support</a>
+                </div>
+            <!-- Header Login tile starts here -->
+           <div class="nav-login nav-item wd-nav-login">
+<a class="nav-top-link-drop-down" id="login-drop-down-user" href="https://myiopscience.iop.org/signin?origin=a0&return=https%3A%2F%2Fiopscience.iop.org%2Farticle%2F10.1088%2F0026-1394%2F12%2F4%2F002" data-nav-trigger="login"><span class="nav-top-username"><span class="fa-icon"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"></path></svg></span>Login</span><span class="icon-arrow-down"></span></a>
+        <div class="nav-drop-down wd-nav-login-dd" data-nav-item="login">
+            <a href="https://myiopscience.iop.org/signin?origin=a0&return=https%3A%2F%2Fiopscience.iop.org%2Farticle%2F10.1088%2F0026-1394%2F12%2F4%2F002" id="wd-login-link">IOPscience login / Sign Up</a>
+        </div>
+    </div><!-- Header Login tile ends here -->
+            </nav>
+    </div>
+
+    <div class="art-lookup-panel m-hide nav-drop-down" data-nav-item="articlelookup">
+    <div class="wrapper wrapper--search cf">
+        <a title="Close" class="close-icon art-lookup__close" tabindex="0" role="button" aria-describedby="close-search-description">
+            <span class="icon-close"></span>
+        </a>
+        <p id="close-search-description" class="offscreen-hidden">Click here to close this panel.</p>
+
+        <div id="search" class="wd-header-search art-lookup__search">
+    <form accept-charset="utf-8,iso-8859-1" class="primary-search" method="get" action="/nsearch" role="search">
+        <fieldset aria-labelledby="search-legend">
+            <div class="art-lookup__fields-wrapper">
+                <div id="search-legend" class="offscreen-hidden">Primary search</div>
+                <label for="quickSearch">Search all IOPscience content</label>
+
+            <input type="text" x-webkit-speech="" name="terms" id="quickSearch" class="art-lookup__field--grow"
+                   placeholder="Search all IOPscience content" value=""/>
+            <input type="submit" x-webkit-speech="" value="Search" class="btn btn-default hdr-search-btn bd-0 art-lookup__submit">
+
+            </div>
+        </fieldset>
+    </form>
+</div>
+<div id="wd-content-finder" class="art-lookup__content-finder">
+            <form accept-charset="utf-8,iso-8859-1" method="get" action="/findcontent" name="contentFinderForm"
+      id="wd-find-art-form" class="cf find-article-issue-display" autocomplete="OFF">
+    <fieldset aria-labelledby="content-finder-legend">
+        <div id="content-finder-legend" class="eyebrow eyebrow--blue">Article Lookup</div>
+        <div class="art-lookup__fields-wrapper">
+
+            <label for="CF_JOURNAL" class="offscreen-hidden">Select journal (required)</label>
+            <select name="CF_JOURNAL"
+            id="CF_JOURNAL"class="find-article-select art-lookup__content-finder-field art-lookup__field--grow art-lookup__content-finder-field--first" >
+        <option value="none"  hidden disabled>Select journal (required)</option>
+<option value="2053-1583"   >2D Mater. (2014 - present)</option>
+<option value="1004-423X"   >Acta Phys. Sin. (Overseas Edn) (1992 - 1999)</option>
+<option value="2043-6262"   >Adv. Nat. Sci: Nanosci. Nanotechnol. (2010 - present)</option>
+<option value="1882-0786"   >Appl. Phys. Express (2008 - present)</option>
+<option value="1758-5090"   >Biofabrication (2009 - present)</option>
+<option value="1748-3190"   >Bioinspir. Biomim. (2006 - present)</option>
+<option value="1748-605X"   >Biomed. Mater. (2006 - present)</option>
+<option value="2057-1976"   >Biomed. Phys. Eng. Express (2015 - present)</option>
+<option value="0508-3443"   >Br. J. Appl. Phys. (1950 - 1967)</option>
+<option value="1009-9271"   >Chin. J. Astron. Astrophys. (2001 - 2008)</option>
+<option value="1003-7713"   >Chin. J. Chem. Phys. (1987 - 2007)</option>
+<option value="1674-0068"   >Chin. J. Chem. Phys. (2008 - 2012)</option>
+<option value="1009-1963"   >Chinese Phys. (2000 - 2007)</option>
+<option value="1674-1056"   >Chinese Phys. B (2008 - present)</option>
+<option value="1674-1137"   >Chinese Phys. C (2008 - present)</option>
+<option value="0256-307X"   >Chinese Phys. Lett. (1984 - present)</option>
+<option value="0264-9381"   >Class. Quantum Grav. (1984 - present)</option>
+<option value="0143-0815"   >Clin. Phys. Physiol. Meas. (1980 - 1992)</option>
+<option value="1364-7830"   >Combust. Theory Modelling (1997 - 2004)</option>
+<option value="0253-6102"   >Commun. Theor. Phys. (1982 - present)</option>
+<option value="1749-4699"   >Comput. Sci. Disc. (2008 - 2015)</option>
+<option value="2057-1739"   >Converg. Sci. Phys. Oncol. (2015 - 2018)</option>
+<option value="0967-1846"   >Distrib. Syst. Engng. (1993 - 1999)</option>
+<option value="2754-2734"   >ECS Adv. (2022 - present)</option>
+<option value="2162-8734"   >ECS Electrochem. Lett. (2012 - 2015)</option>
+<option value="2162-8777"   >ECS J. Solid State Sci. Technol. (2012 - present)</option>
+<option value="2754-2726"   >ECS Sens. Plus (2022 - present)</option>
+<option value="2162-8750"   >ECS Solid State Lett. (2012 - 2015)</option>
+<option value="1938-5862"   >ECS Trans. (2005 - present)</option>
+<option value="0295-5075"   >EPL (1986 - present)</option>
+<option value="1944-8783"   >Electrochem. Soc. Interface (1992 - present)</option>
+<option value="1944-8775"   >Electrochem. Solid-State Lett. (1998 - 2012)</option>
+<option value="2516-1075"   >Electron. Struct. (2019 - present)</option>
+<option value="2631-8695"   >Eng. Res. Express (2019 - present)</option>
+<option value="2515-7620"   >Environ. Res. Commun. (2018 - present)</option>
+<option value="1748-9326"   >Environ. Res. Lett. (2006 - present)</option>
+<option value="2752-5295"   >Environ. Res.: Climate (2022 - present)</option>
+<option value="2752-664X"   >Environ. Res.: Ecol. (2022 - present)</option>
+<option value="2752-5309"   >Environ. Res.: Health (2022 - present)</option>
+<option value="2634-4505"   >Environ. Res.: Infrastruct. Sustain. (2021 - present)</option>
+<option value="0143-0807"   >Eur. J. Phys. (1980 - present)</option>
+<option value="2058-8585"   >Flex. Print. Electron. (2015 - present)</option>
+<option value="1873-7005"   >Fluid Dyn. Res. (1986 - present)</option>
+<option value="2631-6331"   >Funct. Compos. Struct. (2018 - present)</option>
+<option value="1755-1315"   >IOP Conf. Ser.: Earth Environ. Sci. (2008 - present)</option>
+<option value="1757-899X"   >IOP Conf. Ser.: Mater. Sci. Eng. (2009 - present)</option>
+<option value="2633-1357"   >IOP SciNotes (2020 - present)</option>
+<option value="2631-7990"   >Int. J. Extrem. Manuf. (2019 - present)</option>
+<option value="0266-5611"   >Inverse Problems (1985 - present)</option>
+<option value="1064-5632"   >Izv. Math. (1995 - present)</option>
+<option value="1752-7163"   >J. Breath Res. (2007 - present)</option>
+<option value="1475-7516"   >J. Cosmol. Astropart. Phys. (2003 - present)</option>
+<option value="1945-7111"   >J. Electrochem. Soc. (1902 - present)</option>
+<option value="1742-2140"   >J. Geophys. Eng. (2004 - 2018)</option>
+<option value="1126-6708"   >J. High Energy Phys. (1997 - 2009)</option>
+<option value="1748-0221"   >J. Inst. (2006 - present)</option>
+<option value="0960-1317"   >J. Micromech. Microeng. (1991 - present)</option>
+<option value="1741-2552"   >J. Neural Eng. (2004 - present)</option>
+<option value="0368-3281"   >J. Nucl. Energy, Part C Plasma Phys. (1959 - 1966)</option>
+<option value="0150-536X"   >J. Opt. (1977 - 1998)</option>
+<option value="2040-8986"   >J. Opt. (2010 - present)</option>
+<option value="1464-4258"   >J. Opt. A: Pure Appl. Opt. (1999 - 2009)</option>
+<option value="1464-4266"   >J. Opt. B: Quantum Semiclass. Opt. (1999 - 2005)</option>
+<option value="0022-3689"   >J. Phys. A: Gen. Phys. (1968 - 1972)</option>
+<option value="0305-4470"   >J. Phys. A: Math. Gen. (1975 - 2006)</option>
+<option value="0301-0015"   >J. Phys. A: Math. Nucl. Gen. (1973 - 1974)</option>
+<option value="1751-8121"   >J. Phys. A: Math. Theor. (2007 - present)</option>
+<option value="0953-4075"   >J. Phys. B: At. Mol. Opt. Phys. (1988 - present)</option>
+<option value="0022-3700"   >J. Phys. B: At. Mol. Phys. (1968 - 1987)</option>
+<option value="0022-3719"   >J. Phys. C: Solid State Phys. (1968 - 1988)</option>
+<option value="2399-6528"   >J. Phys. Commun. (2017 - present)</option>
+<option value="2632-072X"   >J. Phys. Complex. (2019 - present)</option>
+<option value="0022-3727"   >J. Phys. D: Appl. Phys. (1968 - present)</option>
+<option value="0022-3735"   >J. Phys. E: Sci. Instrum. (1968 - 1989)</option>
+<option value="2515-7655"   >J. Phys. Energy (2018 - present)</option>
+<option value="0305-4608"   >J. Phys. F: Met. Phys. (1971 - 1988)</option>
+<option value="0954-3899"   >J. Phys. G: Nucl. Part. Phys. (1989 - present)</option>
+<option value="0305-4616"   >J. Phys. G: Nucl. Phys. (1975 - 1988)</option>
+<option value="2515-7639"   >J. Phys. Mater. (2018 - present)</option>
+<option value="2515-7647"   >J. Phys. Photonics (2018 - present)</option>
+<option value="0953-8984"   >J. Phys.: Condens. Matter (1989 - present)</option>
+<option value="1742-6596"   >J. Phys.: Conf. Ser. (2004 - present)</option>
+<option value="0952-4746"   >J. Radiol. Prot. (1988 - present)</option>
+<option value="0950-7671"   >J. Sci. Instrum. (1923 - 1967)</option>
+<option value="1674-4926"   >J. Semicond. (2009 - present)</option>
+<option value="0260-2814"   >J. Soc. Radiol. Prot. (1981 - 1987)</option>
+<option value="1742-5468"   >J. Stat. Mech. (2004 - present)</option>
+<option value="1468-5248"   >J. Turbulence (2000 - 2004)</option>
+<option value="1347-4065"   >Jpn. J. Appl. Phys. (1962 - present)</option>
+<option value="1555-6611"   >Laser Phys. (2013 - present)</option>
+<option value="1612-202X"   >Laser Phys. Lett. (2004 - present)</option>
+<option value="2632-2153"   >Mach. Learn.: Sci. Technol. (2019 - present)</option>
+<option value="2752-5724"   >Mater. Futures (2022 - present)</option>
+<option value="2633-4356"   >Mater. Quantum Technol. (2020 - present)</option>
+<option value="2053-1591"   >Mater. Res. Express (2014 - present)</option>
+<option value="0025-5726"   >Math. USSR Izv. (1967 - 1992)</option>
+<option value="0025-5734"   >Math. USSR Sb. (1967 - 1993)</option>
+<option value="0957-0233"   >Meas. Sci. Technol. (1990 - present)</option>
+<option value="2151-2043"   >Meet. Abstr. (2002 - present)</option>
+<option value="2050-6120"   >Methods Appl. Fluoresc. (2013 - present)</option>
+<option value="0026-1394" selected  >Metrologia (1965 - present)</option>
+<option value="0965-0393"   >Modelling Simul. Mater. Sci. Eng. (1992 - present)</option>
+<option value="2399-7532"   >Multifunct. Mater. (2018 - present)</option>
+<option value="2632-959X"   >Nano Express (2020 - present)</option>
+<option value="2399-1984"   >Nano Futures (2017 - present)</option>
+<option value="0957-4484"   >Nanotechnology (1990 - present)</option>
+<option value="0954-898X"   >Network: Comput. Neural Syst. (1990 - 2004)</option>
+<option value="2634-4386"   >Neuromorph. Comput. Eng. (2021 - present)</option>
+<option value="1367-2630"   >New J. Phys. (1998 - present)</option>
+<option value="0951-7715"   >Nonlinearity (1988 - present)</option>
+<option value="0335-7368"   >Nouvelle Revue d'Optique (1973 - 1976)</option>
+<option value="0029-4780"   >Nouvelle Revue d'Optique Appliquée (1970 - 1972)</option>
+<option value="0029-5515"   >Nucl. Fusion (1960 - present)</option>
+<option value="1538-3873"   >PASP (1889 - present)</option>
+<option value="1478-3975"   >Phys. Biol. (2004 - present)</option>
+<option value="0031-9112"   >Phys. Bull. (1950 - 1988)</option>
+<option value="0031-9120"   >Phys. Educ. (1966 - present)</option>
+<option value="0031-9155"   >Phys. Med. Biol. (1956 - present)</option>
+<option value="1402-4896"   >Phys. Scr. (1970 - present)</option>
+<option value="2058-7058"   >Phys. World (1988 - present)</option>
+<option value="1063-7869"   >Phys.-Usp. (1993 - present)</option>
+<option value="0305-4624"   >Physics in Technology (1973 - 1988)</option>
+<option value="0967-3334"   >Physiol. Meas. (1993 - present)</option>
+<option value="0032-1028"   >Plasma Phys. (1967 - 1983)</option>
+<option value="0741-3335"   >Plasma Phys. Control. Fusion (1984 - present)</option>
+<option value="2516-1067"   >Plasma Res. Express (2018 - present)</option>
+<option value="1009-0630"   >Plasma Sci. Technol. (1999 - present)</option>
+<option value="0963-0252"   >Plasma Sources Sci. Technol. (1992 - present)</option>
+<option value="2576-1579"   >Proc. - Electrochem. Soc. (1967 - 2005)</option>
+<option value="0959-5309"   >Proc. Phys. Soc. (1926 - 1948)</option>
+<option value="0370-1328"   >Proc. Phys. Soc. (1958 - 1967)</option>
+<option value="0370-1298"   >Proc. Phys. Soc. A (1949 - 1957)</option>
+<option value="0370-1301"   >Proc. Phys. Soc. B (1949 - 1957)</option>
+<option value="1478-7814"   >Proc. Phys. Soc. London (1874 - 1925)</option>
+<option value="2516-1091"   >Prog. Biomed. Eng. (2018 - present)</option>
+<option value="2516-1083"   >Prog. Energy (2018 - present)</option>
+<option value="0963-6625"   >Public Understand. Sci. (1992 - 2002)</option>
+<option value="0963-9659"   >Pure Appl. Opt. (1992 - 1998)</option>
+<option value="1469-7688"   >Quantitative Finance (2001 - 2004)</option>
+<option value="1063-7818"   >Quantum Electron. (1993 - present)</option>
+<option value="0954-8998"   >Quantum Opt. (1989 - 1994)</option>
+<option value="2058-9565"   >Quantum Sci. Technol. (2015 - present)</option>
+<option value="1355-5111"   >Quantum Semiclass. Opt. (1995 - 1998)</option>
+<option value="0034-4885"   >Rep. Prog. Phys. (1934 - present)</option>
+<option value="1674-4527"   >Res. Astron. Astrophys. (2009 - present)</option>
+<option value="2515-5172"   >Research Notes of the AAS (2017 - present)</option>
+<option value="0034-6683"   >Review of Physics in Technology (1970 - 1972)</option>
+<option value="1468-4802"   >Russ. Acad. Sci. Sb. Math. (1993 - 1995)</option>
+<option value="0036-021X"   >Russ. Chem. Rev. (1960 - present)</option>
+<option value="0036-0279"   >Russ. Math. Surv. (1960 - present)</option>
+<option value="1468-4810"   >Russian Acad. Sci. Izv. Math. (1993 - 1995)</option>
+<option value="1064-5616"   >Sb. Math. (1995 - present)</option>
+<option value="1468-6996"   >Sci. Technol. Adv. Mater. (2000 - 2015)</option>
+<option value="0268-1242"   >Semicond. Sci. Technol. (1986 - present)</option>
+<option value="0964-1726"   >Smart Mater. Struct. (1992 - present)</option>
+<option value="0049-1748"   >Sov. J. Quantum Electron. (1971 - 1992)</option>
+<option value="0038-5670"   >Sov. Phys. Usp. (1958 - 1992)</option>
+<option value="0953-2048"   >Supercond. Sci. Technol. (1988 - present)</option>
+<option value="2051-672X"   >Surf. Topogr.: Metrol. Prop. (2013 - present)</option>
+<option value="1538-3881"   >The Astronomical Journal (1849 - present)</option>
+<option value="0004-637X"   >The Astrophysical Journal (1996 - present)</option>
+<option value="1538-4357"   >The Astrophysical Journal Letters (1995 - 2009)</option>
+<option value="2041-8205"   >The Astrophysical Journal Letters (2010 - present)</option>
+<option value="0067-0049"   >The Astrophysical Journal Supplement Series (1996 - present)</option>
+<option value="2632-3338"   >The Planetary Science Journal (2020 - present)</option>
+<option value="2156-7395"   >Trans. Am. Electrochem. Soc. (1930 - 1930)</option>
+<option value="1945-6859"   >Trans. Electrochem. Soc. (1931 - 1948)</option>
+<option value="1475-4878"   >Trans. Opt. Soc. (1899 - 1932)</option>
+<option value="2053-1613"   >Transl. Mater. Res. (2014 - 2018)</option>
+<option value="0959-7174"   >Waves Random Media (1991 - 2004)</option>
+</select>
+<label for="CF_VOLUME" class="offscreen-hidden">Volume number:</label>
+            <input type="text" name="CF_VOLUME" id="CF_VOLUME" class="art-lookup__content-finder-field" placeholder="Volume" x-webkit-speech="">
+            <label for="CF_ISSUE" class="offscreen-hidden">Issue number (if known):</label>
+            <input type="text" name="CF_ISSUE" id="CF_ISSUE" class="art-lookup__content-finder-field" placeholder="Issue" x-webkit-speech="">
+            <label for="CF_PAGE" class="offscreen-hidden">Article or page number:</label>
+            <input type="text" name="CF_PAGE" id="CF_PAGE" class="art-lookup__content-finder-field art-lookup__content-finder-field--last" placeholder="Article or page" x-webkit-speech="">
+
+            <input type="submit" class="btn btn-default art-lookup__submit" value="Lookup" name="submit">
+        </div>
+    </fieldset>
+</form></div>
+    </div>
+</div></header>
+<!-- Header tile ends -->
+<div class="page-body" itemscope itemtype="http://schema.org/Periodical">
+        <a name="" id="skip-to-content-link-target" tabindex="-1"></a>
+        <div class="wrapper grid-3-col da-showgrid ta-showgrid cf">
+    <main role="main">
+        <!-- Secondary header starts -->
+<div class="secondary-header cf" id="wd-secondary-header">
+    <!-- Branded journal header starts -->
+<div class="branded">
+
+    <div class="publication-name" id="wd-pub-name">
+	<div class="publication-title" itemprop="name" itemid="periodical">
+				<a href="/journal/0026-1394" itemprop="url" >Metrologia</a>
+	</div>
+		</div>
+    <div class="partner-logos m-hide" id="wd-partner-logos">
+            <div class="partner-logo-alignment">
+                <!-- Partner logo tile starts -->
+<button class="overlay-launch partner-logo" aria-expanded="false">
+    <img border="0" src="https://cms.iopscience.org/5f6a597b-a250-11db-91d1-43cbc024114a/bipm.gif?guest=true" alt="International Bureau of Weights and Measures (BIPM), find out more">
+</button>
+<span class="overlay-set">
+    <div class="tint-screen"></div>
+    <div role="dialog" aria-label="International Bureau of Weights and Measures (BIPM), find out more" aria-modal="true" class="overlay-panel">
+        <button class="close-icon close-overlay" aria-label="Close"><span class="icon-close"></span></button>
+        <div class="overlay-img">
+            <a href="http://www.bipm.org/">
+                <img border="0" src="https://cms.iopscience.org/5f6a597b-a250-11db-91d1-43cbc024114a/bipm.gif?guest=true" alt="International Bureau of Weights and Measures (BIPM), find out more">
+            </a>
+        </div>
+        <div class="overlay-text">
+            <p>The International Bureau of Weights and Measures (BIPM) was set up by the Metre Convention and has its headquarters near Paris, France. It is financed jointly by its Member States and operates under the exclusive supervision of the CIPM.</p> <p>Its mandate is to provide the basis for a single, coherent system of measurements throughout the world, traceable to the International System of Units (SI). This task takes many forms, from direct dissemination of units (as in the case of mass and time) to coordination through international comparisons of national measurement standards (as in electricity and ionizing radiation).</p> <p>The BIPM has an international staff of over 70 and its status vis-&agrave;-vis the French Government is similar to that of other intergovernmental organizations based in Paris.</p></div>
+        <p class="ta-c mt-1 mb-2"><a href="http://www.bipm.org/">http://www.bipm.org/</a></p>
+    </div>
+</span>
+<!-- Partner logo tile ends -->
+
+</div>
+        </div>
+    </div>
+<!-- Branded journal header ends -->
+</div> <!-- end secondary-header -->
+<!-- Secondary header ends --><div class="da1-da2" itemscope="" itemtype="http://schema.org/ScholarlyArticle" id="page-content">
+            <div class="da1 ta1 article-head">
+                <!-- Start Eyebrow block, containing Surtitle and Labels -->
+<div class="eyebrow">
+	<!-- Start Collection Labels -->
+    <!-- End Collection Labels --> </div>
+<!-- End Eyebrow block -->
+
+<h1 itemprop="headline" class="wd-jnl-art-title">Magnetic Temperature Scale in the 2 K to 30 K Range</h1>
+
+<p class="mb-0">
+	<span data-authors="">
+		<span itemtype="http://schema.org/Person" itemprop="author" class="nowrap"><span itemprop="name"> D N Astrov</span><sup>1</sup></span>, <span itemtype="http://schema.org/Person" itemprop="author" class="nowrap"><span itemprop="name"> V A Pavlov</span><sup>1</sup></span> and <span itemtype="http://schema.org/Person" itemprop="author" class="nowrap"><span itemprop="name"> V T Shkraba</span><sup>1</sup></span></span>
+</p>
+
+<p class="small" itemprop="isPartOf" itemscope="" itemtype="http://schema.org/PublicationIssue">
+	<!--Article Breadcrumb Tile Start-->
+<!-- Start Copyright-->
+    <span itemprop="copyrightHolder" class="wd-jnl-art-copyright">
+       	  Published under licence by IOP Publishing Ltd</span><br />
+    <!-- end Copyright -->
+<span itemscope itemtype="http://schema.org/Periodical" itemid="periodical" class="wd-jnl-art-breadcrumb-title article-toolbar-anchor">
+	<span itemprop="name">
+		<a href="/journal/0026-1394" itemprop="url" class="event_breadcrumb" data-event-action="Title link">Metrologia</a></span></span>,
+	<span itemprop="isPartOf" itemscope itemtype="http://schema.org/PublicationVolume" class="wd-jnl-art-breadcrumb-vol nowrap">
+	<link itemprop="isPartOf" itemid="periodical" itemscope/>
+	<span itemprop="volumeNumber"><a href="/volume/0026-1394/12" itemprop="url" class="event_breadcrumb" data-event-action="Volume link">Volume 12</a></span></span>,
+<span itemprop="issueNumber" class="wd-jnl-art-breadcrumb-issue"><a href="/issue/0026-1394/12/4" itemprop="url" class="event_breadcrumb" data-event-action="Issue link"><!--Issue Number Tile Start-->
+Number 4<!--Issue Number Tile End--></a></span>
+<!--Article Breadcrumb Tile End-->
+<!-- Start Focus issue title -->
+	<!-- End focus issue title -->
+	<span style="display: block"><strong>Citation</strong>  D N Astrov <em>et al</em> 1976 <em>Metrologia</em> <b>12</b> 143</span>
+    <span style = "display: block"><strong>DOI</strong> 10.1088/0026-1394/12/4/002</span>
+</p>
+
+<div class="btn-multi-block mb-1">
+		<a href="/article/10.1088/0026-1394/12/4/002/pdf"
+       class="btn btn-large btn-primary content-download btn-full-w-mobile wd-jnl-art-pdf-button-main dupe-buttons"
+       title="Magnetic Temperature Scale in the 2 K to 30 K Range" itemprop="sameAs" target="_blank" rel="noopener"><span
+            class="icon-file-pdf"></span><span
+            class="offscreen-hidden"> Download </span><span>Article</span> PDF</a>
+</div>
+<!-- Start Linked Articles note -->
+	<!-- End Linked Articles note -->
+<div class='geotargetlygeocontent1630487904595'></div><!-- Start toolbar -->
+<div class="in-page-nav-wrapper">
+    <div class="nav-in-page m-hide wd-in-pg-toolbar in-page-toolbar-anchor">
+        <div class="nav-in-page-active-wrapper">
+            <div class="">
+                <div class="nav-in-page-active-grid-1">
+                    <nav aria-label="Article toolbar" data-nav-group>
+                        <div class="nav-item wd-in-pg-toolbar-fig">
+                            <a href="" class="nav-top-link-drop-down article-toolbar-dropdown"
+                               data-toolbar-action="figures" data-nav-trigger="figures">Figures<span
+                                    class="icon-arrow-down"></span></a>
+                            <div class="nav-drop-down" data-nav-item="figures">
+                                <ul class="overflow-x" data-toolbar-container="figures"></ul>
+                            </div>
+                        </div>
+                        <div class="nav-item wd-in-pg-toolbar-tables">
+                            <a href="" class="nav-top-link-drop-down article-toolbar-dropdown"
+                               data-toolbar-action="table" data-nav-trigger="table">Tables<span
+                                    class="icon-arrow-down"></span></a>
+                            <div class="nav-drop-down" data-nav-item="table">
+                                <ul class="overflow-x" data-toolbar-container="table"></ul>
+                            </div>
+                        </div>
+                        <div class="nav-item wd-in-pg-toolbar-ref">
+                            <a href="" class="nav-top-link-drop-down article-toolbar-dropdown"
+                               data-toolbar-action="references" data-nav-trigger="references">References<span
+                                    class="icon-arrow-down"></span></a>
+                            <div class="nav-drop-down" data-nav-item="references">
+                                <div class="overflow-y" data-toolbar-container="references"></div>
+                            </div>
+                        </div>
+                        </nav>
+                </div>
+                <div class="nav-in-page-active-grid-2 d-n">
+                    <aside>
+                        <div class="pdf-button-2nd">
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End toolbar -->
+</div>
+            <div class="da2 ta2">
+                <div class="print-hide content-tools">
+			<div>
+	<p>
+		<span id="total-downloads" class="wd-jnl-art-total-dwnlds"><b>44</b> Total downloads</span>
+			<br />
+		</p>
+	</div>
+	
+<div class="dimensions-altmetric-li">
+
+        <!-- Start Dimensions display -->
+        <!-- Start Dimensions display -->
+    <span class="__dimensions_badge_embed__ dimensions-embed" data-doi="10.1088/0026-1394/12/4/002" data-style="small_circle" data-hide-zero-citations="true" data-legend=""></span>
+    <!-- End Dimensions display -->
+<!-- End Dimensions display -->
+        <!-- Start Altmetrics display -->
+        <div data-badge-popover="right" data-badge-type="donut" data-doi="10.1088/0026-1394/12/4/002" data-hide-no-mentions="true" class="altmetric-embed" data-hide-less-than="1"></div>
+        <!-- End Altmetrics display -->
+        <div class="clear-fl"></div>
+    </div>
+<!-- Start MathJax links -->
+		<div>
+		  <a href="#" id="mathJaxOff" style="display: none;">Turn off MathJax</a>
+		  <a href="#" id="mathJaxOn" style="display: none;">Turn on MathJax</a>
+		</div>	
+	<!-- End MathJax links -->
+<!-- Start Permission Link -->
+<div>
+        <p class="wd-jnl-art-get-permisssion print-hide">
+            <a href="https://publishingsupport.iopscience.iop.org/questions/partner-owned-journals-titles-which-iop-handles-permissions-requests/" target="_blank" rel="noopener">Get permission to re-use this article</a>
+        </p>
+    </div>
+<!-- End Permission Link --><div id="wd-share-icons">
+    <p>Share this article</p>
+    <ul class="share-icon-links">
+        <li id="wd-share-icon-email" class="share-icon-link">
+            <a href="mailto:?subject=Magnetic Temperature Scale in the 2 K to 30 K Range&amp;body=Magnetic Temperature Scale in the 2 K to 30 K Range - https://doi.org/10.1088/0026-1394/12/4/002"
+               title="Share this content via email. Clicking this link will open your default email client."
+               class="share-icon-link">
+                <img src="https://static.iopscience.com/2.98.0/img/icon-email.svg" alt="Share this content via email">
+            </a>
+        </li>
+        <li id="wd-share-icon-facebook" class="share-icon-link">
+            <a href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fdoi.org%2F10.1088%2F0026-1394%2F12%2F4%2F002" title="Share a link to this content on your Facebook profile"
+               class="share-icon-link" target="_blank" rel="noopener">
+                <img src="https://static.iopscience.com/2.98.0/img/icon-facebook.svg" alt="Share on Facebook (opens new window)">
+            </a>
+        </li>
+        <li id="wd-share-icon-twitter" class="share-icon-link">
+            <a href="http://twitter.com/share?url=https%3A%2F%2Fdoi.org%2F10.1088%2F0026-1394%2F12%2F4%2F002&amp;text=Magnetic+Temperature+Scale+in+the+2+K+to+30+K+Range&amp;via=IOPscience" title="Share a link to this content on your Twitter profile"
+               class="share-icon-link" target="_blank" rel="noopener">
+                <img src="https://static.iopscience.com/2.98.0/img/icon-twitter.svg" alt="Share on Twitter (opens new window)">
+            </a>
+        </li>
+        <li id="wd-share-icon-mendeley" class="share-icon-link">
+            <a href="https://www.mendeley.com/import/?doi=10.1088%2F0026-1394%2F12%2F4%2F002" title="Share on Mendeley" class="share-icon-link" target="_blank"
+               rel="noopener">
+                <img src="https://static.iopscience.com/2.98.0/img/icon-mendeley.svg" alt="Share on Mendeley (opens new window)">
+            </a>
+        </li>
+    </ul>
+    <div class="clear-fl"></div>
+</div>
+
+</div>
+</div>
+            <div class="da1 ta1">
+                <!-- Article information starts. This includes author emails, affiliations, article published date, doi etc. -->
+<div class="reveal-container reveal-closed reveal-plus-icon bdt-1 wd-jnl-art-article-info-wrapper">
+    <div class="replica-h3 mt-0">
+        <a id="wd-article-info-accordion" href="#" class="reveal-trigger"
+           data-reveal-label-alt="Hide article information">Article information</a>
+    </div>
+    <div class="reveal-content">
+        <div class="article-meta">
+            
+	<!-- Start Affiliations --><div class="wd-jnl-art-author-affiliations"><h2 class="replica-h4">Author affiliations</h2><p class="mb-05"><sup>1</sup> The Physico-Technical and Radio-Technical Measurements Institute (PRMI), Moscow, USSR</p></div><!-- End Affiliations -->
+	
+      <!-- Start Dates -->
+<div class="col-no-break wd-jnl-art-dates">
+        <h2 class="replica-h4">Dates</h2>
+        <ol>
+            <li>Received <span itemprop="dateReceived">22 February 1975</span></li>
+            </ol>
+    </div>
+<!-- End Dates -->
+
+<!-- Start Crossmark -->
+            <!-- End Crossmark -->
+
+            <!-- Start Peer Review Metrics -->
+<!-- End Peer Review Metrics -->
+
+<!--  Start Citation -->
+            <!--  End Citation -->
+
+            <!-- Start Accepted manuscript Link -->
+<!-- End Accepted manuscript Link -->
+<!-- Start Annotations -->
+<!-- End Annotations --><!-- Start Reprint Link -->
+	<p><a href="https://pod-iopscience.org?doi=10.1088/0026-1394/12/4/002&UTCDate=20122022_091226" id="wd-jnl-art-reprint">Buy this article in print</a></p>
+	<!-- End Reprint Link --><!-- Start Journal RSS feed -->
+                    <div class="jnl-notifications-wrapper jnl-notifications-wrapper--rss">
+                        <a class="wd-jnl-rss" href="/journal/rss/0026-1394"><span
+                                class="icon-feed icon-feed--jhp"></span>Journal RSS</a>
+                    </div>
+					<!-- End Journal RSS feed -->
+                <!-- Start Email Alert -->
+    <!-- Start Email Alert -->
+        <div class="jnl-notifications-wrapper">
+            <a class="wd-jnl-email-alert loginRequired"
+               href="https://myiopscience.iop.org/signin?origin=a0&return=https%3A%2F%2Fiopscience.iop.org%2Fmyiopscience%2Falerts%2Fsubscribe%3Fjournal%3D0026-1394"
+               id="noId" title="Create journal email alert">
+                <span class="icon-alarm icon-alarm--jhp"></span>Sign up for new issue notifications
+            </a>
+        </div>
+
+    <!-- End Email Alert -->
+<!-- End Email Alert --><!-- Start Citation Alert Link -->
+                    <p>
+<div class="jnl-notifications-wrapper">
+    <a class="wd-jnl-email-alert" href="https://myiopscience.iop.org/signin?origin=a0&return=https%3A%2F%2Fiopscience.iop.org%2Fmyiopscience%2Falerts%2Fsubscribe%3FarticleID%3D0026-1394%2F12%2F4%2F143"><span
+            class="icon-alarm icon-alarm--jhp"></span>Create citation alert</a>
+</div><!-- End Citation Alert Link -->
+                </div>
+    </div>
+</div>
+<!-- Article information ends -->
+<div class="article-content">
+	<span id="articleId" class="hide">0026-1394/12/4/143</span>
+<!-- Start Abstract -->
+    <h2 id="artAbst" class="collapse-blocked">Abstract</h2>
+        <!-- Start article video abstract -->
+<!-- End article video abstract -->
+	<div class="article-text wd-jnl-art-abstract cf" itemprop="description">
+            <p>In the temperature range from 2 to 30 K a comparison has been made of a magnetic thermometer based on the magnetic susceptibilities of manganous ammonium sulfate (MAS) and gadolinium molybdate (GM) with the readings of a germanium resistance thermometer. The magnetic susceptibility was measured by a screened selfchecking mutual inductance bridge with an uncertainty of the relative measurements being not worse that ±5 <b>&#x00d7;</b> 10<sup>-6</sup>. The magnetic thermometer sensitivity near 30 K is 0.3 mK with MAS and 0.07 mK with GM. The magnetic thermometer was calibrated in terms of the IPTS-68 and T<sub>58</sub> temperature scale with an uncertainty of ±0.5 mK. The magnetic temperature scale was determined using the MAS data obtained in three experimental runs and GM data taken in two runs. The scale was transferred on a germanium resistance thermometer with a root-mean-square deviation of the data from the smooth curve of 0.7 mK. The inconsistency previously reported in the literature between the IPTS-68 and the T<sub>58</sub> temperature scale has been confirmed. The helium normal boiling point temperature on the T<sub>58</sub> scale is according to our data too low and must be raised by 9.5 ± 1.5 mK. An indirect comparison of our magnetic temperature scale with the results obtained by Van Rijn and Durieux as well as with those by Cetas and Swenson has been carried out in terms of the NBS P 2-20 K scale. The estimated difference between our data and the results of the above authors does not exceed ±3 mK.</p></div>
+    <!-- End abstract -->
+<!-- Start Export citation and abstract tools -->
+	<p>
+		<small>Export citation and abstract</small>
+		<span class="btn-multi-block">
+			<a href="/export?type=article&doi=10.1088/0026-1394/12/4/002&exportFormat=iopexport_bib&exportType=abs&navsubmit=Export+abstract" class="btn btn-primary wd-btn-cit-abs-bib" aria-label="BibTeX of citation and abstract">BibTeX</a>
+			<a href="/export?type=article&doi=10.1088/0026-1394/12/4/002&exportFormat=iopexport_ris&exportType=abs&navsubmit=Export+abstract" class="btn btn-primary wd-btn-cit-abs-ris" aria-label="RIS of citation and abstract">RIS</a>
+		</span>
+	</p>
+<!-- End Export citation and abstract tools -->
+<div class="linked-articles linked-articles--issue-nav">
+	<div class="linked-articles__wrapper">
+		<div class="linked-articles__prev">
+			<a href="/article/10.1088/0026-1394/12/4/001"
+			   class="linked-articles__btn event_read-more-articles" data-event-action="Previous Article"><span class="fa-icon"><svg
+					aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512"><path
+					d="M192 127.338v257.324c0 17.818-21.543 26.741-34.142 14.142L29.196 270.142c-7.81-7.81-7.81-20.474 0-28.284l128.662-128.662c12.599-12.6 34.142-3.676 34.142 14.142z"></path></svg></span><b>Previous</b> article in issue</a>
+		</div>
+		<div class="linked-articles__next">
+			<a href="/article/10.1088/0026-1394/12/4/003"
+			   class="linked-articles__btn event_read-more-articles" data-event-action="Next Article"><b>Next</b> article in issue<span
+					class="fa-icon fa-icon--right"><svg aria-hidden="true" focusable="false"
+														xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512"><path
+					d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"></path></svg></span></a>
+		</div>
+		</div>
+</div>
+<!-- Start info bottom -->
+    <!-- End info bottom -->
+<!-- Start Footnotes -->
+	<!-- End Footnotes -->	
+</div>
+</div>
+            <div class="da2 ta2">
+                <!-- Start Content nav and Back to top link -->
+<nav aria-label="Table of contents" class="content-nav show-w-js">
+	<ul class="content-nav-ul wd-content-nav">
+	</ul>
+	<a data-footer-backtotop class="btn btn-bottom back-top pl-0" href="#back-to-top-target"><span class="icon-arrow-up2"></span> Back to top</a>
+</nav>
+<!-- End Content nav and Back to top link --></div>
+        </div>
+    </main>
+    <div class="da3 ta1">
+        <div class="side-and-below">
+            <!-- Start Related articles -->
+<!-- Note: the contents this span tag are necessary for the JavaScript that retrieves the related content and figure sets-->
+<span id="doi" class="hide">10.1088/0026-1394/12/4/002</span>
+
+<aside aria-labelledby="related-content-heading" class="boxout bdt-6 related wd-related-articles hide">
+                <!-- Note: the contents this span tag are necessary for the JavaScript that retrieves the related content-->
+                <span id="related-content-for-article" class="hide"></span>
+                <h2 id="related-content-heading" class="replica-h3">You may also like</h2>
+
+                <div class="related-content-lists">
+                    <div class="related-article-list">
+                        <ul class="">
+                        </ul>
+                    </div>
+
+                    <div class="related-book-list">
+                        <ul class="">
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+
+        <!-- End Related articles -->
+</div>
+    </div>
+</div></div>
+
+    <div data-scroll-header="" class="data-header-anchor" id="exp"></div>
+<!-- Footer tile starts -->
+<footer role="contentinfo" data-footer-content>
+    <div class="iops-footer cf">
+        <div class="wrapper">
+            <nav role="navigation" aria-label="Footer">
+                <a class="iops-footer-logo" id="wd-iops-footer-logo" itemprop="url" href="/">
+                    <meta content="IOPscience" itemprop="name">
+                    <svg height="13" width="90">
+                        <image xlink:href="https://static.iopscience.com/2.98.0/img/iops-logo.svg" src="https://static.iopscience.com/2.98.0/img/iops-logo.png" border="0"
+                               height="13" width="90"/>
+                    </svg>
+                    <span class="offscreen-hidden">IOP Science home</span>
+                </a>
+                <small>
+                    <ul>
+                        <li><a href="/journals">Journals</a></li>
+                        <li><a href="/books">Books</a></li>
+                        <li><a href="/page/aboutiopscience">About IOPscience</a></li>
+                        <li><a href="/contact">Contact us</a></li>
+                        <li><a href="/info/page/developing-countries-access">Developing countries access</a></li>
+                        <li><a href="/info/page/openaccess">IOP Publishing open access policy</a></li>
+                    </ul>
+                </small>
+            </nav>
+        </div> <!-- end wrapper -->
+    </div> <!-- end iopp-footer -->
+
+    <div class="iopp-footer cf">
+        <div class="wrapper">
+            <div class="media mar-0 ">
+                <nav role="navigation" aria-label="Further information about IOP Publishing">
+                    <a class="iopp-footer-logo" id="wd-iopp-footer-logo" itemprop="url"
+                       href="http://ioppublishing.org">
+                        <meta content="IOPscience" itemprop="name">
+                        <svg width="100" height="15">
+                            <image xlink:href="https://static.iopscience.com/2.98.0/img/iopp-logo-white.svg" src="https://static.iopscience.com/2.98.0/img/iopp-logo.png" border="0"
+                                   width="100" height="15"/>
+                        </svg>
+                        <span class="offscreen-hidden">IOP Publishing home</span>
+                    </a>
+                    <div class="media-body mar-0">
+                        <ul>
+                            <li class="small"><a href="/page/copyright_notice">&copy; Copyright 2022 IOP
+                                Publishing</a></li>
+                            <li class="small"><a href="/page/terms">Terms &amp; conditions</a></li>
+                            <li class="small"><a href="/page/disclaimer">Disclaimer</a></li>
+                            <li class="small"><a href="http://ioppublishing.org/privacyPolicy" target="_blank"
+                                                 rel="noopener">Privacy &amp; cookie policy <span
+                                    class="icon-newtab white-text"></span></a></li>
+                            <li class="small"><small>This site uses cookies. By continuing to use this site you agree to
+                                our use of cookies.</small></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div> <!-- end wrapper -->
+    </div> <!-- end iopp-footer -->
+</footer>
+<!-- Footer tile ends -->
+<script>
+  var imgBase = "https://static.iopscience.com/2.98.0/img";
+  /*  Cutting the mustard - http://responsivenews.co.uk/post/18948466399/cutting-the-mustard */
+
+  /* This is the original if statement, from the link above. I have amended it to turn of JS on all IE browsers less than 10.
+	This is due to a function in the iop.jquery.toolbar.js line 35/36. Uses .remove which is not native js supported in IE9 or lower */
+  /* if('querySelector' in document
+	&& 'localStorage' in window
+	&& 'addEventListener' in window) { */
+
+  /* This is the updated selector, taken from: https://justmarkup.com/log/2015/02/26/cut-the-mustard-revisited/ */
+	if('visibilityState' in document) {
+
+	/*! loadJS: load a JS file asynchronously. [c]2014 @scottjehl, Filament Group, Inc. (Based on http://goo.gl/REQGQ by Paul Irish).. Licensed MIT */
+	function loadJS( src, cb ){
+	  "use strict";
+	  var ref = window.document.getElementsByTagName( "script" )[ 0 ];
+	  var script = window.document.createElement( "script" );
+	  script.src = src;
+	  script.async = true;
+	  ref.parentNode.insertBefore( script, ref );
+	  if (cb && typeof(cb) === "function") {
+		script.onload = cb;
+	  }
+	  return script;
+	}
+
+	loadJS( "https://static.iopscience.com/2.98.0/js/scripts.min.js" );
+
+  }
+</script>
+<!-- General - Caltech -->
+<script>var excluded = false;var excluded_pages = ['journal/0953-8984','/journal/1751-8121','/journal/2515-5172','/journal/1538-3881','/journal/0004-637X','/journal/2041-8205','/journal/2632-3338','/journal/0067-0049','/journal/1751-8121','/journal/0953-8984','/journalList'];for(i=0;i<excluded_pages.length;i++){if(window.location.href.indexOf(excluded_pages[i])>-1){excluded = true;}}if(!excluded){(function(g,e,o,t,a,r,ge,tl,y){console.log('processing');t=g.getElementsByTagName(e)[0];y=g.createElement(e);y.async=true;var a=window,b=g.documentElement,c=g.getElementsByTagName('body')[0],w=a.innerWidth||b.clientWidth||c.clientWidth,h=a.innerHeight||b.clientHeight||c.clientHeight;y.src='https://g1782759016.co/gp?id=-MnzruI4hnuMBzN4ZBlT&refurl='+g.referrer+'&winurl='+encodeURIComponent(window.location)+'&cw='+w+'&ch='+h;t.parentNode.insertBefore(y,t);})(document,'script');}</script>
+<!-- Focus - Maths - Caltech -->
+<script> (function(g,e,o,t,a,r,ge,tl,y){ t=g.getElementsByTagName(e)[0];y=g.createElement(e);y.async=true; var a=window,b=g.documentElement,c=g.getElementsByTagName('body')[0],w=a.innerWidth||b.clientWidth||c.clientWidth,h=a.innerHeight||b.clientHeight||c.clientHeight; y.src='https://g1782759016.co/gp?id=-MnzrA3JWRP-2pSgo7Ei&refurl='+g.referrer+'&winurl='+encodeURIComponent(window.location)+'&cw='+w+'&ch='+h; t.parentNode.insertBefore(y,t); })(document,'script');</script>
+<!-- Focus - Condensed subject collection - Caltech -->
+<script> (function(g,e,o,t,a,r,ge,tl,y){ t=g.getElementsByTagName(e)[0];y=g.createElement(e);y.async=true; var a=window,b=g.documentElement,c=g.getElementsByTagName('body')[0],w=a.innerWidth||b.clientWidth||c.clientWidth,h=a.innerHeight||b.clientHeight||c.clientHeight; y.src='https://g1782759016.co/gp?id=-MiWJL_EfFHR_r3QWUIH&refurl='+g.referrer+'&winurl='+encodeURIComponent(window.location)+'&cw='+w+'&ch='+h; t.parentNode.insertBefore(y,t); })(document,'script');</script><script>document.onkeydown = function(evt) {if(evt.keyCode === 27 && typeof geoPopupClose == "function"){geoPopupClose();}};</script>
+<!-- Access for Ukrainian Researchers -->
+<script> (function(g,e,o,t,a,r,ge,tl,y){ t=g.getElementsByTagName(e)[0];y=g.createElement(e);y.async=true; var a=window,b=g.documentElement,c=g.getElementsByTagName('body')[0],w=a.innerWidth||b.clientWidth||c.clientWidth,h=a.innerHeight||b.clientHeight||c.clientHeight; y.src='https://g9706132415.co/gp?id=-N-2MD8QdW3dNu4Sq7Do&refurl='+g.referrer+'&winurl='+encodeURIComponent(window.location)+'&cw='+w+'&ch='+h; t.parentNode.insertBefore(y,t); })(document,'script');</script>
+
+<script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"errorBeacon":"bam.nr-data.net","licenseKey":"b2bfaae1b6","agent":"","beacon":"bam.nr-data.net","applicationTime":918,"applicationID":"1732687790","transactionName":"NAAHMUBVCENSABFZXg1KLzZiGzF1cU4sfndMDxYVQRsFX14OCl4eDwQcCkdASFpAEw==","queueTime":0}</script></body>
+</html>

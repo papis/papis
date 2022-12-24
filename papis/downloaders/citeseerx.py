@@ -1,38 +1,72 @@
+import os
 import re
-from typing import Optional
+from typing import Any, ClassVar, Dict, Optional
 
-import papis.downloaders.fallback
+import papis.document
+import papis.downloaders
+
+_K = papis.document.KeyConversionPair
+article_key_conversion = [
+    _K("title", [papis.document.EmptyKeyConversion]),
+    _K("abstract", [papis.document.EmptyKeyConversion]),
+    _K("journal", [papis.document.EmptyKeyConversion]),
+    _K("urls", [papis.document.EmptyKeyConversion]),
+    _K("year", [papis.document.EmptyKeyConversion]),
+    _K("publisher", [papis.document.EmptyKeyConversion]),
+    _K("authors", [
+        {"key": "author_list", "action": papis.document.split_authors_name},
+    ])
+]
 
 
-class Downloader(papis.downloaders.fallback.Downloader):
+class Downloader(papis.downloaders.Downloader):
 
-    BASE = "https://citeseerx.ist.psu.edu"
-    jsessionid = "012341666D7AD1C5C931FC0CFBA34BFA"
+    # NOTE: not sure if this API is open for the public, but it seems to work
+    API_URL = "https://citeseerx.ist.psu.edu/api/paper"  # type: ClassVar[str]
 
-    def __init__(self, url: str):
-        papis.downloaders.fallback.Downloader.__init__(self,
-                                                       uri=url,
-                                                       name="citeseerx")
-        self.expected_document_extension = "pdf"
-        self.priority = 10
+    # NOTE: this seems to fail with an 'Internal Server Error 500' more often
+    # than not, so it may not be worth it to keep around until it stabilizes
+    DOCUMENT_URL = (
+        "https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi={pid}"
+        )  # type: ClassVar[str]
+
+    def __init__(self, url: str) -> None:
+        super().__init__(
+            url, "citeseerx",
+            expected_document_extension="pdf",
+            priority=10,
+            )
+
+        self.pid = os.path.basename(url)
 
     @classmethod
     def match(cls,
-              url: str) -> Optional[papis.downloaders.fallback.Downloader]:
+              url: str) -> Optional[papis.downloaders.Downloader]:
         return (Downloader(url)
                 if re.match(r".*citeseerx\.ist\.psu\.edu.*", url)
                 else None)
 
-    def get_document_url(self) -> Optional[str]:
-        return ("{base}/viewdoc/download;jsessionid={jid}?"
-                "doi={doi}&rep=rep1&type=pdf"
-                .format(doi=self.ctx.data.get("doi"),
-                        base=self.BASE,
-                        jid=self.jsessionid))
+    def _get_raw_data(self) -> bytes:
+        response = self.session.get(
+            self.API_URL,
+            params={"paper_id": self.pid},
+            headers={"token": "undefined", "referer": self.uri},
+            )
 
-    def download_bibtex(self) -> None:
-        bibtex = self._get_soup().find_all(attrs=dict(id="bibtex"))
-        if not bibtex:
-            return None
-        self.bibtex_data = ("\n".join(e.text for e in bibtex[0].find_all("p"))
-                                .replace("\xa0", " "))
+        if not response.ok:
+            self.logger.error("Could not obtain CiteSeerX data: '%s'", response.reason)
+
+        return response.content
+
+    def get_data(self) -> Dict[str, Any]:
+        import json
+        data = json.loads(self._get_raw_data().decode())
+
+        if "paper" in data:
+            return papis.document.keyconversion_to_data(
+                article_key_conversion, data["paper"])
+        else:
+            return {}
+
+    def get_document_url(self) -> Optional[str]:
+        return self.DOCUMENT_URL.format(pid=self.pid)

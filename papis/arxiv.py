@@ -30,6 +30,10 @@ import papis.config
 
 logger = logging.getLogger("arxiv")
 
+ARXIV_API_URL = "http://arxiv.org/api/query"
+ARXIV_ABS_URL = "https://arxiv.org/abs"
+ARXIV_PDF_URL = "https://arxiv.org/pdf"
+
 
 def get_data(
         query: str = "",
@@ -70,8 +74,7 @@ def get_data(
             "max_results": max_results
         }
     )
-    main_url = "http://arxiv.org/api/query?"
-    req_url = main_url + params
+    req_url = "{}?{}".format(ARXIV_API_URL, params)
     logger.debug("url = '%s'", req_url)
 
     import urllib.request
@@ -90,10 +93,8 @@ def get_data(
 
     entries = soup.find_all("entry")
     for entry in entries:
-        data = dict()
-        data["abstract"] = entry.find("summary").get_text().replace(
-            "\n", " "
-        )
+        data = {}
+        data["abstract"] = entry.find("summary").get_text().replace("\n", " ")
         data["url"] = entry.find("id").get_text()
         data["published"] = entry.find("published").get_text()
         published = data.get("published")
@@ -113,14 +114,14 @@ def get_data(
 
 def validate_arxivid(arxivid: str) -> None:
     import urllib.request
-    url = "https://arxiv.org/abs/{0}".format(arxivid)
+    url = "{}/{}".format(ARXIV_ABS_URL, arxivid)
     request = urllib.request.Request(url)
 
     from urllib.error import HTTPError, URLError
     try:
         urllib.request.urlopen(request)
     except HTTPError:
-        raise ValueError("HTTP 404: {} not an arxivid".format(arxivid))
+        raise ValueError("HTTP 404: '{}' not an arxivid".format(arxivid))
     except URLError:
         pass
 
@@ -134,14 +135,11 @@ def pdf_to_arxivid(
     is the correct one.
 
     :param filepath: Path to the pdf file
-    :type  filepath: str
     :param maxlines: Maximum number of lines that should be checked
         For some documnets, it would spend a long time trying to look for
         a arxivid, and arxivids in the middle of documents don't tend to be the
         correct arxivid of the document.
-    :type  maxlines: int
     :returns: arxivid or None
-    :rtype:  str or None
     """
     with open(filepath, "rb") as fd:
         for j, line in enumerate(fd):
@@ -172,13 +170,13 @@ def find_arxivid_in_text(text: str) -> Optional[str]:
         ), re.I
     )
     miter = regex.finditer(text)
-    try:
+
+    from contextlib import suppress
+    with suppress(StopIteration):
         m = next(miter)
         if m:
-            arxivid = m.group("arxivid")
-            return arxivid
-    except StopIteration:
-        pass
+            return m.group("arxivid")
+
     return None
 
 
@@ -237,16 +235,15 @@ def explorer(
 
 class Downloader(papis.downloaders.Downloader):
 
-    def __init__(self, url: str):
-        papis.downloaders.Downloader.__init__(self, uri=url, name="arxiv")
-        self.expected_document_extension = "pdf"
+    def __init__(self, url: str) -> None:
+        super().__init__(uri=url, name="arxiv", expected_document_extension="pdf")
         self.arxivid = None  # type: Optional[str]
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
         arxivid = find_arxivid_in_text(url)
         if arxivid:
-            url = "https://arxiv.org/abs/{0}".format(arxivid)
+            url = "{}/{}".format(ARXIV_ABS_URL, arxivid)
             down = Downloader(url)
             down.arxivid = arxivid
             return down
@@ -265,44 +262,57 @@ class Downloader(papis.downloaders.Downloader):
         return self._get_identifier()
 
     def download_bibtex(self) -> None:
-        bib_url = self.get_bibtex_url()
-        if not bib_url:
+        arxivid = self.get_bibtex_url()
+        if not arxivid:
             return None
 
         import arxiv2bib
-        bibtex_cli = arxiv2bib.Cli([bib_url])
-        bibtex_cli.run()
 
-        self.logger.debug("bibtex_url = '%s'", bib_url)
-        output = bibtex_cli.output  # List[str]
-        data = "".join(output).replace("\n", " ")
-        self.bibtex_data = data
+        self.logger.debug("arxivid = '%s'", arxivid)
+        bibtex_cli = arxiv2bib.Cli([arxivid])
+        bibtex_cli.run()
+        self.bibtex_data = "".join(bibtex_cli.output).replace("\n", " ")
 
     def get_document_url(self) -> Optional[str]:
         arxivid = self._get_identifier()
+        if not arxivid:
+            return None
+
         self.logger.debug("arxivid = '%s'", arxivid)
-        pdf_url = "https://arxiv.org/pdf/{arxivid}.pdf".format(arxivid=arxivid)
+        pdf_url = "{}/{}.pdf".format(ARXIV_PDF_URL, arxivid)
         self.logger.debug("pdf_url = '%s'", pdf_url)
+
         return pdf_url
 
 
 class Importer(papis.importer.Importer):
 
-    """Importer accepting an arxiv id and downloading files and data"""
+    """Importer accepting an arXiv ID and downloading files and data"""
 
-    def __init__(self, uri: str):
-        papis.importer.Importer.__init__(self, name="arxiv", uri=uri)
-        aid = find_arxivid_in_text(uri)
-        self.downloader = Downloader("https://arxiv.org/abs/{}".format(aid))
+    def __init__(self, uri: str) -> None:
+        try:
+            validate_arxivid(uri)
+            aid = uri       # type: Optional[str]
+        except ValueError:
+            aid = find_arxivid_in_text(uri)
+
+        uri = "{}/{}".format(ARXIV_ABS_URL, aid)
+
+        super().__init__(name="arxiv", uri=uri)
+        self.downloader = Downloader(uri)
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+        arxivid = find_arxivid_in_text(uri)
+        if arxivid:
+            return Importer(uri="{}/{}".format(ARXIV_ABS_URL, arxivid))
+
         try:
             validate_arxivid(uri)
         except ValueError:
             return None
         else:
-            return Importer(uri=uri)
+            return Importer(uri="{}/{}".format(ARXIV_ABS_URL, uri))
 
     def fetch(self) -> None:
         self.downloader.fetch()
@@ -311,10 +321,10 @@ class Importer(papis.importer.Importer):
 
 class ArxividFromPdfImporter(papis.importer.Importer):
 
-    """Importer parsing an arxivid from a pdf file"""
+    """Importer parsing an arXiv ID from a PDF file"""
 
-    def __init__(self, uri: str):
-        papis.importer.Importer.__init__(self, name="pdf2arxivid", uri=uri)
+    def __init__(self, uri: str) -> None:
+        super().__init__(name="pdf2arxivid", uri=uri)
         self.arxivid = None  # type: Optional[str]
 
     @classmethod

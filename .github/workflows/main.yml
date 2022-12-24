@@ -35,10 +35,11 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Install
-      run: |
-        ./tools/ci-install.sh
+      run: ./tools/ci-install.sh
       shell: bash
+
     - name: Run tests, mypy and linting
       run: ./tools/ci-run-tests.sh
       shell: bash

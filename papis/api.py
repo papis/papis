@@ -21,7 +21,6 @@ def get_lib_name() -> str:
     args passed by the user.
 
     :returns: Library name
-    :rtype:  str
 
     >>> get_lib_name() is not None
     True
@@ -36,8 +35,6 @@ def set_lib_from_name(library: str) -> None:
     args passed by the user.
 
     :param library: Name of library or path to a given library
-    :type  library: str
-
     """
     papis.config.set_lib_from_name(library)
 
@@ -48,11 +45,9 @@ def get_libraries() -> List[str]:
     if the ``dir`` or ``dirs`` key defined in the library section.
 
     :returns: List of library names
-    :rtype: list
 
     >>> len(get_libraries()) >= 1
     True
-
     """
     libs = []
     config = papis.config.get_configuration()
@@ -72,10 +67,7 @@ def open_file(file_path: str, wait: bool = True) -> None:
     handle file_path.
 
     :param file_path: File path to be handled.
-    :type  file_path: str
     :param wait: Wait for the completion of the opener program to continue
-    :type  wait: bool
-
     """
     papis.utils.open_file(file_path, wait=wait)
 
@@ -86,10 +78,7 @@ def open_dir(dir_path: str, wait: bool = True) -> None:
     open dir_path.
 
     :param dir_path: Folder path to be handled.
-    :type  dir_path: str
     :param wait: Wait for the completion of the opener program to continue
-    :type  wait: bool
-
     """
     papis.utils.general_open(dir_path, "file-browser", wait=wait)
 
@@ -100,10 +89,7 @@ def edit_file(file_path: str, wait: bool = True) -> None:
     handle file_path.
 
     :param file_path: File path to be handled.
-    :type  file_path: str
     :param wait: Wait for the completion of the opener program to continue
-    :type  wait: bool
-
     """
     papis.utils.general_open(file_path, "editor", wait=wait)
 
@@ -114,10 +100,7 @@ def get_all_documents_in_lib(
     Get ALL documents contained in the given library with possibly.
 
     :param library: Library name.
-    :type  library: str
-
     :returns: List of all documents.
-    :rtype: list
 
     >>> import tempfile
     >>> folder = tempfile.mkdtemp()
@@ -125,7 +108,6 @@ def get_all_documents_in_lib(
     >>> docs = get_all_documents_in_lib(folder)
     >>> len(docs)
     0
-
     """
     return papis.database.get(library).get_all_documents()
 
@@ -137,13 +119,8 @@ def get_documents_in_dir(
     string.
 
     :param directory: Folder path.
-    :type  directory: str
-
     :param search: Search string
-    :type  search: str
-
     :returns: List of filtered documents.
-    :rtype: list
 
     >>> import tempfile
     >>> docs = get_documents_in_dir(tempfile.mkdtemp())
@@ -163,14 +140,8 @@ def get_documents_in_lib(
     string.
 
     :param library: Library name.
-    :type  library: str
-
     :param search: Search string
-    :type  search: str
-
     :returns: List of filtered documents.
-    :rtype: list
-
     """
     return papis.database.get(library).query(search)
 
@@ -181,10 +152,8 @@ def clear_lib_cache(lib: Optional[str] = None) -> None:
     then the current library is used.
 
     :param lib: Library name.
-    :type  lib: str
 
     >>> clear_lib_cache()
-
     """
     papis.database.get(lib).clear()
 
@@ -195,9 +164,16 @@ def doi_to_data(doi: str) -> Dict[str, Any]:
     using the crossref module.
 
     :param doi: DOI expression.
-    :type  doi: str
     :returns: Document's data
-    :rtype: dict
     """
     import papis.crossref
     return papis.crossref.doi_to_data(doi)
+
+
+def save_doc(doc: papis.document.Document) -> None:
+    """
+    Save doc in memory and in disk through the current database.
+    """
+    db = papis.database.get()
+    doc.save()
+    db.update(doc)

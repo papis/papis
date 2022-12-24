@@ -14,10 +14,10 @@ class TestCli(tests.cli.TestCli):
         result = self.invoke([
             "--version"
         ])
-        self.assertTrue(result.exit_code == 0)
+        self.assertEqual(result.exit_code, 0)
 
     # def test_set(self):
     #     result = self.invoke([
     #         "--set", "something", "42"
     #     ])
-    #     self.assertTrue(result.exit_code == 0)
+    #     self.assertEqual(result.exit_code, 0)

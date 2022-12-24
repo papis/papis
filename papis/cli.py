@@ -1,4 +1,4 @@
-from typing import Optional, Any, Callable
+from typing import Optional, Any, Callable, List
 
 import click
 import click.core
@@ -6,37 +6,13 @@ import click.types
 import click.decorators
 
 import papis.config
+import papis.pick
+import papis.document
+import papis.database
 
 
 DecoratorCallable = Callable[..., Any]
 DecoratorArgs = Any
-
-
-class AliasedGroup(click.core.Group):
-    """
-    This group command is taken from
-        http://click.palletsprojects.com/en/5.x/advanced/#command-aliases
-    and is to be used for groups with aliases
-    """
-
-    def get_command(
-            self,
-            ctx: click.core.Context,
-            cmd_name: str) -> Optional[click.core.Command]:
-        rv = click.core.Group.get_command(self, ctx, cmd_name)
-        if rv is not None:
-            return rv
-
-        import difflib
-        matches = difflib.get_close_matches(
-            cmd_name, self.list_commands(ctx), n=2)
-        if not matches:
-            return None
-        elif len(matches) == 1:
-            return click.core.Group.get_command(self, ctx, str(matches[0]))
-        else:
-            ctx.fail("Too many matches: {}".format(matches))
-            return None
 
 
 def query_option(**attrs: DecoratorArgs) -> DecoratorCallable:
@@ -71,6 +47,48 @@ def doc_folder_option(**attrs: DecoratorArgs) -> DecoratorCallable:
         attrs.setdefault("help", "Apply action to a document path")
         return click.decorators.option("--doc-folder", **attrs)(f)
     return decorator
+
+
+def handle_doc_folder_or_query(
+        query: str,
+        doc_folder: str) -> List[papis.document.Document]:
+    """
+    If doc_folder is given then give a list with this document.
+    Else just query the database for a list of documents.
+    """
+    if doc_folder:
+        return [papis.document.from_folder(doc_folder)]
+    return papis.database.get().query(query)
+
+
+def handle_doc_folder_query_sort(
+        query: str,
+        doc_folder: str,
+        sort_field: Optional[str],
+        sort_reverse: bool) -> List[papis.document.Document]:
+    documents = handle_doc_folder_or_query(query, doc_folder)
+
+    if sort_field:
+        documents = papis.document.sort(documents, sort_field, sort_reverse)
+
+    return documents
+
+
+def handle_doc_folder_query_all_sort(
+        query: str,
+        doc_folder: str,
+        sort_field: Optional[str],
+        sort_reverse: bool,
+        _all: bool) -> List[papis.document.Document]:
+    documents = handle_doc_folder_query_sort(query,
+                                             doc_folder,
+                                             sort_field,
+                                             sort_reverse)
+
+    if not _all:
+        documents = [doc for doc in papis.pick.pick_doc(documents) if doc]
+
+    return documents
 
 
 def all_option(**attrs: DecoratorArgs) -> DecoratorCallable:

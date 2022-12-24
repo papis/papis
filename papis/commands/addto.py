@@ -11,11 +11,13 @@ that you want to add to a document that matches with the query string
 
 notice that we repeat two times the flag ``-f``, this is important.
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.addto:cli
     :prog: papis addto
 """
+
 import os
 import logging
 from typing import List, Optional

@@ -40,11 +40,13 @@ or export all of them
     party apps.
 
 
-Cli
-^^^
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. click:: papis.commands.export:cli
     :prog: papis export
 """
+
 import os
 import logging
 from typing import List, Optional
@@ -76,9 +78,7 @@ def run(documents: List[papis.document.Document], to_format: str) -> str:
     Exports several documents into something else.
 
     :param documents: A list of papis documents
-    :type  documents: [papis.document.Document]
     :param to_format: what format to use
-    :type  to_format: str
     """
     ret_string = (
         papis.plugin.get_extension_manager(_extension_name())[to_format]
@@ -118,25 +118,17 @@ def cli(query: str,
         _all: bool) -> None:
     """Export a document from a given library"""
 
-    if doc_folder:
-        documents = [papis.document.from_folder(doc_folder)]
-    else:
-        documents = papis.database.get().query(query)
-
-    if fmt and folder:
-        logger.warning("Only --folder flag will be considered (--fmt ignored)")
-
+    documents = papis.cli.handle_doc_folder_query_all_sort(query,
+                                                           doc_folder,
+                                                           sort_field,
+                                                           sort_reverse,
+                                                           _all)
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
-    if not _all:
-        documents = [d for d in papis.pick.pick_doc(documents)]
-        if not documents:
-            return
-
-    if sort_field:
-        documents = papis.document.sort(documents, sort_field, sort_reverse)
+    if fmt and folder:
+        logger.warning("Only --folder flag will be considered (--fmt ignored)")
 
     # Get the local folder of the document so that third-party apps
     # can actually go to the folder without checking with papis
