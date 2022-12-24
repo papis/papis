@@ -1,7 +1,7 @@
 Papis
 =====
 
-|ghbadge| |Coveralls| |RTD| |CodeQL| |Pypi| |zenodo_badge|
+|ghbadge| |RTD| |CodeQL| |Pypi| |zenodo_badge|
 
 Papis is a powerful and highly extensible CLI document and bibliography manager.
 
@@ -180,8 +180,6 @@ Papis isn't the only fish in the pond. You might also be interested in:
    :target: https://travis-ci.org/papis/papis
 .. |ghbadge| image:: https://github.com/papis/papis/workflows/CI/badge.svg
    :target: https://github.com/papis/papis/actions?query=branch%3Amain+workflow%3ACI
-.. |Coveralls| image:: https://coveralls.io/repos/github/papis/papis/badge.svg?branch=master
-   :target: https://coveralls.io/github/papis/papis?branch=master
 .. |RTD| image:: https://readthedocs.org/projects/papis/badge/?version=latest
    :target: http://papis.readthedocs.io/en/latest/?badge=latest
 .. |CodeQL| image:: https://github.com/Nike-Inc/gimme-a-cli/workflows/CodeQL/badge.svg
