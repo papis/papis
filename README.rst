@@ -179,11 +179,11 @@ Papis isn't the only fish in the pond. You might also be interested in:
 .. |Build_Status| image:: https://travis-ci.org/papis/papis.svg?branch=master
    :target: https://travis-ci.org/papis/papis
 .. |ghbadge| image:: https://github.com/papis/papis/workflows/CI/badge.svg
-   :target: https://github.com/papis/papis/actions?query=branch%3Amain+workflow%3ACI
+   :target: https://github.com/papis/papis/actions?query=branch%3Amaster+workflow%3ACI
 .. |RTD| image:: https://readthedocs.org/projects/papis/badge/?version=latest
    :target: http://papis.readthedocs.io/en/latest/?badge=latest
 .. |CodeQL| image:: https://github.com/Nike-Inc/gimme-a-cli/workflows/CodeQL/badge.svg
-   :target: https://github.com/papis/papis/actions?query=branch%3Amain+workflow%3ACodeQL
+   :target: https://github.com/papis/papis/actions?query=branch%3Amaster+workflow%3ACodeQL
 
 .. |Pypi| image:: https://badge.fury.io/py/papis.svg
    :target: https://pypi.org/project/papis/
