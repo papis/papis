@@ -1,40 +1,36 @@
 """
-The ``config`` command is a useful command because it allows you to check
-the configuration settings' values that your current `papis` session
-is using.
+The ``config`` command allows you to query the settings used by Papis on your
+system.
 
-For example let's say that you want to see which ``dir`` setting your
-default library is using (i.e., the directory or the dir that appears
-in the definition of the library in the configuration file), then you
-would simply do
+The ``config`` command returns the value used by Papis. Therefore, if you
+haven't customized some setting, it will return the default value. In contrast,
+if you have customized it, it will return the value you set.
+
+Let's say you want to see which ``dir`` setting your default library is using.
+You can achieve this with:
 
 .. code::
 
     papis config dir
 
-If you wanted to see which ``dir`` the ``books`` library has, for example,
-then you would do
+If you wanted to see which ``dir`` the ``books`` library uses, you would do:
 
 .. code::
 
     papis -l books config dir
 
-This works equally for any default settings, i.e. settings that have not been
-customized. For example, querying the ``match-format`` setting is done using
-
-.. code::
-
-    papis config match-format
-    > {doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}
+With ``-l``, Papis selects a specific library (here, the "books" library). The 
+rest works just as above.
 
 Settings from a specific section in the configuration file can also be
 accessed by adding a dot ``"."`` between the section and the setting name. For
-example, if your ``books`` library is configured as a section, you could
-(equivalently) do
+example, if your ``books`` library is configured as a section, you can do:
 
 .. code::
 
     papis config books.dir
+
+This is equivalent to the above ``papis -l books config dir`` command.
 
 For a more complex example, the :ref:`Bibtex` command has its own
 configuration settings. These can be accessed through
