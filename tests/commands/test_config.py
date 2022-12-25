@@ -10,9 +10,18 @@ logging.basicConfig(level=logging.DEBUG)
 class TestCommand(unittest.TestCase):
 
     def test_simple(self):
-        self.assertEqual(run("editor"), papis.config.get("editor"))
-        self.assertEqual(run("settings.editor"), papis.config.get("editor"))
-        self.assertEqual(run("papers.dir"), papis.config.get("dir", section="papers"))
+        self.assertEqual(
+            run(["editor"]),
+            {"editor": papis.config.get("editor")}
+            )
+        self.assertEqual(
+            run(["settings.editor"]),
+            {"editor": papis.config.get("editor")}
+            )
+        self.assertEqual(
+            run(["papers.dir"]),
+            {"dir": papis.config.get("dir", section="papers")}
+            )
 
 
 class TestDefaultConfiguration(unittest.TestCase):
