@@ -108,6 +108,11 @@ def get_importers() -> List[Type[Importer]]:
     return [e.plugin for e in get_import_mgr()]
 
 
+def get_importer_names() -> List[str]:
+    result = get_import_mgr().names()  # type: List[str]
+    return result
+
+
 def get_importer_by_name(name: str) -> Type[Importer]:
     """Get importer by name
     :param name: Name of the importer

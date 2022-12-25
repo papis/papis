@@ -115,6 +115,7 @@ import papis.git
 import papis.format
 import papis.citations
 import papis.id
+import papis.smart_importer
 
 logger = logging.getLogger("add")  # type: logging.Logger
 
@@ -557,9 +558,8 @@ def cli(files: List[str],
     matching_importers = []  # type: List[papis.importer.Importer]
 
     if not from_importer and not batch and files:
-        matching_importers = sum((
-            papis.utils.get_matching_importer_or_downloader(f)
-            for f in files), [])
+        matching_importers = (papis.smart_importer
+                              .guess_importers_from_strings(files))
         logger.info("These importers where automatically matched, "
                     "select the ones you want to use")
         _range = papis.tui.utils.select_range(

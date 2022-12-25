@@ -227,38 +227,6 @@ def get_cache_home() -> str:
     return str(path)
 
 
-def get_matching_importer_or_downloader(matching_string: str
-                                        ) -> List[papis.importer.Importer]:
-    logger = logging.getLogger("utils:matcher")
-
-    importers = []  # type: List[papis.importer.Importer]
-    _imps = papis.importer.get_importers()
-    _downs = papis.downloaders.get_available_downloaders()
-    _all_importers = list(_imps) + list(_downs)
-    for importer_cls in _all_importers:
-        logger.debug("trying with importer "
-                     "{c.Back.BLACK}{c.Fore.YELLOW}%s{c.Style.RESET_ALL}",
-                     importer_cls)
-        try:
-            importer = importer_cls.match(
-                matching_string)  # type: Optional[papis.importer.Importer]
-        except Exception as e:
-            logger.error(e)
-            continue
-        if importer:
-            logger.info(
-                "%s {c.Back.BLACK}{c.Fore.GREEN}"
-                "matches %s{c.Style.RESET_ALL}",
-                matching_string, importer.name)
-            try:
-                importer.fetch()
-            except Exception as e:
-                logger.error(e)
-            else:
-                importers.append(importer)
-    return importers
-
-
 def update_doc_from_data_interactively(
         document: Union[papis.document.Document, Dict[str, Any]],
         data: Dict[str, Any], data_name: str) -> None:

@@ -90,3 +90,7 @@ def file_server_path(localpath: str,
     return ("/library/{libname}/file/{0}"
             .format(localpath.replace(libfolder + "/", ""),
                     libname=libname))
+
+
+def add_path(libname: str) -> str:
+    return "/library/{libname}/add".format(libname=libname)
