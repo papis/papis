@@ -66,22 +66,29 @@ class Configuration(configparser.ConfigParser):
             self.logger.warning(
                 "Creating configuration folder in '%s'", self.dir_location)
             os.makedirs(self.dir_location)
+
         if not os.path.exists(self.scripts_location):
+            self.logger.warning(
+                "Creating scripts folder in '%s'", self.scripts_location)
             os.makedirs(self.scripts_location)
+
         if os.path.exists(self.file_location):
-            self.logger.debug(
-                "Reading configuration from '%s'", self.file_location)
+            self.logger.debug("Reading configuration from '%s'", self.file_location)
             self.read(self.file_location)
             self.handle_includes()
-        else:
+
+        # NOTE: if no sections were actually read, add default ones
+        if not self.sections():
             for section in self.default_info:
                 self[section] = {}
                 for field in self.default_info[section]:
                     self[section][field] = self.default_info[section][field]
+
             with open(self.file_location, "w") as configfile:
                 self.logger.info(
                     "Creating config file at '%s'", self.file_location)
                 self.write(configfile)
+
         configpy = get_configpy_file()
         if os.path.exists(configpy):
             self.logger.debug("Executing '%s'", configpy)
