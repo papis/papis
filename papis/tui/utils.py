@@ -68,11 +68,68 @@ def text_area(title: str,
 
     text_height = Dimension(min=0, max=height) if height is not None else None
 
+    import pygments
+    from prompt_toolkit import print_formatted_text
     pygment_lexer = find_lexer_class_by_name(lexer_name)
     lexer = PygmentsLexer(pygment_lexer)
-    text_window = Window(height=text_height,
-                         style="bg:ansiblack fg:ansiwhite",
-                         content=BufferControl(buffer=buffer1, lexer=lexer))
+    tokens = list(pygments.lex(text, lexer=pygment_lexer()))
+    from prompt_toolkit.formatted_text import PygmentsTokens
+    # print_formatted_text(PygmentsTokens(tokens))
+    # print(tokens)
+
+    PAPIS_PYGMENTS_DEFAULT_STYLE = {
+        "pygments.whitespace": "ansigray",
+        "pygments.comment": "italic ansigreen",
+        "pygments.comment.preproc": "noitalic ansiyellow",
+        "pygments.keyword": "bold ansigreen",
+        "pygments.keyword.pseudo": "nobold",
+        "pygments.keyword.type": "nobold ansired",
+        "pygments.operator": "ansigray",
+        "pygments.operator.word": "bold ansimagenta",
+        "pygments.name.builtin": "ansigreen",
+        "pygments.name.function": "ansicyan",
+        "pygments.name.class": "bold ansicyan",
+        "pygments.name.namespace": "bold ansicyan",
+        "pygments.name.exception": "bold ansired",
+        "pygments.name.variable": "ansiblue",
+        "pygments.name.constant": "ansired",
+        "pygments.name.label": "ansigreen",
+        "pygments.name.entity": "bold ansigray",
+        "pygments.name.attribute": "ansigreen",
+        "pygments.name.tag": "bold ansigreen",
+        "pygments.name.decorator": "ansimagenta",
+        # Note: In Pygments, Token.String is an alias for Token.Literal.String,
+        #       and Token.Number as an alias for Token.Literal.Number.
+        "pygments.literal.string": "ansired",
+        "pygments.literal.string.doc": "italic",
+        "pygments.literal.string.interpol": "bold ansired",
+        "pygments.literal.string.escape": "bold ansired",
+        "pygments.literal.string.regex": "ansired",
+        "pygments.literal.string.symbol": "ansiblue",
+        "pygments.literal.string.other": "ansigreen",
+        "pygments.literal.number": "ansigray",
+        "pygments.generic.heading": "bold ansiblue",
+        "pygments.generic.subheading": "bold ansimagenta",
+        "pygments.generic.deleted": "ansired",
+        "pygments.generic.inserted": "ansigreen",
+        "pygments.generic.error": "ansired",
+        "pygments.generic.emph": "italic",
+        "pygments.generic.strong": "bold",
+        "pygments.generic.prompt": "bold ansiblue",
+        "pygments.generic.output": "ansigray",
+        "pygments.generic.traceback": "ansiblue",
+        "pygments.error": "border:ansired",
+    }
+
+    from prompt_toolkit.styles import Style
+    papis_style = Style.from_dict(PAPIS_PYGMENTS_DEFAULT_STYLE)
+    # print_formatted_text(PygmentsTokens(tokens), style=style)
+    print(tokens)
+    # text_window = Window(height=text_height,
+    #                      # style=style,
+    #                      # content=BufferControl(buffer=buffer1, lexer=lexer))
+    #                      content=FormattedTextControl(
+    #                          text=PygmentsTokens(tokens), style=papis_style))
 
     root_container = HSplit([
         Window(
@@ -85,25 +142,36 @@ def text_area(title: str,
             always_hide_cursor=True
         ),
 
-        text_window,
-
         Window(
-            height=1,
-            width=None,
             align=WindowAlign.LEFT,
-            style="bg:ansiwhite",
+            # style="bg:ansiwhite",
+            height=text_height,
+            style=papis_style,
             content=FormattedTextControl(
-                text=[(
-                    "fg:ansiblack bg:ansiwhite",
-                    "Quit [Ctrl-q]  Save [Ctrl-s]"
-                )]
-            )
+                text=PygmentsTokens(tokens),
+            ),
+            always_hide_cursor=True
         ),
+
+        # print_formatted_text(PygmentsTokens(tokens), style=style),
+
+        # Window(
+        #     height=1,
+        #     width=None,
+        #     align=WindowAlign.LEFT,
+        #     style="bg:ansiwhite",
+        #     content=FormattedTextControl(
+        #         text=[(
+        #             "fg:ansiblack bg:ansiwhite",
+        #             "Quit [Ctrl-q]  Save [Ctrl-s]"
+        #         )]
+        #     )
+        # ),
     ])
 
     layout = Layout(root_container)
 
-    layout.focus(text_window)
+    # layout.focus(text_window)
 
     app = App(editing_mode=EditingMode.EMACS,
               layout=layout,
