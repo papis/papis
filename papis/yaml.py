@@ -59,10 +59,10 @@ def yaml_to_data(yaml_path: str,
     with open(yaml_path) as fd:
         try:
             data = yaml.load(fd, Loader=Loader)
-        except Exception as e:
+        except Exception as exc:
             if raise_exception:
-                raise ValueError(e) from e
-            logger.error("YAML syntax error. %s", e)
+                raise ValueError(exc) from exc
+            logger.error("YAML syntax error.", exc_info=exc)
             return {}
         else:
             assert isinstance(data, dict)

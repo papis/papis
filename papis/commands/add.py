@@ -301,7 +301,7 @@ def run(paths: List[str],
 
     for p in in_documents_paths:
         if not os.path.exists(p):
-            raise IOError("Document {} not found".format(p))
+            raise FileNotFoundError("File '{}' not found".format(p))
 
     in_documents_names = [
         papis.utils.clean_document_name(doc_path)
@@ -364,7 +364,9 @@ def run(paths: List[str],
         out_folder_path = os.path.join(out_folder_path, out_folder_name)
 
     if not papis.utils.is_relative_to(out_folder_path, base_path):
-        raise ValueError("formatting produced path outside of library")
+        raise ValueError(
+            "Formatting produced a path outside of library: '{}' not relative to '{}'"
+            .format(base_path, out_folder_path))
 
     if os.path.exists(out_folder_path):
         out_folder_path = ensure_new_folder(out_folder_path)

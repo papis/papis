@@ -42,7 +42,7 @@ class Formater:
 
         :returns: a string with all the replacement fields filled in.
         """
-        raise NotImplementedError
+        raise NotImplementedError(type(self).__name__)
 
 
 class PythonFormater(Formater):

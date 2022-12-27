@@ -247,6 +247,8 @@ class Database(papis.database.base.Database):
             lambda d: d[1].get_main_folder() == document.get_main_folder(),
             enumerate(self.get_documents())))
         if not result:
-            raise Exception(
-                "The document passed could not be found in the library")
+            raise ValueError(
+                "The document passed could not be found in the library: '{}'"
+                .format(papis.document.describe(document)))
+
         return result

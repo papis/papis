@@ -167,8 +167,8 @@ def author_list_to_author(data: Dict[str, Any]) -> str:
 
     if separator is None or fmt is None:
         raise Exception(
-            "You have to define 'multiple-author-separator'"
-            " and 'multiple-author-format'")
+            "Cannot join the author list if the settings 'multiple-authors-separator' "
+            "and 'multiple-authors-format' are not present in the configuration")
 
     return separator.join([
         fmt.format(au=author) for author in data["author_list"]
@@ -442,7 +442,7 @@ def move(document: Document, path: str) -> None:
     >>> move(doc, newfolder)
     Traceback (most recent call last):
     ...
-    Exception: There is already...
+    FileExistsError: There is already...
     """
     folder = document.get_main_folder()
     if not folder:
@@ -451,8 +451,8 @@ def move(document: Document, path: str) -> None:
     path = os.path.expanduser(path)
     if os.path.exists(path):
         raise Exception(
-            "There is already a document in {0}, please check it,\n"
-            "a temporary papis document has been stored in {1}"
+            "There is already a document at '{}' that should be checked. A temporary"
+            "document has been stored at '{}'"
             .format(path, folder)
         )
 

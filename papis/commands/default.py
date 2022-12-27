@@ -232,8 +232,8 @@ def run(verbose: bool,
 
     if not library.paths:
         raise RuntimeError(
-            "Library '{}' does not have any existing folders attached to it, "
-            "please define and create the paths"
+            "Library '{}' does not have any existing folders attached to it. "
+            "Please define and create the paths in the configuration file"
             .format(lib))
 
     # Now the library should be set, let us check if there is a

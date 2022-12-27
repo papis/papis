@@ -88,9 +88,11 @@ class CommandLinePrompt(ConditionalContainer):  # type: ignore
         cmds = list(filter(lambda c: name in c.names, self.commands))
 
         if len(cmds) > 1:
-            raise Exception("More than one command matches the input")
+            raise ValueError(
+                "More than one command matches the input: ['{}']"
+                .format("', '".join(cmd.name for cmd in cmds)))
         elif not cmds:
-            raise Exception("No command found ({0})".format(name))
+            raise ValueError("No command found for '{}'".format(name))
 
         input_cmd.pop(0)
         cmds[0].run(cmds[0], *input_cmd)

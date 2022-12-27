@@ -84,7 +84,7 @@ def run(document: papis.document.Document,
     if git:
         papis.git.add_and_commit_resource(
             folder, info,
-            "Update information for '{0}'".format(
+            "Update information for '{}'".format(
                 papis.document.describe(document)))
 
 

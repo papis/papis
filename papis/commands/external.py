@@ -67,7 +67,7 @@ def external_cli(ctx: click.core.Context, flags: List[str]) -> None:
     script = ctx.obj  # type: papis.commands.Script
     path = script.path
     if not path:
-        raise Exception("Path for script {} not found".format(script))
+        raise FileNotFoundError("Path for script '{}' not found".format(script))
 
     cmd = [path] + list(flags)
     logger.debug("Calling external command '%s'.", cmd)

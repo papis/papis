@@ -9,7 +9,7 @@ DOWNLOADER_RESOURCES_PATH = os.path.join(os.path.dirname(__file__), "resources")
 
 PAPIS_UPDATE_RESOURCES = os.environ.get("PAPIS_UPDATE_RESOURCES", "none").lower()
 if PAPIS_UPDATE_RESOURCES not in ("none", "remote", "local", "both"):
-    raise ValueError("unsupported value of 'PAPIS_UPDATE_RESOURCES'")
+    raise ValueError("Unsupported value of 'PAPIS_UPDATE_RESOURCES'")
 
 
 def get_resource(name: str) -> str:
@@ -102,7 +102,7 @@ def get_local_resource(
                     sort_keys=True,
                     )
             else:
-                raise ValueError("unknown file extension: '{}'".format(ext))
+                raise ValueError("Unknown file extension: '{}'".format(ext))
 
     with open(filename, "r", encoding="utf-8") as f:
         if ext == ".json":
@@ -110,4 +110,4 @@ def get_local_resource(
         elif ext == ".yml" or ext == ".yaml":
             return papis.yaml.yaml_to_data(filename)
         else:
-            raise ValueError("unknown file extension: '{}'".format(ext))
+            raise ValueError("Unknown file extension: '{}'".format(ext))
