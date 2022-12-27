@@ -131,10 +131,10 @@ def setup(level: Optional[Union[int, str]] = None,
         try:
             level = int(getattr(logging, level))
         except AttributeError:
-            raise ValueError("Unknown logger level: '{}'.".format(level))
+            raise ValueError("Unknown logger level: '{}'".format(level))
     else:
         if logging.getLevelName(level).startswith("Level"):
-            raise ValueError("Unknown logger level: '{}'.".format(level))
+            raise ValueError("Unknown logger level: '{}'".format(level))
 
     log_format = (
         "{c.Fore.GREEN}%(name)s{c.Style.RESET_ALL}: %(message)s"

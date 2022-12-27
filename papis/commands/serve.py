@@ -280,7 +280,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.wfile.write(f.read())
             self.wfile.flush()
         else:
-            raise Exception("File {} does not exist".format(path))
+            raise FileNotFoundError("File '{}' does not exist".format(path))
 
     def process_routes(self,
                        routes: List[Tuple[str, Any]]) -> None:
@@ -311,8 +311,9 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         db = papis.database.get(libname)
         doc = db.find_by_id(papis_id)
         if not doc:
-            raise Exception("Document with ref %s not "
-                            "found in the database" % papis_id)
+            raise ValueError(
+                "Document with ref '{}' not found in the database".format(papis_id)
+                )
         return doc
 
     def _get_form(self, method: str = "POST") -> cgi.FieldStorage:
@@ -404,7 +405,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.wfile.write(f.read())
                 self.wfile.flush()
             return
-        raise Exception("File {} does not exist".format(path))
+
+        raise FileNotFoundError("File '{}' does not exist".format(path))
 
     def do_POST(self) -> None:              # noqa: N802
         """

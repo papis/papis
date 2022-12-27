@@ -150,7 +150,8 @@ class Downloader(papis.importer.Importer):
     @classmethod
     def match(cls, url: str) -> Optional["Downloader"]:
         raise NotImplementedError(
-            "Matching uri not implemented for this importer")
+            "Matching URI not implemented for '{}.{}'"
+            .format(cls.__module__, cls.__name__))
 
     def _get_body(self) -> bytes:
         """Get body of the uri, this is also important for unittesting"""
@@ -179,7 +180,8 @@ class Downloader(papis.importer.Importer):
         :returns: Bibtex url
         """
         raise NotImplementedError(
-            "Getting bibtex url not implemented for this downloader")
+            "Getting a BibTeX URL not implemented for the '{}' downloader".
+            format(self.name))
 
     def get_bibtex_data(self) -> Optional[str]:
         """Get the bibtex_data data if it has been downloaded already
@@ -213,14 +215,16 @@ class Downloader(papis.importer.Importer):
         :returns: Document url
         """
         raise NotImplementedError(
-            "Getting bibtex url not implemented for this downloader")
+            "Getting a document URL not implemented for the '{}' downloader"
+            .format(self.name))
 
     def get_data(self) -> Dict[str, Any]:
         """A general data retriever, for instance when data needn't need
         to come from a bibtex
         """
         raise NotImplementedError(
-            "Getting general data is not implemented for this downloader")
+            "Getting data is not implemented for the '{}' downloader"
+            .format(self.name))
 
     def get_doi(self) -> Optional[str]:
         """It returns the doi of the document, if it is retrievable.
@@ -230,7 +234,8 @@ class Downloader(papis.importer.Importer):
         :returns: Document doi
         """
         raise NotImplementedError(
-            "Getting document url not implemented for this downloader")
+            "Getting the DOI not implemented for the '{}' downloader"
+            .format(self.name))
 
     def get_document_data(self) -> Optional[bytes]:
         """Get the document_data data if it has been downloaded already

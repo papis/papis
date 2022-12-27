@@ -107,7 +107,8 @@ def validate_arxivid(arxivid: str) -> None:
 
     if not response.ok:
         raise ValueError(
-            "HTTP {}: '{}' not an arxivid".format(response.status_code, arxivid)
+            "HTTP ({} {}): '{}' not an arxivid".format(
+                response.status_code, response.reason, arxivid)
             )
 
 

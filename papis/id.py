@@ -90,8 +90,10 @@ def get(doc: Dict[str, Any]) -> str:
     """
     Get the id from a document.
     """
+    key = key_name()
     if not has_id(doc):
-        raise ValueError("No '{}' found in '{}'"
-                         .format(key_name(),
-                                 papis.document.describe(doc)))
-    return str(doc[key_name()])
+        raise ValueError(
+            "Papis ID key '{}' not found in document: '{}'"
+            .format(key, papis.document.describe(doc)))
+
+    return str(doc[key])

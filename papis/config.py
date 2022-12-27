@@ -371,7 +371,8 @@ def getstring(key: str, section: Optional[str] = None) -> str:
     """
     result = general_get(key, section=section, data_type=str)
     if not isinstance(result, str):
-        raise ValueError("Key {0} should be a string".format(key))
+        raise ValueError("Key '{}' should be a string, not a '{}'"
+                         .format(key, type(key).__name__))
     return str(result)
 
 
@@ -387,14 +388,16 @@ def getlist(key: str, section: Optional[str] = None) -> List[str]:
         return list(map(str, rawvalue))
     try:
         rawvalue = eval(rawvalue)
-    except Exception as e:
+    except Exception:
         raise SyntaxError(
-            "The key '{0}' must be a valid python object\n\t{1}"
-            .format(key, e))
+            "The key '{}' must be a valid Python object: {}"
+            .format(key, rawvalue))
     else:
         if not isinstance(rawvalue, list):
             raise SyntaxError(
-                "The key '{0}' must be a valid python list".format(key))
+                "The key '{}' must be a valid Python list. Got: {} (type {!r})"
+                .format(key, rawvalue, type(rawvalue).__name__))
+
         return list(map(str, rawvalue))
 
 
@@ -477,13 +480,12 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
             try:
                 paths = eval(os.path.expanduser(config[libname].get("dirs")))
             except Exception as e:
-                raise Exception("To define a library you have to set either"
-                                " dir or dirs in the configuration file.\n"
-                                "\tdir must be a path to a single folder.\n"
-                                "\tdirs must be a python list of "
-                                "paths to folders.\n\n"
-                                "Error: ({0})"
-                                .format(e))
+                raise Exception(
+                    "To define a library you have to set either 'dir' or 'dirs' "
+                    "in the configuration file.\n"
+                    "\t'dir' must be a path to an existing folder.\n"
+                    "\t'dirs' must be a python list of paths.\n\n"
+                    "Error: {}".format(e))
         library_obj = papis.library.Library(libname, paths)
     return library_obj
 

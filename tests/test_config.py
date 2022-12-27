@@ -272,9 +272,8 @@ def test_get_list() -> None:
     except SyntaxError as e:
         assert (
             str(e) == (
-                "The key 'super-key-list' must be a valid python "
-                "object\n\tname 'asdf' is not defined"
-            )
+                "The key 'super-key-list' must be a valid Python object: "
+                "[asdf,2,3,4]")
         )
 
     papis.config.set("super-key-list", "2")
@@ -285,6 +284,7 @@ def test_get_list() -> None:
     except SyntaxError as e:
         assert (
             str(e) == (
-                "The key 'super-key-list' must be a valid python list"
+                "The key 'super-key-list' must be a valid Python list. "
+                "Got: 2 (type 'int')"
             )
         )

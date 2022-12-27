@@ -91,23 +91,21 @@ def run(document: papis.document.Document,
                    .format(document["doi"]))
         elif "isbn" == key:
             url = "https://isbnsearch.org/isbn/{}".format(document["isbn"])
-        else:
+        elif key != "search-engine":
             url = document[key]
+    except KeyError as exc:
+        logger.error("Failed to construct URL for key '%s'.", key, exc_info=exc)
 
-        if not url:
-            raise KeyError()
-
-    except KeyError:
-        if not url or key == "search-engine":
-            import urllib.parse
-            params = {
-                "q": papis.format.format(
-                    papis.config.getstring("browse-query-format"),
-                    document)
-            }
-            url = (papis.config.getstring("search-engine")
-                   + "/?"
-                   + urllib.parse.urlencode(params))
+    if not url or key == "search-engine":
+        import urllib.parse
+        params = {
+            "q": papis.format.format(
+                papis.config.getstring("browse-query-format"),
+                document)
+        }
+        url = (papis.config.getstring("search-engine")
+               + "/?"
+               + urllib.parse.urlencode(params))
 
     if browse:
         logger.info("Opening URL '%s'.", url)

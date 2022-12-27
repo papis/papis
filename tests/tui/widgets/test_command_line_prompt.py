@@ -22,7 +22,7 @@ def test_commandlineprompt():
         prompt.text = "est"
         e = prompt.trigger()
     except Exception as e:
-        assert str(e) == "No command found (est)"
+        assert str(e) == "No command found for 'est'"
     else:
         assert False        # noqa: B011
 
@@ -39,6 +39,6 @@ def test_commandlineprompt():
     try:
         prompt.trigger()
     except Exception as e:  # noqa: F841
-        assert str(e) == "More than one command matches the input"
+        assert str(e) == "More than one command matches the input: ['test', 'test']"
     else:
         assert False        # noqa: B011

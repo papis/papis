@@ -216,10 +216,11 @@ def get_data(
         filters = {}
 
     if filters:
-        if not set(filters) & _filter_names == set(filters):
-            raise Exception(
-                "Filter keys must be one of {0}"
-                .format(",".join(_filter_names))
+        unknown_filters = set(filters) - _filter_names
+        if unknown_filters:
+            raise ValueError(
+                "Unknown filters '{}'. Filter keys must be one of '{}'"
+                .format("', '".join(unknown_filters), "', '".join(_filter_names))
             )
     data = {
         "query": query,
@@ -268,7 +269,8 @@ def doi_to_data(doi_string: str) -> Dict[str, Any]:
     results = get_data(dois=[doi_string])
     if results:
         return results[0]
-    raise ValueError("Couldn't get data for doi ({})".format(doi_string))
+    raise ValueError(
+        "Could not retrieve data for DOI '{}' from Crossref".format(doi_string))
 
 
 @click.command("crossref")

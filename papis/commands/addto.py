@@ -38,8 +38,9 @@ def run(document: papis.document.Document,
         filepaths: List[str],
         git: bool = False) -> None:
     doc_folder = document.get_main_folder()
-    if not doc_folder:
-        raise Exception("Document does not have a folder attached")
+    if not doc_folder or not os.path.exists(doc_folder):
+        raise Exception("Document does not have a folder attached: '{}'."
+                        .format(papis.document.describe(document)))
 
     from papis.utils import create_identifier
     suffix = create_identifier(skip=len(document.get_files()))
@@ -49,7 +50,7 @@ def run(document: papis.document.Document,
 
     for in_file_path in filepaths:
         if not os.path.exists(in_file_path):
-            raise Exception("{} not found".format(in_file_path))
+            raise FileNotFoundError("File '{}' not found".format(in_file_path))
 
         # Rename the file in the staging area
         new_filename = get_file_name(

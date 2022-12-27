@@ -102,7 +102,7 @@ class Importer:
         """
 
         raise NotImplementedError(
-            "Matching URIs is not implemented for '{}.{}'"
+            "Matching URI is not implemented for '{}.{}'"
             .format(cls.__module__, cls.__name__))
 
     @classmethod
@@ -160,7 +160,7 @@ class Importer:
             .format(type(self).__module__, type(self).__name__))
 
     def __str__(self) -> str:
-        return "Importer({}, uri={})".format(self.name, self.uri)
+        return "{}({}, uri={})".format(type(self).__name__, self.name, self.uri)
 
 
 def get_import_mgr() -> "stevedore.extension.ExtensionManager":

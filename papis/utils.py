@@ -281,7 +281,8 @@ def locate_document_in_lib(document: papis.document.Document,
         if docs:
             return docs[0]
 
-    raise IndexError("Document not found in library")
+    raise IndexError("Document not found in library: '{}'"
+                     .format(papis.document.describe(document)))
 
 
 def locate_document(
