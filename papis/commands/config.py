@@ -224,21 +224,24 @@ def cli(options: List[str],
         import json
         click.echo(json.dumps(result, indent=2))
     else:
+        lines = []
         if len(options) == 0 and section is None:
             # NOTE: no inputs prints all of the sections
             is_first = True
             for section, settings in result.items():
                 if not is_first:
-                    click.echo("")
+                    lines.append("")
 
                 is_first = False
-                click.echo("[{}]".format(section))
+                lines.append("[{}]".format(section))
 
                 for key, value in settings.items():
-                    click.echo(format_option(key, value))
+                    lines.append(format_option(key, value))
         else:
             if section is not None and all("." not in o for o in options):
-                click.echo("[{}]".format(section))
+                lines.append("[{}]".format(section))
 
             for key, value in result.items():
-                click.echo(format_option(key, value))
+                lines.append(format_option(key, value))
+
+        click.echo("\n".join(lines))
