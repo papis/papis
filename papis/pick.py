@@ -7,7 +7,6 @@ from typing import Callable, TypeVar, Generic, Sequence, Type
 import papis.config
 import papis.document
 import papis.plugin
-import papis.api
 
 logger = logging.getLogger("pick")
 T = TypeVar("T")
@@ -92,6 +91,8 @@ def pick_subfolder_from_lib(lib: str) -> Sequence[str]:
     Returns:
         Sequence[str]: Paths to subfolder
     """
+    import papis.api
+
     documents = papis.api.get_all_documents_in_lib(lib)
 
     # find all folders containing documents
