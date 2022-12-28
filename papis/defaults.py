@@ -136,6 +136,7 @@ settings = {
     "file-browser": get_default_opener(),
     "bibtex-journal-key": "journal",
     "bibtex-export-zotero-file": False,
+    "bibtex-ignore-keys": "[]",
     "extra-bibtex-keys": "[]",
     "extra-bibtex-types": "[]",
     "default-library": "papers",
