@@ -122,63 +122,53 @@ def text_area(title: str,
     }
 
     from prompt_toolkit.styles import Style
+    from prompt_toolkit.formatted_text import FormattedText
     papis_style = Style.from_dict(PAPIS_PYGMENTS_DEFAULT_STYLE)
     # print_formatted_text(PygmentsTokens(tokens), style=style)
-    print(tokens)
     # text_window = Window(height=text_height,
     #                      # style=style,
     #                      # content=BufferControl(buffer=buffer1, lexer=lexer))
     #                      content=FormattedTextControl(
     #                          text=PygmentsTokens(tokens), style=papis_style))
-
-    root_container = HSplit([
-        Window(
-            align=WindowAlign.LEFT,
-            style="bg:ansiwhite",
-            height=1,
-            content=FormattedTextControl(
-                text=[("fg:ansiblack bg:ansiwhite", title)]
-            ),
-            always_hide_cursor=True
-        ),
-
-        Window(
-            align=WindowAlign.LEFT,
-            # style="bg:ansiwhite",
-            height=text_height,
-            style=papis_style,
-            content=FormattedTextControl(
-                text=PygmentsTokens(tokens),
-            ),
-            always_hide_cursor=True
-        ),
-
-        # print_formatted_text(PygmentsTokens(tokens), style=style),
-
-        # Window(
-        #     height=1,
-        #     width=None,
-        #     align=WindowAlign.LEFT,
-        #     style="bg:ansiwhite",
-        #     content=FormattedTextControl(
-        #         text=[(
-        #             "fg:ansiblack bg:ansiwhite",
-        #             "Quit [Ctrl-q]  Save [Ctrl-s]"
-        #         )]
-        #     )
-        # ),
-    ])
-
-    layout = Layout(root_container)
-
-    # layout.focus(text_window)
-
-    app = App(editing_mode=EditingMode.EMACS,
-              layout=layout,
-              key_bindings=kb,
-              full_screen=full_screen)
-    app.run()
-    return app.return_text
+    print_formatted_text(FormattedText([("bold fg:ansimagenta", title)]))
+    print_formatted_text(PygmentsTokens(tokens), style=papis_style)
+    # root_container = HSplit([
+    #     Window(
+    #         align=WindowAlign.LEFT,
+    #         style="bg:ansiwhite",
+    #         height=1,
+    #         content=FormattedTextControl(
+    #             text=[("fg:ansiblack bg:ansiwhite", title)]
+    #         ),
+    #         always_hide_cursor=True
+    #     ),
+    #
+    #     print_formatted_text(PygmentsTokens(tokens), style=papis_style),
+    #
+    #     # Window(
+    #     #     height=1,
+    #     #     width=None,
+    #     #     align=WindowAlign.LEFT,
+    #     #     style="bg:ansiwhite",
+    #     #     content=FormattedTextControl(
+    #     #         text=[(
+    #     #             "fg:ansiblack bg:ansiwhite",
+    #     #             "Quit [Ctrl-q]  Save [Ctrl-s]"
+    #     #         )]
+    #     #     )
+    #     # ),
+    # ])
+    #
+    # layout = Layout(root_container)
+    #
+    # # layout.focus(text_window)
+    #
+    # app = App(editing_mode=EditingMode.EMACS,
+    #           layout=layout,
+    #           key_bindings=kb,
+    #           full_screen=full_screen)
+    # app.run()
+    # return app.return_text
 
 
 def yes_no_dialog(title: str, text: str) -> Any:
