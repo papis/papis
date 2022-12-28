@@ -42,6 +42,11 @@ def prompt(text: Union[str, FormattedText],
 
     print_formatted_text(FormattedText(text))
 
+    action_texts = []
+    for a in actions:
+        action_texts.append(("", a.name))
+        action_texts.append(("fg:ansiyellow", "[" + a.key + "] "))
+
     root_container = HSplit([
         Window(
             wrap_lines=True,
@@ -51,17 +56,18 @@ def prompt(text: Union[str, FormattedText],
             style="bg:ansiblack fg:ansiwhite",
             content=FormattedTextControl(
                 focusable=False,
-                text=HTML(" ".join(
-                    "{a.name}<yellow>[{a.key}]</yellow>".format(a=a)
-                    for a in actions
-                ))
+                text=FormattedText(action_texts)
+                # text=HTML(" ".join(
+                #     "{a.name}<yellow>[{a.key}]</yellow>".format(a=a)
+                #     for a in actions
+                # ))
             )
         )]
         + ([
             Window(
                 height=1, align=WindowAlign.LEFT,
                 always_hide_cursor=True,
-                style="bold fg:ansipurple bg:ansiwhite",
+                style="bold fg:ansimagenta",
                 content=FormattedTextControl(focusable=False, text=title))
         ] if title else [])
     )
@@ -190,7 +196,7 @@ def diffdict(dicta: Dict[str, Any],
 
     diffshow(
         texta=texta, textb=textb,
-        title="GENERAL DIFFERENCE",
+        title="Diff View",
         namea=namea,
         nameb=nameb,
         actions=actions)
