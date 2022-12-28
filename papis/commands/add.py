@@ -402,11 +402,11 @@ def run(paths: List[str],
     except IndexError:
         logger.info("No document matching found already in the library")
     else:
-        logger.warning("{c.Fore.RED}DUPLICATION WARNING{c.Style.RESET_ALL}")
+        logger.warning("{c.Fore.YELLOW}Duplication Warning{c.Style.RESET_ALL}")
         logger.warning(
             "A document in the library seems to match the added one.")
         logger.warning(
-            "(Hint) Use the 'papis update' command to just update the info.")
+            "(Hint: Use the 'papis update' command to just update the info.)")
 
         papis.tui.utils.text_area(
             "The following document is already in your library",
