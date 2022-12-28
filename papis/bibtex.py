@@ -342,8 +342,6 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
                     "Key '%s' is not present for ref '%s'",
                     journal_key, document["ref"])
 
-            bib_value = string_to_latex(bib_value)
-
         if not supports_unicode:
             bib_value = unicode_to_latex(bib_value)
 
