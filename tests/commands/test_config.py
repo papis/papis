@@ -46,6 +46,7 @@ def test_config_section() -> None:
     from papis.commands.config import run
     section = papis.config.get_general_settings_name()
     config = papis.config.get_configuration()
+    defaults = papis.config.get_default_settings()
 
     # checks:
     # * non-existent key in non-existent section: `editor`
@@ -70,7 +71,7 @@ def test_config_section() -> None:
     # checks:
     # * reading all the sections
     result = run([])
-    assert result == config.default_info
+    assert result == defaults
 
 
 @with_default_config

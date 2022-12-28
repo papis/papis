@@ -154,8 +154,8 @@ def run(
 
     if len(options) == 0:
         # NOTE: no options given -> just get all the settings
+        defaults = papis.config.get_default_settings()
         if default:
-            defaults = papis.config.get_default_settings()
             if section is None:
                 result = defaults
             elif section in defaults:
@@ -166,11 +166,23 @@ def run(
                              section, "', '".join(defaults))
         else:
             if section is None:
-                result = {
-                    sec: {k: config[sec][k] for k in config.options(sec)}
-                    for sec in config if sec != "DEFAULT"
-                    }
+                for sec in defaults:
+                    result[sec] = defaults[sec].copy()
+                    if sec in config:
+                        result.update({
+                            key: papis.config.get(key, section=sec)
+                            for key in config.options(sec) if key in result
+                            })
+            elif section in defaults:
+                result = defaults[section].copy()
+                if section in config:
+                    result.update({
+                        key: papis.config.get(key, section=section)
+                        for key in config.options(section) if key in result
+                        })
             elif section in config:
+                # NOTE: libraries are in the config but not in the defaults,
+                # so we just print whatever settings are in there.
                 result = {key: config[section][key] for key in config.options(section)}
             else:
                 logger.error("Section '%s' not found in configuration file. "
