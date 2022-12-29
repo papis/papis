@@ -349,15 +349,21 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
                     "Key '%s' is not present for ref '%s'",
                     journal_key, document["ref"])
 
+        override_key = bib_key + "_latex"
+        if override_key in document:
+            bib_value = str(document[override_key])
+
         if not supports_unicode:
-            bib_value = unicode_to_latex(bib_value)
+            bib_value = string_to_latex(bib_value)
 
         lines.append("{} = {{{}}}".format(bib_key, bib_value))
 
     # Handle file for zotero exporting
     if (papis.config.getboolean("bibtex-export-zotero-file")
             and document.get_files()):
-        lines.append("{} = {{{}}}".format("file", ";".join(document.get_files())))
+        lines.append("{} = {{{}}}".format("file",
+                                          ";".join(document.get_files())))
 
     separator = ",\n" + " " * indent
-    return "@{type}{{{keys},\n}}".format(type=bibtex_type, keys=separator.join(lines))
+    return "@{type}{{{keys},\n}}".format(type=bibtex_type,
+                                         keys=separator.join(lines))

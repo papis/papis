@@ -2,12 +2,13 @@ import os
 import re
 import pytest
 import logging
-from typing import Dict, Any
+from typing import Dict, Any, FrozenSet
 
 import tests
 import papis
 import papis.bibtex
 import papis.document
+import papis.config
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -120,24 +121,80 @@ def test_to_bibtex_no_ref() -> None:
     assert not result
 
 
+def assert_bibtex(data: Dict[str, Any], expected_bibtex: str) -> None:
+    doc = papis.document.from_data(data)
+    assert papis.bibtex.to_bibtex(doc) == expected_bibtex
+
+
+@tests.with_fresh_config()
 def test_to_bibtex_formatting() -> None:
     """Test formatting for the `to_bibtex` function."""
-    doc = papis.document.from_data({
-        "type": "report",
-        "author": "Albert Einstein",
-        "title": "The Theory of Everything",
-        "journal": "Nature",
-        "year": 2350,
-        "ref": "MyDocument"
-        })
+    assert_bibtex({"type": "report",
+                   "author": "Albert Einstein",
+                   "title": "The Theory of Everything",
+                   "journal": "Nature",
+                   "year": 2350,
+                   "ref": "MyDocument"},
+                  #
+                  "@report{MyDocument,\n"
+                  "  author = {Albert Einstein},\n"
+                  "  journal = {Nature},\n"
+                  "  title = {The Theory of Everything},\n"
+                  "  year = {2350},\n"
+                  "}")
 
-    expected_bibtex = (
-        "@report{MyDocument,\n"
-        + "  author = {Albert Einstein},\n"
-        + "  journal = {Nature},\n"
-        + "  title = {The Theory of Everything},\n"
-        + "  year = {2350},\n"
-        + "}"
-        )
 
-    assert papis.bibtex.to_bibtex(doc) == expected_bibtex
+@tests.with_fresh_config()
+def test_overridable() -> None:
+    doc = {"type": "report",
+           "author": "Albert Einstein",
+           "title": "Ä α The Theory of Everything & Nothing",
+           "title_latex": r"The Theory of Everything \& Nothing",
+           "journal": "Nature",
+           "year": 2350,
+           "ref": "MyDocument"
+           }
+    papis.config.set("bibtex-unicode", True)
+    assert_bibtex(doc,
+                  "@report{MyDocument,\n"
+                  "  author = {Albert Einstein},\n"
+                  "  journal = {Nature},\n"
+                  "  title = {The Theory of Everything \\& Nothing},\n"
+                  "  year = {2350},\n"
+                  "}")
+
+    papis.config.set("bibtex-unicode", False)
+    assert_bibtex(doc,
+                  "@report{MyDocument,\n"
+                  "  author = {Albert Einstein},\n"
+                  "  journal = {Nature},\n"
+                  "  title = {The Theory of Everything "
+                  # this will sadly happen, and it makes sense
+                  r"\textbackslash \&"
+                  " Nothing},\n"
+                  "  year = {2350},\n"
+                  "}")
+
+
+@tests.with_fresh_config()
+def test_ignore_keys() -> None:
+    doc = {"type": "report",
+           "author": "Albert Einstein",
+           "year": 2350,
+           "ref": "MyDocument"}
+    assert_bibtex(doc,
+                  "@report{MyDocument,\n"
+                  "  author = {Albert Einstein},\n"
+                  "  year = {2350},\n"
+                  "}")
+
+    # TODO: think about this since these keys are not updated
+    #       dynamically and it's possible is not worth it to update dynamically
+    papis.config.set("bibtex-ignore-keys", "['year']")
+    papis.bibtex.bibtex_ignore_keys = (
+        frozenset(papis.config.getlist("bibtex-ignore-keys"))
+    )  # type: FrozenSet[str]
+    assert_bibtex(doc,
+                  "@report{MyDocument,\n"
+                  "  author = {Albert Einstein},\n"
+                  "}")
