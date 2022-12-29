@@ -116,12 +116,7 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
                                       filename: str) -> Callable[[], None]:
     def _on_finish() -> None:
         profiler.disable()
-        profiler.create_stats()
-        with open(filename, "w") as output:
-            import pstats
-            stats = pstats.Stats(profiler, stream=output)
-            stats.sort_stats("time")
-            stats.print_stats()
+        profiler.dump_stats(filename)
 
     return _on_finish
 
