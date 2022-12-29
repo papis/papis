@@ -69,7 +69,7 @@ def run(document: papis.document.Document,
 
 @click.command("rm")
 @click.help_option("-h", "--help")
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.git_option(help="Remove in git")
 @papis.cli.sort_option()
 @papis.cli.doc_folder_option()

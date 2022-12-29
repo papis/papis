@@ -19,7 +19,7 @@ from papis.citations import (has_citations,
 
 @click.command("citations")
 @click.help_option("--help", "-h")
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.sort_option()
 @click.option("-c",
               "--fetch-citations",

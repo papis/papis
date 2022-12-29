@@ -315,7 +315,7 @@ def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
 
 @click.command("doctor")
 @click.help_option("--help", "-h")
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.sort_option()
 @click.option("-t", "--checks", "_checks",
               default=lambda: papis.config.getlist("doctor-default-checks"),

@@ -60,7 +60,7 @@ def run(keep: papis.document.Document,
 
 @click.command("merge")
 @click.help_option("-h", "--help")
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.sort_option()
 @click.option("-s",
               "--second",

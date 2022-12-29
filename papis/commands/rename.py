@@ -58,7 +58,7 @@ def run(document: papis.document.Document,
 
 @click.command("rename")
 @click.help_option("--help", "-h")
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.git_option()
 @papis.cli.sort_option()
 @papis.cli.doc_folder_option()

@@ -145,7 +145,7 @@ def run(document: papis.document.Document,
 
 @click.command("open")
 @click.help_option("-h", "--help")
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.sort_option()
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
