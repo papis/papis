@@ -40,12 +40,12 @@ you will not be able to parse the publisher through a search.
 
 """
 import os
-import logging
 from typing import List, Dict, Optional, Any, KeysView, TYPE_CHECKING
 
 import papis.config
 import papis.strings
 import papis.document
+import papis.logging
 import papis.database.base
 import papis.database.cache
 from papis.utils import get_cache_home, get_folders, folders_to_documents
@@ -55,7 +55,7 @@ if TYPE_CHECKING:
     from whoosh.fields import Schema, FieldType
     from whoosh.writing import IndexWriter
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 
 class Database(papis.database.base.Database):

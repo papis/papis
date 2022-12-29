@@ -56,7 +56,6 @@ Command-line Interface
     :prog: papis browse
 """
 
-import logging
 from typing import Optional
 
 import click
@@ -69,8 +68,9 @@ import papis.pick
 import papis.database
 import papis.strings
 import papis.document
+import papis.logging
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 
 def run(document: papis.document.Document,

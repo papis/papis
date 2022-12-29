@@ -95,7 +95,6 @@ Command-line Interface
 
 import os
 import re
-import logging
 from typing import List, Any, Optional, Dict, Tuple
 
 import click
@@ -115,8 +114,9 @@ import papis.git
 import papis.format
 import papis.citations
 import papis.id
+import papis.logging
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 
 class FromFolderImporter(papis.importer.Importer):

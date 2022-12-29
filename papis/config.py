@@ -1,12 +1,12 @@
 import os
-import logging
 import configparser
 from typing import Dict, Any, List, Optional, Callable  # noqa: ignore
 
 import papis.exceptions
 import papis.library
+import papis.logging
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 PapisConfigType = Dict[str, Dict[str, Any]]
 

@@ -14,7 +14,6 @@ Command-line Interface
 """
 
 import os
-import logging
 from typing import Optional, List, Dict, Any
 
 import click
@@ -31,8 +30,9 @@ import papis.format
 import papis.strings
 import papis.commands.rm
 import papis.commands.update
+import papis.logging
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 
 def run(keep: papis.document.Document,

@@ -1,7 +1,6 @@
 import os
 import re
 import sys
-import logging
 from typing import List, Optional, Match, Dict, Tuple
 
 import papis.utils
@@ -10,9 +9,9 @@ import papis.document
 import papis.config
 import papis.format
 import papis.database.base
+import papis.logging
 
-
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 
 def get_cache_file_name(directory: str) -> str:

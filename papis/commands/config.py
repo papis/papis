@@ -37,14 +37,14 @@ Command-line Interface
     :prog: papis config
 """
 
-import logging
 from typing import Optional
 
 import click
 
 import papis.commands
+import papis.logging
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 
 def run(option_string: str) -> Optional[str]:

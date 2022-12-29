@@ -1,4 +1,3 @@
-import logging
 import os
 from typing import Optional, List, Dict, Any, Sequence
 
@@ -9,6 +8,7 @@ import papis.utils
 import papis.config
 import papis.importer
 import papis.document
+import papis.logging
 
 # NOTE: try to use the CLoader when possible, as it's a lot faster than the
 # python version, at least at the time of writing
@@ -17,7 +17,7 @@ try:
 except ImportError:
     from yaml import SafeLoader as Loader  # type: ignore[assignment]
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 YAML_LOADER = Loader
 

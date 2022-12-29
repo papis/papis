@@ -26,8 +26,6 @@ Command-line Interface
 """
 
 import os
-import sys
-import logging
 from typing import Optional, Tuple, List, Callable, TYPE_CHECKING
 
 import click
@@ -36,47 +34,22 @@ import colorama
 
 import papis
 import papis.api
+import papis.cli
 import papis.config
+import papis.logging
 import papis.commands
 import papis.database
-import papis.cli
 
 if TYPE_CHECKING:
     import cProfile
 
-logger = logging.getLogger(__name__)
-
-LEVEL_TO_COLOR = {
-    "CRITICAL": colorama.Style.BRIGHT + colorama.Fore.RED,
-    "ERROR": colorama.Style.BRIGHT + colorama.Fore.RED,
-    "WARNING": colorama.Style.BRIGHT + colorama.Fore.YELLOW,
-    "INFO": colorama.Fore.CYAN,
-    "DEBUG": colorama.Fore.WHITE,
-}
-
-
-class ColoramaFormatter(logging.Formatter):
-    def format(self, record: logging.LogRecord) -> str:
-        if isinstance(record.msg, str):
-            record.msg = record.msg.format(c=colorama)
-
-        if record.levelname in LEVEL_TO_COLOR:
-            record.levelname = "{}{}{}".format(
-                LEVEL_TO_COLOR[record.levelname],
-                record.levelname,
-                colorama.Style.RESET_ALL)
-
-        if record.name.startswith("papis."):
-            record.name = record.name[6:]
-
-        return super().format(record)
+logger = papis.logging.get_logger(__name__)
 
 
 class MultiCommand(click.core.MultiCommand):
 
     scripts = papis.commands.get_scripts()
     scripts.update(papis.commands.get_external_scripts())
-    logger = logging.getLogger("multicommand")
 
     def list_commands(self, ctx: click.core.Context) -> List[str]:
         """List all matched commands in the command folder and in path
@@ -109,7 +82,7 @@ class MultiCommand(click.core.MultiCommand):
             matches = list(map(
                 str, difflib.get_close_matches(name, self.scripts, n=2)))
 
-            self.logger.error(
+            print(
                 "{c.Fore.RED}{c.Style.BRIGHT}{c.Back.BLACK}"
                 "Command '{name}' is unknown! Did you mean '{matches}'?"
                 "{c.Style.RESET_ALL}"
@@ -118,7 +91,7 @@ class MultiCommand(click.core.MultiCommand):
 
             # return the match if there was only one match
             if len(matches) == 1:
-                self.logger.warning("I suppose you meant: '%s'", matches[0])
+                print("I suppose you meant: '%s'", matches[0])
                 script = self.scripts[matches[0]]
             else:
                 return None
@@ -152,15 +125,6 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
             stats.print_stats()
 
     return _on_finish
-
-
-def _disable_color(color: str = "auto") -> bool:
-    return (
-        color == "no"
-        or (color == "auto" and not sys.stdout.isatty())
-        # NOTE: https://no-color.org/
-        or (color == "auto" and "NO_COLOR" in os.environ)
-        )
 
 
 @click.group(
@@ -249,33 +213,7 @@ def run(verbose: bool,
         import atexit
         atexit.register(generate_profile_writing_function(profiler, profile))
 
-    if _disable_color(color):
-        # Turn off colorama (strip escape sequences from the output)
-        colorama.init(strip=True)
-    else:
-        colorama.init()
-
-    log_format = ("["
-                  + "%(levelname)s"
-                  + "] "
-                  + colorama.Fore.GREEN
-                  + "%(name)s"
-                  + colorama.Style.RESET_ALL
-                  + ": "
-                  + "%(message)s"
-                  )
-
-    if verbose:
-        log = "DEBUG"
-        log_format = "[%(relativeCreated)d] {}".format(log_format)
-
-    if logfile is None:
-        handler = logging.StreamHandler()       # type: logging.Handler
-        handler.setFormatter(ColoramaFormatter(log_format))
-    else:
-        handler = logging.FileHandler(logfile, mode="a")
-
-    logging.basicConfig(level=getattr(logging, log), handlers=[handler])
+    papis.logging.setup(log, color=color, logfile=logfile, verbose=verbose)
 
     # NOTE: order of the configurations is intentional based on priority
     #

@@ -1,7 +1,6 @@
 import os
 import re
 import sys
-import logging
 from typing import List, Optional, Any, Sequence, Type, Dict, Union, TYPE_CHECKING
 
 import papis.bibtex
@@ -10,11 +9,12 @@ import papis.document
 import papis.importer
 import papis.plugin
 import papis.utils
+import papis.logging
 
 if TYPE_CHECKING:
     import bs4
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 
 def _extension_name() -> str:
@@ -71,7 +71,7 @@ class Downloader(papis.importer.Importer):
             uri=uri,
             ctx=ctx,
             name=name or os.path.basename(__file__))
-        self.logger = logging.getLogger("downloader.{}".format(self.name))
+        self.logger = papis.logging.get_logger("papis.downloader.{}".format(self.name))
         self.logger.debug("uri '%s'", uri)
 
         self.expected_document_extension = expected_document_extension

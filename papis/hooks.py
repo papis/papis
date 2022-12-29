@@ -1,13 +1,12 @@
 from typing import List, Dict, Any, Callable, TYPE_CHECKING
 
-import logging
-
 import papis.plugin
+import papis.logging
 
 if TYPE_CHECKING:
     from stevedore import ExtensionManager
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 NON_STEVEDORE_HOOKS = {}  # type: Dict[str, List[Callable[[Any], None]]]
 

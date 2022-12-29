@@ -1,13 +1,13 @@
 # See https://github.com/xlcnd/isbnlib for details
-import logging
 from typing import Dict, Any, List, Optional
 
 import click
 
 import papis.document
 import papis.importer
+import papis.logging
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 
 def get_data(query: str = "",
