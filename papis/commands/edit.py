@@ -7,7 +7,6 @@ Command-line Interface
 .. click:: papis.commands.edit:cli
     :prog: papis edit
 """
-import logging
 from typing import Optional
 
 import click
@@ -25,8 +24,9 @@ import papis.strings
 import papis.git
 import papis.format
 import papis.notes
+import papis.logging
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 
 def run(document: papis.document.Document,

@@ -1,13 +1,13 @@
-import logging
 from typing import Optional, Any, Callable, TYPE_CHECKING
 
 import papis.config
 import papis.document
+import papis.logging
 
 if TYPE_CHECKING:
     import pyparsing
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 MATCHER_TYPE = Callable[[papis.document.Document, str, Optional[str]], Any]
 

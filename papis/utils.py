@@ -1,7 +1,6 @@
 import os
 import sys
 import re
-import logging
 import pathlib
 from itertools import count, product
 from typing import (Optional, List, Iterator, Any, Dict,
@@ -21,8 +20,9 @@ import papis.downloaders
 import papis.document
 import papis.database
 import papis.defaults
+import papis.logging
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 A = TypeVar("A")
 B = TypeVar("B")

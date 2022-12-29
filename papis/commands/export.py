@@ -48,7 +48,6 @@ Command-line Interface
 """
 
 import os
-import logging
 from typing import List, Optional
 
 import click
@@ -61,8 +60,9 @@ import papis.api
 import papis.database
 import papis.strings
 import papis.plugin
+import papis.logging
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 
 def available_formats() -> List[str]:

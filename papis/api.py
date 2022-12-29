@@ -2,16 +2,17 @@
 This module describes which functions are intended to be used by users to
 create papis scripts.
 """
+
 from typing import Any, Dict, List, Optional
-import logging
 
 import papis.utils
 import papis.commands
 import papis.config
 import papis.pick
 import papis.database
+import papis.logging
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 
 def get_lib_name() -> str:

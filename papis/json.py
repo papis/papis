@@ -1,11 +1,11 @@
-import logging
 from typing import List
 
 import click
 
 import papis.document
+import papis.logging
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 
 def exporter(documents: List[papis.document.Document]) -> str:

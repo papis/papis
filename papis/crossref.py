@@ -1,6 +1,5 @@
 import re
 import os
-import logging
 import tempfile
 from typing import Set, List, Dict, Any, Optional, Tuple, TYPE_CHECKING
 
@@ -13,11 +12,12 @@ import papis.filetype
 import papis.document
 import papis.importer
 import papis.downloaders.base
+import papis.logging
 
 if TYPE_CHECKING:
     import habanero
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 KeyConversionPair = papis.document.KeyConversionPair
 

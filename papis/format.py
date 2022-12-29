@@ -1,12 +1,12 @@
-import logging
 from typing import Optional, Union, Any, Dict
 
 import papis.config
 import papis.plugin
 import papis.document
+import papis.logging
 from papis.document import Document
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 FormatDocType = Union[Document, Dict[str, Any]]
 _FORMATER = None  # type: Optional[Formater]

@@ -5,12 +5,14 @@ For description refer to
 https://www.base-search.net/about/download/base_interface.pdf
 
 """
-import logging
+
 from typing import Optional, Dict, Any, List, Callable, NamedTuple
 
 import click
 
-logger = logging.getLogger(__name__)
+import papis.logging
+
+logger = papis.logging.get_logger(__name__)
 
 
 def get_data(query: str = "", hits: int = 20) -> List[Dict[str, Any]]:

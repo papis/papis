@@ -55,13 +55,15 @@ The ``extension_manager`` will be able to access the provided functions
 in the package if they have been declared in the entry points of
 the ``setup.py`` script of the named package.
 """
-import logging
+
 from typing import List, Dict, Any, TYPE_CHECKING
+
+import papis.logging
 
 if TYPE_CHECKING:
     from stevedore import ExtensionManager
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 MANAGERS = {}  # type: Dict[str, ExtensionManager]
 

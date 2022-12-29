@@ -6,7 +6,6 @@ There are many checks implemented and some others that you
 can add yourself through the python configuration file.
 """
 
-import logging
 import os
 import re
 import json
@@ -24,9 +23,10 @@ import papis.pick
 import papis.database
 import papis.strings
 import papis.document
+import papis.logging
 from papis.commands.edit import run as edit_run
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 Error = NamedTuple("Error", [("name", str),
                              ("path", str),

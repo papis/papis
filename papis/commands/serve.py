@@ -1,7 +1,6 @@
 import re
 import os
 import json
-import logging
 import http.server
 import urllib.parse
 from typing import Any, List, Optional, Tuple, Callable, Dict  # noqa: ignore
@@ -23,6 +22,7 @@ import papis.commands.doctor
 import papis.crossref
 import papis.notes
 import papis.citations
+import papis.logging
 
 import papis.web.static
 import papis.web.libraries
@@ -32,7 +32,7 @@ import papis.web.search
 import papis.web.pdfjs
 
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 USE_GIT = False  # type: bool
 TAGS_LIST = {}  # type: Dict[str, Optional[Dict[str, int]]]

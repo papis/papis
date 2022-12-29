@@ -1,6 +1,5 @@
 import os
 import re
-import logging
 import functools
 from typing import (
     Optional, Any, List, Generic, Sequence,
@@ -17,8 +16,9 @@ from prompt_toolkit.layout.containers import (
 from prompt_toolkit.filters import has_focus
 
 import papis.utils
+import papis.logging
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 Option = TypeVar("Option")
 

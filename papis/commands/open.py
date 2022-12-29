@@ -74,7 +74,6 @@ Command-line Interface
 """
 
 import os
-import logging
 from typing import Optional
 
 import click
@@ -89,8 +88,9 @@ import papis.database
 import papis.document
 import papis.format
 import papis.strings
+import papis.logging
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 
 def run(document: papis.document.Document,

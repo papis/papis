@@ -87,7 +87,6 @@ Command-line Interface
     :nested: full
 """
 
-import logging
 from typing import List, Optional, TYPE_CHECKING
 import shlex
 
@@ -107,11 +106,12 @@ import papis.format
 import papis.crossref
 import papis.plugin
 import papis.citations
+import papis.logging
 
 if TYPE_CHECKING:
     from stevedore import ExtensionManager
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 
 def _extension_name() -> str:

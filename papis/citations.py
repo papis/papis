@@ -1,6 +1,5 @@
-from typing import Dict, Any, List, Optional, Sequence, Tuple
-import logging
 import os
+from typing import Dict, Any, List, Optional, Sequence, Tuple
 
 import tqdm
 import colorama
@@ -10,9 +9,10 @@ import papis.database
 import papis.crossref
 import papis.yaml
 import papis.utils
+import papis.logging
 from papis.document import Document, to_dict
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 Citation = Dict[str, Any]
 Citations = Sequence[Citation]

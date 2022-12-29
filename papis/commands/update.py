@@ -41,7 +41,6 @@ Command-line Interface
     :prog: papis update
 """
 
-import logging
 from typing import List, Dict, Tuple, Optional, Any
 
 import click
@@ -57,8 +56,9 @@ import papis.format
 import papis.cli
 import papis.importer
 import papis.git
+import papis.logging
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 
 def _update_with_database(document: papis.document.Document) -> None:

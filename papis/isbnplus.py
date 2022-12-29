@@ -59,18 +59,18 @@ An example of successful returns:
     </book>
     ...
 """
-import logging
-from typing import List, Dict, Any
 import urllib.parse
 import urllib.request
+from typing import List, Dict, Any
 
 import click
 import bs4
 
 import papis.config
 import papis.document
+import papis.logging
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 ISBNPLUS_KEY = "98a765346bc0ffee6ede527499b6a4ee"  # type: str
 ISBNPLUS_APPID = "4846a7d1"  # type: str
