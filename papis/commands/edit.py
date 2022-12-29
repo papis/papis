@@ -73,7 +73,7 @@ def edit_notes(document: papis.document.Document,
 
 @click.command("edit")
 @click.help_option("-h", "--help")
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.doc_folder_option()
 @papis.cli.git_option(help="Add changes made to the info file")
 @papis.cli.sort_option()

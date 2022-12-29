@@ -133,7 +133,7 @@ def run(
 
 @click.command("list")
 @click.help_option("--help", "-h")
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.sort_option()
 @click.option(
     "-i",

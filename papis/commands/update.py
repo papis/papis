@@ -89,7 +89,7 @@ def run(document: papis.document.Document,
 @click.command("update")
 @click.help_option("--help", "-h")
 @papis.cli.git_option()
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @papis.cli.sort_option()

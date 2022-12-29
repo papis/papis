@@ -88,7 +88,7 @@ def run(documents: List[papis.document.Document], to_format: str) -> str:
 
 @click.command("export")
 @click.help_option("--help", "-h")
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.doc_folder_option()
 @papis.cli.sort_option()
 @papis.cli.all_option()

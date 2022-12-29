@@ -120,7 +120,7 @@ def run(document: papis.document.Document,
 
 @click.command("browse")
 @click.help_option("--help", "-h")
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.sort_option()
 @click.option("-k", "--key", default="",
               help="Use the value of the document's key to open in"

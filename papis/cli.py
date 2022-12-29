@@ -15,7 +15,7 @@ DecoratorCallable = Callable[..., Any]
 DecoratorArgs = Any
 
 
-def query_option(**attrs: DecoratorArgs) -> DecoratorCallable:
+def query_argument(**attrs: DecoratorArgs) -> DecoratorCallable:
     """Adds a ``query`` argument as a decorator"""
     def decorator(f: DecoratorCallable) -> Any:
         attrs.setdefault(
