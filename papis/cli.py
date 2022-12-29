@@ -25,6 +25,17 @@ def query_argument(**attrs: DecoratorArgs) -> DecoratorCallable:
     return decorator
 
 
+def query_option(**attrs: DecoratorArgs) -> DecoratorCallable:
+    """Adds a ``-q``, ``--query`` option as a decorator"""
+    def decorator(f: DecoratorCallable) -> Any:
+        attrs.setdefault("default",
+                         lambda: papis.config.get("default-query-string"))
+        attrs.setdefault("type", str)
+        attrs.setdefault("help", "Document query for the database")
+        return click.decorators.option("-q", "--query", **attrs)(f)
+    return decorator
+
+
 def sort_option(**attrs: DecoratorArgs) -> DecoratorCallable:
     """Adds a ``sort`` argument as a decorator"""
     def decorator(f: DecoratorCallable) -> Any:
