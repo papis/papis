@@ -1,3 +1,8 @@
+import os
+import shutil
+from typing import Dict, Any, Optional
+import contextlib
+
 import tempfile
 import papis.config
 import papis.api
@@ -5,24 +10,23 @@ import papis.utils
 import papis.document
 import papis.library
 from papis.downloaders import Downloader
-import os
-import shutil
-from typing import Dict, Any, Optional
 
 
 class MockDownloader(Downloader):
-    def __init__(
-            self,
-            url: str = "",
-            name: str = "",
-            bibtex_data: Optional[str] = None,
-            document_data: Optional[bytes] = None):
+
+    def __init__(self,
+                 url: str = "",
+                 name: str = "",
+                 bibtex_data: Optional[str] = None,
+                 document_data: Optional[bytes] = None):
         self.bibtex_data = bibtex_data
         self.document_data = document_data
 
 
 def create_random_pdf(suffix: str = "", prefix: str = "") -> str:
-    with tempfile.NamedTemporaryFile(suffix=suffix, prefix=prefix, delete=False) as fd:
+    with tempfile.NamedTemporaryFile(suffix=suffix,
+                                     prefix=prefix,
+                                     delete=False) as fd:
         fd.write("%PDF-1.5%\n".encode())
 
     return fd.name
@@ -38,21 +42,25 @@ def create_random_epub(suffix: str = "", prefix: str = "") -> str:
         + [0x00 for i in range(1)]
         )
 
-    with tempfile.NamedTemporaryFile(suffix=suffix, prefix=prefix, delete=False) as fd:
+    with tempfile.NamedTemporaryFile(suffix=suffix,
+                                     prefix=prefix,
+                                     delete=False) as fd:
         fd.write(bytearray(buf))
 
     return fd.name
 
 
 def create_random_file(suffix: str = "", prefix: str = "") -> str:
-    with tempfile.NamedTemporaryFile(suffix=suffix, prefix=prefix, delete=False) as fd:
+    with tempfile.NamedTemporaryFile(suffix=suffix,
+                                     prefix=prefix,
+                                     delete=False) as fd:
         fd.write("hello".encode())
 
     return fd.name
 
 
-def create_real_document(
-        data: Dict[str, Any], suffix: str = "") -> Dict[str, Any]:
+def create_real_document(data: Dict[str, Any],
+                         suffix: str = "") -> Dict[str, Any]:
     folder = tempfile.mkdtemp(suffix=suffix)
     doc = papis.document.Document(folder=folder, data=data)
     doc.save()

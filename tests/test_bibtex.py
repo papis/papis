@@ -1,15 +1,19 @@
 import os
 import re
 import pytest
+import logging
+from typing import Dict, Any
 
+import tests
 import papis
 import papis.bibtex
 import papis.document
 
-import logging
 logging.basicConfig(level=logging.DEBUG)
 
-BIBTEX_RESOURCES = os.path.join(os.path.dirname(__file__), "resources", "bibtex")
+BIBTEX_RESOURCES = os.path.join(os.path.dirname(__file__),
+                                "resources",
+                                "bibtex")
 
 
 def test_bibtex_to_dict():
