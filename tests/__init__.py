@@ -117,6 +117,16 @@ test_data = [
 def get_test_lib_name() -> str:
     return "test-lib"
 
+class with_fresh_config(contextlib.ContextDecorator):
+
+    def __enter__(self) -> papis.config.Configuration:
+        config = papis.config.reset_configuration()
+        config["settings"] = {}
+        return config
+
+    def __exit__(self, *exc: Any) -> None:
+        return
+
 
 def setup_test_library() -> None:
     """Set-up a test library for tests
