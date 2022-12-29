@@ -130,7 +130,7 @@ def get_explorer_mgr() -> "ExtensionManager":
 @click.command("lib")
 @click.pass_context
 @click.help_option("--help", "-h")
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.doc_folder_option()
 @click.option("--library", "-l", default=None, help="Papis library to look")
 def lib(ctx: click.Context, query: str,
@@ -184,7 +184,7 @@ def pick(ctx: click.Context, number: Optional[int]) -> None:
 
 @click.command("citations")
 @click.pass_context
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.doc_folder_option()
 @click.help_option("--help", "-h")
 @click.option("-b",

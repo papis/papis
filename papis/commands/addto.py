@@ -103,7 +103,7 @@ def run(document: papis.document.Document,
 
 @click.command("addto")
 @click.help_option("--help", "-h")
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.git_option(help="Add and commit files")
 @papis.cli.sort_option()
 @click.option(

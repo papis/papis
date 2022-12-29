@@ -115,6 +115,10 @@ bibtex_key_converter = {
     "proceedingsTitle": "booktitle"
 }  # type: Dict[str, str]
 
+bibtex_ignore_keys = (
+    frozenset(papis.config.getlist("bibtex-ignore-keys"))
+)  # type: FrozenSet[str]
+
 
 def exporter(documents: List[papis.document.Document]) -> str:
     return "\n\n".join(to_bibtex_multiple(documents))
@@ -329,6 +333,9 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
     for key in sorted(document):
         bib_key = bibtex_key_converter.get(key, key)
         if bib_key not in bibtex_keys:
+            continue
+
+        if bib_key in bibtex_ignore_keys:
             continue
 
         bib_value = str(document[bib_key])
