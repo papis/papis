@@ -30,7 +30,6 @@ from typing import Optional, Tuple, List, Callable, TYPE_CHECKING
 
 import click
 import click.core
-import colorama
 
 import papis
 import papis.api
@@ -74,6 +73,7 @@ class MultiCommand(click.core.MultiCommand):
         >>> cmd.name, cmd.help
         ('add', 'Add...')
         >>> mc.get_command(None, 'this command does not exist')
+        Command ... is unknown!
         """
         try:
             script = self.scripts[name]
@@ -82,12 +82,11 @@ class MultiCommand(click.core.MultiCommand):
             matches = list(map(
                 str, difflib.get_close_matches(name, self.scripts, n=2)))
 
-            print(
-                "{c.Fore.RED}{c.Style.BRIGHT}{c.Back.BLACK}"
-                "Command '{name}' is unknown! Did you mean '{matches}'?"
-                "{c.Style.RESET_ALL}"
-                .format(c=colorama, name=name, matches="' or '".join(matches))
-                )
+            if matches:
+                print("Command '{name}' is unknown! Did you mean '{matches}'?"
+                      .format(name=name, matches="' or '".join(matches)))
+            else:
+                print("Command '{name}' is unknown!".format(name=name))
 
             # return the match if there was only one match
             if len(matches) == 1:
@@ -136,7 +135,7 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
     "-v",
     "--verbose",
     help="Make the output verbose (equivalent to --log DEBUG)",
-    default=False,
+    default="PAPIS_DEBUG" in os.environ,
     is_flag=True)
 @click.option(
     "--profile",
