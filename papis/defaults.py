@@ -135,6 +135,7 @@ settings = {
     "mark-opener-format": get_default_opener(),
 
     "file-browser": get_default_opener(),
+    "bibtex-unicode": False,
     "bibtex-journal-key": "journal",
     "bibtex-export-zotero-file": False,
     "bibtex-ignore-keys": "[]",
@@ -152,10 +153,14 @@ settings = {
         "[<ansiyellow>{doc.html_escape[tags]}</ansiyellow>]"
     ),
 
+    "formater": "python",
+    "time-stamp": True,
     "info-allow-unicode": True,
     "ref-format": "{doc[title]:.15} {doc[author]:.6} {doc[year]}",
     "multiple-authors-separator": " and ",
     "multiple-authors-format": "{au[family]}, {au[given]}",
+    "document-description-format": "{doc[title]} - {doc[author]}",
+    "unique-document-keys": "['doi','ref','isbn','isbn10','url','doc_url']",
 
     "whoosh-schema-fields": "['doi']",
     "whoosh-schema-prototype":
@@ -165,16 +170,6 @@ settings = {
     '"year": TEXT(stored=True),\n'
     '"tags": TEXT(stored=True),\n'
     "}",
-
-    "unique-document-keys": "['doi','ref','isbn','isbn10','url','doc_url']",
-
-    "downloader-proxy": None,
-    "bibtex-unicode": False,
-
-    "time-stamp": True,
-
-    "document-description-format": "{doc[title]} - {doc[author]}",
-    "formater": "python",
 
     # fzf options
     "fzf-binary": "fzf",
@@ -190,5 +185,9 @@ settings = {
                           "{c.Fore.YELLOW}"
                           "«{doc[year]:4}»"
                           "{c.Style.RESET_ALL}"
-                          ":{doc[tags]}")
+                          ":{doc[tags]}"),
+
+    # importer / downloader options
+    "downloader-proxy": None,
+    "isbn-service": "openl",
 }  # type: Dict[str, Any]

@@ -462,6 +462,12 @@ Downloaders
     To know more you can checkout this
     `link <http://docs.python-requests.org/en/master/user/advanced/#proxies>`__.
 
+.. papis-config:: isbn-service
+
+    Sets the ISBN service used by the ISBN importer. Available plugins are
+    documented
+    `here <https://isbnlib.readthedocs.io/en/latest/devs.html#plugins>`__.
+
 Databases
 ---------
 
