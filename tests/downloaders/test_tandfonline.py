@@ -1,13 +1,13 @@
 import os
 import pytest
 
+import papis.logging
 import papis.downloaders
 from papis.downloaders.tandfonline import Downloader
 
 import tests.downloaders as testlib
 
-import logging
-logging.basicConfig(level=logging.DEBUG)
+papis.logging.setup("DEBUG")
 
 TANDFONLINE_URLS = (
     "https://www.tandfonline.com/doi/full/10.1080/00268976.2013.788745",

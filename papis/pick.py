@@ -1,5 +1,4 @@
 import os
-import logging
 import functools
 from abc import ABC, abstractmethod
 from typing import Callable, TypeVar, Generic, Sequence, Type
@@ -7,8 +6,10 @@ from typing import Callable, TypeVar, Generic, Sequence, Type
 import papis.config
 import papis.document
 import papis.plugin
+import papis.logging
 
-logger = logging.getLogger("pick")
+logger = papis.logging.get_logger(__name__)
+
 T = TypeVar("T")
 Option = TypeVar("Option")
 

@@ -1,13 +1,13 @@
 import os
 import pytest
 
+import papis.logging
 import papis.downloaders
 from papis.downloaders.springer import Downloader
 
 import tests.downloaders as testlib
 
-import logging
-logging.basicConfig(level=logging.DEBUG)
+papis.logging.setup("DEBUG")
 
 SPRINGER_LINK_URLS = (
     "https://link.springer.com/article/10.1007/s10924-010-0192-1",

@@ -1,10 +1,11 @@
 """This module serves as an lightweight interface for git related functions.
 """
 import os
-import logging
 from typing import List
 
-logger = logging.getLogger("git")
+import papis.logging
+
+logger = papis.logging.get_logger(__name__)
 
 
 def _issue_git_command(path: str, cmd: str) -> None:

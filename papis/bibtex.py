@@ -1,6 +1,5 @@
 import os
 import string
-import logging
 from typing import Optional, List, FrozenSet, Dict, Any, Iterator
 
 import click
@@ -10,8 +9,9 @@ import papis.importer
 import papis.filetype
 import papis.document
 import papis.format
+import papis.logging
 
-logger = logging.getLogger("bibtex")  # type: logging.Logger
+logger = papis.logging.get_logger(__name__)
 
 # NOTE: see the BibLaTeX docs for an up to date list of types and keys:
 #   https://ctan.org/pkg/biblatex?lang=en
@@ -168,7 +168,6 @@ def explorer(ctx: click.core.Context, bibfile: str) -> None:
     papis explore bibtex lib.bib pick
 
     """
-    logger = logging.getLogger("explore:bibtex")
     logger.info("Reading in bibtex file '%s'", bibfile)
 
     docs = [
@@ -217,7 +216,6 @@ def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
         formally recognizes.
     """
     from bibtexparser.bparser import BibTexParser
-
     parser = BibTexParser(
         common_strings=True,
         ignore_nonstandard_types=False,
@@ -225,7 +223,9 @@ def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
         interpolate_strings=True)
 
     # bibtexparser has too many debug messages to be useful
+    import logging
     logging.getLogger("bibtexparser.bparser").setLevel(logging.WARNING)
+
     if os.path.exists(bibtex):
         with open(bibtex) as fd:
             logger.debug("Reading in file '%s'", bibtex)

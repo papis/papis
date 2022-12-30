@@ -1,13 +1,13 @@
 import os
 import pytest
 
+import papis.logging
 import papis.downloaders
 from papis.downloaders.annualreviews import Downloader
 
 import tests.downloaders as testlib
 
-import logging
-logging.basicConfig(level=logging.DEBUG)
+papis.logging.setup("DEBUG")
 
 ANNUAL_REVIEWS_URLS = (
     "https://www.annualreviews.org/doi/10.1146/annurev-conmatphys-031214-014726",

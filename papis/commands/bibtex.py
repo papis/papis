@@ -124,7 +124,6 @@ Command-line Interface
 
 import os
 import re
-import logging
 
 from typing import List, Optional, Tuple
 import click
@@ -146,9 +145,9 @@ import papis.commands.browse
 import papis.commands.export
 from papis.commands.update import _update_with_database
 import papis.bibtex
+import papis.logging
 
-
-logger = logging.getLogger("papis:bibtex")
+logger = papis.logging.get_logger(__name__)
 
 
 config.register_default_settings({"bibtex": {
@@ -551,7 +550,7 @@ def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
         docs = papis.api.pick_doc(docs)
 
     if out is not None:
-        logging.info("Setting lib name to %s", out)
+        logger.info("Setting lib name to %s", out)
         if not os.path.exists(out):
             os.makedirs(out)
         config.set_lib_from_name(out)

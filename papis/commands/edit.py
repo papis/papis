@@ -7,7 +7,6 @@ Command-line Interface
 .. click:: papis.commands.edit:cli
     :prog: papis edit
 """
-import logging
 from typing import Optional
 
 import click
@@ -25,12 +24,14 @@ import papis.strings
 import papis.git
 import papis.format
 import papis.notes
+import papis.logging
+
+logger = papis.logging.get_logger(__name__)
 
 
 def run(document: papis.document.Document,
         wait: bool = True,
         git: bool = False) -> None:
-    logger = logging.getLogger("run:edit")
     info_file_path = document.get_info_file()
     if not info_file_path:
         raise Exception(papis.strings.no_folder_attached_to_document)
@@ -56,7 +57,6 @@ def run(document: papis.document.Document,
 
 def edit_notes(document: papis.document.Document,
                git: bool = False) -> None:
-    logger = logging.getLogger("edit:notes")
     logger.debug("Editing notes")
     notes_path = papis.notes.notes_path_ensured(document)
     papis.api.edit_file(notes_path)
@@ -98,9 +98,6 @@ def cli(query: str,
         sort_field: Optional[str],
         sort_reverse: bool) -> None:
     """Edit document information from a given library"""
-
-    logger = logging.getLogger("cli:edit")
-
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,
                                                            sort_field,

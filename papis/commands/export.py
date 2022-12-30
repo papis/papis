@@ -48,7 +48,6 @@ Command-line Interface
 """
 
 import os
-import logging
 from typing import List, Optional
 
 import click
@@ -61,8 +60,9 @@ import papis.api
 import papis.database
 import papis.strings
 import papis.plugin
+import papis.logging
 
-logger = logging.getLogger("cli:export")
+logger = papis.logging.get_logger(__name__)
 
 
 def available_formats() -> List[str]:
@@ -186,7 +186,6 @@ def explorer(ctx: click.Context, fmt: str, out: str) -> None:
     papis explore crossref -m 200 -a 'Schrodinger' export --yaml lib.yaml
 
     """
-    logger = logging.getLogger("explore:yaml")
     docs = ctx.obj["documents"]
 
     outstring = run(docs, to_format=fmt)

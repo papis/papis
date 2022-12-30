@@ -59,18 +59,18 @@ An example of successful returns:
     </book>
     ...
 """
-import logging
-from typing import List, Dict, Any
 import urllib.parse
 import urllib.request
+from typing import List, Dict, Any
 
 import click
 import bs4
 
 import papis.config
 import papis.document
+import papis.logging
 
-logger = logging.getLogger("isbnplus")
+logger = papis.logging.get_logger(__name__)
 
 ISBNPLUS_KEY = "98a765346bc0ffee6ede527499b6a4ee"  # type: str
 ISBNPLUS_APPID = "4846a7d1"  # type: str
@@ -166,14 +166,13 @@ def explorer(ctx: click.core.Context,
     papis explore isbnplus -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
 
     """
-    _logger = logging.getLogger("explore:isbnplus")
-    _logger.info("Looking up...")
+    logger.info("Looking up...")
     try:
         data = get_data(query=query, author=author, title=title)
     except Exception as ex:
-        _logger.error(ex)
+        logger.error(ex)
         data = []
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 
-    _logger.info("%s documents found", len(docs))
+    logger.info("%s documents found", len(docs))

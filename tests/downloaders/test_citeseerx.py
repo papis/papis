@@ -2,13 +2,13 @@ import os
 import pytest
 from typing import Callable
 
+import papis.logging
 import papis.downloaders
 from papis.downloaders.citeseerx import Downloader
 
 import tests.downloaders as testlib
 
-import logging
-logging.basicConfig(level=logging.DEBUG)
+papis.logging.setup("DEBUG")
 
 CITESEERX_URLS = (
     "https://citeseerx.ist.psu.edu/doc_view/pid/497490d0d3ab2724e58b03765055f7a134ce89d3",  # noqa: E501

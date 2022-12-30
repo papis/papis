@@ -2,16 +2,16 @@
 """
 import os
 import re
-import logging
 from typing import (
     List, Dict, Any, Optional, Union, NamedTuple, Callable, Tuple)
 
 from typing_extensions import TypedDict
 
-import papis.config
 import papis
+import papis.config
+import papis.logging
 
-logger = logging.getLogger("document")  # type: logging.Logger
+logger = papis.logging.get_logger(__name__)
 
 KeyConversion = TypedDict(
     "KeyConversion", {"key": Optional[str],

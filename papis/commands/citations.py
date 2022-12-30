@@ -4,17 +4,19 @@ See ../../doc/source/commands/citations.rst
 papis citations --fetch-citations
 """
 from typing import Optional
-import logging
 
 import click
 
 import papis.cli
 import papis.document
+import papis.logging
 from papis.citations import (has_citations,
                              has_cited_by,
                              update_and_save_citations_from_database_from_doc,
                              fetch_and_save_citations,
                              fetch_and_save_cited_by_from_database)
+
+logger = papis.logging.get_logger(__name__)
 
 
 @click.command("citations")
@@ -52,10 +54,7 @@ def cli(query: str,
         fetch_citations: bool,
         fetch_cited_by: bool,
         update_from_database: bool) -> None:
-    """Check for common problems in documents"""
-
-    logger = logging.getLogger("cli:citations")
-
+    """Handle document citations"""
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,
                                                            sort_field,

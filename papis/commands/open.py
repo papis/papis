@@ -74,7 +74,6 @@ Command-line Interface
 """
 
 import os
-import logging
 from typing import Optional
 
 import click
@@ -89,13 +88,15 @@ import papis.database
 import papis.document
 import papis.format
 import papis.strings
+import papis.logging
+
+logger = papis.logging.get_logger(__name__)
 
 
 def run(document: papis.document.Document,
         opener: Optional[str] = None,
         folder: bool = False,
         mark: bool = False) -> None:
-    logger = logging.getLogger("open:run")
     if opener is not None:
         papis.config.set("opentool", opener)
 
@@ -171,7 +172,6 @@ def cli(query: str, doc_folder: str, tool: str, folder: bool,
     """Open document from a given library"""
     if tool:
         papis.config.set("opentool", tool)
-    logger = logging.getLogger("cli:run")
 
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,

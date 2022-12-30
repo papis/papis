@@ -1,12 +1,12 @@
 import pytest
 
+import papis.logging
 import papis.downloaders
 from papis.downloaders.fallback import Downloader
 
 import tests.downloaders as testlib
 
-import logging
-logging.basicConfig(level=logging.DEBUG)
+papis.logging.setup("DEBUG")
 
 
 FALLBACK_URLS = (

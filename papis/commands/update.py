@@ -41,7 +41,6 @@ Command-line Interface
     :prog: papis update
 """
 
-import logging
 from typing import List, Dict, Tuple, Optional, Any
 
 import click
@@ -57,6 +56,9 @@ import papis.format
 import papis.cli
 import papis.importer
 import papis.git
+import papis.logging
+
+logger = papis.logging.get_logger(__name__)
 
 
 def _update_with_database(document: papis.document.Document) -> None:
@@ -120,7 +122,6 @@ def cli(query: str,
         sort_reverse: bool,
         set_tuples: List[Tuple[str, str]],) -> None:
     """Update a document from a given library."""
-    logger = logging.getLogger("cli:update")
 
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,

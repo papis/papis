@@ -1,13 +1,13 @@
 import os
 import pytest
 
+import papis.logging
 import papis.downloaders
 from papis.downloaders.projecteuclid import Downloader
 
 import tests.downloaders as testlib
 
-import logging
-logging.basicConfig(level=logging.DEBUG)
+papis.logging.setup("DEBUG")
 
 PROJECT_EUCLID_URLS = (
     "https://projecteuclid.org/journals/advances-in-differential-equations/volume-19/"

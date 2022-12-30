@@ -8,9 +8,9 @@ import tests
 import papis
 import papis.bibtex
 import papis.document
-import papis.config
+import papis.logging
 
-logging.basicConfig(level=logging.DEBUG)
+papis.logging.setup("DEBUG")
 
 BIBTEX_RESOURCES = os.path.join(os.path.dirname(__file__),
                                 "resources",
