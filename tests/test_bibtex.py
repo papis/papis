@@ -198,3 +198,6 @@ def test_ignore_keys() -> None:
                   "@report{MyDocument,\n"
                   "  author = {Albert Einstein},\n"
                   "}")
+    papis.bibtex.bibtex_ignore_keys = (
+        frozenset([])
+    )  # type: FrozenSet[str]
