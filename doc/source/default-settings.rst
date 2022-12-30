@@ -156,6 +156,8 @@ Tools options
     file browsers such as ``dolphin``, ``thunar`` or ``ranger`` just to name a few.
 
 
+.. _bibtex-options:
+
 Bibtex options
 --------------
 

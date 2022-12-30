@@ -21,6 +21,7 @@ command-line interface (*CLI*) is heavily tailored after
    database_structure
    papis_id
    citations
+   bibtex
    commands
    web-application
    gui
