@@ -49,6 +49,7 @@ import papis.logging
 import papis.database.base
 import papis.database.cache
 from papis.utils import get_cache_home, get_folders, folders_to_documents
+from papis.exceptions import DocumentFolderNotFound
 
 if TYPE_CHECKING:
     from whoosh.index import Index
@@ -150,7 +151,7 @@ class Database(papis.database.base.Database):
     def _get_doc_folder(self, document: papis.document.Document) -> str:
         _folder = document.get_main_folder()
         if _folder is None:
-            raise Exception(papis.strings.no_folder_attached_to_document)
+            raise DocumentFolderNotFound(papis.document.describe(document))
         else:
             return _folder
 

@@ -30,6 +30,7 @@ import papis.config
 import papis.document
 import papis.logging
 import papis.strings
+from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)
 
@@ -39,8 +40,7 @@ def run(document: papis.document.Document,
         git: bool = False) -> None:
     doc_folder = document.get_main_folder()
     if not doc_folder or not os.path.exists(doc_folder):
-        raise Exception("Document does not have a folder attached: '{}'."
-                        .format(papis.document.describe(document)))
+        raise DocumentFolderNotFound(papis.document.describe(document))
 
     from papis.utils import create_identifier
     suffix = create_identifier(skip=len(document.get_files()))

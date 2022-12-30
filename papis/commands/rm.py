@@ -19,6 +19,7 @@ import papis.strings
 import papis.database
 import papis.git
 import papis.logging
+from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)
 
@@ -32,7 +33,7 @@ def run(document: papis.document.Document,
     db = papis.database.get()
     _doc_folder = document.get_main_folder()
     if not _doc_folder:
-        raise Exception(papis.strings.no_folder_attached_to_document)
+        raise DocumentFolderNotFound(papis.document.describe(document))
 
     if filepath is not None:
         os.remove(filepath)

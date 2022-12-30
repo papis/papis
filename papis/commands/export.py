@@ -61,6 +61,7 @@ import papis.database
 import papis.strings
 import papis.plugin
 import papis.logging
+from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)
 
@@ -154,7 +155,7 @@ def cli(query: str,
             _doc_folder_name = document.get_main_folder_name()
             outdir = out or _doc_folder_name
             if not _doc_folder or not _doc_folder_name or not outdir:
-                raise Exception(papis.strings.no_folder_attached_to_document)
+                raise DocumentFolderNotFound(papis.document.describe(document))
             if not len(documents) == 1:
                 outdir = os.path.join(out, _doc_folder_name)
             logger.info(

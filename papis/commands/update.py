@@ -57,6 +57,7 @@ import papis.cli
 import papis.importer
 import papis.git
 import papis.logging
+from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)
 
@@ -80,7 +81,7 @@ def run(document: papis.document.Document,
     folder = document.get_main_folder()
     info = document.get_info_file()
     if not folder or not info:
-        raise Exception(papis.strings.no_folder_attached_to_document)
+        raise DocumentFolderNotFound(papis.document.describe(document))
     if git:
         papis.git.add_and_commit_resource(
             folder, info,

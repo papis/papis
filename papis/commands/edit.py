@@ -25,6 +25,7 @@ import papis.git
 import papis.format
 import papis.notes
 import papis.logging
+from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)
 
@@ -34,7 +35,8 @@ def run(document: papis.document.Document,
         git: bool = False) -> None:
     info_file_path = document.get_info_file()
     if not info_file_path:
-        raise Exception(papis.strings.no_folder_attached_to_document)
+        raise DocumentFolderNotFound(papis.document.describe(document))
+
     _old_dict = papis.document.to_dict(document)
     papis.utils.general_open(info_file_path, "editor", wait=wait)
     document.load()

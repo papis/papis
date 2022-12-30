@@ -465,14 +465,14 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
             # the configuration object can only store strings
             config[name] = {"dirs": str(library_obj.paths)}
         else:
-            raise Exception("Library '{0}' does not seem to exist"
-                            "\n\n"
-                            "To add a library simply write the following"
-                            " in your configuration file located at '{cpath}'"
-                            "\n\n"
-                            "\t[{0}]\n"
-                            "\tdir = path/to/your/{0}/folder"
-                            .format(libname, cpath=get_config_file()))
+            raise RuntimeError("Library '{0}' does not seem to exist"
+                               "\n\n"
+                               "To add a library simply write the following"
+                               " in your configuration file located at '{cpath}'"
+                               "\n\n"
+                               "\t[{0}]\n"
+                               "\tdir = path/to/your/{0}/folder"
+                               .format(libname, cpath=get_config_file()))
     else:
         try:
             paths = [os.path.expanduser(config[libname]["dir"])]
@@ -480,7 +480,7 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
             try:
                 paths = eval(os.path.expanduser(config[libname].get("dirs")))
             except Exception as e:
-                raise Exception(
+                raise RuntimeError(
                     "To define a library you have to set either 'dir' or 'dirs' "
                     "in the configuration file.\n"
                     "\t'dir' must be a path to an existing folder.\n"

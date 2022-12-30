@@ -2,6 +2,8 @@
 readable.
 """
 
+import papis.strings
+
 
 class DefaultSettingValueMissing(Exception):
     """This exception is when a setting's value has no default value.
@@ -19,3 +21,10 @@ class DefaultSettingValueMissing(Exception):
     Don't forget to check the documentation.
         """.format(key)
         super().__init__(message)
+
+
+class DocumentFolderNotFound(FileNotFoundError):
+    def __init__(self, doc: str) -> None:
+        super().__init__("{}: '{}'".format(
+            papis.strings.no_folder_attached_to_document,
+            doc))
