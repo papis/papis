@@ -7,7 +7,7 @@ import papis.config
 import papis.format
 import papis.document
 
-from tests import create_random_file
+from tests import create_random_file, with_fresh_config
 
 DOCUMENT_RESOURCES = os.path.join(os.path.dirname(__file__), "resources")
 
@@ -82,6 +82,7 @@ def test_main_features() -> None:
     assert doc.html_escape["author"] == "Russell, Bertrand"
 
 
+@with_fresh_config()
 def test_to_bibtex() -> None:
     papis.config.set("bibtex-journal-key", "journal_abbrev")
     doc = papis.document.from_data({
