@@ -1,23 +1,21 @@
 import os
 import re
 import pytest
-import logging
-from typing import Dict, Any, FrozenSet
+from typing import Dict, Any
+import json
 
 import tests
 import papis
 import papis.bibtex
 import papis.document
-import papis.logging
 
-papis.logging.setup("DEBUG")
 
 BIBTEX_RESOURCES = os.path.join(os.path.dirname(__file__),
                                 "resources",
                                 "bibtex")
 
 
-def test_bibtex_to_dict():
+def test_bibtex_to_dict() -> None:
     bibpath = os.path.join(BIBTEX_RESOURCES, "1.bib")
     bibs = papis.bibtex.bibtex_to_dict(bibpath)
     expected_keys = {
@@ -45,18 +43,19 @@ def test_bibtex_to_dict():
     assert re.match(r".*concurrent inter.*", bib["abstract"])
 
 
-def test_bibkeys_exist():
+def test_bibkeys_exist() -> None:
     assert hasattr(papis.bibtex, "bibtex_keys")
     assert len(papis.bibtex.bibtex_keys) != 0
 
 
-def test_bibtypes_exist():
+def test_bibtypes_exist() -> None:
     assert hasattr(papis.bibtex, "bibtex_types")
     assert len(papis.bibtex.bibtex_types) != 0
 
 
 @pytest.mark.parametrize("bibfile", ["1.bib", "2.bib", "3.bib"])
-def test_author_list_conversion(bibfile, overwrite=False):
+def test_author_list_conversion(bibfile: str,
+                                overwrite: bool = False) -> None:
     jsonfile = "{}_out.json".format(os.path.splitext(bibfile)[0])
 
     bibpath = os.path.join(BIBTEX_RESOURCES, bibfile)
@@ -65,14 +64,12 @@ def test_author_list_conversion(bibfile, overwrite=False):
     bib = papis.bibtex.bibtex_to_dict(bibpath)[0]
     if overwrite or not os.path.exists(jsonpath):
         with open(jsonpath, "w") as f:
-            import json
             json.dump(bib, f,
                       indent=2,
                       sort_keys=True,
                       ensure_ascii=False)
 
     with open(jsonpath, "r") as f:
-        import json
         expected = json.loads(f.read())
 
     assert bib["author_list"] == expected["author_list"]
@@ -193,11 +190,11 @@ def test_ignore_keys() -> None:
     papis.config.set("bibtex-ignore-keys", "['year']")
     papis.bibtex.bibtex_ignore_keys = (
         frozenset(papis.config.getlist("bibtex-ignore-keys"))
-    )  # type: FrozenSet[str]
+    )
     assert_bibtex(doc,
                   "@report{MyDocument,\n"
                   "  author = {Albert Einstein},\n"
                   "}")
     papis.bibtex.bibtex_ignore_keys = (
         frozenset([])
-    )  # type: FrozenSet[str]
+    )
