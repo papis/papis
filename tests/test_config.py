@@ -146,7 +146,6 @@ def test_get_configuration() -> None:
     config = papis.config.get_configuration()
     assert type(config) is papis.config.Configuration
     assert settings in config.keys()
-    assert id(_CONFIGURATION) == id(config)
 
 
 def test_get_configuration_2() -> None:
