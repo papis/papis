@@ -89,6 +89,7 @@ import papis.document
 import papis.format
 import papis.strings
 import papis.logging
+from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)
 
@@ -102,7 +103,7 @@ def run(document: papis.document.Document,
 
     _doc_folder = document.get_main_folder()
     if _doc_folder is None:
-        raise Exception(papis.strings.no_folder_attached_to_document)
+        raise DocumentFolderNotFound(papis.document.describe(document))
 
     if folder:
         # Open directory
@@ -116,11 +117,11 @@ def run(document: papis.document.Document,
                 _mark_name = papis.config.getstring("mark-format-name")
                 _mark_opener = papis.config.getstring("mark-opener-format")
                 if not _mark_fmt:
-                    raise Exception(
+                    raise ValueError(
                         "No mark header format given. Set 'mark-header-format' in "
                         "the configuration file")
                 if not _mark_name:
-                    raise Exception(
+                    raise ValueError(
                         "No mark name format given. Set 'mark-format-name' "
                         "in the configuration file")
                 mark_dict = papis.api.pick(
@@ -131,7 +132,7 @@ def run(document: papis.document.Document,
                         _mark_fmt, x, doc_key=_mark_name))
                 if mark_dict:
                     if not _mark_opener:
-                        raise Exception(
+                        raise ValueError(
                             "No mark opener format given. Set 'mark-opener-format' "
                             "in the configuration file")
                     opener = papis.format.format(

@@ -165,7 +165,7 @@ def author_list_to_author(data: Dict[str, Any]) -> str:
     fmt = papis.config.getstring("multiple-authors-format")
 
     if separator is None or fmt is None:
-        raise Exception(
+        raise ValueError(
             "Cannot join the author list if the settings 'multiple-authors-separator' "
             "and 'multiple-authors-format' are not present in the configuration")
 
@@ -449,7 +449,7 @@ def move(document: Document, path: str) -> None:
 
     path = os.path.expanduser(path)
     if os.path.exists(path):
-        raise Exception(
+        raise FileExistsError(
             "There is already a document at '{}' that should be checked. A temporary"
             "document has been stored at '{}'"
             .format(path, folder)

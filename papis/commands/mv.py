@@ -19,6 +19,7 @@ import papis.cli
 import papis.pick
 import papis.strings
 import papis.logging
+from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)
 
@@ -29,7 +30,8 @@ def run(document: papis.document.Document,
 
     folder = document.get_main_folder()
     if not folder:
-        raise Exception(papis.strings.no_folder_attached_to_document)
+        raise DocumentFolderNotFound(papis.document.describe(document))
+
     cmd = ["git", "-C", folder] if git else []
     cmd += ["mv", folder, new_folder_path]
     db = papis.database.get()
