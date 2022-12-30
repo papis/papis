@@ -107,4 +107,7 @@ def setup(level: Union[int, str],
 
 
 def get_logger(name: Optional[str] = None) -> logging.Logger:
-    return logging.getLogger(name)
+    if name is None or name.startswith("papis."):
+        return logging.getLogger(name)
+    else:
+        return logging.getLogger("papis").getChild(name)
