@@ -5,6 +5,7 @@ import papis.logging
 import papis.downloaders
 from papis.downloaders.iopscience import Downloader
 
+import tests
 import tests.downloaders as testlib
 
 papis.logging.setup("DEBUG")
@@ -15,7 +16,7 @@ IOPSCIENCE_URLS = (
     )
 
 
-@testlib.with_default_config
+@tests.with_default_config()
 @pytest.mark.parametrize("url", IOPSCIENCE_URLS)
 def test_iop_science_fetch(monkeypatch, url: str) -> None:
     cls = papis.downloaders.get_downloader_by_name("iopscience")

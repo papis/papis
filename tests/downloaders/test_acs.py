@@ -5,6 +5,7 @@ import papis.logging
 import papis.downloaders
 from papis.downloaders.acs import Downloader
 
+import tests
 import tests.downloaders as testlib
 
 papis.logging.setup("DEBUG")
@@ -33,7 +34,7 @@ def test_acs_match() -> None:
         assert Downloader.match(url) is None
 
 
-@testlib.with_default_config
+@tests.with_default_config()
 @pytest.mark.skip(reason="acs.org disallows web scrapers (cloudflare)")
 @pytest.mark.parametrize("url", ACS_URLS)
 def test_acs_fetch(monkeypatch, url: str) -> None:

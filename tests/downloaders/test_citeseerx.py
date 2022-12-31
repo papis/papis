@@ -6,6 +6,7 @@ import papis.logging
 import papis.downloaders
 from papis.downloaders.citeseerx import Downloader
 
+import tests
 import tests.downloaders as testlib
 
 papis.logging.setup("DEBUG")
@@ -27,7 +28,7 @@ def get_citeseerx_resource(
         headers={"token": "undefined", "referer": url})
 
 
-@testlib.with_default_config
+@tests.with_default_config()
 @pytest.mark.parametrize("url", CITESEERX_URLS)
 def test_citeseerx_fetch(monkeypatch, url: str) -> None:
     cls = papis.downloaders.get_downloader_by_name("citeseerx")

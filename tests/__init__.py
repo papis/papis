@@ -117,15 +117,21 @@ test_data = [
 def get_test_lib_name() -> str:
     return "test-lib"
 
-class with_fresh_config(contextlib.ContextDecorator):
+class with_default_config(contextlib.ContextDecorator):
+
+    def __init__(self) -> None:
+        self.config_file = None  # type: Optional[str]
 
     def __enter__(self) -> papis.config.Configuration:
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as _tmp:
+            self.config_file = _tmp.name
+        papis.config.set_config_file(_tmp.name)
         config = papis.config.reset_configuration()
-        config["settings"] = {}
         return config
 
     def __exit__(self, *exc: Any) -> None:
-        return
+        if self.config_file:
+            os.unlink(self.config_file)
 
 
 def setup_test_library() -> None:

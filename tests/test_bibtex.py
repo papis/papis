@@ -123,7 +123,7 @@ def assert_bibtex(data: Dict[str, Any], expected_bibtex: str) -> None:
     assert papis.bibtex.to_bibtex(doc) == expected_bibtex
 
 
-@tests.with_fresh_config()
+@tests.with_default_config()
 def test_to_bibtex_formatting() -> None:
     """Test formatting for the `to_bibtex` function."""
     assert_bibtex({"type": "report",
@@ -141,7 +141,7 @@ def test_to_bibtex_formatting() -> None:
                   "}")
 
 
-@tests.with_fresh_config()
+@tests.with_default_config()
 def test_overridable() -> None:
     doc = {"type": "report",
            "author": "Albert Einstein",
@@ -173,7 +173,7 @@ def test_overridable() -> None:
                   "}")
 
 
-@tests.with_fresh_config()
+@tests.with_default_config()
 def test_ignore_keys() -> None:
     doc = {"type": "report",
            "author": "Albert Einstein",

@@ -5,6 +5,7 @@ import papis.logging
 import papis.downloaders
 from papis.downloaders.springer import Downloader
 
+import tests
 import tests.downloaders as testlib
 
 papis.logging.setup("DEBUG")
@@ -33,7 +34,7 @@ def test_springer_match() -> None:
         assert Downloader.match(url) is None
 
 
-@testlib.with_default_config
+@tests.with_default_config()
 @pytest.mark.parametrize("url", SPRINGER_LINK_URLS)
 def test_springer_fetch(monkeypatch, url: str) -> None:
     cls = papis.downloaders.get_downloader_by_name("springer")

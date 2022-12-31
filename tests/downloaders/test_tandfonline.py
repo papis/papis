@@ -5,6 +5,7 @@ import papis.logging
 import papis.downloaders
 from papis.downloaders.tandfonline import Downloader
 
+import tests
 import tests.downloaders as testlib
 
 papis.logging.setup("DEBUG")
@@ -13,7 +14,6 @@ TANDFONLINE_URLS = (
     "https://www.tandfonline.com/doi/full/10.1080/00268976.2013.788745",
     "https://www.tandfonline.com/doi/full/10.1080/23311932.2015.1117749"
     )
-
 
 def test_tandfonline_match():
     valid_urls = (
@@ -33,7 +33,7 @@ def test_tandfonline_match():
         assert Downloader.match(url) is None
 
 
-@testlib.with_default_config
+@tests.with_default_config()
 @pytest.mark.parametrize("url", TANDFONLINE_URLS)
 def test_tandfonline_fetch(monkeypatch, url: str) -> None:
     cls = papis.downloaders.get_downloader_by_name("tandfonline")
