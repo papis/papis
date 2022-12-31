@@ -56,7 +56,6 @@ Command-line Interface
     :prog: papis browse
 """
 
-import logging
 from typing import Optional
 
 import click
@@ -69,9 +68,9 @@ import papis.pick
 import papis.database
 import papis.strings
 import papis.document
+import papis.logging
 
-
-logger = logging.getLogger("browse")
+logger = papis.logging.get_logger(__name__)
 
 
 def run(document: papis.document.Document,
@@ -120,7 +119,7 @@ def run(document: papis.document.Document,
 
 @click.command("browse")
 @click.help_option("--help", "-h")
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.sort_option()
 @click.option("-k", "--key", default="",
               help="Use the value of the document's key to open in"
@@ -137,9 +136,6 @@ def cli(query: str,
         sort_field: Optional[str],
         sort_reverse: bool) -> None:
     """Open document's url in a browser"""
-
-    logger = logging.getLogger("cli:browse")
-
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,
                                                            sort_field,

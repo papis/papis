@@ -10,19 +10,22 @@ Coding Style
 * No trailing white spaces are allowed.
 * Restrict each line of code to 80 characters.
 * Follow the PEP8 style guide: https://www.python.org/dev/peps/pep-0008/
-* Always run `make test` before submitting a new PR. You need to run
-  `pip3 install -e .[develop]` in the papis directory before running the
-  tests.
+* Always run tests before submitting a new PR.
+  You need to install the develop packages of papis for this:
+  ```
+  pip3 install -e .[develop]
+  ```
+  You can then run the tests with the command
+  ```
+  ./tools/ci-run-tests.sh
+  ```
 
 
-Patches
--------
+Issues
+------
 
-Send patches, created with `git format-patch`, to the email address
-
-    gallo@fkf.mpg.de
-
-or open a pull request on GitHub.
+You can open issues in the github issue tracker
+https://github.com/papis/papis/issues.
 
 
 Version Numbering
@@ -41,8 +44,12 @@ Common Changes
 Adding options
 --------------
 
-* Add a default value in `config.py`, along with a comment that describes the
-  option.
+- Add a default value in `defaults.py`.
+- Document the option in `./doc/source/default-settings.rst`
+  - What is it?
+  - What type should it be?
+  - Note: the default is displayed automatically, so no need to write it
+    explicitly.
 
 The setting is now accessible with `papis.config.get('myoption')`
 or through the cli interface `papis config myoption`.

@@ -87,7 +87,6 @@ Command-line Interface
     :nested: full
 """
 
-import logging
 from typing import List, Optional, TYPE_CHECKING
 import shlex
 
@@ -107,9 +106,12 @@ import papis.format
 import papis.crossref
 import papis.plugin
 import papis.citations
+import papis.logging
 
 if TYPE_CHECKING:
     from stevedore import ExtensionManager
+
+logger = papis.logging.get_logger(__name__)
 
 
 def _extension_name() -> str:
@@ -130,7 +132,7 @@ def get_explorer_mgr() -> "ExtensionManager":
 @click.command("lib")
 @click.pass_context
 @click.help_option("--help", "-h")
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.doc_folder_option()
 @click.option("--library", "-l", default=None, help="Papis library to look")
 def lib(ctx: click.Context, query: str,
@@ -143,7 +145,6 @@ def lib(ctx: click.Context, query: str,
         papis lib -l books einstein pick
 
     """
-    logger = logging.getLogger("explore:lib")
 
     if doc_folder:
         ctx.obj["documents"] += [papis.document.from_folder(doc_folder)]
@@ -184,7 +185,7 @@ def pick(ctx: click.Context, number: Optional[int]) -> None:
 
 @click.command("citations")
 @click.pass_context
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.doc_folder_option()
 @click.help_option("--help", "-h")
 @click.option("-b",
@@ -206,8 +207,6 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
         papis explore citations 'einstein' export --format yaml einstein.yaml
 
     """
-    logger = logging.getLogger("explore:citations")
-
     if doc_folder is not None:
         documents = [papis.document.from_folder(doc_folder)]
     else:
@@ -257,7 +256,6 @@ def cmd(ctx: click.Context, command: str) -> None:
 
     """
     from subprocess import call
-    logger = logging.getLogger("explore:cmd")
     docs = ctx.obj["documents"]
     for doc in docs:
         fcommand = papis.format.format(command, doc)

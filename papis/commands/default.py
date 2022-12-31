@@ -26,8 +26,6 @@ Command-line Interface
 """
 
 import os
-import sys
-import logging
 from typing import Optional, Tuple, List, Callable, TYPE_CHECKING
 
 import click
@@ -35,29 +33,22 @@ import click.core
 
 import papis
 import papis.api
+import papis.cli
 import papis.config
+import papis.logging
 import papis.commands
 import papis.database
-import papis.cli
 
 if TYPE_CHECKING:
     import cProfile
 
-
-class ColoramaFormatter(logging.Formatter):
-    def format(self, record: logging.LogRecord) -> str:
-        if isinstance(record.msg, str):
-            import colorama
-            record.msg = record.msg.format(c=colorama)
-
-        return super().format(record)
+logger = papis.logging.get_logger(__name__)
 
 
 class MultiCommand(click.core.MultiCommand):
 
     scripts = papis.commands.get_scripts()
     scripts.update(papis.commands.get_external_scripts())
-    logger = logging.getLogger("multicommand")
 
     def list_commands(self, ctx: click.core.Context) -> List[str]:
         """List all matched commands in the command folder and in path
@@ -82,6 +73,7 @@ class MultiCommand(click.core.MultiCommand):
         >>> cmd.name, cmd.help
         ('add', 'Add...')
         >>> mc.get_command(None, 'this command does not exist')
+        Command ... is unknown!
         """
         try:
             script = self.scripts[name]
@@ -90,17 +82,15 @@ class MultiCommand(click.core.MultiCommand):
             matches = list(map(
                 str, difflib.get_close_matches(name, self.scripts, n=2)))
 
-            import colorama
-            self.logger.error(
-                "{c.Fore.RED}{c.Style.BRIGHT}{c.Back.BLACK}"
-                "Command '{name}' is unknown! Did you mean '{matches}'?"
-                "{c.Style.RESET_ALL}"
-                .format(c=colorama, name=name, matches="' or '".join(matches))
-                )
+            if matches:
+                print("Command '{name}' is unknown! Did you mean '{matches}'?"
+                      .format(name=name, matches="' or '".join(matches)))
+            else:
+                print("Command '{name}' is unknown!".format(name=name))
 
             # return the match if there was only one match
             if len(matches) == 1:
-                self.logger.warning("I suppose you meant: '%s'", matches[0])
+                print("I suppose you meant: '%s'", matches[0])
                 script = self.scripts[matches[0]]
             else:
                 return None
@@ -136,15 +126,6 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
     return _on_finish
 
 
-def _disable_color(color: str = "auto") -> bool:
-    return (
-        color == "no"
-        or (color == "auto" and not sys.stdout.isatty())
-        # NOTE: https://no-color.org/
-        or (color == "auto" and "NO_COLOR" in os.environ)
-        )
-
-
 @click.group(
     cls=MultiCommand,
     invoke_without_command=True)
@@ -154,7 +135,7 @@ def _disable_color(color: str = "auto") -> bool:
     "-v",
     "--verbose",
     help="Make the output verbose (equivalent to --log DEBUG)",
-    default=False,
+    default="PAPIS_DEBUG" in os.environ,
     is_flag=True)
 @click.option(
     "--profile",
@@ -231,35 +212,7 @@ def run(verbose: bool,
         import atexit
         atexit.register(generate_profile_writing_function(profiler, profile))
 
-    import colorama
-    if _disable_color(color):
-        # Turn off colorama (strip escape sequences from the output)
-        colorama.init(strip=True)
-    else:
-        colorama.init()
-
-    log_format = (colorama.Fore.YELLOW
-                  + "%(levelname)s"
-                  + ":"
-                  + colorama.Fore.GREEN
-                  + "%(name)s"
-                  + colorama.Style.RESET_ALL
-                  + ":"
-                  + "%(message)s"
-                  )
-
-    if verbose:
-        log = "DEBUG"
-        log_format = "%(relativeCreated)d-{}".format(log_format)
-
-    if logfile is None:
-        handler = logging.StreamHandler()       # type: logging.Handler
-        handler.setFormatter(ColoramaFormatter(log_format))
-    else:
-        handler = logging.FileHandler(logfile, mode="a")
-
-    logging.basicConfig(level=getattr(logging, log), handlers=[handler])
-    logger = logging.getLogger("default")
+    papis.logging.setup(log, color=color, logfile=logfile, verbose=verbose)
 
     # NOTE: order of the configurations is intentional based on priority
     #

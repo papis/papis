@@ -19,7 +19,6 @@ Command-line Interface
 """
 
 import os
-import logging
 from typing import List, Optional
 
 import click
@@ -32,13 +31,14 @@ import papis.config
 import papis.commands.add
 import papis.cli
 import papis.strings
+import papis.logging
+
+logger = papis.logging.get_logger(__name__)
 
 
 def run(document: papis.document.Document,
         filepaths: List[str],
         git: bool = False) -> None:
-    logger = logging.getLogger("addto")
-
     from string import ascii_lowercase
     g = papis.utils.create_identifier(ascii_lowercase)
     string_append = ""
@@ -103,7 +103,7 @@ def run(document: papis.document.Document,
 
 @click.command("addto")
 @click.help_option("--help", "-h")
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.git_option(help="Add and commit files")
 @papis.cli.sort_option()
 @click.option(
@@ -124,8 +124,6 @@ def cli(query: str,
         doc_folder: str,
         sort_reverse: bool) -> None:
     """Add files to an existing document"""
-    logger = logging.getLogger("cli:addto")
-
     if doc_folder:
         documents = [papis.document.from_folder(doc_folder)]
     else:

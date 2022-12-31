@@ -5,12 +5,14 @@ For description refer to
 https://www.base-search.net/about/download/base_interface.pdf
 
 """
-import logging
+
 from typing import Optional, Dict, Any, List, Callable, NamedTuple
 
 import click
 
-logger = logging.getLogger("base")
+import papis.logging
+
+logger = papis.logging.get_logger(__name__)
 
 
 def get_data(query: str = "", hits: int = 20) -> List[Dict[str, Any]]:
@@ -22,8 +24,7 @@ def get_data(query: str = "", hits: int = 20) -> List[Dict[str, Any]]:
     logger.warning("BASE engine in papis is experimental")
 
     if hits > 125:
-        logger.error(
-            "BASE only allows a maximum of 125 hits, got %d hits", hits)
+        logger.error("BASE only allows a maximum of 125 hits, got %d hits", hits)
         hits = 125
 
     dict_params = {
@@ -110,7 +111,6 @@ def explorer(ctx: click.core.Context, query: str) -> None:
 
     """
     import papis.document
-    logger = logging.getLogger("explore:base")
     logger.info("Looking up...")
 
     data = get_data(query=query)

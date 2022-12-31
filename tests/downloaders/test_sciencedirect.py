@@ -1,13 +1,13 @@
 import os
 import pytest
 
+import papis.logging
 import papis.downloaders
 from papis.downloaders.sciencedirect import Downloader
 
 import tests.downloaders as testlib
 
-import logging
-logging.basicConfig(level=logging.DEBUG)
+papis.logging.setup("DEBUG")
 
 SCIENCE_DIRECT_URLS = (
     "https://www.sciencedirect.com/science/article/abs/pii/S0009261497040141",

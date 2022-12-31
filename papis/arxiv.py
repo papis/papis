@@ -18,7 +18,6 @@
 import os
 import re
 import sys
-import logging
 from typing import Optional, List, Dict, Any
 
 import click
@@ -26,9 +25,9 @@ import click
 import papis.filetype
 import papis.downloaders.base
 import papis.config
+import papis.logging
 
-
-logger = logging.getLogger("arxiv")
+logger = papis.logging.get_logger(__name__)
 
 ARXIV_API_URL = "http://arxiv.org/api/query"
 ARXIV_ABS_URL = "https://arxiv.org/abs"
@@ -212,7 +211,6 @@ def explorer(
         papis explore arxiv -a '"John Smith"' pick
 
     """
-    logger = logging.getLogger("explore:arxiv")
     logger.info("Looking up...")
 
     data = get_data(

@@ -14,11 +14,11 @@ or to add papers to the bib
 
 ::
 
-    papis bibtex          \
-      read new_papers.bib \ # Read bib file
-      add einstein        \ # Pick a doc with query 'einstein' from library
-      add heisenberg      \ # Pick a doc with query 'heisenberg' from library
-      save new_papers.bib   # Save in new_papers.bib
+    papis bibtex           \
+      read new_papers.bib  \ # Read bib file
+      add -q einstein      \ # Pick a doc with query 'einstein' from library
+      add -q heisenberg    \ # Pick a doc with query 'heisenberg' from library
+      save new_papers.bib    # Save in new_papers.bib
 
 or if I update some information in my papis ``yaml`` files then I can do
 
@@ -49,7 +49,7 @@ with this setup, you can just do
 
 ::
 
-    papis bibtex add einstein save
+    papis bibtex add -q einstein save
 
 Check references quality
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -124,12 +124,13 @@ Command-line Interface
 
 import os
 import re
-import logging
 
 from typing import List, Optional, Tuple
 import click
+import tqdm
 
 import papis.api
+import papis.database
 import papis.cli
 import papis.config as config
 import papis.utils
@@ -144,9 +145,9 @@ import papis.commands.browse
 import papis.commands.export
 from papis.commands.update import _update_with_database
 import papis.bibtex
+import papis.logging
 
-
-logger = logging.getLogger("papis:bibtex")
+logger = papis.logging.get_logger(__name__)
 
 
 config.register_default_settings({"bibtex": {
@@ -186,14 +187,40 @@ cli.add_command(EXPLORER_MGR["bibtex"].plugin, "read")
 
 
 @cli.command("add")
-@papis.cli.query_option()
 @click.help_option("-h", "--help")
 @papis.cli.all_option()
+@papis.cli.query_option()
+@click.option("-r", "--refs-file",
+              help=("File with references to query in the database "
+                    "and then add"),
+              default=None)
 @click.pass_context
-def _add(ctx: click.Context, query: str, _all: bool) -> None:
+def _add(ctx: click.Context,
+         query: str,
+         _all: bool,
+         refs_file: Optional[str]) -> None:
     """Add a reference to the bibtex file"""
-    docs = papis.api.get_documents_in_lib(search=query)
-    if not _all:
+    docs = []
+    if not refs_file:
+        docs = papis.api.get_documents_in_lib(search=query)
+    if refs_file:
+        references = []
+        found = 0
+        db = papis.database.get()
+        logger.info("add and querying from reference file '%s'", refs_file)
+        with open(refs_file) as fd:
+            references = fd.readlines()
+        for ref in tqdm.tqdm(iterable=references):
+            cleaned_ref = ref.strip("\n\r")
+            if not cleaned_ref:
+                continue
+            results = db.query_dict({"ref": cleaned_ref})
+            found += len(results)
+            if results:
+                docs.extend(results)
+        logger.info("Found %s from %s", found, len(references))
+    # do not pick if refs_file is given
+    if not _all and not refs_file:
         docs = list(papis.api.pick_doc(docs))
     ctx.obj["documents"].extend(docs)
 
@@ -523,7 +550,7 @@ def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
         docs = papis.api.pick_doc(docs)
 
     if out is not None:
-        logging.info("Setting lib name to %s", out)
+        logger.info("Setting lib name to %s", out)
         if not os.path.exists(out):
             os.makedirs(out)
         config.set_lib_from_name(out)

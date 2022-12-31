@@ -63,7 +63,6 @@ Command-line Interface
     :prog: papis config
 """
 
-import logging
 from typing import Any, Dict, List, Optional, Tuple
 
 import click
@@ -71,8 +70,9 @@ import colorama
 
 import papis.config
 import papis.commands
+import papis.logging
 
-logger = logging.getLogger(__name__)
+logger = papis.logging.get_logger(__name__)
 
 
 def format_option(key: str, value: Any) -> str:

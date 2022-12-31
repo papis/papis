@@ -1,6 +1,5 @@
 import os
 import string
-import logging
 from typing import Optional, List, FrozenSet, Dict, Any, Iterator
 
 import click
@@ -10,8 +9,9 @@ import papis.importer
 import papis.filetype
 import papis.document
 import papis.format
+import papis.logging
 
-logger = logging.getLogger("bibtex")  # type: logging.Logger
+logger = papis.logging.get_logger(__name__)
 
 # NOTE: see the BibLaTeX docs for an up to date list of types and keys:
 #   https://ctan.org/pkg/biblatex?lang=en
@@ -115,6 +115,10 @@ bibtex_key_converter = {
     "proceedingsTitle": "booktitle"
 }  # type: Dict[str, str]
 
+bibtex_ignore_keys = (
+    frozenset(papis.config.getlist("bibtex-ignore-keys"))
+)  # type: FrozenSet[str]
+
 
 def exporter(documents: List[papis.document.Document]) -> str:
     return "\n\n".join(to_bibtex_multiple(documents))
@@ -164,7 +168,6 @@ def explorer(ctx: click.core.Context, bibfile: str) -> None:
     papis explore bibtex lib.bib pick
 
     """
-    logger = logging.getLogger("explore:bibtex")
     logger.info("Reading in bibtex file '%s'", bibfile)
 
     docs = [
@@ -213,7 +216,6 @@ def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
         formally recognizes.
     """
     from bibtexparser.bparser import BibTexParser
-
     parser = BibTexParser(
         common_strings=True,
         ignore_nonstandard_types=False,
@@ -221,7 +223,9 @@ def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
         interpolate_strings=True)
 
     # bibtexparser has too many debug messages to be useful
+    import logging
     logging.getLogger("bibtexparser.bparser").setLevel(logging.WARNING)
+
     if os.path.exists(bibtex):
         with open(bibtex) as fd:
             logger.debug("Reading in file '%s'", bibtex)
@@ -329,6 +333,9 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
     for key in sorted(document):
         bib_key = bibtex_key_converter.get(key, key)
         if bib_key not in bibtex_keys:
+            continue
+
+        if bib_key in bibtex_ignore_keys:
             continue
 
         bib_value = str(document[bib_key])

@@ -1,15 +1,14 @@
 import os
-import logging
 import configparser
 from typing import Dict, Any, List, Optional, Callable  # noqa: ignore
 
 import papis.exceptions
 import papis.library
+import papis.logging
 
+logger = papis.logging.get_logger(__name__)
 
 PapisConfigType = Dict[str, Dict[str, Any]]
-
-logger = logging.getLogger("config")
 
 _CURRENT_LIBRARY = None  #: Current library in use
 _CONFIGURATION = None  # type: Optional[Configuration]
@@ -38,7 +37,6 @@ class Configuration(configparser.ConfigParser):
         self.dir_location = get_config_folder()
         self.scripts_location = get_scripts_folder()
         self.file_location = get_config_file()
-        self.logger = logging.getLogger("Configuration")
         self.default_info = {
             "papers": {
                 "dir": "~/Documents/papers"
@@ -52,18 +50,18 @@ class Configuration(configparser.ConfigParser):
     def handle_includes(self) -> None:
         if "include" in self:
             for name in self["include"]:
-                self.logger.debug("Including '%s'", name)
+                logger.debug("Including '%s'", name)
                 fullpath = os.path.expanduser(self.get("include", name))
                 if os.path.exists(fullpath):
                     self.read(fullpath)
                 else:
-                    self.logger.warning(
+                    logger.warning(
                         "'%s' not included because it does not exist",
                         fullpath)
 
     def initialize(self) -> None:
         if not os.path.exists(self.dir_location):
-            self.logger.warning(
+            logger.warning(
                 "Creating configuration folder in '%s'", self.dir_location)
             os.makedirs(self.dir_location)
 
@@ -73,7 +71,7 @@ class Configuration(configparser.ConfigParser):
             os.makedirs(self.scripts_location)
 
         if os.path.exists(self.file_location):
-            self.logger.debug("Reading configuration from '%s'", self.file_location)
+            logger.debug("Reading configuration from '%s'", self.file_location)
             self.read(self.file_location)
             self.handle_includes()
 
@@ -85,13 +83,12 @@ class Configuration(configparser.ConfigParser):
                     self[section][field] = self.default_info[section][field]
 
             with open(self.file_location, "w") as configfile:
-                self.logger.info(
-                    "Creating config file at '%s'", self.file_location)
+                logger.info("Creating config file at '%s'", self.file_location)
                 self.write(configfile)
 
         configpy = get_configpy_file()
         if os.path.exists(configpy):
-            self.logger.debug("Executing '%s'", configpy)
+            logger.debug("Executing '%s'", configpy)
             with open(configpy) as fd:
                 exec(fd.read())
 

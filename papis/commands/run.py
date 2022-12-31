@@ -53,7 +53,6 @@ Command-line Interface
 """
 
 import os
-import logging
 from typing import List, Optional
 
 import click
@@ -63,8 +62,9 @@ import papis.cli
 import papis.config
 import papis.document
 import papis.database
+import papis.logging
 
-logger = logging.getLogger("run")
+logger = papis.logging.get_logger(__name__)
 
 
 def run(folder: str, command: Optional[List[str]] = None) -> int:

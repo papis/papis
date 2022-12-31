@@ -1,12 +1,12 @@
-import logging
 from typing import List, Dict, Any
 
 import click
 
 import papis.config
 import papis.document
+import papis.logging
 
-logger = logging.getLogger("dissemin")
+logger = papis.logging.get_logger(__name__)
 
 
 def dissemin_authors_to_papis_authors(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -84,7 +84,6 @@ def explorer(ctx: click.core.Context, query: str) -> None:
     papis explore dissemin -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
 
     """
-    logger = logging.getLogger("explore:dissemin")
     logger.info("Looking up...")
 
     data = get_data(query=query)

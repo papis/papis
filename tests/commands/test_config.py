@@ -1,7 +1,7 @@
 import papis.config
+import papis.logging
 
-import logging
-logging.basicConfig(level=logging.DEBUG)
+papis.logging.setup("DEBUG")
 
 
 def with_default_config(fn):

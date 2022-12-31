@@ -1,9 +1,9 @@
 import os.path
-import logging
 from typing import Optional, List, Dict, Any, Callable, Type, TYPE_CHECKING
 
 import papis
 import papis.plugin
+import papis.logging
 
 
 if TYPE_CHECKING:
@@ -32,7 +32,7 @@ class Importer:
         self.ctx = ctx or Context()  # type: Context
         self.uri = uri  # type: str
         self.name = name or os.path.basename(__file__)  # type: str
-        self.logger = logging.getLogger("importer:{}".format(self.name))
+        self.logger = papis.logging.get_logger("papis.importer.{}".format(self.name))
 
     @classmethod
     def match(cls, uri: str) -> Optional["Importer"]:
