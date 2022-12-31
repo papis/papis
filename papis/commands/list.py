@@ -176,9 +176,11 @@ def run(
     default=False,
     is_flag=True)
 @papis.cli.all_option()
-def cli(
-        query: str, info: bool, _file: bool, notes: bool, _dir: bool,
+@papis.cli.doc_folder_option()
+def cli(query: str, info: bool,
+        _file: bool, notes: bool, _dir: bool,
         _format: str,
+        doc_folder: str,
         template: Optional[str], _all: bool, downloaders: bool,
         libraries: bool,
         sort_field: Optional[str], sort_reverse: bool) -> None:
@@ -190,16 +192,14 @@ def cli(
         _dir = True
 
     if not libraries and not downloaders:
-        db = papis.database.get()
-        documents = db.query(query)
-        if sort_field:
-            documents = \
-                papis.document.sort(documents, sort_field, sort_reverse)
-
+        documents = papis.cli.handle_doc_folder_query_all_sort(query,
+                                                               doc_folder,
+                                                               sort_field,
+                                                               sort_reverse,
+                                                               _all)
         if not documents:
             logger.warning(papis.strings.no_documents_retrieved_message)
-        if not _all:
-            documents = list(papis.pick.pick_doc(documents))
+            return
 
     objects = run(
         documents,
