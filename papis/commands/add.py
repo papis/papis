@@ -402,7 +402,7 @@ def run(paths: List[str],
     except IndexError:
         logger.info("No document matching found already in the library")
     else:
-        logger.warning("{c.Fore.YELLOW}Duplication Warning{c.Style.RESET_ALL}")
+        logger.warning("Duplication Warning")
         logger.warning(
             "A document in the library seems to match the added one.")
         logger.warning(
