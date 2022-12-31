@@ -66,7 +66,7 @@ class Configuration(configparser.ConfigParser):
             os.makedirs(self.dir_location)
 
         if not os.path.exists(self.scripts_location):
-            self.logger.warning(
+            logger.warning(
                 "Creating scripts folder in '%s'", self.scripts_location)
             os.makedirs(self.scripts_location)
 
