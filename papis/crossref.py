@@ -1,6 +1,5 @@
 import re
 import os
-import logging
 import tempfile
 from typing import Set, List, Dict, Any, Optional, Tuple, TYPE_CHECKING
 
@@ -13,12 +12,13 @@ import papis.filetype
 import papis.document
 import papis.importer
 import papis.downloaders.base
+import papis.logging
 
 if TYPE_CHECKING:
     import habanero
 
+logger = papis.logging.get_logger(__name__)
 
-logger = logging.getLogger("crossref")  # type: logging.Logger
 KeyConversionPair = papis.document.KeyConversionPair
 
 _filter_names = set([
@@ -275,7 +275,6 @@ def explorer(
     papis explore crossref -a 'Albert einstein' pick export --bibtex lib.bib
 
     """
-    logger = logging.getLogger("explore:crossref")
     logger.info("Looking up...")
 
     data = get_data(

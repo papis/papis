@@ -1,10 +1,11 @@
 import os
 import unittest
-import logging
+
 import papis.config
+import papis.logging
 from papis.commands.config import run
 
-logging.basicConfig(level=logging.DEBUG)
+papis.logging.setup("DEBUG")
 
 
 class TestCommand(unittest.TestCase):

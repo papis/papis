@@ -1,10 +1,10 @@
-import logging
 from typing import Optional, Dict
 
 from .base import Database
 from papis.library import Library
+import papis.logging
 
-logger = logging.getLogger("database")
+logger = papis.logging.get_logger(__name__)
 
 DATABASES = {}  # type: Dict[Library, Database]
 

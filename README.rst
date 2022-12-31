@@ -1,7 +1,7 @@
 Papis
 =====
 
-|ghbadge| |Coveralls| |RTD| |Code_Quality| |Pypi| |zenodo_badge|
+|ghbadge| |RTD| |CodeQL| |Pypi| |zenodo_badge|
 
 Papis is a powerful and highly extensible CLI document and bibliography manager.
 
@@ -113,10 +113,10 @@ Reviews and blog posts
 - `Blog post <https://alejandrogallo.github.io/blog/posts/getting-paper-references-with-papis/>`__ about getting a paper's references with ``papis explore``.
 - `Blog post <http://nicolasshu.com/zotero_and_papis.html>`__ about using Papis with Zotero and Syncthing.
 - GNU/Linux Switzerland `wrote about Papis <https://gnulinux.ch/papis-dokumentenverwaltung-fuer-die-kommandozeile>`__ *(in German)*.
-- The folks at OSTechNix wrote a review of `Papis 
+- The folks at OSTechNix wrote a review of `Papis
   <https://www.ostechnix.com/papis-command-line-based-document-bibliography-manager/>`__.
 - A `review of Papis <https://ubunlog.com/papis-administrador-documentos/>`__ by Ubunlog *(in Spanish)*.
-  
+
 Contributing
 ------------
 
@@ -139,7 +139,7 @@ Papis has grown over the years and there are now a number of projects that exten
 
    * - `papis-rofi <https://github.com/papis/papis-rofi/>`__
      - `Etn40ff <https://github.com/Etn40ff>`__
-   
+
    * - `papis-dmenu <https://github.com/papis/papis-dmenu>`__
      - you?
 
@@ -175,16 +175,13 @@ Papis isn't the only fish in the pond. You might also be interested in:
 - `Zotero <https://www.zotero.org/>`__ (opensource)
 
 
-
-.. |Build_Status| image:: https://travis-ci.org/papis/papis.svg?branch=master
-   :target: https://travis-ci.org/papis/papis
 .. |ghbadge| image:: https://github.com/papis/papis/workflows/CI/badge.svg
-.. |Coveralls| image:: https://coveralls.io/repos/github/papis/papis/badge.svg?branch=master
-   :target: https://coveralls.io/github/papis/papis?branch=master
+   :target: https://github.com/papis/papis/actions?query=branch%3Amaster+workflow%3ACI
 .. |RTD| image:: https://readthedocs.org/projects/papis/badge/?version=latest
    :target: http://papis.readthedocs.io/en/latest/?badge=latest
-.. |Code_Quality| image:: https://img.shields.io/lgtm/grade/python/g/papis/papis.svg?logo=lgtm&logoWidth=18
-   :target: https://lgtm.com/projects/g/papis/papis/context:python
+.. |CodeQL| image:: https://github.com/papis/papis/workflows/CodeQL/badge.svg
+   :target: https://github.com/papis/papis/actions?query=branch%3Amaster+workflow%3ACodeQL
+
 .. |Pypi| image:: https://badge.fury.io/py/papis.svg
    :target: https://pypi.org/project/papis/
 .. |zenodo_badge| image:: https://zenodo.org/badge/82691622.svg

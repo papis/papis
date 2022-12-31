@@ -15,13 +15,24 @@ DecoratorCallable = Callable[..., Any]
 DecoratorArgs = Any
 
 
-def query_option(**attrs: DecoratorArgs) -> DecoratorCallable:
+def query_argument(**attrs: DecoratorArgs) -> DecoratorCallable:
     """Adds a ``query`` argument as a decorator"""
     def decorator(f: DecoratorCallable) -> Any:
         attrs.setdefault(
             "default",
             lambda: papis.config.get("default-query-string"))
         return click.decorators.argument("query", **attrs)(f)
+    return decorator
+
+
+def query_option(**attrs: DecoratorArgs) -> DecoratorCallable:
+    """Adds a ``-q``, ``--query`` option as a decorator"""
+    def decorator(f: DecoratorCallable) -> Any:
+        attrs.setdefault("default",
+                         lambda: papis.config.get("default-query-string"))
+        attrs.setdefault("type", str)
+        attrs.setdefault("help", "Document query for the database")
+        return click.decorators.option("-q", "--query", **attrs)(f)
     return decorator
 
 

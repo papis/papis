@@ -37,16 +37,17 @@ Command-line Interface
     :prog: papis config
 """
 
-import logging
 from typing import Optional
 
 import click
 
 import papis.commands
+import papis.logging
+
+logger = papis.logging.get_logger(__name__)
 
 
 def run(option_string: str) -> Optional[str]:
-    logger = logging.getLogger("config:run")
 
     option = option_string.split(".")
     key = section = None
@@ -69,7 +70,6 @@ def run(option_string: str) -> Optional[str]:
 @click.argument("option")
 def cli(option: str) -> None:
     """Print configuration values"""
-    logger = logging.getLogger("cli:config")
     logger.debug(option)
 
     click.echo(run(option))

@@ -7,7 +7,6 @@ Command-line Interface
 """
 
 import os
-import logging
 from typing import Optional
 
 import click
@@ -19,12 +18,14 @@ import papis.document
 import papis.cli
 import papis.pick
 import papis.strings
+import papis.logging
+
+logger = papis.logging.get_logger(__name__)
 
 
 def run(document: papis.document.Document,
         new_folder_path: str,
         git: bool = False) -> None:
-    logger = logging.getLogger("mv:run")
 
     folder = document.get_main_folder()
     if not folder:
@@ -48,7 +49,7 @@ def run(document: papis.document.Document,
 
 @click.command("mv")
 @click.help_option("--help", "-h")
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.git_option()
 @papis.cli.sort_option()
 @papis.cli.doc_folder_option()
@@ -61,8 +62,6 @@ def cli(query: str,
     # Leave this imports here for performance
     import prompt_toolkit
     import prompt_toolkit.completion
-
-    logger = logging.getLogger("cli:mv")
 
     documents = papis.cli.handle_doc_folder_query_sort(query,
                                                        doc_folder,

@@ -7,7 +7,6 @@ Command-line Interface
 """
 
 import os
-import logging
 from typing import Optional
 
 import click
@@ -19,6 +18,9 @@ import papis.cli
 import papis.strings
 import papis.database
 import papis.git
+import papis.logging
+
+logger = papis.logging.get_logger(__name__)
 
 
 def run(document: papis.document.Document,
@@ -69,7 +71,7 @@ def run(document: papis.document.Document,
 
 @click.command("rm")
 @click.help_option("-h", "--help")
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.git_option(help="Remove in git")
 @papis.cli.sort_option()
 @papis.cli.doc_folder_option()
@@ -101,7 +103,6 @@ def cli(query: str,
     """
     Delete a document, a file, or a notes-file
     """
-    logger = logging.getLogger("cli:rm")
 
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,

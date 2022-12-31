@@ -5,16 +5,15 @@ to be called by papis.
 """
 import os
 import re
-import logging
 from typing import List
 
 import click
 
 import papis.config
 import papis.commands
+import papis.logging
 
-
-logger = logging.getLogger("external")
+logger = papis.logging.get_logger(__name__)
 
 
 def get_command_help(path: str) -> str:

@@ -6,7 +6,6 @@ There are many checks implemented and some others that you
 can add yourself through the python configuration file.
 """
 
-import logging
 import os
 import re
 import json
@@ -24,8 +23,10 @@ import papis.pick
 import papis.database
 import papis.strings
 import papis.document
+import papis.logging
 from papis.commands.edit import run as edit_run
 
+logger = papis.logging.get_logger(__name__)
 
 Error = NamedTuple("Error", [("name", str),
                              ("path", str),
@@ -39,8 +40,6 @@ CheckFn = Callable[[papis.document.Document], List[Error]]
 Check = NamedTuple("Check", [("name", str),
                              ("operate", CheckFn),
                              ])
-
-logger = logging.getLogger("doctor")
 
 
 def register_check(name: str, check_function: CheckFn) -> None:
@@ -315,7 +314,7 @@ def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
 
 @click.command("doctor")
 @click.help_option("--help", "-h")
-@papis.cli.query_option()
+@papis.cli.query_argument()
 @papis.cli.sort_option()
 @click.option("-t", "--checks", "_checks",
               default=lambda: papis.config.getlist("doctor-default-checks"),

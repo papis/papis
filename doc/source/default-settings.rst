@@ -180,6 +180,15 @@ Bibtex options
     [mylib]
     extra-bibtex-keys = ["tags", "doc_url"]
 
+.. papis-config:: bibtex-ignore-keys
+   :default: []
+
+  When exporting a document to the BibTeX format, do not export the keys
+  appearing in this list. This might be useful if you have some keys
+  that have a lot of content, such as ``abstract``, or maybe you
+  have used a valid BibTeX key for some other purposes, like the ``note``
+  key.
+
 .. papis-config:: extra-bibtex-types
   :default: []
 

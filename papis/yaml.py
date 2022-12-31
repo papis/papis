@@ -1,4 +1,3 @@
-import logging
 import os
 from typing import Optional, List, Dict, Any, Sequence
 
@@ -9,6 +8,7 @@ import papis.utils
 import papis.config
 import papis.importer
 import papis.document
+import papis.logging
 
 # NOTE: try to use the CLoader when possible, as it's a lot faster than the
 # python version, at least at the time of writing
@@ -17,7 +17,8 @@ try:
 except ImportError:
     from yaml import SafeLoader as Loader  # type: ignore[assignment]
 
-logger = logging.getLogger("yaml")
+logger = papis.logging.get_logger(__name__)
+
 YAML_LOADER = Loader
 
 
@@ -102,15 +103,14 @@ def explorer(ctx: click.Context, yamlfile: str) -> None:
     papis explore yaml lib.yaml pick
 
     """
-    _logger = logging.getLogger("explore:yaml")
-    _logger.info("Reading in yaml file '%s'", yamlfile)
+    logger.info("Reading in yaml file '%s'", yamlfile)
 
     with open(yamlfile) as fd:
         docs = [papis.document.from_data(d)
                 for d in yaml.load_all(fd, Loader=Loader)]
     ctx.obj["documents"] += docs
 
-    _logger.info("%d documents found", len(docs))
+    logger.info("%d documents found", len(docs))
 
 
 class Importer(papis.importer.Importer):

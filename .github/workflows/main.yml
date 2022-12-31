@@ -37,9 +37,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Install
-      run: ./tools/ci-install.sh
-      shell: bash
+      run: make ci-install
 
     - name: Run tests, mypy and linting
-      run: ./tools/ci-run-tests.sh
+      run: make ci-test
       shell: bash
