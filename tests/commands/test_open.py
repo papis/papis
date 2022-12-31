@@ -9,17 +9,6 @@ import tests
 import tests.cli
 
 
-class TestRun(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        tests.setup_test_library()
-
-    def get_docs(self):
-        db = papis.database.get()
-        return db.get_all_documents()
-
-
 class TestCli(tests.cli.TestCli):
 
     cli = papis.commands.open.cli

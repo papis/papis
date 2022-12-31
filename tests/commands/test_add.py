@@ -53,9 +53,7 @@ def test_get_hash_folder():
     os.unlink(path)
 
 
-class TestGetFileName(unittest.TestCase):
-    def setUp(self):
-        tests.setup_test_library()
+class TestGetFileName(tests.cli.TestWithLibrary):
 
     def test_get_file_name(self):
         pdf = create_random_pdf(suffix=".pdf")
@@ -98,11 +96,7 @@ class TestGetFileName(unittest.TestCase):
         assert filename == "blah-2.yaml"
 
 
-class TestRun(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        tests.setup_test_library()
+class TestRun(tests.cli.TestWithLibrary):
 
     def test_nofile_exception(self):
         try:

@@ -7,7 +7,7 @@ from papis.commands.browse import run, cli
 
 
 @patch("papis.utils.general_open", lambda *x, **y: None)
-def test_run():
+def test_run() -> None:
     papis.config.set("browse-key", "url")
     assert run(from_data({"url": "hello.com"})) == "hello.com"
 
@@ -29,26 +29,22 @@ class TestCli(tests.cli.TestCli):
 
     cli = cli
 
-    @classmethod
-    def setUpClass(cls):
-        tests.setup_test_library()
-
-    def test_run_function_exists(self):
+    def test_run_function_exists(self) -> None:
         self.assertIsNot(run, None)
 
     @patch("papis.utils.general_open", lambda *x, **y: None)
-    def test_key_doi(self):
+    def test_key_doi(self) -> None:
         result = self.invoke([
             "krishnamurti", "-k", "doi"
         ])
         self.assertEqual(result.exit_code, 0)
 
-    def test_no_documents(self):
+    def test_no_documents(self) -> None:
         result = self.invoke(["__no_document__"])
         self.assertEqual(result.exit_code, 0)
 
     @patch("papis.utils.general_open", lambda *x, **y: None)
-    def test_key_doi_all(self):
+    def test_key_doi_all(self) -> None:
         result = self.invoke([
             "-k", "doi", "--all"
         ])
@@ -56,7 +52,7 @@ class TestCli(tests.cli.TestCli):
 
     @patch("papis.utils.general_open", lambda *x, **y: None)
     @patch("papis.pick.pick_doc", lambda x: [])
-    def test_key_doi_not_select(self):
+    def test_key_doi_not_select(self) -> None:
         result = self.invoke([
             "krishnamurti", "-k", "doi"
         ])
