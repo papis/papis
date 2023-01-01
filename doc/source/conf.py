@@ -44,6 +44,8 @@ intersphinx_mapping = {
     "https://docs.python.org/3/": None,
 }
 
+autodoc_member_order = "bysource"
+
 
 # Exec directive {{{
 
