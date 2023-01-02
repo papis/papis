@@ -1,11 +1,11 @@
 """
 This module define the entry point for external scripts
 to be called by papis.
-
 """
+
 import os
 import re
-from typing import List
+from typing import Any, Dict, List, Optional
 
 import click
 
@@ -24,19 +24,34 @@ def get_command_help(path: str) -> str:
             match = re.match(magic_word, line)
             if match:
                 return str(match.group(1))
+
     return "No help message available"
 
 
-def export_variables() -> None:
+def get_exported_variables(ctx: Optional[Dict[str, Any]] = None) -> Dict[str, str]:
     """
     Export environment variables so that external script can access to
     the information
     """
-    os.environ["PAPIS_LIB"] = papis.config.get_lib().name
-    os.environ["PAPIS_LIB_PATH"] = papis.config.get_lib().path_format()
-    os.environ["PAPIS_CONFIG_PATH"] = papis.config.get_config_folder()
-    os.environ["PAPIS_CONFIG_FILE"] = papis.config.get_config_file()
-    os.environ["PAPIS_SCRIPTS_PATH"] = papis.config.get_scripts_folder()
+    exports = {
+        "PAPIS_LIB": papis.config.get_lib().name,
+        "PAPIS_LIB_PATH": papis.config.get_lib().path_format(),
+        "PAPIS_CONFIG_PATH": papis.config.get_config_folder(),
+        "PAPIS_CONFIG_FILE": papis.config.get_config_file(),
+        "PAPIS_SCRIPTS_PATH": papis.config.get_scripts_folder(),
+    }
+
+    if ctx is not None:
+        if ctx.get("verbose"):
+            exports["PAPIS_DEBUG"] = "1"
+        if ctx.get("log"):
+            exports["PAPIS_LOG_LEVEL"] = str(ctx["log"])
+        if ctx.get("color"):
+            exports["PAPIS_LOG_COLOR"] = str(ctx["color"])
+        if ctx.get("logfile"):
+            exports["PAPIS_LOG_FILE"] = str(ctx["logfile"])
+
+    return exports
 
 
 @click.command(
@@ -57,7 +72,9 @@ def external_cli(ctx: click.core.Context, flags: List[str]) -> None:
     cmd = [path] + list(flags)
     logger.debug("Calling '%s'", cmd)
 
-    export_variables()
+    params = ctx.parent.params if ctx.parent else {}
+    environ = os.environ.copy()
+    environ.update(get_exported_variables(params))
 
     import subprocess
-    subprocess.call(cmd)
+    subprocess.call(cmd, env=environ)

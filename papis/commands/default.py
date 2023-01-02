@@ -167,18 +167,18 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
 @click.option(
     "--color",
     type=click.Choice(["always", "auto", "no"]),
-    default="auto",
+    default=os.environ.get("PAPIS_LOG_COLOR", "auto"),
     help="Prevent the output from having color")
 @click.option(
     "--log",
     help="Logging level",
     type=click.Choice(["INFO", "DEBUG", "WARNING", "ERROR", "CRITICAL"]),
-    default="INFO")
+    default=os.environ.get("PAPIS_LOG_LEVEL", "INFO"))
 @click.option(
     "--logfile",
     help="File to dump the log",
     type=str,
-    default=None)
+    default=os.environ.get("PAPIS_LOG_FILE"))
 @click.option(
     "--np",
     help="Use number of processors for multicore functionalities in papis",
