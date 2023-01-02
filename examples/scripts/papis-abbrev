@@ -49,7 +49,7 @@ import papis.api
 import papis.document
 import papis.logging
 
-papis.logging.setup("INFO")
+papis.logging.setup()
 logger = papis.logging.get_logger("papis.commands.abbrev")
 
 papis.config.register_default_settings({

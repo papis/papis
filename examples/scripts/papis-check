@@ -44,7 +44,7 @@ import papis.config
 import papis.document
 import papis.logging
 
-papis.logging.setup("INFO")
+papis.logging.setup()
 logger = papis.logging.get_logger("papis.commands.check")
 
 papis.config.register_default_settings({

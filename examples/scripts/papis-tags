@@ -31,7 +31,7 @@ import papis.cli
 import papis.document
 import papis.logging
 
-papis.logging.setup("INFO")
+papis.logging.setup()
 logger = papis.logging.get_logger("papis.commands.tags")
 
 TAG_COMMA_REGEX = re.compile(r"\s*,\s*")
