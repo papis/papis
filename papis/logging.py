@@ -51,19 +51,41 @@ def _disable_color(color: str = "auto") -> bool:
         )
 
 
-def setup(level: Union[int, str],
-          color: str = "auto",
+def setup(level: Optional[Union[int, str]] = None,
+          color: Optional[str] = None,
           logfile: Optional[str] = None,
-          verbose: bool = False) -> None:
-    """
+          verbose: Optional[bool] = None) -> None:
+    """Set up formatting and handlers for the root level Papis logger.
+
     :param level: default logging level (see
-        :ref:`Logging Levels <logging:logging-levels>`).
+        :ref:`Logging Levels <logging:logging-levels>`). By default, this
+        takes values from the ``PAPIS_LOG_LEVEL`` environment variable and
+        falls back to ``"INFO"``.
     :param color: flag to control logging colors. It should be one of
-        ``("always", "auto", "no")``.
-    :param logfile: a path for a file in which to write log messages.
+        ``("always", "auto", "no")``. By default, this takes values from the
+        ``PAPIS_LOG_COLOR`` environment variable and falls back to ``"auto"``.
+    :param logfile: a path for a file in which to write log messages. By default,
+        this takes values from the ``PAPIS_LOG_FILE`` environment variable and
+        falls back to *None*.
     :param verbose: make logger verbose (including debug information)
-        regardless of the *level*.
+        regardless of the *level*. By default, this takes values from the
+        ``PAPIS_DEBUG`` environment variable and falls back to *False*.
     """
+
+    if level is None:
+        level = os.environ.get("PAPIS_LOG_LEVEL", "INFO").upper()
+
+    if color is None:
+        color = os.environ.get("PAPIS_LOG_COLOR", "auto")
+
+    if logfile is None:
+        logfile = os.environ.get("PAPIS_LOG_FILE")
+
+    if verbose is None:
+        try:
+            verbose = bool(int(os.environ.get("PAPIS_DEBUG", "0")))
+        except ValueError:
+            verbose = False
 
     if color not in ("always", "auto", "no"):
         raise ValueError("Unknown 'color' value: '{}'".format(color))
@@ -76,7 +98,7 @@ def setup(level: Union[int, str],
 
     if isinstance(level, str):
         try:
-            level = getattr(logging, level)
+            level = int(getattr(logging, level))
         except AttributeError:
             raise ValueError("Unknown logger level: '{}'.".format(level))
     else:
@@ -104,6 +126,25 @@ def setup(level: Union[int, str],
     logger = logging.getLogger("papis")
     logger.setLevel(level)
     logger.addHandler(handler)
+
+
+def reset(level: Optional[Union[int, str]] = None,
+          color: Optional[str] = None,
+          logfile: Optional[str] = None,
+          verbose: Optional[bool] = None) -> None:
+    """Reset the root level Papis logger.
+
+    This function removes all the custom handlers and resets the logger
+    before calling :func:`setup`.
+    """
+    logger = logging.getLogger("papis")
+    for filter in logger.filters:
+        logger.removeFilter(filter)
+
+    for handler in logger.handlers:
+        logger.removeHandler(handler)
+
+    setup(level, color=color, logfile=logfile, verbose=verbose)
 
 
 def get_logger(name: Optional[str] = None) -> logging.Logger:
