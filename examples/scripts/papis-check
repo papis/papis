@@ -1,58 +1,63 @@
 #! /usr/bin/env python3
-# -*- coding: utf-8 -*-
-# papis-short-help: Look-up citations of documents
+# papis-short-help: Check document keys
 # Copyright © 2018 Alejandro Gallo. GPLv3
+
 """
+.. note::
+
+    This is just an example script and more comprehensive checks are implemented
+    by ``papis doctor``.
+
 This command checks for several attributes in every document.
 
-For example if you want to check that every document of your library has valid
-files related to it you can just do
-
-::
+For example, if you want to check that every document in your library has valid
+files attached to it, you can just do::
 
     papis check --key files
 
-this will check that every info file has the key files and that every file
-listed exists.
+This will check that every ``info.yml`` file has the key ``"files"`` and that
+every file listed exists on the filesystem.
 
-You can also define more complicated ones, e.g., if you want to check that
-every document has files, a valid author and title you would just hit
-
-::
+You can also define more complicated checks, e.g., if you want to check that
+every document has files, a valid author and title::
 
     papis check --key files --key author --key title
 
-.. _check-command-options:
+Command Options
+^^^^^^^^^^^^^^^
 
-Check command options
-^^^^^^^^^^^^^^^^^^^^^
+.. papis-config:: keys
+    :section: check
 
-.. papis-config:: check-keys
-
-    Python list key values to be checked by default by the command
+    A list of key values to be checked by default by the command
     ``check``. E.g: ``check-keys = ["author", "doi"]``.
-    It is important that it is a valid python list.
-
 """
-import papis.api
-import papis.config
-import papis.cli
+
+import os
+from typing import Any, Dict, List, Sequence
+
 import click
-import logging
 
+import papis.api
+import papis.cli
+import papis.config
+import papis.document
+import papis.logging
 
-options = {
-    'check': {
-        "keys": '["files"]',
+papis.logging.setup("INFO")
+logger = papis.logging.get_logger("papis.commands.check")
+
+papis.config.register_default_settings({
+    "check": {
+        "keys": ["files"],
     }
-}
-papis.config.register_default_settings(options)
+})
 
 
-def check_files(document):
-    """Check for the exsitence of the document's files
-    :returns: False if some file does not exist, True otherwise
-    :rtype:  bool
+def check_files(document: papis.document.Document) -> bool:
+    """Check for the exsitence of the document's files.
+
+    :returns: *False* if some file does not exist, *True* otherwise
 
     >>> from papis.document import from_data
     >>> doc = from_data({'title': 'Hello World'})
@@ -65,63 +70,58 @@ def check_files(document):
     for f in document.get_files():
         # document.logger.debug(f)
         if not os.path.exists(f):
-            print(
-                "** Error: %s not found in %s" % (
-                f,
-                document.get_main_folder())
-            )
+            logger.error("'%s' not found in '%s'.", f, document.get_main_folder())
             return False
         else:
             return True
 
+    return True
 
-def run(keys, documents):
+
+def run(keys: Sequence[str],
+        documents: Sequence[papis.document.Document],
+        ) -> Sequence[Dict[str, Any]]:
     result = []
     for document in documents:
         for key in keys:
             if key not in document.keys():
-                result.append(
-                    dict(doc=document, key=key, msg='not defined')
-                )
+                result.append({"doc": document, "key": key, "msg": "Undefined"})
             elif not document[key] and document[key] is not False:
-                result.append(
-                    dict(doc=document, key=key, msg='ill defined')
-                )
-            elif key == 'files':
+                result.append({"doc": document, "key": key, "msg": "Ill-defined"})
+            elif key == "files":
                 if not check_files(document):
-                    result.append(
-                        dict(doc=document, key=key, msg='problem with files')
-                    )
+                    result.append({"doc": document, "key": key, "msg": "Missing files"})
+
     return result
 
 
 @click.command()
-@click.help_option('--help', '-h')
-@papis.cli.query_option()
+@click.help_option("--help", "-h")
+@papis.cli.query_argument()
 @click.option(
     "--key", "-k",
     help="Space separated fields to check against",
-    type=str,
     multiple=True,
-    default=lambda: eval(papis.config.get('keys', section='keys'))
+    default=lambda: eval(papis.config.getstring("keys", section="check"))
 )
-def cli(query, key):
+def cli(query: str, key: List[str]) -> None:
     """Check document from a given library"""
     documents = papis.database.get().query(query)
-    logger = logging.getLogger('cli:check')
-    logger.debug(key)
     troubled_docs = run(key, documents)
+
     for doc in troubled_docs:
         print(
-            "{d[key]} - {d[msg]} - {folder}".format(
-                d=doc, folder=doc['doc'].get_main_folder()
+            "{key} - {folder}: {msg}".format(
+                key=doc["key"],
+                folder=doc["doc"].get_main_folder(),
+                msg=doc["msg"],
             )
         )
 
     if not len(troubled_docs) == 0:
-        print("Errors were detected, please fix the info files")
+        logger.error("Errors were detected, please fix the info files")
     else:
-        print("No errors detected")
+        logger.info("No errors detected")
 
 
 if __name__ == "__main__":
