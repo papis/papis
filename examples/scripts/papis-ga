@@ -20,7 +20,7 @@ import papis.api
 import papis.document
 import papis.logging
 
-papis.logging.setup("INFO")
+papis.logging.setup()
 logger = papis.logging.get_logger("papis.commands.ga")
 
 
