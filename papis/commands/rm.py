@@ -146,15 +146,14 @@ def cli(query: str,
     if not (_file or _notes):
         for document in documents:
             if not force:
-                tbar = "The folder {0} would be removed".format(
-                    document.get_main_folder())
-                logger.warning("This document will be removed, check it")
+                logger.warning("Folder to be removed: {0}".format(
+                               document.get_main_folder()))
+                logger.warning("The following document will be removed:")
                 papis.tui.utils.text_area(
-                    title=tbar,
                     text=papis.document.dump(document),
                     lexer_name="yaml")
                 if not papis.tui.utils.confirm(
-                        "Are you sure?", bottom_toolbar=tbar):
+                        "Do you want to remove the document?"):
                     continue
 
             logger.warning("Removing ...")

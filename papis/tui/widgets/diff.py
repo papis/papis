@@ -53,21 +53,17 @@ def prompt(text: Union[str, FormattedText],
             height=1,
             align=WindowAlign.LEFT,
             always_hide_cursor=True,
-            style="bg:ansiblack fg:ansiwhite",
+            style="bg:ansiblack",
             content=FormattedTextControl(
                 focusable=False,
                 text=FormattedText(action_texts)
-                # text=HTML(" ".join(
-                #     "{a.name}<yellow>[{a.key}]</yellow>".format(a=a)
-                #     for a in actions
-                # ))
             )
         )]
         + ([
             Window(
                 height=1, align=WindowAlign.LEFT,
                 always_hide_cursor=True,
-                style="bold fg:ansimagenta",
+                style="bold",
                 content=FormattedTextControl(focusable=False, text=title))
         ] if title else [])
     )
@@ -128,9 +124,9 @@ def diffshow(texta: str,
             or line.startswith("-") and ("fg:ansired bg:ansiblack", line)
             or line.startswith("?") and ("fg:ansiyellow bg:ansiblack", line)
             or line.startswith("^^^") and ("bg:ansiblack fg:ansimagenta", line)
-            or ("fg:ansiwhite", line), raw_text))
+            or ("", line), raw_text))
 
-    prompt(title=title,
+    prompt(title="--- Diff view: " + title + " ---",
            text=formatted_text,
            actions=actions)
 
@@ -196,7 +192,7 @@ def diffdict(dicta: Dict[str, Any],
 
     diffshow(
         texta=texta, textb=textb,
-        title="Diff View",
+        title="all changes",
         namea=namea,
         nameb=nameb,
         actions=actions)
@@ -223,7 +219,7 @@ def diffdict(dicta: Dict[str, Any],
         diffshow(
             texta=str(dicta.get(key, "")) + "\n",
             textb=str(dictb.get(key, "")) + "\n",
-            title="Key: {0}".format(key),
+            title='changes for key "{0}"'.format(key),
             namea=namea,
             nameb=nameb,
             actions=actions)
