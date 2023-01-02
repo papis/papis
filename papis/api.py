@@ -5,7 +5,7 @@ create papis scripts.
 .. class:: T
 """
 
-from typing import Any, Callable, Dict, List, Optional, Sequence, TypeVar
+from typing import Any, Callable, Dict, List, Optional, Sequence, TypeVar, Union
 
 import papis.utils
 import papis.config
@@ -183,16 +183,23 @@ def get_documents_in_dir(
 
 def get_documents_in_lib(
         library: Optional[str] = None,
-        search: str = "") -> List[papis.document.Document]:
+        search: Union[Dict[str, Any], str] = "") -> List[papis.document.Document]:
     """
     Get documents contained in the given library.
 
     :param library: a library name.
-    :param search: a search string used to filter the documents.
+    :param search: a search parameter used to filter the documents.
     :returns: a :class:`list` of filtered documents from *library*.
     """
     import papis.database
-    return papis.database.get(library).query(search)
+    db = papis.database.get(library)
+
+    if isinstance(search, str):
+        return db.query(search)
+    elif isinstance(search, dict):
+        return db.query_dict(search)
+    else:
+        raise TypeError("Unknown search parameter: '{}'".format(search))
 
 
 def clear_lib_cache(lib: Optional[str] = None) -> None:
