@@ -1,5 +1,4 @@
 import os
-import unittest
 
 import papis.config
 import papis.database

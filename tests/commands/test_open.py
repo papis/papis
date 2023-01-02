@@ -1,5 +1,3 @@
-import unittest
-
 import papis.bibtex
 import papis.config
 import papis.document

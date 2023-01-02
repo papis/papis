@@ -1,5 +1,3 @@
-import unittest
-
 from papis.commands.run import run
 import papis.config
 
