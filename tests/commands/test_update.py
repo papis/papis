@@ -1,4 +1,3 @@
-import unittest
 import os
 
 import papis.config

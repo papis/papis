@@ -1,5 +1,4 @@
 import os
-import unittest
 
 import papis.database
 from papis.commands.rename import run

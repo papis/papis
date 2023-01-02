@@ -4,7 +4,6 @@ import glob
 
 import json
 import tempfile
-import unittest
 
 import yaml
 
