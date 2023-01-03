@@ -5,13 +5,28 @@ system.
 The ``config`` command returns the value used by Papis. Therefore, if you
 haven't customized some setting, it will return the default value. In contrast,
 if you have customized it, it will return the value set in the configuration
-file. To show the list of default and overwritten configuration values in a
-section use
+file. For example, to find out to what your "default-library" is set, do:
+
+.. code::
+    papis config default-library
+   
+The ``config`` command can also be used to query settings' default
+values. This is done by adding the ``--default`` flag. This ignores all
+settings set in your papis configuration file (note, however, that any
+setting set in a `config.py` file count as default values). Check the default
+"default-library" with:
+ 
+.. code::
+    papis config --default default-library
+   
+Settings from a specific section in the configuration file can also be
+accessed. To take an example, the `Bibtex`_ command's settings can be
+accessed with:
 
 .. code::
 
-    papis config --default --section <name>
-    papis config --section <name>
+    papis config --section bibtex
+    papis config --default --section bibtex
 
 or call ``papis config`` without the section argument to show the settings
 available for all the known sections.
@@ -32,18 +47,23 @@ If you wanted to see which ``dir`` the ``books`` library uses, you would do:
 With ``-l``, Papis selects a specific library (here, the "books" library). The
 rest works just as above.
 
-Settings from a specific section in the configuration file can also be
-accessed. To take an example, the `Bibtex`_ command's settings can be
-accessed with
+You can also query a specific setting within a section. For example like this:
 
 .. code::
 
-    papis config --default --section bibtex default-read-bibfile
     papis config --section bibtex default-read-bibfile
+    papis config --default --section bibtex default-read-bibfile
 
-For some more advanced usage, we can also query multiple settings at once. Then
-it may be useful to overwrite the selected section for several of the settings.
-This can be achieved by
+Alternatively, you can also you the ``<section.setting>`` format to query the value of
+a setting in a specific `section`:
+
+.. code::
+    papis config bibtex.default-read-bibfile
+    papis config --default bibtex.default-read-bibfile
+    
+For some more advanced usage, we can also query multiple settings at once.  Here,
+sections specified with ``<section>.<setting>`` override the section specified by
+``--setting <section>``. This can be achieved by:
 
 .. code::
 
