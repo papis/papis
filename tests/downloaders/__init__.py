@@ -29,13 +29,18 @@ def with_default_config(fn: Callable[..., Any]) -> Callable[..., Any]:
 
     @functools.wraps(fn)
     def wrapper(*args, **kwargs):
-        with tempfile.NamedTemporaryFile(mode="w") as config:
-            papis.config.set_config_file(config.name)
-            papis.config.reset_configuration()
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as config:
+            pass
 
-            result = fn(*args, **kwargs)
+        papis.config.set_config_file(config.name)
+        papis.config.reset_configuration()
 
-            papis.config.set_config_file(None)
+        result = fn(*args, **kwargs)
+
+        papis.config.set_config_file(None)
+        papis.config.reset_configuration()
+
+        os.unlink(config.name)
 
         return result
 

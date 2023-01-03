@@ -181,6 +181,16 @@ some-other-setting = mandragora
     os.unlink(configpath)
 
 
+def test_set_lib_non_existing() -> None:
+    lib = "non-existing-library"
+    assert not os.path.exists(lib)
+
+    with pytest.raises(
+            Exception,
+            match="Library '{}' does not seem to exist".format(lib)):
+        papis.config.set_lib_from_name(lib)
+
+
 def test_set_lib_from_path() -> None:
     with tempfile.TemporaryDirectory() as lib:
         assert os.path.exists(lib)
@@ -209,8 +219,13 @@ def test_reset_configuration() -> None:
 
 
 def test_get_default_settings() -> None:
-    assert type(papis.config.get_default_settings()) is dict
-    assert papis.config.get_default_settings()["settings"]["mvtool"] == "mv"
+    settings = papis.config.get_default_settings()
+    assert isinstance(settings, dict)
+    assert len(settings) != 0
+
+    section = papis.config.get_general_settings_name()
+    assert section in settings
+    assert settings[section]["mvtool"] == "mv"
 
 
 def test_register_default_settings() -> None:
