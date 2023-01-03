@@ -3,22 +3,24 @@ The ``config`` command allows you to query the settings used by Papis on your
 system.
 
 The ``config`` command returns the value used by Papis. Therefore, if you
-haven't customized some setting, it will return the default value. In contrast,
+have not customized some setting, it will return the default value. In contrast,
 if you have customized it, it will return the value set in the configuration
-file. For example, to find out to what your "default-library" is set, do:
+file. For example, to find out to what your "default-library" is set to, call:
 
 .. code::
+
     papis config default-library
-   
-The ``config`` command can also be used to query settings' default
-values. This is done by adding the ``--default`` flag. This ignores all
-settings set in your papis configuration file (note, however, that any
-setting set in a `config.py` file count as default values). Check the default
-"default-library" with:
- 
+
+The ``config`` command can also be used to query a settings' default
+value. This is done by adding the ``--default`` flag. This ignores all
+settings set in your Papis configuration file (note, however, that
+settings set in a ``config.py`` script can count as default values). Check the
+default "default-library" with:
+
 .. code::
+
     papis config --default default-library
-   
+
 Settings from a specific section in the configuration file can also be
 accessed. To take an example, the `Bibtex`_ command's settings can be
 accessed with:
@@ -28,24 +30,8 @@ accessed with:
     papis config --section bibtex
     papis config --default --section bibtex
 
-or call ``papis config`` without the section argument to show the settings
+or with ``papis config`` (without the section argument) to show the settings
 available for all the known sections.
-
-We can also query specific settings. Let's say you want to see which ``dir``
-setting your default library is using. You can achieve this with:
-
-.. code::
-
-    papis config dir
-
-If you wanted to see which ``dir`` the ``books`` library uses, you would do:
-
-.. code::
-
-    papis -l books config dir
-
-With ``-l``, Papis selects a specific library (here, the "books" library). The
-rest works just as above.
 
 You can also query a specific setting within a section. For example like this:
 
@@ -54,23 +40,21 @@ You can also query a specific setting within a section. For example like this:
     papis config --section bibtex default-read-bibfile
     papis config --default --section bibtex default-read-bibfile
 
-Alternatively, you can also you the ``<section.setting>`` format to query the value of
-a setting in a specific `section`:
+Alternatively, you can also use the ``<section.setting>`` format to query the
+value of a setting in a specific `section`:
 
 .. code::
+
     papis config bibtex.default-read-bibfile
     papis config --default bibtex.default-read-bibfile
-    
-For some more advanced usage, we can also query multiple settings at once.  Here,
+
+For some more advanced usage, we can also query multiple settings at once. Here,
 sections specified with ``<section>.<setting>`` override the section specified by
 ``--setting <section>``. This can be achieved by:
 
 .. code::
 
     papis config --section sec1 key1 key2 key3 sec2.key4 sec3.key5
-
-where the keys take the format ``[<section>.]<key>`` with an optional prefix
-to specify the section override.
 
 You can find a list of all available settings in the configuration section
 at :ref:`general-settings`. Commands and other plugins can define their own
