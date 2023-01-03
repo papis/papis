@@ -36,3 +36,9 @@ class Test(tests.cli.TestWithLibrary):
         assert isinstance(folders, list)
         for f in folders:
             assert os.path.exists(f)
+
+    def test_list_id(self) -> None:
+        ids = run(papis.database.get().get_all_documents(),
+                  papis_id=True)
+        assert len(ids) >= 1
+        assert isinstance(ids, list)

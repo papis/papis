@@ -37,7 +37,7 @@ in ``bash`` like such
 
 .. code:: sh
 
-    id=$(papis list --format "{doc[papis_id]}")
+    id=$(papis list --id)
 
 and subsequently use the ``id`` variable to trigger other commands,
 for instance you can open the file attached to the document like
