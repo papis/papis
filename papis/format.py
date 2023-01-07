@@ -12,8 +12,11 @@ FormatDocType = Union[Document, Dict[str, Any]]
 _FORMATER = None  # type: Optional[Formater]
 
 
-class InvalidFormatterValue(Exception):
+class InvalidFormaterError(ValueError):
     pass
+
+
+InvalidFormatterValue = InvalidFormaterError
 
 
 def escape(fmt: str) -> str:
@@ -34,19 +37,26 @@ class Formater:
                doc_key: str = "",
                additional: Optional[Dict[str, Any]] = None) -> str:
         """
-        :param fmt: Python-like format string.
-        :param doc: Papis document
-        :param doc_key: Name of the document in the format string
-        :param additional: Additional named keys available to the format string
-        :returns: Formated string
+        :param fmt: a format string understood by the formater.
+        :param doc: an object convertible to a document.
+        :param doc_key: the name of the document in the format string. By
+            default, this falls back to ``"format-doc-name"``.
+        :param additional: a :class:`dict` of additional entries to pass to the
+            formater.
+
+        :returns: a string with all the replacement fields filled in.
         """
         raise NotImplementedError
 
 
 class PythonFormater(Formater):
-    """Construct a string using a pythonic format string and a document.
-    You can activate this formatter by setting ``formater = python``.
+    """Construct a string using a `PEP 3101 <https://peps.python.org/pep-3101/>`__
+    (`str.format` based) format string.
+
+    This formater is named ``"python"`` and can be set using the ``formater``
+    setting in the configuration file (see :ref:`general-settings`).
     """
+
     def format(self,
                fmt: str,
                doc: FormatDocType,
@@ -66,21 +76,22 @@ class PythonFormater(Formater):
 
 
 class Jinja2Formater(Formater):
-    """Construct a Jinja2 formated string.
-    You can activate this formatter by setting ``formater = jinja2``.
+    """Construct a string using `Jinja2 <https://palletsprojects.com/p/jinja/>`__
+    templates.
+
+    This formater is named ``"jinja2"`` and can be set using the ``formater``
+    setting in the configuration file (see :ref:`general-settings`).
     """
 
     def __init__(self) -> None:
         try:
-            import jinja2
-        except ImportError:
-            logger.exception("""
-            You're trying to format strings using jinja2
-            Jinja2 is not installed by default, so just install it
-                pip3 install jinja2
-            """)
-        else:
-            self.jinja2 = jinja2
+            import jinja2       # noqa: F401
+        except ImportError as exc:
+            logger.error(
+                "The 'jinja2' formater requires the 'jinja' library. "
+                "To use this functionality install it using e.g. "
+                "'pip install jinja2'.", exc_info=exc)
+            raise exc
 
     def format(self,
                fmt: str,
@@ -90,36 +101,47 @@ class Jinja2Formater(Formater):
         if additional is None:
             additional = {}
 
+        from jinja2 import Template
+
         fmt = escape(fmt)
         doc = papis.document.from_data(doc)
 
         doc_name = doc_key or papis.config.getstring("format-doc-name")
         try:
-            return str(self.jinja2
-                           .Template(fmt)
-                           .render(**{doc_name: doc}, **additional))
-        except Exception as exception:
-            return str(exception)
+            return str(Template(fmt).render(**{doc_name: doc}, **additional))
+        except Exception as exc:
+            return "{}: {}".format(type(exc).__name__, exc)
 
 
 def _extension_name() -> str:
     return "papis.format"
 
 
-def get_formater() -> Formater:
-    """Get the formatter named 'name' declared as a plugin"""
+def get_formater(name: Optional[str] = None) -> Formater:
+    """Initialize a formater plugin.
+
+    Note that the formater is cached and all subsequence calls to this function
+    will return the same formater.
+
+    :param name: the name of the desired formater.
+    """
     global _FORMATER
+
     if _FORMATER is None:
-        name = papis.config.getstring("formater")
+        mgr = papis.plugin.get_extension_manager(_extension_name())
+
+        if name is None:
+            name = papis.config.getstring("formater")
+
         try:
-            _FORMATER = papis.plugin.get_extension_manager(
-                _extension_name())[name].plugin()
-        except KeyError:
-            logger.error("Invalid formatter: %s", name)
-            raise InvalidFormatterValue(
-                "Registered formatters are: %s",
-                papis.plugin.get_available_entrypoints(_extension_name()))
-        logger.debug("Getting %s", name)
+            _FORMATER = mgr[name].plugin()
+        except Exception as exc:
+            entrypoints = papis.plugin.get_available_entrypoints(_extension_name())
+            logger.error("Invalid formater '%s'. Registered formaters are '%s'.",
+                         name, "', '".join(entrypoints), exc_info=exc)
+            raise InvalidFormaterError("Invalid formater: '{}'".format(name))
+
+        logger.debug("Using '%s' formater.", name)
 
     return _FORMATER
 

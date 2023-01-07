@@ -14,6 +14,7 @@ except ImportError:
     HAS_MULTIPROCESSING = False
 
 import papis.config
+import papis.format
 import papis.exceptions
 import papis.importer
 import papis.downloaders
@@ -58,6 +59,9 @@ def parmap(f: Callable[[A], B],
     todo: enable multiprocessing support for darwin (py3.6+) ...
     todo: ... see https://github.com/papis/papis/issues/323
     """
+    # FIXME: load singleton plugins here instead of on all the processes
+    _ = papis.format.get_formater()
+
     if has_multiprocessing() and sys.platform != "darwin":
         np = np or os.cpu_count()
         np = int(os.environ.get("PAPIS_NP", str(np)))
