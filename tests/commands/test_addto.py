@@ -1,16 +1,15 @@
 import unittest
-import tests
+
 import papis.config
 from papis.commands.addto import run
 
+import tests
+import tests.cli
 
-class Test(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        tests.setup_test_library()
+class Test(tests.cli.TestWithLibrary):
 
-    def test_simple_add(self):
+    def test_simple_add(self) -> None:
         db = papis.database.get()
         docs = db.query_dict({"author": "krishnamurti"})
         self.assertEqual(len(docs), 1)

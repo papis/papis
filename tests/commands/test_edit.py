@@ -1,25 +1,24 @@
-import papis.bibtex
 import unittest
-import tests
-import papis.config
-from papis.commands.edit import run, cli
 import os
 
+import papis.config
+import papis.bibtex
+from papis.commands.edit import run, cli
 
-class TestRun(unittest.TestCase):
+import tests
+import tests.cli
 
-    @classmethod
-    def setUpClass(cls):
-        tests.setup_test_library()
+
+class TestRun(tests.cli.TestWithLibrary):
 
     def get_docs(self):
         db = papis.database.get()
         return db.get_all_documents()
 
-    def test_run_function_exists(self):
+    def test_run_function_exists(self) -> None:
         self.assertIsNot(run, None)
 
-    def test_update(self):
+    def test_update(self) -> None:
         docs = self.get_docs()
         doc = docs[0]
         title = doc["title"] + "test_update"
@@ -41,33 +40,33 @@ class TestCli(tests.cli.TestCli):
 
     cli = cli
 
-    def test_main(self):
+    def test_main(self) -> None:
         self.do_test_cli_function_exists()
         self.do_test_help()
 
-    def test_simple(self):
+    def test_simple(self) -> None:
         result = self.invoke([
             "krishnamurti"
         ])
         self.assertEqual(result.exit_code, 0)
 
-    def test_doc_not_found(self):
+    def test_doc_not_found(self) -> None:
         result = self.invoke([
             'this document it"s not going to be found'
         ])
         self.assertEqual(result.exit_code, 0)
 
-    def test_all(self):
+    def test_all(self) -> None:
         result = self.invoke([
             "krishnamurti", "--all", "-e", "ls"
         ])
         self.assertEqual(result.exit_code, 0)
         self.assertEqual(papis.config.get("editor"), "ls")
 
-    def test_config(self):
+    def test_config(self) -> None:
         self.assertTrue(papis.config.get("notes-name"))
 
-    def test_notes(self):
+    def test_notes(self) -> None:
         result = self.invoke([
             "krishnamurti", "--all", "-e", "echo", "-n"
         ])

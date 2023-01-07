@@ -6,13 +6,10 @@ import papis.config
 import papis.commands.rm
 
 import tests
+import tests.cli
 
 
-class Test(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        tests.setup_test_library()
+class Test(tests.cli.TestWithLibrary):
 
     def test_rm_document(self):
         db = papis.database.get()
