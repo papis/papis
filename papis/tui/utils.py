@@ -68,10 +68,10 @@ def confirm(prompt_string: str,
 def text_area(text: str,
               lexer_name: str = ""):
     """
-    Small implementation of an editor/pager for small pieces of text.
+    Small implementation of a pager for small pieces of text.
 
     :param text: text
-    :param lexer_name: If the editable text should be highlighted with
+    :param lexer_name: If the text should be highlighted with
         some kind of grammar, examples are ``yaml``, ``python`` ...
     """
     from pygments.lexers import find_lexer_class_by_name
