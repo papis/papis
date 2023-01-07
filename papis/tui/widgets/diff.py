@@ -4,7 +4,7 @@ from typing import (
 from prompt_toolkit import Application, print_formatted_text
 from prompt_toolkit.utils import Event
 from prompt_toolkit.layout.containers import HSplit, Window, WindowAlign
-from prompt_toolkit.formatted_text import FormattedText, HTML
+from prompt_toolkit.formatted_text import FormattedText
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.key_binding import KeyBindings
