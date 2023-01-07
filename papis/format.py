@@ -1,4 +1,4 @@
-from typing import Optional, Union, Any, Dict
+from typing import Any, Dict, Optional, Union
 
 import papis.config
 import papis.plugin
@@ -14,6 +14,17 @@ _FORMATER = None  # type: Optional[Formater]
 
 class InvalidFormatterValue(Exception):
     pass
+
+
+def escape(fmt: str) -> str:
+    # NOTE: this escapes '\n' and '\t' characters in the string so that they
+    # get printed properly when doing the 'fmt.format' below
+
+    import codecs
+    try:
+        return codecs.decode(fmt, "unicode-escape")
+    except ValueError:
+        return fmt
 
 
 class Formater:
@@ -44,13 +55,14 @@ class PythonFormater(Formater):
         if additional is None:
             additional = {}
 
+        fmt = escape(fmt)
+        doc = papis.document.from_data(doc)
+
         doc_name = doc_key or papis.config.getstring("format-doc-name")
-        fdoc = Document()
-        fdoc.update(doc)
         try:
-            return fmt.format(**{doc_name: fdoc}, **additional)
-        except Exception as exception:
-            return str(exception)
+            return fmt.format(**{doc_name: doc}, **additional)
+        except Exception as exc:
+            return "{}: {}".format(type(exc).__name__, exc)
 
 
 class Jinja2Formater(Formater):
@@ -77,6 +89,9 @@ class Jinja2Formater(Formater):
                additional: Optional[Dict[str, Any]] = None) -> str:
         if additional is None:
             additional = {}
+
+        fmt = escape(fmt)
+        doc = papis.document.from_data(doc)
 
         doc_name = doc_key or papis.config.getstring("format-doc-name")
         try:
