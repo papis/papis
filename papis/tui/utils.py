@@ -1,6 +1,8 @@
 import re
 from typing import Optional, List, Callable, Any
 
+# Highlighting style used by pygments. This is a copy of the prompt_toolkit
+# default style, but changed to use ansi colors.
 PAPIS_PYGMENTS_DEFAULT_STYLE = {
     "pygments.whitespace": "ansigray",
     "pygments.comment": "italic ansigreen",
@@ -22,7 +24,7 @@ PAPIS_PYGMENTS_DEFAULT_STYLE = {
     "pygments.name.attribute": "ansigreen",
     "pygments.name.tag": "bold ansigreen",
     "pygments.name.decorator": "ansimagenta",
-    # Note: In Pygments, Token.String is an alias for Token.Literal.String,
+    # NOTE: In Pygments, Token.String is an alias for Token.Literal.String,
     #       and Token.Number as an alias for Token.Literal.Number.
     "pygments.literal.string": "ansired",
     "pygments.literal.string.doc": "italic",
