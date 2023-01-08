@@ -146,8 +146,8 @@ def cli(query: str,
     if not (_file or _notes):
         for document in documents:
             if not force:
-                logger.warning("Folder to be removed: {0}".format(
-                               document.get_main_folder()))
+                logger.warning("Folder to be removed: '%s'", 
+                               document.get_main_folder())
                 logger.warning("The following document will be removed:")
                 papis.tui.utils.text_area(
                     text=papis.document.dump(document),
