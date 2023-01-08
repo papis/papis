@@ -419,7 +419,7 @@ def run(paths: List[str],
         for d_path in tmp_document.get_files():
             papis.utils.open_file(d_path)
     if confirm:
-        if not papis.tui.utils.confirm("Do you want to add the new document anyway?"):
+        if not papis.tui.utils.confirm("Do you want to add the new document?"):
             return
 
     logger.info(
