@@ -71,9 +71,22 @@ def general_open(file_name: str,
         subprocess.call(cmd)
     else:
         logger.debug("Not waiting for process to finish")
-        subprocess.Popen(
-            cmd, shell=False,
-            stdin=None, stdout=None, stderr=None, close_fds=True)
+        popen_kwargs = {
+            "shell": False,
+            "stdin": None,
+            "stdout": None,
+            "stderr": None,
+            "close_fds": True
+        }
+        # Tell subprocess to detach the process.
+        if sys.platform == "win32":
+            popen_kwargs["creationflags"] = subprocess.DETACHED_PROCESS
+            popen_kwargs["creationflags"] |= subprocess.CREATE_NEW_PROCESS_GROUP
+        else:
+            cmd.insert(0, "nohup")
+            popen_kwargs["stdout"] = subprocess.DEVNULL
+            popen_kwargs["stderr"] = subprocess.DEVNULL
+        subprocess.Popen(cmd, **popen_kwargs)
 
 
 def open_file(file_path: str, wait: bool = True) -> None:
