@@ -74,8 +74,8 @@ def general_open(file_name: str,
         popen_kwargs = {
             "shell": False,
             "stdin": None,
-            "stdout": None,
-            "stderr": None,
+            "stdout": subprocess.DEVNULL,
+            "stderr": subprocess.DEVNULL,
             "close_fds": True
         }	# type: Dict[str, Any]
         # Tell subprocess to detach the process.
@@ -84,8 +84,6 @@ def general_open(file_name: str,
             popen_kwargs["creationflags"] |= subprocess.CREATE_NEW_PROCESS_GROUP
         else:
             cmd.insert(0, "nohup")
-            popen_kwargs["stdout"] = subprocess.DEVNULL
-            popen_kwargs["stderr"] = subprocess.DEVNULL
         subprocess.Popen(cmd, **popen_kwargs)
 
 
