@@ -77,7 +77,7 @@ def general_open(file_name: str,
             "stdout": None,
             "stderr": None,
             "close_fds": True
-        }
+        }	# type: Dict[str, Any]
         # Tell subprocess to detach the process.
         if sys.platform == "win32":
             popen_kwargs["creationflags"] = subprocess.DETACHED_PROCESS
