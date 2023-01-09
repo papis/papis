@@ -65,10 +65,12 @@ def general_open(file_name: str,
     cmd = shlex.split("{0} '{1}'".format(opener, file_name))
     logger.debug("cmd: %s", cmd)
 
-    # Check that opener can be called.
+    # NOTE: Detached processes do not fail properly when the command does not
+    # exist, so we check for it manually here
     import shutil
     if not shutil.which(cmd[0]):
-        raise FileNotFoundError("{} not found".format(opener))
+        raise FileNotFoundError(
+            "[Errno 2] No such file or directory: '{}'".format(opener))
 
     import subprocess
     if wait:
@@ -83,12 +85,15 @@ def general_open(file_name: str,
             "stderr": subprocess.DEVNULL,
             "close_fds": True
         }  # type: Dict[str, Any]
-        # Tell subprocess to detach the process.
+
+        # NOTE: Detach process so that the terminal can be closed without also
+        # closing the 'opentool' itself with the open document
         if sys.platform == "win32":
             popen_kwargs["creationflags"] = subprocess.DETACHED_PROCESS
             popen_kwargs["creationflags"] |= subprocess.CREATE_NEW_PROCESS_GROUP
         else:
             cmd.insert(0, "nohup")
+
         subprocess.Popen(cmd, **popen_kwargs)
 
 
