@@ -65,6 +65,11 @@ def general_open(file_name: str,
     cmd = shlex.split("{0} '{1}'".format(opener, file_name))
     logger.debug("cmd: %s", cmd)
 
+    # Check that opener can be called.
+    import shutil
+    if not shutil.which(cmd[0]):
+        raise FileNotFoundError("{} not found".format(opener))
+
     import subprocess
     if wait:
         logger.debug("Waiting for process to finish")
