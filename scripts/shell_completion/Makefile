@@ -1,5 +1,7 @@
 .PHONY: bash zsh fish
 
+all: bash fish zsh
+
 bash:
 	mkdir -p click/bash
 	_PAPIS_COMPLETE=bash_source papis >| click/bash/papis.bash
