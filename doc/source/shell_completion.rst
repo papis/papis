@@ -1,34 +1,56 @@
-Shell auto-completion
-=====================
+Shell Completion
+================
 
-Papis has a bash auto-completion script that comes installed
-when you install papis with ``pip3``.
+Papis has shell completion for ``bash``, ``fish`` and ``zsh`` through the
+`click framework <https://click.palletsprojects.com/en/latest/shell-completion/#shell-completion>`__
+that comes with it when installed through ``pip``. To control the directory
+in which the completions gets installed use the environment variables
 
-It should be installed in a relative path
+.. code:: bash
 
-::
+    PAPIS_<SHELL>_COMPLETION_DIR=my/custom/directory
 
-  PREFIX/etc/bash_completion.d/papis
+where ``<SHELL>`` is the uppercase name of the shell (e.g. ``BASH``) and the
+paths are considered subdirectories of the chosen prefix. The default paths for
+each shell are given below.
 
-normally the ``PREFIX`` part is ``/usr/local/``, so you can add the
-following line to your ``~/.bashrc`` file
+* ``bash``: the completion script is installed in
+  ``$PREFIX/share/bash-completion/completions`` and works directly with
+  the `bash-completion <https://github.com/scop/bash-completion>`__ package.
+  It can also be sourced manually using (or added to your ``.bashrc``)
 
-::
+    .. code:: bash
 
-  source /usr/local/etc/bash_completion.d/papis
+        source $PREFIX/share/bash-completion/completions/papis.bash
 
-or get the bash script from
-`here <https://raw.githubusercontent.com/alejandrogallo/papis/master/scripts/shell_completion/click/papis.sh/>`__.
+* ``fish``: the completion script is installed in
+  ``$PREFIX/share/fish/vendor_completions.d``, which should be sourced
+  automatically (see the
+  `fish docs <https://fishshell.com/docs/current/completions.html#where-to-put-completions>`__
+  for more details). It can also be sourced manually using (or added to your
+  ``config.fish``)
 
+    .. code:: bash
 
-Zsh
----
+        source $PREFIX/share/fish/vendor_completions.d/papis.fish
 
-There is also a way for ``zsh`` users to auto-complete. Either downloading the
-script
-`here <https://raw.githubusercontent.com/alejandrogallo/papis/master/scripts/shell_completion/click/papis.zsh/>`__.
-or adding the following line int the ``.zshrc`` configuration file
+* ``zsh``: the completion script is installed in ``$PREFIX/share/zsh/site-functions``,
+  which is sourced automatically starting with version ``5.0.7`` (see the
+  `zsh docs <https://zsh.sourceforge.io/Doc/Release/Completion-System.html>`__
+  for more details). It can also be sourced manually using (or added to your
+  ``.zshrc``)
 
-::
+    .. code:: bash
 
-  eval "$(_PAPIS_COMPLETE=source_zsh papis)"
+        source $PREFIX/share/zsh/site-functions/_papis
+
+Alternatively, the completion can be generated on-the-fly by running (see more in the
+`click docs <https://click.palletsprojects.com/en/latest/shell-completion/#shell-completion>`__)
+
+.. code:: bash
+
+   eval "$(_PAPIS_COMPLETE=<shell>_source papis)"
+
+where ``<shell>`` is one of the shells supported by ``click``. Note that older
+versions of ``click`` used ``source_<shell>`` instead for the values of
+``_PAPIS_COMPLETE``.
