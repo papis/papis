@@ -121,16 +121,16 @@ key_conversion = [
         "action": lambda x: x[1]["URL"]
     }]),
     KeyConversionPair("issued", [
-        {"key": "year", "action": lambda x: x.get("date-parts")[0][0]},
-        {"key": "month", "action": lambda x: x.get("date-parts")[0][1]}
+        {"key": "year", "action": lambda x: _crossref_date_parts(x, 0)},
+        {"key": "month", "action": lambda x: _crossref_date_parts(x, 1)}
     ]),
     KeyConversionPair("published-online", [
-        {"key": "year", "action": lambda x: x.get("date-parts")[0][0]},
-        {"key": "month", "action": lambda x: x.get("date-parts")[0][1]}
+        {"key": "year", "action": lambda x: _crossref_date_parts(x, 0)},
+        {"key": "month", "action": lambda x: _crossref_date_parts(x, 1)}
     ]),
     KeyConversionPair("published-print", [
-        {"key": "year", "action": lambda x: x.get("date-parts")[0][0]},
-        {"key": "month", "action": lambda x: x.get("date-parts")[0][1]}
+        {"key": "year", "action": lambda x: _crossref_date_parts(x, 0)},
+        {"key": "month", "action": lambda x: _crossref_date_parts(x, 1)}
     ]),
     KeyConversionPair("publisher", [papis.document.EmptyKeyConversion]),
     KeyConversionPair("reference", [{
@@ -149,10 +149,26 @@ key_conversion = [
     KeyConversionPair("event", [  # Conferences
         {"key": "venue", "action": lambda x: x["location"]},
         {"key": "booktitle", "action": lambda x: x["name"]},
-        {"key": "year", "action": lambda x: x["start"]["date-parts"][0][0]},
-        {"key": "month", "action": lambda x: x["start"]["date-parts"][0][1]},
+        {"key": "year", "action": lambda x: _crossref_date_parts(x["start"], 0)},
+        {"key": "month", "action": lambda x: _crossref_date_parts(x["start"], 1)},
     ]),
 ]  # List[papis.document.KeyConversionPair]
+
+
+def _crossref_date_parts(entry: Dict[str, Any],
+                         i: int = 0) -> Optional[int]:
+    date_parts = entry.get("date-parts")
+    if date_parts is None:
+        return date_parts
+
+    assert len(date_parts) == 1
+    parts, = date_parts
+
+    # NOTE: dates can also be partial, where only the year is required
+    if not (0 <= i < len(parts)):
+        return None
+
+    return int(parts[i])
 
 
 def crossref_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
