@@ -1,7 +1,7 @@
 import re
 import os
 import tempfile
-from typing import Set, List, Dict, Any, Optional, Tuple, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
 
 import doi
 import click
@@ -21,7 +21,10 @@ logger = papis.logging.get_logger(__name__)
 
 KeyConversionPair = papis.document.KeyConversionPair
 
-_filter_names = set([
+# NOTE: the API JSON format is maintained at
+#   https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md
+
+_filter_names = frozenset([
     "has_funder", "funder", "location", "prefix", "member", "from_index_date",
     "until_index_date", "from_deposit_date", "until_deposit_date",
     "from_update_date", "until_update_date", "from_created_date",
@@ -41,9 +44,9 @@ _filter_names = set([
     "content_domain", "has_content_domain", "has_crossmark_restriction",
     "has_relation", "relation_type", "relation_object", "relation_object_type",
     "public_references", "publisher_name", "affiliation",
-])  # type: Set[str]
+])
 
-_types_values = [
+_types_values = frozenset([
     "book-section", "monograph", "report", "peer-review", "book-track",
     "journal-article", "book-part", "other", "book", "journal-volume",
     "book-set", "reference-entry", "proceedings-article", "journal",
@@ -51,16 +54,16 @@ _types_values = [
     "proceedings", "standard", "reference-book", "posted-content",
     "journal-issue", "dissertation", "dataset", "book-series", "edited-book",
     "standard-series",
-]  # type: List[str]
+])
 
-_sort_values = [
+_sort_values = frozenset([
     "relevance", "score", "updated", "deposited", "indexed", "published",
     "published-print", "published-online", "issued", "is-referenced-by-count",
     "references-count",
-]  # type: List[str]
+])
 
 
-_order_values = ["asc", "desc"]  # type: List[str]
+_order_values = frozenset(["asc", "desc"])
 
 
 type_converter = {
@@ -254,10 +257,10 @@ def doi_to_data(doi_string: str) -> Dict[str, Any]:
     multiple=True)
 @click.option(
     "--order", "-o", help="Order of appearance according to sorting",
-    default="desc", type=click.Choice(_order_values), show_default=True)
+    default="desc", type=click.Choice(list(_order_values)), show_default=True)
 @click.option(
     "--sort", "-s", help="Sorting parameter", default="score",
-    type=click.Choice(_sort_values), show_default=True)
+    type=click.Choice(list(_sort_values)), show_default=True)
 def explorer(
         ctx: click.core.Context,
         query: str,
