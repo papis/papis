@@ -118,7 +118,7 @@ key_conversion = [
     }]),
     KeyConversionPair("link", [{
         "key": str(papis.config.get("doc-url-key-name")),
-        "action": lambda x: x[1]["URL"]
+        "action": lambda x: _crossref_link(x)
     }]),
     KeyConversionPair("issued", [
         {"key": "year", "action": lambda x: _crossref_date_parts(x, 0)},
@@ -169,6 +169,19 @@ def _crossref_date_parts(entry: Dict[str, Any],
         return None
 
     return int(parts[i])
+
+
+def _crossref_link(entry: List[Dict[str, str]]) -> Optional[str]:
+    if len(entry) == 1:
+        return entry[0]["URL"]
+
+    links = [
+        # NOTE: using the 'similarity-checking' label here is just a heuristic,
+        # since that seemed to be the better choice in some examples
+        resource.get("URL") for resource in entry
+        if resource.get("intended-application") == "similarity-checking"]
+
+    return links[0] if links else None
 
 
 def crossref_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
