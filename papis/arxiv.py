@@ -1,19 +1,24 @@
-"""The following table lists the field prefixes for all the fields
- that can be searched.
+"""
+Table: search_query field prefixes
+==================================
 
- Table:          search_query field prefixes
-============================================
- prefix          explanation
---------------------------------------------
- ti              Title
- au              Author
- abs             Abstract
- co              Comment
- jr              Journal Reference
- cat             Subject Category
- rn              Report Number
- id              Id (use id_list instead)
- all             All of the above
+The following table lists the field prefixes for all the fields
+that can be searched. See the details of query construction in the
+`arXiv API docs <https://arxiv.org/help/api/user-manual#query_details>`__.
+
+====== ========================
+Prefix Explanation
+====== ========================
+ti     Title
+au     Author
+abs    Abstract
+co     Comment
+jr     Journal Reference
+cat    Subject Category
+rn     Report Number
+id     Id (use id_list instead)
+all    All of the above
+====== ========================
 """
 import os
 import re
