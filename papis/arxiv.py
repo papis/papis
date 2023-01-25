@@ -20,9 +20,10 @@ id     Id (use id_list instead)
 all    All of the above
 ====== ========================
 """
+
 import os
 import re
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 import click
 
@@ -32,11 +33,63 @@ import papis.filetype
 import papis.logging
 import papis.utils
 
+if TYPE_CHECKING:
+    import arxiv
+
 logger = papis.logging.get_logger(__name__)
 
 ARXIV_API_URL = "https://arxiv.org/api/query"
 ARXIV_ABS_URL = "https://arxiv.org/abs"
 ARXIV_PDF_URL = "https://arxiv.org/pdf"
+
+# NOTE: keys match attributes of arxiv.Result
+#   https://lukasschwab.me/arxiv.py/index.html#Result.__init__
+
+_k = papis.document.KeyConversionPair
+key_conversion = [
+    _k("authors", [{
+        "key": "author_list",
+        "action": lambda x: papis.document.split_authors_name([
+            author.name for author in x
+            ])
+    }]),
+    _k("doi", [{"key": "doi", "action": None}]),
+    _k("entry_id", [{"key": "url", "action": None}]),
+    _k("journal_ref", [{"key": "journal", "action": None}]),
+    _k("pdf_url", [{
+        "key": str(papis.config.get("doc-url-key-name")),
+        "action": None
+    }]),
+    _k("published", [
+        {"key": "year", "action": lambda x: x.year},
+        {"key": "month", "action": lambda x: x.month}
+    ]),
+    _k("summary", [{"key": "abstract", "action": lambda x: x.replace("\n", " ")}]),
+    _k("title", [{"key": "title", "action": None}]),
+    ]
+
+
+def arxiv_to_papis(result: "arxiv.Result") -> Dict[str, Any]:
+    data = papis.document.keyconversion_to_data(key_conversion, vars(result))
+
+    # NOTE: these tags are recognized by BibLaTeX
+    data["eprint"] = result.get_short_id()
+    data["eprinttype"] = "arxiv"
+    data["eprintclass"] = result.primary_category
+
+    # NOTE: not quite sure what to do about the type? it's not mentioned explicitly
+    comment = result.comment.lower()
+    if "thesis" in comment:
+        if "phd" in comment:
+            data["type"] = "phdthesis"
+        elif "master" in comment:
+            data["type"] = "mastersthesis"
+        else:
+            data["type"] = "thesis"
+    else:
+        data["type"] = "article"
+
+    return data
 
 
 def get_data(
@@ -52,7 +105,10 @@ def get_data(
         page: int = 0,
         max_results: int = 30
         ) -> List[Dict[str, Any]]:
-    dict_params = {
+    from urllib.parse import quote
+
+    # form query
+    search_params = {
         "all": query,
         "ti": title,
         "au": author,
@@ -60,47 +116,26 @@ def get_data(
         "abs": abstract,
         "co": comment,
         "jr": journal,
-        "id_list": id_list,
         "rn": report_number
     }
-    result = []
-    clean_params = {x: dict_params[x] for x in dict_params if dict_params[x]}
-    search_query = "+AND+".join(
-        [f"{key}:{clean_params[key]}" for key in clean_params]
+    search_query = " AND ".join(
+        [f"{key}:{quote(value)}" for key, value in search_params.items() if value]
     )
     logger.debug("Performing query: '%s'.", search_query)
 
-    with papis.utils.get_session() as session:
-        response = session.get(
-            ARXIV_API_URL,
-            params={
-                "search_query": search_query,
-                "start": str(page),
-                "max_results": str(max_results),
-            })
+    # gather results
+    import arxiv
 
-    import bs4
-    soup = bs4.BeautifulSoup(response.content, features="lxml-xml")
+    try:
+        search = arxiv.Search(
+            query=search_query,
+            max_results=max_results,
+            id_list=id_list.split(";"),
+            )
+    except arxiv.arxiv.HTTPError:
+        return []
 
-    entries = soup.find_all("entry")
-    for entry in entries:
-        data = {}
-        data["abstract"] = entry.find("summary").get_text().replace("\n", " ")
-        data["url"] = entry.find("id").get_text()
-        data["published"] = entry.find("published").get_text()
-        published = data.get("published")
-        if published:
-            assert isinstance(published, str)
-            data["year"] = published[0:4]
-        data["title"] = entry.find("title").get_text().replace("\n", " ")
-        data["author"] = ", ".join(
-            [
-                author.get_text().replace("\n", "")
-                for author in entry.find_all("author")
-            ]
-        )
-        result.append(data)
-    return result
+    return [arxiv_to_papis(result) for result in search.results()]
 
 
 def validate_arxivid(arxivid: str) -> None:
