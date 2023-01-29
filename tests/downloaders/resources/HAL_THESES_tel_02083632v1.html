@@ -1,9 +1,15 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+
 <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="citation_language" content="en" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+            <link href="http://purl.org/dc/elements/1.1/" rel="schema.DC">
+<meta name="citation_language" content="en" />
 <meta name="DC.language" content="en" />
+
 <meta name="DC.type" content="phdthesis" />
 <meta property="og:type" content="phdthesis" />
 <meta name="citation_title" content="Global discharging methods for coloring problems in graphs" />
@@ -12,710 +18,1000 @@
 <meta name="DC.identifier" content="https://theses.hal.science/tel-02083632" />
 <meta name="DC.identifier" content="tel-02083632" />
 <meta property="og:url" content="https://theses.hal.science/tel-02083632" />
-<meta name="citation_author" content="Marthe Bonamy" />
-<meta name="citation_author_hal_id" content="marthe-bonamy" />
-<meta name="citation_author_institution" content="Algorithmes, Graphes et Combinatoire" />
-<meta name="DC.creator" content="Marthe Bonamy" />
-<meta name="citation_abstract" content="This thesis falls within graph theory, and deals more precisely with graph coloring problems. In this thesis, we use and develop the discharging method, a counting argument that makes strong advantage of the graph structure. This method is decisive in the proof of the Four Color Theorem. We first give an illustrated overview of the discharging tools that are used for this work: nice methods that we apply, and handy tricks that we develop. In particular, we present the main ideas in a global discharging argument. In the realm of list edge coloring, we most notably prove that the weak List Coloring Conjecture is true for planar graphs of maximum degree 8 (i.e. that they are edge 9-choosable), thus improving over a result of Borodin from 1990. We finally present our results about square coloring, where the goal is to color the vertices in such a way that two vertices that are adjacent or have a common neighbor receive different colors. We look in particular into sufficient conditions on the density of a graph (i.e. the maximum average degree of a subgraph) for its square to be colorable with few colors." />
-<meta name="DC.description" content="This thesis falls within graph theory, and deals more precisely with graph coloring problems. In this thesis, we use and develop the discharging method, a counting argument that makes strong advantage of the graph structure. This method is decisive in the proof of the Four Color Theorem. We first give an illustrated overview of the discharging tools that are used for this work: nice methods that we apply, and handy tricks that we develop. In particular, we present the main ideas in a global discharging argument. In the realm of list edge coloring, we most notably prove that the weak List Coloring Conjecture is true for planar graphs of maximum degree 8 (i.e. that they are edge 9-choosable), thus improving over a result of Borodin from 1990. We finally present our results about square coloring, where the goal is to color the vertices in such a way that two vertices that are adjacent or have a common neighbor receive different colors. We look in particular into sufficient conditions on the density of a graph (i.e. the maximum average degree of a subgraph) for its square to be colorable with few colors." />
-<meta name="description" content="This thesis falls within graph theory, and deals more precisely with graph coloring problems. In this thesis, we use and develop the discharging method, a counting argument that makes strong advantage of the graph structure. This method is decisive in the proof of the Four Color Theorem. We first give an illustrated overview of the discharging tools that are used for this work: nice methods that we apply, and handy tricks that we develop. In particular, we present the main ideas in a global discharging argument. In the realm of list edge coloring, we most notably prove that the weak List Coloring Conjecture is true for planar graphs of maximum degree 8 (i.e. that they are edge 9-choosable), thus improving over a result of Borodin from 1990. We finally present our results about square coloring, where the goal is to color the vertices in such a way that two vertices that are adjacent or have a common neighbor receive different colors. We look in particular into sufficient conditions on the density of a graph (i.e. the maximum average degree of a subgraph) for its square to be colorable with few colors." />
-<meta property="og:description" content="This thesis falls within graph theory, and deals more precisely with graph coloring problems. In this thesis, we use and develop the discharging method, a counting argument that makes strong advantage of the graph structure. This method is decisive in the proof of the Four Color Theorem. We first give an illustrated overview of the discharging tools that are used for this work: nice methods that we apply, and handy tricks that we develop. In particular, we present the main ideas in a global discharging argument. In the realm of list edge coloring, we most notably prove that the weak List Coloring Conjecture is true for planar graphs of maximum degree 8 (i.e. that they are edge 9-choosable), thus improving over a result of Borodin from 1990. We finally present our results about square coloring, where the goal is to color the vertices in such a way that two vertices that are adjacent or have a common neighbor receive different colors. We look in particular into sufficient conditions on the density of a graph (i.e. the maximum average degree of a subgraph) for its square to be colorable with few colors." />
-<meta name="citation_keywords" content="graph theory ; coloring" />
-<meta name="DC.subject" content="graph theory ; coloring" />
-<meta name="keywords" content="graph theory ; coloring" />
-<meta name="citation_keywords" content="coloration ; théorie des graphes" />
-<meta name="DC.subject" content="coloration ; théorie des graphes" />
-<meta name="keywords" content="coloration ; théorie des graphes" />
-<meta name="citation_pdf_url" content="https://theses.hal.science/tel-02083632/document" />
-<meta name="DC.identifier" content="https://theses.hal.science/tel-02083632/document" />
-<meta property="og:url" content="https://theses.hal.science/tel-02083632/document" />
+
+    <meta name="citation_author" content="Marthe Bonamy" />
+
+            
+                <meta name="citation_author_hal_id" content="marthe-bonamy" />
+    
+                <meta name="citation_author_institution" content="Algorithmes, Graphes et Combinatoire" />
+        <meta name="DC.creator" content="Marthe Bonamy" />
+
+
+    <meta name="citation_abstract" content="This thesis falls within graph theory, and deals more precisely with graph coloring problems. In this thesis, we use and develop the discharging method, a counting argument that makes strong advantage of the graph structure. This method is decisive in the proof of the Four Color Theorem. We first give an illustrated overview of the discharging tools that are used for this work: nice methods that we apply, and handy tricks that we develop. In particular, we present the main ideas in a global discharging argument. In the realm of list edge coloring, we most notably prove that the weak List Coloring Conjecture is true for planar graphs of maximum degree 8 (i.e. that they are edge 9-choosable), thus improving over a result of Borodin from 1990. We finally present our results about square coloring, where the goal is to color the vertices in such a way that two vertices that are adjacent or have a common neighbor receive different colors. We look in particular into sufficient conditions on the density of a graph (i.e. the maximum average degree of a subgraph) for its square to be colorable with few colors." />
+    <meta name="DC.description" content="This thesis falls within graph theory, and deals more precisely with graph coloring problems. In this thesis, we use and develop the discharging method, a counting argument that makes strong advantage of the graph structure. This method is decisive in the proof of the Four Color Theorem. We first give an illustrated overview of the discharging tools that are used for this work: nice methods that we apply, and handy tricks that we develop. In particular, we present the main ideas in a global discharging argument. In the realm of list edge coloring, we most notably prove that the weak List Coloring Conjecture is true for planar graphs of maximum degree 8 (i.e. that they are edge 9-choosable), thus improving over a result of Borodin from 1990. We finally present our results about square coloring, where the goal is to color the vertices in such a way that two vertices that are adjacent or have a common neighbor receive different colors. We look in particular into sufficient conditions on the density of a graph (i.e. the maximum average degree of a subgraph) for its square to be colorable with few colors." />
+    <meta name="description" content="This thesis falls within graph theory, and deals more precisely with graph coloring problems. In this thesis, we use and develop the discharging method, a counting argument that makes strong advantage of the graph structure. This method is decisive in the proof of the Four Color Theorem. We first give an illustrated overview of the discharging tools that are used for this work: nice methods that we apply, and handy tricks that we develop. In particular, we present the main ideas in a global discharging argument. In the realm of list edge coloring, we most notably prove that the weak List Coloring Conjecture is true for planar graphs of maximum degree 8 (i.e. that they are edge 9-choosable), thus improving over a result of Borodin from 1990. We finally present our results about square coloring, where the goal is to color the vertices in such a way that two vertices that are adjacent or have a common neighbor receive different colors. We look in particular into sufficient conditions on the density of a graph (i.e. the maximum average degree of a subgraph) for its square to be colorable with few colors." />
+    <meta property="og:description" content="This thesis falls within graph theory, and deals more precisely with graph coloring problems. In this thesis, we use and develop the discharging method, a counting argument that makes strong advantage of the graph structure. This method is decisive in the proof of the Four Color Theorem. We first give an illustrated overview of the discharging tools that are used for this work: nice methods that we apply, and handy tricks that we develop. In particular, we present the main ideas in a global discharging argument. In the realm of list edge coloring, we most notably prove that the weak List Coloring Conjecture is true for planar graphs of maximum degree 8 (i.e. that they are edge 9-choosable), thus improving over a result of Borodin from 1990. We finally present our results about square coloring, where the goal is to color the vertices in such a way that two vertices that are adjacent or have a common neighbor receive different colors. We look in particular into sufficient conditions on the density of a graph (i.e. the maximum average degree of a subgraph) for its square to be colorable with few colors." />
+
+            <meta name="citation_keywords" content="graph theory;coloring" />
+    <meta name="DC.subject" content="graph theory;coloring" />
+    <meta name="keywords" content="graph theory;coloring" />
+            <meta name="citation_keywords" content="coloration;théorie des graphes" />
+    <meta name="DC.subject" content="coloration;théorie des graphes" />
+    <meta name="keywords" content="coloration;théorie des graphes" />
+
+        <meta name="citation_pdf_url" content="https://theses.hal.science/tel-02083632/document" />
+    <meta name="DC.identifier" content="https://theses.hal.science/tel-02083632/document" />
+    <meta property="og:url" content="https://theses.hal.science/tel-02083632/document" />
+
 <meta name="citation_online_date" content="2019/03/29" />
-<meta name="citation_publication_date" content="2015/02/09" />
+
+    <meta name="citation_publication_date" content="2015/02/09" />
 <meta name="DC.date" content="2015/02/09" />
 <meta name="DC.issued" content="2015/02/09" />
-<meta name="citation_dissertation_institution" content="Université de Montpellier" />
-<meta name="DC.publisher" content="Université de Montpellier" />
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
-    <link rel="manifest" href="/site.webmanifest" />
-    <meta name="msapplication-TileColor" content="#da532c" />
-    <meta name="theme-color" content="#ffffff" />
+                                                                                                            <meta name="citation_dissertation_institution" content="Université de Montpellier" />
+            <meta name="DC.publisher" content="Université de Montpellier" />
+                                                                                                                
+ 
 
-    <title>Global discharging methods for coloring problems in graphs - TEL - Thèses en ligne</title>
-    <link href="http://purl.org/dc/elements/1.1/" rel="schema.DC" />
-<link href="https://inbox.hal.science/" rel="http://www.w3.org/ns/ldp#inbox" />
-<link href="https://inbox.hal.science/" rel="http://www.w3.org/ns/ldp#inbox" />
-<link href="//cas.ccsd.cnrs.fr" rel="dns-prefetch" />
-<link href="//cdn.mathjax.org" rel="dns-prefetch" />
-<link href="/search/opensearch" rel="search" type="application/opensearchdescription+xml" title="HAL" />
-<link href="/css/print_hal.css" media="print" rel="stylesheet" type="text/css" />
-    <script type="text/javascript" src="/static/js/tarteaucitron/tarteaucitron.js"></script>
-<script type="text/javascript" src="/static/js/tarteaucitron/tarteaucitron.servicesHAL.js"></script>
-<script type="text/javascript">
-    //<![CDATA[
-            tarteaucitron.init({
-    	  "privacyUrl": "", /* Privacy policy url */
+    <link href="//cdn.mathjax.org" rel="dns-prefetch" >
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/assets/site.webmanifest">
+    <link rel="mask-icon" href="/assets/favicon/safari-pinned-tab.svg" color="#000092">
+    <meta name="msapplication-TileColor" content="#000092">
+    <meta name="theme-color" content="#ffffff">
 
-    	  "hashtag": "#tarteaucitron", /* Open the panel with this hashtag */
-    	  "cookieName": "tarteaucitron", /* Cookie name */
+                <link rel="stylesheet" href="/assets/build/main.9b7936d7.css" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+<link href="/assets/css/select2totree.css" rel="stylesheet">    
 
-    	  "orientation": "top", /* Banner position (top - bottom) */
-    	  "showAlertSmall": true, /* Show the small banner on bottom right */
-    	  "cookieslist": true, /* Show the cookie list */
-
-    	  "adblocker": false, /* Show a Warning if an adblocker is detected */
-    	  "AcceptAllCta" : true, /* Show the accept all button when highPrivacy on */
-    	  "highPrivacy": false, /* Disable auto consent */
-    	  "handleBrowserDNTRequest": false, /* If Do Not Track == 1, disallow all */
-
-    	  "removeCredit": false, /* Remove credit link */
-    	  "moreInfoLink": true, /* Show more info link */
-    	  "useExternalCss": false, /* If false, the tarteaucitron.css file will be loaded */
-
-    	  "cookieDomain": ".archives-ouvertes.fr", /* Shared cookie for multisite */
-
-    	  "readmoreLink": "/cookiespolicy" /* Change the default readmore link */
-        });    //]]>
-</script>
-    <link rel="stylesheet" href="/static/css/ccsd_form.css?1670922029" type="text/css" media="screen" />
-<link rel="stylesheet" href="/static/css/custom-theme/jquery-ui-1.10.0.custom.css?1670922029" type="text/css" media="screen" />
-<link rel="stylesheet" href="/static/v3/css/bootstrap.min.css?1670922029" type="text/css" media="screen" />
-<link rel="stylesheet" href="/static/css/ccsd.css?1670922029" type="text/css" media="screen" />
-<link rel="stylesheet" href="/css/hal.css?1670922029" type="text/css" media="screen" />
-<link rel="stylesheet" href="/public/style.css?1637787420&1670922029" type="text/css" media="screen" />
-
-<script type="text/javascript" src="/static/js/jquery/jquery-1.12.4.min.js?1670922029"></script>
-<script type="text/javascript" src="/static/js/jquery-ui-1.11.4/jquery-ui.min.js?1670922029"></script>
-<script type="text/javascript" src="/js/translations.php?lang=fr&1670922029"></script>
-<script type="text/javascript" src="/static/v3/js/bootstrap.min.js?1670922029"></script>
-<script type="text/javascript" src="/static/js/form.js?1670922029"></script>
-<script type="text/javascript" src="/js/utile.js?1670922029"></script>
-<script type="text/javascript" src="/static/js/datepicker/datepicker-fr.js?1670922029"></script>
-<script type="text/javascript" src="/static/js/datepicker.js?1670922029"></script>
-
-
-    <script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
-    <script type='text/x-mathjax-config'>MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['$$','$$']]}});</script>
-    <style>
-    html {
-    	position: relative;
-    	min-height: 100%;
-    }
-    </style>
+                        <link rel="stylesheet" href="/public/style.ng.css?1668441703" />
     
-</head>
-<body>
-<div class="maintenance-alert"><strong></strong></div>
-<a href="#skip-link" class="sr-only skip-link-top"> Accéder directement au contenu </a>
-<a href="#skip-link-nav" class="sr-only skip-link-top"> Accéder directement à la navigation </a>
 
-<div id="switch-ihm" style="">
-    <span class="pr-3"></span>
-    <label class="switch">
-        <input type="checkbox" onclick="document.cookie = 'halng=true; Max-Age=31536000 ; path=/;';location.reload();">
-        <span class="slider round"></span>
-    </label>
-    <span class="pl-3">Nouvelle interface</span>
-</div>
+                <script src="/assets/js/translations.php?lang=fr"></script>
+        <script src="/assets/build/runtime.763fa2e6.js"></script>
+        <script src="/assets/build/main.8b41ff5e.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+<script type='text/x-mathjax-config'>MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['$$','$$']]}});</script>        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script src="/assets/js/select2totree.js"></script>        
+<script src="/static/js/tarteaucitron/tarteaucitron.js"></script>
+    <script src="/static/js/tarteaucitron/tarteaucitron.servicesHAL.js"></script>
+<script type="text/javascript">
+    tarteaucitron.init({
+        "privacyUrl": "", /* Privacy policy url */
 
-        <link rel="stylesheet" href='/css/navbar.css' type='text/css' media='screen'>
-        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" aria-label="Menu portail">
-            <div class="navbar-header ">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#nav-services">
-                    <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span
-                            class="icon-bar"></span> <span class="icon-bar"></span>
-                </button>
-                <div class="logo-ccsd">
-                    <a class="brand" href="https://hal.archives-ouvertes.fr"
-                       title="HAL Open Science"><img src="/img/hal-logo-header.png" width="80px" style="border: 0;" alt="HAL" /></a>
-                                    </div>
-            </div>
-            <div class="collapse navbar-collapse" id="nav-services">
-                                    <div class="nav navbar-nav navbar-right">
-                                                    <form class="form-inline pull-right" style="margin-top: 8px; margin-right: 8px;"
-                                  action="/user/login?url=https://theses.hal.science/tel-02083632v1" id="form-login" method="post">
-                                <input type="hidden" name="forward-controller" value="view" />
-                                <input type="hidden" name="forward-action" value="index" />
-                                <input type="hidden" name="identifiant" value="tel-02083632" /><input type="hidden" name="2" value="v1" /><input type="hidden" name="version" value="1" />                                <div class="btn-group">
-                                    <button class="btn btn-small btn-primary" type="button" onclick="$('#form-login').submit();" accesskey="l">
-                                                <span class="glyphicon glyphicon-user glyphicon-white" aria-hidden="true" ></span>
-    &nbsp;Connexion</button>
-                                    <button class="btn btn-small btn-primary dropdown-toggle" data-toggle="dropdown" type="button">
-                                        <span class="caret" style="border-top-color: #fff; border-bottom-color: #fff;"></span>
-                                    </button>
+        "hashtag": "#tarteaucitron", /* Open the panel with this hashtag */
+        "cookieName": "tarteaucitron", /* Cookie name */
 
-                                    <ul class="dropdown-menu pull-right">
-                                        <li>                                            <a id="cas2" href="/user/login?authType=CAS&url=https://theses.hal.science/tel-02083632v1">Connexion</a>
-                                                                                    </li>
-                                        <li>
-                                                                                            <a id="getorcid2" href="/user/login?authType=ORCID&url=https://theses.hal.science/tel-02083632v1">Connexion avec ORCID</a>
-                                                                                        </li>
-                                        </li>
-                                                                                <li><a id="coidp" href="https://hal.archives-ouvertes.fr/user/login?authType=IDP&url=https://theses.hal.science/tel-02083632v1">se connecter avec Fédération</a></li>
-                                                                                <li class="divider"></li>
-                                        <li><a href="/user/create">Créer un compte</a></li>
-                                        <li class="divider"></li>
-                                        <li><a href="/user/lostpassword">Mot de passe oublié ?</a></li>
-                                        <li><a href="/user/lostlogin">Login oublié ?</a></li>
-                                    </ul>
-                                </div>
-                            </form>
-                                                </div>
-                                    <form action="#" method="post" id="formLang" class="nav navbar-nav navbar-right navbar-lang">
-                    <input type="hidden" name="lang" id="lang" value="" />
-                                            <select aria-label="Change language" id="select-lang" name="Langues" onchange="changeLang(this)">
-                                                            <option value="fr" selected>  fr  </option>
-                                                            <option value="en" >  en  </option>
-                                                    </select>
-                                    </form>
-            </div>
-        </nav>
-        
-        <script>
-            function changeLang(select) {
-                let selectedLang = select.options[select.selectedIndex].value;
-                $.ajax({ url: "/ajax/ajaxupdatelanguage",
-                    data: {lang: selectedLang},
-                    type : "post",
-                    success: function(){
-                        $('#lang').val(selectedLang);
-                        location.reload();
-                    }
-                });
-            }
+        "orientation": "top", /* Banner position (top - bottom) */
+        "showAlertSmall": true, /* Show the small banner on bottom right */
+        "cookieslist": true, /* Show the cookie list */
 
-            function destroyOrcidSession(){
-                $.ajax({
-                    url: "/external/destroyorcidsession",
-                    success: function(result) {
-                        window.location.reload();
+        "adblocker": false, /* Show a Warning if an adblocker is detected */
+        "AcceptAllCta" : true, /* Show the accept all button when highPrivacy on */
+        "highPrivacy": false, /* Disable auto consent */
+        "handleBrowserDNTRequest": false, /* If Do Not Track == 1, disallow all */
 
-                    },
-                    error: function (result) {
-                       window.location.reload();
+        "removeCredit": false, /* Remove credit link */
+        "moreInfoLink": true, /* Show more info link */
+        "useExternalCss": false, /* If false, the tarteaucitron.css file will be loaded */
 
-                    }
-                });
-            }
+        "cookieDomain": ".archives-ouvertes.fr", /* Shared cookie for multisite */
+
+        "readmoreLink": "/cookiespolicy" /* Change the default readmore link */
+    });
+</script>                    
+            <!-- Matomo -->
+        <script type="text/javascript">
+            var _paq = _paq || [];
+            _paq.push(['trackPageView']);
+            _paq.push(['enableLinkTracking']);
+            (function() {
+                var u="//piwik-hal.ccsd.cnrs.fr/";
+                _paq.push(['setTrackerUrl', u+'matomo.php']);
+                _paq.push(['setSiteId', '21']);
+                                    var secondaryTracker = '//piwik-hal.ccsd.cnrs.fr/matomo.php';var secondaryWebsiteId = 92;_paq.push(['addTracker', secondaryTracker, secondaryWebsiteId]);
+                                var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+                g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+            })();
         </script>
-            <div id="container" class="container">
-        <div class="logo logo-fr">
-<table width="100%" cellpadding="0" style="position:relative;">
+        <!-- End Matomo Code -->
+        <noscript>
+        <img src="//piwik-hal.ccsd.cnrs.fr//matomo.php?idsite=21&amp;rec=1"  style=" border:0;"  alt="" />
+                    <img src="//piwik-hal.ccsd.cnrs.fr//matomo.php?idsite=92&amp;rec=1"  style=" border:0;"  alt="" />
+            </noscript>
+    
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+
+    <title> Global discharging methods for coloring problems in graphs  - Archive ouverte HAL</title>
+</head>
+
+<body>
+<a href="#skip-link" class="sr-only skip-link-top"> Accéder directement au contenu </a>
+    
+
+<nav class="navbar navbar-expand-lg header navbar-dark" aria-label="Menu">
+    <!-- Navbar pour taille mobile -->
+    <a class="navbar-brand logo-HAL" href="https://hal.archives-ouvertes.fr">
+        <img src="/assets/img/hal-logo-header.png" height="40px" title="HAL open science"/>
+        <img src="/assets/img/hal-logo-text.png" height="40px" title="HAL open science"/>
+    </a>
+
+    
+<span class="pr-3"></span>
+<label class="switch">
+    <input type="checkbox" name="switch-ihm" checked id="switch-ihm" class="" value="" onclick=switchOldIHM()>
+    <span class="slider round"></span>
+</label>
+<span class="pl-3">Nouvelle interface</span>
+
+
+<script>
+    document.querySelector('.switch input[type=checkbox]').addEventListener('change', (e) => {
+        this.checkboxValue = e.target.checked ? 'on' : 'off';
+    })
+</script>
+
+    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#nav-services"
+            aria-expanded="false" aria-label="Toggle navigation" style="border-radius: 0">
+        <span class="hamburger">
+                        <span></span> <span></span> <span></span>
+        </span>
+    </button>
+
+    <div class="collapse navbar-collapse" style="height: 60px" id="nav-services">
+        <ul class="nav navbar-nav ml-auto" style="height: inherit; align-items: center;">
+                        
+            <li class="d-none d-lg-block">
+                <a href="https://doc.archives-ouvertes.fr/" target="_blank">
+                    <i class="icon-documentation text-xl" aria-hidden="true"></i>
+                    <span class='sr-only'> Documentation</span>
+                </a>
+            </li>
+          <!-- Choix des langues -->
+            <li class="nav-item dropdown">
+                <form action="#" method="post" id="formLang">
+                    <input type="hidden" name="lang" id="lang" value="" />
+                    <button type="button" data-toggle="dropdown" aria-expanded="false" class="btn btn-secondary dropdown-toggle" id="dropdownLang" aria-label="Langues">
+                        <span> FR</span>
+                    </button>
+                                            <div class="dropdown-menu dropdown-menu-right menu-lang" aria-labelledby="dropdownLang">
+                                                            <div class="list-group-item list-group-item-action" data-value="fr"> Français (FR)</div>
+                                                            <div class="list-group-item list-group-item-action" data-value="en"> Anglais (EN)</div>
+                                                    </div>
+                                    </form>
+            </li>
+                            <li class="nav-item dropdown" id="userList">
+                                      <form class="form-inline" action="/user/login?url=https://theses.hal.science/tel-02083632v1" id="form-login" method="post" style="justify-content: space-around;">
+                         <input type="hidden" name="forward-controller" value="view" /><input type="hidden" name="forward-action" value="index" /><input type="hidden" name="identifiant" value="tel-02083632" /><input type="hidden" name="2" value="v1" /><input type="hidden" name="version" value="1" />
+                         <div class="input-group">
+                             <button type="submit" class="hal-login-button"> Se connecter</button>
+                         </div>
+                     </form>
+                                 </li>
+                     </ul>
+     </div>
+ </nav>
+
+    
+
+
+<nav class=" navbar navbar-expand-lg sub-header" aria-label="Menu secondaire">
+    <ul class="nav navbar-nav" id="second-navbar">
+                            <li class="nav-item dropdown site-env">
+                <span class="color-major-color">
+                    <a href="/" title="theses">Portail HAL
+                        <strong>
+                                                            theses
+                            
+                        </strong></a>
+                </span>
+            </li>
+        
+                <li id="searchHeaderList" class="nav-item dropdown">
+                                    <div>
+    <form action="/search/index" method="get" id="searchHeaderNG" style="margin: 0;" name="search-simple" role="search" class="position-relative">
+        <button type="submit" aria-label="Rechercher" class="hal-main-search-button">
+            <span class="icon-search" aria-hidden="true"></span>
+        </button>
+        <label for="littleSearchBar" class="sr-only"> Recherche </label>
+        <input type="text" name="q" id="littleSearchBar" class="hal-main-search-input autocompletesearch" autocomplete="off" data-collurl="/" placeholder="Chercher un document, un auteur, un mot clef..."
+        value="">
+        <div class="spinner-border position-absolute search-spinner d-none"  role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </form>
+    <button aria-expanded="false" data-toggle="collapse" data-target="#collapseSearch" class="hal-main-advsearch-button" aria-label="Recherche avancée">
+        <span class="icon-drop_down" aria-hidden="true"></span>
+    </button>
+
+        <div class="collapse" id="collapseSearch">
+        <div id="advSearchHeader">
+            <h3> Recherche avancée</h3>
+                            <script type='text/javascript'>/* Fichier DOUBLON
+    Fichier initialisation des éléments sélectionnable dans les selects des inputs et textarea pour les entrées de langues
+    Pour les identifiants qui utilisent le même principe, le fichier se trouve dans le projet hal :
+                            public/js/form/decorator/lang/init.js
+    Les éléments et les décorateurs Identifiant se trouvent dans hal tandis que les éléments de formulaires se trouvent dans ccsd
+    La copie de ce fichier facilite donc le lecture en évitant d'indiquer un chemin spécifique pour ce fichier
+ */
+
+function LangInit (e, name)
+{
+    let link = $(e);
+
+    if (link.closest('li').hasClass('disabled')) {
+        return false;
+    }
+
+    let newValue = link.attr('data-val');
+    let newLabel = link.html();
+
+
+    let button = link.closest('ul').prev('button.dropdown-toggle');
+    button.val(newValue);
+    button.contents().first().replaceWith(newLabel);
+
+    let group = link.closest('.input-group, .textarea-group');
+    let elem = group.find('input, textarea');
+
+    if (elem.attr('data-language')) {
+        let oldValue = elem.attr('lang');
+        elem.attr('data-language', newValue);
+
+        let groups = group.parent();
+        groups.find('ul').each(function (i) {
+            $(this).find('li a[data-val=' + oldValue + ']').closest('li').removeClass('disabled');
+            $(this).find('li a[data-val=' + newValue + ']').closest('li').addClass('disabled');
+        });
+
+        let lastGroup = groups.find('.input-group:last, .textarea-group:last');
+        let firstLinkEnabled = lastGroup.find('ul li[class!="disabled"]:first a');
+
+        if (typeof firstLinkEnabled.html() != 'undefined') {
+            lastGroup.find('button.dropdown-toggle').val(firstLinkEnabled.attr('data-val'));
+            lastGroup.find('button.dropdown-toggle').contents().first().replaceWith(firstLinkEnabled.text());
+
+            let nameTmp = name + "[" + firstLinkEnabled.attr('data-val') + "]";
+            if (elem.attr('data-keyword') ) {
+                nameTmp = nameTmp + "[]";
+            }
+            lastGroup.find("input:first, textarea:first").attr('name', nameTmp);
+        } else {
+            lastGroup.find("input:first, textarea:first").removeAttr('name');
+            lastGroup.hide();
+        }
+    }
+
+    elem.attr('lang', newValue);
+    name = name + "[" + newValue + "]";
+
+    if (elem.attr('data-keyword')) {
+        name = name + "[]";
+    }
+    elem.attr('name', name);
+
+    return false;
+}function MultiTextSimpleLangKeywordDelete (btn) {
+    $(btn).closest('div').remove();
+                
+}function MultiTextSimpleLangKeywordAdd (btn, name)
+{
+    var s = $(btn).closest('div').find('input').val();
+	var empty = s == "";
+	if (!empty) {
+		var r = new RegExp (",|;", "g");
+		matches = s.split(r);
+
+		for (i in matches) {
+			s = matches[i].replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1').trim();
+			if (s != "") {
+
+				var value = s;
+				value = value.replace(new RegExp("(>)", "g"), '&gt;').replace(new RegExp("(<)", "g"), '&lt;');
+
+				if ($(btn).closest('div').find('input').attr("data-length")) {
+					let length = Number($(btn).closest('div').find('input').attr("data-length"));
+					value = value.substring(0,length) + (value.length > length ? '...' : '')
+				}
+
+				var container = $(btn).closest("div").parent();
+				var inputGroup = $(container).find('.input-group:last');
+				var clone = $(inputGroup).clone();
+				var lang = $(clone).find('.form-btn-lang').val();
+				// Find the id and increment it
+				var id = $(clone).find('input').attr('id');
+				var found = id.match(/[0-9]+/);
+				var idNb = (found == null)? 1 : Number(found[0]) + 1;
+				$(inputGroup).find('input').attr('id', (id.replace(/[0-9]+/, "") + idNb));
+
+				$(clone).find('input').attr('type', 'text');
+				$(clone).find('input').attr('name', name + "[" + lang + "][]");
+				$(clone).find('input').attr('lang', lang);
+				$(clone).find('input').attr('data-keyword', "true");
+				$(clone).find('input').val(value);
+				$(clone).find(".errors").remove();
+				$(clone).find('.icon-plus').removeClass("icon-plus").addClass("icon-delete").parent().attr('onclick', 'MultiTextSimpleLangKeywordDelete(this)');
+				$(clone).find('button').find('span').text(translate('Supprimer'));
+
+				$(clone).insertBefore($(container).find('> :last'));
+
+			}
+		}
+		$(btn).closest('div').find('input:first').val("");
+		$(btn).closest('div').find('input:first').focus();
+	}
+}  </script><form id="advSearch" role="form" data-library="ccsd" action="/search/index/?" method="get">
+<div class="form-group row " id="document-element"><label for="document" class="col-md-3 control-label optional">Information de documents</label>
+<div class="col-md-9"><div class="input-group" style="margin-bottom : 10px;"><button class='btn btn-sm btn-default dropdown-toggle form-btn-lang' style=' z-index:0!important;' data-toggle='dropdown' type='button' value='title_t'>Titres&nbsp;</button><ul class='dropdown-menu' role='menu' style='max-height: 140px; overflow:auto;'><li class='dropdown-item'><a data-val='title_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Titres</a></li><li class='dropdown-item'><a data-val='subTitle_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Sous-titre</a></li><li class='dropdown-item'><a data-val='bookTitle_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Titre de l'ouvrage</a></li><li class='dropdown-item'><a data-val='serie_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Titre du volume (Série)</a></li><li class='dropdown-item'><a data-val='text_fulltext' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Champ de recherche par défaut (multicritères) + texte intégral des PDF</a></li><li class='dropdown-item'><a data-val='abstract_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Résumé</a></li><li class='dropdown-item'><a data-val='fulltext_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Texte intégral indexé des documents PDF</a></li><li class='dropdown-item'><a data-val='keyword_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Mots-clés</a></li><li class='dropdown-item'><a data-val='identifiers_id' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Tous les identifiants du document</a></li><li class='dropdown-item'><a data-val='halId_id' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Identifiant HAL du dépôt</a></li><li class='dropdown-item'><a data-val='language_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Langue du document (texte)</a></li><li class='dropdown-item'><a data-val='country_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Pays (Texte)</a></li><li class='dropdown-item'><a data-val='city_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Ville</a></li><li class='dropdown-item'><a data-val='inPress_bool' href='javascript:void(0);' onclick="LangInit(this, 'qa');">À paraître (true ou false)</a></li></ul>
+<input type="text" name="qa[title_t][]" id="document" value="" class="input-flex form-control input-sm" lang="title_t" aria-describedby="document-error" style=" " data-keyword="1" /><span class="input-group-btn"><button type='button' class='btn btn-sm btn-primary form-btn-multi form-btn-add' onclick='MultiTextSimpleLangKeywordAdd(this, "qa");' data-toggle='tooltip' data-placement='right' data-original-title='Ajouter'><i class='icon icon-plus'></i> <span> Ajouter</span></button></span></div></div></div>
+<div class="form-group row " id="author-element"><label for="author" class="col-md-3 control-label optional">Auteur</label>
+<div class="col-md-9"><div class="input-group" style="margin-bottom : 10px;"><button class='btn btn-sm btn-default dropdown-toggle form-btn-lang' style=' z-index:0!important;' data-toggle='dropdown' type='button' value='auth_t'>Auteur (multicritères)&nbsp;</button><ul class='dropdown-menu' role='menu' style='max-height: 140px; overflow:auto;'><li class='dropdown-item'><a data-val='auth_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur (multicritères)</a></li><li class='dropdown-item'><a data-val='authFullName_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : Nom complet</a></li><li class='dropdown-item'><a data-val='authLastName_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : Nom de famille</a></li><li class='dropdown-item'><a data-val='authFirstName_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : Prénom</a></li><li class='dropdown-item'><a data-val='authMiddleName_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : Complément de nom, deuxième prénom</a></li><li class='dropdown-item'><a data-val='authOrganism_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : Organisme payeur</a></li><li class='dropdown-item'><a data-val='authIdHal_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : IdHal (chaîne de caractères)</a></li><li class='dropdown-item'><a data-val='authQuality_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : Fonction</a></li><li class='dropdown-item'><a data-val='authIdHal_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : personID (entier)</a></li><li class='dropdown-item'><a data-val='authId_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">hal_authId_i</a></li><li class='dropdown-item'><a data-val='authOrganismId_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : Identifiant de l'organisme payeur</a></li><li class='dropdown-item'><a data-val='authStructId_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : Identifiant de la structure</a></li><li class='dropdown-item'><a data-val='director_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Directeur de thèse</a></li><li class='dropdown-item'><a data-val='publisher_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Éditeur</a></li><li class='dropdown-item'><a data-val='scientificEditor_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Éditeur scientifique</a></li><li class='dropdown-item'><a data-val='seriesEditor_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Éditeur de la série</a></li></ul>
+<input type="text" name="qa[auth_t][]" id="author" value="" class="input-flex form-control input-sm" lang="auth_t" aria-describedby="author-error" style=" " data-keyword="1" /><span class="input-group-btn"><button type='button' class='btn btn-sm btn-primary form-btn-multi form-btn-add' onclick='MultiTextSimpleLangKeywordAdd(this, "qa");' data-toggle='tooltip' data-placement='right' data-original-title='Ajouter'><i class='icon icon-plus'></i> <span> Ajouter</span></button></span></div></div></div>
+<div class="form-group row " id="structure-element"><label for="structure" class="col-md-3 control-label optional">Structure</label>
+<div class="col-md-9"><div class="input-group" style="margin-bottom : 10px;"><button class='btn btn-sm btn-default dropdown-toggle form-btn-lang' style=' z-index:0!important;' data-toggle='dropdown' type='button' value='structure_t'>Structure (multicritères)&nbsp;</button><ul class='dropdown-menu' role='menu' style='max-height: 140px; overflow:auto;'><li class='dropdown-item'><a data-val='structure_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Structure (multicritères)</a></li><li class='dropdown-item'><a data-val='structAcronym_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Structure : Acronyme</a></li><li class='dropdown-item'><a data-val='structName_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Structure : Nom</a></li><li class='dropdown-item'><a data-val='structCode_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Structure : Code</a></li><li class='dropdown-item'><a data-val='structCountry_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Structure : Pays</a></li><li class='dropdown-item'><a data-val='structType_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Structure : Type</a></li><li class='dropdown-item'><a data-val='structValid_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Structure : État dans le référentiel</a></li><li class='dropdown-item'><a data-val='structId_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Structure : Identifiant HAL de la structure</a></li><li class='dropdown-item'><a data-val='rteamStructCountry_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Structure/équipe de recherche : Pays</a></li><li class='dropdown-item'><a data-val='deptStructCountry_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Structure/regroupement d'équipes : Pays</a></li><li class='dropdown-item'><a data-val='labStructCountry_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Structure/laboratoire : Pays</a></li><li class='dropdown-item'><a data-val='rgrpLabStructCountry_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Structure/regroupement de laboratoires : Pays</a></li><li class='dropdown-item'><a data-val='instStructCountry_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Structure/institution : Pays</a></li><li class='dropdown-item'><a data-val='rgrpInstStructCountry_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Structure/regroupement d'institutions : Pays</a></li></ul>
+<input type="text" name="qa[structure_t][]" id="structure" value="" class="input-flex form-control input-sm" lang="structure_t" aria-describedby="structure-error" style=" " data-keyword="1" /><span class="input-group-btn"><button type='button' class='btn btn-sm btn-primary form-btn-multi form-btn-add' onclick='MultiTextSimpleLangKeywordAdd(this, "qa");' data-toggle='tooltip' data-placement='right' data-original-title='Ajouter'><i class='icon icon-plus'></i> <span> Ajouter</span></button></span></div></div></div>
+<div class="form-group row " id="qa-element"><label for="qa" class="col-md-3 control-label optional">Autres</label>
+<div class="col-md-9"><div class="input-group" style="margin-bottom : 10px;"><button class='btn btn-sm btn-default dropdown-toggle form-btn-lang' style=' z-index:0!important;' data-toggle='dropdown' type='button' value='text'>Champ de recherche par défaut (multicritères)&nbsp;</button><ul class='dropdown-menu' role='menu' style='max-height: 140px; overflow:auto;'><li class='dropdown-item'><a data-val='text' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Champ de recherche par défaut (multicritères)</a></li><li class='dropdown-item'><a data-val='--sep1' href='javascript:void(0);' onclick="LangInit(this, 'qa');"></a></li><li class='dropdown-item'><a data-val='journal_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Revues (multicritères)</a></li><li class='dropdown-item'><a data-val='journalPublisher_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Revue : Éditeur</a></li><li class='dropdown-item'><a data-val='journalTitleAbbr_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Revue : Titre abrégé</a></li><li class='dropdown-item'><a data-val='journalTitle_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Revue : Titre</a></li><li class='dropdown-item'><a data-val='journalId_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Revue : Identifiant interne</a></li><li class='dropdown-item'><a data-val='journalDate_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Revue : Date de début de publication</a></li><li class='dropdown-item'><a data-val='journalEissn_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Revue : ISSN électronique</a></li><li class='dropdown-item'><a data-val='journalIssn_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Revue : ISSN</a></li><li class='dropdown-item'><a data-val='journalPublisher_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Revue : Éditeur</a></li><li class='dropdown-item'><a data-val='journalSherpaColor_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Revue : Couleur dans SHERPA/RoMEO</a></li><li class='dropdown-item'><a data-val='journalValid_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Revue : État dans le référentiel</a></li><li class='dropdown-item'><a data-val='--sep2' href='javascript:void(0);' onclick="LangInit(this, 'qa');"></a></li><li class='dropdown-item'><a data-val='conference_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Colloque (multicritères)</a></li><li class='dropdown-item'><a data-val='conferenceTitle_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Colloque : Titre</a></li><li class='dropdown-item'><a data-val='conferenceOrganizer_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Colloque : Organisateur</a></li><li class='dropdown-item'><a data-val='conferenceStartDateY_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Colloque : date de début (Année)</a></li><li class='dropdown-item'><a data-val='conferenceEndDateY_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Colloque : date de fin (Année)</a></li><li class='dropdown-item'><a data-val='invitedCommunication_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Conférence invitée (oui/non)</a></li><li class='dropdown-item'><a data-val='--sep3' href='javascript:void(0);' onclick="LangInit(this, 'qa');"></a></li><li class='dropdown-item'><a data-val='anrProject_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Projets ANR (multicritères)</a></li><li class='dropdown-item'><a data-val='anrProjectAcronym_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Projet ANR : Acronyme</a></li><li class='dropdown-item'><a data-val='anrProjectAcronymProgram_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Projet ANR : Acronyme du programme</a></li><li class='dropdown-item'><a data-val='anrProjectReference_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Projet ANR : Code décision (référence)</a></li><li class='dropdown-item'><a data-val='anrProjectTitle_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Projet ANR : Nom</a></li><li class='dropdown-item'><a data-val='anrProjectId_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Projet ANR : Identifiant interne</a></li><li class='dropdown-item'><a data-val='anrProjectValid_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Projet ANR : État dans le référentiel</a></li><li class='dropdown-item'><a data-val='--sep4' href='javascript:void(0);' onclick="LangInit(this, 'qa');"></a></li><li class='dropdown-item'><a data-val='europeanProject_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Projets européens (multicritères)</a></li><li class='dropdown-item'><a data-val='europeanProjectAcronym_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Projet européen : Acronyme</a></li><li class='dropdown-item'><a data-val='europeanProjectCallId_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Projet européen : Identifiant de l'appel à projet</a></li><li class='dropdown-item'><a data-val='europeanProjectReference_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Projet européen : Référence</a></li><li class='dropdown-item'><a data-val='europeanProjectTitle_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Projet européen : Nom</a></li><li class='dropdown-item'><a data-val='europeanProjectEndDate_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Projet européen : Date de fin</a></li><li class='dropdown-item'><a data-val='europeanProjectFinancing_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Projet européen : Financement</a></li><li class='dropdown-item'><a data-val='europeanProjectStartDate_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Projet européen : Date de début</a></li><li class='dropdown-item'><a data-val='europeanProjectValid_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Projet européen : État dans le référentiel</a></li><li class='dropdown-item'><a data-val='europeanProjectId_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Projet européen : Identifiant interne</a></li><li class='dropdown-item'><a data-val='--sep6' href='javascript:void(0);' onclick="LangInit(this, 'qa');"></a></li><li class='dropdown-item'><a data-val='producedDateY_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Date de production : année</a></li><li class='dropdown-item'><a data-val='releasedDateY_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Date de mise en ligne : année</a></li><li class='dropdown-item'><a data-val='publicationDateY_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Date de publication : année</a></li><li class='dropdown-item'><a data-val='writingDateY_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Date d'écriture : année</a></li><li class='dropdown-item'><a data-val='modifiedDateY_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Date de modification du dépôt : année</a></li><li class='dropdown-item'><a data-val='submittedDateY_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Date de dépôt : année</a></li><li class='dropdown-item'><a data-val='ePublicationDateY_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Date de publication électronique : année</a></li><li class='dropdown-item'><a data-val='--sep7' href='javascript:void(0);' onclick="LangInit(this, 'qa');"></a></li><li class='dropdown-item'><a data-val='collection_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Collection HAL (multicritères)</a></li><li class='dropdown-item'><a data-val='collCategory_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Collection HAL : catégorie</a></li><li class='dropdown-item'><a data-val='collCode_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Collection HAL : Code</a></li><li class='dropdown-item'><a data-val='collName_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Collection HAL : Nom</a></li><li class='dropdown-item'><a data-val='collId_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Collection HAL : Identifiant interne</a></li><li class='dropdown-item'><a data-val='--sep8' href='javascript:void(0);' onclick="LangInit(this, 'qa');"></a></li><li class='dropdown-item'><a data-val='contributorId_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Identifiant interne du contributeur/déposant</a></li><li class='dropdown-item'><a data-val='contributorFullName_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Nom complet du contributeur/déposant</a></li><li class='dropdown-item'><a data-val='--sep9' href='javascript:void(0);' onclick="LangInit(this, 'qa');"></a></li><li class='dropdown-item'><a data-val='domain_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Domaines</a></li><li class='dropdown-item'><a data-val='primaryDomain_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Domaine primaire</a></li><li class='dropdown-item'><a data-val='level0_domain_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Domaine racine</a></li><li class='dropdown-item'><a data-val='level1_domain_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Sous-domaine niveau 1</a></li><li class='dropdown-item'><a data-val='level2_domain_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Sous-domaine niveau 2</a></li><li class='dropdown-item'><a data-val='level3_domain_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Sous-domaine niveau 3</a></li><li class='dropdown-item'><a data-val='--sep10' href='javascript:void(0);' onclick="LangInit(this, 'qa');"></a></li><li class='dropdown-item'><a data-val='status_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Statut du document</a></li><li class='dropdown-item'><a data-val='version_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Version du document</a></li><li class='dropdown-item'><a data-val='submitType_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Type de dépôt</a></li><li class='dropdown-item'><a data-val='docType_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Type de document</a></li><li class='dropdown-item'><a data-val='isbn_id' href='javascript:void(0);' onclick="LangInit(this, 'qa');">ISBN</a></li><li class='dropdown-item'><a data-val='number_id' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Numéro - référence</a></li><li class='dropdown-item'><a data-val='doiId_id' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Identifiant DOI</a></li><li class='dropdown-item'><a data-val='--sep11' href='javascript:void(0);' onclick="LangInit(this, 'qa');"></a></li><li class='dropdown-item'><a data-val='classification_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Classification</a></li><li class='dropdown-item'><a data-val='audience_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Audience</a></li><li class='dropdown-item'><a data-val='popularLevel_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Vulgarisation</a></li><li class='dropdown-item'><a data-val='peerReviewing_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Comité de lecture - texte (oui ou non)</a></li><li class='dropdown-item'><a data-val='proceedings_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Actes de colloque</a></li><li class='dropdown-item'><a data-val='localReference_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Référence interne</a></li><li class='dropdown-item'><a data-val='funding_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Financement</a></li><li class='dropdown-item'><a data-val='collaboration_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Collaborations</a></li></ul>
+<input type="text" name="qa[text][]" id="qa" value="" lang="text" class=" form-control input-sm" aria-describedby="qa-error" style=" " data-keyword="1" /><span class="input-group-btn"><button type='button' class='btn btn-sm btn-primary form-btn-multi form-btn-add' onclick='MultiTextSimpleLangKeywordAdd(this, "qa");' data-toggle='tooltip' data-placement='right' data-original-title='Ajouter'><i class='icon icon-plus'></i> <span> Ajouter</span></button></span></div></div></div>
+<dt id="submit-label">&#160;</dt><dd id="submit-element">
+<button name="submit" id="submit-button" type="submit" value=" Lancer la recherche" class="btn btn-lg btnSearch hal-visualize-button" aria-describedby="submit-button-error"> Lancer la recherche</button></dd></form>
+            
+            <div class="mt-3">
+                <button class="tools-color btn-hide-show" data-selectOne="#solrSearchHeader" data-selectTwo="#advSearchHeader">
+                    <span>recherche experte (SolR)</span>
+                </button>
+            </div>
+        </div>
+                <div id="solrSearchHeader" class="hide">
+            <h3> Recherche experte (SolR)</h3>
+            <form action="/search/index" method="get" id="searchHeaderSolr" name="search-simple" role="search">
+                <textarea type="text" name="q" class="p-5" autocomplete="off" cols="150" placeholder="Chercher un document, un auteur, un mot clef..."
+                       value="">
+                </textarea>
+                <div>
+                    <button type="submit" aria-label="Rechercher" class="hal-visualize-button">
+                        <span class="icon-search" aria-hidden="true"></span>
+                        <span>Lancer la recherche</span>
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-3">
+                <button class="tools-color btn-hide-show" data-selectOne="#solrSearchHeader" data-selectTwo="#advSearchHeader">
+                    <span>Vers la recherche avancée</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+                    </li>
+                    <li id="ssheader-submit" class="d-table btn-primary-orange">
+                                                
+                                                                                            
+                <a href="/submit/index" class="btn-hal hal-submit-button">
+                    <span class="icon-add colo-white" aria-hidden="true"></span>
+                    <span> Déposer </span>
+                </a>
+            </li>
+        </ul>
+    </nav>    
+        
+    
+<div class="site-header  logo">
+        <div class="section-corps">
+                            <table width="100%" cellpadding="0" style="position:relative;">
 <tr>
-<td align="left"><img src="/public/tel.logo.fr.png" height="200px" alt="TEL - Thèses en ligne" /></td>
+<td align="left"><a href="/" border="0" ><img src="/public/tel.logo.fr.png" alt="TEL : Thèses en ligne" /></a></td>
 </tr>
 </table>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div id="skip-link-nav" tabindex="-1"></div>
-<nav id="global-navigation" class="sidebar-nav" role="navigation" aria-label="Menu principal">
-    <ul class="nav nav-tabs">
-                        <li class="">
-                            <a href="/"  >
-                Accueil</a></li>
-                            <li class="">
-                            <a href="/submit/index"  >
-                Dépôt</a></li>
-                            <li class="dropdown ">
-                            <a href="/section/list2" class="dropdown-toggle" data-toggle="dropdown"> Consulter<b class="caret"></b></a>
-                <ul class="dropdown-menu">                            <li ><a href="/browse/last"  >
-                                    Les derniers dépôts                                </a></li>
-                                                    <li ><a href="/browse/domain"  >
-                                    Par discipline                                </a></li>
-                                                    <li ><a href="/browse/period"  >
-                                    Par date de soutenance                                </a></li>
-                                                    <li ><a href="/browse/collection"  >
-                                    Consultation par collections                                </a></li>
-                                        </ul>
-                </li>
-                                <li class="">
-                            <a href="/search/index"  >
-                Recherche</a></li>
-                            <li class="">
-                            <a href="https://doc.archives-ouvertes.fr/" onclick="this.target='_blank'" >
-                Documentation HAL </a></li>
-                </ul>
-</nav>
-                <div class="corps">
-<!--
-    BreadCrumb
--->
-                    <div id="flash-messages">                    </div>
-                <div id="skip-link" tabindex="-1"></div>
-        <script type="text/javascript">
-            $(function () {
-                $('.btn-lang>button').click(function(){
-                    $(this).parent().find('button').removeClass('active');
-                    $(this).addClass('active').closest('.row').find('.col-content>div').hide();
-                    $(this).closest('.row').find('.col-content .content-' + $(this).attr('data-lang')).show();
-                });
 
-                linkifyElem ('.linkify');
-            });
+                    </div>
+</div>    
+<div class="website-navigation">
+ <ul class="nav nav-pills justify-content-center flex-column flex-md-row">
+                                                 <li class="nav-item  ">
+                <a class="nav-link  "
+                                                    href="/"
+                        
+                                                    target=""
+                                        >Accueil</a>
 
-        function linkifyElem (selector)
-        {
-            if(selector && selector.trim() !== '.linkify' && !selector.includes(".linkify"))
-                selector = selector + ' > .linkify';
-            else
-                selector = '.linkify';
-            $(selector).each(function(){
-                $(this).html(linkify($(this).html()));
-            });
-        }
+                            </li>
+                                                          <li class="nav-item  dropdown  ">
+                <a class="nav-link  dropdown-toggle  "
+                                                    data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"
+                        
+                                                    target=""
+                                        >Consulter</a>
 
-        function displayDiv(selector1, selector2)
-        {
-            if ($(selector1).is(':visible')) {
-                $(selector1).toggle('hide');
-                $(selector2).toggle('show');
-            } else {
-                $(selector2).toggle('hide');
-                $(selector1).toggle('show');
-            }
-        }
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                                <li class="nav-item">
+                    <a class="dropdown-item" href="/browse/last"
+                       target="">Les derniers dépôts</a>
+            
+                        </li>
+                                                        <li class="nav-item">
+                    <a class="dropdown-item" href="/browse/domain"
+                       target="">Par discipline</a>
+            
+                        </li>
+                                                        <li class="nav-item">
+                    <a class="dropdown-item" href="/browse/period"
+                       target="">Par date de soutenance</a>
+            
+                        </li>
+                                                        <li class="nav-item">
+                    <a class="dropdown-item" href="/browse/collection"
+                       target="">Consultation par collections</a>
+            
+                        </li>
+            </ul>                            </li>
+                                                          <li class="nav-item  ">
+                <a class="nav-link  "
+                                                    href="https://doc.archives-ouvertes.fr/"
+                        
+                                                    target="_blank"
+                                        >Documentation HAL </a>
 
-        function viewDocMetadatas(docid)
-        {
-            let content = $('.metadatas-complete .content');
-            if(content[0].style.display === "block"){
-                content.hide();
-                $('.metadatas-complete .btn-view button').html('<i class="glyphicon glyphicon-th-list"></i>Voir');
-            }else {
-                if (content.is(':hidden')) {
-                    content.toggle('slow');
-                } else {
-                    content.html(getLoader());
-                    $.ajax({
-                        url: "/view/metadata",
-                        type: "post",
-                        data: {docid: docid},
-                        success: function (data) {
-                        content.html(data);
-                        linkifyElem('.metadatas-complete .content');
-                        content[0].style.display = 'block';
-                            MathJax.Hub.Queue(["Typeset", MathJax.Hub, "abstracts"]);
-                    }
-                    });
-                }
-                $('.metadatas-complete .btn-view button').html('<i class="glyphicon glyphicon-th-list"></i>Masquer');
-            }
-        }
-    </script>
-    
-<div class="row" id="document">
-    <div class="col-md-8">
-                <div class="btn-group dropdown">
-            <button type="button" class="btn btn-danger">tel-02083632, version 1</button>
-                    </div>
-            <div class="btn label-THESE label-primary"
-             style="margin-left:10px; color:#fff; cursor:inherit;">
-            Thèse        </div>
-                            <h1 class="title">
-                                    <div class="row">
-                        <div class="col-md-1 col-lang">
-                            <div class="btn-group-vertical btn-lang opacity">
-                                                                    <button type="button"
-                                            class="btn btn-default btn-xs active"
-                                            data-lang="en">en</button>
-                                                                    <button type="button"
-                                            class="btn btn-default btn-xs "
-                                            data-lang="fr">fr</button>
-                                                            </div>
-                        </div>
-                        <div class="col-md-11 col-content">
-                                                            <div class="linkify content-en" >
-                                    Global discharging methods for coloring problems in graphs                                </div>
-                                                            <div class="linkify content-fr" style="display:none;">
-                                    Méthodes de déchargement global pour des problèmes de coloration dans les graphes                                </div>
-                                                    </div>
-                    </div>
-                            </h1>
-                <div class="authors">
-            <span class="author"><a rel="nofollow" href="/search/index/q/*/authIdHal_s/marthe-bonamy" target="_blank">Marthe Bonamy</a>&nbsp;<sup>1</sup>&nbsp;</span>            <button type="button" class="btn btn-default btn-xs opacity" onclick="displayDiv('.authors', '.authors-details')">Détails</button>
-            <div class="structs">
-                <div class="struct">
-                                </div>
-                                    <div class="struct">
-                        <span class="structid">1</span>
-                        <a rel="nofollow"
-                           href="/search/index/q/*/structId_i/388229/"
-                           target="_blank">
-                            ALGCO - Algorithmes, Graphes et Combinatoire                        </a>
-                                                            <div style="padding-left:22px;">LIRMM - Laboratoire d'Informatique de Robotique et de Microélectronique de Montpellier</div>
-                                                        </div>
-                            </div>
-        </div>
-                <div class="authors-details well" style="display:none;">
-                        <div class="row"><div class="col-md-12"><blockquote><strong><i class="glyphicon glyphicon-user"></i>&nbsp;<a rel="nofollow" href="/search/index/q/*/authIdHal_s/marthe-bonamy" target="_blank">Marthe Bonamy</a>&nbsp;<sup>1</sup><br/><span class="label label-default">Auteur</span><br/><label class="label label-primary">PersonId : 180516</label><br /> <a href="javascript:void(0);" onclick="$('#form-login').submit();"title=Connectez-vous pour contacter le contributeur><i class='glyphicon glyphicon-envelope'></i></a></strong><small>IdHAL : <a href="//cv.archives-ouvertes.fr/marthe-bonamy" title="CV HAL" target="_blank">marthe-bonamy</a></small><small>ORCID : <a href="https://orcid.org/0000-0001-7905-8018" title="ORCID" target="_blank">0000-0001-7905-8018</a></small><small>IdRef : <a href="https://www.idref.fr/223311855" title="IdRef" target="_blank">223311855</a></small></blockquote></div></div><div class="row"></div>            <div class="structs">
-                                    <div class="well struct">
-                        <span class="structid">1</span>
-                        <a href="/search/index/q/*/structId_i/388229" target="_blank">ALGCO - Algorithmes, Graphes et Combinatoire</a><small> (LIRMM, 161 rue Ada, 34000 Montpellier - France)</small> <label class="label label-primary">StructId : 388229</label><ul><li><a href="/search/index/q/*/structId_i/181" target="_blank">LIRMM - Laboratoire d'Informatique de Robotique et de Microélectronique de Montpellier</a><small> (161 rue Ada - 34095 Montpellier - France)</small> <label class="label label-primary">StructId : 181</label><ul><li><a href="/search/index/q/*/structId_i/410122" target="_blank">UM - Université de Montpellier</a> : UMR5506<small> (163 rue Auguste Broussonnet - 34090 Montpellier - France)</small> <label class="label label-primary">StructId : 410122</label></li><li><a href="/search/index/q/*/structId_i/441569" target="_blank">CNRS - Centre National de la Recherche Scientifique</a> : UMR5506<small> (France)</small> <label class="label label-primary">StructId : 441569</label></li></ul></li></ul>                    </div>
-                            </div>
-            <div class="text-center">
-                <button type="button" class="btn btn-default btn-xs" onclick="displayDiv('.authors', '.authors-details')">Masquer les détails</button>
-            </div>
-        </div>
-                <div class="abstract">
-                                    <div class="row">
-                        <div class="col-md-1 col-lang">
-                            <div class="btn-group-vertical btn-lang opacity">
-                                                                    <button type="button" class="btn btn-default btn-xs " data-lang="en">en</button>
-                                                                    <button type="button" class="btn btn-default btn-xs active" data-lang="fr">fr</button>
-                                                            </div>
-                        </div>
-                        <div class="col-md-11 col-content">
-                                                            <div class="content-en" style="display:none;" lang="en">
-                                    <div class="linkify abstract-content">
-                                        <strong>Abstract</strong> : This thesis falls within graph theory, and deals more precisely with graph coloring problems. In this thesis, we use and develop the discharging method, a counting argument that makes strong advantage of the graph structure. This method is decisive in the proof of the Four Color Theorem. We first give an illustrated overview of the discharging tools that are used for this work: nice methods that we apply, and handy tricks that we develop. In particular, we present the main ideas in a global discharging argument. In the realm of list edge coloring, we most notably prove that the weak List Coloring Conjecture is true for planar graphs of maximum degree 8 (i.e. that they are edge 9-choosable), thus improving over a result of Borodin from 1990. We finally present our results about square coloring, where the goal is to color the vertices in such a way that two vertices that are adjacent or have a common neighbor receive different colors. We look in particular into sufficient conditions on the density of a graph (i.e. the maximum average degree of a subgraph) for its square to be colorable with few colors.                                    </div>
-                                </div>
-                                                            <div class="content-fr"  lang="fr">
-                                    <div class="linkify abstract-content">
-                                        <strong>Résumé</strong> : Cette thèse s’inscrit dans le cadre de la théorie des graphes, et porte plus particulièrement sur des problèmes de coloration de graphes. Dans cette thèse, nous nous intéressons à l’utilisation et au développement de la méthode de  déchargement, un argument de comptage qui exploite fortement la structure du graphe. Cette méthode est décisive dans la preuve du Théorème des Quatre Couleurs. Nous donnons d’abord une vue d’ensemble des outils de déchargement que nous utilisons dans ce travail, entre les méthodes élégantes mises en application, et les astuces développées. Nous présentons en particulier l’idée essentielle d’une preuve par déchargement global. Dans le cadre de la coloration d’arêtes par liste, nous résolvons la Conjecture de Coloration par Liste faible dans le cas des graphes planaires de degré maximum 8, en prouvant qu’on peut colorier par liste les arêtes de ces derniers avec 9 couleurs
-seulement. Ceci améliore un résultat de Borodin de 1990. Enfin, nous présentons nos résultats dans le cadre de la coloration de carrés, où il s’agit de colorier les sommets sans qu’il y ait deux sommets adjacents ou avec un voisin commun qui soient de la même couleur. On s’intéresse en particulier à des conditions suffisantes sur la densité du graphe (c-à-d le degré moyen maximum d’un sous-graphe) pour qu’on puisse colorier son carré avec peu de couleurs.                                    </div>
-                                </div>
-                                                    </div>
-                    </div>
-                            </div>
-                            <div class="keywords">
-                                    <div class="row">
-                        <div class="col-md-1 col-lang">
-                            <div class="btn-group-vertical btn-lang opacity">
-                                                                    <button type="button" class="btn btn-default btn-xs " data-lang="en">en</button>
-                                                                    <button type="button" class="btn btn-default btn-xs active" data-lang="fr">fr</button>
-                                                            </div>
-                        </div>
-                        <div class="col-md-11 col-content">
-                                                            <div class="content-en" style="display:none;">
-                                    <div class="linkify keyword-content">
-                                        <strong>Keywords</strong> :
-                                                                                    <a rel="nofollow"
-                                               href="/search/index/q/*/keyword_t/graph%20theory/"
-                                               target="_blank" class="btn btn-default btn-xs">graph theory</a>
-                                                                                    <a rel="nofollow"
-                                               href="/search/index/q/*/keyword_t/coloring/"
-                                               target="_blank" class="btn btn-default btn-xs">coloring</a>
-                                                                            </div>
-                                </div>
-                                                            <div class="content-fr" >
-                                    <div class="linkify keyword-content">
-                                        <strong>Mots-clés</strong> :
-                                                                                    <a rel="nofollow"
-                                               href="/search/index/q/*/keyword_t/coloration/"
-                                               target="_blank" class="btn btn-default btn-xs">coloration</a>
-                                                                                    <a rel="nofollow"
-                                               href="/search/index/q/*/keyword_t/théorie%20des%20graphes/"
-                                               target="_blank" class="btn btn-default btn-xs">théorie des graphes</a>
-                                                                            </div>
-                                </div>
-                                                    </div>
-                    </div>
-                            </div>
-                <div class="metadatas">
-            <div><strong>Type de document</strong> :
-                <div class="label label-THESE label-primary">
-                    Thèse                </div>
-            </div>
-                                        <div><strong>Domaine</strong> :
-                    <blockquote style="margin-left:65px;margin-top:-15px;">
-                        <div>
-                                                            <div>
-                                    <strong>                                    <a rel="nofollow" href="/search/index/q/*/level0_domain_s/info" target="_blank">Informatique [cs]</a> / <a rel="nofollow" href="/search/index/q/*/level1_domain_s/info.info-dm" target="_blank">Mathématique discrète [cs.DM]</a>                                    </strong>                                </div>
-                                                            <div>
-                                                                        <a rel="nofollow" href="/search/index/q/*/level0_domain_s/math" target="_blank">Mathématiques [math]</a> / <a rel="nofollow" href="/search/index/q/*/level1_domain_s/math.math-co" target="_blank">Combinatoire [math.CO]</a>                                                                    </div>
-                                                    </div>
-                    </blockquote>
-                </div>
-                    </div>
-        <div class="metadatas-complete">
-            <span class="metadatas-complete-title">
-                Liste complète des métadonnées             </span>
+                            </li>
+               </ul>
+</div>
 
-            <span class="btn-view text-center">
-                <button type="button" class="btn btn-default btn-sm" aria-expanded="false"
-                        onclick="viewDocMetadatas(2083632)">
-                            <span class="glyphicon glyphicon-th-list" aria-hidden="true" ></span>
-    &nbsp;Voir                </button>
+
+<main>
+    <div id="skip-link" tabindex="-1"></div>
+    <div class="toast hide valid-bg toast-valid" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-body">
+        <div class="message">
+            <span class="icon-valid" aria-hidden="true"></span>
+            <span class="flash-messages">
             </span>
-            <div class="content"></div>
         </div>
-
-        <!-- Relationships -->
-        
-
-        <!-- Cited References -->
-        <br />
-<div class="references">
-    <span class="references-title" id="references-title">
-        Littérature citée [109 références]     </span>
-    <span class="references-buttons text-center">
-        <span class="btn-group" role="group">
-            <a type="button" id="btn-view" class="btn btn-default btn-sm" onclick="viewDocReferences(2083632)">
-                <i class="glyphicon glyphicon-th-list"></i>&nbsp;Voir            </a>
-            <a type="button" id="btn-hide" class="btn btn-default btn-sm" onclick="hideDocReferences()">
-                <i class="glyphicon glyphicon-th-list"></i>&nbsp;Masquer            </a>
-            <a type="button" target="_blank" class="btn btn-default btn-sm" href="/tel-02083632v1/html_references">
-                <i class="glyphicon glyphicon-download"></i>&nbsp;Télécharger            </a>
-        </span>
-    </span>
-    <div class="content"></div>
-</div>
-
-<script type="text/javascript">
-    // Display references
-    function viewDocReferences(docId)
-    {
-        var referencesContent = '.references .content';
-        if ($(referencesContent).is(':hidden')) {
-            $('.references #btn-view').hide();
-            $(referencesContent).toggle('slow');
-            $('.references #btn-hide').show();
-        } else {
-            $(referencesContent).html(getLoader());
-            $.ajax({
-                url: "/view/references",
-                type: "post",
-                data: {docId:docId, actionReference:'renderReferences'},
-                success: function(data) {
-                    $('.references #btn-view').hide();
-                    $(referencesContent).html(data);
-                    linkifyElem ('.references .content .linkify');
-                    $('.references #btn-hide').show();
-
-                    // Par défaut, on affiche seulement les références bien formées
-                    sortReferences('well');
-                }
-            });
-        }
-    }
-    // Hide references
-    function hideDocReferences()
-    {
-        $('.references #btn-view').show();
-        $('.references .content, .references #btn-hide').hide();
-    }
-</script>
-
-        <!-- Gallery -->
-                <hr/>
-        <div>
-    <small>
-        https://theses.hal.science/tel-02083632<br/>Contributeur : <a rel="nofollow" href="/search/index/q/*/contributorId_i/180184" target="_blank">Marthe Bonamy</a>                <a href='javascript:void(0);'
-                   onclick="$('#form-login').submit();">Connectez-vous pour contacter le contributeur</a>
-                        <br/>Soumis le : vendredi 29 mars 2019 - 10:34:19<br/>Dernière modification le : vendredi 5 août 2022 - 15:02:53        <br/>Archivage à long terme le :  : dimanche 30 juin 2019 - 13:28:05<br/>
-    </small>
-</div>
-
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
-    <div class="col-md-4">
-        <!-- Fichiers -->
-            <div class="widget widget-files">
-        <h3 class="widget-header">
-            Fichier        </h3>
-        <div class="widget-content">                    <div class="row">
-                        <div class="col-md-4 text-center">                            <a href="https://theses.hal.science/tel-02083632/document" target="_blank">
-                                <img src="//thumb.ccsd.cnrs.fr/8443294/small" style="border: 0" class="img-thumbnail" alt="Vignette du document"/>
-                            </a>
-                        </div>
-                        <div class="col-md-8">
-                                                            <a href="https://theses.hal.science/tel-02083632/document" target="_blank" data-toggle="tooltip" title="these-mbonamy.pdf - 1.37 Mo">these-mbonamy.pdf</a>
+</div>
 
-                                                            <div>Fichiers produits par l'(les) auteur(s)                                </div>
+<div class="toast hide warning-bg toast-warning" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-body">
+        <div class="message">
+            <span class="icon-not_valid" aria-hidden="true"></span>
+            <span class="flash-messages">
+            </span>
+        </div>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</div>
+
+<div class="toast hide bgcolor-second toast-info" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-body">
+        <div class="message">
+            <span class="flash-messages">
+            </span>
+        </div>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</div>
+
+<div class="toast hide bgcolor-second toast-loader" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-body">
+        <div class="message">
+            <div class="spinner-border text-light" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <span class="flash-messages">
+            </span>
+        </div>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</div>
+            <script type="text/javascript">
+        $(document).ready(function() {
+                    });
+    </script>
+                    
+
+<section class="section-corps row">
+    <div id="flash-messages"></div>
+
+    <section class="col-12 col-md-9 order-sm-12 flex-74">
+        <div class="header-section">
+    <span class="typdoc">Thèse
+                    </span>
+    
+        <span class="year strong">Année : 2015</span>
+</div>        <div class="section-content section-shadow">
+            <div style="display: flex; justify-content: space-between;">
+                <div style="display: flex; align-items: center;">
+                                                                                    
+                                            <h2 class="title-lang en active" lang="en" style="margin-bottom: 0;">Global discharging methods for coloring problems in graphs</h2>
+                                            <h2 class="title-lang fr " lang="fr" style="margin-bottom: 0;">Méthodes de déchargement global pour des problèmes de coloration dans les graphes</h2>
+                                                                <div class="btn-group btn-group-lang" role="group" aria-label="Choix langues" style="align-items: unset;">
+                                                            <button class="btn btn-lang-title active" aria-pressed="true" data-lang="en">
+                                    en
+                                </button>
+                                                            <button class="btn btn-lang-title " aria-pressed="false" data-lang="fr">
+                                    fr
+                                </button>
                                                     </div>
-                    </div>
-                    </div>
-    </div>
-
-        <!-- Licence -->
-        
-        <!-- Open Access -->
-
-        
-        <!-- Publisher Link -->
-
-        
-        <!-- Identifiants  -->
-        <div class="widget widget-identifiants">
-    <h3 class="widget-header">Identifiants</h3>
-    <div class="widget-content">
-        <ul>
-                        <li>HAL Id : <strong>tel-02083632, version 1</strong></li>
-                    </ul>
-    </div>
-</div>
-        <!-- Collections -->
-            <div class="widget widget-collection">
-        <h3 class="widget-header">Collections</h3>
-        <div class="widget-content">
-                                                                                                                                                                                                                            <p><a href="/CNRS" target="_blank" data-toggle="tooltip" title="CNRS - Centre national de la recherche scientifique">CNRS</a> | <a href="/INSMI" target="_blank" data-toggle="tooltip" title="CNRS-INSMI - INstitut des Sciences Mathématiques et de leurs Interactions">INSMI</a> | <a href="/ALGCO" target="_blank" data-toggle="tooltip" title="Algorithmes, Graphes et Combinatoire">ALGCO</a> | <a href="/LIRMM" target="_blank" data-toggle="tooltip" title="Laboratoire d'Informatique de Robotique et de Microélectronique de Montpellier">LIRMM</a> | <a href="/TDS-MACS" target="_blank" data-toggle="tooltip" title="Réseau de recherche en Théorie des Systèmes Distribués, Modélisation, Analyse et Contrôle des Systèmes">TDS-MACS</a> | <a href="/MIPS" target="_blank" data-toggle="tooltip" title="Mathématiques, Informatique, Physique et Systèmes">MIPS</a> | <a href="/UNIV-MONTPELLIER" target="_blank" data-toggle="tooltip" title="Université de Montpellier">UNIV-MONTPELLIER</a></p>
-        </div>
-    </div>
-        <!-- Relations -->
-                <!-- Citation -->
-        <div class="widget widget-citation">
-    <h3 class="widget-header">Citation</h3>
-    <div class="widget-content ref-biblio">Marthe Bonamy. Global discharging methods for coloring problems in graphs. Discrete Mathematics [cs.DM]. Université de Montpellier, 2015. English. <a target="_blank" href="https://www.theses.fr/">&#x27E8;NNT : &#x27E9;</a>. <a target="_blank" href="https://theses.hal.science/tel-02083632">&#x27E8;tel-02083632&#x27E9;</a></div>
-</div>
-        
-        <!-- Export -->
-        
-<div class="widget widget-export">
-    <h3 class="widget-header">Exporter</h3>
-    <div class="widget-content" style="text-align:center">
-                <a class="widget-export-btn btn btn-default btn-sm" href="/tel-02083632v1/bibtex" role="button" target="_blank">BibTeX</a>
-        <a class="widget-export-btn btn btn-default btn-sm" href="/tel-02083632v1/tei" role="button" target="_blank">TEI</a>
-        <a class="widget-export-btn btn btn-default btn-sm" href="/tel-02083632v1/dc" role="button" target="_blank">DC</a>
-        <a class="widget-export-btn btn btn-default btn-sm" href="/tel-02083632v1/dcterms" role="button" target="_blank">DCterms</a>
-        <a class="widget-export-btn btn btn-default btn-sm" href="/tel-02083632v1/endnote" role="button">EndNote</a>
-        <a class="widget-export-btn btn btn-default btn-sm" href="/tel-02083632v1/datacite" role="button">Datacite</a>
-    </div>
-</div>
-
-        <!-- Partager -->
-        <div class="widget widget-share">
-    <h3 class="widget-header">Partager</h3>
-    <div class="widget-content" >
-                <!-- AddToAny BEGIN -->
-        <div class="a2a_kit a2a_kit_size_32 a2a_default_style">
-            <a class="a2a_button_facebook"></a>
-            <a class="a2a_button_twitter"></a>
-            <a class="a2a_button_email"></a>
-            <a class="a2a_dd" href="https://www.addtoany.com/share"></a>
-        </div>
-        <script async src="https://static.addtoany.com/menu/page.js"></script>
-        <!-- AddToAny END -->
-    </div>
-</div>
-
-        <!-- Altmetrics -->
-            <div class="widget widget-metrics">
-        <h3 class="widget-header">Métriques</h3>
-
-        <div class="widget-content" style="text-align: center">
-
-                    <div class="row">
-                            <div class="col-md-6">
-                <div style="height:3em"><strong>Consultations de la notice</strong></div>
-                <h2 style="margin-top:10px;"><span class="label label-primary">198</span></h2>
-            </div>
-                          <div class="col-md-6">
-                <div style="height:3em"><strong>Téléchargements de fichiers</strong></div>
-                <h2 style="margin-top:10px;"><span class="label label-primary">691</span></h2>
-            </div>
-                        </div>
-            </div>
-    </div>
-
-    </div>
-</div>
-
+                                    </div>
+                <div>
+                    <span style="margin-left: 2%; margin-right: 3%"></span>
                 </div>
             </div>
+            
+                <span></span>
+                <div id="authors-simplified">
+    <div class="authors">
+                
+                    
+                        <button type="button" data-toggle="popover" class="btn-popover no-hide" data-container="body"
+                    data-placement="right" data-title="" data-content="
+
+
+    
+
+    &lt;div class=&#039;popover-authors&#039;&gt;
+        &lt;div class=&#039;popover-author-header&#039;&gt;
+            &lt;h4&gt;Auteur&lt;/h4&gt;
+
+&lt;ul&gt;
+    &lt;li&gt;Fonction : &lt;strong&gt;Auteur&lt;/strong&gt;&lt;/li&gt;
+            &lt;li&gt;PersonId : &lt;strong&gt;180516&lt;/strong&gt;&lt;/li&gt;
+
+                    &lt;li&gt;IdHAL : &lt;a href=&quot;/search/index/q/*/authIdHal_s/marthe-bonamy&quot; target=&quot;_blank&quot; title=&quot;Consulter les publications&quot;&gt;&lt;strong&gt;marthe-bonamy&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
+                    
+                    &lt;li&gt;ORCID : &lt;strong&gt;&lt;a href=&quot;https://orcid.org/0000-0001-7905-8018&quot; title=&quot;ORCID&quot; target=&quot;_blank&quot;&gt;0000-0001-7905-8018&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
+        
+                    &lt;li&gt;IdRef     : &lt;strong&gt;&lt;a href=&quot;https://www.idref.fr/223311855&quot; title=&quot;IdRef&quot; target=&quot;_blank&quot;&gt;223311855&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
+        
+    
+
+&lt;/ul&gt;
+
+        &lt;/div&gt;
+
+
+                            &lt;a class=&#039;popover-affil&#039; href=&quot;/search/index/q/*/structId_i/388229&quot;&gt;Algorithmes, Graphes et Combinatoire&lt;/a&gt;
+        
+
+
+
+    &lt;a href=&quot;/search/index/q/*/authIdHal_s/marthe-bonamy&quot; title=&quot;Search author&quot; target=&quot;_blank&quot;&gt;
+        &lt;div class=&#039;popover-resume hal-privilege-button&#039;&gt;
+            &lt;span class=&#039;icon-search hal-icon&#039;&gt;&lt;/span&gt;
+            Chercher dans HAL
+        &lt;/div&gt;
+    &lt;/a&gt;
+
+    
+
+    &lt;/div&gt;
+
+ ">
+                <span>Marthe Bonamy</span>
+            </button>
+
+                            (1)
+            
+                        </div>
+    <button type="button" class="btn btn-hide-show" data-selectOne="#authors-simplified" data-selectTwo="#authors-detailed">Afficher plus de détails</button>
+
+
+        <div class="structures bg-beige">
+        <div>
+            <span class="icon-institution" aria-hidden="true"></span>
+        </div>
+        <div>
+                            <span>1</span>
+                <button type="button" data-toggle="popover" class="btn-popover no-hide close-outside" data-container="body"
+                        data-placement="right" data-title="" data-content="<div class='popover-structure'><a href='/search/index/q/*/structId_i/388229' target='_blank'>ALGCO - Algorithmes, Graphes et Combinatoire</a><small> (LIRMM, 161 rue Ada, 34000 Montpellier - France)</small> <label class='label label-primary label-OLD'>388229</label><ul><li><a href='/search/index/q/*/structId_i/181' target='_blank'>LIRMM - Laboratoire d'Informatique de Robotique et de Microélectronique de Montpellier</a><small> (161 rue Ada - 34095 Montpellier - France)</small> <label class='label label-primary label-OLD'>181</label><ul><li><a href='/search/index/q/*/structId_i/410122' target='_blank'>UM - Université de Montpellier</a> : UMR5506<small> (163 rue Auguste Broussonnet - 34090 Montpellier - France)</small> <label class='label label-primary label-OLD'>410122</label></li><li><a href='/search/index/q/*/structId_i/441569' target='_blank'>CNRS - Centre National de la Recherche Scientifique</a> : UMR5506<small> (France)</small> <label class='label label-primary label-VALID'>441569</label></li></ul></li></ul></div>">
+                                            ALGCO - 
+                                        Algorithmes, Graphes et Combinatoire
+                </button>
+                <br>
+
+                    
+    
+
+                    </div>
+    </div>
+</div>
+
+
+<div id="authors-detailed">
+    <div class="container">
+        <div class="row">
+                            <div class="col-lg-4">
+                    <div class="bg-beige">
+                        
+
+
+    
+
+    <a href="/search/index/q/*/authIdHal_s/marthe-bonamy" target="_blank">Marthe Bonamy</a>
+
+<ul>
+    <li>Fonction : <strong>Auteur</strong></li>
+            <li>PersonId : <strong>180516</strong></li>
+
+                    <li>IdHAL : <a href="/search/index/q/*/authIdHal_s/marthe-bonamy" target="_blank" title="Consulter les publications"><strong>marthe-bonamy</strong></a></li>
+                    
+                    <li>ORCID : <strong><a href="https://orcid.org/0000-0001-7905-8018" title="ORCID" target="_blank">0000-0001-7905-8018</a></strong></li>
+        
+                    <li>IdRef     : <strong><a href="https://www.idref.fr/223311855" title="IdRef" target="_blank">223311855</a></strong></li>
+        
+    
+
+</ul>
+
+
+
+                            <div class='detailed-affil'>
+                <span class='icon-institution hal-icon'></span>
+                <a href="/search/index/q/*/structId_i/388229">Algorithmes, Graphes et Combinatoire</a>
+            </div>
+        
+
+
+
+    
+
+
+                    </div>
+                </div>
+                    </div>
+    </div>
+    <button type="button" class="btn btn-hide-show" data-selectOne="#authors-simplified" data-selectTwo="#authors-detailed" style="margin-top: 22px;">Réduire la vue détaillée</button>
+</div>
+                <div class="row" style="width: 102%;">
+                    
+
+    <div class="abstract col-lg-7">
+        <div>
+            <h4> Résumé </h4>
+
+                                                    
+            <div class="btn-group" role="group" aria-label="Choix langues">
+                            <button class="btn btn-lang-abstract active" aria-pressed="true" data-lang="en">
+                    en
+                </button>
+                            <button class="btn btn-lang-abstract " aria-pressed="false" data-lang="fr">
+                    fr
+                </button>
+                        </div>
+        </div>
+
+                            <div class="abstract-content en active" lang="en">
+                    This thesis falls within graph theory, and deals more precisely with graph coloring problems. In this thesis, we use and develop the discharging method, a counting argument that makes strong advantage of the graph structure. This method is decisive in the proof of the Four Color Theorem. We first give an illustrated overview of the discharging tools that are used for this work: nice methods that we apply, and handy tricks that we develop. In particular, we present the main ideas in a global discharging argument. In the realm of list edge coloring, we most notably prove that the weak List Coloring Conjecture is true for planar graphs of maximum degree 8 (i.e. that they are edge 9-choosable), thus improving over a result of Borodin from 1990. We finally present our results about square coloring, where the goal is to color the vertices in such a way that two vertices that are adjacent or have a common neighbor receive different colors. We look in particular into sufficient conditions on the density of a graph (i.e. the maximum average degree of a subgraph) for its square to be colorable with few colors.
+                </div>
+                            <div class="abstract-content fr " lang="fr">
+                    Cette thèse s’inscrit dans le cadre de la théorie des graphes, et porte plus particulièrement sur des problèmes de coloration de graphes. Dans cette thèse, nous nous intéressons à l’utilisation et au développement de la méthode de  déchargement, un argument de comptage qui exploite fortement la structure du graphe. Cette méthode est décisive dans la preuve du Théorème des Quatre Couleurs. Nous donnons d’abord une vue d’ensemble des outils de déchargement que nous utilisons dans ce travail, entre les méthodes élégantes mises en application, et les astuces développées. Nous présentons en particulier l’idée essentielle d’une preuve par déchargement global. Dans le cadre de la coloration d’arêtes par liste, nous résolvons la Conjecture de Coloration par Liste faible dans le cas des graphes planaires de degré maximum 8, en prouvant qu’on peut colorier par liste les arêtes de ces derniers avec 9 couleurs
+seulement. Ceci améliore un résultat de Borodin de 1990. Enfin, nous présentons nos résultats dans le cadre de la coloration de carrés, où il s’agit de colorier les sommets sans qu’il y ait deux sommets adjacents ou avec un voisin commun qui soient de la même couleur. On s’intéresse en particulier à des conditions suffisantes sur la densité du graphe (c-à-d le degré moyen maximum d’un sous-graphe) pour qu’on puisse colorier son carré avec peu de couleurs.
+                </div>
+                        </div>
+                    <div class="col-lg-5">
+                        
+
+    
+                
+    <div class="keywords">
+        <div>
+            <h4> Mots clés </h4>
+                            <div class="btn-group" role="group" aria-label="Choix langues" style="align-items: unset;">
+                                            <button class="btn btn-lang-keywords active" aria-pressed="true" data-lang="en">
+                            en
+                        </button>
+                                            <button class="btn btn-lang-keywords " aria-pressed="false" data-lang="fr">
+                            fr
+                        </button>
+                                    </div>
+                                        <div class="keys-lang en active" data-lang="en">
+                                            <a class="hal-bgtext" href="/search/index/q/*/keyword_t/graph%20theory" target="_blank" rel="nofollow">graph theory</a>
+                                            <a class="hal-bgtext" href="/search/index/q/*/keyword_t/coloring" target="_blank" rel="nofollow">coloring</a>
+                                    </div>
+                            <div class="keys-lang fr " data-lang="fr">
+                                            <a class="hal-bgtext" href="/search/index/q/*/keyword_t/coloration" target="_blank" rel="nofollow">coloration</a>
+                                            <a class="hal-bgtext" href="/search/index/q/*/keyword_t/théorie%20des%20graphes" target="_blank" rel="nofollow">théorie des graphes</a>
+                                    </div>
+                    </div>
+
+    </div>
+
+
+    <div class="domains">
+        <h4> Domaines </h4>
+                                                                                    <a class="hal-bgtext" href="/search/index/q/*/level0_domain_s/info" rel="nofollow" target="_blank">Informatique [cs]</a>
+                                                                                <a class="hal-bgtext" href="/search/index/q/*/level1_domain_s/info.info-dm" rel="nofollow" target="_blank">Mathématique discrète [cs.DM]</a>
+                                                                                                                <a class="hal-bgtext" href="/search/index/q/*/level0_domain_s/math" rel="nofollow" target="_blank">Mathématiques [math]</a>
+                                                                                <a class="hal-bgtext" href="/search/index/q/*/level1_domain_s/math.math-co" rel="nofollow" target="_blank">Combinatoire [math.CO]</a>
+                                        </div>
+                        
+
+<button data-toggle="modal" data-docid="2083632" data-target="#metadatas_Modal"
+        aria-expanded="false" aria-controls="metadatas_Modal" class="btn hal-option-button metadatas" style="margin-top: 48px; width: 100%;">
+    Liste complète des métadonnées
+</button>
+
+<div class="modal fade" id="metadatas_Modal" data-backdrop=true tabindex="-1" aria-labelledby="metadatas_ModalLabel" aria-hidden="true" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+                        <div class="modal-body" id="metadata-body" style="padding: 0;"></div>
         </div>
     </div>
-<!-- ****************************
-              Footer
-****************************** -->
-    <footer role="contentinfo" class="footer footer-default">
-        <div class="row" style="margin:0">
-            <div class="col-sm-4 col-md-2">
-                <h5>Contact</h5>
-                <ul>
-                    <li>
-                        <a href="//doc.archives-ouvertes.fr/support" target="_blank" rel="noopener">Support</a>
-                    </li>
-                </ul>
+</div>                    </div>
+                </div>
+
+                         <div class="viewer panel-doc d-none d-sm-block">
+        <button data-toggle="collapse" data-docid="2083632" data-target="#viewer-detailed" aria-expanded="true" aria-controls="viewer-detailed" class="btn drop-down">
+            Fichiers et aperçu
+            <span class="icon-drop_down hal-icon" aria-hidden="true"></span>
+        </button>
+
+        <div id="viewer-detailed" class="panel-doc-detailed collapse show">
+            <div class="row">
+                <div class="col-md-2">
+                                                                                                                        
+                    <div id="list-thumbnail-viewer" style="text-align: center;">
+                                                                                                                                                                                                                                        <span class='file-major'>Fichier principal</span>
+                            <div class="thumbnail-viewer active" data-id="2086572" data-preview="https://theses.hal.science/tel-02083632v1/preview/these-mbonamy.pdf">
+                                <img alt="Vignette du fichier" src="//thumb.ccsd.cnrs.fr/8443294/medium" style="width: 100%;">
+                            </div>
+                            <span> these-mbonamy.pdf (1.37 Mo) </span>
+                            <a href="https://theses.hal.science/tel-02083632v1/file/these-mbonamy.pdf" download="these-mbonamy.pdf"><span class="icon-download" aria-hidden="true"></span><span class="sr-only">Télécharger le fichier</span> </a>
+                                                                </div>
+                </div>
+
+                <div class="col-md-9 pb-4">
+                                                                                                                                                                        
+                        <div class="viewer-content active" id="2086572">
+                                                            <iframe src="https://theses.hal.science/tel-02083632v1/preview/these-mbonamy.pdf#page=2" allowfullscreen webkitallowfullscreen></iframe>
+                                                                                                                    <span>Origine : Fichiers produits par l&#039;(les) auteur(s) </span><br/>
+                                                                                                            </div>
+                                                                    </div>
+            </div>         </div>     </div> 
+                    <div class="panel-doc references">
+        <button data-toggle="collapse" data-docid="2083632" data-target="#ref-detailed" aria-expanded="false" aria-controls="ref-detailed" class="btn drop-down">
+            Littérature citée
+            <small id="references-title"></small>
+            <span class="icon-drop_down hal-icon" aria-hidden="true"></span>
+        </button>
+        <div id="ref-detailed" class="collapse">
+            <div class="result p-4">
+                <div class="section-shadow stat-spinner">
+    <div class="spinner-border text-center" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
             </div>
-            <div class="col-sm-4 col-md-2">
-                <h5>Ressources</h5>
-                <ul>
-                    <li> <a href="//doc.archives-ouvertes.fr/" target="_blank" >Documentation</a> </li>
-                    <li> <a href="//doc.archives-ouvertes.fr/faq" target="_blank" > FAQ </a> </li>
-                    <li> <a href="https://api.archives-ouvertes.fr/docs" target="_blank" > API </a> </li>
-                    <li> <a href="https://api.archives-ouvertes.fr/docs/oai" target="_blank" > OAI-PMH </a> </li>
-                    <li> <a href="https://aurehal.archives-ouvertes.fr" target="_blank" > AuréHAL </a> </li>
-                </ul>
+        </div>
+    </div>
+
+
+                
+                                    </div>
+
+        <div class="submitted-date d-none d-sm-block">
+            <p>
+                                    <a rel="nofollow" href="/search/index/q/*/contributorId_i/180184" target="_blank">Marthe Bonamy</a>
+                                            &nbsp;:&nbsp;<a href='javascript:void(0);'
+                                        onclick="$('#form-login').submit();">Connectez-vous pour contacter le contributeur</a>
+                                                </p>
+            <p>https://theses.hal.science/tel-02083632</p>
+            <p>Soumis le :  vendredi 29 mars 2019-10:34:19</p>
+            <p>Dernière modification le :  vendredi 5 août 2022-15:02:53</p>
+                            <p>Archivage à long terme le :  dimanche 30 juin 2019-13:28:05</p>
+                    </div>
+    </section>
+
+    <section class="col-12 col-md-3 order-sm-1">
+                <div class="section-content section-shadow hal-visualize-button widget-files">
+            
+
+                        
+                <a href="https://theses.hal.science/tel-02083632v1/document" target="_blank">
+            <div class="file">
+                <span class="icon-download hal-icon" aria-hidden="true"></span>
+                <span>  Télécharger pour visualiser</span>
             </div>
-            <div class="col-sm-4 col-md-2">
-                <h5> Information</h5>
-                <ul>
-                    <li> <a href="/view/privacy">Données personnelles </a> </li>
-                    <li> <a href="/view/legalnotice">Mentions légales </a> </li>
-                    <li> <a href="</view/accessibilityHelp">Accessibilité</a> </li>
-                    <li> <a href="</view/conformiteRgaa" >Conformité RGAA</a> </li>
-                </ul>
+        </a>
+    
+        </div>
+                <div class="section-content section-shadow">
+            <h3> Dates et versions</h3>
+
+    <div class="bg-beige versions pt-1 pb-1">
+        <span>tel-02083632 ,</span>
+        <span><a href="tel-02083632v1"> version 1</a></span>
+        <span>(29-03-2019)</span>
+                    </div>
+                        <h3 style="margin-top: 10px;"> Identifiants</h3>
+<div class="identifier-list">
+    <ul>
+        <li> <span> HAL Id : </span>
+            <span> tel-02083632 , version 1 </span>
+        </li>
+
+                
+            </ul>
+
+</div>        </div>
+
+        
+
+        
+
+        
+        
+        <div class="section-content section-shadow">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3> Citer</h3>
+                <button id="citation-button" class="hal-option-button" style="padding: 6px 12px;"><span class="icon-copy"></span></button>
             </div>
-            <div class="col-sm-4 col-md-2">
-                <h5> Questions juridiques</h5>
-                <ul>
-                    <li> <a href="https://www.ouvrirlascience.fr/je-publie-quels-sont-mes-droits/" target="_blank" >Je publie, quels sont mes droits ?</a> </li>
-                    <li> <a href="https://v2.sherpa.ac.uk/romeo/" target="_blank" > Sherpa Romeo </a> </li>
-                </ul>
-            </div>
-            <div class="col-sm-4 col-md-2">
-                <h5> Portails </h5>
-                <ul>
-                    <li><a href="/browse/portal" >Liste des portails</a></li>
-                    <li><a href="//halshs.archives-ouvertes.fr" target="_blank" >HAL SHS</a></li>
-                    <li><a href="//tel.archives-ouvertes.fr" target="_blank" >HAL Thèses</a></li>
-                    <li><a href="//medihal.archives-ouvertes.fr" target="_blank" >mediHAL</a></li>
-                </ul>
-            </div>
-            <div class="col-sm-4 col-md-2">
-                <h5> CCSD </h5>
-                <ul>
-                    <li> <a href="//www.ccsd.cnrs.fr/" target="_blank" > CCSD </a> </li>
-                    <li> <a href="//www.episciences.org/" target="_blank" > episciences.org </a> </li>
-                    <li> <a href="//www.sciencesconf.org/" target="_blank" > sciencesconf.org </a> </li>
-                </ul>
+            <div class="bg-beige p-2" id="citation">
+                Marthe Bonamy. Global discharging methods for coloring problems in graphs. Discrete Mathematics [cs.DM]. Université de Montpellier, 2015. English. <a target="_blank" href="https://www.theses.fr/">&#x27E8;NNT : &#x27E9;</a>. <a target="_blank" href="https://theses.hal.science/tel-02083632">&#x27E8;tel-02083632&#x27E9;</a>
             </div>
         </div>
 
-    </footer>
+        
 
-    <script type="text/javascript">
-        window.addEventListener("DOMContentLoaded", () => {
-            $(document.body).tooltip({ selector: '[data-toggle="tooltip"]' , html: true, container: 'body'});
+        <div class="section-content section-shadow section-export">
+            <h3> Exporter</h3>
 
-            // Retrieve all buttons, convert it to an Array. Then for each button, if they have the attribute aria-expanded,
-            // set it to true or false if it's open or close
-            Array.prototype.slice.call(document.getElementsByTagName("button")).forEach(button => {
-                if (button.hasAttribute("aria-expanded")) {
-                    button.addEventListener("click", () => {
-                        if (button.getAttribute("aria-expanded") === "false") {
-                            button.setAttribute("aria-expanded", "true");
-                        } else {
-                            button.setAttribute("aria-expanded", "false");
-                        }
 
-                    })
-                }
-            })
 
-        });
-    </script>
-                <!-- Matomo -->
-<script>
+    <a class="hal-bgtext size-regular" href="/tel-02083632v1/bibtex" target="_blank" style="white-space: nowrap;">BibTeX</a>
+    <a class="hal-bgtext size-regular" href="/tel-02083632v1/tei" target="_blank" style="white-space: nowrap;">TEI</a>
+    <a class="hal-bgtext size-regular" href="/tel-02083632v1/dc" target="_blank" style="white-space: nowrap;">Dublin Core</a>
+    <a class="hal-bgtext size-regular" href="/tel-02083632v1/dcterms" target="_blank" style="white-space: nowrap;">DC Terms</a>
+    <a class="hal-bgtext size-regular" href="/tel-02083632v1/endnote" target="_blank" style="white-space: nowrap;">EndNote</a>
+    <a class="hal-bgtext size-regular" href="/tel-02083632v1/datacite" target="_blank" style="white-space: nowrap;">Datacite</a>
+        </div>
 
-	  var _paq = _paq || [];
-	  _paq.push(['trackPageView']);
-	  _paq.push(['enableLinkTracking']);
+                            <div class="section-content section-shadow section-collection">
+                <h3> Collections</h3>
+                <div>
+                                            <a class="hal-bgtext size-regular" href="/CNRS"
+                           target="_blank"> CNRS</a>
+                                            <a class="hal-bgtext size-regular" href="/INSMI"
+                           target="_blank"> INSMI</a>
+                                            <a class="hal-bgtext size-regular" href="/ALGCO"
+                           target="_blank"> ALGCO</a>
+                                            <a class="hal-bgtext size-regular" href="/LIRMM"
+                           target="_blank"> LIRMM</a>
+                                            <a class="hal-bgtext size-regular" href="/TDS-MACS"
+                           target="_blank"> TDS-MACS</a>
+                                            <a class="hal-bgtext size-regular" href="/MIPS"
+                           target="_blank"> MIPS</a>
+                                            <a class="hal-bgtext size-regular" href="/UNIV-MONTPELLIER"
+                           target="_blank"> UNIV-MONTPELLIER</a>
+                                    </div>
+            </div>
+                            <div class="section-content section-shadow" id="metrics">
+                    <div class="row">
+                    <div class="metrics-views col-6">
+            <span>
+                198
+            </span>
+                <span>Consultations</span>
+            </div>
+        
+                    <div class="metrics-views col-6">
+            <span>
+                692
+            </span>
+                <span>Téléchargements</span>
+            </div>
+            </div>
 
-	  (function() {
-		var u="//piwik-hal.ccsd.cnrs.fr/";
-		_paq.push(['setTrackerUrl', u+'matomo.php']);
-		_paq.push(['setSiteId', '21']);
-		
-		var secondaryTracker = '//piwik-hal.ccsd.cnrs.fr/matomo.php';var secondaryWebsiteId = 92;_paq.push(['addTracker', secondaryTracker, secondaryWebsiteId]);
-		
-		var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-		g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-	  })();
-  
+            </div>
+        
+        
 
+
+        <div class="section-content section-shadow">
+            <h3> Partager</h3>
+<!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+    <a class="a2a_button_google_gmail"></a><span class="sr-only"> Gmail </span>
+    <a class="a2a_button_facebook"></a><span class="sr-only"> Facebook </span>
+    <a class="a2a_button_twitter"></a><span class="sr-only"> Twitter </span>
+    <a class="a2a_button_linkedin"></a><span class="sr-only"> LinkedIn </span>
+    <a class="a2a_dd" href="https://www.addtoany.com/share"></a><span class="sr-only"> More </span>
+</div>
+<script async src="https://static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END -->        </div>
+
+    </section>
+
+</section>
+
+<div class="navbar-expand-lg">
+    
+    <div id="accordion-actions" class="collapse navbar-collapse">
+        <ul>
+                    </ul>
+            </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        linkifyElem ('.linkify');
+    });
 </script>
-<!-- End Matomo Code --><noscript><img src="//piwik-hal.ccsd.cnrs.fr//matomo.php?idsite=21&amp;rec=1"  style=" border:0;"  alt=""  /><img src="//piwik-hal.ccsd.cnrs.fr//matomo.php?idsite=92&amp;rec=1"  style=" border:0;"  alt=""  /></noscript></body>
+
+    </main>
+
+    
+<footer>
+    
+    <div class="row" style="margin:0">
+        <div class="col-sm-4 col-md-2">
+            <p> Contact </p>
+            <ul>
+                <li>
+                                    <a href="//doc.archives-ouvertes.fr/support" target="_blank" rel="noopener">Support</a>
+                                </li>
+            </ul>
+        </div>
+        <div class="col-sm-4 col-md-2">
+            <p> Ressources</p>
+            <ul>
+                <li> <a href="//doc.archives-ouvertes.fr/" target="_blank" > Documentation </a> </li>
+                <li> <a href="//doc.archives-ouvertes.fr/faq" target="_blank" > FAQ </a> </li>
+                <li> <a href="//api.archives-ouvertes.fr/docs" target="_blank" > API </a> </li>
+                <li> <a href="//api.archives-ouvertes.fr/docs/oai" target="_blank" > OAI-PMH </a> </li>
+                <li> <a href="//aurehal.archives-ouvertes.fr/" target="_blank" > AuréHAL </a> </li>
+            </ul>
+        </div>
+        <div class="col-sm-4 col-md-2">
+            <p> Informations</p>
+            <ul>
+                <li> <a href="/view/privacy"> Données personnelles </a> </li>
+                <li> <a href="/view/legalnotice"> Mentions légales </a> </li>
+                <li> <a href="/view/accessibilityHelp"> Accessibilité </a> </li>
+                <li> <a href="/view/conformiteRgaa" > Conformité RGAA </a> </li>
+            </ul>
+        </div>
+        <div class="col-sm-4 col-md-2">
+            <p> Questions juridiques </p>
+            <ul>
+                <li> <a href="https://www.ouvrirlascience.fr/je-publie-quels-sont-mes-droits/" target="_blank" > Je publie, quels sont mes droits ? </a> </li>
+                <li> <a href="https://www.ouvrirlascience.fr/guide-application-loi-republique-numerique-article-30-ecrits-scientifiques-version-courte/" target="_blank" > Loi pour une République numérique </a> </li>
+                <li> <a href="https://www.ouvrirlascience.fr/wp-content/uploads/2022/07/Guide_non_cession_des_droits_web.pdf" target="_blank" > Stratégie de non-cession des droits </a> </li>
+                <li> <a href="https://v2.sherpa.ac.uk/romeo/" target="_blank" > SHERPA/RoMEO </a> </li>
+            </ul>
+        </div>
+        <div class="col-sm-4 col-md-2">
+            <p> Portails </p>
+            <ul>
+                <li><a href="https://hal.archives-ouvertes.fr/browse/portal" target="_blank"> Portails institutionnels </a></li>
+                <li><a href="//hal.archives-ouvertes.fr" target="_blank" >HAL</a></li>
+                <li><a href="//halshs.archives-ouvertes.fr" target="_blank" >HAL SHS</a></li>
+                <li><a href="//tel.archives-ouvertes.fr" target="_blank" >HAL Thèses</a></li>
+                <li><a href="//medihal.archives-ouvertes.fr" target="_blank" >MédiHAL</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-4 col-md-2">
+            <p> CCSD </p>
+            <ul>
+                <li> <a href="//www.ccsd.cnrs.fr/" target="_blank" > CCSD </a> </li>
+                <li> <a href="//www.episciences.org/" target="_blank" > Episciences </a> </li>
+                <li> <a href="//www.sciencesconf.org/" target="_blank" > Sciencesconf </a> </li>
+            </ul>
+        </div>
+    </div>
+</footer>
+</body>
 </html>
