@@ -36,7 +36,6 @@ key_conversion = [
     KeyConversionPair("container-title", [{"key": "journal", "action": None}]),
     KeyConversionPair("PMID", [
         {"key": "pmid", "action": None},
-        {"key": "ref", "action": lambda x: "pmid{}".format(x)}
         ]),
     KeyConversionPair("ISSN", [{"key": "issn", "action": None}]),
     KeyConversionPair("DOI", [{"key": "doi", "action": None}]),
