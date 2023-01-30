@@ -118,8 +118,14 @@ class Downloader(papis.importer.Importer):
             if bib_rawdata:
                 datalist = papis.bibtex.bibtex_to_dict(bib_rawdata)
                 if datalist:
-                    self.logger.info("Merging data from bibtex")
+                    if len(datalist) > 1:
+                        self.logger.warning(
+                            "'%s' found %d BibTeX entries. Picking first one.",
+                            self.name, len(datalist))
+
+                    self.logger.info("Merging data from BibTeX")
                     self.ctx.data.update(datalist[0])
+
         # try getting doi
         try:
             doi = self.get_doi()
