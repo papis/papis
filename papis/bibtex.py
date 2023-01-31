@@ -190,14 +190,22 @@ def bibtexparser_entry_to_papis(entry: Dict[str, str]) -> Dict[str, str]:
     :param entry: Dictionary with keys of bibtexparser format.
     :returns: Dictionary with keys of papis format.
     """
+    from bibtexparser.latexenc import latex_to_unicode
 
     _k = papis.document.KeyConversionPair
     key_conversion = [
+        _k("ID", [{"key": "ref", "action": lambda x: None}]),
         _k("ENTRYTYPE", [{"key": "type", "action": None}]),
         _k("link", [{"key": "url", "action": None}]),
+        _k("title", [{
+            "key": "title",
+            "action": lambda x: latex_to_unicode(x.replace("\n", " "))
+            }]),
         _k("author", [{
-            "key": "author_list", "action":
-                lambda author: papis.document.split_authors_name([author])
+            "key": "author_list",
+            "action": lambda author: papis.document.split_authors_name([
+                latex_to_unicode(author)
+                ])
             }]),
     ]
 
