@@ -1,6 +1,7 @@
 import re
 from typing import Optional, Tuple, Dict
 
+import papis.utils
 import papis.downloaders.base
 
 
@@ -39,20 +40,15 @@ class Downloader(papis.downloaders.Downloader):
         return bibtex_url, data
 
     def download_bibtex(self) -> None:
-        import urllib.parse
-        import urllib.request
+        url, params = self._get_bibtex_url()
+        self.logger.debug("bibtex url = '%s'", url)
 
-        bib_url, values = self._get_bibtex_url()
-        post_data = urllib.parse.urlencode(values).encode("ascii")
+        session = papis.utils.get_session()
+        response = session.get(url, params=params)
+        if not response.ok:
+            return
 
-        self.logger.debug("bibtex url = '%s'", bib_url)
-
-        req = urllib.request.Request(bib_url, post_data)
-        with urllib.request.urlopen(req) as response:
-            data = response.read()
-            text = data.decode("utf-8")
-            text = text.replace("<br>", "")
-            self.bibtex_data = text
+        self.bibtex_data = response.content.decode().replace("<br>", "")
 
     def get_document_url(self) -> Optional[str]:
         identifier = self.get_identifier()

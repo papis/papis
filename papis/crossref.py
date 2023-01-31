@@ -400,8 +400,7 @@ class Importer(papis.importer.Importer):
                 response = session.get(doc_url, allow_redirects=True)
                 kind = filetype.guess(response.content)
 
-                import requests
-                if response.status_code != requests.codes.ok:
+                if not response.ok:
                     self.logger.info("Could not download document. "
                                      "HTTP status: %s (%d)",
                                      response.reason, response.status_code)

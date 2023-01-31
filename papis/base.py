@@ -10,51 +10,67 @@ from typing import Optional, Dict, Any, List, Callable, NamedTuple
 
 import click
 
+import papis.utils
 import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
+# NOTE: the BASE API is documented at
+#   https://www.base-search.net/about/download/base_interface.pdf
+BASE_API_URL = "https://api.base-search.net/cgi-bin/BaseHttpSearchInterface.fcgi/"
 
-def get_data(query: str = "", hits: int = 20) -> List[Dict[str, Any]]:
-    base_baseurl = (
-        "https://api.base-search.net/"
-        "cgi-bin/BaseHttpSearchInterface.fcgi/"
-    )
+BASE_MAX_HITS = 120
+BASE_MAX_QUERY_LENGTH = 1000
 
-    logger.warning("BASE engine in papis is experimental")
 
-    if hits > 125:
-        logger.error("BASE only allows a maximum of 125 hits, got %d hits", hits)
-        hits = 125
+def get_data(
+        query: str = "",
+        hits: int = 10,
+        boost: bool = False) -> List[Dict[str, Any]]:
+    """
+    :param query: a query string to pass to the BASE search API
+        (maximum 1000 characters).
+    :param hits: maximum number of returned results
+        (maximum 120).
+    :param boost: push open access documents upwards in the results.
+    """
+    logger.warning("BASE engine in papis is experimental!")
 
-    dict_params = {
-        "func": "PerformSearch",
-        "query": query,
-        "format": "json",
-        "hits": hits,
-    }
+    if hits > BASE_MAX_HITS:
+        logger.error("BASE only allows a maximum of %d hits (got %d hits).",
+                     BASE_MAX_HITS, hits)
+        hits = BASE_MAX_HITS
 
-    import urllib.parse
-    params = urllib.parse.urlencode(
-        {x: dict_params[x] for x in dict_params if dict_params[x]}
-    )
-    req_url = base_baseurl + "search?" + params
-    logger.debug("url = '%s'", req_url)
+    if len(query) > BASE_MAX_QUERY_LENGTH:
+        logger.error("BASE only allows queries of maximum %d characters (got %d).",
+                     BASE_MAX_QUERY_LENGTH, len(query))
+        query = query[:BASE_MAX_QUERY_LENGTH]
 
-    import urllib.request
-    url = urllib.request.Request(
-        req_url,
-        headers={
-            "User-Agent": "papis"
-        }
-    )
+    session = papis.utils.get_session()
+    response = session.get(
+        BASE_API_URL,
+        params={
+            "func": "PerformSearch",
+            "query": query if query else None,
+            "format": "json",
+            "hits": str(hits),
+            "boost": "oa" if boost else None,
+        })
 
-    import json
-    jsondoc = json.loads(urllib.request.urlopen(url).read().decode())
-    docs = jsondoc.get("response").get("docs")
+    if not response.ok:
+        logger.error("An HTTP error (%d %s) was encountered for query: '%s'.",
+                     response.status_code, response.reason, query)
+        return []
 
-    logger.info("Retrieved %d documents", len(docs))
-    return list(map(basedoc_to_papisdoc, docs))
+    jsondoc = response.json()
+    if "response" not in jsondoc:
+        logger.error("Error querying BASE API: '%s'.", jsondoc["error"])
+        return []
+
+    docs = jsondoc["response"]["docs"]
+
+    logger.info("Retrieved %d documents.", len(docs))
+    return [basedoc_to_papisdoc(doc) for doc in docs]
 
 
 def basedoc_to_papisdoc(basedoc: Dict[str, Any]) -> Dict[str, Any]:

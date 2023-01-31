@@ -69,17 +69,9 @@ def is_valid_pmid(pmid: str) -> bool:
     if not pmid.isdigit():
         return False
 
-    import urllib
-    url = PUBMED_URL.format(pmid=pmid, database=PUBMED_DATABASE)
-    request = urllib.request.Request(url)
-
-    from urllib.error import HTTPError, URLError
-    try:
-        urllib.request.urlopen(request)
-    except (HTTPError, URLError):
-        return False
-
-    return True
+    session = papis.utils.get_session()
+    response = session.get(PUBMED_URL.format(pmid=pmid, database=PUBMED_DATABASE))
+    return response.ok
 
 
 def get_data(query: str = "") -> Dict[str, Any]:
