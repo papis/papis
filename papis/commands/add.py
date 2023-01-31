@@ -296,6 +296,13 @@ def run(paths: List[str],
 
     tmp_document = papis.document.Document(temp_dir)
 
+    # reference building
+    # NOTE: this needs to go before any papis.format calls, so that those can
+    # potentially use the 'ref' key in the formatted strings.
+    if "ref" not in data:
+        data["ref"] = papis.bibtex.create_reference(data)
+        logger.info("Created reference '%s'", data["ref"])
+
     if base_path is None:
         base_path = os.path.expanduser(papis.config.get_lib_dirs()[0])
     out_folder_path = base_path
@@ -377,11 +384,6 @@ def run(paths: List[str],
             shutil.copy(in_file_path, tmp_end_filepath)
 
     data["files"] = new_file_list
-
-    # reference building
-    if "ref" not in data:
-        data["ref"] = papis.bibtex.create_reference(data)
-        logger.info("Created reference '%s'", data["ref"])
 
     tmp_document.update(data)
     tmp_document.save()
