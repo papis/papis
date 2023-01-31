@@ -1,6 +1,6 @@
 import os
 import configparser
-from typing import Dict, Any, List, Optional, Callable  # noqa: ignore
+from typing import Dict, Any, List, Optional, Callable  # noqa: F401
 
 import papis.exceptions
 import papis.library

@@ -81,17 +81,6 @@ class Downloader(papis.importer.Importer):
         self.bibtex_data = None  # type: Optional[str]
         self.document_data = None  # type: Optional[bytes]
 
-        import requests
-        self.session = requests.Session()  # type: requests.Session
-        self.session.headers = requests.structures.CaseInsensitiveDict({
-            "User-Agent": papis.config.getstring("user-agent")
-        })
-        proxy = papis.config.get("downloader-proxy")
-        if proxy is not None:
-            self.session.proxies = {
-                "http": proxy,
-                "https": proxy,
-            }
         self.cookies = cookies
 
     def fetch_data(self) -> None:
@@ -162,7 +151,8 @@ class Downloader(papis.importer.Importer):
 
     def _get_body(self) -> bytes:
         """Get body of the uri, this is also important for unittesting"""
-        return self.session.get(self.uri).content
+        session = papis.utils.get_session()
+        return session.get(self.uri, cookies=self.cookies).content
 
     def _get_soup(self) -> "bs4.BeautifulSoup":
         """Get body of the uri, this is also important for unittesting"""
@@ -208,9 +198,11 @@ class Downloader(papis.importer.Importer):
         url = self.get_bibtex_url()
         if not url:
             return
-        res = self.session.get(url, cookies=self.cookies)
         self.logger.info("Downloading bibtex from '%s'", url)
-        self.bibtex_data = res.content.decode()
+
+        session = papis.utils.get_session()
+        response = session.get(url, cookies=self.cookies)
+        self.bibtex_data = response.content.decode()
 
     def get_document_url(self) -> Optional[str]:
         """It returns the urls that is to be access to download
@@ -259,8 +251,10 @@ class Downloader(papis.importer.Importer):
         if not url:
             return
         self.logger.info("Downloading file from '%s'", url)
-        res = self.session.get(url, cookies=self.cookies)
-        self.document_data = res.content
+
+        session = papis.utils.get_session()
+        response = session.get(url, cookies=self.cookies)
+        self.document_data = response.content
 
     def check_document_format(self) -> bool:
         """Check if the downloaded document has the filetype that the

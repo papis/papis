@@ -2,6 +2,7 @@ import os
 import re
 from typing import Any, ClassVar, Dict, Optional
 
+import papis.utils
 import papis.document
 import papis.downloaders
 
@@ -47,7 +48,8 @@ class Downloader(papis.downloaders.Downloader):
                 else None)
 
     def _get_raw_data(self) -> bytes:
-        response = self.session.get(
+        session = papis.utils.get_session()
+        response = session.get(
             self.API_URL,
             params={"paper_id": self.pid},
             headers={"token": "undefined", "referer": self.uri},

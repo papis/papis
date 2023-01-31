@@ -1,6 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 import papis
+import papis.utils
 import papis.importer
 import papis.document
 import papis.downloaders.base
@@ -84,15 +85,11 @@ def is_valid_pmid(pmid: str) -> bool:
 def get_data(query: str = "") -> Dict[str, Any]:
     # NOTE: being nice and using the project version as a user agent
     # as requested in https://api.ncbi.nlm.nih.gov/lit/ctxp
-    import requests
-    headers = requests.structures.CaseInsensitiveDict({
-        "user-agent": "papis/{}".format(papis.__version__)
-        })
-
-    session = requests.Session()
-    session.headers = headers       # type: ignore[assignment]
-    response = session.get(PUBMED_URL.format(
-        pmid=query.strip(), database=PUBMED_DATABASE))
+    session = papis.utils.get_session()
+    response = session.get(
+        PUBMED_URL.format(pmid=query.strip(), database=PUBMED_DATABASE),
+        headers={"user-agent": "papis/{}".format(papis.__version__)},
+        )
 
     import json
     return pubmed_data_to_papis_data(json.loads(response.content.decode()))
