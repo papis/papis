@@ -395,17 +395,12 @@ class Importer(papis.importer.Importer):
                 self.logger.info(
                     "Trying to download document from '%s'", doc_url)
 
-                import requests
-                session = requests.Session()
-
-                import requests.structures
-                session.headers = requests.structures.CaseInsensitiveDict({
-                    "user-agent": papis.config.getstring("user-agent")})
-
                 import filetype
+                session = papis.utils.get_session()
                 response = session.get(doc_url, allow_redirects=True)
                 kind = filetype.guess(response.content)
 
+                import requests
                 if response.status_code != requests.codes.ok:
                     self.logger.info("Could not download document. "
                                      "HTTP status: %s (%d)",

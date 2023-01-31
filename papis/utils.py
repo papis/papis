@@ -4,7 +4,7 @@ import re
 import pathlib
 from itertools import count, product
 from typing import (Optional, List, Iterator, Any, Dict,
-                    Union, Callable, TypeVar)
+                    Union, Callable, TypeVar, TYPE_CHECKING)
 
 try:
     import multiprocessing.synchronize  # noqa: F401
@@ -24,8 +24,34 @@ import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
+if TYPE_CHECKING:
+    import requests
+
 A = TypeVar("A")
 B = TypeVar("B")
+
+_REQUESTS_SESSION = None    # type: Optional[requests.Session]
+
+
+def get_session() -> "requests.Session":
+    global _REQUESTS_SESSION
+
+    if _REQUESTS_SESSION is None:
+        import requests
+        session = requests.Session()
+        session.headers.update({
+            "User-Agent": papis.config.getstring("user-agent"),
+        })
+
+        proxy = papis.config.get("downloader-proxy")
+        if proxy is not None:
+            session.proxies = {
+                "http": proxy,
+                "https": proxy,
+            }
+        _REQUESTS_SESSION = session
+
+    return _REQUESTS_SESSION
 
 
 def has_multiprocessing() -> bool:
