@@ -22,10 +22,11 @@ from typing import Optional, List, Dict, Any
 
 import click
 
-import papis.filetype
-import papis.downloaders.base
 import papis.config
+import papis.downloaders.base
+import papis.filetype
 import papis.logging
+import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 
@@ -65,29 +66,18 @@ def get_data(
     )
     logger.debug("query = '%s'", search_query)
 
-    import urllib.parse
-    params = urllib.parse.urlencode(
-        {
+    session = papis.utils.get_session()
+    response = session.get(
+        ARXIV_API_URL,
+        params={
             "search_query": search_query,
-            "start": page,
-            "max_results": max_results
-        }
-    )
-    req_url = "{}?{}".format(ARXIV_API_URL, params)
-    logger.debug("url = '%s'", req_url)
-
-    import urllib.request
-    url = urllib.request.Request(
-        req_url,
-        headers={
-            "User-Agent": papis.config.getstring("user-agent")
-        }
-    )
-    xmldoc = urllib.request.urlopen(url).read()
+            "start": str(page),
+            "max_results": str(max_results),
+        })
 
     import bs4
     soup = bs4.BeautifulSoup(
-        xmldoc,
+        response.content,
         features="html.parser" if sys.version_info.minor < 6 else "lxml-xml")
 
     entries = soup.find_all("entry")
@@ -112,17 +102,13 @@ def get_data(
 
 
 def validate_arxivid(arxivid: str) -> None:
-    import urllib.request
-    url = "{}/{}".format(ARXIV_ABS_URL, arxivid)
-    request = urllib.request.Request(url)
+    session = papis.utils.get_session()
 
-    from urllib.error import HTTPError, URLError
-    try:
-        urllib.request.urlopen(request)
-    except HTTPError:
-        raise ValueError("HTTP 404: '{}' not an arxivid".format(arxivid))
-    except URLError:
-        pass
+    response = session.get("{}/{}".format(ARXIV_ABS_URL, arxivid))
+    if not response.ok:
+        raise ValueError(
+            "HTTP {}: '{}' not an arxivid".format(response.status_code, arxivid)
+            )
 
 
 def pdf_to_arxivid(

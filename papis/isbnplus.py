@@ -59,13 +59,12 @@ An example of successful returns:
     </book>
     ...
 """
-import urllib.parse
-import urllib.request
 from typing import List, Dict, Any
 
 import click
 import bs4
 
+import papis.utils
 import papis.config
 import papis.document
 import papis.logging
@@ -89,38 +88,29 @@ def get_data(query: str = "",
              app_key: str = ISBNPLUS_KEY
              ) -> List[Dict[str, Any]]:
     """Get documents from isbnplus"""
+    session = papis.utils.get_session()
+    response = session.get(
+        "{}/search".format(ISBNPLUS_BASEURL),
+        params={
+            "q": query if query else None,
+            "p": str(page),
+            "a": author if author else None,
+            "c": category if category else None,
+            "s": series if series else None,
+            "t": title if title else None,
+            "order": order,
+            "app_id": app_id,
+            "app_key": app_key
+        })
+    if not response.ok:
+        logger.error("An HTTP error (%d %s) was encountered for query: '%s'",
+                     response.status_code, response.reason, query)
+        return []
 
-    results = []
-    dict_params = {
-        "q": query,
-        "p": page,
-        "a": author,
-        "c": category,
-        "s": series,
-        "t": title,
-        "order": order,
-        "app_id": app_id,
-        "app_key": app_key
-    }
-    params = urllib.parse.urlencode({x: v
-                                     for x, v in dict_params.items()
-                                     if v})
-    req_url = ISBNPLUS_BASEURL + "search?" + params
-    logger.debug("url = '%s'", req_url)
-    url = urllib.request.Request(
-        req_url,
-        headers={"User-Agent": papis.config.getstring("user-agent")}
-    )
-
-    with urllib.request.urlopen(url) as req:
-        xmldoc = req.read()
-
-    root = bs4.BeautifulSoup(xmldoc, "html.parser")
-
-    for book in root.find_all("book"):
-        book_data = book_to_data(book)
-        results.append(book_data)
+    root = bs4.BeautifulSoup(response.content, "html.parser")
+    results = [book_to_data(book) for book in root.find_all("book")]
     logger.debug("%d records retrieved", len(results))
+
     return results
 
 
