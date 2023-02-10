@@ -53,8 +53,9 @@ def get_data(query: str = "") -> List[Dict[str, Any]]:
     Get data using the dissemin API
     https://dissem.in/api/search/?q=pregroup
     """
-    session = papis.utils.get_session()
-    response = session.get(DISSEMIN_API_URL, params={"q": query})
+    with papis.utils.get_session() as session:
+        response = session.get(DISSEMIN_API_URL, params={"q": query})
+
     if not response.ok:
         logger.error("An HTTP error (%d %s) was encountered for query: '%s'",
                      response.status_code, response.reason, query)

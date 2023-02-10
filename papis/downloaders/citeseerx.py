@@ -48,8 +48,7 @@ class Downloader(papis.downloaders.Downloader):
                 else None)
 
     def _get_raw_data(self) -> bytes:
-        session = papis.utils.get_session()
-        response = session.get(
+        response = self.session.get(
             self.API_URL,
             params={"paper_id": self.pid},
             headers={"token": "undefined", "referer": self.uri},

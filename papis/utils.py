@@ -30,28 +30,21 @@ if TYPE_CHECKING:
 A = TypeVar("A")
 B = TypeVar("B")
 
-_REQUESTS_SESSION = None    # type: Optional[requests.Session]
-
 
 def get_session() -> "requests.Session":
-    global _REQUESTS_SESSION
+    import requests
+    session = requests.Session()
+    session.headers.update({
+        "User-Agent": papis.config.getstring("user-agent"),
+    })
 
-    if _REQUESTS_SESSION is None:
-        import requests
-        session = requests.Session()
-        session.headers.update({
-            "User-Agent": papis.config.getstring("user-agent"),
-        })
-
-        proxy = papis.config.get("downloader-proxy")
-        if proxy is not None:
-            session.proxies = {
-                "http": proxy,
-                "https": proxy,
-            }
-        _REQUESTS_SESSION = session
-
-    return _REQUESTS_SESSION
+    proxy = papis.config.get("downloader-proxy")
+    if proxy is not None:
+        session.proxies = {
+            "http": proxy,
+            "https": proxy,
+        }
+    return session
 
 
 def has_multiprocessing() -> bool:
