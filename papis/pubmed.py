@@ -69,19 +69,20 @@ def is_valid_pmid(pmid: str) -> bool:
     if not pmid.isdigit():
         return False
 
-    session = papis.utils.get_session()
-    response = session.get(PUBMED_URL.format(pmid=pmid, database=PUBMED_DATABASE))
+    with papis.utils.get_session() as session:
+        response = session.get(PUBMED_URL.format(pmid=pmid, database=PUBMED_DATABASE))
+
     return response.ok
 
 
 def get_data(query: str = "") -> Dict[str, Any]:
     # NOTE: being nice and using the project version as a user agent
     # as requested in https://api.ncbi.nlm.nih.gov/lit/ctxp
-    session = papis.utils.get_session()
-    response = session.get(
-        PUBMED_URL.format(pmid=query.strip(), database=PUBMED_DATABASE),
-        headers={"user-agent": "papis/{}".format(papis.__version__)},
-        )
+    with papis.utils.get_session() as session:
+        response = session.get(
+            PUBMED_URL.format(pmid=query.strip(), database=PUBMED_DATABASE),
+            headers={"user-agent": "papis/{}".format(papis.__version__)},
+            )
 
     import json
     return pubmed_data_to_papis_data(json.loads(response.content.decode()))

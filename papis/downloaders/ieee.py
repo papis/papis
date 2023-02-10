@@ -43,8 +43,7 @@ class Downloader(papis.downloaders.Downloader):
         url, params = self._get_bibtex_url()
         self.logger.debug("bibtex url = '%s'", url)
 
-        session = papis.utils.get_session()
-        response = session.get(url, params=params)
+        response = self.session.get(url, params=params)
         if not response.ok:
             return
 

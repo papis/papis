@@ -46,16 +46,16 @@ def get_data(
                      BASE_MAX_QUERY_LENGTH, len(query))
         query = query[:BASE_MAX_QUERY_LENGTH]
 
-    session = papis.utils.get_session()
-    response = session.get(
-        BASE_API_URL,
-        params={
-            "func": "PerformSearch",
-            "query": query if query else None,
-            "format": "json",
-            "hits": str(hits),
-            "boost": "oa" if boost else None,
-        })
+    with papis.utils.get_session() as session:
+        response = session.get(
+            BASE_API_URL,
+            params={
+                "func": "PerformSearch",
+                "query": query if query else None,
+                "format": "json",
+                "hits": str(hits),
+                "boost": "oa" if boost else None,
+            })
 
     if not response.ok:
         logger.error("An HTTP error (%d %s) was encountered for query: '%s'.",

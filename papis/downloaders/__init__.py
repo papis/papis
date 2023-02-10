@@ -76,12 +76,16 @@ class Downloader(papis.importer.Importer):
 
         self.expected_document_extension = expected_document_extension
         self.priority = priority
+        self.session = papis.utils.get_session()
         self._soup = None  # type: Optional[bs4.BeautifulSoup]
 
         self.bibtex_data = None  # type: Optional[str]
         self.document_data = None  # type: Optional[bytes]
 
         self.cookies = cookies
+
+    def __del__(self) -> None:
+        self.session.close()
 
     def fetch_data(self) -> None:
         """
@@ -151,8 +155,7 @@ class Downloader(papis.importer.Importer):
 
     def _get_body(self) -> bytes:
         """Get body of the uri, this is also important for unittesting"""
-        session = papis.utils.get_session()
-        return session.get(self.uri, cookies=self.cookies).content
+        return self.session.get(self.uri, cookies=self.cookies).content
 
     def _get_soup(self) -> "bs4.BeautifulSoup":
         """Get body of the uri, this is also important for unittesting"""
@@ -200,8 +203,7 @@ class Downloader(papis.importer.Importer):
             return
         self.logger.info("Downloading bibtex from '%s'", url)
 
-        session = papis.utils.get_session()
-        response = session.get(url, cookies=self.cookies)
+        response = self.session.get(url, cookies=self.cookies)
         self.bibtex_data = response.content.decode()
 
     def get_document_url(self) -> Optional[str]:
@@ -252,8 +254,7 @@ class Downloader(papis.importer.Importer):
             return
         self.logger.info("Downloading file from '%s'", url)
 
-        session = papis.utils.get_session()
-        response = session.get(url, cookies=self.cookies)
+        response = self.session.get(url, cookies=self.cookies)
         self.document_data = response.content
 
     def check_document_format(self) -> bool:

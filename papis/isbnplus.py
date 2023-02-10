@@ -88,20 +88,21 @@ def get_data(query: str = "",
              app_key: str = ISBNPLUS_KEY
              ) -> List[Dict[str, Any]]:
     """Get documents from isbnplus"""
-    session = papis.utils.get_session()
-    response = session.get(
-        "{}/search".format(ISBNPLUS_BASEURL),
-        params={
-            "q": query if query else None,
-            "p": str(page),
-            "a": author if author else None,
-            "c": category if category else None,
-            "s": series if series else None,
-            "t": title if title else None,
-            "order": order,
-            "app_id": app_id,
-            "app_key": app_key
-        })
+    with papis.utils.get_session() as session:
+        response = session.get(
+            "{}/search".format(ISBNPLUS_BASEURL),
+            params={
+                "q": query if query else None,
+                "p": str(page),
+                "a": author if author else None,
+                "c": category if category else None,
+                "s": series if series else None,
+                "t": title if title else None,
+                "order": order,
+                "app_id": app_id,
+                "app_key": app_key
+            })
+
     if not response.ok:
         logger.error("An HTTP error (%d %s) was encountered for query: '%s'",
                      response.status_code, response.reason, query)

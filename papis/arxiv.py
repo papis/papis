@@ -66,14 +66,14 @@ def get_data(
     )
     logger.debug("query = '%s'", search_query)
 
-    session = papis.utils.get_session()
-    response = session.get(
-        ARXIV_API_URL,
-        params={
-            "search_query": search_query,
-            "start": str(page),
-            "max_results": str(max_results),
-        })
+    with papis.utils.get_session() as session:
+        response = session.get(
+            ARXIV_API_URL,
+            params={
+                "search_query": search_query,
+                "start": str(page),
+                "max_results": str(max_results),
+            })
 
     import bs4
     soup = bs4.BeautifulSoup(
@@ -102,9 +102,9 @@ def get_data(
 
 
 def validate_arxivid(arxivid: str) -> None:
-    session = papis.utils.get_session()
+    with papis.utils.get_session() as session:
+        response = session.get("{}/{}".format(ARXIV_ABS_URL, arxivid))
 
-    response = session.get("{}/{}".format(ARXIV_ABS_URL, arxivid))
     if not response.ok:
         raise ValueError(
             "HTTP {}: '{}' not an arxivid".format(response.status_code, arxivid)

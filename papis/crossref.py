@@ -396,10 +396,10 @@ class Importer(papis.importer.Importer):
                     "Trying to download document from '%s'", doc_url)
 
                 import filetype
-                session = papis.utils.get_session()
-                response = session.get(doc_url, allow_redirects=True)
-                kind = filetype.guess(response.content)
+                with papis.utils.get_session() as session:
+                    response = session.get(doc_url, allow_redirects=True)
 
+                kind = filetype.guess(response.content)
                 if not response.ok:
                     self.logger.info("Could not download document. "
                                      "HTTP status: %s (%d)",

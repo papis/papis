@@ -1,7 +1,6 @@
 import re
 from typing import Optional
 
-import papis.utils
 import papis.downloaders.base
 
 
@@ -41,8 +40,7 @@ class Downloader(papis.downloaders.Downloader):
         import bs4
 
         # TODO: Simplify this function for typing
-        session = papis.utils.get_session()
-        raw_data = session.get(self.uri).content.decode("utf-8")
+        raw_data = self.session.get(self.uri).content.decode("utf-8")
         soup = bs4.BeautifulSoup(raw_data, "html.parser")
         a = list(filter(
             lambda t: re.match(r".*en ligne.*", t.text),
@@ -54,7 +52,7 @@ class Downloader(papis.downloaders.Downloader):
             return None
 
         second_url = a[0]["href"]
-        raw_data = session.get(second_url).content.decode("utf-8")
+        raw_data = self.session.get(second_url).content.decode("utf-8")
         soup = bs4.BeautifulSoup(raw_data, "html.parser")
         a = list(filter(
             lambda t: re.match(r".*pdf$", t.get("href", "")),
