@@ -1,17 +1,64 @@
-import papis.document
+import pytest
+
 import papis.format
 import papis.config
-from tests import setup_test_library
+import papis.document
+
+import tests.downloaders as testlib
 
 
-def test_basic():
-    setup_test_library()
-    document = papis.document.from_data(
-        dict(author="Fulano", title="Something"))
+@testlib.with_default_config
+def test_python_formater(monkeypatch):
+    papis.config.set("formater", "python")
 
-    assert papis.format.format(
-        "{doc[author]}{doc[title]}", document) == "FulanoSomething"
-    assert papis.format.format(
-        "{doc[author]}{doc[title]}{doc[blahblah]}", document) == "FulanoSomething"
-    assert papis.format.format(
-        "{doc[author]}{doc[title]}{doc[blahblah]}", {"title": "hell"}) == "hell"
+    with monkeypatch.context() as m:
+        m.setattr(papis.format, "_FORMATER", None)
+
+        document = papis.document.from_data({"author": "Fulano", "title": "A New Hope"})
+        assert (
+            papis.format.format("{doc[author]}: {doc[title]}", document)
+            == "Fulano: A New Hope")
+        assert (
+            papis.format.format("{doc[author]}:\\n\\t{doc[title]}", document)
+            == "Fulano:\n\tA New Hope")
+        assert (
+            papis.format.format(
+                "{doc[author]}: {doc[title]} - {doc[blahblah]}",
+                document)
+            == "Fulano: A New Hope - ")
+
+        document = {"title": "The Phantom Menace"}
+        assert (
+            papis.format.format(
+                "{doc[author]}: {doc[title]} ({doc[blahblah]})",
+                document)
+            == ": The Phantom Menace ()")
+
+
+@testlib.with_default_config
+def test_jinja_formater(monkeypatch):
+    pytest.importorskip("jinja2")
+    papis.config.set("formater", "jinja2")
+
+    with monkeypatch.context() as m:
+        m.setattr(papis.format, "_FORMATER", None)
+
+        document = papis.document.from_data({"author": "Fulano", "title": "A New Hope"})
+        assert (
+            papis.format.format("{{ doc.author }}: {{ doc.title }}", document)
+            == "Fulano: A New Hope")
+        assert (
+            papis.format.format("{{ doc. author }}:\\n\\t{{ doc.title }}", document)
+            == "Fulano:\n\tA New Hope")
+        assert (
+            papis.format.format(
+                "{{ doc.author }}: {{ doc.title }} - {{ doc.blahblah }}",
+                document)
+            == "Fulano: A New Hope - ")
+
+        document = {"title": "The Phantom Menace"}
+        assert (
+            papis.format.format(
+                "{{ doc.author }}: {{ doc.title }} ({{ doc.blahblah }})",
+                document)
+            == ": The Phantom Menace ()")
