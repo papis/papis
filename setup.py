@@ -263,7 +263,6 @@ setup(
             "crossref=papis.crossref:explorer",
             "dblp=papis.dblp:explorer",
             "dissemin=papis.dissemin:explorer",
-            "base=papis.base:explorer",
             "export=papis.commands.export:explorer",
             "isbn=papis.isbn:explorer",
             "isbnplus=papis.isbnplus:explorer",
