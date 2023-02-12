@@ -265,7 +265,6 @@ setup(
             "dissemin=papis.dissemin:explorer",
             "export=papis.commands.export:explorer",
             "isbn=papis.isbn:explorer",
-            "isbnplus=papis.isbnplus:explorer",
             "yaml=papis.yaml:explorer",
             "json=papis.json:explorer",
             "bibtex=papis.bibtex:explorer",
