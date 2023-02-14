@@ -403,17 +403,15 @@ def run(paths: List[str],
     except IndexError:
         logger.info("No document matching found already in the library")
     else:
-        logger.warning("{c.Fore.RED}DUPLICATION WARNING{c.Style.RESET_ALL}")
+        logger.warning("Duplication Warning")
         logger.warning(
-            "A document in the library seems to match the added one.")
+            "A document in the library seems to match the one to be added.")
         logger.warning(
-            "(Hint) Use the 'papis update' command to just update the info.")
+            "Hint: Use the 'papis update' command to update an existing document.")
+        logger.warning("The following document is already in your library:")
 
-        papis.tui.utils.text_area(
-            "The following document is already in your library",
-            papis.document.dump(found_document),
-            lexer_name="yaml",
-            height=20)
+        papis.tui.utils.text_area(papis.document.dump(found_document),
+                                  lexer_name="yaml")
         confirm = True
 
     if citations:
@@ -423,7 +421,7 @@ def run(paths: List[str],
         for d_path in tmp_document.get_files():
             papis.utils.open_file(d_path)
     if confirm:
-        if not papis.tui.utils.confirm("Really add?"):
+        if not papis.tui.utils.confirm("Do you want to add the new document?"):
             return
 
     logger.info(

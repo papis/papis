@@ -4,7 +4,7 @@ from typing import (
 from prompt_toolkit import Application, print_formatted_text
 from prompt_toolkit.utils import Event
 from prompt_toolkit.layout.containers import HSplit, Window, WindowAlign
-from prompt_toolkit.formatted_text import FormattedText, HTML
+from prompt_toolkit.formatted_text import FormattedText
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.key_binding import KeyBindings
@@ -42,26 +42,28 @@ def prompt(text: Union[str, FormattedText],
 
     print_formatted_text(FormattedText(text))
 
+    action_texts = []
+    for a in actions:
+        action_texts.append(("", a.name))
+        action_texts.append(("fg:ansiyellow", "[" + a.key + "] "))
+
     root_container = HSplit([
         Window(
             wrap_lines=True,
             height=1,
             align=WindowAlign.LEFT,
             always_hide_cursor=True,
-            style="bg:ansiblack fg:ansiwhite",
+            style="bg:ansiblack",
             content=FormattedTextControl(
                 focusable=False,
-                text=HTML(" ".join(
-                    "{a.name}<yellow>[{a.key}]</yellow>".format(a=a)
-                    for a in actions
-                ))
+                text=FormattedText(action_texts)
             )
         )]
         + ([
             Window(
                 height=1, align=WindowAlign.LEFT,
                 always_hide_cursor=True,
-                style="bold fg:ansipurple bg:ansiwhite",
+                style="bold",
                 content=FormattedTextControl(focusable=False, text=title))
         ] if title else [])
     )
@@ -117,14 +119,14 @@ def diffshow(texta: str,
     formatted_text = list(map(
         lambda line:
             # match line values
-            line.startswith("@") and ("fg:violet bg:ansiblack", line)
+            line.startswith("@") and ("fg:ansimagenta bg:ansiblack", line)
             or line.startswith("+") and ("fg:ansigreen bg:ansiblack", line)
             or line.startswith("-") and ("fg:ansired bg:ansiblack", line)
             or line.startswith("?") and ("fg:ansiyellow bg:ansiblack", line)
-            or line.startswith("^^^") and ("bg:ansiblack fg:ansipurple", line)
-            or ("fg:ansiwhite", line), raw_text))
+            or line.startswith("^^^") and ("bg:ansiblack fg:ansimagenta", line)
+            or ("", line), raw_text))
 
-    prompt(title=title,
+    prompt(title="--- Diff view: " + title + " ---",
            text=formatted_text,
            actions=actions)
 
@@ -190,7 +192,7 @@ def diffdict(dicta: Dict[str, Any],
 
     diffshow(
         texta=texta, textb=textb,
-        title="GENERAL DIFFERENCE",
+        title="all changes",
         namea=namea,
         nameb=nameb,
         actions=actions)
@@ -217,7 +219,7 @@ def diffdict(dicta: Dict[str, Any],
         diffshow(
             texta=str(dicta.get(key, "")) + "\n",
             textb=str(dictb.get(key, "")) + "\n",
-            title="Key: {0}".format(key),
+            title='changes for key "{0}"'.format(key),
             namea=namea,
             nameb=nameb,
             actions=actions)
