@@ -107,10 +107,10 @@ def files_check(doc: papis.document.Document) -> List[Error]:
 KEYS_EXIST_CHECK_NAME = "keys-exist"
 
 
-def keys_check(doc: papis.document.Document) -> List[Error]:
+def keys_exist_check(doc: papis.document.Document) -> List[Error]:
     """
     Checks whether the keys provided in the configuration
-    option ``doctor-keys-check`` exit in the document and are non-empty.
+    option ``doctor-keys-exist-keys`` exit in the document and are non-empty.
 
     :returns: a :class:`list` of errors, one for each key that does not exist.
     """
@@ -197,7 +197,7 @@ DUPLICATED_KEYS_NAME = "duplicated-keys"
 def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
     """
     Check for duplicated keys in the list given by the
-    ``doctor-duplicated-keys-check`` configuration option.
+    ``doctor-duplicated-keys-keys`` configuration option.
 
     :returns: a :class:`list` of errors, one for each key with a value that already
         exist in the documents from the current query.
@@ -359,7 +359,7 @@ def html_codes_check(doc: papis.document.Document) -> List[Error]:
 
 
 register_check(FILES_CHECK_NAME, files_check)
-register_check(KEYS_EXIST_CHECK_NAME, keys_check)
+register_check(KEYS_EXIST_CHECK_NAME, keys_exist_check)
 register_check(DUPLICATED_KEYS_NAME, duplicated_keys_check)
 register_check(BIBTEX_TYPE_CHECK_NAME, bibtex_type_check)
 register_check(REFS_CHECK_NAME, refs_check)
