@@ -34,14 +34,14 @@ def test_files_check(monkeypatch) -> None:
 
 
 def test_keys_check() -> None:
-    from papis.commands.doctor import keys_check
+    from papis.commands.doctor import keys_exist_check
 
     doc = papis.document.from_data({
         "title": "DNA sequencing with chain-terminating inhibitors",
         "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
         })
 
-    error, = keys_check(doc)
+    error, = keys_exist_check(doc)
     assert error.payload == "ref"
 
 
