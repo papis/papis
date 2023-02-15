@@ -358,12 +358,65 @@ def html_codes_check(doc: papis.document.Document) -> List[Error]:
     return results
 
 
+HTML_TAGS_CHECK_NAME = "html-tags"
+HTML_TAGS_REGEX = re.compile(r"<.*?>")
+
+
+def html_tags_check(doc: papis.document.Document) -> List[Error]:
+    """
+    Checks that the keys in ``doctor-html-tags-keys`` configuration options do
+    not contain any HTML tags like ``<href>`` etc.
+
+    :returns: a :class:`list` of errors, one for each key that contains HTML codes.
+    """
+    from papis.api import save_doc
+
+    results = []
+    folder = doc.get_main_folder() or ""
+
+    def make_fixer(key: str) -> FixFn:
+        def fixer() -> None:
+            old_value = str(doc[key])
+            new_value = HTML_TAGS_REGEX.sub("", old_value).strip()
+
+            logger.info("[FIX] Removing HTML tags from key '%s'.", key)
+            doc[key] = new_value
+            save_doc(doc)
+
+        return fixer
+
+    for key in papis.config.getlist("doctor-html-tags-keys"):
+        value = doc.get(key)
+        if value is None:
+            logger.debug("Key '%s' not found in document: '%s'",
+                         key, papis.document.describe(doc))
+            continue
+
+        if not isinstance(value, str):
+            continue
+
+        m = HTML_TAGS_REGEX.findall(value)
+        if m:
+            results.append(Error(name=HTML_TAGS_CHECK_NAME,
+                                 path=folder,
+                                 msg=("Field '{}' contains HTML tags: {}"
+                                      .format(key, m)),
+                                 suggestion_cmd=(
+                                     "papis edit --doc-folder {}".format(folder)),
+                                 fix_action=make_fixer(key),
+                                 payload=key,
+                                 doc=doc))
+
+    return results
+
+
 register_check(FILES_CHECK_NAME, files_check)
 register_check(KEYS_EXIST_CHECK_NAME, keys_exist_check)
 register_check(DUPLICATED_KEYS_NAME, duplicated_keys_check)
 register_check(BIBTEX_TYPE_CHECK_NAME, bibtex_type_check)
 register_check(REFS_CHECK_NAME, refs_check)
 register_check(HTML_CODES_CHECK_NAME, html_codes_check)
+register_check(HTML_TAGS_CHECK_NAME, html_tags_check)
 register_check(KEY_TYPE_CHECK_NAME, key_type_check)
 
 

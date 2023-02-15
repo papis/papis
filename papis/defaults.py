@@ -47,6 +47,7 @@ settings = {
     "doctor-keys-exist-keys": ["title", "author", "ref"],
     "doctor-duplicated-keys-keys": ["ref"],
     "doctor-html-codes-keys": ["title", "author", "abstract", "journal"],
+    "doctor-html-tags-keys": ["title", "author", "abstract", "journal"],
     "doctor-key-type-check-keys": [("year", "int"),
                                    ("month", "int"),
                                    ("files", "list"),
