@@ -176,3 +176,26 @@ def test_html_codes_check(monkeypatch) -> None:
             error.fix_action()
             assert (doc["title"]
                     == "DNA sequencing with chain-terminating inhibitors & stuff")
+
+
+def test_html_tags_check(monkeypatch) -> None:
+    from papis.commands.doctor import html_tags_check
+
+    with monkeypatch.context() as m:
+        m.setattr(papis.api, "save_doc", lambda _: None)
+
+        doc = papis.document.from_data({
+            "title": "DNA sequencing with chain-terminating inhibitors",
+            "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
+            })
+        errors = html_tags_check(doc)
+        assert not errors
+
+        doc["title"] = (
+            "<emph>DNA sequencing with chain-terminating <div>inhibitors</div></emph>"
+            )
+        error, = html_tags_check(doc)
+        assert error.payload == "title"
+
+        error.fix_action()
+        assert doc["title"] == "DNA sequencing with chain-terminating inhibitors"
