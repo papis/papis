@@ -78,7 +78,7 @@ def test_get_config_file(monkeypatch) -> None:
 
 
 @pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
-def test_get_configpy_file(monkeypatch):
+def test_get_configpy_file(monkeypatch) -> None:
     with tempfile.TemporaryDirectory() as d:
         with monkeypatch.context() as m:
             m.setenv("XDG_CONFIG_HOME", d)
