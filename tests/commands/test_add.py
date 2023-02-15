@@ -305,36 +305,6 @@ class TestCli(tests.cli.TestCli):
         self.assertEqual(get_document_extension(epub), "epub")
         os.unlink(yamlfile)
 
-    # @patch(
-    #     "papis.crossref.get_data",
-    #     lambda **x: [
-    #         {"author": "Kant", "doi": "1/1", "doc_url": "https://nourl"}])
-    # @patch(
-    #     "papis.downloaders.get_downloader",
-    #     lambda url, downloader:
-    #         tests.MockDownloader(
-    #             bibtex_data=" ",
-    #             document_data="%PDF-1.5%\n".encode()))
-    # @patch("papis.utils.open_file", lambda x: None)
-    # @patch(
-    #     "papis.utils.update_doc_from_data_interactively",
-    #     lambda ctxdata, impdata, string: ctxdata.update(impdata))
-    # @patch('papis.utils.confirm', lambda x: True)
-    # def test_from_doi(self):
-    #     result = self.invoke([
-    #         "--from", "doi", "10.1112/plms/s2-42.1.0",
-    #         "--confirm", "--open"
-    #     ])
-    #     self.assertEqual(result.exit_code, 0)
-    #     db = papis.database.get()
-    #     docs = db.query_dict({"author": "Kant"})
-    #     self.assertEqual(len(docs), 1)
-    #     doc = docs[0]
-    #     # one file at least was retrieved
-    #     self.assertEqual(len(doc.get_files()), 1)
-    #     # it has the pdf ending
-    #     self.assertEqual(len(re.split(".pdf", doc.get_files()[0])), 2)
-
     @patch("papis.utils.open_file", lambda x: None)
     @patch("papis.tui.utils.confirm", lambda x: True)
     @patch(
