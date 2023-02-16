@@ -9,7 +9,10 @@ if TYPE_CHECKING:
 
 logger = papis.logging.get_logger(__name__)
 
-MATCHER_TYPE = Callable[[papis.document.Document, str, Optional[str]], Any]
+MATCHER_TYPE = Callable[
+    [papis.document.Document, str, Optional[str], Optional[str]],
+    Any
+]
 
 
 class DocMatcher(object):
@@ -33,7 +36,6 @@ class DocMatcher(object):
     """
     search = ""  # type: str
     parsed_search = None  # type: pyparsing.ParseResults
-    doc_format = "{%s[DOC_KEY]}" % (papis.config.getstring("format-doc-name"))
     matcher = None  # type: Optional[MATCHER_TYPE]
 
     @classmethod
@@ -65,13 +67,13 @@ class DocMatcher(object):
         for parsed in cls.parsed_search:
             if len(parsed) == 1:
                 search = parsed[0]
-                sformat = None
+                doc_key = None
             elif len(parsed) == 3:
                 search = parsed[2]
-                sformat = cls.doc_format.replace("DOC_KEY", parsed[0])
+                doc_key = parsed[0]
 
             if cls.matcher is not None:
-                match = doc if cls.matcher(doc, search, sformat) else None
+                match = doc if cls.matcher(doc, search, None, doc_key) else None
             if not match:
                 break
         return match

@@ -96,7 +96,8 @@ def filter_documents(
 
 def match_document(
         document: papis.document.Document, search: str,
-        match_format: Optional[str] = None) -> Optional[Match[str]]:
+        match_format: Optional[str] = None,
+        doc_key: Optional[str] = None) -> Optional[Match[str]]:
     """Main function to match document to a given search.
 
     :param document: Papis document
@@ -104,6 +105,7 @@ def match_document(
     :param match_format: Python-like format string.
         (`see here
         <https://docs.python.org/2/library/string.html#format-string-syntax>`__)
+    :param doc_key: Restrict the search to an optionally given document key
     :returns: Non false if matches, true-ish if it does match.
 
     >>> papis.config.set('match-format', '{doc[author]}')
@@ -116,7 +118,10 @@ def match_document(
     True
     """
     match_format = match_format or str(papis.config.get("match-format"))
-    match_string = papis.format.format(match_format, document)
+    if doc_key is not None:
+        match_string = str(document[doc_key])
+    else:
+        match_string = papis.format.format(match_format, document)
     regex = get_regex_from_search(search)
     return re.match(regex, match_string, re.IGNORECASE)
 
