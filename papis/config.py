@@ -60,6 +60,7 @@ class Configuration(configparser.ConfigParser):
                         fullpath)
 
     def initialize(self) -> None:
+        # ensure all configuration directories exist
         if not os.path.exists(self.dir_location):
             logger.warning(
                 "Creating configuration folder in '%s'", self.dir_location)
@@ -70,13 +71,18 @@ class Configuration(configparser.ConfigParser):
                 "Creating scripts folder in '%s'", self.scripts_location)
             os.makedirs(self.scripts_location)
 
+        # load settings
         if os.path.exists(self.file_location):
             logger.debug("Reading configuration from '%s'", self.file_location)
             self.read(self.file_location)
             self.handle_includes()
 
-        # NOTE: if no sections were actually read, add default ones
+        # if no sections were actually read, add default ones
         if not self.sections():
+            logger.warning(
+                "No sections were found in the configuration file. "
+                "Adding default ones (with a default library named 'papers')!")
+
             for section in self.default_info:
                 self[section] = {}
                 for field in self.default_info[section]:
@@ -86,6 +92,22 @@ class Configuration(configparser.ConfigParser):
                 logger.info("Creating config file at '%s'", self.file_location)
                 self.write(configfile)
 
+        # ensure the general section and default-library exist in the config
+        general_section = get_general_settings_name()
+        if general_section not in self:
+            libs = get_libs_from_config(self)
+            default_library = (
+                libs[0] if libs else
+                self.default_info[general_section]["default-library"])
+
+            logger.warning(
+                "No main '%s' section found in the configuration file. "
+                "Setting '%s' as the default library!",
+                general_section, default_library)
+
+            self[general_section] = {"default-library": default_library}
+
+        # evaluate the python config
         configpy = get_configpy_file()
         if os.path.exists(configpy):
             logger.debug("Executing '%s'", configpy)
@@ -504,6 +526,20 @@ def get_lib() -> papis.library.Library:
         set_lib_from_name(lib)
     assert isinstance(_CURRENT_LIBRARY, papis.library.Library)
     return _CURRENT_LIBRARY
+
+
+def get_libs() -> List[str]:
+    return get_libs_from_config(get_configuration())
+
+
+def get_libs_from_config(config: Configuration) -> List[str]:
+    libs = []
+    for section in config:
+        sec = config[section]
+        if "dir" in sec or "dirs" in sec:
+            libs.append(section)
+
+    return libs
 
 
 def reset_configuration() -> Configuration:

@@ -58,15 +58,7 @@ def get_libraries() -> List[str]:
     >>> len(get_libraries()) >= 1
     True
     """
-    config = papis.config.get_configuration()
-
-    libs = []
-    for section in config:
-        sec = config[section]
-        if "dir" in sec or "dirs" in sec:
-            libs.append(section)
-
-    return libs
+    return papis.config.get_libs()
 
 
 def pick_doc(
