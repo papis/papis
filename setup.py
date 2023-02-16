@@ -108,6 +108,7 @@ setup(
         "lxml>=4.3.5; python_version>'3.6'",
         "python-slugify>=1.2.6 ; python_version>'3.4'",
         "dominate",
+        "typing_extensions",
     ],
     python_requires=">=3.5",
     extras_require={
