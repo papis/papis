@@ -10,7 +10,6 @@ def get_docs():
 
 
 def test_docmatcher():
-
     DocMatcher.set_search("author:einstein")
     assert DocMatcher.search == "author:einstein"
     DocMatcher.set_search("author:seitz")
@@ -21,7 +20,7 @@ def test_docmatcher():
     docs = get_docs()
     assert len(list(docs)) == 16
     for res in [(True, 16), (False, 0)]:
-        DocMatcher.set_matcher(lambda doc, search, sformat, res=res: res[0])
+        DocMatcher.set_matcher(lambda doc, search, sformat, doc_key, res=res: res[0])
         filtered = list(
             filter(lambda x: x is not None, map(DocMatcher.return_if_match, docs)))
         assert len(filtered) == res[1]
