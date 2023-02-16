@@ -357,10 +357,7 @@ def from_data(data: Union[Document, Dict[str, Any]]) -> Document:
     :param data: A dictionary to be copied to a new document. If this is already
         a document, a (deep) copy is performed.
     """
-    if isinstance(data, Document):
-        return Document(folder=data.get_main_folder(), data=data)
-    else:
-        return Document(data=data)
+    return Document(data=data)
 
 
 def sort(docs: List[Document], key: str, reverse: bool) -> List[Document]:
