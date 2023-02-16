@@ -66,7 +66,8 @@ class PythonFormater(Formater):
             additional = {}
 
         fmt = escape(fmt)
-        doc = papis.document.from_data(doc)
+        if not isinstance(doc, papis.document.Document):
+            doc = papis.document.from_data(doc)
 
         doc_name = doc_key or papis.config.getstring("format-doc-name")
         try:
@@ -104,7 +105,8 @@ class Jinja2Formater(Formater):
         from jinja2 import Template
 
         fmt = escape(fmt)
-        doc = papis.document.from_data(doc)
+        if not isinstance(doc, papis.document.Document):
+            doc = papis.document.from_data(doc)
 
         doc_name = doc_key or papis.config.getstring("format-doc-name")
         try:
