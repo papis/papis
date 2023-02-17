@@ -100,13 +100,9 @@ def match_document(
         doc_key: Optional[str] = None) -> Optional[Match[str]]:
     """Main function to match document to a given search.
 
-    :param document: Papis document
-    :param search: A valid search string
-    :param match_format: Python-like format string.
-        (`see here
-        <https://docs.python.org/2/library/string.html#format-string-syntax>`__)
-    :param doc_key: Restrict the search to an optionally given document key
-    :returns: Non false if matches, true-ish if it does match.
+    :param search: A (valid) search string.
+    :param match_format: A format string (see ``papis.format.format``).
+    :param doc_key: Restrict the search to an optionally given document key.
 
     >>> papis.config.set('match-format', '{doc[author]}')
     >>> document = papis.document.from_data({'author': 'einstein'})
