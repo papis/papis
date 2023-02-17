@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from tests import testlib
@@ -5,7 +6,7 @@ from tests import testlib
 
 @pytest.fixture()
 def tmp_config(request):
-    marker = request.node.get_closest_marker("runner_setup")
+    marker = request.node.get_closest_marker("config_setup")
     kwargs = marker.kwargs if marker else {}
 
     with testlib.TemporaryConfiguration(**kwargs) as config:
@@ -14,7 +15,7 @@ def tmp_config(request):
 
 @pytest.fixture()
 def tmp_library(request):
-    marker = request.node.get_closest_marker("runner_setup")
+    marker = request.node.get_closest_marker("library_setup")
     kwargs = marker.kwargs if marker else {}
 
     with testlib.TemporaryLibrary(**kwargs) as lib:
@@ -22,10 +23,12 @@ def tmp_library(request):
 
 
 @pytest.fixture()
-def resource_cache():
-    return testlib.ResourceCache(cachedir="resources")
+def resource_cache(request):
+    marker = request.node.get_closest_marker("resource_setup")
 
+    cachedir = "resources"
+    if marker:
+        cachedir = marker.kwargs.get("cachedir", "resources")
+        cachedir = os.path.join(*cachedir.split("/"))
 
-@pytest.fixture()
-def downloader_cache():
-    return testlib.ResourceCache(cachedir="downloaders/resources")
+    return testlib.ResourceCache(cachedir)

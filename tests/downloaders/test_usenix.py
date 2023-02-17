@@ -1,13 +1,11 @@
 import os
 import pytest
+from _pytest.monkeypatch import MonkeyPatch
 
-import papis.logging
 import papis.downloaders
 from papis.downloaders.usenix import Downloader
 
-import tests.downloaders as testlib
-
-papis.logging.setup("DEBUG")
+from tests.testlib import TemporaryConfiguration, ResourceCache
 
 USENIX_LINK_URLS = (
     "https://www.usenix.org/conference/usenixsecurity22/presentation/bulekov",
@@ -15,9 +13,9 @@ USENIX_LINK_URLS = (
     )
 
 
-def download_bibtex(down: Downloader, infile: str) -> None:
+def download_bibtex(cache: ResourceCache, down: Downloader, infile: str) -> None:
     url = down.get_bibtex_url()
-    data = testlib.get_remote_resource(infile, url, cookies=down.cookies)()
+    data = cache.get_remote_resource(infile, url, cookies=down.cookies)
     down.bibtex_data = data.decode()
 
 
@@ -39,9 +37,12 @@ def test_usenix_match() -> None:
         assert Downloader.match(url) is None
 
 
-@testlib.with_default_config
+@pytest.mark.resource_setup(cachedir="downloaders/resources")
 @pytest.mark.parametrize("url", USENIX_LINK_URLS)
-def test_usenix_fetch(monkeypatch, url: str) -> None:
+def test_usenix_fetch(tmp_config: TemporaryConfiguration,
+                      resource_cache: ResourceCache,
+                      monkeypatch: MonkeyPatch,
+                      url: str) -> None:
     cls = papis.downloaders.get_downloader_by_name("usenix")
     assert cls is Downloader
 
@@ -52,12 +53,12 @@ def test_usenix_fetch(monkeypatch, url: str) -> None:
     infile = "USENIX_{}.bib".format(uid)
     outfile = "USENIX_{}_Out.json".format(uid)
 
-    with monkeypatch.context() as m:
-        m.setattr(down, "download_document", lambda: None)
-        m.setattr(down, "download_bibtex", lambda: download_bibtex(down, infile))
+    monkeypatch.setattr(down, "download_document", lambda: None)
+    monkeypatch.setattr(down, "download_bibtex",
+                        lambda: download_bibtex(resource_cache, down, infile))
 
-        down.fetch()
-        extracted_data = down.ctx.data
-        expected_data = testlib.get_local_resource(outfile, extracted_data)
+    down.fetch()
+    extracted_data = down.ctx.data
+    expected_data = resource_cache.get_local_resource(outfile, extracted_data)
 
-        assert extracted_data == expected_data
+    assert extracted_data == expected_data
