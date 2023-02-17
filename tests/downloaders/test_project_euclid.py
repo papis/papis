@@ -1,13 +1,10 @@
 import os
 import pytest
 
-import papis.logging
 import papis.downloaders
 from papis.downloaders.projecteuclid import Downloader
 
-import tests.downloaders as testlib
-
-papis.logging.setup("DEBUG")
+from tests.testlib import TemporaryConfiguration, ResourceCache
 
 PROJECT_EUCLID_URLS = (
     "https://projecteuclid.org/journals/advances-in-differential-equations/volume-19/"
@@ -20,9 +17,12 @@ PROJECT_EUCLID_URLS = (
     )
 
 
-@testlib.with_default_config
+@pytest.mark.resource_setup(cachedir="downloaders/resources")
 @pytest.mark.parametrize("url", PROJECT_EUCLID_URLS)
-def test_project_euclid_fetch(monkeypatch, url: str) -> None:
+def test_project_euclid_fetch(tmp_config: TemporaryConfiguration,
+                              resource_cache: ResourceCache,
+                              monkeypatch: pytest.MonkeyPatch,
+                              url: str) -> None:
     cls = papis.downloaders.get_downloader_by_name("projecteuclid")
     assert cls is Downloader
 
@@ -33,15 +33,15 @@ def test_project_euclid_fetch(monkeypatch, url: str) -> None:
     infile = "ProjectEuclid_{}.html".format(uid)
     outfile = "ProjectEuclid_{}_Out.json".format(uid)
 
-    with monkeypatch.context() as m:
-        m.setattr(down, "_get_body", testlib.get_remote_resource(infile, url))
-        m.setattr(down, "download_document", lambda: None)
+    monkeypatch.setattr(down, "_get_body",
+                        lambda: resource_cache.get_remote_resource(infile, url))
+    monkeypatch.setattr(down, "download_document", lambda: None)
 
-        # NOTE: bibtex add some extra fields, so we just disable it for the test
-        m.setattr(down, "download_bibtex", lambda: None)
+    # NOTE: bibtex add some extra fields, so we just disable it for the test
+    monkeypatch.setattr(down, "download_bibtex", lambda: None)
 
-        down.fetch()
-        extracted_data = down.ctx.data
-        expected_data = testlib.get_local_resource(outfile, extracted_data)
+    down.fetch()
+    extracted_data = down.ctx.data
+    expected_data = resource_cache.get_local_resource(outfile, extracted_data)
 
-        assert extracted_data == expected_data
+    assert extracted_data == expected_data

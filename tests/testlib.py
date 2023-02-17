@@ -8,8 +8,13 @@ import click
 import click.testing
 
 import papis.logging
+
 papis.logging.setup()
 random.seed(42)
+
+PAPIS_UPDATE_RESOURCES = os.environ.get("PAPIS_UPDATE_RESOURCES", "none").lower()
+if PAPIS_UPDATE_RESOURCES not in ("none", "remote", "local", "both"):
+    raise ValueError("unsupported value of 'PAPIS_UPDATE_RESOURCES'")
 
 PAPIS_TEST_DOCUMENTS = [
     {
@@ -141,9 +146,6 @@ class TemporaryConfiguration:
 
     @property
     def tmpdir(self) -> str:
-        if self._tmpdir is None:
-            raise AttributeError("tmpdir")
-
         return self._tmpdir.name
 
     def create_random_file(self,
@@ -253,3 +255,72 @@ class PapisRunner(click.testing.CliRunner):
             kwargs["catch_exceptions"] = False
 
         return super().invoke(cli, args, **kwargs)
+
+
+class ResourceCache:
+    def __init__(self, cachedir: str) -> None:
+        import papis.utils
+
+        self.cachedir = os.path.join(os.path.dirname(__file__), cachedir)
+        if not os.path.exists(self.cachedir):
+            os.makedirs(self.cachedir)
+
+        self.session = papis.utils.get_session()
+
+    def get_remote_resource(
+            self, filename: str, url: str,
+            force: bool = False,
+            params: Optional[Dict[str, str]] = None,
+            headers: Optional[Dict[str, str]] = None,
+            cookies: Optional[Dict[str, str]] = None,
+            ) -> bytes:
+        filename = os.path.join(self.cachedir, filename)
+        if force or PAPIS_UPDATE_RESOURCES in ("remote", "both"):
+            if headers is None:
+                headers = {}
+
+            response = self.session.get(
+                url, params=params, headers=headers, cookies=cookies)
+
+            with open(filename, "w", encoding="utf-8") as f:
+                f.write(response.content.decode())
+
+        with open(filename, encoding="utf-8") as f:
+            return f.read().encode()
+
+    def get_local_resource(
+            self, filename: str, data: Any,
+            force: bool = False) -> Any:
+        filename = os.path.join(self.cachedir, filename)
+        _, ext = os.path.splitext(filename)
+
+        import json
+        import yaml
+        import papis.yaml
+
+        if force or PAPIS_UPDATE_RESOURCES in ("local", "both"):
+            assert data is not None
+            with open(filename, "w", encoding="utf-8") as f:
+                if ext == ".json":
+                    json.dump(
+                        data, f,
+                        indent=2,
+                        sort_keys=True,
+                        ensure_ascii=False,
+                        )
+                elif ext == ".yml" or ext == ".yaml":
+                    yaml.dump(
+                        data, f,
+                        indent=2,
+                        sort_keys=True,
+                        )
+                else:
+                    raise ValueError("Unknown file extension: '{}'".format(ext))
+
+        with open(filename, "r", encoding="utf-8") as f:
+            if ext == ".json":
+                return json.load(f)
+            elif ext == ".yml" or ext == ".yaml":
+                return papis.yaml.yaml_to_data(filename)
+            else:
+                raise ValueError("Unknown file extension: '{}'".format(ext))
