@@ -2,61 +2,43 @@
 # are loaded before the configuration file is set; some modules like
 # `papis.bibtex` have import side effects involving the config and interfere
 
-import os
-import tempfile
-import contextlib
-from typing import Iterator
+import pytest
 
-import papis.logging
-papis.logging.setup("DEBUG")
+from tests.testlib import TemporaryConfiguration
 
 
-@contextlib.contextmanager
-def temporary_config(text: str = "") -> Iterator[None]:
-    with tempfile.NamedTemporaryFile(mode="w", delete=False) as configfile:
-        configfile.write(text)
-
+@pytest.mark.config_setup(overwrite=True, settings={})
+def test_empty_config(tmp_config: TemporaryConfiguration) -> None:
     import papis.config
-    papis.config.set_config_file(configfile.name)
-    papis.config.reset_configuration()
+    from papis.defaults import settings
 
-    try:
-        yield
-    finally:
-        papis.config.set_config_file(None)
-        papis.config.reset_configuration()
-
-        os.unlink(configfile.name)
+    config = papis.config.get_configuration()
+    assert papis.config.get_general_settings_name() in config
+    assert papis.config.get_libs() == ["papers"]
+    assert papis.config.get("picktool") == settings["picktool"]
 
 
-def test_empty_config() -> None:
-    with temporary_config():
-        import papis.config
-        from papis.defaults import settings
+@pytest.mark.config_setup(overwrite=True, settings={
+    "papers": {"dir": "/some/directory/probably"}
+    })
+def test_config_with_no_general_settings(tmp_config: TemporaryConfiguration) -> None:
+    import papis.config
+    from papis.defaults import settings
 
-        config = papis.config.get_configuration()
-        assert papis.config.get_general_settings_name() in config
-        assert papis.config.get_libs() == ["papers"]
-        assert papis.config.get("picktool") == settings["picktool"]
-
-
-def test_config_with_no_general_settings() -> None:
-    with temporary_config("[papers]\ndir = /some/directory/probably"):
-        import papis.config
-        from papis.defaults import settings
-
-        config = papis.config.get_configuration()
-        assert papis.config.get_general_settings_name() in config
-        assert papis.config.get_libs() == ["papers"]
-        assert papis.config.get("picktool") == settings["picktool"]
+    config = papis.config.get_configuration()
+    assert papis.config.get_general_settings_name() in config
+    assert papis.config.get_libs() == ["papers"]
+    assert papis.config.get("picktool") == settings["picktool"]
 
 
-def test_config_different_default_library() -> None:
-    with temporary_config("[books]\ndir = /some/directory/probably"):
-        import papis.config
-        from papis.defaults import settings
+@pytest.mark.config_setup(overwrite=True, settings={
+    "books": {"dir": "/some/directory/probably"}
+    })
+def test_config_different_default_library(tmp_config: TemporaryConfiguration) -> None:
+    import papis.config
+    from papis.defaults import settings
 
-        config = papis.config.get_configuration()
-        assert papis.config.get_general_settings_name() in config
-        assert papis.config.get_libs() == ["books"]
-        assert papis.config.get("picktool") == settings["picktool"]
+    config = papis.config.get_configuration()
+    assert papis.config.get_general_settings_name() in config
+    assert papis.config.get_libs() == ["books"]
+    assert papis.config.get("picktool") == settings["picktool"]
