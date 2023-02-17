@@ -2,19 +2,16 @@ import os
 import re
 import pytest
 
-import papis
-import papis.bibtex
-import papis.document
-import papis.logging
-
-papis.logging.setup("DEBUG")
+from tests.testlib import ResourceCache, TemporaryConfiguration
 
 BIBTEX_RESOURCES = os.path.join(os.path.dirname(__file__), "resources", "bibtex")
 
 
-def test_bibtex_to_dict():
+def test_bibtex_to_dict(tmp_config: TemporaryConfiguration) -> None:
+    import papis.bibtex
+
     bibpath = os.path.join(BIBTEX_RESOURCES, "1.bib")
-    bibs = papis.bibtex.bibtex_to_dict(bibpath)
+    bib, = papis.bibtex.bibtex_to_dict(bibpath)
     expected_keys = {
         "title",
         "author",
@@ -31,49 +28,45 @@ def test_bibtex_to_dict():
         "url",
         }
 
-    assert len(bibs) == 1
-    for bib in bibs:
-        assert not (expected_keys - bib.keys())
-
+    assert not (expected_keys - bib.keys())
     assert bib["type"] == "article"
     assert re.match(r".*Rev.*", bib["journal"])
     assert re.match(r".*concurrent inter.*", bib["abstract"])
 
 
-def test_bibkeys_exist():
+def test_bibkeys_exist(tmp_config: TemporaryConfiguration) -> None:
+    import papis.bibtex
+
     assert hasattr(papis.bibtex, "bibtex_keys")
     assert len(papis.bibtex.bibtex_keys) != 0
 
 
-def test_bibtypes_exist():
+def test_bibtypes_exist(tmp_config: TemporaryConfiguration) -> None:
+    import papis.bibtex
+
     assert hasattr(papis.bibtex, "bibtex_types")
     assert len(papis.bibtex.bibtex_types) != 0
 
 
 @pytest.mark.parametrize("bibfile", ["1.bib", "2.bib", "3.bib"])
-def test_author_list_conversion(bibfile, overwrite=False):
-    jsonfile = "{}_out.json".format(os.path.splitext(bibfile)[0])
+def test_author_list_conversion(
+        tmp_config: TemporaryConfiguration,
+        resource_cache: ResourceCache,
+        bibfile: str,
+        overwrite: bool = False) -> None:
+    jsonfile = "bibtex/{}_out.json".format(os.path.splitext(bibfile)[0])
 
-    bibpath = os.path.join(BIBTEX_RESOURCES, bibfile)
-    jsonpath = os.path.join(BIBTEX_RESOURCES, jsonfile)
+    import papis.bibtex
 
-    bib = papis.bibtex.bibtex_to_dict(bibpath)[0]
-    if overwrite or not os.path.exists(jsonpath):
-        with open(jsonpath, "w") as f:
-            import json
-            json.dump(bib, f,
-                      indent=2,
-                      sort_keys=True,
-                      ensure_ascii=False)
-
-    with open(jsonpath, "r") as f:
-        import json
-        expected = json.loads(f.read())
+    bib, = papis.bibtex.bibtex_to_dict(os.path.join(BIBTEX_RESOURCES, bibfile))
+    expected = resource_cache.get_local_resource(jsonfile, bib)
 
     assert bib["author_list"] == expected["author_list"]
 
 
-def test_clean_ref() -> None:
+def test_clean_ref(tmp_config: TemporaryConfiguration) -> None:
+    import papis.bibtex
+
     for (r, rc) in [
             ("Einstein über etwas und so 1923", "EinsteinUberEtwasUndSo1923"),
             ("Äöasf () : Aλבert Eιنς€in", "AoasfAlbertEinseurin"),
@@ -82,9 +75,9 @@ def test_clean_ref() -> None:
         assert rc == papis.bibtex.ref_cleanup(r)
 
 
-def test_to_bibtex_wrong_type() -> None:
+def test_to_bibtex_wrong_type(tmp_config: TemporaryConfiguration) -> None:
     """Test no BibTeX entry is constructed for incorrect types."""
-
+    import papis.document
     doc = papis.document.from_data({
         "type": "fictional",
         "ref": "MyDocument",
@@ -94,12 +87,17 @@ def test_to_bibtex_wrong_type() -> None:
         "year": 2350
         })
 
+    import papis.bibtex
     result = papis.bibtex.to_bibtex(doc)
     assert not result
 
 
-def test_to_bibtex_no_ref() -> None:
+def test_to_bibtex_no_ref(tmp_config: TemporaryConfiguration) -> None:
     """Test no BibTeX entry is constructed for invalid references."""
+    import papis.bibtex
+    import papis.config
+    import papis.document
+
     doc = papis.document.from_data({
         "type": "techreport",
         "author": "Albert Einstein",
@@ -116,8 +114,9 @@ def test_to_bibtex_no_ref() -> None:
     assert not result
 
 
-def test_to_bibtex_formatting() -> None:
+def test_to_bibtex_formatting(tmp_config: TemporaryConfiguration) -> None:
     """Test formatting for the `to_bibtex` function."""
+    import papis.document
     doc = papis.document.from_data({
         "type": "report",
         "author": "Albert Einstein",
@@ -136,4 +135,5 @@ def test_to_bibtex_formatting() -> None:
         + "}"
         )
 
+    import papis.bibtex
     assert papis.bibtex.to_bibtex(doc) == expected_bibtex
