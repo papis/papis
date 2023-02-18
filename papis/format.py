@@ -31,6 +31,9 @@ def escape(fmt: str) -> str:
 
 
 class Formater:
+    def __init__(self) -> None:
+        self.default_doc_name = papis.config.getstring("format-doc-name")
+
     def format(self,
                fmt: str,
                doc: FormatDocType,
@@ -69,7 +72,7 @@ class PythonFormater(Formater):
         if not isinstance(doc, papis.document.Document):
             doc = papis.document.from_data(doc)
 
-        doc_name = doc_key or papis.config.getstring("format-doc-name")
+        doc_name = doc_key or self.default_doc_name
         try:
             return fmt.format(**{doc_name: doc}, **additional)
         except Exception as exc:
@@ -85,6 +88,8 @@ class Jinja2Formater(Formater):
     """
 
     def __init__(self) -> None:
+        super().__init__()
+
         try:
             import jinja2       # noqa: F401
         except ImportError as exc:
@@ -108,7 +113,7 @@ class Jinja2Formater(Formater):
         if not isinstance(doc, papis.document.Document):
             doc = papis.document.from_data(doc)
 
-        doc_name = doc_key or papis.config.getstring("format-doc-name")
+        doc_name = doc_key or self.default_doc_name
         try:
             return str(Template(fmt).render(**{doc_name: doc}, **additional))
         except Exception as exc:
