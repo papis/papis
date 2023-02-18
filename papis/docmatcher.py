@@ -1,4 +1,5 @@
-from typing import Any, Callable, List, NamedTuple, Optional
+import re
+from typing import Any, Callable, List, NamedTuple, Optional, Pattern
 
 import papis.config
 import papis.document
@@ -7,12 +8,13 @@ import papis.logging
 logger = papis.logging.get_logger(__name__)
 
 MATCHER_TYPE = Callable[
-    [papis.document.Document, str, Optional[str], Optional[str]],
+    [papis.document.Document, Pattern[str], Optional[str], Optional[str]],
     Any
 ]
 
 ParseResult = NamedTuple("ParseResult", [
     ("search", str),
+    ("pattern", Pattern[str]),
     ("doc_key", Optional[str]),
     ])
 
@@ -70,7 +72,7 @@ class DocMatcher(object):
 
         for p in cls.parsed_search:
             match = (
-                doc if cls.matcher(doc, p.search, cls.match_format, p.doc_key)
+                doc if cls.matcher(doc, p.pattern, cls.match_format, p.doc_key)
                 else None)
 
             if not match:
@@ -121,6 +123,23 @@ class DocMatcher(object):
         return cls.parsed_search
 
 
+def get_regex_from_search(search: str) -> Pattern[str]:
+    r"""Creates a default regex from a search string.
+
+    :param search: A valid search string
+    :returns: Regular expression
+
+    >>> get_regex_from_search(' ein 192     photon')
+    '.*ein.*192.*photon.*'
+
+    >>> get_regex_from_search('{1234}')
+    '.*\\{1234\\}.*'
+    """
+    return re.compile(
+        ".*{}.*".format(".*".join(map(re.escape, search.split()))),
+        re.IGNORECASE)
+
+
 def parse_query(query_string: str) -> List[ParseResult]:
     import pyparsing
     logger.debug("Parsing query: '%s'", query_string)
@@ -163,6 +182,7 @@ def parse_query(query_string: str) -> List[ParseResult]:
         else:
             continue
 
-        results.append(ParseResult(search=search, doc_key=doc_key))
+        pattern = get_regex_from_search(search)
+        results.append(ParseResult(search=search, pattern=pattern, doc_key=doc_key))
 
     return results
