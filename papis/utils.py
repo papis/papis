@@ -62,9 +62,10 @@ def parmap(f: Callable[[A], B],
     # FIXME: load singleton plugins here instead of on all the processes
     _ = papis.format.get_formater()
 
-    if has_multiprocessing() and sys.platform != "darwin":
-        np = np or os.cpu_count()
-        np = int(os.environ.get("PAPIS_NP", str(np)))
+    if np is None:
+        np = int(os.environ.get("PAPIS_NP", str(os.cpu_count())))
+
+    if np and HAS_MULTIPROCESSING and sys.platform != "darwin":
         with Pool(np) as pool:
             return list(pool.map(f, xs))
     else:
