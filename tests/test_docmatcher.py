@@ -28,25 +28,20 @@ def test_docmatcher():
 
 def test_parse_query():
     r = parse_query("hello   author : einstein")
-    assert r[0][0] == "hello"
-    assert r[1][0] == "author"
-    assert r[1][1] == ":"
-    assert r[1][2] == "einstein"
+    assert r[0].search == "hello"
+    assert r[1].doc_key == "author"
+    assert r[1].search == "einstein"
 
-    r = parse_query("doi : 123.123/124_123")
-    re = ["doi", ":", "123.123/124_123"]
-    for i in range(len(re)):
-        assert r[0][i] == re[i]
+    r, = parse_query("doi : 123.123/124_123")
+    assert r.doc_key == "doi"
+    assert r.search == "123.123/124_123"
 
-    r = parse_query("doi : 123.123/124_123(80)12")
-    re = ["doi", ":", "123.123/124_123(80)12"]
-    for i in range(len(re)):
-        assert r[0][i] == re[i]
+    r, = parse_query("doi : 123.123/124_123(80)12")
+    assert r.doc_key == "doi"
+    assert r.search == "123.123/124_123(80)12"
 
     r = parse_query('tt : asfd   author : "Albert einstein"')
-    assert r[0][0] == "tt"
-    assert r[0][1] == ":"
-    assert r[0][2] == "asfd"
-    assert r[1][0] == "author"
-    assert r[1][1] == ":"
-    assert r[1][2] == "Albert einstein"
+    assert r[0].doc_key == "tt"
+    assert r[0].search == "asfd"
+    assert r[1].doc_key == "author"
+    assert r[1].search == "Albert einstein"
