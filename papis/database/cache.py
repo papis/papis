@@ -113,7 +113,7 @@ def match_document(
     >>> match_document(document, 'einstein', '{doc[title]}') is None
     True
     """
-    match_format = match_format or str(papis.config.get("match-format"))
+    match_format = match_format or papis.config.getstring("match-format")
     if doc_key is not None:
         match_string = str(document[doc_key])
     else:

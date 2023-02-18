@@ -37,6 +37,7 @@ class DocMatcher(object):
     search = ""  # type: str
     parsed_search = None  # type: pyparsing.ParseResults
     matcher = None  # type: Optional[MATCHER_TYPE]
+    match_format = papis.config.getstring("match-format")   # type: str
 
     @classmethod
     def return_if_match(
@@ -61,7 +62,7 @@ class DocMatcher(object):
         True
         """
         match = None
-        if cls.parsed_search is None:
+        if cls.parsed_search is None or cls.matcher is None:
             return match
 
         for parsed in cls.parsed_search:
