@@ -130,13 +130,13 @@ class DocMatcher(object):
         :returns: Parsed query
 
         >>> print(DocMatcher.parse('hello author : einstein'))
-        [['hello'], ['author', ':', 'einstein']]
+        [['hello'], ['author', 'einstein']]
         >>> print(DocMatcher.parse(''))
         []
         >>> print(\
             DocMatcher.parse(\
                 '"hello world whatever :" tags : \\\'hello ::::\\\''))
-        [['hello world whatever :'], ['tags', ':', 'hello ::::']]
+        [['hello world whatever :'], ['tags', 'hello ::::']]
         >>> print(DocMatcher.parse('hello'))
         [['hello']]
         """
@@ -152,10 +152,10 @@ def get_regex_from_search(search: str) -> Pattern[str]:
     :param search: A valid search string
     :returns: Regular expression
 
-    >>> get_regex_from_search(' ein 192     photon')
+    >>> get_regex_from_search(' ein 192     photon').pattern
     '.*ein.*192.*photon.*'
 
-    >>> get_regex_from_search('{1234}')
+    >>> get_regex_from_search('{1234}').pattern
     '.*\\{1234\\}.*'
     """
     return re.compile(

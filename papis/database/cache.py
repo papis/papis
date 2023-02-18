@@ -102,13 +102,13 @@ def match_document(
 
     See ``papis.docmatcher.MatcherCallable``.
 
-    >>> papis.config.set('match-format', '{doc[author]}')
+    >>> from papis.docmatcher import get_regex_from_search as regex
     >>> document = papis.document.from_data({'author': 'einstein'})
-    >>> match_document(document, 'e in') is None
+    >>> match_document(document, regex('e in'), '{doc[author]}') is None
     False
-    >>> match_document(document, 'ee in') is None
+    >>> match_document(document, regex('ee in'), '{doc[author]}') is None
     True
-    >>> match_document(document, 'einstein', '{doc[title]}') is None
+    >>> match_document(document, regex('einstein'), '{doc[title]}') is None
     True
     """
     match_format = match_format or papis.config.getstring("match-format")
@@ -116,6 +116,7 @@ def match_document(
         match_string = str(document[doc_key])
     else:
         match_string = papis.format.format(match_format, document)
+
     return search.match(match_string)
 
 
