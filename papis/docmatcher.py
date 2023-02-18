@@ -1,5 +1,6 @@
 import re
-from typing import Any, Callable, List, NamedTuple, Optional, Pattern
+from typing import Any, List, NamedTuple, Optional, Pattern
+from typing_extensions import Protocol
 
 import papis.config
 import papis.document
@@ -7,16 +8,38 @@ import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
-MATCHER_TYPE = Callable[
-    [papis.document.Document, Pattern[str], Optional[str], Optional[str]],
-    Any
-]
 
-ParseResult = NamedTuple("ParseResult", [
+_ParseResult = NamedTuple("_ParseResult", [
     ("search", str),
     ("pattern", Pattern[str]),
     ("doc_key", Optional[str]),
     ])
+
+
+class ParseResult(_ParseResult):
+    def __repr__(self) -> str:
+        doc_key = "{!r}, ".format(self.doc_key) if self.doc_key is not None else ""
+        return "[{}{!r}]".format(doc_key, self.search)
+
+
+class MatcherCallable(Protocol):
+    def __call__(self,
+                 document: papis.document.Document,
+                 search: Pattern[str],
+                 match_format: Optional[str] = None,
+                 doc_key: Optional[str] = None,
+                 ) -> Any:
+        """Match a document's keys to a given search pattern.
+
+        The search pattern is matched against *doc_key*, if given, and
+        *match_format* otherwise.
+
+        :param search: A regex pattern to match the query against..
+        :param match_format: A format string (see ``papis.format.format``)
+            to match against.
+        :param doc_key: A specific key in the document to match against.
+        :returns: *None* if the match fails and anything else otherwise.
+        """
 
 
 class DocMatcher(object):
@@ -41,7 +64,7 @@ class DocMatcher(object):
 
     search = ""  # type: str
     parsed_search = None  # type: List[ParseResult]
-    matcher = None  # type: Optional[MATCHER_TYPE]
+    matcher = None  # type: Optional[MatcherCallable]
     match_format = papis.config.getstring("match-format")   # type: str
 
     @classmethod
@@ -89,7 +112,7 @@ class DocMatcher(object):
         cls.search = search
 
     @classmethod
-    def set_matcher(cls, matcher: MATCHER_TYPE) -> None:
+    def set_matcher(cls, matcher: MatcherCallable) -> None:
         """
         >>> from papis.database.cache import match_document
         >>> DocMatcher.set_matcher(match_document)

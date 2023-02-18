@@ -100,13 +100,7 @@ def match_document(
         doc_key: Optional[str] = None) -> Optional[Match[str]]:
     """Match a document's keys to a given search pattern.
 
-    The search pattern is matched against *doc_key*, if given, and *match_format*
-    otherwise.
-
-    :param search: A regex pattern to match the query against..
-    :param match_format: A format string (see ``papis.format.format``) to match
-        against.
-    :param doc_key: A specific key in the document to match against.
+    See ``papis.docmatcher.MatcherCallable``.
 
     >>> papis.config.set('match-format', '{doc[author]}')
     >>> document = papis.document.from_data({'author': 'einstein'})
