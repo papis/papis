@@ -1,7 +1,6 @@
 import os
-import re
 import sys
-from typing import List, Optional, Match, Dict, Tuple
+from typing import Dict, List, Match, Optional, Pattern, Tuple
 
 import papis.utils
 import papis.docmatcher
@@ -95,14 +94,19 @@ def filter_documents(
 
 
 def match_document(
-        document: papis.document.Document, search: str,
+        document: papis.document.Document,
+        search: Pattern[str],
         match_format: Optional[str] = None,
         doc_key: Optional[str] = None) -> Optional[Match[str]]:
-    """Main function to match document to a given search.
+    """Match a document's keys to a given search pattern.
 
-    :param search: A (valid) search string.
-    :param match_format: A format string (see ``papis.format.format``).
-    :param doc_key: Restrict the search to an optionally given document key.
+    The search pattern is matched against *doc_key*, if given, and *match_format*
+    otherwise.
+
+    :param search: A regex pattern to match the query against..
+    :param match_format: A format string (see ``papis.format.format``) to match
+        against.
+    :param doc_key: A specific key in the document to match against.
 
     >>> papis.config.set('match-format', '{doc[author]}')
     >>> document = papis.document.from_data({'author': 'einstein'})
@@ -118,23 +122,7 @@ def match_document(
         match_string = str(document[doc_key])
     else:
         match_string = papis.format.format(match_format, document)
-    regex = get_regex_from_search(search)
-    return re.match(regex, match_string, re.IGNORECASE)
-
-
-def get_regex_from_search(search: str) -> str:
-    r"""Creates a default regex from a search string.
-
-    :param search: A valid search string
-    :returns: Regular expression
-
-    >>> get_regex_from_search(' ein 192     photon')
-    '.*ein.*192.*photon.*'
-
-    >>> get_regex_from_search('{1234}')
-    '.*\\{1234\\}.*'
-    """
-    return ".*" + ".*".join(map(re.escape, search.split())) + ".*"
+    return search.match(match_string)
 
 
 class Database(papis.database.base.Database):
@@ -213,7 +201,9 @@ class Database(papis.database.base.Database):
     def match(self,
               document: papis.document.Document,
               query_string: str) -> bool:
-        return bool(match_document(document, query_string))
+        from papis.docmatcher import get_regex_from_search
+        query = get_regex_from_search(query_string)
+        return bool(match_document(document, query))
 
     def clear(self) -> None:
         cache_path = self._get_cache_file_path()
