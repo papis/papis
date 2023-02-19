@@ -280,22 +280,29 @@ def get_matching_importer_or_downloader(matching_string: str
         logger.debug("trying with importer "
                      "{c.Back.BLACK}{c.Fore.YELLOW}%s{c.Style.RESET_ALL}",
                      importer_cls)
+
+        name = "{}.{}".format(importer_cls.__module__, importer_cls.__name__)
         try:
-            importer = importer_cls.match(
-                matching_string)  # type: Optional[papis.importer.Importer]
-        except Exception as e:
-            logger.error(e)
-            continue
+            importer = importer_cls.match(matching_string)
+        except Exception:
+            logger.debug("%s failed to match query: '%s'.",
+                         name, matching_string)
+            importer = None
+
         if importer:
-            logger.info(
-                "%s {c.Back.BLACK}{c.Fore.GREEN}matches %s{c.Style.RESET_ALL}",
-                matching_string, importer.name)
             try:
                 importer.fetch()
-            except Exception as e:
-                logger.error(e)
+            except Exception:
+                logger.debug("%s (%s) failed to fetch query: '%s'.",
+                             name, importer.name, matching_string)
             else:
+                logger.info(
+                    "{c.Back.BLACK}{c.Fore.GREEN}%s (%s) fetched data for query '%s'!"
+                    "{c.Style.RESET_ALL}",
+                    name, importer.name, matching_string)
+
                 importers.append(importer)
+
     return importers
 
 
