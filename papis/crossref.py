@@ -345,13 +345,14 @@ class DoiFromPdfImporter(papis.importer.Importer):
         return importer if importer.doi else None
 
     def fetch(self) -> None:
-        self.logger.info("Trying to parse DOI from file '%s'", self.uri)
         if self.ctx:
             return
+
         if not self.doi:
             self.doi = doi.pdf_to_doi(self.uri, maxlines=2000)
+
         if self.doi:
-            self.logger.info("Parsed DOI: '%s'", self.doi)
+            self.logger.info("Parsed DOI '%s' from file: '%s'.", self.doi, self.uri)
             self.logger.warning(
                 "There is no guarantee that this DOI is the correct one")
             importer = Importer(uri=self.doi)
