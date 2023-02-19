@@ -1,25 +1,116 @@
 VERSION v0.13
 =============
 
-## NEW `papis_id` special key in `info.yaml`
+## Features
 
-In order to make plugin writing easier we have decided to introduce
-a `papis_id` key in the document's info files.
+### New: Special `papis_id` key ([#449](https://github.com/papis/papis/pull/449))
 
-**Important**: When you update to this new version,
-clear the cache of the database backend that you're using
+In order to make plugin writing easier we have decided to introduce a
+`papis_id` key in the document's info files. This key essentially functions as
+a UUID for the document. Many commands have gained support for this, e.g.
 
-```sh
-papis --cc
-```
+    papis list --id query
+    papis open papis_id:someid
 
-## NEW `papis doctor` command
+For more information see the documentation.
 
-## Major improvements to the web application
+**Important**: This change requires updating the database backend. This can be
+done by simply clearing the cache using `papis --cc`.
 
-## Project's README improvement
+### New: `papis doctor` command ([#421](https://github.com/papis/papis/pull/421))
 
-## Improvements to `bibtex` export
+A new `papis doctor` command was introduced that can be used to check that
+document information is correct, up to date, or is nicely linted. The command
+also supports fixing incorrect information for many cases!
+
+It can be used as
+
+    papis doctor --checks files --explain query
+
+There are several useful checks implemented already (non-exhaustive list):
+
+* `files`: checks that the document files actually exist in the file system.
+* `keys-exist`: checks that the provided keys exist in the document.
+* `bibtex-type`: checks that the document type is a valid BibTeX type.
+* `refs`: checks that the document ref exists and does not contain invalid characters.
+
+For more information see the documentation.
+
+### New: `papis citations` command ([#451](https://github.com/papis/papis/pull/451))
+
+A new `papis citations` command was added to handle retrieving citation
+information for a document. This includes both papers cited by the document
+and those which cite the document itself.
+
+For more information see the documentation.
+
+
+### New: Add DBLP support ([#489](https://github.com/papis/papis/pull/489))
+
+Add support for the [DBLP](dblp.org/) database. The database can now be explored
+using
+
+    papis explore dblp -q query pick
+
+and documents can be imported directly using the DBLP key or URL
+
+    papis add --from dblp 'conf/iccg/EncarnacaoAFFGM93'
+
+### Major improvements to the web application ([#424](https://github.com/papis/papis/pull/424))
+
+The Papis web application, which can be accessed with `papis serve`, has seen
+major development since the last version. It now has support for
+
+* editing of `info.yaml` file of a document (requires `ace.js`).
+* viewing document PDF files directly in the browser (requires `pdfjs`).
+* viewing LaTeX in titles, abstracts and others (requires `KaTeX`).
+* exporting the document to BibTeX.
+* showing citations for the document.
+* showing errors from `papis doctor`.
+* showing a timeline for queried documents.
+
+And many other general interface and robustness improvements.
+
+### Other noteworthy features
+
+* A major overhaul of the README ([#415](https://github.com/papis/papis/pull/415)).
+* Consistent use of ANSI colors ([#462](https://github.com/papis/papis/pull/462)).
+* Better notes handling in
+  `papis update` ([#404](https://github.com/papis/papis/pull/404)),
+  `papis edit` ([#391](https://github.com/papis/papis/pull/391)) and
+  the papis picker ([#319](https://github.com/papis/papis/pull/319)).
+* Improvements to BiBTeX export (
+  [#412](https://github.com/papis/papis/pull/412)
+  [#444](https://github.com/papis/papis/pull/444)
+  [#443](https://github.com/papis/papis/pull/443)
+  [#468](https://github.com/papis/papis/pull/468)).
+* Support [NO_COLOR](https://no-color.org/)
+  ([#437](https://github.com/papis/papis/pull/437)).
+* Major overhaul of the `papis config` command, which can now show defaults
+  and select specific sections ([#454](https://github.com/papis/papis/pull/454)).
+* Fix shell completion on `bash`, `zsh`, and `fish`
+  ([#478](https://github.com/papis/papis/pull/478)).
+* Update the logging format ([#465](https://github.com/papis/papis/pull/465)).
+* Updated multiple downloaders to support the latest version of the website
+  and for better data extraction (
+  [#441](https://github.com/papis/papis/pull/441)
+  [#447](https://github.com/papis/papis/pull/447)).
+* Avoid downloading files on `papis add` in certain scenarios
+  ([#505](https://github.com/papis/papis/pull/505)).
+* Recognize `DjVu` files correctly ([#522](https://github.com/papis/papis/pull/522)).
+* Add USENIX downloader ([#523](https://github.com/papis/papis/pull/523)).
+* Support remote URLs in `papis addto` ([#541](https://github.com/papis/papis/pull/541)).
+* Add `sort-reverse` configuration option ([#543](https://github.com/papis/papis/pull/543)).
+
+## Bug fixes
+
+* Properly detach processes on `papis open` ([#476](https://github.com/papis/papis/pull/476)).
+* Fix link extraction in `crossref` ([#480](https://github.com/papis/papis/pull/480)).
+* Do not generate refs in downloaders ([#483](https://github.com/papis/papis/pull/483)).
+* Fix empty config file handling ([#497](https://github.com/papis/papis/pull/497)).
+* Fix database query for `jinja2` ([#499](https://github.com/papis/papis/pull/499)).
+* Fix crash on trying to add a duplicate document ([#510](https://github.com/papis/papis/pull/510)).
+* Fix many typos ([#540](https://github.com/papis/papis/pull/540)).
 
 VERSION v0.12
 =============
@@ -73,7 +164,7 @@ Check out the
 ## MacOS
 - disable multiprocessing by default on mac due to lack of performance and source
   of strange behaviour.
-  
+
 ## Community
 - usage of github discussions and #papis channel on libera.
 
