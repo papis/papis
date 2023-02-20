@@ -83,14 +83,14 @@ class MultiCommand(click.core.MultiCommand):
                 str, difflib.get_close_matches(name, self.scripts, n=2)))
 
             if matches:
-                print("Command '{name}' is unknown! Did you mean '{matches}'?"
-                      .format(name=name, matches="' or '".join(matches)))
+                click.echo("Command '{name}' is unknown! Did you mean '{matches}'?"
+                           .format(name=name, matches="' or '".join(matches)))
             else:
-                print("Command '{name}' is unknown!".format(name=name))
+                click.echo("Command '{name}' is unknown!".format(name=name))
 
             # return the match if there was only one match
             if len(matches) == 1:
-                print("I suppose you meant: '%s'", matches[0])
+                click.echo("I suppose you meant: '{}'".format(matches[0]))
                 script = self.scripts[matches[0]]
             else:
                 return None

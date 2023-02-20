@@ -553,9 +553,9 @@ def cli(files: List[str],
     if list_importers:
         import_mgr = papis.importer.get_import_mgr()
         for n in import_mgr.names():
-            print("{name}\n\t{text}".format(
-                name=n,
-                text=re.sub(r"[ \n]+", " ", import_mgr[n].plugin.__doc__)))
+            text = re.sub(r"[ \n]+", " ", import_mgr[n].plugin.__doc__)
+            click.echo("{name}\n\t{text}".format(name=n, text=text))
+
         return
 
     data = {}

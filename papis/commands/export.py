@@ -144,7 +144,7 @@ def cli(query: str,
                 fd.write(ret_string)
         else:
             logger.info("Dumping to stdout")
-            print(ret_string)
+            click.echo(ret_string)
         return
 
     import shutil
@@ -195,4 +195,4 @@ def explorer(ctx: click.Context, fmt: str, out: str) -> None:
                 "Writing %d documents in %s into '%s'", len(docs), fmt, out)
             fd.write(outstring)
     else:
-        print(outstring)
+        click.echo(outstring)
