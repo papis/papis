@@ -306,24 +306,25 @@ def get_available_downloaders() -> List[Type[Downloader]]:
 
 
 def get_matching_downloaders(url: str) -> Sequence[Downloader]:
-    """Get matching downloaders sorted by their priorities.
-    The first elements have the higher priority
+    """Get matching downloaders for the *url*.
 
-    :param url: Url to be matched against
-    :returns: A list of sorted downloaders
+    :param url: URL to be matched against.
+    :returns: A list of downloaders (sorted by priority).
     """
-    print(get_available_downloaders())
-    _maybe_matches = [
-        d.match(url)
-        for d in get_available_downloaders()]  # List[Optional[Downloader]]
-    matches = [m
-               for m in _maybe_matches
-               if m is not None]  # type: List[Downloader]
-    print(matches)
-    return sorted(
-        matches,
-        key=lambda k: k.priority,
-        reverse=True)
+    available_downloaders = get_available_downloaders()
+    logger.debug("Available downloaders: '%s'",
+                 "', '".join([d.__module__ for d in available_downloaders]))
+
+    matches = [d
+               for maybe_downloader in available_downloaders
+               for d in [maybe_downloader.match(url)]
+               if d is not None]  # List[Downloader]
+
+    logger.debug("Downloaders matching '%s': '%s'",
+                 url,
+                 "', '".join([d.name for d in matches]))
+
+    return sorted(matches, key=lambda k: k.priority, reverse=True)
 
 
 def get_downloader_by_name(name: str) -> Type[Downloader]:

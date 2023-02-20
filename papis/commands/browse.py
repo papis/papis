@@ -113,7 +113,8 @@ def run(document: papis.document.Document,
         logger.info("Opening url '%s'", url)
         papis.utils.general_open(url, "browser", wait=False)
     else:
-        print(url)
+        click.echo(url)
+
     return url
 
 

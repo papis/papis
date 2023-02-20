@@ -350,7 +350,7 @@ def _browse(ctx: click.Context, key: Optional[str]) -> None:
 @click.pass_context
 def _rm(ctx: click.Context) -> None:
     """Remove a document from the documents list"""
-    print("Sorry, TODO...")
+    click.echo("Sorry, TODO...")
 
 
 @cli.command("ref")
@@ -368,7 +368,7 @@ def _ref(ctx: click.Context, out: Optional[str]) -> None:
         with open(out, "w+") as fd:
             fd.write(ref)
     else:
-        print(ref)
+        click.echo(ref)
 
 
 @cli.command("save")
@@ -385,7 +385,7 @@ def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
     if not force:
         c = papis.tui.utils.confirm("Are you sure you want to save?")
         if not c:
-            print("Not saving..")
+            click.echo("Not saving..")
             return
     with open(bibfile, "w+") as fd:
         logger.info("Saving %d documents in '%s'", len(docs), bibfile)
