@@ -1,14 +1,13 @@
 import os
+import json
+from typing import Any, Dict
+
 import pytest
 
-from unittest.mock import patch
-import json
-from papis.crossref import (
-    get_data, doi_to_data
-)
+import tests as testlib
 
 
-def _get_test_json(filename):
+def _get_test_json(filename: str) -> Dict[str, Any]:
     resources = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
         "resources", "crossref"
@@ -18,8 +17,11 @@ def _get_test_json(filename):
         return json.load(fd)
 
 
+@testlib.with_default_config()
 @pytest.mark.xfail(reason="crossref times out quite often")
-def test_get_data():
+def test_get_data() -> None:
+    from papis.crossref import get_data
+
     data = get_data(
         author="Albert Einstein",
         max_results=1,
@@ -28,34 +30,24 @@ def test_get_data():
     assert len(data) == 1
 
 
-@patch(
-    "papis.crossref._get_crossref_works",
-    lambda **x: _get_test_json("test1.json")
-)
-def test_doi_to_data_1():
-    data = doi_to_data("10.1103/physrevb.89.140501")
-    assert isinstance(data, dict)
-    result = _get_test_json("test1_out.json")
-    assert result == data
+@testlib.with_default_config()
+@pytest.mark.parametrize(("doi", "basename"), [
+    ("10.1103/physrevb.89.140501", "test1"),
+    ("10.1103/physrevb.89.140501", "test_2"),
+    ("10.1145/3184558.3186235", "test_conference")
+    ])
+def test_doi_to_data(monkeypatch, doi: str, basename: str) -> None:
+    infile = "{}.json".format(basename)
+    outfile = "{}_out.json".format(basename)
 
+    import papis.crossref
 
-@patch(
-    "papis.crossref._get_crossref_works",
-    lambda **x: _get_test_json("test_2.json")
-)
-def test_doi_to_data_2():
-    data = doi_to_data("10.1103/physrevb.89.140501")
-    assert isinstance(data, dict)
-    result = _get_test_json("test_2_out.json")
-    assert result == data
+    with monkeypatch.context() as m:
+        m.setattr(papis.crossref,
+                  "_get_crossref_works",
+                  lambda **x: _get_test_json(infile))
 
+        data = papis.crossref.doi_to_data(doi)
+        result = _get_test_json(outfile)
 
-@patch(
-    "papis.crossref._get_crossref_works",
-    lambda **x: _get_test_json("test_conference.json")
-)
-def test_doi_to_data_conference():
-    data = doi_to_data("")
-    assert isinstance(data, dict)
-    result = _get_test_json("test_conference_out.json")
-    assert result == data
+        assert data == result

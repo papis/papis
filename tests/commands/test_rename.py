@@ -1,23 +1,19 @@
 import os
-import unittest
 
 import papis.database
 from papis.commands.rename import run
 
 import tests
+import tests.cli
 
 
-class Test(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        tests.setup_test_library()
+class Test(tests.cli.TestWithLibrary):
 
     def get_docs(self):
         db = papis.database.get()
         return db.get_all_documents()
 
-    def test_simple_update(self):
+    def test_simple_update(self) -> None:
         docs = self.get_docs()
         document = docs[0]
         title = document["title"]

@@ -1,4 +1,3 @@
-import unittest
 import os
 
 import papis.config
@@ -6,6 +5,7 @@ import papis.bibtex
 from papis.commands.update import run, cli
 
 import tests
+import tests.cli
 
 
 def _get_resource_file(filename):
@@ -19,11 +19,7 @@ def _get_resource_file(filename):
     return filepath
 
 
-class Test(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        tests.setup_test_library()
+class Test(tests.cli.TestWithLibrary):
 
     def get_docs(self):
         db = papis.database.get()

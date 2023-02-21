@@ -21,9 +21,9 @@ def test_basic():
     assert ol.marks == [0, 2]
     ol.toggle_mark_current_selection()
     assert ol.marks == [0]
-    # fg:red because it failed
+    # fg:ansired because it failed
     assert ol.get_tokens() == [
-        ("", "hello\n"), ("", "world\n"), ("fg:red", "<bye\n")]
+        ("", "hello\n"), ("", "world\n"), ("fg:ansired", "<bye\n")]
     assert ol.get_line_prefix(2, None) == [
         ("class:options_list.selected_margin", "|")]
     assert ol.get_line_prefix(1, None) == [

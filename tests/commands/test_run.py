@@ -1,23 +1,20 @@
-import unittest
-import tests
 from papis.commands.run import run
 import papis.config
 
+import tests
+import tests.cli
 
-class Test(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        tests.setup_test_library()
+class Test(tests.cli.TestWithLibrary):
 
     @classmethod
     def tearDownClass(cls):
         pass
 
-    def test_run_ls(self):
+    def test_run_ls(self) -> None:
         status = run(papis.config.get_lib_dirs()[0], command=["ls"])
         assert status == 0
 
-    def test_run_nonexistent(self):
+    def test_run_nonexistent(self) -> None:
         status = run(papis.config.get_lib_dirs()[0], command=["nonexistent"])
         assert not status == 0

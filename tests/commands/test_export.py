@@ -1,50 +1,46 @@
-import papis.bibtex
-import json
-import yaml
-import tempfile
-import unittest
-import tests
-import tests.cli
-import papis.config
-import papis.document
-from papis.commands.export import run, cli
 import re
 import os
 import glob
 
-# NOTE: try to use the CLoader when possible, as it's a lot faster than the
-# python version, at least at the time of writing
-try:
-    from yaml import CSafeLoader as Loader
-except ImportError:
-    from yaml import SafeLoader as Loader  # type: ignore[misc]
+import json
+import tempfile
+
+import yaml
+
+import papis.yaml
+import papis.bibtex
+import papis.config
+import papis.document
+from papis.commands.export import run, cli
+
+import tests
+import tests.cli
 
 
-class TestRun(unittest.TestCase):
+Loader = papis.yaml.YAML_LOADER
 
-    @classmethod
-    def setUpClass(cls):
-        tests.setup_test_library()
+
+class TestRun(tests.cli.TestWithLibrary):
 
     def get_docs(self):
         db = papis.database.get()
         return db.get_all_documents()
 
-    def test_bibtex(self):
+    def test_bibtex(self) -> None:
         docs = self.get_docs()
         string = run(docs, to_format="bibtex")
         self.assertTrue(string)
         data = papis.bibtex.bibtex_to_dict(string)
         self.assertTrue(data)
 
-    def test_json(self):
+    def test_json(self) -> None:
         docs = self.get_docs()
         string = run(docs, to_format="json")
         self.assertTrue(string)
         data = json.loads(string)
         self.assertTrue(data)
 
-    def test_yaml(self):
+    def test_yaml(self) -> None:
         docs = self.get_docs()
         string = run(docs, to_format="yaml")
         self.assertTrue(string)
@@ -65,11 +61,11 @@ class TestCli(tests.cli.TestCli):
 
     cli = cli
 
-    def test_main(self):
+    def test_main(self) -> None:
         self.do_test_cli_function_exists()
         self.do_test_help()
 
-    def test_json(self):
+    def test_json(self) -> None:
         result = self.invoke([
             "krishnamurti", "--format", "json"
         ])
@@ -97,7 +93,7 @@ class TestCli(tests.cli.TestCli):
         self.assertIsNot(re.match(r".*Krishnamurti.*", data[0]["author"]), None)
         os.unlink(outfile)
 
-    def test_yaml(self):
+    def test_yaml(self) -> None:
         result = self.invoke([
             "krishnamurti", "--format", "yaml"
         ])
@@ -121,7 +117,7 @@ class TestCli(tests.cli.TestCli):
         self.assertIsNot(re.match(r".*Krishnamurti.*", data["author"]), None)
         os.unlink(outfile)
 
-    def test_folder(self):
+    def test_folder(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             outdir = os.path.join(d, "export")
 
@@ -135,7 +131,7 @@ class TestCli(tests.cli.TestCli):
             self.assertIsNot(doc, None)
             self.assertIsNot(re.match(r".*Krishnamurti.*", doc["author"]), None)
 
-    def test_folder_all(self):
+    def test_folder_all(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             outdir = os.path.join(d, "export")
 
@@ -151,6 +147,6 @@ class TestCli(tests.cli.TestCli):
                 self.assertTrue(os.path.exists(d))
                 self.assertTrue(os.path.isdir(d))
 
-    def test_no_documents(self):
+    def test_no_documents(self) -> None:
         result = self.invoke(["-f", "bibtex", "__no_document__"])
         self.assertEqual(result.exit_code, 0)

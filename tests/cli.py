@@ -1,29 +1,40 @@
-import tests
 import unittest
+from typing import Any, Optional
+
+import click
+import click.testing
+
 import papis.config
 
+import tests
 
-class TestCli(unittest.TestCase):
 
-    runner = None
-    cli = None
+class TestWithLibrary(unittest.TestCase):
 
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:
         tests.setup_test_library()
 
-    def setUp(self):
-        from click.testing import CliRunner
-        self.runner = CliRunner()
-        self.assertEqual(papis.config.get_lib_name(), tests.get_test_lib_name())
 
-    def invoke(self, *args, **kwargs):
-        return self.runner.invoke(self.cli, *args, **kwargs)
+class TestCli(TestWithLibrary):
 
-    def do_test_cli_function_exists(self):
+    runner = None  # type: Optional[click.testing.CliRunner]
+    cli = None  # type: Optional[click.BaseCommand]
+
+    def setUp(self) -> None:
+        self.runner = click.testing.CliRunner()
+        self.assertEqual(papis.config.get_lib_name(),
+                         tests.get_test_lib_name())
+
+    def invoke(self, *args: Any, **kwargs: Any) -> click.testing.Result:
+        if self.runner is not None and self.cli is not None:
+            return self.runner.invoke(self.cli, *args, **kwargs)
+        raise RuntimeError("Runner or cli are not set")
+
+    def do_test_cli_function_exists(self) -> None:
         self.assertIsNot(self.cli, None)
 
-    def do_test_help(self):
+    def do_test_help(self) -> None:
         for flag in ["-h", "--help"]:
             result = self.invoke([flag])
             self.assertNotEqual(len(result.output), 0)

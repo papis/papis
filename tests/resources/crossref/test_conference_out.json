@@ -27,6 +27,7 @@
   ],
   "type": "inproceedings",
   "url": "http://dx.doi.org/10.1145/3184558.3186235",
+  "doc_url": "http://dl.acm.org/ft_gateway.cfm?id=3186235&ftid=1958239&dwn=1",
   "citations": [
     {
       "unstructured": "Pieter Bonte, Femke Ongenae, and Filip De Turck. 2016. Learning Semantic Rules for Intelligent Transport Scheduling in Hospitals. In Proc. of the 5th Workshop on Data Mining and Knowledge Discovery meets Linked Open Data."

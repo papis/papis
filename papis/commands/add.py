@@ -244,6 +244,20 @@ def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
     return result
 
 
+def ensure_new_folder(path: str) -> str:
+    if not os.path.exists(path):
+        return path
+
+    from string import ascii_lowercase
+    suffix = papis.utils.create_identifier(ascii_lowercase)
+
+    new_path = path
+    while os.path.exists(new_path):
+        new_path = "{}-{}".format(path, next(suffix))
+
+    return new_path
+
+
 def run(paths: List[str],
         data: Optional[Dict[str, Any]] = None,
         folder_name: Optional[str] = None,
@@ -296,6 +310,13 @@ def run(paths: List[str],
 
     tmp_document = papis.document.Document(temp_dir)
 
+    # reference building
+    # NOTE: this needs to go before any papis.format calls, so that those can
+    # potentially use the 'ref' key in the formatted strings.
+    if "ref" not in data:
+        data["ref"] = papis.bibtex.create_reference(data)
+        logger.info("Created reference '%s'", data["ref"])
+
     if base_path is None:
         base_path = os.path.expanduser(papis.config.get_lib_dirs()[0])
     out_folder_path = base_path
@@ -335,6 +356,9 @@ def run(paths: List[str],
 
     if not papis.utils.is_relative_to(out_folder_path, base_path):
         raise ValueError("formatting produced path outside of library")
+
+    if os.path.exists(out_folder_path):
+        out_folder_path = ensure_new_folder(out_folder_path)
 
     data["files"] = in_documents_names
 
@@ -378,11 +402,6 @@ def run(paths: List[str],
 
     data["files"] = new_file_list
 
-    # reference building
-    if "ref" not in data:
-        data["ref"] = papis.bibtex.create_reference(data)
-        logger.info("Created reference '%s'", data["ref"])
-
     tmp_document.update(data)
     tmp_document.save()
 
@@ -401,17 +420,19 @@ def run(paths: List[str],
     except IndexError:
         logger.info("No document matching found already in the library")
     else:
-        logger.warning("{c.Fore.RED}DUPLICATION WARNING{c.Style.RESET_ALL}")
-        logger.warning(
-            "A document in the library seems to match the added one.")
-        logger.warning(
-            "(Hint) Use the 'papis update' command to just update the info.")
+        click.echo("The following document is already in your library:")
+        papis.tui.utils.text_area(papis.document.dump(found_document),
+                                  lexer_name="yaml")
 
-        papis.tui.utils.text_area(
-            "The following document is already in your library",
-            papis.document.dump(found_document),
-            lexer_name="yaml",
-            height=20)
+        logger.warning("Duplication Warning")
+        logger.warning(
+            "A document (shown above) in the '%s' library seems to match the "
+            "one to be added.", papis.config.get_lib())
+        logger.warning(
+            "Hint: Use the 'papis update' command instead to update the "
+            "existing document.")
+
+        # NOTE: we always want the user to confirm if a duplicate is found!
         confirm = True
 
     if citations:
@@ -421,7 +442,7 @@ def run(paths: List[str],
         for d_path in tmp_document.get_files():
             papis.utils.open_file(d_path)
     if confirm:
-        if not papis.tui.utils.confirm("Really add?"):
+        if not papis.tui.utils.confirm("Do you want to add the new document?"):
             return
 
     logger.info(
@@ -441,7 +462,7 @@ def run(paths: List[str],
     help="Add a document into a given library"
 )
 @click.help_option("--help", "-h")
-@click.argument("files", type=str, nargs=-1)
+@click.argument("files", type=click.Path(), nargs=-1)
 @click.option(
     "-s", "--set", "set_list",
     help="Set some information before",

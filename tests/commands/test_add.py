@@ -1,7 +1,6 @@
 import re
 import os
 import tempfile
-import unittest
 from unittest.mock import patch
 import tests
 import tests.cli
@@ -53,9 +52,7 @@ def test_get_hash_folder():
     os.unlink(path)
 
 
-class TestGetFileName(unittest.TestCase):
-    def setUp(self):
-        tests.setup_test_library()
+class TestGetFileName(tests.cli.TestWithLibrary):
 
     def test_get_file_name(self):
         pdf = create_random_pdf(suffix=".pdf")
@@ -98,11 +95,7 @@ class TestGetFileName(unittest.TestCase):
         assert filename == "blah-2.yaml"
 
 
-class TestRun(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        tests.setup_test_library()
+class TestRun(tests.cli.TestWithLibrary):
 
     def test_nofile_exception(self):
         try:
@@ -311,36 +304,6 @@ class TestCli(tests.cli.TestCli):
         # and it should still be an epub
         self.assertEqual(get_document_extension(epub), "epub")
         os.unlink(yamlfile)
-
-    # @patch(
-    #     "papis.crossref.get_data",
-    #     lambda **x: [
-    #         {"author": "Kant", "doi": "1/1", "doc_url": "https://nourl"}])
-    # @patch(
-    #     "papis.downloaders.get_downloader",
-    #     lambda url, downloader:
-    #         tests.MockDownloader(
-    #             bibtex_data=" ",
-    #             document_data="%PDF-1.5%\n".encode()))
-    # @patch("papis.utils.open_file", lambda x: None)
-    # @patch(
-    #     "papis.utils.update_doc_from_data_interactively",
-    #     lambda ctxdata, impdata, string: ctxdata.update(impdata))
-    # @patch('papis.utils.confirm', lambda x: True)
-    # def test_from_doi(self):
-    #     result = self.invoke([
-    #         "--from", "doi", "10.1112/plms/s2-42.1.0",
-    #         "--confirm", "--open"
-    #     ])
-    #     self.assertEqual(result.exit_code, 0)
-    #     db = papis.database.get()
-    #     docs = db.query_dict({"author": "Kant"})
-    #     self.assertEqual(len(docs), 1)
-    #     doc = docs[0]
-    #     # one file at least was retrieved
-    #     self.assertEqual(len(doc.get_files()), 1)
-    #     # it has the pdf ending
-    #     self.assertEqual(len(re.split(".pdf", doc.get_files()[0])), 2)
 
     @patch("papis.utils.open_file", lambda x: None)
     @patch("papis.tui.utils.confirm", lambda x: True)

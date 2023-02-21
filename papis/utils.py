@@ -4,7 +4,7 @@ import re
 import pathlib
 from itertools import count, product
 from typing import (Optional, List, Iterator, Any, Dict,
-                    Union, Callable, TypeVar)
+                    Union, Callable, TypeVar, TYPE_CHECKING)
 
 try:
     import multiprocessing.synchronize  # noqa: F401
@@ -14,6 +14,7 @@ except ImportError:
     HAS_MULTIPROCESSING = False
 
 import papis.config
+import papis.format
 import papis.exceptions
 import papis.importer
 import papis.downloaders
@@ -24,8 +25,27 @@ import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
+if TYPE_CHECKING:
+    import requests
+
 A = TypeVar("A")
 B = TypeVar("B")
+
+
+def get_session() -> "requests.Session":
+    import requests
+    session = requests.Session()
+    session.headers.update({
+        "User-Agent": papis.config.getstring("user-agent"),
+    })
+
+    proxy = papis.config.get("downloader-proxy")
+    if proxy is not None:
+        session.proxies = {
+            "http": proxy,
+            "https": proxy,
+        }
+    return session
 
 
 def has_multiprocessing() -> bool:
@@ -39,9 +59,13 @@ def parmap(f: Callable[[A], B],
     todo: enable multiprocessing support for darwin (py3.6+) ...
     todo: ... see https://github.com/papis/papis/issues/323
     """
-    if has_multiprocessing() and sys.platform != "darwin":
-        np = np or os.cpu_count()
-        np = int(os.environ.get("PAPIS_NP", str(np)))
+    # FIXME: load singleton plugins here instead of on all the processes
+    _ = papis.format.get_formater()
+
+    if np is None:
+        np = int(os.environ.get("PAPIS_NP", str(os.cpu_count())))
+
+    if np and HAS_MULTIPROCESSING and sys.platform != "darwin":
         with Pool(np) as pool:
             return list(pool.map(f, xs))
     else:
@@ -65,15 +89,36 @@ def general_open(file_name: str,
     cmd = shlex.split("{0} '{1}'".format(opener, file_name))
     logger.debug("cmd: %s", cmd)
 
+    # NOTE: Detached processes do not fail properly when the command does not
+    # exist, so we check for it manually here
+    import shutil
+    if not shutil.which(cmd[0]):
+        raise FileNotFoundError(
+            "[Errno 2] No such file or directory: '{}'".format(opener))
+
     import subprocess
     if wait:
         logger.debug("Waiting for process to finish")
         subprocess.call(cmd)
     else:
         logger.debug("Not waiting for process to finish")
-        subprocess.Popen(
-            cmd, shell=False,
-            stdin=None, stdout=None, stderr=None, close_fds=True)
+        popen_kwargs = {
+            "shell": False,
+            "stdin": None,
+            "stdout": subprocess.DEVNULL,
+            "stderr": subprocess.DEVNULL,
+            "close_fds": True
+        }  # type: Dict[str, Any]
+
+        # NOTE: Detach process so that the terminal can be closed without also
+        # closing the 'opentool' itself with the open document
+        if sys.platform == "win32":
+            popen_kwargs["creationflags"] = subprocess.DETACHED_PROCESS
+            popen_kwargs["creationflags"] |= subprocess.CREATE_NEW_PROCESS_GROUP
+        else:
+            cmd.insert(0, "nohup")
+
+        subprocess.Popen(cmd, **popen_kwargs)
 
 
 def open_file(file_path: str, wait: bool = True) -> None:

@@ -2,4 +2,4 @@ API
 ===
 
 .. automodule:: papis.api
-  :members:
+    :members:

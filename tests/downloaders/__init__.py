@@ -1,9 +1,9 @@
 import os
 import json
-import tempfile
-import functools
-
 from typing import Any, Callable, Dict, Optional
+
+from tests import with_default_config       # noqa: F401
+
 
 DOWNLOADER_RESOURCES_PATH = os.path.join(os.path.dirname(__file__), "resources")
 

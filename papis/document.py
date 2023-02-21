@@ -351,11 +351,11 @@ def move(document: Document, path: str) -> None:
         document.set_folder(path)
 
 
-def from_data(data: Dict[str, Any]) -> Document:
-    """Construct a document object from a data dictionary.
+def from_data(data: Union[Document, Dict[str, Any]]) -> Document:
+    """Construct a document object from a dictionary.
 
-    :param data: Data to be copied to a new document
-    :returns: A papis document
+    :param data: A dictionary to be copied to a new document. If this is already
+        a document, a (deep) copy is performed.
     """
     return Document(data=data)
 

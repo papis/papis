@@ -76,23 +76,16 @@ class Downloader(papis.importer.Importer):
 
         self.expected_document_extension = expected_document_extension
         self.priority = priority
+        self.session = papis.utils.get_session()
         self._soup = None  # type: Optional[bs4.BeautifulSoup]
 
         self.bibtex_data = None  # type: Optional[str]
         self.document_data = None  # type: Optional[bytes]
 
-        import requests
-        self.session = requests.Session()  # type: requests.Session
-        self.session.headers = requests.structures.CaseInsensitiveDict({
-            "User-Agent": papis.config.getstring("user-agent")
-        })
-        proxy = papis.config.get("downloader-proxy")
-        if proxy is not None:
-            self.session.proxies = {
-                "http": proxy,
-                "https": proxy,
-            }
         self.cookies = cookies
+
+    def __del__(self) -> None:
+        self.session.close()
 
     def fetch_data(self) -> None:
         """
@@ -118,8 +111,14 @@ class Downloader(papis.importer.Importer):
             if bib_rawdata:
                 datalist = papis.bibtex.bibtex_to_dict(bib_rawdata)
                 if datalist:
-                    self.logger.info("Merging data from bibtex")
+                    if len(datalist) > 1:
+                        self.logger.warning(
+                            "'%s' found %d BibTeX entries. Picking first one.",
+                            self.name, len(datalist))
+
+                    self.logger.info("Merging data from BibTeX")
                     self.ctx.data.update(datalist[0])
+
         # try getting doi
         try:
             doi = self.get_doi()
@@ -156,7 +155,7 @@ class Downloader(papis.importer.Importer):
 
     def _get_body(self) -> bytes:
         """Get body of the uri, this is also important for unittesting"""
-        return self.session.get(self.uri).content
+        return self.session.get(self.uri, cookies=self.cookies).content
 
     def _get_soup(self) -> "bs4.BeautifulSoup":
         """Get body of the uri, this is also important for unittesting"""
@@ -202,9 +201,10 @@ class Downloader(papis.importer.Importer):
         url = self.get_bibtex_url()
         if not url:
             return
-        res = self.session.get(url, cookies=self.cookies)
         self.logger.info("Downloading bibtex from '%s'", url)
-        self.bibtex_data = res.content.decode()
+
+        response = self.session.get(url, cookies=self.cookies)
+        self.bibtex_data = response.content.decode()
 
     def get_document_url(self) -> Optional[str]:
         """It returns the urls that is to be access to download
@@ -253,8 +253,9 @@ class Downloader(papis.importer.Importer):
         if not url:
             return
         self.logger.info("Downloading file from '%s'", url)
-        res = self.session.get(url, cookies=self.cookies)
-        self.document_data = res.content
+
+        response = self.session.get(url, cookies=self.cookies)
+        self.document_data = response.content
 
     def check_document_format(self) -> bool:
         """Check if the downloaded document has the filetype that the

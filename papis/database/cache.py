@@ -1,7 +1,6 @@
 import os
-import re
 import sys
-from typing import List, Optional, Match, Dict, Tuple
+from typing import Dict, List, Match, Optional, Pattern, Tuple
 
 import papis.utils
 import papis.docmatcher
@@ -95,45 +94,30 @@ def filter_documents(
 
 
 def match_document(
-        document: papis.document.Document, search: str,
-        match_format: Optional[str] = None) -> Optional[Match[str]]:
-    """Main function to match document to a given search.
+        document: papis.document.Document,
+        search: Pattern[str],
+        match_format: Optional[str] = None,
+        doc_key: Optional[str] = None) -> Optional[Match[str]]:
+    """Match a document's keys to a given search pattern.
 
-    :param document: Papis document
-    :param search: A valid search string
-    :param match_format: Python-like format string.
-        (`see here
-        <https://docs.python.org/2/library/string.html#format-string-syntax>`__)
-    :returns: Non false if matches, true-ish if it does match.
+    See ``papis.docmatcher.MatcherCallable``.
 
-    >>> papis.config.set('match-format', '{doc[author]}')
+    >>> from papis.docmatcher import get_regex_from_search as regex
     >>> document = papis.document.from_data({'author': 'einstein'})
-    >>> match_document(document, 'e in') is None
+    >>> match_document(document, regex('e in'), '{doc[author]}') is None
     False
-    >>> match_document(document, 'ee in') is None
+    >>> match_document(document, regex('ee in'), '{doc[author]}') is None
     True
-    >>> match_document(document, 'einstein', '{doc[title]}') is None
+    >>> match_document(document, regex('einstein'), '{doc[title]}') is None
     True
     """
-    match_format = match_format or str(papis.config.get("match-format"))
-    match_string = papis.format.format(match_format, document)
-    regex = get_regex_from_search(search)
-    return re.match(regex, match_string, re.IGNORECASE)
+    match_format = match_format or papis.config.getstring("match-format")
+    if doc_key is not None:
+        match_string = str(document[doc_key])
+    else:
+        match_string = papis.format.format(match_format, document)
 
-
-def get_regex_from_search(search: str) -> str:
-    r"""Creates a default regex from a search string.
-
-    :param search: A valid search string
-    :returns: Regular expression
-
-    >>> get_regex_from_search(' ein 192     photon')
-    '.*ein.*192.*photon.*'
-
-    >>> get_regex_from_search('{1234}')
-    '.*\\{1234\\}.*'
-    """
-    return ".*" + ".*".join(map(re.escape, search.split())) + ".*"
+    return search.match(match_string)
 
 
 class Database(papis.database.base.Database):
@@ -212,7 +196,9 @@ class Database(papis.database.base.Database):
     def match(self,
               document: papis.document.Document,
               query_string: str) -> bool:
-        return bool(match_document(document, query_string))
+        from papis.docmatcher import get_regex_from_search
+        query = get_regex_from_search(query_string)
+        return bool(match_document(document, query))
 
     def clear(self) -> None:
         cache_path = self._get_cache_file_path()

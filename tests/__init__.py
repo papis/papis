@@ -1,26 +1,8 @@
 import os
 import shutil
-from typing import Dict, Any, Optional
-import contextlib
-
 import tempfile
-import papis.config
-import papis.api
-import papis.utils
-import papis.document
-import papis.library
-from papis.downloaders import Downloader
-
-
-class MockDownloader(Downloader):
-
-    def __init__(self,
-                 url: str = "",
-                 name: str = "",
-                 bibtex_data: Optional[str] = None,
-                 document_data: Optional[bytes] = None):
-        self.bibtex_data = bibtex_data
-        self.document_data = document_data
+import contextlib
+from typing import Any, Dict
 
 
 def create_random_pdf(suffix: str = "", prefix: str = "") -> str:
@@ -61,9 +43,11 @@ def create_random_file(suffix: str = "", prefix: str = "") -> str:
 
 def create_real_document(data: Dict[str, Any],
                          suffix: str = "") -> Dict[str, Any]:
+    from papis.document import Document
     folder = tempfile.mkdtemp(suffix=suffix)
-    doc = papis.document.Document(folder=folder, data=data)
+    doc = Document(folder=folder, data=data)
     doc.save()
+
     assert os.path.exists(doc.get_info_file())
     return doc
 
@@ -117,43 +101,60 @@ test_data = [
 def get_test_lib_name() -> str:
     return "test-lib"
 
-class with_default_config(contextlib.ContextDecorator):
 
+class with_default_config(contextlib.ContextDecorator):     # noqa: N801
     def __init__(self) -> None:
         self.config_file = None  # type: Optional[str]
 
-    def __enter__(self) -> papis.config.Configuration:
-        with tempfile.NamedTemporaryFile(mode="w", delete=False) as _tmp:
-            self.config_file = _tmp.name
-        papis.config.set_config_file(_tmp.name)
-        config = papis.config.reset_configuration()
-        return config
+    def __enter__(self) -> "with_default_config":
+        if self.config_file is not None:
+            raise ValueError("Context manager cannot be nested")
+
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as config_file:
+            self.config_file = config_file.name
+
+        import papis.config
+        papis.config.set_config_file(self.config_file)
+        papis.config.reset_configuration()
+
+        return self
 
     def __exit__(self, *exc: Any) -> None:
         if self.config_file:
             os.unlink(self.config_file)
+            self.config_file = None
+
+        import papis.config
+        papis.config.set_config_file(self.config_file)
+        papis.config.reset_configuration()
 
 
 def setup_test_library() -> None:
     """Set-up a test library for tests
     """
-    config = papis.config.get_configuration()
+    from papis.config import get_configuration, set_lib, get_lib
+    config = get_configuration()
     config["settings"] = {}
     folder = tempfile.mkdtemp(prefix="papis-test-library-")
+
+    from papis.library import Library
     libname = get_test_lib_name()
-    lib = papis.library.Library(libname, [folder])
-    papis.config.set_lib(lib)
-    papis.database.clear_cached()
+    lib = Library(libname, [folder])
+    set_lib(lib)
+
+    from papis.database import clear_cached
+    clear_cached()
     os.environ["XDG_CACHE_HOME"] = tempfile.mkdtemp(
         prefix="papis-test-cache-home-"
     )
 
+    from papis.document import from_data
     for i, data in enumerate(test_data):
         data["files"] = [
             create_random_pdf() for i in range(data.get("_test_files"))
         ]
-        doc = papis.document.from_data(data)
-        folder = os.path.join(papis.config.get_lib().paths[0], str(i))
+        doc = from_data(data)
+        folder = os.path.join(get_lib().paths[0], str(i))
         os.makedirs(folder)
         assert os.path.exists(folder)
         doc.set_folder(folder)

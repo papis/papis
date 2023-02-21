@@ -3,10 +3,13 @@ from typing import List, Dict, Any
 import click
 
 import papis.config
+import papis.utils
 import papis.document
 import papis.logging
 
 logger = papis.logging.get_logger(__name__)
+
+DISSEMIN_API_URL = "https://dissem.in/api/search/"
 
 
 def dissemin_authors_to_papis_authors(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -50,24 +53,15 @@ def get_data(query: str = "") -> List[Dict[str, Any]]:
     Get data using the dissemin API
     https://dissem.in/api/search/?q=pregroup
     """
-    import urllib.parse
-    import urllib.request
+    with papis.utils.get_session() as session:
+        response = session.get(DISSEMIN_API_URL, params={"q": query})
 
-    dict_params = {"q": query}
-    params = urllib.parse.urlencode(dict_params)
-    main_url = "https://dissem.in/api/search/?"
-    req_url = main_url + params
-    logger.debug("url = '%s'", req_url)
-    url = urllib.request.Request(
-        req_url,
-        headers={
-            "User-Agent": str(papis.config.get("user-agent"))
-        }
-    )
-    jsondoc = urllib.request.urlopen(url).read().decode()
+    if not response.ok:
+        logger.error("An HTTP error (%d %s) was encountered for query: '%s'",
+                     response.status_code, response.reason, query)
+        return []
 
-    import json
-    paperlist = json.loads(jsondoc)
+    paperlist = response.json()
     return sum([dissemindoc_to_papis(d) for d in paperlist["papers"]], [])
 
 

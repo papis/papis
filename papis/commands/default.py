@@ -116,12 +116,7 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
                                       filename: str) -> Callable[[], None]:
     def _on_finish() -> None:
         profiler.disable()
-        profiler.create_stats()
-        with open(filename, "w") as output:
-            import pstats
-            stats = pstats.Stats(profiler, stream=output)
-            stats.sort_stats("time")
-            stats.print_stats()
+        profiler.dump_stats(filename)
 
     return _on_finish
 
@@ -172,18 +167,18 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
 @click.option(
     "--color",
     type=click.Choice(["always", "auto", "no"]),
-    default="auto",
+    default=os.environ.get("PAPIS_LOG_COLOR", "auto"),
     help="Prevent the output from having color")
 @click.option(
     "--log",
     help="Logging level",
     type=click.Choice(["INFO", "DEBUG", "WARNING", "ERROR", "CRITICAL"]),
-    default="INFO")
+    default=os.environ.get("PAPIS_LOG_LEVEL", "INFO"))
 @click.option(
     "--logfile",
     help="File to dump the log",
     type=str,
-    default=None)
+    default=os.environ.get("PAPIS_LOG_FILE"))
 @click.option(
     "--np",
     help="Use number of processors for multicore functionalities in papis",

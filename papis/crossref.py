@@ -1,7 +1,7 @@
 import re
 import os
 import tempfile
-from typing import Set, List, Dict, Any, Optional, Tuple, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
 
 import doi
 import click
@@ -21,7 +21,10 @@ logger = papis.logging.get_logger(__name__)
 
 KeyConversionPair = papis.document.KeyConversionPair
 
-_filter_names = set([
+# NOTE: the API JSON format is maintained at
+#   https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md
+
+_filter_names = frozenset([
     "has_funder", "funder", "location", "prefix", "member", "from_index_date",
     "until_index_date", "from_deposit_date", "until_deposit_date",
     "from_update_date", "until_update_date", "from_created_date",
@@ -41,9 +44,9 @@ _filter_names = set([
     "content_domain", "has_content_domain", "has_crossmark_restriction",
     "has_relation", "relation_type", "relation_object", "relation_object_type",
     "public_references", "publisher_name", "affiliation",
-])  # type: Set[str]
+])
 
-_types_values = [
+_types_values = frozenset([
     "book-section", "monograph", "report", "peer-review", "book-track",
     "journal-article", "book-part", "other", "book", "journal-volume",
     "book-set", "reference-entry", "proceedings-article", "journal",
@@ -51,16 +54,16 @@ _types_values = [
     "proceedings", "standard", "reference-book", "posted-content",
     "journal-issue", "dissertation", "dataset", "book-series", "edited-book",
     "standard-series",
-]  # type: List[str]
+])
 
-_sort_values = [
+_sort_values = frozenset([
     "relevance", "score", "updated", "deposited", "indexed", "published",
     "published-print", "published-online", "issued", "is-referenced-by-count",
     "references-count",
-]  # type: List[str]
+])
 
 
-_order_values = ["asc", "desc"]  # type: List[str]
+_order_values = frozenset(["asc", "desc"])
 
 
 type_converter = {
@@ -115,19 +118,19 @@ key_conversion = [
     }]),
     KeyConversionPair("link", [{
         "key": str(papis.config.get("doc-url-key-name")),
-        "action": lambda x: x[1]["URL"]
+        "action": lambda x: _crossref_link(x)
     }]),
     KeyConversionPair("issued", [
-        {"key": "year", "action": lambda x: x.get("date-parts")[0][0]},
-        {"key": "month", "action": lambda x: x.get("date-parts")[0][1]}
+        {"key": "year", "action": lambda x: _crossref_date_parts(x, 0)},
+        {"key": "month", "action": lambda x: _crossref_date_parts(x, 1)}
     ]),
     KeyConversionPair("published-online", [
-        {"key": "year", "action": lambda x: x.get("date-parts")[0][0]},
-        {"key": "month", "action": lambda x: x.get("date-parts")[0][1]}
+        {"key": "year", "action": lambda x: _crossref_date_parts(x, 0)},
+        {"key": "month", "action": lambda x: _crossref_date_parts(x, 1)}
     ]),
     KeyConversionPair("published-print", [
-        {"key": "year", "action": lambda x: x.get("date-parts")[0][0]},
-        {"key": "month", "action": lambda x: x.get("date-parts")[0][1]}
+        {"key": "year", "action": lambda x: _crossref_date_parts(x, 0)},
+        {"key": "month", "action": lambda x: _crossref_date_parts(x, 1)}
     ]),
     KeyConversionPair("publisher", [papis.document.EmptyKeyConversion]),
     KeyConversionPair("reference", [{
@@ -146,10 +149,39 @@ key_conversion = [
     KeyConversionPair("event", [  # Conferences
         {"key": "venue", "action": lambda x: x["location"]},
         {"key": "booktitle", "action": lambda x: x["name"]},
-        {"key": "year", "action": lambda x: x["start"]["date-parts"][0][0]},
-        {"key": "month", "action": lambda x: x["start"]["date-parts"][0][1]},
+        {"key": "year", "action": lambda x: _crossref_date_parts(x["start"], 0)},
+        {"key": "month", "action": lambda x: _crossref_date_parts(x["start"], 1)},
     ]),
 ]  # List[papis.document.KeyConversionPair]
+
+
+def _crossref_date_parts(entry: Dict[str, Any],
+                         i: int = 0) -> Optional[int]:
+    date_parts = entry.get("date-parts")
+    if date_parts is None:
+        return date_parts
+
+    assert len(date_parts) == 1
+    parts, = date_parts
+
+    # NOTE: dates can also be partial, where only the year is required
+    if not (0 <= i < len(parts)):
+        return None
+
+    return int(parts[i])
+
+
+def _crossref_link(entry: List[Dict[str, str]]) -> Optional[str]:
+    if len(entry) == 1:
+        return entry[0]["URL"]
+
+    links = [
+        # NOTE: using the 'similarity-checking' label here is just a heuristic,
+        # since that seemed to be the better choice in some examples
+        resource.get("URL") for resource in entry
+        if resource.get("intended-application") == "similarity-checking"]
+
+    return links[0] if links else None
 
 
 def crossref_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -254,10 +286,10 @@ def doi_to_data(doi_string: str) -> Dict[str, Any]:
     multiple=True)
 @click.option(
     "--order", "-o", help="Order of appearance according to sorting",
-    default="desc", type=click.Choice(_order_values), show_default=True)
+    default="desc", type=click.Choice(list(_order_values)), show_default=True)
 @click.option(
     "--sort", "-s", help="Sorting parameter", default="score",
-    type=click.Choice(_sort_values), show_default=True)
+    type=click.Choice(list(_sort_values)), show_default=True)
 def explorer(
         ctx: click.core.Context,
         query: str,
@@ -363,18 +395,12 @@ class Importer(papis.importer.Importer):
                 self.logger.info(
                     "Trying to download document from '%s'", doc_url)
 
-                import requests
-                session = requests.Session()
-
-                import requests.structures
-                session.headers = requests.structures.CaseInsensitiveDict({
-                    "user-agent": papis.config.getstring("user-agent")})
-
                 import filetype
-                response = session.get(doc_url, allow_redirects=True)
-                kind = filetype.guess(response.content)
+                with papis.utils.get_session() as session:
+                    response = session.get(doc_url, allow_redirects=True)
 
-                if response.status_code != requests.codes.ok:
+                kind = filetype.guess(response.content)
+                if not response.ok:
                     self.logger.info("Could not download document. "
                                      "HTTP status: %s (%d)",
                                      response.reason, response.status_code)

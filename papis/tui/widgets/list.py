@@ -99,7 +99,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
             align=WindowAlign.LEFT,
             height=None,
             get_line_prefix=self.get_line_prefix
-            # get_line_prefix=lambda line, b: [('bg:red', '  ')]
+            # get_line_prefix=lambda line, b: [('bg:ansired', '  ')]
         )
 
         self.update()
@@ -318,7 +318,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
             except Exception as e:
                 logger.error(
                     "Error processing html for\n %s\n %s", prestring, e)
-                htmlobject = [("fg:red", prestring)]
+                htmlobject = [("fg:ansired", prestring)]
             self.options_headers += [htmlobject]
         logger.debug("Got %d headers", len(self.options_headers))
         logger.debug("Processing matchers")

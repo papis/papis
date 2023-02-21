@@ -41,6 +41,16 @@ Examples
         src="https://asciinema.org/a/QZTBZ3tFfyk9WQuJ9WWB2UpSw.js"
         id="asciicast-QZTBZ3tFfyk9WQuJ9WWB2UpSw" async></script>
 
+- For scripting, printing the id of a series of documents is valuable in order
+  to further use the id in other scripts.
+
+    .. code:: bash
+
+        papis_id=$(papis list --id)
+        papis open papis_id:${papis_id}
+        papis edit papis_id:${papis_id}
+        # etc.
+
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
@@ -54,6 +64,7 @@ from typing import List, Optional, Union, Sequence
 import click
 
 import papis
+import papis.id
 import papis.utils
 import papis.strings
 import papis.config
@@ -68,13 +79,13 @@ import papis.logging
 logger = papis.logging.get_logger(__name__)
 
 
-def run(
-        documents: List[papis.document.Document],
+def run(documents: List[papis.document.Document],
         libraries: bool = False,
         downloaders: bool = False,
         pick: bool = False,
         files: bool = False,
         folders: bool = False,
+        papis_id: bool = False,
         info_files: bool = False,
         notes: bool = False,
         fmt: str = "",
@@ -107,6 +118,8 @@ def run(
                 document.get_files() for document in documents
             ] for doc_file in files
         ]
+    elif papis_id:
+        return [papis.id.get(d) for d in documents]
     elif notes:
         return [
             os.path.join(d.get_main_folder() or "", d["notes"])
@@ -139,6 +152,12 @@ def run(
     "-i",
     "--info",
     help="Show the info file name associated with the document",
+    default=False,
+    is_flag=True)
+@click.option(
+    "--id",
+    "_papis_id",
+    help="Show the papis_id",
     default=False,
     is_flag=True)
 @click.option(
@@ -176,9 +195,15 @@ def run(
     default=False,
     is_flag=True)
 @papis.cli.all_option()
-def cli(
-        query: str, info: bool, _file: bool, notes: bool, _dir: bool,
+@papis.cli.doc_folder_option()
+def cli(query: str,
+        info: bool,
+        _papis_id: bool,
+        _file: bool,
+        notes: bool,
+        _dir: bool,
         _format: str,
+        doc_folder: str,
         template: Optional[str], _all: bool, downloaders: bool,
         libraries: bool,
         sort_field: Optional[str], sort_reverse: bool) -> None:
@@ -190,16 +215,14 @@ def cli(
         _dir = True
 
     if not libraries and not downloaders:
-        db = papis.database.get()
-        documents = db.query(query)
-        if sort_field:
-            documents = \
-                papis.document.sort(documents, sort_field, sort_reverse)
-
+        documents = papis.cli.handle_doc_folder_query_all_sort(query,
+                                                               doc_folder,
+                                                               sort_field,
+                                                               sort_reverse,
+                                                               _all)
         if not documents:
             logger.warning(papis.strings.no_documents_retrieved_message)
-        if not _all:
-            documents = list(papis.pick.pick_doc(documents))
+            return
 
     objects = run(
         documents,
@@ -208,6 +231,7 @@ def cli(
         notes=notes,
         files=_file,
         folders=_dir,
+        papis_id=_papis_id,
         info_files=info,
         fmt=_format,
         template=template)

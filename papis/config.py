@@ -1,6 +1,6 @@
 import os
 import configparser
-from typing import Dict, Any, List, Optional, Callable  # noqa: ignore
+from typing import Dict, Any, List, Optional, Callable  # noqa: F401
 
 import papis.exceptions
 import papis.library
@@ -60,24 +60,54 @@ class Configuration(configparser.ConfigParser):
                         fullpath)
 
     def initialize(self) -> None:
+        # ensure all configuration directories exist
         if not os.path.exists(self.dir_location):
             logger.warning(
                 "Creating configuration folder in '%s'", self.dir_location)
             os.makedirs(self.dir_location)
+
         if not os.path.exists(self.scripts_location):
+            logger.warning(
+                "Creating scripts folder in '%s'", self.scripts_location)
             os.makedirs(self.scripts_location)
+
+        # load settings
         if os.path.exists(self.file_location):
             logger.debug("Reading configuration from '%s'", self.file_location)
             self.read(self.file_location)
             self.handle_includes()
-        else:
+
+        # if no sections were actually read, add default ones
+        if not self.sections():
+            logger.warning(
+                "No sections were found in the configuration file. "
+                "Adding default ones (with a default library named 'papers')!")
+
             for section in self.default_info:
                 self[section] = {}
                 for field in self.default_info[section]:
                     self[section][field] = self.default_info[section][field]
+
             with open(self.file_location, "w") as configfile:
                 logger.info("Creating config file at '%s'", self.file_location)
                 self.write(configfile)
+
+        # ensure the general section and default-library exist in the config
+        general_section = get_general_settings_name()
+        if general_section not in self:
+            libs = get_libs_from_config(self)
+            default_library = (
+                libs[0] if libs else
+                self.default_info[general_section]["default-library"])
+
+            logger.warning(
+                "No main '%s' section found in the configuration file. "
+                "Setting '%s' as the default library!",
+                general_section, default_library)
+
+            self[general_section] = {"default-library": default_library}
+
+        # evaluate the python config
         configpy = get_configpy_file()
         if os.path.exists(configpy):
             logger.debug("Executing '%s'", configpy)
@@ -234,19 +264,13 @@ def general_get(key: str, section: Optional[str] = None,
         the variable.
     :param extras: List of tuples containing section and prefixes
     """
-    # Init main variables
-    method = None  # type: Optional[Callable[[Any, Any], Any]]
-    value = None  # type: Optional[Any]
     config = get_configuration()
     libname = get_lib_name()
     global_section = get_general_settings_name()
-    specialized_key = section + "-" + key if section is not None else key
-    extras = [(section, key)] if section is not None else []
-    sections = [(global_section, specialized_key)] +\
-        extras + [(libname, specialized_key)]
     default_settings = get_default_settings()
 
     # Check data type for setting getter method
+    method = None  # type: Optional[Callable[[Any, Any], Any]]
     if data_type == int:
         method = config.getint
     elif data_type == float:
@@ -256,26 +280,50 @@ def general_get(key: str, section: Optional[str] = None,
     else:
         method = config.get
 
+    # NOTE: configuration settings are given in two formats (where <section>
+    # and <key> are given as arguments)
+    #
+    # 1. As a key under the `global_section`
+    #
+    #   [settings]
+    #   <section>-<key> = value
+    #
+    # 2. In a separate section
+    #
+    #   [<section>]
+    #   <key> = value
+    #
+    # 3. As a key under the current library section
+    #
+    #   [lib]
+    #   <section>-<key> = value
+    #
+    # If the <section> is not given, then only the general and library settings
+    # are checked.
+
+    qualified_key = key if section is None else "{}-{}".format(section, key)
+    candidate_sections = (
+        # NOTE: these are in overwriting order: general < custom < lib
+        [(global_section, qualified_key)]
+        + ([] if section is None else [(section, key)])
+        + [(libname, qualified_key)]
+        )
+
     # Try to get key's value from configuration
-    for extra in sections:
-        sec = extra[0]
-        whole_key = extra[1]
-        if sec not in config:
+    value = None  # type: Optional[Any]
+    for section_name, key_name in candidate_sections:
+        if section_name not in config:
             continue
-        if whole_key in config[sec]:
-            value = method(sec, whole_key)
+
+        if key_name in config[section_name]:
+            value = method(section_name, key_name)
 
     if value is None:
         try:
-            default = default_settings[
-                section or global_section
-            ][
-                specialized_key if section is None else key
-            ]
-        except KeyError:
-            raise papis.exceptions.DefaultSettingValueMissing(key)
-        else:
-            return default
+            return default_settings[section or global_section][key]
+        except KeyError as exc:
+            raise papis.exceptions.DefaultSettingValueMissing(qualified_key) from exc
+
     return value
 
 
@@ -478,6 +526,20 @@ def get_lib() -> papis.library.Library:
         set_lib_from_name(lib)
     assert isinstance(_CURRENT_LIBRARY, papis.library.Library)
     return _CURRENT_LIBRARY
+
+
+def get_libs() -> List[str]:
+    return get_libs_from_config(get_configuration())
+
+
+def get_libs_from_config(config: Configuration) -> List[str]:
+    libs = []
+    for section in config:
+        sec = config[section]
+        if "dir" in sec or "dirs" in sec:
+            libs.append(section)
+
+    return libs
 
 
 def reset_configuration() -> Configuration:

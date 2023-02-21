@@ -1,3 +1,5 @@
+.. _general-settings:
+
 General settings
 ----------------
 

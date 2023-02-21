@@ -145,14 +145,19 @@ class Importer(papis.importer.Importer):
         self.logger.info("Reading input file = '%s'", self.uri)
         try:
             bib_data = bibtex_to_dict(self.uri)
-            if len(bib_data) > 1:
-                self.logger.warning(
-                    "The bibtex file contains more than one entry, "
-                    "only taking the first entry")
-            if bib_data:
-                self.ctx.data = bib_data[0]
         except Exception as e:
-            self.logger.debug(e)
+            self.logger.error(e)
+            return
+
+        if not bib_data:
+            return
+
+        if len(bib_data) > 1:
+            self.logger.warning(
+                "The bibtex file contains %d entries, only taking the first entry",
+                len(bib_data))
+
+        self.ctx.data = bib_data[0]
 
 
 @click.command("bibtex")
@@ -185,15 +190,22 @@ def bibtexparser_entry_to_papis(entry: Dict[str, str]) -> Dict[str, str]:
     :param entry: Dictionary with keys of bibtexparser format.
     :returns: Dictionary with keys of papis format.
     """
+    from bibtexparser.latexenc import latex_to_unicode
 
     _k = papis.document.KeyConversionPair
     key_conversion = [
-        _k("ID", [{"key": "ref", "action": None}]),
+        _k("ID", [{"key": "ref", "action": lambda x: None}]),
         _k("ENTRYTYPE", [{"key": "type", "action": None}]),
         _k("link", [{"key": "url", "action": None}]),
+        _k("title", [{
+            "key": "title",
+            "action": lambda x: latex_to_unicode(x.replace("\n", " "))
+            }]),
         _k("author", [{
-            "key": "author_list", "action":
-                lambda author: papis.document.split_authors_name([author])
+            "key": "author_list",
+            "action": lambda author: papis.document.split_authors_name([
+                latex_to_unicode(author)
+                ])
             }]),
     ]
 
@@ -209,7 +221,7 @@ def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
 
     .. code:: python
 
-        { type: "article ...", "ref": "example1960etAl", author:" ..."}
+        { "type": "article", "author": "...", "title": "...", ...}
 
     :param bibtex: Bibtex file path or bibtex information in string format.
     :returns: Dictionary with bibtex information with keys that bibtex
