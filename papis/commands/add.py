@@ -244,6 +244,20 @@ def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
     return result
 
 
+def ensure_new_folder(path: str) -> str:
+    if not os.path.exists(path):
+        return path
+
+    from string import ascii_lowercase
+    suffix = papis.utils.create_identifier(ascii_lowercase)
+
+    new_path = path
+    while os.path.exists(new_path):
+        new_path = "{}-{}".format(path, next(suffix))
+
+    return new_path
+
+
 def run(paths: List[str],
         data: Optional[Dict[str, Any]] = None,
         folder_name: Optional[str] = None,
@@ -343,6 +357,9 @@ def run(paths: List[str],
     if not papis.utils.is_relative_to(out_folder_path, base_path):
         raise ValueError("formatting produced path outside of library")
 
+    if os.path.exists(out_folder_path):
+        out_folder_path = ensure_new_folder(out_folder_path)
+
     data["files"] = in_documents_names
 
     logger.info("Folder path: '%s'", out_folder_path)
@@ -403,15 +420,19 @@ def run(paths: List[str],
     except IndexError:
         logger.info("No document matching found already in the library")
     else:
-        logger.warning("Duplication Warning")
-        logger.warning(
-            "A document in the library seems to match the one to be added.")
-        logger.warning(
-            "Hint: Use the 'papis update' command to update an existing document.")
-        logger.warning("The following document is already in your library:")
-
+        click.echo("The following document is already in your library:")
         papis.tui.utils.text_area(papis.document.dump(found_document),
                                   lexer_name="yaml")
+
+        logger.warning("Duplication Warning")
+        logger.warning(
+            "A document (shown above) in the '%s' library seems to match the "
+            "one to be added.", papis.config.get_lib())
+        logger.warning(
+            "Hint: Use the 'papis update' command instead to update the "
+            "existing document.")
+
+        # NOTE: we always want the user to confirm if a duplicate is found!
         confirm = True
 
     if citations:
