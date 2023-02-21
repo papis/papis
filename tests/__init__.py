@@ -2,7 +2,7 @@ import os
 import shutil
 import tempfile
 import contextlib
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 
 def create_random_pdf(suffix: str = "", prefix: str = "") -> str:

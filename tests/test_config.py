@@ -7,7 +7,6 @@ import tempfile
 import papis.exceptions
 import papis.config
 import papis.defaults
-from papis.config import _CONFIGURATION
 
 
 def test_default_opener() -> None:
@@ -148,12 +147,12 @@ def test_get_configuration() -> None:
     assert settings in config.keys()
 
 
-def test_get_configuration_2() -> None:
-    global _CONFIGURATION
-    _CONFIGURATION = None
+def test_get_configuration_2(monkeypatch) -> None:
+    with monkeypatch.context() as m:
+        m.setattr(papis.config, "_CONFIGURATION", None)
 
-    config = papis.config.get_configuration()
-    assert type(config) is papis.config.Configuration
+        config = papis.config.get_configuration()
+        assert type(config) is papis.config.Configuration
 
 
 def test_merge_configuration_from_path() -> None:
