@@ -74,8 +74,12 @@ class Configuration(configparser.ConfigParser):
         # load settings
         if os.path.exists(self.file_location):
             logger.debug("Reading configuration from '%s'", self.file_location)
-            self.read(self.file_location)
-            self.handle_includes()
+            try:
+                self.read(self.file_location)
+                self.handle_includes()
+            except configparser.DuplicateOptionError as exc:
+                logger.error("%s: %s", type(exc).__name__, exc, exc_info=exc)
+                raise SystemExit(1)
 
         # if no sections were actually read, add default ones
         if not self.sections():
