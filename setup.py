@@ -132,8 +132,11 @@ setup(
             "sphinx-click",
             "sphinx_rtd_theme",
             "types-PyYAML",
+            "types-Pygments",
+            "types-beautifulsoup4",
+            "types-python-slugify",
             "types-requests",
-            "types-contextvars",
+            "types-tqdm",
         ],
     },
     description=(
