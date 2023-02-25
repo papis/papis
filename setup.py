@@ -91,7 +91,6 @@ setup(
         "chardet>=3.0.2",
         "click>=7.0.0",
         "colorama>=0.2",
-        "configparser>=3.0.0",
         "dominate",
         "filetype>=1.0.1",
         "habanero<1.2.0; python_version<'3.6'",
