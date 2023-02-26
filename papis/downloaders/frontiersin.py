@@ -22,7 +22,7 @@ class Downloader(papis.downloaders.Downloader):
 
     def get_doi(self) -> Optional[str]:
         url = self.uri
-        self.logger.info("Parsing DOI from '%s'", url)
+        self.logger.debug("Parsing DOI from '%s'.", url)
         mdoi = re.match(r".*/articles/([^/]+/[^/?&%^$]+).*", url)
         if mdoi:
             doi = mdoi.group(1)
@@ -32,11 +32,11 @@ class Downloader(papis.downloaders.Downloader):
     def get_document_url(self) -> Optional[str]:
         durl = ("https://www.frontiersin.org/articles/{doi}/pdf"
                 .format(doi=self.get_doi()))
-        self.logger.debug("doc url = '%s'", durl)
+        self.logger.debug("Using document URL: '%s'.", durl)
         return durl
 
     def get_bibtex_url(self) -> Optional[str]:
         url = ("https://www.frontiersin.org/articles/{doi}/bibTex"
                .format(doi=self.get_doi()))
-        self.logger.debug("bibtex url = '%s'", url)
+        self.logger.debug("Using BibTeX URL: '%s'.", url)
         return url

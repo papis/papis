@@ -32,12 +32,12 @@ class Downloader(papis.downloaders.Downloader):
         # https://aip.scitation.org/doi/pdf/10.1063/1.4873138
         durl = ("https://aip.scitation.org/doi/pdf/{doi}"
                 .format(doi=self.get_doi()))
-        self.logger.debug("doc url = '%s'", durl)
+        self.logger.debug("Using document URL: '%s'.", durl)
         return durl
 
     def get_bibtex_url(self) -> Optional[str]:
         url = ("https://aip.scitation.org/action/downloadCitation"
                "?format=bibtex&cookieSet=1&doi={doi}"
                .format(doi=self.get_doi()))
-        self.logger.debug("bibtex url = '%s'", url)
+        self.logger.debug("Using BibTeX URL: '%s'.", url)
         return url

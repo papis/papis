@@ -116,14 +116,14 @@ def explorer(ctx: click.Context, yamlfile: str) -> None:
 
         papis explore yaml lib.yaml pick
     """
-    logger.info("Reading in yaml file '%s'", yamlfile)
+    logger.info("Reading YAML file '%s'...", yamlfile)
 
     with open(yamlfile) as fd:
         docs = [papis.document.from_data(d)
                 for d in yaml.load_all(fd, Loader=Loader)]
     ctx.obj["documents"] += docs
 
-    logger.info("%d documents found", len(docs))
+    logger.info("Found %d documents.", len(docs))
 
 
 class Importer(papis.importer.Importer):

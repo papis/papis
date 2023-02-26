@@ -141,11 +141,12 @@ class Importer(papis.importer.Importer):
         return importer if importer.ctx else None
 
     def fetch_data(self: papis.importer.Importer) -> Any:
-        self.logger.info("Reading input file = '%s'", self.uri)
+        self.logger.info("Reading input file = '%s'.", self.uri)
         try:
             bib_data = bibtex_to_dict(self.uri)
-        except Exception as e:
-            self.logger.error(e)
+        except Exception as exc:
+            self.logger.error("Error reading BibTeX file: '%s'.",
+                              self.uri, exc_info=exc)
             return
 
         if not bib_data:
@@ -153,7 +154,7 @@ class Importer(papis.importer.Importer):
 
         if len(bib_data) > 1:
             self.logger.warning(
-                "The bibtex file contains %d entries, only taking the first entry",
+                "The BibTeX file contains %d entries. Picking the first one!",
                 len(bib_data))
 
         self.ctx.data = bib_data[0]
@@ -172,14 +173,14 @@ def explorer(ctx: click.core.Context, bibfile: str) -> None:
     papis explore bibtex lib.bib pick
 
     """
-    logger.info("Reading in bibtex file '%s'", bibfile)
+    logger.info("Reading BibTeX file '%s'...", bibfile)
 
     docs = [
         papis.document.from_data(d)
         for d in bibtex_to_dict(bibfile)]
     ctx.obj["documents"] += docs
 
-    logger.info("%d documents found", len(docs))
+    logger.info("Found %d documents.", len(docs))
 
 
 def bibtexparser_entry_to_papis(entry: Dict[str, str]) -> Dict[str, str]:
@@ -239,7 +240,7 @@ def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
 
     if os.path.exists(bibtex):
         with open(bibtex) as fd:
-            logger.debug("Reading in file '%s'", bibtex)
+            logger.debug("Reading in file: '%s'.", bibtex)
             text = fd.read()
     else:
         text = bibtex
@@ -271,14 +272,9 @@ def create_reference(doc: Dict[str, Any], force: bool = False) -> str:
     if doc.get("ref") and not force:
         return str(doc["ref"])
     elif papis.config.get("ref-format"):
-        try:
-            ref = papis.format.format(papis.config.getstring("ref-format"),
-                                      doc)
-        except Exception as e:
-            logger.error(e)
-            ref = ""
+        ref = papis.format.format(papis.config.getstring("ref-format"), doc)
 
-    logger.debug("Generated 'ref = %s'", ref)
+    logger.debug("Generated ref '%s'.", ref)
     if not ref:
         if doc.get("doi"):
             ref = doc["doi"]
@@ -294,7 +290,7 @@ def to_bibtex_multiple(documents: List[papis.document.Document]) -> Iterator[str
     for doc in documents:
         bib = to_bibtex(doc)
         if not bib:
-            logger.warning("Skipping document export: '%s'",
+            logger.warning("Skipping document export: '%s'.",
                            doc.get_info_file())
             continue
 
@@ -316,7 +312,7 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
         elif document["type"] in bibtex_type_converter:
             bibtex_type = bibtex_type_converter[document["type"]]
         else:
-            logger.error("BibTeX type '%s' not valid: '%s'",
+            logger.error("BibTeX type '%s' not valid in document: '%s'.",
                          document["type"],
                          document.get_info_file())
             return ""
@@ -327,12 +323,12 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
     # determine ref value
     ref = create_reference(document)
     if not ref:
-        logger.error("No valid ref found for document: '%s'",
+        logger.error("No valid ref found for document: '%s'.",
                      document.get_info_file())
 
         return ""
 
-    logger.debug("Used 'ref = %s'", ref)
+    logger.debug("Using ref '%s'.", ref)
 
     from bibtexparser.latexenc import string_to_latex
 
@@ -350,14 +346,14 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
             continue
 
         bib_value = str(document[bib_key])
-        logger.debug("BibTeX entry: '%s: %s'", bib_key, bib_value)
+        logger.debug("Processing BibTeX entry: '%s: %s'.", bib_key, bib_value)
 
         if bib_key == "journal":
             if journal_key in document:
                 bib_value = str(document[journal_key])
             else:
                 logger.warning(
-                    "Key '%s' is not present for ref '%s'",
+                    "'journal-key' key '%s' is not present for ref '%s'.",
                     journal_key, document["ref"])
 
             bib_value = string_to_latex(bib_value)

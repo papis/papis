@@ -138,7 +138,7 @@ def get_data(query: str = "", max_results: int = 30) -> List[Dict[str, Any]]:
     hits = result["hits"].get("hit")
 
     if hits is None:
-        logger.error("Could not retrieve results from DBLP. Error: '%s'",
+        logger.error("Could not retrieve results from DBLP. Error: '%s'.",
                      result["status"]["text"])
         return []
 
@@ -183,13 +183,13 @@ def explorer(
 
         papis explore dblp -a 'Albert einstein' pick export --bibtex lib.bib
     """
-    logger.info("Looking up...")
+    logger.info("Looking up DBLP documents...")
 
     data = get_data(query=query, max_results=max_results)
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 
-    logger.info("%s documents found", len(docs))
+    logger.info("Found %d documents.", len(docs))
 
 
 class Importer(papis.importer.Importer):
@@ -220,7 +220,7 @@ class Importer(papis.importer.Importer):
             response = session.get(url)
 
         if not response.ok:
-            logger.error("Could not get BibTeX entry for '%s'", self.uri)
+            logger.error("Could not get BibTeX entry for '%s'.", self.uri)
             return
 
         entries = papis.bibtex.bibtex_to_dict(response.content.decode())

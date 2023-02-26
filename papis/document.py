@@ -118,9 +118,9 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
             if action:
                 try:
                     new_value = action(papis_value)
-                except Exception as ex:
-                    logger.debug("Error while trying to parse '%s' (%s)",
-                                 papis_key, ex)
+                except Exception as exc:
+                    logger.debug("Error while trying to parse '%s' (%s).",
+                                 papis_key, exc_info=exc)
                     new_value = None
             else:
                 new_value = papis_value
@@ -340,10 +340,10 @@ class Document(Dict[str, Any]):
 
         try:
             data = papis.yaml.yaml_to_data(info_file, raise_exception=True)
-        except Exception as ex:
+        except Exception as exc:
             logger.error(
-                "Error reading info file in '%s'. Please check it!\n%s",
-                info_file, ex)
+                "Error reading info file at '%s'. Please check it!",
+                self.get_info_file(), exc_info=exc)
         else:
             self.update(data)
 
@@ -507,7 +507,7 @@ def sort(docs: Sequence[Document], key: str, reverse: bool = False) -> List[Docu
             -priority.value if reverse else priority.value,
             date, int_value, str_value)
 
-    logger.debug("Sorting %d documents", len(docs))
+    logger.debug("Sorting %d documents.", len(docs))
     return sorted(docs, key=document_sort_key, reverse=reverse)
 
 

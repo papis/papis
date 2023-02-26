@@ -20,7 +20,7 @@ def _issue_git_command(path: str, cmd: str) -> None:
 
     import shlex
     split_cmd = shlex.split(cmd)
-    logger.debug(split_cmd)
+    logger.debug("Running command: %s.", split_cmd)
 
     import subprocess
     os.chdir(path)
@@ -34,8 +34,8 @@ def commit(path: str, message: str) -> None:
     :param message: Commit message
     """
 
-    logger.info("Committing '%s' with message '%s'", path, message)
-    cmd = 'git commit -m "{0}"'.format(message)
+    logger.info("Committing '%s' with message '%s'.", path, message)
+    cmd = "git commit -m '{}'".format(message)
     _issue_git_command(path, cmd)
 
 
@@ -45,8 +45,8 @@ def add(path: str, resource: str) -> None:
     :param path: Folder where a git repo exists.
     :param resource: Commit resource
     """
-    logger.info("Adding '%s'", path)
-    cmd = 'git add "{0}"'.format(resource)
+    logger.info("Adding '%s'.", path)
+    cmd = "git add '{}'".format(resource)
     _issue_git_command(path, cmd)
 
 
@@ -56,18 +56,19 @@ def remove(path: str, resource: str, recursive: bool = False) -> None:
     :param path: Folder where a git repo exists.
     :param resource: Commit resource
     """
-    logger.info("Removing '%s'", path)
+    logger.info("Removing '%s'.", path)
     # force removal always
-    cmd = 'git rm -f {r} "{0}"'.format(resource, r="-r" if recursive else "")
+    flag = "-r" if recursive else ""
+    cmd = "git rm -f {} '{}'".format(flag, resource)
     _issue_git_command(path, cmd)
 
 
 def add_and_commit_resource(path: str, resource: str, message: str) -> None:
-    """Adds and commits a resource.
+    """Adds and commits a single resource.
 
-    :param path: Folder where a git repo exists.
-    :param resource: Commit resource
-    :param message: Commit message
+    :param path: Folder where the git repository is located.
+    :param resource: name of the resource to add and commit.
+    :param message: commit message.
     """
     add(path, resource)
     commit(path, message)
@@ -76,7 +77,7 @@ def add_and_commit_resource(path: str, resource: str, message: str) -> None:
 def add_and_commit_resources(path: str,
                              resources: List[str],
                              message: str) -> None:
-    """Adds and commits a resources.
+    """Add and commit multiple resources.
     """
     for resource in resources:
         add(path, resource)

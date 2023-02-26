@@ -37,7 +37,7 @@ def fetch_citations(doc: Document) -> List[Dict[str, Any]]:
     metadata_citations = get_metadata_citations(doc)
     if not metadata_citations:
         if "doi" in doc:
-            logger.debug("trying with doi '%s'", doc["doi"])
+            logger.debug("Trying fetching citations with DOI '%s'.", doc["doi"])
             data = papis.crossref.doi_to_data(doc["doi"])
             metadata_citations = get_metadata_citations(data)
             if not metadata_citations:
@@ -50,14 +50,14 @@ def fetch_citations(doc: Document) -> List[Dict[str, Any]]:
 
     dois = [str(d.get("doi")).lower() for d in metadata_citations
             if "doi" in d]
-    logger.info("%d citations found to query", len(dois))
+    logger.info("Found %d citations.", len(dois))
 
     dois_with_data = [
     ]  # type: List[Dict[str, Any]]
     found_in_lib_dois = [
     ]  # type: List[Dict[str, Any]]
 
-    logger.info("Checking which citations are already in the library")
+    logger.info("Checking which citations are already in the library.")
     dois_with_data = get_citations_from_database(dois)
 
     for data in dois_with_data:
@@ -65,8 +65,8 @@ def fetch_citations(doc: Document) -> List[Dict[str, Any]]:
         if doi:
             dois.remove(doi)
 
-    logger.info("Found %d DOIs in library", len(found_in_lib_dois))
-    logger.info("Fetching %d citations from crossref", len(dois))
+    logger.info("Found %d DOIs in library.", len(found_in_lib_dois))
+    logger.info("Fetching %d citations from Crossref.", len(dois))
 
     with tqdm.tqdm(iterable=dois) as progress:
         for doi in progress:

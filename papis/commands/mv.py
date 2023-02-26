@@ -33,7 +33,7 @@ def run(document: papis.document.Document,
     cmd = ["git", "-C", folder] if git else []
     cmd += ["mv", folder, new_folder_path]
     db = papis.database.get()
-    logger.debug(cmd)
+    logger.debug("Running command '%s'.", cmd)
 
     import subprocess
     subprocess.call(cmd)
@@ -41,7 +41,7 @@ def run(document: papis.document.Document,
     new_document_folder = os.path.join(
         new_folder_path,
         os.path.basename(folder))
-    logger.debug("New document folder: '%s'", new_document_folder)
+    logger.debug("New document folder: '%s'.", new_document_folder)
 
     document.set_folder(new_document_folder)
     db.add(document)
@@ -93,14 +93,14 @@ def cli(query: str,
                 completer=completer,
                 complete_while_typing=True
             ))
-    except Exception as e:
-        logger.error(e)
+    except Exception as exc:
+        logger.error("Failed to choose directory.", exc_info=exc)
         return
 
-    logger.info("new folder is '%s'", new_folder)
+    logger.info("New document folder: '%s'.", new_folder)
 
     if not os.path.exists(new_folder):
-        logger.info("Creating path %s", new_folder)
+        logger.info("Creating path '%s'.", new_folder)
         os.makedirs(new_folder, mode=papis.config.getint("dir-umask") or 0o666)
 
     run(document, new_folder, git=git)

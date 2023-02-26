@@ -26,7 +26,7 @@ def explorer(ctx: click.Context, jsonfile: str) -> None:
     papis explore json lib.json pick
 
     """
-    logger.info("Reading in json file '%s'", jsonfile)
+    logger.info("Reading JSON file '%s'...", jsonfile)
 
     import json
 
@@ -34,4 +34,4 @@ def explorer(ctx: click.Context, jsonfile: str) -> None:
         docs = [papis.document.from_data(d) for d in json.load(f)]
         ctx.obj["documents"] += docs
 
-    logger.info("%s documents found", len(docs))
+    logger.info("Found %s documents.", len(docs))

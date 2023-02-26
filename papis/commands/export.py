@@ -128,7 +128,7 @@ def cli(query: str,
         return
 
     if fmt and folder:
-        logger.warning("Only --folder flag will be considered (--fmt ignored)")
+        logger.warning("Only --folder flag will be considered (--fmt ignored).")
 
     # Get the local folder of the document so that third-party apps
     # can actually go to the folder without checking with papis
@@ -139,11 +139,11 @@ def cli(query: str,
 
     if ret_string is not None and not folder:
         if out is not None:
-            logger.info("Dumping to '%s'", out)
+            logger.info("Dumping to '%s'.", out)
             with open(out, "a+") as fd:
                 fd.write(ret_string)
         else:
-            logger.info("Dumping to stdout")
+            logger.info("Dumping to STDOUT.")
             click.echo(ret_string)
         return
 
@@ -158,7 +158,7 @@ def cli(query: str,
             if not len(documents) == 1:
                 outdir = os.path.join(out, _doc_folder_name)
             logger.info(
-                "Exporting doc '%s' to '%s'",
+                "Exporting document '%s' to '%s'.",
                 papis.document.describe(document), outdir)
             shutil.copytree(_doc_folder, outdir)
 
@@ -192,7 +192,7 @@ def explorer(ctx: click.Context, fmt: str, out: str) -> None:
     if out is not None:
         with open(out, "a+") as fd:
             logger.info(
-                "Writing %d documents in %s into '%s'", len(docs), fmt, out)
+                "Writing %d documents in '%s' format to '%s'.", len(docs), fmt, out)
             fd.write(outstring)
     else:
         click.echo(outstring)

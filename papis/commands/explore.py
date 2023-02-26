@@ -150,7 +150,7 @@ def lib(ctx: click.Context, query: str,
         ctx.obj["documents"] += [papis.document.from_folder(doc_folder)]
     db = papis.database.get(library_name=library)
     docs = db.query(query)
-    logger.info("%d documents found", len(docs))
+    logger.info("Found %d documents.", len(docs))
 
     ctx.obj["documents"] += docs
     assert isinstance(ctx.obj["documents"], list)
@@ -220,13 +220,13 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
         return
 
     for document in documents:
-        logger.debug("exploring %s", papis.document.describe(document))
+        logger.debug("Exploring document '%s'.", papis.document.describe(document))
         if cited_by:
             _citations = papis.citations.get_cited_by(document)
         else:
             _citations = papis.citations.get_citations(document)
 
-        logger.debug("got %s citations", len(_citations))
+        logger.debug("Found %d citations.", len(_citations))
 
         ctx.obj["documents"].extend(_citations)
 
@@ -260,7 +260,7 @@ def cmd(ctx: click.Context, command: str) -> None:
     for doc in docs:
         fcommand = papis.format.format(command, doc)
         splitted_command = shlex.split(fcommand)
-        logger.info("Calling '%s'", splitted_command)
+        logger.info("Calling command '%s'.", splitted_command)
         call(splitted_command)
 
 

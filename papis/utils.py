@@ -121,8 +121,8 @@ def general_open(file_name: str,
         opener = default_opener
 
     import shlex
-    cmd = shlex.split("{0} '{1}'".format(opener, file_name))
-    logger.debug("cmd: %s", cmd)
+    cmd = shlex.split("{} '{}'".format(opener, file_name))
+    logger.debug("Running command: '%s'.", cmd)
 
     # NOTE: Detached processes do not fail properly when the command does not
     # exist, so we check for it manually here
@@ -133,10 +133,10 @@ def general_open(file_name: str,
 
     import subprocess
     if wait:
-        logger.debug("Waiting for process to finish")
+        logger.debug("Waiting for process to finish.")
         subprocess.call(cmd)
     else:
-        logger.debug("Not waiting for process to finish")
+        logger.debug("Not waiting for process to finish.")
         popen_kwargs = {
             "shell": False,
             "stdin": None,
@@ -177,7 +177,7 @@ def get_folders(folder: str) -> List[str]:
     :param folder: root folder to look into.
     :returns: List of folders containing an ``info`` file.
     """
-    logger.debug("Indexing folders in '%s'", folder)
+    logger.debug("Indexing folders in '%s'.", folder)
     info_name = papis.config.getstring("info-name")
 
     folders = []
@@ -185,7 +185,7 @@ def get_folders(folder: str) -> List[str]:
         if os.path.exists(os.path.join(root, info_name)):
             folders.append(root)
 
-    logger.debug("%d valid folders retrieved", len(folders))
+    logger.debug("Retrieved %d valid folders.", len(folders))
 
     return folders
 
@@ -321,7 +321,7 @@ def folders_to_documents(folders: Iterable[str]) -> List[papis.document.Document
     begin_t = time.time()
     result = parmap(papis.document.from_folder, folders)
 
-    logger.debug("Done in %.1f ms", 1000 * (time.time() - begin_t))
+    logger.debug("Finished in %.1f ms.", 1000 * (time.time() - begin_t))
     return result
 
 
@@ -398,7 +398,7 @@ def get_matching_importer_or_downloader(
     for cls in all_importer_classes:
         name = "{}.{}".format(cls.__module__, cls.__name__)
         logger.debug("Trying with importer "
-                     "{c.Back.BLACK}{c.Fore.YELLOW}%s{c.Style.RESET_ALL}",
+                     "{c.Back.BLACK}{c.Fore.YELLOW}%s{c.Style.RESET_ALL}.",
                      name)
 
         try:

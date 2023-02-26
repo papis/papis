@@ -69,26 +69,22 @@ def filter_documents(
     papis.docmatcher.DocMatcher.parse()
     papis.docmatcher.DocMatcher.set_matcher(match_document)
 
+    logger.debug("Filtering %d docs (search '%s').", len(documents), search)
+
     import time
-    begin_t = 1000 * time.time()
+    begin_t = time.time()
     # FIXME: find a better solution for this that works for both OSes
     if sys.platform == "win32":
-        logger.debug(
-            "Filtering %d docs (search '%s')", len(documents), search)
         filtered_docs = [
             d for d in [papis.docmatcher.DocMatcher.return_if_match(d)
                         for d in documents] if d is not None]
-
     else:
-        logger.debug(
-            "Filtering %d docs (search '%s')", len(documents), search)
-        result = \
-            papis.utils.parmap(papis.docmatcher.DocMatcher.return_if_match,
-                               documents)
+        result = papis.utils.parmap(papis.docmatcher.DocMatcher.return_if_match,
+                                    documents)
         filtered_docs = [d for d in result if d is not None]
 
-    _delta = 1000 * time.time() - begin_t
-    logger.debug("Done (in %.2fms) (%d docs)", _delta, len(filtered_docs))
+    _delta = 1000 * (time.time() - begin_t)
+    logger.debug("Finished filtering in %.2fms (%d docs).", _delta, len(filtered_docs))
 
     return filtered_docs
 
@@ -140,27 +136,27 @@ class Database(papis.database.base.Database):
         use_cache = papis.config.getboolean("use-cache")
         cache_path = self._get_cache_file_path()
         if use_cache and os.path.exists(cache_path):
-            logger.debug("Getting documents from cache in '%s'", cache_path)
+            logger.debug("Getting documents from cache at '%s'.", cache_path)
 
             import pickle
             with open(cache_path, "rb") as fd:
                 self.documents = pickle.load(fd)
         else:
-            logger.info("Indexing library, this might take a while...")
+            logger.info("Indexing library. This might take a while...")
             folders = sum([papis.utils.get_folders(d)
                            for d in self.get_dirs()],
                           [])  # type: List[str]
             self.documents = papis.utils.folders_to_documents(folders)
-            logger.debug("maybe computing papis ids")
+            logger.debug("Computing 'papis_id' for each document.")
             for doc in self.documents:
                 self.maybe_compute_id(doc)
             if use_cache:
                 self.save()
-        logger.debug("Loaded %d documents", len(self.documents))
+        logger.debug("Loaded %d documents.", len(self.documents))
         return self.documents
 
     def add(self, document: papis.document.Document) -> None:
-        logger.debug("Adding document...")
+        logger.debug("Adding document: '%s'.", papis.document.describe(document))
 
         docs = self.get_documents()
         self.maybe_compute_id(document)
@@ -174,7 +170,7 @@ class Database(papis.database.base.Database):
     def update(self, document: papis.document.Document) -> None:
         if not papis.config.getboolean("use-cache"):
             return
-        logger.debug("Updating document...")
+        logger.debug("Updating document: '%s'.", papis.document.describe(document))
 
         docs = self.get_documents()
         result = self._locate_document(document)
@@ -185,7 +181,7 @@ class Database(papis.database.base.Database):
     def delete(self, document: papis.document.Document) -> None:
         if not papis.config.getboolean("use-cache"):
             return
-        logger.debug("Deleting document...")
+        logger.debug("Deleting document: '%s'.", papis.document.describe(document))
 
         docs = self.get_documents()
         result = self._locate_document(document)
@@ -202,7 +198,7 @@ class Database(papis.database.base.Database):
 
     def clear(self) -> None:
         cache_path = self._get_cache_file_path()
-        logger.warning("Clearing cache at '%s'", cache_path)
+        logger.warning("Clearing cache at '%s'.", cache_path)
 
         if os.path.exists(cache_path):
             os.remove(cache_path)
@@ -214,7 +210,7 @@ class Database(papis.database.base.Database):
         return self.query(query_string)
 
     def query(self, query_string: str) -> List[papis.document.Document]:
-        logger.debug("Querying '%s'...", query_string)
+        logger.debug("Querying database for '%s'.", query_string)
 
         docs = self.get_documents()
         # This makes it faster, if it's the all query string, return everything
@@ -232,7 +228,7 @@ class Database(papis.database.base.Database):
 
     def save(self) -> None:
         docs = self.get_documents()
-        logger.debug("Saving %d documents...", len(docs))
+        logger.debug("Saving %d documents.", len(docs))
 
         import pickle
         path = self._get_cache_file_path()

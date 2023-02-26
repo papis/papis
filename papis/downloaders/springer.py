@@ -39,7 +39,7 @@ class Downloader(papis.downloaders.Downloader):
     def get_bibtex_url(self) -> Optional[str]:
         if "doi" in self.ctx.data:
             url = self.BIBTEX_URL.format(doi=self.ctx.data["doi"])
-            self.logger.debug("bibtex url = '%s'", url)
+            self.logger.debug("Using BibTeX URL: '%s'.", url)
             return url
         else:
             return None
@@ -47,7 +47,7 @@ class Downloader(papis.downloaders.Downloader):
     def get_document_url(self) -> Optional[str]:
         if "doi" in self.ctx.data:
             url = self.DOCUMENT_URL.format(doi=self.ctx.data["doi"])
-            self.logger.debug("doc url = '%s'", url)
+            self.logger.debug("Using document URL: '%s'.", url)
             return url
         else:
             return None

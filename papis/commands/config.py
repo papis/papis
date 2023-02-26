@@ -117,7 +117,7 @@ def _get_option_safe(
         section, key = parse_option(option, default_section)
     except ValueError:
         logger.error(
-            "Options should be in a <section>.<key> or <key> format: got '%s'",
+            "Options should be in a <section>.<key> or <key> format: got '%s'.",
             option)
         return key, value
 
@@ -130,13 +130,14 @@ def _get_option_safe(
             value = defaults[section][key]
         except KeyError:
             logger.error(
-                "No default value for setting '%s' found in section '%s'",
+                "No default value for setting '%s' found in section '%s'.",
                 key, section)
     else:
         try:
             value = papis.config.get(key, section=section)
         except papis.exceptions.DefaultSettingValueMissing as exc:
-            logger.error("\n%s", str(exc).strip("\n"))
+            logger.error("No value for setting '%s' found in section '%s'.",
+                         key, section, exc_info=exc)
 
     return key, value
 

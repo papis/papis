@@ -55,7 +55,7 @@ class Downloader(papis.downloaders.Downloader):
             )
 
         if not response.ok:
-            self.logger.error("Could not obtain CiteSeerX data: '%s'", response.reason)
+            self.logger.error("Could not obtain CiteSeerX data: '%s'.", response.reason)
 
         return response.content
 

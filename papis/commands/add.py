@@ -131,7 +131,7 @@ class FromFolderImporter(papis.importer.Importer):
         return FromFolderImporter(uri=uri) if os.path.isdir(uri) else None
 
     def fetch(self) -> None:
-        self.logger.info("Importing from folder '%s'", self.uri)
+        self.logger.info("Importing from folder '%s'.", self.uri)
 
         doc = papis.document.from_folder(self.uri)
         del doc[papis.id.key_name()]
@@ -193,7 +193,7 @@ def get_file_name(
 
     if len(file_name_base) > basename_limit:
         logger.warning(
-            "Shortening the file name '%s' for portability", file_name_base)
+            "Shortening file name for portability: '%s'.", file_name_base)
         file_name_base = file_name_base[0:basename_limit]
 
     # Remove extension from file_name_base, if any
@@ -316,7 +316,7 @@ def run(paths: List[str],
     if "ref" not in data:
         new_ref = papis.bibtex.create_reference(data)
         if new_ref:
-            logger.info("Created reference '%s'", new_ref)
+            logger.info("Created reference '%s'.", new_ref)
             data["ref"] = new_ref
 
     if base_path is None:
@@ -371,8 +371,8 @@ def run(paths: List[str],
 
     data["files"] = in_documents_names
 
-    logger.info("Folder path: '%s'", out_folder_path)
-    logger.debug("File(s): %s", in_documents_paths)
+    logger.info("Document folder is '%s'.", out_folder_path)
+    logger.debug("Document includes files: '%s'.", "', '".join(in_documents_paths))
 
     # First prepare everything in the temporary directory
     from string import ascii_lowercase
@@ -399,12 +399,10 @@ def run(paths: List[str],
 
         if link:
             in_file_abspath = os.path.abspath(in_file_path)
-            logger.debug(
-                "[SYMLINK] '%s' to '%s'", in_file_abspath, tmp_end_filepath)
+            logger.debug("[SYMLINK] '%s' to '%s'.", in_file_abspath, tmp_end_filepath)
             os.symlink(in_file_abspath, tmp_end_filepath)
         else:
-            logger.debug(
-                "[CP] '%s' to '%s'", in_file_path, tmp_end_filepath)
+            logger.debug("[CP] '%s' to '%s'.", in_file_path, tmp_end_filepath)
 
             import shutil
             shutil.copy(in_file_path, tmp_end_filepath)
@@ -417,17 +415,22 @@ def run(paths: List[str],
     # Check if the user wants to edit before submitting the doc
     # to the library
     if edit:
-        logger.info("Editing file before adding it")
+        logger.info("Editing file before adding it.")
         papis.api.edit_file(tmp_document.get_info_file(), wait=True)
-        logger.info("Loading the changes made by editing")
+        logger.debug("Loading the changes made by editing.")
         tmp_document.load()
 
     # Duplication checking
-    logger.info("Checking if this document is already in the library")
+    logger.info("Checking if this document is already in the library. "
+                "This uses the keys ['%s'] to determine uniqueness.",
+                "', '".join(papis.config.getlist("unique-document-keys"))
+                )
+
     try:
         found_document = papis.utils.locate_document_in_lib(tmp_document)
     except IndexError:
-        logger.info("No document matching found already in the library")
+        logger.info("No document matching the new metadata found in the '%s' library.",
+                    papis.config.get_lib_name())
     else:
         click.echo("The following document is already in your library:")
         papis.tui.utils.text_area(papis.document.dump(found_document),
@@ -454,8 +457,7 @@ def run(paths: List[str],
         if not papis.tui.utils.confirm("Do you want to add the new document?"):
             return
 
-    logger.info(
-        "[MV] '%s' to '%s'", tmp_document.get_main_folder(), out_folder_path)
+    logger.info("[MV] '%s' to '%s'.", tmp_document.get_main_folder(), out_folder_path)
 
     # This also sets the folder of tmp_document
     papis.document.move(tmp_document, out_folder_path)
@@ -606,7 +608,10 @@ def cli(files: List[str],
     ctx.files.extend(imported.files)
 
     if not ctx:
-        logger.error("There is nothing to be added")
+        logger.error("No document is created, since no data or files have been "
+                     "found. Try providing a filename, an URL or use "
+                     "`--from [importer] [uri]` to extract metadata for the "
+                     "document.")
         return
 
     if papis.config.getboolean("time-stamp"):
@@ -619,11 +624,11 @@ def cli(files: List[str],
 
     if fetch_citations:
         try:
-            logger.info("Fetching citations")
+            logger.info("Fetching citations for document.")
             citations = papis.citations.fetch_citations(
                 papis.document.from_data(ctx.data))
-        except ValueError:
-            logger.warning("could not fetch any meaningful citations")
+        except ValueError as exc:
+            logger.warning("Could not fetch any citations.", exc_info=exc)
             citations = []
     else:
         citations = []

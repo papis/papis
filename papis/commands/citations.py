@@ -66,20 +66,20 @@ def cli(query: str,
         _has_cited_by_p = has_cited_by(document)
         if fetch_citations:
             if _has_citations_p and force or not _has_citations_p:
-                logger.info("[%d/%d] fetching citations for %s",
+                logger.info("[%d/%d] Fetching citations for '%s'.",
                             i + 1, len(documents),
                             papis.document.describe(document))
                 fetch_and_save_citations(document)
         if update_from_database:
             if _has_citations_p:
-                logger.info("[%d/%d] updating citations from library for %s",
+                logger.info("[%d/%d] Updating citations from library for '%s'.",
                             i + 1, len(documents),
                             papis.document.describe(document))
                 update_and_save_citations_from_database_from_doc(document)
         if fetch_cited_by:
             if _has_cited_by_p and force or not _has_cited_by_p:
-                logger.info("[%d/%d] fetching cited-by "
-                            "references from library for %s",
-                            i + 1, len(documents),
-                            papis.document.describe(document))
+                logger.info(
+                    "[%d/%d] Fetching cited-by references from library for '%s'",
+                    i + 1, len(documents),
+                    papis.document.describe(document))
                 fetch_and_save_cited_by_from_database(document)

@@ -37,7 +37,7 @@ class Importer(papis.importer.Importer):
         )
 
     def fetch(self) -> None:
-        self.logger.info("Attempting to import from url '%s'", self.uri)
+        self.logger.info("Attempting to import from URL '%s'.", self.uri)
         self.ctx = get_info_from_url(self.uri) or papis.importer.Context()
 
     def fetch_data(self) -> None:
@@ -71,7 +71,6 @@ class Downloader(papis.importer.Importer):
             ctx=ctx,
             name=name or os.path.basename(__file__))
         self.logger = papis.logging.get_logger("papis.downloader.{}".format(self.name))
-        self.logger.debug("uri '%s'", uri)
 
         self.expected_document_extension = expected_document_extension
         self.priority = priority
@@ -113,10 +112,10 @@ class Downloader(papis.importer.Importer):
                 if datalist:
                     if len(datalist) > 1:
                         self.logger.warning(
-                            "'%s' found %d BibTeX entries. Picking first one.",
+                            "'%s' found %d BibTeX entries. Picking the first one!",
                             self.name, len(datalist))
 
-                    self.logger.info("Merging data from BibTeX")
+                    self.logger.info("Merging data from BibTeX.")
                     self.ctx.data.update(datalist[0])
 
         # try getting doi
@@ -141,7 +140,7 @@ class Downloader(papis.importer.Importer):
                 with tempfile.NamedTemporaryFile(
                         mode="wb+", delete=False) as f:
                     f.write(doc_rawdata)
-                    self.logger.info("Saving downloaded file in '%s'", f.name)
+                    self.logger.info("Saving downloaded file in '%s'.", f.name)
                     self.ctx.files.append(f.name)
 
     def fetch(self) -> None:
@@ -201,7 +200,7 @@ class Downloader(papis.importer.Importer):
         url = self.get_bibtex_url()
         if not url:
             return
-        self.logger.info("Downloading bibtex from '%s'", url)
+        self.logger.info("Downloading BibTeX from '%s'.", url)
 
         response = self.session.get(url, cookies=self.cookies)
         self.bibtex_data = response.content.decode()
@@ -252,7 +251,7 @@ class Downloader(papis.importer.Importer):
         url = self.get_document_url()
         if not url:
             return
-        self.logger.info("Downloading file from '%s'", url)
+        self.logger.info("Downloading file from '%s'.", url)
 
         response = self.session.get(url, cookies=self.cookies)
         self.document_data = response.content
@@ -268,7 +267,7 @@ class Downloader(papis.importer.Importer):
         def print_warning() -> None:
             self.logger.error(
                 "The downloaded data does not seem to be of "
-                "the correct type ('%s')",
+                "the expected '%s' type.",
                 self.expected_document_extension)
 
         if self.expected_document_extension is None:
@@ -285,7 +284,7 @@ class Downloader(papis.importer.Importer):
             print_warning()
             return False
 
-        self.logger.debug("Retrieved kind of document seems to be '%s'", extension)
+        self.logger.debug("Retrieved document type seems to be '%s'.", extension)
 
         if isinstance(self.expected_document_extension, list):
             expected_document_extensions = self.expected_document_extension
@@ -314,7 +313,7 @@ def get_matching_downloaders(url: str) -> Sequence[Downloader]:
     :returns: A list of downloaders (sorted by priority).
     """
     available_downloaders = get_available_downloaders()
-    logger.debug("Available downloaders: '%s'",
+    logger.debug("Found available downloaders: '%s'.",
                  "', '".join([d.__module__ for d in available_downloaders]))
 
     matches = [d
@@ -322,7 +321,7 @@ def get_matching_downloaders(url: str) -> Sequence[Downloader]:
                for d in [maybe_downloader.match(url)]
                if d is not None]  # List[Downloader]
 
-    logger.debug("Downloaders matching '%s': '%s'",
+    logger.debug("Found downloaders matching query '%s': '%s'.",
                  url,
                  "', '".join([d.name for d in matches]))
 
@@ -353,13 +352,13 @@ def get_info_from_url(
 
     downloaders = get_matching_downloaders(url)
     if not downloaders:
-        logger.warning("No matching downloader found for '%s'", url)
+        logger.warning("No matching downloader found for '%s'.", url)
         return papis.importer.Context()
 
-    logger.debug("Found %d matching downloaders", len(downloaders))
+    logger.debug("Found %d matching downloaders.", len(downloaders))
     downloader = downloaders[0]
 
-    logger.info("Using downloader '%s'", downloader)
+    logger.info("Using downloader '%s'.", downloader)
     if downloader.expected_document_extension is None and \
             expected_doc_format is not None:
         downloader.expected_document_extension = expected_doc_format

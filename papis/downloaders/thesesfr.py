@@ -48,7 +48,7 @@ class Downloader(papis.downloaders.Downloader):
         ))
 
         if not a:
-            self.logger.error("No document url in theses.fr")
+            self.logger.error("No document found for '%s'.", self.uri)
             return None
 
         second_url = a[0]["href"]
@@ -60,7 +60,7 @@ class Downloader(papis.downloaders.Downloader):
         ))
 
         if not a:
-            self.logger.error("No document url in '%s'", second_url)
+            self.logger.error("No document found for '%s'.", second_url)
             return None
 
         return str(a[0]["href"])
@@ -72,5 +72,5 @@ class Downloader(papis.downloaders.Downloader):
         'https://www.theses.fr/2014TOU30305.bib'
         """
         url = "https://www.theses.fr/{id}.bib".format(id=self.get_identifier())
-        self.logger.debug("bibtex url = '%s'", url)
+        self.logger.debug("Using BibTeX URL: '%s'.", url)
         return url

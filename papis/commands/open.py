@@ -109,17 +109,19 @@ def run(document: papis.document.Document,
         papis.api.open_dir(_doc_folder)
     else:
         if mark:
-            logger.debug("Getting document's marks")
+            logger.debug("Getting document's marks.")
             marks = document[papis.config.getstring("mark-key-name")]
             if marks:
-                logger.info("Picking marks")
                 _mark_fmt = papis.config.getstring("mark-header-format")
                 _mark_name = papis.config.getstring("mark-format-name")
                 _mark_opener = papis.config.getstring("mark-opener-format")
                 if not _mark_fmt:
-                    raise Exception("No mark header format")
+                    raise Exception(
+                        "No mark header format. Set 'mark-header-format' in "
+                        "the configuration file.")
                 if not _mark_name:
-                    raise Exception("No mark name format")
+                    raise Exception("No mark name format. Set 'mark-format-name' "
+                                    "in the configuration file.")
                 mark_dict = papis.api.pick(
                     marks,
                     header_filter=lambda x: papis.format.format(
@@ -133,11 +135,12 @@ def run(document: papis.document.Document,
                         _mark_opener,
                         papis.document.from_data(mark_dict[0]),
                         doc_key=_mark_name)
-                    logger.info("Setting opener to '%s'", opener)
+                    logger.info("Setting opener to '%s'.", opener)
                     papis.config.set("opentool", opener)
         files = document.get_files()
         if not files:
-            logger.error("The document chosen has no files attached")
+            logger.error("The chosen document has no files attached: '%s'.",
+                         papis.document.describe(document))
             return
         files_to_open = papis.api.pick(files, header_filter=os.path.basename)
         for file_to_open in files_to_open:

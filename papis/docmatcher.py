@@ -165,7 +165,7 @@ def get_regex_from_search(search: str) -> Pattern[str]:
 
 def parse_query(query_string: str) -> List[ParseResult]:
     import pyparsing
-    logger.debug("Parsing query: '%s'", query_string)
+    logger.debug("Parsing query: '%s'.", query_string)
 
     papis_key_word = pyparsing.Word(pyparsing.alphanums + "-._/")
     papis_value_word = pyparsing.Word(pyparsing.alphanums + "-._/()")
@@ -190,7 +190,7 @@ def parse_query(query_string: str) -> List[ParseResult]:
         )
     )
     parsed = papis_query.parseString(query_string)
-    logger.debug("Parsed query: '%s'", parsed)
+    logger.debug("Parsed query: '%s'.", parsed)
 
     # convert pyparsing results to our format
     results = []
