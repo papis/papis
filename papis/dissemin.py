@@ -57,7 +57,7 @@ def get_data(query: str = "") -> List[Dict[str, Any]]:
         response = session.get(DISSEMIN_API_URL, params={"q": query})
 
     if not response.ok:
-        logger.error("An HTTP error (%d %s) was encountered for query: '%s'",
+        logger.error("An HTTP error (%d %s) was encountered for query: '%s'.",
                      response.status_code, response.reason, query)
         return []
 
@@ -78,10 +78,10 @@ def explorer(ctx: click.core.Context, query: str) -> None:
     papis explore dissemin -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
 
     """
-    logger.info("Looking up...")
+    logger.info("Looking up Dissemin documents...")
 
     data = get_data(query=query)
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 
-    logger.info("%s documents found", len(docs))
+    logger.info("Found %s documents.", len(docs))

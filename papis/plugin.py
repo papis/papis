@@ -70,12 +70,12 @@ MANAGERS = {}  # type: Dict[str, ExtensionManager]
 
 def stevedore_error_handler(manager: "ExtensionManager",
                             entrypoint: str, exception: str) -> None:
-    logger.error("Error while loading entrypoint '%s'", entrypoint)
-    logger.error(exception)
+    logger.error("Error while loading entrypoint '%s': %s.", entrypoint, exception)
 
 
 def _load_extensions(namespace: str) -> None:
-    logger.debug("Creating manager for %s", namespace)
+    global MANAGERS
+    logger.debug("Creating manager for namespace '%s'.", namespace)
 
     from stevedore import ExtensionManager
     MANAGERS[namespace] = ExtensionManager(

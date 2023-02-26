@@ -34,15 +34,13 @@ class Downloader(papis.downloaders.Downloader):
             if doi:
                 return str(doi)
 
-        self.logger.info("Trying to parse doi from url body...")
-        soup = self._get_soup()
-
         from doi import find_doi_in_text
+        soup = self._get_soup()
         return find_doi_in_text(str(soup))
 
     def get_document_url(self) -> Optional[str]:
         url = self.ctx.data.get("pdf_url")
         if url is not None:
-            self.logger.debug("Got a pdf url = '%s'", url)
+            self.logger.debug("Using document URL: '%s'.", url)
 
         return str(url)

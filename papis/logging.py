@@ -11,7 +11,7 @@ Helper functions to set up logging used by ``papis``.
 import os
 import sys
 import logging
-from typing import Optional, Union
+from typing import Any, Optional, Tuple, Union
 
 import colorama
 
@@ -26,6 +26,31 @@ LEVEL_TO_COLOR = {
 
 
 class ColoramaFormatter(logging.Formatter):
+    def __init__(self, log_format: str, full_tb: bool = False) -> None:
+        super().__init__(log_format)
+        self.full_tb = full_tb
+
+    def formatException(self, exc_info: Tuple[Any, ...]) -> str:    # noqa: N802
+        import io
+        import traceback
+
+        if self.full_tb:
+            buffer = io.StringIO()
+            traceback.print_exception(exc_info[0], exc_info[1], exc_info[2],
+                                      None, buffer)
+            tb = buffer.getvalue().strip()
+            buffer.close()
+
+            return "\n".join("  ┆ {}".format(line) for line in tb.split("\n"))
+        else:
+            msg = str(exc_info[1])
+            if len(msg) > 48:
+                msg = "{}...".format(msg[:48].rsplit(" ", 1)[0])
+
+            return (
+                "(Caught exception '{}: {}'. Use `--log DEBUG` to see traceback)"
+                .format(exc_info[0].__name__, msg))
+
     def format(self, record: logging.LogRecord) -> str:
         if isinstance(record.msg, str):
             record.msg = record.msg.format(c=colorama)
@@ -38,6 +63,12 @@ class ColoramaFormatter(logging.Formatter):
 
         if record.name.startswith("papis."):
             record.name = record.name[6:]
+
+        if record.exc_info and not self.full_tb:
+            exc_text = self.formatException(record.exc_info)
+            record.msg = "{} {}".format(record.msg, exc_text)
+            record.exc_text = None
+            record.exc_info = None
 
         return super().format(record)
 
@@ -116,8 +147,9 @@ def setup(level: Optional[Union[int, str]] = None,
         log_format = "[%(levelname)s] {}".format(log_format)
 
     if logfile is None:
+        full_tb = level == logging.DEBUG
         handler = logging.StreamHandler()       # type: logging.Handler
-        handler.setFormatter(ColoramaFormatter(log_format))
+        handler.setFormatter(ColoramaFormatter(log_format, full_tb=full_tb))
     else:
         handler = logging.FileHandler(logfile, mode="a")
 

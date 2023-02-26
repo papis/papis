@@ -47,16 +47,16 @@ def run(keep: papis.document.Document,
         to_folder = keep.get_main_folder()
         if to_folder:
             import shutil
-            logger.info("Moving %s", f)
+            logger.info("Moving '%s' to '%s'.", f, to_folder)
             shutil.copy(f, to_folder)
             keep["files"] += [os.path.basename(f)]
     papis.commands.update.run(keep, data, git=git)
 
     if not keep_both:
-        logger.info("Removing '%s'", erase)
+        logger.info("Removing '%s'.", papis.document.describe(erase))
         papis.commands.rm.run(erase, git=git)
     else:
-        logger.info("Keeping both documents")
+        logger.info("Keeping both documents.")
 
 
 @click.command("merge")
@@ -141,7 +141,6 @@ def cli(query: str,
         files += [doc.get_files()[i] for i in indices]
 
     if not papis.tui.utils.confirm("Are you sure you want to merge?"):
-        logger.info("Exiting safely")
         return
 
     keep = b if second else a
@@ -158,7 +157,7 @@ def cli(query: str,
             keep["files"] += [os.path.basename(f)]
         keep.update(data_a)
         keep.save()
-        logger.info("Saving the new document in '%s'", out)
+        logger.info("Saving the new document in '%s'.", out)
         return
 
     run(keep, erase, data_a, files, keep_both, git)

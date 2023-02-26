@@ -248,7 +248,7 @@ def run(verbose: bool,
 
     # read in configuration from command-line
     for pair in set_list:
-        logger.debug("Setting '%s' to '%s'", *pair)
+        logger.debug("Setting '%s' to '%s'.", *pair)
         papis.config.set(pair[0], pair[1])
 
     if clear_cache:

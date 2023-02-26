@@ -234,15 +234,15 @@ def get_data(
         kwargs.update({"sort": sort, "order": order})
     try:
         results = _get_crossref_works(filter=filters, **kwargs)
-    except Exception as e:
-        logger.error(e)
+    except Exception as exc:
+        logger.error("Error getting works from Crossref.", exc_info=exc)
         return []
 
     if isinstance(results, list):
         docs = [d["message"] for d in results]
     elif isinstance(results, dict):
         if "message" not in results:
-            logger.error("Error retrieving from crossref: incorrect message")
+            logger.error("Error retrieving data from Crossref: incorrect message.")
             return []
         message = results["message"]
         if "items" in message:
@@ -250,12 +250,11 @@ def get_data(
         else:
             docs = [message]
     else:
-        logger.error("Error retrieving from crossref: incorrect message")
+        logger.error("Error retrieving data from Crossref: incorrect message.")
         return []
-    logger.debug("Retrieved %s documents", len(docs))
-    return [
-        crossref_data_to_papis_data(d)
-        for d in docs]
+
+    logger.debug("Retrieved %s documents.", len(docs))
+    return [crossref_data_to_papis_data(d) for d in docs]
 
 
 def doi_to_data(doi_string: str) -> Dict[str, Any]:
@@ -307,7 +306,7 @@ def explorer(
     papis explore crossref -a 'Albert einstein' pick export --bibtex lib.bib
 
     """
-    logger.info("Looking up...")
+    logger.info("Looking up Crossref documents...")
 
     data = get_data(
         query=query,
@@ -320,7 +319,7 @@ def explorer(
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 
-    logger.info("%s documents found", len(docs))
+    logger.info("Found %s documents.", len(docs))
 
 
 class DoiFromPdfImporter(papis.importer.Importer):
@@ -351,7 +350,7 @@ class DoiFromPdfImporter(papis.importer.Importer):
         if self._doi is None:
             self.logger.info("Parsed DOI '%s' from file: '%s'.", self.doi, self.uri)
             self.logger.warning(
-                "There is no guarantee that this DOI is the correct one")
+                "There is no guarantee that this DOI is the correct one!")
             self._doi = doi.pdf_to_doi(self.uri, maxlines=2000)
 
         return self._doi
@@ -403,18 +402,18 @@ class Importer(papis.importer.Importer):
         if doc_url is None:
             return
 
-        self.logger.info("Trying to download document from '%s'", doc_url)
+        self.logger.info("Trying to download document from '%s'.", doc_url)
 
         with papis.utils.get_session() as session:
             response = session.get(doc_url, allow_redirects=True)
 
         ext = papis.filetype.guess_content_extension(response.content)
         if not response.ok:
-            self.logger.info("Could not download document. HTTP status: %s (%d)",
+            self.logger.info("Could not download document. HTTP status: %s (%d).",
                              response.reason, response.status_code)
         elif ext is None:
             self.logger.info("Downloaded document does not have a "
-                             "recognizable (binary) mimetype: '%s'",
+                             "recognizable (binary) mimetype: '%s'.",
                              response.headers["Content-Type"])
         else:
             with tempfile.NamedTemporaryFile(
@@ -422,7 +421,7 @@ class Importer(papis.importer.Importer):
                     suffix=".{}".format(ext),
                     delete=False) as f:
                 f.write(response.content)
-                self.logger.debug("Saving in '%s'", f.name)
+                self.logger.debug("Saving document files: '%s'.", f.name)
                 self.ctx.files.append(f.name)
 
 
@@ -447,7 +446,7 @@ class FromCrossrefImporter(papis.importer.Importer):
         return None
 
     def fetch_data(self) -> None:
-        self.logger.info("Querying '%s' to crossref.org", self.uri)
+        self.logger.info("Querying Crossref with '%s'.", self.uri)
         docs = [
             papis.document.from_data(d)
             for d in get_data(query=self.uri)]

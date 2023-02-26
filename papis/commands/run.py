@@ -71,10 +71,11 @@ def run(folder: str, command: Optional[List[str]] = None) -> int:
     if command is None:
         command = []
 
-    logger.debug("Changing directory to '%s'", folder)
+    logger.debug("Changing directory to '%s'.", folder)
     os.chdir(os.path.expanduser(folder))
     commandstr = " ".join(command)
-    logger.debug("Command: %s", commandstr)
+
+    logger.debug("Running command '%s'.", commandstr)
     return os.system(commandstr)
 
 

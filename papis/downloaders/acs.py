@@ -44,7 +44,7 @@ class Downloader(papis.downloaders.Downloader):
         doi = self.ctx.data.get("doi")
         if doi is not None:
             url = self.BIBTEX_URL.format(doi=doi)
-            self.logger.debug("bibtex url = %s", url)
+            self.logger.debug("Using BibTeX URL: '%s'.", url)
             return url
 
         return None

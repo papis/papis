@@ -197,9 +197,9 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self._redirect_back()
 
     def get_libraries(self) -> None:
-        logger.info("getting libraries")
+        logger.info("Getting libraries.")
         libs = papis.api.get_libraries()
-        logger.debug("%s", libs)
+        logger.debug("Found libraries: '%s'.", "', '".join(libs))
 
         self._ok()
         self._header_json()
@@ -207,7 +207,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self._send_json(libs)
 
     def get_library(self, libname: str) -> None:
-        logger.info(libname)
+        logger.info("Getting library '%s'.", libname)
         lib = papis.config.get_lib_from_name(libname)
 
         self._ok()
@@ -223,7 +223,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     def get_query(self, libname: str, query: str) -> None:
         self._handle_lib(libname)
         cleaned_query = urllib.parse.unquote(query)
-        logger.info("Querying in lib %s for <%s>", libname, cleaned_query)
+        logger.info("Querying in library '%s' for '%s'.", libname, cleaned_query)
         docs = papis.api.get_documents_in_lib(libname, cleaned_query)
         self.serve_documents(docs)
 
@@ -232,7 +232,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         Serve a list of documents and set the files attribute to
         the full paths so that the user can reach them.
         """
-        logger.info("serving %s documents", len(docs))
+        logger.info("Serving %s documents.", len(docs))
 
         # get absolute paths for files
         for d in docs:
@@ -343,18 +343,18 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         new_info = form.getvalue("value")
         info_path = doc.get_info_file()
 
-        logger.info("checking syntax of the yaml")
+        logger.info("Checking syntax of the info file: '%s'.", info_path)
         with tempfile.NamedTemporaryFile(mode="w+", delete=False) as fdr:
             fdr.write(new_info)
         try:
             papis.yaml.yaml_to_data(fdr.name, raise_exception=True)
         except ValueError as e:
-            self._send_json_error(404, "Error in yaml: {}".format(e))
+            self._send_json_error(404, "Error in info file: {}".format(e))
             os.unlink(fdr.name)
             return
         else:
             os.unlink(fdr.name)
-            logger.info("info text seems ok")
+            logger.info("Info file is valid.")
             with open(info_path, "w+") as _fdr:
                 _fdr.write(new_info)
             doc.load()
@@ -489,11 +489,11 @@ def cli(address: str, port: int, git: bool) -> None:
     if not papis.web.pdfjs.detect_pdfjs():
         logger.warning(papis.web.pdfjs.error_message())
 
-    logger.info("starting server in address http://%s:%s",
+    logger.info("Starting server in address 'http://%s:%s'.",
                 address or "localhost",
                 port)
-    logger.info("press Ctrl-C to exit")
-    logger.info("THIS COMMAND IS EXPERIMENTAL, "
-                "expect bugs, feedback appreciated")
+    logger.info("Press <Ctrl-C> to exit.")
+    logger.info("THIS COMMAND IS EXPERIMENTAL, expect bugs. Feedback appreciated!")
+
     httpd = http.server.HTTPServer(server_address, PapisRequestHandler)
     httpd.serve_forever()

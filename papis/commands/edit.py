@@ -42,7 +42,7 @@ def run(document: papis.document.Document,
 
     # If nothing changed there is nothing else to be done
     if _old_dict == _new_dict:
-        logger.debug("old and new are equal, doing nothing")
+        logger.debug("No changes made to the document.")
         return
 
     papis.database.get().update(document)
@@ -57,7 +57,7 @@ def run(document: papis.document.Document,
 
 def edit_notes(document: papis.document.Document,
                git: bool = False) -> None:
-    logger.debug("Editing notes")
+    logger.debug("Editing notes.")
     notes_path = papis.notes.notes_path_ensured(document)
     papis.api.edit_file(notes_path)
     if git:

@@ -132,7 +132,7 @@ import tqdm
 import papis.api
 import papis.database
 import papis.cli
-import papis.config as config
+import papis.config
 import papis.utils
 import papis.format
 import papis.tui.utils
@@ -150,7 +150,7 @@ import papis.logging
 logger = papis.logging.get_logger(__name__)
 
 
-config.register_default_settings({"bibtex": {
+papis.config.register_default_settings({"bibtex": {
     "default-read-bibfile": "",
     "auto-read": "",
     "default-save-bibfile": ""
@@ -172,14 +172,13 @@ def cli(ctx: click.Context, no_auto_read: bool) -> None:
     ctx.obj = {"documents": []}
 
     if no_auto_read:
-        logger.info("Setting 'auto-read' to False")
-        config.set("auto-read", "False", section="bibtex")
+        papis.config.set("auto-read", "False", section="bibtex")
+    else:
+        no_auto_read = not papis.config.getboolean("auto-read", section="bibtex")
 
-    bibfile = config.get("default-read-bibfile", section="bibtex")
-    if (bool(config.getboolean("auto-read", section="bibtex"))
-            and bibfile
-            and os.path.exists(bibfile)):
-        logger.info("Auto-reading '%s'", bibfile)
+    bibfile = papis.config.get("default-read-bibfile", section="bibtex")
+    if not no_auto_read and bibfile and os.path.exists(bibfile):
+        logger.info("Auto-reading '%s'.", bibfile)
         EXPLORER_MGR["bibtex"].plugin.callback(bibfile)
 
 
@@ -207,7 +206,7 @@ def _add(ctx: click.Context,
         references = []
         found = 0
         db = papis.database.get()
-        logger.info("add and querying from reference file '%s'", refs_file)
+        logger.info("Adding and querying from reference file: '%s'.", refs_file)
         with open(refs_file) as fd:
             references = fd.readlines()
         for ref in tqdm.tqdm(iterable=references):
@@ -218,7 +217,7 @@ def _add(ctx: click.Context,
             found += len(results)
             if results:
                 docs.extend(results)
-        logger.info("Found %s from %s", found, len(references))
+        logger.info("Found %d / %d documents.", found, len(references))
     # do not pick if refs_file is given
     if not _all and not refs_file:
         docs = list(papis.api.pick_doc(docs))
@@ -258,14 +257,12 @@ def _update(ctx: click.Context, _all: bool,
             libdoc = papis.utils.locate_document_in_lib(doc)
         except IndexError as e:
             logger.info(
-                "{c.Fore.YELLOW}%s:"
-                "\n\t{c.Back.RED}%-80.80s{c.Style.RESET_ALL}",
+                "{c.Fore.YELLOW}%s:\n\t'{c.Fore.RED}%-80.80s{c.Style.RESET_ALL}'",
                 e, papis.document.describe(doc))
         else:
             if fromdb:
                 logger.info(
-                    "Updating \n\t{c.Fore.GREEN}"
-                    "{c.Back.BLACK}%-80.80s{c.Style.RESET_ALL}",
+                    "Updating '{c.Fore.GREEN}%-80.80s{c.Style.RESET_ALL}'",
                     papis.document.describe(doc))
                 if keys:
                     docs[j].update(
@@ -326,8 +323,11 @@ def _edit(ctx: click.Context,
                 papis.commands.edit.run(located)
         except IndexError:
             not_found += 1
-            logger.warning("not found: %s", papis.document.describe(doc))
-    logger.info("found %s from %s", len(docs) - not_found, len(docs))
+            logger.warning("Document not found in library '%s': %s.",
+                           papis.config.get_lib_name(),
+                           papis.document.describe(doc))
+
+    logger.info("Found %d / %d documents.", len(docs) - not_found, len(docs))
 
 
 @cli.command("browse")
@@ -338,7 +338,7 @@ def _browse(ctx: click.Context, key: Optional[str]) -> None:
     """browse a document in the documents list"""
     docs = papis.api.pick_doc(ctx.obj["documents"])
     if key:
-        config.set("browse-key", key)
+        papis.config.set("browse-key", key)
     if not docs:
         return
     for d in docs:
@@ -375,7 +375,7 @@ def _ref(ctx: click.Context, out: Optional[str]) -> None:
 @click.help_option("-h", "--help")
 @click.argument(
     "bibfile",
-    default=lambda: config.get("default-save-bibfile", section="bibtex"),
+    default=lambda: papis.config.get("default-save-bibfile", section="bibtex"),
     required=True, type=click.Path())
 @click.option("-f", "--force", default=False, is_flag=True)
 @click.pass_context
@@ -388,7 +388,7 @@ def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
             click.echo("Not saving..")
             return
     with open(bibfile, "w+") as fd:
-        logger.info("Saving %d documents in '%s'", len(docs), bibfile)
+        logger.info("Saving %d documents in '%s'.", len(docs), bibfile)
         fd.write(papis.commands.export.run(docs, to_format="bibtex"))
 
 
@@ -424,34 +424,40 @@ def _sort(ctx: click.Context, key: Optional[str], reverse: bool) -> None:
               type=str)
 @click.pass_context
 def _unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
-    """Remove repetitions"""
+    """Remove duplicate BibTeX entries."""
     docs = ctx.obj["documents"]
     unique_docs = []
-    duplis_docs = []
+    duplicated_docs = []
 
     while True:
         if len(docs) == 0:
             break
+
         doc = docs.pop(0)
         unique_docs.append(doc)
         indices = []
-        for i, bottle in enumerate(docs):
-            if doc.get(key) == bottle.get(key):
+
+        doc_value = doc.get(key)
+        for i, other in enumerate(docs):
+            if doc_value == other.get(key):
                 indices.append(i)
-                duplis_docs.append(bottle)
+                duplicated_docs.append(other)
                 logger.info(
-                    "%d repeated %s -> %s",
-                    len(duplis_docs), key, doc.get(key))
+                    "Found a duplicate document for key '%s' with value '%s'.\n"
+                    "\t%s\n\t%s",
+                    key, doc_value,
+                    papis.document.describe(doc),
+                    papis.document.describe(other))
         docs = [d for (i, d) in enumerate(docs) if i not in indices]
 
-    logger.info("Unique   : %d", len(unique_docs))
-    logger.info("Discarded: %d", len(duplis_docs))
+    logger.info("Found %d unique documents.", len(unique_docs))
+    logger.info("Discarded %d duplicated documents.", len(duplicated_docs))
 
     ctx.obj["documents"] = unique_docs
     if o:
+        logger.info("Saving %d duplicate documents in '%s'.", len(duplicated_docs), o)
         with open(o, "w+") as f:
-            logger.info("Saving %d documents in '%s'", len(duplis_docs), o)
-            f.write(papis.commands.export.run(duplis_docs, to_format="bibtex"))
+            f.write(papis.commands.export.run(duplicated_docs, to_format="bibtex"))
 
 
 @cli.command("doctor")
@@ -468,17 +474,17 @@ def _doctor(ctx: click.Context, key: List[str]) -> None:
         e.g. papis bibtex doctor -k title -k url -k doi
 
     """
-    logger.info("Checking for existence of keys %s", ", ".join(key))
+    logger.info("Checking for existence of keys '%s'.", "', '".join(key))
 
     failed = [(d, keys) for d, keys in [(d, [k for k in key if k not in d])
                                         for d in ctx.obj["documents"]]
               if keys]
 
     for j, (doc, keys) in enumerate(failed):
-        logger.info("%s {c.Back.BLACK}{c.Fore.RED}%-80.80s{c.Style.RESET_ALL}",
+        logger.info("%d. {c.Fore.RED}%-80.80s{c.Style.RESET_ALL}",
                     j, papis.document.describe(doc))
         for k in keys:
-            logger.info("\tmissing: %s", k)
+            logger.info("\tMissing: %s", k)
 
 
 @cli.command("filter-cited")
@@ -502,7 +508,7 @@ def _filter_cited(ctx: click.Context, _files: List[str]) -> None:
                 if re.search(doc["ref"], text):
                     found.append(doc)
 
-    logger.info("%s documents cited", len(found))
+    logger.info("Found %d cited documents.", len(found))
     ctx.obj["documents"] = found
 
 
@@ -526,10 +532,10 @@ def _iscited(ctx: click.Context, _files: List[str]) -> None:
                 if not re.search(doc["ref"], text):
                     unfound.append(doc)
 
-    logger.info("%s documents not cited", len(unfound))
+    logger.info("Found %s documents with no citations.", len(unfound))
 
     for j, doc in enumerate(unfound):
-        logger.info("%s {c.Back.BLACK}{c.Fore.RED}%-80.80s{c.Style.RESET_ALL}",
+        logger.info("%d. {c.Fore.RED}%-80.80s{c.Style.RESET_ALL}",
                     j, papis.document.describe(doc))
 
 
@@ -539,7 +545,6 @@ def _iscited(ctx: click.Context, _files: List[str]) -> None:
 @papis.cli.all_option()
 @click.pass_context
 def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
-
     """
     Import documents to papis
         e.g. papis bibtex read mybib.bib import
@@ -550,18 +555,17 @@ def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
         docs = papis.api.pick_doc(docs)
 
     if out is not None:
-        logger.info("Setting lib name to %s", out)
+        logger.info("Setting library to '%s'.", out)
         if not os.path.exists(out):
             os.makedirs(out)
-        config.set_lib_from_name(out)
+        papis.config.set_lib_from_name(out)
 
     for j, doc in enumerate(docs):
         file_value = None
         filepaths = []
         for k in ("file", "FILE"):
             logger.info(
-                "%s {c.Back.BLACK}{c.Fore.YELLOW}%-80.80s"
-                "{c.Style.RESET_ALL}",
+                "%d. {c.Fore.YELLOW}%-80.80s{c.Style.RESET_ALL}",
                 j, papis.document.describe(doc))
             if k in doc:
                 file_value = doc[k]
@@ -569,19 +573,16 @@ def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
                 break
 
         if not file_value:
-            logger.info("\t"
-                        "{c.Back.YELLOW}{c.Fore.BLACK}"
-                        "No pdf files will be imported"
-                        "{c.Style.RESET_ALL}")
+            logger.info(
+                "\t{c.Fore.YELLOW}No PDF files will be imported{c.Style.RESET_ALL}.")
         else:
             filepaths = [f for f in file_value.split(":") if os.path.exists(f)]
 
         if not filepaths and file_value is not None:
-            logger.info("\t"
-                        "{c.Back.BLACK}{c.Fore.RED}"
-                        "No valid file in \n%s{c.Style.RESET_ALL}",
-                        file_value)
+            logger.info(
+                "\t{c.Fore.RED}No valid file in '%s'{c.Style.RESET_ALL}.",
+                file_value)
         else:
-            logger.info("\tfound %s file(s)", len(filepaths))
+            logger.info("\tFound %d file(s).", len(filepaths))
 
         papis.commands.add.run(filepaths, data=doc)

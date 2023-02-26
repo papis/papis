@@ -64,14 +64,14 @@ def run(document: papis.document.Document,
         if len(os.path.abspath(out_file_path)) >= 255:
             logger.warning(
                 "Length of absolute path is > 255 characters. "
-                "This may cause some issues with some pdf viewers")
+                "This may cause some issues with some PDF viewers.")
 
         if os.path.exists(out_file_path):
-            logger.warning("%s already exists, ignoring...", out_file_path)
+            logger.warning("File '%s' already exists. Skipping...", out_file_path)
             continue
 
         import shutil
-        logger.info("[CP] '%s' to '%s'", in_file_path, out_file_path)
+        logger.info("[CP] '%s' to '%s'.", in_file_path, out_file_path)
         shutil.copy(in_file_path, out_file_path)
 
     if "files" not in document:

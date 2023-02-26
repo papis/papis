@@ -124,7 +124,7 @@ def cli(query: str,
                 if not papis.tui.utils.confirm(
                         "Are you sure?", bottom_toolbar=tbar):
                     continue
-            logger.info("Removing '%s'...", filepath)
+            logger.info("Removing file '%s' from document.", filepath)
             run(document, filepath=filepath, git=git)
 
     if _notes:
@@ -140,14 +140,13 @@ def cli(query: str,
                 if not papis.tui.utils.confirm(
                         "Are you sure?", bottom_toolbar=tbar):
                     continue
-            logger.info("Removing '%s'...", notespath)
+            logger.info("Removing notes: '%s'.", notespath)
             run(document, notespath=notespath, git=git)
 
     if not (_file or _notes):
         for document in documents:
             if not force:
-                logger.warning("Folder to be removed: '%s'",
-                               document.get_main_folder())
+                logger.warning("Removing folder: '%s'.", document.get_main_folder())
                 logger.warning("The following document will be removed:")
                 papis.tui.utils.text_area(
                     text=papis.document.dump(document),
@@ -156,5 +155,5 @@ def cli(query: str,
                         "Do you want to remove the document?"):
                     continue
 
-            logger.warning("Removing ...")
             run(document, git=git)
+            logger.warning("Document removed: '%s'.", papis.document.describe(document))

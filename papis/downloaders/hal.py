@@ -59,7 +59,7 @@ class Downloader(papis.downloaders.fallback.Downloader):
     def get_bibtex_url(self) -> Optional[str]:
         if "pdf_url" in self.ctx.data:
             url = self.uri.replace("document", "bibtex")
-            self.logger.debug("bibtex url = '%s'", url)
+            self.logger.debug("Using BibTeX URL: '%s'.", url)
             return url
         else:
             return None

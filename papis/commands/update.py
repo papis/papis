@@ -135,8 +135,7 @@ def cli(query: str,
     for document in documents:
         ctx = papis.importer.Context()
 
-        logger.info("Updating "
-                    "{c.Back.WHITE}{c.Fore.BLACK}%s{c.Style.RESET_ALL}",
+        logger.info("Updating {c.Back.WHITE}{c.Fore.BLACK}%s{c.Style.RESET_ALL}.",
                     papis.document.describe(document))
 
         ctx.data.update(document)
@@ -167,8 +166,8 @@ def cli(query: str,
                             importer.fetch()
                 except NotImplementedError:
                     continue
-                except Exception as e:
-                    logger.exception(e)
+                except Exception as exc:
+                    logger.exception("Failed to match document data.", exc_info=exc)
                 else:
                     if importer and importer.ctx:
                         matching_importers.append(importer)

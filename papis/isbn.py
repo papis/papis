@@ -16,7 +16,7 @@ ISBN_SERVICE_NAMES = list(isbn_services)
 
 def get_data(query: str = "",
              service: Optional[str] = None) -> List[Dict[str, Any]]:
-    logger.debug("Trying to retrieve isbn from query: '%s'", query)
+    logger.debug("Trying to retrieve ISBN from query: '%s'.", query)
 
     if service is None:
         service = papis.config.get("isbn-service")
@@ -76,13 +76,13 @@ def explorer(ctx: click.core.Context, query: str, service: str) -> None:
     papis explore isbn -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
 
     """
-    logger.info("Looking up...")
+    logger.info("Looking up ISBN documents...")
 
     data = get_data(query=query, service=service)
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 
-    logger.info("%d documents found", len(docs))
+    logger.info("Found %d documents.", len(docs))
 
 
 class Importer(papis.importer.Importer):

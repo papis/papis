@@ -64,7 +64,7 @@ def get_data(
     search_query = "+AND+".join(
         ["{}:{}".format(key, clean_params[key]) for key in clean_params]
     )
-    logger.debug("query = '%s'", search_query)
+    logger.debug("Performing query: '%s'.", search_query)
 
     with papis.utils.get_session() as session:
         response = session.get(
@@ -197,7 +197,7 @@ def explorer(
         papis explore arxiv -a '"John Smith"' pick
 
     """
-    logger.info("Looking up...")
+    logger.info("Looking up arXiv documents...")
 
     data = get_data(
         query=query,
@@ -214,7 +214,7 @@ def explorer(
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 
-    logger.info("%s documents found", len(docs))
+    logger.info("Found %s documents.", len(docs))
 
 
 class Downloader(papis.downloaders.Downloader):
@@ -259,7 +259,7 @@ class Downloader(papis.downloaders.Downloader):
             return None
 
         pdf_url = "{}/{}.pdf".format(ARXIV_PDF_URL, arxivid)
-        self.logger.debug("pdf_url = '%s'", pdf_url)
+        self.logger.debug("Using document URL: '%s'.", pdf_url)
 
         return pdf_url
 
@@ -325,14 +325,18 @@ class ArxividFromPdfImporter(papis.importer.Importer):
         return importer if importer.arxivid else None
 
     def fetch(self) -> None:
-        self.logger.info("Trying to parse arxivid from file '%s'", self.uri)
+        self.logger.info("Trying to parse arxivid from file '%s'.", self.uri)
         if not self.arxivid:
             self.arxivid = pdf_to_arxivid(self.uri, maxlines=2000)
+
         if self.arxivid:
-            self.logger.info("Parsed arxivid '%s'", self.arxivid)
+            self.logger.info("Parsed arxivid '%s'.", self.arxivid)
             self.logger.warning(
-                "There is no guarantee that this arxivid is the one")
+                "There is no guarantee that this arxivid is the correct one!")
+
             importer = Importer.match(self.arxivid)
             if importer:
                 importer.fetch()
                 self.ctx = importer.ctx
+        else:
+            self.logger.info("No arxivid found in file: '%s'.", self.uri)

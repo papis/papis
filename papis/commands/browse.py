@@ -110,7 +110,7 @@ def run(document: papis.document.Document,
                    + urllib.parse.urlencode(params))
 
     if browse:
-        logger.info("Opening url '%s'", url)
+        logger.info("Opening URL '%s'.", url)
         papis.utils.general_open(url, "browser", wait=False)
     else:
         click.echo(url)
@@ -149,7 +149,7 @@ def cli(query: str,
     if key:
         papis.config.set("browse-key", key)
 
-    logger.info("Using key '%s'", papis.config.get("browse-key"))
+    logger.info("Using key '%s'.", papis.config.get("browse-key"))
 
     for document in documents:
         run(document, browse=not _print)

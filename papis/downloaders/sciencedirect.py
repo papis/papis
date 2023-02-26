@@ -61,7 +61,7 @@ class Downloader(papis.downloaders.Downloader):
 
         # get authors
         scripts = soup.find_all(name="script", attrs={"data-iso-key": "_0"})
-        self.logger.debug("Found %d scripts with 'data-iso-key=_0'", len(scripts))
+        self.logger.debug("Found %d scripts with 'data-iso-key=_0'.", len(scripts))
 
         if len(scripts) == 1:
             import json

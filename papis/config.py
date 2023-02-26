@@ -50,20 +50,19 @@ class Configuration(configparser.ConfigParser):
     def handle_includes(self) -> None:
         if "include" in self:
             for name in self["include"]:
-                logger.debug("Including '%s'", name)
                 fullpath = os.path.expanduser(self.get("include", name))
                 if os.path.exists(fullpath):
+                    logger.debug("Including file '%s'.", name)
                     self.read(fullpath)
                 else:
                     logger.warning(
-                        "'%s' not included because it does not exist",
+                        "'%s' not included because it does not exist.",
                         fullpath)
 
     def initialize(self) -> None:
         # ensure all configuration directories exist
         if not os.path.exists(self.dir_location):
-            logger.warning(
-                "Creating configuration folder in '%s'", self.dir_location)
+            logger.warning("Creating configuration folder in '%s'.", self.dir_location)
             os.makedirs(self.dir_location)
 
         if not os.path.exists(self.scripts_location):
@@ -73,7 +72,7 @@ class Configuration(configparser.ConfigParser):
 
         # load settings
         if os.path.exists(self.file_location):
-            logger.debug("Reading configuration from '%s'", self.file_location)
+            logger.debug("Reading configuration from '%s'.", self.file_location)
             try:
                 self.read(self.file_location)
                 self.handle_includes()
@@ -93,7 +92,7 @@ class Configuration(configparser.ConfigParser):
                     self[section][field] = self.default_info[section][field]
 
             with open(self.file_location, "w") as configfile:
-                logger.info("Creating config file at '%s'", self.file_location)
+                logger.info("Creating configuration file at '%s'.", self.file_location)
                 self.write(configfile)
 
         # ensure the general section and default-library exist in the config
@@ -114,7 +113,7 @@ class Configuration(configparser.ConfigParser):
         # evaluate the python config
         configpy = get_configpy_file()
         if os.path.exists(configpy):
-            logger.debug("Executing '%s'", configpy)
+            logger.debug("Executing configuration script '%s'.", configpy)
             with open(configpy) as fd:
                 exec(fd.read())
 
@@ -224,7 +223,7 @@ def get_config_file() -> str:
         config_file = _OVERRIDE_VARS["file"]
     else:
         config_file = os.path.join(get_config_folder(), "config")
-    logger.debug("Getting config file '%s'", config_file)
+    logger.debug("Getting config file '%s'.", config_file)
     return config_file
 
 
@@ -239,7 +238,7 @@ def set_config_file(filepath: str) -> None:
     """Override the main configuration file path
     """
     global _OVERRIDE_VARS
-    logger.debug("Setting config file to '%s'", filepath)
+    logger.debug("Setting config file to '%s'.", filepath)
     _OVERRIDE_VARS["file"] = filepath
 
 
@@ -408,7 +407,7 @@ def get_configuration() -> Configuration:
     """
     global _CONFIGURATION
     if _CONFIGURATION is None:
-        logger.debug("Creating configuration")
+        logger.debug("Creating configuration.")
         _CONFIGURATION = Configuration()
         # Handle local configuration file, and merge it if it exists
         local_config_file = papis.config.get("local-config-file")
@@ -427,7 +426,7 @@ def merge_configuration_from_path(path: Optional[str],
     """
     if path is None or not os.path.exists(path):
         return
-    logger.debug("Merging configuration from '%s'", path)
+    logger.debug("Merging configuration from '%s'.", path)
     configuration.read(path)
     configuration.handle_includes()
 
@@ -457,9 +456,7 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
     if libname not in config:
         if os.path.isdir(libname):
             # Check if the path exists, then use this path as a new library
-            logger.warning(
-                "Since the path '%s' exists, interpreting it as a library",
-                libname)
+            logger.warning("Setting path '%s' as the main library folder.", libname)
             library_obj = papis.library.from_paths([libname])
             name = library_obj.path_format()
             # the configuration object can only store strings
@@ -553,5 +550,5 @@ def reset_configuration() -> Configuration:
     """
     global _CONFIGURATION
     _CONFIGURATION = None
-    logger.debug("Resetting configuration")
+    logger.debug("Resetting configuration.")
     return get_configuration()

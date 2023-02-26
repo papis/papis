@@ -71,7 +71,7 @@ class Downloader(papis.downloaders.Downloader):
             return None
 
         url = self.BIBTEX_URL.format(doi=doi)
-        self.logger.debug("bibtex url = '%s'", url)
+        self.logger.debug("Using BibTeX URL: '%s'.", url)
         return url
 
     def get_document_url(self) -> Optional[str]:
@@ -80,5 +80,5 @@ class Downloader(papis.downloaders.Downloader):
             return None
 
         url = self.DOCUMENT_URL.format(doi=doi)
-        self.logger.debug("doc url = '%s'", url)
+        self.logger.debug("Using document URL: '%s'.", url)
         return url
