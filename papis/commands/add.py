@@ -580,57 +580,30 @@ def cli(files: List[str],
         confirm = False
         open_file = False
 
-    import_mgr = papis.importer.get_import_mgr()
-    matching_importers = []  # type: List[papis.importer.Importer]
+    only_data = bool(files) and not force_download
+    matching_importers = papis.utils.get_matching_importer_by_name(
+        from_importer, only_data=only_data)
 
     if not from_importer and not batch and files:
         matching_importers = sum((
-            papis.utils.get_matching_importer_or_downloader(f)
+            papis.utils.get_matching_importer_or_downloader(f, only_data=only_data)
             for f in files), [])
+
         if matching_importers:
             logger.info("These importers where automatically matched. "
                         "Select the ones you want to use.")
 
-            indices = papis.tui.utils.select_range(
+            matching_indices = papis.tui.utils.select_range(
                 ["{} (files: {}) ".format(imp.name, ", ".join(imp.ctx.files))
                  for imp in matching_importers],
                 "Select matching importers (for instance 0, 1, 3-10, a, all...)")
 
-            matching_importers = [matching_importers[i] for i in indices]
+            matching_importers = [matching_importers[i] for i in matching_indices]
 
-    for importer_tuple in from_importer:
-        try:
-            importer_name = importer_tuple[0]
-            resource = importer_tuple[1]
-            importer = import_mgr[importer_name].plugin(uri=resource)
-            importer.fetch()
-            if importer.ctx:
-                matching_importers.append(importer)
-        except Exception as e:
-            logger.exception(e)
-
-    if matching_importers:
-        logger.info("There are %d possible matchings", len(matching_importers))
-
-        for importer in matching_importers:
-            if importer.ctx.data:
-                logger.info("Merging data from importer %s", importer.name)
-                if batch:
-                    ctx.data.update(importer.ctx.data)
-                else:
-                    papis.utils.update_doc_from_data_interactively(
-                        ctx.data,
-                        importer.ctx.data,
-                        str(importer))
-            if importer.ctx.files and (not files or force_download):
-                logger.info(
-                    "Got files %s from importer '%s'",
-                    importer.ctx.files, importer.name)
-                for f in importer.ctx.files:
-                    papis.utils.open_file(f)
-                    _msg = "Use this file? (from {0})".format(importer.name)
-                    if batch or papis.tui.utils.confirm(_msg):
-                        ctx.files.append(f)
+    imported = papis.utils.collect_importer_data(
+        matching_importers, batch=batch, only_data=only_data)
+    ctx.data.update(imported.data)
+    ctx.files.extend(imported.files)
 
     if not ctx:
         logger.error("There is nothing to be added")
