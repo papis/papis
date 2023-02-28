@@ -3,8 +3,8 @@ import sys
 import re
 import pathlib
 from itertools import count, product
-from typing import (Optional, List, Iterator, Any, Dict,
-                    Union, Callable, TypeVar, TYPE_CHECKING)
+from typing import (Optional, List, Iterator, Iterable, Any, Dict,
+                    Union, Callable, TypeVar, Tuple, TYPE_CHECKING)
 
 try:
     import multiprocessing.synchronize  # noqa: F401
@@ -270,40 +270,139 @@ def get_cache_home() -> str:
     return str(path)
 
 
-def get_matching_importer_or_downloader(matching_string: str
-                                        ) -> List[papis.importer.Importer]:
-    importers = []  # type: List[papis.importer.Importer]
-    _imps = papis.importer.get_importers()
-    _downs = papis.downloaders.get_available_downloaders()
-    _all_importers = list(_imps) + list(_downs)
-    for importer_cls in _all_importers:
-        logger.debug("trying with importer "
-                     "{c.Back.BLACK}{c.Fore.YELLOW}%s{c.Style.RESET_ALL}",
-                     importer_cls)
+def get_matching_importer_or_downloader(
+        uri: str,
+        only_data: bool = True,
+        ) -> List[papis.importer.Importer]:
+    """Gets all the importers and downloaders that match *uri*.
 
-        name = "{}.{}".format(importer_cls.__module__, importer_cls.__name__)
+    This function tries to match the URI using :meth:`~papis.importer.Importer.match`
+    and extract the data using :meth:`~papis.importer.Importer.fetch`. Only
+    importers that fetch the data without issues are returned.
+
+    :param uri: an URI to match the importers against.
+    :param only_data: if *True*, attempt to only import document data, not files.
+    """
+    result = []
+
+    all_importer_classes = (
+        papis.importer.get_importers()
+        + papis.downloaders.get_available_downloaders())
+
+    for cls in all_importer_classes:
+        name = "{}.{}".format(cls.__module__, cls.__name__)
+        logger.debug("Trying with importer "
+                     "{c.Back.BLACK}{c.Fore.YELLOW}%s{c.Style.RESET_ALL}",
+                     name)
+
         try:
-            importer = importer_cls.match(matching_string)
+            importer = cls.match(uri)
         except Exception:
-            logger.debug("%s failed to match query: '%s'.",
-                         name, matching_string)
+            logger.debug("%s failed to match query: '%s'.", name, uri)
             importer = None
 
         if importer:
             try:
-                importer.fetch()
+                if only_data:
+                    # NOTE: not all importers can (or do) separate the fetching
+                    # of data and files, so we try both cases for now
+                    try:
+                        importer.fetch_data()
+                    except NotImplementedError:
+                        importer.fetch()
+                else:
+                    importer.fetch()
             except Exception:
                 logger.debug("%s (%s) failed to fetch query: '%s'.",
-                             name, importer.name, matching_string)
+                             name, importer.name, uri)
             else:
                 logger.info(
                     "{c.Back.BLACK}{c.Fore.GREEN}%s (%s) fetched data for query '%s'!"
                     "{c.Style.RESET_ALL}",
-                    name, importer.name, matching_string)
+                    name, importer.name, uri)
 
-                importers.append(importer)
+                result.append(importer)
 
-    return importers
+    return result
+
+
+def get_matching_importer_by_name(
+        name_and_uris: Iterable[Tuple[str, str]],
+        only_data: bool = True,
+        ) -> List[papis.importer.Importer]:
+    """Get importers that match the given URIs.
+    This function tries to match the URI using :meth:`~papis.importer.Importer.match`
+    and extract the data using :meth:`~papis.importer.Importer.fetch`. Only
+    importers that fetch the data without issues are returned.
+    :param name_and_uris: an list of ``(name, uri)`` of importer names and
+        URIs to match them against.
+    :param only_data: if *True*, attempt to only import document data, not files.
+    """
+    import_mgr = papis.importer.get_import_mgr()
+
+    result = []
+    for name, uri in name_and_uris:
+        try:
+            importer = import_mgr[name].plugin(uri=uri)
+            if only_data:
+                # NOTE: not all importers can (or do) separate the fetching
+                # of data and files, so we try both cases for now
+                try:
+                    importer.fetch_data()
+                except NotImplementedError:
+                    importer.fetch()
+            else:
+                importer.fetch()
+
+            if importer.ctx:
+                result.append(importer)
+        except Exception as exc:
+            logger.debug("Failed to match importer '%s': '%s'.",
+                         name, uri, exc_info=exc)
+
+    return result
+
+
+def collect_importer_data(
+        importers: Iterable[papis.importer.Importer],
+        batch: bool = True,
+        only_data: bool = True,
+        ) -> papis.importer.Context:
+    """Collect all data from the given *importers*.
+    It is assumed that the importers have called the needed ``fetch`` methods,
+    so all data has been downloaded and converted. This function is meant to
+    only do the aggregation.
+    :param batch: if *True*, overwrite data from previous importers, otherwise
+        ask the user to manually merge.
+    :param only_data: if *True*, only import document data, not files.
+    """
+    ctx = papis.importer.Context()
+    if not importers:
+        return ctx
+
+    for importer in importers:
+        if importer.ctx.data:
+            logger.info("Merging data from importer '%s'.", importer.name)
+            if batch:
+                ctx.data.update(importer.ctx.data)
+            else:
+                papis.utils.update_doc_from_data_interactively(
+                    ctx.data,
+                    importer.ctx.data,
+                    str(importer))
+
+        if not only_data and importer.ctx.files:
+            logger.info("Got files from importer '%s':\n\t%s",
+                        importer.name,
+                        "\n\t".join(importer.ctx.files))
+
+            msg = "Use this file? (from {})".format(importer.name)
+            for f in importer.ctx.files:
+                papis.utils.open_file(f)
+                if batch or papis.tui.utils.confirm(msg):
+                    ctx.files.append(f)
+
+    return ctx
 
 
 def update_doc_from_data_interactively(
