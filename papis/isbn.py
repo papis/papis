@@ -2,6 +2,7 @@
 from typing import Dict, Any, List, Optional
 
 import click
+from isbnlib.registry import services as isbn_services
 
 import papis.config
 import papis.document
@@ -9,6 +10,8 @@ import papis.importer
 import papis.logging
 
 logger = papis.logging.get_logger(__name__)
+
+ISBN_SERVICE_NAMES = list(isbn_services)
 
 
 def get_data(query: str = "",
@@ -18,10 +21,9 @@ def get_data(query: str = "",
     if service is None:
         service = papis.config.get("isbn-service")
 
-    import isbnlib.registry
-    if service not in isbnlib.registry.services:
+    if service not in ISBN_SERVICE_NAMES:
         logger.error("ISBN service '%s' is not known. Available services: '%s'.",
-                     service, "', '".join(isbnlib.registry.services))
+                     service, "', '".join(ISBN_SERVICE_NAMES))
         return []
 
     import isbnlib
@@ -63,8 +65,8 @@ def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
 @click.help_option("--help", "-h")
 @click.option("--query", "-q", default=None)
 @click.option("--service", "-s",
-              default="goob",
-              type=click.Choice(["wiki", "goob", "openl"]))
+              default=ISBN_SERVICE_NAMES[0],
+              type=click.Choice(ISBN_SERVICE_NAMES))
 def explorer(ctx: click.core.Context, query: str, service: str) -> None:
     """
     Look for documents using isbnlib
