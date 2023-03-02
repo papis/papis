@@ -480,16 +480,10 @@ def cli(query: str,
     """Check for common problems in documents"""
 
     if list_checks:
-        re_whitespace = re.compile(r"\s+")
+        click.echo("\n".join(papis.utils.dump_object_doc([
+            (name, fn.operate) for name, fn in REGISTERED_CHECKS.items()
+            ], sep="\n    ")))
 
-        for name, fn in REGISTERED_CHECKS.items():
-            if fn.operate.__doc__:
-                check_doc = [line for line in fn.operate.__doc__.split("\n\n") if line]
-            else:
-                check_doc = ["No description."]
-
-            headline = re_whitespace.sub(" ", check_doc[0].strip())
-            click.echo("{}\n    {}".format(name, headline))
         return
 
     documents = papis.cli.handle_doc_folder_query_all_sort(

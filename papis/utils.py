@@ -432,3 +432,23 @@ def is_relative_to(path: str, other: str) -> bool:
             return not os.path.relpath(path, start=other).startswith("..")
         except ValueError:
             return False
+
+
+def dump_object_doc(
+        objects: Iterable[Tuple[str, Any]],
+        sep: str = "\n\t") -> List[str]:
+    import colorama
+    re_whitespace = re.compile(r"\s+")
+
+    result = []
+    for name, obj in objects:
+        if obj.__doc__:
+            lines = [line for line in obj.__doc__.split("\n\n") if line]
+        else:
+            lines = ["No description."]
+
+        headline = re_whitespace.sub(" ", lines[0].strip())
+        result.append("{c.Style.BRIGHT}{name}{c.Style.RESET_ALL}{sep}{headline}"
+                      .format(c=colorama, name=name, sep=sep, headline=headline))
+
+    return result
