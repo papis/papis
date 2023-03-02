@@ -9,8 +9,36 @@ import papis.logging
 if TYPE_CHECKING:
     from stevedore import ExtensionManager
 
+IMPORTER_PLUGIN_ID = "papis.importer"
+
+
+def cache(meth: Callable[["Importer"], None]) -> Callable[["Importer"], None]:
+    """Decorator used to cache :class:`Importer` methods.
+
+    The data is cached in the :attr:`Importer.ctx` of each importer instance.
+    The method *meth* is only called if the context is empty.
+
+    :param meth: a method of an :class:`Importer`.
+    """
+    def wrapper(self: "Importer") -> None:
+        if not self.ctx:
+            meth(self)
+
+    return wrapper
+
 
 class Context:
+    """
+    .. attribute:: data
+
+        A :class:`dict` of fields retrieved by the :class:`Importer`. These are
+        generally not processed.
+
+    .. attribute:: files
+
+        A :class:`list` of files retrieved by the :class:`Importer`.
+    """
+
     def __init__(self) -> None:
         self.data = {}   # type: Dict[str, Any]
         self.files = []  # type: List[str]
@@ -20,10 +48,34 @@ class Context:
 
 
 class Importer:
+    """
+    .. attribute:: name
 
-    """This is the base class for every importer"""
+        A name given to the importer (that is not necessarily unique).
 
-    def __init__(self, uri: str = "", name: str = "",
+    .. attribute:: uri
+
+        The URI (Uniform Resource Identifier) that the importer is to extract
+        data from. This can be an URL, a local or remote file name, an object
+        identifier (e.g. DOI), etc.
+
+    .. attribute:: ctx
+
+        A :class:`Context` that stores the data retrieved by the importer.
+
+    .. automethod:: __init__
+
+    .. automethod:: match
+    .. automethod:: match_data
+
+    .. automethod:: fetch
+    .. automethod:: fetch_data
+    .. automethod:: fetch_files
+    """
+
+    def __init__(self,
+                 uri: str = "",
+                 name: str = "",
                  ctx: Optional[Context] = None) -> None:
         """
         :param uri: uri
@@ -36,35 +88,54 @@ class Importer:
 
     @classmethod
     def match(cls, uri: str) -> Optional["Importer"]:
-        """This method should be called to know if a given uri matches
-        the importer or not.
+        """Check if the importer can process the given URI.
 
-        For example, a valid match for archive would be:
+        For example, an importer that supports links from the arXiv can check
+        that the given URI matches using:
+
         .. code:: python
 
-            return re.match(r".*arxiv.org.*", uri)
+            re.match(r".*arxiv.org.*", uri)
 
-        it will return something that is true if it matches and something
-        falsely otherwise.
+        This can then be used to instantiate and return a corresponding
+        :class:`Importer` object.
 
-        :param uri: uri where the document should be retrieved from.
+        :param uri: An URI where the document information should be retrieved from.
+        :return: An importer instance if the match to the URI is successful or
+            *None* otherwise.
         """
+
         raise NotImplementedError(
-            "Matching uri not implemented for this importer")
+            "Matching URIs is not implemented for '{}.{}'"
+            .format(cls.__module__, cls.__name__))
 
     @classmethod
     def match_data(cls, data: Dict[str, Any]) -> Optional["Importer"]:
-        """Get a dictionary of data and try to decide if there is
-        a valid uri in it.
+        """Check if the importer can process the given metadata.
 
-        :param data: Data to look into
+        This method can be used to search for valid URIs inside the *data* that
+        can then be processed by the importer. For example, if the metadata contains
+        a DOI field, this can be used to import additional information.
+
+        :param data: An :class:`dict` with metadata to inspect and match against.
+        :return: An importer instance if matching metadata is found or
+            *None* otherwise.
         """
         raise NotImplementedError(
-            "Matching data not implemented for this importer")
+            "Matching metadata is not implemented for '{}.{}'"
+            .format(cls.__module__, cls.__name__))
 
+    @cache
     def fetch(self) -> None:
-        """
-        can return a dict to update the document with
+        """Fetch metadata and files for the given :attr:`Importer.uri`.
+
+        This method calls :meth:`Importer.fetch_data` and :meth:`Importer.fetch_files`
+        to get all the information available for the document. It is recommended
+        to implement the two methods separately, if possible, for maximum
+        flexibility.
+
+        The imported data is stored in :attr:`Importer.ctx` and it is not
+        queried again on subsequent calls to this function.
         """
         from contextlib import suppress
 
@@ -75,58 +146,43 @@ class Importer:
             self.fetch_files()
 
     def fetch_data(self) -> None:
-        raise NotImplementedError()
+        """Fetch metadata from the given :attr:`Importer.uri`.
+
+        The imported metadata is stored in :attr:`Importer.ctx`.
+        """
+        raise NotImplementedError(
+            "Fetching metadata is not implemented for '{}.{}'"
+            .format(type(self).__module__, type(self).__name__))
 
     def fetch_files(self) -> None:
-        raise NotImplementedError()
+        """Fetch files from the given :attr:`Importer.uri`.
+
+        The imported files are stored in :attr:`Importer.ctx`.
+        """
+        raise NotImplementedError(
+            "Fetching files is not implemented for '{}.{}'"
+            .format(type(self).__module__, type(self).__name__))
 
     def __str__(self) -> str:
         return "Importer({}, uri={})".format(self.name, self.uri)
 
 
-def _extension_name() -> str:
-    return "papis.importer"
-
-
 def get_import_mgr() -> "ExtensionManager":
-    """Get the import manager
-    :returns: Import manager
-    """
-    return papis.plugin.get_extension_manager(_extension_name())
+    """Retrieve the ``stevedore.ExtensionManager`` for importer plugins."""
+    return papis.plugin.get_extension_manager(IMPORTER_PLUGIN_ID)
 
 
 def available_importers() -> List[str]:
-    """Get the available importer names.
-    :returns: List of importer names
-    """
-    return papis.plugin.get_available_entrypoints(_extension_name())
+    """Get a list of available importer names."""
+    return papis.plugin.get_available_entrypoints(IMPORTER_PLUGIN_ID)
 
 
 def get_importers() -> List[Type[Importer]]:
-    """Get all available importers
-    """
+    """Get a list of available importer classes."""
     return [e.plugin for e in get_import_mgr()]
 
 
 def get_importer_by_name(name: str) -> Type[Importer]:
-    """Get importer by name
-    :param name: Name of the importer
-    :returns: The importer
-    """
+    """Get an importer class by *name*."""
     imp = get_import_mgr()[name].plugin  # type: Type[Importer]
     return imp
-
-
-def cache(fun: Callable[[Importer], Any]) -> Callable[[Importer], Any]:
-    """
-    This is a decorator to be used if a method of an Importer
-    is to be cached, i.e., if the context of the importer is already
-    set, then one does not need to run the function anymore, even if
-    it is explicitly run.
-
-    :param self: Method of an Importer
-    """
-    def wrapper(self: Importer) -> Any:
-        if not self.ctx:
-            fun(self)
-    return wrapper
