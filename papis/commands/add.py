@@ -560,10 +560,10 @@ def cli(files: List[str],
     """
 
     if list_importers:
-        import_mgr = papis.importer.get_import_mgr()
-        for n in import_mgr.names():
-            text = re.sub(r"[ \n]+", " ", import_mgr[n].plugin.__doc__)
-            click.echo("{name}\n\t{text}".format(name=n, text=text))
+        mgr = papis.importer.get_import_mgr()
+        click.echo("\n".join(papis.utils.dump_object_doc([
+            (name, mgr[name].plugin) for name in mgr.names()
+            ], sep="\n    ")))
 
         return
 
