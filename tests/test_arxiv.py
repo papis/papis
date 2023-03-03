@@ -38,7 +38,7 @@ def test_match():
     down = Downloader.match("arXiv:1701.08223v2?234")
     assert down
     assert down.uri == "https://arxiv.org/abs/1701.08223v2"
-    assert down._get_identifier() == "1701.08223v2"
+    assert down.arxivid == "1701.08223v2"
 
 
 def test_downloader_getter():
@@ -49,7 +49,6 @@ def test_downloader_getter():
     assert down.name == "arxiv"
     assert down.expected_document_extension == "pdf"
     # assert(down.get_doi() == '10.1021/ed044p128')
-    assert len(down.get_bibtex_url()) > 0
     assert len(down.get_bibtex_data()) > 0
     bibs = papis.bibtex.bibtex_to_dict(down.get_bibtex_data())
     assert len(bibs) == 1
