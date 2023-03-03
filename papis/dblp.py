@@ -208,7 +208,7 @@ class Importer(papis.importer.Importer):
         else:
             return None
 
-    def fetch(self) -> None:
+    def fetch_data(self) -> None:
         # uri: https://dblp.org/rec/conf/iccg/EncarnacaoAFFGM93.html
         # bib: https://dblp.org/rec/conf/iccg/EncarnacaoAFFGM93.bib
         if is_valid_dblp_key(self.uri):
