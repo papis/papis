@@ -298,9 +298,13 @@ class Importer(papis.importer.Importer):
     def arxivid(self) -> Optional[str]:
         return self.downloader.arxivid
 
-    def fetch(self) -> None:
-        self.downloader.fetch()
-        self.ctx = self.downloader.ctx
+    def fetch_data(self) -> None:
+        self.downloader.fetch_data()
+        self.ctx.data = self.downloader.ctx.data.copy()
+
+    def fetch_files(self) -> None:
+        self.downloader.fetch_files()
+        self.ctx.files = self.downloader.ctx.files.copy()
 
 
 class ArxividFromPdfImporter(papis.importer.Importer):
