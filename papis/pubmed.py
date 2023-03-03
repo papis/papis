@@ -102,5 +102,5 @@ class Importer(papis.importer.Importer):
 
         return None
 
-    def fetch(self) -> None:
+    def fetch_data(self) -> None:
         self.ctx.data = get_data(self.uri)
