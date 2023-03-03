@@ -128,8 +128,7 @@ class Importer(papis.importer.Importer):
             return importer if importer.ctx.data else None
         return None
 
-    @papis.importer.cache
-    def fetch(self: papis.importer.Importer) -> Any:
+    def fetch_data(self: papis.importer.Importer) -> Any:
         self.ctx.data = yaml_to_data(self.uri, raise_exception=True)
         if self.ctx:
             self.logger.debug("Successfully read file: '%s'.", self.uri)
