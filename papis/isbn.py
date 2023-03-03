@@ -99,7 +99,7 @@ class Importer(papis.importer.Importer):
             return None
         return Importer(uri=uri)
 
-    def fetch(self) -> None:
+    def fetch_data(self) -> None:
         import isbnlib
         try:
             data = get_data(self.uri)
