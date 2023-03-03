@@ -140,8 +140,7 @@ class Importer(papis.importer.Importer):
         importer.fetch()
         return importer if importer.ctx else None
 
-    @papis.importer.cache
-    def fetch(self: papis.importer.Importer) -> Any:
+    def fetch_data(self: papis.importer.Importer) -> Any:
         self.logger.info("Reading input file = '%s'", self.uri)
         try:
             bib_data = bibtex_to_dict(self.uri)
