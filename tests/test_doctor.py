@@ -3,37 +3,34 @@ import tempfile
 
 import papis.api
 import papis.document
-import papis.logging
 
-papis.logging.setup("DEBUG")
+from tests.testlib import TemporaryConfiguration
 
 
-def test_files_check(monkeypatch) -> None:
+def test_files_check(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
     from papis.commands.doctor import files_check
+    monkeypatch.setattr(papis.api, "save_doc", lambda _: None)
 
-    with monkeypatch.context() as m:
-        m.setattr(papis.api, "save_doc", lambda _: None)
+    with tempfile.NamedTemporaryFile("w") as tmp:
+        folder = os.path.dirname(tmp.name)
+        doc = papis.document.from_data({
+            "files": [os.path.basename(tmp.name), "non-existent-file"],
+            })
 
-        with tempfile.NamedTemporaryFile("w") as tmp:
-            folder = os.path.dirname(tmp.name)
-            doc = papis.document.from_data({
-                "files": [os.path.basename(tmp.name), "non-existent-file"],
-                })
+        # check: without folder
+        errors = files_check(doc)
+        assert not errors
 
-            # check: without folder
-            errors = files_check(doc)
-            assert not errors
+        # check: non-existent file
+        doc.set_folder(folder)
+        error, = files_check(doc)
+        assert error.payload == os.path.join(folder, "non-existent-file")
 
-            # check: non-existent file
-            doc.set_folder(folder)
-            error, = files_check(doc)
-            assert error.payload == os.path.join(folder, "non-existent-file")
-
-            error.fix_action()
-            assert "non-existent-file" not in doc["files"]
+        error.fix_action()
+        assert "non-existent-file" not in doc["files"]
 
 
-def test_keys_check() -> None:
+def test_keys_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.commands.doctor import keys_exist_check
 
     doc = papis.document.from_data({
@@ -45,39 +42,38 @@ def test_keys_check() -> None:
     assert error.payload == "ref"
 
 
-def test_refs_check(monkeypatch) -> None:
+def test_refs_check(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
     from papis.commands.doctor import refs_check
+    monkeypatch.setattr(papis.api, "save_doc", lambda _: None)
 
-    with monkeypatch.context() as m:
-        m.setattr(papis.api, "save_doc", lambda _: None)
-        doc = papis.document.from_data({
-            "title": "DNA sequencing with chain-terminating inhibitors",
-            "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
-            })
+    doc = papis.document.from_data({
+        "title": "DNA sequencing with chain-terminating inhibitors",
+        "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
+        })
 
-        # check: missing ref
-        error, = refs_check(doc)
-        assert error.msg == "Reference missing."
+    # check: missing ref
+    error, = refs_check(doc)
+    assert error.msg == "Reference missing."
 
-        error.fix_action()
-        assert "ref" in doc
-        assert doc["ref"] == "DnaSequencingSanger"
+    error.fix_action()
+    assert "ref" in doc
+    assert doc["ref"] == "DnaSequencingSanger"
 
-        # check: empty ref
-        doc["ref"] = "    "
-        error, = refs_check(doc)
-        assert error.msg == "Reference missing."
+    # check: empty ref
+    doc["ref"] = "    "
+    error, = refs_check(doc)
+    assert error.msg == "Reference missing."
 
-        # check: ref with invalid symbols
-        doc["ref"] = "[myref]"
-        error, = refs_check(doc)
-        assert "Bad characters" in error.msg
+    # check: ref with invalid symbols
+    doc["ref"] = "[myref]"
+    error, = refs_check(doc)
+    assert "Bad characters" in error.msg
 
-        error.fix_action()
-        assert doc["ref"] == "myref"
+    error.fix_action()
+    assert doc["ref"] == "myref"
 
 
-def test_duplicated_keys_check() -> None:
+def test_duplicated_keys_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.commands.doctor import duplicated_keys_check
 
     docs = [
@@ -96,7 +92,7 @@ def test_duplicated_keys_check() -> None:
     assert error.payload == "ref"
 
 
-def test_bibtex_type_check() -> None:
+def test_bibtex_type_check(tmp_config: TemporaryConfiguration) -> None:
     import papis.bibtex
     from papis.commands.doctor import bibtex_type_check
 
@@ -120,7 +116,7 @@ def test_bibtex_type_check() -> None:
         assert not errors
 
 
-def test_key_type_check() -> None:
+def test_key_type_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.commands.doctor import key_type_check
 
     doc = papis.document.from_data({
@@ -152,50 +148,46 @@ def test_key_type_check() -> None:
     assert not errors
 
 
-def test_html_codes_check(monkeypatch) -> None:
+def test_html_codes_check(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
     from papis.commands.doctor import html_codes_check
+    monkeypatch.setattr(papis.api, "save_doc", lambda _: None)
 
-    with monkeypatch.context() as m:
-        m.setattr(papis.api, "save_doc", lambda _: None)
+    doc = papis.document.from_data({
+        "title": "DNA sequencing with chain-terminating inhibitors",
+        "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
+        })
+    errors = html_codes_check(doc)
+    assert not errors
 
-        doc = papis.document.from_data({
-            "title": "DNA sequencing with chain-terminating inhibitors",
-            "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
-            })
-        errors = html_codes_check(doc)
-        assert not errors
-
-        for amp in ("&amp;", "&#38;", "&#x26;"):
-            doc["title"] = (
-                "DNA sequencing with chain-terminating inhibitors {} stuff"
-                .format(amp))
-
-            error, = html_codes_check(doc)
-            assert error.payload == "title"
-
-            error.fix_action()
-            assert (doc["title"]
-                    == "DNA sequencing with chain-terminating inhibitors & stuff")
-
-
-def test_html_tags_check(monkeypatch) -> None:
-    from papis.commands.doctor import html_tags_check
-
-    with monkeypatch.context() as m:
-        m.setattr(papis.api, "save_doc", lambda _: None)
-
-        doc = papis.document.from_data({
-            "title": "DNA sequencing with chain-terminating inhibitors",
-            "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
-            })
-        errors = html_tags_check(doc)
-        assert not errors
-
+    for amp in ("&amp;", "&#38;", "&#x26;"):
         doc["title"] = (
-            "<emph>DNA sequencing with chain-terminating <div>inhibitors</div></emph>"
-            )
-        error, = html_tags_check(doc)
+            "DNA sequencing with chain-terminating inhibitors {} stuff"
+            .format(amp))
+
+        error, = html_codes_check(doc)
         assert error.payload == "title"
 
         error.fix_action()
-        assert doc["title"] == "DNA sequencing with chain-terminating inhibitors"
+        assert (doc["title"]
+                == "DNA sequencing with chain-terminating inhibitors & stuff")
+
+
+def test_html_tags_check(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
+    from papis.commands.doctor import html_tags_check
+    monkeypatch.setattr(papis.api, "save_doc", lambda _: None)
+
+    doc = papis.document.from_data({
+        "title": "DNA sequencing with chain-terminating inhibitors",
+        "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
+        })
+    errors = html_tags_check(doc)
+    assert not errors
+
+    doc["title"] = (
+        "<emph>DNA sequencing with chain-terminating <div>inhibitors</div></emph>"
+        )
+    error, = html_tags_check(doc)
+    assert error.payload == "title"
+
+    error.fix_action()
+    assert doc["title"] == "DNA sequencing with chain-terminating inhibitors"
