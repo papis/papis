@@ -5,7 +5,6 @@ import click
 
 import papis.utils
 import papis.config
-import papis.bibtex
 import papis.importer
 import papis.document
 import papis.logging
@@ -209,6 +208,8 @@ class Importer(papis.importer.Importer):
             return None
 
     def fetch_data(self) -> None:
+        import papis.bibtex
+
         # uri: https://dblp.org/rec/conf/iccg/EncarnacaoAFFGM93.html
         # bib: https://dblp.org/rec/conf/iccg/EncarnacaoAFFGM93.bib
         if is_valid_dblp_key(self.uri):
