@@ -1,5 +1,5 @@
 import os.path
-from typing import Optional, List, Dict, Any, Callable, Type, TYPE_CHECKING
+from typing import Optional, List, Dict, Any, Callable, Type, TypeVar, TYPE_CHECKING
 
 import papis
 import papis.plugin
@@ -11,8 +11,10 @@ if TYPE_CHECKING:
 
 IMPORTER_PLUGIN_ID = "papis.importer"
 
+ImporterT = TypeVar("ImporterT", bound="Importer")
 
-def cache(meth: Callable[["Importer"], None]) -> Callable[["Importer"], None]:
+
+def cache(meth: Callable[[ImporterT], None]) -> Callable[[ImporterT], None]:
     """Decorator used to cache :class:`Importer` methods.
 
     The data is cached in the :attr:`Importer.ctx` of each importer instance.
@@ -20,7 +22,7 @@ def cache(meth: Callable[["Importer"], None]) -> Callable[["Importer"], None]:
 
     :param meth: a method of an :class:`Importer`.
     """
-    def wrapper(self: "Importer") -> None:
+    def wrapper(self: ImporterT) -> None:
         if not self.ctx:
             meth(self)
 
