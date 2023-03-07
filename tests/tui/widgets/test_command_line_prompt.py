@@ -1,9 +1,12 @@
-from papis.tui.widgets.command_line_prompt import Command, CommandLinePrompt
+import pytest
 
 
-def test_simple_command():
+def test_simple_command() -> None:
+    from papis.tui.widgets.command_line_prompt import Command
+
     cmd = Command("test", lambda c: 1 + 1)
     assert cmd.app is not None
+
     r = cmd.run(cmd)
     assert r == 2
     assert cmd.names == ["test"]
@@ -12,33 +15,28 @@ def test_simple_command():
     assert cmd.names == ["test", "t", "e"]
 
 
-def test_commandlineprompt():
+def test_command_line_prompt() -> None:
+    from papis.tui.widgets.command_line_prompt import Command, CommandLinePrompt
     cmds = [Command("test", lambda c: 1 + 1)]
     prompt = CommandLinePrompt(commands=cmds)
+
     prompt.text = "test"
-    re = prompt.trigger()
-    assert re is None
-    try:
-        prompt.text = "est"
-        e = prompt.trigger()
-    except Exception as e:
-        assert str(e) == "No command found for 'est'"
-    else:
-        assert False        # noqa: B011
+    prompt.trigger()
+
+    prompt.text = "est"
+    with pytest.raises(Exception,
+                       match=r"No command found for 'est'"):
+        prompt.trigger()
 
     prompt.text = ""
-    assert prompt.trigger() is None
+    prompt.trigger()
 
     prompt.commands = 2 * [Command("test", lambda c: 1 + 1)]
-
     prompt.text = "sdf asldfj dsafds"
     prompt.clear()
     assert prompt.text == ""
 
     prompt.text = "test"
-    try:
+    with pytest.raises(Exception,
+                       match="More than one command matches the input"):
         prompt.trigger()
-    except Exception as e:  # noqa: F841
-        assert str(e) == "More than one command matches the input: ['test', 'test']"
-    else:
-        assert False        # noqa: B011
