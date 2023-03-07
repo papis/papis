@@ -23,7 +23,6 @@ def test_prompt_toolkit() -> None:
     from prompt_toolkit.buffer import Buffer                            # noqa: F401
     from prompt_toolkit.enums import EditingMode                        # noqa: F401
     from prompt_toolkit.key_binding import KeyBindings                  # noqa: F401
-    from prompt_toolkit.data_structures import Point                    # noqa: F401
     from prompt_toolkit.layout.containers import HSplit, Window         # noqa: F401
     from prompt_toolkit.layout.controls import (                        # noqa: F401
         BufferControl,
@@ -31,3 +30,8 @@ def test_prompt_toolkit() -> None:
     )
     from prompt_toolkit.layout.layout import Layout                     # noqa: F401
     from prompt_toolkit.widgets import HorizontalLine                   # noqa: F401
+
+    try:
+        from prompt_toolkit.data_structures import Point                # noqa: F401
+    except ImportError:
+        from prompt_toolkit.layout.screen import Point                  # noqa: F401
