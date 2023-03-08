@@ -111,7 +111,7 @@ def test_locate_document():
     assert found_doc is None
 
 
-def test_extension():
+def test_guess_extension():
     docs = [
         [tests.create_random_pdf(), "pdf"],
         [tests.create_random_pdf(), "pdf"],
