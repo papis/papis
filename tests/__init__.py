@@ -12,7 +12,7 @@ def create_random_pdf(suffix: str = "", prefix: str = "") -> str:
 
 
 def create_random_epub(suffix: str = "", prefix: str = "") -> str:
-    buf = bytearray(
+    buf = bytes(
         [0x50, 0x4B, 0x3, 0x4]
         + [0x00 for i in range(26)]
         + [0x6D, 0x69, 0x6D, 0x65, 0x74, 0x79, 0x70, 0x65, 0x61, 0x70,
@@ -22,7 +22,20 @@ def create_random_epub(suffix: str = "", prefix: str = "") -> str:
         )
 
     with tempfile.NamedTemporaryFile(suffix=suffix, prefix=prefix, delete=False) as fd:
-        fd.write(bytearray(buf))
+        fd.write(buf)
+
+    return fd.name
+
+
+def create_random_djvu(suffix: str = "", prefix: str = "") -> str:
+    buf = bytes(
+        [0x41, 0x54, 0x26, 0x54, 0x46, 0x4F, 0x52, 0x4D]
+        + [0x00, 0x00, 0x00, 0x00]
+        + [0x44, 0x4A, 0x56, 0x4D]
+        )
+
+    with tempfile.NamedTemporaryFile(suffix=suffix, prefix=prefix, delete=False) as fd:
+        fd.write(buf)
 
     return fd.name
 
