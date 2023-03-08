@@ -258,9 +258,9 @@ class Downloader(papis.importer.Importer):
         self.document_data = response.content
 
     def check_document_format(self) -> bool:
-        """Check if the downloaded document has the filetype that the
+        """Check if the downloaded document has the file type that the
         downloader expects. If the downloader does not expect any special
-        filetype, accept anything because there is no way to know if it is
+        file type, accept anything because there is no way to know if it is
         correct.
 
         :returns: True if it is of the right type, else otherwise
@@ -274,23 +274,25 @@ class Downloader(papis.importer.Importer):
         if self.expected_document_extension is None:
             return True
 
-        import filetype
-        retrieved_kind = filetype.guess(self.get_document_data())
+        data = self.get_document_data()
+        if data is None:
+            return True
 
-        if retrieved_kind is None:
+        from papis.filetype import guess_content_extension
+        extension = guess_content_extension(data)
+
+        if extension is None:
             print_warning()
             return False
 
-        self.logger.debug(
-            "Retrieved kind of document seems to be '%s'",
-            retrieved_kind.mime)
+        self.logger.debug("Retrieved kind of document seems to be '%s'", extension)
 
         if isinstance(self.expected_document_extension, list):
             expected_document_extensions = self.expected_document_extension
         else:
             expected_document_extensions = [self.expected_document_extension]
 
-        if retrieved_kind.extension in expected_document_extensions:
+        if extension in expected_document_extensions:
             return True
         else:
             print_warning()
