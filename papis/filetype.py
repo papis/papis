@@ -5,6 +5,36 @@ from typing import Optional
 import filetype
 
 
+class DjVu(filetype.Type):      # type: ignore[misc]
+    """
+    Implements the DjVu type matcher.
+    """
+
+    MIME = "image/vnd.djvu"
+    EXTENSION = "djvu"
+
+    def __init__(self) -> None:
+        super().__init__(mime=self.MIME, extension=self.EXTENSION)
+
+    def match(self, buf: bytes) -> bool:
+        # https://en.wikipedia.org/wiki/List_of_file_signatures
+        # magic: AT&TFORMXXXXDJV[UM]
+        return (
+            len(buf) >= 16
+            and buf[0] == 0x41 and buf[1] == 0x54
+            and buf[2] == 0x26 and buf[3] == 0x54
+            and buf[4] == 0x46 and buf[5] == 0x4F
+            and buf[6] == 0x52 and buf[7] == 0x4D
+            # and buf[8:11] == ??
+            and buf[12] == 0x44 and buf[13] == 0x4A
+            and buf[14] == 0x56
+            and (buf[15] == 0x55 or buf[15] == 0x4D)
+            )
+
+
+filetype.add_type(DjVu())
+
+
 def guess_content_extension(content: bytes) -> Optional[str]:
     """Guess the extension from (potential) file contents.
 
