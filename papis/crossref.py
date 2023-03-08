@@ -405,22 +405,21 @@ class Importer(papis.importer.Importer):
 
         self.logger.info("Trying to download document from '%s'", doc_url)
 
-        import filetype
         with papis.utils.get_session() as session:
             response = session.get(doc_url, allow_redirects=True)
 
-        kind = filetype.guess(response.content)
+        ext = papis.filetype.guess_content_extension(response.content)
         if not response.ok:
             self.logger.info("Could not download document. HTTP status: %s (%d)",
                              response.reason, response.status_code)
-        elif kind is None:
+        elif ext is None:
             self.logger.info("Downloaded document does not have a "
                              "recognizable (binary) mimetype: '%s'",
                              response.headers["Content-Type"])
         else:
             with tempfile.NamedTemporaryFile(
                     mode="wb+",
-                    suffix=".{}".format(kind.extension),
+                    suffix=".{}".format(ext),
                     delete=False) as f:
                 f.write(response.content)
                 self.logger.debug("Saving in '%s'", f.name)
