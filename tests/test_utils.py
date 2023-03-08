@@ -117,8 +117,9 @@ def test_guess_extension():
         [tests.create_random_pdf(), "pdf"],
         [tests.create_random_file(), "data"],
         [tests.create_random_epub(), "epub"],
+        [tests.create_random_djvu(), "djvu"],
         [tests.create_random_file(suffix=".yaml"), "yaml"],
-        [tests.create_random_file(suffix=".text"), "text"],
+        [tests.create_random_file(suffix=".txt"), "txt"],
     ]
     for d in docs:
         assert get_document_extension(d[0]) == d[1]
