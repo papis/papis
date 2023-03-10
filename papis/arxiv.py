@@ -267,6 +267,7 @@ class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str) -> None:
         super().__init__(uri=url, name="arxiv", expected_document_extension="pdf")
+        self._result: Optional["arxiv.Result"] = None
         self._arxivid: Optional[str] = None
 
     @classmethod
@@ -288,26 +289,40 @@ class Downloader(papis.downloaders.Downloader):
 
         return self._arxivid
 
-    def download_bibtex(self) -> None:
-        arxivid = self.arxivid
-        if not arxivid:
-            return None
+    @property
+    def result(self) -> Optional["arxiv.Result"]:
+        if self._result is None:
+            import arxiv
 
-        import arxiv2bib
+            try:
+                results = list(arxiv.Search(id_list=[self.arxivid]).results())
+            except arxiv.arxiv.HTTPError:
+                results = []
 
-        bibtex_cli = arxiv2bib.Cli([arxivid])
-        bibtex_cli.run()
-        self.bibtex_data = "".join(bibtex_cli.output).replace("\n", " ")
+            if len(results) > 1:
+                self.logger.error(
+                    "Found multiple results for arxivid '%s'. Picking the first one!",
+                    self.arxivid)
+
+            if results:
+                self._result = results[0]
+
+        return self._result
+
+    def get_data(self) -> Dict[str, Any]:
+        result = self.result
+        if result is None:
+            return {}
+
+        return arxiv_to_papis(self.result)
 
     def get_document_url(self) -> Optional[str]:
-        arxivid = self.arxivid
-        if not arxivid:
+        result = self.result
+        if result is None:
             return None
 
-        pdf_url = f"{ARXIV_PDF_URL}/{arxivid}.pdf"
-        self.logger.debug("Using document URL: '%s'.", pdf_url)
-
-        return pdf_url
+        self.logger.debug("pdf_url = '%s'", result.pdf_url)
+        return str(result.pdf_url)
 
 
 class Importer(papis.importer.Importer):
