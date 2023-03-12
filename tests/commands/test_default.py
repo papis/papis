@@ -1,23 +1,19 @@
-import tests.cli
-from papis.commands.default import run
+from tests.testlib import TemporaryLibrary, PapisRunner
 
 
-class TestCli(tests.cli.TestCli):
+def test_default_cli(tmp_library: TemporaryLibrary) -> None:
+    from papis import __version__
+    from papis.commands.default import run as cli
 
-    cli = run
+    cli_runner = PapisRunner()
+    result = cli_runner.invoke(
+        cli,
+        ["--version"])
+    assert result.exit_code == 0
+    assert __version__ in result.output
 
-    def test_main(self):
-        self.do_test_cli_function_exists()
-        self.do_test_help()
-
-    def test_version(self):
-        result = self.invoke([
-            "--version"
-        ])
-        self.assertEqual(result.exit_code, 0)
-
-    # def test_set(self):
-    #     result = self.invoke([
-    #         "--set", "something", "42"
-    #     ])
-    #     self.assertEqual(result.exit_code, 0)
+    result = cli_runner.invoke(
+        cli,
+        ["--set", "something", "42"])
+    assert result.exit_code == 0
+    assert not result.output
