@@ -1,18 +1,18 @@
-from papis.commands.git import cli
+import os
 
-import tests
+import papis.config
+
+from tests.testlib import TemporaryLibrary, PapisRunner
 
 
-class TestCli(tests.cli.TestCli):
+def test_git_cli(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.git import cli
+    cli_runner = PapisRunner()
 
-    cli = cli
+    result = cli_runner.invoke(
+        cli,
+        ["init"])
+    assert result.exit_code == 0
 
-    def test_main(self):
-        self.do_test_cli_function_exists()
-        self.do_test_help()
-
-    def test_simple(self):
-        result = self.invoke([
-            "init"
-        ])
-        self.assertEqual(result.exit_code, 0)
+    folder, = papis.config.get_lib_dirs()
+    assert os.path.exists(os.path.join(folder, ".git"))
