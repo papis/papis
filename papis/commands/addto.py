@@ -124,19 +124,15 @@ def cli(query: str,
         doc_folder: str,
         sort_reverse: bool) -> None:
     """Add files to an existing document"""
-    if doc_folder:
-        documents = [papis.document.from_folder(doc_folder)]
-    else:
-        documents = papis.database.get().query(query)
+    documents = papis.cli.handle_doc_folder_query_sort(
+        query, doc_folder, sort_field, sort_reverse)
 
     if not documents:
+        import papis.strings
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
-    if sort_field:
-        documents = papis.document.sort(documents, sort_field, sort_reverse)
-
-    docs = papis.pick.pick_doc(documents)
+    docs = papis.api.pick_doc(documents)
 
     if not docs:
         return
