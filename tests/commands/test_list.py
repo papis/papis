@@ -1,43 +1,31 @@
 import os
 
-import papis.config
 import papis.database
-from papis.commands.list import run
 
-import tests
-import tests.cli
+from tests.testlib import TemporaryLibrary
 
 
-class Test(tests.cli.TestWithLibrary):
+def test_list_run(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.list import run
 
-    @classmethod
-    def tearDownClass(cls) -> None:
-        pass
+    assert papis.config.get_lib_name() == tmp_library.libname
 
-    def test_lib_is_correct(self) -> None:
-        assert papis.config.get_lib_name() == tests.get_test_lib_name()
+    db = papis.database.get()
+    docs = db.get_all_documents()
 
-    def test_list_info_notes(self) -> None:
-        for k in [[dict(info_files=True), 1], [dict(notes=True), 0]]:
-            objs = run(papis.database.get().get_all_documents(), **k[0])
-            assert isinstance(objs, list)
-            assert len(objs) >= k[1]
+    objs = run(docs, info_files=True)
+    assert len(objs) == len(docs)
+    assert all(os.path.exists(f) for f in objs)
 
-    def test_list_libs(self) -> None:
-        libs = run([], libraries=True)
-        assert len(libs) >= 1
+    objs = run(docs, notes=True)
+    assert len(objs) == 0
 
-    def test_list_folders(self) -> None:
-        folders = run(
-            papis.database.get().get_all_documents(),
-            folders=True)
-        assert len(folders) >= 1
-        assert isinstance(folders, list)
-        for f in folders:
-            assert os.path.exists(f)
+    libs = run([], libraries=True)
+    assert len(libs) == 1
 
-    def test_list_id(self) -> None:
-        ids = run(papis.database.get().get_all_documents(),
-                  papis_id=True)
-        assert len(ids) >= 1
-        assert isinstance(ids, list)
+    folders = run(docs, folders=True)
+    assert len(folders) == len(docs)
+    assert all(os.path.exists(f) for f in folders)
+
+    ids = run(docs, papis_id=True)
+    assert len(ids) == len(docs)
