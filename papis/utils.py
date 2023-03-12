@@ -2,7 +2,6 @@ import os
 import sys
 import re
 import pathlib
-from itertools import count, product
 from typing import (Optional, List, Iterator, Iterable, Any, Dict,
                     Union, Callable, TypeVar, Tuple, TYPE_CHECKING)
 
@@ -152,7 +151,7 @@ def get_folders(folder: str) -> List[str]:
     return folders
 
 
-def create_identifier(input_list: str) -> Iterator[str]:
+def create_identifier(input_list: Optional[str] = None, skip: int = 0) -> Iterator[str]:
     """This creates a generator object capable of iterating over lists to
     create combinations of that list that result in unique strings.
     Ideally for use in modifying an existing string to make it unique.
@@ -166,10 +165,20 @@ def create_identifier(input_list: str) -> Iterator[str]:
     (`see here <https://stackoverflow.com/questions/14381940/>`__)
 
     :param input_list: list to iterate over
+    :param skip: number of identifiers to skip.
     """
-    for n in count(1):
-        for s in product(input_list, repeat=n):
-            yield "".join(s)
+    import string
+    from itertools import count, product, islice
+
+    def ids() -> Iterator[str]:
+        inputs = string.ascii_lowercase if input_list is None else input_list
+
+        for n in count(1):
+            for s in product(inputs, repeat=n):
+                yield "".join(s)
+
+    for i in islice(ids(), skip, None):
+        yield i
 
 
 def clean_document_name(doc_path: str) -> str:
