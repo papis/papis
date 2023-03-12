@@ -1,93 +1,86 @@
-import os
 import re
 import tempfile
 
-from papis.commands.explore import cli
-
-import tests
-import tests.cli
+from tests.testlib import TemporaryLibrary, PapisRunner
 
 
-class TestCli(tests.cli.TestCli):
+def test_explore_cli(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.explore import cli
+    cli_runner = PapisRunner()
 
-    cli = cli
+    result = cli_runner.invoke(
+        cli,
+        ["cmd", "ls"])
+    assert result.exit_code == 0
 
-    def test_main(self):
-        self.do_test_cli_function_exists()
-        self.do_test_help()
+    result = cli_runner.invoke(
+        cli,
+        ["lib", "krishnamurti"])
+    assert result.exit_code == 0
 
-    def test_cmd(self):
-        result = self.invoke([
-            "cmd", "ls"
-        ])
-        self.assertEqual(result.exit_code, 0)
 
-    def test_lib(self):
-        result = self.invoke([
-            "lib", "krishnamurti"
-        ])
-        self.assertEqual(result.exit_code, 0)
+def test_explore_bibtex_cli(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.explore import cli
+    cli_runner = PapisRunner()
 
-    def test_export_bibtex(self):
-        with tempfile.NamedTemporaryFile(delete=False) as f:
-            path = f.name
+    with tempfile.NamedTemporaryFile(delete=False, dir=tmp_library.tmpdir) as f:
+        path = f.name
 
-        result = self.invoke([
-            "lib", "krishnamurti", "export", "--format", "bibtex", "-o", path
-        ])
-        self.assertEqual(result.exit_code, 0)
-        self.assertTrue(os.path.exists(path))
+    result = cli_runner.invoke(
+        cli,
+        ["lib", "krishnamurti", "export", "--format", "bibtex", "--out", path])
+    assert result.exit_code == 0
 
-        with open(path) as fd:
-            bibtex = fd.read()
+    with open(path) as fd:
+        exported_bibtex = fd.read()
 
-        expected_bibtex = (
-            "@article{FreedomFromThJKri2009,",
-            "  year = {2009},",
-            "  title = {Freedom from the known},",
-            "  author = {J. Krishnamurti},",
-            "}"
-        )
+    assert exported_bibtex == (
+        "@article{FreedomFromThJKri2009,\n"
+        "  author = {J. Krishnamurti},\n"
+        "  title = {Freedom from the known},\n"
+        "  year = {2009},\n"
+        "}"
+    )
 
-        for chunk in expected_bibtex:
-            self.assertTrue(chunk in bibtex.split("\n"))
 
-    def test_export_yaml(self):
-        with tempfile.NamedTemporaryFile(delete=False) as f:
-            path = f.name
+def test_explore_yaml_cli(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.explore import cli
+    cli_runner = PapisRunner()
 
-        result = self.invoke([
-            "lib", "krishnamurti", "export", "--format", "yaml", "-o", path
-        ])
-        self.assertEqual(result.exit_code, 0)
-        self.assertTrue(os.path.exists(path))
+    with tempfile.NamedTemporaryFile(delete=False, dir=tmp_library.tmpdir) as f:
+        path = f.name
 
-        with open(path) as fd:
-            yaml = fd.read()
+    result = cli_runner.invoke(
+        cli,
+        ["lib", "popper", "export", "--format", "yaml", "--out", path])
+    assert result.exit_code == 0
 
-        expected_yaml = (
-            r"author: J. Krishnamurti",
-            r"title: Freedom from the known",
-            r"year: '2009'"
-        )
+    with open(path) as fd:
+        exported_yaml = fd.read()
 
-        for ey in expected_yaml:
-            self.assertTrue(re.findall(ey, yaml))
+    assert re.match(
+        "author: K. Popper\n"
+        "doi: 10.1021/ct5004252\n"
+        "papis_id: .*\n"
+        "title: The open society\n"
+        "volume: I\n",
+        exported_yaml
+    )
 
-        os.unlink(path)
 
-    def test_citations_and_json(self):
-        with tempfile.NamedTemporaryFile(delete=False) as f:
-            path = f.name
+def test_explore_citations_and_json_cli(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.explore import cli
+    cli_runner = PapisRunner()
 
-        result = self.invoke([
-            "citations", "krishnamurti", "export", "--format", "json", "--out",
-            path
-        ])
-        self.assertEqual(result.exit_code, 0)
+    with tempfile.NamedTemporaryFile(delete=False, dir=tmp_library.tmpdir) as f:
+        path = f.name
 
-        with open(path) as fd:
-            yaml = fd.read()
+    result = cli_runner.invoke(
+        cli,
+        ["citations", "krishnamurti", "export", "--format", "json", "--out", path])
+    assert result.exit_code == 0
 
-        self.assertEqual(yaml, "[]")
-        os.unlink(path)
+    with open(path) as fd:
+        exported_json = fd.read()
+
+    assert exported_json == "[]"
