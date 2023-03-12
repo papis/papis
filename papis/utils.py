@@ -150,7 +150,6 @@ def general_open(file_name: str,
             "stdin": None,
             "stdout": subprocess.DEVNULL,
             "stderr": subprocess.DEVNULL,
-            "close_fds": True
         }
 
         # NOTE: Detach process so that the terminal can be closed without also
@@ -159,6 +158,9 @@ def general_open(file_name: str,
             popen_kwargs["creationflags"] = subprocess.DETACHED_PROCESS
             popen_kwargs["creationflags"] |= subprocess.CREATE_NEW_PROCESS_GROUP
         else:
+            # NOTE: 'close_fds' is not supported on windows with stdout/stderr
+            # https://docs.python.org/3/library/subprocess.html#subprocess.Popen
+            popen_kwargs["close_fds"] = True
             cmd.insert(0, "nohup")
 
         subprocess.Popen(cmd, **popen_kwargs)
