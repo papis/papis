@@ -125,7 +125,11 @@ def general_open(file_name: str,
         opener = default_opener
 
     import shlex
-    cmd = shlex.split("{} '{}'".format(opener, file_name))
+    if sys.platform == "win32":
+        cmd = shlex.split(str(opener), posix=False) + [file_name]
+    else:
+        cmd = shlex.split("{} '{}'".format(opener, file_name))
+
     logger.debug("Running command: '%s'.", cmd)
 
     # NOTE: Detached processes do not fail properly when the command does not
