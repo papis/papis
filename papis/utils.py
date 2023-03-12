@@ -32,6 +32,12 @@ B = TypeVar("B")
 
 
 def get_session() -> "requests.Session":
+    """Create a :class:`requests.Session` for ``papis``.
+
+    This session has the expected ``User-Agent``, proxy and other settings used
+    for ``papis``. It is recommended to use it instead of creating a separate
+    connection.
+    """
     import requests
     session = requests.Session()
     session.headers.update({
@@ -44,6 +50,7 @@ def get_session() -> "requests.Session":
             "http": proxy,
             "https": proxy,
         }
+
     return session
 
 
@@ -52,12 +59,30 @@ def has_multiprocessing() -> bool:
 
 
 def parmap(f: Callable[[A], B],
-           xs: List[A],
+           xs: Iterable[A],
            np: Optional[int] = None) -> List[B]:
+    """Apply the function *f* to all elements of *xs*.
+
+    When available, this function uses the :mod:`multiprocessing` module to
+    apply the function in parallel. This can have a noticeable performance
+    impact when the number of elements of *xs* is large, but can also be slower
+    than a sequential :func:`map`.
+
+    The number of processes can also be controlled using the ``PAPIS_NP``
+    environment variable. Setting this variable to ``0`` will disable the
+    use of :mod:`multiprocessing` on all platforms.
+
+    .. todo::
+
+        Enable multiprocessing support for Darwin on Python 3.6+. For details
+        see `this issues <https://github.com/papis/papis/issues/323>`__.
+
+    :param f: a callable to apply to a list of elements.
+    :param xs: an iterable of elements to apply the function *f* to.
+    :param np: number of processes to use when applying the function *f* in
+        parallel. This value defaults to ``PAPIS_NP`` or :func:`os.cpu_count`.
     """
-    todo: enable multiprocessing support for darwin (py3.6+) ...
-    todo: ... see https://github.com/papis/papis/issues/323
-    """
+
     # FIXME: load singleton plugins here instead of on all the processes
     _ = papis.format.get_formater()
 
@@ -75,13 +100,24 @@ def general_open(file_name: str,
                  key: str,
                  default_opener: Optional[str] = None,
                  wait: bool = True) -> None:
-    """Wrapper for openers
+    """Open a file with a configured open tool (executable).
+
+    :param file_name: a file path to open.
+    :param key: a key in the configuration file to determine the opener used,
+        e.g. ``opentool``.
+    :param default_opener: an existing executable that can be used to open the
+        file given by *file_name*. By default, the opener given by
+        *key*, if any, or the default ``papis`` opener are used.
+    :param wait: if *True* wait for the process to finish, otherwise detach the
+        process and return immediately.
     """
+
     try:
         opener = papis.config.get(key)
     except papis.exceptions.DefaultSettingValueMissing:
         if default_opener is None:
             default_opener = papis.defaults.get_default_opener()
+
         opener = default_opener
 
     import shlex
@@ -121,29 +157,32 @@ def general_open(file_name: str,
 
 
 def open_file(file_path: str, wait: bool = True) -> None:
-    """Open file using the ``opentool`` key value as a program to
-    handle file_path.
+    """Open file using the configured ``opentool`` (see :ref:`general-settings`).
 
-    :param file_path: File path to be handled.
-    :param wait: Wait for the completion of the opener program to continue
+    :param file_path: a file path to open.
+    :param wait: if *True* wait for the process to finish, otherwise detach the
+        process and return immediately.
     """
     general_open(file_name=file_path, key="opentool", wait=wait)
 
 
 def get_folders(folder: str) -> List[str]:
-    """This is the main indexing routine. It looks inside ``folder`` and crawls
-    the whole directory structure in search for subfolders containing an info
-    file.
+    """Get all folders with ``papis`` documents inside of *folder*.
 
-    :param folder: Folder to look into.
-    :returns: List of folders containing an info file.
+    This is the main indexing routine. It looks inside *folder* and crawls
+    the whole directory structure in search of subfolders containing an ``info``
+    file. The name of the file must match the configured ``info-name``
+    (see :ref:`general-settings`).
+
+    :param folder: root folder to look into.
+    :returns: List of folders containing an ``info`` file.
     """
     logger.debug("Indexing folders in '%s'", folder)
+    info_name = papis.config.getstring("info-name")
 
     folders = []
     for root, _, _ in os.walk(folder):
-        if os.path.exists(
-                os.path.join(root, papis.config.getstring("info-name"))):
+        if os.path.exists(os.path.join(root, info_name)):
             folders.append(root)
 
     logger.debug("%d valid folders retrieved", len(folders))
@@ -152,20 +191,21 @@ def get_folders(folder: str) -> List[str]:
 
 
 def create_identifier(input_list: Optional[str] = None, skip: int = 0) -> Iterator[str]:
-    """This creates a generator object capable of iterating over lists to
-    create combinations of that list that result in unique strings.
-    Ideally for use in modifying an existing string to make it unique.
+    """Creates an infinite list of identifiers based on *input_list*.
 
-    Example:
+    This creates a generator object capable of iterating over lists to
+    create unique products of increasing cardinality
+    (see `here <https://stackoverflow.com/questions/14381940/>`__). This is
+    mainly intended to create suffixes for existing strings, e.g. file names,
+    to ensure uniqueness.
+
+    :param input_list: list to iterate over
+    :param skip: number of identifiers to skip.
+
     >>> import string
     >>> m = create_identifier(string.ascii_lowercase)
     >>> next(m)
     'a'
-
-    (`see here <https://stackoverflow.com/questions/14381940/>`__)
-
-    :param input_list: list to iterate over
-    :param skip: number of identifiers to skip.
     """
     import string
     from itertools import count, product, islice
@@ -181,40 +221,59 @@ def create_identifier(input_list: Optional[str] = None, skip: int = 0) -> Iterat
         yield i
 
 
-def clean_document_name(doc_path: str) -> str:
-    """Get a file path and return the basename of the path cleaned.
+def clean_document_name(doc_path: str, is_path: bool = True) -> str:
+    """Clean a string to only contain visible ASCII characters.
 
-    It will also turn chinese, french, russian etc into ascii characters.
+    This function uses ``slugify`` to create ASCII strings that can be used
+    safely as file names or printed to consoles that do not necessarily support
+    full unicode.
 
-    :param doc_path: Path of a document.
-    :returns: Basename of the path cleaned
+    By default, it assumes that the input is a path and will only look at its
+    ``basename``. This can have unintended results for other strings and can
+    be disabled by setting *is_path* to *False*.
+
+    :param doc_path: a string to be cleaned.
+    :param is_path: if *True*, only the basename of *doc_path* is cleaned, as
+        obtained from :func:`os.path.basename`.
+    :returns: a cleaned ASCII string.
     """
+    if is_path:
+        doc_path = os.path.basename(doc_path)
+
     import slugify
     regex_pattern = r"[^a-z0-9.]+"
     return str(slugify.slugify(
-        os.path.basename(doc_path),
+        doc_path,
         word_boundary=True,
         regex_pattern=regex_pattern))
 
 
 def locate_document_in_lib(document: papis.document.Document,
-                           library: Optional[str] = None
-                           ) -> papis.document.Document:
-    """Try to figure out if a document is already in a library
+                           library: Optional[str] = None) -> papis.document.Document:
+    """Locate a document in a library.
 
-    :param document: Document to be searched for
-    :param library: Name of a valid papis library
-    :returns: Document in library if found
-    :raises IndexError: Whenever document is not found in the library
+    This function uses the ``unique-document-keys`` (see :ref:`general-settings`)
+    to determine if the current document matches any document in the library.
+    The first document for which a key matches exactly will be returned.
+
+    :param document: the document to search for.
+    :param library: the name of a valid ``papis`` library.
+    :returns: a full document as found in the library.
+
+    :raises IndexError: No document found in the library.
     """
+
     db = papis.database.get(library_name=library)
+
     comparing_keys = papis.config.getlist("unique-document-keys")
     assert comparing_keys is not None
 
-    for k in comparing_keys:
-        if not document.has(k):
+    for key in comparing_keys:
+        value = document.get(key)
+        if value is None:
             continue
-        docs = db.query_dict({k: document[k]})
+
+        docs = db.query_dict({key: value})
         if docs:
             return docs[0]
 
@@ -223,32 +282,41 @@ def locate_document_in_lib(document: papis.document.Document,
 
 def locate_document(
         document: papis.document.Document,
-        documents: List[papis.document.Document]
+        documents: Iterable[papis.document.Document]
         ) -> Optional[papis.document.Document]:
-    """Try to figure out if a document is already within a list of documents.
+    """Locate a *document* in a list of *documents*.
 
-    :param document: Document to be searched for
-    :param documents: Documents to search in
-    :returns: papis document if it is found
+    This function uses the ``unique-document-keys`` (see :ref:`general-settings`)
+    to determine if the current document matches any document in the list.
+    The first document for which a key matches exactly will be returned.
+
+    :param document: the document to search for.
+    :param documents: an iterable of existing documents to match against.
+    :returns: a document from *documents* which matches the given *document*
+        or *None* if no document is found.
     """
+
     # if these keys exist in the documents, then check those first
     # TODO: find a way to really match well titles and author
     comparing_keys = papis.config.getlist("unique-document-keys")
     assert comparing_keys is not None
+
     for d in documents:
         for key in comparing_keys:
             if key in document and key in d:
                 if re.match(document[key], d[key], re.I):
                     return d
+
     return None
 
 
-def folders_to_documents(folders: List[str]) -> List[papis.document.Document]:
-    """Turn folders into documents, this step is quite critical for performance
+def folders_to_documents(folders: Iterable[str]) -> List[papis.document.Document]:
+    """Load a list of documents from their respective *folders*.
 
-    :param folders: List of folder paths.
-    :returns: List of document objects.
+    :param folders: a list of folder paths to load from.
+    :returns: a list of document objects.
     """
+
     import time
     begin_t = time.time()
     result = parmap(papis.document.from_folder, folders)
@@ -257,26 +325,55 @@ def folders_to_documents(folders: List[str]) -> List[papis.document.Document]:
     return result
 
 
-def get_cache_home() -> str:
-    """Get folder where the cache files are stored, it retrieves the
-    ``cache-dir`` configuration setting. It is ``XDG`` standard compatible.
+def update_doc_from_data_interactively(
+        document: Union[papis.document.Document, Dict[str, Any]],
+        data: Dict[str, Any],
+        data_name: str) -> None:
+    """Shows a TUI to update the *document* interactively with fields from *data*.
 
-    :returns: Full path for cache main folder
+    :param document: a document (or a mapping convertible to a document) which
+        is going to be updated.
+    :param data: additional data to select and merge into *document*.
+    :param data_name: an identifier for the *data* to show in the TUI.
     """
-    user_defined = papis.config.get("cache-dir")
-    if user_defined is not None:
-        path = os.path.expanduser(user_defined)
-    else:
-        path = os.path.expanduser(
-            os.path.join(str(os.environ.get("XDG_CACHE_HOME")), "papis")
-        ) if os.environ.get(
-            "XDG_CACHE_HOME"
-        ) else os.path.expanduser(
-            os.path.join("~", ".cache", "papis")
-        )
-    if not os.path.exists(path):
-        os.makedirs(path)
-    return str(path)
+    import copy
+    docdata = copy.copy(document)
+
+    import papis.tui.widgets.diff
+    # do not compare some entries
+    docdata.pop("files", None)
+    docdata.pop("tags", None)
+
+    document.update(papis.tui.widgets.diff.diffdict(
+                    docdata,
+                    data,
+                    namea=papis.document.describe(document),
+                    nameb=data_name))
+
+
+def get_cache_home() -> str:
+    """Get default cache directory.
+
+    This will retrieve the ``cache-dir`` configuration setting
+    (see :ref:`general-settings`). It is ``XDG`` standard compatible.
+
+    :returns: the absolute path for the cache main folder.
+    """
+    cachedir = papis.config.get("cache-dir")
+
+    if cachedir is None:
+        xdg_cache_dir = os.environ.get("XDG_CACHE_HOME")
+        if xdg_cache_dir:
+            cachedir = os.path.join(xdg_cache_dir, "papis")
+        else:
+            cachedir = os.path.join("~", ".cache", "papis")
+
+    # ensure the directory exists
+    cachedir = os.path.expanduser(cachedir)
+    if not os.path.exists(cachedir):
+        os.makedirs(cachedir)
+
+    return cachedir
 
 
 def get_matching_importer_or_downloader(
@@ -340,9 +437,11 @@ def get_matching_importer_by_name(
         only_data: bool = True,
         ) -> List[papis.importer.Importer]:
     """Get importers that match the given URIs.
+
     This function tries to match the URI using :meth:`~papis.importer.Importer.match`
     and extract the data using :meth:`~papis.importer.Importer.fetch`. Only
     importers that fetch the data without issues are returned.
+
     :param name_and_uris: an list of ``(name, uri)`` of importer names and
         URIs to match them against.
     :param only_data: if *True*, attempt to only import document data, not files.
@@ -378,9 +477,11 @@ def collect_importer_data(
         only_data: bool = True,
         ) -> papis.importer.Context:
     """Collect all data from the given *importers*.
+
     It is assumed that the importers have called the needed ``fetch`` methods,
     so all data has been downloaded and converted. This function is meant to
     only do the aggregation.
+
     :param batch: if *True*, overwrite data from previous importers, otherwise
         ask the user to manually merge.
     :param only_data: if *True*, only import document data, not files.
@@ -414,24 +515,13 @@ def collect_importer_data(
     return ctx
 
 
-def update_doc_from_data_interactively(
-        document: Union[papis.document.Document, Dict[str, Any]],
-        data: Dict[str, Any], data_name: str) -> None:
-    import copy
-    docdata = copy.copy(document)
-
-    import papis.tui.widgets.diff
-    # do not compare some entries
-    docdata.pop("files", None)
-    docdata.pop("tags", None)
-    document.update(papis.tui.widgets.diff.diffdict(
-                    docdata,
-                    data,
-                    namea=papis.document.describe(document),
-                    nameb=data_name))
-
-
 def is_relative_to(path: str, other: str) -> bool:
+    """Check if paths are relative to each other.
+
+    This is equivalent to :meth:`pathlib.PurePath.is_relative_to`.
+
+    :returns: *True* if *path* is relative to the *other* path.
+    """
     if sys.version_info >= (3, 9):
         return pathlib.Path(path).is_relative_to(other)
     # This should lead to the same result as the above for older versions of
@@ -446,6 +536,19 @@ def is_relative_to(path: str, other: str) -> bool:
 def dump_object_doc(
         objects: Iterable[Tuple[str, Any]],
         sep: str = "\n\t") -> List[str]:
+    """Dumps the documentation for each of the object in *objects* to a string.
+
+    This function is meant to provide a short description for each object based
+    on the first line of its documentation. For example, an if the object are
+    importers, it can show::
+
+        importer_name
+            This is my fancy importer for <service>
+
+    :param objects: an iterable of ``(name, object)`` to be displayed.
+    :param sep: the separator between the name and the description.
+    :returns: a list of strings describing each object.
+    """
     import colorama
     re_whitespace = re.compile(r"\s+")
 
