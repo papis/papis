@@ -1,33 +1,45 @@
 import re
 import os
-import tempfile
-from unittest.mock import patch
-import tests
-import tests.cli
+import pytest
+
 import papis.config
-import papis.crossref
-from papis.commands.add import (
-    run, cli,
-    get_file_name,
-    get_hash_folder
-)
-from tests import (
-    create_random_pdf, create_random_file, create_random_epub,
-    create_real_document
-)
-from papis.filetype import get_document_extension
+import papis.document
+
+from tests.testlib import TemporaryLibrary, PapisRunner
 
 
-def test_get_hash_folder():
-    data = dict(author="don quijote de la mancha")
+def make_document(name: str, dir: str, nfiles: int = 0) -> papis.document.Document:
+    folder = os.path.join(dir, name)
+    if not os.path.exists(folder):
+        os.makedirs(folder)
 
-    with tempfile.NamedTemporaryFile(prefix="papis-get-name-", delete=False) as f:
-        path = f.name
+    from tests.testlib import create_random_file
+    files = [os.path.basename(create_random_file(dir=folder)) for _ in range(nfiles)]
+    data = {
+        "author": "Plato",
+        "title": "Republic",
+        "year": 375,
+        "files": files
+    }
 
-    hh = get_hash_folder(data, [path])
+    import papis.id
+
+    doc = papis.document.Document(folder, data)
+    doc[papis.id.key_name()] = papis.id.compute_an_id(doc)
+    doc.save()
+
+    return doc
+
+
+def test_get_hash_folder(tmp_library: TemporaryLibrary) -> None:
+    data = {"author": "don quijote de la mancha"}
+    filename = tmp_library.create_random_file()
+
+    from papis.commands.add import get_hash_folder
+    hh = get_hash_folder(data, [filename])
     assert re.match(r".*-don-quijote-de-la-ma$", hh) is not None
 
-    three_files_hh = get_hash_folder(data, [path, path, path])
+    three_files_hh = get_hash_folder(data, [filename, filename, filename])
     assert re.match(r".*-don-quijote-de-la-ma$", three_files_hh) is not None
     assert not three_files_hh == hh
 
@@ -37,286 +49,281 @@ def test_get_hash_folder():
     assert not no_files_hh == hh
 
     data = {}
-    hh = get_hash_folder(data, [path])
+    hh = get_hash_folder(data, [filename])
     assert re.match(r".*-don-quijote-de-la-ma$", hh) is None
-    os.unlink(path)
 
-    with tempfile.NamedTemporaryFile(prefix="papis-get-name-", delete=False) as f:
-        path = f.name
+    filename = tmp_library.create_random_file()
 
-    newhh = get_hash_folder(data, [path])
+    newhh = get_hash_folder(data, [filename])
     assert not hh == newhh
 
-    newnewhh = get_hash_folder(data, [path])
+    newnewhh = get_hash_folder(data, [filename])
     assert not newnewhh == newhh
-    os.unlink(path)
 
 
-class TestGetFileName(tests.cli.TestWithLibrary):
+def test_get_file_name(tmp_library: TemporaryLibrary) -> None:
+    pdf = tmp_library.create_random_file("pdf")
+    path = tmp_library.create_random_file(
+        "text", prefix="papis-get-name-", suffix=".data")
 
-    def test_get_file_name(self):
-        pdf = create_random_pdf(suffix=".pdf")
-        path = create_random_file(prefix="papis-get_name-")
+    from papis.commands.add import get_file_name
 
-        assert papis.config.get("add-file-name") is None
-        filename = get_file_name(dict(title="blah"), path, suffix="3")
-        assert re.match(r"^papis-get-name-.*\.data$", filename) is not None
-        # With suffix
-        filename = get_file_name(dict(title="blah"), pdf, suffix="3")
-        assert len(re.split("[.]pdf", filename)) == 2
-        # Without suffix
-        filename = get_file_name(dict(title="blah"), pdf)
-        assert len(re.split("[.]pdf", filename)) == 2
+    assert papis.config.get("add-file-name") is None
+    filename = get_file_name({"title": "blah"}, path, suffix="3")
+    assert re.match(r"^papis-get-name-.*\.data$", filename) is not None
+    # With suffix
+    filename = get_file_name({"title": "blah"}, pdf, suffix="3")
+    assert len(re.split("[.]pdf", filename)) == 2
+    # Without suffix
+    filename = get_file_name({"title": "blah"}, pdf)
+    assert len(re.split("[.]pdf", filename)) == 2
 
-        papis.config.set(
-            "add-file-name",
-            "{doc[title]} {doc[author]} {doc[yeary]}"
-        )
+    papis.config.set(
+        "add-file-name",
+        "{doc[title]} {doc[author]} {doc[yeary]}"
+    )
 
-        filename = get_file_name(dict(title="blah"), path, suffix="2")
-        assert filename == "blah-2.data"
+    filename = get_file_name({"title": "blah"}, path, suffix="2")
+    assert filename == "blah-2.data"
 
-        filename = get_file_name(dict(title="b" * 200), path, suffix="2")
-        assert filename == "b" * 150 + "-2.data"
+    filename = get_file_name({"title": "b" * 200}, path, suffix="2")
+    assert filename == "b" * 150 + "-2.data"
 
-        filename = get_file_name(
-            dict(title="blah"), create_random_pdf(suffix=".pdf"), suffix="2"
-        )
-        assert filename == "blah-2.pdf"
+    pdf = tmp_library.create_random_file("pdf")
+    filename = get_file_name({"title": "blah"}, pdf, suffix="2")
+    assert filename == "blah-2.pdf"
 
-        filename = get_file_name(
-            dict(title="blah"), create_random_pdf(), suffix="2"
-        )
-        assert filename == "blah-2.pdf"
+    pdf = tmp_library.create_random_file("pdf")
+    filename = get_file_name({"title": "blah"}, pdf, suffix="2")
+    assert filename == "blah-2.pdf"
 
-        filename = get_file_name(
-            dict(title="blah"), create_random_file(suffix=".yaml"), suffix="2"
-        )
-        assert filename == "blah-2.yaml"
+    yaml = tmp_library.create_random_file("text", suffix=".yaml")
+    filename = get_file_name({"title": "blah"}, yaml, suffix="2")
+    assert filename == "blah-2.yaml"
 
 
-class TestRun(tests.cli.TestWithLibrary):
+def test_add_run(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
+    from papis.commands.add import run
 
-    def test_nofile_exception(self):
-        try:
-            run(
-                ["/path/does/not/exist.pdf"],
-                data=dict(author="Bohm", title="My effect")
-            )
-            self.assertTrue(False)
-        except IOError:
-            self.assertTrue(True)
-
-    def test_nofile_add(self):
+    # add non-existent file
+    with pytest.raises(OSError, match="exist.pdf"):
         run(
-            [],
-            data=dict(author="Evangelista", title="MRCI")
-        )
-        db = papis.database.get()
-        docs = db.query_dict(dict(author="Evangelista"))
-        self.assertEqual(len(docs), 1)
-        doc = docs[0]
-        self.assertIsNot(doc, None)
-        self.assertEqual(len(doc.get_files()), 0)
+            ["/path/does/not/exist.pdf"],
+            data={"author": "Bohm", "title": "My effect"})
 
-    def test_add_with_data(self):
-        data = {
-            "journal": "International Journal of Quantum Chemistry",
-            "language": "en",
-            "issue": "15",
-            "title": "How many-body perturbation theory has changed qm ",
-            "url": "https://doi.wiley.com/10.1002/qua.22384",
-            "volume": "109",
-            "author": "Kutzelnigg, Werner",
-            "type": "article",
-            "doi": "10.1002/qua.22384",
-            "year": "2009",
-            "ref": "2FJT2E3A"
-        }
-        number_of_files = 10
-        with tempfile.TemporaryDirectory() as d:
-            paths = []
-            for i in range(number_of_files):
-                paths.append(os.path.join(d, str(i)))
-                with open(paths[-1], "w+"):
-                    pass
+    # add n files
+    run([], data={"author": "Evangelista", "title": "MRCI"})
 
-            run(paths, data=data)
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Evangelista"})
+    assert len(doc.get_files()) == 0
 
-            db = papis.database.get()
-            docs = db.query_dict(dict(author="Kutzelnigg, Werner"))
-            self.assertEqual(len(docs), 1)
-            doc = docs[0]
-            self.assertIsNot(doc, None)
-            self.assertEqual(len(doc.get_files()), number_of_files)
+    # add many files
+    data = {
+        "journal": "International Journal of Quantum Chemistry",
+        "language": "en",
+        "issue": "15",
+        "title": "How many-body perturbation theory has changed qm ",
+        "url": "http://doi.wiley.com/10.1002/qua.22384",
+        "volume": "109",
+        "author": "Kutzelnigg, Werner",
+        "type": "article",
+        "doi": "10.1002/qua.22384",
+        "year": "2009",
+        "ref": "2FJT2E3A"
+    }
+    paths = [tmp_library.create_random_file() for _ in range(nfiles)]
+
+    run(paths, data=data)
+
+    doc, = db.query_dict({"author": "Kutzelnigg"})
+    assert len(doc.get_files()) == nfiles
 
 
-class TestCli(tests.cli.TestCli):
+def test_add_set_cli(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.add import cli
+    cli_runner = PapisRunner()
 
-    cli = cli
+    result = cli_runner.invoke(
+        cli,
+        ["--set", "author", "Bertrand Russell",
+         "--set", "title", "Principia",
+         "--batch"])
+    assert result.exit_code == 0
 
-    def test_main(self):
-        self.do_test_cli_function_exists()
-        self.do_test_help()
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Bertrand Russell"})
+    assert doc["title"] == "Principia"
+    assert not doc.get_files()
 
-    def test_set(self):
-        result = self.invoke([
-            "-s", "author", "Bertrand Russell",
-            "-b",
-            "--set", "title", "Principia"
-        ])
-        self.assertEqual(result.exit_code, 0)
-        db = papis.database.get()
-        docs = db.query_dict(dict(author="Bertrand Russell"))
-        self.assertEqual(len(docs), 1)
-        self.assertEqual(len(docs[0].get_files()), 0)
 
-    def test_link(self):
-        pdf = create_random_pdf()
-        result = self.invoke([
-            "-s", "author", "Plato",
-            "--set", "title", "Republic",
-            "-b",
-            "--link", pdf
-        ])
-        self.assertIsNot(result, None)
-        # self.assertEqual(result.exit_code, 0)
+def test_add_link_cli(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.add import cli
+    cli_runner = PapisRunner()
 
-        db = papis.database.get()
-        docs = db.query_dict(dict(author="Plato"))
-        self.assertEqual(len(docs), 1)
+    filename = tmp_library.create_random_file()
+    result = cli_runner.invoke(
+        cli,
+        ["--set", "author", "Plato",
+         "--set", "title", "Republic",
+         "--batch",
+         "--link",
+         filename])
+    assert result.exit_code == 0
 
-        doc = docs[0]
-        self.assertEqual(len(doc.get_files()), 1)
-        self.assertTrue(os.path.islink(doc.get_files()[0]))
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Plato"})
 
-    @patch("papis.utils.open_file", lambda x: None)
-    @patch("papis.tui.utils.confirm", lambda x: True)
-    @patch(
-        "papis.utils.update_doc_from_data_interactively",
-        lambda ctxdata, impdata, string: ctxdata.update(impdata))
-    @patch("papis.utils.open_file", lambda x: None)
-    def test_name_and_from_folder(self):
-        pdf = create_random_pdf(suffix=".pdf")
-        result = self.invoke([
-            "-s", "author", "Aristoteles",
-            "--set", "title", '"The apology of socrates"',
-            "-b",
-            "--folder-name", "the_apology", pdf
-        ])
-        self.assertEqual(result.exit_code, 0)
+    files = doc.get_files()
+    assert len(files) == 1
+    assert os.path.islink(files[0])
 
-        db = papis.database.get()
-        docs = db.query_dict(dict(author="Aristoteles"))
-        self.assertEqual(len(docs), 1)
 
-        doc = docs[0]
-        assert os.path.basename(doc.get_main_folder()) == "the-apology"
-        assert len(doc.get_files()) == 1
+def test_add_folder_name_cli(tmp_library: TemporaryLibrary) -> None:
+    import papis.yaml
+    from papis.commands.add import cli
+    cli_runner = PapisRunner()
 
-        gotpdf = doc.get_files()[0]
-        assert len(re.split(r"[.]pdf", pdf)) == 2
-        assert len(re.split(r"[.]pdf", gotpdf)) == 2
+    filename = tmp_library.create_random_file()
+    result = cli_runner.invoke(
+        cli,
+        ["--set", "author", "Aristotel",
+         "--set", "title", "The apology of Socrates",
+         "--batch",
+         "--folder-name", "the-apology",
+         filename])
+    assert result.exit_code == 0
 
-        result = self.invoke([
-            "--from", "folder", doc.get_main_folder()
-        ])
-        # FIXME: this is not working I don't know why
-        #        I get <Result UnsupportedOperation('fileno')>
-        # self.assertEqual(result.exit_code, 0)
-        # docs = db.query_dict(dict(author="Aristoteles"))
-        # self.assertEqual(len(docs), 2)
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Aristotel"})
 
-    @patch("papis.utils.open_file", lambda x: None)
-    @patch("papis.tui.utils.confirm", lambda x: True)
-    @patch(
-        "papis.utils.update_doc_from_data_interactively",
-        lambda ctxdata, impdata, string: ctxdata.update(impdata))
-    def test_with_bibtex(self):
-        bibstring = """
-        @article{10.1002/andp.19053221004, author = { A. Einstein },
-          doi = { 10.1002/andp.19053221004 },
-          issue = { 10 }, journal = { Ann. Phys. }, pages = { 891--921 },
-          title = { Zur Elektrodynamik bewegter K\"{o}rper },
-          type = { article },
-          volume = { 322 },
-          year = { 1905 },
-        }
-        """
-        with tempfile.NamedTemporaryFile("w", delete=False) as f:
-            bibfile = f.name
-            f.write(bibstring)
+    folder = doc.get_main_folder()
+    assert folder is not None
+    assert os.path.basename(folder) == "the-apology"
+    assert len(doc.get_files()) == 1
 
-        pdf = create_random_pdf()
-        self.assertEqual(get_document_extension(pdf), "pdf")
 
-        result = self.invoke([pdf, "--from", "bibtex", bibfile])
-        self.assertIsNot(result, None)
+def test_add_from_folder_cli(tmp_library: TemporaryLibrary,
+                             monkeypatch: pytest.MonkeyPatch) -> None:
+    import papis.yaml
+    from papis.commands.add import cli
+    cli_runner = PapisRunner()
 
-        db = papis.database.get()
-        docs = db.query_dict(
-            dict(
-                author="einstein",
-                title="Elektrodynamik bewegter"
-            )
-        )
-        self.assertEqual(len(docs), 1)
-        doc = docs[0]
-        self.assertEqual(len(doc.get_files()), 1)
-        # This is the original pdf file, it should still be there
-        self.assertTrue(os.path.exists(pdf))
-        # and it should still be apdf
-        self.assertEqual(get_document_extension(pdf), "pdf")
-        self.assertEqual(get_document_extension(doc.get_files()[0]), "pdf")
-        os.unlink(bibfile)
+    doc = make_document("test-add-from-folder", tmp_library.tmpdir, nfiles=1)
+    folder = doc.get_main_folder()
+    assert folder is not None
 
-    @patch("papis.utils.open_file", lambda x: None)
-    @patch("papis.tui.utils.confirm", lambda x: True)
-    @patch(
-        "papis.utils.update_doc_from_data_interactively",
-        lambda ctxdata, impdata, string: ctxdata.update(impdata))
-    def test_from_yaml(self):
-        yamlstring = (
-            "title: The lord of the rings\n"
-            "author: Tolkien\n"
-        )
+    with monkeypatch.context() as m:
+        m.setattr(papis.utils, "update_doc_from_data_interactively",
+                  lambda doc, d, name: doc.update(d))
+        m.setattr(papis.utils, "open_file", lambda x: None)
+        m.setattr(papis.tui.utils, "confirm", lambda *args: True)
 
-        with tempfile.NamedTemporaryFile("w", delete=False) as f:
-            yamlfile = f.name
-            f.write(yamlstring)
+        result = cli_runner.invoke(
+            cli,
+            ["--from", "folder", folder])
+        assert result.exit_code == 0
 
-        epub = create_random_epub()
-        self.assertEqual(get_document_extension(epub), "epub")
+    from papis.database.cache import Database
+    db = papis.database.get()
+    assert isinstance(db, Database)
 
-        result = self.invoke([
-            epub, "--from", "yaml", yamlfile
-        ])
-        self.assertIsNot(result, None)
+    db.documents = None
+    doc, = db.query_dict({"author": "Plato"})
 
-        db = papis.database.get()
-        docs = db.query_dict({"author": "Tolkien"})
-        self.assertEqual(len(docs), 1)
-        doc = docs[0]
-        self.assertEqual(len(doc.get_files()), 1)
-        self.assertEqual(get_document_extension(doc.get_files()[0]), "epub")
-        # This is the original epub file, it should still be there
-        self.assertTrue(os.path.exists(epub))
-        # and it should still be an epub
-        self.assertEqual(get_document_extension(epub), "epub")
-        os.unlink(yamlfile)
+    assert doc["title"] == "Republic"
+    assert len(doc.get_files()) == 1
 
-    @patch("papis.utils.open_file", lambda x: None)
-    @patch("papis.tui.utils.confirm", lambda x: True)
-    @patch(
-        "papis.utils.update_doc_from_data_interactively",
-        lambda ctxdata, impdata, string: ctxdata.update(impdata))
-    @patch("papis.tui.utils.text_area", lambda *x, **y: True)
-    def test_from_lib(self):
-        newdoc = create_real_document({"author": "Lindgren"})
-        self.assertEqual(newdoc["author"], "Lindgren")
-        folder = newdoc.get_main_folder()
-        self.assertTrue(os.path.exists(folder))
-        self.assertTrue(os.path.exists(newdoc.get_info_file()))
-        result = self.invoke([
-            "--confirm", "--from", "lib", newdoc.get_main_folder(), "--open"])
-        self.assertEqual(result.exit_code, 0)
+
+def test_add_bibtex_cli(tmp_library: TemporaryLibrary,
+                        monkeypatch: pytest.MonkeyPatch) -> None:
+    from papis.commands.add import cli
+    cli_runner = PapisRunner()
+
+    bibtex_string = (
+        "@article{10.1002/andp.19053221004,\n"
+        "    author = {A. Einstein},\n"
+        "    doi = {10.1002/andp.19053221004},\n"
+        "    issue = {10},\n"
+        "    journal = {Ann. Phys.},\n"
+        "    pages = {891--921},\n"
+        "    title = {Zur Elektrodynamik bewegter Körper},\n"
+        "    type = {article},\n"
+        "    volume = {322},\n"
+        "    year = {1905}\n"
+        "}"
+    )
+
+    bibfile = os.path.join(tmp_library.tmpdir, "test-add.bib")
+    with open(bibfile, "w") as f:
+        f.write(bibtex_string)
+
+    with monkeypatch.context() as m:
+        m.setattr(papis.utils, "update_doc_from_data_interactively",
+                  lambda doc, d, name: doc.update(d))
+        m.setattr(papis.utils, "open_file", lambda x: None)
+        m.setattr(papis.tui.utils, "confirm", lambda *args: True)
+
+        filename = tmp_library.create_random_file()
+        result = cli_runner.invoke(
+            cli,
+            ["--from", "bibtex", bibfile, filename])
+        assert result.exit_code == 0
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "einstein", "title": "Elektrodynamik bewegter"})
+
+    assert doc["doi"] == "10.1002/andp.19053221004"
+    assert len(doc.get_files()) == 1
+
+
+def test_add_yaml_cli(tmp_library: TemporaryLibrary,
+                      monkeypatch: pytest.MonkeyPatch) -> None:
+    import papis.yaml
+    from papis.commands.add import cli
+    cli_runner = PapisRunner()
+
+    yamlfile = os.path.join(tmp_library.tmpdir, "test-add.yaml")
+    papis.yaml.data_to_yaml(yamlfile, {
+        "author": "Tolkien",
+        "title": "The lord of the rings",
+        })
+
+    with monkeypatch.context() as m:
+        m.setattr(papis.utils, "update_doc_from_data_interactively",
+                  lambda doc, d, name: doc.update(d))
+        m.setattr(papis.utils, "open_file", lambda x: None)
+        m.setattr(papis.tui.utils, "confirm", lambda *args: True)
+
+        filename = tmp_library.create_random_file()
+        result = cli_runner.invoke(
+            cli,
+            ["--from", "yaml", yamlfile, filename])
+        assert result.exit_code == 0
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Tolkien"})
+
+    assert len(doc.get_files()) == 1
+
+
+def test_add_lib_cli(tmp_library: TemporaryLibrary,
+                     monkeypatch: pytest.MonkeyPatch) -> None:
+    import papis.yaml
+    from papis.commands.add import cli
+    cli_runner = PapisRunner()
+
+    doc = make_document("test-add-from-folder", tmp_library.tmpdir)
+    folder = doc.get_main_folder()
+    assert folder is not None
+
+    with monkeypatch.context() as m:
+        m.setattr(papis.utils, "update_doc_from_data_interactively",
+                  lambda doc, d, name: doc.update(d))
+        m.setattr(papis.utils, "open_file", lambda x: None)
+        m.setattr(papis.tui.utils, "confirm", lambda *args: True)
+
+        result = cli_runner.invoke(
+            cli,
+            ["--from", "lib", folder, "--open", "--confirm"])
+        assert result.exit_code == 0
