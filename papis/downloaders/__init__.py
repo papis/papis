@@ -3,7 +3,6 @@ import re
 import sys
 from typing import List, Optional, Any, Sequence, Type, Dict, Union, TYPE_CHECKING
 
-import papis.bibtex
 import papis.config
 import papis.document
 import papis.importer
@@ -109,6 +108,7 @@ class Downloader(papis.importer.Importer):
         else:
             bib_rawdata = self.get_bibtex_data()
             if bib_rawdata:
+                import papis.bibtex
                 datalist = papis.bibtex.bibtex_to_dict(bib_rawdata)
                 if datalist:
                     if len(datalist) > 1:

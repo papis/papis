@@ -4,7 +4,6 @@ from typing import (
 
 from typing_extensions import TypedDict
 
-import papis.bibtex
 import papis.config
 import papis.document
 import papis.importer
