@@ -19,6 +19,7 @@
 
 import os
 import re
+import enum
 from typing import (
     Any, Callable, Dict, List, NamedTuple, Optional, Sequence, Tuple, Union,
     )
@@ -30,6 +31,19 @@ import papis.config
 import papis.logging
 
 logger = papis.logging.get_logger(__name__)
+
+
+# NOTE: rankings used in papis.document.sort:
+#   date:       0 (date type -- comes first)
+#   int:        1 (integer type)
+#   other:      2 (other types)
+#   none:       3 (missing key)
+class SortPriority(enum.IntEnum):
+    Date = 0
+    Int = 1
+    Other = 2
+    Missing = 3
+
 
 KeyConversion = TypedDict(
     "KeyConversion", {"key": Optional[str],
@@ -465,60 +479,36 @@ def sort(docs: Sequence[Document], key: str, reverse: bool = False) -> List[Docu
 
     :returns: a list of documents sorted by *key*.
     """
-    return Document(data=data)
+    from datetime import datetime
+    default_sort_key = (
+        SortPriority.Missing, datetime.fromtimestamp(0), 0, "")
 
+    from contextlib import suppress
 
-def sort(docs: List[Document], key: str, reverse: bool) -> List[Document]:
-    # The tuple returned by the _sort_for_key function represents:
-    # (ranking, integer value, string value)
-    # Rankings are:
-    #   date:   0 (come first)
-    #   integers:    2 (come after integers)
-    #   strings:    3 (come after integers)
-    #   None:       4 (come last)
-    sort_rankings = {
-        "date": 0,
-        "int": 1,
-        "string": 2,
-        "None": 3
-    }
+    def document_sort_key(doc: Document) -> Tuple[int, datetime, int, str]:
+        priority, date, int_value, str_value = default_sort_key
 
-    # Preserve the ordering of types even if --reverse is used.
-    if reverse:
-        for sort_type in sort_rankings:
-            sort_rankings[sort_type] = -sort_rankings[sort_type]
+        value = doc.get(key)
+        if value is not None:
+            str_value = str(value)
 
-    import datetime
-    zero_date = datetime.datetime.fromtimestamp(0)
-
-    def _sort_for_key(key: str, doc: Document
-                      ) -> Tuple[int, datetime.datetime, int, str]:
-        from contextlib import suppress
-        if key in doc:
             if key == "time-added":
                 with suppress(ValueError):
-                    date_value = \
-                        datetime.datetime.strptime(str(doc[key]),
-                                                   papis.strings.time_format)
-                    return (sort_rankings["date"],
-                            date_value, 0, str(doc[key]))
-
-            if str(doc[key]).isdigit():
-                return (sort_rankings["int"],
-                        zero_date,
-                        int(doc[key]),
-                        str(doc[key]))
+                    date = datetime.strptime(str_value, papis.strings.time_format)
+                    priority = SortPriority.Date
             else:
-                return (sort_rankings["string"],
-                        zero_date,
-                        0,
-                        str(doc[key]))
-        else:
-            # The key does not appear in the document, ensure
-            # it comes last.
-            return (sort_rankings["None"], zero_date, 0, "")
+                try:
+                    int_value = int(str_value)
+                    priority = SortPriority.Int
+                except ValueError:
+                    priority = SortPriority.Other
+
+        return (
+            -priority.value if reverse else priority.value,
+            date, int_value, str_value)
+
     logger.debug("Sorting %d documents", len(docs))
-    return sorted(docs, key=lambda d: _sort_for_key(key, d), reverse=reverse)
+    return sorted(docs, key=document_sort_key, reverse=reverse)
 
 
 def new(folder_path: str,
