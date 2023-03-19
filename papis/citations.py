@@ -36,7 +36,7 @@ def _delete_citations_key(citations: Citations) -> None:
 def fetch_citations(doc: Document) -> List[Dict[str, Any]]:
     metadata_citations = get_metadata_citations(doc)
     if not metadata_citations:
-        if doc.has("doi"):
+        if "doi" in doc:
             logger.debug("trying with doi '%s'", doc["doi"])
             data = papis.crossref.doi_to_data(doc["doi"])
             metadata_citations = get_metadata_citations(data)
