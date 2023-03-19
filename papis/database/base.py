@@ -108,7 +108,7 @@ class Database(ABC):
         database and update the document yaml accordignly.
         """
         key_name = papis.id.key_name()
-        if doc.has(key_name):
+        if key_name in doc:
             return
         while True:
             new_id = papis.id.compute_an_id(doc)

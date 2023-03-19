@@ -21,16 +21,16 @@ def links(doc: papis.document.Document, small: bool = True) -> None:
                      target="_blank"):
                 wh.icon_span(icon, title)
 
-        if doc.has("url"):
+        if "url" in doc:
             url_link("external-link", "url", doc["url"])
-        if doc.has("doi"):
+        if "doi" in doc:
             quoted_doi = urllib.parse.quote(doc["doi"], safe="")
             url_link("check-circle", "doi",
                      "https://doi.org/{}".format(doc["doi"]))
             url_link("database", "ads",
                      "https://ui.adsabs.harvard.edu/abs/{}"
                      .format(quoted_doi))
-            if not doc.has("files"):
+            if "files" not in doc:
                 url_link("lock-open", "unp",
                          "https://unpaywall.org/{}".format(doc["doi"]))
         else:
@@ -79,26 +79,26 @@ def render(libname: str,
                     t.span(doc["title"])
                 t.span(doc["author"])
                 t.br()
-                if doc.has("journal"):
+                if "journal" in doc:
                     wh.icon("book-open")
                     t.span(doc["journal"])
                     t.br()
 
-                if doc.has("files"):
+                if "files" in doc:
                     _doc_files_icons(files=doc.get_files(),
                                      libname=libname,
                                      libfolder=libfolder)
         with t.td():
-            if doc.has("tags"):
+            if "tags" in doc:
                 papis.web.tags.tags_list_div(doc["tags"], libname)
                 t.br()
 
-            if doc.has("year"):
+            if "year" in doc:
                 t.span(doc["year"], cls="badge bg-primary papis-year")
             else:
                 t.span("!!!!", cls="badge bg-danger papis-year")
             t.br()
-            if doc.has("ref"):
+            if "ref" in doc:
                 with t.a(cls="badge bg-success", href=doc_link):
                     wh.icon("at")
                     t.span(doc["ref"])

@@ -125,7 +125,7 @@ def run(documents: List[papis.document.Document],
             os.path.join(d.get_main_folder() or "", d["notes"])
             for d in documents
             if d.get_main_folder() is not None
-            and d.has("notes") and isinstance(d["notes"], str)
+            and "notes" in d and isinstance(d["notes"], str)
             and os.path.exists(
                 os.path.join(d.get_main_folder() or "", d["notes"]))]
     elif info_files:

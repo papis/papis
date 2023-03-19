@@ -129,7 +129,7 @@ def cli(query: str,
 
     if _notes:
         for document in documents:
-            if not document.has("notes"):
+            if "notes" not in document:
                 continue
             notespath = os.path.join(
                 str(document.get_main_folder()),
