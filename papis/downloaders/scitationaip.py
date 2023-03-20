@@ -14,7 +14,7 @@ class Downloader(papis.downloaders.Downloader):
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
-        # http://aip.scitation.org/doi/10.1063/1.4873138
+        # https://aip.scitation.org/doi/10.1063/1.4873138
         if re.match(r".*(aip|aapt)\.scitation\.org.*", url):
             return Downloader(url)
         else:
@@ -29,14 +29,14 @@ class Downloader(papis.downloaders.Downloader):
             return None
 
     def get_document_url(self) -> Optional[str]:
-        # http://aip.scitation.org/doi/pdf/10.1063/1.4873138
-        durl = ("http://aip.scitation.org/doi/pdf/{doi}"
+        # https://aip.scitation.org/doi/pdf/10.1063/1.4873138
+        durl = ("https://aip.scitation.org/doi/pdf/{doi}"
                 .format(doi=self.get_doi()))
         self.logger.debug("doc url = '%s'", durl)
         return durl
 
     def get_bibtex_url(self) -> Optional[str]:
-        url = ("http://aip.scitation.org/action/downloadCitation"
+        url = ("https://aip.scitation.org/action/downloadCitation"
                "?format=bibtex&cookieSet=1&doi={doi}"
                .format(doi=self.get_doi()))
         self.logger.debug("bibtex url = '%s'", url)

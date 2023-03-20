@@ -12,11 +12,11 @@ class Downloader(papis.downloaders.Downloader):
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
         """
-        >>> Downloader.match('http://wha2341!@#!@$%!@#file.pdf') is False
+        >>> Downloader.match('https://wha2341!@#!@$%!@#file.pdf') is False
         False
         >>> Downloader.match('https://whateverpt?is?therefile.epub') is False
         False
-        >>> not Downloader.match('http://whatever?path?is?therefile')
+        >>> not Downloader.match('https://whatever?path?is?therefile')
         True
         """
         endings = "pdf|djvu|epub|mobi|jpg|png|md"

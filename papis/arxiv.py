@@ -30,7 +30,7 @@ import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 
-ARXIV_API_URL = "http://arxiv.org/api/query"
+ARXIV_API_URL = "https://arxiv.org/api/query"
 ARXIV_ABS_URL = "https://arxiv.org/abs"
 ARXIV_PDF_URL = "https://arxiv.org/pdf"
 

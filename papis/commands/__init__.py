@@ -13,8 +13,8 @@ import papis.plugin
 class AliasedGroup(click.core.Group):
     """
     This group command is taken from
-        http://click.palletsprojects.com/en/5.x/advanced/#command-aliases
-    and is to be used for groups with aliases
+    `here <https://click.palletsprojects.com/en/5.x/advanced/#command-aliases>`__
+    and is to be used for groups with aliases.
     """
 
     def get_command(self,

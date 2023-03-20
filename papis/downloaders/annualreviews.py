@@ -6,10 +6,10 @@ import papis.downloaders.base
 
 class Downloader(papis.downloaders.Downloader):
 
-    DOCUMENT_URL = "http://annualreviews.org/doi/pdf/{doi}"  # type: ClassVar[str]
+    DOCUMENT_URL = "https://annualreviews.org/doi/pdf/{doi}"  # type: ClassVar[str]
 
     BIBTEX_URL = (
-        "http://annualreviews.org/action/downloadCitation"
+        "https://annualreviews.org/action/downloadCitation"
         "?format=bibtex&cookieSet=1&doi={doi}"
         )  # type: ClassVar[str]
 

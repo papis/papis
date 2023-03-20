@@ -18,10 +18,10 @@ class Downloader(papis.downloaders.Downloader):
 
     def get_identifier(self) -> Optional[str]:
         """
-        >>> d = Downloader("http://www.theses.fr/2014TOU30305")
+        >>> d = Downloader("https://www.theses.fr/2014TOU30305")
         >>> d.get_identifier()
         '2014TOU30305'
-        >>> d = Downloader("http://www.theses.fr/2014TOU30305.bib/?asdf=2")
+        >>> d = Downloader("https://www.theses.fr/2014TOU30305.bib/?asdf=2")
         >>> d.get_identifier()
         '2014TOU30305'
         """
@@ -30,10 +30,10 @@ class Downloader(papis.downloaders.Downloader):
 
     def get_document_url(self) -> Optional[str]:
         """
-        >>> d = Downloader("http://www.theses.fr/2014TOU30305")
+        >>> d = Downloader("https://www.theses.fr/2014TOU30305")
         >>> d.get_document_url()
-        'http://thesesups.ups-tlse.fr/2722/1/2014TOU30305.pdf'
-        >>> d = Downloader("http://theses.fr/1998ENPC9815")
+        'https://thesesups.ups-tlse.fr/2722/1/2014TOU30305.pdf'
+        >>> d = Downloader("https://theses.fr/1998ENPC9815")
         >>> d.get_document_url()
         'https://pastel.archives-ouvertes.fr/tel-00005590v2/file/Cances.pdf'
         """
@@ -67,10 +67,10 @@ class Downloader(papis.downloaders.Downloader):
 
     def get_bibtex_url(self) -> Optional[str]:
         """
-        >>> d = Downloader("http://www.theses.fr/2014TOU30305")
+        >>> d = Downloader("https://www.theses.fr/2014TOU30305")
         >>> d.get_bibtex_url()
-        'http://www.theses.fr/2014TOU30305.bib'
+        'https://www.theses.fr/2014TOU30305.bib'
         """
-        url = "http://www.theses.fr/{id}.bib".format(id=self.get_identifier())
+        url = "https://www.theses.fr/{id}.bib".format(id=self.get_identifier())
         self.logger.debug("bibtex url = '%s'", url)
         return url
