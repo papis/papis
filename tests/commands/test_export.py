@@ -17,9 +17,6 @@ import tests
 import tests.cli
 
 
-Loader = papis.yaml.YAML_LOADER
-
-
 class TestRun(tests.cli.TestWithLibrary):
 
     def get_docs(self):
@@ -50,7 +47,7 @@ class TestRun(tests.cli.TestWithLibrary):
             fd.write(string)
 
         with open(path, "r") as fd:
-            data = list(yaml.load_all(fd, Loader=Loader))
+            data = list(yaml.load_all(fd, Loader=papis.yaml.Loader))
 
         self.assertIsNot(data, None)
         self.assertTrue(data)
