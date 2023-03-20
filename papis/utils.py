@@ -27,16 +27,20 @@ logger = papis.logging.get_logger(__name__)
 if TYPE_CHECKING:
     import requests
 
+#: Invariant :class:`typing.TypeVar`
 A = TypeVar("A")
+#: Invariant :class:`typing.TypeVar`
 B = TypeVar("B")
 
 
 def get_session() -> "requests.Session":
     """Create a :class:`requests.Session` for ``papis``.
 
-    This session has the expected ``User-Agent``, proxy and other settings used
-    for ``papis``. It is recommended to use it instead of creating a separate
-    connection.
+    This session has the expected ``User-Agent`` (see
+    :ref:`config-settings-user-agent`), proxy (see
+    :ref:`config-settings-downloader-proxy`) and other settings used
+    for ``papis``. It is recommended to use it instead of creating a
+    :class:`requests.Session` at every call site.
     """
     import requests
     session = requests.Session()
@@ -104,7 +108,7 @@ def general_open(file_name: str,
 
     :param file_name: a file path to open.
     :param key: a key in the configuration file to determine the opener used,
-        e.g. ``opentool``.
+        e.g. :ref:`config-settings-opentool`.
     :param default_opener: an existing executable that can be used to open the
         file given by *file_name*. By default, the opener given by
         *key*, if any, or the default ``papis`` opener are used.
@@ -157,7 +161,7 @@ def general_open(file_name: str,
 
 
 def open_file(file_path: str, wait: bool = True) -> None:
-    """Open file using the configured ``opentool`` (see :ref:`general-settings`).
+    """Open file using the configured :ref:`config-settings-opentool`.
 
     :param file_path: a file path to open.
     :param wait: if *True* wait for the process to finish, otherwise detach the
@@ -171,8 +175,8 @@ def get_folders(folder: str) -> List[str]:
 
     This is the main indexing routine. It looks inside *folder* and crawls
     the whole directory structure in search of subfolders containing an ``info``
-    file. The name of the file must match the configured ``info-name``
-    (see :ref:`general-settings`).
+    file. The name of the file must match the configured
+    :ref:`config-settings-info-name`.
 
     :param folder: root folder to look into.
     :returns: List of folders containing an ``info`` file.
@@ -224,9 +228,9 @@ def create_identifier(input_list: Optional[str] = None, skip: int = 0) -> Iterat
 def clean_document_name(doc_path: str, is_path: bool = True) -> str:
     """Clean a string to only contain visible ASCII characters.
 
-    This function uses ``slugify`` to create ASCII strings that can be used
-    safely as file names or printed to consoles that do not necessarily support
-    full unicode.
+    This function uses `slugify <https://github.com/un33k/python-slugify>`__ to
+    create ASCII strings that can be used safely as file names or printed to
+    consoles that do not necessarily support full unicode.
 
     By default, it assumes that the input is a path and will only look at its
     ``basename``. This can have unintended results for other strings and can
@@ -252,7 +256,7 @@ def locate_document_in_lib(document: papis.document.Document,
                            library: Optional[str] = None) -> papis.document.Document:
     """Locate a document in a library.
 
-    This function uses the ``unique-document-keys`` (see :ref:`general-settings`)
+    This function uses the :ref:`config-settings-unique-document-keys`
     to determine if the current document matches any document in the library.
     The first document for which a key matches exactly will be returned.
 
@@ -286,7 +290,7 @@ def locate_document(
         ) -> Optional[papis.document.Document]:
     """Locate a *document* in a list of *documents*.
 
-    This function uses the ``unique-document-keys`` (see :ref:`general-settings`)
+    This function uses the :ref:`config-settings-unique-document-keys`
     to determine if the current document matches any document in the list.
     The first document for which a key matches exactly will be returned.
 
@@ -354,8 +358,8 @@ def update_doc_from_data_interactively(
 def get_cache_home() -> str:
     """Get default cache directory.
 
-    This will retrieve the ``cache-dir`` configuration setting
-    (see :ref:`general-settings`). It is ``XDG`` standard compatible.
+    This will retrieve the :ref:`config-settings-cache-dir` configuration setting.
+    It is ``XDG`` standard compatible.
 
     :returns: the absolute path for the cache main folder.
     """
@@ -535,18 +539,21 @@ def is_relative_to(path: str, other: str) -> bool:
 
 def dump_object_doc(
         objects: Iterable[Tuple[str, Any]],
-        sep: str = "\n\t") -> List[str]:
+        sep: str = "\n\t",
+        bright: bool = True) -> List[str]:
     """Dumps the documentation for each of the object in *objects* to a string.
 
     This function is meant to provide a short description for each object based
-    on the first line of its documentation. For example, an if the object are
-    importers, it can show::
+    on the first line of its documentation.
 
-        importer_name
-            This is my fancy importer for <service>
+    >>> from papis.arxiv import Importer
+    >>> dump_object_doc([("arxiv", Importer)], sep=": ", bright=False)
+    ['arxiv: Importer accepting an arXiv ID and downloading files and data']
 
     :param objects: an iterable of ``(name, object)`` to be displayed.
     :param sep: the separator between the name and the description.
+    :param bright: if *True*, the object name is styled bold for command-line
+        printing.
     :returns: a list of strings describing each object.
     """
     import colorama
@@ -560,7 +567,12 @@ def dump_object_doc(
             lines = ["No description."]
 
         headline = re_whitespace.sub(" ", lines[0].strip())
-        result.append("{c.Style.BRIGHT}{name}{c.Style.RESET_ALL}{sep}{headline}"
-                      .format(c=colorama, name=name, sep=sep, headline=headline))
+        if bright:
+            name = (
+                "{c.Style.BRIGHT}{name}{c.Style.RESET_ALL}"
+                .format(c=colorama, name=name))
+
+        result.append("{name}{sep}{headline}"
+                      .format(name=name, sep=sep, headline=headline))
 
     return result

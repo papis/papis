@@ -73,8 +73,9 @@ def yaml_to_list(yaml_path: str,
                  raise_exception: bool = False) -> List[Dict[str, Any]]:
     """Read a list of YAML documents.
 
-    This is analogous to :func:`yaml_to_data`, but uses :func:`yaml.load_all` to
-    read multiple documents.
+    This is analogous to :func:`yaml_to_data`, but uses ``yaml.load_all`` to
+    read multiple documents (see
+    `PyYAML docs <https://pyyaml.org/wiki/PyYAMLDocumentation>`__).
 
     :param yaml_path: path to a file containing YAML documents.
     :param raise_exception: if *True* an exception is raised when loading the
@@ -135,6 +136,7 @@ class Importer(papis.importer.Importer):
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+        """Check if the *uri* points to an existing YAML file."""
         importer = Importer(uri=uri)
         if os.path.exists(uri) and not os.path.isdir(uri):
             importer.fetch()
@@ -142,6 +144,7 @@ class Importer(papis.importer.Importer):
         return None
 
     def fetch_data(self: papis.importer.Importer) -> Any:
+        """Fetch metadata from the YAML file."""
         self.ctx.data = yaml_to_data(self.uri, raise_exception=True)
         if self.ctx:
             self.logger.debug("Successfully read file: '%s'.", self.uri)

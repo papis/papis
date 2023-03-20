@@ -5,12 +5,12 @@ import papis
 import papis.plugin
 import papis.logging
 
-
 if TYPE_CHECKING:
-    from stevedore import ExtensionManager
+    import stevedore.extension
 
 IMPORTER_PLUGIN_ID = "papis.importer"
 
+#: Invariant :class:`TypeVar` bound to the :class:`Importer` class.
 ImporterT = TypeVar("ImporterT", bound="Importer")
 
 
@@ -22,6 +22,9 @@ def cache(meth: Callable[[ImporterT], None]) -> Callable[[ImporterT], None]:
 
     :param meth: a method of an :class:`Importer`.
     """
+    from functools import wraps
+
+    @wraps(meth)
     def wrapper(self: ImporterT) -> None:
         if not self.ctx:
             meth(self)
@@ -64,15 +67,6 @@ class Importer:
     .. attribute:: ctx
 
         A :class:`Context` that stores the data retrieved by the importer.
-
-    .. automethod:: __init__
-
-    .. automethod:: match
-    .. automethod:: match_data
-
-    .. automethod:: fetch
-    .. automethod:: fetch_data
-    .. automethod:: fetch_files
     """
 
     def __init__(self,
@@ -169,8 +163,10 @@ class Importer:
         return "Importer({}, uri={})".format(self.name, self.uri)
 
 
-def get_import_mgr() -> "ExtensionManager":
-    """Retrieve the ``stevedore.ExtensionManager`` for importer plugins."""
+def get_import_mgr() -> "stevedore.extension.ExtensionManager":
+    """Retrieve the :class:`stevedore.extension.ExtensionManager` for
+    importer plugins.
+    """
     return papis.plugin.get_extension_manager(IMPORTER_PLUGIN_ID)
 
 

@@ -1,21 +1,4 @@
-"""Module defining the main document type.
-
-.. class:: KeyConversion
-
-    A :class:`dict` that contains a *key* and an *action*. The *key* contains the
-    name of a key in another dictionary and the *action* contains a callable
-    that can pre-processes the value.
-
-.. class:: KeyConversionPair
-    .. attribute:: foreign_key
-
-        A string denoting the foreign key (in the input data).
-
-    .. attribute:: list
-
-        A :class:`list` of :class:`KeyConversion` dictionaries used to
-        rename and post-process the :attr:`foreign_key` and its value.
-"""
+"""Module defining the main document type."""
 
 import os
 import re
@@ -38,22 +21,39 @@ logger = papis.logging.get_logger(__name__)
 #   int:        1 (integer type)
 #   other:      2 (other types)
 #   none:       3 (missing key)
-class SortPriority(enum.IntEnum):
+class _SortPriority(enum.IntEnum):
     Date = 0
     Int = 1
     Other = 2
     Missing = 3
 
 
+#: A :class:`dict` that contains a *key* and an *action*. The *key* contains the
+#: name of a key in another dictionary and the *action* contains a callable
+#: that can pre-processes the value.
 KeyConversion = TypedDict(
     "KeyConversion", {"key": Optional[str],
                       "action": Optional[Callable[[Any], Any]]}
 )
+
+#: A default :class:`KeyConversion`.
 EmptyKeyConversion = KeyConversion(key=None, action=None)
+
 KeyConversionPair = NamedTuple(
     "KeyConversionPair",
-    [("foreign_key", str), ("list", List[KeyConversion])]
+    [
+        ("foreign_key", str),
+        ("list", List[KeyConversion]),
+    ]
 )
+KeyConversionPair.foreign_key.__doc__ = """
+    A string denoting the foreign key (in the input data).
+"""
+
+KeyConversionPair.list.__doc__ = """
+    A :class:`list` of :class:`KeyConversion` mappings used to
+    rename and post-process the :attr:`foreign_key` and its value.
+"""
 
 
 def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
@@ -67,7 +67,7 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
 
     For example, we have the simple dictionary
 
-    .. code:: json
+    .. code:: python
 
         data = {"id": "10.1103/physrevb.89.140501"}
 
@@ -146,17 +146,16 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
 def author_list_to_author(data: Dict[str, Any]) -> str:
     """Convert a list of authors into a single author string.
 
-    This uses the ``multiple-authors-separator`` and the ``multiple-authors-format``
-    configuration settings (see :ref:`general-settings`) to construct the
+    This uses the :ref:`config-settings-multiple-authors-separator` and the
+    :ref:`config-settings-multiple-authors-format` settings to construct the
     concatenated authors.
 
     :param data: a :class:`dict` that contains an ``"author_list"`` key to
         be converted into a single author string.
 
-    >>> authors = [\
-        {"given": "Some", "family": "Author"},\
-        {"given": "Other", "family": "Author"}]
-    >>> author_list_to_author({"author_list": authors})
+    >>> author1 = {"given": "Some", "family": "Author"}
+    >>> author2 = {"given": "Other", "family": "Author"}
+    >>> author_list_to_author({"author_list": [author1, author2]})
     'Author, Some and Author, Other'
     """
     if "author_list" not in data:
@@ -419,7 +418,7 @@ def delete(document: Document) -> None:
 def describe(document: Union[Document, Dict[str, Any]]) -> str:
     """
     :returns: a string description of the current document using
-        ``document-description-format`` (see :ref:`general-settings`).
+        :ref:`config-settings-document-description-format`.
     """
     return papis.format.format(
         papis.config.getstring("document-description-format"),
@@ -481,7 +480,7 @@ def sort(docs: Sequence[Document], key: str, reverse: bool = False) -> List[Docu
     """
     from datetime import datetime
     default_sort_key = (
-        SortPriority.Missing, datetime.fromtimestamp(0), 0, "")
+        _SortPriority.Missing, datetime.fromtimestamp(0), 0, "")
 
     from contextlib import suppress
 
@@ -495,13 +494,13 @@ def sort(docs: Sequence[Document], key: str, reverse: bool = False) -> List[Docu
             if key == "time-added":
                 with suppress(ValueError):
                     date = datetime.strptime(str_value, papis.strings.time_format)
-                    priority = SortPriority.Date
+                    priority = _SortPriority.Date
             else:
                 try:
                     int_value = int(str_value)
-                    priority = SortPriority.Int
+                    priority = _SortPriority.Int
                 except ValueError:
-                    priority = SortPriority.Other
+                    priority = _SortPriority.Other
 
         return (
             -priority.value if reverse else priority.value,
