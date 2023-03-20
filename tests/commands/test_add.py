@@ -125,7 +125,7 @@ class TestRun(tests.cli.TestWithLibrary):
             "language": "en",
             "issue": "15",
             "title": "How many-body perturbation theory has changed qm ",
-            "url": "http://doi.wiley.com/10.1002/qua.22384",
+            "url": "https://doi.wiley.com/10.1002/qua.22384",
             "volume": "109",
             "author": "Kutzelnigg, Werner",
             "type": "article",
