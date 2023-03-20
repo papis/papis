@@ -42,6 +42,9 @@ extensions = [
 
 intersphinx_mapping = {
     "https://docs.python.org/3/": None,
+    "https://requests.readthedocs.io/en/latest/": None,
+    "https://bibtexparser.readthedocs.io/en/master": None,
+    "https://docs.openstack.org/stevedore/latest/": None,
 }
 
 autodoc_member_order = "bysource"
@@ -65,21 +68,20 @@ class PapisConfig(Directive):
     add_index = True
 
     def run(self):
-        import papis.config
+        from papis.config import get_general_settings_name, get_default_settings
         key = self.arguments[0]
         section = self.options.get(
             "section",
-            papis.config.get_general_settings_name())
+            get_general_settings_name())
         default = self.options.get(
             "default",
-            papis.config.get_default_settings().get(section).get(key))
+            get_default_settings().get(section, {}).get(key, "<missing>"))
 
         lines = []
         lines.append("")
-        lines.append(".. _config-{section}-{key}:"
-                     .format(section=section, key=key))
+        lines.append(".. _config-{section}-{key}:".format(section=section, key=key))
         lines.append("")
-        lines.append("**{key}** (config-{section}-{key}_)"
+        lines.append("`{key} <config-{section}-{key}>`_"
                      .format(section=section, key=key))
 
         if "\n" in str(default):
