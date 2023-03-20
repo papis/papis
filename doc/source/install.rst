@@ -2,9 +2,10 @@ Installation
 ============
 
 .. image:: https://badge.fury.io/py/papis.svg
-   :target: https://badge.fury.io/py/papis
+    :target: https://badge.fury.io/py/papis
+
 .. image:: https://repology.org/badge/vertical-allrepos/papis.svg
-   :target: https://repology.org/metapackage/papis
+    :target: https://repology.org/project/papis/versions
 
 Using pip
 ---------
@@ -48,7 +49,7 @@ NixOS
 -----
 
 If you are running `NixOS <https://nixos.org/>`__ or you have the
-`nix <https://nixos.org/nix/>`__ package manager installed, you can install
+`nix <https://github.com/NixOS/nix>`__ package manager installed, you can install
 papis by running:
 
 ::
@@ -81,7 +82,7 @@ First of all you have to get the code, open a terminal and hit
   git clone https://github.com/papis/papis.git
 
 or download the
-`zip file <https://github.com/papis/papis/archive/master.zip>`__.
+`zip file <https://github.com/papis/papis/archive/refs/heads/master.zip>`__.
 
 
 Go inside of the ``papis`` source folder and you can install it with ``python3``.

@@ -206,9 +206,9 @@ Bibtex options
 .. papis-config:: multiple-authors-format
 
     When retrieving automatic author information from services like
-    crossref.org, papis usually builds the ``author`` field for the
-    given document. The format how every single author name is built
-    is given by this setting, for instance you could customize it
+    `crossref.org <https://www.crossref.org>`__, papis usually builds the
+    ``author`` field for the given document. The format how every single author
+    name is built is given by this setting, for instance you could customize it
     by the following:
 
     ::
@@ -460,7 +460,7 @@ Downloaders
 
     There is the possibility of download papers using a proxy.
     To know more you can checkout this
-    `link <http://docs.python-requests.org/en/master/user/advanced/#proxies>`__.
+    `link <https://docs.python-requests.org/en/latest/user/advanced/#proxies>`__.
 
 .. papis-config:: isbn-service
 
@@ -564,7 +564,7 @@ or inside the library sections prepending a ``tui-``,
     Examples are ``fg:#ff00aa bg:black`` etc...
     More information can be found
     `here
-    <https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/styling.html/>`__
+    <https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/styling.html>`__
     .
 
 .. papis-config:: message_toolbar_style

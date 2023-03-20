@@ -107,8 +107,8 @@ If you open the ``info.yaml`` file you will see the following contents:
   - document.pdf
 
 This file is all that papis uses to store the information of your newly added
-document. It is stored in a nicely readable `yaml
-<https://en.wikipedia.org/wiki/YAML/>`__ format.
+document. It is stored in a nicely readable `YAML
+<https://en.wikipedia.org/wiki/YAML>`__ format.
 
 Now you already have your first document, and.. you can open it!
 Just do
