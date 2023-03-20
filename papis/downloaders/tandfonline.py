@@ -38,11 +38,11 @@ def _parse_month(date: str) -> Optional[int]:
 
 class Downloader(papis.downloaders.Downloader):
     DOCUMENT_URL = (
-        "http://www.tandfonline.com/doi/pdf/{doi}"
+        "https://www.tandfonline.com/doi/pdf/{doi}"
         )   # type: ClassVar[str]
 
     BIBTEX_URL = (
-        "http://www.tandfonline.com/action/downloadCitation"
+        "https://www.tandfonline.com/action/downloadCitation"
         "?format=bibtex&cookieSet=1&doi={doi}"
         )   # type: ClassVar[str]
 

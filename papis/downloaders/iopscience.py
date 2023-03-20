@@ -10,7 +10,7 @@ class Downloader(papis.downloaders.Downloader):
         )   # type: ClassVar[str]
 
     BIBTEX_URL = (
-        "http://iopscience.iop.org/export?aid={aid}"
+        "https://iopscience.iop.org/export?aid={aid}"
         "&exportFormat=iopexport_bib&exportType=abs"
         "&navsubmit=Export%2Babstract"
         )   # type: ClassVar[str]

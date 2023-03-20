@@ -125,7 +125,7 @@ Tools options
     As for now papis is not intended to detect the type of document to be opened
     and decide upon how to open the document. You should set this
     to the right program for the tool. If you are on linux you might want
-    to take a look at `ranger <http://ranger.github.io>`__ or let
+    to take a look at `ranger <https://ranger.github.io>`__ or let
     the default handle it in your system.
     For mac users you might set this to ``open``.
 
@@ -201,7 +201,7 @@ Bibtex options
     [mylib]
     extra-bibtex-types = ["wikipedia", "video", "song"]
 
-  See `bibtex reference <http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`__.
+  See `bibtex reference <https://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`__.
 
 .. papis-config:: multiple-authors-format
 

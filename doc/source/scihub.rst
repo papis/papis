@@ -38,7 +38,7 @@ Some usage examples are:
 
     .. code:: bash
 
-      papis scihub http://physicstoday.scitation.org/doi/10.1063/1.881498 \\
+      papis scihub https://physicstoday.scitation.org/doi/10.1063/1.881498 \\
         add --folder-name important_paper
 
   - Download via the ``doi.org`` url:

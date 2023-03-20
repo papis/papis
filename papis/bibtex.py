@@ -402,7 +402,7 @@ def unicode_to_latex(text: str) -> str:
     # conversions (e.g. u2010 -> -).
 
     # The original table comes from
-    # http://www.w3.org/Math/characters/unicode.xml, converted via this XSL
+    # https://www.w3.org/Math/characters/unicode.xml, converted via this XSL
     # script: https://gist.github.com/798546 . Based on my experience so far,
     # the source table is far from perfect.
 
