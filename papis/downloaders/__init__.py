@@ -3,7 +3,6 @@ import re
 import sys
 from typing import List, Optional, Any, Sequence, Type, Dict, Union, TYPE_CHECKING
 
-import papis.bibtex
 import papis.config
 import papis.document
 import papis.importer
@@ -109,6 +108,7 @@ class Downloader(papis.importer.Importer):
         else:
             bib_rawdata = self.get_bibtex_data()
             if bib_rawdata:
+                import papis.bibtex
                 datalist = papis.bibtex.bibtex_to_dict(bib_rawdata)
                 if datalist:
                     if len(datalist) > 1:
@@ -258,9 +258,9 @@ class Downloader(papis.importer.Importer):
         self.document_data = response.content
 
     def check_document_format(self) -> bool:
-        """Check if the downloaded document has the filetype that the
+        """Check if the downloaded document has the file type that the
         downloader expects. If the downloader does not expect any special
-        filetype, accept anything because there is no way to know if it is
+        file type, accept anything because there is no way to know if it is
         correct.
 
         :returns: True if it is of the right type, else otherwise
@@ -274,23 +274,25 @@ class Downloader(papis.importer.Importer):
         if self.expected_document_extension is None:
             return True
 
-        import filetype
-        retrieved_kind = filetype.guess(self.get_document_data())
+        data = self.get_document_data()
+        if data is None:
+            return True
 
-        if retrieved_kind is None:
+        from papis.filetype import guess_content_extension
+        extension = guess_content_extension(data)
+
+        if extension is None:
             print_warning()
             return False
 
-        self.logger.debug(
-            "Retrieved kind of document seems to be '%s'",
-            retrieved_kind.mime)
+        self.logger.debug("Retrieved kind of document seems to be '%s'", extension)
 
         if isinstance(self.expected_document_extension, list):
             expected_document_extensions = self.expected_document_extension
         else:
             expected_document_extensions = [self.expected_document_extension]
 
-        if retrieved_kind.extension in expected_document_extensions:
+        if extension in expected_document_extensions:
             return True
         else:
             print_warning()
@@ -306,24 +308,25 @@ def get_available_downloaders() -> List[Type[Downloader]]:
 
 
 def get_matching_downloaders(url: str) -> Sequence[Downloader]:
-    """Get matching downloaders sorted by their priorities.
-    The first elements have the higher priority
+    """Get matching downloaders for the *url*.
 
-    :param url: Url to be matched against
-    :returns: A list of sorted downloaders
+    :param url: URL to be matched against.
+    :returns: A list of downloaders (sorted by priority).
     """
-    print(get_available_downloaders())
-    _maybe_matches = [
-        d.match(url)
-        for d in get_available_downloaders()]  # List[Optional[Downloader]]
-    matches = [m
-               for m in _maybe_matches
-               if m is not None]  # type: List[Downloader]
-    print(matches)
-    return sorted(
-        matches,
-        key=lambda k: k.priority,
-        reverse=True)
+    available_downloaders = get_available_downloaders()
+    logger.debug("Available downloaders: '%s'",
+                 "', '".join([d.__module__ for d in available_downloaders]))
+
+    matches = [d
+               for maybe_downloader in available_downloaders
+               for d in [maybe_downloader.match(url)]
+               if d is not None]  # List[Downloader]
+
+    logger.debug("Downloaders matching '%s': '%s'",
+                 url,
+                 "', '".join([d.name for d in matches]))
+
+    return sorted(matches, key=lambda k: k.priority, reverse=True)
 
 
 def get_downloader_by_name(name: str) -> Type[Downloader]:

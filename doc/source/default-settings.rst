@@ -125,7 +125,7 @@ Tools options
     As for now papis is not intended to detect the type of document to be opened
     and decide upon how to open the document. You should set this
     to the right program for the tool. If you are on linux you might want
-    to take a look at `ranger <http://ranger.github.io>`__ or let
+    to take a look at `ranger <https://ranger.github.io>`__ or let
     the default handle it in your system.
     For mac users you might set this to ``open``.
 
@@ -203,14 +203,14 @@ Bibtex options
     [mylib]
     extra-bibtex-types = ["wikipedia", "video", "song"]
 
-  See `bibtex reference <http://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`__.
+  See `bibtex reference <https://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`__.
 
 .. papis-config:: multiple-authors-format
 
     When retrieving automatic author information from services like
-    crossref.org, papis usually builds the ``author`` field for the
-    given document. The format how every single author name is built
-    is given by this setting, for instance you could customize it
+    `crossref.org <https://www.crossref.org>`__, papis usually builds the
+    ``author`` field for the given document. The format how every single author
+    name is built is given by this setting, for instance you could customize it
     by the following:
 
     ::
@@ -462,7 +462,13 @@ Downloaders
 
     There is the possibility of download papers using a proxy.
     To know more you can checkout this
-    `link <http://docs.python-requests.org/en/master/user/advanced/#proxies>`__.
+    `link <https://docs.python-requests.org/en/latest/user/advanced/#proxies>`__.
+
+.. papis-config:: isbn-service
+
+    Sets the ISBN service used by the ISBN importer. Available plugins are
+    documented
+    `here <https://isbnlib.readthedocs.io/en/latest/devs.html#plugins>`__.
 
 Databases
 ---------
@@ -560,7 +566,7 @@ or inside the library sections prepending a ``tui-``,
     Examples are ``fg:#ff00aa bg:black`` etc...
     More information can be found
     `here
-    <https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/styling.html/>`__
+    <https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/styling.html>`__
     .
 
 .. papis-config:: message_toolbar_style

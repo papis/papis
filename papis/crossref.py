@@ -330,30 +330,34 @@ class DoiFromPdfImporter(papis.importer.Importer):
     def __init__(self, uri: str) -> None:
         """The uri should be a filepath"""
         super().__init__(name="pdf2doi", uri=uri)
-        self.doi = None  # type: Optional[str]
+        self._doi = None  # type: Optional[str]
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
         """The uri should be a filepath"""
         filepath = uri
-        if (os.path.isdir(filepath) or not os.path.exists(filepath)
+        if (
+                os.path.isdir(filepath)
+                or not os.path.exists(filepath)
                 or not papis.filetype.get_document_extension(filepath) == "pdf"
-                ):      # noqa: E124
+                ):
             return None
+
         importer = DoiFromPdfImporter(filepath)
-        importer.fetch()
         return importer if importer.doi else None
 
-    def fetch(self) -> None:
-        self.logger.info("Trying to parse DOI from file '%s'", self.uri)
-        if self.ctx:
-            return
-        if not self.doi:
-            self.doi = doi.pdf_to_doi(self.uri, maxlines=2000)
-        if self.doi:
-            self.logger.info("Parsed DOI: '%s'", self.doi)
+    @property
+    def doi(self) -> Optional[str]:
+        if self._doi is None:
+            self.logger.info("Parsed DOI '%s' from file: '%s'.", self.doi, self.uri)
             self.logger.warning(
                 "There is no guarantee that this DOI is the correct one")
+            self._doi = doi.pdf_to_doi(self.uri, maxlines=2000)
+
+        return self._doi
+
+    def fetch(self) -> None:
+        if self.doi:
             importer = Importer(uri=self.doi)
             importer.fetch()
             self.ctx = importer.ctx
@@ -380,42 +384,46 @@ class Importer(papis.importer.Importer):
             cls, data: Dict[str, Any]) -> Optional[papis.importer.Importer]:
         if "doi" in data:
             return Importer(uri=data["doi"])
+
         return None
 
-    def fetch(self) -> None:
-        self.logger.info("Using DOI '%s'", self.uri)
-        doidata = papis.crossref.get_data(dois=[self.uri])
-        if doidata:
-            self.ctx.data = doidata[0]
-            doc_url = self.ctx.data.get(
-                papis.config.getstring("doc-url-key-name"),
-                None)
+    def fetch_data(self) -> None:
+        data = papis.crossref.get_data(dois=[self.uri])
+        if data:
+            self.ctx.data = data[0]
 
-            if doc_url is not None:
-                self.logger.info(
-                    "Trying to download document from '%s'", doc_url)
+    def fetch_files(self) -> None:
+        if not self.ctx.data:
+            return
 
-                import filetype
-                with papis.utils.get_session() as session:
-                    response = session.get(doc_url, allow_redirects=True)
+        doc_url = self.ctx.data.get(
+            papis.config.getstring("doc-url-key-name"),
+            None)
 
-                kind = filetype.guess(response.content)
-                if not response.ok:
-                    self.logger.info("Could not download document. "
-                                     "HTTP status: %s (%d)",
-                                     response.reason, response.status_code)
-                elif kind is None:
-                    self.logger.info("Downloaded document does not have a "
-                                     "recognizable (binary) mimetype: '%s'",
-                                     response.headers["Content-Type"])
-                else:
-                    with tempfile.NamedTemporaryFile(
-                            mode="wb+",
-                            suffix=".{}".format(kind.extension),
-                            delete=False) as f:
-                        f.write(response.content)
-                        self.logger.debug("Saving in '%s'", f.name)
-                        self.ctx.files.append(f.name)
+        if doc_url is None:
+            return
+
+        self.logger.info("Trying to download document from '%s'", doc_url)
+
+        with papis.utils.get_session() as session:
+            response = session.get(doc_url, allow_redirects=True)
+
+        ext = papis.filetype.guess_content_extension(response.content)
+        if not response.ok:
+            self.logger.info("Could not download document. HTTP status: %s (%d)",
+                             response.reason, response.status_code)
+        elif ext is None:
+            self.logger.info("Downloaded document does not have a "
+                             "recognizable (binary) mimetype: '%s'",
+                             response.headers["Content-Type"])
+        else:
+            with tempfile.NamedTemporaryFile(
+                    mode="wb+",
+                    suffix=".{}".format(ext),
+                    delete=False) as f:
+                f.write(response.content)
+                self.logger.debug("Saving in '%s'", f.name)
+                self.ctx.files.append(f.name)
 
 
 class FromCrossrefImporter(papis.importer.Importer):
@@ -435,6 +443,7 @@ class FromCrossrefImporter(papis.importer.Importer):
             cls, data: Dict[str, Any]) -> Optional[papis.importer.Importer]:
         if "title" in data:
             return FromCrossrefImporter(uri=data["title"])
+
         return None
 
     def fetch_data(self) -> None:
@@ -442,33 +451,42 @@ class FromCrossrefImporter(papis.importer.Importer):
         docs = [
             papis.document.from_data(d)
             for d in get_data(query=self.uri)]
+
         if docs:
             self.logger.info("Got %d matches, picking...", len(docs))
             docs = list(papis.pick.pick_doc(docs))
+
             if not docs:
                 return
+
             doc = docs[0]
             importer = Importer(uri=doc["doi"])
             importer.fetch()
-            self.ctx = importer.ctx
+            self.ctx.data = importer.ctx.data.copy()
 
 
 class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, uri: str) -> None:
         super().__init__(uri=uri, name="doi")
+        self._doi = None    # type: Optional[str]
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.downloaders.Downloader]:
-        if doi.find_doi_in_text(uri):
-            return Downloader(uri)
-        else:
-            return None
+        down = Downloader(uri)
+        return down if down.doi else None
+
+    @property
+    def doi(self) -> Optional[str]:
+        if self._doi is None:
+            self._doi = doi.find_doi_in_text(self.uri)
+
+        return self._doi
 
     def fetch(self) -> None:
-        _doi = doi.find_doi_in_text(self.uri)
-        if _doi is None:
-            return None
-        importer = Importer(uri=_doi)
+        if self.doi is None:
+            return
+
+        importer = Importer(uri=self.doi)
         importer.fetch()
         self.ctx = importer.ctx

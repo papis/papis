@@ -1,7 +1,7 @@
 import os
 from typing import Optional, List, Dict, Any, Sequence
 
-import yaml                                 # lgtm [py/import-and-import-from]
+import yaml
 import click
 
 import papis.utils
@@ -19,15 +19,12 @@ except ImportError:
 
 logger = papis.logging.get_logger(__name__)
 
-YAML_LOADER = Loader
-
 
 def data_to_yaml(yaml_path: str, data: Dict[str, Any]) -> None:
-    """
-    Save data to yaml at path outpath
+    """Save *data* to *yaml_path* in the YAML format.
 
-    :param yaml_path: Path to a yaml file
-    :param data: Data in a dictionary
+    :param yaml_path: path to a file.
+    :param data: data to write to the file as a YAML document.
     """
     with open(yaml_path, "w+") as fd:
         yaml.dump(
@@ -37,46 +34,28 @@ def data_to_yaml(yaml_path: str, data: Dict[str, Any]) -> None:
             default_flow_style=False)
 
 
-def yaml_to_list(yaml_path: str,
-                 raise_exception: bool = False) -> Sequence[Dict[str, Any]]:
-    """
-    Analogous to yaml_to_data but using load_all to read everything.
-    """
-    try:
-        with open(yaml_path) as fdd:
-            return list(yaml.load_all(fdd, Loader=Loader))
-    except Exception as e:
-        if raise_exception:
-            raise ValueError(e) from e
-        logger.error("YAML syntax error. %s")
-        return []
-
-
 def list_to_path(data: Sequence[Dict[str, Any]], filepath: str) -> None:
+    r"""Save a list of :class:`dict`\ s to a YAML file.
+
+    :param data: a sequence of dictionaries to save as YAML documents.
+    :param filepath: path to a file.
+    """
     with open(filepath, "w+") as fdd:
         yaml.dump_all(data, fdd, allow_unicode=True)
 
 
-def exporter(documents: List[papis.document.Document]) -> str:
-    """
-    Returns a yaml string containing all documents in the input list.
-    """
-    string = yaml.dump_all(
-        [papis.document.to_dict(document) for document in documents],
-        allow_unicode=True)
-    return str(string)
+def yaml_to_data(yaml_path: str,
+                 raise_exception: bool = False) -> Dict[str, Any]:
+    """Read a YAML document from *yaml_path*.
 
+    :param yaml_path: path to a file.
+    :param raise_exception: if *True* an exception is raised when loading the
+        data has failed. Otherwise just a log message is emitted.
+    :returns: a :class:`dict` containing the data from the YAML document.
 
-def yaml_to_data(
-        yaml_path: str,
-        raise_exception: bool = False) -> Dict[str, Any]:
+    :raises ValueError: if the document cannot be loaded due to YAML parsing errors.
     """
-    Convert a yaml file into a dictionary using the yaml module.
 
-    :param yaml_path: Path to a yaml file
-    :returns: Dictionary containing the info of the yaml file
-    :raises ValueError: If a yaml parsing error happens
-    """
     with open(yaml_path) as fd:
         try:
             data = yaml.load(fd, Loader=Loader)
@@ -90,18 +69,52 @@ def yaml_to_data(
             return data
 
 
+def yaml_to_list(yaml_path: str,
+                 raise_exception: bool = False) -> List[Dict[str, Any]]:
+    """Read a list of YAML documents.
+
+    This is analogous to :func:`yaml_to_data`, but uses :func:`yaml.load_all` to
+    read multiple documents.
+
+    :param yaml_path: path to a file containing YAML documents.
+    :param raise_exception: if *True* an exception is raised when loading the
+        data has failed. Otherwise just a log message is emitted.
+    :returns: a :class:`list` of :class:`dict` objects, one for each YAML
+        document in the file.
+
+    :raises ValueError: if the documents cannot be loaded due to YAML parsing errors.
+    """
+    try:
+        with open(yaml_path) as fdd:
+            return list(yaml.load_all(fdd, Loader=Loader))
+    except Exception as e:
+        if raise_exception:
+            raise ValueError(e) from e
+        logger.error("YAML syntax error. %s")
+        return []
+
+
+def exporter(documents: List[papis.document.Document]) -> str:
+    """
+    Returns a YAML string containing all documents in the input list.
+    """
+    string = yaml.dump_all(
+        [papis.document.to_dict(document) for document in documents],
+        allow_unicode=True)
+
+    return str(string)
+
+
 @click.command("yaml")
 @click.pass_context
 @click.argument("yamlfile", type=click.Path(exists=True))
 @click.help_option("--help", "-h")
 def explorer(ctx: click.Context, yamlfile: str) -> None:
-    """
-    Import documents from a yaml file
+    """Import documents from a YAML file.
 
-    Examples of its usage are
+    Examples of its usage are::
 
-    papis explore yaml lib.yaml pick
-
+        papis explore yaml lib.yaml pick
     """
     logger.info("Reading in yaml file '%s'", yamlfile)
 
@@ -115,7 +128,7 @@ def explorer(ctx: click.Context, yamlfile: str) -> None:
 
 class Importer(papis.importer.Importer):
 
-    """Importer that parses a yaml file"""
+    """Importer that parses a YAML file"""
 
     def __init__(self, uri: str) -> None:
         super().__init__(name="yaml", uri=uri)
@@ -128,8 +141,7 @@ class Importer(papis.importer.Importer):
             return importer if importer.ctx.data else None
         return None
 
-    @papis.importer.cache
-    def fetch(self: papis.importer.Importer) -> Any:
-        self.ctx.data = yaml_to_data(self.uri, raise_exception=False)
+    def fetch_data(self: papis.importer.Importer) -> Any:
+        self.ctx.data = yaml_to_data(self.uri, raise_exception=True)
         if self.ctx:
-            self.logger.info("successfully read file '%s'", self.uri)
+            self.logger.debug("Successfully read file: '%s'.", self.uri)

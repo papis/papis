@@ -24,7 +24,7 @@ if the database is supposed to only contain the key fields
         }
 
 where all the fields are explained in the whoosh
-`documentation <https://whoosh.readthedocs.io/en/latest/schema.html/>`__.
+`documentation <https://whoosh.readthedocs.io/en/latest/schema.html>`__.
 
 After this Schema is created, the folders of the library are recursed over
 and the documents are added to the database where only these

@@ -2,28 +2,38 @@
 from typing import Dict, Any, List, Optional
 
 import click
+from isbnlib.registry import services as isbn_services
 
+import papis.config
 import papis.document
 import papis.importer
 import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
+ISBN_SERVICE_NAMES = list(isbn_services)
+
 
 def get_data(query: str = "",
-             service: str = "openl") -> List[Dict[str, Any]]:
+             service: Optional[str] = None) -> List[Dict[str, Any]]:
     logger.debug("Trying to retrieve isbn from query: '%s'", query)
 
+    if service is None:
+        service = papis.config.get("isbn-service")
+
+    if service not in ISBN_SERVICE_NAMES:
+        logger.error("ISBN service '%s' is not known. Available services: '%s'.",
+                     service, "', '".join(ISBN_SERVICE_NAMES))
+        return []
+
     import isbnlib
-    results = []  # type: List[Dict[str, Any]]
     isbn = isbnlib.isbn_from_words(query)
     data = isbnlib.meta(isbn, service=service)
-    if data is None:
-        return results
+    if isinstance(data, dict):
+        return [data_to_papis(data)]
     else:
-        assert isinstance(data, dict)
-        results.append(data_to_papis(data))
-        return results
+        logger.error("Could not retrieve ISBN data.")
+        return []
 
 
 def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -55,8 +65,8 @@ def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
 @click.help_option("--help", "-h")
 @click.option("--query", "-q", default=None)
 @click.option("--service", "-s",
-              default="goob",
-              type=click.Choice(["wcat", "goob", "openl"]))
+              default=ISBN_SERVICE_NAMES[0],
+              type=click.Choice(ISBN_SERVICE_NAMES))
 def explorer(ctx: click.core.Context, query: str, service: str) -> None:
     """
     Look for documents using isbnlib
@@ -89,7 +99,7 @@ class Importer(papis.importer.Importer):
             return None
         return Importer(uri=uri)
 
-    def fetch(self) -> None:
+    def fetch_data(self) -> None:
         import isbnlib
         try:
             data = get_data(self.uri)

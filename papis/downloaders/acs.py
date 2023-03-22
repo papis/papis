@@ -7,11 +7,11 @@ import papis.downloaders
 
 class Downloader(papis.downloaders.Downloader):
     DOCUMENT_URL = (
-        "http://pubs.acs.org/doi/pdf/{doi}"
+        "https://pubs.acs.org/doi/pdf/{doi}"
         )   # type: ClassVar[str]
 
     BIBTEX_URL = (
-        "http://pubs.acs.org/action/downloadCitation"
+        "https://pubs.acs.org/action/downloadCitation"
         "?format=bibtex&cookieSet=1&doi={doi}"
         )   # type: ClassVar[str]
 

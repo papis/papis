@@ -30,7 +30,7 @@ import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 
-ARXIV_API_URL = "http://arxiv.org/api/query"
+ARXIV_API_URL = "https://arxiv.org/api/query"
 ARXIV_ABS_URL = "https://arxiv.org/abs"
 ARXIV_PDF_URL = "https://arxiv.org/pdf"
 
@@ -221,7 +221,7 @@ class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str) -> None:
         super().__init__(uri=url, name="arxiv", expected_document_extension="pdf")
-        self.arxivid = None  # type: Optional[str]
+        self._arxivid = None  # type: Optional[str]
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
@@ -229,40 +229,35 @@ class Downloader(papis.downloaders.Downloader):
         if arxivid:
             url = "{}/{}".format(ARXIV_ABS_URL, arxivid)
             down = Downloader(url)
-            down.arxivid = arxivid
+            down._arxivid = arxivid
             return down
         else:
             return None
 
-    def _get_identifier(self) -> Optional[str]:
-        """Get arxiv identifier
-        :returns: Identifier
-        """
-        if not self.arxivid:
-            self.arxivid = find_arxivid_in_text(self.uri)
-        return self.arxivid
+    @property
+    def arxivid(self) -> Optional[str]:
+        if self._arxivid is None:
+            self._arxivid = find_arxivid_in_text(self.uri)
+            self.logger.debug("Found the arxivid '%s'.", self._arxivid)
 
-    def get_bibtex_url(self) -> Optional[str]:
-        return self._get_identifier()
+        return self._arxivid
 
     def download_bibtex(self) -> None:
-        arxivid = self.get_bibtex_url()
+        arxivid = self.arxivid
         if not arxivid:
             return None
 
         import arxiv2bib
 
-        self.logger.debug("arxivid = '%s'", arxivid)
         bibtex_cli = arxiv2bib.Cli([arxivid])
         bibtex_cli.run()
         self.bibtex_data = "".join(bibtex_cli.output).replace("\n", " ")
 
     def get_document_url(self) -> Optional[str]:
-        arxivid = self._get_identifier()
+        arxivid = self.arxivid
         if not arxivid:
             return None
 
-        self.logger.debug("arxivid = '%s'", arxivid)
         pdf_url = "{}/{}.pdf".format(ARXIV_PDF_URL, arxivid)
         self.logger.debug("pdf_url = '%s'", pdf_url)
 
@@ -284,6 +279,7 @@ class Importer(papis.importer.Importer):
 
         super().__init__(name="arxiv", uri=uri)
         self.downloader = Downloader(uri)
+        self.downloader._arxivid = aid
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
@@ -298,9 +294,17 @@ class Importer(papis.importer.Importer):
         else:
             return Importer(uri="{}/{}".format(ARXIV_ABS_URL, uri))
 
-    def fetch(self) -> None:
-        self.downloader.fetch()
-        self.ctx = self.downloader.ctx
+    @property
+    def arxivid(self) -> Optional[str]:
+        return self.downloader.arxivid
+
+    def fetch_data(self) -> None:
+        self.downloader.fetch_data()
+        self.ctx.data = self.downloader.ctx.data.copy()
+
+    def fetch_files(self) -> None:
+        self.downloader.fetch_files()
+        self.ctx.files = self.downloader.ctx.files.copy()
 
 
 class ArxividFromPdfImporter(papis.importer.Importer):

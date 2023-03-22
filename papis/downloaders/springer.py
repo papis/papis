@@ -11,7 +11,7 @@ class Downloader(papis.downloaders.Downloader):
         )   # type: ClassVar[str]
 
     BIBTEX_URL = (
-        "http://citation-needed.springer.com/v2/"
+        "https://citation-needed.springer.com/v2/"
         "references/{doi}?format=bibtex&amp;flavour=citation"
         )   # type: ClassVar[str]
 

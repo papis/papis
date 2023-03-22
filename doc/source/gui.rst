@@ -7,8 +7,8 @@ already downloadable from pip.
 
 See for instance
 
-- `papis-rofi <https://papis_rofi.readthedocs.io/>`__
-- `papis-dmenu <https://papis_dmenu.readthedocs.io/>`__
+- `papis-rofi <https://papis-rofi.readthedocs.io/en/latest>`__
+- `papis-dmenu <https://papis-dmenu.readthedocs.io/en/latest>`__
 
 
 And more to come!

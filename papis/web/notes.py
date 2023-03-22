@@ -55,7 +55,7 @@ ace.config.loadModule('ace/ext/keybinding_menu',
                         (module) =>  {{
                             module.init({editor});
                         }});
-{editor}.setKeyboardHandler('ace/keyboard/vim');
+// {editor}.setKeyboardHandler('ace/keyboard/vim');
 {editor}.session.setMode("ace/mode/{ext}");
 
 {onsubmit}

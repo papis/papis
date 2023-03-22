@@ -269,7 +269,7 @@ def _update(ctx: click.Context, _all: bool,
                     papis.document.describe(doc))
                 if keys:
                     docs[j].update(
-                        {k: libdoc.get(k) for k in keys if libdoc.has(k)})
+                        {k: libdoc.get(k) for k in keys if k in libdoc})
                 else:
                     docs[j] = libdoc
     click.get_current_context().obj["documents"] = docs
@@ -350,7 +350,7 @@ def _browse(ctx: click.Context, key: Optional[str]) -> None:
 @click.pass_context
 def _rm(ctx: click.Context) -> None:
     """Remove a document from the documents list"""
-    print("Sorry, TODO...")
+    click.echo("Sorry, TODO...")
 
 
 @cli.command("ref")
@@ -368,7 +368,7 @@ def _ref(ctx: click.Context, out: Optional[str]) -> None:
         with open(out, "w+") as fd:
             fd.write(ref)
     else:
-        print(ref)
+        click.echo(ref)
 
 
 @cli.command("save")
@@ -385,7 +385,7 @@ def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
     if not force:
         c = papis.tui.utils.confirm("Are you sure you want to save?")
         if not c:
-            print("Not saving..")
+            click.echo("Not saving..")
             return
     with open(bibfile, "w+") as fd:
         logger.info("Saving %d documents in '%s'", len(docs), bibfile)
@@ -470,7 +470,7 @@ def _doctor(ctx: click.Context, key: List[str]) -> None:
     """
     logger.info("Checking for existence of keys %s", ", ".join(key))
 
-    failed = [(d, keys) for d, keys in [(d, [k for k in key if not d.has(k)])
+    failed = [(d, keys) for d, keys in [(d, [k for k in key if k not in d])
                                         for d in ctx.obj["documents"]]
               if keys]
 
@@ -563,7 +563,7 @@ def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
                 "%s {c.Back.BLACK}{c.Fore.YELLOW}%-80.80s"
                 "{c.Style.RESET_ALL}",
                 j, papis.document.describe(doc))
-            if doc.has(k):
+            if k in doc:
                 file_value = doc[k]
                 logger.info("\tKey '%s' exists", k)
                 break

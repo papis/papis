@@ -151,13 +151,20 @@ def cli(query: str,
                     processed_tuples[key] = value
             ctx.data.update(processed_tuples)
 
-        matching_importers = []
+        # NOTE: use 'papis addto' to add files, so this only adds data
+        # by setting 'only_data' to True always
+        matching_importers = papis.utils.get_matching_importer_by_name(
+            from_importer, only_data=True)
+
         if not from_importer and auto:
             for importer_cls in papis.importer.get_importers():
                 try:
                     importer = importer_cls.match_data(document)
                     if importer:
-                        importer.fetch()
+                        try:
+                            importer.fetch_data()
+                        except NotImplementedError:
+                            importer.fetch()
                 except NotImplementedError:
                     continue
                 except Exception as e:
@@ -166,36 +173,8 @@ def cli(query: str,
                     if importer and importer.ctx:
                         matching_importers.append(importer)
 
-        for _importer_name, _uri in from_importer:
-            try:
-                _uri = papis.format.format(_uri, document)
-                _iclass = papis.importer.get_importer_by_name(_importer_name)
-                importer = _iclass(uri=_uri)
-                importer.fetch()
-                if importer.ctx:
-                    matching_importers.append(importer)
-            except Exception as e:
-                logger.exception(e)
-
-        if matching_importers:
-            logger.info(
-                "There are %d possible matchings", len(matching_importers))
-
-            for importer in matching_importers:
-                if importer.ctx.data:
-                    logger.info(
-                        "Merging data from importer '%s'", importer.name)
-                    papis.utils.update_doc_from_data_interactively(
-                        ctx.data,
-                        importer.ctx.data,
-                        str(importer))
-                if importer.ctx.files:
-                    logger.info(
-                        "Got files %s from importer '%s'",
-                        importer.ctx.files, importer.name)
-                    for f in importer.ctx.files:
-                        papis.utils.open_file(f)
-                        if papis.tui.utils.confirm("Use this file?"):
-                            ctx.files.append(f)
+        imported = papis.utils.collect_importer_data(
+            matching_importers, batch=False, only_data=True)
+        ctx.data.update(imported.data)
 
         run(document, data=ctx.data, git=git)

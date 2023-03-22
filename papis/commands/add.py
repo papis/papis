@@ -314,21 +314,19 @@ def run(paths: List[str],
     # NOTE: this needs to go before any papis.format calls, so that those can
     # potentially use the 'ref' key in the formatted strings.
     if "ref" not in data:
-        data["ref"] = papis.bibtex.create_reference(data)
-        logger.info("Created reference '%s'", data["ref"])
+        new_ref = papis.bibtex.create_reference(data)
+        if new_ref:
+            logger.info("Created reference '%s'", new_ref)
+            data["ref"] = new_ref
 
     if base_path is None:
         base_path = os.path.expanduser(papis.config.get_lib_dirs()[0])
-    out_folder_path = base_path
 
     if subfolder:
-        out_folder_path = os.path.join(out_folder_path, subfolder)
+        base_path = os.path.join(base_path, subfolder)
+    out_folder_path = base_path = os.path.normpath(base_path)
 
-    if not folder_name:
-        out_folder_name = get_hash_folder(data, in_documents_paths)
-        out_folder_path = os.path.join(out_folder_path, out_folder_name)
-        logger.info("Got an automatic folder name")
-    else:
+    if folder_name:
         temp_doc = papis.document.Document(data=data)
         temp_path = os.path.join(out_folder_path, folder_name)
         components = []     # type: List[str]
@@ -348,11 +346,22 @@ def run(paths: List[str],
             # continue with parent path component
             temp_path = os.path.dirname(temp_path)
 
+        del temp_doc
+
         # components are formatted in reverse order, so we add then now in the
         # right order to the path
-        out_folder_path = os.path.join(out_folder_path, *components)
+        out_folder_path = os.path.normpath(os.path.join(out_folder_path, *components))
 
-        del temp_doc
+    if out_folder_path == base_path:
+        if folder_name:
+            logger.error(
+                "Could not produce a folder path from the provided data:\n"
+                "\tdata: %s\n\tfiles: %s",
+                data, in_documents_names)
+
+        logger.info("Constructing an automatic (hashed) folder name.")
+        out_folder_name = get_hash_folder(data, in_documents_paths)
+        out_folder_path = os.path.join(out_folder_path, out_folder_name)
 
     if not papis.utils.is_relative_to(out_folder_path, base_path):
         raise ValueError("formatting produced path outside of library")
@@ -551,11 +560,11 @@ def cli(files: List[str],
     """
 
     if list_importers:
-        import_mgr = papis.importer.get_import_mgr()
-        for n in import_mgr.names():
-            print("{name}\n\t{text}".format(
-                name=n,
-                text=re.sub(r"[ \n]+", " ", import_mgr[n].plugin.__doc__)))
+        mgr = papis.importer.get_import_mgr()
+        click.echo("\n".join(papis.utils.dump_object_doc([
+            (name, mgr[name].plugin) for name in mgr.names()
+            ], sep="\n    ")))
+
         return
 
     data = {}
@@ -571,54 +580,30 @@ def cli(files: List[str],
         confirm = False
         open_file = False
 
-    import_mgr = papis.importer.get_import_mgr()
-    matching_importers = []  # type: List[papis.importer.Importer]
+    only_data = bool(files) and not force_download
+    matching_importers = papis.utils.get_matching_importer_by_name(
+        from_importer, only_data=only_data)
 
     if not from_importer and not batch and files:
         matching_importers = sum((
-            papis.utils.get_matching_importer_or_downloader(f)
+            papis.utils.get_matching_importer_or_downloader(f, only_data=only_data)
             for f in files), [])
-        logger.info("These importers where automatically matched, "
-                    "select the ones you want to use")
-        _range = papis.tui.utils.select_range(
-            ["{0} (files: {1}) ".format(imp.name, ", ".join(imp.ctx.files))
-                for imp in matching_importers],
-            "Select matching importers (for instance 0, 1, 3-10, a, all...)")
-        matching_importers = [matching_importers[i] for i in _range]
 
-    for importer_tuple in from_importer:
-        try:
-            importer_name = importer_tuple[0]
-            resource = importer_tuple[1]
-            importer = import_mgr[importer_name].plugin(uri=resource)
-            importer.fetch()
-            if importer.ctx:
-                matching_importers.append(importer)
-        except Exception as e:
-            logger.exception(e)
+        if matching_importers:
+            logger.info("These importers where automatically matched. "
+                        "Select the ones you want to use.")
 
-    if matching_importers:
-        logger.info("There are %d possible matchings", len(matching_importers))
+            matching_indices = papis.tui.utils.select_range(
+                ["{} (files: {}) ".format(imp.name, ", ".join(imp.ctx.files))
+                 for imp in matching_importers],
+                "Select matching importers (for instance 0, 1, 3-10, a, all...)")
 
-        for importer in matching_importers:
-            if importer.ctx.data:
-                logger.info("Merging data from importer %s", importer.name)
-                if batch:
-                    ctx.data.update(importer.ctx.data)
-                else:
-                    papis.utils.update_doc_from_data_interactively(
-                        ctx.data,
-                        importer.ctx.data,
-                        str(importer))
-            if importer.ctx.files and (not files or force_download):
-                logger.info(
-                    "Got files %s from importer '%s'",
-                    importer.ctx.files, importer.name)
-                for f in importer.ctx.files:
-                    papis.utils.open_file(f)
-                    _msg = "Use this file? (from {0})".format(importer.name)
-                    if batch or papis.tui.utils.confirm(_msg):
-                        ctx.files.append(f)
+            matching_importers = [matching_importers[i] for i in matching_indices]
+
+    imported = papis.utils.collect_importer_data(
+        matching_importers, batch=batch, only_data=only_data)
+    ctx.data.update(imported.data)
+    ctx.files.extend(imported.files)
 
     if not ctx:
         logger.error("There is nothing to be added")

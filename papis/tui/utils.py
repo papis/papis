@@ -1,6 +1,8 @@
 import re
 from typing import Optional, List, Callable, Any
 
+import click
+
 # Highlighting style used by pygments. This is a copy of the prompt_toolkit
 # default style, but changed to use ansi colors.
 PAPIS_PYGMENTS_DEFAULT_STYLE = {
@@ -157,7 +159,7 @@ def select_range(options: List[Any],
                  accept_none: bool = False,
                  bottom_toolbar: Optional[str] = None) -> List[int]:
     for i, o in enumerate(options):
-        print("{i}. {o}".format(i=i, o=o))
+        click.echo("{i}. {o}".format(i=i, o=o))
 
     possible_indices = range(len(options))
     all_keywords = ["all", "a"]

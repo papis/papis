@@ -480,16 +480,10 @@ def cli(query: str,
     """Check for common problems in documents"""
 
     if list_checks:
-        re_whitespace = re.compile(r"\s+")
+        click.echo("\n".join(papis.utils.dump_object_doc([
+            (name, fn.operate) for name, fn in REGISTERED_CHECKS.items()
+            ], sep="\n    ")))
 
-        for name, fn in REGISTERED_CHECKS.items():
-            if fn.operate.__doc__:
-                check_doc = [line for line in fn.operate.__doc__.split("\n\n") if line]
-            else:
-                check_doc = ["No description."]
-
-            headline = re_whitespace.sub(" ", check_doc[0].strip())
-            print("{}\n    {}".format(name, headline))
         return
 
     documents = papis.cli.handle_doc_folder_query_all_sort(
@@ -513,19 +507,19 @@ def cli(query: str,
     if _json:
         import json
 
-        print(json.dumps(list(map(error_to_dict, errors))))
+        click.echo(json.dumps(list(map(error_to_dict, errors))))
         return
 
     from papis.commands.edit import run as edit_run
 
     for error in errors:
-        print("{e.name}\t{e.payload}\t{e.path}".format(e=error))
+        click.echo("{e.name}\t{e.payload}\t{e.path}".format(e=error))
 
         if explain:
-            print("\tReason: {}".format(error.msg))
+            click.echo("\tReason: {}".format(error.msg))
 
         if suggest:
-            print("\tSuggestion: {}".format(error.suggestion_cmd))
+            click.echo("\tSuggestion: {}".format(error.suggestion_cmd))
 
         if fix:
             error.fix_action()

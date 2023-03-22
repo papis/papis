@@ -27,7 +27,7 @@ def render(doc: papis.document.Document,
             with t.button(cls="btn btn-success",
                           type="submit"):
                 wh.icon_span("cloud-bolt", "Fetch citations")
-            if doc.has("doi"):
+            if "doi" in doc:
                 quoted_doi = urllib.parse.quote(doc["doi"], safe="")
                 with t.a(cls="btn btn-primary",
                          target="_blank",
@@ -45,7 +45,7 @@ def render(doc: papis.document.Document,
                                               libfolder,
                                               papis.document.from_data(cit))
     else:
-        if doc.has("doi"):
+        if "doi" in doc:
             quoted_doi = urllib.parse.quote(doc["doi"], safe="")
             ads = ads_fmt.format(doi=quoted_doi)
             t.a("Provided by ads", href=ads)

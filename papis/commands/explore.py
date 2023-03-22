@@ -6,7 +6,7 @@ Imagine you want to search for some papers online, but you don't want to
 go into a browser and look for it. Explore gives you way to do this,
 using several services available online, more should be coming on the way.
 
-An excellent such resource is `crossref <https://crossref.org/>`__,
+An excellent such resource is `crossref <https://www.crossref.org/>`__,
 which you can use by using the subcommand crossref:
 
 ::
