@@ -19,8 +19,8 @@ def test_python_formater(monkeypatch):
             papis.format.format("{doc[author]}: {doc[title]}", document)
             == "Fulano: A New Hope")
         assert (
-            papis.format.format("{doc[author]}:\\n\\t{doc[title]}", document)
-            == "Fulano:\n\tA New Hope")
+            papis.format.format("{doc[author]}:\\n\\t»{doc[title]}", document)
+            == "Fulano:\n\t»A New Hope")
         assert (
             papis.format.format(
                 "{doc[author]}: {doc[title]} - {doc[blahblah]}",

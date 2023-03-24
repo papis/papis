@@ -19,15 +19,8 @@ class InvalidFormaterError(ValueError):
 InvalidFormatterValue = InvalidFormaterError
 
 
-def escape(fmt: str) -> str:
-    # NOTE: this escapes '\n' and '\t' characters in the string so that they
-    # get printed properly when doing the 'fmt.format' below
-
-    import codecs
-    try:
-        return codecs.decode(fmt, "unicode-escape")
-    except ValueError:
-        return fmt
+def unescape(fmt: str) -> str:
+    return fmt.replace("\\n", "\n").replace("\\t", "\t").replace("\\r", "\r")
 
 
 class Formater:
@@ -68,7 +61,7 @@ class PythonFormater(Formater):
         if additional is None:
             additional = {}
 
-        fmt = escape(fmt)
+        fmt = unescape(fmt)
         if not isinstance(doc, papis.document.Document):
             doc = papis.document.from_data(doc)
 
@@ -109,7 +102,7 @@ class Jinja2Formater(Formater):
 
         from jinja2 import Template
 
-        fmt = escape(fmt)
+        fmt = unescape(fmt)
         if not isinstance(doc, papis.document.Document):
             doc = papis.document.from_data(doc)
 
