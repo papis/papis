@@ -141,6 +141,41 @@ def test_get() -> None:
         papis.config.get("_unknown_key")
 
 
+def test_get_types() -> None:
+    # getint
+    papis.config.set("int_config", "1")
+    value = papis.config.getint("int_config")
+    assert isinstance(value, int)
+    assert value == 1
+
+    papis.config.set("int_config", "x")
+    with pytest.raises(ValueError,
+                       match="Key 'int_config' should be an integer"):
+        value = papis.config.getint("int_config")
+
+    # getfloat
+    papis.config.set("float_config", "3.1415")
+    value = papis.config.getfloat("float_config")
+    assert isinstance(value, float)
+    assert value == 3.1415
+
+    papis.config.set("float_config", "not1")
+    with pytest.raises(ValueError,
+                       match="Key 'float_config' should be a float"):
+        value = papis.config.getfloat("float_config")
+
+    # getboolean
+    papis.config.set("boolean_config", "True")
+    value = papis.config.getboolean("boolean_config")
+    assert isinstance(value, bool)
+    assert value
+
+    papis.config.set("boolean_config", "not1")
+    with pytest.raises(ValueError,
+                       match="Key 'boolean_config' should be a boolean"):
+        value = papis.config.getboolean("boolean_config")
+
+
 def test_get_configuration() -> None:
     settings = papis.config.get_general_settings_name()
     config = papis.config.get_configuration()
