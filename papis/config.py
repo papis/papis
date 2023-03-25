@@ -342,7 +342,12 @@ def getint(key: str, section: Optional[str] = None) -> Optional[int]:
     >>> getint('something')
     42
     """
-    return general_get(key, section=section, data_type=int)
+    try:
+        return general_get(key, section=section, data_type=int)
+    except ValueError:
+        value = general_get(key, section=section)
+        raise ValueError("Key '{}' should be an integer: '{}' is of type '{}'"
+                         .format(key, value, type(key).__name__))
 
 
 def getfloat(key: str, section: Optional[str] = None) -> Optional[float]:
@@ -351,7 +356,12 @@ def getfloat(key: str, section: Optional[str] = None) -> Optional[float]:
     >>> getfloat('something')
     0.42
     """
-    return general_get(key, section=section, data_type=float)
+    try:
+        return general_get(key, section=section, data_type=float)
+    except ValueError:
+        value = general_get(key, section=section)
+        raise ValueError("Key '{}' should be a float: '{}' is of type '{}'"
+                         .format(key, value, type(key).__name__))
 
 
 def getboolean(key: str, section: Optional[str] = None) -> Optional[bool]:
@@ -360,7 +370,12 @@ def getboolean(key: str, section: Optional[str] = None) -> Optional[bool]:
     >>> getboolean('add-open')
     True
     """
-    return general_get(key, section=section, data_type=bool)
+    try:
+        return general_get(key, section=section, data_type=bool)
+    except ValueError:
+        value = general_get(key, section=section)
+        raise ValueError("Key '{}' should be a boolean: '{}' is of type '{}'"
+                         .format(key, value, type(key).__name__))
 
 
 def getstring(key: str, section: Optional[str] = None) -> str:
@@ -371,8 +386,9 @@ def getstring(key: str, section: Optional[str] = None) -> str:
     """
     result = general_get(key, section=section, data_type=str)
     if not isinstance(result, str):
-        raise ValueError("Key '{}' should be a string, not a '{}'"
-                         .format(key, type(key).__name__))
+        raise ValueError("Key '{}' should be a string: '{}' is of type '{}'"
+                         .format(key, result, type(key).__name__))
+
     return str(result)
 
 
