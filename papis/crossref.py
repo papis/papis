@@ -350,10 +350,11 @@ class DoiFromPdfImporter(papis.importer.Importer):
     @property
     def doi(self) -> Optional[str]:
         if self._doi is None:
-            self.logger.info("Parsed DOI '%s' from file: '%s'.", self.doi, self.uri)
+            self._doi = doi.pdf_to_doi(self.uri, maxlines=2000)
+
+            self.logger.info("Parsed DOI '%s' from file: '%s'.", self._doi, self.uri)
             self.logger.warning(
                 "There is no guarantee that this DOI is the correct one!")
-            self._doi = doi.pdf_to_doi(self.uri, maxlines=2000)
 
         return self._doi
 
