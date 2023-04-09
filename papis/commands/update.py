@@ -46,25 +46,15 @@ from typing import List, Dict, Tuple, Optional, Any
 import click
 
 import papis.utils
-import papis.tui.utils
 import papis.strings
-import papis.downloaders
 import papis.document
-import papis.database
-import papis.pick
 import papis.format
 import papis.cli
 import papis.importer
 import papis.git
 import papis.logging
-from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)
-
-
-def _update_with_database(document: papis.document.Document) -> None:
-    document.save()
-    papis.database.get().update(document)
 
 
 def run(document: papis.document.Document,
@@ -73,15 +63,17 @@ def run(document: papis.document.Document,
     if data is None:
         data = {}
 
-    # Keep the ref the same, otherwise issues can be caused when
-    # writing LaTeX documents and all the ref's change
-    data["ref"] = document["ref"]
-    document.update(data)
-    _update_with_database(document)
     folder = document.get_main_folder()
     info = document.get_info_file()
+
     if not folder or not info:
+        from papis.exceptions import DocumentFolderNotFound
         raise DocumentFolderNotFound(papis.document.describe(document))
+
+    from papis.api import save_doc
+    document.update(data)
+    save_doc(document)
+
     if git:
         papis.git.add_and_commit_resource(
             folder, info,
@@ -175,6 +167,14 @@ def cli(query: str,
 
         imported = papis.utils.collect_importer_data(
             matching_importers, batch=False, only_data=True)
+        if "ref" in imported.data:
+            logger.debug(
+                "An importer set the 'ref' key. This is not allowed and will be "
+                "automatically removed. Check importers: '%s'",
+                "', '".join(importer.name for importer in matching_importers))
+
+            del imported.data["ref"]
+
         ctx.data.update(imported.data)
 
         run(document, data=ctx.data, git=git)
