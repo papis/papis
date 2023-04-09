@@ -105,3 +105,13 @@ class TestCli(tests.cli.TestCli):
     #         "krishnamurti", "--from", "bibtex", yamlpath
     #     ])
     #     self.assertEqual(result.exit_code, 0)
+
+    def test_update_ref(self):
+        result = self.invoke([
+            "krishnamurti", "--set", "ref", "NewRef",
+            ])
+        self.assertEqual(result.exit_code, 0)
+
+        db = papis.database.get()
+        doc, = db.query_dict({"author": "krishnamurti"})
+        assert doc["ref"] == "NewRef"
