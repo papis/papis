@@ -143,7 +143,6 @@ import papis.commands.open
 import papis.commands.edit
 import papis.commands.browse
 import papis.commands.export
-from papis.commands.update import _update_with_database
 import papis.bibtex
 import papis.logging
 
@@ -306,6 +305,8 @@ def _edit(ctx: click.Context,
         papis bibtex read article.bib edit --set __proj focal-point --all
 
     """
+    from papis.api import save_doc
+
     not_found = 0
     docs = ctx.obj["documents"]
     if not docs:
@@ -318,7 +319,7 @@ def _edit(ctx: click.Context,
             if set_tuples:
                 for k, v in set_tuples:
                     located[k] = papis.format.format(v, located)
-                _update_with_database(located)
+                save_doc(located)
             else:
                 papis.commands.edit.run(located)
         except IndexError:
