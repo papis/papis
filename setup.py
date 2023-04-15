@@ -252,6 +252,7 @@ setup(
             "tandfonline=papis.downloaders.tandfonline:Downloader",
             "thesesfr=papis.downloaders.thesesfr:Downloader",
             "worldscientific=papis.downloaders.worldscientific:Downloader",
+            "usenix=papis.downloaders.usenix:Downloader",
         ],
         "papis.explorer": [
             "add=papis.commands.explore:add",
