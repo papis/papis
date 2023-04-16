@@ -1,0 +1,31 @@
+{
+  "address": "Boston, MA",
+  "author": "Bulekov, Alexander and Das, Bandan and Hajnoczi, Stefan and Egele, Manuel",
+  "author_list": [
+    {
+      "family": "Bulekov",
+      "given": "Alexander"
+    },
+    {
+      "family": "Das",
+      "given": "Bandan"
+    },
+    {
+      "family": "Hajnoczi",
+      "given": "Stefan"
+    },
+    {
+      "family": "Egele",
+      "given": "Manuel"
+    }
+  ],
+  "booktitle": "31st USENIX Security Symposium (USENIX Security 22)",
+  "isbn": "978-1-939133-31-1",
+  "month": "August",
+  "pages": "1221--1238",
+  "publisher": "USENIX Association",
+  "title": "Morphuzz: Bending (Input) Space to Fuzz Virtual Devices",
+  "type": "inproceedings",
+  "url": "https://www.usenix.org/conference/usenixsecurity22/presentation/bulekov",
+  "year": "2022"
+}
