@@ -1,0 +1,39 @@
+{
+  "address": "Renton, WA",
+  "author": "Goyal, Prateesh and Shah, Preey and Zhao, Kevin and Nikolaidis, Georgios and Alizadeh, Mohammad and Anderson, Thomas E.",
+  "author_list": [
+    {
+      "family": "Goyal",
+      "given": "Prateesh"
+    },
+    {
+      "family": "Shah",
+      "given": "Preey"
+    },
+    {
+      "family": "Zhao",
+      "given": "Kevin"
+    },
+    {
+      "family": "Nikolaidis",
+      "given": "Georgios"
+    },
+    {
+      "family": "Alizadeh",
+      "given": "Mohammad"
+    },
+    {
+      "family": "Anderson",
+      "given": "Thomas E."
+    }
+  ],
+  "booktitle": "19th USENIX Symposium on Networked Systems Design and Implementation (NSDI 22)",
+  "isbn": "978-1-939133-27-4",
+  "month": "April",
+  "pages": "779--805",
+  "publisher": "USENIX Association",
+  "title": "Backpressure Flow Control",
+  "type": "inproceedings",
+  "url": "https://www.usenix.org/conference/nsdi22/presentation/goyal",
+  "year": "2022"
+}
