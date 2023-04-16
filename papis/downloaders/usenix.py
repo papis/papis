@@ -36,7 +36,7 @@ class Downloader(papis.downloaders.Downloader):
         path_components = list(path.split("/"))
         if len(path_components) < 5:
             return None
-        self.logger.debug("%s", path_components)
+        self.logger.debug("Parsed URL: %s.", path_components)
         return path_components[2] + "-" + path_components[4]
 
     def get_document_url(self) -> Optional[str]:
@@ -51,7 +51,7 @@ class Downloader(papis.downloaders.Downloader):
         if not self._raw_data:
             self._raw_data = self.session.get(self.uri).content.decode("utf-8")
             if not self._raw_data:
-                self.logger.warning("failed to fetch data from '%s'", self.uri)
+                self.logger.warning("Failed to fetch data from '%s'.", self.uri)
                 return None
 
         soup = bs4.BeautifulSoup(self._raw_data, "html.parser")
@@ -63,10 +63,12 @@ class Downloader(papis.downloaders.Downloader):
             ))
 
         if not a:
-            self.logger.warning("No citation_pdf_url url in this usenix page")
+            self.logger.warning(
+                "No 'citation_pdf_url' URL found in this usenix page: '%s'.",
+                self.uri)
             return None
 
-        self.logger.debug("found html tag %s", a[0])
+        self.logger.debug("Found HTML tag: '%s'", a[0])
         pdf_url = str(a[0].get("content", default=""))
         if not pdf_url:
             return None
@@ -87,7 +89,7 @@ class Downloader(papis.downloaders.Downloader):
         if not self._raw_data:
             self._raw_data = self.session.get(self.uri).content.decode("utf-8")
             if not self._raw_data:
-                self.logger.warning("failed to fetch data from '%s'", self.uri)
+                self.logger.warning("Failed to fetch data from '%s'.", self.uri)
                 return None
 
         soup = bs4.BeautifulSoup(self._raw_data, "html.parser")
@@ -100,7 +102,8 @@ class Downloader(papis.downloaders.Downloader):
             ))
 
         if not a:
-            self.logger.warning("No bibtex export url in this usenix page")
+            self.logger.warning("No BibTeX URL found in this usenix page: '%s'.",
+                                self.uri)
             return None
 
         bib_path = a[0].get("href", "")
