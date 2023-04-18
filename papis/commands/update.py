@@ -109,7 +109,7 @@ def run(document: papis.document.Document,
               multiple=True,
               default=(),)
 @click.option("-s", "--set", "set_tuples",
-              help="Update document's information with key value."
+              help="Update document's information with key value. "
                    "The value can be a papis format.",
               multiple=True,
               type=(str, str),)
