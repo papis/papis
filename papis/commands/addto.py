@@ -23,8 +23,7 @@ import tempfile
 from typing import List, Optional
 
 import click
-import requests
-
+import papis.api
 import papis.cli
 import papis.commands.add
 import papis.config
@@ -34,13 +33,7 @@ import papis.logging
 import papis.pick
 import papis.strings
 import papis.utils
-import papis.api
-import papis.cli
-import papis.git
-import papis.config
-import papis.document
-import papis.logging
-import papis.strings
+import requests
 from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)
@@ -75,9 +68,11 @@ def run(document: papis.document.Document,
                     logger.warning("Failed to fetch '%s' (http error %d)",
                                    in_file_path, resp.status_code)
                     continue
-            except requests.exceptions.BaseHTTPError as e:
+            except requests.exceptions.RequestException as exc:
                 logger.warning("Failed to fetch '%s' (reason: %s)",
-                               in_file_path, exc_info=e)
+                               in_file_path,
+                               exc,
+                               exc_info=exc)
                 continue
             except Exception as e:
                 logger.error(str(e), exc_info=e)

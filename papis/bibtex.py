@@ -160,9 +160,9 @@ class Importer(papis.importer.Importer):
                                         self.uri, resp.status_code)
             else:
                 bib_data = bibtex_to_dict(self.uri)
-        except requests.exceptions.BaseHTTPError as e:
+        except requests.exceptions.RequestException as exc:
             self.logger.warning("Failed to fetch '%s' (reason: %s)",
-                                self.uri, e)
+                                self.uri, exc, exc_info=exc)
         except Exception as exc:
             self.logger.error("Error reading BibTeX file: '%s'.",
                               self.uri, exc_info=exc)
