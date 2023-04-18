@@ -1,7 +1,6 @@
 import os
 import string
 import tempfile
-import logging
 from typing import Optional, List, FrozenSet, Dict, Any, Iterator
 
 import requests
@@ -147,7 +146,8 @@ class Importer(papis.importer.Importer):
         self.logger.info("Reading input file = '%s'.", self.uri)
         try:
             bib_data = []
-            if self.uri.startswith("http://") or self.uri.startswith("https://"):
+            if self.uri.startswith("http://") \
+                    or self.uri.startswith("https://"):
                 resp = requests.get(self.uri)
                 if resp.status_code == 200:
                     with tempfile.NamedTemporaryFile(suffix=".papis.bib",
@@ -169,7 +169,7 @@ class Importer(papis.importer.Importer):
             return
 
         if not bib_data:
-            self.logger.warning(f"empty or invalid bibtex at {self.uri}")
+            self.logger.warning("empty or invalid bibtex at '%s'", self.uri)
             return
 
         if len(bib_data) > 1:

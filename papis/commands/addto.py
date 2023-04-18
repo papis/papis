@@ -74,14 +74,13 @@ def run(document: papis.document.Document,
                 else:
                     logger.warning("Failed to fetch '%s' (http error %d)",
                                    in_file_path, resp.status_code)
-                    in_file_path = None
+                    continue
             except requests.exceptions.BaseHTTPError as e:
                 logger.warning("Failed to fetch '%s' (reason: %s)",
-                               in_file_path, e)
-                in_file_path = None
+                               in_file_path, exc_info=e)
+                continue
             except Exception as e:
-                logger.error(e)
-                in_file_path = None
+                logger.error(str(e), exc_info=e)
                 return
 
         if not os.path.exists(in_file_path):
