@@ -288,7 +288,7 @@ def _open(ctx: click.Context) -> None:
 @cli.command("edit")
 @click.help_option("-h", "--help")
 @click.option("-s", "--set", "set_tuples",
-              help="Update document's information with key value."
+              help="Update document's information with key value. "
               "The value can be a papis format.",
               multiple=True,
               type=(str, str),)

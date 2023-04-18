@@ -65,7 +65,7 @@ def run(keep: papis.document.Document,
 @papis.cli.sort_option()
 @click.option("-s",
               "--second",
-              help="Keep the second document after merge and erase the first,"
+              help="Keep the second document after merge and erase the first, "
                    "the default is keep the first",
               default=False,
               is_flag=True)
