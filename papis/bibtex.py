@@ -161,15 +161,15 @@ class Importer(papis.importer.Importer):
             else:
                 bib_data = bibtex_to_dict(self.uri)
         except requests.exceptions.RequestException as exc:
-            self.logger.warning("Failed to fetch '%s' (reason: %s)",
-                                self.uri, exc, exc_info=exc)
+            self.logger.warning("Failed to fetch '%s'.",
+                                self.uri, exc_info=exc)
         except Exception as exc:
             self.logger.error("Error reading BibTeX file: '%s'.",
                               self.uri, exc_info=exc)
             return
 
         if not bib_data:
-            self.logger.warning("empty or invalid bibtex at '%s'", self.uri)
+            self.logger.warning("Empty or invalid BibTeX entry at '%s'.", self.uri)
             return
 
         if len(bib_data) > 1:

@@ -69,13 +69,12 @@ def run(document: papis.document.Document,
                                    in_file_path, resp.status_code)
                     continue
             except requests.exceptions.RequestException as exc:
-                logger.warning("Failed to fetch '%s' (reason: %s)",
+                logger.warning("Failed to fetch '%s'.",
                                in_file_path,
-                               exc,
                                exc_info=exc)
                 continue
             except Exception as e:
-                logger.error(str(e), exc_info=e)
+                logger.error("Failed to fetch '%s'.", in_file_path, exc_info=e)
                 return
 
         if not os.path.exists(in_file_path):
