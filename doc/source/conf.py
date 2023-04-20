@@ -45,6 +45,7 @@ intersphinx_mapping = {
     "https://requests.readthedocs.io/en/latest/": None,
     "https://bibtexparser.readthedocs.io/en/master": None,
     "https://docs.openstack.org/stevedore/latest/": None,
+    "https://click.palletsprojects.com/en/latest/": None,
 }
 
 autodoc_member_order = "bysource"

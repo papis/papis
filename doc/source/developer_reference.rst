@@ -7,6 +7,12 @@ Developer API reference
    another. This is meant to be used by developers, both of ``papis`` itself and
    any external plugins.
 
+``papis.cli``
+^^^^^^^^^^^^^
+
+.. automodule:: papis.cli
+    :members:
+
 ``papis.document``
 ^^^^^^^^^^^^^^^^^^
 
