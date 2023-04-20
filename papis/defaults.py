@@ -18,6 +18,7 @@ settings = {
     "database-backend": "papis",
     "default-query-string": ".",
     "sort-field": None,
+    "sort-reverse": False,
 
     "opentool": get_default_opener(),
     "dir-umask": 0o755,
