@@ -771,6 +771,13 @@ Other
   if you want your documents by default to be sorted by ``year``, you
   would set ``sort-field = year``.
 
+.. papis-config:: sort-reverse
+
+    Augments ``sort-field`` by allowing the documents to be sorted in
+    reverse order. For example, when sorting by year, this allows sorting
+    ascendingly or descendingly. This is a boolean option that can be set to
+    ``True`` or ``False``.
+
 .. papis-config:: time-stamp
 
   Whether or not to add a timestamp to a document when is being added to

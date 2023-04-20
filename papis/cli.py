@@ -43,6 +43,7 @@ def sort_option(**attrs: Any) -> DecoratorCallable:
         reverse = click.option(
             "--reverse", "sort_reverse",
             help="Reverse sort order",
+            default=lambda: papis.config.getboolean("sort-reverse"),
             is_flag=True)
 
         return sort(reverse(f))
