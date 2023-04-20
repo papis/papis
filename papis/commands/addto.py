@@ -137,12 +137,12 @@ def run(document: papis.document.Document,
               help="File name for the document (papis format)",
               default=None)
 @papis.cli.doc_folder_option()
-def cli(query: str, 
-        git: bool, 
-        files: List[str], 
+def cli(query: str,
+        git: bool,
+        files: List[str],
         urls: List[str],
-        file_name: Optional[str], 
-        sort_field: Optional[str], 
+        file_name: Optional[str],
+        sort_field: Optional[str],
         doc_folder: str,
         sort_reverse: bool) -> None:
     """Add files to an existing document"""
