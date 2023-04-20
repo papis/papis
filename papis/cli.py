@@ -40,11 +40,12 @@ def sort_option(**attrs: Any) -> DecoratorCallable:
             help="Sort documents with respect to the FIELD",
             metavar="FIELD",
             **attrs)
+
         reverse = click.option(
             "--reverse", "sort_reverse",
             help="Reverse sort order",
-            default=lambda: papis.config.getboolean("sort-reverse"),
-            is_flag=True)
+            is_flag=True,
+            **attrs)
 
         return sort(reverse(f))
 
@@ -117,6 +118,13 @@ def handle_doc_folder_query_sort(
     documents = handle_doc_folder_or_query(query, doc_folder)
 
     if sort_field:
+        if not sort_reverse:
+            # FIXME: setting the default in 'sort_option' does not seem to work.
+            # that sounds like a bug in click, so for now set it here in a
+            # slightly hacky way, that works because this is only used by commands
+            reverse = papis.config.getboolean("sort-reverse")
+            sort_reverse = False if reverse is None else reverse
+
         documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     return documents
