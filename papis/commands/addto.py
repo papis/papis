@@ -19,17 +19,21 @@ Command-line Interface
 """
 
 import os
+import tempfile
 from typing import List, Optional
 
 import click
-
 import papis.api
 import papis.cli
-import papis.git
+import papis.commands.add
 import papis.config
 import papis.document
+import papis.git
 import papis.logging
+import papis.pick
 import papis.strings
+import papis.utils
+import requests
 from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)
@@ -46,9 +50,33 @@ def run(document: papis.document.Document,
     suffix = create_identifier(skip=len(document.get_files()))
 
     from papis.commands.add import get_file_name
-    new_file_list = []
 
+    tmp_file = None
+    new_file_list = []
     for in_file_path in filepaths:
+
+        if in_file_path.startswith("http://") or in_file_path.startswith(
+                "https://"):
+            tmp_file = tempfile.NamedTemporaryFile(delete=False)
+            try:
+                resp = requests.get(in_file_path)
+                if resp.status_code == 200:
+                    tmp_file.write(resp.content)
+                    tmp_file.close()
+                    in_file_path = tmp_file.name
+                else:
+                    logger.warning("Failed to fetch '%s' (http error %d)",
+                                   in_file_path, resp.status_code)
+                    continue
+            except requests.exceptions.RequestException as exc:
+                logger.warning("Failed to fetch '%s'.",
+                               in_file_path,
+                               exc_info=exc)
+                continue
+            except Exception as e:
+                logger.error("Failed to fetch '%s'.", in_file_path, exc_info=e)
+                return
+
         if not os.path.exists(in_file_path):
             raise FileNotFoundError("File '{}' not found".format(in_file_path))
 
@@ -75,6 +103,10 @@ def run(document: papis.document.Document,
         logger.info("[CP] '%s' to '%s'.", in_file_path, out_file_path)
         shutil.copy(in_file_path, out_file_path)
 
+        if tmp_file:
+            os.unlink(tmp_file.name)
+            tmp_file = None
+
     if "files" not in document:
         document["files"] = []
 
@@ -95,19 +127,20 @@ def run(document: papis.document.Document,
 @papis.cli.query_argument()
 @papis.cli.git_option(help="Add and commit files")
 @papis.cli.sort_option()
-@click.option(
-    "-f", "--files",
-    help="File fullpaths to documents",
-    multiple=True,
-    type=click.Path(exists=True))
-@click.option(
-    "--file-name",
-    help="File name for the document (papis format)",
-    default=None)
+@click.option("-f",
+              "--files",
+              help="File fullpaths to documents",
+              multiple=True,
+              type=click.Path(exists=True))
+@click.option("-u", "--urls", help="URLs to documents", multiple=True)
+@click.option("--file-name",
+              help="File name for the document (papis format)",
+              default=None)
 @papis.cli.doc_folder_option()
 def cli(query: str,
         git: bool,
         files: List[str],
+        urls: List[str],
         file_name: Optional[str],
         sort_field: Optional[str],
         doc_folder: str,
@@ -130,4 +163,4 @@ def cli(query: str,
     if file_name is not None:  # Use args if set
         papis.config.set("add-file-name", file_name)
 
-    run(document, files, git=git)
+    run(document, files + urls, git=git)

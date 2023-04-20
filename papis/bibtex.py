@@ -1,7 +1,9 @@
 import os
 import string
+import tempfile
 from typing import Optional, List, FrozenSet, Dict, Any, Iterator
 
+import requests
 import click
 
 import papis.config
@@ -143,13 +145,31 @@ class Importer(papis.importer.Importer):
     def fetch_data(self: papis.importer.Importer) -> Any:
         self.logger.info("Reading input file = '%s'.", self.uri)
         try:
-            bib_data = bibtex_to_dict(self.uri)
+            bib_data = []
+            if self.uri.startswith("http://") \
+                    or self.uri.startswith("https://"):
+                resp = requests.get(self.uri)
+                if resp.status_code == 200:
+                    with tempfile.NamedTemporaryFile(suffix=".papis.bib",
+                                                     mode="w+b") as tf:
+                        tf.write(resp.content)
+                        tf.flush()
+                        bib_data = bibtex_to_dict(tf.name)
+                else:
+                    self.logger.warning("Failed to fetch '%s' (http error %d)",
+                                        self.uri, resp.status_code)
+            else:
+                bib_data = bibtex_to_dict(self.uri)
+        except requests.exceptions.RequestException as exc:
+            self.logger.warning("Failed to fetch '%s'.",
+                                self.uri, exc_info=exc)
         except Exception as exc:
             self.logger.error("Error reading BibTeX file: '%s'.",
                               self.uri, exc_info=exc)
             return
 
         if not bib_data:
+            self.logger.warning("Empty or invalid BibTeX entry at '%s'.", self.uri)
             return
 
         if len(bib_data) > 1:
