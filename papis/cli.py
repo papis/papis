@@ -1,9 +1,6 @@
 from typing import Optional, Any, Callable, List
 
 import click
-import click.core
-import click.types
-import click.decorators
 
 import papis.config
 import papis.pick
@@ -12,60 +9,89 @@ import papis.database
 
 
 DecoratorCallable = Callable[..., Any]
-DecoratorArgs = Any
 
 
-def query_argument(**attrs: DecoratorArgs) -> DecoratorCallable:
-    """Adds a ``query`` argument as a decorator"""
+def query_argument(**attrs: Any) -> DecoratorCallable:
+    """Adds a ``query`` argument as a :mod:`click` decorator."""
+    return click.argument(
+        "query",
+        default=lambda: papis.config.getstring("default-query-string"),
+        type=str,
+        **attrs)
+
+
+def query_option(**attrs: Any) -> DecoratorCallable:
+    """Adds a ``-q``, ``--query`` option as a :mod:`click` decorator."""
+
+    return click.option(
+        "-q", "--query",
+        default=lambda: papis.config.getstring("default-query-string"),
+        type=str,
+        help="Query for a document in the database",
+        **attrs)
+
+
+def sort_option(**attrs: Any) -> DecoratorCallable:
+    """Adds a ``--sort`` and a ``--reverse`` option as a :mod:`click` decorator."""
     def decorator(f: DecoratorCallable) -> Any:
-        attrs.setdefault(
-            "default",
-            lambda: papis.config.get("default-query-string"))
-        return click.decorators.argument("query", **attrs)(f)
-    return decorator
-
-
-def query_option(**attrs: DecoratorArgs) -> DecoratorCallable:
-    """Adds a ``-q``, ``--query`` option as a decorator"""
-    def decorator(f: DecoratorCallable) -> Any:
-        attrs.setdefault("default",
-                         lambda: papis.config.get("default-query-string"))
-        attrs.setdefault("type", str)
-        attrs.setdefault("help", "Document query for the database")
-        return click.decorators.option("-q", "--query", **attrs)(f)
-    return decorator
-
-
-def sort_option(**attrs: DecoratorArgs) -> DecoratorCallable:
-    """Adds a ``sort`` argument as a decorator"""
-    def decorator(f: DecoratorCallable) -> Any:
-        attrs.setdefault("default", lambda: papis.config.get("sort-field"))
-        attrs.setdefault("help", "Sort documents with respect to FIELD")
-        attrs.setdefault("metavar", "FIELD")
-        sort_f = click.decorators.option("--sort", "sort_field", **attrs)
-        reverse_f = click.decorators.option(
+        sort = click.option(
+            "--sort", "sort_field",
+            default=lambda: papis.config.get("sort-field"),
+            help="Sort documents with respect to the FIELD",
+            metavar="FIELD",
+            **attrs)
+        reverse = click.option(
             "--reverse", "sort_reverse",
-            help="Reverse sort order", is_flag=True)
-        return sort_f(reverse_f(f))
+            help="Reverse sort order",
+            is_flag=True)
+
+        return sort(reverse(f))
+
     return decorator
 
 
-def doc_folder_option(**attrs: DecoratorArgs) -> DecoratorCallable:
-    """Adds a ``document folder`` argument as a decorator"""
-    def decorator(f: DecoratorCallable) -> Any:
-        attrs.setdefault("default", None)
-        attrs.setdefault("type", click.types.Path(exists=True))
-        attrs.setdefault("help", "Apply action to a document path")
-        return click.decorators.option("--doc-folder", **attrs)(f)
-    return decorator
+def doc_folder_option(**attrs: Any) -> DecoratorCallable:
+    """Adds a ``--doc-folder`` argument as a :mod:`click` decorator."""
+    return click.option(
+        "--doc-folder",
+        default=None,
+        type=click.Path(exists=True),
+        help="Document folder on which to apply action",
+        **attrs)
+
+
+def all_option(**attrs: Any) -> DecoratorCallable:
+    """Adds a ``--all`` option as a :mod:`click` decorator."""
+    return click.option(
+        "-a", "--all", "_all",
+        default=False,
+        is_flag=True,
+        help="Apply action to all matching documents",
+        **attrs)
+
+
+def git_option(**attrs: Any) -> DecoratorCallable:
+    """Adds a ``--git`` option as a :mod:`click` decorator."""
+    help = attrs.pop("help", "Commit changes to git")
+    return click.option(
+        "--git/--no-git",
+        default=lambda: bool(papis.config.get("use-git")),
+        help=help,
+        **attrs)
 
 
 def handle_doc_folder_or_query(
         query: str,
-        doc_folder: str) -> List[papis.document.Document]:
-    """
-    If doc_folder is given then give a list with this document.
-    Else just query the database for a list of documents.
+        doc_folder: Optional[str]) -> List[papis.document.Document]:
+    """Query database for documents.
+
+    This handles the :func:`query_option` and :func:`doc_folder_option`
+    command-line arguments. If a *doc_folder* is given, then the document at
+    that location is loaded, otherwise the database is queried using *query*.
+
+    :param query: a database query string.
+    :param doc_folder: existing document folder (see
+        :func:`papis.document.from_folder`).
     """
     if doc_folder:
         return [papis.document.from_folder(doc_folder)]
@@ -74,9 +100,19 @@ def handle_doc_folder_or_query(
 
 def handle_doc_folder_query_sort(
         query: str,
-        doc_folder: str,
+        doc_folder: Optional[str],
         sort_field: Optional[str],
         sort_reverse: bool) -> List[papis.document.Document]:
+    """Query database for documents.
+
+    Similar to :func:`handle_doc_folder_or_query`, but also handles the
+    :func:`sort_option` arguments. It sorts the resulting documents according
+    to *sort_field* and *reverse_field*.
+
+    :param sort_field: field by which to sort the resulting documents
+        (see :func:`papis.document.sort`).
+    :param sort_reverse: if *True*, the fields are sorted in reverse order.
+    """
     documents = handle_doc_folder_or_query(query, doc_folder)
 
     if sort_field:
@@ -91,6 +127,14 @@ def handle_doc_folder_query_all_sort(
         sort_field: Optional[str],
         sort_reverse: bool,
         _all: bool) -> List[papis.document.Document]:
+    """Query database for documents.
+
+    Similar to :func:`handle_doc_folder_query_sort`, but also handles the
+    :func:`all_option` argument.
+
+    :param _all: if *False*, the user is prompted to pick a subset of documents
+        (see :func:`papis.api.pick_doc`).
+    """
     documents = handle_doc_folder_query_sort(query,
                                              doc_folder,
                                              sort_field,
@@ -102,45 +146,21 @@ def handle_doc_folder_query_all_sort(
     return documents
 
 
-def all_option(**attrs: DecoratorArgs) -> DecoratorCallable:
-    """Adds a ``query`` argument as a decorator"""
-    def decorator(f: DecoratorCallable) -> Any:
-        attrs.setdefault("default", False)
-        attrs.setdefault("is_flag", True)
-        attrs.setdefault("help", "Apply action to all matching documents")
-        return click.decorators.option("-a", "--all", "_all", **attrs)(f)
-    return decorator
-
-
-def git_option(
-        help: str = "Add git interoperability",
-        **attrs: DecoratorArgs) -> DecoratorCallable:
-    """Adds a ``git`` option as a decorator"""
-    def decorator(f: DecoratorCallable) -> Any:
-        attrs.setdefault(
-            "default",
-            lambda: True if papis.config.get("use-git") else False)
-        attrs.setdefault("help", help)
-        return click.decorators.option("--git/--no-git", **attrs)(f)
-    return decorator
-
-
 def bypass(
-        group: click.core.Group,
-        command: click.core.Command,
+        group: click.Group,
+        command: click.Command,
         command_name: str) -> Callable[..., Any]:
-    """
-    This function is specially important for people developing scripts in
-    papis.
+    """Overwrite existing ``papis`` commands.
 
-    Suppose you're writing a plugin that uses the ``add`` command as seen
-    in the command line in papis. However you don't want exactly the ``add``
-    command and you want to add some behavior before calling it, and you
-    don't want to write your own ``add`` function from scratch.
+    This function is specially important for developing scripts in ``papis``.
 
-    You can then use the following snippet
+    For example, consider augmenting the ``add`` command, as seen
+    when using ``papis add``. In this case, we may want to add some additional
+    options or behaviour before calling ``papis.commands.add``, but would like
+    to avoid writing it from scratch. This function can then be used as follows
+    to allow this
 
-    .. code::python
+    .. code:: python
 
         import click
         import papis.cli
