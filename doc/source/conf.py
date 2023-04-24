@@ -41,11 +41,11 @@ extensions = [
 ]
 
 intersphinx_mapping = {
-    "https://docs.python.org/3/": None,
-    "https://requests.readthedocs.io/en/latest/": None,
-    "https://bibtexparser.readthedocs.io/en/master": None,
-    "https://docs.openstack.org/stevedore/latest/": None,
-    "https://click.palletsprojects.com/en/latest/": None,
+    "bibtexparser": ("https://bibtexparser.readthedocs.io/en/master", None),
+    "click": ("https://click.palletsprojects.com/en/latest", None),
+    "python": ("https://docs.python.org/3", None),
+    "requests": ("https://requests.readthedocs.io/en/latest", None),
+    "stevedore": ("https://docs.openstack.org/stevedore/latest", None),
 }
 
 autodoc_member_order = "bysource"
