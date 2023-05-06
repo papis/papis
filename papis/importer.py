@@ -66,7 +66,8 @@ class Importer:
 
     .. attribute:: ctx
 
-        A :class:`Context` that stores the data retrieved by the importer.
+        A :class:`~papis.importer.Context` that stores the data retrieved by
+        the importer.
     """
 
     def __init__(self,
@@ -94,7 +95,7 @@ class Importer:
             re.match(r".*arxiv.org.*", uri)
 
         This can then be used to instantiate and return a corresponding
-        :class:`Importer` object.
+        :class:`~papis.importer.Importer` object.
 
         :param uri: An URI where the document information should be retrieved from.
         :return: An importer instance if the match to the URI is successful or
@@ -123,15 +124,15 @@ class Importer:
 
     @cache
     def fetch(self) -> None:
-        """Fetch metadata and files for the given :attr:`Importer.uri`.
+        """Fetch metadata and files for the given :attr:`~papis.importer.Importer.uri`.
 
         This method calls :meth:`Importer.fetch_data` and :meth:`Importer.fetch_files`
         to get all the information available for the document. It is recommended
         to implement the two methods separately, if possible, for maximum
         flexibility.
 
-        The imported data is stored in :attr:`Importer.ctx` and it is not
-        queried again on subsequent calls to this function.
+        The imported data is stored in :attr:`~papis.importer.Importer.ctx` and
+        it is not queried again on subsequent calls to this function.
         """
         from contextlib import suppress
 
@@ -142,18 +143,18 @@ class Importer:
             self.fetch_files()
 
     def fetch_data(self) -> None:
-        """Fetch metadata from the given :attr:`Importer.uri`.
+        """Fetch metadata from the given :attr:`~papis.importer.Importer.uri`.
 
-        The imported metadata is stored in :attr:`Importer.ctx`.
+        The imported metadata is stored in :attr:`~papis.importer.Importer.ctx`.
         """
         raise NotImplementedError(
             "Fetching metadata is not implemented for '{}.{}'"
             .format(type(self).__module__, type(self).__name__))
 
     def fetch_files(self) -> None:
-        """Fetch files from the given :attr:`Importer.uri`.
+        """Fetch files from the given :attr:`~papis.importer.Importer.uri`.
 
-        The imported files are stored in :attr:`Importer.ctx`.
+        The imported files are stored in :attr:`~papis.importer.Importer.ctx`.
         """
         raise NotImplementedError(
             "Fetching files is not implemented for '{}.{}'"
