@@ -47,7 +47,7 @@ def test_downloader_getter():
     assert len(downs) >= 1
     down = downs[0]
     assert down.name == "arxiv"
-    assert down.expected_document_extension == "pdf"
+    assert down.expected_document_extensions == ("pdf",)
     # assert(down.get_doi() == '10.1021/ed044p128')
     assert len(down.get_bibtex_data()) > 0
     bibs = papis.bibtex.bibtex_to_dict(down.get_bibtex_data())

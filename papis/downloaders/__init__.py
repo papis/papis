@@ -1,4 +1,3 @@
-import os
 import re
 import sys
 from typing import List, Optional, Any, Sequence, Type, Dict, Union, TYPE_CHECKING
@@ -81,27 +80,28 @@ class Downloader(papis.importer.Importer):
                  cookies: Optional[Dict[str, str]] = None,
                  priority: int = 1,
                  ) -> None:
-        if ctx is None:
-            ctx = papis.importer.Context()
+        if isinstance(expected_document_extension, str):
+            expected_document_extension = (expected_document_extension,)
+
+        if expected_document_extension is not None:
+            expected_document_extension = tuple(expected_document_extension)
 
         if cookies is None:
             cookies = {}
 
-        super().__init__(
-            uri=uri,
-            ctx=ctx,
-            name=name or os.path.basename(__file__))
+        super().__init__(uri=uri, name=name, ctx=ctx)
         self.logger = papis.logging.get_logger("papis.downloader.{}".format(self.name))
 
-        self.expected_document_extension = expected_document_extension
+        self.expected_document_extensions = expected_document_extension
         self.priority = priority
-        self.session = papis.utils.get_session()
         self.cookies = cookies
+        self.session = papis.utils.get_session()
 
         # NOTE: used to cache data
         self._soup: Optional[bs4.BeautifulSoup] = None
         self.bibtex_data: Optional[str] = None
         self.document_data: Optional[bytes] = None
+        self.document_extension: Optional[str] = None
 
     def __del__(self) -> None:
         self.session.close()
@@ -208,9 +208,14 @@ class Downloader(papis.importer.Importer):
         else:
             doc_rawdata = self.get_document_data()
             if doc_rawdata and self.check_document_format():
+                extension = self.get_document_extension()
+                if extension:
+                    extension = ".{}".format(extension)
+
                 import tempfile
                 with tempfile.NamedTemporaryFile(
-                        mode="wb+", delete=False) as f:
+                        mode="wb+", delete=False,
+                        suffix=extension) as f:
                     f.write(doc_rawdata)
                     self.logger.info("Saving downloaded file in '%s'.", f.name)
                     self.ctx.files.append(f.name)
@@ -310,6 +315,25 @@ class Downloader(papis.importer.Importer):
 
         return self.document_data
 
+    def get_document_extension(self) -> str:
+        """
+        :returns: a guess for the extension of :meth:`get_document_data`. This
+            is based on :mod:`filetype` and uses magic file signatures to
+            determine the type. If no guess is valid, an empty string is returned.
+        """
+        if self.document_extension is None:
+            data = self.get_document_data()
+            document_extension = None
+            if data is not None:
+                from papis.filetype import guess_content_extension
+                document_extension = guess_content_extension(data)
+
+            self.document_extension = (
+                document_extension if document_extension is not None else ""
+            )
+
+        return self.document_extension
+
     def download_document(self) -> None:
         """Download and store the file that is given by :meth:`get_document_url`.
 
@@ -332,44 +356,23 @@ class Downloader(papis.importer.Importer):
         :returns: *True* if the document has a supported file type and *False*
             otherwise.
         """
-        def print_warning() -> None:
+        if self.expected_document_extensions is None:
+            return True
+
+        extension = self.get_document_extension()
+        if extension and extension in self.expected_document_extensions:
+            return True
+        else:
             self.logger.error(
                 "The downloaded data does not seem to be of "
-                "the expected '%s' type.",
-                self.expected_document_extension)
-
-        if self.expected_document_extension is None:
-            return True
-
-        data = self.get_document_data()
-        if data is None:
-            return True
-
-        from papis.filetype import guess_content_extension
-        extension = guess_content_extension(data)
-
-        if extension is None:
-            print_warning()
-            return False
-
-        self.logger.debug("Retrieved document type seems to be '%s'.", extension)
-
-        if isinstance(self.expected_document_extension, list):
-            expected_document_extensions = self.expected_document_extension
-        else:
-            expected_document_extensions = [self.expected_document_extension]
-
-        if extension in expected_document_extensions:
-            return True
-        else:
-            print_warning()
+                "the expected types: '%s'",
+                "', '".join(self.expected_document_extensions))
             return False
 
 
 def get_available_downloaders() -> List[Type[Downloader]]:
     """Get all declared downloader classes."""
-    _ret = papis.plugin.get_available_plugins(_extension_name())
-    return _ret
+    return papis.plugin.get_available_plugins(_extension_name())
 
 
 def get_matching_downloaders(url: str) -> List[Downloader]:
@@ -424,11 +427,14 @@ def get_info_from_url(
         return papis.importer.Context()
 
     logger.debug("Found %d matching downloaders.", len(downloaders))
-    downloader = downloaders[0]
 
-    logger.info("Using downloader '%s'.", downloader)
-    if downloader.expected_document_extension is None and \
-            expected_doc_format is not None:
-        downloader.expected_document_extension = expected_doc_format
-    downloader.fetch()
-    return downloader.ctx
+    down = downloaders[0]
+    logger.info("Using downloader '%s'.", down)
+
+    if (
+            down.expected_document_extensions is None
+            and expected_doc_format is not None):
+        down.expected_document_extensions = (expected_doc_format,)
+
+    down.fetch()
+    return down.ctx

@@ -12,20 +12,22 @@ class Downloader(papis.downloaders.Downloader):
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
         """
-        >>> Downloader.match('https://wha2341!@#!@$%!@#file.pdf') is False
+        >>> Downloader.match('https://wha2341!@#!@$%!@#file.pdf') is None
         False
-        >>> Downloader.match('https://whateverpt?is?therefile.epub') is False
+        >>> Downloader.match('https://whateverpt?is?therefile.epub') is None
         False
-        >>> not Downloader.match('https://whatever?path?is?therefile')
+        >>> Downloader.match('https://whatever?path?is?therefile') is None
         True
         """
         endings = "pdf|djvu|epub|mobi|jpg|png|md"
         m = re.match(r"^http.*\.(%s)$" % endings, url, re.IGNORECASE)
         if m:
             d = Downloader(url)
+
             extension = m.group(1)
+            d.expected_document_extensions = (extension,)
             d.logger.info("Expecting a document of type '%s'.", extension)
-            d.expected_document_extension = extension
+
             return d
         else:
             return None

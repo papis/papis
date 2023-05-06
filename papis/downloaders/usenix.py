@@ -55,10 +55,16 @@ class Downloader(papis.downloaders.Downloader):
                 return None
 
         soup = bs4.BeautifulSoup(self._raw_data, "html.parser")
+        extension = (
+            self.expected_document_extensions[0]
+            if self.expected_document_extensions else "")
+
         a = list(
             filter(
-                lambda t: t.get("name", "") == "citation_pdf_url" and t.get(
-                    "content", "").endswith(self.expected_document_extension),
+                lambda t: (
+                    t.get("name", "") == "citation_pdf_url"
+                    and t.get("content", "").endswith(extension)
+                ),
                 soup.find_all("meta"),
             ))
 
