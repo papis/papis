@@ -1,4 +1,3 @@
-import os.path
 from typing import Optional, List, Dict, Any, Callable, Type, TypeVar, TYPE_CHECKING
 
 import papis
@@ -78,9 +77,15 @@ class Importer:
         :param uri: uri
         :param name: Name of the importer
         """
+        if ctx is None:
+            ctx = Context()
+
+        if not name:
+            name = type(self).__module__.split(".")[-1]
+
         self.ctx: Context = ctx or Context()
         self.uri: str = uri
-        self.name: str = name or os.path.basename(__file__)
+        self.name: str = name
         self.logger = papis.logging.get_logger("papis.importer.{}".format(self.name))
 
     @classmethod
