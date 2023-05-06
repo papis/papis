@@ -19,7 +19,6 @@ Command-line Interface
 """
 
 import os
-import tempfile
 from typing import List, Optional
 
 import click
@@ -33,7 +32,6 @@ import papis.logging
 import papis.pick
 import papis.strings
 import papis.utils
-import requests
 from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)
@@ -49,41 +47,26 @@ def run(document: papis.document.Document,
     from papis.utils import create_identifier
     suffix = create_identifier(skip=len(document.get_files()))
 
+    from papis.downloaders import download_document
     from papis.commands.add import get_file_name
 
     tmp_file = None
     new_file_list = []
     for in_file_path in filepaths:
+        if (
+                in_file_path.startswith("http://")
+                or in_file_path.startswith("https://")):
+            local_in_file_path = download_document(in_file_path) or ""
+        else:
+            local_in_file_path = in_file_path
 
-        if in_file_path.startswith("http://") or in_file_path.startswith(
-                "https://"):
-            tmp_file = tempfile.NamedTemporaryFile(delete=False)
-            try:
-                resp = requests.get(in_file_path)
-                if resp.status_code == 200:
-                    tmp_file.write(resp.content)
-                    tmp_file.close()
-                    in_file_path = tmp_file.name
-                else:
-                    logger.warning("Failed to fetch '%s' (http error %d)",
-                                   in_file_path, resp.status_code)
-                    continue
-            except requests.exceptions.RequestException as exc:
-                logger.warning("Failed to fetch '%s'.",
-                               in_file_path,
-                               exc_info=exc)
-                continue
-            except Exception as e:
-                logger.error("Failed to fetch '%s'.", in_file_path, exc_info=e)
-                return
-
-        if not os.path.exists(in_file_path):
+        if not os.path.exists(local_in_file_path):
             raise FileNotFoundError("File '{}' not found".format(in_file_path))
 
         # Rename the file in the staging area
         new_filename = get_file_name(
             papis.document.to_dict(document),
-            in_file_path,
+            local_in_file_path,
             suffix=next(suffix)
         )
         out_file_path = os.path.join(doc_folder, new_filename)
@@ -100,8 +83,8 @@ def run(document: papis.document.Document,
             continue
 
         import shutil
-        logger.info("[CP] '%s' to '%s'.", in_file_path, out_file_path)
-        shutil.copy(in_file_path, out_file_path)
+        logger.info("[CP] '%s' to '%s'.", local_in_file_path, out_file_path)
+        shutil.copy(local_in_file_path, out_file_path)
 
         if tmp_file:
             os.unlink(tmp_file.name)
@@ -163,4 +146,7 @@ def cli(query: str,
     if file_name is not None:  # Use args if set
         papis.config.set("add-file-name", file_name)
 
-    run(document, files + urls, git=git)
+    try:
+        run(document, files + urls, git=git)
+    except Exception as exc:
+        logger.error("Failed to add files.", exc_info=exc)

@@ -1,5 +1,6 @@
 import re
 import sys
+import tempfile
 from typing import List, Optional, Any, Sequence, Type, Dict, Union, TYPE_CHECKING
 
 import papis.config
@@ -212,7 +213,6 @@ class Downloader(papis.importer.Importer):
                 if extension:
                     extension = ".{}".format(extension)
 
-                import tempfile
                 with tempfile.NamedTemporaryFile(
                         mode="wb+", delete=False,
                         suffix=extension) as f:
@@ -438,3 +438,49 @@ def get_info_from_url(
 
     down.fetch()
     return down.ctx
+
+
+def download_document(
+        url: str,
+        expected_document_extension: Optional[str] = None,
+        cookies: Optional[Dict[str, Any]] = None,
+        ) -> Optional[str]:
+    """Download a document from *url* and store it in a local file.
+
+    :param url: the URL of a remote file.
+    :param expected_document_extension: an expected file type. If *None*, then
+        an extension is guessed from the file contents, but this can also fail.
+    :returns: a path to a local file containing the data from *url*.
+    """
+    if cookies is None:
+        cookies = {}
+
+    try:
+        with papis.utils.get_session() as session:
+            response = session.get(url, cookies=cookies, allow_redirects=True)
+    except Exception as exc:
+        logger.error("Failed to fetch '%s'.", url, exc_info=exc)
+        return None
+
+    if not response.ok:
+        logger.error("Could not download document '%s'. (HTTP status: %s %d).",
+                     url, response.reason, response.status_code)
+        return None
+
+    ext = expected_document_extension
+    if ext is None:
+        from papis.filetype import guess_content_extension
+        ext = guess_content_extension(response.content)
+        if not ext:
+            logger.warning("Downloaded document does not have a "
+                           "recognizable (binary) mimetype: '%s'.",
+                           response.headers["Content-Type"])
+
+    ext = ".{}".format(ext) if ext else ""
+    with tempfile.NamedTemporaryFile(
+            mode="wb+",
+            suffix=ext,
+            delete=False) as f:
+        f.write(response.content)
+
+    return f.name
