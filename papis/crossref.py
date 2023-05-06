@@ -1,6 +1,5 @@
 import re
 import os
-import tempfile
 from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
 
 import doi
@@ -406,25 +405,10 @@ class Importer(papis.importer.Importer):
 
         self.logger.info("Trying to download document from '%s'.", doc_url)
 
-        with papis.utils.get_session() as session:
-            response = session.get(doc_url, allow_redirects=True)
-
-        ext = papis.filetype.guess_content_extension(response.content)
-        if not response.ok:
-            self.logger.info("Could not download document. HTTP status: %s (%d).",
-                             response.reason, response.status_code)
-        elif ext is None:
-            self.logger.info("Downloaded document does not have a "
-                             "recognizable (binary) mimetype: '%s'.",
-                             response.headers["Content-Type"])
-        else:
-            with tempfile.NamedTemporaryFile(
-                    mode="wb+",
-                    suffix=".{}".format(ext),
-                    delete=False) as f:
-                f.write(response.content)
-                self.logger.debug("Saving document files: '%s'.", f.name)
-                self.ctx.files.append(f.name)
+        from papis.downloaders import download_document
+        filename = download_document(doc_url)
+        if filename is not None:
+            self.ctx.files.append(filename)
 
 
 class FromCrossrefImporter(papis.importer.Importer):

@@ -1,9 +1,7 @@
 import os
 import string
-import tempfile
 from typing import Optional, List, FrozenSet, Dict, Any, Iterator
 
-import requests
 import click
 
 import papis.config
@@ -177,26 +175,18 @@ class Importer(papis.importer.Importer):
         return importer if importer.ctx else None
 
     def fetch_data(self: papis.importer.Importer) -> Any:
-        self.logger.info("Reading input file = '%s'.", self.uri)
+        self.logger.info("Reading input file: '%s'.", self.uri)
+
+        from papis.downloaders import download_document
+        if (
+                self.uri.startswith("http://")
+                or self.uri.startswith("https://")):
+            filename = download_document(self.uri, expected_document_extension="bib")
+        else:
+            filename = self.uri
+
         try:
-            bib_data = []
-            if self.uri.startswith("http://") \
-                    or self.uri.startswith("https://"):
-                resp = requests.get(self.uri)
-                if resp.status_code == 200:
-                    with tempfile.NamedTemporaryFile(suffix=".papis.bib",
-                                                     mode="w+b") as tf:
-                        tf.write(resp.content)
-                        tf.flush()
-                        bib_data = bibtex_to_dict(tf.name)
-                else:
-                    self.logger.warning("Failed to fetch '%s' (http error %d)",
-                                        self.uri, resp.status_code)
-            else:
-                bib_data = bibtex_to_dict(self.uri)
-        except requests.exceptions.RequestException as exc:
-            self.logger.warning("Failed to fetch '%s'.",
-                                self.uri, exc_info=exc)
+            bib_data = bibtex_to_dict(filename) if filename is not None else []
         except Exception as exc:
             self.logger.error("Error reading BibTeX file: '%s'.",
                               self.uri, exc_info=exc)
