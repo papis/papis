@@ -19,6 +19,12 @@ Developer API reference
 .. automodule:: papis.document
     :members:
 
+``papis.downloaders``
+^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: papis.downloaders
+   :members:
+
 ``papis.importer``
 ^^^^^^^^^^^^^^^^^^
 
