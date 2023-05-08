@@ -1,6 +1,5 @@
 import re
-from typing import Any, List, NamedTuple, Optional, Pattern
-from typing_extensions import Protocol
+from typing import Any, List, NamedTuple, Optional, Pattern, Protocol
 
 import papis.config
 import papis.document

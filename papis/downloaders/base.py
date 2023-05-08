@@ -1,8 +1,7 @@
 import re
 from typing import (
-    Any, List, Dict, Iterator, Tuple, Union, Pattern, TYPE_CHECKING)
-
-from typing_extensions import TypedDict
+    Any, List, Dict, Iterator, Tuple, Union, Pattern,
+    TypedDict, TYPE_CHECKING)
 
 import papis.config
 import papis.document
