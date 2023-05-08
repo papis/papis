@@ -4,10 +4,9 @@ import os
 import re
 import enum
 from typing import (
-    Any, Callable, Dict, List, NamedTuple, Optional, Sequence, Tuple, Union,
+    Any, Callable, Dict, List, NamedTuple, Optional, Sequence, Tuple,
+    TypedDict, Union,
     )
-
-from typing_extensions import TypedDict
 
 import papis
 import papis.config
