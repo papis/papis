@@ -5,8 +5,6 @@ EXIT_STATUS=0
 
 python -m pytest papis/ tests/ --cov=papis || EXIT_STATUS=$?
 python -m flake8 papis tests examples || EXIT_STATUS=$?
-if (( "$PYTHON_MINOR_VERSION" > 6)); then
-    python -m mypy --show-error-codes papis || EXIT_STATUS=$?
-fi
+python -m mypy --show-error-codes papis || EXIT_STATUS=$?
 
 exit $EXIT_STATUS
