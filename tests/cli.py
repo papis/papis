@@ -18,8 +18,8 @@ class TestWithLibrary(unittest.TestCase):
 
 class TestCli(TestWithLibrary):
 
-    runner = None  # type: Optional[click.testing.CliRunner]
-    cli = None  # type: Optional[click.BaseCommand]
+    runner: Optional[click.testing.CliRunner] = None
+    cli: Optional[click.BaseCommand] = None
 
     def setUp(self) -> None:
         self.runner = click.testing.CliRunner()
