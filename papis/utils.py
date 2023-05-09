@@ -141,13 +141,13 @@ def general_open(file_name: str,
         subprocess.call(cmd)
     else:
         logger.debug("Not waiting for process to finish.")
-        popen_kwargs = {
+        popen_kwargs: Dict[str, Any] = {
             "shell": False,
             "stdin": None,
             "stdout": subprocess.DEVNULL,
             "stderr": subprocess.DEVNULL,
             "close_fds": True
-        }  # type: Dict[str, Any]
+        }
 
         # NOTE: Detach process so that the terminal can be closed without also
         # closing the 'opentool' itself with the open document

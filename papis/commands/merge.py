@@ -131,7 +131,7 @@ def cli(query: str,
                                                    data_b,
                                                    papis.document.describe(b))
 
-    files = []  # type: List[str]
+    files: List[str] = []
     for doc in documents:
         indices = papis.tui.utils.select_range(
             doc.get_files(),

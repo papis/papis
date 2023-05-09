@@ -10,14 +10,14 @@ logger = papis.logging.get_logger(__name__)
 
 PapisConfigType = Dict[str, Dict[str, Any]]
 
-_CURRENT_LIBRARY = None  #: Current library in use
-_CONFIGURATION = None  # type: Optional[Configuration]
-_DEFAULT_SETTINGS = None  # type: Optional[PapisConfigType]
-_OVERRIDE_VARS = {
+_CURRENT_LIBRARY = None
+_CONFIGURATION: Optional["Configuration"] = None
+_DEFAULT_SETTINGS: Optional[PapisConfigType] = None
+_OVERRIDE_VARS: Dict[str, Optional[str]] = {
     "folder": None,
     "file": None,
     "scripts": None
-}  # type: Dict[str, Optional[str]]
+}
 
 
 def get_general_settings_name() -> str:
@@ -34,17 +34,17 @@ class Configuration(configparser.ConfigParser):
     def __init__(self) -> None:
         super().__init__()
 
-        self.dir_location = get_config_folder()
-        self.scripts_location = get_scripts_folder()
-        self.file_location = get_config_file()
-        self.default_info = {
+        self.dir_location: str = get_config_folder()
+        self.scripts_location: str = get_scripts_folder()
+        self.file_location: str = get_config_file()
+        self.default_info: PapisConfigType = {
             "papers": {
                 "dir": "~/Documents/papers"
             },
             get_general_settings_name(): {
                 "default-library": "papers"
             }
-        }  # type: PapisConfigType
+        }
         self.initialize()
 
     def handle_includes(self) -> None:
@@ -185,7 +185,7 @@ def get_config_dirs() -> List[str]:
     """Get papis configuration directories where the configuration
     files might be stored
     """
-    dirs = []  # type: List[str]
+    dirs: List[str] = []
     # get_config_home should also be included on top of XDG_CONFIG_DIRS
     if os.environ.get("XDG_CONFIG_DIRS") is not None:
         dirs += [
@@ -273,7 +273,7 @@ def general_get(key: str, section: Optional[str] = None,
     default_settings = get_default_settings()
 
     # Check data type for setting getter method
-    method = None  # type: Optional[Callable[[Any, Any], Any]]
+    method: Callable[[Any, Any], Any]
     if data_type == int:
         method = config.getint
     elif data_type == float:
@@ -313,7 +313,7 @@ def general_get(key: str, section: Optional[str] = None,
         )
 
     # Try to get key's value from configuration
-    value = None  # type: Optional[Any]
+    value: Any = None
     for section_name, key_name in candidate_sections:
         if section_name not in config:
             continue
@@ -399,7 +399,7 @@ def getlist(key: str, section: Optional[str] = None) -> List[str]:
     :raises SyntaxError: Whenever the parsed syntax is either not a valid
         python object or a valid python list.
     """
-    rawvalue = general_get(key, section=section)  # type: Any
+    rawvalue: Any = general_get(key, section=section)
     if isinstance(rawvalue, list):
         return list(map(str, rawvalue))
     try:

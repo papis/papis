@@ -64,7 +64,7 @@ def get_exported_variables(ctx: Optional[Dict[str, Any]] = None) -> Dict[str, st
 @click.pass_context
 def external_cli(ctx: click.core.Context, flags: List[str]) -> None:
     """Actual papis command to call the external command"""
-    script = ctx.obj  # type: papis.commands.Script
+    script: papis.commands.Script = ctx.obj
     path = script.path
     if not path:
         raise FileNotFoundError("Path for script '{}' not found".format(script))

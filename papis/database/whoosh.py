@@ -70,7 +70,7 @@ class Database(papis.database.base.Database):
                 self.cache_dir,
                 papis.database.cache.get_cache_file_name(
                     self.lib.path_format()
-                )))  # type: str
+                )))
 
         self.initialize()
 
@@ -205,8 +205,7 @@ class Database(papis.database.base.Database):
         at the time of building a brand new index.
         """
         logger.debug("Indexing the library, this might take a while...")
-        folders = sum([
-            get_folders(d) for d in self.get_dirs()], [])  # type: List[str]
+        folders: List[str] = sum([get_folders(d) for d in self.get_dirs()], [])
         documents = folders_to_documents(folders)
         schema_keys = self.get_schema_init_fields().keys()
         writer = self.get_writer()

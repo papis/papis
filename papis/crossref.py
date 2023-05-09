@@ -92,8 +92,7 @@ type_converter = {
     "report-series": "inproceedings",
     "standard-series": "incollection",
     "standard": "techreport",
-}  # type: Dict[str, str]
-
+}
 
 key_conversion = [
     KeyConversionPair("DOI", [{"key": "doi", "action": None}]),
@@ -331,7 +330,7 @@ class DoiFromPdfImporter(papis.importer.Importer):
     def __init__(self, uri: str) -> None:
         """The uri should be a filepath"""
         super().__init__(name="pdf2doi", uri=uri)
-        self._doi = None  # type: Optional[str]
+        self._doi: Optional[str] = None
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
@@ -471,7 +470,7 @@ class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, uri: str) -> None:
         super().__init__(uri=uri, name="doi")
-        self._doi = None    # type: Optional[str]
+        self._doi: Optional[str] = None
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.downloaders.Downloader]:

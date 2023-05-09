@@ -34,8 +34,8 @@ import papis.web.pdfjs
 
 logger = papis.logging.get_logger(__name__)
 
-USE_GIT = False  # type: bool
-TAGS_LIST = {}  # type: Dict[str, Optional[Dict[str, int]]]
+USE_GIT = False
+TAGS_LIST: Dict[str, Optional[Dict[str, int]]] = {}
 
 
 AnyFn = Callable[..., Any]

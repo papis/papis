@@ -148,7 +148,7 @@ def setup(level: Optional[Union[int, str]] = None,
 
     if logfile is None:
         full_tb = level == logging.DEBUG
-        handler = logging.StreamHandler()       # type: logging.Handler
+        handler: logging.Handler = logging.StreamHandler()
         handler.setFormatter(ColoramaFormatter(log_format, full_tb=full_tb))
     else:
         handler = logging.FileHandler(logfile, mode="a")

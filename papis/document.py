@@ -110,7 +110,7 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
             continue
 
         for conv_data in key_pair.list:
-            papis_key = conv_data.get("key") or foreign_key  # type: str
+            papis_key: str = conv_data.get("key") or foreign_key
             papis_value = data[foreign_key]
 
             action = conv_data.get("action")
@@ -232,15 +232,15 @@ class Document(Dict[str, Any]):
         in the document for use in HTML documents.
     """
 
-    subfolder = ""          # type: str
-    _info_file_path = ""    # type: str
+    subfolder: str = ""
+    _info_file_path: str = ""
 
     def __init__(self,
                  folder: Optional[str] = None,
                  data: Optional[Dict[str, Any]] = None) -> None:
         super().__init__()
 
-        self._folder = None          # type: Optional[str]
+        self._folder: Optional[str] = None
 
         if folder is not None:
             self.set_folder(folder)

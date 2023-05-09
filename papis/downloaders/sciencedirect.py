@@ -57,7 +57,7 @@ class Downloader(papis.downloaders.Downloader):
 
     def get_data(self) -> Dict[str, Any]:
         soup = self._get_soup()
-        data = {}   # type: Dict[str, Any]
+        data: Dict[str, Any] = {}
 
         # get authors
         scripts = soup.find_all(name="script", attrs={"data-iso-key": "_0"})

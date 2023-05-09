@@ -30,7 +30,7 @@ __all__ = [
 
 KeyInfo = TypedDict("KeyInfo", {"key": str, "help": str})
 
-_KEYS_INFO = None  # type: Optional[Dict[str, KeyInfo]]
+_KEYS_INFO: Optional[Dict[str, KeyInfo]] = None
 
 
 def get_keys_info() -> Dict[str, KeyInfo]:
@@ -294,7 +294,7 @@ class Picker(Application, Generic[Option]):  # type: ignore
             header_filter=header_filter,
             match_filter=match_filter,
             custom_filter=~has_focus(self.help_window)
-        )  # type: OptionsList[Option]
+        )
         self.options_list.search_buffer.on_text_changed += self.update
 
         commands, commands_kb = get_commands(self)
@@ -319,7 +319,7 @@ class Picker(Application, Generic[Option]):  # type: ignore
             self.command_line_prompt.window,
         ])
 
-        help_text = ""  # type: str
+        help_text = ""
         keys_info = get_keys_info()
         for k in keys_info:
             help_text += (

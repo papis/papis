@@ -18,7 +18,7 @@ logger = papis.logging.get_logger(__name__)
 # NOTE: see the BibLaTeX docs for an up to date list of types and keys:
 #   https://ctan.org/pkg/biblatex?lang=en
 
-bibtex_types = frozenset([
+bibtex_types: FrozenSet[str] = frozenset([
     # regular types (Section 2.1.1)
     "article",
     "book", "mvbook", "inbook", "bookinbook", "suppbook", "booklet",
@@ -56,18 +56,18 @@ bibtex_types = frozenset([
     "video",
     # type aliases (Section 2.1.2)
     "conference", "electronic", "masterthesis", "phdthesis", "techreport", "www",
-]) | frozenset(papis.config.getlist("extra-bibtex-types"))  # type: FrozenSet[str]
+]) | frozenset(papis.config.getlist("extra-bibtex-types"))
 
 # Zotero translator fields, see also
 #   https://github.com/zotero/zotero-schema
 #   https://github.com/papis/papis/pull/121
-bibtex_type_converter = {
+bibtex_type_converter: Dict[str, str] = {
     "conferencePaper": "inproceedings",
     "journalArticle": "article",
     "journal": "article",
-}  # type: Dict[str, str]
+}
 
-bibtex_keys = frozenset([
+bibtex_keys: FrozenSet[str] = frozenset([
     # data fields (Section 2.2.2)
     "abstract", "addendum", "afterword", "annotation", "annotator", "author",
     "authortype", "bookauthor", "bookpagination", "booksubtitle", "booktitle",
@@ -103,23 +103,23 @@ bibtex_keys = frozenset([
     "primaryclass", "school"
     # fields that we ignore
     # type,
-]) | frozenset(papis.config.getlist("extra-bibtex-keys"))  # type: FrozenSet[str]
+]) | frozenset(papis.config.getlist("extra-bibtex-keys"))
 
 # Zotero translator fields, see also
 #   https://github.com/zotero/zotero-schema
 #   https://github.com/papis/papis/pull/121
-bibtex_key_converter = {
+bibtex_key_converter: Dict[str, str] = {
     "abstractNote": "abstract",
     "university": "school",
     "conferenceName": "eventtitle",
     "place": "location",
     "publicationTitle": "journal",
     "proceedingsTitle": "booktitle"
-}  # type: Dict[str, str]
+}
 
-bibtex_ignore_keys = (
+bibtex_ignore_keys: FrozenSet[str] = (
     frozenset(papis.config.getlist("bibtex-ignore-keys"))
-)  # type: FrozenSet[str]
+)
 
 
 def exporter(documents: List[papis.document.Document]) -> str:

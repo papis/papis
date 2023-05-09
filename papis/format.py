@@ -9,7 +9,7 @@ from papis.document import Document
 logger = papis.logging.get_logger(__name__)
 
 FormatDocType = Union[Document, Dict[str, Any]]
-_FORMATER = None  # type: Optional[Formater]
+_FORMATER: Optional["Formater"] = None
 
 
 class InvalidFormaterError(ValueError):

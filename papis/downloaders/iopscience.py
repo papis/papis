@@ -5,15 +5,15 @@ import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):
-    DOCUMENT_URL = (
+    DOCUMENT_URL: ClassVar[str] = (
         "https://iopscience.iop.org/article/{doi}/pdf"
-        )   # type: ClassVar[str]
+        )
 
-    BIBTEX_URL = (
+    BIBTEX_URL: ClassVar[str] = (
         "https://iopscience.iop.org/export?aid={aid}"
         "&exportFormat=iopexport_bib&exportType=abs"
         "&navsubmit=Export%2Babstract"
-        )   # type: ClassVar[str]
+        )
 
     def __init__(self, url: str) -> None:
         super().__init__(

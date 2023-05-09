@@ -13,7 +13,7 @@ def get_default_opener() -> str:
     return "xdg-open"
 
 
-settings = {
+settings: Dict[str, Any] = {
     "local-config-file": ".papis.config",
     "database-backend": "papis",
     "default-query-string": ".",
@@ -191,4 +191,4 @@ settings = {
     # importer / downloader options
     "downloader-proxy": None,
     "isbn-service": "openl",
-}  # type: Dict[str, Any]
+}

@@ -53,10 +53,8 @@ def fetch_citations(doc: papis.document.Document) -> List[Dict[str, Any]]:
             if "doi" in d]
     logger.info("Found %d citations.", len(dois))
 
-    dois_with_data = [
-    ]  # type: List[Dict[str, Any]]
-    found_in_lib_dois = [
-    ]  # type: List[Dict[str, Any]]
+    dois_with_data: List[Dict[str, Any]] = []
+    found_in_lib_dois: List[Dict[str, Any]] = []
 
     logger.info("Checking which citations are already in the library.")
     dois_with_data = get_citations_from_database(dois)
@@ -91,7 +89,7 @@ def get_citations_from_database(
     with the information of these documents.
     """
     db = papis.database.get()
-    dois_with_data = []  # type: List[Dict[str, Any]]
+    dois_with_data: List[Dict[str, Any]] = []
     with tqdm.tqdm(iterable=dois) as progress:
         for doi in progress:
             citation = db.query_dict({"doi": doi})
@@ -117,7 +115,7 @@ def update_and_save_citations_from_database_from_doc(
 
 
 def update_citations_from_database(citations: Citations) -> Citations:
-    new_citations = []  # type: List[Dict[str, Any]]
+    new_citations: List[Dict[str, Any]] = []
     dois = [str(c.get("doi")).lower() for c in citations
             if "doi" in c]
     new_data_list = get_citations_from_database(dois)
@@ -215,7 +213,7 @@ def fetch_cited_by_from_database(cit: Citation) -> Citations:
     if not doi:
         return []
 
-    result = []  # type: List[Citation]
+    result: List[Citation] = []
     db = papis.database.get()
     documents = db.get_all_documents()
 

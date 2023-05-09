@@ -11,9 +11,9 @@ T = TypeVar("T")
 
 
 class Command(ABC, Generic[T]):
-    regex = None  # type: Optional[Pattern]
-    command = ""  # type: str
-    key = ""  # type: str
+    regex: Optional[Pattern] = None
+    command: str = ""
+    key: str = ""
 
     def binding(self) -> str:
         return "{0}:{1}".format(self.key, self.command)
@@ -74,7 +74,7 @@ class Picker(papis.pick.Picker[T]):
         if len(options) == 1:
             return [options[0]]
 
-        commands = [Choose(), Open(), Edit()]  # type: Sequence[Command[T]]
+        commands: Sequence[Command[T]] = [Choose(), Open(), Edit()]
 
         bindings = [c.binding() for c in commands
                     ] + papis.config.getlist("fzf-extra-bindings")
@@ -95,7 +95,7 @@ class Picker(papis.pick.Picker[T]):
                 return header_filter(d)
 
         headers = [_header_filter(o) for o in options]
-        docs = []  # type: Sequence[T]
+        docs: Sequence[T] = []
 
         import subprocess as sp
         with sp.Popen(command, stdin=sp.PIPE, stdout=sp.PIPE) as p:
