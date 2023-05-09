@@ -114,7 +114,7 @@ setup(
         "develop": [
             "flake8-bugbear",
             "flake8-quotes",
-            "flake8<6",
+            "flake8",
             "mypy>=0.7",
             "pep8-naming",
             "pylint",
