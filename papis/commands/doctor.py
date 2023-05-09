@@ -23,21 +23,35 @@ import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
-# FIXME: when going to python >=3.6, these should be classes (dataclasses?) and
-# have some basic documentation for the various fields
 FixFn = Callable[[], None]
-Error = NamedTuple("Error", [("name", str),
-                             ("path", str),
-                             ("payload", str),
-                             ("msg", str),
-                             ("suggestion_cmd", str),
-                             ("fix_action", FixFn),
-                             ("doc", Optional[papis.document.Document]),
-                             ])
-CheckFn = Callable[[papis.document.Document], List[Error]]
-Check = NamedTuple("Check", [("name", str),
-                             ("operate", CheckFn),
-                             ])
+CheckFn = Callable[[papis.document.Document], List["Error"]]
+
+
+class Error(NamedTuple):
+    #: Name of the check generating the error.
+    name: str
+    #: Path to the document that generated the error.
+    path: str
+    #: A value that caused the error.
+    payload: str
+    #: A short message describing the error that can be displayed to the user.
+    msg: str
+    #: A command to run to fix the error that can be suggested to the user.
+    suggestion_cmd: str
+    #: A callable that can autofix the error.
+    fix_action: FixFn
+    #: The document that generated the error.
+    doc: Optional[papis.document.Document]
+
+
+class Check(NamedTuple):
+    #: Name of the check
+    name: str
+    #: A callable that takes a document and returns a list of errors generated
+    #: by the current check.
+    operate: CheckFn
+
+
 REGISTERED_CHECKS: Dict[str, Check] = {}
 
 

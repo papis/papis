@@ -28,7 +28,11 @@ __all__ = [
     "Picker"
 ]
 
-KeyInfo = TypedDict("KeyInfo", {"key": str, "help": str})
+
+class KeyInfo(TypedDict):
+    key: str
+    help: str
+
 
 _KEYS_INFO: Optional[Dict[str, KeyInfo]] = None
 

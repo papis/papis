@@ -34,12 +34,10 @@ class AliasedGroup(click.core.Group):
         return None
 
 
-Script = NamedTuple("Script",
-                    [("command_name", str),
-                     ("path", Optional[str]),
-                     ("plugin", Union[None,
-                                      click.core.Command,
-                                      AliasedGroup])])
+class Script(NamedTuple):
+    command_name: str
+    path: Optional[str]
+    plugin: Optional[Union[click.Command, AliasedGroup]]
 
 
 def get_external_scripts() -> Dict[str, Script]:
