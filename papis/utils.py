@@ -199,8 +199,8 @@ def create_identifier(input_list: Optional[str] = None, skip: int = 0) -> Iterat
 
     This creates a generator object capable of iterating over lists to
     create unique products of increasing cardinality
-    (see `here <https://stackoverflow.com/questions/14381940/>`__). This is
-    mainly intended to create suffixes for existing strings, e.g. file names,
+    (see `here <https://stackoverflow.com/questions/14381940/python-pair-alphabets-after-loop-is-completed>`__).
+    This is mainly intended to create suffixes for existing strings, e.g. file names,
     to ensure uniqueness.
 
     :param input_list: list to iterate over
@@ -210,7 +210,7 @@ def create_identifier(input_list: Optional[str] = None, skip: int = 0) -> Iterat
     >>> m = create_identifier(string.ascii_lowercase)
     >>> next(m)
     'a'
-    """
+    """  # noqa: E501
     import string
     from itertools import count, product, islice
 

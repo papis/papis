@@ -120,7 +120,7 @@ Reviews and blog posts
 Contributing
 ------------
 
-Contributions are very welcome! Take a look at `CONTRIBUTING.md <https://github.com/papis/papis/blob/master/CONTRIBUTING.md>`__ for general rules and `HACKING.md <https://github.com/papis/papis/blob/master/HACKING.md>`__ for additional code-related information. We encourage you to also check out, contribute to, or even help maintain the other projects in the Papis ecosystem mentioned below :wink:.
+Contributions are very welcome! Take a look at `CONTRIBUTING.md <https://github.com/papis/papis/blob/main/CONTRIBUTING.md>`__ for general rules and `HACKING.md <https://github.com/papis/papis/blob/main/HACKING.md>`__ for additional code-related information. We encourage you to also check out, contribute to, or even help maintain the other projects in the Papis ecosystem mentioned below :wink:.
 
 The Papis ecosystem
 -------------------
@@ -176,11 +176,11 @@ Papis isn't the only fish in the pond. You might also be interested in:
 
 
 .. |ghbadge| image:: https://github.com/papis/papis/workflows/CI/badge.svg
-   :target: https://github.com/papis/papis/actions?query=branch%3Amaster+workflow%3ACI
+   :target: https://github.com/papis/papis/actions?query=branch%3Amain+workflow%3ACI
 .. |RTD| image:: https://readthedocs.org/projects/papis/badge/?version=latest
    :target: http://papis.readthedocs.io/en/latest/?badge=latest
 .. |CodeQL| image:: https://github.com/papis/papis/workflows/CodeQL/badge.svg
-   :target: https://github.com/papis/papis/actions?query=branch%3Amaster+workflow%3ACodeQL
+   :target: https://github.com/papis/papis/actions?query=branch%3Amain+workflow%3ACodeQL
 
 .. |Pypi| image:: https://badge.fury.io/py/papis.svg
    :target: https://pypi.org/project/papis/
