@@ -8,11 +8,10 @@ import papis.logging
 logger = papis.logging.get_logger(__name__)
 
 
-_ParseResult = NamedTuple("_ParseResult", [
-    ("search", str),
-    ("pattern", Pattern[str]),
-    ("doc_key", Optional[str]),
-    ])
+class _ParseResult(NamedTuple):
+    search: str
+    pattern: Pattern[str]
+    doc_key: Optional[str]
 
 
 class ParseResult(_ParseResult):

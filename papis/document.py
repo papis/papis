@@ -27,32 +27,25 @@ class _SortPriority(enum.IntEnum):
     Missing = 3
 
 
-#: A :class:`dict` that contains a *key* and an *action*. The *key* contains the
-#: name of a key in another dictionary and the *action* contains a callable
-#: that can pre-processes the value.
-KeyConversion = TypedDict(
-    "KeyConversion", {"key": Optional[str],
-                      "action": Optional[Callable[[Any], Any]]}
-)
+class KeyConversion(TypedDict):
+    """A :class:`dict` that contains a *key* and an *action*."""
+
+    #: Name of a key in a foreign dictionary to convert.
+    key: Optional[str]
+    #: Action to apply to the value at :attr:`key` for pre-processing.
+    action: Optional[Callable[[Any], Any]]
+
 
 #: A default :class:`KeyConversion`.
 EmptyKeyConversion = KeyConversion(key=None, action=None)
 
-KeyConversionPair = NamedTuple(
-    "KeyConversionPair",
-    [
-        ("foreign_key", str),
-        ("list", List[KeyConversion]),
-    ]
-)
-KeyConversionPair.foreign_key.__doc__ = """
-    A string denoting the foreign key (in the input data).
-"""
 
-KeyConversionPair.list.__doc__ = """
-    A :class:`list` of :class:`KeyConversion` mappings used to
-    rename and post-process the :attr:`foreign_key` and its value.
-"""
+class KeyConversionPair(NamedTuple):
+    #: A string denoting the foreign key (in the input data).
+    foreign_key: str
+    #: A :class:`list` of :class:`KeyConversion` mappings used to
+    #: rename and post-process the :attr:`foreign_key` and its value.
+    list: List[KeyConversion]
 
 
 def keyconversion_to_data(conversions: Sequence[KeyConversionPair],

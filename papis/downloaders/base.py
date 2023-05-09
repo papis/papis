@@ -11,13 +11,12 @@ import papis.utils
 if TYPE_CHECKING:
     import bs4
 
-MetaEquivalence = TypedDict(
-    "MetaEquivalence", {
-        "tag": str,
-        "key": str,
-        "attrs": Dict[str, Union[str, Pattern[str]]],
-    }
-)
+
+class MetaEquivalence(TypedDict):
+    tag: str
+    key: str
+    attrs: Dict[str, Union[str, Pattern[str]]]
+
 
 meta_equivalences: List[MetaEquivalence] = [
     # google
