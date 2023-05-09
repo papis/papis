@@ -155,7 +155,7 @@ def run(
         the values from the configuration file.
     """
     config = papis.config.get_configuration()
-    result = {}     # type: Dict[str, Any]
+    result: Dict[str, Any] = {}
 
     if len(options) == 0:
         # NOTE: no options given -> just get all the settings

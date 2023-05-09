@@ -5,13 +5,12 @@ import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):
+    DOCUMENT_URL: ClassVar[str] = "https://annualreviews.org/doi/pdf/{doi}"
 
-    DOCUMENT_URL = "https://annualreviews.org/doi/pdf/{doi}"  # type: ClassVar[str]
-
-    BIBTEX_URL = (
+    BIBTEX_URL: ClassVar[str] = (
         "https://annualreviews.org/action/downloadCitation"
         "?format=bibtex&cookieSet=1&doi={doi}"
-        )  # type: ClassVar[str]
+        )
 
     def __init__(self, url: str) -> None:
         super().__init__(

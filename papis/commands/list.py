@@ -208,7 +208,7 @@ def cli(query: str,
         libraries: bool,
         sort_field: Optional[str], sort_reverse: bool) -> None:
     """List documents' properties"""
-    documents = []  # type: List[papis.document.Document]
+    documents: List[papis.document.Document] = []
 
     if (not libraries and not downloaders
             and not _file and not info and not _dir):

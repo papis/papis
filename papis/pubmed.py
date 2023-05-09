@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 import papis
 import papis.utils
@@ -21,7 +21,7 @@ type_converter = {
     "paper-conference": "inproceedings",
     "report": "report",
     "thesis": "phdthesis",
-}   # type: Dict[str, str]
+}
 
 
 def handle_pubmed_pages(pages: str) -> str:
@@ -54,7 +54,7 @@ key_conversion = [
     KeyConversionPair("issue", [papis.document.EmptyKeyConversion]),
     KeyConversionPair("title", [papis.document.EmptyKeyConversion]),
     KeyConversionPair("publisher", [papis.document.EmptyKeyConversion]),
-]   # type: List[KeyConversionPair]
+]
 
 
 def pubmed_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:

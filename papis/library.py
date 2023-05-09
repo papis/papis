@@ -8,9 +8,9 @@ class Library:
     def __init__(self, name: str, paths: List[str]) -> None:
         """Create a Library object."""
         self.name = name
-        self.paths = sum(
+        self.paths: List[str] = sum(
             [glob.glob(os.path.expanduser(p)) for p in paths],
-            [])  # type: List[str]
+            [])
 
     def path_format(self) -> str:
         return ":".join(self.paths)

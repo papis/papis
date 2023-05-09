@@ -222,7 +222,7 @@ class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str) -> None:
         super().__init__(uri=url, name="arxiv", expected_document_extension="pdf")
-        self._arxivid = None  # type: Optional[str]
+        self._arxivid: Optional[str] = None
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
@@ -272,7 +272,7 @@ class Importer(papis.importer.Importer):
     def __init__(self, uri: str) -> None:
         try:
             validate_arxivid(uri)
-            aid = uri       # type: Optional[str]
+            aid: Optional[str] = uri
         except ValueError:
             aid = find_arxivid_in_text(uri)
 
@@ -314,7 +314,7 @@ class ArxividFromPdfImporter(papis.importer.Importer):
 
     def __init__(self, uri: str) -> None:
         super().__init__(name="pdf2arxivid", uri=uri)
-        self.arxivid = None  # type: Optional[str]
+        self.arxivid: Optional[str] = None
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:

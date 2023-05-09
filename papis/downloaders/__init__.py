@@ -99,9 +99,9 @@ class Downloader(papis.importer.Importer):
         self.cookies = cookies
 
         # NOTE: used to cache data
-        self._soup = None  # type: Optional[bs4.BeautifulSoup]
-        self.bibtex_data = None  # type: Optional[str]
-        self.document_data = None  # type: Optional[bytes]
+        self._soup: Optional[bs4.BeautifulSoup] = None
+        self.bibtex_data: Optional[str] = None
+        self.document_data: Optional[bytes] = None
 
     def __del__(self) -> None:
         self.session.close()
@@ -401,8 +401,9 @@ def get_downloader_by_name(name: str) -> Type[Downloader]:
         be the same as its name, but this is not enforced.
     :returns: a downloader class.
     """
-    downloader_class = papis.plugin.get_extension_manager(
-        _extension_name())[name].plugin  # type: Type[Downloader]
+    downloader_class: Type[Downloader] = (
+        papis.plugin.get_extension_manager(_extension_name())[name].plugin
+    )
     return downloader_class
 
 

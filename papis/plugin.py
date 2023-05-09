@@ -65,7 +65,7 @@ if TYPE_CHECKING:
 
 logger = papis.logging.get_logger(__name__)
 
-MANAGERS = {}  # type: Dict[str, ExtensionManager]
+MANAGERS: Dict[str, "ExtensionManager"] = {}
 
 
 def stevedore_error_handler(manager: "ExtensionManager",

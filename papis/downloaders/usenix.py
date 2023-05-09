@@ -13,7 +13,7 @@ class Downloader(papis.downloaders.Downloader):
             "usenix",
             expected_document_extension="pdf",
         )
-        self._raw_data = None  # type: Optional[str]
+        self._raw_data: Optional[str] = None
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:

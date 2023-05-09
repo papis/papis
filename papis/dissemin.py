@@ -13,7 +13,7 @@ DISSEMIN_API_URL = "https://dissem.in/api/search/"
 
 
 def dissemin_authors_to_papis_authors(data: Dict[str, Any]) -> Dict[str, Any]:
-    new_data = {}  # type: Dict[str, Any]
+    new_data: Dict[str, Any] = {}
     if "authors" in data:
         authors = []
         for author in data["authors"]:

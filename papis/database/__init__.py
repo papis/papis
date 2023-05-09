@@ -6,7 +6,7 @@ import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
-DATABASES = {}  # type: Dict[Library, Database]
+DATABASES: Dict[Library, Database] = {}
 
 
 def get(library_name: Optional[str] = None) -> Database:

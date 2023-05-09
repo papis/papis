@@ -61,10 +61,10 @@ class DocMatcher(object):
     parallelize the matching.
     """
 
-    search = ""  # type: str
-    parsed_search = None  # type: List[ParseResult]
-    matcher = None  # type: Optional[MatcherCallable]
-    match_format = papis.config.getstring("match-format")   # type: str
+    search: str = ""
+    parsed_search: Optional[List[ParseResult]] = None
+    matcher: Optional[MatcherCallable] = None
+    match_format: str = papis.config.getstring("match-format")
 
     @classmethod
     def return_if_match(

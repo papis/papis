@@ -121,7 +121,7 @@ class Database(papis.database.base.Database):
     def __init__(self, library: Optional[papis.library.Library] = None) -> None:
         super().__init__(library)
 
-        self.documents = None  # type: Optional[List[papis.document.Document]]
+        self.documents: Optional[List[papis.document.Document]] = None
         self.initialize()
 
     def get_backend_name(self) -> str:
@@ -143,9 +143,9 @@ class Database(papis.database.base.Database):
                 self.documents = pickle.load(fd)
         else:
             logger.info("Indexing library. This might take a while...")
-            folders = sum([papis.utils.get_folders(d)
-                           for d in self.get_dirs()],
-                          [])  # type: List[str]
+            folders: List[str] = sum(
+                [papis.utils.get_folders(d) for d in self.get_dirs()],
+                [])
             self.documents = papis.utils.folders_to_documents(folders)
             logger.debug("Computing 'papis_id' for each document.")
             for doc in self.documents:

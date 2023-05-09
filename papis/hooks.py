@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
 logger = papis.logging.get_logger(__name__)
 
-NON_STEVEDORE_HOOKS = {}  # type: Dict[str, List[Callable[[Any], None]]]
+NON_STEVEDORE_HOOKS: Dict[str, List[Callable[[Any], None]]] = {}
 
 
 def _get_namespace(name: str) -> str:

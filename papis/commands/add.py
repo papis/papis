@@ -329,7 +329,7 @@ def run(paths: List[str],
     if folder_name:
         temp_doc = papis.document.Document(data=data)
         temp_path = os.path.join(out_folder_path, folder_name)
-        components = []     # type: List[str]
+        components: List[str] = []
 
         temp_path = os.path.normpath(temp_path)
         out_folder_path = os.path.normpath(out_folder_path)

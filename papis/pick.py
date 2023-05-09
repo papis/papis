@@ -33,8 +33,10 @@ def _extension_name() -> str:
 
 def get_picker(name: str) -> Type[Picker[Option]]:
     """Get the picker named 'name' declared as a plugin"""
-    picker = papis.plugin.get_extension_manager(
-        _extension_name())[name].plugin  # type: Type[Picker[Option]]
+    picker: Type[Picker[Option]] = (
+        papis.plugin.get_extension_manager(_extension_name())[name].plugin
+    )
+
     return picker
 
 
@@ -46,7 +48,7 @@ def pick(
 
     name = papis.config.getstring("picktool")
     try:
-        picker = get_picker(name)  # type: Type[Picker[Option]]
+        picker: Type[Picker[Option]] = get_picker(name)
     except KeyError:
         entrypoints = papis.plugin.get_available_entrypoints(_extension_name())
         logger.error(

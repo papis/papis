@@ -45,8 +45,8 @@ class Context:
     """
 
     def __init__(self) -> None:
-        self.data = {}   # type: Dict[str, Any]
-        self.files = []  # type: List[str]
+        self.data: Dict[str, Any] = {}
+        self.files: List[str] = []
 
     def __bool__(self) -> bool:
         return bool(self.files) or bool(self.data)
@@ -78,9 +78,9 @@ class Importer:
         :param uri: uri
         :param name: Name of the importer
         """
-        self.ctx = ctx or Context()  # type: Context
-        self.uri = uri  # type: str
-        self.name = name or os.path.basename(__file__)  # type: str
+        self.ctx: Context = ctx or Context()
+        self.uri: str = uri
+        self.name: str = name or os.path.basename(__file__)
         self.logger = papis.logging.get_logger("papis.importer.{}".format(self.name))
 
     @classmethod
@@ -183,5 +183,5 @@ def get_importers() -> List[Type[Importer]]:
 
 def get_importer_by_name(name: str) -> Type[Importer]:
     """Get an importer class by *name*."""
-    imp = get_import_mgr()[name].plugin  # type: Type[Importer]
+    imp: Type[Importer] = get_import_mgr()[name].plugin
     return imp

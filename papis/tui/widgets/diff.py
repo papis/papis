@@ -1,5 +1,5 @@
 from typing import (
-    Dict, Any, List, Union, NamedTuple, Callable, Sequence, Optional)
+    Dict, Any, List, Union, NamedTuple, Callable, Optional)
 
 from prompt_toolkit import Application, print_formatted_text
 from prompt_toolkit.utils import Event
@@ -114,7 +114,7 @@ def diffshow(texta: str,
         "^^^^^^^^^\ndiff from\n",
         "----- {namea}\n".format(namea=namea),
         "+++++ {nameb}\n".format(nameb=nameb),
-    ]  # type: Sequence[str]
+    ]
 
     formatted_text = list(map(
         lambda line:
@@ -156,7 +156,7 @@ def diffdict(dicta: Dict[str, Any],
         "quit": False,
         "add_all": False,
         "cancel": False,
-    }  # type: Dict[str, bool]
+    }
 
     def reset() -> None:
         for k in options:

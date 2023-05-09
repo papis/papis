@@ -23,13 +23,13 @@ article_key_conversion = [
 class Downloader(papis.downloaders.Downloader):
 
     # NOTE: not sure if this API is open for the public, but it seems to work
-    API_URL = "https://citeseerx.ist.psu.edu/api/paper"  # type: ClassVar[str]
+    API_URL: ClassVar[str] = "https://citeseerx.ist.psu.edu/api/paper"
 
     # NOTE: this seems to fail with an 'Internal Server Error 500' more often
     # than not, so it may not be worth it to keep around until it stabilizes
-    DOCUMENT_URL = (
+    DOCUMENT_URL: ClassVar[str] = (
         "https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi={pid}"
-        )  # type: ClassVar[str]
+        )
 
     def __init__(self, url: str) -> None:
         super().__init__(

@@ -38,7 +38,7 @@ CheckFn = Callable[[papis.document.Document], List[Error]]
 Check = NamedTuple("Check", [("name", str),
                              ("operate", CheckFn),
                              ])
-REGISTERED_CHECKS = {}  # type: Dict[str, Check]
+REGISTERED_CHECKS: Dict[str, Check] = {}
 
 
 def error_to_dict(e: Error) -> Dict[str, Any]:
@@ -190,7 +190,7 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
     return []
 
 
-DUPLICATED_KEYS_SEEN = collections.defaultdict(set)  # type: Dict[str, Set[str]]
+DUPLICATED_KEYS_SEEN: Dict[str, Set[str]] = collections.defaultdict(set)
 DUPLICATED_KEYS_NAME = "duplicated-keys"
 
 
@@ -205,7 +205,7 @@ def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
     keys = papis.config.getlist("doctor-duplicated-keys-keys")
     folder = doc.get_main_folder() or ""
 
-    results = []  # type: List[Error]
+    results: List[Error] = []
     for key in keys:
         value = doc.get(key)
         if value is None:
@@ -429,7 +429,7 @@ def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
     """
     assert all(check in REGISTERED_CHECKS for check in checks)
 
-    results = []  # type: List[Error]
+    results: List[Error] = []
     for check in checks:
         results.extend(REGISTERED_CHECKS[check].operate(doc))
 
@@ -495,7 +495,7 @@ def cli(query: str,
 
     logger.debug("Running checks: '%s'.", "', '".join(_checks))
 
-    errors = []  # type: List[Error]
+    errors: List[Error] = []
     for doc in documents:
         errors.extend(run(doc, _checks))
 
