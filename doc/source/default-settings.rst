@@ -522,7 +522,7 @@ Databases
 .. papis-config:: whoosh-schema-prototype
 
     This is the model for the whoosh schema, check
-    `the documentation <https://whoosh.readthedocs.io/en/latest/schema.html/>`__
+    `the documentation <https://whoosh.readthedocs.io/en/latest/schema.html>`__
     for more information.
 
 Terminal user interface (picker)

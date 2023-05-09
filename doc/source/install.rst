@@ -82,7 +82,7 @@ First of all you have to get the code, open a terminal and hit
   git clone https://github.com/papis/papis.git
 
 or download the
-`zip file <https://github.com/papis/papis/archive/refs/heads/master.zip>`__.
+`zip file <https://github.com/papis/papis/archive/refs/heads/main.zip>`__.
 
 
 Go inside of the ``papis`` source folder and you can install it with ``python3``.
