@@ -365,7 +365,7 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
         if bib_key in bibtex_ignore_keys:
             continue
 
-        bib_value = str(document[bib_key])
+        bib_value = str(document[key])
         logger.debug("Processing BibTeX entry: '%s: %s'.", bib_key, bib_value)
 
         if bib_key == "journal":
