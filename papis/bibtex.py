@@ -22,7 +22,8 @@ bibtex_types = [
 bibtex_type_converter = {
     "conferencePaper": "inproceedings",
     "journalArticle": "article",
-    "journal": "article"
+    "journal": "article",
+    "bookSection": "inbook"
 }  # type: Dict[str, str]
 
 bibtex_keys = [
