@@ -65,6 +65,7 @@ bibtex_type_converter: Dict[str, str] = {
     "conferencePaper": "inproceedings",
     "journalArticle": "article",
     "journal": "article",
+    "bookSection": "inbook",
 }
 
 bibtex_keys: FrozenSet[str] = frozenset([
