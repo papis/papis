@@ -175,6 +175,7 @@ setup(
         ],
         "papis.exporter": [
             "bibtex=papis.bibtex:exporter",
+            "hayagriva=papis.hayagriva:exporter",
             "json=papis.json:exporter",
             "yaml=papis.yaml:exporter",
         ],
