@@ -55,7 +55,7 @@ bibtex_types: FrozenSet[str] = frozenset([
     "standard",
     "video",
     # type aliases (Section 2.1.2)
-    "conference", "electronic", "masterthesis", "phdthesis", "techreport", "www",
+    "conference", "electronic", "mastersthesis", "phdthesis", "techreport", "www",
 ]) | frozenset(papis.config.getlist("extra-bibtex-types"))
 
 # Zotero translator fields, see also
@@ -66,6 +66,10 @@ bibtex_type_converter: Dict[str, str] = {
     "journalArticle": "article",
     "journal": "article",
     "bookSection": "inbook",
+    "monograph": "book",
+    "presentation": "misc",
+    "blogPost": "online",
+    "webpage": "online"
 }
 
 bibtex_keys: FrozenSet[str] = frozenset([
