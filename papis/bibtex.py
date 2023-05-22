@@ -58,18 +58,47 @@ bibtex_types: FrozenSet[str] = frozenset([
     "conference", "electronic", "mastersthesis", "phdthesis", "techreport", "www",
 ]) | frozenset(papis.config.getlist("extra-bibtex-types"))
 
-# Zotero translator fields, see also
+# NOTE: Zotero translator fields are defined in
 #   https://github.com/zotero/zotero-schema
-#   https://github.com/papis/papis/pull/121
+# and were extracted with
+#   curl -s https://raw.githubusercontent.com/zotero/zotero-schema/master/schema.json | jq ' .itemTypes[].itemType'  # noqa: E501
 bibtex_type_converter: Dict[str, str] = {
-    "conferencePaper": "inproceedings",
-    "journalArticle": "article",
-    "journal": "article",
-    "bookSection": "inbook",
-    "monograph": "book",
-    "presentation": "misc",
+    # Zotero
+    "annotation": "misc",
+    "attachment": "misc",
+    "audioRecording": "audio",
+    "bill": "legislation",
     "blogPost": "online",
-    "webpage": "online"
+    "bookSection": "inbook",
+    "case": "jurisdiction",
+    "computerProgram": "software",
+    "conferencePaper": "inproceedings",
+    "dictionaryEntry": "misc",
+    "document": "article",
+    "email": "online",
+    "encyclopediaArticle": "article",
+    "film": "video",
+    "forumPost": "online",
+    "hearing": "jurisdiction",
+    "instantMessage": "online",
+    "interview": "article",
+    "journalArticle": "article",
+    "magazineArticle": "article",
+    "manuscript": "unpublished",
+    "map": "misc",
+    "newspaperArticle": "article",
+    "note": "misc",
+    "podcast": "audio",
+    "preprint": "unpublished",
+    "presentation": "misc",
+    "radioBroadcast": "audio",
+    "statute": "jurisdiction",
+    "tvBroadcast": "video",
+    "videoRecording": "video",
+    "webpage": "online",
+    # Others
+    "journal": "article",
+    "monograph": "book",
 }
 
 bibtex_keys: FrozenSet[str] = frozenset([
