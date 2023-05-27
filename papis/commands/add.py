@@ -584,7 +584,7 @@ def cli(files: List[str],
         confirm = False
         open_file = False
 
-    only_data = bool(files) and not force_download
+    only_data = bool(ctx.files) and not force_download
     matching_importers = papis.utils.get_matching_importer_by_name(
         from_importer, only_data=only_data)
 
