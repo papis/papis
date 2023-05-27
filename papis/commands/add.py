@@ -598,7 +598,9 @@ def cli(files: List[str],
                         "Select the ones you want to use.")
 
             matching_indices = papis.tui.utils.select_range(
-                ["{} (files: {}) ".format(imp.name, ", ".join(imp.ctx.files))
+                ["{} (files: {}) ".format(
+                    imp.name,
+                    ", ".join(imp.ctx.files) if imp.ctx.files else "no")
                  for imp in matching_importers],
                 "Select matching importers (for instance 0, 1, 3-10, a, all...)")
 
