@@ -53,7 +53,9 @@ Command-line Interface
 """
 
 import os
-from typing import List, Optional
+import contextlib
+import shlex
+from typing import Iterator, List, Optional
 
 import click
 
@@ -67,16 +69,31 @@ import papis.logging
 logger = papis.logging.get_logger(__name__)
 
 
+@contextlib.contextmanager
+def chdir(path: str) -> Iterator[None]:
+    # TODO: contextlib.chdir exists in python>=3.11 so we could switch to that
+    # in a far away future, but this is a similar (non-reentrant) implementation
+    cwd = os.getcwd()
+    os.chdir(path)
+
+    try:
+        yield None
+    finally:
+        os.chdir(cwd)
+
+
 def run(folder: str, command: Optional[List[str]] = None) -> int:
     if command is None:
         command = []
 
+    folder = os.path.expanduser(folder)
     logger.debug("Changing directory to '%s'.", folder)
-    os.chdir(os.path.expanduser(folder))
-    commandstr = " ".join(command)
 
-    logger.debug("Running command '%s'.", commandstr)
-    return os.system(commandstr)
+    with chdir(folder):
+        commandstr = shlex.join(command)
+        logger.debug("Running command '%s'.", commandstr)
+
+        return os.system(commandstr)
 
 
 @click.command("run", context_settings={"ignore_unknown_options": True})
