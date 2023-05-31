@@ -323,7 +323,11 @@ class Document(Dict[str, Any]):
     def save(self) -> None:
         """Saves the current document fields into the info file."""
         import papis.yaml
-        papis.yaml.data_to_yaml(self.get_info_file(), dict(self))
+
+        allow_unicode = papis.config.getboolean("info-allow-unicode")
+        papis.yaml.data_to_yaml(self.get_info_file(),
+                                dict(self),
+                                allow_unicode=allow_unicode)
 
     def load(self) -> None:
         """Load information from the info file."""
