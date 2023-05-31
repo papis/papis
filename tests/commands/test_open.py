@@ -1,4 +1,5 @@
 import os
+import sys
 import pytest
 
 from tests.testlib import TemporaryLibrary, PapisRunner
@@ -34,4 +35,15 @@ def test_open_cli(tmp_library: TemporaryLibrary) -> None:
     result = cli_runner.invoke(
         cli,
         ["--tool", "python {} echo".format(script), "--mark", "--all", "Krishnamurti"])
+    assert result.exit_code == 0
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="uses windows commands")
+def test_open_windows_cli(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.open import cli
+    cli_runner = PapisRunner()
+
+    result = cli_runner.invoke(
+        cli,
+        ["--tool", 'cmd.exe /c start ""', "--all", "Krishnamurti"])
     assert result.exit_code == 0
