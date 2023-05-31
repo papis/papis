@@ -166,7 +166,8 @@ def save_citations(doc: papis.document.Document, citations: Citations) -> None:
     if not file_path:
         return
 
-    papis.yaml.list_to_path(citations, file_path)
+    allow_unicode = papis.config.getboolean("info-allow-unicode")
+    papis.yaml.list_to_path(citations, file_path, allow_unicode=allow_unicode)
 
 
 def fetch_and_save_citations(doc: papis.document.Document) -> None:
@@ -250,7 +251,8 @@ def save_cited_by(doc: papis.document.Document, citations: Citations) -> None:
     if not file_path:
         return
 
-    papis.yaml.list_to_path(citations, file_path)
+    allow_unicode = papis.config.getboolean("info-allow-unicode")
+    papis.yaml.list_to_path(citations, file_path, allow_unicode=allow_unicode)
 
 
 def _cites_me_p(doi_doc: Tuple[str, papis.document.Document]) -> Optional[Citation]:
@@ -297,7 +299,8 @@ def fetch_and_save_cited_by_from_database(doc: papis.document.Document) -> None:
 
     file_path = get_cited_by_file(doc)
     if citations and file_path:
-        papis.yaml.list_to_path(citations, file_path)
+        allow_unicode = papis.config.getboolean("info-allow-unicode")
+        papis.yaml.list_to_path(citations, file_path, allow_unicode=allow_unicode)
 
 
 def get_cited_by(doc: papis.document.Document) -> Citations:

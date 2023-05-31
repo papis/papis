@@ -13,35 +13,44 @@ import papis.logging
 # NOTE: try to use the CLoader when possible, as it's a lot faster than the
 # python version, at least at the time of writing
 try:
-    from yaml import CSafeLoader as Loader
+    from yaml import CSafeDumper as Dumper, CSafeLoader as Loader
 except ImportError:
+    from yaml import SafeDumper as Dumper  # type: ignore[assignment]
     from yaml import SafeLoader as Loader  # type: ignore[assignment]
 
 logger = papis.logging.get_logger(__name__)
 
 
-def data_to_yaml(yaml_path: str, data: Dict[str, Any]) -> None:
+def data_to_yaml(yaml_path: str,
+                 data: Dict[str, Any], *,
+                 allow_unicode: Optional[bool] = True) -> None:
     """Save *data* to *yaml_path* in the YAML format.
 
     :param yaml_path: path to a file.
     :param data: data to write to the file as a YAML document.
     """
-    with open(yaml_path, "w+") as fd:
-        yaml.dump(
-            data,
-            fd,
-            allow_unicode=papis.config.getboolean("info-allow-unicode"),
-            default_flow_style=False)
+    with open(yaml_path, "w+", encoding="utf-8") as fd:
+        yaml.dump(data,
+                  stream=fd,
+                  Dumper=Dumper,
+                  allow_unicode=allow_unicode,
+                  default_flow_style=False)
 
 
-def list_to_path(data: Sequence[Dict[str, Any]], filepath: str) -> None:
+def list_to_path(data: Sequence[Dict[str, Any]],
+                 filepath: str, *,
+                 allow_unicode: Optional[bool] = True) -> None:
     r"""Save a list of :class:`dict`\ s to a YAML file.
 
     :param data: a sequence of dictionaries to save as YAML documents.
     :param filepath: path to a file.
     """
-    with open(filepath, "w+") as fdd:
-        yaml.dump_all(data, fdd, allow_unicode=True)
+    with open(filepath, "w+", encoding="utf-8") as fd:
+        yaml.dump_all(data,
+                      stream=fd,
+                      Dumper=Dumper,
+                      allow_unicode=allow_unicode,
+                      default_flow_style=False)
 
 
 def yaml_to_data(yaml_path: str,
@@ -56,7 +65,7 @@ def yaml_to_data(yaml_path: str,
     :raises ValueError: if the document cannot be loaded due to YAML parsing errors.
     """
 
-    with open(yaml_path) as fd:
+    with open(yaml_path, encoding="utf-8") as fd:
         try:
             data = yaml.load(fd, Loader=Loader)
         except Exception as exc:
@@ -86,12 +95,12 @@ def yaml_to_list(yaml_path: str,
     :raises ValueError: if the documents cannot be loaded due to YAML parsing errors.
     """
     try:
-        with open(yaml_path) as fdd:
-            return list(yaml.load_all(fdd, Loader=Loader))
-    except Exception as e:
+        with open(yaml_path, encoding="utf-8") as fd:
+            return list(yaml.load_all(fd, Loader=Loader))
+    except Exception as exc:
         if raise_exception:
-            raise ValueError(e) from e
-        logger.error("YAML syntax error. %s")
+            raise ValueError(exc) from exc
+        logger.error("YAML syntax error. %s", exc_info=exc)
         return []
 
 

@@ -131,3 +131,19 @@ def test_slugify(tmp_config: TemporaryConfiguration) -> None:
     )
     assert clean_document_name("масса и енергиа.pdf") == "massa-i-energia.pdf"
     assert clean_document_name("الامير الصغير.pdf") == "lmyr-lsgyr.pdf"
+
+
+def test_yaml_unicode_dump(tmp_config: TemporaryConfiguration) -> None:
+    from papis.crossref import get_data
+
+    doi = "10.1111/febs.15572"
+    doc, = get_data(dois=[doi])
+    assert doc["doi"] == doi
+
+    from papis.yaml import data_to_yaml, yaml_to_data
+
+    filename = os.path.join(tmp_config.tmpdir, "test_dump_encoding.yml")
+    data_to_yaml(filename, doc)
+
+    doc = yaml_to_data(filename)
+    assert doc["doi"] == doi
