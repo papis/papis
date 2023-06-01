@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # you can install this to a local test virtualenv like so:
 #   virtualenv venv

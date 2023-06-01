@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 # vim-run: python % -p 3.3 ../Dockerfile --norun
 
 import argparse
