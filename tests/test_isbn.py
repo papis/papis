@@ -11,7 +11,7 @@ def load_json(filename: str, data_getter: Optional[Callable[[], Any]] = None) ->
         os.path.dirname(__file__), "resources", "isbn", filename)
 
     if os.path.exists(path):
-        with open(path, "r") as f:
+        with open(path) as f:
             data = json.load(f)
     elif data_getter is not None:
         data = data_getter()

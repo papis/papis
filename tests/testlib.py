@@ -317,7 +317,7 @@ class ResourceCache:
                 else:
                     raise ValueError("Unknown file extension: '{}'".format(ext))
 
-        with open(filename, "r", encoding="utf-8") as f:
+        with open(filename, encoding="utf-8") as f:
             if ext == ".json":
                 return json.load(f)
             elif ext == ".yml" or ext == ".yaml":

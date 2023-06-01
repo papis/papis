@@ -48,7 +48,7 @@ def notes_path_ensured(doc: papis.document.Document) -> str:
                                          .getstring("notes-template")))
         templ_out = ""
         if os.path.exists(templ_path):
-            with open(templ_path, "r") as f:
+            with open(templ_path) as f:
                 templ_src = f.read()
                 templ_out = papis.format.format(templ_src, doc)
         with open(_notes_path, "w+") as _fd:
