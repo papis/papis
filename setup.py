@@ -162,9 +162,9 @@ setup(
         "tui",
         "zotero",
     ],
-    package_data=dict(
-        papis=["py.typed"],
-    ),
+    package_data={
+        "papis": ["py.typed"],
+    },
     data_files=data_files,
     packages=included_packages,
     entry_points={

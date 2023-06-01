@@ -117,15 +117,15 @@ def diffshow(texta: str,
         "+++++ {nameb}\n".format(nameb=nameb),
     ]
 
-    formatted_text = FormattedText(map(
-        lambda line:
-            # match line values
-            line.startswith("@") and ("fg:ansimagenta bg:ansiblack", line)
-            or line.startswith("+") and ("fg:ansigreen bg:ansiblack", line)
-            or line.startswith("-") and ("fg:ansired bg:ansiblack", line)
-            or line.startswith("?") and ("fg:ansiyellow bg:ansiblack", line)
-            or line.startswith("^^^") and ("bg:ansiblack fg:ansimagenta", line)
-            or ("", line), raw_text))
+    formatted_text = FormattedText([
+        line.startswith("@") and ("fg:ansimagenta bg:ansiblack", line)
+        or line.startswith("+") and ("fg:ansigreen bg:ansiblack", line)
+        or line.startswith("-") and ("fg:ansired bg:ansiblack", line)
+        or line.startswith("?") and ("fg:ansiyellow bg:ansiblack", line)
+        or line.startswith("^^^") and ("bg:ansiblack fg:ansimagenta", line)
+        or ("", line)
+        for line in raw_text
+    ])
 
     prompt(title="--- Diff view: " + title + " ---",
            text=formatted_text,

@@ -4,7 +4,7 @@ PapisConfigType = Dict[str, Dict[str, Any]]
 
 
 def get_default_settings() -> PapisConfigType:
-    return dict(tui={
+    return {"tui": {
         "status_line_format": (
             "{selected_index}/{number_of_documents}  "
             + "F1:help  "
@@ -32,4 +32,4 @@ def get_default_settings() -> PapisConfigType:
         "mark_key": "c-t",
 
         "editmode": "emacs",
-    })
+    }}
