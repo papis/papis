@@ -75,7 +75,7 @@ def test_edit_cli(tmp_library: TemporaryLibrary) -> None:
 def sed_replace(filename: str) -> None:
     # NOTE: this function is used by 'test_edit_run' to provide a cross-platform
     # way to edit a file that the test can later recognize and see it was called
-    with open(filename, "r") as fd:
+    with open(filename) as fd:
         contents = "\n".join([
             line.replace("title: ", "title: test_edit") for line in fd
             ])

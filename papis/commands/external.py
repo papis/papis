@@ -19,7 +19,7 @@ logger = papis.logging.get_logger(__name__)
 def get_command_help(path: str) -> str:
     """Get help string from external commands."""
     magic_word = papis.config.getstring("scripts-short-help-regex")
-    with open(path, "r") as _fd:
+    with open(path) as _fd:
         for line in _fd:
             match = re.match(magic_word, line)
             if match:
