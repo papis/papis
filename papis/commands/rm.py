@@ -43,7 +43,7 @@ def run(document: papis.document.Document,
         if git:
             papis.git.remove(_doc_folder, filepath)
             papis.git.add(_doc_folder, document.get_info_file())
-            papis.git.commit(_doc_folder, "Remove file '{0}'".format(filepath))
+            papis.git.commit(_doc_folder, "Remove file '{}'".format(filepath))
 
     if notespath is not None:
         os.remove(notespath)
@@ -63,7 +63,7 @@ def run(document: papis.document.Document,
             papis.git.remove(_doc_folder, _doc_folder, recursive=True)
             papis.git.commit(
                 _topfolder,
-                "Remove document '{0}'".format(
+                "Remove document '{}'".format(
                     papis.document.describe(document)))
         else:
             papis.document.delete(document)
@@ -121,7 +121,7 @@ def cli(query: str,
                 continue
             filepath = filepaths[0]
             if not force:
-                tbar = "The file {0} would be removed".format(filepath)
+                tbar = "The file {} would be removed".format(filepath)
                 if not papis.tui.utils.confirm(
                         "Are you sure?", bottom_toolbar=tbar):
                     continue
@@ -137,7 +137,7 @@ def cli(query: str,
                 document["notes"]
             )
             if not force:
-                tbar = "The file {0} would be removed".format(notespath)
+                tbar = "The file {} would be removed".format(notespath)
                 if not papis.tui.utils.confirm(
                         "Are you sure?", bottom_toolbar=tbar):
                     continue

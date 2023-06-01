@@ -198,7 +198,7 @@ def get_file_name(
 
     # Remove extension from file_name_base, if any
     file_name_base = re.sub(
-        r"([.]{0})?$".format(ext),
+        r"([.]{})?$".format(ext),
         "",
         file_name_base
     )
@@ -467,7 +467,7 @@ def run(paths: List[str],
     if git:
         papis.git.add_and_commit_resource(
             str(tmp_document.get_main_folder()), ".",
-            "Add document '{0}'".format(papis.document.describe(tmp_document)))
+            "Add document '{}'".format(papis.document.describe(tmp_document)))
 
 
 @click.command(
@@ -500,7 +500,7 @@ def run(paths: List[str],
     default=None)
 @click.option(
     "--from", "from_importer",
-    help="Add document from a specific importer ({0})".format(
+    help="Add document from a specific importer ({})".format(
         ", ".join(papis.importer.available_importers())
     ),
     type=(click.Choice(papis.importer.available_importers()), str),
