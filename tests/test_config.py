@@ -294,24 +294,13 @@ def test_get_list(tmp_config: TemporaryConfiguration) -> None:
 
     papis.config.set("super-key-list", "[asdf,2,3,4]")
     assert papis.config.get("super-key-list") == "[asdf,2,3,4]"
-    try:
+
+    with pytest.raises(SyntaxError, match="must be a valid Python object"):
         papis.config.getlist("super-key-list")
-    except SyntaxError as e:
-        assert (
-            str(e) == (
-                "The key 'super-key-list' must be a valid Python object: "
-                "[asdf,2,3,4]")
-        )
 
     papis.config.set("super-key-list", "2")
     assert papis.config.get("super-key-list") == "2"
     assert papis.config.getint("super-key-list") == 2
-    try:
+
+    with pytest.raises(SyntaxError, match="must be a valid Python list"):
         papis.config.getlist("super-key-list")
-    except SyntaxError as e:
-        assert (
-            str(e) == (
-                "The key 'super-key-list' must be a valid Python list. "
-                "Got: 2 (type 'int')"
-            )
-        )

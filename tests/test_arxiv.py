@@ -84,5 +84,5 @@ def test_validate_arxivid(tmp_config: TemporaryConfiguration) -> None:
 
     import pytest
     for bad in ["1206.6272v3", "blahv2"]:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="not an arxivid"):
             papis.arxiv.validate_arxivid(bad)
