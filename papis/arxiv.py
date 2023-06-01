@@ -17,7 +17,6 @@
 """
 import os
 import re
-import sys
 from typing import Optional, List, Dict, Any
 
 import click
@@ -76,9 +75,7 @@ def get_data(
             })
 
     import bs4
-    soup = bs4.BeautifulSoup(
-        response.content,
-        features="html.parser" if sys.version_info.minor < 6 else "lxml-xml")
+    soup = bs4.BeautifulSoup(response.content, features="lxml-xml")
 
     entries = soup.find_all("entry")
     for entry in entries:
