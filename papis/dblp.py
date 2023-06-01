@@ -73,7 +73,7 @@ def _dblp_authors(entries: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 def search(
         query: str = "",
-        format: str = "json",
+        output_format: str = "json",
         max_results: int = 30,
         max_completions: int = 10,
         api: str = "publ",
@@ -105,9 +105,9 @@ def search(
             .format(DBLP_MAX_COMPLETIONS, max_completions)
             )
 
-    if format not in DBLP_FORMATS:
+    if output_format not in DBLP_FORMATS:
         raise ValueError(
-            "Unsupported format: '{}' (expected {})".format(format, DBLP_FORMATS)
+            "Unsupported format: '{}' (expected {})".format(output_format, DBLP_FORMATS)
             )
 
     url = DBLP_API_ENDPOINTS.get(api.lower())
@@ -119,7 +119,7 @@ def search(
             url,
             params={
                 "q": query,
-                "format": format,
+                "format": output_format,
                 "h": str(max_results),
                 "f": "0",
                 "c": str(max_completions),
@@ -131,7 +131,7 @@ def search(
 def get_data(query: str = "", max_results: int = 30) -> List[Dict[str, Any]]:
     import json
     response = json.loads(
-        search(query=query, format="json", max_results=max_results)
+        search(query=query, output_format="json", max_results=max_results)
         )
     result = response.get("result")
     hits = result["hits"].get("hit")
