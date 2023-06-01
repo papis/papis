@@ -93,7 +93,7 @@ def run(document: papis.document.Document,
               default=False,
               is_flag=True)
 @click.option("--from", "from_importer",
-              help="Add document from a specific importer ({0})".format(
+              help="Add document from a specific importer ({})".format(
                   ", ".join(papis.importer.available_importers())
               ),
               type=(click.Choice(papis.importer.available_importers()), str),

@@ -298,7 +298,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
             self._send_json_error(400, str(e))
         else:
             self._send_json_error(404,
-                                  "Server path {0} not understood"
+                                  "Server path {} not understood"
                                   .format(self.path))
 
     def _handle_lib(self, libname: str) -> None:

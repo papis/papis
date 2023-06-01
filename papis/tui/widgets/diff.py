@@ -218,7 +218,7 @@ def diffdict(dicta: Dict[str, Any],
         diffshow(
             texta=str(dicta.get(key, "")) + "\n",
             textb=str(dictb.get(key, "")) + "\n",
-            title='changes for key "{0}"'.format(key),
+            title='changes for key "{}"'.format(key),
             namea=namea,
             nameb=nameb,
             actions=actions)
