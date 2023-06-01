@@ -9,12 +9,11 @@ from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.key_binding import KeyBindings
 
-Action = NamedTuple("Action",
-                    [
-                        ("name", str),
-                        ("key", str),
-                        ("action", Callable[[Event], None])
-                    ])
+
+class Action(NamedTuple):
+    name: str
+    key: str
+    action: Callable[[Event], None]
 
 
 def prompt(text: Union[str, FormattedText],
