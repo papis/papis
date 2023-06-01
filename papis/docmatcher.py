@@ -40,7 +40,7 @@ class MatcherCallable(Protocol):
         """
 
 
-class DocMatcher(object):
+class DocMatcher:
     """This class implements the mini query language for papis.
     All its methods are static, it could be also implemented as a separate
     module.
