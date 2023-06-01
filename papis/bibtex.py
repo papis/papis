@@ -2915,8 +2915,8 @@ def unicode_to_latex(text: str) -> str:
     #    u"\u2AC6\u0338": r"\nsupseteqq",
     #    u"\u2AFD\u20E5": r"{\rlap{\textbackslash}{{/}\!\!{/}}}",
 
-    unicode_to_latex_table = dict(
-        (ord(k), v)
+    unicode_to_latex_table = {
+        ord(k): v
         for k, v in unicode_to_latex_table_base.items()
-    )
+    }
     return text.translate(unicode_to_latex_table)

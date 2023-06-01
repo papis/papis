@@ -25,8 +25,9 @@ def widget(_unquoted_file_path: str, viewer_id: str = "djvuViewer") -> None:
     argument.
     """
     t.div(id=viewer_id)
-    t.script(tu.raw(MAIN_CODE.substitute(**dict(selector=viewer_id,
-                                                path=_unquoted_file_path))))
+    t.script(tu.raw(
+        MAIN_CODE.substitute(**{"selector": viewer_id, "path": _unquoted_file_path})
+    ))
 
     t.script(src=DJVUJS_LIB_SRC)
     t.script(src=DJVUJS_VIEWER_SRC)
