@@ -178,12 +178,12 @@ def find_arxivid_in_text(text: str) -> Optional[str]:
 @click.option("--category", default="", type=str)
 @click.option("--id-list", default="", type=str)
 @click.option("--page", default=0, type=int)
-@click.option("--max", "-m", default=20, type=int)
+@click.option("--max", "-m", "max_results", default=20, type=int)
 def explorer(
         ctx: click.core.Context,
         query: str, author: str, title: str, abstract: str, comment: str,
         journal: str, report_number: str, category: str, id_list: str,
-        page: int, max: int) -> None:
+        page: int, max_results: int) -> None:
     """
     Look for documents on `arXiv.org <arxiv.org/>`__.
 
@@ -216,7 +216,7 @@ def explorer(
         category=category,
         id_list=id_list,
         page=page or 0,
-        max_results=max)
+        max_results=max_results)
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 

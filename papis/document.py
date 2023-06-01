@@ -44,11 +44,11 @@ EmptyKeyConversion = KeyConversion(key=None, action=None)
 
 
 class KeyConversionPair(NamedTuple):
-    #: A string denoting the foreign key (in the input data).
-    foreign_key: str
-    #: A :class:`list` of :class:`KeyConversion` mappings used to
-    #: rename and post-process the :attr:`foreign_key` and its value.
-    list: List[KeyConversion]
+    #: A string denoting the key in the input data.
+    from_key: str
+    #: A :class:`list` of :class:`KeyConversion` key mapping rules used to
+    #: rename and post-process the :attr:`from_key` and its value.
+    rules: List[KeyConversion]
 
 
 def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
@@ -101,22 +101,22 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
 
     for key_pair in conversions:
 
-        foreign_key = key_pair.foreign_key
-        if foreign_key not in data:
+        from_key = key_pair.from_key
+        if from_key not in data:
             continue
 
-        for conv_data in key_pair.list:
-            papis_key: str = conv_data.get("key") or foreign_key
-            papis_value = data[foreign_key]
+        for rule in key_pair.rules:
+            papis_key = str(rule.get("key") or from_key)
+            papis_value = data[from_key]
 
-            action = conv_data.get("action")
+            action = rule.get("action")
             if action:
                 try:
                     new_value = action(papis_value)
                 except Exception as exc:
                     logger.debug(
-                        "Error parsing papis key '%s' from foreign key '%s' => '%r'.",
-                        papis_key, foreign_key, papis_value, exc_info=exc
+                        "Error converting value from key '%s' to '%s': %r.",
+                        from_key, papis_key, papis_value, exc_info=exc
                     )
                     new_value = None
             else:
@@ -129,8 +129,9 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
                 new_data[papis_key] = new_value
 
     if keep_unknown_keys:
+        from_keys = {c.from_key for c in conversions}
         for key, value in data.items():
-            if key in [c.foreign_key for c in conversions]:
+            if key in from_keys:
                 continue
             new_data[key] = value
 
