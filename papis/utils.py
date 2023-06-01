@@ -227,8 +227,7 @@ def create_identifier(input_list: Optional[str] = None, skip: int = 0) -> Iterat
             for s in product(inputs, repeat=n):
                 yield "".join(s)
 
-    for i in islice(ids(), skip, None):
-        yield i
+    yield from islice(ids(), skip, None)
 
 
 def clean_document_name(doc_path: str, is_path: bool = True) -> str:
