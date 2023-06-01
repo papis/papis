@@ -72,7 +72,7 @@ def create_random_file(filetype: Optional[str] = None,
     # NOTE: these are chosen to match using 'filetype.guess' and are not valid
     # files otherwise
     if filetype == "pdf":
-        buf = "%PDF-1.5%\n".encode()
+        buf = b"%PDF-1.5%\n"
         suffix = ".pdf" if suffix is None else suffix
     elif filetype == "epub":
         buf = bytes(
@@ -92,7 +92,7 @@ def create_random_file(filetype: Optional[str] = None,
             )
         suffix = ".djvu" if suffix is None else suffix
     elif filetype == "text":
-        buf = "papis-test-file-contents".encode()
+        buf = b"papis-test-file-contents"
     else:
         raise ValueError("Unknown file type: '{}'".format(filetype))
 
