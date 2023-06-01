@@ -126,8 +126,8 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"papis"
-copyright = u"2017, Alejandro Gallo"
+project = "papis"
+copyright = "2017, Alejandro Gallo"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -281,7 +281,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ("index", "papis.tex", u"papis Documentation", u"Alejandro Gallo", "manual"),
+    ("index", "papis.tex", "papis Documentation", "Alejandro Gallo", "manual"),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -309,41 +309,41 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ("index", "papis", u"Papis Documentation",
-     [u"Alejandro Gallo"], 1),
-    ("configuration", "papis-config", u"Papis Configuration",
-     [u"Alejandro Gallo"], 1),
-    ("commands/add", "papis-add", u"add command",
+    ("index", "papis", "Papis Documentation",
      ["Alejandro Gallo"], 1),
-    ("commands/addto", "papis-addto", u"addto command",
+    ("configuration", "papis-config", "Papis Configuration",
      ["Alejandro Gallo"], 1),
-    ("commands/browse", "papis-browse", u"browse command",
+    ("commands/add", "papis-add", "add command",
      ["Alejandro Gallo"], 1),
-    ("commands/config", "papis-config", u"config command",
+    ("commands/addto", "papis-addto", "addto command",
      ["Alejandro Gallo"], 1),
-    ("commands/default", "papis-default", u"default command",
+    ("commands/browse", "papis-browse", "browse command",
      ["Alejandro Gallo"], 1),
-    ("commands/edit", "papis-edit", u"edit command",
+    ("commands/config", "papis-config", "config command",
      ["Alejandro Gallo"], 1),
-    ("commands/explore", "papis-explore", u"explore command",
+    ("commands/default", "papis-default", "default command",
      ["Alejandro Gallo"], 1),
-    ("commands/export", "papis-export", u"export command",
+    ("commands/edit", "papis-edit", "edit command",
      ["Alejandro Gallo"], 1),
-    ("commands/git", "papis-git", u"git command",
+    ("commands/explore", "papis-explore", "explore command",
      ["Alejandro Gallo"], 1),
-    ("commands/list", "papis-list", u"list command",
+    ("commands/export", "papis-export", "export command",
      ["Alejandro Gallo"], 1),
-    ("commands/mv", "papis-mv", u"mv command",
+    ("commands/git", "papis-git", "git command",
      ["Alejandro Gallo"], 1),
-    ("commands/open", "papis-open", u"open command",
+    ("commands/list", "papis-list", "list command",
      ["Alejandro Gallo"], 1),
-    ("commands/rename", "papis-rename", u"rename command",
+    ("commands/mv", "papis-mv", "mv command",
      ["Alejandro Gallo"], 1),
-    ("commands/rm", "papis-rm", u"rm command",
+    ("commands/open", "papis-open", "open command",
      ["Alejandro Gallo"], 1),
-    ("commands/run", "papis-run", u"run command",
+    ("commands/rename", "papis-rename", "rename command",
      ["Alejandro Gallo"], 1),
-    ("commands/update", "papis-update", u"update command",
+    ("commands/rm", "papis-rm", "rm command",
+     ["Alejandro Gallo"], 1),
+    ("commands/run", "papis-run", "run command",
+     ["Alejandro Gallo"], 1),
+    ("commands/update", "papis-update", "update command",
      ["Alejandro Gallo"], 1),
 ]
 
@@ -356,8 +356,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ("index", "papis", u"papis Documentation",
-     u"Alejandro Gallo", "papis", "One line description of project.",
+    ("index", "papis", "papis Documentation",
+     "Alejandro Gallo", "papis", "One line description of project.",
      "Miscellaneous"),
 ]
 
@@ -376,9 +376,9 @@ texinfo_documents = [
 # -- Options for Epub output {{{1 --------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u"papis"
-epub_author = u"Alejandro Gallo"
-epub_publisher = u"Alejandro Gallo"
-epub_copyright = u"2017, Alejandro Gallo"
+epub_title = "papis"
+epub_author = "Alejandro Gallo"
+epub_publisher = "Alejandro Gallo"
+epub_copyright = "2017, Alejandro Gallo"
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ["search.html"]
