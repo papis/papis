@@ -315,8 +315,9 @@ class Downloader(papis.importer.Importer):
     def get_document_extension(self) -> str:
         """
         :returns: a guess for the extension of :meth:`get_document_data`. This
-            is based on :mod:`filetype` and uses magic file signatures to
-            determine the type. If no guess is valid, an empty string is returned.
+            is based on `filetype <https://h2non.github.io/filetype.py/>`__ and
+            uses magic file signatures to determine the type. If no guess is valid,
+            an empty string is returned.
         """
         if self.document_extension is None:
             data = self.get_document_data()

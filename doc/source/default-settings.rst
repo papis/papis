@@ -230,6 +230,11 @@ Bibtex options
     Whether or not to allow direct unicode characters in the document
     fields to be exported into the bibtex text.
 
+.. papis-config:: bibtex-export-zotero-file
+
+   A boolean value that can be used to add a ``"file"`` field to exported
+   BibTeX entries. The files are added as a semicolon separated string.
+
 .. _add-command-options:
 
 ``papis add`` options
