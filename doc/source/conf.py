@@ -41,7 +41,7 @@ extensions = [
 ]
 
 intersphinx_mapping = {
-    "bibtexparser": ("https://bibtexparser.readthedocs.io/en/master", None),
+    "bibtexparser": ("https://bibtexparser.readthedocs.io/en/main", None),
     "click": ("https://click.palletsprojects.com/en/latest", None),
     "python": ("https://docs.python.org/3", None),
     "requests": ("https://requests.readthedocs.io/en/latest", None),
