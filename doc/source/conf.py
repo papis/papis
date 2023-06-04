@@ -83,7 +83,7 @@ class PapisConfig(Directive):
         lines.append("")
         lines.append(".. _config-{section}-{key}:".format(section=section, key=key))
         lines.append("")
-        lines.append("`{key} <config-{section}-{key}>`_"
+        lines.append("`{key} <#config-{section}-{key}>`__"
                      .format(section=section, key=key))
 
         if "\n" in str(default):
