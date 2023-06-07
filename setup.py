@@ -4,11 +4,11 @@
 #   ./venv/bin/pip install --editable .
 #   ./venv/bin/pip install --editable .[dev]  # with dev requirements, too
 
+import glob
 import os
 import sys
-import glob
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 import papis
 
@@ -21,28 +21,32 @@ else:
     # NOTE: see the documentation for 'bash-completion' at
     #   https://github.com/scop/bash-completion/blob/master/README.md#faq
     bash_completion_dir = os.environ.get(
-        "PAPIS_BASH_COMPLETION_DIR", "share/bash-completion/completions")
+        "PAPIS_BASH_COMPLETION_DIR", "share/bash-completion/completions"
+    )
     # NOTE: see the documentation for 'fish' at
     #   https://fishshell.com/docs/current/completions.html#where-to-put-completions
     fish_completion_dir = os.environ.get(
-        "PAPIS_FISH_COMPLETION_DIR", "share/fish/vendor_completions.d")
+        "PAPIS_FISH_COMPLETION_DIR", "share/fish/vendor_completions.d"
+    )
     # NOTE: 'site-functions' is included by default since zsh 5.0.7, see
     #   https://zsh.sourceforge.io/releases.html
     zsh_completion_dir = os.environ.get(
-        "PAPIS_ZSH_COMPLETION_DIR", "share/zsh/site-functions")
+        "PAPIS_ZSH_COMPLETION_DIR", "share/zsh/site-functions"
+    )
 
     data_files = [
-        ("share/doc/papis", [
-            "README.rst",
-            "CHANGELOG.md",
-            "AUTHORS",
-            "LICENSE",
-        ]),
-
+        (
+            "share/doc/papis",
+            [
+                "README.rst",
+                "CHANGELOG.md",
+                "AUTHORS",
+                "LICENSE",
+            ],
+        ),
         (bash_completion_dir, ["scripts/shell_completion/click/bash/papis.bash"]),
         (fish_completion_dir, ["scripts/shell_completion/click/fish/papis.fish"]),
         (zsh_completion_dir, ["scripts/shell_completion/click/zsh/_papis"]),
-
         ("share/man/man1", glob.glob("doc/build/man/*")),
         ("share/applications", ["contrib/papis.desktop"]),
     ]
@@ -171,8 +175,7 @@ setup(
         "console_scripts": [
             "papis=papis.commands.default:run",
         ],
-        "papis.hook.on_edit_done": [
-        ],
+        "papis.hook.on_edit_done": [],
         "papis.exporter": [
             "bibtex=papis.bibtex:exporter",
             "json=papis.json:exporter",
@@ -225,6 +228,7 @@ setup(
         ],
         "papis.downloader": [
             "acm=papis.downloaders.acm:Downloader",
+            "acl=papis.downloaders.acl:Downloader",
             "acs=papis.downloaders.acs:Downloader",
             "annualreviews=papis.downloaders.annualreviews:Downloader",
             "aps=papis.downloaders.aps:Downloader",
@@ -261,7 +265,7 @@ setup(
             "lib=papis.commands.explore:lib",
             "pick=papis.commands.explore:pick",
             "yaml=papis.yaml:explorer",
-        ]
+        ],
     },
     platforms=["linux", "osx", "win32"],
 )
