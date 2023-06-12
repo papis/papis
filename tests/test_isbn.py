@@ -37,11 +37,12 @@ def get_unmodified_isbn_data(query: str) -> Any:
 def test_get_data(tmp_config: TemporaryConfiguration) -> None:
     import papis.isbn
 
-    mattuck = papis.isbn.get_data(query="Mattuck feynan diagrams")
-    assert mattuck
-    assert isinstance(mattuck, list)
-    assert isinstance(mattuck[0], dict)
-    assert mattuck[0]["isbn-13"] == "9780486670478"
+    result = papis.isbn.get_data(query="Mattuck feynan diagrams")
+    assert result
+    assert isinstance(result, list)
+    assert isinstance(result[0], dict)
+    assert result[0]["isbn-13"] == "9780486670478"
+    assert result[0]["language"] != ""
 
 
 def test_importer_match(tmp_config: TemporaryConfiguration) -> None:
