@@ -1,0 +1,14 @@
+author:
+- given-name: A. M.
+  name: Turing
+doi: 10.1112/plms/s2-42.1.230
+page-range: 230--265
+parent:
+  date: '1937'
+  issue: '1'
+  title: Proceedings of the London Mathematical Society
+  type: Periodical
+  volume: s2-42
+title: On Computable Numbers with an Application to the Entscheidungsproblem
+type: Article
+url: https://api.wiley.com/onlinelibrary/tdm/v1/articles/10.1112%2Fplms%2Fs2-42.1.230

@@ -16,6 +16,49 @@ HAYAGRIVA_TYPES = frozenset({
     "thread", "video", "audio", "exibition",
 })
 
+HAYAGRIVA_PARENT_TYPES = {
+    "article": "periodical",
+    "chapter": "book",
+    "entry": "reference",
+    "anthos": "anthology",
+    "web": "web",
+    "scene": "video",
+    "artwork": "exhibition",
+    "legislation": "anthology",
+    "tweet": "tweet",
+    "video": "video",
+    "audio": "audio",
+}
+
+# NOTE: these are mostly taken from
+#   https://github.com/typst/hayagriva/blob/main/tests/basic.yml
+# as there does not seem to be any official list of what goes in the entry and
+# what goes in the parent (some fields can even repeat, which is not supported
+# by papis)
+
+HAYAGRIVA_TYPE_PARENT_KEYS = {
+    "article": frozenset({
+        "date", "edition", "isbn", "issn", "issue", "journal", "location",
+        "organization", "publisher", "volume",
+    }),
+    "chapter": frozenset({
+        "journal", "author", "volume", "volume-total", "isbn", "issn",
+        "page-total", "date",
+    }),
+    "entry": frozenset({"journal"}),
+    "anthos": frozenset({
+        "journal", "volume", "date", "isbn", "location", "publisher",
+        "editor",
+    }),
+    "web": frozenset({}),
+    "scene": frozenset({}),
+    "artwork": frozenset({}),
+    "legislation": frozenset({}),
+    "tweet": frozenset({}),
+    "video": frozenset({}),
+    "audio": frozenset({}),
+}
+
 # NOTE: only types that are different are stored
 # NOTE: keep in sync with papis.bibtex.bibtex_types
 BIBTEX_TO_HAYAGRIVA_TYPE_MAP = {
@@ -39,8 +82,8 @@ BIBTEX_TO_HAYAGRIVA_TYPE_MAP = {
     # "periodical": "periodical",
     "suppperiodical": "periodical",
     # "proceedings": "proceedings",
-    "mvproceedings": "proceedings",
-    "inproceedings": "proceedings",
+    "mvproceedings": "article",
+    "inproceedings": "article",
     "reference": "reference",
     "mvreference": "reference",
     "inreference": "reference",
@@ -79,14 +122,19 @@ BIBTEX_TO_HAYAGRIVA_TYPE_MAP = {
 # NOTE: not all fields are implemented, since they're not well-supported
 _k = papis.document.KeyConversionPair
 PAPIS_TO_HAYAGRIVA_KEY_CONVERSION_MAP = [
-    _k("type", [{"key": "type", "action": lambda t: to_hayagriva_type(t)}]),
     _k("title", [papis.document.EmptyKeyConversion]),
+    _k("author", [{
+        "key": "author",
+        # NOTE: this is mostly the case in tests, but might as well include it
+        "action": lambda a: to_hayagriva_authors(papis.document.split_authors_name([a]))
+    }]),
     _k("author_list", [{"key": "author", "action": lambda a: to_hayagriva_authors(a)}]),
-    _k("year", [papis.document.EmptyKeyConversion]),
+    _k("year", [{"key": "date", "action": None}]),
     _k("date", [{"key": "date", "action": None}]),
     _k("editor", [papis.document.EmptyKeyConversion]),
     _k("publisher", [papis.document.EmptyKeyConversion]),
     _k("location", [papis.document.EmptyKeyConversion]),
+    _k("venue", [{"key": "location", "action": None}]),
     _k("organization", [papis.document.EmptyKeyConversion]),
     _k("institution", [{"key": "organization", "action": None}]),
     _k("issue", [papis.document.EmptyKeyConversion]),
@@ -101,12 +149,9 @@ PAPIS_TO_HAYAGRIVA_KEY_CONVERSION_MAP = [
     _k("isbn", [papis.document.EmptyKeyConversion]),
     _k("issn", [papis.document.EmptyKeyConversion]),
     _k("language", [papis.document.EmptyKeyConversion]),
+    # NOTE: this is mostly for the parent
+    _k("journal", [{"key": "title", "action": None}]),
 ]
-
-
-def to_hayagriva_type(entry_type: str) -> str:
-    # NOTE: the fields are case insensitive, but typst seems to capitalize them
-    return BIBTEX_TO_HAYAGRIVA_TYPE_MAP.get(entry_type, entry_type).capitalize()
 
 
 def to_hayagriva_authors(authors: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -114,8 +159,59 @@ def to_hayagriva_authors(authors: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 
 def to_hayagriva(doc: papis.document.Document) -> Dict[str, Any]:
-    from papis.document import keyconversion_to_data
-    data = keyconversion_to_data(PAPIS_TO_HAYAGRIVA_KEY_CONVERSION_MAP, doc)
+    from contextlib import suppress
+
+    bibtype = doc["type"]
+    htype = BIBTEX_TO_HAYAGRIVA_TYPE_MAP.get(bibtype, bibtype)
+
+    parent_known_keys = HAYAGRIVA_TYPE_PARENT_KEYS[htype]
+    if htype == "article":
+        if "proceedings" in bibtype:
+            # NOTE: heuristic: proceedings are published and have a DOI
+            ptype = "proceedings" if "doi" in doc else "conference"
+        elif "eprint" in doc or "ssrn" in doc.get("journal", "").lower():
+            # NOTE: this mostly supports arXiv and SSRN
+            ptype = "Repository"
+        else:
+            # NOTE: hayagriva also supports articles in blogs or newspapers, but
+            # we don't really have a way to distinguish at the moment
+            ptype = "periodical"
+    else:
+        ptype = HAYAGRIVA_PARENT_TYPES.get(htype)
+
+    # NOTE: the type is case insensitive, but typst seems to capitalize them
+    data = {"type": htype.capitalize()}
+    parent = {"type": ptype.capitalize()} if ptype else {}
+
+    for foreign_key, conversions in PAPIS_TO_HAYAGRIVA_KEY_CONVERSION_MAP:
+        if foreign_key not in doc:
+            continue
+
+        for conversion in conversions:
+            key = conversion.get("key") or foreign_key
+            value = doc[foreign_key]
+
+            action = conversion.get("action")
+            conv_value = None
+            if action:
+                with suppress(Exception):
+                    conv_value = action(value)
+            else:
+                conv_value = value
+
+            if isinstance(conv_value, str):
+                conv_value = conv_value.strip()
+
+            if conv_value:
+                if ptype and (
+                        key in parent_known_keys
+                        or foreign_key in parent_known_keys):
+                    parent[key] = conv_value
+                else:
+                    data[key] = conv_value
+
+    if parent:
+        data["parent"] = parent
 
     return data
 
