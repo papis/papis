@@ -35,7 +35,8 @@ PAPIS_TEST_DOCUMENTS = [
         "volume": "I",
         "_test_files": 0,
     }, {
-        "author": "Turing A. M.",
+        "type": "article",
+        "author": "Turing, A. M.",
         "doi": "10.1112/plms/s2-42.1.230",
         "issue": "1",
         "journal": "Proceedings of the London Mathematical Society",
