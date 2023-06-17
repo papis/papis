@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import papis.document
 import papis.logging
@@ -165,6 +165,8 @@ def to_hayagriva(doc: papis.document.Document) -> Dict[str, Any]:
     htype = BIBTEX_TO_HAYAGRIVA_TYPE_MAP.get(bibtype, bibtype)
 
     parent_known_keys = HAYAGRIVA_TYPE_PARENT_KEYS[htype]
+    ptype: Optional[str] = None
+
     if htype == "article":
         if "proceedings" in bibtype:
             # NOTE: heuristic: proceedings are published and have a DOI
@@ -180,8 +182,8 @@ def to_hayagriva(doc: papis.document.Document) -> Dict[str, Any]:
         ptype = HAYAGRIVA_PARENT_TYPES.get(htype)
 
     # NOTE: the type is case insensitive, but typst seems to capitalize them
-    data = {"type": htype.capitalize()}
-    parent = {"type": ptype.capitalize()} if ptype else {}
+    data: Dict[str, Any] = {"type": htype.capitalize()}
+    parent: Dict[str, Any] = {"type": ptype.capitalize()} if ptype else {}
 
     for foreign_key, conversions in PAPIS_TO_HAYAGRIVA_KEY_CONVERSION_MAP:
         if foreign_key not in doc:
