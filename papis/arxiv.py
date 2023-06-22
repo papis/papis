@@ -159,7 +159,7 @@ def find_arxivid_in_text(text: str) -> Optional[str]:
         m = next(miter)
         if m:
             aid = m.group("arxivid")
-            aid = aid[:-4] if aid.endswith('.pdf') else aid
+            aid = aid[:-4] if aid.endswith(".pdf") else aid
             return aid
 
     return None
