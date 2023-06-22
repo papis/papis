@@ -20,7 +20,6 @@ def _issue_git_command(path: str, cmd: str) -> None:
     path = os.path.expanduser(path)
     assert os.path.exists(path)
 
-    import shlex
     split_cmd = shlex.split(cmd)
     logger.debug("Running command: %s.", split_cmd)
 
