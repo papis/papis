@@ -26,10 +26,15 @@ def test_find_arxiv_id(tmp_config: TemporaryConfiguration) -> None:
         ("http://arxiv.org/abs/1110.3658>", "1110.3658"),
         ("https://arxiv.com/abs/1110.3658>", "1110.3658"),
         ("https://arxiv.org/1110.3658>", "1110.3658"),
+        ("https://arxiv.org/pdf/1110.3658.pdf", "1110.3658"),
+        ("http://arxiv.org/pdf/1110.3658.pdf", "1110.3658"),
+        ("https://arxiv.com/pdf/1110.3658.pdf", "1110.3658"),
+        ("http://arxiv.com/pdf/1110.3658.pdf", "1110.3658"),
     ]
 
     for url, arxivid in test_data:
-        assert papis.arxiv.find_arxivid_in_text(url) == arxivid
+        assert papis.arxiv.find_arxivid_in_text(url) == arxivid, \
+            f"Could not retrieve correct arxivid from {url}"
 
 
 def test_match(tmp_config: TemporaryConfiguration) -> None:
