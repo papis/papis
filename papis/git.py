@@ -46,7 +46,7 @@ def add(path: str, resource: str) -> None:
     :param resource: Commit resource
     """
     logger.info("Adding '%s'.", path)
-    cmd = "git add '{}'".format(shlex.quote(resource))
+    cmd = "git add {}".format(shlex.quote(resource))
     _issue_git_command(path, cmd)
 
 
@@ -59,7 +59,7 @@ def remove(path: str, resource: str, recursive: bool = False) -> None:
     logger.info("Removing '%s'.", path)
     # force removal always
     flag = "-r" if recursive else ""
-    cmd = "git rm -f {} '{}'".format(flag, shlex.quote(resource))
+    cmd = "git rm -f {} {}".format(flag, shlex.quote(resource))
     _issue_git_command(path, cmd)
 
 
