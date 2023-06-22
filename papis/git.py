@@ -2,8 +2,10 @@
 """
 import os
 from typing import List
+import shlex
 
 import papis.logging
+
 
 logger = papis.logging.get_logger(__name__)
 
@@ -18,7 +20,6 @@ def _issue_git_command(path: str, cmd: str) -> None:
     path = os.path.expanduser(path)
     assert os.path.exists(path)
 
-    import shlex
     split_cmd = shlex.split(cmd)
     logger.debug("Running command: %s.", split_cmd)
 
@@ -33,9 +34,8 @@ def commit(path: str, message: str) -> None:
     :param path: Folder where a git repo exists.
     :param message: Commit message
     """
-
     logger.info("Committing '%s' with message '%s'.", path, message)
-    cmd = "git commit -m '{}'".format(message)
+    cmd = "git commit -m {}".format(shlex.quote(message))
     _issue_git_command(path, cmd)
 
 
@@ -46,7 +46,7 @@ def add(path: str, resource: str) -> None:
     :param resource: Commit resource
     """
     logger.info("Adding '%s'.", path)
-    cmd = "git add '{}'".format(resource)
+    cmd = "git add {}".format(shlex.quote(resource))
     _issue_git_command(path, cmd)
 
 
@@ -59,7 +59,7 @@ def remove(path: str, resource: str, recursive: bool = False) -> None:
     logger.info("Removing '%s'.", path)
     # force removal always
     flag = "-r" if recursive else ""
-    cmd = "git rm -f {} '{}'".format(flag, resource)
+    cmd = "git rm -f {} {}".format(flag, shlex.quote(resource))
     _issue_git_command(path, cmd)
 
 
