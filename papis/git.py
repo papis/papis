@@ -2,8 +2,10 @@
 """
 import os
 from typing import List
+import shlex
 
 import papis.logging
+
 
 logger = papis.logging.get_logger(__name__)
 
@@ -33,9 +35,8 @@ def commit(path: str, message: str) -> None:
     :param path: Folder where a git repo exists.
     :param message: Commit message
     """
-
     logger.info("Committing '%s' with message '%s'.", path, message)
-    cmd = "git commit -m '{}'".format(message)
+    cmd = "git commit -m {}".format(shlex.quote(message))
     _issue_git_command(path, cmd)
 
 
