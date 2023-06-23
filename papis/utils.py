@@ -3,7 +3,7 @@ import sys
 import re
 import pathlib
 from typing import (Optional, List, Iterator, Iterable, Any, Dict,
-                    Union, Callable, TypeVar, Tuple, TYPE_CHECKING)
+                    Union, Callable, Sequence, TypeVar, Tuple, TYPE_CHECKING)
 
 try:
     import multiprocessing.synchronize  # noqa: F401
@@ -100,6 +100,69 @@ def parmap(f: Callable[[A], B],
         return list(map(f, xs))
 
 
+def run(cmd: Sequence[str],
+        wait: bool = True,
+        env: Optional[Dict[str, Any]] = None,
+        cwd: Optional[str] = None) -> None:
+    """Run a given command with :mod:`subprocess`.
+
+    This is a simple wrapper around :class:`subprocess.Popen` with custom
+    defaults used to call Papis commands.
+
+    :arg cmd: a sequence of arguments to run, where the first entry is expected
+        to be the command name and the remaining entries its arguments.
+    :param wait: if *True* wait for the process to finish, otherwise detach the
+        process and return immediately.
+    :param env: a mapping that defines additional environment variables for
+        the child process.
+    :param cwd: current working directory in which to run the command.
+    """
+
+    cmd = list(cmd)
+    if not cmd:
+        return
+
+    if cwd:
+        cwd = os.path.expanduser(cwd)
+        logger.debug("Changing directory to '%s'.", cwd)
+
+    logger.debug("Running command: '%s'.", cmd)
+
+    # NOTE: Detached processes do not fail properly when the command does not
+    # exist, so we check for it manually here
+    import shutil
+    if not shutil.which(cmd[0]):
+        raise FileNotFoundError("Command not found: '{}'".format(cmd[0]))
+
+    import subprocess
+    if wait:
+        logger.debug("Waiting for process to finish.")
+        subprocess.call(cmd, cwd=cwd, env=env)
+    else:
+        logger.debug("Not waiting for process to finish.")
+        popen_kwargs: Dict[str, Any] = {
+            "cwd": cwd,
+            "env": env,
+            "shell": False,
+            "stdin": None,
+            "stdout": subprocess.DEVNULL,
+            "stderr": subprocess.DEVNULL,
+        }
+
+        # NOTE: Detach process so that the terminal can be closed without also
+        # closing the 'opentool' itself with the open document
+        if sys.platform == "win32":
+            popen_kwargs["creationflags"] = subprocess.DETACHED_PROCESS
+            popen_kwargs["creationflags"] |= subprocess.CREATE_NEW_PROCESS_GROUP
+        else:
+            # NOTE: 'close_fds' is not supported on windows with stdout/stderr
+            # https://docs.python.org/3/library/subprocess.html#subprocess.Popen
+            popen_kwargs["close_fds"] = True
+            cmd.insert(0, "nohup")
+
+        subprocess.Popen(cmd, **popen_kwargs)
+
+
 def general_open(file_name: str,
                  key: str,
                  default_opener: Optional[str] = None,
@@ -130,40 +193,12 @@ def general_open(file_name: str,
     else:
         cmd = shlex.split("{} '{}'".format(opener, file_name))
 
-    logger.debug("Running command: '%s'.", cmd)
-
-    # NOTE: Detached processes do not fail properly when the command does not
-    # exist, so we check for it manually here
     import shutil
     if not shutil.which(cmd[0]):
         raise FileNotFoundError(
-            "[Errno 2] No such file or directory: '{}'".format(opener))
+            "Command not found for key '{}': '{}'".format(key, opener))
 
-    import subprocess
-    if wait:
-        logger.debug("Waiting for process to finish.")
-        subprocess.call(cmd)
-    else:
-        logger.debug("Not waiting for process to finish.")
-        popen_kwargs: Dict[str, Any] = {
-            "shell": False,
-            "stdin": None,
-            "stdout": subprocess.DEVNULL,
-            "stderr": subprocess.DEVNULL,
-        }
-
-        # NOTE: Detach process so that the terminal can be closed without also
-        # closing the 'opentool' itself with the open document
-        if sys.platform == "win32":
-            popen_kwargs["creationflags"] = subprocess.DETACHED_PROCESS
-            popen_kwargs["creationflags"] |= subprocess.CREATE_NEW_PROCESS_GROUP
-        else:
-            # NOTE: 'close_fds' is not supported on windows with stdout/stderr
-            # https://docs.python.org/3/library/subprocess.html#subprocess.Popen
-            popen_kwargs["close_fds"] = True
-            cmd.insert(0, "nohup")
-
-        subprocess.Popen(cmd, **popen_kwargs)
+    run(cmd, wait=wait)
 
 
 def open_file(file_path: str, wait: bool = True) -> None:
