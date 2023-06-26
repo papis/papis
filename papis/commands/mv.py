@@ -32,14 +32,12 @@ def run(document: papis.document.Document,
     if not folder:
         raise DocumentFolderNotFound(papis.document.describe(document))
 
-    cmd = ["git", "-C", folder] if git else []
-    cmd += ["mv", folder, new_folder_path]
-    db = papis.database.get()
-    logger.debug("Running command '%s'.", cmd)
+    papis.utils.run((["git"] if git else []) + ["mv", folder, new_folder_path],
+                    cwd=folder)
 
-    import subprocess
-    subprocess.call(cmd)
+    db = papis.database.get()
     db.delete(document)
+
     new_document_folder = os.path.join(
         new_folder_path,
         os.path.basename(folder))

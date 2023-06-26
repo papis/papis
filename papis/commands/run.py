@@ -52,15 +52,13 @@ Command-line Interface
     :prog: papis run
 """
 
-import os
-import contextlib
-import shlex
-from typing import Iterator, List, Optional
+from typing import List, Optional
 
 import click
 
 import papis.pick
 import papis.cli
+import papis.utils
 import papis.config
 import papis.document
 import papis.database
@@ -69,31 +67,11 @@ import papis.logging
 logger = papis.logging.get_logger(__name__)
 
 
-@contextlib.contextmanager
-def chdir(path: str) -> Iterator[None]:
-    # TODO: contextlib.chdir exists in python>=3.11 so we could switch to that
-    # in a far away future, but this is a similar (non-reentrant) implementation
-    cwd = os.getcwd()
-    os.chdir(path)
-
-    try:
-        yield None
-    finally:
-        os.chdir(cwd)
-
-
-def run(folder: str, command: Optional[List[str]] = None) -> int:
+def run(folder: str, command: Optional[List[str]] = None) -> None:
     if command is None:
-        command = []
+        return
 
-    folder = os.path.expanduser(folder)
-    logger.debug("Changing directory to '%s'.", folder)
-
-    with chdir(folder):
-        commandstr = shlex.join(command)
-        logger.debug("Running command '%s'.", commandstr)
-
-        return os.system(commandstr)
+    papis.utils.run(command, cwd=folder, wait=True)
 
 
 @click.command("run", context_settings={"ignore_unknown_options": True})
@@ -145,4 +123,5 @@ def cli(run_command: List[str],
         folders = papis.config.get_lib_dirs()
 
     for folder in folders:
-        run(folder, command=([prefix] if prefix else []) + list(run_command))
+        cmd = ([prefix] if prefix else []) + list(run_command)
+        run(folder, cmd)

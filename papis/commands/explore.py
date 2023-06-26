@@ -92,6 +92,7 @@ import shlex
 
 import click
 
+import papis.utils
 import papis.tui.utils
 import papis.commands
 import papis.document
@@ -255,13 +256,10 @@ def cmd(ctx: click.Context, command: str) -> None:
         pick cmd 'papis scihub {doc[doi]}'
 
     """
-    from subprocess import call
     docs = ctx.obj["documents"]
     for doc in docs:
         fcommand = papis.format.format(command, doc)
-        splitted_command = shlex.split(fcommand)
-        logger.info("Calling command '%s'.", splitted_command)
-        call(splitted_command)
+        papis.utils.run(shlex.split(fcommand))
 
 
 @click.group("explore",
