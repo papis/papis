@@ -102,6 +102,7 @@ def test_get_file_name(tmp_library: TemporaryLibrary) -> None:
     assert filename == "blah-2.yaml"
 
 
+@pytest.mark.library_setup(use_git=True)
 def test_add_run(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
     from papis.commands.add import run
 
@@ -111,7 +112,7 @@ def test_add_run(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
             ["/path/does/not/exist.pdf"],
             data={"author": "Bohm", "title": "My effect"})
 
-    # add n files
+    # add no files
     run([], data={"author": "Evangelista", "title": "MRCI"})
 
     db = papis.database.get()
@@ -134,7 +135,7 @@ def test_add_run(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
     }
     paths = [tmp_library.create_random_file() for _ in range(nfiles)]
 
-    run(paths, data=data)
+    run(paths, data=data, git=True)
 
     doc, = db.query_dict({"author": "Kutzelnigg"})
     assert len(doc.get_files()) == nfiles

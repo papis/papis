@@ -220,8 +220,10 @@ class TemporaryConfiguration:
 class TemporaryLibrary(TemporaryConfiguration):
     def __init__(self,
                  settings: Optional[Dict[str, Any]] = None,
+                 use_git: bool = False,
                  populate: bool = True) -> None:
         super().__init__(settings=settings)
+        self.use_git = use_git
         self.populate = populate
 
     def __enter__(self) -> "TemporaryLibrary":
@@ -238,6 +240,20 @@ class TemporaryLibrary(TemporaryConfiguration):
         # populate library
         if self.populate:
             populate_library(self.libdir)
+
+        if self.use_git:
+            from papis.utils import run
+
+            # make sure to initialize a git repository for the library
+            run(["git", "init", "-b", "main"], cwd=self.libdir)
+            run(["git", "config", "user.name", "papis"],
+                cwd=self.libdir)
+            run(["git", "config", "user.email", "papis@example.com"],
+                cwd=self.libdir)
+
+            if self.populate:
+                run(["git", "add", "."], cwd=self.libdir)
+                run(["git", "commit", "-m", "Initial commit"], cwd=self.libdir)
 
         return self
 

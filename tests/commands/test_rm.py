@@ -19,6 +19,7 @@ def test_rm_run(tmp_library: TemporaryLibrary) -> None:
     assert not os.path.exists(folder)
 
 
+@pytest.mark.library_setup(use_git=True)
 def test_rm_files_run(tmp_library: TemporaryLibrary) -> None:
     from papis.commands.rm import run
 
@@ -31,7 +32,7 @@ def test_rm_files_run(tmp_library: TemporaryLibrary) -> None:
     filename = doc.get_files()[0]
     assert os.path.exists(filename)
 
-    run(doc, filepath=filename)
+    run(doc, filepath=filename, git=True)
     assert not os.path.exists(filename)
 
     db.clear()
