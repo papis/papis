@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional
 
 import click
 
+import papis.utils
 import papis.config
 import papis.commands
 import papis.logging
@@ -76,5 +77,4 @@ def external_cli(ctx: click.core.Context, flags: List[str]) -> None:
     environ = os.environ.copy()
     environ.update(get_exported_variables(params))
 
-    import subprocess
-    subprocess.call(cmd, env=environ)
+    papis.utils.run(cmd, env=environ)

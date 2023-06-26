@@ -12,6 +12,7 @@ from typing import Optional
 import click
 
 import papis.cli
+import papis.utils
 import papis.database
 import papis.strings
 import papis.git
@@ -33,19 +34,14 @@ def run(document: papis.document.Document,
         raise DocumentFolderNotFound(papis.document.describe(document))
 
     subfolder = os.path.dirname(folder)
-
     new_folder_path = os.path.join(subfolder, new_name)
 
     if os.path.exists(new_folder_path):
         logger.warning("Path '%s' already exists.", new_folder_path)
         return
 
-    cmd = ["git", "-C", folder] if git else []
-    cmd += ["mv", folder, new_folder_path]
-
-    import subprocess
-    logger.debug("Running command '%s'.", cmd)
-    subprocess.call(cmd)
+    papis.utils.run((["git"] if git else []) + ["mv", folder, new_folder_path],
+                    cwd=folder)
 
     if git:
         papis.git.commit(
