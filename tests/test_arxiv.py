@@ -1,9 +1,11 @@
+import pytest
 import papis.arxiv
 import papis.downloaders
 
 from tests.testlib import TemporaryConfiguration
 
 
+@pytest.mark.xfail(reason="arxiv times out sometimes")
 def test_get_data(tmp_config: TemporaryConfiguration) -> None:
     data = papis.arxiv.get_data(
         author="Garnet Chan",
@@ -50,6 +52,7 @@ def test_match(tmp_config: TemporaryConfiguration) -> None:
     assert down.arxivid == "1701.08223v2"
 
 
+@pytest.mark.xfail(reason="arxiv times out sometimes")
 def test_downloader_getter(tmp_config: TemporaryConfiguration) -> None:
     import papis.bibtex
 
