@@ -1,13 +1,3 @@
-"""
-Logging
--------
-
-Helper functions to set up logging used by ``papis``.
-
-.. autofunction:: setup
-.. autofunction:: get_logger
-"""
-
 import os
 import sys
 import logging
@@ -26,11 +16,21 @@ LEVEL_TO_COLOR = {
 
 
 class ColoramaFormatter(logging.Formatter):
+    """A custom logging formatter that uses ``colorama``."""
+
     def __init__(self, log_format: str, full_tb: bool = False) -> None:
         super().__init__(log_format)
-        self.full_tb = full_tb
+
+        #: A flag to denote whether a full traceback should be displayed when
+        #: used with ``logger.info(..., exc_info=ext)``.
+        self.full_tb: bool = full_tb
 
     def formatException(self, exc_info: Tuple[Any, ...]) -> str:    # noqa: N802
+        """Format and return the specified exception information as a string.
+
+        If :attr:`full_tb` is *True*, then the full traceback is shown. Otherwise,
+        a short inline description is given.
+        """
         import io
         import traceback
 
@@ -52,6 +52,13 @@ class ColoramaFormatter(logging.Formatter):
                 .format(exc_info[0].__name__, msg))
 
     def format(self, record: logging.LogRecord) -> str:
+        """Format the specified record as text.
+
+        This adds color coding to the logging levels, includes the exception
+        into the message, removes the papis namespace from the name, etc. Any
+        formatting of the logging output is made here.
+        """
+
         if isinstance(record.msg, str):
             record.msg = record.msg.format(c=colorama)
 
@@ -88,8 +95,7 @@ def setup(level: Optional[Union[int, str]] = None,
           verbose: Optional[bool] = None) -> None:
     """Set up formatting and handlers for the root level Papis logger.
 
-    :param level: default logging level (see
-        :ref:`Logging Levels <logging:logging-levels>`). By default, this
+    :param level: default logging level (see :mod:`logging`). By default, this
         takes values from the ``PAPIS_LOG_LEVEL`` environment variable and
         falls back to ``"INFO"``.
     :param color: flag to control logging colors. It should be one of
@@ -180,6 +186,12 @@ def reset(level: Optional[Union[int, str]] = None,
 
 
 def get_logger(name: Optional[str] = None) -> logging.Logger:
+    """Get a logger instance for the given name under the papis namespace.
+
+    :arg name: the provisional name of the logger instance.
+    :returns: a :class:`logging.Logger` under the papis namespace, i.e. with a
+        name such as ``papis.<name>``.
+    """
     if name is None or name.startswith("papis."):
         return logging.getLogger(name)
     else:
