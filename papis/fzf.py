@@ -23,7 +23,7 @@ class Command(ABC, Generic[T]):
         return [int(i) for i in m.group(1).split()] if m else None
 
     @abstractmethod
-    def run(self, docs: Sequence[T]) -> Sequence[T]:
+    def run(self, docs: List[T]) -> List[T]:
         pass
 
 
@@ -32,7 +32,7 @@ class Choose(Command[T]):
     command = "execute(echo choose {+n})+accept"
     key = "enter"
 
-    def run(self, docs: Sequence[T]) -> Sequence[T]:
+    def run(self, docs: List[T]) -> List[T]:
         return docs
 
 
@@ -41,7 +41,7 @@ class Edit(Command[T]):
     command = "execute(echo edit {+n})"
     key = "ctrl-e"
 
-    def run(self, docs: Sequence[T]) -> Sequence[T]:
+    def run(self, docs: List[T]) -> List[T]:
         from papis.commands.edit import run
         for doc in docs:
             if isinstance(doc, papis.document.Document):
@@ -54,7 +54,7 @@ class Open(Command[T]):
     command = "execute(echo open {+n})"
     key = "ctrl-o"
 
-    def run(self, docs: Sequence[T]) -> Sequence[T]:
+    def run(self, docs: List[T]) -> List[T]:
         from papis.commands.open import run
         for doc in docs:
             if isinstance(doc, papis.document.Document):
@@ -64,17 +64,17 @@ class Open(Command[T]):
 
 class Picker(papis.pick.Picker[T]):
     def __call__(self,
-                 options: Sequence[T],
+                 items: Sequence[T],
                  header_filter: Callable[[T], str] = str,
                  match_filter: Callable[[T], str] = str,
-                 default_index: int = 0) -> Sequence[T]:
+                 default_index: int = 0) -> List[T]:
 
-        if len(options) == 0:
+        if len(items) == 0:
             return []
-        if len(options) == 1:
-            return [options[0]]
+        if len(items) == 1:
+            return [items[0]]
 
-        commands: Sequence[Command[T]] = [Choose(), Open(), Edit()]
+        commands: List[Command[T]] = [Choose(), Open(), Edit()]
 
         bindings = [c.binding() for c in commands
                     ] + papis.config.getlist("fzf-extra-bindings")
@@ -94,8 +94,8 @@ class Picker(papis.pick.Picker[T]):
             else:
                 return header_filter(d)
 
-        headers = [_header_filter(o) for o in options]
-        docs: Sequence[T] = []
+        headers = [_header_filter(o) for o in items]
+        docs: List[T] = []
 
         import subprocess as sp
         with sp.Popen(command, stdin=sp.PIPE, stdout=sp.PIPE) as p:
@@ -109,6 +109,6 @@ class Picker(papis.pick.Picker[T]):
                         indices = c.indices(line.decode())
                         if not indices:
                             continue
-                        docs = c.run([options[i] for i in indices])
+                        docs = c.run([items[i] for i in indices])
 
         return docs
