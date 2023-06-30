@@ -37,6 +37,12 @@ Developer API reference
 .. automodule:: papis.importer
     :members:
 
+``papis.logging``
+^^^^^^^^^^^^^^^^^
+
+.. automodule:: papis.logging
+    :members:
+
 ``papis.pick``
 ^^^^^^^^^^^^^^
 
