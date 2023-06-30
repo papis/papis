@@ -1,105 +1,53 @@
-"""
-General architecture
---------------------
+from typing import List, Dict, Any
 
-Papis uses the package `stevedore <https://github.com/openstack/stevedore/>`__
-for general plugin management.
-
-The only papis module invoking ``stevedore`` should be
-``papis/plugin.py``.
-
-The different plugins in papis like ``papis.command``,
-``papis.exporter`` etc. define a so-called ``ExtensionManager``
-which loads various objects that have been declared in a python
-package somewhere.
-
-For example, the yaml exporter is defined as
-
-.. code:: python
-
-    def exporter(documents: List[papis.document.Document]) -> str:
-        string = yaml.dump_all(
-            [papis.document.to_dict(document) for document in documents],
-            allow_unicode=True)
-        return str(string)
-
-and declared in ``setup.py`` as
-
-.. code:: python
-
-    setup(
-        ...
-        entry_points={
-            'papis.exporter': [
-                'bibtex=papis.bibtex:exporter',
-                'json=papis.json:exporter',
-                'yaml=papis.yaml:exporter',
-            ],
-        ...
-    )
-
-and the exporter can be used as in the code below
-
-.. code:: python
-
-    import papis.plugin
-    extension_manager = papis.plugin.get_extension_manager("papis.exporter")
-    # yaml_exporter is the function defined above
-    yaml_exporter = extension_manager["yaml"].plugin
-
-    yaml_string = yaml_exporter(mydocs)
-
-Now a developer is able to write another exporter in some package
-and install the package in the system.
-The ``extension_manager`` will be able to access the provided functions
-in the package if they have been declared in the entry points of
-the ``setup.py`` script of the named package.
-"""
-
-from typing import List, Dict, Any, TYPE_CHECKING
+from stevedore import ExtensionManager
 
 import papis.logging
 
-if TYPE_CHECKING:
-    from stevedore import ExtensionManager
-
 logger = papis.logging.get_logger(__name__)
 
-MANAGERS: Dict[str, "ExtensionManager"] = {}
+MANAGERS: Dict[str, ExtensionManager] = {}
 
 
-def stevedore_error_handler(manager: "ExtensionManager",
+def stevedore_error_handler(manager: ExtensionManager,
                             entrypoint: str, exception: str) -> None:
     logger.error("Error while loading entrypoint '%s': %s.", entrypoint, exception)
 
 
-def _load_extensions(namespace: str) -> None:
+def get_extension_manager(namespace: str) -> ExtensionManager:
+    """
+    :arg namespace: the namespace for the entry points.
+    :returns: an extension manager for the given entry point namespace.
+    """
     global MANAGERS
-    logger.debug("Creating manager for namespace '%s'.", namespace)
 
-    from stevedore import ExtensionManager
-    MANAGERS[namespace] = ExtensionManager(
-        namespace=namespace,
-        invoke_on_load=False,
-        verify_requirements=True,
-        propagate_map_exceptions=True,
-        on_load_failure_callback=stevedore_error_handler
-    )
+    manager = MANAGERS.get(namespace)
+    if manager is None:
+        logger.debug("Creating manager for namespace '%s'.", namespace)
 
+        manager = ExtensionManager(
+            namespace=namespace,
+            invoke_on_load=False,
+            verify_requirements=True,
+            propagate_map_exceptions=True,
+            on_load_failure_callback=stevedore_error_handler
+        )
 
-def get_extension_manager(namespace: str) -> "ExtensionManager":
-    global MANAGERS
-    if not MANAGERS.get(namespace):
-        _load_extensions(namespace)
-    extension_mgr = MANAGERS[namespace]
-    assert extension_mgr is not None
-    return extension_mgr
+        MANAGERS[namespace] = manager
+
+    return manager
 
 
 def get_available_entrypoints(namespace: str) -> List[str]:
-    return list(
-        map(str, get_extension_manager(namespace).entry_points_names()))
+    """
+    :returns: a list of all available entry points in the given *namespace*.
+    """
+    manager = get_extension_manager(namespace)
+    return [str(e) for e in manager.entry_points_names()]
 
 
 def get_available_plugins(namespace: str) -> List[Any]:
+    """
+    :returns: a list of all available plugins in the given *namespace*.
+    """
     return [e.plugin for e in get_extension_manager(namespace)]
