@@ -43,6 +43,12 @@ Developer API reference
 .. automodule:: papis.pick
     :members:
 
+``papis.plugin``
+^^^^^^^^^^^^^^^^
+
+.. automodule:: papis.plugin
+    :members:
+
 ``papis.utils``
 ^^^^^^^^^^^^^^^
 
