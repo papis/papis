@@ -13,6 +13,12 @@ Developer API reference
 .. automodule:: papis.bibtex
     :members:
 
+``papis.citations``
+^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: papis.citations
+    :members:
+
 ``papis.cli``
 ^^^^^^^^^^^^^
 

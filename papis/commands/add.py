@@ -269,7 +269,7 @@ def run(paths: List[str],
         edit: bool = False,
         git: bool = False,
         link: bool = False,
-        citations: papis.citations.Citations = ()) -> None:
+        citations: Optional[papis.citations.Citations] = None) -> None:
     """
     :param paths: Paths to the documents to be added
     :param data: Data for the document to be added.
@@ -289,6 +289,9 @@ def run(paths: List[str],
     """
     if data is None:
         data = {}
+
+    if citations is None:
+        citations = []
 
     import tempfile
 
