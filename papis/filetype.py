@@ -7,7 +7,7 @@ import filetype
 
 class DjVu(filetype.Type):      # type: ignore[misc]
     """
-    Implements the DjVu type matcher.
+    Implements a custom DjVu type matcher for ``filetype``.
     """
 
     MIME = "image/vnd.djvu"
