@@ -31,6 +31,18 @@ Developer API reference
 .. automodule:: papis.downloaders
    :members:
 
+``papis.format``
+^^^^^^^^^^^^^^^^
+
+.. automodule:: papis.format
+    :members:
+
+``papis.git``
+^^^^^^^^^^^^^
+
+.. automodule:: papis.git
+    :members:
+
 ``papis.id``
 ^^^^^^^^^^^^
 
