@@ -9,7 +9,7 @@ from tests.testlib import TemporaryConfiguration
 
 def test_python_formater(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
     papis.config.set("formater", "python")
-    monkeypatch.setattr(papis.format, "_FORMATER", None)
+    monkeypatch.setattr(papis.format, "FORMATER", None)
 
     document = papis.document.from_data({"author": "Fulano", "title": "A New Hope"})
     assert (
@@ -35,7 +35,7 @@ def test_python_formater(tmp_config: TemporaryConfiguration, monkeypatch) -> Non
 def test_jinja_formater(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
     pytest.importorskip("jinja2")
     papis.config.set("formater", "jinja2")
-    monkeypatch.setattr(papis.format, "_FORMATER", None)
+    monkeypatch.setattr(papis.format, "FORMATER", None)
 
     document = papis.document.from_data({"author": "Fulano", "title": "A New Hope"})
     assert (

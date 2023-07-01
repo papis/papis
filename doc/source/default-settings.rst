@@ -791,8 +791,12 @@ Other
 
 .. papis-config:: formater
 
-    The formatting language in python can be configured through plugins.
+    Picks the formater for templated strings in the configuration file and
+    in various strings presented to the user. Supported formaters are
 
-    .. autoclass:: papis.format.PythonFormater
+    * ``"python"``: based on :class:`papis.format.PythonFormater`.
+    * ``"jinja2"``: based on :class:`papis.format.Jinja2Formater`.
 
-    .. autoclass:: papis.format.Jinja2Formater
+    Note that the default values of many of the papis configuration settings are
+    based on the Python formatter. These will need to all be specified explicitly
+    if another formater is chosen.

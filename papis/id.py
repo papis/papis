@@ -1,6 +1,6 @@
-from typing import Optional, Dict, Any
 import hashlib
 import random
+from typing import Optional
 
 import papis.document
 
@@ -34,12 +34,12 @@ def key_name() -> str:
     return "papis_id"
 
 
-def has_id(doc: Dict[str, Any]) -> bool:
+def has_id(doc: papis.document.DocumentLike) -> bool:
     """Check if the given *doc* has an id."""
     return key_name() in doc
 
 
-def get(doc: Dict[str, Any]) -> str:
+def get(doc: papis.document.DocumentLike) -> str:
     """Get the id from a document."""
     key = key_name()
 

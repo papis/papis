@@ -14,6 +14,9 @@ import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
+#: A union of types that can be converted to a document.
+DocumentLike = Union["Document", Dict[str, Any]]
+
 
 # NOTE: rankings used in papis.document.sort:
 #   date:       0 (date type -- comes first)
