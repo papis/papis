@@ -31,6 +31,12 @@ Developer API reference
 .. automodule:: papis.downloaders
    :members:
 
+``papis.filetype``
+^^^^^^^^^^^^^^^^^^
+
+.. automodule:: papis.filetype
+   :members:
+
 ``papis.format``
 ^^^^^^^^^^^^^^^^
 
