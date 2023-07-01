@@ -49,6 +49,12 @@ Developer API reference
 .. automodule:: papis.logging
     :members:
 
+``papis.notes``
+^^^^^^^^^^^^^^^
+
+.. automodule:: papis.notes
+    :members:
+
 ``papis.pick``
 ^^^^^^^^^^^^^^
 
