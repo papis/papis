@@ -19,6 +19,12 @@ Developer API reference
 .. automodule:: papis.cli
     :members:
 
+``papis.config``
+^^^^^^^^^^^^^^^^
+
+.. automodule:: papis.config
+    :members:
+
 ``papis.docmatcher``
 ^^^^^^^^^^^^^^^^^^^^
 
