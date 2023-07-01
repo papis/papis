@@ -158,10 +158,10 @@ def test_get_configuration(tmp_config: TemporaryConfiguration, monkeypatch) -> N
 
     assert isinstance(config_1, papis.config.Configuration)
     assert general_name in config_1
-    assert config_1 is papis.config._CONFIGURATION
+    assert config_1 is papis.config.CURRENT_CONFIGURATION
 
     with monkeypatch.context() as m:
-        m.setattr(papis.config, "_CONFIGURATION", None)
+        m.setattr(papis.config, "CURRENT_CONFIGURATION", None)
 
         config_2 = papis.config.get_configuration()
         assert isinstance(config_2, papis.config.Configuration)
