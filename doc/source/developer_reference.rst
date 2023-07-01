@@ -31,6 +31,12 @@ Developer API reference
 .. automodule:: papis.downloaders
    :members:
 
+``papis.exceptions``
+^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: papis.exceptions
+   :members:
+
 ``papis.filetype``
 ^^^^^^^^^^^^^^^^^^
 
