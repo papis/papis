@@ -1,9 +1,9 @@
 """
-The add command is one of the central commands of the papis command line
+The ``add`` command is one of the central commands of the papis command-line
 interface. It is a very versatile command with a fair amount of options.
 
-There are also customization settings available for this command, check out
-the :ref:`configuration page <add-command-options>` for add.
+There are also a few customization settings available for this command, which
+are described on the :ref:`configuration page <add-command-options>` for add.
 
 Examples
 ^^^^^^^^
@@ -11,15 +11,15 @@ Examples
 - Add a document located in ``~/Documents/interesting.pdf`` and name the
   folder where it will be stored in the database ``interesting-paper-2021``
 
-    .. code::
+    .. code:: sh
 
         papis add ~/Documents/interesting.pdf \\
             --folder-name interesting-paper-2021
 
-  if you want to add directly some key values, like ``author``, ``title``
-  and ``tags``, you can also run the following:
+  if you want to directly add some metadata, like author, title and tags,
+  you can also run the following:
 
-    .. code::
+    .. code:: sh
 
         papis add ~/Documents/interesting.pdf \\
             --folder-name interesting-paper-2021 \\
@@ -28,63 +28,57 @@ Examples
             --set year 1985 \\
             --set tags 'biology interesting bees'
 
-- Add a paper that you have locally in a file and get the paper information
-  through its ``doi`` identifier (in this case ``10.10763/1.3237134`` as an
+- Add a paper with a locally stored file and get the paper information
+  through its DOI identifier (in this case ``10.10763/1.3237134`` as an
   example):
 
-    .. code::
+    .. code:: sh
 
         papis add ~/Documents/interesting.pdf --from doi 10.10763/1.3237134
 
 - Add paper to a library named ``machine-learning`` from ``arxiv.org``
 
-    .. code::
+    .. code:: sh
 
         papis -l machine-learning add \\
             --from arxiv https://arxiv.org/abs/1712.03134
 
-- If you do not want copy the original pdfs into the library, you can
+- If you do not want copy the original PDFs into the library, you can
   also tell papis to just create a link to them, for example
 
-    .. code::
+    .. code:: sh
 
         papis add --link ~/Documents/interesting.pdf \\
             --from doi 10.10763/1.3237134
 
-  will add an entry into the papis library, but the pdf document will remain
-  at ``~/Documents/interesting.pdf``, and in the document's folder
+  will add an entry into the papis library, but the PDF document will remain
+  at ``~/Documents/interesting.pdf``. In the document's folder
   there will be a link to ``~/Documents/interesting.pdf`` instead of the
   file itself. Of course you always have to be sure that the
   document at ``~/Documents/interesting.pdf`` does not disappear, otherwise
-  you will end up without a document to open.
+  you will end up without a document file.
 
 - Papis also tries to make sense of the inputs that you have passed
-  to the command, for instance you could provide only a ``doi`` and
-  papis will try to know if this is indeed a ``doi``
+  on the command-line. For instance you could provide only a DOI and
+  papis will figure out if this is indeed a DOI and download available metadata
+  using Crossref. For example, you can try
 
-    .. code::
+    .. code:: sh
 
         papis add 10.1103/PhysRevLett.123.156401
 
-  or from a ``url``
+  Similarly, a wide array of known journal are recognized by URL, so you can try:
 
-    .. code::
+    .. code:: sh
 
         papis add journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.156401
         papis add https://arxiv.org/abs/1712.03134
 
-- You can also download citations alongside the information of the
-  paper if the papers is able to obtain a ``doi`` identifier.  You can
-  pass the ``--fetch-citations`` flag in order to create a
-  ``citations.yaml`` file.
-
-Examples in python
-^^^^^^^^^^^^^^^^^^
-
-There is a python function in the add module that can be used to interact
-in a more effective way in python scripts,
-
-.. autofunction:: papis.commands.add.run
+- You can also download citations alongside the information on the
+  paper if the metadata contains a DOI identifier.  You can pass the
+  ``--fetch-citations`` flag in order to create a ``citations.yaml`` file
+  in the document's main folder with a list of citations. You can check out
+  the ``papis citations`` command for more advanced usage.
 
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
