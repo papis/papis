@@ -1,3 +1,5 @@
+.. _info-file:
+
 The ``info.yaml`` file
 ======================
 

@@ -1,53 +1,43 @@
 r"""
-This command helps to interact with ``bib`` files in your LaTeX projects.
+This command helps interacting with BibTeX ``bib`` files in your LaTeX projects.
 
 Examples
 ^^^^^^^^
 
-I use it for opening some papers for instance
-
-::
+You can use it for opening some papers by calling::
 
     papis bibtex read new_papers.bib open
 
-or to add papers to the bib
+or to add papers to the BibTeX file by calling::
 
-::
+    papis bibtex             \
+        read new_papers.bib  \ # Read bib file
+        add -q einstein      \ # Pick a doc with query 'einstein' from library
+        add -q heisenberg    \ # Pick a doc with query 'heisenberg' from library
+        save new_papers.bib    # Save in new_papers.bib
 
-    papis bibtex           \
-      read new_papers.bib  \ # Read bib file
-      add -q einstein      \ # Pick a doc with query 'einstein' from library
-      add -q heisenberg    \ # Pick a doc with query 'heisenberg' from library
-      save new_papers.bib    # Save in new_papers.bib
+or to update some information that was modified in papis'
+:ref:`YAML files <info-file>` by calling::
 
-or if I update some information in my papis ``yaml`` files then I can do
-
-::
-
-    papis bibtex          \
-      read new_papers.bib \ # Read bib file
-      update -f           \ # Update what has been read from papis library
-      save new_papers.bib   # save everything to new_papers.bib, overwriting
+    papis bibtex            \
+        read new_papers.bib \ # Read bib file
+        update -f           \ # Update what has been read from papis library
+        save new_papers.bib   # save everything to new_papers.bib, overwriting
 
 Local configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you are working in a local folder where you have
-a bib file called ``main.bib``, you'll grow sick and tired
-of writing always ``read main.bib`` and  ``save main.bib``, so you can
-write a local configuration file ``.papis.config`` for ``papis bibtex``
-to read and write automatically
-
-::
+If you are working in a local folder where you have a ``bib`` file called
+``main.bib``, you can avoid adding the repetitive ``read main.bib`` and
+``save main.bib`` by writing a local configuration file ``.papis.config`` for
+``papis bibtex`` to read and write automatically. This file should contain::
 
     [bibtex]
     default-read-bibfile = main.bib
     default-save-bibfile = main.bib
     auto-read = True
 
-with this setup, you can just do
-
-::
+With this setup, you can just do::
 
     papis bibtex add -q einstein save
 
@@ -55,56 +45,44 @@ Check references quality
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 When you're collaborating with someone, you might come across malformed
-or incomplete references. Most journals want to have all the ``doi``s
-and urls available. You can automate this diagnostic with
-
-For this you kan use the command ``doctor``
-
-::
+or incomplete references. Most journals want to have all the DOIs
+and URLs available. For this you can use the ``doctor`` command::
 
     papis bibtex read mybib.bib doctor
 
-Mostly I want to have only the references in my project's bib file
-that are actually cited in the latex file, you can check
-which references are not cited in the tex files by doing
-
-
-::
+Usually, you likely want to only have the references that are actually cited
+in the LaTeX file in your project's BibTeX file. You can check which references
+are not cited in the ``.tex`` files by calling::
 
     papis bibtex iscited -f main.tex -f chapter-2.tex
 
-and you can then filter them out using the command ``filter-cited``.
+and you can then filter them out using the ``filter-cited`` command.
 
-To monitor the health of the bib project's file, I mostly have a
-target in the project's ``Makefile`` like
+To monitor the health of the project's BibTeX file, you can add a simple target
+to the project's ``Makefile`` like
 
 .. code:: make
 
-    .PHONY: check-bib
     check-bib:
         papis bibtex iscited -f main.tex doctor
-
-it does not solve all problems under the sun, but it is really better than no
-check!
-
-
+    .PHONY: check-bib
 
 Vim integration
 ^^^^^^^^^^^^^^^
 
-Right now, you can easily use it from vim with these simple lines
+This command can also be easily used from vim with these simple lines
 
 .. code:: vim
 
     function! PapisBibtexRef()
-      let l:temp = tempname()
-      echom l:temp
-      silent exec "!papis bibtex ref -o ".l:temp
-      let l:olda = @a
-      let @a = join(readfile(l:temp), ',')
-      normal! "ap
-      redraw!
-      let @a = l:olda
+        let l:temp = tempname()
+        echom l:temp
+        silent exec "!papis bibtex ref -o ".l:temp
+        let l:olda = @a
+        let @a = join(readfile(l:temp), ',')
+        normal! "ap
+        redraw!
+        let @a = l:olda
     endfunction
 
     command! -nargs=0 BibRef call PapisBibtexRef()
