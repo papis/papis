@@ -1,12 +1,15 @@
 """
+The papis command-line (without any subcommands) can be used to set configuration
+options or select the library.
+
 Examples
 ^^^^^^^^
 
-- To override some configuration options, you can use the flag ``--set``, for
-  instance, if you want to override the editor used and the opentool to open
-  documents, you can just type
+- To override some configuration options, you can use the ``--set`` flag. For
+  instance, if you want to override the ``editor`` used to edit files or the
+  ``opentool`` used to open documents, you can just type
 
-    .. code:: shell
+    .. code:: sh
 
         papis --set editor gedit --set opentool firefox edit
         papis --set editor gedit --set opentool firefox open
@@ -14,7 +17,7 @@ Examples
 - If you want to list the libraries and pick one before sending a database
   query to papis, use ``--pick-lib`` as such
 
-    .. code:: shell
+    .. code:: sh
 
         papis --pick-lib open 'einstein relativity'
 
