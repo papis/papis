@@ -16,6 +16,7 @@ Commands
 .. include:: commands/export.rst
 .. include:: commands/git.rst
 .. include:: commands/list.rst
+.. include:: commands/merge.rst
 .. include:: commands/mv.rst
 .. include:: commands/open.rst
 .. include:: commands/rename.rst
