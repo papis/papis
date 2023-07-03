@@ -1,16 +1,19 @@
 """
-Merge two documents that might be potentially repeated.
+Merge two documents that might be potentially duplicated.
 
-If your papis picker do not support selecting two items, then
-pass the ``--pick`` flag to pick twice for the documents.
+If your papis picker does not support selecting two items, then
+pass the ``--pick`` flag to pick twice from the documents.
 
-TODO: Write more documentation
+Examples
+^^^^^^^^
+
+TODO
 
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.merge:cli
-    :prog: papis open
+    :prog: papis merge
 """
 
 import os
