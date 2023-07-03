@@ -1,4 +1,6 @@
 """
+This command can be used to move a document to a new folder.
+
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
