@@ -4,45 +4,44 @@ This command is useful to issue commands in the directory of your library.
 Examples
 ^^^^^^^^
 
-    - List files in your directory
+- List all files in the library directory
 
-    .. code::
+    .. code:: sh
 
         papis run ls
 
-    - Find a file in your directory using the ``find`` command
+- Find a file the library directory using the ``find`` command
 
-    .. code::
+    .. code:: sh
 
         papis run find -name 'document.pdf'
 
-    - Find all pdfs in the document folders matching einstein
+- Find all PDFs in the document folders matching "einstein"
 
-    .. code::
+    .. code:: sh
 
         papis run -p einstein --all -- find . -name '*.pdf'
 
-      notice that in general, the symbol ``--`` is advisable
-      so that the arguments after it are considered as positional arguments
-      for the shell commands.
+    In general, the symbol ``--`` is advisable so that the arguments after it
+    are considered as positional arguments for the shell commands.
 
-      In this example you could also use pipes, for instance to print the
-      absolute path to the files, in linux you can use the command
-      ``readlink -f`` and a pipe ``|`` to do this, i.e.:
+    In this example you could also use pipes. For instance, to print the
+    absolute path to the files, in Linux you can use the command
+    ``readlink -f`` and a pipe ``|`` to do this, i.e.
 
-    .. code::
+    .. code:: sh
 
         papis run -p einstein \
                 --all -- "find . -name '*.pdf' | xargs readlink -f"
 
-    - Replace some text in all info.yaml files by something.
-      For instance imagine you want to replace all ``note`` field names
-      in the ``info.yaml`` files by ``_note`` so that the ``note`` field
-      does not get exported to bibtex. You can do
+- Replace some text in all ``info.yaml`` files by something.
+  For instance imagine you want to replace all ``note`` field names
+  in the ``info.yaml`` files by ``_note`` so that the ``note`` field
+  does not get exported. You can do
 
-      .. code::
+    .. code:: sh
 
-          papis run -a -- sed -i "s/^note:/_note:/" info.yaml
+        papis run -a -- sed -i 's/^note:/_note:/' info.yaml
 
 
 Command-line Interface
