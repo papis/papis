@@ -1,5 +1,5 @@
 """
-The open command is a very important command in the papis workflow.
+The ``open`` command is a very important command in the papis workflow.
 With it you can open documents, folders or marks.
 
 Marks
@@ -8,14 +8,12 @@ Marks
 One of special things about this command is the possibility of
 creating marks for documents. As you would imagine, it is in general
 difficult to create marks for any kind of data. For instance,
-if our library consists of pdf files and epub files for instance,
-we would like to define bookmarks in order to go back to them at
-some later point.
+if our library consists of PDF files and EPUB files, we would like to define
+bookmarks in order to go back to them at some later point.
 
 How you define marks can be customized through the marks configuration
-settings :ref:`here <marks-options>`.
-The default way of doing it is just by defining a ``marks`` list in a document.
-Let us look at a concrete example:
+settings :ref:`here <marks-options>`. The default way of doing it is just by
+defining a ``marks`` list in a document. Let us look at a concrete example:
 
 .. code:: yaml
 
@@ -36,35 +34,33 @@ Let us look at a concrete example:
     year: '2009'
 
 This book has defined two marks. Each mark has a name and a value.
-If you tell the open command to open marks, then it will look for
-the marks and open the value (page number). This is the default behaviour,
-however if you go to the :ref:`configuration <marks-options>`
-you'll see that you can change the convention to what it suits you.
-
+If you tell the ``open`` command to open marks, then it will look for
+the marks and open the value (page number). This is the default behaviour.
+However, if you go to the :ref:`configuration <marks-options>`
+you'll see that you can change the convention to what suits you.
 
 Examples
 ^^^^^^^^
-- Open a pdf file linked to a document matching the string ``bohm``
 
-    ::
+- Open a PDF file linked to a document matching the string ``bohm``
+
+    .. code:: sh
 
         papis open bohm
 
 - Open the folder where this last document is stored
 
-    ::
+    .. code:: sh
 
         papis open -d bohm
 
-  Please notice that the file browser used will be also related to
-  the :ref:`file-browser setting <config-settings-file-browser>`.
+  The file browser used is given by the :ref:`config-settings-file-browser` setting.
 
 - Open a mark defined in the info file
 
-    ::
+    .. code:: sh
 
         papis open --mark bohm
-
 
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
