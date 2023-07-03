@@ -1,12 +1,12 @@
 """
-This command is to list contents of a library.
+This command is used to list items in a library.
 
 Examples
 ^^^^^^^^
 
-- List all document files associated will all entries:
+- List all document files associated will all documents in the library:
 
-    .. code:: bash
+    .. code:: sh
 
         papis list --all --file
 
@@ -16,9 +16,9 @@ Examples
         src="https://asciinema.org/a/XwD0ZaUORoOonwDw4rXoQDkjZ.js"
         id="asciicast-XwD0ZaUORoOonwDw4rXoQDkjZ" async></script>
 
-- List all document year and title with custom formatting:
+- List the year and title of all documents with some custom formatting:
 
-    .. code:: bash
+    .. code:: sh
 
         papis list --all --format '{doc[year]} {doc[title]}'
 
@@ -28,10 +28,10 @@ Examples
         src="https://asciinema.org/a/NZ8Ii1wWYPo477CIL4vZhUqOy.js"
         id="asciicast-NZ8Ii1wWYPo477CIL4vZhUqOy" async></script>
 
-- List all documents according to the bibitem formatting (stored in a template
+- List all documents according to the ``bibitem`` formatting (stored in a template
   file ``bibitem.template``):
 
-    .. code:: bash
+    .. code:: sh
 
         papis list --all --template bibitem.template
 
@@ -44,9 +44,9 @@ Examples
 - For scripting, printing the id of a series of documents is valuable in order
   to further use the id in other scripts.
 
-    .. code:: bash
+    .. code:: sh
 
-        papis_id=$(papis list --id)
+        papis_id=$(papis list --id einstein)
         papis open papis_id:${papis_id}
         papis edit papis_id:${papis_id}
         # etc.
