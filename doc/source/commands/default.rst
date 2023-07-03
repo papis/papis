@@ -1,4 +1,4 @@
-Main
-----
-.. automodule:: papis.commands.default
+Papis
+-----
 
+.. automodule:: papis.commands.default
