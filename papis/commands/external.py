@@ -1,6 +1,5 @@
 """
-This module define the entry point for external scripts
-to be called by papis.
+This module define the entry point for external scripts to be called by papis.
 """
 
 import os
