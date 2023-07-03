@@ -1,15 +1,25 @@
 """
-This command adds files to existing papis documents in some library.
+This command adds files to existing documents in a library.
 
-For instance imagine you have two pdf files, ``a.pdf`` and ``b.pdf``
+Examples
+^^^^^^^^
+
+For instance imagine you have two PDF files, ``a.pdf`` and ``b.pdf``
 that you want to add to a document that matches with the query string
-``einstein photon definition``, then you would use
+"einstein photon definition". Then you would use
 
-::
+.. code:: sh
 
     papis addto 'einstein photon definition' -f a.pdf -f b.pdf
 
-notice that we repeat two times the flag ``-f``, this is important.
+where the ``-f`` flag needs to be repeated for every file that is added. Remote
+files can be similarly added using
+
+.. code:: sh
+
+    papis addto 'einstein photon definition' -u 'https://arxiv.org/pdf/2306.13122.pdf'
+
+where the link needs to be to the actual remote PDF file.
 
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
