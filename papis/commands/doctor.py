@@ -1,9 +1,93 @@
 """
-The doctor command checks for the overall health of your
-library.
+The doctor command checks for the overall health of your library.
 
 There are many checks implemented and some others that you
-can add yourself through the python configuration file.
+can add yourself through the Python configuration file (these cannot be added
+through the static configuration file). Currently, the following checks are
+implemented
+
+* ``files``: checks whether all the document files exist on the filesystem.
+* ``keys-exist``: checks that the keys provided by
+  :ref:`config-settings-doctor-keys-exist-keys` exist in the document.
+* ``duplicated-keys``: checks that the keys provided by
+  :ref:`config-settings-doctor-duplicated-keys-keys` are not present in multiple
+  documents. This is mainly meant to be used to check the ``ref`` key.
+* ``bibtex-type``: checks that the document type matches a known BibTeX type.
+* ``refs``: checks that the document has a valid reference.
+* ``html-codes``: checks that no HTML codes (e.g. ``&amp;``) appear in the keys
+  provided by :ref:`config-settings-doctor-html-codes-keys`.
+* ``html-tags``: checks that no HTML tags (e.g. ``<a>``) appear in the keys
+  provided by :ref:`config-settings-doctor-html-tags-keys`.
+* ``key-type``: checks the type of keys provided by
+  :ref:`config-settings-doctor-key-type-check-keys`, e.g.
+  (year should be an ``int``).
+
+If any custom checks are implemented, you can get a complete list at runtime from
+
+.. code:: sh
+
+    papis doctor --list-checks
+
+Examples
+^^^^^^^^
+
+- To check if all the files of a document are present, use
+
+    .. code:: sh
+
+        papis doctor --check files einstein
+
+- To check if any unwanted HTML tags are present in your documents (especially
+  abstracts can be full of additional HTML or XML tags) use
+
+    .. code:: sh
+
+        papis doctor --explain --check html-tags einstein
+
+  The ``--explain`` flag can be used to give additional details of checks that
+  failed. Some fixes such as this also have automatic fixers. Here, we can just
+  remove all the HTML tags by writing
+
+    .. code:: sh
+
+        papis doctor --fix --check html-tags einstein
+
+- If an automatic fix is not possible, some checks also have suggested
+  commands or tips to fix the issue that was found. For example, if a key
+  does not exist in the document, it can suggest editing the file to add it.
+
+    .. code:: sh
+
+        papis doctor --suggestion --check keys-exist einstein
+        >> Suggestion: papis edit --doc-folder /path/to/folder
+
+  If this is the case, you can also run
+
+        papis doctor --edit --check keys-exist einstein
+
+  to automatically open the ``info.yaml`` file for editing.
+
+Implementing additional checks
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A check is just a function that takes a document and returns a list of errors.
+A skeleton implementation that gets added to ``config.py``
+(see `Python configuration file`) can be implemented as follows
+
+.. code:: python
+
+    from papis.commands.doctor import Error, register_check
+
+    def my_custom_check(doc) -> List[Error]:
+        ...
+
+    register_check("my-custom-check", my_custom_check)
+
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. click:: papis.commands.doctor:cli
+    :prog: papis doctor
 """
 
 import os
