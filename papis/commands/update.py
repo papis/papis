@@ -1,34 +1,32 @@
-"""This command is to update the information of the documents.
-
-Some examples of the usage are given below
+"""
+This command is to update document metadata.
 
 Examples
 ^^^^^^^^
 
 - Update a document automatically and interactively
-  (searching by ``doi`` number in *crossref*, or in other sources...)
+  (searching by DOI in Crossref or in other sources...)
+
+    .. code:: sh
+
+        papis update --auto 'author : dyson'
+
+- Update your library from a BibTeX file, where many entries are listed.
+  We will try to look for documents in your library that match these
+  entries and will ask you entry per entry to update it. For example,
+  ``libraryfile.bib`` is a file containing many entries, then
 
     .. code::
 
-        papis update --auto -i "author : dyson"
+        papis update --from bibtex libraryfile.bib
 
-- Update your library from a bib(la)tex file where many entries are listed.
-  papis will try to look for documents in your library that match these
-  entries and will ask you entry per entry to update it (of course this is
-  done if you use the ``-i`` flag for interactively doing it). In the example
-  ``libraryfile.bib`` is a file containing many entries.
-
-    .. code::
-
-        papis update --from bibtex libraryfile.bib -i
-
-- Tag all einstein papers with the tag classics
+- Tag all "einstein" papers with the tag "classics"
 
     .. code::
 
         papis update --all --set tags classics einstein
 
-and add the tag of ``physics`` to all papers tagged as ``classics``
+  and add the tag of "physics" to all papers tagged as "classics"
 
     .. code::
 
