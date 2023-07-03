@@ -373,6 +373,38 @@ Bibtex options
 
 .. _marks-options:
 
+``papis doctor`` options
+------------------------
+
+.. papis-config:: doctor-default-checks
+
+    A list of checks that are performed by default.
+
+.. papis-config:: doctor-keys-exist-keys
+
+    A list of keys used by the ``keys-exist`` check. The check will show an
+    error if these keys are not present in a document.
+
+.. papis-config:: doctor-duplicated-keys-keys
+
+    A list of keys used by the ``duplicated-keys`` check. The check will show
+    an error if the value of these keys is duplicated across multiple documents.
+
+.. papis-config:: doctor-html-codes-keys
+
+    A list of keys used by the ``html-codes`` check. The check will show an error
+    if any of the keys contain unwanted HTML codes, e.g. ``&amp;``.
+
+.. papis-config:: doctor-html-tags-keys
+
+    A list of keys used by the ``html-tags`` check. The check will show an error
+    if any of the keys contain unwanted HTML tags, e.g. ``<div>``.
+
+.. papis-config:: doctor-key-type-check-keys
+
+   A list of two tuples with ``(key, type)`` used by the ``key-type`` check. This
+   check will show an error if the key does not have the corresponding type. The
+   type should be a builtin Python type that can be used with ``eval``.
 
 Citations options
 -----------------
