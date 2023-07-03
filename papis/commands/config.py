@@ -2,6 +2,9 @@
 The ``config`` command allows you to query the settings used by Papis on your
 system.
 
+Examples
+^^^^^^^^
+
 The ``config`` command returns the value used by Papis. Therefore, if you
 have not customized some setting, it will return the default value. In contrast,
 if you have customized it, it will return the value set in the configuration
