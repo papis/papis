@@ -1,36 +1,39 @@
 """
-The export command is useful to work with other programs such as bibtex.
+The ``export`` command is useful to work with other programs by exporting to
+other formats (such as BibTeX).
+
+Examples
+^^^^^^^^
 
 Some examples of its usage are:
 
-- Export one of the documents matching the author with einstein to bibtex:
+- Export one of the documents matching the author with Einstein to BibTeX
 
-.. code::
+.. code:: sh
 
     papis export --format bibtex 'author : einstein'
 
 or export all of them
 
-.. code::
+.. code:: sh
 
     papis export --format bibtex --all 'author : einstein'
 
-- Export all documents to bibtex and save them into a ``lib.bib`` file
+- Export all documents to BibTeX and save them into a ``lib.bib`` file
 
 .. code::
 
     papis export --all --format bibtex --out lib.bib
 
 - Export a folder of one of the documents matching the word ``krebs``
-  into a folder named, ``interesting-document``
+  into a folder named ``interesting-document``
 
 .. code::
 
     papis export --folder --out interesting-document krebs
 
   this will create the folder ``interesting-document`` containing the
-  ``info.yaml`` file, the linked documents and a ``bibtex`` file for
-  sharing with other people.
+  ``info.yaml`` file and the linked documents.
 
 .. note::
 
@@ -38,7 +41,6 @@ or export all of them
     associated that points to the full local folder path where the document
     is stored in the file system. This is done for the convenience of third
     party apps.
-
 
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
