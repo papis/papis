@@ -1,5 +1,7 @@
-"""This command edits the information of the documents.
-The editor used is defined by the ``editor`` configuration setting.
+"""
+This command edits the :ref:`info.yaml file <info-file>` of the documents.
+The editor used is defined by the :ref:`config-settings-editor` configuration
+setting.
 
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
