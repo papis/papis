@@ -67,14 +67,39 @@ def get_external_scripts() -> Dict[str, Script]:
 
 
 def get_scripts() -> Dict[str, Script]:
-    commands_mgr = papis.plugin.get_extension_manager(_extension_name())
+    mgr = papis.plugin.get_extension_manager(COMMAND_EXTENSION_NAME)
 
-    scripts_dict = {}
-    for command_name in commands_mgr.names():
-        scripts_dict[command_name] = Script(
-            command_name=command_name,
-            path=None,
-            plugin=commands_mgr[command_name].plugin
-        )
+    scripts = {}
+    for name in mgr.names():
+        extension = mgr[name]
 
-    return scripts_dict
+        plugin = extension.plugin
+        if not plugin.help:
+            plugin.help = "No help message available"
+
+        if not plugin.short_help:
+            plugin.short_help = plugin.help
+
+        scripts[name] = Script(command_name=name, path=None, plugin=plugin)
+
+    return scripts
+
+
+def get_all_scripts() -> Dict[str, Script]:
+    scripts = get_scripts()
+    external_scripts = get_external_scripts()
+
+    for name, script in external_scripts.items():
+        entry_point_script = scripts.get(name)
+        if entry_point_script is not None:
+            papis.logging.debug(
+                "WARN: External script '%s' also available as command entry point "
+                "from '%s'. Skipping external script!",
+                script.path, entry_point_script.plugin.callback.__module__
+                )
+
+            continue
+
+        scripts[name] = script
+
+    return scripts
