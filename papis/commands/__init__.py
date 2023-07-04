@@ -7,7 +7,11 @@ import difflib
 import click.core
 
 import papis.config
+import papis.logging
 import papis.plugin
+
+COMMAND_EXTENSION_NAME = "papis.command"
+EXTERNAL_COMMAND_REGEX = re.compile(".*papis-([^ .]+)$")
 
 
 class AliasedGroup(click.core.Group):
@@ -41,24 +45,25 @@ class Script(NamedTuple):
 
 
 def get_external_scripts() -> Dict[str, Script]:
-    regex = re.compile(".*papis-([^ .]+)$")
-    paths = []
+    paths = [papis.config.get_scripts_folder()] + os.environ.get("PATH", "").split(":")
+
     scripts = {}
-    paths.append(papis.config.get_scripts_folder())
-    paths += os.environ["PATH"].split(":")
     for path in paths:
-        for script in glob.glob(os.path.join(path, "papis-*")):
-            m = regex.match(script)
-            if m is not None:
-                name = m.group(1)
-                scripts[name] = Script(command_name=name,
-                                       path=script,
-                                       plugin=None)
+        for script in glob.iglob(os.path.join(path, "papis-*")):
+            m = EXTERNAL_COMMAND_REGEX.match(script)
+            if m is None:
+                continue
+
+            name = m.group(1)
+            if name in scripts:
+                papis.logging.debug(
+                    "WARN: External script '%s' with name '%s' already "
+                    "found at '%s'. Overwriting the previous script!",
+                    script, name, scripts[name].path)
+
+            scripts[name] = Script(command_name=name, path=script, plugin=None)
+
     return scripts
-
-
-def _extension_name() -> str:
-    return "papis.command"
 
 
 def get_scripts() -> Dict[str, Script]:
