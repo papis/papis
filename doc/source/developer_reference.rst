@@ -25,6 +25,12 @@ Developer API reference
 .. automodule:: papis.cli
     :members:
 
+``papis.commands``
+^^^^^^^^^^^^^^^^^^
+
+.. automodule:: papis.commands
+    :members:
+
 ``papis.config``
 ^^^^^^^^^^^^^^^^
 

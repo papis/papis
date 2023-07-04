@@ -49,7 +49,9 @@ logger = papis.logging.get_logger(__name__)
 
 
 class MultiCommand(click.core.MultiCommand):
+
     scripts = papis.commands.get_all_scripts()
+    script_names = sorted(scripts)
 
     def list_commands(self, ctx: click.core.Context) -> List[str]:
         """List all matched commands in the command folder and in path
@@ -59,9 +61,7 @@ class MultiCommand(click.core.MultiCommand):
         >>> len(rv) > 0
         True
         """
-        _rv = list(self.scripts)
-        _rv.sort()
-        return _rv
+        return self.script_names
 
     def get_command(
             self,
