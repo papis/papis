@@ -3,9 +3,11 @@ import sys
 import logging
 from typing import Any, Optional, Tuple, Union
 
+import click
 import colorama
 
 
+PAPIS_DEBUG = "PAPIS_DEBUG" in os.environ
 LEVEL_TO_COLOR = {
     "CRITICAL": colorama.Style.BRIGHT + colorama.Fore.RED,
     "ERROR": colorama.Style.BRIGHT + colorama.Fore.RED,
@@ -13,6 +15,11 @@ LEVEL_TO_COLOR = {
     "INFO": colorama.Fore.CYAN,
     "DEBUG": colorama.Fore.WHITE,
 }
+
+
+def debug(msg: str, *args: Any) -> None:
+    if PAPIS_DEBUG:
+        click.echo(msg % args)
 
 
 class ColoramaFormatter(logging.Formatter):
