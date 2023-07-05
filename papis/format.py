@@ -66,13 +66,7 @@ class PythonFormater(Formater):
             doc = papis.document.from_data(doc)
 
         doc_name = doc_key or self.default_doc_name
-        try:
-            return fmt.format(**{doc_name: doc}, **additional)
-        except Exception as exc:
-            logger.debug("Could not format string '%s' for document '%s'",
-                         fmt, papis.document.describe(doc), exc_info=exc)
-
-            return "{}: {}".format(type(exc).__name__, exc)
+        return fmt.format(**{doc_name: doc}, **additional)
 
 
 class Jinja2Formater(Formater):

@@ -181,9 +181,18 @@ def get_file_name(
     if file_name_opt is None:
         file_name_opt = os.path.basename(original_filepath)
 
-    # Get a file name from the format `add-file-name`
-    file_name_base = papis.format.format(file_name_opt,
-                                         papis.document.from_data(data))
+    try:
+        # Get a file name from the format `add-file-name`
+        file_name_base = papis.format.format(
+            file_name_opt, papis.document.from_data(data)
+        )
+    except Exception as exc:
+        logger.warning(
+            "failed to format document with: %s\nfalling back to original filename",
+            file_name_opt,
+            exc_info=exc,
+        )
+        file_name_base = os.path.basename(original_filepath)
 
     if len(file_name_base) > basename_limit:
         logger.warning(
@@ -321,7 +330,9 @@ def run(paths: List[str],
 
     if subfolder:
         base_path = os.path.join(base_path, subfolder)
-    out_folder_path = base_path = os.path.normpath(base_path)
+
+    base_path = os.path.normpath(base_path)
+    out_folder_path = base_path
 
     if folder_name:
         temp_doc = papis.document.Document(data=data)
@@ -331,13 +342,23 @@ def run(paths: List[str],
         temp_path = os.path.normpath(temp_path)
         out_folder_path = os.path.normpath(out_folder_path)
 
-        while (
-                temp_path != out_folder_path
-                and papis.utils.is_relative_to(temp_path, out_folder_path)):
+        while temp_path != out_folder_path and papis.utils.is_relative_to(
+            temp_path, out_folder_path
+        ):
             path_component = os.path.basename(temp_path)
 
-            component_cleaned = papis.utils.clean_document_name(
-                papis.format.format(path_component, temp_doc))
+            formatted = None
+            try:
+                formatted = papis.format.format(path_component, temp_doc)
+            except Exception as exc:
+                logger.warn(
+                    "failed to format path component: %s", path_component, exc_info=exc
+                )
+                out_folder_path = base_path
+                components = []
+                break
+
+            component_cleaned = papis.utils.clean_document_name(formatted)
             components.insert(0, component_cleaned)
 
             # continue with parent path component
