@@ -158,7 +158,7 @@ def is_valid_dblp_key(key: str) -> bool:
         return response.ok
 
 
-@click.command("dblp")
+@click.command("dblp")                  # type: ignore[arg-type]
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.option(

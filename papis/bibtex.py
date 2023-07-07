@@ -218,7 +218,7 @@ class Importer(papis.importer.Importer):
         self.ctx.data = bib_data[0]
 
 
-@click.command("bibtex")
+@click.command("bibtex")                # type: ignore[arg-type]
 @click.pass_context
 @click.argument("bibfile", type=click.Path(exists=True))
 @click.help_option("--help", "-h")

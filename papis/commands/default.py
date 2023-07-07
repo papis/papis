@@ -101,7 +101,7 @@ class MultiCommand(click.core.MultiCommand):
         # If it gets here, it means that it is an external script
         import copy
         from papis.commands.external import external_cli
-        cli = copy.copy(external_cli)
+        cli: click.Command = copy.copy(external_cli)
 
         from papis.commands.external import get_command_help
         cli.context_settings["obj"] = script
@@ -109,6 +109,7 @@ class MultiCommand(click.core.MultiCommand):
             cli.help = get_command_help(script.path)
         cli.name = script.command_name
         cli.short_help = cli.help
+
         return cli
 
 
@@ -121,7 +122,7 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
     return _on_finish
 
 
-@click.group(
+@click.group(                           # type: ignore[arg-type,type-var]
     cls=MultiCommand,
     invoke_without_command=True)
 @click.help_option("--help", "-h")

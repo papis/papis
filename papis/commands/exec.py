@@ -43,7 +43,8 @@ def run(_file: str) -> None:
         exec(f.read())
 
 
-@click.command("exec", context_settings={"ignore_unknown_options": True})
+@click.command("exec",                  # type: ignore[arg-type]
+               context_settings={"ignore_unknown_options": True})
 @click.help_option("--help", "-h")
 @click.argument("python_file", type=click.Path(exists=True))
 @click.argument("args", nargs=-1)

@@ -136,7 +136,8 @@ papis.config.register_default_settings({"bibtex": {
 EXPLORER_MGR = explore.get_explorer_mgr()
 
 
-@click.group("bibtex", cls=papis.commands.AliasedGroup, chain=True)
+@click.group("bibtex",                  # type: ignore[arg-type]
+             cls=papis.commands.AliasedGroup, chain=True)
 @click.help_option("-h", "--help")
 @click.option("--noar", "--no-auto-read", "no_auto_read",
               default=False,
@@ -162,7 +163,7 @@ def cli(ctx: click.Context, no_auto_read: bool) -> None:
 cli.add_command(EXPLORER_MGR["bibtex"].plugin, "read")
 
 
-@cli.command("add")
+@cli.command("add")                     # type: ignore[arg-type]
 @click.help_option("-h", "--help")
 @papis.cli.all_option()
 @papis.cli.query_option()
@@ -201,7 +202,7 @@ def _add(ctx: click.Context,
     ctx.obj["documents"].extend(docs)
 
 
-@cli.command("update")
+@cli.command("update")                  # type: ignore[arg-type]
 @click.help_option("-h", "--help")
 @papis.cli.all_option()
 @click.option("--from", "-f", "fromdb",
@@ -249,7 +250,7 @@ def _update(ctx: click.Context, _all: bool,
     click.get_current_context().obj["documents"] = docs
 
 
-@cli.command("open")
+@cli.command("open")                    # type: ignore[arg-type]
 @click.help_option("-h", "--help")
 @click.pass_context
 def _open(ctx: click.Context) -> None:
@@ -309,7 +310,7 @@ def _edit(ctx: click.Context,
     logger.info("Found %d / %d documents.", len(docs) - not_found, len(docs))
 
 
-@cli.command("browse")
+@cli.command("browse")                  # type: ignore[arg-type]
 @click.help_option("-h", "--help")
 @click.option("-k", "--key", default=None, help="doi, url, ...")
 @click.pass_context
@@ -324,7 +325,7 @@ def _browse(ctx: click.Context, key: Optional[str]) -> None:
         papis.commands.browse.run(d)
 
 
-@cli.command("rm")
+@cli.command("rm")                      # type: ignore[arg-type]
 @click.help_option("-h", "--help")
 @click.pass_context
 def _rm(ctx: click.Context) -> None:
@@ -332,7 +333,7 @@ def _rm(ctx: click.Context) -> None:
     click.echo("Sorry, TODO...")
 
 
-@cli.command("ref")
+@cli.command("ref")                     # type: ignore[arg-type]
 @click.help_option("-h", "--help")
 @click.option("-o", "--out", help="Output ref to a file", default=None)
 @click.pass_context
@@ -350,7 +351,7 @@ def _ref(ctx: click.Context, out: Optional[str]) -> None:
         click.echo(ref)
 
 
-@cli.command("save")
+@cli.command("save")                    # type: ignore[arg-type]
 @click.help_option("-h", "--help")
 @click.argument(
     "bibfile",
@@ -371,7 +372,7 @@ def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
         fd.write(papis.commands.export.run(docs, to_format="bibtex"))
 
 
-@cli.command("sort")
+@cli.command("sort")                    # type: ignore[arg-type]
 @click.help_option("-h", "--help")
 @click.option("-k", "--key",
               help="Field to order it",
@@ -391,7 +392,7 @@ def _sort(ctx: click.Context, key: Optional[str], reverse: bool) -> None:
                                        reverse=reverse))
 
 
-@cli.command("unique")
+@cli.command("unique")                  # type: ignore[arg-type]
 @click.help_option("-h", "--help")
 @click.option("-k", "--key",
               help="Field to test for uniqueness, default is ref",
@@ -439,7 +440,7 @@ def _unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
             f.write(papis.commands.export.run(duplicated_docs, to_format="bibtex"))
 
 
-@cli.command("doctor")
+@cli.command("doctor")                  # type: ignore[arg-type]
 @click.help_option("-h", "--help")
 @click.option("-k", "--key",
               help="Field to test for uniqueness, default is ref",
@@ -466,7 +467,7 @@ def _doctor(ctx: click.Context, key: List[str]) -> None:
             logger.info("\tMissing: %s", k)
 
 
-@cli.command("filter-cited")
+@cli.command("filter-cited")            # type: ignore[arg-type]
 @click.help_option("-h", "--help")
 @click.option("-f", "--file", "_files",
               help="Text file to check for references",
@@ -491,7 +492,7 @@ def _filter_cited(ctx: click.Context, _files: List[str]) -> None:
     ctx.obj["documents"] = found
 
 
-@cli.command("iscited")
+@cli.command("iscited")                 # type: ignore[arg-type]
 @click.help_option("-h", "--help")
 @click.option("-f", "--file", "_files",
               help="Text file to check for references",

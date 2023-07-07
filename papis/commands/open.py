@@ -151,7 +151,7 @@ def run(document: papis.document.Document,
             papis.api.open_file(file_to_open, wait=False)
 
 
-@click.command("open")
+@click.command("open")                  # type: ignore[arg-type]
 @click.help_option("-h", "--help")
 @papis.cli.query_argument()
 @papis.cli.sort_option()
