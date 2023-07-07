@@ -10,7 +10,7 @@ Here are some problems that users have come across often:
 
   .. code::
 
-    papis --clear-cache
+    papis cache clear
 
   will do.
 

@@ -1,3 +1,25 @@
+VERSION v0.14
+=============
+
+## Add `cache` command (remove `papis --cc/--clear-cache`) ([#603](https://github.com/papis/papis/pull/603))
+
+The `cache` command has been added in order to provide more control for the
+papis cache.
+Accordingly, the equivalent commands `papis --cc` and `papis --clear-cache`
+have been replaced by
+
+```
+papis cache clear
+```
+
+You can learn more about the cache command in the documentation.
+
+## Papis' default command
+
+When invoking `papis` without a subcommand the help message is printed.
+This should avoid some confusions for new users ([#603](https://github.com/papis/papis/pull/603)).
+
+
 VERSION v0.13
 =============
 

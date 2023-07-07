@@ -41,7 +41,7 @@ class Database(ABC):
     def get_cache_path(self) -> str:
         """Get the path to the actual cache file or directory.
         """
-        raise NotImplementedError("Match not defined for backend '{}'"
+        raise NotImplementedError("Cache path not defined for backend '{}'"
                                   .format(self.get_backend_name()))
 
     def match(
