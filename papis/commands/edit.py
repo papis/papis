@@ -72,7 +72,7 @@ def edit_notes(document: papis.document.Document,
                                                msg)
 
 
-@click.command("edit")
+@click.command("edit")                  # type: ignore[arg-type]
 @click.help_option("-h", "--help")
 @papis.cli.query_argument()
 @papis.cli.doc_folder_option()

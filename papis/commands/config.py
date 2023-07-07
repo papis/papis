@@ -204,7 +204,7 @@ def run(
     return result
 
 
-@click.command("config")
+@click.command("config")                # type: ignore[arg-type]
 @click.help_option("--help", "-h")
 @click.argument("options", nargs=-1)
 @click.option(

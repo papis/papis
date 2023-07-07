@@ -450,7 +450,7 @@ def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
     return results
 
 
-@click.command("doctor")
+@click.command("doctor")                # type: ignore[arg-type]
 @click.help_option("--help", "-h")
 @papis.cli.query_argument()
 @papis.cli.sort_option()

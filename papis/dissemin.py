@@ -65,7 +65,7 @@ def get_data(query: str = "") -> List[Dict[str, Any]]:
     return sum([dissemindoc_to_papis(d) for d in paperlist["papers"]], [])
 
 
-@click.command("dissemin")
+@click.command("dissemin")              # type: ignore[arg-type]
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.option("--query", "-q", default="", type=str)
