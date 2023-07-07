@@ -124,6 +124,9 @@ class Database(papis.database.base.Database):
         self.documents: Optional[List[papis.document.Document]] = None
         self.initialize()
 
+    def get_cache_path(self) -> str:
+        return self._get_cache_file_path()
+
     def get_backend_name(self) -> str:
         return "papis"
 
