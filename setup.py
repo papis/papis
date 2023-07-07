@@ -223,6 +223,7 @@ setup(
             "run=papis.commands.run:cli",
             "serve=papis.commands.serve:cli",
             "update=papis.commands.update:cli",
+            "cache=papis.commands.cache:cli",
         ],
         "papis.downloader": [
             "acm=papis.downloaders.acm:Downloader",

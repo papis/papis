@@ -59,12 +59,18 @@ In such cases you will have to *clear the cache*.
 Clearing the cache
 ^^^^^^^^^^^^^^^^^^
 
-To clear the cache for a given library you can use the flag
-``--clear-cache``, e.g.
+To clear the cache for a given library you can use the command ``cache``
+thusly
 
 .. code::
 
-    papis --clear-cache
+    papis cache clear
+
+In order to clear and rebuild the cache (i.e., reset it), you can simply run
+
+.. code::
+
+    papis cache reset
 
 Query language
 ^^^^^^^^^^^^^^

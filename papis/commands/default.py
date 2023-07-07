@@ -125,7 +125,7 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
 
 @click.group(                           # type: ignore[arg-type,type-var]
     cls=MultiCommand,
-    invoke_without_command=True)
+    invoke_without_command=False)
 @click.help_option("--help", "-h")
 @click.version_option(version=papis.__version__)
 @click.option(
@@ -153,11 +153,6 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
 @click.option(
     "--pick-lib",
     help="Pick library to use",
-    default=False,
-    is_flag=True)
-@click.option(
-    "--cc", "--clear-cache", "clear_cache",
-    help="Clear cache of the library used",
     default=False,
     is_flag=True)
 @click.option(
@@ -193,7 +188,6 @@ def run(verbose: bool,
         log: str,
         logfile: Optional[str],
         pick_lib: bool,
-        clear_cache: bool,
         set_list: List[Tuple[str, str]],
         color: str,
         np: Optional[int]) -> None:
@@ -252,6 +246,3 @@ def run(verbose: bool,
     for pair in set_list:
         logger.debug("Setting '%s' to '%s'.", *pair)
         papis.config.set(pair[0], pair[1])
-
-    if clear_cache:
-        papis.database.get().clear()
