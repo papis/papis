@@ -349,10 +349,15 @@ class DoiFromPdfImporter(papis.importer.Importer):
     def doi(self) -> Optional[str]:
         if self._doi is None:
             self._doi = doi.pdf_to_doi(self.uri, maxlines=2000)
+            self._doi = "" if self._doi is None else self._doi
 
-            self.logger.info("Parsed DOI '%s' from file: '%s'.", self._doi, self.uri)
-            self.logger.warning(
-                "There is no guarantee that this DOI is the correct one!")
+            if self._doi:
+                self.logger.info("Parsed DOI '%s' from file: '%s'.",
+                                 self._doi, self.uri)
+                self.logger.warning(
+                    "There is no guarantee that this DOI is the correct one!")
+            else:
+                self.logger.debug("No DOI found in document: '%s'", self.uri)
 
         return self._doi
 
@@ -465,11 +470,12 @@ class Downloader(papis.downloaders.Downloader):
     def doi(self) -> Optional[str]:
         if self._doi is None:
             self._doi = doi.find_doi_in_text(self.uri)
+            self._doi = "" if self._doi is None else self._doi
 
         return self._doi
 
     def fetch(self) -> None:
-        if self.doi is None:
+        if not self.doi:
             return
 
         importer = Importer(uri=self.doi)
