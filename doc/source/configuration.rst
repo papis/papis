@@ -162,6 +162,8 @@ An example of a project using a local configuration file can be seen
 and every time ``papis`` is using that library the ``.papis.config``
 file is also read and some settings will be getting overridden.
 
+.. _config_py:
+
 Python configuration file
 -------------------------
 
