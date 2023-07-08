@@ -72,7 +72,7 @@ Implementing additional checks
 
 A check is just a function that takes a document and returns a list of errors.
 A skeleton implementation that gets added to ``config.py``
-(see `Python configuration file`) can be implemented as follows
+(see :ref:`config_py`) can be implemented as follows
 
 .. code:: python
 
