@@ -116,20 +116,18 @@ if TYPE_CHECKING:
 
 logger = papis.logging.get_logger(__name__)
 
-
-def _extension_name() -> str:
-    return "papis.explorer"
+EXPLORER_EXTENSION_NAME = "papis.explorer"
 
 
 def get_available_explorers() -> List[click.Command]:
     """
     Gets all exporters registered.
     """
-    return papis.plugin.get_available_plugins(_extension_name())
+    return papis.plugin.get_available_plugins(EXPLORER_EXTENSION_NAME)
 
 
 def get_explorer_mgr() -> "ExtensionManager":
-    return papis.plugin.get_extension_manager(_extension_name())
+    return papis.plugin.get_extension_manager(EXPLORER_EXTENSION_NAME)
 
 
 @click.command("lib")                   # type: ignore[arg-type]
@@ -141,12 +139,14 @@ def get_explorer_mgr() -> "ExtensionManager":
 def lib(ctx: click.Context, query: str,
         doc_folder: str, library: Optional[str]) -> None:
     """
-    Query for documents in your library
+    Query for documents in your library.
 
-    Examples of its usage are
+    For example, to query all the documents containing "einstein" in the "books"
+    library, you can call
+
+    .. code:: sh
 
         papis lib -l books einstein pick
-
     """
 
     if doc_folder:
@@ -168,12 +168,14 @@ def lib(ctx: click.Context, query: str,
               help="Pick automatically the n-th document")
 def pick(ctx: click.Context, number: Optional[int]) -> None:
     """
-    Pick a document from the retrieved documents
+    Pick a document from the retrieved documents.
 
-    Examples of its usage are
+    For example, to open a picker with the documents in a BibTeX file,
+    you can call
 
-    papis explore bibtex lib.bib pick
+    .. code:: sh
 
+        papis explore bibtex 'lib.bib' pick
     """
     docs = ctx.obj["documents"]
     if number is not None:
@@ -201,11 +203,12 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
               cited_by: bool,
               _all: bool) -> None:
     """
-    Query the citations of a paper
+    Query the citations for a paper.
 
-    Example:
+    For example, to go through the citations of a paper and export it in a
+    YAML file, you can call
 
-    Go through the citations of a paper and export it in a yaml file
+    .. code:: sh
 
         papis explore citations 'einstein' export --format yaml einstein.yaml
 
@@ -237,6 +240,15 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
 @click.command("add")
 @click.pass_context
 def add(ctx: click.Context) -> None:
+    """
+    Add selected documents to the current library.
+
+    For example, to add documents from a BibTeX file, you can call
+
+    .. code:: sh
+
+        papis explore bibtex 'lib.bib' pick add
+    """
     docs = ctx.obj["documents"]
     for d in docs:
         papis.commands.add.run([], d)
@@ -248,15 +260,18 @@ def add(ctx: click.Context) -> None:
 @click.argument("command", type=str)
 def cmd(ctx: click.Context, command: str) -> None:
     """
-    Run a general command on the document list
+    Run a general command on the document list.
 
-    Examples of its usage are:
+    For example, to look for 200 Schroedinger papers with
+    `Crossref <https://www.crossref.org/>`__, pick one, and add it to the
+    current library via ``papis-scihub``, you can call
 
-    Look for 200 Schroedinger papers, pick one, and add it via papis-scihub
+    .. code:: sh
 
-    papis explore crossref -m 200 -a 'Schrodinger' \\
-        pick cmd 'papis scihub {doc[doi]}'
-
+        papis explore \\
+            crossref -m 200 -a 'Schrodinger' \\
+            pick \\
+            cmd 'papis scihub {doc[doi]}'
     """
     docs = ctx.obj["documents"]
     for doc in docs:
@@ -271,7 +286,7 @@ def cmd(ctx: click.Context, command: str) -> None:
 @click.pass_context
 def cli(ctx: click.Context) -> None:
     """
-    Explore new documents using a variety of resources
+    Explore new documents using a variety of resources.
     """
     ctx.obj = {"documents": []}
 

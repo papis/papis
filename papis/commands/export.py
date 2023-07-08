@@ -182,12 +182,16 @@ def cli(query: str,
     default=None,)
 def explorer(ctx: click.Context, fmt: str, out: str) -> None:
     """
-    Export retrieved documents into various formats for later use
+    Export retrieved documents into various formats.
 
-    Examples of its usage are
+    For example, to query Crossref an export all 200 documents to a YAML file,
+    you can call
 
-    papis explore crossref -m 200 -a 'Schrodinger' export --yaml lib.yaml
+    .. code:: sh
 
+        papis explore \\
+            crossref -m 200 -a 'Schrodinger' \\
+            export --format yaml lib.yaml
     """
     docs = ctx.obj["documents"]
 

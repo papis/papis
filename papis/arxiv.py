@@ -185,14 +185,20 @@ def explorer(
         journal: str, report_number: str, category: str, id_list: str,
         page: int, max: int) -> None:
     """
-    Look for documents on ArXiV.org.
+    Look for documents on `arXiv.org <arxiv.org/>`__.
 
-    Examples of its usage are
+
+    For example, to search for documents with the authors "Hummer" and
+    "Garnet Chan" (a maximum of 100 articles), use
+
+    .. code:: sh
 
         papis explore arxiv -a 'Hummel' -m 100 arxiv -a 'Garnet Chan' pick
 
     If you want to search for the exact author name 'John Smith', you should
     enclose it in extra quotes, as in the example below
+
+    .. code:: sh
 
         papis explore arxiv -a '"John Smith"' pick
 

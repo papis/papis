@@ -122,9 +122,9 @@ def exporter(documents: List[papis.document.Document]) -> str:
 def explorer(ctx: click.Context, yamlfile: str) -> None:
     """Import documents from a YAML file.
 
-    Examples of its usage are::
+    For example, you can call
 
-        papis explore yaml lib.yaml pick
+        papis explore yaml 'lib.yaml' pick
     """
     logger.info("Reading YAML file '%s'...", yamlfile)
 

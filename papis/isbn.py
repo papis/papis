@@ -72,12 +72,17 @@ def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
               type=click.Choice(ISBN_SERVICE_NAMES))
 def explorer(ctx: click.core.Context, query: str, service: str) -> None:
     """
-    Look for documents using isbnlib
+    Look for documents using `isbnlib <https://isbnlib.readthedocs.io/en/latest/>`__.
 
-    Examples of its usage are
+    For example, to look for a document with the author "Albert Einstein" and
+    open it with Firefox, you can call
 
-    papis explore isbn -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
+    .. code:: sh
 
+        papis explore \\
+            isbn -q 'Albert einstein' \\
+            pick \\
+            cmd 'firefox {doc[url]}'
     """
     logger.info("Looking up ISBN documents...")
 
