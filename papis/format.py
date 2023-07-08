@@ -69,6 +69,9 @@ class PythonFormater(Formater):
         try:
             return fmt.format(**{doc_name: doc}, **additional)
         except Exception as exc:
+            logger.debug("Could not format string '%s' for document '%s'",
+                         fmt, papis.document.describe(doc), exc_info=exc)
+
             return "{}: {}".format(type(exc).__name__, exc)
 
 
@@ -110,6 +113,9 @@ class Jinja2Formater(Formater):
         try:
             return str(Template(fmt).render(**{doc_name: doc}, **additional))
         except Exception as exc:
+            logger.debug("Could not format string '%s' for document '%s'",
+                         fmt, papis.document.describe(doc), exc_info=exc)
+
             return "{}: {}".format(type(exc).__name__, exc)
 
 
