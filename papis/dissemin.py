@@ -71,12 +71,17 @@ def get_data(query: str = "") -> List[Dict[str, Any]]:
 @click.option("--query", "-q", default="", type=str)
 def explorer(ctx: click.core.Context, query: str) -> None:
     """
-    Look for documents on dissem.in
+    Look for documents on `dissem.in <https://dissem.in/>`__.
 
-    Examples of its usage are
+    For example, to look for a document with the author "Albert Einstein" and
+    open it with Firefox, you can call
 
-    papis explore dissemin -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
+    .. code:: sh
 
+        papis explore \\
+            dissemin -q 'Albert einstein' \\
+            pick \\
+            cmd 'firefox {doc[url]}'
     """
     logger.info("Looking up Dissemin documents...")
 

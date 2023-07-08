@@ -176,11 +176,15 @@ def explorer(
     """
     Look for documents on `dblp.org <https://dblp.org/>`__.
 
-    Examples of its usage are
+    For example, to look for a document with the author "Albert Einstein" and
+    export it to a BibTeX file, you can call
 
-    .. code:: bash
+    .. code:: sh
 
-        papis explore dblp -a 'Albert einstein' pick export --bibtex lib.bib
+        papis explore \\
+            dblp -a 'Albert einstein' \\
+            pick \\
+            export --format bibtex lib.bib
     """
     logger.info("Looking up DBLP documents...")
 

@@ -227,7 +227,9 @@ def explorer(ctx: click.core.Context, bibfile: str) -> None:
 
     This explorer be used as
 
-        papis explore bibtex lib.bib pick
+    .. code:: sh
+
+        papis explore bibtex 'lib.bib' pick
     """
     logger.info("Reading BibTeX file '%s'...", bibfile)
 

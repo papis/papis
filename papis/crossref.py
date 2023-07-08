@@ -299,12 +299,17 @@ def explorer(
         sort: str,
         order: str) -> None:
     """
-    Look for documents on crossref.org.
+    Look for documents on `Crossref <https://www.crossref.org/>`__.
 
-    Examples of its usage are
+    For example, to look for a document with the author "Albert Einstein" and
+    export it to a BibTeX file, you can call
 
-    papis explore crossref -a 'Albert einstein' pick export --bibtex lib.bib
+    .. code:: sh
 
+        papis explore \\
+            crossref -a 'Albert einstein' \\
+            pick \\
+            export --format bibtex lib.bib
     """
     logger.info("Looking up Crossref documents...")
 

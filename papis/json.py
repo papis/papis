@@ -19,12 +19,11 @@ def exporter(documents: List[papis.document.Document]) -> str:
 @click.help_option("--help", "-h")
 def explorer(ctx: click.Context, jsonfile: str) -> None:
     """
-    Import documents from a json file
+    Import documents from a JSON file.
 
-    Examples of its usage are
+    For example, you can call
 
-    papis explore json lib.json pick
-
+        papis explore json 'lib.json' pick
     """
     logger.info("Reading JSON file '%s'...", jsonfile)
 
