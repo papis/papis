@@ -1,4 +1,4 @@
-ARG PYTHON_VERSION=3.7
+ARG PYTHON_VERSION=3.8
 FROM python:$PYTHON_VERSION
 
 RUN apt-get update
@@ -9,8 +9,6 @@ VOLUME /papis
 
 COPY . /papis
 
-RUN python setup.py develop
-RUN pip install .[develop]
-RUN pip install .[optional]
+RUN pip install -e .[optional,develop]
 
 CMD ["pytest", "tests", "papis", "--cov", "papis"]
