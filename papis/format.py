@@ -19,7 +19,7 @@ class InvalidFormaterError(ValueError):
 
 class FormatFailedError(Exception):
     """
-    Thrown when the formatter failed to format, e.g., due to lack of 
+    Thrown when the formatter failed to format, e.g., due to lack of
     data or an invalid format string
     """
 
