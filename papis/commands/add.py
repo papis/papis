@@ -343,7 +343,7 @@ def run(paths: List[str],
             formatted = None
             try:
                 formatted = papis.format.format(path_component, temp_doc)
-            except Exception:
+            except papis.format.FormatFailedError:
                 out_folder_path = base_path
                 components = []
                 break
