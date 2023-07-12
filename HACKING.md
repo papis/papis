@@ -36,6 +36,17 @@ The docs can be generated with
 make doc
 ```
 
+To quickly get things up and running, you can also use docker/podman:
+
+```
+# build the image
+docker build -t papis .
+# to run the CI tests
+podman run -v $(pwd):/papis --rm -it papis
+# enter the container interactively
+podman run -v $(pwd):/papis --rm -it papis bash
+```
+
 Issues
 ------
 
