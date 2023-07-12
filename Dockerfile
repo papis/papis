@@ -7,11 +7,9 @@ RUN apt-get update \
   && apt-get clean -y \
   && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /papis
-VOLUME /papis
-
 COPY . /papis
 
+WORKDIR /papis
 RUN pip install -e .[optional,develop]
 
 CMD ["bash", "tools/ci-run-tests.sh"]
