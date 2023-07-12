@@ -40,12 +40,14 @@ To quickly get things up and running, you can also use docker/podman:
 
 ```
 # build the image
-docker build -t papis .
+docker build -t papisdev .
 # to run the CI tests
-podman run -v $(pwd):/papis --rm -it papis
+docker run -v $(pwd):/papis --rm -it papisdev
 # enter the container interactively
-podman run -v $(pwd):/papis --rm -it papis bash
+docker run -v $(pwd):/papis --rm -it papisdev bash
 ```
+
+(or replace `docker` with `podman` if you prefer)
 
 Issues
 ------
