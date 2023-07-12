@@ -14,5 +14,4 @@ COPY . /papis
 
 RUN pip install -e .[optional,develop]
 
-# CMD ["pytest", "tests", "papis", "--cov", "papis"]
 CMD ["bash", "tools/ci-run-tests.sh"]
