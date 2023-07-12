@@ -18,9 +18,10 @@ class InvalidFormaterError(ValueError):
 
 
 class FormatFailedError(Exception):
-    """
-    Thrown when the formatter failed to format, e.g., due to lack of
-    data or an invalid format string
+    """An exception that is thrown when a format string fails to be interpolated.
+
+    This can happen due to lack of data (e.g. missing fields in the document)
+    or invalid format strings (e.g. passed to the wrong formatter).
     """
 
 
@@ -45,6 +46,9 @@ class Formater:
         :param doc: an object convertible to a document.
         :param doc_key: the name of the document in the format string. By
             default, this falls back to :ref:`config-settings-format-doc-name`.
+        :param default: an optional string to use as a default value if the
+            formatting fails. If no default is given, a :exc:`FormatFailedError`
+            will be raised.
         :param additional: a :class:`dict` of additional entries to pass to the
             formater.
 
@@ -80,8 +84,8 @@ class PythonFormater(Formater):
             return fmt.format(**{doc_name: doc}, **additional)
         except Exception as exc:
             if default is not None:
-                logger.debug("Could not format string '%s' for document '%s'",
-                             fmt, papis.document.describe(doc), exc_info=exc)
+                logger.warning("Could not format string '%s' for document '%s'",
+                               fmt, papis.document.describe(doc), exc_info=exc)
                 return default
             else:
                 raise FormatFailedError(fmt) from exc
@@ -127,8 +131,8 @@ class Jinja2Formater(Formater):
             return str(Template(fmt).render(**{doc_name: doc}, **additional))
         except Exception as exc:
             if default is not None:
-                logger.debug("Could not format string '%s' for document '%s'",
-                             fmt, papis.document.describe(doc), exc_info=exc)
+                logger.warning("Could not format string '%s' for document '%s'",
+                               fmt, papis.document.describe(doc), exc_info=exc)
                 return default
             else:
                 raise FormatFailedError(fmt) from exc
@@ -174,17 +178,10 @@ def format(fmt: str,
 
     This is the user-facing function that should be called when formating a
     string. The formaters should not be called directly.
+
+    Arguments match those of :meth:`Formater.format`.
     """
     formater = get_formater()
-    try:
-        return formater.format(fmt, doc, doc_key=doc_key,
-                               additional=additional, default=default)
-    except FormatFailedError:
-        raise
-    except Exception as exc:
-        if default is not None:
-            logger.debug("Could not format string '%s' for document '%s'",
-                         fmt, papis.document.describe(doc), exc_info=exc)
-            return default
-        else:
-            raise FormatFailedError(fmt) from exc
+    return formater.format(fmt, doc, doc_key=doc_key,
+                           additional=additional,
+                           default=default)
