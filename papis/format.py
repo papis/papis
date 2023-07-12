@@ -38,7 +38,8 @@ class Formater:
                fmt: str,
                doc: papis.document.DocumentLike,
                doc_key: str = "",
-               additional: Optional[Dict[str, Any]] = None) -> str:
+               additional: Optional[Dict[str, Any]] = None,
+               default: Optional[str] = None) -> str:
         """
         :param fmt: a format string understood by the formater.
         :param doc: an object convertible to a document.
@@ -64,7 +65,8 @@ class PythonFormater(Formater):
                fmt: str,
                doc: papis.document.DocumentLike,
                doc_key: str = "",
-               additional: Optional[Dict[str, Any]] = None) -> str:
+               additional: Optional[Dict[str, Any]] = None,
+               default: Optional[str] = None) -> str:
         if additional is None:
             additional = {}
 
@@ -73,7 +75,16 @@ class PythonFormater(Formater):
             doc = papis.document.from_data(doc)
 
         doc_name = doc_key or self.default_doc_name
-        return fmt.format(**{doc_name: doc}, **additional)
+
+        try:
+            return fmt.format(**{doc_name: doc}, **additional)
+        except Exception as exc:
+            if default is not None:
+                logger.debug("Could not format string '%s' for document '%s'",
+                             fmt, papis.document.describe(doc), exc_info=exc)
+                return default
+            else:
+                raise FormatFailedError(fmt) from exc
 
 
 class Jinja2Formater(Formater):
@@ -166,7 +177,10 @@ def format(fmt: str,
     """
     formater = get_formater()
     try:
-        return formater.format(fmt, doc, doc_key=doc_key, additional=additional)
+        return formater.format(fmt, doc, doc_key=doc_key,
+                               additional=additional, default=default)
+    except FormatFailedError:
+        raise
     except Exception as exc:
         if default is not None:
             logger.debug("Could not format string '%s' for document '%s'",
