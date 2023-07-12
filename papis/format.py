@@ -147,6 +147,7 @@ def get_formater(name: Optional[str] = None) -> Formater:
 def format(fmt: str,
            doc: papis.document.DocumentLike,
            doc_key: str = "",
+           default: Optional[str] = None,
            additional: Optional[Dict[str, Any]] = None) -> str:
     """Format a string using the selected formater.
 
@@ -154,4 +155,12 @@ def format(fmt: str,
     string. The formaters should not be called directly.
     """
     formater = get_formater()
-    return formater.format(fmt, doc, doc_key=doc_key, additional=additional)
+    try:
+        return formater.format(fmt, doc, doc_key=doc_key, additional=additional)
+    except Exception as e:
+        if default is not None:
+            logger.debug("Failed to format according to '%s' - %s", fmt, e)
+            return default
+        else:
+            logger.warning("Failed to format according to '%s' - %s", fmt, e)
+            raise
