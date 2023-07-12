@@ -328,3 +328,23 @@ def test_add_lib_cli(tmp_library: TemporaryLibrary,
             cli,
             ["--from", "lib", folder, "--open", "--confirm"])
         assert result.exit_code == 0
+
+
+def test_add_set_invalid_format_cli(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.add import cli
+    cli_runner = PapisRunner()
+
+    papis.config.set("add-file-name",
+                     "{doc[author_list][0][family]} - {doc[year]} - {doc[title]}")
+
+    result = cli_runner.invoke(
+        cli,
+        ["--set", "author", "Bertrand Russell",
+         "--set", "title", "Principia",
+         "--batch"])
+    assert result.exit_code == 0
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Bertrand Russell"})
+    assert doc["title"] == "Principia"
+    assert not doc.get_files()
