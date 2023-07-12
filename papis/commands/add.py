@@ -181,18 +181,11 @@ def get_file_name(
     if file_name_opt is None:
         file_name_opt = os.path.basename(original_filepath)
 
-    try:
-        # Get a file name from the format `add-file-name`
-        file_name_base = papis.format.format(
-            file_name_opt, papis.document.from_data(data)
-        )
-    except Exception as exc:
-        logger.warning(
-            "failed to format document with: %s\nfalling back to original filename",
-            file_name_opt,
-            exc_info=exc,
-        )
-        file_name_base = os.path.basename(original_filepath)
+    # Get a file name from the format `add-file-name`
+    file_name_base = papis.format.format(
+        file_name_opt, papis.document.from_data(data),
+        default=os.path.basename(original_filepath)
+    )
 
     if len(file_name_base) > basename_limit:
         logger.warning(
@@ -350,10 +343,7 @@ def run(paths: List[str],
             formatted = None
             try:
                 formatted = papis.format.format(path_component, temp_doc)
-            except Exception as exc:
-                logger.warn(
-                    "failed to format path component: %s", path_component, exc_info=exc
-                )
+            except Exception:
                 out_folder_path = base_path
                 components = []
                 break
