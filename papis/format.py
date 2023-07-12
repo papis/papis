@@ -17,6 +17,13 @@ class InvalidFormaterError(ValueError):
     """An exception that is thrown when an invalid formater is selected."""
 
 
+class FormatFailedError(Exception):
+    """
+    Thrown when the formatter failed to format, e.g., due to lack of 
+    data or an invalid format string
+    """
+
+
 def unescape(fmt: str) -> str:
     return fmt.replace("\\n", "\n").replace("\\t", "\t").replace("\\r", "\r")
 
@@ -93,7 +100,8 @@ class Jinja2Formater(Formater):
                fmt: str,
                doc: papis.document.DocumentLike,
                doc_key: str = "",
-               additional: Optional[Dict[str, Any]] = None) -> str:
+               additional: Optional[Dict[str, Any]] = None,
+               default: Optional[str] = None) -> str:
         if additional is None:
             additional = {}
 
@@ -107,10 +115,12 @@ class Jinja2Formater(Formater):
         try:
             return str(Template(fmt).render(**{doc_name: doc}, **additional))
         except Exception as exc:
-            logger.debug("Could not format string '%s' for document '%s'",
-                         fmt, papis.document.describe(doc), exc_info=exc)
-
-            return "{}: {}".format(type(exc).__name__, exc)
+            if default is not None:
+                logger.debug("Could not format string '%s' for document '%s'",
+                             fmt, papis.document.describe(doc), exc_info=exc)
+                return default
+            else:
+                raise FormatFailedError(fmt) from exc
 
 
 def get_formater(name: Optional[str] = None) -> Formater:
@@ -147,8 +157,8 @@ def get_formater(name: Optional[str] = None) -> Formater:
 def format(fmt: str,
            doc: papis.document.DocumentLike,
            doc_key: str = "",
-           default: Optional[str] = None,
-           additional: Optional[Dict[str, Any]] = None) -> str:
+           additional: Optional[Dict[str, Any]] = None,
+           default: Optional[str] = None) -> str:
     """Format a string using the selected formater.
 
     This is the user-facing function that should be called when formating a
@@ -157,10 +167,10 @@ def format(fmt: str,
     formater = get_formater()
     try:
         return formater.format(fmt, doc, doc_key=doc_key, additional=additional)
-    except Exception as e:
+    except Exception as exc:
         if default is not None:
-            logger.debug("Failed to format according to '%s' - %s", fmt, e)
+            logger.debug("Could not format string '%s' for document '%s'",
+                         fmt, papis.document.describe(doc), exc_info=exc)
             return default
         else:
-            logger.warning("Failed to format according to '%s' - %s", fmt, e)
-            raise
+            raise FormatFailedError(fmt) from exc
