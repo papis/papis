@@ -106,7 +106,8 @@ def run(document: papis.document.Document,
         params = {
             "q": papis.format.format(
                 papis.config.getstring("browse-query-format"),
-                document)
+                document,
+                default="{} {}".format(document["author"], document["title"]))
         }
         url = (papis.config.getstring("search-engine")
                + "/?"

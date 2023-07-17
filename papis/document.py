@@ -421,7 +421,7 @@ def describe(document: Union[Document, Dict[str, Any]]) -> str:
     """
     return papis.format.format(
         papis.config.getstring("document-description-format"),
-        document, default=document.get("papis_id", ""))
+        document, default=document["papis_id"])
 
 
 def move(document: Document, path: str) -> None:
@@ -486,7 +486,7 @@ def sort(docs: Sequence[Document], key: str, reverse: bool = False) -> List[Docu
     def document_sort_key(doc: Document) -> Tuple[int, datetime, int, str]:
         priority, date, int_value, str_value = default_sort_key
 
-        value = doc.get(key)
+        value = doc.get(key, None)
         if value is not None:
             str_value = str(value)
 

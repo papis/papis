@@ -349,22 +349,28 @@ def create_reference(doc: Dict[str, Any], force: bool = False) -> str:
         already has a ``"ref"`` key.
     :returns: a clean reference for the document.
     """
-    ref = ""
     # Check first if the paper has a reference
-    if doc.get("ref") and not force:
-        return str(doc["ref"])
-    elif papis.config.get("ref-format"):
-        ref = papis.format.format(papis.config.getstring("ref-format"), doc)
+    ref = str(doc.get("ref", ""))
+    if not force and ref:
+        return ref
+
+    # Otherwise, try to generate one somehow
+    ref_format = papis.config.get("ref-format")
+    if ref_format is not None:
+        ref = papis.format.format(str(ref_format), doc, default="")
+
+    if not ref:
+        ref = str(doc.get("doi", ""))
+
+    if not ref:
+        ref = str(doc.get("isbn", ""))
+
+    if not ref:
+        # Just try to get something out of the data
+        ref = "{:.30}".format(
+              " ".join(string.capwords(str(d)) for d in doc.values()))
 
     logger.debug("Generated ref '%s'.", ref)
-    if not ref:
-        if doc.get("doi"):
-            ref = doc["doi"]
-        else:
-            # Just try to get something out of the data
-            ref = "{:.30}".format(
-                " ".join(string.capwords(str(d)) for d in doc.values()))
-
     return ref_cleanup(ref)
 
 
