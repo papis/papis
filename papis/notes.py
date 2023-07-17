@@ -9,6 +9,9 @@ import papis.format
 import papis.document
 import papis.utils
 import papis.hooks
+import papis.logging
+
+logger = papis.logging.get_logger(__name__)
 
 
 def has_notes(doc: papis.document.Document) -> bool:
@@ -26,7 +29,8 @@ def notes_path(doc: papis.document.Document) -> str:
         *doc* (this file does not neccessarily exist).
     """
     if not has_notes(doc):
-        notes_name = papis.format.format(papis.config.getstring("notes-name"), doc)
+        notes_name = papis.format.format(papis.config.getstring("notes-name"), doc,
+                                         default="notes.tex")
         doc["notes"] = papis.utils.clean_document_name(notes_name)
         papis.api.save_doc(doc)
 
@@ -51,7 +55,11 @@ def notes_path_ensured(doc: papis.document.Document) -> str:
         template = ""
         if os.path.exists(templatepath):
             with open(templatepath, encoding="utf-8") as fd:
-                template = papis.format.format(fd.read(), doc)
+                try:
+                    template = papis.format.format(fd.read(), doc)
+                except papis.format.FormatFailedError as exc:
+                    logger.error("Failed to format notes template at '%s'.",
+                                 templatepath, exc_info=exc)
 
         with open(notespath, "w+", encoding="utf-8") as fd:
             fd.write(template)

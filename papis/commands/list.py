@@ -132,7 +132,8 @@ def run(documents: List[papis.document.Document],
         return [d.get_info_file() for d in documents]
     elif fmt:
         return [
-            papis.format.format(fmt, document)
+            papis.format.format(fmt, document,
+                                default=papis.document.describe(document))
             for document in documents
         ]
     elif folders:

@@ -133,7 +133,13 @@ def cli(query: str,
         if set_tuples:
             processed_tuples = {}
             for key, value in set_tuples:
-                value = papis.format.format(value, document)
+                try:
+                    value = papis.format.format(value, document)
+                except papis.format.FormatFailedError as exc:
+                    logger.error("Could not format '%s' with value '%s'.",
+                                 key, value, exc_info=exc)
+                    continue
+
                 if key == "notes":
                     value = papis.utils.clean_document_name(value)
                     processed_tuples[key] = value

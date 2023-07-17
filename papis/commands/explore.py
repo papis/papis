@@ -275,7 +275,7 @@ def cmd(ctx: click.Context, command: str) -> None:
     """
     docs = ctx.obj["documents"]
     for doc in docs:
-        fcommand = papis.format.format(command, doc)
+        fcommand = papis.format.format(command, doc, default="")
         papis.utils.run(shlex.split(fcommand))
 
 

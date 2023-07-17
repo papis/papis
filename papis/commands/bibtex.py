@@ -297,7 +297,11 @@ def _edit(ctx: click.Context,
             located = papis.utils.locate_document_in_lib(doc)
             if set_tuples:
                 for k, v in set_tuples:
-                    located[k] = papis.format.format(v, located)
+                    try:
+                        located[k] = papis.format.format(v, located)
+                    except papis.format.FormatFailedError as exc:
+                        logger.error("Could not format '%s' with value '%s'.",
+                                     k, v, exc_info=exc)
                 save_doc(located)
             else:
                 papis.commands.edit.run(located)
