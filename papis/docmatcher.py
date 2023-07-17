@@ -37,12 +37,13 @@ class MatcherCallable(Protocol):
     .. automethod:: __call__
     """
 
-    def __call__(self,
-                 document: papis.document.Document,
-                 search: Pattern[str],
-                 match_format: Optional[str] = None,
-                 doc_key: Optional[str] = None,
-                 ) -> Any:
+    def __call__(
+        self,
+        document: papis.document.Document,
+        search: Pattern[str],
+        match_format: Optional[str] = None,
+        doc_key: Optional[str] = None,
+    ) -> Any:
         """Match a document's keys to a given search pattern.
 
         The matcher can decide whether the *match_format* or the *doc_key* take
@@ -92,8 +93,8 @@ class DocMatcher:
 
     @classmethod
     def return_if_match(
-            cls,
-            doc: papis.document.Document) -> Optional[papis.document.Document]:
+        cls, doc: papis.document.Document
+    ) -> Optional[papis.document.Document]:
         """Use :attr:`DocMatcher.parsed_search` to match the *doc* against the query.
 
             >>> import papis.document
@@ -117,13 +118,19 @@ class DocMatcher:
         if cls.parsed_search is None or cls.matcher is None:
             return match
 
+        tokens = []
         for p in cls.parsed_search:
-            match = (
-                doc if cls.matcher(doc, p.pattern, cls.match_format, p.doc_key)
-                else None)
+            if type(p) == ParseResult:
+                tokens.append(
+                    "True"
+                    if cls.matcher(doc, p.pattern, cls.match_format, p.doc_key)
+                    else "False"
+                )
+            else:
+                tokens.append(p)
 
-            if not match:
-                break
+        result = eval(" ".join(tokens))
+        match = doc if result else None
 
         return match
 
@@ -131,9 +138,9 @@ class DocMatcher:
     def set_search(cls, search: str) -> None:
         """Set the search for this instance of the matcher.
 
-            >>> DocMatcher.set_search('author:Hummel')
-            >>> DocMatcher.search
-            'author:Hummel'
+        >>> DocMatcher.set_search('author:Hummel')
+        >>> DocMatcher.search
+        'author:Hummel'
         """
         cls.search = search
 
@@ -141,17 +148,18 @@ class DocMatcher:
     def set_matcher(cls, matcher: MatcherCallable) -> None:
         """Set the matcher callable for the search.
 
-            >>> from papis.database.cache import match_document
-            >>> DocMatcher.set_matcher(match_document)
+        >>> from papis.database.cache import match_document
+        >>> DocMatcher.set_matcher(match_document)
         """
         cls.matcher = matcher
 
     @classmethod
-    def parse(cls, search: Optional[str] = None) -> List[ParseResult]:
-        """Parse the main query text.
+    def parse(cls, search: Optional[str] = None) -> List[ParseResult | str]:
+        """Parse the main query text and check its syntax.
 
         This method will also set :attr:`DocMatcher.parsed_search` to the
-        resulting parsed query and it will return it too.
+        resulting parsed query and it will return it too. If there is a syntax
+        error it will log an error message and return None.
 
             >>> print(DocMatcher.parse('hello author : einstein'))
             [['hello'], ['author', 'einstein']]
@@ -169,7 +177,13 @@ class DocMatcher:
         """
         if search is None:
             search = cls.search
-        cls.parsed_search = parse_query(search)
+        parsed_search = parse_query(search)
+
+        if test_syntax(parsed_search):
+            cls.parsed_search = parsed_search
+        else:
+            cls.parsed_search = None
+
         return cls.parsed_search
 
 
@@ -186,17 +200,64 @@ def get_regex_from_search(search: str) -> Pattern[str]:
         properly escaped and allows for multiple spaces.
     """
     return re.compile(
-        ".*{}.*".format(".*".join(map(re.escape, search.split()))),
-        re.IGNORECASE)
+        ".*{}.*".format(".*".join(map(re.escape, search.split()))), re.IGNORECASE
+    )
 
 
-def parse_query(query_string: str) -> List[ParseResult]:
+def test_syntax(parsed: List[ParseResult | str]) -> bool:
+    """Tests the syntax by replacing all search terms with True,
+    then trying to evaluate the resulting string.
+    """
+
+    test = []
+    for token in parsed:
+        if type(token) == ParseResult:
+            test.append("True")
+        else:
+            test.append(token)
+
+    try:
+        eval(" ".join(test))
+        return True
+    except SyntaxError:
+        logger.error("Malformed query.")
+        return False
+
+
+def proofread(parsed: List[ParseResult | str]) -> List[ParseResult | str]:
+    """Fixes a parsed query by inserting missing *and* operators.
+    For instance:
+    ' ein 192     photon' -> 'ein and 192 and photon'
+
+
+    :param a parsed a search string.
+    :returns: a fixed list of ParseResults or operators.
+    """
+    needsboolafter = lambda x: False if x in ["and", "or", "not", "("] else True
+    needsboolbefore = lambda x: False if x in ["and", "or", ")"] else True
+    result = []
+    last = len(parsed) - 1
+    fixes = 0
+    for idx, token in enumerate(parsed):
+        result.append(token)
+        if idx != last and needsboolafter(token) and needsboolbefore(parsed[idx + 1]):
+            # add 'and' when queries or syntax have have no operator in between
+            result.append("and")
+            fixes += 1
+
+    if fixes > 0:
+        logger.debug("Fixed query by adding %s missing 'and' operator(s).", fixes)
+
+    return result
+
+
+def parse_query(query_string: str) -> List[ParseResult | str]:
     """Parse a query string using :mod:`pyparsing`.
 
     The query language implemented by this function for papis supports strings
     of the form::
 
-        'hello author : Einstein    title: "Fancy Title: Part 1" tags'
+        'hello author : Einstein or not (title: "Fancy Title: Part 1" tags)'
 
     which will result in
 
@@ -204,9 +265,15 @@ def parse_query(query_string: str) -> List[ParseResult]:
 
         results = [
             ParseResult(search="hello", pattern=<...>, doc_key=None),
+            "and",
             ParseResult(search="Einstein", pattern=<...>, doc_key="author"),
+            "or",
+            "not",
+            "(",
             ParseResult(search="Fancy Title: Part 1", pattern=<...>, doc_key="title"),
+            "and",
             ParseResult(search="tags", pattern=<...>, doc_key=None),
+            ")"
         ]
 
     We can see there that constructs of the form ``"key:value"`` with the colon
@@ -220,47 +287,49 @@ def parse_query(query_string: str) -> List[ParseResult]:
     """
 
     import pyparsing
+
     logger.debug("Parsing query: '%s'.", query_string)
 
     papis_key_word = pyparsing.Word(pyparsing.alphanums + "-._/")
-    papis_value_word = pyparsing.Word(pyparsing.alphanums + "-._/()")
 
-    papis_value = pyparsing.QuotedString(
-        quoteChar='"', escChar="\\", escQuote="\\"
-    ) ^ pyparsing.QuotedString(
-        quoteChar="'", escChar="\\", escQuote="\\"
-    ) ^ papis_value_word
-
-    equal = (
-        pyparsing.ZeroOrMore(pyparsing.Literal(" "))
-        + pyparsing.Literal(":")
-        + pyparsing.ZeroOrMore(pyparsing.Literal(" "))
+    papis_value_word = pyparsing.Word(
+        pyparsing.alphanums + pyparsing.alphas8bit + "-._/"
     )
 
-    papis_query = pyparsing.ZeroOrMore(
-        pyparsing.Group(
-            pyparsing.ZeroOrMore(
-                papis_key_word + equal
-            ) + papis_value
-        )
+    papis_value = (
+        pyparsing.QuotedString(quoteChar='"', escChar="\\", escQuote="\\")
+        ^ pyparsing.QuotedString(quoteChar="'", escChar="\\", escQuote="\\")
+        ^ papis_value_word
     )
-    parsed = papis_query.parseString(query_string)
+
+    equal = pyparsing.Literal(":")
+
+    key_phrase = pyparsing.Group(papis_key_word + equal + papis_value)
+
+    operators = "and or not ( )"
+    operator = pyparsing.oneOf(operators)
+
+    papis_query = pyparsing.ZeroOrMore(key_phrase | papis_value | operator)
+
+    parsed = papis_query.parseString(query_string).as_list()
     logger.debug("Parsed query: '%s'.", parsed)
 
     # convert pyparsing results to our format
     results = []
-    for result in parsed:
-        n = len(result)
-        if n == 1:
-            search = result[0]
-            doc_key = None
-        elif n == 3:
-            search = result[2]
-            doc_key = result[0]
+    for token in parsed:
+        if token in operators.split():
+            results.append(token)
         else:
-            continue
+            if type(token) is not list:
+                search = token
+                doc_key = None
+            elif len(token) == 3:
+                search = token[2]
+                doc_key = token[0]
+            else:
+                continue
 
-        pattern = get_regex_from_search(search)
-        results.append(ParseResult(search=search, pattern=pattern, doc_key=doc_key))
+            pattern = get_regex_from_search(search)
+            results.append(ParseResult(search=search, pattern=pattern, doc_key=doc_key))
 
-    return results
+    return proofread(results)
