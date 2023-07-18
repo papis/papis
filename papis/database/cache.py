@@ -160,7 +160,6 @@ class Database(papis.database.base.Database):
 
     def add(self, document: papis.document.Document) -> None:
         logger.debug("Adding document: '%s'.", papis.document.describe(document))
-
         docs = self.get_documents()
         self.maybe_compute_id(document)
         docs.append(document)

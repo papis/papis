@@ -38,6 +38,8 @@ settings: Dict[str, Any] = {
     "cache-dir": None,
     "use-git": False,
 
+    "auto-doctor": False,
+
     "add-confirm": False,
     "add-folder-name": "",
     "add-subfolder": "",

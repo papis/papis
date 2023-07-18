@@ -51,13 +51,15 @@ import papis.cli
 import papis.importer
 import papis.git
 import papis.logging
+import papis.commands.doctor
 
 logger = papis.logging.get_logger(__name__)
 
 
 def run(document: papis.document.Document,
         data: Optional[Dict[str, Any]] = None,
-        git: bool = False) -> None:
+        git: bool = False,
+        auto_doctor: bool = False) -> None:
     if data is None:
         data = {}
 
@@ -68,8 +70,13 @@ def run(document: papis.document.Document,
         from papis.exceptions import DocumentFolderNotFound
         raise DocumentFolderNotFound(papis.document.describe(document))
 
-    from papis.api import save_doc
     document.update(data)
+    if auto_doctor:
+        logger.debug("Running doctor auto-fixers on document: '%s'.",
+                     papis.document.describe(document))
+        papis.commands.doctor.fix_errors(document)
+
+    from papis.api import save_doc
     save_doc(document)
 
     if git:
@@ -88,6 +95,9 @@ def run(document: papis.document.Document,
 @papis.cli.sort_option()
 @papis.cli.bool_flag("--auto",
                      help="Try to parse information from different sources")
+@papis.cli.bool_flag("--auto-doctor/--no-auto-doctor",
+                     help="Apply papis doctor to newly added documents.",
+                     default=lambda: papis.config.getboolean("auto-doctor"))
 @click.option("--from", "from_importer",
               help="Add document from a specific importer ({})".format(
                   ", ".join(papis.importer.available_importers())
@@ -109,6 +119,7 @@ def cli(query: str,
         from_importer: List[Tuple[str, str]],
         batch: bool,
         auto: bool,
+        auto_doctor: bool,
         _all: bool,
         sort_field: Optional[str],
         sort_reverse: bool,
@@ -181,4 +192,4 @@ def cli(query: str,
 
         ctx.data.update(imported.data)
 
-        run(document, data=ctx.data, git=git)
+        run(document, data=ctx.data, git=git, auto_doctor=auto_doctor)
