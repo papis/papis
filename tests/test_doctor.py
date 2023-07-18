@@ -1,5 +1,4 @@
 import os
-import pytest
 import tempfile
 
 import papis.api
@@ -8,10 +7,8 @@ import papis.document
 from papis.testing import TemporaryConfiguration
 
 
-def test_files_check(tmp_config: TemporaryConfiguration,
-                     monkeypatch: pytest.MonkeyPatch) -> None:
+def test_files_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.commands.doctor import files_check
-    monkeypatch.setattr(papis.api, "save_doc", lambda _: None)
 
     with tempfile.NamedTemporaryFile("w") as tmp:
         folder = os.path.dirname(tmp.name)
@@ -35,6 +32,9 @@ def test_files_check(tmp_config: TemporaryConfiguration,
 def test_keys_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.commands.doctor import keys_exist_check
 
+    papis.config.set("doctor-keys-exist-keys",
+                     ["ref", "author", "author_list", "title"])
+
     doc = papis.document.from_data({
         "title": "DNA sequencing with chain-terminating inhibitors",
         "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
@@ -45,10 +45,8 @@ def test_keys_check(tmp_config: TemporaryConfiguration) -> None:
     assert error1.payload == "author_list" or error2.payload == "author_list"
 
 
-def test_keys_check_authors(tmp_config: TemporaryConfiguration,
-                            monkeypatch: pytest.MonkeyPatch) -> None:
+def test_keys_check_authors(tmp_config: TemporaryConfiguration) -> None:
     from papis.commands.doctor import keys_exist_check
-    monkeypatch.setattr(papis.api, "save_doc", lambda _: None)
 
     papis.config.set("doctor-keys-exist-keys", ["author_list", "author"])
     full_doc = papis.document.from_data(
@@ -85,10 +83,8 @@ def test_keys_check_authors(tmp_config: TemporaryConfiguration,
     assert doc["author"] == "Doe, John and Doe, Jane"
 
 
-def test_refs_check(tmp_config: TemporaryConfiguration,
-                    monkeypatch: pytest.MonkeyPatch) -> None:
+def test_refs_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.commands.doctor import refs_check
-    monkeypatch.setattr(papis.api, "save_doc", lambda _: None)
 
     doc = papis.document.from_data({
         "title": "DNA sequencing with chain-terminating inhibitors",
@@ -160,10 +156,8 @@ def test_bibtex_type_check(tmp_config: TemporaryConfiguration) -> None:
         assert not errors
 
 
-def test_key_type_check(tmp_config: TemporaryConfiguration,
-                        monkeypatch: pytest.MonkeyPatch) -> None:
+def test_key_type_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.commands.doctor import key_type_check
-    monkeypatch.setattr(papis.api, "save_doc", lambda _: None)
 
     doc = papis.document.from_data({
         "author_list": [{"given": "F.", "family": "Sanger"}],
@@ -226,10 +220,8 @@ def test_key_type_check(tmp_config: TemporaryConfiguration,
     assert doc["tags"] == "test-key-tag-1,test-key-tag-2,test-key-tag-3"
 
 
-def test_html_codes_check(tmp_config: TemporaryConfiguration,
-                          monkeypatch: pytest.MonkeyPatch) -> None:
+def test_html_codes_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.commands.doctor import html_codes_check
-    monkeypatch.setattr(papis.api, "save_doc", lambda _: None)
 
     doc = papis.document.from_data({
         "title": "DNA sequencing with chain-terminating inhibitors",
@@ -251,10 +243,8 @@ def test_html_codes_check(tmp_config: TemporaryConfiguration,
                 == "DNA sequencing with chain-terminating inhibitors & stuff")
 
 
-def test_html_tags_check(tmp_config: TemporaryConfiguration,
-                         monkeypatch: pytest.MonkeyPatch) -> None:
+def test_html_tags_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.commands.doctor import html_tags_check
-    monkeypatch.setattr(papis.api, "save_doc", lambda _: None)
 
     doc = papis.document.from_data({
         "title": "DNA sequencing with chain-terminating inhibitors",

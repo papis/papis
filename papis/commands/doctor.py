@@ -155,9 +155,8 @@ class Error(NamedTuple):
     #: A command to run to fix the error that can be suggested to the user.
     suggestion_cmd: str
     #: A callable that can autofix the error (see :data:`FixFn`). Note that this
-    #: can change the attached :attr:`doc` and even the on-disk data, so it
-    #: should be used carefully.
-    fix_action: FixFn
+    #: will change the attached :attr:`doc`.
+    fix_action: Optional[FixFn]
     #: The document that generated the error.
     doc: Optional[papis.document.Document]
 
@@ -205,7 +204,6 @@ def files_check(doc: papis.document.Document) -> List[Error]:
 
     :returns: a :class:`list` of errors, one for each file that does not exist.
     """
-    from papis.api import save_doc
 
     files = doc.get_files()
     folder = doc.get_main_folder() or ""
@@ -223,7 +221,6 @@ def files_check(doc: papis.document.Document) -> List[Error]:
             if basename in doc["files"]:
                 logger.info("[FIX] Removing file from document: '%s'.", basename)
                 doc["files"].remove(basename)
-                save_doc(doc)
 
         return fixer
 
@@ -248,12 +245,10 @@ def keys_exist_check(doc: papis.document.Document) -> List[Error]:
 
     :returns: a :class:`list` of errors, one for each key that does not exist.
     """
-    from papis.api import save_doc
-
     folder = doc.get_main_folder() or ""
     keys = papis.config.getlist("doctor-keys-exist-keys")
 
-    def make_fixer(key: str) -> FixFn:
+    def make_fixer(key: str) -> Optional[FixFn]:
         def fixer_author_from_author_list() -> None:
             if "author_list" not in doc:
                 return
@@ -261,7 +256,6 @@ def keys_exist_check(doc: papis.document.Document) -> List[Error]:
             logger.info("[FIX] Parsing 'author_list' into 'author': '%s'.",
                         doc["author_list"])
             doc["author"] = papis.document.author_list_to_author(doc)
-            save_doc(doc)
 
         def fixer_author_list_from_author() -> None:
             if "author" not in doc:
@@ -270,17 +264,13 @@ def keys_exist_check(doc: papis.document.Document) -> List[Error]:
             logger.info("[FIX] Parsing 'author' into 'author_list': '%s'.",
                         doc["author"])
             doc["author_list"] = papis.document.split_authors_name(doc["author"])
-            save_doc(doc)
-
-        def fixer_empty() -> None:
-            return
 
         if key == "author":
             return fixer_author_from_author_list
         elif key == "author_list":
             return fixer_author_list_from_author
         else:
-            return fixer_empty
+            return None
 
     return [Error(name=KEYS_EXIST_CHECK_NAME,
                   path=folder,
@@ -306,7 +296,6 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
         characters (as required by BibTeX).
     """
     import papis.bibtex
-    from papis.api import save_doc
 
     folder = doc.get_main_folder() or ""
 
@@ -315,7 +304,6 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
         logger.info("[FIX] Setting ref to '%s'.", ref)
 
         doc["ref"] = ref
-        save_doc(doc)
 
     def clean_ref_fixer() -> None:
         ref = REFS_BAD_SYMBOL_REGEX.sub("", doc["ref"]).strip()
@@ -382,7 +370,7 @@ def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
                              path=folder,
                              msg=f"Key '{key}' is duplicated ({value})",
                              suggestion_cmd=f"papis edit {key}:'{value}'",
-                             fix_action=lambda: None,
+                             fix_action=None,
                              payload=key,
                              doc=doc))
 
@@ -407,7 +395,7 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
                       path=folder,
                       msg="Document does not define a type",
                       suggestion_cmd=f"papis edit --doc-folder {folder}",
-                      fix_action=lambda: None,
+                      fix_action=None,
                       payload="type",
                       doc=doc)]
 
@@ -416,7 +404,7 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
                       path=folder,
                       msg=f"Document type '{bib_type}' is not a valid BibTeX type",
                       suggestion_cmd=f"papis edit --doc-folder {folder}",
-                      fix_action=lambda: None,
+                      fix_action=None,
                       payload=bib_type,
                       doc=doc)]
 
@@ -435,14 +423,12 @@ def biblatex_type_alias_check(doc: papis.document.Document) -> List[Error]:
     :returns: an error if the type of the document is an alias.
     """
     from papis.bibtex import bibtex_type_aliases
-    from papis.api import save_doc
     folder = doc.get_main_folder() or ""
 
     def make_fixer(value: str) -> FixFn:
         def fixer() -> None:
             logger.info("[FIX] Setting BibLaTeX 'type' to '%s'.", value)
             doc["type"] = value
-            save_doc(doc)
 
         return fixer
 
@@ -480,7 +466,6 @@ def biblatex_key_alias_check(doc: papis.document.Document) -> List[Error]:
     :returns: an error for each key of the document that is an alias.
     """
     from papis.bibtex import bibtex_key_aliases
-    from papis.api import save_doc
     folder = doc.get_main_folder() or ""
 
     def make_fixer(key: str) -> FixFn:
@@ -489,7 +474,6 @@ def biblatex_key_alias_check(doc: papis.document.Document) -> List[Error]:
             logger.info("[FIX] Renaming BibLaTeX key '%s' to '%s'.", key, new_key)
             doc[new_key] = doc[key]
             del doc[key]
-            save_doc(doc)
 
         return fixer
 
@@ -541,7 +525,7 @@ def biblatex_required_keys_check(doc: papis.document.Document) -> List[Error]:
                        "to be compatible with BibLaTeX"
                        .format(bib_type, "', '".join(keys))),
                   suggestion_cmd="papis edit --doc-folder {}".format(folder),
-                  fix_action=lambda: None,
+                  fix_action=None,
                   payload=",".join(keys),
                   doc=doc)
             for keys in required_keys
@@ -564,7 +548,6 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
     :returns: a :class:`list` of errors, one for each key does not have the
         expected type (if it exists).
     """
-    from papis.api import save_doc
     folder = doc.get_main_folder() or ""
 
     # NOTE: the separator can be quoted so that it can force whitespace
@@ -582,8 +565,6 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
             else:
                 doc[key] = [value]
 
-            save_doc(doc)
-
         def fixer_convert_str() -> None:
             value = doc[key]
 
@@ -593,8 +574,6 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
                 doc[key] = separator.join(value)
             else:
                 doc[key] = str(value)
-
-            save_doc(doc)
 
         def fixer_convert_any() -> None:
             value = doc[key]
@@ -606,7 +585,6 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
 
             try:
                 doc[key] = cls(value)
-                save_doc(doc)
             except Exception as exc:
                 logger.error("Failed to convert key '%s' to '%s': '%s'.",
                              key, cls, papis.document.describe(doc), exc_info=exc)
@@ -665,7 +643,6 @@ def html_codes_check(doc: papis.document.Document) -> List[Error]:
     :returns: a :class:`list` of errors, one for each key that contains HTML codes.
     """
     from html import unescape
-    from papis.api import save_doc
 
     results = []
     folder = doc.get_main_folder() or ""
@@ -675,7 +652,6 @@ def html_codes_check(doc: papis.document.Document) -> List[Error]:
             val = unescape(doc[key])
             doc[key] = val
             logger.info("[FIX] Removing HTML codes from key '%s'.", key)
-            save_doc(doc)
 
         return fixer
 
@@ -708,7 +684,6 @@ def html_tags_check(doc: papis.document.Document) -> List[Error]:
 
     :returns: a :class:`list` of errors, one for each key that contains HTML codes.
     """
-    from papis.api import save_doc
 
     results = []
     folder = doc.get_main_folder() or ""
@@ -720,7 +695,6 @@ def html_tags_check(doc: papis.document.Document) -> List[Error]:
 
             logger.info("[FIX] Removing HTML tags from key '%s'.", key)
             doc[key] = new_value
-            save_doc(doc)
 
         return fixer
 
@@ -760,20 +734,149 @@ register_check(HTML_TAGS_CHECK_NAME, html_tags_check)
 register_check(KEY_TYPE_CHECK_NAME, key_type_check)
 
 
-def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
+def gather_errors(documents: List[papis.document.Document],
+                  checks: Optional[List[str]] = None) -> List[Error]:
+    """Run all *checks* over the list of *documents*.
+
+    Only checks registered with :func:`register_check` are supported and any
+    unrecongnized checks are automatically skipped.
+
+    :param checks: a list of checks to run over the documents. If not provided,
+        the default :ref:`config-settings-doctor-default-checks` are used.
+    :returns: a list of all the errors gathered from the documents.
+    """
+    if not checks:
+        checks = papis.config.getlist("doctor-default-checks")
+
+    for check in checks:
+        if check not in REGISTERED_CHECKS:
+            logger.error("Unknown doctor check '%s' (skipping).", check)
+
+    checks = [check for check in checks if check in REGISTERED_CHECKS]
+    logger.debug("Running checks: '%s'.", "', '".join(checks))
+
+    errors: List[Error] = []
+    for doc in documents:
+        for check in checks:
+            errors.extend(REGISTERED_CHECKS[check].operate(doc))
+
+    return errors
+
+
+def fix_errors(doc: papis.document.Document,
+               checks: Optional[List[str]] = None) -> None:
+    """Fix errors in *doc* for the given *checks*.
+
+    This function only applies existing auto-fixers to the document. This is
+    not possible for many of the existing checks, but can be used to quickly
+    clean up a document.
+    """
+    errors = gather_errors([doc], checks=checks)
+
+    fixed = 0
+    for error in errors:
+        if not error.fix_action:
+            logger.error("Cannot fix '%s' error for document '%s': %s",
+                         error.name, papis.document.describe(doc), error.msg)
+            continue
+
+        try:
+            error.fix_action()
+            fixed += 1
+        except Exception as exc:
+            logger.error("Failed to fix '%s' error for document '%s': %s",
+                         error.name, papis.document.describe(doc), error.msg,
+                         exc_info=exc)
+
+    logger.info("Auto-fixed %d / %d errors!", fixed, len(errors))
+
+
+def process_errors(errors: List[Error],
+                   fix: bool = False,
+                   explain: bool = False,
+                   suggest: bool = False,
+                   edit: bool = False) -> None:
+    """Process a list of document errors from :func:`gather_errors`.
+
+    :param fix: if *True*, any automatic fixes are applied to the document the
+        error refers to.
+    :param explain: if *True*, a short explanation of the error is shown.
+    :param suggest: if *True*, a short suggestion for manual fixing of the
+        error is shown.
+    :param edit: if *True*, the document is opened for editing.
+    """
+    if not errors:
+        return
+
+    import colorama as c
+
+    from papis.api import save_doc
+    from papis.commands.edit import run as edit_run
+
+    fixed = 0
+    for i, error in enumerate(errors):
+        if i != 0:
+            click.echo()
+
+        click.echo(
+            f"{c.Style.BRIGHT}{c.Fore.RED}{error.name}{c.Style.RESET_ALL}"
+            f"\t{c.Style.BRIGHT}{error.payload}{c.Style.RESET_ALL}"
+            f"\t{c.Fore.YELLOW}{error.path}{c.Style.RESET_ALL}")
+
+        if explain:
+            click.echo(
+                f"\t{c.Style.BRIGHT}{c.Fore.CYAN}Reason{c.Style.RESET_ALL}: "
+                f"{error.msg}")
+
+        if suggest:
+            click.echo(
+                f"\t{c.Style.BRIGHT}{c.Fore.GREEN}Suggestion{c.Style.RESET_ALL}: "
+                f"{error.suggestion_cmd}")
+
+        if fix and error.fix_action:
+            try:
+                error.fix_action()
+                fixed += 1
+            except Exception as exc:
+                logger.error("Failed to fix '%s' for document '%s'.",
+                             error.name,
+                             papis.document.describe(error.doc)
+                             if error.doc else "unknown",
+                             exc_info=exc)
+
+        if error.doc:
+            if edit:
+                # NOTE: ensure the document has been saved before editing
+                error.doc.save()
+
+                click.pause("Press any key to edit...")
+                edit_run(error.doc)
+            elif fix and error.fix_action:
+                save_doc(error.doc)
+
+    if fix:
+        logger.info("Auto-fixed %d / %d errors!", fixed, len(errors))
+
+
+def run(doc: papis.document.Document,
+        checks: Optional[List[str]] = None,
+        fix: bool = True,
+        explain: bool = False,
+        suggest: bool = False,
+        edit: bool = False) -> None:
     """
     Runner for ``papis doctor``.
 
     It runs all the checks given by the *checks* argument that have been
-    registered through :func:`register_check`.
+    registered through :func:`register_check`. It then proceeds with processing
+    and fixing each error in turn.
     """
-    assert all(check in REGISTERED_CHECKS for check in checks)
-
-    results: List[Error] = []
-    for check in checks:
-        results.extend(REGISTERED_CHECKS[check].operate(doc))
-
-    return results
+    errors = gather_errors([doc], checks=checks)
+    process_errors(errors,
+                   fix=fix,
+                   explain=explain,
+                   suggest=suggest,
+                   edit=edit)
 
 
 @click.command("doctor")
@@ -815,7 +918,6 @@ def cli(query: str,
         all_checks: bool,
         list_checks: bool) -> None:
     """Check for common problems in documents"""
-
     if list_checks:
         click.echo("\n".join(papis.utils.dump_object_doc([
             (name, fn.operate) for name, fn in REGISTERED_CHECKS.items()
@@ -836,12 +938,7 @@ def cli(query: str,
         # NOTE: ensure uniqueness of the checks so we don't run the same ones
         _checks = list(set(_checks))
 
-    logger.debug("Running checks: '%s'.", "', '".join(_checks))
-
-    errors: List[Error] = []
-    for doc in documents:
-        errors.extend(run(doc, _checks))
-
+    errors = gather_errors(documents, checks=_checks)
     if errors:
         logger.warning("Found %s errors.", len(errors))
     else:
@@ -855,32 +952,8 @@ def cli(query: str,
             indent=2))
         return
 
-    import colorama as c
-
-    from papis.commands.edit import run as edit_run
-
-    for i, error in enumerate(errors):
-        if i != 0 and (explain or suggest):
-            click.echo()
-
-        click.echo(
-            f"{c.Style.BRIGHT}{c.Fore.RED}{error.name}{c.Style.RESET_ALL}"
-            f"\t{c.Style.BRIGHT}{error.payload}{c.Style.RESET_ALL}"
-            f"\t{c.Fore.YELLOW}{error.path}{c.Style.RESET_ALL}")
-
-        if explain:
-            click.echo(
-                f"\t{c.Style.BRIGHT}{c.Fore.CYAN}Reason{c.Style.RESET_ALL}: "
-                f"{error.msg}")
-
-        if suggest:
-            click.echo(
-                f"\t{c.Style.BRIGHT}{c.Fore.GREEN}Suggestion{c.Style.RESET_ALL}: "
-                f"{error.suggestion_cmd}")
-
-        if fix:
-            error.fix_action()
-
-        if edit and error.doc:
-            click.pause("Press any key to edit...")
-            edit_run(error.doc)
+    process_errors(errors,
+                   fix=fix,
+                   explain=explain,
+                   suggest=suggest,
+                   edit=edit)

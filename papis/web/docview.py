@@ -34,7 +34,7 @@ def html(libname: str, doc: papis.document.Document) -> t.html_tag:
     and maybe in the future to update the information.
     """
     checks = papis.commands.doctor.registered_checks_names()
-    errors = papis.commands.doctor.run(doc, checks)
+    errors = papis.commands.doctor.gather_errors([doc], checks)
     libfolder = papis.config.get_lib_from_name(libname).paths[0]
 
     with papis.web.header.main_html_document(doc["title"]) as result:

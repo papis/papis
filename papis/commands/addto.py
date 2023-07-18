@@ -76,7 +76,7 @@ def run(document: papis.document.Document,
 
         # Rename the file in the staging area
         new_filename = get_file_name(
-            papis.document.to_dict(document),
+            document,
             local_in_file_path,
             suffix=next(suffix)
         )

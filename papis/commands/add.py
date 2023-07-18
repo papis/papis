@@ -109,6 +109,8 @@ import papis.format
 import papis.citations
 import papis.id
 import papis.logging
+import papis.commands.doctor
+
 
 logger = papis.logging.get_logger(__name__)
 
@@ -162,7 +164,7 @@ class FromLibImporter(papis.importer.Importer):
 
 
 def get_file_name(
-        data: Dict[str, Any],
+        doc: papis.document.Document,
         original_filepath: str,
         suffix: str = "",
         base_name_limit: int = 150) -> str:
@@ -173,7 +175,6 @@ def get_file_name(
     does not provide the necessary keys, the original file name will be preserved
     (mostly as is).
 
-    :param data: a document-like object from which to construct the file name.
     :param original_filepath: absolute path to the original file, which is used
         to determine the extension of the resulting filename.
     :param suffix: a suffix to be appended to the end of the new file name.
@@ -191,7 +192,7 @@ def get_file_name(
         file_name_opt = os.path.basename(original_filepath)
 
     file_name_base = papis.format.format(
-        file_name_opt, papis.document.from_data(data),
+        file_name_opt, doc,
         default=""
     )
 
@@ -267,7 +268,8 @@ def run(paths: List[str],
         edit: bool = False,
         git: bool = False,
         link: bool = False,
-        citations: Optional[papis.citations.Citations] = None) -> None:
+        citations: Optional[papis.citations.Citations] = None,
+        auto_doctor: bool = False) -> None:
     """
     :param paths: Paths to the documents to be added
     :param data: Data for the document to be added.
@@ -309,8 +311,6 @@ def run(paths: List[str],
         for doc_path in in_documents_paths
     ]
 
-    tmp_document = papis.document.Document(temp_dir)
-
     # reference building
     # NOTE: this needs to go before any papis.format calls, so that those can
     # potentially use the 'ref' key in the formatted strings.
@@ -319,6 +319,13 @@ def run(paths: List[str],
         if new_ref:
             logger.info("Created reference '%s'.", new_ref)
             data["ref"] = new_ref
+
+    tmp_document = papis.document.Document(folder=temp_dir, data=data)
+
+    if auto_doctor:
+        logger.debug("Running doctor auto-fixers on document: '%s'.",
+                     papis.document.describe(tmp_document))
+        papis.commands.doctor.fix_errors(tmp_document)
 
     if base_path is None:
         base_path = os.path.expanduser(papis.config.get_lib_dirs()[0])
@@ -330,7 +337,6 @@ def run(paths: List[str],
     out_folder_path = base_path
 
     if folder_name:
-        temp_doc = papis.document.Document(data=data)
         temp_path = os.path.join(out_folder_path, folder_name)
         components: List[str] = []
 
@@ -344,7 +350,7 @@ def run(paths: List[str],
 
             formatted = None
             try:
-                formatted = papis.format.format(path_component, temp_doc)
+                formatted = papis.format.format(path_component, tmp_document)
             except papis.format.FormatFailedError:
                 out_folder_path = base_path
                 components = []
@@ -356,8 +362,6 @@ def run(paths: List[str],
             # continue with parent path component
             temp_path = os.path.dirname(temp_path)
 
-        del temp_doc
-
         # components are formatted in reverse order, so we add then now in the
         # right order to the path
         out_folder_path = os.path.normpath(os.path.join(out_folder_path, *components))
@@ -367,10 +371,10 @@ def run(paths: List[str],
             logger.error(
                 "Could not produce a folder path from the provided data:\n"
                 "\tdata: %s\n\tfiles: %s",
-                data, in_documents_names)
+                tmp_document, in_documents_names)
 
         logger.info("Constructing an automatic (hashed) folder name.")
-        out_folder_name = get_hash_folder(data, in_documents_paths)
+        out_folder_name = get_hash_folder(tmp_document, in_documents_paths)
         out_folder_path = os.path.join(out_folder_path, out_folder_name)
 
     if not papis.utils.is_relative_to(out_folder_path, base_path):
@@ -380,8 +384,6 @@ def run(paths: List[str],
 
     if os.path.exists(out_folder_path):
         out_folder_path = ensure_new_folder(out_folder_path)
-
-    data["files"] = in_documents_names
 
     logger.info("Document folder is '%s'.", out_folder_path)
     logger.debug("Document includes files: '%s'.", "', '".join(in_documents_paths))
@@ -399,7 +401,7 @@ def run(paths: List[str],
         # Rename the file in the staging area
         new_filename = papis.utils.clean_document_name(
             get_file_name(
-                data,
+                tmp_document,
                 in_file_path,
                 suffix=string_append))
         new_file_list.append(new_filename)
@@ -419,9 +421,7 @@ def run(paths: List[str],
             import shutil
             shutil.copy(in_file_path, tmp_end_filepath)
 
-    data["files"] = new_file_list
-
-    tmp_document.update(data)
+    tmp_document["files"] = new_file_list
     tmp_document.save()
 
     # Check if the user wants to edit before submitting the doc
@@ -487,10 +487,10 @@ def run(paths: List[str],
             return
 
     logger.info("[MV] '%s' to '%s'.", tmp_document.get_main_folder(), out_folder_path)
-
-    # This also sets the folder of tmp_document
     papis.document.move(tmp_document, out_folder_path)
+
     papis.database.get().add(tmp_document)
+
     if git:
         papis.git.add_and_commit_resource(
             str(tmp_document.get_main_folder()), ".",
@@ -552,6 +552,10 @@ def run(paths: List[str],
     help="Instead of copying the file to the library, create a link to "
          "its original location",
     default=False)
+@papis.cli.bool_flag(
+    "--auto-doctor/--no-auto-doctor",
+    help="Apply papis doctor to newly added documents.",
+    default=lambda: papis.config.getboolean("auto-doctor"))
 @papis.cli.git_option(help="Git add and commit the new document")
 @papis.cli.bool_flag(
     "--list-importers", "--li", "list_importers",
@@ -575,6 +579,7 @@ def cli(files: List[str],
         confirm: bool,
         open_file: bool,
         edit: bool,
+        auto_doctor: bool,
         git: bool,
         link: bool,
         list_importers: bool,
@@ -675,4 +680,5 @@ def cli(files: List[str],
         edit=edit,
         git=git,
         link=link,
-        citations=citations)
+        citations=citations,
+        auto_doctor=auto_doctor)
