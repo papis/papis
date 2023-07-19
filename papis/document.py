@@ -421,7 +421,7 @@ def describe(document: Union[Document, Dict[str, Any]]) -> str:
     """
     return papis.format.format(
         papis.config.getstring("document-description-format"),
-        document, default=document["papis_id"])
+        document, default=document.get("title", str(document)))
 
 
 def move(document: Document, path: str) -> None:
