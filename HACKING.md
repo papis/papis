@@ -138,10 +138,10 @@ see the arXiv importers in `arxiv.py`. To add a new importer
 - (Optional) Instead of the `fetch` method, you can also implement the `fetch_data`
   and / or `fetch_files` methods separately.
 
-The importer is then registered with `papis` by adding it to `setup.py`. In the
-`entry_points` argument under `"papis.importer"` add
+The importer is then registered with `papis` by adding it to `pyproject.toml`.
+In the `project.entry_points."papis.importer"` section add
 ```
-myimporter=papis.myservice:Importer
+myimporter = "papis.myservice:Importer"
 ```
 or see the existing examples.
 
@@ -162,5 +162,5 @@ from a remote location. They can be implemented in a very similar way:
 - (Optional) Implement the `Downloader.get_document_url` method to return an
   URL from which a document (e.g. PDF file) can be downloaded.
 
-The downloader can then be added to the `"papis.downloader"` key in `setup.py`,
-similarly to an importer.
+The downloader can then be added to the `project.entry-points."papis.downloader"`
+section, similarly to an importer.

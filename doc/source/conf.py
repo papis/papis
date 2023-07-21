@@ -223,7 +223,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ("index", "papis.tex", "papis Documentation", "Alejandro Gallo", "manual"),
+    ("index", "{}.tex".format(project), "{} Documentation".format(project),
+     papis.__author__, "manual"),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -252,13 +253,13 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ("configuration", "papis-config-settings", "Papis configuration",
-     ["Alejandro Gallo"], 1),
+     [papis.__author__], 1),
     ("library_structure", "papis-library-structure", "Papis library structure",
-     ["Alejandro Gallo"], 1),
+     [papis.__author__], 1),
     ("info_file", "papis-info-file", "Papis info.yaml file",
-     ["Alejandro Gallo"], 1),
+     [papis.__author__], 1),
     ("database_structure", "papis-database-structure", "Papis database structure",
-     ["Alejandro Gallo"], 1),
+     [papis.__author__], 1),
 ]
 
 for entry in os.scandir("commands"):
@@ -267,7 +268,7 @@ for entry in os.scandir("commands"):
         "commands/{}".format(name),
         "papis-{}".format(name),
         "{} command".format(name),
-        ["Alejandro Gallo"],
+        [papis.__author__],
         1,
         ))
 
@@ -280,8 +281,8 @@ for entry in os.scandir("commands"):
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ("index", "papis", "papis Documentation",
-     "Alejandro Gallo", "papis", "One line description of project.",
+    ("index", project, "{} Documentation".format(project),
+     papis.__author__, project, "One line description of project.",
      "Miscellaneous"),
 ]
 
@@ -300,9 +301,9 @@ texinfo_documents = [
 # -- Options for Epub output {{{1 --------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = "papis"
-epub_author = "Alejandro Gallo"
-epub_publisher = "Alejandro Gallo"
-epub_copyright = "2017, Alejandro Gallo"
+epub_title = project
+epub_author = papis.__author__
+epub_publisher = papis.__author__
+epub_copyright = copyright
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ["search.html"]
