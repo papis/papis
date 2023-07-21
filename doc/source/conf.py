@@ -10,7 +10,7 @@
 import os
 import sys
 
-from papis import __version__
+import papis
 from papis.sphinx_ext import make_link_resolve
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -69,15 +69,15 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "papis"
-copyright = "2017, Alejandro Gallo"
+project = papis.__name__
+copyright = "2017 {}".format(papis.__author__)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = __version__
+version = papis.__version__
 # The full version, including alpha/beta/rc tags.
 # release = re.sub('^v', '', os.popen('git describe').read().strip())
 release = version

@@ -4,11 +4,10 @@ set -ex
 DIST_DIR=dist
 
 
-rm -rf distenv
-virtualenv -p python3 distenv
-source ./distenv/bin/activate
-pip install .
-pip install .[develop]
+# install build dependencies
+python -m pip install --upgrade pip hatchling wheel build twine
+python -m pip install .
+python -m pip install .[docs]
 
 echo "Updating man pages"
 rm -rf doc/build/
