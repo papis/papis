@@ -49,6 +49,7 @@
           dominate
           filetype
           habanero
+          hatchling
           isbnlib
           jinja2
           lxml
@@ -93,7 +94,7 @@
         python.pkgs.buildPythonPackage rec {
           pname = "papis";
           version = "0.13";
-          format = "setuptools";
+          format = "pyproject";
 
           # disabled = pythonOlder "3.8";
 
@@ -222,7 +223,7 @@
             python --version
             python -m venv .venv
             source .venv/bin/activate
-            pip install -e ".[develop,optional]"
+            pip install -e ".[develop,docs,optional]"
           '';
         };
       };

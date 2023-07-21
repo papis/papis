@@ -16,7 +16,7 @@ For development, consider creating a new virtual environment (with any
 preferred method, e.g. [venv](https://docs.python.org/3/library/venv.html)).
 All development packages can be installed with
 ```bash
-python -m pip install -e '.[develop]'
+python -m pip install -e '.[develop,docs]'
 ```
 
 To run the tests, just use `pytest`. Some helpful wrappers are given in the

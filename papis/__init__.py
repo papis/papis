@@ -1,4 +1,11 @@
-__license__ = "GPLv3"
-__version__ = "0.13"
-__author__ = __maintainer__ = "Alejandro Gallo"
-__email__ = "aamsgallo@gmail.com"
+from importlib import metadata
+
+m = metadata.metadata("papis")
+
+__license__ = m["License"]
+__version__ = m["Version"]
+
+# NOTE: this is formatted like `John Smith <johnsmith@example.com>`
+__author__ = m["Author-email"].split("<")[0].strip()
+__maintainer__ = m["Maintainer-email"].split("<")[0].strip()
+__email__ = m["Author-email"].split("<")[-1][:-1].strip()
