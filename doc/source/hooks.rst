@@ -28,12 +28,11 @@ hook like
 2 Writing hooks as a developer
 ------------------------------
 
-To add a hook as a plugin writer or a developer
-you can just add the ``entry_point`` to the ``setup.py``
-file, for instance for the ``on_edit_done`` hook you would write
+To add a hook as a plugin writer or a developer you can just add the *entrypoint*
+to the ``pyproject.toml`` file. For instance for the ``on_edit_done`` hook you
+would write
 
-.. code:: python
+.. code:: toml
 
-    "papis.hook.on_edit_done" : [
-        "my_hook_name=path.to.my:function,
-    ]
+    [project.entry-points."papis.hook.on_edit_done"]
+    my_hook_name = "path.module:function"
