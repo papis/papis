@@ -155,7 +155,6 @@ release = version
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 exclude_patterns = [
-    "commands/*.rst",
     "default-settings.rst",
 ]
 
@@ -312,43 +311,25 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ("index", "papis", "Papis Documentation",
+    ("configuration", "papis-config-settings", "Papis configuration",
      ["Alejandro Gallo"], 1),
-    ("configuration", "papis-config", "Papis Configuration",
+    ("library_structure", "papis-library-structure", "Papis library structure",
      ["Alejandro Gallo"], 1),
-    ("commands/add", "papis-add", "add command",
+    ("info_file", "papis-info-file", "Papis info.yaml file",
      ["Alejandro Gallo"], 1),
-    ("commands/addto", "papis-addto", "addto command",
-     ["Alejandro Gallo"], 1),
-    ("commands/browse", "papis-browse", "browse command",
-     ["Alejandro Gallo"], 1),
-    ("commands/config", "papis-config", "config command",
-     ["Alejandro Gallo"], 1),
-    ("commands/default", "papis-default", "default command",
-     ["Alejandro Gallo"], 1),
-    ("commands/edit", "papis-edit", "edit command",
-     ["Alejandro Gallo"], 1),
-    ("commands/explore", "papis-explore", "explore command",
-     ["Alejandro Gallo"], 1),
-    ("commands/export", "papis-export", "export command",
-     ["Alejandro Gallo"], 1),
-    ("commands/git", "papis-git", "git command",
-     ["Alejandro Gallo"], 1),
-    ("commands/list", "papis-list", "list command",
-     ["Alejandro Gallo"], 1),
-    ("commands/mv", "papis-mv", "mv command",
-     ["Alejandro Gallo"], 1),
-    ("commands/open", "papis-open", "open command",
-     ["Alejandro Gallo"], 1),
-    ("commands/rename", "papis-rename", "rename command",
-     ["Alejandro Gallo"], 1),
-    ("commands/rm", "papis-rm", "rm command",
-     ["Alejandro Gallo"], 1),
-    ("commands/run", "papis-run", "run command",
-     ["Alejandro Gallo"], 1),
-    ("commands/update", "papis-update", "update command",
+    ("database_structure", "papis-database-structure", "Papis database structure",
      ["Alejandro Gallo"], 1),
 ]
+
+for entry in os.scandir("commands"):
+    name, _ = entry.name.split(".")
+    man_pages.append((
+        "commands/{}".format(name),
+        "papis-{}".format(name),
+        "{} command".format(name),
+        ["Alejandro Gallo"],
+        1,
+        ))
 
 # If true, show URL addresses after external links.
 # man_show_urls = False

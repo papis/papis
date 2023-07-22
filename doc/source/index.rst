@@ -11,7 +11,9 @@ command-line interface (*CLI*) is heavily tailored after
 `Git <https://git-scm.com>`__.
 
 .. toctree::
-   :maxdepth: 2
+   :hidden:
+   :maxdepth: 1
+   :caption: Getting started
 
    quick_start
    install
@@ -19,23 +21,41 @@ command-line interface (*CLI*) is heavily tailored after
    info_file
    library_structure
    database_structure
+
+.. toctree::
+   :hidden:
+   :glob:
+   :maxdepth: 2
+   :caption: Commands
+
+   commands/*
+
+.. toctree::
+   :hidden:
+   :maxdepth: 1
+   :caption: User guides
+
    papis_id
    citations
-   commands
    web-application
    gui
    editors
-   hooks
    scripting
-   api
-   plugins
    git
    scihub
    importing
    shell_completion
-   developer_reference
    faq
 
+.. toctree::
+   :hidden:
+   :maxdepth: 1
+   :caption: Developer documentation
+
+   api
+   plugins
+   hooks
+   developer_reference
 
 
 Indices and tables

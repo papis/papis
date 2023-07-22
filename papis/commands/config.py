@@ -25,8 +25,8 @@ default "default-library" with:
     papis config --default default-library
 
 Settings from a specific section in the configuration file can also be
-accessed. To take an example, the `Bibtex`_ command's settings can be
-accessed with:
+accessed. To take an example, the :ref:`papis bibtex <command-bibtex>` command's
+settings can be accessed with:
 
 .. code::
 
