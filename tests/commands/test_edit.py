@@ -5,9 +5,11 @@ import papis.database
 
 from tests.testlib import TemporaryLibrary, PapisRunner
 
+script = os.path.join(os.path.dirname(__file__), "scripts.py")
+
 
 @pytest.mark.library_setup(settings={
-    "editor": "python {}".format(__file__),
+    "editor": "python {} sed".format(script)
     })
 def test_edit_run(tmp_library: TemporaryLibrary) -> None:
     import papis.config
@@ -70,20 +72,3 @@ def test_edit_cli(tmp_library: TemporaryLibrary) -> None:
 
     expected_notes_path = os.path.join(folder, notes_name)
     assert os.path.exists(expected_notes_path)
-
-
-def sed_replace(filename: str) -> None:
-    # NOTE: this function is used by 'test_edit_run' to provide a cross-platform
-    # way to edit a file that the test can later recognize and see it was called
-    with open(filename) as fd:
-        contents = "\n".join([
-            line.replace("title: ", "title: test_edit") for line in fd
-            ])
-
-    with open(filename, "w") as fd:
-        fd.write(contents)
-
-
-if __name__ == "__main__":
-    import sys
-    sed_replace(sys.argv[-1])

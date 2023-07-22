@@ -1,6 +1,9 @@
+import os
 import pytest
 
 from tests.testlib import TemporaryLibrary, PapisRunner
+
+script = os.path.join(os.path.dirname(__file__), "scripts.py")
 
 
 @pytest.mark.library_setup(settings={
@@ -30,14 +33,5 @@ def test_open_cli(tmp_library: TemporaryLibrary) -> None:
 
     result = cli_runner.invoke(
         cli,
-        ["--tool", "python {}".format(__file__), "--mark", "--all", "Krishnamurti"])
+        ["--tool", "python {} echo".format(script), "--mark", "--all", "Krishnamurti"])
     assert result.exit_code == 0
-
-
-def echo(filename: str) -> None:
-    print("Attempted to open '{}'".format(filename))
-
-
-if __name__ == "__main__":
-    import sys
-    echo(sys.argv[-1])
