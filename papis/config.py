@@ -183,7 +183,6 @@ def register_default_settings(settings_dictionary: PapisConfigType) -> None:
     # NOTE: this updates existing sections in place
     for section, settings in settings_dictionary.items():
         if section in default_settings:
-            logger.warning("Updating existing section '%s'.", section)
             default_settings[section].update(settings)
         else:
             default_settings[section] = settings
