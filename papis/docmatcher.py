@@ -18,17 +18,31 @@ class ParseResult(NamedTuple):
         r = ParseResult(search="einstein", pattern=<...>, doc_key="author")
     """
 
+    #: A boolean indicating whether this is part of syntax or as search query
+    syntax: bool
     #: A search string that was matched for this result.
-    search: str
+    string: str
     #: A regex pattern constructed from the :attr:`search` using
     #: :func:`get_regex_from_search`.
-    pattern: Pattern[str]
+    pattern: Pattern[str] = None
     #: A document key that was matched for this result, if any.
-    doc_key: Optional[str]
+    doc_key: Optional[str] = None
 
     def __repr__(self) -> str:
         doc_key = "{!r}, ".format(self.doc_key) if self.doc_key is not None else ""
-        return "[{}{!r}]".format(doc_key, self.search)
+        return "[{}{!r}]".format(doc_key, self.string)
+
+    def needsboolafter(self) -> bool:
+        if self.syntax and self.string in ["and", "or", "not", "("]:
+            return False
+        else:
+            return True
+
+    def needsboolbefore(self) -> bool:
+        if self.syntax and self.string in ["and", "or", ")"]:
+            return False
+        else:
+            return True
 
 
 class MatcherCallable(Protocol):
@@ -120,14 +134,14 @@ class DocMatcher:
 
         tokens = []
         for p in cls.parsed_search:
-            if type(p) == ParseResult:
+            if not p.syntax:
                 tokens.append(
                     "True"
                     if cls.matcher(doc, p.pattern, cls.match_format, p.doc_key)
                     else "False"
                 )
             else:
-                tokens.append(p)
+                tokens.append(p.string)
 
         result = eval(" ".join(tokens))
         match = doc if result else None
@@ -154,7 +168,7 @@ class DocMatcher:
         cls.matcher = matcher
 
     @classmethod
-    def parse(cls, search: Optional[str] = None) -> List[ParseResult | str]:
+    def parse(cls, search: Optional[str] = None) -> List[ParseResult]:
         """Parse the main query text and check its syntax.
 
         This method will also set :attr:`DocMatcher.parsed_search` to the
@@ -204,17 +218,17 @@ def get_regex_from_search(search: str) -> Pattern[str]:
     )
 
 
-def test_syntax(parsed: List[ParseResult | str]) -> bool:
+def test_syntax(parsed: List[ParseResult]) -> bool:
     """Tests the syntax by replacing all search terms with True,
     then trying to evaluate the resulting string.
     """
 
     test = []
-    for token in parsed:
-        if type(token) == ParseResult:
+    for p in parsed:
+        if not p.syntax:
             test.append("True")
         else:
-            test.append(token)
+            test.append(p.string)
 
     try:
         eval(" ".join(test))
@@ -224,7 +238,7 @@ def test_syntax(parsed: List[ParseResult | str]) -> bool:
         return False
 
 
-def proofread(parsed: List[ParseResult | str]) -> List[ParseResult | str]:
+def proofread(parsed: List[ParseResult]) -> List[ParseResult]:
     """Fixes a parsed query by inserting missing *and* operators.
     For instance:
     ' ein 192     photon' -> 'ein and 192 and photon'
@@ -233,16 +247,14 @@ def proofread(parsed: List[ParseResult | str]) -> List[ParseResult | str]:
     :param a parsed a search string.
     :returns: a fixed list of ParseResults or operators.
     """
-    needsboolafter = lambda x: False if x in ["and", "or", "not", "("] else True
-    needsboolbefore = lambda x: False if x in ["and", "or", ")"] else True
     result = []
     last = len(parsed) - 1
     fixes = 0
     for idx, token in enumerate(parsed):
         result.append(token)
-        if idx != last and needsboolafter(token) and needsboolbefore(parsed[idx + 1]):
+        if idx != last and token.needsboolafter() and parsed[idx + 1].needsboolbefore():
             # add 'and' when queries or syntax have have no operator in between
-            result.append("and")
+            result.append(ParseResult(syntax=True, string="and"))
             fixes += 1
 
     if fixes > 0:
@@ -251,7 +263,7 @@ def proofread(parsed: List[ParseResult | str]) -> List[ParseResult | str]:
     return result
 
 
-def parse_query(query_string: str) -> List[ParseResult | str]:
+def parse_query(query_string: str) -> List[ParseResult]:
     """Parse a query string using :mod:`pyparsing`.
 
     The query language implemented by this function for papis supports strings
@@ -318,18 +330,23 @@ def parse_query(query_string: str) -> List[ParseResult | str]:
     results = []
     for token in parsed:
         if token in operators.split():
-            results.append(token)
+            syntax = True
+            string = token
         else:
             if type(token) is not list:
-                search = token
+                syntax = False
+                string = token
                 doc_key = None
             elif len(token) == 3:
-                search = token[2]
+                syntax = False
+                string = token[2]
                 doc_key = token[0]
             else:
                 continue
 
-            pattern = get_regex_from_search(search)
-            results.append(ParseResult(search=search, pattern=pattern, doc_key=doc_key))
+        pattern = get_regex_from_search(string)
+        results.append(
+            ParseResult(syntax=syntax, string=string, pattern=pattern, doc_key=doc_key)
+        )
 
     return proofread(results)
