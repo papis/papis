@@ -24,7 +24,7 @@ class ParseResult(NamedTuple):
     string: str
     #: A regex pattern constructed from the :attr:`search` using
     #: :func:`get_regex_from_search`.
-    pattern: Pattern[str] = None
+    pattern: Pattern[str]
     #: A document key that was matched for this result, if any.
     doc_key: Optional[str] = None
 
@@ -196,7 +196,7 @@ class DocMatcher:
         if test_syntax(parsed_search):
             cls.parsed_search = parsed_search
         else:
-            cls.parsed_search = None
+            cls.parsed_search = []
 
         return cls.parsed_search
 
@@ -254,7 +254,11 @@ def proofread(parsed: List[ParseResult]) -> List[ParseResult]:
         result.append(token)
         if idx != last and token.needsboolafter() and parsed[idx + 1].needsboolbefore():
             # add 'and' when queries or syntax have have no operator in between
-            result.append(ParseResult(syntax=True, string="and"))
+            result.append(
+                ParseResult(
+                    syntax=True, string="and", pattern=get_regex_from_search("")
+                )
+            )
             fixes += 1
 
     if fixes > 0:
