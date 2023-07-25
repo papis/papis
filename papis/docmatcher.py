@@ -176,13 +176,13 @@ class DocMatcher:
         error it will log an error message and return None.
 
             >>> print(DocMatcher.parse('hello author : einstein'))
-            [['hello'], ['author', 'einstein']]
+            [['hello'], ['and'], ['author', 'einstein']]
             >>> print(DocMatcher.parse(''))
             []
             >>> print(\
                 DocMatcher.parse(\
                     '"hello world whatever :" tags : \\\'hello ::::\\\''))
-            [['hello world whatever :'], ['tags', 'hello ::::']]
+            [['hello world whatever :'], ['and'], ['tags', 'hello ::::']]
             >>> print(DocMatcher.parse('hello'))
             [['hello']]
 
@@ -193,7 +193,7 @@ class DocMatcher:
             search = cls.search
         parsed_search = parse_query(search)
 
-        if test_syntax(parsed_search):
+        if check_syntax(parsed_search):
             cls.parsed_search = parsed_search
         else:
             cls.parsed_search = []
@@ -218,7 +218,7 @@ def get_regex_from_search(search: str) -> Pattern[str]:
     )
 
 
-def test_syntax(parsed: List[ParseResult]) -> bool:
+def check_syntax(parsed: List[ParseResult]) -> bool:
     """Tests the syntax by replacing all search terms with True,
     then trying to evaluate the resulting string.
     """
