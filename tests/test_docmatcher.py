@@ -48,20 +48,18 @@ def test_parse_query(tmp_config: TemporaryConfiguration) -> None:
     from papis.docmatcher import parse_query
 
     rs = parse_query("hello   author : einstein")
-    assert rs[0].search == "hello"
-    assert rs[1].doc_key == "author"
-    assert rs[1].search == "einstein"
+    assert rs[0].string == "hello"
+    assert rs[1].string == "and"
+    assert rs[2].doc_key == "author"
+    assert rs[2].string == "einstein"
 
-    r, = parse_query("doi : 123.123/124_123")
-    assert r.doc_key == "doi"
-    assert r.search == "123.123/124_123"
-
-    r, = parse_query("doi : 123.123/124_123(80)12")
-    assert r.doc_key == "doi"
-    assert r.search == "123.123/124_123(80)12"
+    rs = parse_query("doi : 123.123/124_123")
+    assert rs[0].doc_key == "doi"
+    assert rs[0].string == "123.123/124_123"
 
     rs = parse_query('tt : asfd   author : "Albert einstein"')
     assert rs[0].doc_key == "tt"
-    assert rs[0].search == "asfd"
-    assert rs[1].doc_key == "author"
-    assert rs[1].search == "Albert einstein"
+    assert rs[0].string == "asfd"
+    assert rs[1].string == "and"
+    assert rs[2].doc_key == "author"
+    assert rs[2].string == "Albert einstein"
