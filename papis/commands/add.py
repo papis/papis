@@ -596,12 +596,12 @@ def cli(files: List[str],
     matching_importers = papis.utils.get_matching_importer_by_name(
         from_importer, only_data=only_data)
 
-    if not from_importer and not batch and files:
+    if not from_importer and files:
         matching_importers = sum((
             papis.utils.get_matching_importer_or_downloader(f, only_data=only_data)
             for f in files), [])
 
-        if matching_importers:
+        if matching_importers and not batch:
             logger.info("These importers where automatically matched. "
                         "Select the ones you want to use.")
 
@@ -613,6 +613,11 @@ def cli(files: List[str],
                 "Select matching importers (for instance 0, 1, 3-10, a, all...)")
 
             matching_importers = [matching_importers[i] for i in matching_indices]
+        elif matching_importers:
+            if len(matching_importers) >= 2:
+                matching_importers = [matching_importers[1]]   
+            else:
+                matching_importers = [matching_importers[0]]
 
     imported = papis.utils.collect_importer_data(
         matching_importers, batch=batch, only_data=only_data)
