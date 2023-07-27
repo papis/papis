@@ -580,8 +580,6 @@ def cli(files: List[str],
         return
 
     data = {}
-    for data_set in set_list:
-        data[data_set[0]] = data_set[1]
 
     ctx = papis.importer.Context()
     ctx.files = [f for f in files if os.path.exists(f)]
@@ -618,6 +616,11 @@ def cli(files: List[str],
         matching_importers, batch=batch, only_data=only_data)
     ctx.data.update(imported.data)
     ctx.files.extend(imported.files)
+
+    set_data = {}
+    for data_set in set_list:
+        set_data[data_set[0]] = data_set[1]
+    ctx.data.update(set_data)
 
     if not ctx:
         logger.error("No document is created, since no data or files have been "
