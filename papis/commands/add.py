@@ -490,6 +490,11 @@ def run(paths: List[str],
     multiple=True,
     type=(str, str))
 @click.option(
+    "-S", "--set-after", "set_after_list",
+    help="Set some information after",
+    multiple=True,
+    type=(str, str))
+@click.option(
     "-d", "--subfolder",
     help="Subfolder in the library",
     default=lambda: papis.config.getstring("add-subfolder"))
@@ -553,6 +558,7 @@ def run(paths: List[str],
               is_flag=True)
 def cli(files: List[str],
         set_list: List[Tuple[str, str]],
+        set_after_list: List[Tuple[str, str]],
         subfolder: str,
         pick_subfolder: bool,
         folder_name: str,
@@ -580,6 +586,8 @@ def cli(files: List[str],
         return
 
     data = {}
+    for data_set in set_list:
+        data[data_set[0]] = data_set[1]
 
     ctx = papis.importer.Context()
     ctx.files = [f for f in files if os.path.exists(f)]
@@ -617,10 +625,11 @@ def cli(files: List[str],
     ctx.data.update(imported.data)
     ctx.files.extend(imported.files)
 
-    set_data = {}
-    for data_set in set_list:
-        set_data[data_set[0]] = data_set[1]
-    ctx.data.update(set_data)
+    if set_after_list:
+        set_after_data = {}
+        for data_set in set_after_list:
+            set_after_data[data_set[0]] = data_set[1]
+        ctx.data.update(set_after_data)
 
     if not ctx:
         logger.error("No document is created, since no data or files have been "
