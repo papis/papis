@@ -32,7 +32,7 @@ def prompt(text: Union[str, FormattedText],
         actions = []
 
     assert isinstance(actions, list)
-    assert type(title) == str
+    assert isinstance(title, str)
 
     kb = KeyBindings()
 
