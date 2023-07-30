@@ -160,7 +160,7 @@ Tools options
 
 .. _bibtex-options:
 
-Bibtex options
+BibTeX options
 --------------
 
 .. papis-config:: bibtex-journal-key
@@ -175,8 +175,8 @@ Bibtex options
 .. papis-config:: extra-bibtex-keys
   :default: []
 
-  When exporting documents in bibtex format, you might want to add
-  non-standard bibtex keys such as ``doc_url`` or ``tags``. You can add
+  When exporting documents in BibTeX format, you might want to add
+  non-standard BibTeX keys such as ``doc_url`` or ``tags``. You can add
   these as a valid python list of strings, for instance:
 
   .. code:: ini
@@ -196,14 +196,16 @@ Bibtex options
 .. papis-config:: extra-bibtex-types
   :default: []
 
-  Allow non-standard bibtex types to be recognized, e.g,
+  Allow non-standard BibTeX types to be recognized, e.g,
 
   .. code:: ini
 
     [mylib]
     extra-bibtex-types = ["wikipedia", "video", "song"]
 
-  See `bibtex reference <https://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`__.
+  See the `BibTeX reference <https://mirror.easyname.at/ctan/biblio/bibtex/base/btxdoc.pdf>`__
+  or the `BibLaTeX reference <https://ftp.snt.utwente.nl/pub/software/tex/macros/latex/contrib/biblatex/doc/biblatex.pdf>`__
+  for supported types.
 
 .. papis-config:: multiple-authors-format
 
@@ -230,7 +232,7 @@ Bibtex options
 .. papis-config:: bibtex-unicode
 
     Whether or not to allow direct unicode characters in the document
-    fields to be exported into the bibtex text.
+    fields to be exported into the BibTeX text.
 
 .. papis-config:: bibtex-export-zotero-file
 
