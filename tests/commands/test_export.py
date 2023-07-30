@@ -1,149 +1,152 @@
-import re
 import os
-import glob
-
-import json
 import tempfile
 
-import yaml
+import papis.database
 
-import papis.yaml
-import papis.bibtex
-import papis.config
-import papis.document
-from papis.commands.export import run, cli
-
-import tests
-import tests.cli
+from tests.testlib import TemporaryLibrary, PapisRunner
 
 
-class TestRun(tests.cli.TestWithLibrary):
+def test_export_run(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.export import run
 
-    def get_docs(self):
-        db = papis.database.get()
-        return db.get_all_documents()
+    db = papis.database.get()
+    docs = db.get_all_documents()
 
-    def test_bibtex(self) -> None:
-        docs = self.get_docs()
-        string = run(docs, to_format="bibtex")
-        self.assertTrue(string)
-        data = papis.bibtex.bibtex_to_dict(string)
-        self.assertTrue(data)
+    # bibtex
+    exported_bibtex = run(docs, to_format="bibtex")
+    assert exported_bibtex
+    data = papis.bibtex.bibtex_to_dict(exported_bibtex)
+    assert isinstance(data, list)
+    assert len(data) == len(docs)
 
-    def test_json(self) -> None:
-        docs = self.get_docs()
-        string = run(docs, to_format="json")
-        self.assertTrue(string)
-        data = json.loads(string)
-        self.assertTrue(data)
+    # FIXME: not all fields are there and some don't match due to bibtex
+    # pre- or post-processing
+    assert all(d["title"] == doc["title"] for d, doc in zip(data, docs))
 
-    def test_yaml(self) -> None:
-        docs = self.get_docs()
-        string = run(docs, to_format="yaml")
-        self.assertTrue(string)
+    # json
+    exported_json = run(docs, to_format="json")
+    assert exported_json
 
-        with tempfile.NamedTemporaryFile("w+", delete=False) as fd:
-            path = fd.name
-            fd.write(string)
+    import json
+    data = json.loads(exported_json)
+    assert isinstance(data, list)
+    assert data == docs
 
-        with open(path, "r") as fd:
-            data = list(yaml.load_all(fd, Loader=papis.yaml.Loader))
+    # yaml
+    exported_yaml = run(docs, to_format="yaml")
+    assert exported_yaml
 
-        self.assertIsNot(data, None)
-        self.assertTrue(data)
-        os.unlink(path)
+    with tempfile.NamedTemporaryFile("w+", delete=False, dir=tmp_library.tmpdir) as fd:
+        fd.write(exported_yaml)
+        path = fd.name
+
+    from papis.yaml import yaml_to_list
+    data = yaml_to_list(path, raise_exception=True)
+    assert data == docs
 
 
-class TestCli(tests.cli.TestCli):
+def test_export_json_cli(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.export import cli
+    cli_runner = PapisRunner()
 
-    cli = cli
+    result = cli_runner.invoke(
+        cli,
+        ["--format", "json", "_this_document_does_not_exist_"])
 
-    def test_main(self) -> None:
-        self.do_test_cli_function_exists()
-        self.do_test_help()
+    assert result.exit_code == 0
+    assert not result.output
 
-    def test_json(self) -> None:
-        result = self.invoke([
-            "krishnamurti", "--format", "json"
-        ])
-        self.assertEqual(result.exit_code, 0)
-        data = json.loads(result.stdout_bytes.decode())
-        self.assertIsInstance(data, list)
-        self.assertEqual(len(data), 1)
-        self.assertIsNot(re.match(r".*Krishnamurti.*", data[0]["author"]), None)
+    result = cli_runner.invoke(
+        cli,
+        ["--format", "json", "krishnamurti"])
+    assert result.exit_code == 0
 
-        # output stdout
-        with tempfile.NamedTemporaryFile(delete=False) as f:
-            outfile = f.name
+    import json
+    data = json.loads(result.output)
 
-        result = self.invoke([
-            "Krishnamurti", "--format", "json", "--out", outfile
-        ])
-        self.assertEqual(result.exit_code, 0)
-        self.assertTrue(os.path.exists(outfile))
+    assert len(data) == 1
+    assert "Krishnamurti" in data[0]["author"]
+    assert data[0]["year"] == "2009"
 
-        with open(outfile) as fd:
-            data = json.load(fd)
+    outfile = os.path.join(tmp_library.tmpdir, "test.json")
+    result = cli_runner.invoke(
+        cli,
+        ["--format", "json", "--out", outfile, "krishnamurti"])
 
-        self.assertIsInstance(data, list)
-        self.assertEqual(len(data), 1)
-        self.assertIsNot(re.match(r".*Krishnamurti.*", data[0]["author"]), None)
-        os.unlink(outfile)
+    assert result.exit_code == 0
+    assert os.path.exists(outfile)
 
-    def test_yaml(self) -> None:
-        result = self.invoke([
-            "krishnamurti", "--format", "yaml"
-        ])
-        self.assertEqual(result.exit_code, 0)
-        data = yaml.safe_load(result.stdout_bytes)
-        assert re.match(r".*Krishnamurti.*", data["author"]) is not None
+    with open(outfile) as fd:
+        data_out = json.load(fd)
 
-        with tempfile.NamedTemporaryFile(delete=False) as f:
-            outfile = f.name
+    assert len(data_out) == 1
+    assert data_out == data
 
-        result = self.invoke([
-            "Krishnamurti", "--format", "yaml", "--out", outfile
-        ])
-        self.assertEqual(result.exit_code, 0)
-        self.assertTrue(os.path.exists(outfile))
 
-        with open(outfile) as fd:
-            data = yaml.safe_load(fd.read())
+def test_export_yaml_cli(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.export import cli
+    cli_runner = PapisRunner()
 
-        self.assertIsNot(data, None)
-        self.assertIsNot(re.match(r".*Krishnamurti.*", data["author"]), None)
-        os.unlink(outfile)
+    result = cli_runner.invoke(
+        cli,
+        ["--format", "yaml", "krishnamurti"])
+    assert result.exit_code == 0
 
-    def test_folder(self) -> None:
-        with tempfile.TemporaryDirectory() as d:
-            outdir = os.path.join(d, "export")
+    import yaml
+    data = yaml.safe_load(result.output)
 
-            result = self.invoke(["krishnamurti", "--folder", "--out", outdir])
-            self.assertTrue(os.path.exists(outdir))
-            self.assertTrue(os.path.isdir(outdir))
-            self.assertEqual(result.exit_code, 0)
-            self.assertEqual(result.stdout_bytes, b"")
+    assert "Krishnamurti" in data["author"]
+    assert data["year"] == "2009"
 
-            doc = papis.document.from_folder(outdir)
-            self.assertIsNot(doc, None)
-            self.assertIsNot(re.match(r".*Krishnamurti.*", doc["author"]), None)
+    outfile = os.path.join(tmp_library.tmpdir, "test.yaml")
+    result = cli_runner.invoke(
+        cli,
+        ["--format", "yaml", "--out", outfile, "krishnamurti"])
 
-    def test_folder_all(self) -> None:
-        with tempfile.TemporaryDirectory() as d:
-            outdir = os.path.join(d, "export")
+    assert result.exit_code == 0
+    assert os.path.exists(outfile)
 
-            result = self.invoke(["--all", "--folder", "--out", outdir])
-            self.assertTrue(os.path.exists(outdir))
-            self.assertTrue(os.path.isdir(outdir))
-            self.assertEqual(result.exit_code, 0)
-            self.assertEqual(result.stdout_bytes, b"")
+    with open(outfile) as fd:
+        data_out = yaml.safe_load(fd)
 
-            dirs = glob.glob(os.path.join(outdir, "*"))
-            self.assertGreater(len(dirs), 1)
-            for d in dirs:
-                self.assertTrue(os.path.exists(d))
-                self.assertTrue(os.path.isdir(d))
+    assert data_out == data
 
-    def test_no_documents(self) -> None:
-        result = self.invoke(["-f", "bibtex", "__no_document__"])
-        self.assertEqual(result.exit_code, 0)
+
+def test_export_folder_cli(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.export import cli
+    cli_runner = PapisRunner()
+
+    outdir = os.path.join(tmp_library.libdir, "test_export_subfolder")
+    result = cli_runner.invoke(
+        cli,
+        ["--folder", "--out", outdir, "krishnamurti"])
+
+    assert result.exit_code == 0
+    assert os.path.exists(outdir)
+    assert os.path.isdir(outdir)
+
+    doc = papis.document.from_folder(outdir)
+    assert doc is not None
+    assert "Krishnamurti" in doc["author"]
+
+
+def test_export_folder_all_cli(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.export import cli
+    cli_runner = PapisRunner()
+
+    outdir = os.path.join(tmp_library.libdir, "test_export_folder")
+    result = cli_runner.invoke(
+        cli,
+        ["--all", "--folder", "--out", outdir])
+
+    assert result.exit_code == 0
+    assert os.path.exists(outdir)
+    assert os.path.isdir(outdir)
+
+    import glob
+    dirs = glob.glob(os.path.join(outdir, "*"))
+    assert len(dirs) == 6
+
+    for d in dirs:
+        assert os.path.exists(d)
+        assert os.path.isdir(d)

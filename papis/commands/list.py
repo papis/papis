@@ -1,12 +1,12 @@
 """
-This command is to list contents of a library.
+This command is used to list items in a library.
 
 Examples
 ^^^^^^^^
 
-- List all document files associated will all entries:
+- List all document files associated will all documents in the library:
 
-    .. code:: bash
+    .. code:: sh
 
         papis list --all --file
 
@@ -16,9 +16,9 @@ Examples
         src="https://asciinema.org/a/XwD0ZaUORoOonwDw4rXoQDkjZ.js"
         id="asciicast-XwD0ZaUORoOonwDw4rXoQDkjZ" async></script>
 
-- List all document year and title with custom formatting:
+- List the year and title of all documents with some custom formatting:
 
-    .. code:: bash
+    .. code:: sh
 
         papis list --all --format '{doc[year]} {doc[title]}'
 
@@ -28,10 +28,10 @@ Examples
         src="https://asciinema.org/a/NZ8Ii1wWYPo477CIL4vZhUqOy.js"
         id="asciicast-NZ8Ii1wWYPo477CIL4vZhUqOy" async></script>
 
-- List all documents according to the bibitem formatting (stored in a template
+- List all documents according to the ``bibitem`` formatting (stored in a template
   file ``bibitem.template``):
 
-    .. code:: bash
+    .. code:: sh
 
         papis list --all --template bibitem.template
 
@@ -44,9 +44,9 @@ Examples
 - For scripting, printing the id of a series of documents is valuable in order
   to further use the id in other scripts.
 
-    .. code:: bash
+    .. code:: sh
 
-        papis_id=$(papis list --id)
+        papis_id=$(papis list --id einstein)
         papis open papis_id:${papis_id}
         papis edit papis_id:${papis_id}
         # etc.
@@ -100,7 +100,7 @@ def run(documents: List[papis.document.Document],
 
     if template is not None:
         if not os.path.exists(template):
-            logger.error("Template file '%s' not found", template)
+            logger.error("Template file '%s' not found.", template)
             return []
         with open(template) as fd:
             fmt = fd.read()
@@ -132,7 +132,8 @@ def run(documents: List[papis.document.Document],
         return [d.get_info_file() for d in documents]
     elif fmt:
         return [
-            papis.format.format(fmt, document)
+            papis.format.format(fmt, document,
+                                default=papis.document.describe(document))
             for document in documents
         ]
     elif folders:
@@ -208,7 +209,7 @@ def cli(query: str,
         libraries: bool,
         sort_field: Optional[str], sort_reverse: bool) -> None:
     """List documents' properties"""
-    documents = []  # type: List[papis.document.Document]
+    documents: List[papis.document.Document] = []
 
     if (not libraries and not downloaders
             and not _file and not info and not _dir):

@@ -37,14 +37,14 @@ def _parse_month(date: str) -> Optional[int]:
 
 
 class Downloader(papis.downloaders.Downloader):
-    DOCUMENT_URL = (
+    DOCUMENT_URL: ClassVar[str] = (
         "https://www.tandfonline.com/doi/pdf/{doi}"
-        )   # type: ClassVar[str]
+        )
 
-    BIBTEX_URL = (
+    BIBTEX_URL: ClassVar[str] = (
         "https://www.tandfonline.com/action/downloadCitation"
         "?format=bibtex&cookieSet=1&doi={doi}"
-        )   # type: ClassVar[str]
+        )
 
     def __init__(self, url: str) -> None:
         super().__init__(
@@ -71,7 +71,7 @@ class Downloader(papis.downloaders.Downloader):
             return None
 
         url = self.BIBTEX_URL.format(doi=doi)
-        self.logger.debug("bibtex url = '%s'", url)
+        self.logger.debug("Using BibTeX URL: '%s'.", url)
         return url
 
     def get_document_url(self) -> Optional[str]:
@@ -80,5 +80,5 @@ class Downloader(papis.downloaders.Downloader):
             return None
 
         url = self.DOCUMENT_URL.format(doi=doi)
-        self.logger.debug("doc url = '%s'", url)
+        self.logger.debug("Using document URL: '%s'.", url)
         return url

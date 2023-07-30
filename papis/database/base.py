@@ -48,7 +48,8 @@ class Database(ABC):
         :param document: Document to be matched
         :param query_string: Query string
         """
-        raise NotImplementedError("Match not defined for this class")
+        raise NotImplementedError(
+            "Match not defined for backend '{}'".format(self.get_backend_name()))
 
     @abstractmethod
     def clear(self) -> None:
@@ -88,9 +89,8 @@ class Database(ABC):
         if len(results) > 1:
             raise ValueError("More than one document matches the unique id '{}'"
                              .format(identifier))
-        if results:
-            return results[0]
-        return None
+
+        return results[0] if results else None
 
     @staticmethod
     def get_id_key() -> str:

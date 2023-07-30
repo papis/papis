@@ -12,7 +12,7 @@ pip install .[develop]
 
 echo "Updating man pages"
 rm -rf doc/build/
-make doc-man ENV=distenv
+make -C doc man ENV=distenv
 
 rm -rf ${DIST_DIR}
 rm -rf doc/build/man/_static/

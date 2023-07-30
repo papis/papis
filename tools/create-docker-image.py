@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 # vim-run: python % -p 3.3 ../Dockerfile --norun
 
 import argparse
@@ -13,7 +12,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-p", help="Python version",
         choices=map(
-            lambda x: "{0}.{1}".format(*x),
+            lambda x: "{}.{}".format(*x),
             zip(it.repeat(3), range(3, 8))))
     parser.add_argument("dockerfile")
     parser.add_argument(

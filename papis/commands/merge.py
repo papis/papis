@@ -1,16 +1,19 @@
 """
-Merge two documents that might be potentially repeated.
+Merge two documents that might be potentially duplicated.
 
-If your papis picker do not support selecting two items, then
-pass the ``--pick`` flag to pick twice for the documents.
+If your papis picker does not support selecting two items, then
+pass the ``--pick`` flag to pick twice from the documents.
 
-TODO: Write more documentation
+Examples
+^^^^^^^^
+
+TODO
 
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.merge:cli
-    :prog: papis open
+    :prog: papis merge
 """
 
 import os
@@ -47,16 +50,16 @@ def run(keep: papis.document.Document,
         to_folder = keep.get_main_folder()
         if to_folder:
             import shutil
-            logger.info("Moving %s", f)
+            logger.info("Moving '%s' to '%s'.", f, to_folder)
             shutil.copy(f, to_folder)
             keep["files"] += [os.path.basename(f)]
     papis.commands.update.run(keep, data, git=git)
 
     if not keep_both:
-        logger.info("Removing '%s'", erase)
+        logger.info("Removing '%s'.", papis.document.describe(erase))
         papis.commands.rm.run(erase, git=git)
     else:
-        logger.info("Keeping both documents")
+        logger.info("Keeping both documents.")
 
 
 @click.command("merge")
@@ -65,7 +68,7 @@ def run(keep: papis.document.Document,
 @papis.cli.sort_option()
 @click.option("-s",
               "--second",
-              help="Keep the second document after merge and erase the first,"
+              help="Keep the second document after merge and erase the first, "
                    "the default is keep the first",
               default=False,
               is_flag=True)
@@ -131,7 +134,7 @@ def cli(query: str,
                                                    data_b,
                                                    papis.document.describe(b))
 
-    files = []  # type: List[str]
+    files: List[str] = []
     for doc in documents:
         indices = papis.tui.utils.select_range(
             doc.get_files(),
@@ -141,7 +144,6 @@ def cli(query: str,
         files += [doc.get_files()[i] for i in indices]
 
     if not papis.tui.utils.confirm("Are you sure you want to merge?"):
-        logger.info("Exiting safely")
         return
 
     keep = b if second else a
@@ -158,7 +160,7 @@ def cli(query: str,
             keep["files"] += [os.path.basename(f)]
         keep.update(data_a)
         keep.save()
-        logger.info("Saving the new document in '%s'", out)
+        logger.info("Saving the new document in '%s'.", out)
         return
 
     run(keep, erase, data_a, files, keep_both, git)

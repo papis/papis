@@ -1,30 +1,12 @@
-"""Module defining the main document type.
-
-.. class:: KeyConversion
-
-    A :class:`dict` that contains a *key* and an *action*. The *key* contains the
-    name of a key in another dictionary and the *action* contains a callable
-    that can pre-processes the value.
-
-.. class:: KeyConversionPair
-    .. attribute:: foreign_key
-
-        A string denoting the foreign key (in the input data).
-
-    .. attribute:: list
-
-        A :class:`list` of :class:`KeyConversion` dictionaries used to
-        rename and post-process the :attr:`foreign_key` and its value.
-"""
+"""Module defining the main document type."""
 
 import os
 import re
 import enum
 from typing import (
-    Any, Callable, Dict, List, NamedTuple, Optional, Sequence, Tuple, Union,
+    Any, Callable, Dict, List, NamedTuple, Optional, Sequence, Tuple,
+    TypedDict, Union,
     )
-
-from typing_extensions import TypedDict
 
 import papis
 import papis.config
@@ -32,28 +14,41 @@ import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
+#: A union of types that can be converted to a document.
+DocumentLike = Union["Document", Dict[str, Any]]
+
 
 # NOTE: rankings used in papis.document.sort:
 #   date:       0 (date type -- comes first)
 #   int:        1 (integer type)
 #   other:      2 (other types)
 #   none:       3 (missing key)
-class SortPriority(enum.IntEnum):
+class _SortPriority(enum.IntEnum):
     Date = 0
     Int = 1
     Other = 2
     Missing = 3
 
 
-KeyConversion = TypedDict(
-    "KeyConversion", {"key": Optional[str],
-                      "action": Optional[Callable[[Any], Any]]}
-)
+class KeyConversion(TypedDict):
+    """A :class:`dict` that contains a *key* and an *action*."""
+
+    #: Name of a key in a foreign dictionary to convert.
+    key: Optional[str]
+    #: Action to apply to the value at :attr:`key` for pre-processing.
+    action: Optional[Callable[[Any], Any]]
+
+
+#: A default :class:`KeyConversion`.
 EmptyKeyConversion = KeyConversion(key=None, action=None)
-KeyConversionPair = NamedTuple(
-    "KeyConversionPair",
-    [("foreign_key", str), ("list", List[KeyConversion])]
-)
+
+
+class KeyConversionPair(NamedTuple):
+    #: A string denoting the foreign key (in the input data).
+    foreign_key: str
+    #: A :class:`list` of :class:`KeyConversion` mappings used to
+    #: rename and post-process the :attr:`foreign_key` and its value.
+    list: List[KeyConversion]
 
 
 def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
@@ -67,7 +62,7 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
 
     For example, we have the simple dictionary
 
-    .. code:: json
+    .. code:: python
 
         data = {"id": "10.1103/physrevb.89.140501"}
 
@@ -111,16 +106,18 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
             continue
 
         for conv_data in key_pair.list:
-            papis_key = conv_data.get("key") or foreign_key  # type: str
+            papis_key: str = conv_data.get("key") or foreign_key
             papis_value = data[foreign_key]
 
             action = conv_data.get("action")
             if action:
                 try:
                     new_value = action(papis_value)
-                except Exception as ex:
-                    logger.debug("Error while trying to parse '%s' (%s)",
-                                 papis_key, ex)
+                except Exception as exc:
+                    logger.debug(
+                        "Error parsing papis key '%s' from foreign key '%s' => '%r'.",
+                        papis_key, foreign_key, papis_value, exc_info=exc
+                    )
                     new_value = None
             else:
                 new_value = papis_value
@@ -146,17 +143,16 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
 def author_list_to_author(data: Dict[str, Any]) -> str:
     """Convert a list of authors into a single author string.
 
-    This uses the ``multiple-authors-separator`` and the ``multiple-authors-format``
-    configuration settings (see :ref:`general-settings`) to construct the
+    This uses the :ref:`config-settings-multiple-authors-separator` and the
+    :ref:`config-settings-multiple-authors-format` settings to construct the
     concatenated authors.
 
     :param data: a :class:`dict` that contains an ``"author_list"`` key to
         be converted into a single author string.
 
-    >>> authors = [\
-        {"given": "Some", "family": "Author"},\
-        {"given": "Other", "family": "Author"}]
-    >>> author_list_to_author({"author_list": authors})
+    >>> author1 = {"given": "Some", "family": "Author"}
+    >>> author2 = {"given": "Other", "family": "Author"}
+    >>> author_list_to_author({"author_list": [author1, author2]})
     'Author, Some and Author, Other'
     """
     if "author_list" not in data:
@@ -166,9 +162,9 @@ def author_list_to_author(data: Dict[str, Any]) -> str:
     fmt = papis.config.getstring("multiple-authors-format")
 
     if separator is None or fmt is None:
-        raise Exception(
-            "You have to define 'multiple-author-separator'"
-            " and 'multiple-author-format'")
+        raise ValueError(
+            "Cannot join the author list if the settings 'multiple-authors-separator' "
+            "and 'multiple-authors-format' are not present in the configuration")
 
     return separator.join([
         fmt.format(au=author) for author in data["author_list"]
@@ -234,15 +230,15 @@ class Document(Dict[str, Any]):
         in the document for use in HTML documents.
     """
 
-    subfolder = ""          # type: str
-    _info_file_path = ""    # type: str
+    subfolder: str = ""
+    _info_file_path: str = ""
 
     def __init__(self,
                  folder: Optional[str] = None,
                  data: Optional[Dict[str, Any]] = None) -> None:
         super().__init__()
 
-        self._folder = None          # type: Optional[str]
+        self._folder: Optional[str] = None
 
         if folder is not None:
             self.set_folder(folder)
@@ -329,7 +325,11 @@ class Document(Dict[str, Any]):
     def save(self) -> None:
         """Saves the current document fields into the info file."""
         import papis.yaml
-        papis.yaml.data_to_yaml(self.get_info_file(), dict(self))
+
+        allow_unicode = papis.config.getboolean("info-allow-unicode")
+        papis.yaml.data_to_yaml(self.get_info_file(),
+                                dict(self),
+                                allow_unicode=allow_unicode)
 
     def load(self) -> None:
         """Load information from the info file."""
@@ -340,10 +340,10 @@ class Document(Dict[str, Any]):
 
         try:
             data = papis.yaml.yaml_to_data(info_file, raise_exception=True)
-        except Exception as ex:
+        except Exception as exc:
             logger.error(
-                "Error reading info file in '%s'. Please check it!\n%s",
-                info_file, ex)
+                "Error reading info file at '%s'. Please check it!",
+                self.get_info_file(), exc_info=exc)
         else:
             self.update(data)
 
@@ -419,11 +419,11 @@ def delete(document: Document) -> None:
 def describe(document: Union[Document, Dict[str, Any]]) -> str:
     """
     :returns: a string description of the current document using
-        ``document-description-format`` (see :ref:`general-settings`).
+        :ref:`config-settings-document-description-format`.
     """
     return papis.format.format(
         papis.config.getstring("document-description-format"),
-        document)
+        document, default=document.get("title", str(document)))
 
 
 def move(document: Document, path: str) -> None:
@@ -442,7 +442,7 @@ def move(document: Document, path: str) -> None:
     >>> move(doc, newfolder)
     Traceback (most recent call last):
     ...
-    Exception: There is already...
+    FileExistsError: There is already...
     """
     folder = document.get_main_folder()
     if not folder:
@@ -450,9 +450,9 @@ def move(document: Document, path: str) -> None:
 
     path = os.path.expanduser(path)
     if os.path.exists(path):
-        raise Exception(
-            "There is already a document in {0}, please check it,\n"
-            "a temporary papis document has been stored in {1}"
+        raise FileExistsError(
+            "There is already a document at '{}' that should be checked. A temporary"
+            "document has been stored at '{}'"
             .format(path, folder)
         )
 
@@ -481,33 +481,33 @@ def sort(docs: Sequence[Document], key: str, reverse: bool = False) -> List[Docu
     """
     from datetime import datetime
     default_sort_key = (
-        SortPriority.Missing, datetime.fromtimestamp(0), 0, "")
+        _SortPriority.Missing, datetime.fromtimestamp(0), 0, "")
 
     from contextlib import suppress
 
     def document_sort_key(doc: Document) -> Tuple[int, datetime, int, str]:
         priority, date, int_value, str_value = default_sort_key
 
-        value = doc.get(key)
+        value = doc.get(key, None)
         if value is not None:
             str_value = str(value)
 
             if key == "time-added":
                 with suppress(ValueError):
                     date = datetime.strptime(str_value, papis.strings.time_format)
-                    priority = SortPriority.Date
+                    priority = _SortPriority.Date
             else:
                 try:
                     int_value = int(str_value)
-                    priority = SortPriority.Int
+                    priority = _SortPriority.Int
                 except ValueError:
-                    priority = SortPriority.Other
+                    priority = _SortPriority.Other
 
         return (
             -priority.value if reverse else priority.value,
             date, int_value, str_value)
 
-    logger.debug("Sorting %d documents", len(docs))
+    logger.debug("Sorting %d documents.", len(docs))
     return sorted(docs, key=document_sort_key, reverse=reverse)
 
 

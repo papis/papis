@@ -6,7 +6,7 @@ import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
-DATABASES = {}  # type: Dict[Library, Database]
+DATABASES: Dict[Library, Database] = {}
 
 
 def get(library_name: Optional[str] = None) -> Database:
@@ -33,7 +33,7 @@ def _instantiate_database(backend_name: str, library: Library) -> Database:
         import papis.database.whoosh
         return papis.database.whoosh.Database(library)
     else:
-        raise Exception("No valid database type: {}".format(backend_name))
+        raise ValueError("Invalid database backend: '{}'".format(backend_name))
 
 
 def get_all_query_string() -> str:

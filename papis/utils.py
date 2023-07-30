@@ -3,7 +3,7 @@ import sys
 import re
 import pathlib
 from typing import (Optional, List, Iterator, Iterable, Any, Dict,
-                    Union, Callable, TypeVar, Tuple, TYPE_CHECKING)
+                    Union, Callable, Sequence, TypeVar, Tuple, TYPE_CHECKING)
 
 try:
     import multiprocessing.synchronize  # noqa: F401
@@ -27,16 +27,20 @@ logger = papis.logging.get_logger(__name__)
 if TYPE_CHECKING:
     import requests
 
+#: Invariant :class:`typing.TypeVar`
 A = TypeVar("A")
+#: Invariant :class:`typing.TypeVar`
 B = TypeVar("B")
 
 
 def get_session() -> "requests.Session":
     """Create a :class:`requests.Session` for ``papis``.
 
-    This session has the expected ``User-Agent``, proxy and other settings used
-    for ``papis``. It is recommended to use it instead of creating a separate
-    connection.
+    This session has the expected ``User-Agent`` (see
+    :ref:`config-settings-user-agent`), proxy (see
+    :ref:`config-settings-downloader-proxy`) and other settings used
+    for ``papis``. It is recommended to use it instead of creating a
+    :class:`requests.Session` at every call site.
     """
     import requests
     session = requests.Session()
@@ -96,6 +100,69 @@ def parmap(f: Callable[[A], B],
         return list(map(f, xs))
 
 
+def run(cmd: Sequence[str],
+        wait: bool = True,
+        env: Optional[Dict[str, Any]] = None,
+        cwd: Optional[str] = None) -> None:
+    """Run a given command with :mod:`subprocess`.
+
+    This is a simple wrapper around :class:`subprocess.Popen` with custom
+    defaults used to call Papis commands.
+
+    :arg cmd: a sequence of arguments to run, where the first entry is expected
+        to be the command name and the remaining entries its arguments.
+    :param wait: if *True* wait for the process to finish, otherwise detach the
+        process and return immediately.
+    :param env: a mapping that defines additional environment variables for
+        the child process.
+    :param cwd: current working directory in which to run the command.
+    """
+
+    cmd = list(cmd)
+    if not cmd:
+        return
+
+    if cwd:
+        cwd = os.path.expanduser(cwd)
+        logger.debug("Changing directory to '%s'.", cwd)
+
+    logger.debug("Running command: '%s'.", cmd)
+
+    # NOTE: Detached processes do not fail properly when the command does not
+    # exist, so we check for it manually here
+    import shutil
+    if not shutil.which(cmd[0]):
+        raise FileNotFoundError("Command not found: '{}'".format(cmd[0]))
+
+    import subprocess
+    if wait:
+        logger.debug("Waiting for process to finish.")
+        subprocess.call(cmd, cwd=cwd, env=env)
+    else:
+        logger.debug("Not waiting for process to finish.")
+        popen_kwargs: Dict[str, Any] = {
+            "cwd": cwd,
+            "env": env,
+            "shell": False,
+            "stdin": None,
+            "stdout": subprocess.DEVNULL,
+            "stderr": subprocess.DEVNULL,
+        }
+
+        # NOTE: Detach process so that the terminal can be closed without also
+        # closing the 'opentool' itself with the open document
+        if sys.platform == "win32":
+            popen_kwargs["creationflags"] = subprocess.DETACHED_PROCESS
+            popen_kwargs["creationflags"] |= subprocess.CREATE_NEW_PROCESS_GROUP
+        else:
+            # NOTE: 'close_fds' is not supported on windows with stdout/stderr
+            # https://docs.python.org/3/library/subprocess.html#subprocess.Popen
+            popen_kwargs["close_fds"] = True
+            cmd.insert(0, "nohup")
+
+        subprocess.Popen(cmd, **popen_kwargs)
+
+
 def general_open(file_name: str,
                  key: str,
                  default_opener: Optional[str] = None,
@@ -104,7 +171,7 @@ def general_open(file_name: str,
 
     :param file_name: a file path to open.
     :param key: a key in the configuration file to determine the opener used,
-        e.g. ``opentool``.
+        e.g. :ref:`config-settings-opentool`.
     :param default_opener: an existing executable that can be used to open the
         file given by *file_name*. By default, the opener given by
         *key*, if any, or the default ``papis`` opener are used.
@@ -121,43 +188,21 @@ def general_open(file_name: str,
         opener = default_opener
 
     import shlex
-    cmd = shlex.split("{0} '{1}'".format(opener, file_name))
-    logger.debug("cmd: %s", cmd)
+    if sys.platform == "win32":
+        cmd = shlex.split(str(opener), posix=False) + [file_name]
+    else:
+        cmd = shlex.split("{} '{}'".format(opener, file_name))
 
-    # NOTE: Detached processes do not fail properly when the command does not
-    # exist, so we check for it manually here
     import shutil
     if not shutil.which(cmd[0]):
         raise FileNotFoundError(
-            "[Errno 2] No such file or directory: '{}'".format(opener))
+            "Command not found for key '{}': '{}'".format(key, opener))
 
-    import subprocess
-    if wait:
-        logger.debug("Waiting for process to finish")
-        subprocess.call(cmd)
-    else:
-        logger.debug("Not waiting for process to finish")
-        popen_kwargs = {
-            "shell": False,
-            "stdin": None,
-            "stdout": subprocess.DEVNULL,
-            "stderr": subprocess.DEVNULL,
-            "close_fds": True
-        }  # type: Dict[str, Any]
-
-        # NOTE: Detach process so that the terminal can be closed without also
-        # closing the 'opentool' itself with the open document
-        if sys.platform == "win32":
-            popen_kwargs["creationflags"] = subprocess.DETACHED_PROCESS
-            popen_kwargs["creationflags"] |= subprocess.CREATE_NEW_PROCESS_GROUP
-        else:
-            cmd.insert(0, "nohup")
-
-        subprocess.Popen(cmd, **popen_kwargs)
+    run(cmd, wait=wait)
 
 
 def open_file(file_path: str, wait: bool = True) -> None:
-    """Open file using the configured ``opentool`` (see :ref:`general-settings`).
+    """Open file using the configured :ref:`config-settings-opentool`.
 
     :param file_path: a file path to open.
     :param wait: if *True* wait for the process to finish, otherwise detach the
@@ -171,13 +216,13 @@ def get_folders(folder: str) -> List[str]:
 
     This is the main indexing routine. It looks inside *folder* and crawls
     the whole directory structure in search of subfolders containing an ``info``
-    file. The name of the file must match the configured ``info-name``
-    (see :ref:`general-settings`).
+    file. The name of the file must match the configured
+    :ref:`config-settings-info-name`.
 
     :param folder: root folder to look into.
     :returns: List of folders containing an ``info`` file.
     """
-    logger.debug("Indexing folders in '%s'", folder)
+    logger.debug("Indexing folders in '%s'.", folder)
     info_name = papis.config.getstring("info-name")
 
     folders = []
@@ -185,7 +230,7 @@ def get_folders(folder: str) -> List[str]:
         if os.path.exists(os.path.join(root, info_name)):
             folders.append(root)
 
-    logger.debug("%d valid folders retrieved", len(folders))
+    logger.debug("Retrieved %d valid folders.", len(folders))
 
     return folders
 
@@ -195,8 +240,8 @@ def create_identifier(input_list: Optional[str] = None, skip: int = 0) -> Iterat
 
     This creates a generator object capable of iterating over lists to
     create unique products of increasing cardinality
-    (see `here <https://stackoverflow.com/questions/14381940/>`__). This is
-    mainly intended to create suffixes for existing strings, e.g. file names,
+    (see `here <https://stackoverflow.com/questions/14381940/python-pair-alphabets-after-loop-is-completed>`__).
+    This is mainly intended to create suffixes for existing strings, e.g. file names,
     to ensure uniqueness.
 
     :param input_list: list to iterate over
@@ -206,7 +251,7 @@ def create_identifier(input_list: Optional[str] = None, skip: int = 0) -> Iterat
     >>> m = create_identifier(string.ascii_lowercase)
     >>> next(m)
     'a'
-    """
+    """  # noqa: E501
     import string
     from itertools import count, product, islice
 
@@ -217,16 +262,15 @@ def create_identifier(input_list: Optional[str] = None, skip: int = 0) -> Iterat
             for s in product(inputs, repeat=n):
                 yield "".join(s)
 
-    for i in islice(ids(), skip, None):
-        yield i
+    yield from islice(ids(), skip, None)
 
 
 def clean_document_name(doc_path: str, is_path: bool = True) -> str:
     """Clean a string to only contain visible ASCII characters.
 
-    This function uses ``slugify`` to create ASCII strings that can be used
-    safely as file names or printed to consoles that do not necessarily support
-    full unicode.
+    This function uses `slugify <https://github.com/un33k/python-slugify>`__ to
+    create ASCII strings that can be used safely as file names or printed to
+    consoles that do not necessarily support full unicode.
 
     By default, it assumes that the input is a path and will only look at its
     ``basename``. This can have unintended results for other strings and can
@@ -252,7 +296,7 @@ def locate_document_in_lib(document: papis.document.Document,
                            library: Optional[str] = None) -> papis.document.Document:
     """Locate a document in a library.
 
-    This function uses the ``unique-document-keys`` (see :ref:`general-settings`)
+    This function uses the :ref:`config-settings-unique-document-keys`
     to determine if the current document matches any document in the library.
     The first document for which a key matches exactly will be returned.
 
@@ -277,7 +321,8 @@ def locate_document_in_lib(document: papis.document.Document,
         if docs:
             return docs[0]
 
-    raise IndexError("Document not found in library")
+    raise IndexError("Document not found in library: '{}'"
+                     .format(papis.document.describe(document)))
 
 
 def locate_document(
@@ -286,7 +331,7 @@ def locate_document(
         ) -> Optional[papis.document.Document]:
     """Locate a *document* in a list of *documents*.
 
-    This function uses the ``unique-document-keys`` (see :ref:`general-settings`)
+    This function uses the :ref:`config-settings-unique-document-keys`
     to determine if the current document matches any document in the list.
     The first document for which a key matches exactly will be returned.
 
@@ -321,7 +366,7 @@ def folders_to_documents(folders: Iterable[str]) -> List[papis.document.Document
     begin_t = time.time()
     result = parmap(papis.document.from_folder, folders)
 
-    logger.debug("Done in %.1f ms", 1000 * (time.time() - begin_t))
+    logger.debug("Finished in %.1f ms.", 1000 * (time.time() - begin_t))
     return result
 
 
@@ -354,8 +399,8 @@ def update_doc_from_data_interactively(
 def get_cache_home() -> str:
     """Get default cache directory.
 
-    This will retrieve the ``cache-dir`` configuration setting
-    (see :ref:`general-settings`). It is ``XDG`` standard compatible.
+    This will retrieve the :ref:`config-settings-cache-dir` configuration setting.
+    It is ``XDG`` standard compatible.
 
     :returns: the absolute path for the cache main folder.
     """
@@ -398,7 +443,7 @@ def get_matching_importer_or_downloader(
     for cls in all_importer_classes:
         name = "{}.{}".format(cls.__module__, cls.__name__)
         logger.debug("Trying with importer "
-                     "{c.Back.BLACK}{c.Fore.YELLOW}%s{c.Style.RESET_ALL}",
+                     "{c.Back.BLACK}{c.Fore.YELLOW}%s{c.Style.RESET_ALL}.",
                      name)
 
         try:
@@ -535,18 +580,21 @@ def is_relative_to(path: str, other: str) -> bool:
 
 def dump_object_doc(
         objects: Iterable[Tuple[str, Any]],
-        sep: str = "\n\t") -> List[str]:
+        sep: str = "\n\t",
+        bright: bool = True) -> List[str]:
     """Dumps the documentation for each of the object in *objects* to a string.
 
     This function is meant to provide a short description for each object based
-    on the first line of its documentation. For example, an if the object are
-    importers, it can show::
+    on the first line of its documentation.
 
-        importer_name
-            This is my fancy importer for <service>
+    >>> from papis.arxiv import Importer
+    >>> dump_object_doc([("arxiv", Importer)], sep=": ", bright=False)
+    ['arxiv: Importer accepting an arXiv ID and downloading files and data']
 
     :param objects: an iterable of ``(name, object)`` to be displayed.
     :param sep: the separator between the name and the description.
+    :param bright: if *True*, the object name is styled bold for command-line
+        printing.
     :returns: a list of strings describing each object.
     """
     import colorama
@@ -560,7 +608,12 @@ def dump_object_doc(
             lines = ["No description."]
 
         headline = re_whitespace.sub(" ", lines[0].strip())
-        result.append("{c.Style.BRIGHT}{name}{c.Style.RESET_ALL}{sep}{headline}"
-                      .format(c=colorama, name=name, sep=sep, headline=headline))
+        if bright:
+            name = (
+                "{c.Style.BRIGHT}{name}{c.Style.RESET_ALL}"
+                .format(c=colorama, name=name))
+
+        result.append("{name}{sep}{headline}"
+                      .format(name=name, sep=sep, headline=headline))
 
     return result

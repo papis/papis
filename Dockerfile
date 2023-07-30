@@ -1,16 +1,15 @@
-ARG PYTHON_VERSION=3.7
+ARG PYTHON_VERSION=3.11
 FROM python:$PYTHON_VERSION
 
-RUN apt-get update
-RUN apt-get install -y vim-nox
-
-WORKDIR /papis
-VOLUME /papis
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update \
+  && apt-get install -y vim-nox build-essential make \
+  && apt-get clean -y \
+  && rm -rf /var/lib/apt/lists/*
 
 COPY . /papis
 
-RUN python setup.py develop
-RUN pip install .[develop]
-RUN pip install .[optional]
+WORKDIR /papis
+RUN pip install -e .[optional,develop]
 
-CMD ["pytest", "tests", "papis", "--cov", "papis"]
+CMD ["bash", "tools/ci-run-tests.sh"]

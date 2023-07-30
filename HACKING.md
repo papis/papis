@@ -4,7 +4,7 @@ Guidelines for Code Modification
 Coding Style
 ------------
 
-* Use syntax compatible with Python `3.5+`.
+* Use syntax compatible with Python `3.8+`.
 * Use docstrings with [Sphinx](https://www.sphinx-doc.org/en/master/) in mind.
 * Follow the [PEP8 style guide](https://www.python.org/dev/peps/pep-0008/)
 * Try and run tests locally before submitting a new PR.
@@ -35,6 +35,19 @@ The docs can be generated with
 ```
 make doc
 ```
+
+To quickly get things up and running, you can also use docker/podman:
+
+```
+# build the image
+docker build -t papisdev .
+# to run the CI tests
+docker run -v $(pwd):/papis --rm -it papisdev
+# enter the container interactively
+docker run -v $(pwd):/papis --rm -it papisdev bash
+```
+
+(or replace `docker` with `podman` if you prefer)
 
 Issues
 ------

@@ -1,14 +1,14 @@
 import os
+import pytest
+from typing import Any, Dict
 
-import papis.config
-import papis.bibtex
-from papis.commands.update import run, cli
+import papis.database
+from papis.document import Document
 
-import tests
-import tests.cli
+from tests.testlib import TemporaryLibrary, PapisRunner, ResourceCache
 
 
-def _get_resource_file(filename):
+def _get_resource_file(filename: str) -> str:
     resources = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
         "..", "resources", "commands", "update"
@@ -19,89 +19,119 @@ def _get_resource_file(filename):
     return filepath
 
 
-class Test(tests.cli.TestWithLibrary):
-
-    def get_docs(self):
-        db = papis.database.get()
-        return db.get_all_documents()
-
-    def test_data(self):
-        db = papis.database.get()
-        docs = self.get_docs()
-        self.assertTrue(docs)
-        doc = docs[0]
-        data = {}
-        data["tags"] = "test_data"
-        run(doc, data=data)
-        docs = db.query_dict(dict(tags="test_data"))
-        self.assertTrue(docs)
+def update_doc_from_data_interactively(
+        document: Document,
+        data: Dict[str, Any],
+        data_name: str) -> None:
+    document.update(data)
 
 
-class TestCli(tests.cli.TestCli):
+def test_update_run(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.update import run
 
-    cli = cli
+    db = papis.database.get()
+    docs = db.get_all_documents()
+    doc = docs[0]
 
-    def test_1_no_documents(self):
-        result = self.invoke(["__no_document__"])
-        self.assertEqual(result.exit_code, 0)
+    tags = "test_tag"
+    run(doc, data={"tags": tags})
 
-    def test_1_main(self):
-        self.do_test_cli_function_exists()
-        self.do_test_help()
+    doc, = db.query_dict({"tags": tags})
+    assert doc["tags"] == tags
 
-    def test_3_set(self):
-        db = papis.database.get()
-        result = self.invoke([
-            "krishnamurti",
-            "-s", "isbn", "92130123",
-            "--set", "doi", "10.213.phys.rev/213",
-        ])
-        self.assertEqual(result.exit_code, 0)
-        docs = db.query_dict(dict(author="krishnamurti"))
-        self.assertTrue(docs)
-        self.assertEqual(docs[0]["doi"], "10.213.phys.rev/213")
-        self.assertEqual(docs[0]["isbn"], "92130123")
 
-    def test_7_delete_key_confirm(self):
-        db = papis.database.get()
-        result = self.invoke([
-            "krishnamurti",
-            "-s", "doi", "",
-            "--set", "isbn", "",
-        ])
-        self.assertIsNot(result, None)
-        # self.assertEqual(result.exit_code, 0)
+@pytest.mark.parametrize(("isbn", "doi"), [
+    ("92130123", "10.213.phys.rev/213"),
+    ("", "")
+    ])
+def test_update_cli(tmp_library: TemporaryLibrary, isbn: str, doi: str) -> None:
+    from papis.commands.update import cli
+    cli_runner = PapisRunner()
 
-        docs = db.query_dict(dict(author="krishnamurti"))
-        self.assertEqual(len(docs), 1)
-        self.assertTrue(docs[0].has("doi"))
-        self.assertTrue(docs[0].has("isbn"))
-        self.assertFalse(docs[0].get("doi"))
-        self.assertFalse(docs[0].get("isbn"))
+    result = cli_runner.invoke(
+        cli,
+        ["__no_document__"])
+    assert result.exit_code == 0
+    assert not result.output
 
-    # def test_8_yaml(self):
-    #     yamlpath = _get_resource_file("russell.yaml")
-    #     result = self.invoke([
-    #         "krishnamurti", "--from", "yaml", yamlpath])
-    #     self.assertIsNot(result, None)
+    result = cli_runner.invoke(
+        cli,
+        ["--set", "isbn", isbn]
+        + ["--set", "doi", doi, "krishnamurti"])
+    assert result.exit_code == 0
 
-    #     db = papis.database.get()
-    #     docs = db.query_dict(dict(author="krishnamurti"))
-    #     self.assertTrue(docs)
-    #     self.assertEqual("10.2307/2021897", docs[0]["doi"])
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Krishnamurti"})
+    assert doc["doi"] == doi
+    assert doc["isbn"] == isbn
 
-    # def test_9_bibtex(self):
-    #     db = papis.database.get()
-    #     bibpath = _get_resource_file("wannier.bib")
-    #     result = self.invoke(["krishnamurti", "--from", "bibtex", bibpath])
-    #     self.assertEqual(result.exit_code, 0)
-    #     docs = db.query_dict(dict(author="krishnamurti"))
-    #     self.assertTrue(docs)
-    #     self.assertTrue(re.match(r".*Krishnamurti.*", docs[0]["author"]))
 
-    # def test_9_bibtexerrored(self):
-    #     yamlpath = _get_resource_file("russell.yaml")
-    #     result = self.invoke([
-    #         "krishnamurti", "--from", "bibtex", yamlpath
-    #     ])
-    #     self.assertEqual(result.exit_code, 0)
+def test_update_yaml_cli(tmp_library: TemporaryLibrary,
+                         resource_cache: ResourceCache,
+                         monkeypatch: pytest.MonkeyPatch) -> None:
+    from papis.commands.update import cli
+    cli_runner = PapisRunner()
+
+    filename = os.path.join(resource_cache.cachedir,
+                            "commands", "update", "russell.yaml")
+
+    import papis.utils
+    with monkeypatch.context() as m:
+        m.setattr(papis.utils, "update_doc_from_data_interactively",
+                  update_doc_from_data_interactively)
+
+        result = cli_runner.invoke(
+            cli,
+            ["--from", "yaml", filename, "krishnamurti"])
+        assert result.exit_code == 0
+
+    import papis.yaml
+    data = papis.yaml.yaml_to_data(filename)
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Russell"})
+
+    assert doc["doi"] == data["doi"]
+
+
+def test_update_bibtex_cli(tmp_library: TemporaryLibrary,
+                           resource_cache: ResourceCache,
+                           monkeypatch: pytest.MonkeyPatch) -> None:
+    from papis.commands.update import cli
+    cli_runner = PapisRunner()
+
+    filename = os.path.join(resource_cache.cachedir,
+                            "commands", "update", "wannier.bib")
+
+    import papis.utils
+    with monkeypatch.context() as m:
+        m.setattr(papis.utils, "update_doc_from_data_interactively",
+                  update_doc_from_data_interactively)
+
+        result = cli_runner.invoke(
+            cli,
+            ["--from", "bibtex", filename, "krishnamurti"])
+        assert result.exit_code == 0
+
+    import papis.bibtex
+    data, = papis.bibtex.bibtex_to_dict(filename)
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Wannier"})
+
+    assert doc["doi"] == data["doi"]
+
+
+def test_update_cli_ref(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.update import cli
+    cli_runner = PapisRunner()
+
+    result = cli_runner.invoke(
+        cli,
+        ["krishnamurti", "--set", "ref", "NewRef"])
+    assert result.exit_code == 0
+    assert not result.output
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "krishnamurti"})
+    assert doc["ref"] == "NewRef"

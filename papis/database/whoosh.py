@@ -49,6 +49,7 @@ import papis.logging
 import papis.database.base
 import papis.database.cache
 from papis.utils import get_cache_home, get_folders, folders_to_documents
+from papis.exceptions import DocumentFolderNotFound
 
 if TYPE_CHECKING:
     from whoosh.index import Index
@@ -69,7 +70,7 @@ class Database(papis.database.base.Database):
                 self.cache_dir,
                 papis.database.cache.get_cache_file_name(
                     self.lib.path_format()
-                )))  # type: str
+                )))
 
         self.initialize()
 
@@ -79,17 +80,17 @@ class Database(papis.database.base.Database):
     def clear(self) -> None:
         import shutil
         if self.index_exists():
-            logger.warning("Clearing the database")
+            logger.warning("Clearing the database.")
             shutil.rmtree(self.index_dir)
 
     def add(self, document: papis.document.Document) -> None:
         schema_keys = self.get_schema_init_fields().keys()
 
-        logger.debug("Adding document...")
+        logger.debug("Adding document: '%s'.", papis.document.describe(document))
         writer = self.get_writer()
         self.add_document_with_writer(document, writer, schema_keys)
 
-        logger.debug("Committing document..")
+        logger.debug("Committing document: '%s'.", papis.document.describe(document))
         writer.commit()
 
     def update(self, document: papis.document.Document) -> None:
@@ -101,12 +102,12 @@ class Database(papis.database.base.Database):
     def delete(self, document: papis.document.Document) -> None:
         writer = self.get_writer()
 
-        logger.debug("Deleting document..")
+        logger.debug("Deleting document: '%s'.", papis.document.describe(document))
         writer.delete_by_term(
             Database.get_id_key(),
             self.get_id_value(document))
 
-        logger.debug("Committing deletion..")
+        logger.debug("Committing document: '%s'.", papis.document.describe(document))
         writer.commit()
 
     def query_dict(self,
@@ -116,7 +117,7 @@ class Database(papis.database.base.Database):
         return self.query(query_string)
 
     def query(self, query_string: str) -> List[papis.document.Document]:
-        logger.debug("Querying '%s'...", query_string)
+        logger.debug("Querying database for '%s'.", query_string)
 
         import whoosh.qparser
         index = self.get_index()
@@ -126,7 +127,7 @@ class Database(papis.database.base.Database):
         query = qp.parse(query_string)
         with index.searcher() as searcher:
             results = searcher.search(query, limit=None)
-            logger.debug(results)
+            logger.debug("Found %d results: %s", len(results), results)
             documents = [
                 papis.document.from_folder(r.get("papis-folder"))
                 for r in results]
@@ -150,7 +151,7 @@ class Database(papis.database.base.Database):
     def _get_doc_folder(self, document: papis.document.Document) -> str:
         _folder = document.get_main_folder()
         if _folder is None:
-            raise Exception(papis.strings.no_folder_attached_to_document)
+            raise DocumentFolderNotFound(papis.document.describe(document))
         else:
             return _folder
 
@@ -158,9 +159,9 @@ class Database(papis.database.base.Database):
         """Create a brand new index, notice that if an index already
         exists it will delete it and create a new one.
         """
-        logger.debug("Creating index...")
+        logger.debug("Creating index.")
         if not os.path.exists(self.index_dir):
-            logger.debug("Creating index directory '%s'", self.index_dir)
+            logger.debug("Creating index directory '%s'.", self.index_dir)
             os.makedirs(self.index_dir)
 
         import whoosh.index
@@ -204,8 +205,7 @@ class Database(papis.database.base.Database):
         at the time of building a brand new index.
         """
         logger.debug("Indexing the library, this might take a while...")
-        folders = sum([
-            get_folders(d) for d in self.get_dirs()], [])  # type: List[str]
+        folders: List[str] = sum([get_folders(d) for d in self.get_dirs()], [])
         documents = folders_to_documents(folders)
         schema_keys = self.get_schema_init_fields().keys()
         writer = self.get_writer()
@@ -231,7 +231,7 @@ class Database(papis.database.base.Database):
             # aren't the same, then we have to rebuild the
             # database.
             if user_field_names != db_field_names:
-                logger.debug("Rebuilding database because field names do not match")
+                logger.debug("Rebuilding database because field names do not match.")
                 self.rebuild()
             else:
                 # Otherwise, verify that the fields are
@@ -241,14 +241,14 @@ class Database(papis.database.base.Database):
                 for field in user_field_names:
                     if user_fields[field] != db_fields[field]:
                         logger.debug(
-                            "Rebuilding database because field types do not match")
+                            "Rebuilding database because field types do not match.")
 
                         self.rebuild()
                         rebuilt_db = True
                         break
 
                 if not rebuilt_db:
-                    logger.debug("Initialized index found for library")
+                    logger.debug("Initialized index found for library.")
                     return
         self.create_index()
         self.do_indexing()
@@ -277,7 +277,7 @@ class Database(papis.database.base.Database):
     def create_schema(self) -> "Schema":
         """Creates and returns whoosh schema to be applied to the library
         """
-        logger.debug("Creating schema...")
+        logger.debug("Creating schema.")
         fields = self.get_schema_init_fields()
 
         from whoosh.fields import Schema

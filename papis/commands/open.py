@@ -1,5 +1,5 @@
 """
-The open command is a very important command in the papis workflow.
+The ``open`` command is a very important command in the papis workflow.
 With it you can open documents, folders or marks.
 
 Marks
@@ -8,14 +8,12 @@ Marks
 One of special things about this command is the possibility of
 creating marks for documents. As you would imagine, it is in general
 difficult to create marks for any kind of data. For instance,
-if our library consists of pdf files and epub files for instance,
-we would like to define bookmarks in order to go back to them at
-some later point.
+if our library consists of PDF files and EPUB files, we would like to define
+bookmarks in order to go back to them at some later point.
 
 How you define marks can be customized through the marks configuration
-settings :ref:`here <marks-options>`.
-The default way of doing it is just by defining a ``marks`` list in a document.
-Let us look at a concrete example:
+settings :ref:`here <marks-options>`. The default way of doing it is just by
+defining a ``marks`` list in a document. Let us look at a concrete example:
 
 .. code:: yaml
 
@@ -36,35 +34,33 @@ Let us look at a concrete example:
     year: '2009'
 
 This book has defined two marks. Each mark has a name and a value.
-If you tell the open command to open marks, then it will look for
-the marks and open the value (page number). This is the default behaviour,
-however if you go to the :ref:`configuration <marks-options>`
-you'll see that you can change the convention to what it suits you.
-
+If you tell the ``open`` command to open marks, then it will look for
+the marks and open the value (page number). This is the default behaviour.
+However, if you go to the :ref:`configuration <marks-options>`
+you'll see that you can change the convention to what suits you.
 
 Examples
 ^^^^^^^^
-- Open a pdf file linked to a document matching the string ``bohm``
 
-    ::
+- Open a PDF file linked to a document matching the string ``bohm``
+
+    .. code:: sh
 
         papis open bohm
 
 - Open the folder where this last document is stored
 
-    ::
+    .. code:: sh
 
         papis open -d bohm
 
-  Please notice that the file browser used will be also related to
-  the :ref:`file-browser setting <config-settings-file-browser>`.
+  The file browser used is given by the :ref:`config-settings-file-browser` setting.
 
 - Open a mark defined in the info file
 
-    ::
+    .. code:: sh
 
         papis open --mark bohm
-
 
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -89,6 +85,7 @@ import papis.document
 import papis.format
 import papis.strings
 import papis.logging
+from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)
 
@@ -102,24 +99,27 @@ def run(document: papis.document.Document,
 
     _doc_folder = document.get_main_folder()
     if _doc_folder is None:
-        raise Exception(papis.strings.no_folder_attached_to_document)
+        raise DocumentFolderNotFound(papis.document.describe(document))
 
     if folder:
         # Open directory
         papis.api.open_dir(_doc_folder)
     else:
         if mark:
-            logger.debug("Getting document's marks")
+            logger.debug("Getting document's marks.")
             marks = document[papis.config.getstring("mark-key-name")]
             if marks:
-                logger.info("Picking marks")
                 _mark_fmt = papis.config.getstring("mark-header-format")
                 _mark_name = papis.config.getstring("mark-format-name")
                 _mark_opener = papis.config.getstring("mark-opener-format")
                 if not _mark_fmt:
-                    raise Exception("No mark header format")
+                    raise ValueError(
+                        "No mark header format given. Set 'mark-header-format' in "
+                        "the configuration file")
                 if not _mark_name:
-                    raise Exception("No mark name format")
+                    raise ValueError(
+                        "No mark name format given. Set 'mark-format-name' "
+                        "in the configuration file")
                 mark_dict = papis.api.pick(
                     marks,
                     header_filter=lambda x: papis.format.format(
@@ -128,23 +128,26 @@ def run(document: papis.document.Document,
                         _mark_fmt, x, doc_key=_mark_name))
                 if mark_dict:
                     if not _mark_opener:
-                        raise Exception("mark-opener-format not set")
+                        raise ValueError(
+                            "No mark opener format given. Set 'mark-opener-format' "
+                            "in the configuration file")
                     opener = papis.format.format(
                         _mark_opener,
                         papis.document.from_data(mark_dict[0]),
                         doc_key=_mark_name)
-                    logger.info("Setting opener to '%s'", opener)
+                    logger.info("Setting opener to '%s'.", opener)
                     papis.config.set("opentool", opener)
         files = document.get_files()
         if not files:
-            logger.error("The document chosen has no files attached")
+            logger.error("The chosen document has no files attached: '%s'.",
+                         papis.document.describe(document))
             return
         files_to_open = papis.api.pick(files, header_filter=os.path.basename)
         for file_to_open in files_to_open:
             papis.api.open_file(file_to_open, wait=False)
 
 
-@click.command("open")
+@click.command("open")                  # type: ignore[arg-type]
 @click.help_option("-h", "--help")
 @papis.cli.query_argument()
 @papis.cli.sort_option()

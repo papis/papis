@@ -16,7 +16,10 @@ logger = papis.logging.get_logger(__name__)
 # NOTE: see the BibLaTeX docs for an up to date list of types and keys:
 #   https://ctan.org/pkg/biblatex?lang=en
 
-bibtex_types = frozenset([
+#: A set of known BibLaTeX types (as described in Section 2.1 of the
+#: `manual <https://ctan.org/pkg/biblatex?lang=en>`__). These types can be
+#: extended with :ref:`config-settings-extra-bibtex-types`.
+bibtex_types: FrozenSet[str] = frozenset([
     # regular types (Section 2.1.1)
     "article",
     "book", "mvbook", "inbook", "bookinbook", "suppbook", "booklet",
@@ -53,19 +56,60 @@ bibtex_types = frozenset([
     "standard",
     "video",
     # type aliases (Section 2.1.2)
-    "conference", "electronic", "masterthesis", "phdthesis", "techreport", "www",
-]) | frozenset(papis.config.getlist("extra-bibtex-types"))  # type: FrozenSet[str]
+    "conference", "electronic", "mastersthesis", "phdthesis", "techreport", "www",
+]) | frozenset(papis.config.getlist("extra-bibtex-types"))
 
-# Zotero translator fields, see also
+# NOTE: Zotero translator fields are defined in
 #   https://github.com/zotero/zotero-schema
-#   https://github.com/papis/papis/pull/121
-bibtex_type_converter = {
-    "conferencePaper": "inproceedings",
-    "journalArticle": "article",
-    "journal": "article",
-}  # type: Dict[str, str]
+# and were extracted with
+#   curl -s https://raw.githubusercontent.com/zotero/zotero-schema/master/schema.json | jq ' .itemTypes[].itemType'  # noqa: E501
 
-bibtex_keys = frozenset([
+#: A mapping of arbitrary types to BibLaTeX types in :data:`bibtex_types`. This
+#: mapping can be used when translating from other software, e.g. Zotero has
+#: custom fields in its `schema <https://github.com/zotero/zotero-schema>`__.
+bibtex_type_converter: Dict[str, str] = {
+    # Zotero
+    "annotation": "misc",
+    "attachment": "misc",
+    "audioRecording": "audio",
+    "bill": "legislation",
+    "blogPost": "online",
+    "bookSection": "inbook",
+    "case": "jurisdiction",
+    "computerProgram": "software",
+    "conferencePaper": "inproceedings",
+    "dictionaryEntry": "misc",
+    "document": "article",
+    "email": "online",
+    "encyclopediaArticle": "article",
+    "film": "video",
+    "forumPost": "online",
+    "hearing": "jurisdiction",
+    "instantMessage": "online",
+    "interview": "article",
+    "journalArticle": "article",
+    "magazineArticle": "article",
+    "manuscript": "unpublished",
+    "map": "misc",
+    "newspaperArticle": "article",
+    "note": "misc",
+    "podcast": "audio",
+    "preprint": "unpublished",
+    "presentation": "misc",
+    "radioBroadcast": "audio",
+    "statute": "jurisdiction",
+    "tvBroadcast": "video",
+    "videoRecording": "video",
+    "webpage": "online",
+    # Others
+    "journal": "article",
+    "monograph": "book",
+}
+
+#: A set of known BibLaTeX fields (as described in Section 2.2 of the
+#: `manual <https://ctan.org/pkg/biblatex?lang=en>`__). These types can be
+#: extended with :ref:`config-settings-extra-bibtex-keys`.
+bibtex_keys: FrozenSet[str] = frozenset([
     # data fields (Section 2.2.2)
     "abstract", "addendum", "afterword", "annotation", "annotator", "author",
     "authortype", "bookauthor", "bookpagination", "booksubtitle", "booktitle",
@@ -101,23 +145,28 @@ bibtex_keys = frozenset([
     "primaryclass", "school"
     # fields that we ignore
     # type,
-]) | frozenset(papis.config.getlist("extra-bibtex-keys"))  # type: FrozenSet[str]
+]) | frozenset(papis.config.getlist("extra-bibtex-keys"))
 
 # Zotero translator fields, see also
 #   https://github.com/zotero/zotero-schema
 #   https://github.com/papis/papis/pull/121
-bibtex_key_converter = {
+
+#: A mapping of arbitrary fields to BibLaTeX fields in :data:`bibtex_keys`. This
+#: mapping can be used when translating from other software.
+bibtex_key_converter: Dict[str, str] = {
     "abstractNote": "abstract",
     "university": "school",
     "conferenceName": "eventtitle",
     "place": "location",
     "publicationTitle": "journal",
     "proceedingsTitle": "booktitle"
-}  # type: Dict[str, str]
+}
 
-bibtex_ignore_keys = (
+#: A set of BibLaTeX fields to ignore when exporting from the Papis database.
+#: These can be extended with :ref:`config-settings-bibtex-ignore-keys`.
+bibtex_ignore_keys: FrozenSet[str] = (
     frozenset(papis.config.getlist("bibtex-ignore-keys"))
-)  # type: FrozenSet[str]
+)
 
 
 def exporter(documents: List[papis.document.Document]) -> str:
@@ -125,8 +174,7 @@ def exporter(documents: List[papis.document.Document]) -> str:
 
 
 class Importer(papis.importer.Importer):
-
-    """Importer that parses BibTeX files"""
+    """Importer that parses BibTeX files."""
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(name="bibtex", **kwargs)
@@ -141,53 +189,64 @@ class Importer(papis.importer.Importer):
         return importer if importer.ctx else None
 
     def fetch_data(self: papis.importer.Importer) -> Any:
-        self.logger.info("Reading input file = '%s'", self.uri)
+        self.logger.info("Reading input file: '%s'.", self.uri)
+
+        from papis.downloaders import download_document
+        if (
+                self.uri.startswith("http://")
+                or self.uri.startswith("https://")):
+            filename = download_document(self.uri, expected_document_extension="bib")
+        else:
+            filename = self.uri
+
         try:
-            bib_data = bibtex_to_dict(self.uri)
-        except Exception as e:
-            self.logger.error(e)
+            bib_data = bibtex_to_dict(filename) if filename is not None else []
+        except Exception as exc:
+            self.logger.error("Error reading BibTeX file: '%s'.",
+                              self.uri, exc_info=exc)
             return
 
         if not bib_data:
+            self.logger.warning("Empty or invalid BibTeX entry at '%s'.", self.uri)
             return
 
         if len(bib_data) > 1:
             self.logger.warning(
-                "The bibtex file contains %d entries, only taking the first entry",
+                "The BibTeX file contains %d entries. Picking the first one!",
                 len(bib_data))
 
         self.ctx.data = bib_data[0]
 
 
-@click.command("bibtex")
+@click.command("bibtex")                # type: ignore[arg-type]
 @click.pass_context
 @click.argument("bibfile", type=click.Path(exists=True))
 @click.help_option("--help", "-h")
 def explorer(ctx: click.core.Context, bibfile: str) -> None:
+    """Import documents from a BibTeX file.
+
+    This explorer be used as
+
+    .. code:: sh
+
+        papis explore bibtex 'lib.bib' pick
     """
-    Import documents from a bibtex file
-
-    Examples of its usage are
-
-    papis explore bibtex lib.bib pick
-
-    """
-    logger.info("Reading in bibtex file '%s'", bibfile)
+    logger.info("Reading BibTeX file '%s'...", bibfile)
 
     docs = [
         papis.document.from_data(d)
         for d in bibtex_to_dict(bibfile)]
     ctx.obj["documents"] += docs
 
-    logger.info("%d documents found", len(docs))
+    logger.info("Found %d documents.", len(docs))
 
 
-def bibtexparser_entry_to_papis(entry: Dict[str, str]) -> Dict[str, str]:
-    """Convert keys of a bib entry in bibtexparser format to papis
-    compatible format.
+def bibtexparser_entry_to_papis(entry: Dict[str, Any]) -> Dict[str, Any]:
+    """Convert the keys of a BibTeX entry parsed by :mod:`bibtexparser` to a
+    papis-compatible format.
 
-    :param entry: Dictionary with keys of bibtexparser format.
-    :returns: Dictionary with keys of papis format.
+    :param entry: a dictionary with keys parsed by :mod:`bibtexparser`.
+    :returns: a dictionary with keys converted to a papis-compatible format.
     """
     from bibtexparser.latexenc import latex_to_unicode
 
@@ -215,16 +274,28 @@ def bibtexparser_entry_to_papis(entry: Dict[str, str]) -> Dict[str, str]:
 
 
 def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
-    """
-    Convert bibtex file to dict
+    """Convert a BibTeX file (or string) to a list of papis-compatible dictionaries.
+
+    This will convert an entry like
+
+    .. code:: tex
+
+        @article{ref,
+            author = { ... },
+            title = { ... },
+            ...,
+        }
+
+    to a dictionary such as
 
     .. code:: python
 
         { "type": "article", "author": "...", "title": "...", ...}
 
-    :param bibtex: Bibtex file path or bibtex information in string format.
-    :returns: Dictionary with bibtex information with keys that bibtex
-        formally recognizes.
+    :param bibtex: a path to a BibTeX file or a string containing BibTeX
+        formatted data. If it is a file, its contents are passed to
+        :class:`~bibtexparser.bparser.BibTexParser`.
+    :returns: a list of entries from the BibTeX data in a compatible format.
     """
     from bibtexparser.bparser import BibTexParser
     parser = BibTexParser(
@@ -239,18 +310,19 @@ def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
 
     if os.path.exists(bibtex):
         with open(bibtex) as fd:
-            logger.debug("Reading in file '%s'", bibtex)
+            logger.debug("Reading in file: '%s'.", bibtex)
             text = fd.read()
     else:
         text = bibtex
+
     entries = parser.parse(text, partial=True).entries
-    # Clean entries
     return [bibtexparser_entry_to_papis(entry) for entry in entries]
 
 
 def ref_cleanup(ref: str) -> str:
-    """
-    Function to cleanup references to be acceptable for latex
+    """Function to cleanup references to be acceptable for LaTeX.
+
+    :returns: a slugified reference without any disallowed characters.
     """
     import slugify
     allowed_characters = r"([^a-zA-Z0-9._]+|(?<!\\)[._])"
@@ -263,30 +335,42 @@ def ref_cleanup(ref: str) -> str:
 
 
 def create_reference(doc: Dict[str, Any], force: bool = False) -> str:
+    """Try to create a reference for the document *doc*.
+
+    If the document *doc* does not have a ``"ref"`` key, this function attempts
+    to create one, otherwise the existing key is returned. When creating a new
+    reference:
+
+    * the :ref:`config-settings-ref-format` key is used, if available,
+    * the document DOI is used, if available,
+    * a string is constructed from the document data (author, title, etc.).
+
+    :param force: if *True*, the reference is re-created even if the document
+        already has a ``"ref"`` key.
+    :returns: a clean reference for the document.
     """
-    Try to create a sane reference for the document
-    """
-    ref = ""
     # Check first if the paper has a reference
-    if doc.get("ref") and not force:
-        return str(doc["ref"])
-    elif papis.config.get("ref-format"):
-        try:
-            ref = papis.format.format(papis.config.getstring("ref-format"),
-                                      doc)
-        except Exception as e:
-            logger.error(e)
-            ref = ""
+    ref = str(doc.get("ref", ""))
+    if not force and ref:
+        return ref
 
-    logger.debug("Generated 'ref = %s'", ref)
+    # Otherwise, try to generate one somehow
+    ref_format = papis.config.get("ref-format")
+    if ref_format is not None:
+        ref = papis.format.format(str(ref_format), doc, default="")
+
     if not ref:
-        if doc.get("doi"):
-            ref = doc["doi"]
-        else:
-            # Just try to get something out of the data
-            ref = "{:.30}".format(
-                " ".join(string.capwords(str(d)) for d in doc.values()))
+        ref = str(doc.get("doi", ""))
 
+    if not ref:
+        ref = str(doc.get("isbn", ""))
+
+    if not ref:
+        # Just try to get something out of the data
+        ref = "{:.30}".format(
+              " ".join(string.capwords(str(d)) for d in doc.values()))
+
+    logger.debug("Generated ref '%s'.", ref)
     return ref_cleanup(ref)
 
 
@@ -294,7 +378,7 @@ def to_bibtex_multiple(documents: List[papis.document.Document]) -> Iterator[str
     for doc in documents:
         bib = to_bibtex(doc)
         if not bib:
-            logger.warning("Skipping document export: '%s'",
+            logger.warning("Skipping document export: '%s'.",
                            doc.get_info_file())
             continue
 
@@ -302,10 +386,25 @@ def to_bibtex_multiple(documents: List[papis.document.Document]) -> Iterator[str
 
 
 def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
-    """Create a bibtex string from document's information
+    """Convert a document to a BibTeX containing only valid metadata.
 
-    :param document: Papis document
-    :returns: String containing bibtex formatting
+    To convert a document, it must have a valid BibTeX type
+    (see :data:`bibtex_types`) and a valid reference under the ``"ref"`` key
+    (see :func:`create_reference`). Valid BibTeX keys (see :data:`bibtex_keys`)
+    are exported, while other keys are ignored (see :data:`bibtex_ignore_keys`)
+    with the following rules:
+
+    * :ref:`config-settings-bibtex-unicode` is used to control whether the
+      field values can contain unicode characters.
+    * :ref:`config-settings-bibtex-journal-key` is used to define the field
+      name for the journal.
+    * :ref:`config-settings-bibtex-export-zotero-file` is used to also add a
+      ``"file"`` field to the BibTeX entry, which can be used by e.g. Zotero to
+      import documents.
+
+    :param document: a papis document.
+    :param indent: set indentation for the BibTeX fields.
+    :returns: a string containing the document metadata in a BibTeX format.
     """
     bibtex_type = ""
 
@@ -316,7 +415,7 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
         elif document["type"] in bibtex_type_converter:
             bibtex_type = bibtex_type_converter[document["type"]]
         else:
-            logger.error("BibTeX type '%s' not valid: '%s'",
+            logger.error("BibTeX type '%s' not valid in document: '%s'.",
                          document["type"],
                          document.get_info_file())
             return ""
@@ -327,12 +426,12 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
     # determine ref value
     ref = create_reference(document)
     if not ref:
-        logger.error("No valid ref found for document: '%s'",
+        logger.error("No valid ref found for document: '%s'.",
                      document.get_info_file())
 
         return ""
 
-    logger.debug("Used 'ref = %s'", ref)
+    logger.debug("Using ref '%s'.", ref)
 
     from bibtexparser.latexenc import string_to_latex
 
@@ -349,15 +448,15 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
         if bib_key in bibtex_ignore_keys:
             continue
 
-        bib_value = str(document[bib_key])
-        logger.debug("BibTeX entry: '%s: %s'", bib_key, bib_value)
+        bib_value = str(document[key])
+        logger.debug("Processing BibTeX entry: '%s: %s'.", bib_key, bib_value)
 
         if bib_key == "journal":
             if journal_key in document:
                 bib_value = str(document[journal_key])
             else:
                 logger.warning(
-                    "Key '%s' is not present for ref '%s'",
+                    "'journal-key' key '%s' is not present for ref '%s'.",
                     journal_key, document["ref"])
 
         override_key = bib_key + "_latex"

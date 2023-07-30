@@ -1,6 +1,5 @@
 """
-This module define the entry point for external scripts
-to be called by papis.
+This module define the entry point for external scripts to be called by papis.
 """
 
 import os
@@ -9,6 +8,7 @@ from typing import Any, Dict, List, Optional
 
 import click
 
+import papis.utils
 import papis.config
 import papis.commands
 import papis.logging
@@ -19,8 +19,8 @@ logger = papis.logging.get_logger(__name__)
 def get_command_help(path: str) -> str:
     """Get help string from external commands."""
     magic_word = papis.config.getstring("scripts-short-help-regex")
-    with open(path, "r") as _fd:
-        for line in _fd:
+    with open(path) as fd:
+        for line in fd:
             match = re.match(magic_word, line)
             if match:
                 return str(match.group(1))
@@ -54,7 +54,7 @@ def get_exported_variables(ctx: Optional[Dict[str, Any]] = None) -> Dict[str, st
     return exports
 
 
-@click.command(
+@click.command(                         # type: ignore[arg-type]
     context_settings={
         "ignore_unknown_options": True,
         "help_option_names": [],
@@ -64,17 +64,16 @@ def get_exported_variables(ctx: Optional[Dict[str, Any]] = None) -> Dict[str, st
 @click.pass_context
 def external_cli(ctx: click.core.Context, flags: List[str]) -> None:
     """Actual papis command to call the external command"""
-    script = ctx.obj  # type: papis.commands.Script
+    script: papis.commands.Script = ctx.obj
     path = script.path
     if not path:
-        raise Exception("Path for script {} not found".format(script))
+        raise FileNotFoundError("Path for script '{}' not found".format(script))
 
     cmd = [path] + list(flags)
-    logger.debug("Calling '%s'", cmd)
+    logger.debug("Calling external command '%s'.", cmd)
 
     params = ctx.parent.params if ctx.parent else {}
     environ = os.environ.copy()
     environ.update(get_exported_variables(params))
 
-    import subprocess
-    subprocess.call(cmd, env=environ)
+    papis.utils.run(cmd, env=environ)

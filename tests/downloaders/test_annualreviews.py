@@ -1,21 +1,17 @@
 import os
 import pytest
 
-import papis.logging
 import papis.downloaders
 from papis.downloaders.annualreviews import Downloader
 
-import tests
-import tests.downloaders as testlib
-
-papis.logging.setup("DEBUG")
+from tests.testlib import TemporaryConfiguration, ResourceCache
 
 ANNUAL_REVIEWS_URLS = (
     "https://www.annualreviews.org/doi/10.1146/annurev-conmatphys-031214-014726",
     )
 
 
-def test_annual_review_match() -> None:
+def test_annual_review_match(tmp_config: TemporaryConfiguration) -> None:
     valid_urls = (
         "https://www.annualreviews.org",
         "http://www.annualreviews.org",
@@ -34,10 +30,13 @@ def test_annual_review_match() -> None:
         assert Downloader.match(url) is None
 
 
-@tests.with_default_config()
 @pytest.mark.skip(reason="annualreviews.org disallows web scrapers (cloudflare)")
+@pytest.mark.resource_setup(cachedir="downloaders/resources")
 @pytest.mark.parametrize("url", ANNUAL_REVIEWS_URLS)
-def test_annual_review_fetch(monkeypatch, url: str) -> None:
+def test_annual_review_fetch(tmp_config: TemporaryConfiguration,
+                             resource_cache: ResourceCache,
+                             monkeypatch: pytest.MonkeyPatch,
+                             url: str) -> None:
     cls = papis.downloaders.get_downloader_by_name("annualreviews")
     assert cls is Downloader
 
@@ -48,15 +47,15 @@ def test_annual_review_fetch(monkeypatch, url: str) -> None:
     infile = "AnnualReview_{}.html".format(uid)
     outfile = "AnnualReview_{}_Out.json".format(uid)
 
-    with monkeypatch.context() as m:
-        m.setattr(down, "_get_body", testlib.get_remote_resource(infile, url))
-        m.setattr(down, "download_document", lambda: None)
+    monkeypatch.setattr(down, "_get_body",
+                        lambda: resource_cache.get_remote_resource(infile, url))
+    monkeypatch.setattr(down, "download_document", lambda: None)
 
-        # NOTE: bibtex add some extra fields, so we just disable it for the test
-        m.setattr(down, "download_bibtex", lambda: None)
+    # NOTE: bibtex add some extra fields, so we just disable it for the test
+    monkeypatch.setattr(down, "download_bibtex", lambda: None)
 
-        down.fetch()
-        extracted_data = down.ctx.data
-        expected_data = testlib.get_local_resource(outfile, extracted_data)
+    down.fetch()
+    extracted_data = down.ctx.data
+    expected_data = resource_cache.get_local_resource(outfile, extracted_data)
 
-        assert extracted_data == expected_data
+    assert extracted_data == expected_data

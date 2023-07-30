@@ -2,42 +2,37 @@ import tempfile
 import pickle
 import os
 
-import papis.bibtex
 import papis.config
 import papis.format
 import papis.document
 
-from tests import create_random_file, with_default_config
+from tests.testlib import TemporaryConfiguration
 
 DOCUMENT_RESOURCES = os.path.join(os.path.dirname(__file__), "resources")
 
 
-def test_new() -> None:
+def test_new(tmp_config: TemporaryConfiguration) -> None:
     nfiles = 10
-    files = [create_random_file(suffix=".{}".format(i)) for i in range(nfiles)]
+    files = [tmp_config.create_random_file() for _ in range(nfiles)]
 
-    with tempfile.TemporaryDirectory() as d:
-        tmp = os.path.join(d, "doc")
-        doc = papis.document.new(tmp, {"author": "hello"}, files)
+    tmp = os.path.join(tmp_config.tmpdir, "doc1")
+    doc = papis.document.new(tmp, {"author": "hello"}, files)
 
-        assert os.path.exists(doc.get_main_folder())
-        assert doc.get_main_folder() == tmp
-        assert len(doc["files"]) == nfiles
-        assert len(doc.get_files()) == nfiles
+    folder = doc.get_main_folder()
+    assert os.path.exists(folder)
+    assert folder == tmp
 
-        for i in range(nfiles):
-            assert doc["files"][i].endswith(str(i))
-            assert not os.path.exists(doc["files"][i])
-            assert os.path.exists(doc.get_files()[i])
+    files = doc.get_files()
+    assert len(files) == nfiles
+    assert all(os.path.exists(f) for f in files)
 
-    with tempfile.TemporaryDirectory() as d:
-        tmp = os.path.join(d, "doc")
-        doc = papis.document.new(tmp, {"author": "hello"}, [])
+    tmp = os.path.join(tmp_config.tmpdir, "doc2")
+    doc = papis.document.new(tmp, {"author": "hello"}, [])
 
-        assert os.path.exists(doc.get_main_folder())
-        assert doc.get_main_folder() == tmp
-        assert len(doc["files"]) == 0
-        assert len(doc.get_files()) == 0
+    assert os.path.exists(doc.get_main_folder())
+    assert doc.get_main_folder() == tmp
+    assert len(doc["files"]) == 0
+    assert len(doc.get_files()) == 0
 
 
 def test_from_data() -> None:
@@ -82,8 +77,9 @@ def test_main_features() -> None:
     assert doc.html_escape["author"] == "Russell, Bertrand"
 
 
-@with_default_config()
-def test_to_bibtex() -> None:
+def test_to_bibtex(tmp_config: TemporaryConfiguration) -> None:
+    import papis.bibtex
+
     papis.config.set("bibtex-journal-key", "journal_abbrev")
     doc = papis.document.from_data({
         "title": "Hello",
@@ -140,7 +136,7 @@ def test_pickle() -> None:
     assert gotdocs[1]["author"] == docs[1]["author"]
 
 
-def test_sort() -> None:
+def test_sort(tmp_config: TemporaryConfiguration) -> None:
     docs = [
         papis.document.from_data(dict(title="Hello world", year=1990)),
         papis.document.from_data({"author": "Turing", "year": "1932"}),

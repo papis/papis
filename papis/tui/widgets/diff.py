@@ -1,5 +1,5 @@
 from typing import (
-    Dict, Any, List, Union, NamedTuple, Callable, Sequence, Optional)
+    Dict, Any, List, Union, NamedTuple, Callable, Optional)
 
 from prompt_toolkit import Application, print_formatted_text
 from prompt_toolkit.utils import Event
@@ -9,12 +9,11 @@ from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.key_binding import KeyBindings
 
-Action = NamedTuple("Action",
-                    [
-                        ("name", str),
-                        ("key", str),
-                        ("action", Callable[[Event], None])
-                    ])
+
+class Action(NamedTuple):
+    name: str
+    key: str
+    action: Callable[[Event], None]
 
 
 def prompt(text: Union[str, FormattedText],
@@ -33,7 +32,7 @@ def prompt(text: Union[str, FormattedText],
         actions = []
 
     assert isinstance(actions, list)
-    assert type(title) == str
+    assert isinstance(title, str)
 
     kb = KeyBindings()
 
@@ -114,7 +113,7 @@ def diffshow(texta: str,
         "^^^^^^^^^\ndiff from\n",
         "----- {namea}\n".format(namea=namea),
         "+++++ {nameb}\n".format(nameb=nameb),
-    ]  # type: Sequence[str]
+    ]
 
     formatted_text = list(map(
         lambda line:
@@ -156,7 +155,7 @@ def diffdict(dicta: Dict[str, Any],
         "quit": False,
         "add_all": False,
         "cancel": False,
-    }  # type: Dict[str, bool]
+    }
 
     def reset() -> None:
         for k in options:
@@ -219,7 +218,7 @@ def diffdict(dicta: Dict[str, Any],
         diffshow(
             texta=str(dicta.get(key, "")) + "\n",
             textb=str(dictb.get(key, "")) + "\n",
-            title='changes for key "{0}"'.format(key),
+            title='changes for key "{}"'.format(key),
             namea=namea,
             nameb=nameb,
             actions=actions)

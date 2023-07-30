@@ -1,21 +1,13 @@
-"""
-Logging
--------
-
-Helper functions to set up logging used by ``papis``.
-
-.. autofunction:: setup
-.. autofunction:: get_logger
-"""
-
 import os
 import sys
 import logging
-from typing import Optional, Union
+from typing import Any, Optional, Tuple, Union
 
+import click
 import colorama
 
 
+PAPIS_DEBUG = "PAPIS_DEBUG" in os.environ
 LEVEL_TO_COLOR = {
     "CRITICAL": colorama.Style.BRIGHT + colorama.Fore.RED,
     "ERROR": colorama.Style.BRIGHT + colorama.Fore.RED,
@@ -25,8 +17,55 @@ LEVEL_TO_COLOR = {
 }
 
 
+def debug(msg: str, *args: Any) -> None:
+    if PAPIS_DEBUG:
+        click.echo(msg % args)
+
+
 class ColoramaFormatter(logging.Formatter):
+    """A custom logging formatter that uses ``colorama``."""
+
+    def __init__(self, log_format: str, full_tb: bool = False) -> None:
+        super().__init__(log_format)
+
+        #: A flag to denote whether a full traceback should be displayed when
+        #: used with ``logger.info(..., exc_info=ext)``.
+        self.full_tb: bool = full_tb
+
+    def formatException(self, exc_info: Tuple[Any, ...]) -> str:    # noqa: N802
+        """Format and return the specified exception information as a string.
+
+        If :attr:`full_tb` is *True*, then the full traceback is shown. Otherwise,
+        a short inline description is given.
+        """
+        import io
+        import traceback
+
+        if self.full_tb:
+            buffer = io.StringIO()
+            traceback.print_exception(exc_info[0], exc_info[1], exc_info[2],
+                                      None, buffer)
+            tb = buffer.getvalue().strip()
+            buffer.close()
+
+            return "\n".join("  ┆ {}".format(line) for line in tb.split("\n"))
+        else:
+            msg = str(exc_info[1])
+            if len(msg) > 48:
+                msg = "{}...".format(msg[:48].rsplit(" ", 1)[0])
+
+            return (
+                "(Caught exception '{}: {}'. Use `--log DEBUG` to see traceback)"
+                .format(exc_info[0].__name__, msg))
+
     def format(self, record: logging.LogRecord) -> str:
+        """Format the specified record as text.
+
+        This adds color coding to the logging levels, includes the exception
+        into the message, removes the papis namespace from the name, etc. Any
+        formatting of the logging output is made here.
+        """
+
         if isinstance(record.msg, str):
             record.msg = record.msg.format(c=colorama)
 
@@ -38,6 +77,12 @@ class ColoramaFormatter(logging.Formatter):
 
         if record.name.startswith("papis."):
             record.name = record.name[6:]
+
+        if record.exc_info and not self.full_tb:
+            exc_text = self.formatException(record.exc_info)
+            record.msg = "{} {}".format(record.msg, exc_text)
+            record.exc_text = None
+            record.exc_info = None
 
         return super().format(record)
 
@@ -57,8 +102,7 @@ def setup(level: Optional[Union[int, str]] = None,
           verbose: Optional[bool] = None) -> None:
     """Set up formatting and handlers for the root level Papis logger.
 
-    :param level: default logging level (see
-        :ref:`Logging Levels <logging:logging-levels>`). By default, this
+    :param level: default logging level (see :mod:`logging`). By default, this
         takes values from the ``PAPIS_LOG_LEVEL`` environment variable and
         falls back to ``"INFO"``.
     :param color: flag to control logging colors. It should be one of
@@ -100,10 +144,10 @@ def setup(level: Optional[Union[int, str]] = None,
         try:
             level = int(getattr(logging, level))
         except AttributeError:
-            raise ValueError("Unknown logger level: '{}'.".format(level))
+            raise ValueError("Unknown logger level: '{}'".format(level))
     else:
         if logging.getLevelName(level).startswith("Level"):
-            raise ValueError("Unknown logger level: '{}'.".format(level))
+            raise ValueError("Unknown logger level: '{}'".format(level))
 
     log_format = (
         "{c.Fore.GREEN}%(name)s{c.Style.RESET_ALL}: %(message)s"
@@ -116,8 +160,9 @@ def setup(level: Optional[Union[int, str]] = None,
         log_format = "[%(levelname)s] {}".format(log_format)
 
     if logfile is None:
-        handler = logging.StreamHandler()       # type: logging.Handler
-        handler.setFormatter(ColoramaFormatter(log_format))
+        full_tb = level == logging.DEBUG
+        handler: logging.Handler = logging.StreamHandler()
+        handler.setFormatter(ColoramaFormatter(log_format, full_tb=full_tb))
     else:
         handler = logging.FileHandler(logfile, mode="a")
 
@@ -148,6 +193,12 @@ def reset(level: Optional[Union[int, str]] = None,
 
 
 def get_logger(name: Optional[str] = None) -> logging.Logger:
+    """Get a logger instance for the given name under the papis namespace.
+
+    :arg name: the provisional name of the logger instance.
+    :returns: a :class:`logging.Logger` under the papis namespace, i.e. with a
+        name such as ``papis.<name>``.
+    """
     if name is None or name.startswith("papis."):
         return logging.getLogger(name)
     else:

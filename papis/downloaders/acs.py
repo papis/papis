@@ -6,14 +6,14 @@ import papis.downloaders
 
 
 class Downloader(papis.downloaders.Downloader):
-    DOCUMENT_URL = (
+    DOCUMENT_URL: ClassVar[str] = (
         "https://pubs.acs.org/doi/pdf/{doi}"
-        )   # type: ClassVar[str]
+        )
 
-    BIBTEX_URL = (
+    BIBTEX_URL: ClassVar[str] = (
         "https://pubs.acs.org/action/downloadCitation"
         "?format=bibtex&cookieSet=1&doi={doi}"
-        )   # type: ClassVar[str]
+        )
 
     def __init__(self, url: str) -> None:
         super().__init__(
@@ -44,7 +44,7 @@ class Downloader(papis.downloaders.Downloader):
         doi = self.ctx.data.get("doi")
         if doi is not None:
             url = self.BIBTEX_URL.format(doi=doi)
-            self.logger.debug("bibtex url = %s", url)
+            self.logger.debug("Using BibTeX URL: '%s'.", url)
             return url
 
         return None

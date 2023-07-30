@@ -131,7 +131,7 @@ def prompt(
 
     fragments = [
         ("", prompt_string),
-        ("fg:ansired", " ({0})".format(default)),
+        ("fg:ansired", " ({})".format(default)),
         ("", ": "),
     ]
 

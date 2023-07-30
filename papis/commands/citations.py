@@ -1,8 +1,50 @@
 """
-See ../../doc/source/commands/citations.rst
+The ``citations`` command updates and creates the ``citations.yaml`` and
+``cited.yaml`` files for every document.
 
-papis citations --fetch-citations
+Examples
+^^^^^^^^
+
+- Create the ``citations.yaml`` file for a document that you pick
+
+    .. code:: sh
+
+        papis citations --fetch-citations
+
+- Create the ``citations.yaml`` file for all documents matching an author
+
+    .. code:: sh
+
+        papis citations --all --fetch-citations 'author:einstein'
+
+- Overwrite the ``citations.yaml`` file with the ``--force`` flag for all
+  papers matching a query
+
+    .. code:: sh
+
+        papis citations --force --fetch-citations 'author:einstein'
+
+- Update the ``citations.yaml`` file with citations of documents existing in
+  your library
+
+    .. code:: sh
+
+        papis citations --all --update-from-database 'author:einstein'
+
+- Create the ``cited-by.yaml`` for all documents in your library (this might
+  take a while)
+
+    .. code:: sh
+
+        papis citations --fetch-cited-by --all
+
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. click:: papis.commands.citations:cli
+    :prog: papis citations
 """
+
 from typing import Optional
 
 import click
@@ -66,20 +108,20 @@ def cli(query: str,
         _has_cited_by_p = has_cited_by(document)
         if fetch_citations:
             if _has_citations_p and force or not _has_citations_p:
-                logger.info("[%d/%d] fetching citations for %s",
+                logger.info("[%d/%d] Fetching citations for '%s'.",
                             i + 1, len(documents),
                             papis.document.describe(document))
                 fetch_and_save_citations(document)
         if update_from_database:
             if _has_citations_p:
-                logger.info("[%d/%d] updating citations from library for %s",
+                logger.info("[%d/%d] Updating citations from library for '%s'.",
                             i + 1, len(documents),
                             papis.document.describe(document))
                 update_and_save_citations_from_database_from_doc(document)
         if fetch_cited_by:
             if _has_cited_by_p and force or not _has_cited_by_p:
-                logger.info("[%d/%d] fetching cited-by "
-                            "references from library for %s",
-                            i + 1, len(documents),
-                            papis.document.describe(document))
+                logger.info(
+                    "[%d/%d] Fetching cited-by references from library for '%s'",
+                    i + 1, len(documents),
+                    papis.document.describe(document))
                 fetch_and_save_cited_by_from_database(document)

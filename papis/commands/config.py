@@ -2,6 +2,9 @@
 The ``config`` command allows you to query the settings used by Papis on your
 system.
 
+Examples
+^^^^^^^^
+
 The ``config`` command returns the value used by Papis. Therefore, if you
 have not customized some setting, it will return the default value. In contrast,
 if you have customized it, it will return the value set in the configuration
@@ -22,8 +25,8 @@ default "default-library" with:
     papis config --default default-library
 
 Settings from a specific section in the configuration file can also be
-accessed. To take an example, the `Bibtex`_ command's settings can be
-accessed with:
+accessed. To take an example, the :ref:`papis bibtex <command-bibtex>` command's
+settings can be accessed with:
 
 .. code::
 
@@ -117,7 +120,7 @@ def _get_option_safe(
         section, key = parse_option(option, default_section)
     except ValueError:
         logger.error(
-            "Options should be in a <section>.<key> or <key> format: got '%s'",
+            "Options should be in a <section>.<key> or <key> format: got '%s'.",
             option)
         return key, value
 
@@ -130,13 +133,14 @@ def _get_option_safe(
             value = defaults[section][key]
         except KeyError:
             logger.error(
-                "No default value for setting '%s' found in section '%s'",
+                "No default value for setting '%s' found in section '%s'.",
                 key, section)
     else:
         try:
             value = papis.config.get(key, section=section)
         except papis.exceptions.DefaultSettingValueMissing as exc:
-            logger.error("\n%s", str(exc).strip("\n"))
+            logger.error("No value for setting '%s' found in section '%s'.",
+                         key, section, exc_info=exc)
 
     return key, value
 
@@ -154,7 +158,7 @@ def run(
         the values from the configuration file.
     """
     config = papis.config.get_configuration()
-    result = {}     # type: Dict[str, Any]
+    result: Dict[str, Any] = {}
 
     if len(options) == 0:
         # NOTE: no options given -> just get all the settings
@@ -203,7 +207,7 @@ def run(
     return result
 
 
-@click.command("config")
+@click.command("config")                # type: ignore[arg-type]
 @click.help_option("--help", "-h")
 @click.argument("options", nargs=-1)
 @click.option(

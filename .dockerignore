@@ -1,3 +1,5 @@
+Dockerfile
+release.Dockerfile
 papis/deps/*
 .vim-run
 

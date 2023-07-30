@@ -1,36 +1,12 @@
+import pytest
+
 import papis.config
-import papis.logging
 
-papis.logging.setup("DEBUG")
-
-
-def with_default_config(fn):
-    import os
-    import tempfile
-    import functools
-
-    @functools.wraps(fn)
-    def wrapper(*args, **kwargs):
-        with tempfile.NamedTemporaryFile(mode="w", delete=False) as config:
-            pass
-
-        papis.config.set_config_file(config.name)
-        papis.config.reset_configuration()
-
-        result = fn(*args, **kwargs)
-
-        papis.config.set_config_file(None)
-        papis.config.reset_configuration()
-
-        os.unlink(config.name)
-
-        return result
-
-    return wrapper
+from tests.testlib import TemporaryConfiguration
 
 
-@with_default_config
-def test_config_single_option() -> None:
+@pytest.mark.config_setup(overwrite=True, settings={})
+def test_config_single_option(tmp_config: TemporaryConfiguration) -> None:
     from papis.commands.config import run
 
     assert run(["editor"]) == {"editor": papis.config.get("editor")}
@@ -38,8 +14,8 @@ def test_config_single_option() -> None:
     assert run(["papers.dir"]) == {"dir": papis.config.get("dir", section="papers")}
 
 
-@with_default_config
-def test_config_section() -> None:
+@pytest.mark.config_setup(overwrite=True, settings={})
+def test_config_section(tmp_config: TemporaryConfiguration) -> None:
     # NOTE: imported to register the `bibtex` default settings
     import papis.commands.bibtex
 
@@ -74,8 +50,8 @@ def test_config_section() -> None:
     assert result == defaults
 
 
-@with_default_config
-def test_config_section_defaults() -> None:
+@pytest.mark.config_setup(overwrite=True, settings={})
+def test_config_section_defaults(tmp_config: TemporaryConfiguration) -> None:
     from papis.commands.config import run
     defaults = papis.config.get_default_settings()
 

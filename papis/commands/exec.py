@@ -1,27 +1,28 @@
 r"""
-This command is useful to execute python scripts with the environment of your
-papis executable.
+This command is useful to execute Python scripts with the environment of your
+``papis`` executable.
 
-Often papis is installed in a virtual environment or locally, and therefore
-the global python executable does not have access to the papis library.
+Often papis is installed in a virtual environment or locally in the user's home
+directory, and therefore the global Python executable does not have access to
+the papis environment.
 
 This command tries to mend this issue by allowing the user to write a
-python script and run it using the correct environment where papis is
+Python script and run it using the correct environment where papis is
 installed.
 
 Examples
 ^^^^^^^^
 
-    - Run the code in the file ``my-script.py`` and pass it the
-      arguments arg1 and arg2
+- Run the code in the file ``my-script.py`` and pass it the
+    arguments arg1 and arg2
 
-    .. code::
+    .. code:: sh
 
         papis exec my-script.py arg1 arg2
 
-    - Pass the help argument ``-h`` to the script ``my-script.py``
+- Pass the help argument ``-h`` to the script ``my-script.py``
 
-    .. code::
+    .. code:: sh
 
         papis exec my-script.py -- -h
 
@@ -43,7 +44,8 @@ def run(_file: str) -> None:
         exec(f.read())
 
 
-@click.command("exec", context_settings={"ignore_unknown_options": True})
+@click.command("exec",                  # type: ignore[arg-type]
+               context_settings={"ignore_unknown_options": True})
 @click.help_option("--help", "-h")
 @click.argument("python_file", type=click.Path(exists=True))
 @click.argument("args", nargs=-1)

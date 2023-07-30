@@ -13,7 +13,7 @@ DISSEMIN_API_URL = "https://dissem.in/api/search/"
 
 
 def dissemin_authors_to_papis_authors(data: Dict[str, Any]) -> Dict[str, Any]:
-    new_data = {}  # type: Dict[str, Any]
+    new_data: Dict[str, Any] = {}
     if "authors" in data:
         authors = []
         for author in data["authors"]:
@@ -57,7 +57,7 @@ def get_data(query: str = "") -> List[Dict[str, Any]]:
         response = session.get(DISSEMIN_API_URL, params={"q": query})
 
     if not response.ok:
-        logger.error("An HTTP error (%d %s) was encountered for query: '%s'",
+        logger.error("An HTTP error (%d %s) was encountered for query: '%s'.",
                      response.status_code, response.reason, query)
         return []
 
@@ -65,23 +65,28 @@ def get_data(query: str = "") -> List[Dict[str, Any]]:
     return sum([dissemindoc_to_papis(d) for d in paperlist["papers"]], [])
 
 
-@click.command("dissemin")
+@click.command("dissemin")              # type: ignore[arg-type]
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.option("--query", "-q", default="", type=str)
 def explorer(ctx: click.core.Context, query: str) -> None:
     """
-    Look for documents on dissem.in
+    Look for documents on `dissem.in <https://dissem.in/>`__.
 
-    Examples of its usage are
+    For example, to look for a document with the author "Albert Einstein" and
+    open it with Firefox, you can call
 
-    papis explore dissemin -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
+    .. code:: sh
 
+        papis explore \\
+            dissemin -q 'Albert einstein' \\
+            pick \\
+            cmd 'firefox {doc[url]}'
     """
-    logger.info("Looking up...")
+    logger.info("Looking up Dissemin documents...")
 
     data = get_data(query=query)
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 
-    logger.info("%s documents found", len(docs))
+    logger.info("Found %s documents.", len(docs))

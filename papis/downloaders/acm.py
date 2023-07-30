@@ -22,7 +22,7 @@ class Downloader(papis.downloaders.Downloader):
 
     def get_doi(self) -> Optional[str]:
         url = self.uri
-        self.logger.debug("Parsing DOI from '%s'", url)
+        self.logger.debug("Parsing DOI from '%s'.", url)
         mdoi = re.match(r".*/doi/(.*/[^?&%^$]*).*", url)
         if mdoi:
             doi = mdoi.group(1).replace("abs/", "").replace("full/", "")
@@ -33,5 +33,5 @@ class Downloader(papis.downloaders.Downloader):
     def get_document_url(self) -> Optional[str]:
         durl = ("https://dl.acm.org/doi/pdf/{doi}"
                 .format(doi=self.get_doi()))
-        self.logger.debug("doc url = '%s'", durl)
+        self.logger.debug("Using document URL: '%s'.", durl)
         return durl

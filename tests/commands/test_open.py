@@ -1,40 +1,37 @@
-import papis.bibtex
-import papis.config
-import papis.document
-import papis.commands.open
+import os
+import pytest
 
-import tests
-import tests.cli
+from tests.testlib import TemporaryLibrary, PapisRunner
+
+script = os.path.join(os.path.dirname(__file__), "scripts.py")
 
 
-class TestCli(tests.cli.TestCli):
+@pytest.mark.library_setup(settings={
+    "file-browser": "echo"
+    })
+def test_open_cli(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.open import cli
+    cli_runner = PapisRunner()
 
-    cli = papis.commands.open.cli
+    result = cli_runner.invoke(
+        cli,
+        ["doc without files"])
+    assert result.exit_code == 0
 
-    def test_main(self):
-        self.do_test_cli_function_exists()
-        self.do_test_help()
+    result = cli_runner.invoke(
+        cli,
+        ["--tool", "nonexistingcommand", "Krishnamurti"],
+        catch_exceptions=True)
+    assert result.exit_code != 0
+    assert result.exc_info[0] == FileNotFoundError
 
-    def test_tool(self):
-        result = self.invoke([
-            "doc without files"
-        ])
-        self.assertEqual(result.exit_code, 0)
+    result = cli_runner.invoke(
+        cli,
+        ["--tool", "nonexistingcommand", "--dir", "Krishnamurti"],
+        catch_exceptions=True)
+    assert result.exit_code == 0
 
-        result = self.invoke([
-            "Krishnamurti",
-            "--tool", "nonexistingcommand"
-        ])
-        self.assertNotEqual(result.exit_code, 0)
-
-        result = self.invoke([
-            "Krishnamurti",
-            "--tool", "nonexistingcommand", "--folder"
-        ])
-        self.assertNotEqual(result.exit_code, 0)
-
-        result = self.invoke([
-            "Krishnamurti", "--mark", "--all", "--tool", "dir"
-        ])
-        self.assertIsNot(result, None)
-        # self.assertEqual(result.exit_code, 0)
+    result = cli_runner.invoke(
+        cli,
+        ["--tool", "python {} echo".format(script), "--mark", "--all", "Krishnamurti"])
+    assert result.exit_code == 0

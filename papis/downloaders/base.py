@@ -1,8 +1,7 @@
 import re
 from typing import (
-    Any, List, Dict, Iterator, Tuple, Union, Pattern, TYPE_CHECKING)
-
-from typing_extensions import TypedDict
+    Any, List, Dict, Iterator, Tuple, Union, Pattern,
+    TypedDict, TYPE_CHECKING)
 
 import papis.config
 import papis.document
@@ -12,15 +11,14 @@ import papis.utils
 if TYPE_CHECKING:
     import bs4
 
-MetaEquivalence = TypedDict(
-    "MetaEquivalence", {
-        "tag": str,
-        "key": str,
-        "attrs": Dict[str, Union[str, Pattern[str]]],
-    }
-)
 
-meta_equivalences = [
+class MetaEquivalence(TypedDict):
+    tag: str
+    key: str
+    attrs: Dict[str, Union[str, Pattern[str]]]
+
+
+meta_equivalences: List[MetaEquivalence] = [
     # google
     {"tag": "meta", "key": "abstract", "attrs": {"name": "description"}},
     {"tag": "meta", "key": "doi", "attrs": {"name": "doi"}},
@@ -97,11 +95,11 @@ meta_equivalences = [
             "key": "doi",
             "attrs": {"name": re.compile("dc.identifier", re.I),
                       "scheme": "doi"}},
-]  # type: List[MetaEquivalence]
+]
 
 
 def parse_meta_headers(soup: "bs4.BeautifulSoup") -> Dict[str, Any]:
-    data = {}  # type: Dict[str, Any]
+    data: Dict[str, Any] = {}
     for equiv in meta_equivalences:
         elements = soup.find_all(equiv["tag"], attrs=equiv["attrs"])
         if elements:
@@ -132,12 +130,12 @@ def parse_meta_authors(soup: "bs4.BeautifulSoup") -> List[Dict[str, Any]]:
         attrs={"name": "citation_author_institution"})
 
     if affs and len(authors) == len(affs):
-        authors_and_affs = zip(authors, affs)  # type: Iterator[Tuple[Any, Any]]
+        authors_and_affs: Iterator[Tuple[Any, Any]] = zip(authors, affs)
     else:
         authors_and_affs = ((a, None) for a in authors)
 
     # convert to papis author format
-    author_list = []  # type: List[Dict[str, Any]]
+    author_list: List[Dict[str, Any]] = []
     for author, aff in authors_and_affs:
         fullname, = papis.document.split_authors_name([author.get("content")])
         affiliation = [{"name": aff.get("content")}] if aff else []

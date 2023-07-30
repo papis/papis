@@ -1,9 +1,93 @@
 """
-The doctor command checks for the overall health of your
-library.
+The doctor command checks for the overall health of your library.
 
 There are many checks implemented and some others that you
-can add yourself through the python configuration file.
+can add yourself through the Python configuration file (these cannot be added
+through the static configuration file). Currently, the following checks are
+implemented
+
+* ``files``: checks whether all the document files exist on the filesystem.
+* ``keys-exist``: checks that the keys provided by
+  :ref:`config-settings-doctor-keys-exist-keys` exist in the document.
+* ``duplicated-keys``: checks that the keys provided by
+  :ref:`config-settings-doctor-duplicated-keys-keys` are not present in multiple
+  documents. This is mainly meant to be used to check the ``ref`` key.
+* ``bibtex-type``: checks that the document type matches a known BibTeX type.
+* ``refs``: checks that the document has a valid reference.
+* ``html-codes``: checks that no HTML codes (e.g. ``&amp;``) appear in the keys
+  provided by :ref:`config-settings-doctor-html-codes-keys`.
+* ``html-tags``: checks that no HTML tags (e.g. ``<a>``) appear in the keys
+  provided by :ref:`config-settings-doctor-html-tags-keys`.
+* ``key-type``: checks the type of keys provided by
+  :ref:`config-settings-doctor-key-type-check-keys`, e.g.
+  (year should be an ``int``).
+
+If any custom checks are implemented, you can get a complete list at runtime from
+
+.. code:: sh
+
+    papis doctor --list-checks
+
+Examples
+^^^^^^^^
+
+- To check if all the files of a document are present, use
+
+    .. code:: sh
+
+        papis doctor --check files einstein
+
+- To check if any unwanted HTML tags are present in your documents (especially
+  abstracts can be full of additional HTML or XML tags) use
+
+    .. code:: sh
+
+        papis doctor --explain --check html-tags einstein
+
+  The ``--explain`` flag can be used to give additional details of checks that
+  failed. Some fixes such as this also have automatic fixers. Here, we can just
+  remove all the HTML tags by writing
+
+    .. code:: sh
+
+        papis doctor --fix --check html-tags einstein
+
+- If an automatic fix is not possible, some checks also have suggested
+  commands or tips to fix the issue that was found. For example, if a key
+  does not exist in the document, it can suggest editing the file to add it.
+
+    .. code:: sh
+
+        papis doctor --suggestion --check keys-exist einstein
+        >> Suggestion: papis edit --doc-folder /path/to/folder
+
+  If this is the case, you can also run
+
+        papis doctor --edit --check keys-exist einstein
+
+  to automatically open the ``info.yaml`` file for editing.
+
+Implementing additional checks
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A check is just a function that takes a document and returns a list of errors.
+A skeleton implementation that gets added to ``config.py``
+(see :ref:`config_py`) can be implemented as follows
+
+.. code:: python
+
+    from papis.commands.doctor import Error, register_check
+
+    def my_custom_check(doc) -> List[Error]:
+        ...
+
+    register_check("my-custom-check", my_custom_check)
+
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. click:: papis.commands.doctor:cli
+    :prog: papis doctor
 """
 
 import os
@@ -23,22 +107,36 @@ import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
-# FIXME: when going to python >=3.6, these should be classes (dataclasses?) and
-# have some basic documentation for the various fields
 FixFn = Callable[[], None]
-Error = NamedTuple("Error", [("name", str),
-                             ("path", str),
-                             ("payload", str),
-                             ("msg", str),
-                             ("suggestion_cmd", str),
-                             ("fix_action", FixFn),
-                             ("doc", Optional[papis.document.Document]),
-                             ])
-CheckFn = Callable[[papis.document.Document], List[Error]]
-Check = NamedTuple("Check", [("name", str),
-                             ("operate", CheckFn),
-                             ])
-REGISTERED_CHECKS = {}  # type: Dict[str, Check]
+CheckFn = Callable[[papis.document.Document], List["Error"]]
+
+
+class Error(NamedTuple):
+    #: Name of the check generating the error.
+    name: str
+    #: Path to the document that generated the error.
+    path: str
+    #: A value that caused the error.
+    payload: str
+    #: A short message describing the error that can be displayed to the user.
+    msg: str
+    #: A command to run to fix the error that can be suggested to the user.
+    suggestion_cmd: str
+    #: A callable that can autofix the error.
+    fix_action: FixFn
+    #: The document that generated the error.
+    doc: Optional[papis.document.Document]
+
+
+class Check(NamedTuple):
+    #: Name of the check
+    name: str
+    #: A callable that takes a document and returns a list of errors generated
+    #: by the current check.
+    operate: CheckFn
+
+
+REGISTERED_CHECKS: Dict[str, Check] = {}
 
 
 def error_to_dict(e: Error) -> Dict[str, Any]:
@@ -190,7 +288,7 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
     return []
 
 
-DUPLICATED_KEYS_SEEN = collections.defaultdict(set)  # type: Dict[str, Set[str]]
+DUPLICATED_KEYS_SEEN: Dict[str, Set[str]] = collections.defaultdict(set)
 DUPLICATED_KEYS_NAME = "duplicated-keys"
 
 
@@ -205,7 +303,7 @@ def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
     keys = papis.config.getlist("doctor-duplicated-keys-keys")
     folder = doc.get_main_folder() or ""
 
-    results = []  # type: List[Error]
+    results: List[Error] = []
     for key in keys:
         value = doc.get(key)
         if value is None:
@@ -429,14 +527,14 @@ def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
     """
     assert all(check in REGISTERED_CHECKS for check in checks)
 
-    results = []  # type: List[Error]
+    results: List[Error] = []
     for check in checks:
         results.extend(REGISTERED_CHECKS[check].operate(doc))
 
     return results
 
 
-@click.command("doctor")
+@click.command("doctor")                # type: ignore[arg-type]
 @click.help_option("--help", "-h")
 @papis.cli.query_argument()
 @papis.cli.sort_option()
@@ -495,7 +593,7 @@ def cli(query: str,
 
     logger.debug("Running checks: '%s'.", "', '".join(_checks))
 
-    errors = []  # type: List[Error]
+    errors: List[Error] = []
     for doc in documents:
         errors.extend(run(doc, _checks))
 

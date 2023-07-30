@@ -1,6 +1,5 @@
 import re
 import os
-import tempfile
 from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
 
 import doi
@@ -92,8 +91,7 @@ type_converter = {
     "report-series": "inproceedings",
     "standard-series": "incollection",
     "standard": "techreport",
-}  # type: Dict[str, str]
-
+}
 
 key_conversion = [
     KeyConversionPair("DOI", [{"key": "doi", "action": None}]),
@@ -149,8 +147,12 @@ key_conversion = [
     KeyConversionPair("event", [  # Conferences
         {"key": "venue", "action": lambda x: x["location"]},
         {"key": "booktitle", "action": lambda x: x["name"]},
-        {"key": "year", "action": lambda x: _crossref_date_parts(x["start"], 0)},
-        {"key": "month", "action": lambda x: _crossref_date_parts(x["start"], 1)},
+        {"key": "year",
+         "action": (lambda x:
+                    _crossref_date_parts(x["start"], 0) if "start" in x else None)},
+        {"key": "month",
+         "action": (lambda x:
+                    _crossref_date_parts(x["start"], 1) if "start" in x else None)},
     ]),
 ]  # List[papis.document.KeyConversionPair]
 
@@ -216,10 +218,11 @@ def get_data(
         filters = {}
 
     if filters:
-        if not set(filters) & _filter_names == set(filters):
-            raise Exception(
-                "Filter keys must be one of {0}"
-                .format(",".join(_filter_names))
+        unknown_filters = set(filters) - _filter_names
+        if unknown_filters:
+            raise ValueError(
+                "Unknown filters '{}'. Filter keys must be one of '{}'"
+                .format("', '".join(unknown_filters), "', '".join(_filter_names))
             )
     data = {
         "query": query,
@@ -234,15 +237,15 @@ def get_data(
         kwargs.update({"sort": sort, "order": order})
     try:
         results = _get_crossref_works(filter=filters, **kwargs)
-    except Exception as e:
-        logger.error(e)
+    except Exception as exc:
+        logger.error("Error getting works from Crossref.", exc_info=exc)
         return []
 
     if isinstance(results, list):
         docs = [d["message"] for d in results]
     elif isinstance(results, dict):
         if "message" not in results:
-            logger.error("Error retrieving from crossref: incorrect message")
+            logger.error("Error retrieving data from Crossref: incorrect message.")
             return []
         message = results["message"]
         if "items" in message:
@@ -250,12 +253,11 @@ def get_data(
         else:
             docs = [message]
     else:
-        logger.error("Error retrieving from crossref: incorrect message")
+        logger.error("Error retrieving data from Crossref: incorrect message.")
         return []
-    logger.debug("Retrieved %s documents", len(docs))
-    return [
-        crossref_data_to_papis_data(d)
-        for d in docs]
+
+    logger.debug("Retrieved %s documents.", len(docs))
+    return [crossref_data_to_papis_data(d) for d in docs]
 
 
 def doi_to_data(doi_string: str) -> Dict[str, Any]:
@@ -269,10 +271,11 @@ def doi_to_data(doi_string: str) -> Dict[str, Any]:
     results = get_data(dois=[doi_string])
     if results:
         return results[0]
-    raise ValueError("Couldn't get data for doi ({})".format(doi_string))
+    raise ValueError(
+        "Could not retrieve data for DOI '{}' from Crossref".format(doi_string))
 
 
-@click.command("crossref")
+@click.command("crossref")              # type: ignore[arg-type]
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.option("--query", "-q", help="General query", default="")
@@ -300,14 +303,19 @@ def explorer(
         sort: str,
         order: str) -> None:
     """
-    Look for documents on crossref.org.
+    Look for documents on `Crossref <https://www.crossref.org/>`__.
 
-    Examples of its usage are
+    For example, to look for a document with the author "Albert Einstein" and
+    export it to a BibTeX file, you can call
 
-    papis explore crossref -a 'Albert einstein' pick export --bibtex lib.bib
+    .. code:: sh
 
+        papis explore \\
+            crossref -a 'Albert einstein' \\
+            pick \\
+            export --format bibtex lib.bib
     """
-    logger.info("Looking up...")
+    logger.info("Looking up Crossref documents...")
 
     data = get_data(
         query=query,
@@ -320,7 +328,7 @@ def explorer(
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 
-    logger.info("%s documents found", len(docs))
+    logger.info("Found %s documents.", len(docs))
 
 
 class DoiFromPdfImporter(papis.importer.Importer):
@@ -330,7 +338,7 @@ class DoiFromPdfImporter(papis.importer.Importer):
     def __init__(self, uri: str) -> None:
         """The uri should be a filepath"""
         super().__init__(name="pdf2doi", uri=uri)
-        self._doi = None  # type: Optional[str]
+        self._doi: Optional[str] = None
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
@@ -349,10 +357,16 @@ class DoiFromPdfImporter(papis.importer.Importer):
     @property
     def doi(self) -> Optional[str]:
         if self._doi is None:
-            self.logger.info("Parsed DOI '%s' from file: '%s'.", self.doi, self.uri)
-            self.logger.warning(
-                "There is no guarantee that this DOI is the correct one")
             self._doi = doi.pdf_to_doi(self.uri, maxlines=2000)
+            self._doi = "" if self._doi is None else self._doi
+
+            if self._doi:
+                self.logger.info("Parsed DOI '%s' from file: '%s'.",
+                                 self._doi, self.uri)
+                self.logger.warning(
+                    "There is no guarantee that this DOI is the correct one!")
+            else:
+                self.logger.debug("No DOI found in document: '%s'", self.uri)
 
         return self._doi
 
@@ -403,27 +417,12 @@ class Importer(papis.importer.Importer):
         if doc_url is None:
             return
 
-        self.logger.info("Trying to download document from '%s'", doc_url)
+        self.logger.info("Trying to download document from '%s'.", doc_url)
 
-        with papis.utils.get_session() as session:
-            response = session.get(doc_url, allow_redirects=True)
-
-        ext = papis.filetype.guess_content_extension(response.content)
-        if not response.ok:
-            self.logger.info("Could not download document. HTTP status: %s (%d)",
-                             response.reason, response.status_code)
-        elif ext is None:
-            self.logger.info("Downloaded document does not have a "
-                             "recognizable (binary) mimetype: '%s'",
-                             response.headers["Content-Type"])
-        else:
-            with tempfile.NamedTemporaryFile(
-                    mode="wb+",
-                    suffix=".{}".format(ext),
-                    delete=False) as f:
-                f.write(response.content)
-                self.logger.debug("Saving in '%s'", f.name)
-                self.ctx.files.append(f.name)
+        from papis.downloaders import download_document
+        filename = download_document(doc_url)
+        if filename is not None:
+            self.ctx.files.append(filename)
 
 
 class FromCrossrefImporter(papis.importer.Importer):
@@ -447,7 +446,7 @@ class FromCrossrefImporter(papis.importer.Importer):
         return None
 
     def fetch_data(self) -> None:
-        self.logger.info("Querying '%s' to crossref.org", self.uri)
+        self.logger.info("Querying Crossref with '%s'.", self.uri)
         docs = [
             papis.document.from_data(d)
             for d in get_data(query=self.uri)]
@@ -469,7 +468,7 @@ class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, uri: str) -> None:
         super().__init__(uri=uri, name="doi")
-        self._doi = None    # type: Optional[str]
+        self._doi: Optional[str] = None
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.downloaders.Downloader]:
@@ -480,11 +479,12 @@ class Downloader(papis.downloaders.Downloader):
     def doi(self) -> Optional[str]:
         if self._doi is None:
             self._doi = doi.find_doi_in_text(self.uri)
+            self._doi = "" if self._doi is None else self._doi
 
         return self._doi
 
     def fetch(self) -> None:
-        if self.doi is None:
+        if not self.doi:
             return
 
         importer = Importer(uri=self.doi)

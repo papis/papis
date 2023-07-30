@@ -5,7 +5,6 @@ import click
 
 import papis.utils
 import papis.config
-import papis.bibtex
 import papis.importer
 import papis.document
 import papis.logging
@@ -138,7 +137,7 @@ def get_data(query: str = "", max_results: int = 30) -> List[Dict[str, Any]]:
     hits = result["hits"].get("hit")
 
     if hits is None:
-        logger.error("Could not retrieve results from DBLP. Error: '%s'",
+        logger.error("Could not retrieve results from DBLP. Error: '%s'.",
                      result["status"]["text"])
         return []
 
@@ -159,7 +158,7 @@ def is_valid_dblp_key(key: str) -> bool:
         return response.ok
 
 
-@click.command("dblp")
+@click.command("dblp")                  # type: ignore[arg-type]
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.option(
@@ -177,19 +176,23 @@ def explorer(
     """
     Look for documents on `dblp.org <https://dblp.org/>`__.
 
-    Examples of its usage are
+    For example, to look for a document with the author "Albert Einstein" and
+    export it to a BibTeX file, you can call
 
-    .. code:: bash
+    .. code:: sh
 
-        papis explore dblp -a 'Albert einstein' pick export --bibtex lib.bib
+        papis explore \\
+            dblp -a 'Albert einstein' \\
+            pick \\
+            export --format bibtex lib.bib
     """
-    logger.info("Looking up...")
+    logger.info("Looking up DBLP documents...")
 
     data = get_data(query=query, max_results=max_results)
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 
-    logger.info("%s documents found", len(docs))
+    logger.info("Found %d documents.", len(docs))
 
 
 class Importer(papis.importer.Importer):
@@ -209,6 +212,8 @@ class Importer(papis.importer.Importer):
             return None
 
     def fetch_data(self) -> None:
+        import papis.bibtex
+
         # uri: https://dblp.org/rec/conf/iccg/EncarnacaoAFFGM93.html
         # bib: https://dblp.org/rec/conf/iccg/EncarnacaoAFFGM93.bib
         if is_valid_dblp_key(self.uri):
@@ -220,7 +225,7 @@ class Importer(papis.importer.Importer):
             response = session.get(url)
 
         if not response.ok:
-            logger.error("Could not get BibTeX entry for '%s'", self.uri)
+            logger.error("Could not get BibTeX entry for '%s'.", self.uri)
             return
 
         entries = papis.bibtex.bibtex_to_dict(response.content.decode())

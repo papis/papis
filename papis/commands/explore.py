@@ -1,50 +1,52 @@
 """
-This command is in an experimental stage but it might be useful for many
-people.
+This command is mainly used to explore different databases and gather data
+for a project before adding it to the papis libraries.
+
+Examples
+^^^^^^^^
 
 Imagine you want to search for some papers online, but you don't want to
-go into a browser and look for it. Explore gives you way to do this,
-using several services available online, more should be coming on the way.
+go into a browser and look for it. The ``explore`` command gives you way to do
+this using several services available online. More should be coming on the way!
 
-An excellent such resource is `crossref <https://www.crossref.org/>`__,
-which you can use by using the subcommand crossref:
+An excellent resource for this is `Crossref <https://www.crossref.org/>`__.
+You can use it by using the ``crossref`` subcommand:
 
-::
+.. code:: sh
 
     papis explore crossref --author 'Freeman Dyson'
 
 If you issue this command, you will see some text but basically nothing
-will happen. This is because ``explore`` is conceived in such a way
-as to concatenate commands, doing a simple
+will happen. This is because ``explore`` is conceived as a concatenating command.
+Doing a simple
 
-::
+.. code:: sh
 
     papis explore crossref -h
 
-will tell you which commands are available.
-Let us suppose that you want to look for some documents on crossref,
-say some papers of Schroedinger, and you want to store them into a bibtex
-file called ``lib.bib``, then you could concatenate the commands
-``crossref`` and ``export --format bibtex`` as such
+will tell you which commands are available. Let us suppose that you want to
+look for some documents on Crossref, say some papers of Schroedinger's, and
+you want to store them into a BibTeX file called ``lib.bib``. Then you could
+concatenate the commands ``crossref`` and ``export --format bibtex`` as such
 
-::
+.. code:: sh
 
     papis explore crossref -a 'Schrodinger' export --format bibtex lib.bib
 
-This will store everything that you got from crossref in the file ``lib.bib``
-and store in bibtex format. ``explore`` is much more flexible than that,
-you can also pick just one document to store, for instance let's assume that
-you don't want to store all retrieved documents but only one that you pick,
-the ``pick`` command will take care of it
+This will store everything that you got from Crossref in the ``lib.bib`` file.
+However, ``explore`` is much more flexible than that. You can also pick just
+one document to store. For instance, let's assume that you don't want to store
+all retrieved documents but only one that you pick. The ``pick`` command will
+take care of it
 
-::
+.. code:: sh
 
     papis explore crossref -a 'Schrodinger' pick export --format bibtex lib.bib
 
-notice how the ``pick`` command is situated before the ``export``.
+Notice how the ``pick`` command is situated before the ``export``.
 More generally you could write something like
 
-::
+.. code:: sh
 
     papis explore \\
         crossref -a Schroedinger \\
@@ -54,17 +56,17 @@ More generally you could write something like
         pick  \\
         export --format bibtex specially-picked-document.bib
 
-The upper command will look in crossref for documents authored by Schrodinger,
-then also by Einstein, and will look on the arxiv for papers authored by Felix
-Hummel. At the end, all these documents will be stored in the ``docs.yaml``.
+The upper command will look in Crossref for documents authored by Schrodinger,
+then also by Einstein, and will look on the arXiv for papers authored by Felix
+Hummel. At the end, all these documents will be stored in the ``docs.yaml`` file.
 After that we pick one document from them and store the information in
 the file ``specially-picked-document.bib``, and we could go on and on.
 
 If you want to follow-up on these documents and get them again to pick one,
-you could use the ``yaml`` command to read in document information from a yaml
-file, i.e., the previously created ``docs.yaml``
+you could use the ``yaml`` command to read in document information from a YAML
+file, e.g. the previously created ``docs.yaml``,
 
-::
+.. code:: sh
 
     papis explore \\
         yaml docs.yaml \\
@@ -72,12 +74,12 @@ file, i.e., the previously created ``docs.yaml``
         cmd 'papis scihub {doc[doi]}' \\
         cmd 'firefox {doc[url]}'
 
-In this last example, we read the documents' information from ``docs.yaml`` and
-pick a document, which then feed into the ``explore cmd`` command, that accepts
+In this last example, we read the documents from ``docs.yaml`` and pick a
+document, which we then feed into the ``explore cmd`` command, that accepts
 a papis formatting string to issue a general shell command.  In this case, the
 picked document gets fed into the ``papis scihub`` command which tries to
-download the document using ``scihub``, and also this very document is tried to
-be opened by firefox (in case the document does have a ``url``).
+download the document using ``scihub``. Also this very document is opened by
+Firefox (in case the document does have a ``url``).
 
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -92,6 +94,7 @@ import shlex
 
 import click
 
+import papis.utils
 import papis.tui.utils
 import papis.commands
 import papis.document
@@ -113,23 +116,21 @@ if TYPE_CHECKING:
 
 logger = papis.logging.get_logger(__name__)
 
-
-def _extension_name() -> str:
-    return "papis.explorer"
+EXPLORER_EXTENSION_NAME = "papis.explorer"
 
 
 def get_available_explorers() -> List[click.Command]:
     """
     Gets all exporters registered.
     """
-    return papis.plugin.get_available_plugins(_extension_name())
+    return papis.plugin.get_available_plugins(EXPLORER_EXTENSION_NAME)
 
 
 def get_explorer_mgr() -> "ExtensionManager":
-    return papis.plugin.get_extension_manager(_extension_name())
+    return papis.plugin.get_extension_manager(EXPLORER_EXTENSION_NAME)
 
 
-@click.command("lib")
+@click.command("lib")                   # type: ignore[arg-type]
 @click.pass_context
 @click.help_option("--help", "-h")
 @papis.cli.query_argument()
@@ -138,25 +139,27 @@ def get_explorer_mgr() -> "ExtensionManager":
 def lib(ctx: click.Context, query: str,
         doc_folder: str, library: Optional[str]) -> None:
     """
-    Query for documents in your library
+    Query for documents in your library.
 
-    Examples of its usage are
+    For example, to query all the documents containing "einstein" in the "books"
+    library, you can call
+
+    .. code:: sh
 
         papis lib -l books einstein pick
-
     """
 
     if doc_folder:
         ctx.obj["documents"] += [papis.document.from_folder(doc_folder)]
     db = papis.database.get(library_name=library)
     docs = db.query(query)
-    logger.info("%d documents found", len(docs))
+    logger.info("Found %d documents.", len(docs))
 
     ctx.obj["documents"] += docs
     assert isinstance(ctx.obj["documents"], list)
 
 
-@click.command("pick")
+@click.command("pick")                  # type: ignore[arg-type]
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.option("--number", "-n",
@@ -165,12 +168,14 @@ def lib(ctx: click.Context, query: str,
               help="Pick automatically the n-th document")
 def pick(ctx: click.Context, number: Optional[int]) -> None:
     """
-    Pick a document from the retrieved documents
+    Pick a document from the retrieved documents.
 
-    Examples of its usage are
+    For example, to open a picker with the documents in a BibTeX file,
+    you can call
 
-    papis explore bibtex lib.bib pick
+    .. code:: sh
 
+        papis explore bibtex 'lib.bib' pick
     """
     docs = ctx.obj["documents"]
     if number is not None:
@@ -198,11 +203,12 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
               cited_by: bool,
               _all: bool) -> None:
     """
-    Query the citations of a paper
+    Query the citations for a paper.
 
-    Example:
+    For example, to go through the citations of a paper and export it in a
+    YAML file, you can call
 
-    Go through the citations of a paper and export it in a yaml file
+    .. code:: sh
 
         papis explore citations 'einstein' export --format yaml einstein.yaml
 
@@ -220,13 +226,13 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
         return
 
     for document in documents:
-        logger.debug("exploring %s", papis.document.describe(document))
+        logger.debug("Exploring document '%s'.", papis.document.describe(document))
         if cited_by:
             _citations = papis.citations.get_cited_by(document)
         else:
             _citations = papis.citations.get_citations(document)
 
-        logger.debug("got %s citations", len(_citations))
+        logger.debug("Found %d citations.", len(_citations))
 
         ctx.obj["documents"].extend(_citations)
 
@@ -234,44 +240,53 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
 @click.command("add")
 @click.pass_context
 def add(ctx: click.Context) -> None:
+    """
+    Add selected documents to the current library.
+
+    For example, to add documents from a BibTeX file, you can call
+
+    .. code:: sh
+
+        papis explore bibtex 'lib.bib' pick add
+    """
     docs = ctx.obj["documents"]
     for d in docs:
         papis.commands.add.run([], d)
 
 
-@click.command("cmd")
+@click.command("cmd")               # type: ignore[arg-type]
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.argument("command", type=str)
 def cmd(ctx: click.Context, command: str) -> None:
     """
-    Run a general command on the document list
+    Run a general command on the document list.
 
-    Examples of its usage are:
+    For example, to look for 200 Schroedinger papers with
+    `Crossref <https://www.crossref.org/>`__, pick one, and add it to the
+    current library via ``papis-scihub``, you can call
 
-    Look for 200 Schroedinger papers, pick one, and add it via papis-scihub
+    .. code:: sh
 
-    papis explore crossref -m 200 -a 'Schrodinger' \\
-        pick cmd 'papis scihub {doc[doi]}'
-
+        papis explore \\
+            crossref -m 200 -a 'Schrodinger' \\
+            pick \\
+            cmd 'papis scihub {doc[doi]}'
     """
-    from subprocess import call
     docs = ctx.obj["documents"]
     for doc in docs:
-        fcommand = papis.format.format(command, doc)
-        splitted_command = shlex.split(fcommand)
-        logger.info("Calling '%s'", splitted_command)
-        call(splitted_command)
+        fcommand = papis.format.format(command, doc, default="")
+        papis.utils.run(shlex.split(fcommand))
 
 
-@click.group("explore",
+@click.group("explore",             # type: ignore[arg-type]
              cls=papis.commands.AliasedGroup,
              invoke_without_command=False, chain=True)
 @click.help_option("--help", "-h")
 @click.pass_context
 def cli(ctx: click.Context) -> None:
     """
-    Explore new documents using a variety of resources
+    Explore new documents using a variety of resources.
     """
     ctx.obj = {"documents": []}
 

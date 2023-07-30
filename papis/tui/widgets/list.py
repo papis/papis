@@ -56,29 +56,29 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
             cpu_count = os.cpu_count()
 
         self.search_buffer = search_buffer
-        self.last_query_text = ""  # type: str
+        self.last_query_text = ""
         self.search_buffer.on_text_changed += self.update
 
         self.header_filter = header_filter
         self.match_filter = match_filter
-        self.current_index = default_index  # type: Optional[int]
+        self.current_index = default_index
         self.entries_left_offset = 0
         self.cpu_count = cpu_count
 
-        self.options_headers_linecount = []  # type: List[int]
-        self._indices_to_lines = []  # type: List[int]
+        self.options_headers_linecount: List[int] = []
+        self._indices_to_lines: List[int] = []
 
-        self.options_headers = []  # type: FormattedText
-        self.options_matchers = []  # type: List[str]
-        self.indices = []  # type: List[int]
-        self._options = []  # type: Sequence[Option]
-        self.marks = []  # type: List[int]
-        self.max_entry_height = 1  # type: int
+        self.options_headers: FormattedText = []
+        self.options_matchers: List[str] = []
+        self.indices: List[int] = []
+        self._options: Sequence[Option] = []
+        self.marks: List[int] = []
+        self.max_entry_height = 1
 
         # options are processed here also through the setter
         # ##################################################
         self.set_options(options)
-        self.cursor = Point(0, 0)  # type: Point
+        self.cursor = Point(0, 0)
         # ##################################################
 
         self.content = FormattedTextControl(
@@ -280,11 +280,11 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
 
         self.update_cursor()
         begin_t = time.time()
-        internal_text = functools.reduce(
+        internal_text: List[Tuple[str, str]] = functools.reduce(
             operator.add,
             [self.options_headers[i] for i in self.indices],
-            [])  # type: List[Tuple[str, str]]
-        logger.debug("Created items in %.1f ms", 1000 * (time.time() - begin_t))
+            [])
+        logger.debug("Created items in %.1f ms.", 1000 * (time.time() - begin_t))
         return internal_text
 
     def index_to_line(self, index: int) -> int:
@@ -300,7 +300,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         return self._indices_to_lines[index]
 
     def process_options(self) -> None:
-        logger.debug("Processing %d options", len(self.get_options()))
+        logger.debug("Processing %d options.", len(self.get_options()))
         self.marks = []
 
         def _get_linecount(_o: Option) -> int:
@@ -309,7 +309,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         self.options_headers_linecount = list(map(_get_linecount,
                                                   self.get_options()))
         self.max_entry_height = max(self.options_headers_linecount)
-        logger.debug("Processing headers")
+        logger.debug("Processing headers.")
         self.options_headers = []
         for _opt in self.get_options():
             prestring = self.header_filter(_opt) + "\n"
@@ -320,9 +320,9 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
                     "Error processing html for\n %s\n %s", prestring, e)
                 htmlobject = [("fg:ansired", prestring)]
             self.options_headers += [htmlobject]
-        logger.debug("Got %d headers", len(self.options_headers))
-        logger.debug("Processing matchers")
+        logger.debug("Got %d headers.", len(self.options_headers))
+        logger.debug("Processing matchers.")
         self.options_matchers = list(
             map(self.match_filter, self.get_options()))
         self.indices = list(range(len(self.get_options())))
-        logger.debug("Got %d matchers", len(self.options_matchers))
+        logger.debug("Got %d matchers.", len(self.options_matchers))

@@ -1,53 +1,58 @@
-"""This command will try its best to find a source in the internet for the
+"""
+This command will try its best to find a source in the internet for the
 document at hand.
 
-Of course if the document has an url key in its info file, it will use this url
-to open it in a browser.  Also if it has a doc_url key, or a doi, it will try
-to compose urls out of these to open it.
+If the document has an URL key in its ``info.yaml`` file, it will use this URL
+to open it in a browser.  Also if it has a ``doc_url`` key, or a DOI, it will try
+to compose URLs out of these to open it.
 
 If none of the above work, then it will try to use a search engine with the
-document's information (using the ``browse-query-format``).  You can select
-which search engine you want to use using the ``search-engine`` setting.
+document's information (using the :ref:`config-settings-browse-query-format`
+configuration option).  You can select which search engine you want to use
+with the :ref:`config-settings-search-engine` setting.
 
-It uses the configuration option ``browse-key`` to form an url
-according to which key is given in the document. You can bypass this option
-using the `-k` flag issuing the command.
+Examples
+^^^^^^^^
 
-::
+By default, it will use the configuration option :ref:`config-settings-browse-key`
+to try and form an URL to browse. You can bypass this option using the ``-k``
+flag issuing the command
+
+.. code:: sh
 
     papis browse -k doi einstein
 
-This will form an url through the DOI of the document.
+This will form an URL through the DOI of the document. Similarly,
 
-::
+.. code:: sh
 
     papis browse -k isbn
 
-This will form an url through the ISBN of the document
-using isbnsearch.org.
+will form an URL through the ISBN of the document using
+`isbnsearch.org <https://isbnsearch.org/>`__. It can also use
 
-::
+.. code:: sh
 
     papis browse -k ads
 
-This will form an url using the gread ADS service and there you can check
-for similar papers, citations, references and much more.
-Please note that for this to work the document should have a DOI
-attached to it.
+to form an URL using the great `ADS service <https://ui.adsabs.harvard.edu/>`__
+and there you can check for similar papers, citations, references and much more.
+Please note that for this to work the document should have a DOI attached to it.
+Using
 
-::
+.. code:: sh
 
     papis browse -k whatever
 
-This will consider the key ``whatever`` of the document
-to be a valid url, I guess at this point you'll know what you're doing.
+will consider the key ``whatever`` from the document to be a valid URL,
+assuming at this point that you'll know what you're doing. Finally, the default
 
-::
+.. code:: sh
 
     papis browse -k search-engine
 
-This is the default, it will do a search-engine search with the data of your
-paper and hopefully you'll find it.
+will do a ``search-engine`` search with the data of your paper and hopefully
+you'll find it there.
 
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -91,26 +96,25 @@ def run(document: papis.document.Document,
                    .format(document["doi"]))
         elif "isbn" == key:
             url = "https://isbnsearch.org/isbn/{}".format(document["isbn"])
-        else:
+        elif key != "search-engine":
             url = document[key]
+    except KeyError as exc:
+        logger.error("Failed to construct URL for key '%s'.", key, exc_info=exc)
 
-        if not url:
-            raise KeyError()
-
-    except KeyError:
-        if not url or key == "search-engine":
-            import urllib.parse
-            params = {
-                "q": papis.format.format(
-                    papis.config.getstring("browse-query-format"),
-                    document)
-            }
-            url = (papis.config.getstring("search-engine")
-                   + "/?"
-                   + urllib.parse.urlencode(params))
+    if not url or key == "search-engine":
+        import urllib.parse
+        params = {
+            "q": papis.format.format(
+                papis.config.getstring("browse-query-format"),
+                document,
+                default="{} {}".format(document["author"], document["title"]))
+        }
+        url = (papis.config.getstring("search-engine")
+               + "/?"
+               + urllib.parse.urlencode(params))
 
     if browse:
-        logger.info("Opening url '%s'", url)
+        logger.info("Opening URL '%s'.", url)
         papis.utils.general_open(url, "browser", wait=False)
     else:
         click.echo(url)
@@ -149,7 +153,7 @@ def cli(query: str,
     if key:
         papis.config.set("browse-key", key)
 
-    logger.info("Using key '%s'", papis.config.get("browse-key"))
+    logger.info("Using key '%s'.", papis.config.get("browse-key"))
 
     for document in documents:
         run(document, browse=not _print)

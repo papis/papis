@@ -232,6 +232,11 @@ Bibtex options
     Whether or not to allow direct unicode characters in the document
     fields to be exported into the bibtex text.
 
+.. papis-config:: bibtex-export-zotero-file
+
+   A boolean value that can be used to add a ``"file"`` field to exported
+   BibTeX entries. The files are added as a semicolon separated string.
+
 .. _add-command-options:
 
 ``papis add`` options
@@ -370,6 +375,38 @@ Bibtex options
 
 .. _marks-options:
 
+``papis doctor`` options
+------------------------
+
+.. papis-config:: doctor-default-checks
+
+    A list of checks that are performed by default.
+
+.. papis-config:: doctor-keys-exist-keys
+
+    A list of keys used by the ``keys-exist`` check. The check will show an
+    error if these keys are not present in a document.
+
+.. papis-config:: doctor-duplicated-keys-keys
+
+    A list of keys used by the ``duplicated-keys`` check. The check will show
+    an error if the value of these keys is duplicated across multiple documents.
+
+.. papis-config:: doctor-html-codes-keys
+
+    A list of keys used by the ``html-codes`` check. The check will show an error
+    if any of the keys contain unwanted HTML codes, e.g. ``&amp;``.
+
+.. papis-config:: doctor-html-tags-keys
+
+    A list of keys used by the ``html-tags`` check. The check will show an error
+    if any of the keys contain unwanted HTML tags, e.g. ``<div>``.
+
+.. papis-config:: doctor-key-type-check-keys
+
+   A list of two tuples with ``(key, type)`` used by the ``key-type`` check. This
+   check will show an error if the key does not have the corresponding type. The
+   type should be a builtin Python type that can be used with ``eval``.
 
 Citations options
 -----------------
@@ -524,7 +561,7 @@ Databases
 .. papis-config:: whoosh-schema-prototype
 
     This is the model for the whoosh schema, check
-    `the documentation <https://whoosh.readthedocs.io/en/latest/schema.html/>`__
+    `the documentation <https://whoosh.readthedocs.io/en/latest/schema.html>`__
     for more information.
 
 Terminal user interface (picker)
@@ -773,6 +810,13 @@ Other
   if you want your documents by default to be sorted by ``year``, you
   would set ``sort-field = year``.
 
+.. papis-config:: sort-reverse
+
+    Augments ``sort-field`` by allowing the documents to be sorted in
+    reverse order. For example, when sorting by year, this allows sorting
+    ascendingly or descendingly. This is a boolean option that can be set to
+    ``True`` or ``False``.
+
 .. papis-config:: time-stamp
 
   Whether or not to add a timestamp to a document when is being added to
@@ -781,8 +825,12 @@ Other
 
 .. papis-config:: formater
 
-    The formatting language in python can be configured through plugins.
+    Picks the formater for templated strings in the configuration file and
+    in various strings presented to the user. Supported formaters are
 
-    .. autoclass:: papis.format.PythonFormater
+    * ``"python"``: based on :class:`papis.format.PythonFormater`.
+    * ``"jinja2"``: based on :class:`papis.format.Jinja2Formater`.
 
-    .. autoclass:: papis.format.Jinja2Formater
+    Note that the default values of many of the papis configuration settings are
+    based on the Python formatter. These will need to all be specified explicitly
+    if another formater is chosen.

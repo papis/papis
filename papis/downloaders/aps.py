@@ -20,12 +20,12 @@ class Downloader(papis.downloaders.fallback.Downloader):
     def get_bibtex_url(self) -> Optional[str]:
         url = "{}?type=bibtex&download=true".format(
             self.uri.replace("/abstract", "/export"))
-        self.logger.debug("bibtex url = '%s'", url)
+        self.logger.debug("Using BibTeX URL '%s'.", url)
 
         return url
 
     def get_document_url(self) -> Optional[str]:
         url = self.uri.replace("/abstract", "/pdf")
-        self.logger.debug("pdf url = '%s'", url)
+        self.logger.debug("Using document URL: '%s'.", url)
 
         return url

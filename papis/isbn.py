@@ -16,7 +16,7 @@ ISBN_SERVICE_NAMES = list(isbn_services)
 
 def get_data(query: str = "",
              service: Optional[str] = None) -> List[Dict[str, Any]]:
-    logger.debug("Trying to retrieve isbn from query: '%s'", query)
+    logger.debug("Trying to retrieve ISBN from query: '%s'.", query)
 
     if service is None:
         service = papis.config.get("isbn-service")
@@ -48,11 +48,14 @@ def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
         _k("authors", [{
             "key": "author_list",
             "action": papis.document.split_authors_name
-            }]),
+        }]),
         _k("isbn-13", [
             {"key": "isbn", "action": None},
             {"key": "isbn-13", "action": None},
-            ]),
+        ]),
+        _k("language", [
+            {"key": "language", "action": lambda x: x if x else "en"}
+        ])
         ]
 
     data = {k.lower(): data[k] for k in data}
@@ -60,7 +63,7 @@ def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
         key_conversion, data, keep_unknown_keys=True)
 
 
-@click.command("isbn")
+@click.command("isbn")                  # type: ignore[arg-type]
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.option("--query", "-q", default=None)
@@ -69,20 +72,25 @@ def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
               type=click.Choice(ISBN_SERVICE_NAMES))
 def explorer(ctx: click.core.Context, query: str, service: str) -> None:
     """
-    Look for documents using isbnlib
+    Look for documents using `isbnlib <https://isbnlib.readthedocs.io/en/latest/>`__.
 
-    Examples of its usage are
+    For example, to look for a document with the author "Albert Einstein" and
+    open it with Firefox, you can call
 
-    papis explore isbn -q 'Albert einstein' pick cmd 'firefox {doc[url]}'
+    .. code:: sh
 
+        papis explore \\
+            isbn -q 'Albert einstein' \\
+            pick \\
+            cmd 'firefox {doc[url]}'
     """
-    logger.info("Looking up...")
+    logger.info("Looking up ISBN documents...")
 
     data = get_data(query=query, service=service)
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 
-    logger.info("%d documents found", len(docs))
+    logger.info("Found %d documents.", len(docs))
 
 
 class Importer(papis.importer.Importer):

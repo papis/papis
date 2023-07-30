@@ -2,9 +2,12 @@ name: CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "main" ]
+  schedule:
+    # 17:00 on Friday (UTC)
+    - cron: "00 17 * * 5"
 
 jobs:
   build:
@@ -12,24 +15,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.5', '3.6', '3.7', '3.8', '3.9', '3.10', '3.11']
-        exclude:
-          # TODO: ubuntu-latest (i.e. ubuntu-22.04) has no support for <3.7
-          - os: ubuntu-latest
-            python-version: '3.6'
-          - os: ubuntu-latest
-            python-version: '3.5'
-        include:
-          - os: ubuntu-20.04
-            python-version: '3.6'
-          - os: ubuntu-20.04
-            python-version: '3.5'
+        python-version: ['3.8', '3.9', '3.10', '3.11']
       fail-fast: False
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 

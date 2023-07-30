@@ -4,45 +4,44 @@ This command is useful to issue commands in the directory of your library.
 Examples
 ^^^^^^^^
 
-    - List files in your directory
+- List all files in the library directory
 
-    .. code::
+    .. code:: sh
 
         papis run ls
 
-    - Find a file in your directory using the ``find`` command
+- Find a file the library directory using the ``find`` command
 
-    .. code::
+    .. code:: sh
 
         papis run find -name 'document.pdf'
 
-    - Find all pdfs in the document folders matching einstein
+- Find all PDFs in the document folders matching "einstein"
 
-    .. code::
+    .. code:: sh
 
         papis run -p einstein --all -- find . -name '*.pdf'
 
-      notice that in general, the symbol ``--`` is advisable
-      so that the arguments after it are considered as positional arguments
-      for the shell commands.
+    In general, the symbol ``--`` is advisable so that the arguments after it
+    are considered as positional arguments for the shell commands.
 
-      In this example you could also use pipes, for instance to print the
-      absolute path to the files, in linux you can use the command
-      ``readlink -f`` and a pipe ``|`` to do this, i.e.:
+    In this example you could also use pipes. For instance, to print the
+    absolute path to the files, in Linux you can use the command
+    ``readlink -f`` and a pipe ``|`` to do this, i.e.
 
-    .. code::
+    .. code:: sh
 
         papis run -p einstein \
                 --all -- "find . -name '*.pdf' | xargs readlink -f"
 
-    - Replace some text in all info.yaml files by something.
-      For instance imagine you want to replace all ``note`` field names
-      in the ``info.yaml`` files by ``_note`` so that the ``note`` field
-      does not get exported to bibtex. You can do
+- Replace some text in all ``info.yaml`` files by something.
+  For instance imagine you want to replace all ``note`` field names
+  in the ``info.yaml`` files by ``_note`` so that the ``note`` field
+  does not get exported. You can do
 
-      .. code::
+    .. code:: sh
 
-          papis run -a -- sed -i "s/^note:/_note:/" info.yaml
+        papis run -a -- sed -i 's/^note:/_note:/' info.yaml
 
 
 Command-line Interface
@@ -52,13 +51,13 @@ Command-line Interface
     :prog: papis run
 """
 
-import os
 from typing import List, Optional
 
 import click
 
 import papis.pick
 import papis.cli
+import papis.utils
 import papis.config
 import papis.document
 import papis.database
@@ -67,18 +66,15 @@ import papis.logging
 logger = papis.logging.get_logger(__name__)
 
 
-def run(folder: str, command: Optional[List[str]] = None) -> int:
+def run(folder: str, command: Optional[List[str]] = None) -> None:
     if command is None:
-        command = []
+        return
 
-    logger.debug("Changing directory to '%s'", folder)
-    os.chdir(os.path.expanduser(folder))
-    commandstr = " ".join(command)
-    logger.debug("Command: %s", commandstr)
-    return os.system(commandstr)
+    papis.utils.run(command, cwd=folder, wait=True)
 
 
-@click.command("run", context_settings={"ignore_unknown_options": True})
+@click.command("run",                   # type: ignore[arg-type]
+               context_settings={"ignore_unknown_options": True})
 @click.help_option("--help", "-h")
 @click.option(
     "--pick", "-p",
@@ -127,4 +123,5 @@ def cli(run_command: List[str],
         folders = papis.config.get_lib_dirs()
 
     for folder in folders:
-        run(folder, command=([prefix] if prefix else []) + list(run_command))
+        cmd = ([prefix] if prefix else []) + list(run_command)
+        run(folder, cmd)

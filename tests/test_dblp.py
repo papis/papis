@@ -1,8 +1,9 @@
+import pytest
 import requests
 
 import papis.dblp
 
-import tests as testlib
+from tests.testlib import ResourceCache, TemporaryConfiguration
 
 DBLP_KEYS_VALID = [
     "books/sp/02/ST2002",
@@ -27,8 +28,8 @@ def get(code: int, url: str) -> requests.Response:
     return r
 
 
-@testlib.with_default_config()
-def test_valid_dblp_key(monkeypatch, has_connection: bool = True) -> None:
+def test_valid_dblp_key(tmp_config: TemporaryConfiguration, monkeypatch,
+                        has_connection: bool = True) -> None:
     with monkeypatch.context() as m:
         if not has_connection:
             m.setattr(requests.Session, "get", lambda self, url: get(200, url))
@@ -44,8 +45,8 @@ def test_valid_dblp_key(monkeypatch, has_connection: bool = True) -> None:
             assert not papis.dblp.is_valid_dblp_key(key)
 
 
-@testlib.with_default_config()
-def test_importer_match(monkeypatch, has_connection: bool = True) -> None:
+def test_importer_match(tmp_config: TemporaryConfiguration, monkeypatch,
+                        has_connection: bool = True) -> None:
     with monkeypatch.context() as m:
         if not has_connection:
             m.setattr(requests.Session, "get", lambda self, url: get(200, url))
@@ -70,20 +71,19 @@ def test_importer_match(monkeypatch, has_connection: bool = True) -> None:
             assert importer is None
 
 
-@testlib.with_default_config()
-def test_importer_fetch(monkeypatch) -> None:
+@pytest.mark.resource_setup(cachedir="resources/dblp")
+def test_importer_fetch(tmp_config: TemporaryConfiguration, monkeypatch,
+                        resource_cache: ResourceCache) -> None:
     url = papis.dblp.DBLP_URL_FORMAT.format(uri=DBLP_KEYS_VALID[-1])
     infile = "dblp_1.bin"
     outfile = "dblp_1_out.json"
 
-    from tests.downloaders import get_remote_resource, get_local_resource
-
-    def get_bib(self, bib_url: str) -> requests.Response:
+    def get_bib(self: requests.Session, bib_url: str) -> requests.Response:
         assert bib_url.endswith(".bib")
 
         r = requests.Response()
         r.status_code = 200
-        r._content = get_remote_resource(infile, bib_url)()
+        r._content = resource_cache.get_remote_resource(infile, bib_url)
 
         return r
 
@@ -91,9 +91,10 @@ def test_importer_fetch(monkeypatch) -> None:
         m.setattr(requests.Session, "get", get_bib)
 
         importer = papis.dblp.Importer.match(url)
-        importer.fetch()
+        assert importer is not None
 
+        importer.fetch()
         extracted_data = importer.ctx.data
-        expected_data = get_local_resource(outfile, extracted_data)
+        expected_data = resource_cache.get_local_resource(outfile, extracted_data)
 
         assert extracted_data == expected_data

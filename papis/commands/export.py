@@ -1,36 +1,39 @@
 """
-The export command is useful to work with other programs such as bibtex.
+The ``export`` command is useful to work with other programs by exporting to
+other formats (such as BibTeX).
+
+Examples
+^^^^^^^^
 
 Some examples of its usage are:
 
-- Export one of the documents matching the author with einstein to bibtex:
+- Export one of the documents matching the author with Einstein to BibTeX
 
-.. code::
+.. code:: sh
 
     papis export --format bibtex 'author : einstein'
 
 or export all of them
 
-.. code::
+.. code:: sh
 
     papis export --format bibtex --all 'author : einstein'
 
-- Export all documents to bibtex and save them into a ``lib.bib`` file
+- Export all documents to BibTeX and save them into a ``lib.bib`` file
 
 .. code::
 
     papis export --all --format bibtex --out lib.bib
 
 - Export a folder of one of the documents matching the word ``krebs``
-  into a folder named, ``interesting-document``
+  into a folder named ``interesting-document``
 
 .. code::
 
     papis export --folder --out interesting-document krebs
 
   this will create the folder ``interesting-document`` containing the
-  ``info.yaml`` file, the linked documents and a ``bibtex`` file for
-  sharing with other people.
+  ``info.yaml`` file and the linked documents.
 
 .. note::
 
@@ -38,7 +41,6 @@ or export all of them
     associated that points to the full local folder path where the document
     is stored in the file system. This is done for the convenience of third
     party apps.
-
 
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -61,6 +63,7 @@ import papis.database
 import papis.strings
 import papis.plugin
 import papis.logging
+from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)
 
@@ -86,7 +89,7 @@ def run(documents: List[papis.document.Document], to_format: str) -> str:
     return str(ret_string)
 
 
-@click.command("export")
+@click.command("export")                # type: ignore[arg-type]
 @click.help_option("--help", "-h")
 @papis.cli.query_argument()
 @papis.cli.doc_folder_option()
@@ -128,7 +131,7 @@ def cli(query: str,
         return
 
     if fmt and folder:
-        logger.warning("Only --folder flag will be considered (--fmt ignored)")
+        logger.warning("Only --folder flag will be considered (--fmt ignored).")
 
     # Get the local folder of the document so that third-party apps
     # can actually go to the folder without checking with papis
@@ -139,11 +142,11 @@ def cli(query: str,
 
     if ret_string is not None and not folder:
         if out is not None:
-            logger.info("Dumping to '%s'", out)
+            logger.info("Dumping to '%s'.", out)
             with open(out, "a+") as fd:
                 fd.write(ret_string)
         else:
-            logger.info("Dumping to stdout")
+            logger.info("Dumping to STDOUT.")
             click.echo(ret_string)
         return
 
@@ -154,16 +157,16 @@ def cli(query: str,
             _doc_folder_name = document.get_main_folder_name()
             outdir = out or _doc_folder_name
             if not _doc_folder or not _doc_folder_name or not outdir:
-                raise Exception(papis.strings.no_folder_attached_to_document)
+                raise DocumentFolderNotFound(papis.document.describe(document))
             if not len(documents) == 1:
                 outdir = os.path.join(out, _doc_folder_name)
             logger.info(
-                "Exporting doc '%s' to '%s'",
+                "Exporting document '%s' to '%s'.",
                 papis.document.describe(document), outdir)
             shutil.copytree(_doc_folder, outdir)
 
 
-@click.command("export")
+@click.command("export")                # type: ignore[arg-type]
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.option(
@@ -179,12 +182,16 @@ def cli(query: str,
     default=None,)
 def explorer(ctx: click.Context, fmt: str, out: str) -> None:
     """
-    Export retrieved documents into various formats for later use
+    Export retrieved documents into various formats.
 
-    Examples of its usage are
+    For example, to query Crossref an export all 200 documents to a YAML file,
+    you can call
 
-    papis explore crossref -m 200 -a 'Schrodinger' export --yaml lib.yaml
+    .. code:: sh
 
+        papis explore \\
+            crossref -m 200 -a 'Schrodinger' \\
+            export --format yaml lib.yaml
     """
     docs = ctx.obj["documents"]
 
@@ -192,7 +199,7 @@ def explorer(ctx: click.Context, fmt: str, out: str) -> None:
     if out is not None:
         with open(out, "a+") as fd:
             logger.info(
-                "Writing %d documents in %s into '%s'", len(docs), fmt, out)
+                "Writing %d documents in '%s' format to '%s'.", len(docs), fmt, out)
             fd.write(outstring)
     else:
         click.echo(outstring)

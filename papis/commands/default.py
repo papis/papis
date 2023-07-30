@@ -1,12 +1,15 @@
 """
+The papis command-line (without any subcommands) can be used to set configuration
+options or select the library.
+
 Examples
 ^^^^^^^^
 
-- To override some configuration options, you can use the flag ``--set``, for
-  instance, if you want to override the editor used and the opentool to open
-  documents, you can just type
+- To override some configuration options, you can use the ``--set`` flag. For
+  instance, if you want to override the ``editor`` used to edit files or the
+  ``opentool`` used to open documents, you can just type
 
-    .. code:: shell
+    .. code:: sh
 
         papis --set editor gedit --set opentool firefox edit
         papis --set editor gedit --set opentool firefox open
@@ -14,7 +17,7 @@ Examples
 - If you want to list the libraries and pick one before sending a database
   query to papis, use ``--pick-lib`` as such
 
-    .. code:: shell
+    .. code:: sh
 
         papis --pick-lib open 'einstein relativity'
 
@@ -47,8 +50,8 @@ logger = papis.logging.get_logger(__name__)
 
 class MultiCommand(click.core.MultiCommand):
 
-    scripts = papis.commands.get_scripts()
-    scripts.update(papis.commands.get_external_scripts())
+    scripts = papis.commands.get_all_scripts()
+    script_names = sorted(scripts)
 
     def list_commands(self, ctx: click.core.Context) -> List[str]:
         """List all matched commands in the command folder and in path
@@ -58,9 +61,7 @@ class MultiCommand(click.core.MultiCommand):
         >>> len(rv) > 0
         True
         """
-        _rv = list(self.scripts)
-        _rv.sort()
-        return _rv
+        return self.script_names
 
     def get_command(
             self,
@@ -101,7 +102,7 @@ class MultiCommand(click.core.MultiCommand):
         # If it gets here, it means that it is an external script
         import copy
         from papis.commands.external import external_cli
-        cli = copy.copy(external_cli)
+        cli: click.Command = copy.copy(external_cli)
 
         from papis.commands.external import get_command_help
         cli.context_settings["obj"] = script
@@ -109,6 +110,7 @@ class MultiCommand(click.core.MultiCommand):
             cli.help = get_command_help(script.path)
         cli.name = script.command_name
         cli.short_help = cli.help
+
         return cli
 
 
@@ -121,7 +123,7 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
     return _on_finish
 
 
-@click.group(
+@click.group(                           # type: ignore[arg-type,type-var]
     cls=MultiCommand,
     invoke_without_command=True)
 @click.help_option("--help", "-h")
@@ -232,8 +234,8 @@ def run(verbose: bool,
 
     if not library.paths:
         raise RuntimeError(
-            "Library '{}' does not have any existing folders attached to it, "
-            "please define and create the paths"
+            "Library '{}' does not have any existing folders attached to it. "
+            "Please define and create the paths in the configuration file"
             .format(lib))
 
     # Now the library should be set, let us check if there is a
@@ -248,7 +250,7 @@ def run(verbose: bool,
 
     # read in configuration from command-line
     for pair in set_list:
-        logger.debug("Setting '%s' to '%s'", *pair)
+        logger.debug("Setting '%s' to '%s'.", *pair)
         papis.config.set(pair[0], pair[1])
 
     if clear_cache:

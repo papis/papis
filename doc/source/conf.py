@@ -41,7 +41,14 @@ extensions = [
 ]
 
 intersphinx_mapping = {
-    "https://docs.python.org/3/": None,
+    # NOTE: docs on main seem to be broken at the moment (2023-06-04)
+    "bibtexparser": ("https://bibtexparser.readthedocs.io/en/v1.4.0", None),
+    "click": ("https://click.palletsprojects.com/en/latest", None),
+    "prompt_toolkit": ("https://python-prompt-toolkit.readthedocs.io/en/master", None),
+    "pyparsing": ("https://pyparsing-docs.readthedocs.io/en/latest", None),
+    "python": ("https://docs.python.org/3", None),
+    "requests": ("https://requests.readthedocs.io/en/latest", None),
+    "stevedore": ("https://docs.openstack.org/stevedore/latest", None),
 }
 
 autodoc_member_order = "bysource"
@@ -65,21 +72,20 @@ class PapisConfig(Directive):
     add_index = True
 
     def run(self):
-        import papis.config
+        from papis.config import get_general_settings_name, get_default_settings
         key = self.arguments[0]
         section = self.options.get(
             "section",
-            papis.config.get_general_settings_name())
+            get_general_settings_name())
         default = self.options.get(
             "default",
-            papis.config.get_default_settings().get(section).get(key))
+            get_default_settings().get(section, {}).get(key, "<missing>"))
 
         lines = []
         lines.append("")
-        lines.append(".. _config-{section}-{key}:"
-                     .format(section=section, key=key))
+        lines.append(".. _config-{section}-{key}:".format(section=section, key=key))
         lines.append("")
-        lines.append("**{key}** (config-{section}-{key}_)"
+        lines.append("`{key} <#config-{section}-{key}>`__"
                      .format(section=section, key=key))
 
         if "\n" in str(default):
@@ -123,8 +129,8 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"papis"
-copyright = u"2017, Alejandro Gallo"
+project = "papis"
+copyright = "2017, Alejandro Gallo"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -149,7 +155,6 @@ release = version
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 exclude_patterns = [
-    "commands/*.rst",
     "default-settings.rst",
 ]
 
@@ -278,7 +283,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ("index", "papis.tex", u"papis Documentation", u"Alejandro Gallo", "manual"),
+    ("index", "papis.tex", "papis Documentation", "Alejandro Gallo", "manual"),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -306,43 +311,25 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ("index", "papis", u"Papis Documentation",
-     [u"Alejandro Gallo"], 1),
-    ("configuration", "papis-config", u"Papis Configuration",
-     [u"Alejandro Gallo"], 1),
-    ("commands/add", "papis-add", u"add command",
+    ("configuration", "papis-config-settings", "Papis configuration",
      ["Alejandro Gallo"], 1),
-    ("commands/addto", "papis-addto", u"addto command",
+    ("library_structure", "papis-library-structure", "Papis library structure",
      ["Alejandro Gallo"], 1),
-    ("commands/browse", "papis-browse", u"browse command",
+    ("info_file", "papis-info-file", "Papis info.yaml file",
      ["Alejandro Gallo"], 1),
-    ("commands/config", "papis-config", u"config command",
-     ["Alejandro Gallo"], 1),
-    ("commands/default", "papis-default", u"default command",
-     ["Alejandro Gallo"], 1),
-    ("commands/edit", "papis-edit", u"edit command",
-     ["Alejandro Gallo"], 1),
-    ("commands/explore", "papis-explore", u"explore command",
-     ["Alejandro Gallo"], 1),
-    ("commands/export", "papis-export", u"export command",
-     ["Alejandro Gallo"], 1),
-    ("commands/git", "papis-git", u"git command",
-     ["Alejandro Gallo"], 1),
-    ("commands/list", "papis-list", u"list command",
-     ["Alejandro Gallo"], 1),
-    ("commands/mv", "papis-mv", u"mv command",
-     ["Alejandro Gallo"], 1),
-    ("commands/open", "papis-open", u"open command",
-     ["Alejandro Gallo"], 1),
-    ("commands/rename", "papis-rename", u"rename command",
-     ["Alejandro Gallo"], 1),
-    ("commands/rm", "papis-rm", u"rm command",
-     ["Alejandro Gallo"], 1),
-    ("commands/run", "papis-run", u"run command",
-     ["Alejandro Gallo"], 1),
-    ("commands/update", "papis-update", u"update command",
+    ("database_structure", "papis-database-structure", "Papis database structure",
      ["Alejandro Gallo"], 1),
 ]
+
+for entry in os.scandir("commands"):
+    name, _ = entry.name.split(".")
+    man_pages.append((
+        "commands/{}".format(name),
+        "papis-{}".format(name),
+        "{} command".format(name),
+        ["Alejandro Gallo"],
+        1,
+        ))
 
 # If true, show URL addresses after external links.
 # man_show_urls = False
@@ -353,8 +340,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ("index", "papis", u"papis Documentation",
-     u"Alejandro Gallo", "papis", "One line description of project.",
+    ("index", "papis", "papis Documentation",
+     "Alejandro Gallo", "papis", "One line description of project.",
      "Miscellaneous"),
 ]
 
@@ -373,9 +360,9 @@ texinfo_documents = [
 # -- Options for Epub output {{{1 --------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u"papis"
-epub_author = u"Alejandro Gallo"
-epub_publisher = u"Alejandro Gallo"
-epub_copyright = u"2017, Alejandro Gallo"
+epub_title = "papis"
+epub_author = "Alejandro Gallo"
+epub_publisher = "Alejandro Gallo"
+epub_copyright = "2017, Alejandro Gallo"
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ["search.html"]

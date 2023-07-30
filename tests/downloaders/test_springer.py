@@ -1,14 +1,10 @@
 import os
 import pytest
 
-import papis.logging
 import papis.downloaders
 from papis.downloaders.springer import Downloader
 
-import tests
-import tests.downloaders as testlib
-
-papis.logging.setup("DEBUG")
+from tests.testlib import TemporaryConfiguration, ResourceCache
 
 SPRINGER_LINK_URLS = (
     "https://link.springer.com/article/10.1007/s10924-010-0192-1",
@@ -16,7 +12,7 @@ SPRINGER_LINK_URLS = (
     )
 
 
-def test_springer_match() -> None:
+def test_springer_match(tmp_config: TemporaryConfiguration) -> None:
     valid_urls = (
         "https://link.springer.com",
         "http://link.springer.com",
@@ -34,9 +30,12 @@ def test_springer_match() -> None:
         assert Downloader.match(url) is None
 
 
-@tests.with_default_config()
+@pytest.mark.resource_setup(cachedir="downloaders/resources")
 @pytest.mark.parametrize("url", SPRINGER_LINK_URLS)
-def test_springer_fetch(monkeypatch, url: str) -> None:
+def test_springer_fetch(tmp_config: TemporaryConfiguration,
+                        resource_cache: ResourceCache,
+                        monkeypatch: pytest.MonkeyPatch,
+                        url: str) -> None:
     cls = papis.downloaders.get_downloader_by_name("springer")
     assert cls is Downloader
 
@@ -47,15 +46,15 @@ def test_springer_fetch(monkeypatch, url: str) -> None:
     infile = "SpringerLink_{}.html".format(uid)
     outfile = "SpringerLink_{}_Out.json".format(uid)
 
-    with monkeypatch.context() as m:
-        m.setattr(down, "_get_body", testlib.get_remote_resource(infile, url))
-        m.setattr(down, "download_document", lambda: None)
+    monkeypatch.setattr(down, "_get_body",
+                        lambda: resource_cache.get_remote_resource(infile, url))
+    monkeypatch.setattr(down, "download_document", lambda: None)
 
-        # NOTE: bibtex add some extra fields, so we just disable it for the test
-        m.setattr(down, "download_bibtex", lambda: None)
+    # NOTE: bibtex add some extra fields, so we just disable it for the test
+    monkeypatch.setattr(down, "download_bibtex", lambda: None)
 
-        down.fetch()
-        extracted_data = down.ctx.data
-        expected_data = testlib.get_local_resource(outfile, extracted_data)
+    down.fetch()
+    extracted_data = down.ctx.data
+    expected_data = resource_cache.get_local_resource(outfile, extracted_data)
 
-        assert extracted_data == expected_data
+    assert extracted_data == expected_data

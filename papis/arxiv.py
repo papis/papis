@@ -17,7 +17,6 @@
 """
 import os
 import re
-import sys
 from typing import Optional, List, Dict, Any
 
 import click
@@ -64,7 +63,7 @@ def get_data(
     search_query = "+AND+".join(
         ["{}:{}".format(key, clean_params[key]) for key in clean_params]
     )
-    logger.debug("query = '%s'", search_query)
+    logger.debug("Performing query: '%s'.", search_query)
 
     with papis.utils.get_session() as session:
         response = session.get(
@@ -76,9 +75,7 @@ def get_data(
             })
 
     import bs4
-    soup = bs4.BeautifulSoup(
-        response.content,
-        features="html.parser" if sys.version_info.minor < 6 else "lxml-xml")
+    soup = bs4.BeautifulSoup(response.content, features="lxml-xml")
 
     entries = soup.find_all("entry")
     for entry in entries:
@@ -107,7 +104,8 @@ def validate_arxivid(arxivid: str) -> None:
 
     if not response.ok:
         raise ValueError(
-            "HTTP {}: '{}' not an arxivid".format(response.status_code, arxivid)
+            "HTTP ({} {}): '{}' not an arxivid".format(
+                response.status_code, response.reason, arxivid)
             )
 
 
@@ -160,12 +158,14 @@ def find_arxivid_in_text(text: str) -> Optional[str]:
     with suppress(StopIteration):
         m = next(miter)
         if m:
-            return m.group("arxivid")
+            aid = m.group("arxivid")
+            aid = aid[:-4] if aid.endswith(".pdf") else aid
+            return aid
 
     return None
 
 
-@click.command("arxiv")
+@click.command("arxiv")                 # type: ignore[arg-type]
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.option("--query", "-q", default="", type=str)
@@ -185,19 +185,25 @@ def explorer(
         journal: str, report_number: str, category: str, id_list: str,
         page: int, max: int) -> None:
     """
-    Look for documents on ArXiV.org.
+    Look for documents on `arXiv.org <arxiv.org/>`__.
 
-    Examples of its usage are
+
+    For example, to search for documents with the authors "Hummer" and
+    "Garnet Chan" (a maximum of 100 articles), use
+
+    .. code:: sh
 
         papis explore arxiv -a 'Hummel' -m 100 arxiv -a 'Garnet Chan' pick
 
     If you want to search for the exact author name 'John Smith', you should
     enclose it in extra quotes, as in the example below
 
+    .. code:: sh
+
         papis explore arxiv -a '"John Smith"' pick
 
     """
-    logger.info("Looking up...")
+    logger.info("Looking up arXiv documents...")
 
     data = get_data(
         query=query,
@@ -214,14 +220,14 @@ def explorer(
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 
-    logger.info("%s documents found", len(docs))
+    logger.info("Found %s documents.", len(docs))
 
 
 class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str) -> None:
         super().__init__(uri=url, name="arxiv", expected_document_extension="pdf")
-        self._arxivid = None  # type: Optional[str]
+        self._arxivid: Optional[str] = None
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
@@ -259,7 +265,7 @@ class Downloader(papis.downloaders.Downloader):
             return None
 
         pdf_url = "{}/{}.pdf".format(ARXIV_PDF_URL, arxivid)
-        self.logger.debug("pdf_url = '%s'", pdf_url)
+        self.logger.debug("Using document URL: '%s'.", pdf_url)
 
         return pdf_url
 
@@ -271,7 +277,7 @@ class Importer(papis.importer.Importer):
     def __init__(self, uri: str) -> None:
         try:
             validate_arxivid(uri)
-            aid = uri       # type: Optional[str]
+            aid: Optional[str] = uri
         except ValueError:
             aid = find_arxivid_in_text(uri)
 
@@ -313,7 +319,7 @@ class ArxividFromPdfImporter(papis.importer.Importer):
 
     def __init__(self, uri: str) -> None:
         super().__init__(name="pdf2arxivid", uri=uri)
-        self.arxivid = None  # type: Optional[str]
+        self.arxivid: Optional[str] = None
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
@@ -325,14 +331,18 @@ class ArxividFromPdfImporter(papis.importer.Importer):
         return importer if importer.arxivid else None
 
     def fetch(self) -> None:
-        self.logger.info("Trying to parse arxivid from file '%s'", self.uri)
+        self.logger.info("Trying to parse arxivid from file '%s'.", self.uri)
         if not self.arxivid:
             self.arxivid = pdf_to_arxivid(self.uri, maxlines=2000)
+
         if self.arxivid:
-            self.logger.info("Parsed arxivid '%s'", self.arxivid)
+            self.logger.info("Parsed arxivid '%s'.", self.arxivid)
             self.logger.warning(
-                "There is no guarantee that this arxivid is the one")
+                "There is no guarantee that this arxivid is the correct one!")
+
             importer = Importer.match(self.arxivid)
             if importer:
                 importer.fetch()
                 self.ctx = importer.ctx
+        else:
+            self.logger.info("No arxivid found in file: '%s'.", self.uri)

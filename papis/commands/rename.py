@@ -12,6 +12,7 @@ from typing import Optional
 import click
 
 import papis.cli
+import papis.utils
 import papis.database
 import papis.strings
 import papis.git
@@ -19,6 +20,7 @@ import papis.pick
 import papis.document
 import papis.tui.utils
 import papis.logging
+from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)
 
@@ -29,30 +31,25 @@ def run(document: papis.document.Document,
     folder = document.get_main_folder()
 
     if not folder:
-        raise Exception(papis.strings.no_folder_attached_to_document)
+        raise DocumentFolderNotFound(papis.document.describe(document))
 
     subfolder = os.path.dirname(folder)
-
     new_folder_path = os.path.join(subfolder, new_name)
 
     if os.path.exists(new_folder_path):
-        logger.warning("Path '%s' already exists", new_folder_path)
+        logger.warning("Path '%s' already exists.", new_folder_path)
         return
 
-    cmd = ["git", "-C", folder] if git else []
-    cmd += ["mv", folder, new_folder_path]
-
-    import subprocess
-    logger.debug(cmd)
-    subprocess.call(cmd)
+    papis.utils.run((["git"] if git else []) + ["mv", folder, new_folder_path],
+                    cwd=folder)
 
     if git:
         papis.git.commit(
             new_folder_path,
-            "Rename from {} to '{}'".format(folder, new_name))
+            "Rename from '{}' to '{}'".format(folder, new_name))
 
     db.delete(document)
-    logger.debug("New document folder: '%s'", new_folder_path)
+    logger.debug("New document folder: '%s'.", new_folder_path)
     document.set_folder(new_folder_path)
     db.add(document)
 

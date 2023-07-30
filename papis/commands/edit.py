@@ -1,5 +1,7 @@
-"""This command edits the information of the documents.
-The editor used is defined by the ``editor`` configuration setting.
+"""
+This command edits the :ref:`info.yaml file <info-file>` of the documents.
+The editor used is defined by the :ref:`config-settings-editor` configuration
+setting.
 
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -25,6 +27,7 @@ import papis.git
 import papis.format
 import papis.notes
 import papis.logging
+from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)
 
@@ -34,7 +37,8 @@ def run(document: papis.document.Document,
         git: bool = False) -> None:
     info_file_path = document.get_info_file()
     if not info_file_path:
-        raise Exception(papis.strings.no_folder_attached_to_document)
+        raise DocumentFolderNotFound(papis.document.describe(document))
+
     _old_dict = papis.document.to_dict(document)
     papis.utils.general_open(info_file_path, "editor", wait=wait)
     document.load()
@@ -42,7 +46,7 @@ def run(document: papis.document.Document,
 
     # If nothing changed there is nothing else to be done
     if _old_dict == _new_dict:
-        logger.debug("old and new are equal, doing nothing")
+        logger.debug("No changes made to the document.")
         return
 
     papis.database.get().update(document)
@@ -51,18 +55,17 @@ def run(document: papis.document.Document,
         papis.git.add_and_commit_resource(
             str(document.get_main_folder()),
             info_file_path,
-            "Update information for '{0}'".format(
+            "Update information for '{}'".format(
                 papis.document.describe(document)))
 
 
 def edit_notes(document: papis.document.Document,
                git: bool = False) -> None:
-    logger.debug("Editing notes")
+    logger.debug("Editing notes.")
     notes_path = papis.notes.notes_path_ensured(document)
     papis.api.edit_file(notes_path)
     if git:
-        msg = ("Update notes for '{0}'"
-               .format(papis.document.describe(document)))
+        msg = "Update notes for '{}'".format(papis.document.describe(document))
         folder = document.get_main_folder()
         if folder:
             papis.git.add_and_commit_resources(folder,
@@ -71,7 +74,7 @@ def edit_notes(document: papis.document.Document,
                                                msg)
 
 
-@click.command("edit")
+@click.command("edit")                  # type: ignore[arg-type]
 @click.help_option("-h", "--help")
 @papis.cli.query_argument()
 @papis.cli.doc_folder_option()

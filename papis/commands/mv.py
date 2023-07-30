@@ -1,4 +1,6 @@
 """
+This command can be used to move a document to a new folder.
+
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
@@ -19,6 +21,7 @@ import papis.cli
 import papis.pick
 import papis.strings
 import papis.logging
+from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)
 
@@ -29,19 +32,18 @@ def run(document: papis.document.Document,
 
     folder = document.get_main_folder()
     if not folder:
-        raise Exception(papis.strings.no_folder_attached_to_document)
-    cmd = ["git", "-C", folder] if git else []
-    cmd += ["mv", folder, new_folder_path]
-    db = papis.database.get()
-    logger.debug(cmd)
+        raise DocumentFolderNotFound(papis.document.describe(document))
 
-    import subprocess
-    subprocess.call(cmd)
+    papis.utils.run((["git"] if git else []) + ["mv", folder, new_folder_path],
+                    cwd=folder)
+
+    db = papis.database.get()
     db.delete(document)
+
     new_document_folder = os.path.join(
         new_folder_path,
         os.path.basename(folder))
-    logger.debug("New document folder: '%s'", new_document_folder)
+    logger.debug("New document folder: '%s'.", new_document_folder)
 
     document.set_folder(new_document_folder)
     db.add(document)
@@ -93,14 +95,14 @@ def cli(query: str,
                 completer=completer,
                 complete_while_typing=True
             ))
-    except Exception as e:
-        logger.error(e)
+    except Exception as exc:
+        logger.error("Failed to choose directory.", exc_info=exc)
         return
 
-    logger.info("new folder is '%s'", new_folder)
+    logger.info("New document folder: '%s'.", new_folder)
 
     if not os.path.exists(new_folder):
-        logger.info("Creating path %s", new_folder)
+        logger.info("Creating path '%s'.", new_folder)
         os.makedirs(new_folder, mode=papis.config.getint("dir-umask") or 0o666)
 
     run(document, new_folder, git=git)

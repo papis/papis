@@ -2,22 +2,17 @@ import os
 import re
 import pytest
 from typing import Dict, Any
-import json
 
-import tests
-import papis
-import papis.bibtex
-import papis.document
+from tests.testlib import ResourceCache, TemporaryConfiguration
+
+BIBTEX_RESOURCES = os.path.join(os.path.dirname(__file__), "resources", "bibtex")
 
 
-BIBTEX_RESOURCES = os.path.join(os.path.dirname(__file__),
-                                "resources",
-                                "bibtex")
+def test_bibtex_to_dict(tmp_config: TemporaryConfiguration) -> None:
+    import papis.bibtex
 
-
-def test_bibtex_to_dict() -> None:
     bibpath = os.path.join(BIBTEX_RESOURCES, "1.bib")
-    bibs = papis.bibtex.bibtex_to_dict(bibpath)
+    bib, = papis.bibtex.bibtex_to_dict(bibpath)
     expected_keys = {
         "title",
         "author",
@@ -34,48 +29,45 @@ def test_bibtex_to_dict() -> None:
         "url",
         }
 
-    assert len(bibs) == 1
-    for bib in bibs:
-        assert not (expected_keys - bib.keys())
-
+    assert not (expected_keys - bib.keys())
     assert bib["type"] == "article"
     assert re.match(r".*Rev.*", bib["journal"])
     assert re.match(r".*concurrent inter.*", bib["abstract"])
 
 
-def test_bibkeys_exist() -> None:
+def test_bibkeys_exist(tmp_config: TemporaryConfiguration) -> None:
+    import papis.bibtex
+
     assert hasattr(papis.bibtex, "bibtex_keys")
     assert len(papis.bibtex.bibtex_keys) != 0
 
 
-def test_bibtypes_exist() -> None:
+def test_bibtypes_exist(tmp_config: TemporaryConfiguration) -> None:
+    import papis.bibtex
+
     assert hasattr(papis.bibtex, "bibtex_types")
     assert len(papis.bibtex.bibtex_types) != 0
 
 
 @pytest.mark.parametrize("bibfile", ["1.bib", "2.bib", "3.bib"])
-def test_author_list_conversion(bibfile: str,
-                                overwrite: bool = False) -> None:
-    jsonfile = "{}_out.json".format(os.path.splitext(bibfile)[0])
+def test_author_list_conversion(
+        tmp_config: TemporaryConfiguration,
+        resource_cache: ResourceCache,
+        bibfile: str,
+        overwrite: bool = False) -> None:
+    jsonfile = "bibtex/{}_out.json".format(os.path.splitext(bibfile)[0])
 
-    bibpath = os.path.join(BIBTEX_RESOURCES, bibfile)
-    jsonpath = os.path.join(BIBTEX_RESOURCES, jsonfile)
+    import papis.bibtex
 
-    bib = papis.bibtex.bibtex_to_dict(bibpath)[0]
-    if overwrite or not os.path.exists(jsonpath):
-        with open(jsonpath, "w") as f:
-            json.dump(bib, f,
-                      indent=2,
-                      sort_keys=True,
-                      ensure_ascii=False)
-
-    with open(jsonpath, "r") as f:
-        expected = json.loads(f.read())
+    bib, = papis.bibtex.bibtex_to_dict(os.path.join(BIBTEX_RESOURCES, bibfile))
+    expected = resource_cache.get_local_resource(jsonfile, bib)
 
     assert bib["author_list"] == expected["author_list"]
 
 
-def test_clean_ref() -> None:
+def test_clean_ref(tmp_config: TemporaryConfiguration) -> None:
+    import papis.bibtex
+
     for (r, rc) in [
             ("Einstein über etwas und so 1923", "EinsteinUberEtwasUndSo1923"),
             ("Äöasf () : Aλבert Eιنς€in", "AoasfAlbertEinseurin"),
@@ -84,9 +76,9 @@ def test_clean_ref() -> None:
         assert rc == papis.bibtex.ref_cleanup(r)
 
 
-def test_to_bibtex_wrong_type() -> None:
+def test_to_bibtex_wrong_type(tmp_config: TemporaryConfiguration) -> None:
     """Test no BibTeX entry is constructed for incorrect types."""
-
+    import papis.document
     doc = papis.document.from_data({
         "type": "fictional",
         "ref": "MyDocument",
@@ -96,12 +88,17 @@ def test_to_bibtex_wrong_type() -> None:
         "year": 2350
         })
 
+    import papis.bibtex
     result = papis.bibtex.to_bibtex(doc)
     assert not result
 
 
-def test_to_bibtex_no_ref() -> None:
+def test_to_bibtex_no_ref(tmp_config: TemporaryConfiguration) -> None:
     """Test no BibTeX entry is constructed for invalid references."""
+    import papis.bibtex
+    import papis.config
+    import papis.document
+
     doc = papis.document.from_data({
         "type": "techreport",
         "author": "Albert Einstein",
@@ -118,83 +115,90 @@ def test_to_bibtex_no_ref() -> None:
     assert not result
 
 
-def assert_bibtex(data: Dict[str, Any], expected_bibtex: str) -> None:
-    doc = papis.document.from_data(data)
-    assert papis.bibtex.to_bibtex(doc) == expected_bibtex
+def is_same_bibtex(data: Dict[str, Any], expected_bibtex: str) -> bool:
+    from papis.bibtex import to_bibtex
+    from papis.document import from_data
+
+    return to_bibtex(from_data(data)) == expected_bibtex
 
 
-@tests.with_default_config()
-def test_to_bibtex_formatting() -> None:
+def test_to_bibtex_formatting(tmp_config: TemporaryConfiguration) -> None:
     """Test formatting for the `to_bibtex` function."""
-    assert_bibtex({"type": "report",
-                   "author": "Albert Einstein",
-                   "title": "The Theory of Everything",
-                   "journal": "Nature",
-                   "year": 2350,
-                   "ref": "MyDocument"},
-                  #
-                  "@report{MyDocument,\n"
-                  "  author = {Albert Einstein},\n"
-                  "  journal = {Nature},\n"
-                  "  title = {The Theory of Everything},\n"
-                  "  year = {2350},\n"
-                  "}")
+    assert is_same_bibtex({
+        "type": "report",
+        "author": "Albert Einstein",
+        "title": "The Theory of Everything",
+        "journal": "Nature",
+        "year": 2350,
+        "ref": "MyDocument"},
+        #
+        "@report{MyDocument,\n"
+        "  author = {Albert Einstein},\n"
+        "  journal = {Nature},\n"
+        "  title = {The Theory of Everything},\n"
+        "  year = {2350},\n"
+        "}")
 
 
-@tests.with_default_config()
-def test_overridable() -> None:
-    doc = {"type": "report",
-           "author": "Albert Einstein",
-           "title": "Ä α The Theory of Everything & Nothing",
-           "title_latex": r"The Theory of Everything \& Nothing",
-           "journal": "Nature",
-           "year": 2350,
-           "ref": "MyDocument"
-           }
+def test_overridable(tmp_config: TemporaryConfiguration) -> None:
+    import papis.config
+
+    doc = {
+        "type": "report",
+        "author": "Albert Einstein",
+        "title": "Ä α The Theory of Everything & Nothing",
+        "title_latex": r"The Theory of Everything \& Nothing",
+        "journal": "Nature",
+        "year": 2350,
+        "ref": "MyDocument"
+    }
+
     papis.config.set("bibtex-unicode", True)
-    assert_bibtex(doc,
-                  "@report{MyDocument,\n"
-                  "  author = {Albert Einstein},\n"
-                  "  journal = {Nature},\n"
-                  "  title = {The Theory of Everything \\& Nothing},\n"
-                  "  year = {2350},\n"
-                  "}")
+    assert is_same_bibtex(doc,
+                          "@report{MyDocument,\n"
+                          "  author = {Albert Einstein},\n"
+                          "  journal = {Nature},\n"
+                          "  title = {The Theory of Everything \\& Nothing},\n"
+                          "  year = {2350},\n"
+                          "}")
 
     papis.config.set("bibtex-unicode", False)
-    assert_bibtex(doc,
-                  "@report{MyDocument,\n"
-                  "  author = {Albert Einstein},\n"
-                  "  journal = {Nature},\n"
-                  "  title = {The Theory of Everything "
-                  # this will sadly happen, and it makes sense
-                  r"\textbackslash \&"
-                  " Nothing},\n"
-                  "  year = {2350},\n"
-                  "}")
+    assert is_same_bibtex(doc,
+                          "@report{MyDocument,\n"
+                          "  author = {Albert Einstein},\n"
+                          "  journal = {Nature},\n"
+                          "  title = {The Theory of Everything "
+                          # this will sadly happen, and it makes sense
+                          r"\textbackslash \&"
+                          " Nothing},\n"
+                          "  year = {2350},\n"
+                          "}")
 
 
-@tests.with_default_config()
-def test_ignore_keys() -> None:
-    doc = {"type": "report",
-           "author": "Albert Einstein",
-           "year": 2350,
-           "ref": "MyDocument"}
-    assert_bibtex(doc,
-                  "@report{MyDocument,\n"
-                  "  author = {Albert Einstein},\n"
-                  "  year = {2350},\n"
-                  "}")
+def test_ignore_keys(tmp_config: TemporaryConfiguration,
+                     monkeypatch: pytest.MonkeyPatch) -> None:
+    import papis.bibtex
+    import papis.config
+
+    doc = {
+        "type": "report",
+        "author": "Albert Einstein",
+        "year": 2350,
+        "ref": "MyDocument"
+    }
+    assert is_same_bibtex(doc,
+                          "@report{MyDocument,\n"
+                          "  author = {Albert Einstein},\n"
+                          "  year = {2350},\n"
+                          "}")
 
     # TODO: think about this since these keys are not updated
     #       dynamically and it's possible is not worth it to update dynamically
     papis.config.set("bibtex-ignore-keys", "['year']")
-    papis.bibtex.bibtex_ignore_keys = (
-        frozenset(papis.config.getlist("bibtex-ignore-keys"))
-    )
-    assert_bibtex(doc,
-                  "@report{MyDocument,\n"
-                  "  author = {Albert Einstein},\n"
-                  "}")
-    papis.bibtex.bibtex_ignore_keys = (
-        frozenset([])
-    )
+    monkeypatch.setattr(papis.bibtex, "bibtex_ignore_keys",
+                        frozenset(papis.config.getlist("bibtex-ignore-keys")))
+
+    assert is_same_bibtex(doc,
+                          "@report{MyDocument,\n"
+                          "  author = {Albert Einstein},\n"
+                          "}")

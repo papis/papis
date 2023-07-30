@@ -4,20 +4,13 @@ import pytest
 import tempfile
 
 import papis.config
-import papis.database
-import papis.document
-import papis.commands.add
-from papis.utils import (
-    get_cache_home, create_identifier, locate_document,
-    general_open, clean_document_name,
-)
-from papis.filetype import get_document_extension
 
-import tests
+from tests.testlib import TemporaryConfiguration
 
 
 @pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
-def test_get_cache_home(monkeypatch):
+def test_get_cache_home(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
+    from papis.utils import get_cache_home
     tmpdir = tempfile.gettempdir()
 
     with monkeypatch.context() as m:
@@ -34,32 +27,27 @@ def test_get_cache_home(monkeypatch):
         assert get_cache_home() == os.path.join(tmpdir, ".cache", "papis")
         assert os.path.exists(get_cache_home())
 
-    with tempfile.TemporaryDirectory() as d:
+    with tempfile.TemporaryDirectory(dir=tmp_config.tmpdir) as d:
         tmp = os.path.join(d, "blah")
         papis.config.set("cache-dir", tmp)
         assert get_cache_home() == tmp
 
 
-def test_create_identifier():
-    import itertools
+def test_create_identifier() -> None:
     import string
-    output = list(
-        itertools.islice(
-            create_identifier(string.ascii_uppercase),
-            30
-        )
-    )
+    from papis.utils import create_identifier
+
     expected = [
         "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
         "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
         "AA", "AB", "AC", "AD"
     ]
-    for i, value in enumerate(expected):
-        assert output[i] == value
+    for value, output in zip(expected, create_identifier(string.ascii_uppercase)):
+        assert output == value
 
 
 @pytest.mark.skipif(sys.platform != "linux", reason="uses linux tools")
-def test_general_open_with_spaces():
+def test_general_open_with_spaces(tmp_config: TemporaryConfiguration) -> None:
     suffix = "File with at least a couple of spaces"
     with tempfile.NamedTemporaryFile("w", suffix=suffix, delete=False) as f:
         filename = f.name
@@ -67,6 +55,7 @@ def test_general_open_with_spaces():
 
     assert os.path.exists(filename)
 
+    from papis.utils import general_open
     general_open(
         filename,
         "nonexistentoption",
@@ -81,7 +70,7 @@ def test_general_open_with_spaces():
     os.unlink(filename)
 
 
-def test_locate_document():
+def test_locate_document(tmp_config: TemporaryConfiguration) -> None:
     from papis.document import from_data
     docs = [
         from_data(dict(doi="10.1021/ct5004252", title="Hello world")),
@@ -93,6 +82,8 @@ def test_locate_document():
             )
         ),
     ]
+
+    from papis.utils import locate_document
 
     doc = from_data(dict(doi="10.1021/CT5004252"))
     found_doc = locate_document(doc, docs)
@@ -111,21 +102,25 @@ def test_locate_document():
     assert found_doc is None
 
 
-def test_guess_extension():
+def test_extension(tmp_config: TemporaryConfiguration) -> None:
     docs = [
-        [tests.create_random_pdf(), "pdf"],
-        [tests.create_random_pdf(), "pdf"],
-        [tests.create_random_file(), "data"],
-        [tests.create_random_epub(), "epub"],
-        [tests.create_random_djvu(), "djvu"],
-        [tests.create_random_file(suffix=".yaml"), "yaml"],
-        [tests.create_random_file(suffix=".txt"), "txt"],
+        [tmp_config.create_random_file("pdf"), "pdf"],
+        [tmp_config.create_random_file("pdf"), "pdf"],
+        [tmp_config.create_random_file("epub"), "epub"],
+        [tmp_config.create_random_file("text"), "data"],
+        [tmp_config.create_random_file("djvu"), "djvu"],
+        [tmp_config.create_random_file("text", suffix=".yaml"), "yaml"],
+        [tmp_config.create_random_file("text", suffix=".text"), "text"],
     ]
+
+    from papis.filetype import get_document_extension
     for d in docs:
         assert get_document_extension(d[0]) == d[1]
 
 
-def test_slugify():
+def test_slugify(tmp_config: TemporaryConfiguration) -> None:
+    from papis.utils import clean_document_name
+
     assert (
         clean_document_name("{{] __ }}albert )(*& $ß $+_ einstein (*]")
         == "albert-ss-einstein"
@@ -136,3 +131,19 @@ def test_slugify():
     )
     assert clean_document_name("масса и енергиа.pdf") == "massa-i-energia.pdf"
     assert clean_document_name("الامير الصغير.pdf") == "lmyr-lsgyr.pdf"
+
+
+def test_yaml_unicode_dump(tmp_config: TemporaryConfiguration) -> None:
+    from papis.crossref import get_data
+
+    doi = "10.1111/febs.15572"
+    doc, = get_data(dois=[doi])
+    assert doc["doi"] == doi
+
+    from papis.yaml import data_to_yaml, yaml_to_data
+
+    filename = os.path.join(tmp_config.tmpdir, "test_dump_encoding.yml")
+    data_to_yaml(filename, doc)
+
+    doc = yaml_to_data(filename)
+    assert doc["doi"] == doi
