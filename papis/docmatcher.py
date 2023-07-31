@@ -261,8 +261,7 @@ def proofread(parsed: List[ParseResult]) -> List[ParseResult]:
             )
             fixes += 1
 
-    if fixes > 0:
-        logger.debug("Fixed query by adding %s missing 'and' operator(s).", fixes)
+    logger.debug("Fixed query by adding %s missing 'and' operator(s).", fixes)
 
     return result
 
