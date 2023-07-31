@@ -32,13 +32,13 @@ class ParseResult(NamedTuple):
         doc_key = "{!r}, ".format(self.doc_key) if self.doc_key is not None else ""
         return "[{}{!r}]".format(doc_key, self.string)
 
-    def needsboolafter(self) -> bool:
+    def needs_operator_after(self) -> bool:
         if self.syntax and self.string in ["and", "or", "not", "("]:
             return False
         else:
             return True
 
-    def needsboolbefore(self) -> bool:
+    def needs_operator_before(self) -> bool:
         if self.syntax and self.string in ["and", "or", ")"]:
             return False
         else:
@@ -192,7 +192,7 @@ class DocMatcher:
             search = cls.search
         parsed_search = parse_query(search)
 
-        if check_syntax(parsed_search):
+        if check_query_consistency(parsed_search):
             cls.parsed_search = parsed_search
         else:
             cls.parsed_search = []
@@ -217,7 +217,7 @@ def get_regex_from_search(search: str) -> Pattern[str]:
     )
 
 
-def check_syntax(parsed: List[ParseResult]) -> bool:
+def check_query_consistency(parsed: List[ParseResult]) -> bool:
     """Tests the syntax by replacing all search terms with True,
     then trying to evaluate the resulting string.
     """
@@ -237,7 +237,7 @@ def check_syntax(parsed: List[ParseResult]) -> bool:
         return False
 
 
-def proofread(parsed: List[ParseResult]) -> List[ParseResult]:
+def add_implicit_query_operators(parsed: List[ParseResult]) -> List[ParseResult]:
     """Fixes a parsed query by inserting missing *and* operators.
     For instance:
     ' ein 192     photon' -> 'ein and 192 and photon'
@@ -251,7 +251,8 @@ def proofread(parsed: List[ParseResult]) -> List[ParseResult]:
     fixes = 0
     for idx, token in enumerate(parsed):
         result.append(token)
-        if idx != last and token.needsboolafter() and parsed[idx + 1].needsboolbefore():
+        if idx != last and token.needs_operator_after() and \
+            parsed[idx + 1].needs_operator_before():
             # add 'and' when queries or syntax have have no operator in between
             result.append(
                 ParseResult(
@@ -351,4 +352,4 @@ def parse_query(query_string: str) -> List[ParseResult]:
             ParseResult(syntax=syntax, string=string, pattern=pattern, doc_key=doc_key)
         )
 
-    return proofread(results)
+    return add_implicit_query_operators(results)
