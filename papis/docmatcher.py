@@ -51,13 +51,12 @@ class MatcherCallable(Protocol):
     .. automethod:: __call__
     """
 
-    def __call__(
-        self,
-        document: papis.document.Document,
-        search: Pattern[str],
-        match_format: Optional[str] = None,
-        doc_key: Optional[str] = None,
-    ) -> Any:
+    def __call__(self,
+                 document: papis.document.Document,
+                 search: Pattern[str],
+                 match_format: Optional[str] = None,
+                 doc_key: Optional[str] = None,
+                 ) -> Any:
         """Match a document's keys to a given search pattern.
 
         The matcher can decide whether the *match_format* or the *doc_key* take
@@ -152,9 +151,9 @@ class DocMatcher:
     def set_search(cls, search: str) -> None:
         """Set the search for this instance of the matcher.
 
-        >>> DocMatcher.set_search('author:Hummel')
-        >>> DocMatcher.search
-        'author:Hummel'
+            >>> DocMatcher.set_search('author:Hummel')
+            >>> DocMatcher.search
+            'author:Hummel'
         """
         cls.search = search
 
@@ -162,8 +161,8 @@ class DocMatcher:
     def set_matcher(cls, matcher: MatcherCallable) -> None:
         """Set the matcher callable for the search.
 
-        >>> from papis.database.cache import match_document
-        >>> DocMatcher.set_matcher(match_document)
+            >>> from papis.database.cache import match_document
+            >>> DocMatcher.set_matcher(match_document)
         """
         cls.matcher = matcher
 
