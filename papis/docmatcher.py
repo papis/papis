@@ -96,7 +96,7 @@ class DocMatcher:
     #: Search string from which the matcher is constructed.
     search: ClassVar[str] = ""
     #: A parsed version of the :attr:`search` string using :func:`parse_query`.
-    parsed_search: ClassVar[Optional[List[ParseResult]]] = None
+    parsed_search: ClassVar[List[ParseResult]] = []
     #: A :class:`MatcherCallable` used to match the document to the
     #: :attr:`parsed_search`.
     matcher: ClassVar[Optional[MatcherCallable]] = None
@@ -220,6 +220,9 @@ def get_regex_from_search(search: str) -> Pattern[str]:
 def check_query_consistency(parsed: List[ParseResult]) -> bool:
     """Tests the syntax by replacing all search terms with True,
     then trying to evaluate the resulting string.
+
+    :param a parsed a search string.
+    :returns: a boolean indicating whether the query is logically consistent
     """
 
     test = []
@@ -252,7 +255,7 @@ def add_implicit_query_operators(parsed: List[ParseResult]) -> List[ParseResult]
     for idx, token in enumerate(parsed):
         result.append(token)
         if idx != last and token.needs_operator_after() and \
-            parsed[idx + 1].needs_operator_before():
+                parsed[idx + 1].needs_operator_before():
             # add 'and' when queries or syntax have have no operator in between
             result.append(
                 ParseResult(
