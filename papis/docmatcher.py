@@ -128,7 +128,7 @@ class DocMatcher:
         """
 
         match = None
-        if cls.parsed_search is None or cls.matcher is None:
+        if len(cls.parsed_search) == 0 or cls.matcher is None:
             return match
 
         tokens = []
