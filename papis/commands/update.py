@@ -79,7 +79,7 @@ def run(document: papis.document.Document,
                 papis.document.describe(document)))
 
 
-@click.command("update")                # type: ignore[arg-type]
+@click.command("update")
 @click.help_option("--help", "-h")
 @papis.cli.git_option()
 @papis.cli.query_argument()

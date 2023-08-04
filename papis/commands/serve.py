@@ -470,7 +470,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.process_routes(routes)
 
 
-@click.command("serve")                 # type: ignore[arg-type]
+@click.command("serve")
 @click.help_option("-h", "--help")
 @click.option("-p", "--port",
               help="Port to listen to",

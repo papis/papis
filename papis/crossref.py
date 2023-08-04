@@ -275,7 +275,7 @@ def doi_to_data(doi_string: str) -> Dict[str, Any]:
         "Could not retrieve data for DOI '{}' from Crossref".format(doi_string))
 
 
-@click.command("crossref")              # type: ignore[arg-type]
+@click.command("crossref")
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.option("--query", "-q", help="General query", default="")
