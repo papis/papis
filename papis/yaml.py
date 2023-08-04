@@ -115,7 +115,7 @@ def exporter(documents: List[papis.document.Document]) -> str:
     return str(string)
 
 
-@click.command("yaml")                  # type: ignore[arg-type]
+@click.command("yaml")
 @click.pass_context
 @click.argument("yamlfile", type=click.Path(exists=True))
 @click.help_option("--help", "-h")

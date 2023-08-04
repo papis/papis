@@ -478,7 +478,7 @@ def run(paths: List[str],
             "Add document '{}'".format(papis.document.describe(tmp_document)))
 
 
-@click.command(                         # type: ignore[arg-type]
+@click.command(
     "add",
     help="Add a document into a given library"
 )

@@ -165,7 +165,7 @@ def find_arxivid_in_text(text: str) -> Optional[str]:
     return None
 
 
-@click.command("arxiv")                 # type: ignore[arg-type]
+@click.command("arxiv")
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.option("--query", "-q", default="", type=str)
