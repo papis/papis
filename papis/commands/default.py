@@ -48,7 +48,7 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 
-class MultiCommand(click.core.MultiCommand):
+class ScriptLoaderGroup(click.Group):
 
     scripts = papis.commands.get_all_scripts()
     script_names = sorted(scripts)
@@ -56,8 +56,8 @@ class MultiCommand(click.core.MultiCommand):
     def list_commands(self, ctx: click.core.Context) -> List[str]:
         """List all matched commands in the command folder and in path
 
-        >>> mc = MultiCommand()
-        >>> rv = mc.list_commands(None)
+        >>> group = ScriptLoaderGroup()
+        >>> rv = group.list_commands(None)
         >>> len(rv) > 0
         True
         """
@@ -69,11 +69,11 @@ class MultiCommand(click.core.MultiCommand):
             name: str) -> Optional[click.core.Command]:
         """Get the command to be run
 
-        >>> mc = MultiCommand()
-        >>> cmd = mc.get_command(None, 'add')
+        >>> group = ScriptLoaderGroup()
+        >>> cmd = group.get_command(None, 'add')
         >>> cmd.name, cmd.help
         ('add', 'Add...')
-        >>> mc.get_command(None, 'this command does not exist')
+        >>> group.get_command(None, 'this command does not exist')
         Command ... is unknown!
         """
         try:
@@ -123,7 +123,7 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
 
 
 @click.group(
-    cls=MultiCommand,
+    cls=ScriptLoaderGroup,
     invoke_without_command=False)
 @click.help_option("--help", "-h")
 @click.version_option(version=papis.__version__)
