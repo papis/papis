@@ -70,7 +70,7 @@ def confirm(prompt_string: str,
 
 
 def text_area(text: str,
-              lexer_name: str = ""):
+              lexer_name: str = "") -> None:
     """
     Small implementation of a pager for small pieces of text.
 
@@ -78,15 +78,16 @@ def text_area(text: str,
     :param lexer_name: If the text should be highlighted with
         some kind of grammar, examples are ``yaml``, ``python`` ...
     """
+    from pygments import lex
     from pygments.lexers import find_lexer_class_by_name
 
-    import pygments
-    from prompt_toolkit import print_formatted_text
     pygment_lexer = find_lexer_class_by_name(lexer_name)
-    tokens = list(pygments.lex(text, lexer=pygment_lexer()))
+    tokens = lex(text, lexer=pygment_lexer())  # type: ignore[no-untyped-call]
+
+    from prompt_toolkit import print_formatted_text
+    from prompt_toolkit.styles import Style
     from prompt_toolkit.formatted_text import PygmentsTokens
 
-    from prompt_toolkit.styles import Style
     papis_style = Style.from_dict(PAPIS_PYGMENTS_DEFAULT_STYLE)
     print_formatted_text(PygmentsTokens(tokens), style=papis_style)
 
@@ -135,7 +136,7 @@ def prompt(
         ("", ": "),
     ]
 
-    result = prompt_toolkit.prompt(fragments,
+    result = prompt_toolkit.prompt(fragments,       # type: ignore[arg-type]
                                    validator=validator,
                                    multiline=multiline,
                                    bottom_toolbar=bottom_toolbar,

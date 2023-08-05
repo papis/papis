@@ -92,7 +92,7 @@ setup(
         "habanero>=0.6.0",
         "isbnlib>=3.9.1",
         "lxml>=4.3.5",
-        "prompt_toolkit>=2.0.5",
+        "prompt_toolkit>=3.0.0",
         "pygments>=2.2.0",
         "pyparsing>=2.2.0",
         "python-doi>=0.1.1",
