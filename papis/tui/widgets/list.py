@@ -6,7 +6,7 @@ from typing import (
     Callable, Tuple, Pattern, TypeVar)
 
 from prompt_toolkit.formatted_text.html import HTML
-from prompt_toolkit.formatted_text.base import FormattedText  # noqa: ignore
+from prompt_toolkit.formatted_text.base import FormattedText
 from prompt_toolkit.layout.screen import Point
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.controls import FormattedTextControl
@@ -232,8 +232,8 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
 
         f = functools.partial(match_against_regex, regex)
         results = papis.utils.parmap(f,
-                                     [(i, l)
-                                      for i, l in
+                                     [(i, matcher)
+                                      for i, matcher in
                                       enumerate(self.options_matchers)
                                       if i in search_indices])
 

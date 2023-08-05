@@ -19,7 +19,7 @@ from .widgets.command_line_prompt import Command, CommandLinePrompt
 from .widgets import InfoWindow, HelpWindow, MessageToolbar
 from .widgets.list import Option, OptionsList
 
-from typing import (  # noqa: ignore
+from typing import (
     Optional, Dict, Any, List, Callable, Tuple, Generic,
     Sequence, TypedDict)
 
