@@ -1,6 +1,6 @@
 import sys
 import os
-from typing import Dict, Any  # noqa: ignore
+from typing import Any, Dict
 
 
 def get_default_opener() -> str:
