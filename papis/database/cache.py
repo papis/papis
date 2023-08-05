@@ -246,6 +246,14 @@ class Database(papis.database.base.Database):
             document: papis.document.Document
             ) -> List[Tuple[int, papis.document.Document]]:
         assert isinstance(document, papis.document.Document)
+
+        result = list(filter(
+            lambda d: d[1]["papis_id"] == document["papis_id"],
+            enumerate(self.get_documents())))
+
+        if result:
+            return result
+
         result = list(filter(
             lambda d: d[1].get_main_folder() == document.get_main_folder(),
             enumerate(self.get_documents())))
