@@ -44,7 +44,7 @@ class Command:
         self.aliases = aliases
 
     @property
-    def app(self) -> Application:
+    def app(self) -> Application[Any]:
         return get_app()
 
     @property
@@ -52,7 +52,7 @@ class Command:
         return [self.name] + self.aliases
 
 
-class CommandLinePrompt(ConditionalContainer):  # type: ignore
+class CommandLinePrompt(ConditionalContainer):
     """
     A vim-like command line prompt widget.
     It's supposed to be instantiated only once.
@@ -62,7 +62,8 @@ class CommandLinePrompt(ConditionalContainer):  # type: ignore
             commands = []
 
         self.commands = commands
-        wc = WordCompleter(sum([c.names for c in commands], []))
+        names: List[str] = sum((c.names for c in commands), [])
+        wc = WordCompleter(names)
         self.buf = Buffer(
             completer=wc, complete_while_typing=True
         )

@@ -3,17 +3,16 @@ import re
 import functools
 from typing import (
     Optional, Any, List, Generic, Sequence,
-    Callable, Tuple, Pattern, TypeVar)
+    Callable, Tuple, Pattern, TypeVar, Union)
 
-from prompt_toolkit.formatted_text.html import HTML
-from prompt_toolkit.formatted_text.base import FormattedText
-from prompt_toolkit.layout.screen import Point
+from prompt_toolkit.formatted_text import HTML, AnyFormattedText, FormattedText
+from prompt_toolkit.data_structures import Point
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.containers import (
     Window, ConditionalContainer, WindowAlign, ScrollOffsets
 )
-from prompt_toolkit.filters import has_focus
+from prompt_toolkit.filters import Filter, has_focus
 
 import papis.utils
 import papis.logging
@@ -25,7 +24,7 @@ Option = TypeVar("Option")
 
 def match_against_regex(
         regex: Pattern[str],
-        pair: (int, str)) -> Optional[int]:
+        pair: Tuple[int, str]) -> Optional[int]:
     """Return index if line matches regex
 
         pair[0] is the index of the element
@@ -34,10 +33,8 @@ def match_against_regex(
     return pair[0] if regex.match(pair[1]) else None
 
 
-class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
-
-    """This is the main widget containing a list of items (options)
-    to select from.
+class OptionsList(ConditionalContainer, Generic[Option]):
+    """This is the main widget containing a list of items (options) to select from.
     """
 
     def __init__(
@@ -46,7 +43,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
             default_index: int = 0,
             header_filter: Callable[[Option], str] = str,
             match_filter: Callable[[Option], str] = str,
-            custom_filter: Optional[Callable[[str], bool]] = None,
+            custom_filter: Optional[Union[Filter, Callable[[str], bool]]] = None,
             search_buffer: Optional[Buffer] = None,
             cpu_count: Optional[int] = None) -> None:
         if search_buffer is None:
@@ -61,17 +58,17 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
 
         self.header_filter = header_filter
         self.match_filter = match_filter
-        self.current_index = default_index
+        self.current_index: Optional[int] = default_index
         self.entries_left_offset = 0
         self.cpu_count = cpu_count
 
         self.options_headers_linecount: List[int] = []
         self._indices_to_lines: List[int] = []
 
-        self.options_headers: FormattedText = []
+        self.options_headers: List[FormattedText] = []
         self.options_matchers: List[str] = []
         self.indices: List[int] = []
-        self._options: Sequence[Option] = []
+        self._options: List[Option] = []
         self.marks: List[int] = []
         self.max_entry_height = 1
 
@@ -81,14 +78,14 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         self.cursor = Point(0, 0)
         # ##################################################
 
-        self.content = FormattedTextControl(
+        content = FormattedTextControl(
             text=self.get_tokens,
             focusable=False,
             key_bindings=None,
             get_cursor_position=lambda: self.cursor,
         )
         self.content_window = Window(
-            content=self.content,
+            content=content,
             wrap_lines=False,
             allow_scroll_beyond_bottom=True,
             scroll_offsets=ScrollOffsets(bottom=self.max_entry_height),
@@ -107,7 +104,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         super().__init__(
             content=self.content_window,
             filter=(
-                custom_filter
+                custom_filter   # type: ignore[arg-type]
                 if custom_filter is not None
                 else has_focus(self.search_buffer)
             )
@@ -116,9 +113,10 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
     def get_line_prefix(
             self,
             line: int,
-            blih: Any) -> Optional[List[Tuple[str, str]]]:
+            blih: int) -> AnyFormattedText:
         if self.current_index is None:
             return None
+
         current_line = self.index_to_line(self.current_index)
         if (0 <= line - current_line
                 < self.options_headers_linecount[self.current_index]):
@@ -140,14 +138,14 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
         if self.current_index is not None:
             self.marks.append(self.current_index)
 
-    def get_options(self) -> Sequence[Option]:
+    def get_options(self) -> List[Option]:
         """Get the original options
         """
         return self._options
 
     def set_options(self, new_options: Sequence[Option]) -> None:
         """Set the options and process them"""
-        self._options = new_options
+        self._options = list(new_options)
         self.process_options()
 
     def move_up(self) -> None:
@@ -247,7 +245,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
             else:
                 self.current_index = self.indices[0]
 
-    def get_selection(self) -> Sequence[Option]:
+    def get_selection(self) -> List[Option]:
         """Get the selected item, if there is Any"""
         if len(self.marks):
             return [self.get_options()[m] for m in self.marks]
@@ -310,19 +308,24 @@ class OptionsList(ConditionalContainer, Generic[Option]):  # type: ignore
                                                   self.get_options()))
         self.max_entry_height = max(self.options_headers_linecount)
         logger.debug("Processing headers.")
+
         self.options_headers = []
         for _opt in self.get_options():
             prestring = self.header_filter(_opt) + "\n"
             try:
                 htmlobject = HTML(prestring).formatted_text
-            except Exception as e:
+            except Exception as exc:
                 logger.error(
-                    "Error processing html for\n %s\n %s", prestring, e)
-                htmlobject = [("fg:ansired", prestring)]
-            self.options_headers += [htmlobject]
+                    "Error processing HTML for '%s'.", prestring, exc_info=exc)
+                htmlobject = FormattedText([("fg:ansired", prestring)])
+
+            self.options_headers.append(htmlobject)
+
         logger.debug("Got %d headers.", len(self.options_headers))
         logger.debug("Processing matchers.")
+
         self.options_matchers = list(
             map(self.match_filter, self.get_options()))
         self.indices = list(range(len(self.get_options())))
+
         logger.debug("Got %d matchers.", len(self.options_matchers))
