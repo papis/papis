@@ -1,6 +1,5 @@
 import os
-import sys
-import pytest
+import time
 
 from papis.commands.cache import cli
 import papis.database
@@ -23,13 +22,12 @@ def test_clear(tmp_library: TemporaryLibrary) -> None:
 
 def test_pwd(tmp_library: TemporaryLibrary) -> None:
     db = papis.database.get()
+
     cli_runner = PapisRunner()
     result = cli_runner.invoke(cli, ["pwd"])
     assert db.get_cache_path() == result.output.replace("\n", "")
 
 
-@pytest.mark.skipif((sys.platform == "win32") and (sys.version_info >= (3, 8)),
-                    reason="For some reason update-newer does not work.")
 def test_rm_add_update(tmp_library: TemporaryLibrary) -> None:
     db = papis.database.get()
     cli_runner = PapisRunner()
@@ -43,7 +41,7 @@ def test_rm_add_update(tmp_library: TemporaryLibrary) -> None:
     # rm
     ###################################################
     query_results = db.query_dict({"title": title})
-    assert len(query_results) > 0
+    assert len(query_results) == 1
 
     result = cli_runner.invoke(cli, ["rm", "--doc-folder", folder])
     assert result.exit_code == 0
@@ -59,30 +57,36 @@ def test_rm_add_update(tmp_library: TemporaryLibrary) -> None:
     query_results = db.query_dict({"title": title})
     assert len(query_results) == 1
 
-    # udpate
+    # update
     ###################################################
-    doc["cache"] = "testing"
-    doc.save()
+    # NOTE: modifying `doc` diretly may modify the version in the database, so
+    # this modifies the info file behind its back completely to check the update
+    doc_dict = {**dict(doc), "cache": "test-update"}
+    papis.yaml.data_to_yaml(doc.get_info_file(), doc_dict, allow_unicode=True)
 
-    query_results = db.query_dict({"cache": "testing"})
+    query_results = db.query_dict({"cache": "test-update"})
     assert len(query_results) == 0
 
     result = cli_runner.invoke(cli, ["update", "--doc-folder", folder])
     assert result.exit_code == 0
 
-    query_results = db.query_dict({"cache": "testing"})
+    query_results = db.query_dict({"cache": "test-update"})
     assert len(query_results) == 1
 
     # update-newer
     ###################################################
-    doc["cache"] = "end-testing"
-    doc.save()
+    # NOTE: `update-newer` checks mtimes, so we wait a bit so that the mtime is
+    # meaningfully changed and the OS had time to update it
+    time.sleep(1)
 
-    query_results = db.query_dict({"cache": "end-testing"})
+    doc_dict = {**dict(doc), "cache": "test-update-newer"}
+    papis.yaml.data_to_yaml(doc.get_info_file(), doc_dict, allow_unicode=True)
+
+    query_results = db.query_dict({"cache": "test-update-newer"})
     assert len(query_results) == 0
 
     result = cli_runner.invoke(cli, ["update-newer", "--all"])
     assert result.exit_code == 0
 
-    query_results = db.query_dict({"cache": "end-testing"})
+    query_results = db.query_dict({"cache": "test-update-newer"})
     assert len(query_results) == 1

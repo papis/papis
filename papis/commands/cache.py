@@ -190,19 +190,21 @@ def update_newer(query: str, doc_folder: str, _all: bool,
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
-    updated_documents_n = 0
+    updated_documents_count = 0
     cache_path = db.get_cache_path()
+    cache_path_mtime = os.stat(cache_path).st_mtime
 
     for doc in documents:
         info = doc.get_info_file()
-
         if not os.path.exists(info):
             continue
 
-        if os.stat(cache_path).st_mtime < os.stat(info).st_mtime:
-            updated_documents_n += 1
-            logger.info("Updating %s", papis.document.describe(doc))
+        info_mtime = os.stat(info).st_mtime
+        if cache_path_mtime < info_mtime:
+            updated_documents_count += 1
+            logger.info("Updating newer '%s'.", papis.document.describe(doc))
+
             doc.load()
             db.update(doc)
 
-    logger.info("Updated %d documents", updated_documents_n)
+    logger.info("Updated %d documents.", updated_documents_count)
