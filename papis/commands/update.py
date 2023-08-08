@@ -103,10 +103,15 @@ def run(document: papis.document.Document,
                    "The value can be a papis format.",
               multiple=True,
               type=(str, str),)
+@click.option(
+    "-b", "--batch",
+    help="Batch mode, do not prompt or otherwise",
+    default=False, is_flag=True)
 def cli(query: str,
         git: bool,
         doc_folder: str,
         from_importer: List[Tuple[str, str]],
+        batch: bool,
         auto: bool,
         _all: bool,
         sort_field: Optional[str],
@@ -170,7 +175,7 @@ def cli(query: str,
                         matching_importers.append(importer)
 
         imported = papis.utils.collect_importer_data(
-            matching_importers, batch=False, only_data=True)
+            matching_importers, batch=batch, only_data=True)
         if "ref" in imported.data:
             logger.debug(
                 "An importer set the 'ref' key. This is not allowed and will be "
