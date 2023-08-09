@@ -166,7 +166,7 @@ def cli(query: str,
                     importer = importer_cls.match_data(document)
                     if importer:
                         try:
-                            importer.fetch_data()
+                            importer.fetch_data(batch=batch)
                         except NotImplementedError:
                             importer.fetch()
                 except NotImplementedError:
