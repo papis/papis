@@ -119,6 +119,9 @@ def cli(query: str,
         set_tuples: List[Tuple[str, str]],) -> None:
     """Update a document from a given library."""
 
+    if batch:
+        _all = True
+          
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,
                                                            sort_field,
