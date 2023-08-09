@@ -389,12 +389,18 @@ def update_doc_from_data_interactively(
     docdata.pop("files", None)
     docdata.pop("tags", None)
 
-    document.update(papis.tui.widgets.diff.diffdict(
-                    docdata,
-                    data,
-                    namea=papis.document.describe(document),
-                    nameb=data_name))
-
+    if papis.config.getstring("picktool") == "fzf":
+        document.update(papis.tui.widgets.diff.difffzf(
+                        docdata,
+                        data,
+                        namea=papis.document.describe(document),
+                        nameb=data_name))
+    else:
+        document.update(papis.tui.widgets.diff.diffdict(
+                        docdata,
+                        data,
+                        namea=papis.document.describe(document),
+                        nameb=data_name))
 
 def get_cache_home() -> str:
     """Get default cache directory.
