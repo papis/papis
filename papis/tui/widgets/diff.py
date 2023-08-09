@@ -234,3 +234,98 @@ def diffdict(dicta: Dict[str, Any],
             reset()
 
     return rdict
+
+def difffzf(dicta: Dict[str, Any],
+             dictb: Dict[str, Any],
+             namea: str = "a",
+             nameb: str = "b"
+             ) -> Dict[str, Any]:
+    """
+    Compute the difference of two dictionaries.
+
+    :param dicta: Base dictionary
+    :param dictb: Dictionary with the differences that the result might add
+    :param namea: Label to be shown for dictionary a
+    :param namea: Label to be shown for dictionary b
+    :returns: A dictionary containing the base data of dicta plus data
+        from dictb if this was chosen.
+    """
+    import papis.config
+
+    rdict = {}
+    dictc = []
+
+    keys = [k for k in sorted(set(dicta) | set(dictb))
+            if not dicta.get(k) == dictb.get(k) and dictb.get(k)]
+
+    # Set ditc (used by fzf preview)
+    for key in keys:
+        akey = dicta.get(key)
+        bkey = dictb.get(key)
+
+        if bkey:
+            if akey:
+                dictc.append(akey)
+            else:
+                dictc.append('')
+        else:
+                dictc.append('')
+
+    # Fzf setup
+    tmpfile = '/tmp/papis-diff-fzf-tmp'
+
+    with open(tmpfile, 'w') as f:
+        f.write('\n'.join(dictc))
+
+    flags = ['--ansi', '-m',
+             '--preview', f'echo -e $(sed -n "$(({{n}}+1))p" {tmpfile})',
+             '--preview-window', 'bottom:wrap:20%'] + papis.config.getlist("diff-fzf-extra-flags")
+
+    if papis.config.getlist("diff-fzf-flags"):
+        flags = papis.config.getlist("diff-fzf-flags")
+
+    bindings = ['enter:execute(echo {+n})+accept'] + papis.config.getlist("diff-fzf-extra-bindings")
+
+    command = [papis.config.getstring("fzf-binary"),
+               "--bind", ",".join(bindings)
+               ] + flags
+
+    import subprocess as sp
+    with sp.Popen(command, stdin=sp.PIPE, stdout=sp.PIPE) as p:
+        # dictb > dicta
+        # 3 colors: if key exist only in dictb, only in dicta, in both
+        if p.stdin is not None:
+            with p.stdin as stdin:
+                for key in keys:
+                    akey = dicta.get(key)
+                    bkey = dictb.get(key)
+
+                    if bkey:
+                        value = bkey
+                        if akey:
+                            color = papis.config.getstring("diff-fzf-color-ab")
+                        else:
+                            color = papis.config.getstring("diff-fzf-color-b")
+                    else:
+                        value = akey
+                        color = papis.config.getstring("diff-fzf-color-a")
+
+                    text = color + key + ': ' + value
+                    stdin.write((text + "\n").encode())
+
+        if p.stdout is not None:
+            selection = p.stdout.readline().decode().split()
+            selection = list(map(int, selection))
+
+            for i, key in enumerate(keys):
+                akey = dicta.get(key)
+                bkey = dictb.get(key)
+                if i in selection:
+                    if akey and bkey:
+                        rdict[key] = dicta.get(key)
+                elif bkey:
+                    rdict[key] = dictb.get(key)
+                else:
+                    rdict[key] = dicta.get(key)
+
+    return rdict
