@@ -1,4 +1,4 @@
-import re
+/import re
 import os
 from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
 
@@ -397,7 +397,7 @@ class Importer(papis.importer.Importer):
 
         return None
 
-    def fetch_data(self) -> None:
+    def fetch_data(self, batch=batch) -> None:
         data = papis.crossref.get_data(dois=[self.uri])
         if data:
             self.ctx.data = data[0]
@@ -441,15 +441,16 @@ class FromCrossrefImporter(papis.importer.Importer):
 
         return None
 
-    def fetch_data(self) -> None:
+    def fetch_data(self, batch=False) -> None:
         self.logger.info("Querying Crossref with '%s'.", self.uri)
         docs = [
             papis.document.from_data(d)
             for d in get_data(query=self.uri)]
 
         if docs:
-            self.logger.info("Got %d matches, picking...", len(docs))
-            docs = list(papis.pick.pick_doc(docs))
+            if not batch:
+                self.logger.info("Got %d matches, picking...", len(docs))
+                docs = list(papis.pick.pick_doc(docs))
 
             if not docs:
                 return
