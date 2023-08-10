@@ -259,7 +259,8 @@ def run(paths: List[str],
         folder_name: Optional[str] = None,
         file_name: Optional[str] = None,
         subfolder: Optional[str] = None,
-        base_path: Optional[str] = None,
+        base_path: Optional[str] = None,        print_folder: bool = False,
+        print_folder: bool = False,
         confirm: bool = False,
         open_file: bool = False,
         edit: bool = False,
@@ -468,6 +469,8 @@ def run(paths: List[str],
             return
 
     logger.info("[MV] '%s' to '%s'.", tmp_document.get_main_folder(), out_folder_path)
+    if print_folder:
+        print(out_folder_path)
 
     # This also sets the folder of tmp_document
     papis.document.move(tmp_document, out_folder_path)
@@ -520,6 +523,10 @@ def run(paths: List[str],
     help="Batch mode, do not prompt or otherwise",
     default=False, is_flag=True)
 @click.option(
+    "-P", "--print-folder", "print_folder",
+    help="Print in stdin the papis-folder name where the info.yaml file has been saved",
+    default=False, is_flag=True)
+@click.option(
     "--confirm/--no-confirm",
     help="Ask to confirm before adding to the collection",
     default=lambda: True if papis.config.get("add-confirm") else False)
@@ -559,6 +566,7 @@ def cli(files: List[str],
         file_name: Optional[str],
         from_importer: List[Tuple[str, str]],
         batch: bool,
+        print_folder: bool,
         confirm: bool,
         open_file: bool,
         edit: bool,
@@ -651,6 +659,7 @@ def cli(files: List[str],
         file_name=file_name,
         subfolder=subfolder,
         base_path=base_path,
+        print_folder=print_folder,
         confirm=confirm,
         open_file=open_file,
         edit=edit,
