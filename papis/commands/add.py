@@ -260,6 +260,7 @@ def run(paths: List[str],
         file_name: Optional[str] = None,
         subfolder: Optional[str] = None,
         base_path: Optional[str] = None,
+        batch: bool = False,
         confirm: bool = False,
         open_file: bool = False,
         edit: bool = False,
@@ -455,6 +456,10 @@ def run(paths: List[str],
             "existing document.")
 
         # NOTE: we always want the user to confirm if a duplicate is found!
+        # Except when batch option is set
+        if batch:
+            logger.warning("No document has been created, since batch option exit when a duplicate is found.")
+            return
         confirm = True
 
     if citations:
@@ -656,6 +661,7 @@ def cli(files: List[str],
         file_name=file_name,
         subfolder=subfolder,
         base_path=base_path,
+        batch=batch,
         confirm=confirm,
         open_file=open_file,
         edit=edit,
