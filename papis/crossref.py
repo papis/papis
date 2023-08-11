@@ -397,7 +397,7 @@ class Importer(papis.importer.Importer):
 
         return None
 
-    def fetch_data(self, batch=batch) -> None:
+    def fetch_data(self) -> None:
         data = papis.crossref.get_data(dois=[self.uri])
         if data:
             self.ctx.data = data[0]
@@ -441,24 +441,19 @@ class FromCrossrefImporter(papis.importer.Importer):
 
         return None
 
-    def fetch_data(self, batch=False) -> None:
+    def fetch_data(self) -> None:
         self.logger.info("Querying Crossref with '%s'.", self.uri)
         docs = [
             papis.document.from_data(d)
             for d in get_data(query=self.uri)]
 
-        if docs:
-            if not batch:
-                self.logger.info("Got %d matches, picking...", len(docs))
-                docs = list(papis.pick.pick_doc(docs))
+        if not docs:
+            return
 
-            if not docs:
-                return
-
-            doc = docs[0]
-            importer = Importer(uri=doc["doi"])
-            importer.fetch()
-            self.ctx.data = importer.ctx.data.copy()
+        doc = docs[0]
+        importer = Importer(uri=doc["doi"])
+        importer.fetch()
+        self.ctx.data = importer.ctx.data.copy()
 
 
 class Downloader(papis.downloaders.Downloader):
