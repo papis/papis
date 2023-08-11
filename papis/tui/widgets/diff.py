@@ -2,18 +2,17 @@ from typing import (
     Dict, Any, List, Union, NamedTuple, Callable, Optional)
 
 from prompt_toolkit import Application, print_formatted_text
-from prompt_toolkit.utils import Event
 from prompt_toolkit.layout.containers import HSplit, Window, WindowAlign
 from prompt_toolkit.formatted_text import FormattedText
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.layout import Layout
-from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent
 
 
 class Action(NamedTuple):
     name: str
     key: str
-    action: Callable[[Event], None]
+    action: Callable[[KeyPressEvent], None]
 
 
 def prompt(text: Union[str, FormattedText],
@@ -28,18 +27,21 @@ def prompt(text: Union[str, FormattedText],
     :param actions: A list of Actions as defined in `Action`.
     :param kwargs: kwargs to prompt_toolkit application class
     """
+    if not isinstance(text, FormattedText):
+        text = FormattedText([("", text)])
+
     if actions is None:
         actions = []
 
     assert isinstance(actions, list)
-    assert type(title) == str
+    assert isinstance(title, str)
 
     kb = KeyBindings()
 
     for action in actions:
         kb.add(action.key)(action.action)
 
-    print_formatted_text(FormattedText(text))
+    print_formatted_text(text)
 
     action_texts = []
     for a in actions:
@@ -67,7 +69,7 @@ def prompt(text: Union[str, FormattedText],
         ] if title else [])
     )
 
-    app = Application(
+    app: Application[Any] = Application(
         layout=Layout(root_container),
         key_bindings=kb,
         **kwargs)
@@ -115,7 +117,7 @@ def diffshow(texta: str,
         "+++++ {nameb}\n".format(nameb=nameb),
     ]
 
-    formatted_text = list(map(
+    formatted_text = FormattedText(map(
         lambda line:
             # match line values
             line.startswith("@") and ("fg:ansimagenta bg:ansiblack", line)
@@ -161,22 +163,26 @@ def diffdict(dicta: Dict[str, Any],
         for k in options:
             options[k] = False
 
-    def oset(event: Event, option: str, value: bool) -> None:
+    def oset(event: KeyPressEvent, option: str, value: bool) -> None:
         options[option] = value
-        event.app.exit(0)
+        event.app.exit(result=0)
 
     actions = [
         Action(
             name="Add all",
             key="a", action=lambda e: oset(e, "add_all", True)),
         Action(
-            name="Split", key="s", action=lambda e: oset(e, "split", True)),
+            name="Split",
+            key="s", action=lambda e: oset(e, "split", True)),
         Action(
-            name="Reject", key="n", action=lambda e: oset(e, "reject", True)),
+            name="Reject",
+            key="n", action=lambda e: oset(e, "reject", True)),
         Action(
-            name="Quit", key="q", action=lambda e: oset(e, "quit", True)),
+            name="Quit",
+            key="q", action=lambda e: oset(e, "quit", True)),
         Action(
-            name="Cancel", key="c", action=lambda e: oset(e, "cancel", True)),
+            name="Cancel",
+            key="c", action=lambda e: oset(e, "cancel", True)),
     ]
 
     keys = [k for k in sorted(set(dicta) | set(dictb))

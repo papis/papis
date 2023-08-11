@@ -54,7 +54,7 @@ def get_exported_variables(ctx: Optional[Dict[str, Any]] = None) -> Dict[str, st
     return exports
 
 
-@click.command(                         # type: ignore[arg-type]
+@click.command(
     context_settings={
         "ignore_unknown_options": True,
         "help_option_names": [],

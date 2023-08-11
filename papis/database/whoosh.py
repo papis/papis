@@ -74,6 +74,9 @@ class Database(papis.database.base.Database):
 
         self.initialize()
 
+    def get_cache_path(self) -> str:
+        return self.index_dir
+
     def get_backend_name(self) -> str:
         return "whoosh"
 
