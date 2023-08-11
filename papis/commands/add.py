@@ -456,11 +456,8 @@ def run(paths: List[str],
             "existing document.")
 
         # NOTE: we always want the user to confirm if a duplicate is found!
-        # Except when batch option is set
-        if batch:
-            logger.warning("No document has been created, since batch option exit when a duplicate is found.")
-            return
-        confirm = True
+        # But never when batch option is set
+        confirm = not batch
 
     if citations:
         papis.citations.save_citations(tmp_document, citations)
@@ -618,11 +615,6 @@ def cli(files: List[str],
                 "Select matching importers (for instance 0, 1, 3-10, a, all...)")
 
             matching_importers = [matching_importers[i] for i in matching_indices]
-        elif matching_importers:
-            if len(matching_importers) >= 2:
-                matching_importers = [matching_importers[1]]   
-            else:
-                matching_importers = [matching_importers[0]]
 
     imported = papis.utils.collect_importer_data(
         matching_importers, batch=batch, only_data=only_data)
