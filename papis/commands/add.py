@@ -470,7 +470,9 @@ def run(paths: List[str],
 
     logger.info("[MV] '%s' to '%s'.", tmp_document.get_main_folder(), out_folder_path)
     if print_folder:
-        print(out_folder_path)
+        if os.path.isdir(os.path.dirname(print_folder)):
+            with open(print_folder, 'w') as pf:
+                pf.write(out_folder_path)
 
     # This also sets the folder of tmp_document
     papis.document.move(tmp_document, out_folder_path)
@@ -523,9 +525,10 @@ def run(paths: List[str],
     help="Batch mode, do not prompt or otherwise",
     default=False, is_flag=True)
 @click.option(
-    "-P", "--print-folder", "print_folder",
+    "--pf", "--print-folder", "print_folder",
     help="Print in stdin the papis-folder name where the info.yaml file has been saved",
-    default=False, is_flag=True)
+    nargs=1,
+    default=None)
 @click.option(
     "--confirm/--no-confirm",
     help="Ask to confirm before adding to the collection",
@@ -566,7 +569,7 @@ def cli(files: List[str],
         file_name: Optional[str],
         from_importer: List[Tuple[str, str]],
         batch: bool,
-        print_folder: bool,
+        print_folder: str,
         confirm: bool,
         open_file: bool,
         edit: bool,
