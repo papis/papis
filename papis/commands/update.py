@@ -103,15 +103,10 @@ def run(document: papis.document.Document,
                    "The value can be a papis format.",
               multiple=True,
               type=(str, str),)
-@click.option(
-    "-b", "--batch",
-    help="Batch mode, do not prompt or otherwise",
-    default=False, is_flag=True)
 def cli(query: str,
         git: bool,
         doc_folder: str,
         from_importer: List[Tuple[str, str]],
-        batch: bool,
         auto: bool,
         _all: bool,
         sort_field: Optional[str],
@@ -119,9 +114,6 @@ def cli(query: str,
         set_tuples: List[Tuple[str, str]],) -> None:
     """Update a document from a given library."""
 
-    if batch:
-        _all = True
-          
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,
                                                            sort_field,
@@ -166,7 +158,7 @@ def cli(query: str,
                     importer = importer_cls.match_data(document)
                     if importer:
                         try:
-                            importer.fetch_data(batch=batch)
+                            importer.fetch_data()
                         except NotImplementedError:
                             importer.fetch()
                 except NotImplementedError:
@@ -178,7 +170,7 @@ def cli(query: str,
                         matching_importers.append(importer)
 
         imported = papis.utils.collect_importer_data(
-            matching_importers, batch=batch, only_data=True)
+            matching_importers, batch=False, only_data=True)
         if "ref" in imported.data:
             logger.debug(
                 "An importer set the 'ref' key. This is not allowed and will be "
