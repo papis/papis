@@ -69,3 +69,17 @@ def test_filter_documents() -> None:
     assert len(filter_documents([document], search="einstein")) == 1
     assert len(filter_documents([document], search="author : ein")) == 1
     assert len(filter_documents([document], search="title : ein")) != 1
+
+
+def test_cache_path(tmp_library: TemporaryLibrary) -> None:
+    database_init(tmp_library.libname)
+
+    db = papis.database.get()
+
+    assert os.path.exists(db.get_cache_path())
+    assert not os.path.isdir(db.get_cache_path())
+    assert os.path.isfile(db.get_cache_path())
+
+    db.clear()
+
+    assert not os.path.exists(db.get_cache_path())

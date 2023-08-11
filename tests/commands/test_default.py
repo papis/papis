@@ -15,5 +15,5 @@ def test_default_cli(tmp_library: TemporaryLibrary) -> None:
     result = cli_runner.invoke(
         cli,
         ["--set", "something", "42"])
-    assert result.exit_code == 0
-    assert not result.output
+    # error missing command
+    assert result.exit_code == 2

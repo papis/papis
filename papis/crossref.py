@@ -147,8 +147,12 @@ key_conversion = [
     KeyConversionPair("event", [  # Conferences
         {"key": "venue", "action": lambda x: x["location"]},
         {"key": "booktitle", "action": lambda x: x["name"]},
-        {"key": "year", "action": lambda x: _crossref_date_parts(x["start"], 0)},
-        {"key": "month", "action": lambda x: _crossref_date_parts(x["start"], 1)},
+        {"key": "year",
+         "action": (lambda x:
+                    _crossref_date_parts(x["start"], 0) if "start" in x else None)},
+        {"key": "month",
+         "action": (lambda x:
+                    _crossref_date_parts(x["start"], 1) if "start" in x else None)},
     ]),
 ]  # List[papis.document.KeyConversionPair]
 
@@ -271,7 +275,7 @@ def doi_to_data(doi_string: str) -> Dict[str, Any]:
         "Could not retrieve data for DOI '{}' from Crossref".format(doi_string))
 
 
-@click.command("crossref")              # type: ignore[arg-type]
+@click.command("crossref")
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.option("--query", "-q", help="General query", default="")

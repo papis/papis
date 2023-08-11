@@ -34,13 +34,13 @@ def query_option(**attrs: Any) -> DecoratorCallable:
 def sort_option(**attrs: Any) -> DecoratorCallable:
     """Adds a ``--sort`` and a ``--reverse`` option as a :mod:`click` decorator."""
     def decorator(f: DecoratorCallable) -> Any:
-        sort: DecoratorCallable = click.option(
+        sort = click.option(
             "--sort", "sort_field",
             default=lambda: papis.config.get("sort-field"),
             help="Sort documents with respect to the FIELD",
             metavar="FIELD",
             **attrs)
-        reverse: DecoratorCallable = click.option(
+        reverse = click.option(
             "--reverse", "sort_reverse",
             help="Reverse sort order",
             default=lambda: papis.config.getboolean("sort-reverse"),
