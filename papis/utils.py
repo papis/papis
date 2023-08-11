@@ -471,11 +471,8 @@ def get_matching_importer_or_downloader(
                     "{c.Back.BLACK}{c.Fore.GREEN}%s (%s) fetched data for query '%s'!"
                     "{c.Style.RESET_ALL}",
                     name, importer.name, uri)
-
-                if importer.name == "fallback":
-                    result.insert(0, importer)
-                else:
-                    result.append(importer)
+      
+                result.append(importer)
 
     return result
 
