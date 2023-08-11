@@ -3,7 +3,8 @@ import os
 import json
 import http.server
 import urllib.parse
-from typing import Any, List, Optional, Tuple, Callable, Dict  # noqa: ignore
+from typing import Any, List, Optional, Tuple, Callable, Dict
+
 import functools
 import cgi
 import collections
@@ -154,7 +155,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         if TAGS_LIST.get(libname) is None:
             TAGS_LIST[libname] = collections.defaultdict(int)
             for tag in tags_of_tags:
-                TAGS_LIST[libname][tag] += 1  # type: ignore
+                TAGS_LIST[libname][tag] += 1  # type: ignore[index]
 
         page = papis.web.tags.html(libname=libname,
                                    pretitle="TAGS",
@@ -470,7 +471,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.process_routes(routes)
 
 
-@click.command("serve")                 # type: ignore[arg-type]
+@click.command("serve")
 @click.help_option("-h", "--help")
 @click.option("-p", "--port",
               help="Port to listen to",

@@ -130,7 +130,7 @@ def get_explorer_mgr() -> "ExtensionManager":
     return papis.plugin.get_extension_manager(EXPLORER_EXTENSION_NAME)
 
 
-@click.command("lib")                   # type: ignore[arg-type]
+@click.command("lib")
 @click.pass_context
 @click.help_option("--help", "-h")
 @papis.cli.query_argument()
@@ -159,7 +159,7 @@ def lib(ctx: click.Context, query: str,
     assert isinstance(ctx.obj["documents"], list)
 
 
-@click.command("pick")                  # type: ignore[arg-type]
+@click.command("pick")
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.option("--number", "-n",
@@ -254,7 +254,7 @@ def add(ctx: click.Context) -> None:
         papis.commands.add.run([], d)
 
 
-@click.command("cmd")               # type: ignore[arg-type]
+@click.command("cmd")
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.argument("command", type=str)
@@ -279,7 +279,7 @@ def cmd(ctx: click.Context, command: str) -> None:
         papis.utils.run(shlex.split(fcommand))
 
 
-@click.group("explore",             # type: ignore[arg-type]
+@click.group("explore",
              cls=papis.commands.AliasedGroup,
              invoke_without_command=False, chain=True)
 @click.help_option("--help", "-h")

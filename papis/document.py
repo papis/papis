@@ -114,8 +114,10 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
                 try:
                     new_value = action(papis_value)
                 except Exception as exc:
-                    logger.debug("Error while trying to parse '%s' (%s).",
-                                 papis_key, exc_info=exc)
+                    logger.debug(
+                        "Error parsing papis key '%s' from foreign key '%s' => '%r'.",
+                        papis_key, foreign_key, papis_value, exc_info=exc
+                    )
                     new_value = None
             else:
                 new_value = papis_value
