@@ -472,7 +472,10 @@ def get_matching_importer_or_downloader(
                     "{c.Style.RESET_ALL}",
                     name, importer.name, uri)
 
-                result.append(importer)
+                if importer.name == "fallback":
+                    result.insert(0, importer)
+                else:
+                    result.append(importer)
 
     return result
 
