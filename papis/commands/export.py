@@ -89,7 +89,7 @@ def run(documents: List[papis.document.Document], to_format: str) -> str:
     return str(ret_string)
 
 
-@click.command("export")                # type: ignore[arg-type]
+@click.command("export")
 @click.help_option("--help", "-h")
 @papis.cli.query_argument()
 @papis.cli.doc_folder_option()
@@ -166,7 +166,7 @@ def cli(query: str,
             shutil.copytree(_doc_folder, outdir)
 
 
-@click.command("export")                # type: ignore[arg-type]
+@click.command("export")
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.option(

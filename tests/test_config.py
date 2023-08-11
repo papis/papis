@@ -12,7 +12,7 @@ def test_default_opener(tmp_config: TemporaryConfiguration) -> None:
     if sys.platform.startswith("darwin"):
         assert papis.defaults.get_default_opener() == "open"
     elif sys.platform.startswith("win"):
-        assert papis.defaults.get_default_opener() == "start"
+        assert papis.defaults.get_default_opener() == "cmd.exe /c start"
     else:
         assert papis.defaults.get_default_opener() == "xdg-open"
 

@@ -63,7 +63,7 @@ def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
         key_conversion, data, keep_unknown_keys=True)
 
 
-@click.command("isbn")                  # type: ignore[arg-type]
+@click.command("isbn")
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.option("--query", "-q", default=None)

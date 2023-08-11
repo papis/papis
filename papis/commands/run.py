@@ -73,8 +73,7 @@ def run(folder: str, command: Optional[List[str]] = None) -> None:
     papis.utils.run(command, cwd=folder, wait=True)
 
 
-@click.command("run",                   # type: ignore[arg-type]
-               context_settings={"ignore_unknown_options": True})
+@click.command("run", context_settings={"ignore_unknown_options": True})
 @click.help_option("--help", "-h")
 @click.option(
     "--pick", "-p",

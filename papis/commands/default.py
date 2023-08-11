@@ -48,7 +48,7 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 
-class MultiCommand(click.core.MultiCommand):
+class ScriptLoaderGroup(click.Group):
 
     scripts = papis.commands.get_all_scripts()
     script_names = sorted(scripts)
@@ -56,8 +56,8 @@ class MultiCommand(click.core.MultiCommand):
     def list_commands(self, ctx: click.core.Context) -> List[str]:
         """List all matched commands in the command folder and in path
 
-        >>> mc = MultiCommand()
-        >>> rv = mc.list_commands(None)
+        >>> group = ScriptLoaderGroup()
+        >>> rv = group.list_commands(None)
         >>> len(rv) > 0
         True
         """
@@ -69,11 +69,11 @@ class MultiCommand(click.core.MultiCommand):
             name: str) -> Optional[click.core.Command]:
         """Get the command to be run
 
-        >>> mc = MultiCommand()
-        >>> cmd = mc.get_command(None, 'add')
+        >>> group = ScriptLoaderGroup()
+        >>> cmd = group.get_command(None, 'add')
         >>> cmd.name, cmd.help
         ('add', 'Add...')
-        >>> mc.get_command(None, 'this command does not exist')
+        >>> group.get_command(None, 'this command does not exist')
         Command ... is unknown!
         """
         try:
@@ -102,7 +102,7 @@ class MultiCommand(click.core.MultiCommand):
         # If it gets here, it means that it is an external script
         import copy
         from papis.commands.external import external_cli
-        cli: click.Command = copy.copy(external_cli)
+        cli = copy.copy(external_cli)
 
         from papis.commands.external import get_command_help
         cli.context_settings["obj"] = script
@@ -110,7 +110,6 @@ class MultiCommand(click.core.MultiCommand):
             cli.help = get_command_help(script.path)
         cli.name = script.command_name
         cli.short_help = cli.help
-
         return cli
 
 
@@ -123,9 +122,9 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
     return _on_finish
 
 
-@click.group(                           # type: ignore[arg-type,type-var]
-    cls=MultiCommand,
-    invoke_without_command=True)
+@click.group(
+    cls=ScriptLoaderGroup,
+    invoke_without_command=False)
 @click.help_option("--help", "-h")
 @click.version_option(version=papis.__version__)
 @click.option(
@@ -153,11 +152,6 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
 @click.option(
     "--pick-lib",
     help="Pick library to use",
-    default=False,
-    is_flag=True)
-@click.option(
-    "--cc", "--clear-cache", "clear_cache",
-    help="Clear cache of the library used",
     default=False,
     is_flag=True)
 @click.option(
@@ -193,7 +187,6 @@ def run(verbose: bool,
         log: str,
         logfile: Optional[str],
         pick_lib: bool,
-        clear_cache: bool,
         set_list: List[Tuple[str, str]],
         color: str,
         np: Optional[int]) -> None:
@@ -252,6 +245,3 @@ def run(verbose: bool,
     for pair in set_list:
         logger.debug("Setting '%s' to '%s'.", *pair)
         papis.config.set(pair[0], pair[1])
-
-    if clear_cache:
-        papis.database.get().clear()
