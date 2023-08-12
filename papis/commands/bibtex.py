@@ -175,7 +175,7 @@ def _add(ctx: click.Context,
          query: str,
          _all: bool,
          refs_file: Optional[str]) -> None:
-    """Add a reference to the bibtex file"""
+    """Add a reference to the BibTeX file."""
     docs = []
     if not refs_file:
         docs = papis.api.get_documents_in_lib(search=query)
@@ -219,7 +219,7 @@ def _add(ctx: click.Context,
 @click.pass_context
 def _update(ctx: click.Context, _all: bool,
             fromdb: bool, to: bool, keys: List[str]) -> None:
-    """Update documents from and to the library"""
+    """Update documents from and to the library."""
     docs = click.get_current_context().obj["documents"]
     picked_doc = None
     if not _all:
@@ -253,7 +253,7 @@ def _update(ctx: click.Context, _all: bool,
 @click.help_option("-h", "--help")
 @click.pass_context
 def _open(ctx: click.Context) -> None:
-    """Open a document in the documents list"""
+    """Open a document using the default application."""
     docs = ctx.obj["documents"]
     docs = papis.api.pick_doc(docs)
     if not docs:
@@ -275,13 +275,14 @@ def _edit(ctx: click.Context,
           set_tuples: List[Tuple[str, str]],
           _all: bool) -> None:
     """
-    Tries to find the document in the list around
-    the library and then edits it.
+    Edit documents by adding keys or opening an editor.
 
-    Examples:
+    For example, you can run the following to add a special key ``__proj`` to
+    all the documents
+
+    .. code:: sh
 
         papis bibtex read article.bib edit --set __proj focal-point --all
-
     """
     from papis.api import save_doc
 
@@ -318,7 +319,7 @@ def _edit(ctx: click.Context,
 @click.option("-k", "--key", default=None, help="doi, url, ...")
 @click.pass_context
 def _browse(ctx: click.Context, key: Optional[str]) -> None:
-    """browse a document in the documents list"""
+    """Browse a document in the document list."""
     docs = papis.api.pick_doc(ctx.obj["documents"])
     if key:
         papis.config.set("browse-key", key)
@@ -332,7 +333,7 @@ def _browse(ctx: click.Context, key: Optional[str]) -> None:
 @click.help_option("-h", "--help")
 @click.pass_context
 def _rm(ctx: click.Context) -> None:
-    """Remove a document from the documents list"""
+    """Remove a document from the documents list."""
     click.echo("Sorry, TODO...")
 
 
@@ -341,7 +342,7 @@ def _rm(ctx: click.Context) -> None:
 @click.option("-o", "--out", help="Output ref to a file", default=None)
 @click.pass_context
 def _ref(ctx: click.Context, out: Optional[str]) -> None:
-    """Print the reference for a document"""
+    """Print the reference for a document."""
     docs = ctx.obj["documents"]
     docs = papis.api.pick_doc(docs)
     if not docs:
@@ -363,7 +364,7 @@ def _ref(ctx: click.Context, out: Optional[str]) -> None:
 @click.option("-f", "--force", default=False, is_flag=True)
 @click.pass_context
 def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
-    """Save the documents imported in bibtex format"""
+    """Save the documents in the BibTeX format."""
     docs = ctx.obj["documents"]
     if not force:
         c = papis.tui.utils.confirm("Are you sure you want to save?")
@@ -388,7 +389,7 @@ def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
               is_flag=True)
 @click.pass_context
 def _sort(ctx: click.Context, key: Optional[str], reverse: bool) -> None:
-    """Sort documents"""
+    """Sort the documents in the BibTeX file."""
     docs = ctx.obj["documents"]
     ctx.obj["documents"] = list(sorted(docs,
                                        key=lambda d: str(d[key]),
@@ -453,9 +454,13 @@ def _unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
 @click.pass_context
 def _doctor(ctx: click.Context, key: List[str]) -> None:
     """
-    Check bibfile for correctness, missing keys etc.
-        e.g. papis bibtex doctor -k title -k url -k doi
+    Check BibTeX file for correctness.
 
+    This can check missing keys, e.g. by running
+
+    .. code:: sh
+
+        papis bibtex doctor -k title -k url -k doi
     """
     logger.info("Checking for existence of keys '%s'.", "', '".join(key))
 
@@ -478,8 +483,13 @@ def _doctor(ctx: click.Context, key: List[str]) -> None:
 @click.pass_context
 def _filter_cited(ctx: click.Context, _files: List[str]) -> None:
     """
-    Filter cited documents from the read bib file
-    e.g.
+    Filter cited documents from the BibTeX file.
+
+    for example to filter cited documents in ``main.tex`` and save a unique
+    list of documents in ``cited.bib``, you can run
+
+    .. code:: sh
+
         papis bibtex read main.bib filter-cited -f main.tex save cited.bib
     """
     found = []
@@ -503,8 +513,14 @@ def _filter_cited(ctx: click.Context, _files: List[str]) -> None:
 @click.pass_context
 def _iscited(ctx: click.Context, _files: List[str]) -> None:
     """
-    Check which documents are not cited
-    e.g. papis bibtex iscited -f main.tex -f chapter-2.tex
+    Check which documents are not cited.
+
+    For example, to print a list of documents that have not been cited in
+    both ``main.tex`` and ``chapter-2.tex``, run
+
+    .. code:: sh
+
+        papis bibtex iscited -f main.tex -f chapter-2.tex
     """
     unfound = []
 
@@ -529,8 +545,13 @@ def _iscited(ctx: click.Context, _files: List[str]) -> None:
 @click.pass_context
 def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
     """
-    Import documents to papis
-        e.g. papis bibtex read mybib.bib import
+    Import documents from a BibTeX file to the current library.
+
+    For example, you can run
+
+    .. code:: sh
+
+        papis bibtex read mybib.bib import
     """
     docs = ctx.obj["documents"]
 
