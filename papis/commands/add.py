@@ -456,7 +456,7 @@ def run(paths: List[str],
             "existing document.")
 
         if batch:
-            logger.info("No document is created.")
+            logger.warning("No document is created.")
             return
       
         # NOTE: we always want the user to confirm if a duplicate is found!
