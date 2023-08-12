@@ -549,7 +549,7 @@ def run(paths: List[str],
     is_flag=True)
 @click.option("--fetch-citations",
               help="Fetch citations from doi",
-              default=lambda: papis.config.getboolean("add-fetch-citations"),
+              default=papis.config.getboolean("add-fetch-citations"),
               is_flag=True)
 def cli(files: List[str],
         set_list: List[Tuple[str, str]],
