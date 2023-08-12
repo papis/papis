@@ -471,7 +471,7 @@ def run(paths: List[str],
     logger.info("[MV] '%s' to '%s'.", tmp_document.get_main_folder(), out_folder_path)
     if print_folder:
         if os.path.isdir(os.path.dirname(print_folder)):
-            with open(print_folder, 'w') as pf:
+            with open(print_folder, "w") as pf:
                 pf.write(out_folder_path)
 
     # This also sets the folder of tmp_document
