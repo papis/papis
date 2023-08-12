@@ -455,9 +455,12 @@ def run(paths: List[str],
             "Hint: Use the 'papis update' command instead to update the "
             "existing document.")
 
+        if batch:
+            logger.info("No document is created.")
+            return
+      
         # NOTE: we always want the user to confirm if a duplicate is found!
-        # But never when batch option is set
-        confirm = not batch
+        confirm = True
 
     if citations:
         papis.citations.save_citations(tmp_document, citations)
