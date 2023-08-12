@@ -454,6 +454,10 @@ class FromCrossrefImporter(papis.importer.Importer):
         if not docs:
             return
 
+        self.logger.warning(
+            "Crossref query '%s' returned %d results. Picking the first one!",
+            self.uri, len(docs))
+
         doc = docs[0]
         importer = Importer(uri=doc["doi"])
         importer.fetch()
