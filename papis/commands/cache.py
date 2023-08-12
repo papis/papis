@@ -75,7 +75,7 @@ def cli() -> None:
 def update(query: str, doc_folder: str, _all: bool, sort_field: Optional[str],
            sort_reverse: bool) -> None:
     """
-    Reload the yaml file from disk and update the cache with that information.
+    Reload info.yaml files from disk and update the cache.
     """
     db = papis.database.get()
     documents = papis.cli.handle_doc_folder_query_all_sort(
@@ -96,9 +96,9 @@ def update(query: str, doc_folder: str, _all: bool, sort_field: Optional[str],
 @click.help_option("--help", "-h")
 def clear() -> None:
     """
-    Clear the cache of the library completely.
+    Clear the cache from disk.
 
-    The next invocation of papis will rebuild the cache.
+    The next invocation of any command that uses the cache will rebuild it.
     """
     papis.database.get().clear()
 
@@ -107,8 +107,7 @@ def clear() -> None:
 @click.help_option("--help", "-h")
 def reset() -> None:
     """
-    Resets the cache, i.e., it clears the cache and then
-    builds it.
+    Reset the cache (clear and rebuild).
     """
     papis.database.get().clear()
     papis.database.get().get_all_documents()
@@ -119,10 +118,9 @@ def reset() -> None:
 @papis.cli.doc_folder_option()
 def add(doc_folder: str) -> None:
     """
-    Adds a folder path to the papis cache, i.e., to the database.
+    Add a document to the cache.
 
-    This might be useful for adding single folders from a previous
-    synchronization step.
+    This is useful for adding single folders from a previous synchronization step.
     """
     doc = papis.document.from_folder(doc_folder)
 
@@ -148,7 +146,7 @@ def add(doc_folder: str) -> None:
 def rm(query: str, doc_folder: str, _all: bool, sort_field: Optional[str],
        sort_reverse: bool) -> None:
     """
-    Delete document from the cache, the disk data however will not be touched.
+    Delete documents from the cache.
     """
 
     documents = papis.cli.handle_doc_folder_query_all_sort(
@@ -179,8 +177,7 @@ def pwd() -> None:
 def update_newer(query: str, doc_folder: str, _all: bool,
                  sort_field: Optional[str], sort_reverse: bool) -> None:
     """
-    Reload the yaml file from disk only of those documents whose info
-    file is newer than the cache.
+    Update documents newer than the cache modification time.
     """
     db = papis.database.get()
     documents = papis.cli.handle_doc_folder_query_all_sort(
