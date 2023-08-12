@@ -526,7 +526,7 @@ def run(paths: List[str],
     default=False, is_flag=True)
 @click.option(
     "--pf", "--print-folder", "print_folder",
-    help="Print in stdin the papis-folder name where the info.yaml file has been saved",
+    help="Print to the file given as argument the papis folder newly created",
     nargs=1,
     default=None)
 @click.option(
