@@ -93,7 +93,7 @@ def edit_notes(document: papis.document.Document,
     help="Editor to be used",
     default=None)
 def cli(query: str,
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         git: bool,
         notes: bool,
         _all: bool,

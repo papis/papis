@@ -96,7 +96,8 @@ def handle_doc_folder_or_query(
         :func:`papis.document.from_folder`).
     """
     if doc_folder:
-        return [papis.document.from_folder(doc_folder)]
+        doc_folder_list = [papis.document.from_folder(f) for f in doc_folder]
+        return doc_folder_list
     return papis.database.get().query(query)
 
 
@@ -125,7 +126,7 @@ def handle_doc_folder_query_sort(
 
 def handle_doc_folder_query_all_sort(
         query: str,
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
         sort_reverse: bool,
         _all: bool) -> List[papis.document.Document]:

@@ -58,7 +58,7 @@ def run(document: papis.document.Document,
 def cli(query: str,
         git: bool,
         sort_field: Optional[str],
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         sort_reverse: bool) -> None:
     """Move a document into some other path"""
     # Leave this imports here for performance

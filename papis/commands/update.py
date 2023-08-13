@@ -109,7 +109,7 @@ def run(document: papis.document.Document,
     default=False, is_flag=True)
 def cli(query: str,
         git: bool,
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         from_importer: List[Tuple[str, str]],
         batch: bool,
         auto: bool,

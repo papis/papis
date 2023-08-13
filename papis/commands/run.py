@@ -96,7 +96,7 @@ def cli(run_command: List[str],
         sort_field: str,
         sort_reverse: bool,
         prefix: Optional[str],
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         _all: bool) -> None:
     """Run an arbitrary shell command in the library or command folder"""
 

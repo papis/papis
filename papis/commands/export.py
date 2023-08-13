@@ -112,7 +112,7 @@ def run(documents: List[papis.document.Document], to_format: str) -> str:
     type=click.Choice(available_formats()),
     default="bibtex",)
 def cli(query: str,
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
         sort_reverse: bool,
         folder: str,

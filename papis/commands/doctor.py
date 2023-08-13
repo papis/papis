@@ -564,7 +564,7 @@ def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
               default=False, is_flag=True,
               help="List available checks and their descriptions")
 def cli(query: str,
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
         sort_reverse: bool,
         _all: bool,
