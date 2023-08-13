@@ -1,4 +1,4 @@
-from typing import Optional, Any, Callable, List
+from typing import Optional, Any, Callable, List, Tuple
 
 import click
 
@@ -84,7 +84,7 @@ def git_option(**attrs: Any) -> DecoratorCallable:
 
 def handle_doc_folder_or_query(
         query: str,
-        doc_folder: Optional[str]) -> List[papis.document.Document]:
+        doc_folder: Optional[Tuple[str, ...]]) -> List[papis.document.Document]:
     """Query database for documents.
 
     This handles the :func:`query_option` and :func:`doc_folder_option`
@@ -103,7 +103,7 @@ def handle_doc_folder_or_query(
 
 def handle_doc_folder_query_sort(
         query: str,
-        doc_folder: Optional[str],
+        doc_folder: Optional[Tuple[str, ...]],
         sort_field: Optional[str],
         sort_reverse: bool) -> List[papis.document.Document]:
     """Query database for documents.
