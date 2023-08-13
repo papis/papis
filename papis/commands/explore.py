@@ -150,7 +150,7 @@ def lib(ctx: click.Context, query: str,
     """
 
     if doc_folder:
-        ctx.obj["documents"] += [papis.document.from_folder(doc_folder)]
+        ctx.obj["documents"] += [papis.document.from_folder(d) for d in doc_folder]
     db = papis.database.get(library_name=library)
     docs = db.query(query)
     logger.info("Found %d documents.", len(docs))
@@ -214,7 +214,7 @@ def citations(ctx: click.Context, query: str, doc_folder: Tuple[str, ...],
 
     """
     if doc_folder is not None:
-        documents = [papis.document.from_folder(doc_folder)]
+        documents = [papis.document.from_folder(d) for d in doc_folder]
     else:
         documents = papis.api.get_documents_in_lib(papis.config.get_lib_name(),
                                                    search=query)
