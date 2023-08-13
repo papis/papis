@@ -103,7 +103,7 @@ def cli(run_command: List[str],
     documents = []
 
     if doc_folder:
-        documents = [papis.document.from_folder(doc_folder)]
+        documents = [papis.document.from_folder(d) for d in doc_folder]
     elif pick:
         documents = papis.database.get().query(pick)
 
