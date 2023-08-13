@@ -260,7 +260,6 @@ def run(paths: List[str],
         file_name: Optional[str] = None,
         subfolder: Optional[str] = None,
         base_path: Optional[str] = None,
-        print_folder: Optional[str] = None,
         confirm: bool = False,
         open_file: bool = False,
         edit: bool = False,
@@ -469,10 +468,6 @@ def run(paths: List[str],
             return
 
     logger.info("[MV] '%s' to '%s'.", tmp_document.get_main_folder(), out_folder_path)
-    if print_folder:
-        if os.path.isdir(os.path.dirname(print_folder)):
-            with open(print_folder, "w") as pf:
-                pf.write(out_folder_path)
 
     # This also sets the folder of tmp_document
     papis.document.move(tmp_document, out_folder_path)
@@ -525,11 +520,6 @@ def run(paths: List[str],
     help="Batch mode, do not prompt or otherwise",
     default=False, is_flag=True)
 @click.option(
-    "--pf", "--print-folder", "print_folder",
-    help="Print to the file given as argument the papis folder newly created",
-    nargs=1,
-    default=None)
-@click.option(
     "--confirm/--no-confirm",
     help="Ask to confirm before adding to the collection",
     default=lambda: True if papis.config.get("add-confirm") else False)
@@ -557,6 +547,10 @@ def run(paths: List[str],
     help="Download file with importer even if local file is passed",
     default=False,
     is_flag=True)
+@click.option("--fetch-doi",
+              help="Fetch data from crossref importer",
+              default=False),
+              is_flag=True)
 @click.option("--fetch-citations",
               help="Fetch citations from doi",
               default=lambda: papis.config.getboolean("add-fetch-citations"),
@@ -569,7 +563,6 @@ def cli(files: List[str],
         file_name: Optional[str],
         from_importer: List[Tuple[str, str]],
         batch: bool,
-        print_folder: str,
         confirm: bool,
         open_file: bool,
         edit: bool,
@@ -577,6 +570,7 @@ def cli(files: List[str],
         link: bool,
         list_importers: bool,
         force_download: bool,
+        fetch_doi: bool,
         fetch_citations: bool) -> None:
     """
     Command line interface for papis-add.
@@ -630,6 +624,16 @@ def cli(files: List[str],
     ctx.data.update(imported.data)
     ctx.files.extend(imported.files)
 
+    if fetch_doi and not from_importer:
+        doi_query = (('doi', ctx.data['doi']), )
+        doi_importer = papis.utils.get_matching_importer_by_name(
+            doi_query, only_data=only_data)
+        from_doi = papis.utils.collect_importer_data(
+            doi_importer, batch=batch, only_data=only_data)
+
+        ctx.data.update(from_doi.data)
+        ctx.files.extend(from_doi.files)
+
     if not ctx:
         logger.error("No document is created, since no data or files have been "
                      "found. Try providing a filename, an URL or use "
@@ -662,7 +666,6 @@ def cli(files: List[str],
         file_name=file_name,
         subfolder=subfolder,
         base_path=base_path,
-        print_folder=print_folder,
         confirm=confirm,
         open_file=open_file,
         edit=edit,
