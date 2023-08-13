@@ -72,7 +72,7 @@ def cli() -> None:
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @papis.cli.sort_option()
-def update(query: str, doc_folder: str, _all: bool, sort_field: Optional[str],
+def update(query: str, doc_folder: Tuple[str, ...], _all: bool, sort_field: Optional[str],
            sort_reverse: bool) -> None:
     """
     Reload the yaml file from disk and update the cache with that information.
@@ -117,7 +117,7 @@ def reset() -> None:
 @cli.command("add")
 @click.help_option("--help", "-h")
 @papis.cli.doc_folder_option()
-def add(doc_folder: str) -> None:
+def add(doc_folder: Tuple[str, ...]) -> None:
     """
     Adds a folder path to the papis cache, i.e., to the database.
 
@@ -145,7 +145,7 @@ def add(doc_folder: str) -> None:
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @papis.cli.sort_option()
-def rm(query: str, doc_folder: str, _all: bool, sort_field: Optional[str],
+def rm(query: str, doc_folder: Tuple[str, ...], _all: bool, sort_field: Optional[str],
        sort_reverse: bool) -> None:
     """
     Delete document from the cache, the disk data however will not be touched.
@@ -176,7 +176,7 @@ def pwd() -> None:
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @papis.cli.sort_option()
-def update_newer(query: str, doc_folder: str, _all: bool,
+def update_newer(query: str, doc_folder: Tuple[str, ...], _all: bool,
                  sort_field: Optional[str], sort_reverse: bool) -> None:
     """
     Reload the yaml file from disk only of those documents whose info

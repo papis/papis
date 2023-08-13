@@ -137,7 +137,7 @@ def get_explorer_mgr() -> "ExtensionManager":
 @papis.cli.doc_folder_option()
 @click.option("--library", "-l", default=None, help="Papis library to look")
 def lib(ctx: click.Context, query: str,
-        doc_folder: str, library: Optional[str]) -> None:
+        doc_folder: Tuple[str, ...], library: Optional[str]) -> None:
     """
     Query for documents in your library.
 
@@ -199,7 +199,7 @@ def pick(ctx: click.Context, number: Optional[int]) -> None:
               is_flag=True,
               help="Use the cited-by citations")
 @papis.cli.all_option()
-def citations(ctx: click.Context, query: str, doc_folder: str,
+def citations(ctx: click.Context, query: str, doc_folder: Tuple[str, ...],
               cited_by: bool,
               _all: bool) -> None:
     """
