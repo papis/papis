@@ -549,7 +549,7 @@ def run(paths: List[str],
     is_flag=True)
 @click.option("--fetch-doi",
               help="Fetch data from crossref importer",
-              default=False),
+              default=False,
               is_flag=True)
 @click.option("--fetch-citations",
               help="Fetch citations from doi",
