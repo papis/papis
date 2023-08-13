@@ -59,7 +59,7 @@ Command-line Interface
 """
 
 import os
-from typing import List, Optional, Union, Sequence
+from typing import List, Optional, Union, Sequence, Tuple
 
 import click
 

@@ -93,7 +93,7 @@ Command-line Interface
 import os
 import re
 import collections
-from typing import Any, Optional, List, NamedTuple, Callable, Dict, Set
+from typing import Any, Optional, List, NamedTuple, Callable, Dict, Set, Tuple
 
 import click
 

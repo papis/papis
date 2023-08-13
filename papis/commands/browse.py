@@ -61,7 +61,7 @@ Command-line Interface
     :prog: papis browse
 """
 
-from typing import Optional
+from typing import Optional, Tuple
 
 import click
 

@@ -89,7 +89,7 @@ Command-line Interface
     :nested: full
 """
 
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING, Tuple
 import shlex
 
 import click

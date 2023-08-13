@@ -45,7 +45,7 @@ Command-line Interface
     :prog: papis citations
 """
 
-from typing import Optional
+from typing import Optional, Tuple
 
 import click
 

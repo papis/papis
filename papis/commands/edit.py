@@ -9,7 +9,7 @@ Command-line Interface
 .. click:: papis.commands.edit:cli
     :prog: papis edit
 """
-from typing import Optional
+from typing import Optional, Tuple
 
 import click
 

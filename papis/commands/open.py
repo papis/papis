@@ -70,7 +70,7 @@ Command-line Interface
 """
 
 import os
-from typing import Optional
+from typing import Optional, Tuple
 
 import click
 
