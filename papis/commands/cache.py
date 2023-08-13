@@ -72,7 +72,9 @@ def cli() -> None:
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @papis.cli.sort_option()
-def update(query: str, doc_folder: Tuple[str, ...], _all: bool, sort_field: Optional[str],
+def update(query: str,
+           doc_folder: Tuple[str, ...],
+           _all: bool, sort_field: Optional[str],
            sort_reverse: bool) -> None:
     """
     Reload the yaml file from disk and update the cache with that information.
