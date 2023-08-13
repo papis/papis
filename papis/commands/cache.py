@@ -124,19 +124,20 @@ def add(doc_folder: Tuple[str, ...]) -> None:
     This might be useful for adding single folders from a previous
     synchronization step.
     """
-    doc = papis.document.from_folder(doc_folder)
+    for d in doc_folder:
+        doc = papis.document.from_folder(d)
 
-    if not doc:
-        logger.error(
-            "The path '%s' did not contain any useful papis information.",
-            doc_folder)
-        return
+        if not doc:
+            logger.error(
+                "The path '%s' did not contain any useful papis information.",
+                doc_folder)
+            return
 
-    db = papis.database.get()
-    db.add(doc)
+        db = papis.database.get()
+        db.add(doc)
 
-    logger.info("Succesfully added %s to the cache",
-                papis.document.describe(doc))
+        logger.info("Succesfully added %s to the cache",
+                    papis.document.describe(doc))
 
 
 @cli.command("rm")
