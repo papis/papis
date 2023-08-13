@@ -57,6 +57,7 @@ def doc_folder_option(**attrs: Any) -> DecoratorCallable:
         "--doc-folder",
         default=None,
         type=click.Path(exists=True),
+        multiple=True,
         help="Document folder on which to apply action",
         **attrs)
 
