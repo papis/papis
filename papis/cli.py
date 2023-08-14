@@ -96,8 +96,7 @@ def handle_doc_folder_or_query(
         :func:`papis.document.from_folder`).
     """
     if doc_folder:
-        doc_folder_list = [papis.document.from_folder(f) for f in doc_folder]
-        return doc_folder_list
+        return [papis.document.from_folder(f) for f in doc_folder]
     return papis.database.get().query(query)
 
 
