@@ -599,8 +599,36 @@ def cli(files: List[str],
         open_file = False
 
     only_data = bool(ctx.files) and not force_download
-    matching_importers = papis.utils.get_matching_importer_by_name(
-        from_importer, only_data=only_data)
+
+    if fetch_doi:
+        for d in papis.plugin.get_extension_manager("papis.downloader"):
+            if d.name == "fallback": _fallback = d.plugin.match(files[0])
+
+        try:
+            _fallback.fetch_data()
+        except NotImplementedError:
+            _fallback.fetch()
+
+        getdoi = papis.utils.collect_importer_data(
+            [_fallback], batch=True, only_data=True)
+        doi = "https://doi.org/" + getdoi.data['doi']
+
+        for d in papis.importer.get_import_mgr():
+            if d.name == "doi": doi_importer = d.plugin(uri=doi)
+
+        try:
+            doi_importer.fetch_data()
+        except NotImplementedError:
+            doi_importer.fetch()
+
+        if doi_importer.ctx:
+            matching_importers = [doi_importer]
+        else:
+            matching_importers = []
+
+    else:
+        matching_importers = papis.utils.get_matching_importer_by_name(
+            from_importer, only_data=only_data)
 
     if not from_importer and not batch and files:
         matching_importers = sum((
@@ -624,16 +652,6 @@ def cli(files: List[str],
         matching_importers, batch=batch, only_data=only_data)
     ctx.data.update(imported.data)
     ctx.files.extend(imported.files)
-
-    if fetch_doi and not from_importer:
-        doi_query = (('doi', ctx.data['doi']), )
-        doi_importer = papis.utils.get_matching_importer_by_name(
-            doi_query, only_data=only_data)
-        from_doi = papis.utils.collect_importer_data(
-            doi_importer, batch=batch, only_data=only_data)
-
-        ctx.data.update(from_doi.data)
-        ctx.files.extend(from_doi.files)
 
     if not ctx:
         logger.error("No document is created, since no data or files have been "
