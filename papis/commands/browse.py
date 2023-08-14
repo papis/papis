@@ -61,7 +61,7 @@ Command-line Interface
     :prog: papis browse
 """
 
-from typing import Optional
+from typing import Optional, Tuple
 
 import click
 
@@ -137,7 +137,7 @@ def cli(query: str,
         key: str,
         _all: bool,
         _print: bool,
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
         sort_reverse: bool) -> None:
     """Open document's url in a browser"""

@@ -29,7 +29,7 @@ Command-line Interface
 """
 
 import os
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import click
 import papis.api
@@ -136,7 +136,7 @@ def cli(query: str,
         urls: List[str],
         file_name: Optional[str],
         sort_field: Optional[str],
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         sort_reverse: bool) -> None:
     """Add files to an existing document"""
     documents = papis.cli.handle_doc_folder_query_sort(

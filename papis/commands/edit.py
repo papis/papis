@@ -9,7 +9,7 @@ Command-line Interface
 .. click:: papis.commands.edit:cli
     :prog: papis edit
 """
-from typing import Optional
+from typing import Optional, Tuple
 
 import click
 
@@ -93,7 +93,7 @@ def edit_notes(document: papis.document.Document,
     help="Editor to be used",
     default=None)
 def cli(query: str,
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         git: bool,
         notes: bool,
         _all: bool,

@@ -1,4 +1,4 @@
-from typing import Optional, Any, Callable, List
+from typing import Optional, Any, Callable, List, Tuple
 
 import click
 
@@ -57,6 +57,7 @@ def doc_folder_option(**attrs: Any) -> DecoratorCallable:
         "--doc-folder",
         default=None,
         type=click.Path(exists=True),
+        multiple=True,
         help="Document folder on which to apply action",
         **attrs)
 
@@ -83,7 +84,7 @@ def git_option(**attrs: Any) -> DecoratorCallable:
 
 def handle_doc_folder_or_query(
         query: str,
-        doc_folder: Optional[str]) -> List[papis.document.Document]:
+        doc_folder: Optional[Tuple[str, ...]]) -> List[papis.document.Document]:
     """Query database for documents.
 
     This handles the :func:`query_option` and :func:`doc_folder_option`
@@ -95,13 +96,13 @@ def handle_doc_folder_or_query(
         :func:`papis.document.from_folder`).
     """
     if doc_folder:
-        return [papis.document.from_folder(doc_folder)]
+        return [papis.document.from_folder(f) for f in doc_folder]
     return papis.database.get().query(query)
 
 
 def handle_doc_folder_query_sort(
         query: str,
-        doc_folder: Optional[str],
+        doc_folder: Optional[Tuple[str, ...]],
         sort_field: Optional[str],
         sort_reverse: bool) -> List[papis.document.Document]:
     """Query database for documents.
@@ -124,7 +125,7 @@ def handle_doc_folder_query_sort(
 
 def handle_doc_folder_query_all_sort(
         query: str,
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
         sort_reverse: bool,
         _all: bool) -> List[papis.document.Document]:

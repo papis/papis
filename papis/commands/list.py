@@ -59,7 +59,7 @@ Command-line Interface
 """
 
 import os
-from typing import List, Optional, Union, Sequence
+from typing import List, Optional, Union, Sequence, Tuple
 
 import click
 
@@ -204,7 +204,7 @@ def cli(query: str,
         notes: bool,
         _dir: bool,
         _format: str,
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         template: Optional[str], _all: bool, downloaders: bool,
         libraries: bool,
         sort_field: Optional[str], sort_reverse: bool) -> None:

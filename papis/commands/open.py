@@ -70,7 +70,7 @@ Command-line Interface
 """
 
 import os
-from typing import Optional
+from typing import Optional, Tuple
 
 import click
 
@@ -169,7 +169,7 @@ def run(document: papis.document.Document,
     "--mark/--no-mark",
     help="Open mark",
     default=lambda: papis.config.getboolean("open-mark"))
-def cli(query: str, doc_folder: str, tool: str, folder: bool,
+def cli(query: str, doc_folder: Tuple[str, ...], tool: str, folder: bool,
         sort_field: Optional[str], sort_reverse: bool, _all: bool,
         mark: bool) -> None:
     """Open document from a given library"""

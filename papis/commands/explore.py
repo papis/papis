@@ -89,7 +89,7 @@ Command-line Interface
     :nested: full
 """
 
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING, Tuple
 import shlex
 
 import click
@@ -136,8 +136,10 @@ def get_explorer_mgr() -> "ExtensionManager":
 @papis.cli.query_argument()
 @papis.cli.doc_folder_option()
 @click.option("--library", "-l", default=None, help="Papis library to look")
-def lib(ctx: click.Context, query: str,
-        doc_folder: str, library: Optional[str]) -> None:
+def lib(ctx: click.Context,
+        query: str,
+        doc_folder: Tuple[str, ...],
+        library: Optional[str]) -> None:
     """
     Query for documents in your library.
 
@@ -150,7 +152,7 @@ def lib(ctx: click.Context, query: str,
     """
 
     if doc_folder:
-        ctx.obj["documents"] += [papis.document.from_folder(doc_folder)]
+        ctx.obj["documents"] += [papis.document.from_folder(d) for d in doc_folder]
     db = papis.database.get(library_name=library)
     docs = db.query(query)
     logger.info("Found %d documents.", len(docs))
@@ -199,7 +201,9 @@ def pick(ctx: click.Context, number: Optional[int]) -> None:
               is_flag=True,
               help="Use the cited-by citations")
 @papis.cli.all_option()
-def citations(ctx: click.Context, query: str, doc_folder: str,
+def citations(ctx: click.Context,
+              query: str,
+              doc_folder: Tuple[str, ...],
               cited_by: bool,
               _all: bool) -> None:
     """
@@ -214,7 +218,7 @@ def citations(ctx: click.Context, query: str, doc_folder: str,
 
     """
     if doc_folder is not None:
-        documents = [papis.document.from_folder(doc_folder)]
+        documents = [papis.document.from_folder(d) for d in doc_folder]
     else:
         documents = papis.api.get_documents_in_lib(papis.config.get_lib_name(),
                                                    search=query)

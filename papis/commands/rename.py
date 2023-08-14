@@ -7,7 +7,7 @@ Command-line Interface
 """
 
 import os
-from typing import Optional
+from typing import Optional, Tuple
 
 import click
 
@@ -63,7 +63,7 @@ def run(document: papis.document.Document,
 def cli(query: str,
         git: bool,
         sort_field: Optional[str],
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         sort_reverse: bool) -> None:
     """Rename entry"""
     documents = papis.cli.handle_doc_folder_query_sort(query,

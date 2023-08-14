@@ -7,7 +7,7 @@ Command-line Interface
 """
 
 import os
-from typing import Optional
+from typing import Optional, Tuple
 
 import click
 
@@ -98,7 +98,7 @@ def cli(query: str,
         _notes: bool,
         force: bool,
         _all: bool,
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
         sort_reverse: bool) -> None:
     """

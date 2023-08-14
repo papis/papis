@@ -43,7 +43,7 @@ Dropbox, etc.
 
 """
 import os
-from typing import Optional
+from typing import Optional, Tuple
 
 import click
 
@@ -72,7 +72,10 @@ def cli() -> None:
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @papis.cli.sort_option()
-def update(query: str, doc_folder: str, _all: bool, sort_field: Optional[str],
+def update(query: str,
+           doc_folder: Tuple[str, ...],
+           _all: bool,
+           sort_field: Optional[str],
            sort_reverse: bool) -> None:
     """
     Reload info.yaml files from disk and update the cache.
@@ -116,25 +119,25 @@ def reset() -> None:
 @cli.command("add")
 @click.help_option("--help", "-h")
 @papis.cli.doc_folder_option()
-def add(doc_folder: str) -> None:
+def add(doc_folder: Tuple[str, ...]) -> None:
     """
     Add a document to the cache.
 
     This is useful for adding single folders from a previous synchronization step.
     """
-    doc = papis.document.from_folder(doc_folder)
+    for d in doc_folder:
+        doc = papis.document.from_folder(d)
 
-    if not doc:
-        logger.error(
-            "The path '%s' did not contain any useful papis information.",
-            doc_folder)
-        return
+        if not doc:
+            logger.error("The path '%s' did not contain a valid info.yaml file.",
+                         doc_folder)
+            continue
 
-    db = papis.database.get()
-    db.add(doc)
+        db = papis.database.get()
+        db.add(doc)
 
-    logger.info("Succesfully added %s to the cache",
-                papis.document.describe(doc))
+        logger.info("Succesfully added '%s' to the cache",
+                    papis.document.describe(doc))
 
 
 @cli.command("rm")
@@ -143,7 +146,10 @@ def add(doc_folder: str) -> None:
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @papis.cli.sort_option()
-def rm(query: str, doc_folder: str, _all: bool, sort_field: Optional[str],
+def rm(query: str,
+       doc_folder: Tuple[str, ...],
+       _all: bool,
+       sort_field: Optional[str],
        sort_reverse: bool) -> None:
     """
     Delete documents from the cache.
@@ -174,8 +180,11 @@ def pwd() -> None:
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @papis.cli.sort_option()
-def update_newer(query: str, doc_folder: str, _all: bool,
-                 sort_field: Optional[str], sort_reverse: bool) -> None:
+def update_newer(query: str,
+                 doc_folder: Tuple[str, ...],
+                 _all: bool,
+                 sort_field: Optional[str],
+                 sort_reverse: bool) -> None:
     """
     Update documents newer than the cache modification time.
     """
