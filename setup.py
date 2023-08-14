@@ -122,7 +122,7 @@ setup(
             "python-coveralls",
             "python-lsp-server",
             "sphinx-click",
-            "sphinx_rtd_theme",
+            "sphinx-rtd-theme>=1",
             "types-PyYAML",
             "types-Pygments",
             "types-beautifulsoup4",
