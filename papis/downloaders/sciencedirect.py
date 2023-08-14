@@ -75,6 +75,15 @@ class Downloader(papis.downloaders.Downloader):
         data.update(papis.downloaders.base.parse_meta_headers(soup))
         data["url"] = self.uri
 
+        # Get full abstract                                               
+        if rawdata:
+            rawabstract = rawdata["abstracts"]["content"][0] 
+            for i, r in enumerate(rawabstract):
+                if i == 0:
+                    abstract = rawabstract[r][1]['$$'][0]['_']
+            if abstract:
+                data["abstract"] = abstract
+
         if "firstpage" in data and "lastpage" in data:
             data["pages"] = "{}-{}".format(data["firstpage"], data["lastpage"])
 
