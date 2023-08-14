@@ -80,12 +80,9 @@ def edit_notes(document: papis.document.Document,
 @papis.cli.doc_folder_option()
 @papis.cli.git_option(help="Add changes made to the info file")
 @papis.cli.sort_option()
-@click.option(
-    "-n",
-    "--notes",
-    help="Edit notes associated to the document",
-    default=False,
-    is_flag=True)
+@papis.cli.bool_flag(
+    "-n", "--notes",
+    help="Edit notes associated to the document")
 @papis.cli.all_option()
 @click.option(
     "-e",

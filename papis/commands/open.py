@@ -157,16 +157,11 @@ def run(document: papis.document.Document,
     "--tool",
     help="Tool for opening the file (opentool)",
     default="")
-@click.option(
-    "-d",
-    "--dir",
-    "folder",
-    help="Open directory",
-    default=False,
-    is_flag=True)
-@click.option(
-    "-m",
-    "--mark/--no-mark",
+@papis.cli.bool_flag(
+    "-d", "--dir", "folder",
+    help="Open directory")
+@papis.cli.bool_flag(
+    "-m", "--mark/--no-mark",
     help="Open mark",
     default=lambda: papis.config.getboolean("open-mark"))
 def cli(query: str, doc_folder: Tuple[str, ...], tool: str, folder: bool,

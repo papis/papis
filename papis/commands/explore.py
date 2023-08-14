@@ -195,11 +195,8 @@ def pick(ctx: click.Context, number: Optional[int]) -> None:
 @papis.cli.query_argument()
 @papis.cli.doc_folder_option()
 @click.help_option("--help", "-h")
-@click.option("-b",
-              "--cited-by",
-              default=False,
-              is_flag=True,
-              help="Use the cited-by citations")
+@papis.cli.bool_flag("-b", "--cited-by",
+                     help="Use the cited-by citations")
 @papis.cli.all_option()
 def citations(ctx: click.Context,
               query: str,

@@ -11,6 +11,21 @@ import papis.database
 DecoratorCallable = Callable[..., Any]
 
 
+def bool_flag(*args: Any, **kwargs: Any) -> DecoratorCallable:
+    """A wrapper to :func:`click.option` that hardcodes a boolean flag option."""
+    # NOTE: we set the flag_value regardless because the default might be a
+    # callable, which confuses click about this being a boolean flag.
+    flag_value = kwargs.pop("flag_value", True)
+    default = kwargs.pop("default", False)
+
+    return click.option(
+        *args,
+        flag_value=flag_value,
+        default=default,
+        is_flag=True,
+        **kwargs)
+
+
 def query_argument(**attrs: Any) -> DecoratorCallable:
     """Adds a ``query`` argument as a :mod:`click` decorator."""
     return click.argument(
@@ -40,12 +55,10 @@ def sort_option(**attrs: Any) -> DecoratorCallable:
             help="Sort documents with respect to the FIELD",
             metavar="FIELD",
             **attrs)
-        reverse = click.option(
+        reverse = bool_flag(
             "--reverse", "sort_reverse",
             help="Reverse sort order",
-            default=lambda: papis.config.getboolean("sort-reverse"),
-            flag_value=True,
-            is_flag=True)
+            default=lambda: papis.config.getboolean("sort-reverse"))
 
         return sort(reverse(f))
 
@@ -65,10 +78,8 @@ def doc_folder_option(**attrs: Any) -> DecoratorCallable:
 
 def all_option(**attrs: Any) -> DecoratorCallable:
     """Adds a ``--all`` option as a :mod:`click` decorator."""
-    return click.option(
+    return bool_flag(
         "-a", "--all", "_all",
-        default=False,
-        is_flag=True,
         help="Apply action to all matching documents",
         **attrs)
 
@@ -76,7 +87,7 @@ def all_option(**attrs: Any) -> DecoratorCallable:
 def git_option(**attrs: Any) -> DecoratorCallable:
     """Adds a ``--git`` option as a :mod:`click` decorator."""
     help = attrs.pop("help", "Commit changes to git")
-    return click.option(
+    return bool_flag(
         "--git/--no-git",
         default=lambda: bool(papis.config.get("use-git")),
         help=help,

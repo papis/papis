@@ -129,8 +129,9 @@ def run(document: papis.document.Document,
 @click.option("-k", "--key", default="",
               help="Use the value of the document's key to open in"
                    " the browser, e.g. doi, url, doc_url ...")
-@click.option("-n", "--print", "_print", default=False, is_flag=True,
-              help="Just print out the url, do not open it with browser")
+@papis.cli.bool_flag(
+    "-n", "--print", "_print",
+    help="Just print out the url, do not open it with browser")
 @papis.cli.all_option()
 @papis.cli.doc_folder_option()
 def cli(query: str,

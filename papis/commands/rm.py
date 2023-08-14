@@ -76,21 +76,15 @@ def run(document: papis.document.Document,
 @papis.cli.git_option(help="Remove in git")
 @papis.cli.sort_option()
 @papis.cli.doc_folder_option()
-@click.option(
+@papis.cli.bool_flag(
     "--file", "_file",
-    help="Remove files from a document instead of the whole folder",
-    is_flag=True,
-    default=False)
-@click.option(
+    help="Remove files from a document instead of the whole folder")
+@papis.cli.bool_flag(
     "-n", "--notes", "_notes",
-    help="Remove the notes file from a document instead of the whole folder",
-    is_flag=True,
-    default=False)
-@click.option(
+    help="Remove the notes file from a document instead of the whole folder")
+@papis.cli.bool_flag(
     "-f", "--force",
-    help="Do not confirm removal",
-    is_flag=True,
-    default=False)
+    help="Do not confirm removal")
 @papis.cli.all_option()
 def cli(query: str,
         git: bool,
