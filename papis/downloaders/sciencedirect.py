@@ -80,7 +80,7 @@ class Downloader(papis.downloaders.Downloader):
             rawabstract = rawdata["abstracts"]["content"][0] 
             for i, r in enumerate(rawabstract):
                 if i == 0:
-                    abstract = rawabstract[r][1]['$$'][0]['_']
+                    abstract = rawabstract[r][1]["$$"][0]["_"]
             if abstract:
                 data["abstract"] = abstract
 
