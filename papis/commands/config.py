@@ -75,6 +75,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import click
 import colorama
 
+import papis.cli
 import papis.config
 import papis.commands
 import papis.logging
@@ -214,15 +215,13 @@ def run(
     "-s", "--section",
     help="select a default section for the options",
     default=None)
-@click.option(
+@papis.cli.bool_flag(
     "-d", "--default",
     help="List default configuration setting values, instead of those in the "
-         "configuration file",
-    default=False, is_flag=True)
-@click.option(
+         "configuration file")
+@papis.cli.bool_flag(
     "--json", "json_",
-    help="Print settings in a JSON format",
-    default=False, is_flag=True)
+    help="Print settings in a JSON format")
 def cli(options: List[str],
         section: Optional[str],
         json_: bool,

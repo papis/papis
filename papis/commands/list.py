@@ -149,33 +149,21 @@ def run(documents: List[papis.document.Document],
 @click.help_option("--help", "-h")
 @papis.cli.query_argument()
 @papis.cli.sort_option()
-@click.option(
-    "-i",
-    "--info",
-    help="Show the info file name associated with the document",
-    default=False,
-    is_flag=True)
-@click.option(
-    "--id",
-    "_papis_id",
-    help="Show the papis_id",
-    default=False,
-    is_flag=True)
-@click.option(
+@papis.cli.bool_flag(
+    "-i", "--info",
+    help="Show the info file name associated with the document")
+@papis.cli.bool_flag(
+    "--id", "_papis_id",
+    help="Show the papis_id")
+@papis.cli.bool_flag(
     "-f", "--file", "_file",
-    help="Show the file name associated with the document",
-    default=False,
-    is_flag=True)
-@click.option(
+    help="Show the file name associated with the document")
+@papis.cli.bool_flag(
     "-d", "--dir", "_dir",
-    help="Show the folder name associated with the document",
-    default=False,
-    is_flag=True)
-@click.option(
+    help="Show the folder name associated with the document")
+@papis.cli.bool_flag(
     "-n", "--notes",
-    help="List notes files, if any",
-    default=False,
-    is_flag=True)
+    help="List notes files, if any")
 @click.option(
     "--format", "_format",
     help="List entries using a custom papis format, e.g."
@@ -185,16 +173,12 @@ def run(documents: List[papis.document.Document],
     "--template",
     help="Template file containing a papis format to list entries",
     default=None)
-@click.option(
+@papis.cli.bool_flag(
     "--downloaders",
-    help="List available downloaders",
-    default=False,
-    is_flag=True)
-@click.option(
+    help="List available downloaders")
+@papis.cli.bool_flag(
     "--libraries",
-    help="List defined libraries",
-    default=False,
-    is_flag=True)
+    help="List defined libraries")
 @papis.cli.all_option()
 @papis.cli.doc_folder_option()
 def cli(query: str,

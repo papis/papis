@@ -95,11 +95,9 @@ def run(documents: List[papis.document.Document], to_format: str) -> str:
 @papis.cli.doc_folder_option()
 @papis.cli.sort_option()
 @papis.cli.all_option()
-@click.option(
+@papis.cli.bool_flag(
     "--folder",
-    help="Export document folder to share",
-    default=False,
-    is_flag=True)
+    help="Export document folder to share")
 @click.option(
     "-o",
     "--out",

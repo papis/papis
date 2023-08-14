@@ -138,10 +138,9 @@ EXPLORER_MGR = explore.get_explorer_mgr()
 
 @click.group("bibtex", cls=papis.commands.AliasedGroup, chain=True)
 @click.help_option("-h", "--help")
-@click.option("--noar", "--no-auto-read", "no_auto_read",
-              default=False,
-              is_flag=True,
-              help="Do not auto read even if the configuration file says it")
+@papis.cli.bool_flag(
+    "--noar", "--no-auto-read", "no_auto_read",
+    help="Do not auto read even if the configuration file says it")
 @click.pass_context
 def cli(ctx: click.Context, no_auto_read: bool) -> None:
     """A papis script to interact with bibtex files"""
@@ -204,14 +203,10 @@ def _add(ctx: click.Context,
 @cli.command("update")
 @click.help_option("-h", "--help")
 @papis.cli.all_option()
-@click.option("--from", "-f", "fromdb",
-              show_default=True,
-              help="Update the document from the library",
-              default=False, is_flag=True)
-@click.option("-t", "--to",
-              help="Update the library document from retrieved document",
-              show_default=True,
-              default=False, is_flag=True)
+@papis.cli.bool_flag("--from", "-f", "fromdb",
+                     help="Update the document from the library")
+@papis.cli.bool_flag("-t", "--to",
+                     help="Update the library document from retrieved document")
 @click.option("-k", "--keys",
               help="Update only given keys (can be given multiple times)",
               type=str,
@@ -361,7 +356,7 @@ def _ref(ctx: click.Context, out: Optional[str]) -> None:
     "bibfile",
     default=lambda: papis.config.get("default-save-bibfile", section="bibtex"),
     required=True, type=click.Path())
-@click.option("-f", "--force", default=False, is_flag=True)
+@papis.cli.bool_flag("-f", "--force", help="Do not ask for confirmation when saving")
 @click.pass_context
 def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
     """Save the documents in the BibTeX format."""
@@ -379,14 +374,11 @@ def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
 @cli.command("sort")
 @click.help_option("-h", "--help")
 @click.option("-k", "--key",
-              help="Field to order it",
+              help="Field to order by",
               default=None,
               type=str,
               required=True)
-@click.option("-r", "--reverse",
-              help="Reverse the order",
-              default=False,
-              is_flag=True)
+@papis.cli.bool_flag("-r", "--reverse", help="Reverse the sort order")
 @click.pass_context
 def _sort(ctx: click.Context, key: Optional[str], reverse: bool) -> None:
     """Sort the documents in the BibTeX file."""
