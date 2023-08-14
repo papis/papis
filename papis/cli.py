@@ -44,6 +44,7 @@ def sort_option(**attrs: Any) -> DecoratorCallable:
             "--reverse", "sort_reverse",
             help="Reverse sort order",
             default=lambda: papis.config.getboolean("sort-reverse"),
+            flag_value=True,
             is_flag=True)
 
         return sort(reverse(f))
