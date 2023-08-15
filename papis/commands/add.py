@@ -539,7 +539,7 @@ def run(paths: List[str],
     help="List all available papis importers")
 @papis.cli.bool_flag(
     "--od", "--only-data", "only_data",
-￼    help="Disable file download")
+    help="Disable file download")
 @papis.cli.bool_flag(
     "--force-download", "--fd", "force_download",
     help="Download file with importer even if local file is passed")
