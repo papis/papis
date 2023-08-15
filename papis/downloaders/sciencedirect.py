@@ -59,12 +59,12 @@ def get_full_abstract(soup: List[Dict[str, Any]]) -> str:
                                 a_dic = value[a_i]
                             except Exception:
                                 pass
-                                
+
                             if not abstract:
                                 try:
-                                        a_key = list(a_dic.keys())[0]
-                                        a_list = a_dic[a_key]
-                                        abstract = a_list[0]["_"]
+                                    a_key = list(a_dic.keys())[0]
+                                    a_list = a_dic[a_key]
+                                    abstract = a_list[0]["_"]
                                 except Exception:
                                     pass
         except Exception:
