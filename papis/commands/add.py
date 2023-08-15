@@ -543,6 +543,11 @@ def run(paths: List[str],
     default=False,
     is_flag=True)
 @click.option(
+    "--merge-data", "-m",
+    help="Merge the data from all importers to pickup desired fields at once. "
+         "Take one argument: set the nth importer overwriting the others data.",
+    default=None)
+@click.option(
     "--force-download", "--fd", "force_download",
     help="Download file with importer even if local file is passed",
     default=False,
@@ -567,6 +572,7 @@ def cli(files: List[str],
         link: bool,
         list_importers: bool,
         force_download: bool,
+        merge_data: str,
         fetch_citations: bool) -> None:
     """
     Command line interface for papis-add.
@@ -616,7 +622,7 @@ def cli(files: List[str],
             matching_importers = [matching_importers[i] for i in matching_indices]
 
     imported = papis.utils.collect_importer_data(
-        matching_importers, batch=batch, only_data=only_data)
+        matching_importers, batch=batch, only_data=only_data, merge_data=merge_data)
     ctx.data.update(imported.data)
     ctx.files.extend(imported.files)
 
