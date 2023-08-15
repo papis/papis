@@ -18,7 +18,7 @@ class Action(NamedTuple):
     action: Callable[[KeyPressEvent], None]
 
 
-def prompt(text: Union[str, FormattedText] | List[Tuple[str, str]],
+def prompt(text,
            title: str = "",
            actions: Optional[List[Action]] = None,
            **kwargs: Any
