@@ -537,11 +537,6 @@ def run(paths: List[str],
 @papis.cli.bool_flag(
     "--list-importers", "--li", "list_importers",
     help="List all available papis importers")
-@click.option(
-    "--merge-data", "-m",
-    help="Merge the data from all importers to pickup desired fields at once. "
-         "Take one argument: set the nth importer overwriting the others data.",
-    default=None)
 @papis.cli.bool_flag(
     "--force-download", "--fd", "force_download",
     help="Download file with importer even if local file is passed")
@@ -563,7 +558,6 @@ def cli(files: List[str],
         git: bool,
         link: bool,
         list_importers: bool,
-        merge_data: bool,
         force_download: bool,
         fetch_citations: bool) -> None:
     """
@@ -614,7 +608,7 @@ def cli(files: List[str],
             matching_importers = [matching_importers[i] for i in matching_indices]
 
     imported = papis.utils.collect_importer_data(
-        matching_importers, batch=batch, only_data=only_data, merge_data=merge_data)
+        matching_importers, batch=batch, only_data=only_data)
     ctx.data.update(imported.data)
     ctx.files.extend(imported.files)
 
