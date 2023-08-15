@@ -39,9 +39,10 @@ def _parse_author_list(data: Dict[str, Any]) -> List[Dict[str, Any]]:
     assert data["#name"] == "author-group"
     return [_parse_author(a) for a in data["$$"] if a["#name"] == "author"]
 
+
+def get_full_abstract(soup: List[Dict[str, Any]]) -> str:
 # At least two different metadata formatting have been found for sciencedirect
 # This function tries to deal with both
-def get_full_abstract(soup: List[Dict[str, Any]]) -> str:
     abstract = ""
 
     for section in soup:
