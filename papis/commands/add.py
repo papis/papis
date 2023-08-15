@@ -493,11 +493,9 @@ def run(paths: List[str],
     "-d", "--subfolder",
     help="Subfolder in the library",
     default=lambda: papis.config.getstring("add-subfolder"))
-@click.option(
+@papis.cli.bool_flag(
     "-p", "--pick-subfolder",
-    help="Pick from existing subfolders",
-    is_flag=True,
-    default=False)
+    help="Pick from existing subfolders")
 @click.option(
     "--folder-name",
     help="Name for the document's folder (papis format)",
@@ -515,10 +513,9 @@ def run(paths: List[str],
     nargs=2,
     multiple=True,
     default=(),)
-@click.option(
+@papis.cli.bool_flag(
     "-b", "--batch",
-    help="Batch mode, do not prompt or otherwise",
-    default=False, is_flag=True)
+    help="Batch mode, do not prompt or otherwise")
 @click.option(
     "--confirm/--no-confirm",
     help="Ask to confirm before adding to the collection",
@@ -537,26 +534,21 @@ def run(paths: List[str],
          "its original location",
     default=False)
 @papis.cli.git_option(help="Git add and commit the new document")
-@click.option(
+@papis.cli.bool_flag(
     "--list-importers", "--li", "list_importers",
-    help="List all available papis importers",
-    default=False,
-    is_flag=True)
+    help="List all available papis importers")
 @click.option(
     "--merge-data", "-m",
     help="Merge the data from all importers to pickup desired fields at once. "
          "Take one argument: set the nth importer overwriting the others data.",
     default=None)
-@click.option(
+@papis.cli.bool_flag(
     "--force-download", "--fd", "force_download",
-    help="Download file with importer even if local file is passed",
-    default=False,
-    is_flag=True)
-@click.option("--fetch-citations",
-              help="Fetch citations from doi",
-              default=lambda: papis.config.getboolean("add-fetch-citations"),
-              flag_value=True,
-              is_flag=True)
+    help="Download file with importer even if local file is passed")
+@papis.cli.bool_flag(
+    "--fetch-citations",
+    help="Fetch citations from a DOI (Digital Object Identifier)",
+    default=lambda: papis.config.getboolean("add-fetch-citations"))
 def cli(files: List[str],
         set_list: List[Tuple[str, str]],
         subfolder: str,
@@ -571,8 +563,8 @@ def cli(files: List[str],
         git: bool,
         link: bool,
         list_importers: bool,
-        force_download: bool,
         merge_data: str,
+        force_download: bool,
         fetch_citations: bool) -> None:
     """
     Command line interface for papis-add.
