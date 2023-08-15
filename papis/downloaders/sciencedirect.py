@@ -39,32 +39,34 @@ def _parse_author_list(data: Dict[str, Any]) -> List[Dict[str, Any]]:
     assert data["#name"] == "author-group"
     return [_parse_author(a) for a in data["$$"] if a["#name"] == "author"]
 
+
 def get_full_abstract(soup: List[Dict[str, Any]]) -> str:
     abstract = ""
 
     for section in soup:
         try:
-            for k, v in list(section.items()):
-                if isinstance(v, list):
-                    for i, dic in enumerate(v):
+            for value in list(section.values()):
+                if isinstance(value, list):
+                    for i, dic in enumerate(value):
                         try:
                             a_section = (i, dic["_"])
                         except Exception:
                             pass
 
                         if "Abstract" in a_section:
-                            idx = i + 1
+                            a_i = i + 1
                             try:
-                                a_dic = v[idx]
+                                a_dic = value[a_i]
                             except Exception:
                                 pass
-                        if not abstract:
-                            try:
-                                    a_key = list(a_dic.keys())[0]
-                                    a_list = a_dic[a_key]
-                                    abstract = a_list[0]["_"]
-                            except:
-                                pass
+                                
+                            if not abstract:
+                                try:
+                                        a_key = list(a_dic.keys())[0]
+                                        a_list = a_dic[a_key]
+                                        abstract = a_list[0]["_"]
+                                except Exception:
+                                    pass
         except Exception:
             pass
 
