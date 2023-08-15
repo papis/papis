@@ -538,6 +538,9 @@ def run(paths: List[str],
     "--list-importers", "--li", "list_importers",
     help="List all available papis importers")
 @papis.cli.bool_flag(
+    "--od", "--only-data", "only_data",
+￼    help="Disable file download")
+@papis.cli.bool_flag(
     "--force-download", "--fd", "force_download",
     help="Download file with importer even if local file is passed")
 @papis.cli.bool_flag(
@@ -558,6 +561,7 @@ def cli(files: List[str],
         git: bool,
         link: bool,
         list_importers: bool,
+        only_data: bool,
         force_download: bool,
         fetch_citations: bool) -> None:
     """
@@ -585,7 +589,9 @@ def cli(files: List[str],
         confirm = False
         open_file = False
 
-    only_data = bool(ctx.files) and not force_download
+    if force_download or not only_data:
+￼        only_data = bool(files) and not force_download
+
     matching_importers = papis.utils.get_matching_importer_by_name(
         from_importer, only_data=only_data)
 
