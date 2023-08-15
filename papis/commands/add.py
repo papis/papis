@@ -590,7 +590,7 @@ def cli(files: List[str],
         open_file = False
 
     if force_download or not only_data:
-￼        only_data = bool(files) and not force_download
+        only_data = bool(files) and not force_download
 
     matching_importers = papis.utils.get_matching_importer_by_name(
         from_importer, only_data=only_data)
