@@ -70,7 +70,7 @@ Command-line Interface
 """
 
 import os
-from typing import Optional
+from typing import Optional, Tuple
 
 import click
 
@@ -157,19 +157,14 @@ def run(document: papis.document.Document,
     "--tool",
     help="Tool for opening the file (opentool)",
     default="")
-@click.option(
-    "-d",
-    "--dir",
-    "folder",
-    help="Open directory",
-    default=False,
-    is_flag=True)
-@click.option(
-    "-m",
-    "--mark/--no-mark",
+@papis.cli.bool_flag(
+    "-d", "--dir", "folder",
+    help="Open directory")
+@papis.cli.bool_flag(
+    "-m", "--mark/--no-mark",
     help="Open mark",
     default=lambda: papis.config.getboolean("open-mark"))
-def cli(query: str, doc_folder: str, tool: str, folder: bool,
+def cli(query: str, doc_folder: Tuple[str, ...], tool: str, folder: bool,
         sort_field: Optional[str], sort_reverse: bool, _all: bool,
         mark: bool) -> None:
     """Open document from a given library"""

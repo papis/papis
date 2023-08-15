@@ -127,20 +127,17 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
     invoke_without_command=False)
 @click.help_option("--help", "-h")
 @click.version_option(version=papis.__version__)
-@click.option(
-    "-v",
-    "--verbose",
+@papis.cli.bool_flag(
+    "-v", "--verbose",
     help="Make the output verbose (equivalent to --log DEBUG)",
-    default="PAPIS_DEBUG" in os.environ,
-    is_flag=True)
+    default="PAPIS_DEBUG" in os.environ)
 @click.option(
     "--profile",
     help="Print profiling information into file",
     type=click.Path(),
     default=None)
 @click.option(
-    "-l",
-    "--lib",
+    "-l", "--lib",
     help="Choose a library name or library path (unnamed library)",
     default=lambda: papis.config.getstring("default-library"))
 @click.option(
@@ -149,11 +146,9 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
     help="Configuration file to use",
     type=click.Path(exists=True),
     default=None)
-@click.option(
+@papis.cli.bool_flag(
     "--pick-lib",
-    help="Pick library to use",
-    default=False,
-    is_flag=True)
+    help="Pick library to use")
 @click.option(
     "-s", "--set", "set_list",
     type=(str, str),
