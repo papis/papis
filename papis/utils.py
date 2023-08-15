@@ -395,6 +395,7 @@ def update_doc_from_data_interactively(
                     namea=papis.document.describe(document),
                     nameb=data_name))
 
+
 def update_doc_from_merged_data_interactively(
         document: Union[papis.document.Document, Dict[str, Any]],
         merge_opt: str,
@@ -548,8 +549,6 @@ def merge_importers_data(all_data: Iterable[Tuple[str, ...]]) -> None:
 
     :all_data: combined data from all the selected importers
     """
-    import papis.tui.widgets.diff
-
     mdict = {}
 
     # all_data = raw merged data of all importers/downloaders
@@ -615,7 +614,9 @@ def collect_importer_data(
 
     if merge_data:
         merged = papis.utils.merge_importers_data(merged_data)
-        ctxdata = papis.utils.update_doc_from_merged_data_interactively(merged, merge_data, batch)
+        ctxdata = papis.utils.update_doc_from_merged_data_interactively(merged,
+                                                                        merge_data,
+                                                                        batch)
 
         if ctxdata:
             ctx.data.update(ctxdata)

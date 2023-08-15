@@ -11,6 +11,7 @@ from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent
 # Needed for diffmerge
 import ast
 
+
 class Action(NamedTuple):
     name: str
     key: str
@@ -245,12 +246,12 @@ def diffdict(dicta: Dict[str, Any],
 
 
 # Maybe we could set user settings to choose the colors...
-def diffmerge_format_text (key: str,
-                           value: str,
-                           idx: int,
-                           defval: int,
-                           alt_color: Optional[str] = None,
-                           ) ->Tuple[str, str]:
+def diffmerge_format_text(key: str,
+                          value: str,
+                          idx: int,
+                          defval: int,
+                          alt_color: Optional[str] = None,
+                          ) ->Tuple[str, str]:
     """
     Set the text color for diffmerge.
     """
@@ -265,7 +266,6 @@ def diffmerge_format_text (key: str,
         color = "fg:ansired bg:ansiblack"
 
     return (color, text)
-
 
 
 def diffmerge_add_all(merged: Dict[str, Any], merge_opt: str) -> Dict[str, Any]:
@@ -287,6 +287,7 @@ def diffmerge_add_all(merged: Dict[str, Any], merge_opt: str) -> Dict[str, Any]:
             pass
 
     return rdict
+
 
 def diffmerge(merged: Dict[str, Any], merge_opt: str, batch: bool) -> Dict[str, Any]:
     """
@@ -321,9 +322,9 @@ def diffmerge(merged: Dict[str, Any], merge_opt: str, batch: bool) -> Dict[str, 
         for k in options:
             options[k] = False
 
-    def oset(event: Event, option: str, value: bool) -> None:
+    def oset(event: KeyPressEvent, option: str, value: bool) -> None:
         options[option] = value
-        event.app.exit(0)
+        event.app.exit(result=0)
 
     actions = [
         Action(
@@ -349,9 +350,9 @@ def diffmerge(merged: Dict[str, Any], merge_opt: str, batch: bool) -> Dict[str, 
         for i, v in enumerate(value, start=1):
             show_all.append(diffmerge_format_text(key, v, i, defval))
 
-    prompt(title="--- Merge view: "  + " ---",
-       text=show_all,
-       actions=actions)
+    prompt(title="--- Merge view: " + " ---",
+           text=show_all,
+           actions=actions)
 
     if options["cancel"] or options["quit"]:
         return {}
@@ -387,9 +388,9 @@ def diffmerge(merged: Dict[str, Any], merge_opt: str, batch: bool) -> Dict[str, 
             # 2) the new value to add or reject
             show_selected.append(diffmerge_format_text(key, v, i, defval, "yellow"))
 
-            prompt(title="--- Pick fields values : "  + " ---",
-               text=show_selected,
-               actions=actions)
+            prompt(title="--- Pick fields values : " + " ---",
+                   text=show_selected,
+                   actions=actions)
 
             if options["cancel"]:
                 return {}
