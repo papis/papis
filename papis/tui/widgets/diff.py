@@ -1,5 +1,5 @@
 from typing import (
-    Dict, Any, List, Union, NamedTuple, Callable, Optional)
+    Dict, Any, List, Union, Tuple, NamedTuple, Callable, Optional)
 
 from prompt_toolkit import Application, print_formatted_text
 from prompt_toolkit.layout.containers import HSplit, Window, WindowAlign
@@ -8,6 +8,8 @@ from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent
 
+# Needed for diffmerge
+import ast
 
 class Action(NamedTuple):
     name: str
@@ -238,5 +240,176 @@ def diffdict(dicta: Dict[str, Any],
 
         if not options["add_all"]:
             reset()
+
+    return rdict
+
+
+# Maybe we could set user settings to choose the colors...
+def diffmerge_format_text (key: str,
+                           value: str,
+                           idx: int,
+                           defval: int,
+                           alt_color: Optional[str] = None,
+                           ) ->Tuple[str, str]:
+    """
+    Set the text color for diffmerge.
+    """
+    if idx == defval:
+        text = "+ " + key + ": " + value + "\n"
+        if alt_color:
+            color = "fg:ansi{} bg:ansiblack".format(alt_color)
+        else:
+            color = "fg:ansigreen bg:ansiblack"
+    else:
+        text = "- " + key + ": " + value + "\n"
+        color = "fg:ansired bg:ansiblack"
+
+    return (color, text)
+
+
+
+def diffmerge_add_all(merged: Dict[str, Any], merge_opt: str) -> Dict[str, Any]:
+    rdict = {}
+
+    # Select the default value if multiple key values
+    for key, value in list(merged.items()):
+        if merge_opt == "last":
+            defval = len(value) - 1
+        try:
+            rdict[key] = merged[key][defval]
+        except Exception:
+            rdict[key] = merged[key][0]
+
+        # Rebuild list/int from string
+        try:
+            rdict[key] = ast.literal_eval(rdict[key])
+        except Exception:
+            pass
+
+    return rdict
+
+def diffmerge(merged: Dict[str, Any], merge_opt: str, batch: bool) -> Dict[str, Any]:
+    """
+    Like diffdict, but handles a unique dictionary instead of the diff
+    between two files.
+
+    Used when --merge-data is set.
+
+    :param merged: dictionary merging all importers data
+    :param merged_opt: the default value to select when multiples
+                       values are available for a dict.key ('first' or 'last')
+    :param batch: when --batch option is set, set rdict to its default value
+                  without asking the user to confirm/pick values
+    :returns: The dictionary used to create the entry
+    """
+
+    rdict = {}
+
+    if batch:
+        return diffmerge_add_all(merged, merge_opt)
+
+    options = {
+        "add": False,
+        "reject": False,
+        "pick": False,
+        "quit": False,
+        "add_all": False,
+        "cancel": False,
+    }  # type: Dict[str, bool]
+
+    def reset() -> None:
+        for k in options:
+            options[k] = False
+
+    def oset(event: Event, option: str, value: bool) -> None:
+        options[option] = value
+        event.app.exit(0)
+
+    actions = [
+        Action(
+            name="Add all",
+            key="a", action=lambda e: oset(e, "add_all", True)),
+        Action(
+            name="Pick", key="p", action=lambda e: oset(e, "pick", True)),
+        Action(
+            name="Reject", key="n", action=lambda e: oset(e, "reject", True)),
+        Action(
+            name="Quit", key="q", action=lambda e: oset(e, "quit", True)),
+        Action(
+            name="Cancel", key="c", action=lambda e: oset(e, "cancel", True)),
+    ]
+
+    show_all = []
+    for key, value in list(merged.items()):
+        if merge_opt == "last":
+            defval = len(value)
+        else:
+            defval = 1
+
+        for i, v in enumerate(value, start=1):
+            show_all.append(diffmerge_format_text(key, v, i, defval))
+
+    prompt(title="--- Merge view: "  + " ---",
+       text=show_all,
+       actions=actions)
+
+    if options["cancel"] or options["quit"]:
+        return {}
+    elif options["add_all"]:
+        return diffmerge_add_all(merged, merge_opt)
+    elif options["pick"]:
+        reset()
+
+    actions = [
+        Action(name="Add", key="y", action=lambda e: oset(e, "add", True)),
+    ] + actions
+
+    for key, value in list(merged.items()):
+        if merge_opt == "last":
+            defval = len(value)
+        else:
+            defval = 1
+
+        if options["add_all"]:
+            for i, v in enumerate(value, start=1):
+                if i == defval:
+                    rdict[key] = v
+            continue
+
+        for i, v in enumerate(value, start=1):
+            options["add"] = False
+            options["reject"] = False
+
+            # Show: 1) the values saved is rdict
+            show_selected = []
+            for rk, rv in list(rdict.items()):
+                show_selected.append(diffmerge_format_text(rk, rv, i, i))
+            # 2) the new value to add or reject
+            show_selected.append(diffmerge_format_text(key, v, i, defval, "yellow"))
+
+            prompt(title="--- Pick fields values : "  + " ---",
+               text=show_selected,
+               actions=actions)
+
+            if options["cancel"]:
+                return {}
+            elif options["add"]:
+                rdict[key] = v
+                show_selected.pop()
+            elif options["reject"]:
+                show_selected.pop()
+
+        if options["quit"]:
+            break
+
+        if not options["add_all"]:
+            reset()
+
+    # Rebuild list/int from string
+    for key in rdict:
+        try:
+            rdict[key] = ast.literal_eval(rdict[key])
+        except Exception:
+            pass
 
     return rdict
