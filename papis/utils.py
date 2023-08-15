@@ -620,8 +620,8 @@ def collect_importer_data(
             ctxdata = papis.utils.update_doc_from_merged_data_interactively(merged,
                                                                             merge_data,
                                                                             batch)
-        if ctxdata:
-            ctx.data.update(ctxdata)
+            if ctxdata:
+                ctx.data.update(ctxdata)
 
     return ctx
 
