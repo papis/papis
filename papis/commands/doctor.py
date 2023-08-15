@@ -617,5 +617,5 @@ def cli(query: str,
             error.fix_action()
 
         if edit and error.doc:
-            input("Press any key to edit...")
+            click.pause("Press any key to edit...")
             edit_run(error.doc)
