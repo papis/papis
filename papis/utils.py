@@ -549,19 +549,21 @@ def merge_importers_data(all_data: Iterable[Tuple[str, ...]]) -> None:
 
     :all_data: combined data from all the selected importers
     """
+    # mdict: Dict[str, list]
     mdict = {}
 
     # all_data = raw merged data of all importers/downloaders
     for dic in all_data:
-        keys = dic.keys()
-        # mdict discards dupplicates values
-        # use str() to normalize comparisons
-        for key in keys:
-            if key in mdict:
-                if not str(dic[key]) in mdict[key]:
-                    mdict[key].append(str(dic[key]))
-            else:
-                mdict[key] = [str(dic[key])]
+        if isinstance(dic, dict):
+            keys = dic.keys()
+            # mdict discards dupplicates values
+            # use str() to normalize comparisons
+            for key in keys:
+                if key in mdict:
+                    if not str(dic[key]) in mdict[key]:
+                        mdict[key].append(str(dic[key]))
+                else:
+                    mdict[key] = [str(dic[key])]
 
     return mdict
 
