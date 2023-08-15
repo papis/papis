@@ -1,5 +1,5 @@
 from typing import (
-    Dict, Any, List, Union, Tuple, NamedTuple, Callable, Optional)
+    Dict, Any, List, Tuple, NamedTuple, Callable, Optional)
 
 from prompt_toolkit import Application, print_formatted_text
 from prompt_toolkit.layout.containers import HSplit, Window, WindowAlign
@@ -251,7 +251,7 @@ def diffmerge_format_text(key: str,
                           idx: int,
                           defval: int,
                           alt_color: Optional[str] = None,
-                          ) ->Tuple[str, str]:
+                          ) -> Tuple[str, str]:
     """
     Set the text color for diffmerge.
     """

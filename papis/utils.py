@@ -572,7 +572,7 @@ def collect_importer_data(
         importers: Iterable[papis.importer.Importer],
         batch: bool = True,
         only_data: bool = True,
-        merge_data: str(),
+        merge_data: Union[str, None],
         ) -> papis.importer.Context:
     """Collect all data from the given *importers*.
 
