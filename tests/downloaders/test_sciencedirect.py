@@ -9,6 +9,7 @@ from tests.testlib import TemporaryConfiguration, ResourceCache
 SCIENCE_DIRECT_URLS = (
     "https://www.sciencedirect.com/science/article/abs/pii/S0009261497040141",
     "https://www.sciencedirect.com/science/article/abs/pii/S2210271X18305656",
+    "https://www.sciencedirect.com/science/article/pii/S146290112300117X",
     )
 
 

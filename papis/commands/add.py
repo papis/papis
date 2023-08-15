@@ -563,7 +563,7 @@ def cli(files: List[str],
         git: bool,
         link: bool,
         list_importers: bool,
-        merge_data: str,
+        merge_data: bool,
         force_download: bool,
         fetch_citations: bool) -> None:
     """
