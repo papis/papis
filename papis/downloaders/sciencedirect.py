@@ -41,8 +41,8 @@ def _parse_author_list(data: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 def get_full_abstract(soup: List[Dict[str, Any]]) -> str:
-# At least two different metadata formatting have been found for sciencedirect
-# This function tries to deal with both
+    # NOTE: At least two different metadata formatting have been found for sciencedirect
+    #  This function tries to deal with both
     abstract = ""
 
     for section in soup:
