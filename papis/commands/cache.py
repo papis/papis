@@ -43,7 +43,7 @@ Dropbox, etc.
 
 """
 import os
-from typing import Optional
+from typing import Optional, Tuple
 
 import click
 
@@ -72,10 +72,13 @@ def cli() -> None:
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @papis.cli.sort_option()
-def update(query: str, doc_folder: str, _all: bool, sort_field: Optional[str],
+def update(query: str,
+           doc_folder: Tuple[str, ...],
+           _all: bool,
+           sort_field: Optional[str],
            sort_reverse: bool) -> None:
     """
-    Reload the yaml file from disk and update the cache with that information.
+    Reload info.yaml files from disk and update the cache.
     """
     db = papis.database.get()
     documents = papis.cli.handle_doc_folder_query_all_sort(
@@ -96,9 +99,9 @@ def update(query: str, doc_folder: str, _all: bool, sort_field: Optional[str],
 @click.help_option("--help", "-h")
 def clear() -> None:
     """
-    Clear the cache of the library completely.
+    Clear the cache from disk.
 
-    The next invocation of papis will rebuild the cache.
+    The next invocation of any command that uses the cache will rebuild it.
     """
     papis.database.get().clear()
 
@@ -107,8 +110,7 @@ def clear() -> None:
 @click.help_option("--help", "-h")
 def reset() -> None:
     """
-    Resets the cache, i.e., it clears the cache and then
-    builds it.
+    Reset the cache (clear and rebuild).
     """
     papis.database.get().clear()
     papis.database.get().get_all_documents()
@@ -117,26 +119,25 @@ def reset() -> None:
 @cli.command("add")
 @click.help_option("--help", "-h")
 @papis.cli.doc_folder_option()
-def add(doc_folder: str) -> None:
+def add(doc_folder: Tuple[str, ...]) -> None:
     """
-    Adds a folder path to the papis cache, i.e., to the database.
+    Add a document to the cache.
 
-    This might be useful for adding single folders from a previous
-    synchronization step.
+    This is useful for adding single folders from a previous synchronization step.
     """
-    doc = papis.document.from_folder(doc_folder)
+    for d in doc_folder:
+        doc = papis.document.from_folder(d)
 
-    if not doc:
-        logger.error(
-            "The path '%s' did not contain any useful papis information.",
-            doc_folder)
-        return
+        if not doc:
+            logger.error("The path '%s' did not contain a valid info.yaml file.",
+                         doc_folder)
+            continue
 
-    db = papis.database.get()
-    db.add(doc)
+        db = papis.database.get()
+        db.add(doc)
 
-    logger.info("Succesfully added %s to the cache",
-                papis.document.describe(doc))
+        logger.info("Succesfully added '%s' to the cache",
+                    papis.document.describe(doc))
 
 
 @cli.command("rm")
@@ -145,10 +146,13 @@ def add(doc_folder: str) -> None:
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @papis.cli.sort_option()
-def rm(query: str, doc_folder: str, _all: bool, sort_field: Optional[str],
+def rm(query: str,
+       doc_folder: Tuple[str, ...],
+       _all: bool,
+       sort_field: Optional[str],
        sort_reverse: bool) -> None:
     """
-    Delete document from the cache, the disk data however will not be touched.
+    Delete documents from the cache.
     """
 
     documents = papis.cli.handle_doc_folder_query_all_sort(
@@ -176,11 +180,13 @@ def pwd() -> None:
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @papis.cli.sort_option()
-def update_newer(query: str, doc_folder: str, _all: bool,
-                 sort_field: Optional[str], sort_reverse: bool) -> None:
+def update_newer(query: str,
+                 doc_folder: Tuple[str, ...],
+                 _all: bool,
+                 sort_field: Optional[str],
+                 sort_reverse: bool) -> None:
     """
-    Reload the yaml file from disk only of those documents whose info
-    file is newer than the cache.
+    Update documents newer than the cache modification time.
     """
     db = papis.database.get()
     documents = papis.cli.handle_doc_folder_query_all_sort(

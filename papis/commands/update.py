@@ -86,10 +86,8 @@ def run(document: papis.document.Document,
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @papis.cli.sort_option()
-@click.option("--auto",
-              help="Try to parse information from different sources",
-              default=False,
-              is_flag=True)
+@papis.cli.bool_flag("--auto",
+                     help="Try to parse information from different sources")
 @click.option("--from", "from_importer",
               help="Add document from a specific importer ({})".format(
                   ", ".join(papis.importer.available_importers())
@@ -103,13 +101,11 @@ def run(document: papis.document.Document,
                    "The value can be a papis format.",
               multiple=True,
               type=(str, str),)
-@click.option(
-    "-b", "--batch",
-    help="Batch mode, do not prompt or otherwise",
-    default=False, is_flag=True)
+@papis.cli.bool_flag("-b", "--batch",
+                     help="Batch mode, do not prompt or otherwise")
 def cli(query: str,
         git: bool,
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         from_importer: List[Tuple[str, str]],
         batch: bool,
         auto: bool,

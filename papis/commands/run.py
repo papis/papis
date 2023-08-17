@@ -51,7 +51,7 @@ Command-line Interface
     :prog: papis run
 """
 
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import click
 
@@ -96,14 +96,14 @@ def cli(run_command: List[str],
         sort_field: str,
         sort_reverse: bool,
         prefix: Optional[str],
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         _all: bool) -> None:
     """Run an arbitrary shell command in the library or command folder"""
 
     documents = []
 
     if doc_folder:
-        documents = [papis.document.from_folder(doc_folder)]
+        documents = [papis.document.from_folder(d) for d in doc_folder]
     elif pick:
         documents = papis.database.get().query(pick)
 

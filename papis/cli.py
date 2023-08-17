@@ -1,4 +1,4 @@
-from typing import Optional, Any, Callable, List
+from typing import Optional, Any, Callable, List, Tuple
 
 import click
 
@@ -9,6 +9,21 @@ import papis.database
 
 
 DecoratorCallable = Callable[..., Any]
+
+
+def bool_flag(*args: Any, **kwargs: Any) -> DecoratorCallable:
+    """A wrapper to :func:`click.option` that hardcodes a boolean flag option."""
+    # NOTE: we set the flag_value regardless because the default might be a
+    # callable, which confuses click about this being a boolean flag.
+    flag_value = kwargs.pop("flag_value", True)
+    default = kwargs.pop("default", False)
+
+    return click.option(
+        *args,
+        flag_value=flag_value,
+        default=default,
+        is_flag=True,
+        **kwargs)
 
 
 def query_argument(**attrs: Any) -> DecoratorCallable:
@@ -40,11 +55,10 @@ def sort_option(**attrs: Any) -> DecoratorCallable:
             help="Sort documents with respect to the FIELD",
             metavar="FIELD",
             **attrs)
-        reverse = click.option(
+        reverse = bool_flag(
             "--reverse", "sort_reverse",
             help="Reverse sort order",
-            default=lambda: papis.config.getboolean("sort-reverse"),
-            is_flag=True)
+            default=lambda: papis.config.getboolean("sort-reverse"))
 
         return sort(reverse(f))
 
@@ -57,16 +71,15 @@ def doc_folder_option(**attrs: Any) -> DecoratorCallable:
         "--doc-folder",
         default=None,
         type=click.Path(exists=True),
+        multiple=True,
         help="Document folder on which to apply action",
         **attrs)
 
 
 def all_option(**attrs: Any) -> DecoratorCallable:
     """Adds a ``--all`` option as a :mod:`click` decorator."""
-    return click.option(
+    return bool_flag(
         "-a", "--all", "_all",
-        default=False,
-        is_flag=True,
         help="Apply action to all matching documents",
         **attrs)
 
@@ -74,7 +87,7 @@ def all_option(**attrs: Any) -> DecoratorCallable:
 def git_option(**attrs: Any) -> DecoratorCallable:
     """Adds a ``--git`` option as a :mod:`click` decorator."""
     help = attrs.pop("help", "Commit changes to git")
-    return click.option(
+    return bool_flag(
         "--git/--no-git",
         default=lambda: bool(papis.config.get("use-git")),
         help=help,
@@ -83,7 +96,7 @@ def git_option(**attrs: Any) -> DecoratorCallable:
 
 def handle_doc_folder_or_query(
         query: str,
-        doc_folder: Optional[str]) -> List[papis.document.Document]:
+        doc_folder: Optional[Tuple[str, ...]]) -> List[papis.document.Document]:
     """Query database for documents.
 
     This handles the :func:`query_option` and :func:`doc_folder_option`
@@ -95,13 +108,13 @@ def handle_doc_folder_or_query(
         :func:`papis.document.from_folder`).
     """
     if doc_folder:
-        return [papis.document.from_folder(doc_folder)]
+        return [papis.document.from_folder(f) for f in doc_folder]
     return papis.database.get().query(query)
 
 
 def handle_doc_folder_query_sort(
         query: str,
-        doc_folder: Optional[str],
+        doc_folder: Optional[Tuple[str, ...]],
         sort_field: Optional[str],
         sort_reverse: bool) -> List[papis.document.Document]:
     """Query database for documents.
@@ -124,7 +137,7 @@ def handle_doc_folder_query_sort(
 
 def handle_doc_folder_query_all_sort(
         query: str,
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
         sort_reverse: bool,
         _all: bool) -> List[papis.document.Document]:

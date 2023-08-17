@@ -22,6 +22,45 @@ class AliasedGroup(click.core.Group):
     ``rem`` is also accepted as long as it is unique.
     """
 
+    def format_commands(self,
+                        ctx: click.Context,
+                        formatter: click.HelpFormatter) -> None:
+        """Overwrite the default formatting."""
+        # NOTE: this is copied from click/core.py::MultiCommand.format_commands
+        # https://github.com/pallets/click/blob/388b0e14093355e30b17ffaff0c7588533d9dbc8/src/click/core.py#L1611  # noqa: E501
+        # but instead of getting the short_help, we get the full help, strip it
+        # and wrap it nicely like click.Group does.
+
+        commands = []
+        for subcommand in self.list_commands(ctx):
+            cmd = self.get_command(ctx, subcommand)
+            # What is this, the tool lied about a command.  Ignore it
+            if cmd is None:
+                continue
+            if cmd.hidden:
+                continue
+
+            commands.append((subcommand, cmd))
+
+        # allow for 3 times the default spacing
+        if len(commands):
+            limit = formatter.width - 6 - max(len(cmd[0]) for cmd in commands)
+
+            rows = []
+            for subcommand, cmd in commands:
+                if cmd.help is not None:
+                    help = " ".join(cmd.help.strip().split("\n\n")[0].split())
+                elif cmd.short_help is not None:
+                    help = cmd.get_short_help_str(limit)
+                else:
+                    help = ""
+
+                rows.append((subcommand, help.strip().strip(".")))
+
+            if rows:
+                with formatter.section("Commands"):
+                    formatter.write_dl(rows)
+
     def get_command(self,
                     ctx: click.core.Context,
                     cmd_name: str) -> Optional[click.core.Command]:

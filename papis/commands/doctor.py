@@ -93,7 +93,7 @@ Command-line Interface
 import os
 import re
 import collections
-from typing import Any, Optional, List, NamedTuple, Callable, Dict, Set
+from typing import Any, Optional, List, NamedTuple, Callable, Dict, Set, Tuple
 
 import click
 
@@ -543,28 +543,22 @@ def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
               multiple=True,
               type=click.Choice(registered_checks_names()),
               help="Checks to run on every document.")
-@click.option("--json", "_json",
-              default=False, is_flag=True,
-              help="Output the results in json format")
-@click.option("--fix",
-              default=False, is_flag=True,
-              help="Auto fix the errors with the auto fixer mechanism")
-@click.option("-s", "--suggest",
-              default=False, is_flag=True,
-              help="Suggest commands to be run for resolution")
-@click.option("-e", "--explain",
-              default=False, is_flag=True,
-              help="Give a short message for the reason of the error")
-@click.option("--edit",
-              default=False, is_flag=True,
-              help="Edit every file with the edit command.")
+@papis.cli.bool_flag("--json", "_json",
+                     help="Output the results in json format")
+@papis.cli.bool_flag("--fix",
+                     help="Auto fix the errors with the auto fixer mechanism")
+@papis.cli.bool_flag("-s", "--suggest",
+                     help="Suggest commands to be run for resolution")
+@papis.cli.bool_flag("-e", "--explain",
+                     help="Give a short message for the reason of the error")
+@papis.cli.bool_flag("--edit",
+                     help="Edit every file with the edit command.")
 @papis.cli.all_option()
 @papis.cli.doc_folder_option()
-@click.option("--list-checks", "list_checks",
-              default=False, is_flag=True,
-              help="List available checks and their descriptions")
+@papis.cli.bool_flag("--list-checks", "list_checks",
+                     help="List available checks and their descriptions")
 def cli(query: str,
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
         sort_reverse: bool,
         _all: bool,
@@ -623,5 +617,5 @@ def cli(query: str,
             error.fix_action()
 
         if edit and error.doc:
-            input("Press any key to edit...")
+            click.pause("Press any key to edit...")
             edit_run(error.doc)
