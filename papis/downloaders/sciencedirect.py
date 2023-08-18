@@ -5,6 +5,9 @@ import papis.document
 import papis.downloaders
 import papis.downloaders.base
 
+# a list of ScienceDirect tags that we consider to be text in _parse_full_abstract
+KNOWN_TEXT = {"inf", "__text__", "simple-para"}
+
 
 def _parse_author_list(data: Dict[str, Any]) -> List[Dict[str, Any]]:
     # NOTE: this seems to be a data structure of the form
@@ -38,6 +41,44 @@ def _parse_author_list(data: Dict[str, Any]) -> List[Dict[str, Any]]:
 
     assert data["#name"] == "author-group"
     return [_parse_author(a) for a in data["$$"] if a["#name"] == "author"]
+
+
+def _parse_full_abstract(data: List[Dict[str, Any]]) -> str:
+    # NOTE: `data` contains `abstract-sec` sections with `__text__` entries that
+    # we retrieve and concatenate to get the full abstract text
+
+    def reconstruct_text(entry: Any) -> str:
+        if isinstance(entry, dict):
+            return str(entry["_"]) if entry.get("#name") in KNOWN_TEXT else ""
+        elif isinstance(entry, list):
+            blocks = []
+            for item in entry:
+                p = reconstruct_text(item.get("$$", item))
+                if p:
+                    blocks.append(p)
+
+            # FIXME: this can also be separate paragraphs, so concatenating them
+            # with no newlines is not great, but that would be extra work
+            return "".join(blocks)
+        else:
+            return ""
+
+    for entry in data:
+        d = entry.get("$$")
+        if not d:
+            continue
+
+        paragraphs = []
+        for subentry in d:
+            if subentry.get("#name") == "abstract-sec":
+                text = reconstruct_text(subentry["$$"])
+                if text:
+                    paragraphs.append(text)
+
+        if paragraphs:
+            return "\n\n".join(paragraphs)
+
+    return ""
 
 
 class Downloader(papis.downloaders.Downloader):
@@ -74,6 +115,12 @@ class Downloader(papis.downloaders.Downloader):
         # NOTE: this is second because the data is likely more accurate
         data.update(papis.downloaders.base.parse_meta_headers(soup))
         data["url"] = self.uri
+
+        # get full abstract
+        if len(scripts) == 1:
+            full_abstract = _parse_full_abstract(rawdata["abstracts"]["content"])
+            if full_abstract:
+                data["abstract"] = full_abstract
 
         if "firstpage" in data and "lastpage" in data:
             data["pages"] = "{}-{}".format(data["firstpage"], data["lastpage"])
