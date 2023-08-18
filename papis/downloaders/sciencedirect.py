@@ -5,6 +5,9 @@ import papis.document
 import papis.downloaders
 import papis.downloaders.base
 
+# a list of ScienceDirect tags that we consider to be text in _parse_full_abstract
+KNOWN_TEXT = {"inf", "__text__", "simple-para"}
+
 
 def _parse_author_list(data: Dict[str, Any]) -> List[Dict[str, Any]]:
     # NOTE: this seems to be a data structure of the form
@@ -40,44 +43,42 @@ def _parse_author_list(data: Dict[str, Any]) -> List[Dict[str, Any]]:
     return [_parse_author(a) for a in data["$$"] if a["#name"] == "author"]
 
 
-def get_full_abstract(soup: List[Dict[str, Any]]) -> str:
-    # NOTE: At least two different metadata formatting have been found for sciencedirect
-    #  This function tries to deal with both
-    abstract = ""
+def _parse_full_abstract(data: List[Dict[str, Any]]) -> str:
+    # NOTE: `data` contains `abstract-sec` sections with `__text__` entries that
+    # we retrieve and concatenate to get the full abstract text
 
-    for section in soup:
-        try:
-            # The goal is to grab a key value named 'Abstract'
-            #  wrapped into a list into a dic
-            for value in list(section.values()):
-                if isinstance(value, list):
-                    for i, dic in enumerate(value):
-                        try:
-                            a_section = (i, dic["_"])
-                        except Exception:
-                            pass
+    def reconstruct_text(entry: Any) -> str:
+        if isinstance(entry, dict):
+            return str(entry["_"]) if entry.get("#name") in KNOWN_TEXT else ""
+        elif isinstance(entry, list):
+            blocks = []
+            for item in entry:
+                p = reconstruct_text(item.get("$$", item))
+                if p:
+                    blocks.append(p)
 
-                        # If we catch the 'Abstract' value,
-                        #  the abstract text is contained in
-                        #  the next dic key, into a dic, into a list, into a dic...
-                        if "Abstract" in a_section:
-                            a_i = i + 1
-                            try:
-                                a_dic = value[a_i]
-                            except Exception:
-                                pass
+            # FIXME: this can also be separate paragraphs, so concatenating them
+            # with no newlines is not great, but that would be extra work
+            return "".join(blocks)
+        else:
+            return ""
 
-                            if not abstract:
-                                try:
-                                    a_key = list(a_dic.keys())[0]
-                                    a_list = a_dic[a_key]
-                                    abstract = a_list[0]["_"]
-                                except Exception:
-                                    pass
-        except Exception:
-            pass
+    for entry in data:
+        d = entry.get("$$")
+        if not d:
+            continue
 
-    return abstract
+        paragraphs = []
+        for subentry in d:
+            if subentry.get("#name") == "abstract-sec":
+                text = reconstruct_text(subentry["$$"])
+                if text:
+                    paragraphs.append(text)
+
+        if paragraphs:
+            return "\n\n".join(paragraphs)
+
+    return ""
 
 
 class Downloader(papis.downloaders.Downloader):
@@ -115,9 +116,9 @@ class Downloader(papis.downloaders.Downloader):
         data.update(papis.downloaders.base.parse_meta_headers(soup))
         data["url"] = self.uri
 
-        # Get full abstract
-        if rawdata:
-            full_abstract = get_full_abstract(rawdata["abstracts"]["content"])
+        # get full abstract
+        if len(scripts) == 1:
+            full_abstract = _parse_full_abstract(rawdata["abstracts"]["content"])
             if full_abstract:
                 data["abstract"] = full_abstract
 
