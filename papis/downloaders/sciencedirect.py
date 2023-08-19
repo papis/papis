@@ -68,6 +68,10 @@ def _parse_full_abstract(data: List[Dict[str, Any]]) -> str:
         if not d:
             continue
 
+        section_title = d[0].get("_").lower()
+        if section_title != "abstract":
+            continue
+
         paragraphs = []
         for subentry in d:
             if subentry.get("#name") == "abstract-sec":
