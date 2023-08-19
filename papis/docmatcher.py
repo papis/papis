@@ -18,17 +18,31 @@ class ParseResult(NamedTuple):
         r = ParseResult(search="einstein", pattern=<...>, doc_key="author")
     """
 
+    #: A boolean indicating whether this is part of syntax or as search query
+    syntax: bool
     #: A search string that was matched for this result.
-    search: str
+    string: str
     #: A regex pattern constructed from the :attr:`search` using
     #: :func:`get_regex_from_search`.
     pattern: Pattern[str]
     #: A document key that was matched for this result, if any.
-    doc_key: Optional[str]
+    doc_key: Optional[str] = None
 
     def __repr__(self) -> str:
         doc_key = "{!r}, ".format(self.doc_key) if self.doc_key is not None else ""
-        return "[{}{!r}]".format(doc_key, self.search)
+        return "[{}{!r}]".format(doc_key, self.string)
+
+    def needs_operator_after(self) -> bool:
+        if self.syntax and self.string in ["and", "or", "not", "("]:
+            return False
+        else:
+            return True
+
+    def needs_operator_before(self) -> bool:
+        if self.syntax and self.string in ["and", "or", ")"]:
+            return False
+        else:
+            return True
 
 
 class MatcherCallable(Protocol):
@@ -82,7 +96,7 @@ class DocMatcher:
     #: Search string from which the matcher is constructed.
     search: ClassVar[str] = ""
     #: A parsed version of the :attr:`search` string using :func:`parse_query`.
-    parsed_search: ClassVar[Optional[List[ParseResult]]] = None
+    parsed_search: ClassVar[List[ParseResult]] = []
     #: A :class:`MatcherCallable` used to match the document to the
     #: :attr:`parsed_search`.
     matcher: ClassVar[Optional[MatcherCallable]] = None
@@ -92,8 +106,8 @@ class DocMatcher:
 
     @classmethod
     def return_if_match(
-            cls,
-            doc: papis.document.Document) -> Optional[papis.document.Document]:
+        cls, doc: papis.document.Document
+    ) -> Optional[papis.document.Document]:
         """Use :attr:`DocMatcher.parsed_search` to match the *doc* against the query.
 
             >>> import papis.document
@@ -114,16 +128,22 @@ class DocMatcher:
         """
 
         match = None
-        if cls.parsed_search is None or cls.matcher is None:
+        if len(cls.parsed_search) == 0 or cls.matcher is None:
             return match
 
+        tokens = []
         for p in cls.parsed_search:
-            match = (
-                doc if cls.matcher(doc, p.pattern, cls.match_format, p.doc_key)
-                else None)
+            if not p.syntax:
+                tokens.append(
+                    "True"
+                    if cls.matcher(doc, p.pattern, cls.match_format, p.doc_key)
+                    else "False"
+                )
+            else:
+                tokens.append(p.string)
 
-            if not match:
-                break
+        result = eval(" ".join(tokens))
+        match = doc if result else None
 
         return match
 
@@ -148,19 +168,20 @@ class DocMatcher:
 
     @classmethod
     def parse(cls, search: Optional[str] = None) -> List[ParseResult]:
-        """Parse the main query text.
+        """Parse the main query text and check its syntax.
 
         This method will also set :attr:`DocMatcher.parsed_search` to the
-        resulting parsed query and it will return it too.
+        resulting parsed query and it will return it too. If there is a syntax
+        error it will log an error message and return None.
 
             >>> print(DocMatcher.parse('hello author : einstein'))
-            [['hello'], ['author', 'einstein']]
+            [['hello'], ['and'], ['author', 'einstein']]
             >>> print(DocMatcher.parse(''))
             []
             >>> print(\
                 DocMatcher.parse(\
                     '"hello world whatever :" tags : \\\'hello ::::\\\''))
-            [['hello world whatever :'], ['tags', 'hello ::::']]
+            [['hello world whatever :'], ['and'], ['tags', 'hello ::::']]
             >>> print(DocMatcher.parse('hello'))
             [['hello']]
 
@@ -169,7 +190,13 @@ class DocMatcher:
         """
         if search is None:
             search = cls.search
-        cls.parsed_search = parse_query(search)
+        parsed_search = parse_query(search)
+
+        if check_query_consistency(parsed_search):
+            cls.parsed_search = parsed_search
+        else:
+            cls.parsed_search = []
+
         return cls.parsed_search
 
 
@@ -186,8 +213,60 @@ def get_regex_from_search(search: str) -> Pattern[str]:
         properly escaped and allows for multiple spaces.
     """
     return re.compile(
-        ".*{}.*".format(".*".join(map(re.escape, search.split()))),
-        re.IGNORECASE)
+        ".*{}.*".format(".*".join(map(re.escape, search.split()))), re.IGNORECASE
+    )
+
+
+def check_query_consistency(parsed: List[ParseResult]) -> bool:
+    """Tests the syntax by replacing all search terms with True,
+    then trying to evaluate the resulting string.
+
+    :param a parsed a search string.
+    :returns: a boolean indicating whether the query is logically consistent
+    """
+
+    test = []
+    for p in parsed:
+        if not p.syntax:
+            test.append("True")
+        else:
+            test.append(p.string)
+
+    try:
+        eval(" ".join(test))
+        return True
+    except SyntaxError:
+        logger.error("Malformed query.")
+        return False
+
+
+def add_implicit_query_operators(parsed: List[ParseResult]) -> List[ParseResult]:
+    """Fixes a parsed query by inserting missing *and* operators.
+    For instance:
+    ' ein 192     photon' -> 'ein and 192 and photon'
+
+
+    :param a parsed a search string.
+    :returns: a fixed list of ParseResults or operators.
+    """
+    result = []
+    last = len(parsed) - 1
+    fixes = 0
+    for idx, token in enumerate(parsed):
+        result.append(token)
+        if idx != last and token.needs_operator_after() and \
+                parsed[idx + 1].needs_operator_before():
+            # add 'and' when queries or syntax have have no operator in between
+            result.append(
+                ParseResult(
+                    syntax=True, string="and", pattern=get_regex_from_search("")
+                )
+            )
+            fixes += 1
+
+    logger.debug("Fixed query by adding %s missing 'and' operator(s).", fixes)
+
+    return result
 
 
 def parse_query(query_string: str) -> List[ParseResult]:
@@ -196,7 +275,7 @@ def parse_query(query_string: str) -> List[ParseResult]:
     The query language implemented by this function for papis supports strings
     of the form::
 
-        'hello author : Einstein    title: "Fancy Title: Part 1" tags'
+        'hello author : Einstein or not (title: "Fancy Title: Part 1" tags)'
 
     which will result in
 
@@ -204,9 +283,15 @@ def parse_query(query_string: str) -> List[ParseResult]:
 
         results = [
             ParseResult(search="hello", pattern=<...>, doc_key=None),
+            "and",
             ParseResult(search="Einstein", pattern=<...>, doc_key="author"),
+            "or",
+            "not",
+            "(",
             ParseResult(search="Fancy Title: Part 1", pattern=<...>, doc_key="title"),
+            "and",
             ParseResult(search="tags", pattern=<...>, doc_key=None),
+            ")"
         ]
 
     We can see there that constructs of the form ``"key:value"`` with the colon
@@ -220,47 +305,54 @@ def parse_query(query_string: str) -> List[ParseResult]:
     """
 
     import pyparsing
+
     logger.debug("Parsing query: '%s'.", query_string)
 
     papis_key_word = pyparsing.Word(pyparsing.alphanums + "-._/")
-    papis_value_word = pyparsing.Word(pyparsing.alphanums + "-._/()")
 
-    papis_value = pyparsing.QuotedString(
-        quoteChar='"', escChar="\\", escQuote="\\"
-    ) ^ pyparsing.QuotedString(
-        quoteChar="'", escChar="\\", escQuote="\\"
-    ) ^ papis_value_word
-
-    equal = (
-        pyparsing.ZeroOrMore(pyparsing.Literal(" "))
-        + pyparsing.Literal(":")
-        + pyparsing.ZeroOrMore(pyparsing.Literal(" "))
+    papis_value_word = pyparsing.Word(
+        pyparsing.alphanums + pyparsing.alphas8bit + "-._/"
     )
 
-    papis_query = pyparsing.ZeroOrMore(
-        pyparsing.Group(
-            pyparsing.ZeroOrMore(
-                papis_key_word + equal
-            ) + papis_value
-        )
+    papis_value = (
+        pyparsing.QuotedString(quoteChar='"', escChar="\\", escQuote="\\")
+        ^ pyparsing.QuotedString(quoteChar="'", escChar="\\", escQuote="\\")
+        ^ papis_value_word
     )
-    parsed = papis_query.parseString(query_string)
+
+    equal = pyparsing.Literal(":")
+
+    key_phrase = pyparsing.Group(papis_key_word + equal + papis_value)
+
+    operators = "and or not ( )"
+    operator = pyparsing.oneOf(operators)
+
+    papis_query = pyparsing.ZeroOrMore(key_phrase | papis_value | operator)
+
+    parsed = papis_query.parseString(query_string).as_list()
     logger.debug("Parsed query: '%s'.", parsed)
 
     # convert pyparsing results to our format
     results = []
-    for result in parsed:
-        n = len(result)
-        if n == 1:
-            search = result[0]
-            doc_key = None
-        elif n == 3:
-            search = result[2]
-            doc_key = result[0]
+    for token in parsed:
+        if token in operators.split():
+            syntax = True
+            string = token
         else:
-            continue
+            if type(token) is not list:
+                syntax = False
+                string = token
+                doc_key = None
+            elif len(token) == 3:
+                syntax = False
+                string = token[2]
+                doc_key = token[0]
+            else:
+                continue
 
-        pattern = get_regex_from_search(search)
-        results.append(ParseResult(search=search, pattern=pattern, doc_key=doc_key))
+        pattern = get_regex_from_search(string)
+        results.append(
+            ParseResult(syntax=syntax, string=string, pattern=pattern, doc_key=doc_key)
+        )
 
-    return results
+    return add_implicit_query_operators(results)
