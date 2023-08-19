@@ -451,13 +451,16 @@ def run(paths: List[str],
         logger.warning(
             "A document (shown above) in the '%s' library seems to match the "
             "one to be added.", papis.config.get_lib())
+
+        if batch:
+            logger.warning(
+                "No new document is created! Add this document in "
+                "interactive mode (no '--batch') or use 'papis update' instead.")
+            return
+
         logger.warning(
             "Hint: Use the 'papis update' command instead to update the "
             "existing document.")
-
-        if batch:
-            logger.warning("No document is created.")
-            return
 
         # NOTE: we always want the user to confirm if a duplicate is found!
         confirm = True
