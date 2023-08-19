@@ -259,6 +259,30 @@ max-line-length = 88
 inline-quotes = "double"
 multiline-quotes = "double"
 
+[tool.pylint.MAIN]
+jobs = "1"
+recursive = "yes"
+suggestion-mode = "yes"
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = [
+    "C0103",
+    "missing-function-docstring",
+    "bad-inline-option",
+    "consider-using-f-string",
+    "consider-using-from-import",
+    "deprecated-pragma",
+    "file-ignored",
+    "locally-disabled",
+    "missing-module-docstring",
+    "raw-checker-failed",
+    "suppressed-message",
+    "too-many-arguments",
+    "unspecified-encoding",
+    "use-symbolic-message-instead",
+    "useless-suppression"
+]
+
 [tool.mypy]
 strict = true
 show_column_numbers = true
