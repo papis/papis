@@ -56,7 +56,7 @@ DBLP_KEY_CONVERSION = [
 
 def _dblp_journal(name: str) -> Optional[str]:
     import json
-    result = json.loads(search(query="{}$".format(name), api="venue"))
+    result = json.loads(search(query=f"{name}$", api="venue"))
 
     hits = result["result"]["hits"].get("hit")
     if hits is None or len(hits) != 1:
@@ -95,8 +95,7 @@ def search(
     """
     if not (0 < max_results <= DBLP_MAX_RESULS):
         raise ValueError(
-            "Cannot request more than {} results (got {})"
-            .format(DBLP_MAX_RESULS, max_results)
+            f"Cannot request more than {DBLP_MAX_RESULS} results (got {max_results})"
             )
 
     if not (0 < max_completions <= DBLP_MAX_COMPLETIONS):
@@ -107,12 +106,12 @@ def search(
 
     if output_format not in DBLP_FORMATS:
         raise ValueError(
-            "Unsupported format: '{}' (expected {})".format(output_format, DBLP_FORMATS)
+            f"Unsupported format: '{output_format}' (expected {DBLP_FORMATS})"
             )
 
     url = DBLP_API_ENDPOINTS.get(api.lower())
     if url is None:
-        raise ValueError("Unknown API endpoint '{}'".format(api))
+        raise ValueError(f"Unknown API endpoint '{api}'")
 
     with papis.utils.get_session() as session:
         response = session.get(
@@ -219,7 +218,7 @@ class Importer(papis.importer.Importer):
         if is_valid_dblp_key(self.uri):
             url = DBLP_BIB_FORMAT.format(uri=self.uri)
         else:
-            url = "{}.bib".format(self.uri[:-5])
+            url = f"{self.uri[:-5]}.bib"
 
         with papis.utils.get_session() as session:
             response = session.get(url)

@@ -19,7 +19,7 @@ def html(libname: str) -> t.html_tag:
                 with t.ol(cls="list-group"):
                     libs = papis.api.get_libraries()
                     for lib in libs:
-                        with t.a(href="/library/{}".format(lib)):
+                        with t.a(href=f"/library/{lib}"):
                             t.attr(cls="list-group-item "
                                    "list-group-item-action")
                             wh.icon("book")

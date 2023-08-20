@@ -24,8 +24,8 @@ def widget(documents: Sequence[Dict[str, Any]],
         _text = papis.document.describe(_d)
         _href = wp.doc_server_path(libname, _d)
         if _href:
-            return (r"<a href='{}'>{}<i class='fa fa-check'></i></a>"
-                    .format(_href, _text))
+            return fr"<a href='{_href}'>{_text}<i class='fa fa-check'></i></a>"
+
         return _text
 
     json_data = [{"text": {"text": _make_text(d)},
@@ -35,11 +35,11 @@ def widget(documents: Sequence[Dict[str, Any]],
                                  and isinstance(d["month"], int)
                                  else 1}}
                  for d in documents if "year" in d]
-    t.script(tu.raw("""
-    new TL.Timeline('{}',
-                    {{'events': {} }},
+    t.script(tu.raw(f"""
+    new TL.Timeline('{_id}',
+                    {{'events': {json_data} }},
                     {{
                       timenav_height_percentage: 80,
                       width: "100%"
                     }})
-    """.format(_id, json_data)))
+    """))

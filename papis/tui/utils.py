@@ -132,7 +132,7 @@ def prompt(
 
     fragments = [
         ("", prompt_string),
-        ("fg:ansired", " ({})".format(default)),
+        ("fg:ansired", f" ({default})"),
         ("", ": "),
     ]
 
@@ -160,7 +160,7 @@ def select_range(options: List[Any],
                  accept_none: bool = False,
                  bottom_toolbar: Optional[str] = None) -> List[int]:
     for i, o in enumerate(options):
-        click.echo("{i}. {o}".format(i=i, o=o))
+        click.echo(f"{i}. {o}")
 
     possible_indices = range(len(options))
     all_keywords = ["all", "a"]

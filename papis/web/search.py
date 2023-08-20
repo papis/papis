@@ -19,7 +19,7 @@ QUERY_PLACEHOLDER = "insert query..."
 
 
 def _clear_cache(libname: str) -> None:
-    with t.a(href="/library/{libname}/clear_cache".format(libname=libname)):
+    with t.a(href=f"/library/{libname}/clear_cache"):
         t.i(cls=wh.fa("refresh"),
             data_bs_toggle="tooltip",
             title="Clear Cache")

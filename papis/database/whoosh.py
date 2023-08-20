@@ -116,7 +116,7 @@ class Database(papis.database.base.Database):
     def query_dict(self,
                    dictionary: Dict[str, str]) -> List[papis.document.Document]:
         query_string = " AND ".join(
-            ['{}:"{}" '.format(key, val) for key, val in dictionary.items()])
+            [f'{key}:"{val}" ' for key, val in dictionary.items()])
         return self.query(query_string)
 
     def query(self, query_string: str) -> List[papis.document.Document]:

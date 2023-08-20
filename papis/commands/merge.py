@@ -100,10 +100,10 @@ def cli(query: str,
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
-    documents = list(papis.pick.pick_doc(documents))
+    documents = papis.pick.pick_doc(documents)
 
     if pick:
-        other_documents = list(papis.pick.pick_doc(documents))
+        other_documents = papis.pick.pick_doc(documents)
         documents += other_documents
 
     if len(documents) != 2:

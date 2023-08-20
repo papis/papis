@@ -79,7 +79,7 @@ class AliasedGroup(click.core.Group):
             return None
         if len(matches) == 1:
             return click.core.Group.get_command(self, ctx, str(matches[0]))
-        ctx.fail("Too many matches: {}".format(matches))
+        ctx.fail(f"Too many matches: {matches}")
         return None
 
 
