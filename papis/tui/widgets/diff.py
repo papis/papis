@@ -113,8 +113,8 @@ def diffshow(texta: str,
 
     raw_text = _diffs + [
         "^^^^^^^^^\ndiff from\n",
-        "----- {namea}\n".format(namea=namea),
-        "+++++ {nameb}\n".format(nameb=nameb),
+        f"----- {namea}\n",
+        f"+++++ {nameb}\n",
     ]
 
     formatted_text = FormattedText([
@@ -224,7 +224,7 @@ def diffdict(dicta: Dict[str, Any],
         diffshow(
             texta=str(dicta.get(key, "")) + "\n",
             textb=str(dictb.get(key, "")) + "\n",
-            title='changes for key "{}"'.format(key),
+            title=f'changes for key "{key}"',
             namea=namea,
             nameb=nameb,
             actions=actions)

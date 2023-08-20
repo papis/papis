@@ -194,7 +194,7 @@ def get_file_name(
 
     # Remove extension from file_name_base, if any
     file_name_base = re.sub(
-        r"([.]{})?$".format(ext),
+        fr"([.]{ext})?$",
         "",
         file_name_base
     )
@@ -208,7 +208,7 @@ def get_file_name(
     )
 
     # Adding the recognised extension
-    return "{}.{}".format(filename_basename, ext)
+    return f"{filename_basename}.{ext}"
 
 
 def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
@@ -249,7 +249,7 @@ def ensure_new_folder(path: str) -> str:
 
     new_path = path
     while os.path.exists(new_path):
-        new_path = "{}-{}".format(path, next(suffix))
+        new_path = f"{path}-{next(suffix)}"
 
     return new_path
 
@@ -301,7 +301,7 @@ def run(paths: List[str],
 
     for p in in_documents_paths:
         if not os.path.exists(p):
-            raise FileNotFoundError("File '{}' not found".format(p))
+            raise FileNotFoundError(f"File '{p}' not found")
 
     in_documents_names = [
         papis.utils.clean_document_name(doc_path)

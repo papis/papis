@@ -162,7 +162,7 @@ def get_formater(name: Optional[str] = None) -> Formater:
                 papis.plugin.get_available_entrypoints(FORMATER_EXTENSION_NAME))
             logger.error("Invalid formater '%s'. Registered formaters are '%s'.",
                          name, "', '".join(entrypoints), exc_info=exc)
-            raise InvalidFormaterError("Invalid formater: '{}'".format(name))
+            raise InvalidFormaterError(f"Invalid formater: '{name}'")
 
         logger.debug("Using '%s' formater.", name)
 

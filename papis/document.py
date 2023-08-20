@@ -190,7 +190,7 @@ def split_authors_name(authors: List[str],
 
     author_list = []
     for subauthors in authors:
-        for author in re.split(r"\s+{}\s+".format(separator), subauthors):
+        for author in re.split(fr"\s+{separator}\s+", subauthors):
             parts = splitname(author)
             given = " ".join(parts["first"])
             family = " ".join(parts["von"] + parts["last"] + parts["jr"])
@@ -400,7 +400,7 @@ def dump(document: Document) -> str:
     width = (width // 4 + 2) * 4 - 1
 
     return "\n".join([
-        "{:{}}{}".format("{}:".format(key), width, value)
+        "{:{}}{}".format(f"{key}:", width, value)
         for key, value in sorted(document.items())
         ])
 

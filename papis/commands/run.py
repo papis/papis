@@ -111,7 +111,7 @@ def cli(run_command: List[str],
         documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     if not _all and pick:
-        documents = list(papis.pick.pick_doc(documents))
+        documents = papis.pick.pick_doc(documents)
 
     if _all and not pick:
         documents = papis.database.get().get_all_documents()

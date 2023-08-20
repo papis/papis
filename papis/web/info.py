@@ -23,7 +23,7 @@ def widget(doc: papis.document.Document, libname: str) -> None:
 
     with wh.flex("center"):
         with t.form(method="POST",
-                    onsubmit="{}()".format(onsubmit_name),
+                    onsubmit=f"{onsubmit_name}()",
                     cls="p-3",
                     action=wp.update_info(libname, doc)):
             t.textarea(type="text",
@@ -41,11 +41,11 @@ def widget(doc: papis.document.Document, libname: str) -> None:
         style="min-height: 500px",
         cls="form-control")
 
-    _script = """
-    let {editor} = ace.edit("{}");
-    {editor}.session.setMode("ace/mode/yaml");
-    {}
-    """.format(_yaml_id, onsubmit_body, editor=editor_name)
+    _script = f"""
+    let {editor_name} = ace.edit("{_yaml_id}");
+    {editor_name}.session.setMode("ace/mode/yaml");
+    {onsubmit_body}
+    """
 
     t.script(tu.raw(_script),
              charset="utf-8",

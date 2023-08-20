@@ -272,7 +272,7 @@ def doi_to_data(doi_string: str) -> Dict[str, Any]:
     if results:
         return results[0]
     raise ValueError(
-        "Could not retrieve data for DOI '{}' from Crossref".format(doi_string))
+        f"Could not retrieve data for DOI '{doi_string}' from Crossref")
 
 
 @click.command("crossref")

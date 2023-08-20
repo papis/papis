@@ -14,7 +14,7 @@ VIEWER_PATH = "pdfjs/web/viewer.html"
 def widget(_unquoted_file_path: str) -> None:
     _file_path = urllib.parse.quote(_unquoted_file_path, safe="")
 
-    viewer_path = ("/static/{}?file={}".format(VIEWER_PATH, _file_path))
+    viewer_path = (f"/static/{VIEWER_PATH}?file={_file_path}")
 
     with wh.flex("center"):
         with t.div(cls="btn-group", role="group"):
@@ -48,7 +48,7 @@ def detect_pdfjs() -> bool:
 
 
 def error_message() -> str:
-    return """
+    return f"""
 No installation of pdfjs found.
 
 If you want to be able to read and see PDF files from within
@@ -56,7 +56,7 @@ the papis web applications you need to install pdfjs.
 
 You can download the PDFJS bundle from the url
 
-    {url}
+    {PDFJS_URL}
 
 and extract it to your config directory under 'web/pdfjs', for instance
 in '~/.config/papis/web/pdfjs/'.
@@ -65,7 +65,7 @@ On linux and mac you can simply run the following lines
 
     mkdir -p ~/.config/papis/web/pdfjs
     cd ~/.config/papis/web/pdfjs
-    wget "{url}" -O pdfjs.zip
+    wget "{PDFJS_URL}" -O pdfjs.zip
     unzip pdfjs.zip
     rm pdfjs.zip
-    """.format(url=PDFJS_URL)
+    """

@@ -86,7 +86,7 @@ class Importer:
         self.ctx: Context = ctx or Context()
         self.uri: str = uri
         self.name: str = name
-        self.logger = papis.logging.get_logger("papis.importer.{}".format(self.name))
+        self.logger = papis.logging.get_logger(f"papis.importer.{self.name}")
 
     @classmethod
     def match(cls, uri: str) -> Optional["Importer"]:
@@ -108,8 +108,8 @@ class Importer:
         """
 
         raise NotImplementedError(
-            "Matching URI is not implemented for '{}.{}'"
-            .format(cls.__module__, cls.__name__))
+            f"Matching URI is not implemented for '{cls.__module__}.{cls.__name__}'"
+            )
 
     @classmethod
     def match_data(cls, data: Dict[str, Any]) -> Optional["Importer"]:
@@ -166,7 +166,7 @@ class Importer:
             .format(type(self).__module__, type(self).__name__))
 
     def __str__(self) -> str:
-        return "{}({}, uri={})".format(type(self).__name__, self.name, self.uri)
+        return f"{type(self).__name__}({self.name}, uri={self.uri})"
 
 
 def get_import_mgr() -> "stevedore.extension.ExtensionManager":

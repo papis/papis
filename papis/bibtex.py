@@ -438,7 +438,7 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
     # process keys
     supports_unicode = papis.config.getboolean("bibtex-unicode")
     journal_key = papis.config.getstring("bibtex-journal-key")
-    lines = ["{}".format(ref)]
+    lines = [f"{ref}"]
 
     for key in sorted(document):
         bib_key = bibtex_key_converter.get(key, key)
@@ -464,7 +464,7 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
         if not supports_unicode:
             bib_value = unicode_to_latex(bib_value)
 
-        lines.append("{} = {{{}}}".format(bib_key, bib_value))
+        lines.append(f"{bib_key} = {{{bib_value}}}")
 
     # Handle file for zotero exporting
     if (papis.config.getboolean("bibtex-export-zotero-file")

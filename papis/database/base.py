@@ -55,7 +55,7 @@ class Database(ABC):
         :param query_string: Query string
         """
         raise NotImplementedError(
-            "Match not defined for backend '{}'".format(self.get_backend_name()))
+            f"Match not defined for backend '{self.get_backend_name()}'")
 
     @abstractmethod
     def clear(self) -> None:

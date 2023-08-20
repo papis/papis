@@ -29,7 +29,7 @@ def handle_pubmed_pages(pages: str) -> str:
     start, end = [x.strip() for x in pages.split("-")]
     end = "{}{}".format(start[:max(0, len(start) - len(end))], end)
 
-    return "{}--{}".format(start, end)
+    return f"{start}--{end}"
 
 
 KeyConversionPair = papis.document.KeyConversionPair
@@ -81,7 +81,7 @@ def get_data(query: str = "") -> Dict[str, Any]:
     with papis.utils.get_session() as session:
         response = session.get(
             PUBMED_URL.format(pmid=query.strip(), database=PUBMED_DATABASE),
-            headers={"user-agent": "papis/{}".format(papis.__version__)},
+            headers={"user-agent": f"papis/{papis.__version__}"},
             )
 
     import json
