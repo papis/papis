@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
 
@@ -55,29 +56,25 @@
                                                                                                                                                             <meta name="citation_doi" content="10.1051/jphysrad:01955001606044400" />
                                                             
  
-
     <link href="//cdn.mathjax.org" rel="dns-prefetch" >
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
-    <link rel="manifest" href="/assets/site.webmanifest">
-    <link rel="mask-icon" href="/assets/favicon/safari-pinned-tab.svg" color="#000092">
-    <meta name="msapplication-TileColor" content="#000092">
-    <meta name="theme-color" content="#ffffff">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+<link rel="manifest" href="/assets/site.webmanifest">
+<link rel="mask-icon" href="/assets/favicon/safari-pinned-tab.svg" color="#000092">
+<meta name="msapplication-TileColor" content="#000092">
+<meta name="theme-color" content="#ffffff">
 
-                <link rel="stylesheet" href="/assets/build/main.9b7936d7.css" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
-<link href="/assets/css/select2totree.css" rel="stylesheet">    
-
-                        <link rel="stylesheet" href="/public/style.ng.css?1674236289" />
+                <link rel="stylesheet" href="/assets/build/main.a7e00902.css" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+<link href="/assets/css/select2totree.css" rel="stylesheet">        <link rel="stylesheet" href="/public/style.ng.css?1674236289" />
     
-
                 <script src="/assets/js/translations.php?lang=fr"></script>
-        <script src="/assets/build/runtime.763fa2e6.js"></script>
-        <script src="/assets/build/main.8b41ff5e.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
-<script type='text/x-mathjax-config'>MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['$$','$$']]}});</script>        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-<script src="/assets/js/select2totree.js"></script>        
+<script src="/assets/build/runtime.763fa2e6.js"></script>
+<script src="/assets/build/main.9a529070.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+<script type='text/x-mathjax-config'>MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['$$','$$']]}});</script><script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script src="/assets/js/select2totree.js"></script>
 <script src="/static/js/tarteaucitron/tarteaucitron.js"></script>
     <script src="/static/js/tarteaucitron/tarteaucitron.servicesHAL.js"></script>
 <script type="text/javascript">
@@ -104,7 +101,7 @@
 
         "readmoreLink": "/cookiespolicy" /* Change the default readmore link */
     });
-</script>                    
+</script>            
             <!-- Matomo -->
         <script type="text/javascript">
             var _paq = _paq || [];
@@ -130,32 +127,14 @@
 
     <title> Déplacement de Knight dans les alliages  - Archive ouverte HAL</title>
 </head>
-
 <body>
 <a href="#skip-link" class="sr-only skip-link-top"> Accéder directement au contenu </a>
-    
-
-<nav class="navbar navbar-expand-lg header navbar-dark" aria-label="Menu">
+    <nav class="navbar navbar-expand-lg header navbar-dark" aria-label="Menu">
     <!-- Navbar pour taille mobile -->
     <a class="navbar-brand logo-HAL" href="https://hal.archives-ouvertes.fr">
         <img src="/assets/img/hal-logo-header.png" height="40px" title="HAL open science"/>
         <img src="/assets/img/hal-logo-text.png" height="40px" title="HAL open science"/>
     </a>
-
-    
-<span class="pr-3"></span>
-<label class="switch">
-    <input type="checkbox" name="switch-ihm" checked id="switch-ihm" class="" value="" onclick=switchOldIHM()>
-    <span class="slider round"></span>
-</label>
-<span class="pl-3">Nouvelle interface</span>
-
-
-<script>
-    document.querySelector('.switch input[type=checkbox]').addEventListener('change', (e) => {
-        this.checkboxValue = e.target.checked ? 'on' : 'off';
-    })
-</script>
 
     <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#nav-services"
             aria-expanded="false" aria-label="Toggle navigation" style="border-radius: 0">
@@ -175,7 +154,7 @@
             </li>
           <!-- Choix des langues -->
             <li class="nav-item dropdown">
-                <form action="#" method="post" id="formLang">
+                <form action="/ajax/ajaxupdatelanguage" method="post" id="formLang">
                     <input type="hidden" name="lang" id="lang" value="" />
                     <button type="button" data-toggle="dropdown" aria-expanded="false" class="btn btn-secondary dropdown-toggle" id="dropdownLang" aria-label="Langues">
                         <span> FR</span>
@@ -187,7 +166,7 @@
                                     </form>
             </li>
                             <li class="nav-item dropdown" id="userList">
-                                      <form class="form-inline" action="/user/login?url=https://hal.science/jpa-00235190" id="form-login" method="post" style="justify-content: space-around;">
+                                                                                                      <form class="form-inline" action="/user/login?url=https://hal.science/jpa-00235190" id="form-login" method="post" style="justify-content: space-around;">
                          <input type="hidden" name="forward-controller" value="view" /><input type="hidden" name="forward-action" value="index" /><input type="hidden" name="identifiant" value="jpa-00235190" />
                          <div class="input-group">
                              <button type="submit" class="hal-login-button"> Se connecter</button>
@@ -198,7 +177,7 @@
      </div>
  </nav>
 
-    
+                
 
 
 <nav class=" navbar navbar-expand-lg sub-header" aria-label="Menu secondaire">
@@ -348,7 +327,7 @@ function LangInit (e, name)
 	}
 }  </script><form id="advSearch" role="form" data-library="ccsd" action="/search/index/?" method="get">
 <div class="form-group row " id="document-element"><label for="document" class="col-md-3 control-label optional">Information de documents</label>
-<div class="col-md-9"><div class="input-group" style="margin-bottom : 10px;"><button class='btn btn-sm btn-default dropdown-toggle form-btn-lang' style=' z-index:0!important;' data-toggle='dropdown' type='button' value='title_t'>Titres&nbsp;</button><ul class='dropdown-menu' role='menu' style='max-height: 140px; overflow:auto;'><li class='dropdown-item'><a data-val='title_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Titres</a></li><li class='dropdown-item'><a data-val='subTitle_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Sous-titre</a></li><li class='dropdown-item'><a data-val='bookTitle_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Titre de l'ouvrage</a></li><li class='dropdown-item'><a data-val='serie_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Titre du volume (Série)</a></li><li class='dropdown-item'><a data-val='text_fulltext' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Champ de recherche par défaut (multicritères) + texte intégral des PDF</a></li><li class='dropdown-item'><a data-val='abstract_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Résumé</a></li><li class='dropdown-item'><a data-val='fulltext_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Texte intégral indexé des documents PDF</a></li><li class='dropdown-item'><a data-val='keyword_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Mots-clés</a></li><li class='dropdown-item'><a data-val='identifiers_id' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Tous les identifiants du document</a></li><li class='dropdown-item'><a data-val='halId_id' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Identifiant HAL du dépôt</a></li><li class='dropdown-item'><a data-val='language_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Langue du document (texte)</a></li><li class='dropdown-item'><a data-val='country_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Pays (Texte)</a></li><li class='dropdown-item'><a data-val='city_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Ville</a></li><li class='dropdown-item'><a data-val='inPress_bool' href='javascript:void(0);' onclick="LangInit(this, 'qa');">À paraître (true ou false)</a></li></ul>
+<div class="col-md-9"><div class="input-group" style="margin-bottom : 10px;"><button class='btn btn-sm btn-default dropdown-toggle form-btn-lang' style=' z-index:0!important;' data-toggle='dropdown' type='button' value='title_t'>Titres&nbsp;</button><ul class='dropdown-menu' role='menu' style='max-height: 140px; overflow:auto;'><li class='dropdown-item'><a data-val='title_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Titres</a></li><li class='dropdown-item'><a data-val='subTitle_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Sous-titre</a></li><li class='dropdown-item'><a data-val='bookTitle_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Titre de l'ouvrage</a></li><li class='dropdown-item'><a data-val='serie_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Titre du volume (Série)</a></li><li class='dropdown-item'><a data-val='text_fulltext' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Champ de recherche par défaut (multicritères) + texte intégral des PDF</a></li><li class='dropdown-item'><a data-val='abstract_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Résumé</a></li><li class='dropdown-item'><a data-val='fulltext_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Texte intégral indexé des documents PDF</a></li><li class='dropdown-item'><a data-val='keyword_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Mots-clés</a></li><li class='dropdown-item'><a data-val='docType_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Type de document</a></li><li class='dropdown-item'><a data-val='docSubType_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Sous-type de document</a></li><li class='dropdown-item'><a data-val='identifiers_id' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Tous les identifiants du document</a></li><li class='dropdown-item'><a data-val='halId_id' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Identifiant HAL du dépôt</a></li><li class='dropdown-item'><a data-val='language_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Langue du document (texte)</a></li><li class='dropdown-item'><a data-val='country_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Pays (Texte)</a></li><li class='dropdown-item'><a data-val='city_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Ville</a></li><li class='dropdown-item'><a data-val='inPress_bool' href='javascript:void(0);' onclick="LangInit(this, 'qa');">À paraître (true ou false)</a></li></ul>
 <input type="text" name="qa[title_t][]" id="document" value="" class="input-flex form-control input-sm" lang="title_t" aria-describedby="document-error" style=" " data-keyword="1" /><span class="input-group-btn"><button type='button' class='btn btn-sm btn-primary form-btn-multi form-btn-add' onclick='MultiTextSimpleLangKeywordAdd(this, "qa");' data-toggle='tooltip' data-placement='right' data-original-title='Ajouter'><i class='icon icon-plus'></i> <span> Ajouter</span></button></span></div></div></div>
 <div class="form-group row " id="author-element"><label for="author" class="col-md-3 control-label optional">Auteur</label>
 <div class="col-md-9"><div class="input-group" style="margin-bottom : 10px;"><button class='btn btn-sm btn-default dropdown-toggle form-btn-lang' style=' z-index:0!important;' data-toggle='dropdown' type='button' value='auth_t'>Auteur (multicritères)&nbsp;</button><ul class='dropdown-menu' role='menu' style='max-height: 140px; overflow:auto;'><li class='dropdown-item'><a data-val='auth_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur (multicritères)</a></li><li class='dropdown-item'><a data-val='authFullName_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : Nom complet</a></li><li class='dropdown-item'><a data-val='authLastName_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : Nom de famille</a></li><li class='dropdown-item'><a data-val='authFirstName_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : Prénom</a></li><li class='dropdown-item'><a data-val='authMiddleName_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : Complément de nom, deuxième prénom</a></li><li class='dropdown-item'><a data-val='authOrganism_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : Organisme payeur</a></li><li class='dropdown-item'><a data-val='authIdHal_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : IdHal (chaîne de caractères)</a></li><li class='dropdown-item'><a data-val='authQuality_s' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : Fonction</a></li><li class='dropdown-item'><a data-val='authIdHal_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : personID (entier)</a></li><li class='dropdown-item'><a data-val='authId_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">hal_authId_i</a></li><li class='dropdown-item'><a data-val='authOrganismId_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : Identifiant de l'organisme payeur</a></li><li class='dropdown-item'><a data-val='authStructId_i' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Auteur : Identifiant de la structure</a></li><li class='dropdown-item'><a data-val='director_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Directeur de thèse</a></li><li class='dropdown-item'><a data-val='publisher_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Éditeur</a></li><li class='dropdown-item'><a data-val='scientificEditor_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Éditeur scientifique</a></li><li class='dropdown-item'><a data-val='seriesEditor_t' href='javascript:void(0);' onclick="LangInit(this, 'qa');">Éditeur de la série</a></li></ul>
@@ -372,8 +351,7 @@ function LangInit (e, name)
             <h3> Recherche experte (SolR)</h3>
             <form action="/search/index" method="get" id="searchHeaderSolr" name="search-simple" role="search">
                 <textarea type="text" name="q" class="p-5" autocomplete="off" cols="150" placeholder="Chercher un document, un auteur, un mot clef..."
-                       value="">
-                </textarea>
+                       value=""></textarea>
                 <div>
                     <button type="submit" aria-label="Rechercher" class="hal-visualize-button">
                         <span class="icon-search" aria-hidden="true"></span>
@@ -489,7 +467,7 @@ function LangInit (e, name)
     <div class="authors">
                 
                     
-                        <button type="button" data-toggle="popover" class="btn-popover no-hide" data-container="body"
+            <a type="button" data-toggle="popover" class="btn-popover no-hide" data-container="body"
                     data-placement="right" data-title="" data-content="
 
 
@@ -525,7 +503,7 @@ function LangInit (e, name)
 
  ">
                 <span>Jacques Friedel</span>
-            </button>
+            </a>
 
             
                         </div>
@@ -594,31 +572,31 @@ function LangInit (e, name)
             </div>
                     <div class="col-lg-5">
                         
-
-    
-                
-    <div class="keywords">
+                        <div class="keywords">
         <div>
             <h4> Mots clés </h4>
                             <div class="btn-group" role="group" aria-label="Choix langues" style="align-items: unset;">
-                                            <button class="btn btn-lang-keywords active" aria-pressed="true" data-lang="en">
+                                            <button class="btn btn-lang-keywords active"
+                                aria-pressed="true" data-lang="en">
                             en
                         </button>
                                     </div>
                                         <div class="keys-lang en active" data-lang="en">
-                                            <a class="hal-bgtext" href="/search/index/q/*/keyword_t/alloys" target="_blank" rel="nofollow">alloys</a>
-                                            <a class="hal-bgtext" href="/search/index/q/*/keyword_t/nuclear%20magnetic%20resonance" target="_blank" rel="nofollow">nuclear magnetic resonance</a>
+                                            <a class="hal-bgtext"
+                           href="/search/index/q/*/keyword_t/alloys"
+                           target="_blank" rel="nofollow">alloys</a>
+                                            <a class="hal-bgtext"
+                           href="/search/index/q/*/keyword_t/nuclear%20magnetic%20resonance"
+                           target="_blank" rel="nofollow">nuclear magnetic resonance</a>
                                     </div>
                     </div>
-
     </div>
-
-
     <div class="domains">
         <h4> Domaines </h4>
-                                                                                    <a class="hal-bgtext" href="/search/index/q/*/level0_domain_s/phys" rel="nofollow" target="_blank">Physique [physics]</a>
-                                                                                <a class="hal-bgtext" href="/search/index/q/*/level1_domain_s/phys.hist" rel="nofollow" target="_blank">Articles anciens</a>
-                                        </div>
+                                                <a class="hal-bgtext"
+                   href="/search/index/q/*/domain_s/phys.hist"
+                   rel="nofollow" target="_blank">Articles anciens</a>
+                        </div>
                         
 
 <button data-toggle="modal" data-docid="235190" data-target="#metadatas_Modal"
@@ -646,9 +624,10 @@ function LangInit (e, name)
                 <div class="col-md-2">
                                                                                                                         
                     <div id="list-thumbnail-viewer" style="text-align: center;">
-                                                                                                                                                                                                                                        <span class='file-major'>Fichier principal</span>
+                                                                                                                                                                                                            <span class='file-major'>Fichier principal</span>
                             <div class="thumbnail-viewer active" data-id="149748" data-preview="https://hal.science/jpa-00235190v1/preview/ajp-jphysrad_1955_16_6_444_0.pdf">
-                                <img alt="Vignette du fichier" src="//thumb.ccsd.cnrs.fr/4971442/medium" style="width: 100%;">
+                                                                    <img alt="Vignette du fichier" src="//thumb.ccsd.cnrs.fr/4971442/medium" style="width: 100%;">
+                                
                             </div>
                             <span> ajp-jphysrad_1955_16_6_444_0.pdf (273.22 Ko) </span>
                             <a href="https://hal.science/jpa-00235190v1/file/ajp-jphysrad_1955_16_6_444_0.pdf" download="ajp-jphysrad_1955_16_6_444_0.pdf"><span class="icon-download" aria-hidden="true"></span><span class="sr-only">Télécharger le fichier</span> </a>
@@ -715,7 +694,7 @@ function LangInit (e, name)
 
     <div class="bg-beige versions pt-1 pb-1">
         <span>jpa-00235190 ,</span>
-        <span><a href="jpa-00235190v1"> version 1</a></span>
+        <span><a href="/jpa-00235190v1"> version 1</a></span>
         <span>(01-01-1955)</span>
                     </div>
                         <h3 style="margin-top: 10px;"> Identifiants</h3>
@@ -740,6 +719,7 @@ function LangInit (e, name)
         
 
         
+        
 
         
         
@@ -754,7 +734,6 @@ function LangInit (e, name)
         </div>
 
         
-
         <div class="section-content section-shadow section-export">
             <h3> Exporter</h3>
 
@@ -779,14 +758,14 @@ function LangInit (e, name)
                     <div class="row">
                     <div class="metrics-views col-6">
             <span>
-                181
+                187
             </span>
                 <span>Consultations</span>
             </div>
         
                     <div class="metrics-views col-6">
             <span>
-                74
+                73
             </span>
                 <span>Téléchargements</span>
             </div>
@@ -820,13 +799,7 @@ function LangInit (e, name)
 
 </section>
 
-<div class="navbar-expand-lg">
-    
-    <div id="accordion-actions" class="collapse navbar-collapse">
-        <ul>
-                    </ul>
-            </div>
-</div>
+
 <script type="text/javascript">
     $(function () {
         linkifyElem ('.linkify');
@@ -857,9 +830,9 @@ function LangInit (e, name)
             <ul>
                 <li> <a href="//doc.archives-ouvertes.fr/" target="_blank" > Documentation </a> </li>
                 <li> <a href="//doc.archives-ouvertes.fr/faq" target="_blank" > FAQ </a> </li>
-                <li> <a href="//api.archives-ouvertes.fr/docs" target="_blank" > API </a> </li>
-                <li> <a href="//api.archives-ouvertes.fr/docs/oai" target="_blank" > OAI-PMH </a> </li>
-                <li> <a href="//aurehal.archives-ouvertes.fr/" target="_blank" > AuréHAL </a> </li>
+                <li> <a href="/docs" target="_blank" > API </a> </li>
+                <li> <a href="/docs/oai" target="_blank" > OAI-PMH </a> </li>
+                <li> <a href="https://aurehal.archives-ouvertes.fr" target="_blank" > AuréHAL </a> </li>
             </ul>
         </div>
         <div class="col-sm-4 col-md-2">
@@ -876,7 +849,7 @@ function LangInit (e, name)
             <ul>
                 <li> <a href="https://www.ouvrirlascience.fr/je-publie-quels-sont-mes-droits/" target="_blank" > Je publie, quels sont mes droits ? </a> </li>
                 <li> <a href="https://www.ouvrirlascience.fr/guide-application-loi-republique-numerique-article-30-ecrits-scientifiques-version-courte/" target="_blank" > Loi pour une République numérique </a> </li>
-                <li> <a href="https://www.ouvrirlascience.fr/wp-content/uploads/2022/07/Guide_non_cession_des_droits_web.pdf" target="_blank" > Stratégie de non-cession des droits </a> </li>
+                <li> <a href="https://www.ouvrirlascience.fr/mettre-en-oeuvre-la-strategie-de-non-cession-des-droits-sur-les-publications-scientifiques/" target="_blank" > Stratégie de non-cession des droits </a> </li>
                 <li> <a href="https://v2.sherpa.ac.uk/romeo/" target="_blank" > SHERPA/RoMEO </a> </li>
             </ul>
         </div>
@@ -884,10 +857,10 @@ function LangInit (e, name)
             <p> Portails </p>
             <ul>
                 <li><a href="https://hal.archives-ouvertes.fr/browse/portal" target="_blank"> Portails institutionnels </a></li>
-                <li><a href="//hal.archives-ouvertes.fr" target="_blank" >HAL</a></li>
-                <li><a href="//halshs.archives-ouvertes.fr" target="_blank" >HAL SHS</a></li>
-                <li><a href="//tel.archives-ouvertes.fr" target="_blank" >HAL Thèses</a></li>
-                <li><a href="//medihal.archives-ouvertes.fr" target="_blank" >MédiHAL</a></li>
+                <li><a href="https://hal.archives-ouvertes.fr" target="_blank" >HAL</a></li>
+                <li><a href="//shs.hal.science" target="_blank" >HAL SHS</a></li>
+                <li><a href="//these.hal.science" target="_blank" >HAL Thèses</a></li>
+                <li><a href="//media.hal.science" target="_blank" >MédiHAL</a></li>
             </ul>
         </div>
         <div class="col-sm-4 col-md-2">
@@ -900,5 +873,6 @@ function LangInit (e, name)
         </div>
     </div>
 </footer>
+
 </body>
 </html>

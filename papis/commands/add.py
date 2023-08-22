@@ -260,6 +260,7 @@ def run(paths: List[str],
         file_name: Optional[str] = None,
         subfolder: Optional[str] = None,
         base_path: Optional[str] = None,
+        batch: bool = False,
         confirm: bool = False,
         open_file: bool = False,
         edit: bool = False,
@@ -450,6 +451,13 @@ def run(paths: List[str],
         logger.warning(
             "A document (shown above) in the '%s' library seems to match the "
             "one to be added.", papis.config.get_lib())
+
+        if batch:
+            logger.warning(
+                "No new document is created! Add this document in "
+                "interactive mode (no '--batch') or use 'papis update' instead.")
+            return
+
         logger.warning(
             "Hint: Use the 'papis update' command instead to update the "
             "existing document.")
@@ -595,12 +603,12 @@ def cli(files: List[str],
     matching_importers = papis.utils.get_matching_importer_by_name(
         from_importer, only_data=only_data)
 
-    if not from_importer and not batch and files:
+    if not from_importer and files:
         matching_importers = sum((
             papis.utils.get_matching_importer_or_downloader(f, only_data=only_data)
             for f in files), [])
 
-        if matching_importers:
+        if matching_importers and not batch:
             logger.info("These importers where automatically matched. "
                         "Select the ones you want to use.")
 
@@ -656,6 +664,7 @@ def cli(files: List[str],
         file_name=file_name,
         subfolder=subfolder,
         base_path=base_path,
+        batch=batch,
         confirm=confirm,
         open_file=open_file,
         edit=edit,
