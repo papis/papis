@@ -545,9 +545,10 @@ def run(paths: List[str],
 @papis.cli.bool_flag(
     "--list-importers", "--li", "list_importers",
     help="List all available papis importers")
-@papis.cli.bool_flag(
-    "--od", "--only-data", "only_data",
-    help="Disable file download")
+@click.option(
+    "--download-files/--no-download-files",
+    help="Download file with importer if available or not.",
+    default=lambda: True if papis.config.get("download-files") else False)
 @papis.cli.bool_flag(
     "--force-download", "--fd", "force_download",
     help="Download file with importer even if local file is passed")
@@ -569,7 +570,7 @@ def cli(files: List[str],
         git: bool,
         link: bool,
         list_importers: bool,
-        only_data: bool,
+        download_files: bool,
         force_download: bool,
         fetch_citations: bool) -> None:
     """
