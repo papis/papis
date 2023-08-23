@@ -252,7 +252,7 @@ def bibtexparser_entry_to_papis(entry: Dict[str, Any]) -> Dict[str, Any]:
 
     _k = papis.document.KeyConversionPair
     key_conversion = [
-        _k("ID", [{"key": "ref", "action": lambda x: None}]),
+        _k("ID", [{"key": "ref", "action": None}]),
         _k("ENTRYTYPE", [{"key": "type", "action": None}]),
         _k("link", [{"key": "url", "action": None}]),
         _k("title", [{
