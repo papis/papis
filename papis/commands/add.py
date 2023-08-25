@@ -617,7 +617,7 @@ def cli(files: List[str],
             matching_importers = [matching_importers[i] for i in matching_indices]
 
     imported = papis.utils.collect_importer_data(
-        matching_importers, batch=batch, only_data=only_data)
+        matching_importers, batch=batch, only_data=download_files)
     ctx.data.update(imported.data)
     ctx.files.extend(imported.files)
 
