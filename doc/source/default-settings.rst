@@ -332,7 +332,7 @@ Bibtex options
 
 .. papis-config:: add-download-files
 
-    If set to *False* the ``--download-files`` flag will be added to every call
+    If set to *True* the ``--download-files`` flag will be added to every call
     of the ``papis add`` command (and ``--no-download-files`` if set to *False*).
     This flag is used to control downloading larger document files (e.g. PDFs)
     by the importers and downloaders that support it (metadata is always
