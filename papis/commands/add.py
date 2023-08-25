@@ -550,9 +550,6 @@ def run(paths: List[str],
     help="Download file with importer if available or not.",
     default=lambda: True if papis.config.get("download-files") else False)
 @papis.cli.bool_flag(
-    "--force-download", "--fd", "force_download",
-    help="Download file with importer even if local file is passed")
-@papis.cli.bool_flag(
     "--fetch-citations",
     help="Fetch citations from a DOI (Digital Object Identifier)",
     default=lambda: papis.config.getboolean("add-fetch-citations"))
@@ -571,7 +568,6 @@ def cli(files: List[str],
         link: bool,
         list_importers: bool,
         download_files: bool,
-        force_download: bool,
         fetch_citations: bool) -> None:
     """
     Command line interface for papis-add.
@@ -598,17 +594,13 @@ def cli(files: List[str],
         confirm = False
         open_file = False
 
-    if download_files:
-        only_data = bool(ctx.files) and not force_download
-    else:
-        only_data = False
-
     matching_importers = papis.utils.get_matching_importer_by_name(
-        from_importer, only_data=only_data)
+        from_importer, only_data=download_files)
 
     if not from_importer and files:
         matching_importers = sum((
-            papis.utils.get_matching_importer_or_downloader(f, only_data=only_data)
+            papis.utils.get_matching_importer_or_downloader(f,
+                                                            only_data=download_files)
             for f in files), [])
 
         if matching_importers and not batch:
