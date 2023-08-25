@@ -330,6 +330,14 @@ Bibtex options
     Configure a default for the ``--subfolder`` command line option. Note that, this setting is not
     allowed to contain formatting options. However, one can also specify nested sub-folders.
 
+.. papis-config:: add-download-files
+
+    If set to *False* the ``--download-files`` flag will be added to every call
+    of the ``papis add`` command (and ``--no-download-files`` if set to *False*).
+    This flag is used to control downloading larger document files (e.g. PDFs)
+    by the importers and downloaders that support it (metadata is always
+    downloaded by ``papis add``).
+
 ``papis browse`` options
 ------------------------
 

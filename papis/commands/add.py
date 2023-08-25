@@ -548,7 +548,7 @@ def run(paths: List[str],
 @click.option(
     "--download-files/--no-download-files",
     help="Download file with importer if available or not.",
-    default=lambda: True if papis.config.get("download-files") else False)
+    default=lambda: True if papis.config.get("add-download-files") else False)
 @papis.cli.bool_flag(
     "--fetch-citations",
     help="Fetch citations from a DOI (Digital Object Identifier)",
