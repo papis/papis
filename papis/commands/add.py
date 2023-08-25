@@ -595,12 +595,12 @@ def cli(files: List[str],
         open_file = False
 
     matching_importers = papis.utils.get_matching_importer_by_name(
-        from_importer, only_data=download_files)
+        from_importer, only_data=not download_files)
 
     if not from_importer and files:
         matching_importers = sum((
-            papis.utils.get_matching_importer_or_downloader(f,
-                                                            only_data=download_files)
+            papis.utils.get_matching_importer_or_downloader(
+                f, only_data=not download_files)
             for f in files), [])
 
         if matching_importers and not batch:
@@ -617,7 +617,7 @@ def cli(files: List[str],
             matching_importers = [matching_importers[i] for i in matching_indices]
 
     imported = papis.utils.collect_importer_data(
-        matching_importers, batch=batch, only_data=download_files)
+        matching_importers, batch=batch, only_data=not download_files)
     ctx.data.update(imported.data)
     ctx.files.extend(imported.files)
 
