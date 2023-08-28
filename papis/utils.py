@@ -128,39 +128,39 @@ def run(cmd: Sequence[str],
 
     logger.debug("Running command: '%s'.", cmd)
 
-    # NOTE: Detached processes do not fail properly when the command does not
+    # NOTE: detached processes do not fail properly when the command does not
     # exist, so we check for it manually here
     import shutil
     if not shutil.which(cmd[0]):
-        raise FileNotFoundError("Command not found: '{}'".format(cmd[0]))
+        raise FileNotFoundError(f"Command not found: '{cmd[0]}'")
 
     import subprocess
     if wait:
         logger.debug("Waiting for process to finish.")
-        subprocess.call(cmd, cwd=cwd, env=env)
+        subprocess.call(cmd, shell=False, cwd=cwd, env=env)
     else:
-        logger.debug("Not waiting for process to finish.")
-        popen_kwargs: Dict[str, Any] = {
-            "cwd": cwd,
-            "env": env,
-            "shell": False,
-            "stdin": None,
-            "stdout": subprocess.DEVNULL,
-            "stderr": subprocess.DEVNULL,
-        }
-
-        # NOTE: Detach process so that the terminal can be closed without also
+        # NOTE: detach process so that the terminal can be closed without also
         # closing the 'opentool' itself with the open document
+        platform_kwargs: Dict[str, Any] = {}
         if sys.platform == "win32":
-            popen_kwargs["creationflags"] = subprocess.DETACHED_PROCESS
-            popen_kwargs["creationflags"] |= subprocess.CREATE_NEW_PROCESS_GROUP
+            platform_kwargs["creationflags"] = (
+                subprocess.DETACHED_PROCESS
+                | subprocess.CREATE_NEW_PROCESS_GROUP)
         else:
             # NOTE: 'close_fds' is not supported on windows with stdout/stderr
             # https://docs.python.org/3/library/subprocess.html#subprocess.Popen
-            popen_kwargs["close_fds"] = True
+            platform_kwargs["close_fds"] = True
             cmd.insert(0, "nohup")
 
-        subprocess.Popen(cmd, **popen_kwargs)
+        logger.debug("Not waiting for process to finish.")
+        subprocess.Popen(cmd,
+                         shell=False,
+                         cwd=cwd,
+                         env=env,
+                         stdin=None,
+                         stdout=subprocess.DEVNULL,
+                         stderr=subprocess.DEVNULL,
+                         **platform_kwargs)
 
 
 def general_open(file_name: str,
@@ -188,15 +188,15 @@ def general_open(file_name: str,
         opener = default_opener
 
     import shlex
-    if sys.platform == "win32":
-        cmd = shlex.split(str(opener), posix=False) + [file_name]
-    else:
-        cmd = shlex.split("{} '{}'".format(opener, file_name))
+
+    # NOTE: 'opener' can be a command with arguments, so we split it properly
+    is_windows = sys.platform == "win32"
+    cmd = shlex.split(str(opener), posix=not is_windows) + [file_name]
 
     import shutil
-    if not shutil.which(cmd[0]):
+    if shutil.which(cmd[0]) is None:
         raise FileNotFoundError(
-            "Command not found for key '{}': '{}'".format(key, opener))
+            f"Command not found for '{key}': '{opener}'")
 
     run(cmd, wait=wait)
 
@@ -441,7 +441,7 @@ def get_matching_importer_or_downloader(
         + papis.downloaders.get_available_downloaders())
 
     for cls in all_importer_classes:
-        name = "{}.{}".format(cls.__module__, cls.__name__)
+        name = f"{cls.__module__}.{cls.__name__}"
         logger.debug("Trying with importer "
                      "{c.Back.BLACK}{c.Fore.YELLOW}%s{c.Style.RESET_ALL}.",
                      name)
@@ -551,7 +551,7 @@ def collect_importer_data(
                         importer.name,
                         "\n\t".join(importer.ctx.files))
 
-            msg = "Use this file? (from {})".format(importer.name)
+            msg = f"Use this file? (from {importer.name})"
             for f in importer.ctx.files:
                 papis.utils.open_file(f)
                 if batch or papis.tui.utils.confirm(msg):
@@ -610,10 +610,9 @@ def dump_object_doc(
         headline = re_whitespace.sub(" ", lines[0].strip())
         if bright:
             name = (
-                "{c.Style.BRIGHT}{name}{c.Style.RESET_ALL}"
-                .format(c=colorama, name=name))
+                f"{colorama.Style.BRIGHT}{name}{colorama.Style.RESET_ALL}"
+                )
 
-        result.append("{name}{sep}{headline}"
-                      .format(name=name, sep=sep, headline=headline))
+        result.append(f"{name}{sep}{headline}")
 
     return result

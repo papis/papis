@@ -8,16 +8,16 @@ class DefaultSettingValueMissing(KeyError):
     default value."""
 
     def __init__(self, key: str) -> None:
-        message = """
+        message = f"""
 
-    The configuration setting '{0}' is not defined.
+    The configuration setting '{key}' is not defined.
     Try setting its value in your configuration file as such:
 
         [settings]
-        {0} = some-value
+        {key} = some-value
 
     Don't forget to check the documentation.
-        """.format(key)
+        """
         super().__init__(message)
 
 

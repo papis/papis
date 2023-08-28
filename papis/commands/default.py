@@ -48,7 +48,7 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 
-class MultiCommand(click.core.MultiCommand):
+class ScriptLoaderGroup(click.Group):
 
     scripts = papis.commands.get_all_scripts()
     script_names = sorted(scripts)
@@ -56,8 +56,8 @@ class MultiCommand(click.core.MultiCommand):
     def list_commands(self, ctx: click.core.Context) -> List[str]:
         """List all matched commands in the command folder and in path
 
-        >>> mc = MultiCommand()
-        >>> rv = mc.list_commands(None)
+        >>> group = ScriptLoaderGroup()
+        >>> rv = group.list_commands(None)
         >>> len(rv) > 0
         True
         """
@@ -69,11 +69,11 @@ class MultiCommand(click.core.MultiCommand):
             name: str) -> Optional[click.core.Command]:
         """Get the command to be run
 
-        >>> mc = MultiCommand()
-        >>> cmd = mc.get_command(None, 'add')
+        >>> group = ScriptLoaderGroup()
+        >>> cmd = group.get_command(None, 'add')
         >>> cmd.name, cmd.help
         ('add', 'Add...')
-        >>> mc.get_command(None, 'this command does not exist')
+        >>> group.get_command(None, 'this command does not exist')
         Command ... is unknown!
         """
         try:
@@ -87,11 +87,11 @@ class MultiCommand(click.core.MultiCommand):
                 click.echo("Command '{name}' is unknown! Did you mean '{matches}'?"
                            .format(name=name, matches="' or '".join(matches)))
             else:
-                click.echo("Command '{name}' is unknown!".format(name=name))
+                click.echo(f"Command '{name}' is unknown!")
 
             # return the match if there was only one match
             if len(matches) == 1:
-                click.echo("I suppose you meant: '{}'".format(matches[0]))
+                click.echo(f"I suppose you meant: '{matches[0]}'")
                 script = self.scripts[matches[0]]
             else:
                 return None
@@ -102,7 +102,7 @@ class MultiCommand(click.core.MultiCommand):
         # If it gets here, it means that it is an external script
         import copy
         from papis.commands.external import external_cli
-        cli: click.Command = copy.copy(external_cli)
+        cli = copy.copy(external_cli)
 
         from papis.commands.external import get_command_help
         cli.context_settings["obj"] = script
@@ -110,7 +110,6 @@ class MultiCommand(click.core.MultiCommand):
             cli.help = get_command_help(script.path)
         cli.name = script.command_name
         cli.short_help = cli.help
-
         return cli
 
 
@@ -123,25 +122,22 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
     return _on_finish
 
 
-@click.group(                           # type: ignore[arg-type,type-var]
-    cls=MultiCommand,
-    invoke_without_command=True)
+@click.group(
+    cls=ScriptLoaderGroup,
+    invoke_without_command=False)
 @click.help_option("--help", "-h")
 @click.version_option(version=papis.__version__)
-@click.option(
-    "-v",
-    "--verbose",
+@papis.cli.bool_flag(
+    "-v", "--verbose",
     help="Make the output verbose (equivalent to --log DEBUG)",
-    default="PAPIS_DEBUG" in os.environ,
-    is_flag=True)
+    default="PAPIS_DEBUG" in os.environ)
 @click.option(
     "--profile",
     help="Print profiling information into file",
     type=click.Path(),
     default=None)
 @click.option(
-    "-l",
-    "--lib",
+    "-l", "--lib",
     help="Choose a library name or library path (unnamed library)",
     default=lambda: papis.config.getstring("default-library"))
 @click.option(
@@ -150,16 +146,9 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
     help="Configuration file to use",
     type=click.Path(exists=True),
     default=None)
-@click.option(
+@papis.cli.bool_flag(
     "--pick-lib",
-    help="Pick library to use",
-    default=False,
-    is_flag=True)
-@click.option(
-    "--cc", "--clear-cache", "clear_cache",
-    help="Clear cache of the library used",
-    default=False,
-    is_flag=True)
+    help="Pick library to use")
 @click.option(
     "-s", "--set", "set_list",
     type=(str, str),
@@ -193,7 +182,6 @@ def run(verbose: bool,
         log: str,
         logfile: Optional[str],
         pick_lib: bool,
-        clear_cache: bool,
         set_list: List[Tuple[str, str]],
         color: str,
         np: Optional[int]) -> None:
@@ -234,9 +222,9 @@ def run(verbose: bool,
 
     if not library.paths:
         raise RuntimeError(
-            "Library '{}' does not have any existing folders attached to it. "
+            f"Library '{lib}' does not have any existing folders attached to it. "
             "Please define and create the paths in the configuration file"
-            .format(lib))
+            )
 
     # Now the library should be set, let us check if there is a
     # local configuration file there, and if there is one, then
@@ -252,6 +240,3 @@ def run(verbose: bool,
     for pair in set_list:
         logger.debug("Setting '%s' to '%s'.", *pair)
         papis.config.set(pair[0], pair[1])
-
-    if clear_cache:
-        papis.database.get().clear()

@@ -191,7 +191,7 @@ def get_documents_in_lib(
     elif isinstance(search, dict):
         return db.query_dict(search)
     else:
-        raise TypeError("Unknown search parameter: '{}'".format(search))
+        raise TypeError(f"Unknown search parameter: '{search}'")
 
 
 def clear_lib_cache(lib: Optional[str] = None) -> None:

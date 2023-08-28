@@ -38,6 +38,12 @@ class Database(ABC):
         """
         return self.lib.paths
 
+    def get_cache_path(self) -> str:
+        """Get the path to the actual cache file or directory.
+        """
+        raise NotImplementedError("Cache path not defined for backend '{}'"
+                                  .format(self.get_backend_name()))
+
     def match(
             self,
             document: papis.document.Document,
@@ -49,7 +55,7 @@ class Database(ABC):
         :param query_string: Query string
         """
         raise NotImplementedError(
-            "Match not defined for backend '{}'".format(self.get_backend_name()))
+            f"Match not defined for backend '{self.get_backend_name()}'")
 
     @abstractmethod
     def clear(self) -> None:

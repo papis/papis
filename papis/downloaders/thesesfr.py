@@ -71,6 +71,6 @@ class Downloader(papis.downloaders.Downloader):
         >>> d.get_bibtex_url()
         'https://www.theses.fr/2014TOU30305.bib'
         """
-        url = "https://www.theses.fr/{id}.bib".format(id=self.get_identifier())
+        url = f"https://www.theses.fr/{self.get_identifier()}.bib"
         self.logger.debug("Using BibTeX URL: '%s'.", url)
         return url

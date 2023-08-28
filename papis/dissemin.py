@@ -25,7 +25,7 @@ def dissemin_authors_to_papis_authors(data: Dict[str, Any]) -> Dict[str, Any]:
             )
         new_data["author_list"] = authors
         new_data["author"] = ",".join(
-            ["{a[given_name]} {a[surname]}".format(a=a) for a in authors])
+            [f"{a['given_name']} {a['surname']}" for a in authors])
     return new_data
 
 
@@ -65,7 +65,7 @@ def get_data(query: str = "") -> List[Dict[str, Any]]:
     return sum([dissemindoc_to_papis(d) for d in paperlist["papers"]], [])
 
 
-@click.command("dissemin")              # type: ignore[arg-type]
+@click.command("dissemin")
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.option("--query", "-q", default="", type=str)

@@ -50,7 +50,7 @@ Command-line Interface
 """
 
 import os
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import click
 
@@ -89,17 +89,15 @@ def run(documents: List[papis.document.Document], to_format: str) -> str:
     return str(ret_string)
 
 
-@click.command("export")                # type: ignore[arg-type]
+@click.command("export")
 @click.help_option("--help", "-h")
 @papis.cli.query_argument()
 @papis.cli.doc_folder_option()
 @papis.cli.sort_option()
 @papis.cli.all_option()
-@click.option(
+@papis.cli.bool_flag(
     "--folder",
-    help="Export document folder to share",
-    default=False,
-    is_flag=True)
+    help="Export document folder to share")
 @click.option(
     "-o",
     "--out",
@@ -112,7 +110,7 @@ def run(documents: List[papis.document.Document], to_format: str) -> str:
     type=click.Choice(available_formats()),
     default="bibtex",)
 def cli(query: str,
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
         sort_reverse: bool,
         folder: str,
@@ -166,7 +164,7 @@ def cli(query: str,
             shutil.copytree(_doc_folder, outdir)
 
 
-@click.command("export")                # type: ignore[arg-type]
+@click.command("export")
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.option(

@@ -1,5 +1,5 @@
 {
-  "abstract": "The Cr2 potential energy curve is obtained by treating the dynamical correlation energy terms using a CI procedure based on determinants, equivalent t…",
+  "abstract": "The Cr2 potential energy curve is obtained by treating the dynamical correlation energy terms using a CI procedure based on determinants, equivalent to multi-reference second-order perturbation theory with the Epstein-Nesbet partition of the Hamiltonian. One of the advantages of this treatment is that the level shifts required for the equivalent Møller-Plesset type of treatment to eliminate intruder states and avoid divergences in the ground state second-order energy expression, are not required. Moreover, by truncating the reference space, the dynamical and the non-dynamical correlation energy is included also for the 3s, 3p electrons. The potentials are compared to experiment and to the most accurate theoretical potential curves in the literature.",
   "author": "Mitrushenkov, Alexander O. and Palmieri, Paolo",
   "author_list": [
     {

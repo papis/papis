@@ -359,7 +359,7 @@ def general_get(key: str,
     # If the <section> is not given, then only the general and library settings
     # are checked.
 
-    qualified_key = key if section is None else "{}-{}".format(section, key)
+    qualified_key = key if section is None else f"{section}-{key}"
     candidate_sections = (
         # NOTE: these are in overwriting order: general < custom < lib
         [(global_section, qualified_key)]
@@ -471,8 +471,8 @@ def getlist(key: str, section: Optional[str] = None) -> List[str]:
         rawvalue = eval(rawvalue)
     except Exception:
         raise SyntaxError(
-            "The key '{}' must be a valid Python object: {}"
-            .format(key, rawvalue))
+            f"The key '{key}' must be a valid Python object: {rawvalue}"
+            )
     else:
         if not isinstance(rawvalue, list):
             raise SyntaxError(
@@ -556,12 +556,12 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
             config[lib.name] = {"dirs": str(lib.paths)}
         else:
             raise RuntimeError(
-                "Library '{lib}' does not seem to exist. "
+                f"Library '{libname}' does not seem to exist. "
                 "To add a library simply write the following "
-                "in your configuration file located at '{config}'\n\n"
-                "\t[{lib}]\n"
-                "\tdir = path/to/your/{lib}/folder"
-                .format(lib=libname, config=get_config_file()))
+                f"in your configuration file located at '{get_config_file()}'\n\n"
+                f"\t[{libname}]\n"
+                f"\tdir = path/to/your/{libname}/folder"
+                )
     else:
         try:
             # NOTE: can't use `getstring(...)` due to cyclic dependency

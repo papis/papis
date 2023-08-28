@@ -44,7 +44,7 @@ class Command:
         self.aliases = aliases
 
     @property
-    def app(self) -> Application:
+    def app(self) -> Application[Any]:
         return get_app()
 
     @property
@@ -52,7 +52,7 @@ class Command:
         return [self.name] + self.aliases
 
 
-class CommandLinePrompt(ConditionalContainer):  # type: ignore
+class CommandLinePrompt(ConditionalContainer):
     """
     A vim-like command line prompt widget.
     It's supposed to be instantiated only once.
@@ -62,7 +62,8 @@ class CommandLinePrompt(ConditionalContainer):  # type: ignore
             commands = []
 
         self.commands = commands
-        wc = WordCompleter(sum([c.names for c in commands], []))
+        names: List[str] = sum((c.names for c in commands), [])
+        wc = WordCompleter(names)
         self.buf = Buffer(
             completer=wc, complete_while_typing=True
         )
@@ -92,7 +93,7 @@ class CommandLinePrompt(ConditionalContainer):  # type: ignore
                 "More than one command matches the input: ['{}']"
                 .format("', '".join(cmd.name for cmd in cmds)))
         elif not cmds:
-            raise ValueError("No command found for '{}'".format(name))
+            raise ValueError(f"No command found for '{name}'")
 
         input_cmd.pop(0)
         cmds[0].run(cmds[0], *input_cmd)

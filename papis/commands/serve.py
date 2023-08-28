@@ -3,7 +3,8 @@ import os
 import json
 import http.server
 import urllib.parse
-from typing import Any, List, Optional, Tuple, Callable, Dict  # noqa: ignore
+from typing import Any, List, Optional, Tuple, Callable, Dict
+
 import functools
 import cgi
 import collections
@@ -154,7 +155,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         if TAGS_LIST.get(libname) is None:
             TAGS_LIST[libname] = collections.defaultdict(int)
             for tag in tags_of_tags:
-                TAGS_LIST[libname][tag] += 1  # type: ignore
+                TAGS_LIST[libname][tag] += 1  # type: ignore[index]
 
         page = papis.web.tags.html(libname=libname,
                                    pretitle="TAGS",
@@ -168,7 +169,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         libname = libname or papis.api.get_lib_name()
         self._handle_lib(libname)
         TAGS_LIST[libname] = None
-        self.redirect("/library/{}/tags".format(libname))
+        self.redirect(f"/library/{libname}/tags")
 
     @ok_html
     def page_libraries(self) -> None:
@@ -244,11 +245,11 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self._send_json(docs)
 
     def redirect(self, url: str, code: int = 301) -> None:
-        page = ("""
+        page = (f"""
                   <head>
                      <meta http-equiv="Refresh" content="0; URL={url}">
                   </head>
-                """.format(url=url))
+                """)
         self.send_response(code)
         self.send_header_html()
         self.send_header("Location", url)
@@ -280,7 +281,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.wfile.write(f.read())
             self.wfile.flush()
         else:
-            raise FileNotFoundError("File '{}' does not exist".format(path))
+            raise FileNotFoundError(f"File '{path}' does not exist")
 
     def process_routes(self,
                        routes: List[Tuple[str, Any]]) -> None:
@@ -298,8 +299,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
             self._send_json_error(400, str(e))
         else:
             self._send_json_error(404,
-                                  "Server path {} not understood"
-                                  .format(self.path))
+                                  f"Server path {self.path} not understood"
+                                  )
 
     def _handle_lib(self, libname: str) -> None:
         papis.api.set_lib_from_name(libname)
@@ -312,7 +313,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         doc = db.find_by_id(papis_id)
         if not doc:
             raise ValueError(
-                "Document with ref '{}' not found in the database".format(papis_id)
+                f"Document with ref '{papis_id}' not found in the database"
                 )
         return doc
 
@@ -350,7 +351,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         try:
             papis.yaml.yaml_to_data(fdr.name, raise_exception=True)
         except ValueError as e:
-            self._send_json_error(404, "Error in info file: {}".format(e))
+            self._send_json_error(404, f"Error in info file: {e}")
             os.unlink(fdr.name)
             return
         else:
@@ -406,7 +407,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.wfile.flush()
             return
 
-        raise FileNotFoundError("File '{}' does not exist".format(path))
+        raise FileNotFoundError(f"File '{path}' does not exist")
 
     def do_POST(self) -> None:              # noqa: N802
         """
@@ -470,7 +471,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.process_routes(routes)
 
 
-@click.command("serve")                 # type: ignore[arg-type]
+@click.command("serve")
 @click.help_option("-h", "--help")
 @click.option("-p", "--port",
               help="Port to listen to",

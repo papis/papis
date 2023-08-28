@@ -1,7 +1,6 @@
 import re
 from abc import ABC, abstractmethod
-from typing.re import Pattern
-from typing import Callable, Sequence, TypeVar, List, Optional, Generic
+from typing import Callable, Sequence, TypeVar, List, Optional, Generic, Pattern
 
 import papis.pick
 import papis.config
@@ -11,12 +10,12 @@ T = TypeVar("T")
 
 
 class Command(ABC, Generic[T]):
-    regex: Optional[Pattern] = None
+    regex: Optional[Pattern[str]] = None
     command: str = ""
     key: str = ""
 
     def binding(self) -> str:
-        return "{}:{}".format(self.key, self.command)
+        return f"{self.key}:{self.command}"
 
     def indices(self, line: str) -> Optional[List[int]]:
         m = self.regex.match(line) if self.regex else None

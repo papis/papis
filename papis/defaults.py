@@ -1,6 +1,6 @@
 import sys
 import os
-from typing import Dict, Any  # noqa: ignore
+from typing import Any, Dict
 
 
 def get_default_opener() -> str:
@@ -8,9 +8,13 @@ def get_default_opener() -> str:
     """
     if sys.platform.startswith("darwin"):
         return "open"
-    if os.name == "nt":
-        return "start"
-    return "xdg-open"
+    elif sys.platform == "win32":
+        # NOTE: 'start' is a cmd internal command and cannot be called on its
+        # own without 'call(..., shell=True)' so this calls 'cmd.exe' directly
+        return "cmd.exe /c start"
+    else:
+        # NOTE: should work on Linux / FreeBSD / cygwin
+        return "xdg-open"
 
 
 settings: Dict[str, Any] = {

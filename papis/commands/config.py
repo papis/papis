@@ -75,6 +75,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import click
 import colorama
 
+import papis.cli
 import papis.config
 import papis.commands
 import papis.logging
@@ -105,7 +106,7 @@ def parse_option(
         section = parts[0] if parts[0] else None
         key = parts[1]
     else:
-        raise ValueError("Unsupported option format: '{}'".format(option))
+        raise ValueError(f"Unsupported option format: '{option}'")
 
     return section, key
 
@@ -207,22 +208,20 @@ def run(
     return result
 
 
-@click.command("config")                # type: ignore[arg-type]
+@click.command("config")
 @click.help_option("--help", "-h")
 @click.argument("options", nargs=-1)
 @click.option(
     "-s", "--section",
     help="select a default section for the options",
     default=None)
-@click.option(
+@papis.cli.bool_flag(
     "-d", "--default",
     help="List default configuration setting values, instead of those in the "
-         "configuration file",
-    default=False, is_flag=True)
-@click.option(
+         "configuration file")
+@papis.cli.bool_flag(
     "--json", "json_",
-    help="Print settings in a JSON format",
-    default=False, is_flag=True)
+    help="Print settings in a JSON format")
 def cli(options: List[str],
         section: Optional[str],
         json_: bool,
@@ -253,13 +252,13 @@ def cli(options: List[str],
                     lines.append("")
 
                 is_first = False
-                lines.append("[{}]".format(section))
+                lines.append(f"[{section}]")
 
                 for key, value in settings.items():
                     lines.append(format_option(key, value))
         else:
             if section is not None and all("." not in o for o in options):
-                lines.append("[{}]".format(section))
+                lines.append(f"[{section}]")
 
             for key, value in result.items():
                 lines.append(format_option(key, value))

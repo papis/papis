@@ -54,7 +54,7 @@ def get_exported_variables(ctx: Optional[Dict[str, Any]] = None) -> Dict[str, st
     return exports
 
 
-@click.command(                         # type: ignore[arg-type]
+@click.command(
     context_settings={
         "ignore_unknown_options": True,
         "help_option_names": [],
@@ -67,7 +67,7 @@ def external_cli(ctx: click.core.Context, flags: List[str]) -> None:
     script: papis.commands.Script = ctx.obj
     path = script.path
     if not path:
-        raise FileNotFoundError("Path for script '{}' not found".format(script))
+        raise FileNotFoundError(f"Path for script '{script}' not found")
 
     cmd = [path] + list(flags)
     logger.debug("Calling external command '%s'.", cmd)

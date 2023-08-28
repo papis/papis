@@ -1,9 +1,8 @@
-from prompt_toolkit.utils import Event
 from prompt_toolkit.application import Application
 from prompt_toolkit.formatted_text.html import HTML
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.layout.processors import BeforeInput
-from prompt_toolkit.key_binding import KeyBindings, merge_key_bindings
+from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent, merge_key_bindings
 from prompt_toolkit.filters import has_focus, Condition
 from prompt_toolkit.styles import Style
 from prompt_toolkit.layout.containers import (
@@ -19,9 +18,9 @@ from .widgets.command_line_prompt import Command, CommandLinePrompt
 from .widgets import InfoWindow, HelpWindow, MessageToolbar
 from .widgets.list import Option, OptionsList
 
-from typing import (  # noqa: ignore
+from typing import (
     Optional, Dict, Any, List, Callable, Tuple, Generic,
-    Sequence, TypedDict)
+    Sequence, TypedDict, Union)
 
 __all__ = [
     "Option",
@@ -102,157 +101,165 @@ def get_keys_info() -> Dict[str, KeyInfo]:
     return _KEYS_INFO
 
 
-def create_keybindings(app: Application) -> KeyBindings:
+def create_keybindings(app: "Picker[Any]") -> KeyBindings:
     keys_info = get_keys_info()
     kb = KeyBindings()
 
-    @kb.add("escape",  # type: ignore
+    @kb.add("escape",
             filter=Condition(lambda: app.message_toolbar.text))
-    def _(event: Event) -> None:
-        event.app.message_toolbar.text = None
+    def _escape_message(event: KeyPressEvent) -> None:
+        app.message_toolbar.text = None
 
-    @kb.add("escape",  # type: ignore
+    @kb.add("escape",
             filter=Condition(lambda: app.error_toolbar.text))
-    def _escape(event: Event) -> None:
-        event.app.error_toolbar.text = None
+    def _escape_error(event: KeyPressEvent) -> None:
+        app.error_toolbar.text = None
 
-    @kb.add("c-n", filter=~has_focus(app.info_window))  # type: ignore
-    @kb.add(keys_info["move_down_key"]["key"],  # type: ignore
+    @kb.add("c-n",                                      # type: ignore[misc]
             filter=~has_focus(app.info_window))
-    def down_(event: Event) -> None:
-        event.app.options_list.move_down()
-        event.app.refresh()
-        event.app.update()
+    @kb.add(str(keys_info["move_down_key"]["key"]),     # type: ignore[misc]
+            filter=~has_focus(app.info_window))
+    def _down(event: KeyPressEvent) -> None:
+        app.options_list.move_down()
+        app.refresh()
+        app.update()
 
-    @kb.add(  # type: ignore
+    @kb.add(                                            # type: ignore[misc]
         keys_info["move_down_while_info_window_active_key"]["key"],
         filter=has_focus(app.info_window))
-    def down_info(event: Event) -> None:
-        down_(event)
-        event.app.update_info_window()
+    def _down_info(event: KeyPressEvent) -> None:
+        _down(event)
+        app.update_info_window()
 
-    @kb.add("c-p", filter=~has_focus(app.info_window))  # type: ignore
-    @kb.add(keys_info["move_up_key"]["key"],  # type: ignore
+    @kb.add("c-p",                                      # type: ignore[misc]
             filter=~has_focus(app.info_window))
-    def up_(event: Event) -> None:
-        event.app.options_list.move_up()
-        event.app.refresh()
-        event.app.update()
+    @kb.add(keys_info["move_up_key"]["key"],            # type: ignore[misc]
+            filter=~has_focus(app.info_window))
+    def _up(event: KeyPressEvent) -> None:
+        app.options_list.move_up()
+        app.refresh()
+        app.update()
 
-    @kb.add(  # type: ignore
+    @kb.add(                                            # type: ignore[misc]
         keys_info["move_up_while_info_window_active_key"]["key"],
         filter=has_focus(app.info_window))
-    def up_info(event: Event) -> None:
-        up_(event)
-        event.app.update_info_window()
+    def _up_info(event: KeyPressEvent) -> None:
+        _up(event)
+        app.update_info_window()
 
-    @kb.add("q", filter=has_focus(app.help_window))  # type: ignore
-    @kb.add("escape", filter=has_focus(app.help_window))  # type: ignore
-    def _help_quit(event: Event) -> None:
-        event.app.layout.focus(app.help_window.window)
-        event.app.layout.focus(app.command_line_prompt.window)
-        event.app.message_toolbar.text = None
-        event.app.layout.focus(event.app.options_list.search_buffer)
+    @kb.add("q",                                        # type: ignore[misc]
+            filter=has_focus(app.help_window))
+    @kb.add("escape",                                   # type: ignore[misc]
+            filter=has_focus(app.help_window))
+    def _help_quit(event: KeyPressEvent) -> None:
+        app.layout.focus(app.help_window.window)
+        app.layout.focus(app.command_line_prompt.window)
+        app.message_toolbar.text = None
+        app.layout.focus(app.options_list.search_buffer)
 
-    @kb.add("q", filter=has_focus(app.info_window))  # type: ignore
-    @kb.add("s-tab", filter=has_focus(app.info_window))  # type: ignore
-    @kb.add("escape", filter=has_focus(app.info_window))  # type: ignore
-    def _info(event: Event) -> None:
-        event.app.layout.focus(event.app.options_list.search_buffer)
-        event.app.message_toolbar.text = None
+    @kb.add("q",                                        # type: ignore[misc]
+            filter=has_focus(app.info_window))
+    @kb.add("s-tab",                                    # type: ignore[misc]
+            filter=has_focus(app.info_window))
+    @kb.add("escape",                                   # type: ignore[misc]
+            filter=has_focus(app.info_window))
+    def _info(event: KeyPressEvent) -> None:
+        app.layout.focus(app.options_list.search_buffer)
+        app.message_toolbar.text = None
 
-    @kb.add(keys_info["focus_command_line_key"]["key"],  # type: ignore
-            filter=~has_focus(app.command_line_prompt))
-    def _command_window(event: Event) -> None:
-        event.app.layout.focus(app.command_line_prompt.window)
+    @kb.add(                                            # type: ignore[misc]
+        keys_info["focus_command_line_key"]["key"],
+        filter=~has_focus(app.command_line_prompt))
+    def _command_window(event: KeyPressEvent) -> None:
+        app.layout.focus(app.command_line_prompt.window)
 
-    @kb.add("enter", filter=has_focus(app.command_line_prompt))  # type: ignore
-    def _enter_(event: Event) -> None:
-        event.app.layout.focus(event.app.options_list.search_buffer)
-        try:
-            event.app.command_line_prompt.trigger()
-        except Exception as e:
-            event.app.error_toolbar.text = str(e)
-        event.app.command_line_prompt.clear()
-
-    @kb.add("escape",  # type: ignore
+    @kb.add("enter",                                    # type: ignore[misc]
             filter=has_focus(app.command_line_prompt))
-    def _escape_when_commandline_has_focus(event: Event) -> None:
-        event.app.layout.focus(event.app.options_list.search_buffer)
-        event.app.command_line_prompt.clear()
+    def _enter(event: KeyPressEvent) -> None:
+        app.layout.focus(app.options_list.search_buffer)
+        try:
+            app.command_line_prompt.trigger()
+        except Exception as e:
+            app.error_toolbar.text = str(e)
+        app.command_line_prompt.clear()
 
-    @kb.add("c-t")  # type: ignore
-    def _toggle_mark_(event: Event) -> None:
-        event.app.options_list.toggle_mark_current_selection()
+    @kb.add("escape",                                   # type: ignore[misc]
+            filter=has_focus(app.command_line_prompt))
+    def _escape_when_commandline_has_focus(event: KeyPressEvent) -> None:
+        app.layout.focus(app.options_list.search_buffer)
+        app.command_line_prompt.clear()
+
+    @kb.add("c-t")
+    def _toggle_mark_(event: KeyPressEvent) -> None:
+        app.options_list.toggle_mark_current_selection()
 
     return kb
 
 
-def get_commands(app: Application) -> Tuple[List[Command], KeyBindings]:
-
+def get_commands(app: "Picker[Any]") -> Tuple[List[Command], KeyBindings]:
     kb = KeyBindings()
     keys_info = get_keys_info()
 
-    @kb.add("c-q")  # type: ignore
-    @kb.add("c-c")  # type: ignore
-    def exit(event: Event) -> None:
-        event.app.deselect()
-        event.app.exit()
+    @kb.add("c-q")
+    @kb.add("c-c")
+    def exit(event: Union[Command, KeyPressEvent]) -> None:
+        app.deselect()
+        app.exit()
 
-    @kb.add("enter",  # type: ignore
+    @kb.add("enter",                                    # type: ignore[misc]
             filter=has_focus(app.options_list.search_buffer))
-    def select(event: Event) -> None:
-        event.app.exit()
+    def select(event: Union[Command, KeyPressEvent]) -> None:
+        app.exit()
 
-    @kb.add(keys_info["open_document_key"]["key"],  # type: ignore
+    @kb.add(keys_info["open_document_key"]["key"],      # type: ignore[misc]
             filter=has_focus(app.options_list.search_buffer))
-    def open(cmd: Command) -> None:
+    def open(event: Union[Command, KeyPressEvent]) -> None:
         from papis.commands.open import run
-        docs = cmd.app.get_selection()
+        docs = app.get_selection()
         for doc in docs:
             run(doc)
 
-    @kb.add(keys_info["edit_document_key"]["key"],  # type: ignore
+    @kb.add(keys_info["edit_document_key"]["key"],      # type: ignore[misc]
             filter=has_focus(app.options_list.search_buffer))
-    def edit(cmd: Command) -> None:
+    def edit(event: Union[Command, KeyPressEvent]) -> None:
         from papis.commands.edit import run
-        docs = cmd.app.get_selection()
+        docs = app.get_selection()
         for doc in docs:
             run(doc)
-        cmd.app.renderer.clear()
+        app.renderer.clear()
 
-    @kb.add(keys_info["edit_notes_key"]["key"],  # type: ignore
+    @kb.add(keys_info["edit_notes_key"]["key"],         # type: ignore[misc]
             filter=has_focus(app.options_list.search_buffer))
-    def edit_notes(cmd: Command) -> None:
+    def edit_notes(event: KeyPressEvent) -> None:
         from papis.commands.edit import edit_notes
-        docs = cmd.app.get_selection()
+        docs = app.get_selection()
         for doc in docs:
             edit_notes(doc)
-        cmd.app.renderer.clear()
+        app.renderer.clear()
 
-    @kb.add(keys_info["show_help_key"]["key"],  # type: ignore
+    @kb.add(keys_info["show_help_key"]["key"],          # type: ignore[misc]
             filter=~has_focus(app.help_window))
-    def help(event: Event) -> None:
-        event.app.layout.focus(app.help_window.window)
-        event.app.message_toolbar.text = "Press q to quit"
+    def help(event: Union[Command, KeyPressEvent]) -> None:
+        app.layout.focus(app.help_window.window)
+        app.message_toolbar.text = "Press q to quit"
 
-    @kb.add(keys_info["show_info_key"]["key"],  # type: ignore
+    @kb.add(keys_info["show_info_key"]["key"],          # type: ignore[misc]
             filter=~has_focus(app.info_window))
-    def info(cmd: Command) -> None:
-        cmd.app.update_info_window()
-        cmd.app.layout.focus(cmd.app.info_window.window)
+    def info(event: Union[Command, KeyPressEvent]) -> None:
+        app.update_info_window()
+        app.layout.focus(app.info_window.window)
 
-    @kb.add("c-g", "g")  # type: ignore
-    @kb.add(keys_info["go_top_key"]["key"])  # type: ignore
-    def go_top(event: Event) -> None:
-        event.app.options_list.go_top()
-        event.app.refresh()
+    @kb.add("c-g", "g")
+    @kb.add(keys_info["go_top_key"]["key"])
+    def go_top(event: Union[Command, KeyPressEvent]) -> None:
+        app.options_list.go_top()
+        app.refresh()
 
-    @kb.add("c-g", "G")  # type: ignore
-    @kb.add(keys_info["go_bottom_key"]["key"])  # type: ignore
-    def go_end(event: Event) -> None:
-        event.app.options_list.go_bottom()
-        event.app.refresh()
+    @kb.add("c-g", "G")
+    @kb.add(keys_info["go_bottom_key"]["key"])
+    def go_end(event: Union[Command, KeyPressEvent]) -> None:
+        app.options_list.go_bottom()
+        app.refresh()
 
     return ([
         Command("open", run=open, aliases=["op"]),
@@ -262,8 +269,8 @@ def get_commands(app: Application) -> Tuple[List[Command], KeyBindings]:
         Command("info", run=info, aliases=["i"]),
         Command("go_top", run=go_top),
         Command("go_bottom", run=go_end),
-        Command("move_down", run=lambda c: c.app.options_list.move_down()),
-        Command("move_up", run=lambda c: c.app.options_list.move_up()),
+        Command("move_down", run=lambda c: app.options_list.move_down()),
+        Command("move_up", run=lambda c: app.options_list.move_up()),
         # Command("echo", run=_echo),
         Command("help", run=help),
     ], kb)
@@ -327,9 +334,7 @@ class Picker(Application, Generic[Option]):  # type: ignore
         keys_info = get_keys_info()
         for k in keys_info:
             help_text += (
-                "<ansired>{k[key]}</ansired>: {k[help]}\n".format(
-                    k=keys_info[k]
-                )
+                f"<ansired>{keys_info[k]['key']}</ansired>: {keys_info[k]['help']}\n"
             )
         self.help_window.text = HTML(help_text)
 
@@ -343,19 +348,19 @@ class Picker(Application, Generic[Option]):  # type: ignore
             else EditingMode.VI,
             layout=self.layout,
             style=Style.from_dict({
-                "options_list.selected_margin": config.get(
+                "options_list.selected_margin": config.getstring(
                     "options_list.selected_margin_style", section="tui"
                 ),
-                "options_list.unselected_margin": config.get(
+                "options_list.unselected_margin": config.getstring(
                     "options_list.unselected_margin_style", section="tui"
                 ),
-                "error_toolbar": config.get(
+                "error_toolbar": config.getstring(
                     "error_toolbar_style", section="tui"
                 ),
-                "message_toolbar": config.get(
+                "message_toolbar": config.getstring(
                     "message_toolbar_style", section="tui"
                 ),
-                "status_line": config.get(
+                "status_line": config.getstring(
                     "status_line_style", section="tui"
                 ),
             }),

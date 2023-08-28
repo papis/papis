@@ -14,7 +14,7 @@ using
 
 .. code:: sh
 
-    papis --cc
+    papis cache clear
 
 When the library scans the document added manually, it will create a ``papis_id``
 key automatically and **it will edit** your ``info.yaml`` file accordingly.

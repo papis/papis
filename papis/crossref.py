@@ -272,10 +272,10 @@ def doi_to_data(doi_string: str) -> Dict[str, Any]:
     if results:
         return results[0]
     raise ValueError(
-        "Could not retrieve data for DOI '{}' from Crossref".format(doi_string))
+        f"Could not retrieve data for DOI '{doi_string}' from Crossref")
 
 
-@click.command("crossref")              # type: ignore[arg-type]
+@click.command("crossref")
 @click.pass_context
 @click.help_option("--help", "-h")
 @click.option("--query", "-q", help="General query", default="")
@@ -451,17 +451,17 @@ class FromCrossrefImporter(papis.importer.Importer):
             papis.document.from_data(d)
             for d in get_data(query=self.uri)]
 
-        if docs:
-            self.logger.info("Got %d matches, picking...", len(docs))
-            docs = list(papis.pick.pick_doc(docs))
+        if not docs:
+            return
 
-            if not docs:
-                return
+        self.logger.warning(
+            "Crossref query '%s' returned %d results. Picking the first one!",
+            self.uri, len(docs))
 
-            doc = docs[0]
-            importer = Importer(uri=doc["doi"])
-            importer.fetch()
-            self.ctx.data = importer.ctx.data.copy()
+        doc = docs[0]
+        importer = Importer(uri=doc["doi"])
+        importer.fetch()
+        self.ctx.data = importer.ctx.data.copy()
 
 
 class Downloader(papis.downloaders.Downloader):

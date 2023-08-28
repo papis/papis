@@ -29,7 +29,7 @@ Command-line Interface
 """
 
 import os
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import click
 import papis.api
@@ -71,7 +71,7 @@ def run(document: papis.document.Document,
             local_in_file_path = in_file_path
 
         if not os.path.exists(local_in_file_path):
-            raise FileNotFoundError("File '{}' not found".format(in_file_path))
+            raise FileNotFoundError(f"File '{in_file_path}' not found")
 
         # Rename the file in the staging area
         new_filename = get_file_name(
@@ -136,7 +136,7 @@ def cli(query: str,
         urls: List[str],
         file_name: Optional[str],
         sort_field: Optional[str],
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         sort_reverse: bool) -> None:
     """Add files to an existing document"""
     documents = papis.cli.handle_doc_folder_query_sort(

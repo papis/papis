@@ -124,6 +124,9 @@ class Database(papis.database.base.Database):
         self.documents: Optional[List[papis.document.Document]] = None
         self.initialize()
 
+    def get_cache_path(self) -> str:
+        return self._get_cache_file_path()
+
     def get_backend_name(self) -> str:
         return "papis"
 
@@ -206,7 +209,7 @@ class Database(papis.database.base.Database):
     def query_dict(self,
                    dictionary: Dict[str, str]) -> List[papis.document.Document]:
         query_string = " ".join(
-            ['{}:"{}" '.format(key, val) for key, val in dictionary.items()])
+            [f'{key}:"{val}" ' for key, val in dictionary.items()])
         return self.query(query_string)
 
     def query(self, query_string: str) -> List[papis.document.Document]:
@@ -243,6 +246,14 @@ class Database(papis.database.base.Database):
             document: papis.document.Document
             ) -> List[Tuple[int, papis.document.Document]]:
         assert isinstance(document, papis.document.Document)
+
+        result = list(filter(
+            lambda d: d[1]["papis_id"] == document["papis_id"],
+            enumerate(self.get_documents())))
+
+        if result:
+            return result
+
         result = list(filter(
             lambda d: d[1].get_main_folder() == document.get_main_folder(),
             enumerate(self.get_documents())))

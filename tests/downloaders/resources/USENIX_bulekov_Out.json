@@ -24,6 +24,7 @@
   "month": "August",
   "pages": "1221--1238",
   "publisher": "USENIX Association",
+  "ref": "277148",
   "title": "Morphuzz: Bending (Input) Space to Fuzz Virtual Devices",
   "type": "inproceedings",
   "url": "https://www.usenix.org/conference/usenixsecurity22/presentation/bulekov",

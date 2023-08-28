@@ -4,9 +4,9 @@ Module for helping ace.js editor functionality.
 
 
 def make_onsubmit_function(name: str, editor: str, content_id: str) -> str:
-    return """
+    return f"""
 function {name}() {{
-    let input = document.querySelector("#{_id}");
+    let input = document.querySelector("#{content_id}");
     input.value = {editor}.getValue();
 }}
-    """.format(name=name, editor=editor, _id=content_id)
+    """

@@ -194,7 +194,7 @@ def get_file_name(
 
     # Remove extension from file_name_base, if any
     file_name_base = re.sub(
-        r"([.]{})?$".format(ext),
+        fr"([.]{ext})?$",
         "",
         file_name_base
     )
@@ -208,7 +208,7 @@ def get_file_name(
     )
 
     # Adding the recognised extension
-    return "{}.{}".format(filename_basename, ext)
+    return f"{filename_basename}.{ext}"
 
 
 def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
@@ -249,7 +249,7 @@ def ensure_new_folder(path: str) -> str:
 
     new_path = path
     while os.path.exists(new_path):
-        new_path = "{}-{}".format(path, next(suffix))
+        new_path = f"{path}-{next(suffix)}"
 
     return new_path
 
@@ -260,6 +260,7 @@ def run(paths: List[str],
         file_name: Optional[str] = None,
         subfolder: Optional[str] = None,
         base_path: Optional[str] = None,
+        batch: bool = False,
         confirm: bool = False,
         open_file: bool = False,
         edit: bool = False,
@@ -300,7 +301,7 @@ def run(paths: List[str],
 
     for p in in_documents_paths:
         if not os.path.exists(p):
-            raise FileNotFoundError("File '{}' not found".format(p))
+            raise FileNotFoundError(f"File '{p}' not found")
 
     in_documents_names = [
         papis.utils.clean_document_name(doc_path)
@@ -450,6 +451,13 @@ def run(paths: List[str],
         logger.warning(
             "A document (shown above) in the '%s' library seems to match the "
             "one to be added.", papis.config.get_lib())
+
+        if batch:
+            logger.warning(
+                "No new document is created! Add this document in "
+                "interactive mode (no '--batch') or use 'papis update' instead.")
+            return
+
         logger.warning(
             "Hint: Use the 'papis update' command instead to update the "
             "existing document.")
@@ -478,7 +486,7 @@ def run(paths: List[str],
             "Add document '{}'".format(papis.document.describe(tmp_document)))
 
 
-@click.command(                         # type: ignore[arg-type]
+@click.command(
     "add",
     help="Add a document into a given library"
 )
@@ -493,11 +501,9 @@ def run(paths: List[str],
     "-d", "--subfolder",
     help="Subfolder in the library",
     default=lambda: papis.config.getstring("add-subfolder"))
-@click.option(
+@papis.cli.bool_flag(
     "-p", "--pick-subfolder",
-    help="Pick from existing subfolders",
-    is_flag=True,
-    default=False)
+    help="Pick from existing subfolders")
 @click.option(
     "--folder-name",
     help="Name for the document's folder (papis format)",
@@ -515,10 +521,9 @@ def run(paths: List[str],
     nargs=2,
     multiple=True,
     default=(),)
-@click.option(
+@papis.cli.bool_flag(
     "-b", "--batch",
-    help="Batch mode, do not prompt or otherwise",
-    default=False, is_flag=True)
+    help="Batch mode, do not prompt or otherwise")
 @click.option(
     "--confirm/--no-confirm",
     help="Ask to confirm before adding to the collection",
@@ -537,20 +542,16 @@ def run(paths: List[str],
          "its original location",
     default=False)
 @papis.cli.git_option(help="Git add and commit the new document")
-@click.option(
+@papis.cli.bool_flag(
     "--list-importers", "--li", "list_importers",
-    help="List all available papis importers",
-    default=False,
-    is_flag=True)
-@click.option(
+    help="List all available papis importers")
+@papis.cli.bool_flag(
     "--force-download", "--fd", "force_download",
-    help="Download file with importer even if local file is passed",
-    default=False,
-    is_flag=True)
-@click.option("--fetch-citations",
-              help="Fetch citations from doi",
-              default=lambda: papis.config.getboolean("add-fetch-citations"),
-              is_flag=True)
+    help="Download file with importer even if local file is passed")
+@papis.cli.bool_flag(
+    "--fetch-citations",
+    help="Fetch citations from a DOI (Digital Object Identifier)",
+    default=lambda: papis.config.getboolean("add-fetch-citations"))
 def cli(files: List[str],
         set_list: List[Tuple[str, str]],
         subfolder: str,
@@ -596,12 +597,12 @@ def cli(files: List[str],
     matching_importers = papis.utils.get_matching_importer_by_name(
         from_importer, only_data=only_data)
 
-    if not from_importer and not batch and files:
+    if not from_importer and files:
         matching_importers = sum((
             papis.utils.get_matching_importer_or_downloader(f, only_data=only_data)
             for f in files), [])
 
-        if matching_importers:
+        if matching_importers and not batch:
             logger.info("These importers where automatically matched. "
                         "Select the ones you want to use.")
 
@@ -651,6 +652,7 @@ def cli(files: List[str],
         file_name=file_name,
         subfolder=subfolder,
         base_path=base_path,
+        batch=batch,
         confirm=confirm,
         open_file=open_file,
         edit=edit,

@@ -93,7 +93,7 @@ Command-line Interface
 import os
 import re
 import collections
-from typing import Any, Optional, List, NamedTuple, Callable, Dict, Set
+from typing import Any, Optional, List, NamedTuple, Callable, Dict, Set, Tuple
 
 import click
 
@@ -194,8 +194,8 @@ def files_check(doc: papis.document.Document) -> List[Error]:
 
     return [Error(name=FILES_CHECK_NAME,
                   path=folder,
-                  msg="File '{}' declared but does not exist".format(f),
-                  suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                  msg=f"File '{f}' declared but does not exist",
+                  suggestion_cmd=f"papis edit --doc-folder {folder}",
                   fix_action=make_fixer(f),
                   payload=f,
                   doc=doc)
@@ -217,8 +217,8 @@ def keys_exist_check(doc: papis.document.Document) -> List[Error]:
 
     return [Error(name=KEYS_EXIST_CHECK_NAME,
                   path=folder,
-                  msg="Key '{}' does not exist.".format(k),
-                  suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                  msg=f"Key '{k}' does not exist.",
+                  suggestion_cmd=f"papis edit --doc-folder {folder}",
                   fix_action=lambda: None,
                   payload=k,
                   doc=doc)
@@ -269,8 +269,7 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
         return [Error(name=REFS_CHECK_NAME,
                       path=folder,
                       msg="Reference missing.",
-                      suggestion_cmd=("papis edit --doc-folder {}"
-                                      .format(folder)),
+                      suggestion_cmd=f"papis edit --doc-folder {folder}",
                       fix_action=create_ref_fixer,
                       payload="ref",
                       doc=doc)]
@@ -279,8 +278,8 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
     if m:
         return [Error(name=REFS_CHECK_NAME,
                       path=folder,
-                      msg="Bad characters ({}) found in reference.".format(set(m)),
-                      suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                      msg=f"Bad characters ({set(m)}) found in reference.",
+                      suggestion_cmd=f"papis edit --doc-folder {folder}",
                       fix_action=clean_ref_fixer,
                       payload="ref",
                       doc=doc)]
@@ -317,8 +316,8 @@ def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
 
         results.append(Error(name=DUPLICATED_KEYS_NAME,
                              path=folder,
-                             msg="Key '{}' is duplicated ({}).".format(key, value),
-                             suggestion_cmd="papis edit {}:'{}'".format(key, value),
+                             msg=f"Key '{key}' is duplicated ({value}).",
+                             suggestion_cmd=f"papis edit {key}:'{value}'",
                              fix_action=lambda: None,
                              payload=key,
                              doc=doc))
@@ -344,7 +343,7 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
         return [Error(name=BIBTEX_TYPE_CHECK_NAME,
                       path=folder,
                       msg="Document does not define a type.",
-                      suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                      suggestion_cmd=f"papis edit --doc-folder {folder}",
                       fix_action=lambda: None,
                       payload="type",
                       doc=doc)]
@@ -352,9 +351,8 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
     if bib_type not in papis.bibtex.bibtex_types:
         return [Error(name=BIBTEX_TYPE_CHECK_NAME,
                       path=folder,
-                      msg=("Document type '{}' is not a valid BibTeX type."
-                           .format(bib_type)),
-                      suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                      msg=f"Document type '{bib_type}' is not a valid BibTeX type.",
+                      suggestion_cmd=f"papis edit --doc-folder {folder}",
                       fix_action=lambda: None,
                       payload=bib_type,
                       doc=doc)]
@@ -397,12 +395,10 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
         if doc_value is not None and not isinstance(doc_value, cls):
             results.append(Error(name=KEY_TYPE_CHECK_NAME,
                                  path=folder,
-                                 msg=("Key '{}' ({}) should be of type '{}'"
-                                      " but found '{}'"
-                                      .format(key, doc_value,
-                                              cls, type(doc_value).__name__)),
-                                 suggestion_cmd=("papis edit --doc-folder {}"
-                                                 .format(folder)),
+                                 msg=(
+                                     f"Key '{key}' ({doc_value}) should be of type "
+                                     f"'{cls}' but got '{type(doc_value).__name__}'."),
+                                 suggestion_cmd=f"papis edit --doc-folder {folder}",
                                  fix_action=lambda: None,
                                  payload=key,
                                  doc=doc))
@@ -445,10 +441,8 @@ def html_codes_check(doc: papis.document.Document) -> List[Error]:
         if m:
             results.append(Error(name=HTML_CODES_CHECK_NAME,
                                  path=folder,
-                                 msg=("Field '{}' contains HTML codes {}"
-                                      .format(key, m)),
-                                 suggestion_cmd=(
-                                     "papis edit --doc-folder {}".format(folder)),
+                                 msg=f"Field '{key}' contains HTML codes {m}",
+                                 suggestion_cmd=f"papis edit --doc-folder {folder}",
                                  fix_action=make_fixer(key),
                                  payload=key,
                                  doc=doc))
@@ -497,10 +491,8 @@ def html_tags_check(doc: papis.document.Document) -> List[Error]:
         if m:
             results.append(Error(name=HTML_TAGS_CHECK_NAME,
                                  path=folder,
-                                 msg=("Field '{}' contains HTML tags: {}"
-                                      .format(key, m)),
-                                 suggestion_cmd=(
-                                     "papis edit --doc-folder {}".format(folder)),
+                                 msg=f"Field '{key}' contains HTML tags: {m}",
+                                 suggestion_cmd=f"papis edit --doc-folder {folder}",
                                  fix_action=make_fixer(key),
                                  payload=key,
                                  doc=doc))
@@ -534,7 +526,7 @@ def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
     return results
 
 
-@click.command("doctor")                # type: ignore[arg-type]
+@click.command("doctor")
 @click.help_option("--help", "-h")
 @papis.cli.query_argument()
 @papis.cli.sort_option()
@@ -543,28 +535,22 @@ def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
               multiple=True,
               type=click.Choice(registered_checks_names()),
               help="Checks to run on every document.")
-@click.option("--json", "_json",
-              default=False, is_flag=True,
-              help="Output the results in json format")
-@click.option("--fix",
-              default=False, is_flag=True,
-              help="Auto fix the errors with the auto fixer mechanism")
-@click.option("-s", "--suggest",
-              default=False, is_flag=True,
-              help="Suggest commands to be run for resolution")
-@click.option("-e", "--explain",
-              default=False, is_flag=True,
-              help="Give a short message for the reason of the error")
-@click.option("--edit",
-              default=False, is_flag=True,
-              help="Edit every file with the edit command.")
+@papis.cli.bool_flag("--json", "_json",
+                     help="Output the results in json format")
+@papis.cli.bool_flag("--fix",
+                     help="Auto fix the errors with the auto fixer mechanism")
+@papis.cli.bool_flag("-s", "--suggest",
+                     help="Suggest commands to be run for resolution")
+@papis.cli.bool_flag("-e", "--explain",
+                     help="Give a short message for the reason of the error")
+@papis.cli.bool_flag("--edit",
+                     help="Edit every file with the edit command.")
 @papis.cli.all_option()
 @papis.cli.doc_folder_option()
-@click.option("--list-checks", "list_checks",
-              default=False, is_flag=True,
-              help="List available checks and their descriptions")
+@papis.cli.bool_flag("--list-checks", "list_checks",
+                     help="List available checks and their descriptions")
 def cli(query: str,
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
         sort_reverse: bool,
         _all: bool,
@@ -611,17 +597,17 @@ def cli(query: str,
     from papis.commands.edit import run as edit_run
 
     for error in errors:
-        click.echo("{e.name}\t{e.payload}\t{e.path}".format(e=error))
+        click.echo(f"{error.name}\t{error.payload}\t{error.path}")
 
         if explain:
-            click.echo("\tReason: {}".format(error.msg))
+            click.echo(f"\tReason: {error.msg}")
 
         if suggest:
-            click.echo("\tSuggestion: {}".format(error.suggestion_cmd))
+            click.echo(f"\tSuggestion: {error.suggestion_cmd}")
 
         if fix:
             error.fix_action()
 
         if edit and error.doc:
-            input("Press any key to edit...")
+            click.pause("Press any key to edit...")
             edit_run(error.doc)

@@ -79,17 +79,15 @@ def run(document: papis.document.Document,
                 papis.document.describe(document)))
 
 
-@click.command("update")                # type: ignore[arg-type]
+@click.command("update")
 @click.help_option("--help", "-h")
 @papis.cli.git_option()
 @papis.cli.query_argument()
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @papis.cli.sort_option()
-@click.option("--auto",
-              help="Try to parse information from different sources",
-              default=False,
-              is_flag=True)
+@papis.cli.bool_flag("--auto",
+                     help="Try to parse information from different sources")
 @click.option("--from", "from_importer",
               help="Add document from a specific importer ({})".format(
                   ", ".join(papis.importer.available_importers())
@@ -103,10 +101,13 @@ def run(document: papis.document.Document,
                    "The value can be a papis format.",
               multiple=True,
               type=(str, str),)
+@papis.cli.bool_flag("-b", "--batch",
+                     help="Batch mode, do not prompt or otherwise")
 def cli(query: str,
         git: bool,
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         from_importer: List[Tuple[str, str]],
+        batch: bool,
         auto: bool,
         _all: bool,
         sort_field: Optional[str],
@@ -170,7 +171,7 @@ def cli(query: str,
                         matching_importers.append(importer)
 
         imported = papis.utils.collect_importer_data(
-            matching_importers, batch=False, only_data=True)
+            matching_importers, batch=batch, only_data=True)
         if "ref" in imported.data:
             logger.debug(
                 "An importer set the 'ref' key. This is not allowed and will be "

@@ -66,24 +66,17 @@ def run(keep: papis.document.Document,
 @click.help_option("-h", "--help")
 @papis.cli.query_argument()
 @papis.cli.sort_option()
-@click.option("-s",
-              "--second",
-              help="Keep the second document after merge and erase the first, "
-                   "the default is keep the first",
-              default=False,
-              is_flag=True)
-@click.option("-p",
-              "--pick",
-              help="If your picker does not support picking two documents"
-                   " at once, call twice the picker to get two documents",
-              default=False,
-              is_flag=True)
-@click.option("-k",
-              "--keep",
-              "keep_both",
-              help="Do not erase any document",
-              default=False,
-              is_flag=True)
+@papis.cli.bool_flag(
+    "-s", "--second",
+    help="Keep the second document after merge and erase the first, "
+         "the default is keep the first")
+@papis.cli.bool_flag(
+    "-p", "--pick",
+    help="If your picker does not support picking two documents"
+         " at once, call twice the picker to get two documents")
+@papis.cli.bool_flag(
+    "-k", "--keep", "keep_both",
+    help="Do not erase any document")
 @click.option("-o",
               "--out",
               help="Create the resulting document in this path",
@@ -107,10 +100,10 @@ def cli(query: str,
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
-    documents = [d for d in papis.pick.pick_doc(documents)]
+    documents = papis.pick.pick_doc(documents)
 
     if pick:
-        other_documents = [d for d in papis.pick.pick_doc(documents)]
+        other_documents = papis.pick.pick_doc(documents)
         documents += other_documents
 
     if len(documents) != 2:

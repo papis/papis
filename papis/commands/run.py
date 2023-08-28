@@ -51,7 +51,7 @@ Command-line Interface
     :prog: papis run
 """
 
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import click
 
@@ -73,8 +73,7 @@ def run(folder: str, command: Optional[List[str]] = None) -> None:
     papis.utils.run(command, cwd=folder, wait=True)
 
 
-@click.command("run",                   # type: ignore[arg-type]
-               context_settings={"ignore_unknown_options": True})
+@click.command("run", context_settings={"ignore_unknown_options": True})
 @click.help_option("--help", "-h")
 @click.option(
     "--pick", "-p",
@@ -97,14 +96,14 @@ def cli(run_command: List[str],
         sort_field: str,
         sort_reverse: bool,
         prefix: Optional[str],
-        doc_folder: str,
+        doc_folder: Tuple[str, ...],
         _all: bool) -> None:
     """Run an arbitrary shell command in the library or command folder"""
 
     documents = []
 
     if doc_folder:
-        documents = [papis.document.from_folder(doc_folder)]
+        documents = [papis.document.from_folder(d) for d in doc_folder]
     elif pick:
         documents = papis.database.get().query(pick)
 
@@ -112,7 +111,7 @@ def cli(run_command: List[str],
         documents = papis.document.sort(documents, sort_field, sort_reverse)
 
     if not _all and pick:
-        documents = [d for d in papis.pick.pick_doc(documents)]
+        documents = papis.pick.pick_doc(documents)
 
     if _all and not pick:
         documents = papis.database.get().get_all_documents()

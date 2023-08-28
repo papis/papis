@@ -92,7 +92,7 @@ setup(
         "habanero>=0.6.0",
         "isbnlib>=3.9.1",
         "lxml>=4.3.5",
-        "prompt_toolkit>=2.0.5",
+        "prompt_toolkit>=3.0.0",
         "pygments>=2.2.0",
         "pyparsing>=2.2.0",
         "python-doi>=0.1.1",
@@ -122,7 +122,7 @@ setup(
             "python-coveralls",
             "python-lsp-server",
             "sphinx-click",
-            "sphinx_rtd_theme",
+            "sphinx-rtd-theme>=1",
             "types-PyYAML",
             "types-Pygments",
             "types-beautifulsoup4",
@@ -162,9 +162,9 @@ setup(
         "tui",
         "zotero",
     ],
-    package_data=dict(
-        papis=["py.typed"],
-    ),
+    package_data={
+        "papis": ["py.typed"],
+    },
     data_files=data_files,
     packages=included_packages,
     entry_points={
@@ -223,6 +223,7 @@ setup(
             "run=papis.commands.run:cli",
             "serve=papis.commands.serve:cli",
             "update=papis.commands.update:cli",
+            "cache=papis.commands.cache:cli",
         ],
         "papis.downloader": [
             "acm=papis.downloaders.acm:Downloader",

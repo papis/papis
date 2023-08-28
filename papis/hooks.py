@@ -12,7 +12,7 @@ NON_STEVEDORE_HOOKS: Dict[str, List[Callable[[Any], None]]] = {}
 
 
 def _get_namespace(name: str) -> str:
-    return "papis.hook.{}".format(name)
+    return f"papis.hook.{name}"
 
 
 def get(name: str) -> "ExtensionManager":

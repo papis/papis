@@ -84,7 +84,7 @@ def html(libname: str, doc: papis.document.Document) -> t.html_tag:
                     for i, fpath in enumerate(doc.get_files()):
                         _tab_element(wh.file_icon,
                                      [fpath],
-                                     "#file-tab-{}".format(i))
+                                     f"#file-tab-{i}")
                     _tab_element(wh.icon_span,
                                  ["compress-alt", "Citations"],
                                  "#citations-tab")
@@ -120,10 +120,10 @@ def html(libname: str, doc: papis.document.Document) -> t.html_tag:
                               height=100,
                               style="min-height: 500px",
                               cls="form-control")
-                        _script = """
-                            let bib_editor = ace.edit("{}");
+                        _script = f"""
+                            let bib_editor = ace.edit("{_bibtex_id}");
                             bib_editor.session.setMode("ace/mode/bibtex");
-                        """.format(_bibtex_id)
+                        """
                         t.script(tu.raw(_script),
                                  charset="utf-8",
                                  type="text/javascript")
@@ -139,7 +139,7 @@ def html(libname: str, doc: papis.document.Document) -> t.html_tag:
                                                                   libfolder,
                                                                   libname)
 
-                        with t.div(id="file-tab-{}".format(i),
+                        with t.div(id=f"file-tab-{i}",
                                    role="tabpanel",
                                    aria_labelledby="file-tab",
                                    cls="tab-pane fade"):

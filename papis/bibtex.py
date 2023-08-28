@@ -218,7 +218,7 @@ class Importer(papis.importer.Importer):
         self.ctx.data = bib_data[0]
 
 
-@click.command("bibtex")                # type: ignore[arg-type]
+@click.command("bibtex")
 @click.pass_context
 @click.argument("bibfile", type=click.Path(exists=True))
 @click.help_option("--help", "-h")
@@ -252,7 +252,7 @@ def bibtexparser_entry_to_papis(entry: Dict[str, Any]) -> Dict[str, Any]:
 
     _k = papis.document.KeyConversionPair
     key_conversion = [
-        _k("ID", [{"key": "ref", "action": lambda x: None}]),
+        _k("ID", [{"key": "ref", "action": None}]),
         _k("ENTRYTYPE", [{"key": "type", "action": None}]),
         _k("link", [{"key": "url", "action": None}]),
         _k("title", [{
@@ -438,7 +438,7 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
     # process keys
     supports_unicode = papis.config.getboolean("bibtex-unicode")
     journal_key = papis.config.getstring("bibtex-journal-key")
-    lines = ["{}".format(ref)]
+    lines = [f"{ref}"]
 
     for key in sorted(document):
         bib_key = bibtex_key_converter.get(key, key)
@@ -466,7 +466,7 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
         if not supports_unicode:
             bib_value = string_to_latex(bib_value)
 
-        lines.append("{} = {{{}}}".format(bib_key, bib_value))
+        lines.append(f"{bib_key} = {{{bib_value}}}")
 
     # Handle file for zotero exporting
     if (papis.config.getboolean("bibtex-export-zotero-file")
