@@ -396,6 +396,34 @@ def update_doc_from_data_interactively(
                     nameb=data_name))
 
 
+def update_doc_from_merged_data_interactively(
+        document: Union[papis.document.Document, Dict[str, Any]],
+        merge_opt: str,
+        batch: bool = True,
+        ) -> None:
+    """Shows a TUI to update the *document* interactively with fields from *data*.
+
+    :param document: a document (or a mapping convertible to a document) which
+        is going to be updated.
+    :param data_name: an identifier for the *data* to show in the TUI.
+    """
+    # Remove param data??
+
+    import copy
+    docdata = copy.copy(document)
+
+    import papis.tui.widgets.diff
+    # do not compare some entries
+    docdata.pop("files", None)
+    docdata.pop("tags", None)
+
+    add_data = papis.tui.widgets.diff.diffmerge(docdata, merge_opt, batch=batch)
+
+    if add_data:
+        document.update(add_data)
+        return document
+
+
 def get_cache_home() -> str:
     """Get default cache directory.
 
@@ -516,10 +544,35 @@ def get_matching_importer_by_name(
     return result
 
 
+def merge_importers_data(all_data: Iterable[Tuple[str, ...]]) -> None:
+    """Merge the data from all the importers selected
+
+    :all_data: combined data from all the selected importers
+    """
+    # mdict: Dict[str, list]
+    mdict = {}
+
+    # all_data = raw merged data of all importers/downloaders
+    for dic in all_data:
+        if isinstance(dic, dict):
+            keys = dic.keys()
+            # mdict discards dupplicates values
+            # use str() to normalize comparisons
+            for key in keys:
+                if key in mdict:
+                    if not str(dic[key]) in mdict[key]:
+                        mdict[key].append(str(dic[key]))
+                else:
+                    mdict[key] = [str(dic[key])]
+
+    return mdict
+
+
 def collect_importer_data(
         importers: Iterable[papis.importer.Importer],
         batch: bool = True,
         only_data: bool = True,
+        merge_data: str = "",
         ) -> papis.importer.Context:
     """Collect all data from the given *importers*.
 
@@ -535,10 +588,14 @@ def collect_importer_data(
     if not importers:
         return ctx
 
+    merged_data = []
+
     for importer in importers:
         if importer.ctx.data:
             logger.info("Merging data from importer '%s'.", importer.name)
-            if batch:
+            if merge_data:
+                merged_data.append(importer.ctx.data)
+            elif batch:
                 ctx.data.update(importer.ctx.data)
             else:
                 papis.utils.update_doc_from_data_interactively(
@@ -556,6 +613,15 @@ def collect_importer_data(
                 papis.utils.open_file(f)
                 if batch or papis.tui.utils.confirm(msg):
                     ctx.files.append(f)
+
+    if merge_data:
+        merged = papis.utils.merge_importers_data(merged_data)
+        if merged and isinstance(merged, dict):
+            ctxdata = papis.utils.update_doc_from_merged_data_interactively(merged,
+                                                                            merge_data,
+                                                                            batch)
+            if ctxdata:
+                ctx.data.update(ctxdata)
 
     return ctx
 
