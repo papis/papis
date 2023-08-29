@@ -53,7 +53,7 @@ def test_get_config_dirs(tmp_config: TemporaryConfiguration, monkeypatch) -> Non
         dirs = papis.config.get_config_dirs()
         assert os.environ.get("XDG_CONFIG_DIRS") is None
         assert len(dirs) == 2
-        assert os.path.join("/", "tmp", "papis") == dirs[0]
+        assert os.path.join(tmpdir, "papis") == dirs[0]
 
     with monkeypatch.context() as m:
         m.setenv("XDG_CONFIG_DIRS", "/etc/:/usr/local/etc")
