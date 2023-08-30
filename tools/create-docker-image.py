@@ -11,9 +11,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-p", help="Python version",
-        choices=map(
-            lambda x: "{}.{}".format(*x),
-            zip(it.repeat(3), range(3, 8))))
+        choices=["{}.{}".format(*x) for x in zip(it.repeat(3), range(3, 8))])
     parser.add_argument("dockerfile")
     parser.add_argument(
         "--norun",

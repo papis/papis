@@ -53,7 +53,7 @@ def test_get_config_dirs(tmp_config: TemporaryConfiguration, monkeypatch) -> Non
         dirs = papis.config.get_config_dirs()
         assert os.environ.get("XDG_CONFIG_DIRS") is None
         assert len(dirs) == 2
-        assert os.path.join("/", "tmp", "papis") == dirs[0]
+        assert os.path.join(tmpdir, "papis") == dirs[0]
 
     with monkeypatch.context() as m:
         m.setenv("XDG_CONFIG_DIRS", "/etc/:/usr/local/etc")
@@ -294,24 +294,13 @@ def test_get_list(tmp_config: TemporaryConfiguration) -> None:
 
     papis.config.set("super-key-list", "[asdf,2,3,4]")
     assert papis.config.get("super-key-list") == "[asdf,2,3,4]"
-    try:
+
+    with pytest.raises(SyntaxError, match="must be a valid Python object"):
         papis.config.getlist("super-key-list")
-    except SyntaxError as e:
-        assert (
-            str(e) == (
-                "The key 'super-key-list' must be a valid Python object: "
-                "[asdf,2,3,4]")
-        )
 
     papis.config.set("super-key-list", "2")
     assert papis.config.get("super-key-list") == "2"
     assert papis.config.getint("super-key-list") == 2
-    try:
+
+    with pytest.raises(SyntaxError, match="must be a valid Python list"):
         papis.config.getlist("super-key-list")
-    except SyntaxError as e:
-        assert (
-            str(e) == (
-                "The key 'super-key-list' must be a valid Python list. "
-                "Got: 2 (type 'int')"
-            )
-        )

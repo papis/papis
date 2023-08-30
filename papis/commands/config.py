@@ -106,7 +106,7 @@ def parse_option(
         section = parts[0] if parts[0] else None
         key = parts[1]
     else:
-        raise ValueError("Unsupported option format: '{}'".format(option))
+        raise ValueError(f"Unsupported option format: '{option}'")
 
     return section, key
 
@@ -252,13 +252,13 @@ def cli(options: List[str],
                     lines.append("")
 
                 is_first = False
-                lines.append("[{}]".format(section))
+                lines.append(f"[{section}]")
 
                 for key, value in settings.items():
                     lines.append(format_option(key, value))
         else:
             if section is not None and all("." not in o for o in options):
-                lines.append("[{}]".format(section))
+                lines.append(f"[{section}]")
 
             for key, value in result.items():
                 lines.append(format_option(key, value))

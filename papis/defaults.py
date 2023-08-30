@@ -46,6 +46,7 @@ settings: Dict[str, Any] = {
     "add-edit": False,
     "add-open": False,
     "add-fetch-citations": False,
+    "add-download-files": True,
 
     # papis-doctor configuration
     "doctor-default-checks": ["files", "keys-exist", "duplicated-keys"],

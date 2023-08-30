@@ -28,19 +28,19 @@ def links(doc: papis.document.Document, small: bool = True) -> None:
             url_link("check-circle", "doi",
                      "https://doi.org/{}".format(doc["doi"]))
             url_link("database", "ads",
-                     "https://ui.adsabs.harvard.edu/abs/{}"
-                     .format(quoted_doi))
+                     f"https://ui.adsabs.harvard.edu/abs/{quoted_doi}"
+                     )
             if "files" not in doc:
                 url_link("lock-open", "unp",
                          "https://unpaywall.org/{}".format(doc["doi"]))
         else:
             quoted_title = urllib.parse.quote(doc["title"])
             url_link("crosshairs", "xref",
-                     "https://search.crossref.org/?q={}&from_ui=yes"
-                     .format(quoted_title))
+                     f"https://search.crossref.org/?q={quoted_title}&from_ui=yes"
+                     )
             url_link("database", "ads",
-                     "https://ui.adsabs.harvard.edu/search/q=title:{}"
-                     .format(quoted_title))
+                     f"https://ui.adsabs.harvard.edu/search/q=title:{quoted_title}"
+                     )
 
         url_link("globe", "ddg",
                  "https://duckduckgo.com/?q={}"

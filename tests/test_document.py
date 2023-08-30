@@ -54,7 +54,7 @@ def test_main_features() -> None:
 
     assert doc.has("title")
     assert doc["title"] == "Hello World"
-    assert set(doc.keys()) == set(["title", "author"])
+    assert set(doc.keys()) == {"title", "author"}
     assert not doc.has("doi")
 
     doc["doi"] = "123123.123123"
@@ -63,7 +63,7 @@ def test_main_features() -> None:
     del doc["doi"]
     assert not doc.has("doi")
     assert doc["doi"] == ""
-    assert set(doc.keys()) == set(["title", "author"])
+    assert set(doc.keys()) == {"title", "author"}
 
     doc.set_folder(os.path.join(DOCUMENT_RESOURCES, "document"))
     assert doc.get_main_folder_name()
@@ -138,7 +138,7 @@ def test_pickle() -> None:
 
 def test_sort(tmp_config: TemporaryConfiguration) -> None:
     docs = [
-        papis.document.from_data(dict(title="Hello world", year=1990)),
+        papis.document.from_data({"title": "Hello world", "year": 1990}),
         papis.document.from_data({"author": "Turing", "year": "1932"}),
     ]
     sdocs = papis.document.sort(docs, key="year", reverse=False)

@@ -61,7 +61,7 @@ def get_data(
     result = []
     clean_params = {x: dict_params[x] for x in dict_params if dict_params[x]}
     search_query = "+AND+".join(
-        ["{}:{}".format(key, clean_params[key]) for key in clean_params]
+        [f"{key}:{clean_params[key]}" for key in clean_params]
     )
     logger.debug("Performing query: '%s'.", search_query)
 
@@ -100,7 +100,7 @@ def get_data(
 
 def validate_arxivid(arxivid: str) -> None:
     with papis.utils.get_session() as session:
-        response = session.get("{}/{}".format(ARXIV_ABS_URL, arxivid))
+        response = session.get(f"{ARXIV_ABS_URL}/{arxivid}")
 
     if not response.ok:
         raise ValueError(
@@ -178,12 +178,12 @@ def find_arxivid_in_text(text: str) -> Optional[str]:
 @click.option("--category", default="", type=str)
 @click.option("--id-list", default="", type=str)
 @click.option("--page", default=0, type=int)
-@click.option("--max", "-m", default=20, type=int)
+@click.option("--max", "-m", "max_results", default=20, type=int)
 def explorer(
         ctx: click.core.Context,
         query: str, author: str, title: str, abstract: str, comment: str,
         journal: str, report_number: str, category: str, id_list: str,
-        page: int, max: int) -> None:
+        page: int, max_results: int) -> None:
     """
     Look for documents on `arXiv.org <arxiv.org/>`__.
 
@@ -216,7 +216,7 @@ def explorer(
         category=category,
         id_list=id_list,
         page=page or 0,
-        max_results=max)
+        max_results=max_results)
     docs = [papis.document.from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 
@@ -233,7 +233,7 @@ class Downloader(papis.downloaders.Downloader):
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
         arxivid = find_arxivid_in_text(url)
         if arxivid:
-            url = "{}/{}".format(ARXIV_ABS_URL, arxivid)
+            url = f"{ARXIV_ABS_URL}/{arxivid}"
             down = Downloader(url)
             down._arxivid = arxivid
             return down
@@ -264,7 +264,7 @@ class Downloader(papis.downloaders.Downloader):
         if not arxivid:
             return None
 
-        pdf_url = "{}/{}.pdf".format(ARXIV_PDF_URL, arxivid)
+        pdf_url = f"{ARXIV_PDF_URL}/{arxivid}.pdf"
         self.logger.debug("Using document URL: '%s'.", pdf_url)
 
         return pdf_url
@@ -281,7 +281,7 @@ class Importer(papis.importer.Importer):
         except ValueError:
             aid = find_arxivid_in_text(uri)
 
-        uri = "{}/{}".format(ARXIV_ABS_URL, aid)
+        uri = f"{ARXIV_ABS_URL}/{aid}"
 
         super().__init__(name="arxiv", uri=uri)
         self.downloader = Downloader(uri)
@@ -291,14 +291,14 @@ class Importer(papis.importer.Importer):
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
         arxivid = find_arxivid_in_text(uri)
         if arxivid:
-            return Importer(uri="{}/{}".format(ARXIV_ABS_URL, arxivid))
+            return Importer(uri=f"{ARXIV_ABS_URL}/{arxivid}")
 
         try:
             validate_arxivid(uri)
         except ValueError:
             return None
         else:
-            return Importer(uri="{}/{}".format(ARXIV_ABS_URL, uri))
+            return Importer(uri=f"{ARXIV_ABS_URL}/{uri}")
 
     @property
     def arxivid(self) -> Optional[str]:

@@ -42,5 +42,5 @@ def test_addto_cli(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
         infile, _ = os.path.splitext(os.path.basename(infile))
         return outfile.startswith(clean_document_name(infile))
 
-    assert all([eq(outfile, infile) for outfile, infile in zip(files, inputfiles)]), (
+    assert all(eq(outfile, infile) for outfile, infile in zip(files, inputfiles)), (
         list(zip(files, inputfiles)))

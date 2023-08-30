@@ -46,7 +46,7 @@ def run(document: papis.document.Document,
     if git:
         papis.git.commit(
             new_folder_path,
-            "Rename from '{}' to '{}'".format(folder, new_name))
+            f"Rename from '{folder}' to '{new_name}'")
 
     db.delete(document)
     logger.debug("New document folder: '%s'.", new_folder_path)

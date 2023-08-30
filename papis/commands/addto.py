@@ -71,7 +71,7 @@ def run(document: papis.document.Document,
             local_in_file_path = in_file_path
 
         if not os.path.exists(local_in_file_path):
-            raise FileNotFoundError("File '{}' not found".format(in_file_path))
+            raise FileNotFoundError(f"File '{in_file_path}' not found")
 
         # Rename the file in the staging area
         new_filename = get_file_name(

@@ -36,8 +36,7 @@ class Downloader(papis.downloaders.Downloader):
         return None
 
     def get_document_url(self) -> Optional[str]:
-        durl = ("https://www.worldscientific.com/doi/pdf/{doi}"
-                .format(doi=self.get_doi()))
+        durl = f"https://www.worldscientific.com/doi/pdf/{self.get_doi()}"
         self.logger.debug("Using document URL: '%s'.", durl)
         return durl
 

@@ -194,7 +194,7 @@ def get_file_name(
 
     # Remove extension from file_name_base, if any
     file_name_base = re.sub(
-        r"([.]{})?$".format(ext),
+        fr"([.]{ext})?$",
         "",
         file_name_base
     )
@@ -208,7 +208,7 @@ def get_file_name(
     )
 
     # Adding the recognised extension
-    return "{}.{}".format(filename_basename, ext)
+    return f"{filename_basename}.{ext}"
 
 
 def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
@@ -249,7 +249,7 @@ def ensure_new_folder(path: str) -> str:
 
     new_path = path
     while os.path.exists(new_path):
-        new_path = "{}-{}".format(path, next(suffix))
+        new_path = f"{path}-{next(suffix)}"
 
     return new_path
 
@@ -301,7 +301,7 @@ def run(paths: List[str],
 
     for p in in_documents_paths:
         if not os.path.exists(p):
-            raise FileNotFoundError("File '{}' not found".format(p))
+            raise FileNotFoundError(f"File '{p}' not found")
 
     in_documents_names = [
         papis.utils.clean_document_name(doc_path)
@@ -550,9 +550,10 @@ def run(paths: List[str],
 @papis.cli.bool_flag(
     "--list-importers", "--li", "list_importers",
     help="List all available papis importers")
-@papis.cli.bool_flag(
-    "--force-download", "--fd", "force_download",
-    help="Download file with importer even if local file is passed")
+@click.option(
+    "--download-files/--no-download-files",
+    help="Download file with importer if available or not.",
+    default=lambda: True if papis.config.get("add-download-files") else False)
 @papis.cli.bool_flag(
     "--fetch-citations",
     help="Fetch citations from a DOI (Digital Object Identifier)",
@@ -572,7 +573,7 @@ def cli(files: List[str],
         git: bool,
         link: bool,
         list_importers: bool,
-        force_download: bool,
+        download_files: bool,
         fetch_citations: bool) -> None:
     """
     Command line interface for papis-add.
@@ -599,13 +600,13 @@ def cli(files: List[str],
         confirm = False
         open_file = False
 
-    only_data = bool(ctx.files) and not force_download
     matching_importers = papis.utils.get_matching_importer_by_name(
-        from_importer, only_data=only_data)
+        from_importer, only_data=not download_files)
 
     if not from_importer and files:
         matching_importers = sum((
-            papis.utils.get_matching_importer_or_downloader(f, only_data=only_data)
+            papis.utils.get_matching_importer_or_downloader(
+                f, only_data=not download_files)
             for f in files), [])
 
         if matching_importers and not batch:
@@ -622,7 +623,7 @@ def cli(files: List[str],
             matching_importers = [matching_importers[i] for i in matching_indices]
 
     imported = papis.utils.collect_importer_data(
-        matching_importers, batch=batch, only_data=only_data)
+        matching_importers, batch=batch, only_data=not download_files)
     ctx.data.update(imported.data)
     ctx.files.extend(imported.files)
 

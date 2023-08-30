@@ -18,7 +18,7 @@ def flex(where: str, cls: str = "", **kwargs: Any) -> t.html_tag:
 
 
 def alert(node: t.html_tag, type_: str, **kwargs: Any) -> t.html_tag:
-    with node(cls=("alert alert-{} ".format(type_)
+    with node(cls=(f"alert alert-{type_} "
                    + "alert-dismissible fade show"),
               role="alert",
               **kwargs) as result:
