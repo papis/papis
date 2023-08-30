@@ -111,7 +111,7 @@ def validate_arxivid(arxivid: str) -> None:
 
 def pdf_to_arxivid(
         filepath: str,
-        maxlines: float = float("inf"),      # noqa: B008
+        maxlines: float = float("inf"),
         ) -> Optional[str]:
     """Try to get arxivid from a filepath, it looks for a regex in the binary
     data and returns the first arxivid found, in the hopes that this arxivid
