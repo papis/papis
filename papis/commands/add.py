@@ -498,11 +498,6 @@ def run(paths: List[str],
     multiple=True,
     type=(str, str))
 @click.option(
-    "-S", "--set-after", "set_after_list",
-    help="Set some information after",
-    multiple=True,
-    type=(str, str))
-@click.option(
     "-d", "--subfolder",
     help="Subfolder in the library",
     default=lambda: papis.config.getstring("add-subfolder"))
@@ -560,7 +555,6 @@ def run(paths: List[str],
     default=lambda: papis.config.getboolean("add-fetch-citations"))
 def cli(files: List[str],
         set_list: List[Tuple[str, str]],
-        set_after_list: List[Tuple[str, str]],
         subfolder: str,
         pick_subfolder: bool,
         folder_name: str,
@@ -587,19 +581,12 @@ def cli(files: List[str],
 
         return
 
-    data = {}
-    for data_set in set_list:
-        data[data_set[0]] = data_set[1]
-
-    ctx = papis.importer.Context()
-    ctx.files = [f for f in files if os.path.exists(f)]
-    ctx.data.update(data)
-
     if batch:
         edit = False
         confirm = False
         open_file = False
 
+    # gather importers / downloaders
     matching_importers = papis.utils.get_matching_importer_by_name(
         from_importer, only_data=not download_files)
 
@@ -622,16 +609,22 @@ def cli(files: List[str],
 
             matching_importers = [matching_importers[i] for i in matching_indices]
 
+    # merge importer data + commandline data into a single set
     imported = papis.utils.collect_importer_data(
         matching_importers, batch=batch, only_data=not download_files)
-    ctx.data.update(imported.data)
-    ctx.files.extend(imported.files)
 
-    if set_after_list:
-        set_after_data = {}
-        for data_set in set_after_list:
-            set_after_data[data_set[0]] = data_set[1]
-        ctx.data.update(set_after_data)
+    ctx = papis.importer.Context()
+    ctx.data = imported.data
+    ctx.files = [f for f in files if os.path.exists(f)] + imported.files
+
+    if set_list:
+        if batch or not ctx.data:
+            ctx.data.update(set_list)
+        else:
+            papis.utils.update_doc_from_data_interactively(
+                ctx.data,
+                dict(set_list),
+                "command-line")
 
     if not ctx:
         logger.error("No document is created, since no data or files have been "
