@@ -6,7 +6,7 @@ help: 								## Show this help
 	@echo ""
 .PHONY: help
 
-shell_completion:					## Generate shell completion scripts
+shell-completion:					## Generate shell completion scripts
 	make -C scripts/shell_completion
 .PHONY: shell_completion
 
@@ -34,14 +34,23 @@ doc:								## Generate the documentation in doc/
 	@echo ""
 .PHONY: doc
 
-test:								## Run pytest test and doctests
-	python -m pytest -rswx --cov=papis -v -s papis tests
-.PHONY: test
+pytest:								## Run pytest tests and doctests
+	python -m pytest papis tests
+
+flake8:								## Run flake8 (style checks)
+	python -m flake8 papis tests examples
+
+mypy:								## Run mypy (type annotations)
+	python -m mypy papis
 
 ci-install:							## Install dependencies like on the CI
 	bash tools/ci-install.sh
 .PHONY: ci-install
 
 ci-test:							## Run tests like on the CI
-	bash tools/ci-run-tests.sh
+	bash tools/ci-run-test.sh
 .PHONY: ci-test
+
+ci-lint:							## Run linting like on the CI
+	bash tools/ci-run-lint.sh
+.PHONY: ci-lint
