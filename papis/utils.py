@@ -542,7 +542,7 @@ def collect_importer_data(
                 ctx.data.update(importer.ctx.data)
             else:
                 if ctx.data:
-                    papis.utils.update_doc_from_data_interactively(
+                    update_doc_from_data_interactively(
                         ctx.data,
                         importer.ctx.data,
                         str(importer))
@@ -557,7 +557,7 @@ def collect_importer_data(
 
             msg = f"Use this file? (from {importer.name})"
             for f in importer.ctx.files:
-                papis.utils.open_file(f)
+                open_file(f)
                 if batch or papis.tui.utils.confirm(msg):
                     ctx.files.append(f)
 
