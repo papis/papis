@@ -78,16 +78,16 @@ def arxiv_to_papis(result: "arxiv.Result") -> Dict[str, Any]:
     data["eprintclass"] = result.primary_category
 
     # NOTE: not quite sure what to do about the type? it's not mentioned explicitly
-    comment = result.comment.lower()
-    if "thesis" in comment:
-        if "phd" in comment:
-            data["type"] = "phdthesis"
-        elif "master" in comment:
-            data["type"] = "mastersthesis"
-        else:
-            data["type"] = "thesis"
-    else:
-        data["type"] = "article"
+    data["type"] = "article"
+    if result.comment is not None:
+        comment = result.comment.lower()
+        if "thesis" in comment:
+            if "phd" in comment:
+                data["type"] = "phdthesis"
+            elif "master" in comment:
+                data["type"] = "mastersthesis"
+            else:
+                data["type"] = "thesis"
 
     return data
 
