@@ -41,7 +41,6 @@
       in
         with pypkgs; [
           pyyaml
-          arxiv2bib
           beautifulsoup4
           bibtexparser
           chardet
