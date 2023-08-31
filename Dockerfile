@@ -12,4 +12,4 @@ COPY . /papis
 WORKDIR /papis
 RUN pip install -e .[optional,develop]
 
-CMD ["bash", "tools/ci-run-tests.sh"]
+CMD ["bash", "tools/ci-run-test.sh"]
