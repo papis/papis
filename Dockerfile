@@ -10,6 +10,7 @@ RUN apt-get update \
 COPY . /papis
 
 WORKDIR /papis
-RUN pip install -e .[optional,develop]
 
+CMD ["bash", "tools/ci-install.sh"]
+CMD ["bash", "tools/ci-run-lint.sh"]
 CMD ["bash", "tools/ci-run-test.sh"]
