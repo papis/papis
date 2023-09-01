@@ -238,6 +238,7 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
     :returns: an error if the reference does not exist or contains invalid
         characters (as required by BibTeX).
     """
+    import papis.bibtex
     from papis.api import save_doc
 
     folder = doc.get_main_folder() or ""
@@ -367,8 +368,11 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
     """
     Check document keys have expected types.
 
-    The ``doctor-key-type-check-keys`` configuration entry defines a mapping
-    of keys and their expected types.
+    The :ref:`config-settings-doctor-key-type-check-keys` configuration entry
+    defines a mapping of keys and their expected types. If the desired type is
+    a list, the :ref:`config-settings-doctor-key-type-check-separator` setting
+    can be used to split an existing string (and, similarly, if the desired type
+    is a string, it can be used to join a list of items).
 
     :returns: a :class:`list` of errors, one for each key does not have the
         expected type (if it exists).
@@ -376,9 +380,29 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
     from papis.api import save_doc
     folder = doc.get_main_folder() or ""
 
+    # NOTE: the separator can be quoted so that it can force whitespace
+    separator = papis.config.get("doctor-key-type-check-separator")
+    separator = separator.strip("'").strip('"') if separator else None
+
     def make_fixer(key: str, cls: type) -> FixFn:
         def fixer_convert_list() -> None:
-            doc[key] = [doc[key]]
+            value = doc[key]
+
+            if isinstance(value, str) and separator:
+                doc[key] = re.split(fr"\s*{separator}\s*", value)
+            else:
+                doc[key] = [value]
+
+            save_doc(doc)
+
+        def fixer_convert_str() -> None:
+            value = doc[key]
+
+            if isinstance(value, list) and separator:
+                doc[key] = separator.join(value)
+            else:
+                doc[key] = str(value)
+
             save_doc(doc)
 
         def fixer_convert_any() -> None:
@@ -396,6 +420,8 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
 
         if cls is list:
             return fixer_convert_list
+        if cls is str:
+            return fixer_convert_str
         else:
             return fixer_convert_any
 

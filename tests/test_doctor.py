@@ -127,7 +127,8 @@ def test_key_type_check(tmp_config: TemporaryConfiguration,
     doc = papis.document.from_data({
         "author_list": [{"given": "F.", "family": "Sanger"}],
         "year": ["2023"],
-        "tags": "test-key-type",
+        "projects": "test-key-project",
+        "tags": "test-key-tag-1 test-key-tag-2      test-key-tag-3",
         })
 
     # check: invalid setting parsing
@@ -161,11 +162,31 @@ def test_key_type_check(tmp_config: TemporaryConfiguration,
     assert doc["year"] == 2023
 
     # check: fix list
+    papis.config.set("doctor-key-type-check-separator", " ")
+    papis.config.set("doctor-key-type-check-keys", ["('projects', 'list')"])
+    error, = key_type_check(doc)
+    assert error.payload == "projects"
+    error.fix_action()
+    assert doc["projects"] == ["test-key-project"]
+
     papis.config.set("doctor-key-type-check-keys", ["('tags', 'list')"])
     error, = key_type_check(doc)
     assert error.payload == "tags"
     error.fix_action()
-    assert doc["tags"] == ["test-key-type"]
+    assert doc["tags"] == ["test-key-tag-1", "test-key-tag-2", "test-key-tag-3"]
+
+    papis.config.set("doctor-key-type-check-separator", ",")
+    doc["tags"] = "test-key-tag-1,test-key-tag-2    ,  test-key-tag-3"
+    error, = key_type_check(doc)
+    assert error.payload == "tags"
+    error.fix_action()
+    assert doc["tags"] == ["test-key-tag-1", "test-key-tag-2", "test-key-tag-3"]
+
+    papis.config.set("doctor-key-type-check-keys", ["('tags', 'str')"])
+    error, = key_type_check(doc)
+    assert error.payload == "tags"
+    error.fix_action()
+    assert doc["tags"] == "test-key-tag-1,test-key-tag-2,test-key-tag-3"
 
 
 def test_html_codes_check(tmp_config: TemporaryConfiguration,
