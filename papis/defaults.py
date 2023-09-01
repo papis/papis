@@ -50,8 +50,7 @@ settings: Dict[str, Any] = {
 
     # papis-doctor configuration
     "doctor-default-checks": ["files", "keys-exist", "duplicated-keys"],
-    "doctor-keys-exist-keys": ["title", "author", "ref"],
-    "doctor-keys-exist-autofill": ["author", "author_list"],
+    "doctor-keys-exist-keys": ["title", "author", "author_list", "ref"],
     "doctor-duplicated-keys-keys": ["ref"],
     "doctor-html-codes-keys": ["title", "author", "abstract", "journal"],
     "doctor-html-tags-keys": ["title", "author", "abstract", "journal"],

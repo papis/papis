@@ -51,8 +51,6 @@ def test_keys_check_authors(tmp_config: TemporaryConfiguration,
     monkeypatch.setattr(papis.api, "save_doc", lambda _: None)
 
     papis.config.set("doctor-keys-exist-keys", ["author_list", "author"])
-    papis.config.set("doctor-keys-exist-autofill", ["author_list", "author"])
-
     full_doc = papis.document.from_data(
         {
             "title": "DNA sequencing with chain-terminating inhibitors",
