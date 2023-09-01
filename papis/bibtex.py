@@ -263,7 +263,7 @@ def bibtexparser_entry_to_papis(entry: Dict[str, Any]) -> Dict[str, Any]:
             "key": "author_list",
             "action": lambda author: papis.document.split_authors_name([
                 latex_to_unicode(author)
-                ])
+                ], separator="and")
             }]),
     ]
 
