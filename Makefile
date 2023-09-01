@@ -1,3 +1,5 @@
+PYTHON?=python -X dev
+
 all: help
 
 help: 								## Show this help
@@ -8,7 +10,7 @@ help: 								## Show this help
 
 shell-completion:					## Generate shell completion scripts
 	make -C scripts/shell_completion
-.PHONY: shell_completion
+.PHONY: shell-completion
 
 update-authors:						## Generate AUTHORS file from git commits
 	git shortlog -s -e -n | \
@@ -35,13 +37,16 @@ doc:								## Generate the documentation in doc/
 .PHONY: doc
 
 pytest:								## Run pytest tests and doctests
-	python -m pytest papis tests
+	$(PYTHON) -m pytest papis tests
+.PHONY: pytest
 
 flake8:								## Run flake8 (style checks)
-	python -m flake8 papis tests examples
+	$(PYTHON) -m flake8 papis tests examples
+.PHONY: flake8
 
 mypy:								## Run mypy (type annotations)
-	python -m mypy papis
+	$(PYTHON) -m mypy papis
+.PHONY: mypy
 
 ci-install:							## Install dependencies like on the CI
 	bash tools/ci-install.sh
