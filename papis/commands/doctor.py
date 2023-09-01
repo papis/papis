@@ -240,81 +240,6 @@ def files_check(doc: papis.document.Document) -> List[Error]:
 KEYS_EXIST_CHECK_NAME = "keys-exist"
 
 
-class Autofiller:
-    """
-    Base class that defines the interface of classes that encapsulate autofiller
-    functionality.
-    """
-    msg: str = "[[Autofiller Default Message]]"
-
-    def check(self, doc: papis.document.Document) -> bool:
-        raise NotImplementedError()
-
-    def make_fix(self, doc: papis.document.Document) -> FixFn:
-        raise NotImplementedError()
-
-    def message(self) -> str:
-        return self.msg
-
-
-class AuthorToAuthorList(Autofiller):
-    """
-    Infers the `author_list` key from the `author` (or `authors`) key.
-    """
-    msg = "Document contains 'author' but not 'authors_list'."
-
-    def check(self, doc: papis.document.Document) -> bool:
-        return ("author" in doc and "author_list" not in doc)
-
-    def make_fix(self, doc: papis.document.Document) -> FixFn:
-
-        def fixer() -> None:
-            authors = doc["author"]
-            if not isinstance(authors, list):
-                authors = [authors]
-            doc["author_list"] = papis.document.split_authors_name(
-                authors, separator=None)
-
-        return fixer
-
-
-class AuthorListToAuthor(Autofiller):
-    """
-    Infers the `author` key from the `author_list` key.
-    """
-    msg = "Document contains 'author_list' but not 'author'."
-
-    def check(self, doc: papis.document.Document) -> bool:
-        return ("author" not in doc and "author_list" in doc)
-
-    def make_fix(self, doc: papis.document.Document) -> FixFn:
-
-        def fixer() -> None:
-            doc["author"] = papis.document.author_list_to_author(doc)
-
-        return fixer
-
-
-KEYS_AUTOFILLERS: Dict[str, List[Autofiller]] = {
-    "author_list": [AuthorToAuthorList()],
-    "author": [AuthorListToAuthor()],
-}
-
-
-def register_autofiller_for(key: str, autofiller: Autofiller, prio: int = -1) -> None:
-    """
-    Registers an :class:`Autofiller` for a given `Document[key]`. The
-    autofiller must inherit from the abstract class :class:`Autofiller`.
-    """
-    global KEYS_AUTOFILLERS
-    if key not in KEYS_AUTOFILLERS:
-        KEYS_AUTOFILLERS[key] = []
-    if prio < 0 or prio > len(KEYS_AUTOFILLERS[key]):
-        KEYS_AUTOFILLERS[key].append(autofiller)
-    else:
-        KEYS_AUTOFILLERS[key].insert(prio, autofiller)
-
-
 def keys_exist_check(doc: papis.document.Document) -> List[Error]:
     """
     Checks whether the keys provided in the configuration
@@ -323,45 +248,44 @@ def keys_exist_check(doc: papis.document.Document) -> List[Error]:
 
     :returns: a :class:`list` of errors, one for each key that does not exist.
     """
+    from papis.api import save_doc
+
     folder = doc.get_main_folder() or ""
-    keys = set(papis.config.getlist("doctor-keys-exist-keys"))
-    autofill_keys = set(papis.config.getlist("doctor-keys-exist-autofill"))
+    keys = papis.config.getlist("doctor-keys-exist-keys")
 
-    errors: List[Error] = []
-    for key in (keys | autofill_keys):
-        if key in doc:
-            continue
+    def make_fixer(key: str) -> FixFn:
+        def fixer_author_from_author_list() -> None:
+            if "author_list" not in doc:
+                return
 
-        # check if we have a known auto-filler to automatically fix this.
-        if key in KEYS_AUTOFILLERS and key in autofill_keys:
-            autofiller_list = KEYS_AUTOFILLERS[key]
+            doc["author"] = papis.document.author_list_to_author(doc)
+            save_doc(doc)
 
-            for autofiller in autofiller_list:
-                if autofiller.check(doc):
-                    errors.append(
-                        Error(name=KEYS_EXIST_CHECK_NAME,
-                              path=folder,
-                              msg=autofiller.message(),
-                              suggestion_cmd=(
-                                  "papis edit --doc-folder {}".format(folder)),
-                              fix_action=autofiller.make_fix(doc),
-                              payload=key,
-                              doc=doc))
-                    # we stop after the first auto-filler.
-                    break
-        # otherwise we report the key as missing.
+        def fixer_author_list_from_author() -> None:
+            if "author" not in doc:
+                return
+
+            doc["author_list"] = papis.document.split_authors_name(doc["author"])
+            save_doc(doc)
+
+        def fixer_empty() -> None:
+            return
+
+        if key == "author":
+            return fixer_author_from_author_list
+        elif key == "author_list":
+            return fixer_author_list_from_author
         else:
-            errors.append(Error(name=KEYS_EXIST_CHECK_NAME,
-                                path=folder,
-                                msg="Key '{}' does not exist.".format(key),
-                                suggestion_cmd=(
-                                    "papis edit --doc-folder {}"
-                                    .format(folder)),
-                                fix_action=lambda: None,
-                                payload=key,
-                                doc=doc))
+            return fixer_empty
 
-    return errors
+    return [Error(name=KEYS_EXIST_CHECK_NAME,
+                  path=folder,
+                  msg=f"Key '{k}' does not exist.",
+                  suggestion_cmd=f"papis edit --doc-folder {folder}",
+                  fix_action=make_fixer(k),
+                  payload=k,
+                  doc=doc)
+            for k in keys if k not in doc]
 
 
 REFS_BAD_SYMBOL_REGEX = re.compile(r"[ ,{}\[\]@#`']")

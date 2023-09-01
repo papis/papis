@@ -251,7 +251,7 @@ def split_author_name(author: str) -> Dict[str, Any]:
     return {"family": family, "given": given}
 
 
-def split_authors_name(authors: List[str],
+def split_authors_name(authors: Union[str, List[str]],
                        separator: Optional[str] = None) -> List[Dict[str, Any]]:
     """Convert list of authors to a fixed format.
 
@@ -264,6 +264,9 @@ def split_authors_name(authors: List[str],
         multiple authors. If *None*, a separator is guessed using
         :func:`guess_authors_separator`.
     """
+
+    if isinstance(authors, str):
+        authors = [authors]
 
     author_list = []
     for subauthors in authors:
