@@ -162,3 +162,78 @@ def test_dump() -> None:
         )
 
     assert result == expected_result
+
+
+def test_author_separator_heuristics() -> None:
+    import re
+    from papis.document import guess_authors_separator, split_authors_name
+
+    def is_comma_and_re(sep):
+        assert sep
+        assert re.match(sep, ", and")
+        assert re.match(sep, ",and")
+        assert re.match(sep, ",")
+
+    s = "Sanger, F. and Nicklen, S. and Coulson, A. R."
+    expected = [{"family": "Sanger", "given": "F."},
+                {"family": "Nicklen", "given": "S."},
+                {"family": "Coulson", "given": "A. R."}]
+    assert guess_authors_separator(s) == "and"
+    assert split_authors_name([s]) == expected
+
+    expected = [{"family": "Sanger", "given": "Fabian"},
+                {"family": "Nicklen", "given": "Steven"},
+                {"family": "Coulson", "given": "Alexander R."}]
+
+    s = "Fabian Sanger and Steven Nicklen and Alexander R. Coulson"
+    assert guess_authors_separator(s) == "and"
+    assert split_authors_name([s]) == expected
+
+    s = "Fabian Sanger, Steven Nicklen, Alexander R. Coulson"
+    assert guess_authors_separator(s) == ","
+    assert split_authors_name([s]) == expected
+
+    s = "Fabian Sanger, and Steven Nicklen, and Alexander R. Coulson"
+    sep = guess_authors_separator(s)
+    is_comma_and_re(sep)
+    assert split_authors_name([s]) == expected
+
+    s = "Fabian Sanger, Steven Nicklen, and Alexander R. Coulson"
+    sep = guess_authors_separator(s)
+    is_comma_and_re(sep)
+    assert split_authors_name([s]) == expected
+
+    expected = [{"family": "Doe", "given": "John"},
+                {"family": "Dorian", "given": "Jane"},
+                {"family": "Unknown", "given": "James T."}]
+
+    s = "John Doe, Jane Dorian, and James T. Unknown "
+    sep = guess_authors_separator(s)
+    is_comma_and_re(sep)
+    assert split_authors_name([s]) == expected
+
+    expected = [{"family": "Duck", "given": "Dagobert"},
+                {"family": "von Beethoven", "given": "Ludwig"},
+                {"family": "Ford Jr.", "given": "Henry"}]
+
+    s = "Dagobert Duck and von Beethoven, Ludwig and Ford, Jr., Henry"
+    assert guess_authors_separator(s) == "and"
+    assert split_authors_name([s]) == expected
+
+    expected = [{"family": "Turing", "given": "A. M."}]
+
+    s = "Turing, A. M."
+    assert guess_authors_separator(s) == "and"
+    assert split_authors_name([s]) == expected
+
+    expected = [{"family": "Liddel Hart", "given": "Basil"}]
+
+    s = "Liddel Hart, Basil"
+    assert guess_authors_separator(s) == "and"
+    assert split_authors_name([s]) == expected
+
+    # NOTE: we cannot usefully distinguish between these cases:
+    #   s = "Last Last, First"        # one author
+    #   s = "Last, First First"       # one author
+    #   s = "Last Last, First First"  # one author
+    #   s = "First Last, First Last"  # two authors
