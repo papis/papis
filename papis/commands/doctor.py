@@ -20,7 +20,7 @@ implemented
   provided by :ref:`config-settings-doctor-html-tags-keys`.
 * ``key-type``: checks the type of keys provided by
   :ref:`config-settings-doctor-key-type-check-keys`, e.g.
-  (year should be an ``int``).
+  (year should be an :class:`int`).
 
 If any custom checks are implemented, you can get a complete list at runtime from
 
@@ -208,7 +208,8 @@ KEYS_EXIST_CHECK_NAME = "keys-exist"
 def keys_exist_check(doc: papis.document.Document) -> List[Error]:
     """
     Checks whether the keys provided in the configuration
-    option ``doctor-keys-exist-keys`` exit in the document and are non-empty.
+    option :ref:`config-settings-doctor-keys-exist-keys` exit in the document
+    and are non-empty.
 
     :returns: a :class:`list` of errors, one for each key that does not exist.
     """
@@ -233,7 +234,7 @@ REFS_CHECK_NAME = "refs"
 def refs_check(doc: papis.document.Document) -> List[Error]:
     """
     Checks that a ref exists and if not it tries to create one according to
-    the ``ref-format`` configuration option.
+    the :ref:`config-settings-ref-format` configuration option.
 
     :returns: an error if the reference does not exist or contains invalid
         characters (as required by BibTeX).
@@ -294,7 +295,7 @@ DUPLICATED_KEYS_NAME = "duplicated-keys"
 def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
     """
     Check for duplicated keys in the list given by the
-    ``doctor-duplicated-keys-keys`` configuration option.
+    :ref:`config-settings-doctor-duplicated-keys-keys` configuration option.
 
     :returns: a :class:`list` of errors, one for each key with a value that already
         exist in the documents from the current query.
@@ -367,8 +368,8 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
     """
     Check document keys have expected types.
 
-    The ``doctor-key-type-check-keys`` configuration entry defines a mapping
-    of keys and their expected types.
+    The :ref:`config-settings-doctor-key-type-check-keys` configuration entry
+    defines a mapping of keys and their expected types.
 
     :returns: a :class:`list` of errors, one for each key does not have the
         expected type (if it exists).
@@ -436,8 +437,8 @@ HTML_CODES_CHECK_NAME = "html-codes"
 
 def html_codes_check(doc: papis.document.Document) -> List[Error]:
     """
-    Checks that the keys in ``doctor-html-code-keys`` configuration options do
-    not contain any HTML codes like ``&amp;`` etc.
+    Checks that the keys in :ref:`config-settings-doctor-html-code-keys`
+    configuration options do not contain any HTML codes like ``&amp;`` etc.
 
     :returns: a :class:`list` of errors, one for each key that contains HTML codes.
     """
@@ -480,8 +481,8 @@ HTML_TAGS_REGEX = re.compile(r"<.*?>")
 
 def html_tags_check(doc: papis.document.Document) -> List[Error]:
     """
-    Checks that the keys in ``doctor-html-tags-keys`` configuration options do
-    not contain any HTML tags like ``<href>`` etc.
+    Checks that the keys in :ref:`config-settings-doctor-html-tags-keys`
+    configuration options do not contain any HTML tags like ``<href>`` etc.
 
     :returns: a :class:`list` of errors, one for each key that contains HTML codes.
     """
