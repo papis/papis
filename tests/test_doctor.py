@@ -40,8 +40,51 @@ def test_keys_check(tmp_config: TemporaryConfiguration) -> None:
         "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
         })
 
+    error1, error2 = keys_exist_check(doc)
+    assert error1.payload == "ref" or error2.payload == "ref"
+    assert error1.payload == "author_list" or error2.payload == "author_list"
+
+
+def test_keys_check_authors(tmp_config: TemporaryConfiguration,
+                            monkeypatch: pytest.MonkeyPatch) -> None:
+    from papis.commands.doctor import keys_exist_check
+    monkeypatch.setattr(papis.api, "save_doc", lambda _: None)
+
+    papis.config.set("doctor-keys-exist-keys", ["author_list", "author"])
+    papis.config.set("doctor-keys-exist-autofill", ["author_list", "author"])
+
+    full_doc = papis.document.from_data(
+        {
+            "title": "DNA sequencing with chain-terminating inhibitors",
+            "author": "John Doe, Jane Doe",
+            "author_list": [
+                {"family": "Doe", "given": "John"},
+                {"family": "Doe", "given": "Jane"},
+            ],
+        }
+    )
+
+    doc = full_doc.copy()
+    errors = keys_exist_check(doc)
+    assert not errors
+
+    # check author -> author_list
+    del doc["author_list"]
     error, = keys_exist_check(doc)
-    assert error.payload == "ref"
+
+    error.fix_action()
+    assert doc["author_list"][0]["family"] == "Doe"
+    assert doc["author_list"][0]["given"] == "John"
+    assert doc["author_list"][1]["family"] == "Doe"
+    assert doc["author_list"][1]["given"] == "Jane"
+
+    # check author_list -> author
+    doc = full_doc.copy()
+    del doc["author"]
+
+    error, = keys_exist_check(doc)
+    error.fix_action()
+    assert doc["author"] == "Doe, John and Doe, Jane"
 
 
 def test_refs_check(tmp_config: TemporaryConfiguration,
