@@ -67,7 +67,7 @@ def _dblp_journal(name: str) -> Optional[str]:
 
 
 def _dblp_authors(entries: Dict[str, Any]) -> List[Dict[str, Any]]:
-    return [papis.document.split_authors_name([author["text"]])[0]
+    return [papis.document.split_author_name(author["text"])
             for author in entries["author"]]
 
 
