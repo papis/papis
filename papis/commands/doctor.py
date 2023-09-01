@@ -373,7 +373,31 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
     :returns: a :class:`list` of errors, one for each key does not have the
         expected type (if it exists).
     """
+    from papis.api import save_doc
     folder = doc.get_main_folder() or ""
+
+    def make_fixer(key: str, cls: type) -> FixFn:
+        def fixer_convert_list() -> None:
+            doc[key] = [doc[key]]
+            save_doc(doc)
+
+        def fixer_convert_any() -> None:
+            value = doc[key]
+
+            if isinstance(value, list) and len(value) == 1:
+                value = value[0]
+
+            try:
+                doc[key] = cls(value)
+                save_doc(doc)
+            except Exception as exc:
+                logger.error("Failed to convert key '%s' to '%s': '%s'.",
+                             key, cls, papis.document.describe(doc), exc_info=exc)
+
+        if cls is list:
+            return fixer_convert_list
+        else:
+            return fixer_convert_any
 
     results = []
     for value in papis.config.getlist("doctor-key-type-check-keys"):
@@ -399,7 +423,7 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
                                      f"Key '{key}' ({doc_value}) should be of type "
                                      f"'{cls}' but got '{type(doc_value).__name__}'."),
                                  suggestion_cmd=f"papis edit --doc-folder {folder}",
-                                 fix_action=lambda: None,
+                                 fix_action=make_fixer(key, cls),
                                  payload=key,
                                  doc=doc))
     return results
