@@ -412,7 +412,20 @@ Bibtex options
 
    A list of two tuples with ``(key, type)`` used by the ``key-type`` check. This
    check will show an error if the key does not have the corresponding type. The
-   type should be a builtin Python type that can be used with ``eval``.
+   type should be a builtin Python type that can be used with ``eval``. For
+   example, this can be ``[("year", "int"), ("tags", "list")]`` to check that the
+   year is an integers and the tags are given as a list in a document.
+
+.. papis-config:: doctor-key-type-check-separator
+
+    A separator used by the ``key-type`` check fixer. When converting from
+    :class:`str` to :class:`list`, it is used to split the string into a list,
+    and when converting from :class:`list` to :class:`str`, it is used to join
+    list items. The split will ignore additional whitespace around the separator
+    (for instance, when set to ``,``, the string ``"extra,    whitespace"`` will
+    be converted to the list ``["extra", "whitespace"]``). To preserve leading
+    or trailing whitespace in the separator, make sure to quote it (for instance,
+    ``", "``).
 
 Citations options
 -----------------

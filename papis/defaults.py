@@ -54,6 +54,7 @@ settings: Dict[str, Any] = {
     "doctor-duplicated-keys-keys": ["ref"],
     "doctor-html-codes-keys": ["title", "author", "abstract", "journal"],
     "doctor-html-tags-keys": ["title", "author", "abstract", "journal"],
+    "doctor-key-type-check-separator": None,
     "doctor-key-type-check-keys": [("year", "int"),
                                    ("month", "int"),
                                    ("files", "list"),
