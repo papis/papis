@@ -541,10 +541,14 @@ def collect_importer_data(
             if batch:
                 ctx.data.update(importer.ctx.data)
             else:
-                papis.utils.update_doc_from_data_interactively(
-                    ctx.data,
-                    importer.ctx.data,
-                    str(importer))
+                if ctx.data:
+                    update_doc_from_data_interactively(
+                        ctx.data,
+                        importer.ctx.data,
+                        str(importer))
+                else:
+                    # NOTE: first importer does not require interactive use
+                    ctx.data.update(importer.ctx.data)
 
         if not only_data and importer.ctx.files:
             logger.info("Got files from importer '%s':\n\t%s",
@@ -553,7 +557,7 @@ def collect_importer_data(
 
             msg = f"Use this file? (from {importer.name})"
             for f in importer.ctx.files:
-                papis.utils.open_file(f)
+                open_file(f)
                 if batch or papis.tui.utils.confirm(msg):
                     ctx.files.append(f)
 

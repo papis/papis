@@ -28,6 +28,7 @@ def get(code: int, url: str) -> requests.Response:
     return r
 
 
+@pytest.mark.xfail(reason="dblp times out sometimes")
 def test_valid_dblp_key(tmp_config: TemporaryConfiguration, monkeypatch,
                         has_connection: bool = True) -> None:
     with monkeypatch.context() as m:
