@@ -30,6 +30,7 @@ def test_tandfonline_match(tmp_config: TemporaryConfiguration) -> None:
         assert Downloader.match(url) is None
 
 
+@pytest.mark.skip(reason="tandfonline.com seems to require javascript")
 @pytest.mark.resource_setup(cachedir="downloaders/resources")
 @pytest.mark.parametrize("url", TANDFONLINE_URLS)
 def test_tandfonline_fetch(tmp_config: TemporaryConfiguration,

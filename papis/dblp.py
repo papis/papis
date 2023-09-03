@@ -56,7 +56,7 @@ DBLP_KEY_CONVERSION = [
 
 def _dblp_journal(name: str) -> Optional[str]:
     import json
-    result = json.loads(search(query="{}$".format(name), api="venue"))
+    result = json.loads(search(query=f"{name}$", api="venue"))
 
     hits = result["result"]["hits"].get("hit")
     if hits is None or len(hits) != 1:
@@ -67,13 +67,13 @@ def _dblp_journal(name: str) -> Optional[str]:
 
 
 def _dblp_authors(entries: Dict[str, Any]) -> List[Dict[str, Any]]:
-    return [papis.document.split_authors_name([author["text"]])[0]
+    return [papis.document.split_author_name(author["text"])
             for author in entries["author"]]
 
 
 def search(
         query: str = "",
-        format: str = "json",
+        output_format: str = "json",
         max_results: int = 30,
         max_completions: int = 10,
         api: str = "publ",
@@ -95,8 +95,7 @@ def search(
     """
     if not (0 < max_results <= DBLP_MAX_RESULS):
         raise ValueError(
-            "Cannot request more than {} results (got {})"
-            .format(DBLP_MAX_RESULS, max_results)
+            f"Cannot request more than {DBLP_MAX_RESULS} results (got {max_results})"
             )
 
     if not (0 < max_completions <= DBLP_MAX_COMPLETIONS):
@@ -105,21 +104,21 @@ def search(
             .format(DBLP_MAX_COMPLETIONS, max_completions)
             )
 
-    if format not in DBLP_FORMATS:
+    if output_format not in DBLP_FORMATS:
         raise ValueError(
-            "Unsupported format: '{}' (expected {})".format(format, DBLP_FORMATS)
+            f"Unsupported format: '{output_format}' (expected {DBLP_FORMATS})"
             )
 
     url = DBLP_API_ENDPOINTS.get(api.lower())
     if url is None:
-        raise ValueError("Unknown API endpoint '{}'".format(api))
+        raise ValueError(f"Unknown API endpoint '{api}'")
 
     with papis.utils.get_session() as session:
         response = session.get(
             url,
             params={
                 "q": query,
-                "format": format,
+                "format": output_format,
                 "h": str(max_results),
                 "f": "0",
                 "c": str(max_completions),
@@ -131,7 +130,7 @@ def search(
 def get_data(query: str = "", max_results: int = 30) -> List[Dict[str, Any]]:
     import json
     response = json.loads(
-        search(query=query, format="json", max_results=max_results)
+        search(query=query, output_format="json", max_results=max_results)
         )
     result = response.get("result")
     hits = result["hits"].get("hit")
@@ -219,7 +218,7 @@ class Importer(papis.importer.Importer):
         if is_valid_dblp_key(self.uri):
             url = DBLP_BIB_FORMAT.format(uri=self.uri)
         else:
-            url = "{}.bib".format(self.uri[:-5])
+            url = f"{self.uri[:-5]}.bib"
 
         with papis.utils.get_session() as session:
             response = session.get(url)

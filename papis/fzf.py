@@ -15,7 +15,7 @@ class Command(ABC, Generic[T]):
     key: str = ""
 
     def binding(self) -> str:
-        return "{}:{}".format(self.key, self.command)
+        return f"{self.key}:{self.command}"
 
     def indices(self, line: str) -> Optional[List[int]]:
         m = self.regex.match(line) if self.regex else None

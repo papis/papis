@@ -6,7 +6,7 @@ import papis.web.latex
 
 
 def header(pretitle: str) -> None:
-    t.title("{} Papis web".format(pretitle))
+    t.title(f"{pretitle} Papis web")
     t.meta(name="apple-mobile-web-app-capable", content="yes")
     t.meta(charset="UTF-8")
     t.meta(name="apple-mobile-web-app-capable", content="yes")

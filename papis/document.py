@@ -44,11 +44,11 @@ EmptyKeyConversion = KeyConversion(key=None, action=None)
 
 
 class KeyConversionPair(NamedTuple):
-    #: A string denoting the foreign key (in the input data).
-    foreign_key: str
-    #: A :class:`list` of :class:`KeyConversion` mappings used to
-    #: rename and post-process the :attr:`foreign_key` and its value.
-    list: List[KeyConversion]
+    #: A string denoting the key in the input data.
+    from_key: str
+    #: A :class:`list` of :class:`KeyConversion` key mapping rules used to
+    #: rename and post-process the :attr:`from_key` and its value.
+    rules: List[KeyConversion]
 
 
 def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
@@ -101,22 +101,22 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
 
     for key_pair in conversions:
 
-        foreign_key = key_pair.foreign_key
-        if foreign_key not in data:
+        from_key = key_pair.from_key
+        if from_key not in data:
             continue
 
-        for conv_data in key_pair.list:
-            papis_key: str = conv_data.get("key") or foreign_key
-            papis_value = data[foreign_key]
+        for rule in key_pair.rules:
+            papis_key = str(rule.get("key") or from_key)
+            papis_value = data[from_key]
 
-            action = conv_data.get("action")
+            action = rule.get("action")
             if action:
                 try:
                     new_value = action(papis_value)
                 except Exception as exc:
                     logger.debug(
-                        "Error parsing papis key '%s' from foreign key '%s' => '%r'.",
-                        papis_key, foreign_key, papis_value, exc_info=exc
+                        "Error converting value from key '%s' to '%s': %r.",
+                        from_key, papis_key, papis_value, exc_info=exc
                     )
                     new_value = None
             else:
@@ -129,8 +129,9 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
                 new_data[papis_key] = new_value
 
     if keep_unknown_keys:
+        from_keys = {c.from_key for c in conversions}
         for key, value in data.items():
-            if key in [c.foreign_key for c in conversions]:
+            if key in from_keys:
                 continue
             new_data[key] = value
 
@@ -171,30 +172,106 @@ def author_list_to_author(data: Dict[str, Any]) -> str:
         ])
 
 
-def split_authors_name(authors: List[str],
-                       separator: str = "and") -> List[Dict[str, Any]]:
-    """Convert list of authors to a fixed format.
+# NOTE: matches "Sanger, F. and Nicklen, S. and Coulson, A. R."
+_AUTHOR_FAMILY_FIRST_RE = re.compile(r"\S+\s*,\s*\S+\s+and\s+\S+\s*,")
+# NOTE: matches "F. Sanger and S. Nicklen and A. R. Coulson"
+_AUTHOR_AND_AS_SEP_RE = re.compile(r"[^,\s]\s+and\s+\S")
+# NOTE: matches "F. Sanger, and S. Nicklen, and A. R. Coulson"
+_AUTHOR_AND_COMMA_SEP_RE = re.compile(r",\s+and\s+\S")
+# NOTE: matches "Turing, A. M." or "Liddel Hart, Basil"
+_AUTHOR_SINGLE_AUTHOR_FAMILY_FIRST_RE = \
+    re.compile(r"^(\S+\s*,\s*[^,]+)|([^,]+\s*,\s*\S+)$")
+
+
+def guess_authors_separator(authors: str) -> str:
+    """Attempt to determine the separator for various non-BibTeX author lists.
+
+    :param authors: author string to determine the separator for.
+    :returns: a regex that can be used to split the authors string.
+
+    For example:
+
+    >>> s = "Sanger, F. and Nicklen, S. and Coulson, A. R."
+    >>> assert guess_authors_separator(s) == "and"
+    >>> s = "Fabian Sanger and Steven Nicklen and Alexander R. Coulson"
+    >>> assert guess_authors_separator(s) == "and"
+    >>> s = "Fabian Sanger, Steven Nicklen, Alexander R. Coulson"
+    >>> assert guess_authors_separator(s) == ","
+    >>> s = "Fabian Sanger, and Steven Nicklen, and Alexander R. Coulson"
+    >>> import re
+    >>> sep = guess_authors_separator(s)
+    >>> assert re.match(sep, ", and")
+    >>> s = "Dagobert Duck and von Beethoven, Ludwig and Ford, Jr., Henry"
+    >>> assert guess_authors_separator(s) == "and"
+    >>> s = "Turing, A. M."
+    >>> assert guess_authors_separator(s) == "and"
+    """
+    authors = authors.strip()
+    if not authors:
+        return "and"
+
+    if _AUTHOR_FAMILY_FIRST_RE.match(authors):
+        # found something like "Last, First and Last, First"
+        sep = "and"
+    elif _AUTHOR_AND_AS_SEP_RE.search(authors):
+        # found "Name and Name"
+        sep = "and"
+    elif _AUTHOR_AND_COMMA_SEP_RE.search(authors):
+        # found something like "Name, and Name": use a regex to capture all variants
+        sep = r",\s*(?:and)?"
+    elif _AUTHOR_SINGLE_AUTHOR_FAMILY_FIRST_RE.match(authors):
+        # found a single author "Last, First"
+        sep = "and"
+    elif "," in authors and " and " not in authors:
+        # found something like "Name, Name, Name"
+        sep = ","
+    else:
+        sep = "and"
+
+    return sep
+
+
+def split_author_name(author: str) -> Dict[str, Any]:
+    """Split an author name into a given and family name.
 
     This uses :func:`bibtexparser.customization.splitname` to correctly
     split and determine the first and last names of an author in the list.
     Note that this is just a heuristic and can give incorrect results for
     certain author names.
 
-    :param authors: a list of author names, where each entry can consists of
-        multiple authors separated by *separator*.
-    :param separator: a separator for entries in *authors* that contain
-        multiple authors.
+    :param author: a string containing an author name.
+    :returns: a :class:`dict` with the family and given name of the author.
     """
     from bibtexparser.customization import splitname
 
+    parts = splitname(author)
+    given = " ".join(parts["first"])
+    family = " ".join(parts["von"] + parts["last"] + parts["jr"])
+
+    return {"family": family, "given": given}
+
+
+def split_authors_name(authors: List[str],
+                       separator: Optional[str] = None) -> List[Dict[str, Any]]:
+    """Convert list of authors to a fixed format.
+
+    Uses :func:`split_author_name` to construct the individual authors and the
+    *separator* to split the authors in the list.
+
+    :param authors: a list of author names, where each entry can consists of
+        multiple authors separated by *separator*.
+    :param separator: a separator for entries in *authors* that contain
+        multiple authors. If *None*, a separator is guessed using
+        :func:`guess_authors_separator`.
+    """
+
     author_list = []
     for subauthors in authors:
-        for author in re.split(r"\s+{}\s+".format(separator), subauthors):
-            parts = splitname(author)
-            given = " ".join(parts["first"])
-            family = " ".join(parts["von"] + parts["last"] + parts["jr"])
-
-            author_list.append({"family": family, "given": given})
+        sep = separator if separator else guess_authors_separator(subauthors)
+        author_list.extend([
+            split_author_name(author)
+            for author in re.split(fr"\s*{sep}\s+", subauthors)
+        ])
 
     return author_list
 
@@ -399,7 +476,7 @@ def dump(document: Document) -> str:
     width = (width // 4 + 2) * 4 - 1
 
     return "\n".join([
-        "{:{}}{}".format("{}:".format(key), width, value)
+        "{:{}}{}".format(f"{key}:", width, value)
         for key, value in sorted(document.items())
         ])
 

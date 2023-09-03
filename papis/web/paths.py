@@ -26,7 +26,7 @@ def query_path(libname: str) -> str:
     """
     Path for submiting queries.
     """
-    return "/library/{libname}/query".format(libname=libname)
+    return f"/library/{libname}/query"
 
 
 def fetch_citations_server_path(libname: str, doc: Dict[str, Any]) -> str:

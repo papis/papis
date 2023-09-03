@@ -81,7 +81,7 @@ setup(
     ],
     install_requires=[
         "PyYAML>=3.12",
-        "arxiv2bib>=1.0.7",
+        "arxiv>=1.0.0",
         "beautifulsoup4>=4.4.1",
         "bibtexparser>=0.6.2",
         "chardet>=3.0.2",
@@ -162,9 +162,9 @@ setup(
         "tui",
         "zotero",
     ],
-    package_data=dict(
-        papis=["py.typed"],
-    ),
+    package_data={
+        "papis": ["py.typed"],
+    },
     data_files=data_files,
     packages=included_packages,
     entry_points={

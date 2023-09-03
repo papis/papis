@@ -25,8 +25,7 @@ def ensure_tags_list(tags: Tags) -> List[str]:
 def _tag(tag: str, libname: str) -> t.html_tag:
     return t.a(tag,
                cls="badge bg-dark " + PAPIS_TAG_CLASS,
-               href=("/library/{libname}/query?q=tags:{0}"
-                     .format(tag, libname=libname)))
+               href=f"/library/{libname}/query?q=tags:{tag}")
 
 
 def tags_list_div(tags: Tags, libname: str) -> None:
@@ -42,7 +41,7 @@ def html(pretitle: str, libname: str, tags: Dict[str, int]) -> t.html_tag:
             papis.web.navbar.navbar(libname=libname)
             with wh.container():
                 with t.h1("TAGS"):
-                    with t.a(href="/library/{}/tags/refresh".format(libname)):
+                    with t.a(href=f"/library/{libname}/tags/refresh"):
                         wh.icon("refresh")
                 with wh.container():
                     for tag in sorted(tags,

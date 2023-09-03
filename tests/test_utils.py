@@ -73,31 +73,31 @@ def test_general_open_with_spaces(tmp_config: TemporaryConfiguration) -> None:
 def test_locate_document(tmp_config: TemporaryConfiguration) -> None:
     from papis.document import from_data
     docs = [
-        from_data(dict(doi="10.1021/ct5004252", title="Hello world")),
+        from_data({"doi": "10.1021/ct5004252", "title": "Hello world"}),
         from_data(
-            dict(
-                doi="10.123/12afad12",
-                author="noone really",
-                title="Hello world"
-            )
+            {
+                "doi": "10.123/12afad12",
+                "author": "noone really",
+                "title": "Hello world"
+            }
         ),
     ]
 
     from papis.utils import locate_document
 
-    doc = from_data(dict(doi="10.1021/CT5004252"))
+    doc = from_data({"doi": "10.1021/CT5004252"})
     found_doc = locate_document(doc, docs)
     assert found_doc is not None
 
-    doc = from_data(dict(doi="CT5004252"))
+    doc = from_data({"doi": "CT5004252"})
     found_doc = locate_document(doc, docs)
     assert found_doc is None
 
-    doc = from_data(dict(author="noone really"))
+    doc = from_data({"author": "noone really"})
     found_doc = locate_document(doc, docs)
     assert found_doc is None
 
-    doc = from_data(dict(title="Hello world"))
+    doc = from_data({"title": "Hello world"})
     found_doc = locate_document(doc, docs)
     assert found_doc is None
 

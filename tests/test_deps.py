@@ -32,6 +32,6 @@ def test_prompt_toolkit() -> None:
     from prompt_toolkit.widgets import HorizontalLine                   # noqa: F401
 
     try:
-        from prompt_toolkit.data_structures import Point                # noqa: F401
+        from prompt_toolkit.data_structures import Point
     except ImportError:
         from prompt_toolkit.layout.screen import Point                  # noqa: F401

@@ -86,11 +86,11 @@ def all_option(**attrs: Any) -> DecoratorCallable:
 
 def git_option(**attrs: Any) -> DecoratorCallable:
     """Adds a ``--git`` option as a :mod:`click` decorator."""
-    help = attrs.pop("help", "Commit changes to git")
+    git_help = attrs.pop("help", "Commit changes to git")
     return bool_flag(
         "--git/--no-git",
         default=lambda: bool(papis.config.get("use-git")),
-        help=help,
+        help=git_help,
         **attrs)
 
 

@@ -194,8 +194,8 @@ def files_check(doc: papis.document.Document) -> List[Error]:
 
     return [Error(name=FILES_CHECK_NAME,
                   path=folder,
-                  msg="File '{}' declared but does not exist".format(f),
-                  suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                  msg=f"File '{f}' declared but does not exist",
+                  suggestion_cmd=f"papis edit --doc-folder {folder}",
                   fix_action=make_fixer(f),
                   payload=f,
                   doc=doc)
@@ -217,8 +217,8 @@ def keys_exist_check(doc: papis.document.Document) -> List[Error]:
 
     return [Error(name=KEYS_EXIST_CHECK_NAME,
                   path=folder,
-                  msg="Key '{}' does not exist.".format(k),
-                  suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                  msg=f"Key '{k}' does not exist.",
+                  suggestion_cmd=f"papis edit --doc-folder {folder}",
                   fix_action=lambda: None,
                   payload=k,
                   doc=doc)
@@ -238,6 +238,7 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
     :returns: an error if the reference does not exist or contains invalid
         characters (as required by BibTeX).
     """
+    import papis.bibtex
     from papis.api import save_doc
 
     folder = doc.get_main_folder() or ""
@@ -269,8 +270,7 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
         return [Error(name=REFS_CHECK_NAME,
                       path=folder,
                       msg="Reference missing.",
-                      suggestion_cmd=("papis edit --doc-folder {}"
-                                      .format(folder)),
+                      suggestion_cmd=f"papis edit --doc-folder {folder}",
                       fix_action=create_ref_fixer,
                       payload="ref",
                       doc=doc)]
@@ -279,8 +279,8 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
     if m:
         return [Error(name=REFS_CHECK_NAME,
                       path=folder,
-                      msg="Bad characters ({}) found in reference.".format(set(m)),
-                      suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                      msg=f"Bad characters ({set(m)}) found in reference.",
+                      suggestion_cmd=f"papis edit --doc-folder {folder}",
                       fix_action=clean_ref_fixer,
                       payload="ref",
                       doc=doc)]
@@ -317,8 +317,8 @@ def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
 
         results.append(Error(name=DUPLICATED_KEYS_NAME,
                              path=folder,
-                             msg="Key '{}' is duplicated ({}).".format(key, value),
-                             suggestion_cmd="papis edit {}:'{}'".format(key, value),
+                             msg=f"Key '{key}' is duplicated ({value}).",
+                             suggestion_cmd=f"papis edit {key}:'{value}'",
                              fix_action=lambda: None,
                              payload=key,
                              doc=doc))
@@ -344,7 +344,7 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
         return [Error(name=BIBTEX_TYPE_CHECK_NAME,
                       path=folder,
                       msg="Document does not define a type.",
-                      suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                      suggestion_cmd=f"papis edit --doc-folder {folder}",
                       fix_action=lambda: None,
                       payload="type",
                       doc=doc)]
@@ -352,9 +352,8 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
     if bib_type not in papis.bibtex.bibtex_types:
         return [Error(name=BIBTEX_TYPE_CHECK_NAME,
                       path=folder,
-                      msg=("Document type '{}' is not a valid BibTeX type."
-                           .format(bib_type)),
-                      suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                      msg=f"Document type '{bib_type}' is not a valid BibTeX type.",
+                      suggestion_cmd=f"papis edit --doc-folder {folder}",
                       fix_action=lambda: None,
                       payload=bib_type,
                       doc=doc)]
@@ -369,13 +368,62 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
     """
     Check document keys have expected types.
 
-    The ``doctor-key-type-check-keys`` configuration entry defines a mapping
-    of keys and their expected types.
+    The :ref:`config-settings-doctor-key-type-check-keys` configuration entry
+    defines a mapping of keys and their expected types. If the desired type is
+    a list, the :ref:`config-settings-doctor-key-type-check-separator` setting
+    can be used to split an existing string (and, similarly, if the desired type
+    is a string, it can be used to join a list of items).
 
     :returns: a :class:`list` of errors, one for each key does not have the
         expected type (if it exists).
     """
+    from papis.api import save_doc
     folder = doc.get_main_folder() or ""
+
+    # NOTE: the separator can be quoted so that it can force whitespace
+    separator = papis.config.get("doctor-key-type-check-separator")
+    separator = separator.strip("'").strip('"') if separator else None
+
+    def make_fixer(key: str, cls: type) -> FixFn:
+        def fixer_convert_list() -> None:
+            value = doc[key]
+
+            if isinstance(value, str) and separator:
+                doc[key] = re.split(fr"\s*{separator}\s*", value)
+            else:
+                doc[key] = [value]
+
+            save_doc(doc)
+
+        def fixer_convert_str() -> None:
+            value = doc[key]
+
+            if isinstance(value, list) and separator:
+                doc[key] = separator.join(value)
+            else:
+                doc[key] = str(value)
+
+            save_doc(doc)
+
+        def fixer_convert_any() -> None:
+            value = doc[key]
+
+            if isinstance(value, list) and len(value) == 1:
+                value = value[0]
+
+            try:
+                doc[key] = cls(value)
+                save_doc(doc)
+            except Exception as exc:
+                logger.error("Failed to convert key '%s' to '%s': '%s'.",
+                             key, cls, papis.document.describe(doc), exc_info=exc)
+
+        if cls is list:
+            return fixer_convert_list
+        if cls is str:
+            return fixer_convert_str
+        else:
+            return fixer_convert_any
 
     results = []
     for value in papis.config.getlist("doctor-key-type-check-keys"):
@@ -397,13 +445,11 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
         if doc_value is not None and not isinstance(doc_value, cls):
             results.append(Error(name=KEY_TYPE_CHECK_NAME,
                                  path=folder,
-                                 msg=("Key '{}' ({}) should be of type '{}'"
-                                      " but found '{}'"
-                                      .format(key, doc_value,
-                                              cls, type(doc_value).__name__)),
-                                 suggestion_cmd=("papis edit --doc-folder {}"
-                                                 .format(folder)),
-                                 fix_action=lambda: None,
+                                 msg=(
+                                     f"Key '{key}' ({doc_value}) should be of type "
+                                     f"'{cls}' but got '{type(doc_value).__name__}'."),
+                                 suggestion_cmd=f"papis edit --doc-folder {folder}",
+                                 fix_action=make_fixer(key, cls),
                                  payload=key,
                                  doc=doc))
     return results
@@ -445,10 +491,8 @@ def html_codes_check(doc: papis.document.Document) -> List[Error]:
         if m:
             results.append(Error(name=HTML_CODES_CHECK_NAME,
                                  path=folder,
-                                 msg=("Field '{}' contains HTML codes {}"
-                                      .format(key, m)),
-                                 suggestion_cmd=(
-                                     "papis edit --doc-folder {}".format(folder)),
+                                 msg=f"Field '{key}' contains HTML codes {m}",
+                                 suggestion_cmd=f"papis edit --doc-folder {folder}",
                                  fix_action=make_fixer(key),
                                  payload=key,
                                  doc=doc))
@@ -497,10 +541,8 @@ def html_tags_check(doc: papis.document.Document) -> List[Error]:
         if m:
             results.append(Error(name=HTML_TAGS_CHECK_NAME,
                                  path=folder,
-                                 msg=("Field '{}' contains HTML tags: {}"
-                                      .format(key, m)),
-                                 suggestion_cmd=(
-                                     "papis edit --doc-folder {}".format(folder)),
+                                 msg=f"Field '{key}' contains HTML tags: {m}",
+                                 suggestion_cmd=f"papis edit --doc-folder {folder}",
                                  fix_action=make_fixer(key),
                                  payload=key,
                                  doc=doc))
@@ -605,17 +647,17 @@ def cli(query: str,
     from papis.commands.edit import run as edit_run
 
     for error in errors:
-        click.echo("{e.name}\t{e.payload}\t{e.path}".format(e=error))
+        click.echo(f"{error.name}\t{error.payload}\t{error.path}")
 
         if explain:
-            click.echo("\tReason: {}".format(error.msg))
+            click.echo(f"\tReason: {error.msg}")
 
         if suggest:
-            click.echo("\tSuggestion: {}".format(error.suggestion_cmd))
+            click.echo(f"\tSuggestion: {error.suggestion_cmd}")
 
         if fix:
             error.fix_action()
 
         if edit and error.doc:
-            input("Press any key to edit...")
+            click.pause("Press any key to edit...")
             edit_run(error.doc)

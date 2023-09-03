@@ -32,7 +32,7 @@ def widget(libname: str, doc: papis.document.Document) -> None:
     with wh.flex("center"):
         with t.form(method="POST",
                     cls="p-3",
-                    onsubmit="{}()".format(onsubmit_name),
+                    onsubmit=f"{onsubmit_name}()",
                     action=wp.update_notes(libname, doc)):
             t.textarea(type="text",
                        id=_notes_input_id,
@@ -48,21 +48,18 @@ def widget(libname: str, doc: papis.document.Document) -> None:
         height=100,
         style="min-height: 500px")
 
-    _script = """
-let {editor} = ace.edit("{editor_id}");
-ace.require('ace/ext/settings_menu').init({editor});
+    _script = f"""
+let {editor_name} = ace.edit("{_notes_id}");
+ace.require('ace/ext/settings_menu').init({editor_name});
 ace.config.loadModule('ace/ext/keybinding_menu',
                         (module) =>  {{
-                            module.init({editor});
+                            module.init({editor_name});
                         }});
-// {editor}.setKeyboardHandler('ace/keyboard/vim');
-{editor}.session.setMode("ace/mode/{ext}");
+// {editor_name}.setKeyboardHandler('ace/keyboard/vim');
+{editor_name}.session.setMode("ace/mode/{_notes_extension}");
 
-{onsubmit}
-    """.format(onsubmit=onsubmit_body,
-               editor=editor_name,
-               ext=_notes_extension,
-               editor_id=_notes_id)
+{onsubmit_body}
+    """
 
     t.script(tu.raw(_script),
              charset="utf-8",

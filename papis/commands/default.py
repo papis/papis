@@ -87,11 +87,11 @@ class ScriptLoaderGroup(click.Group):
                 click.echo("Command '{name}' is unknown! Did you mean '{matches}'?"
                            .format(name=name, matches="' or '".join(matches)))
             else:
-                click.echo("Command '{name}' is unknown!".format(name=name))
+                click.echo(f"Command '{name}' is unknown!")
 
             # return the match if there was only one match
             if len(matches) == 1:
-                click.echo("I suppose you meant: '{}'".format(matches[0]))
+                click.echo(f"I suppose you meant: '{matches[0]}'")
                 script = self.scripts[matches[0]]
             else:
                 return None
@@ -222,9 +222,9 @@ def run(verbose: bool,
 
     if not library.paths:
         raise RuntimeError(
-            "Library '{}' does not have any existing folders attached to it. "
+            f"Library '{lib}' does not have any existing folders attached to it. "
             "Please define and create the paths in the configuration file"
-            .format(lib))
+            )
 
     # Now the library should be set, let us check if there is a
     # local configuration file there, and if there is one, then

@@ -1,4 +1,5 @@
 import os
+import pytest
 import tempfile
 
 import papis.api
@@ -7,7 +8,8 @@ import papis.document
 from tests.testlib import TemporaryConfiguration
 
 
-def test_files_check(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
+def test_files_check(tmp_config: TemporaryConfiguration,
+                     monkeypatch: pytest.MonkeyPatch) -> None:
     from papis.commands.doctor import files_check
     monkeypatch.setattr(papis.api, "save_doc", lambda _: None)
 
@@ -42,7 +44,8 @@ def test_keys_check(tmp_config: TemporaryConfiguration) -> None:
     assert error.payload == "ref"
 
 
-def test_refs_check(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
+def test_refs_check(tmp_config: TemporaryConfiguration,
+                    monkeypatch: pytest.MonkeyPatch) -> None:
     from papis.commands.doctor import refs_check
     monkeypatch.setattr(papis.api, "save_doc", lambda _: None)
 
@@ -116,12 +119,16 @@ def test_bibtex_type_check(tmp_config: TemporaryConfiguration) -> None:
         assert not errors
 
 
-def test_key_type_check(tmp_config: TemporaryConfiguration) -> None:
+def test_key_type_check(tmp_config: TemporaryConfiguration,
+                        monkeypatch: pytest.MonkeyPatch) -> None:
     from papis.commands.doctor import key_type_check
+    monkeypatch.setattr(papis.api, "save_doc", lambda _: None)
 
     doc = papis.document.from_data({
         "author_list": [{"given": "F.", "family": "Sanger"}],
-        "year": [2023],
+        "year": ["2023"],
+        "projects": "test-key-project",
+        "tags": "test-key-tag-1 test-key-tag-2      test-key-tag-3",
         })
 
     # check: invalid setting parsing
@@ -147,8 +154,43 @@ def test_key_type_check(tmp_config: TemporaryConfiguration) -> None:
     errors = key_type_check(doc)
     assert not errors
 
+    # check: fix int
+    papis.config.set("doctor-key-type-check-keys", ["('year', 'int')"])
+    error, = key_type_check(doc)
+    assert error.payload == "year"
+    error.fix_action()
+    assert doc["year"] == 2023
 
-def test_html_codes_check(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
+    # check: fix list
+    papis.config.set("doctor-key-type-check-separator", " ")
+    papis.config.set("doctor-key-type-check-keys", ["('projects', 'list')"])
+    error, = key_type_check(doc)
+    assert error.payload == "projects"
+    error.fix_action()
+    assert doc["projects"] == ["test-key-project"]
+
+    papis.config.set("doctor-key-type-check-keys", ["('tags', 'list')"])
+    error, = key_type_check(doc)
+    assert error.payload == "tags"
+    error.fix_action()
+    assert doc["tags"] == ["test-key-tag-1", "test-key-tag-2", "test-key-tag-3"]
+
+    papis.config.set("doctor-key-type-check-separator", ",")
+    doc["tags"] = "test-key-tag-1,test-key-tag-2    ,  test-key-tag-3"
+    error, = key_type_check(doc)
+    assert error.payload == "tags"
+    error.fix_action()
+    assert doc["tags"] == ["test-key-tag-1", "test-key-tag-2", "test-key-tag-3"]
+
+    papis.config.set("doctor-key-type-check-keys", ["('tags', 'str')"])
+    error, = key_type_check(doc)
+    assert error.payload == "tags"
+    error.fix_action()
+    assert doc["tags"] == "test-key-tag-1,test-key-tag-2,test-key-tag-3"
+
+
+def test_html_codes_check(tmp_config: TemporaryConfiguration,
+                          monkeypatch: pytest.MonkeyPatch) -> None:
     from papis.commands.doctor import html_codes_check
     monkeypatch.setattr(papis.api, "save_doc", lambda _: None)
 
@@ -172,7 +214,8 @@ def test_html_codes_check(tmp_config: TemporaryConfiguration, monkeypatch) -> No
                 == "DNA sequencing with chain-terminating inhibitors & stuff")
 
 
-def test_html_tags_check(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
+def test_html_tags_check(tmp_config: TemporaryConfiguration,
+                         monkeypatch: pytest.MonkeyPatch) -> None:
     from papis.commands.doctor import html_tags_check
     monkeypatch.setattr(papis.api, "save_doc", lambda _: None)
 

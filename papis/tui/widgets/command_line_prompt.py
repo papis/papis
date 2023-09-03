@@ -93,7 +93,7 @@ class CommandLinePrompt(ConditionalContainer):
                 "More than one command matches the input: ['{}']"
                 .format("', '".join(cmd.name for cmd in cmds)))
         elif not cmds:
-            raise ValueError("No command found for '{}'".format(name))
+            raise ValueError(f"No command found for '{name}'")
 
         input_cmd.pop(0)
         cmds[0].run(cmds[0], *input_cmd)

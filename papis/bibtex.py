@@ -252,7 +252,7 @@ def bibtexparser_entry_to_papis(entry: Dict[str, Any]) -> Dict[str, Any]:
 
     _k = papis.document.KeyConversionPair
     key_conversion = [
-        _k("ID", [{"key": "ref", "action": lambda x: None}]),
+        _k("ID", [{"key": "ref", "action": None}]),
         _k("ENTRYTYPE", [{"key": "type", "action": None}]),
         _k("link", [{"key": "url", "action": None}]),
         _k("title", [{
@@ -263,7 +263,7 @@ def bibtexparser_entry_to_papis(entry: Dict[str, Any]) -> Dict[str, Any]:
             "key": "author_list",
             "action": lambda author: papis.document.split_authors_name([
                 latex_to_unicode(author)
-                ])
+                ], separator="and")
             }]),
     ]
 
@@ -438,7 +438,7 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
     # process keys
     supports_unicode = papis.config.getboolean("bibtex-unicode")
     journal_key = papis.config.getstring("bibtex-journal-key")
-    lines = ["{}".format(ref)]
+    lines = [f"{ref}"]
 
     for key in sorted(document):
         bib_key = bibtex_key_converter.get(key, key)
@@ -464,7 +464,7 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
         if not supports_unicode:
             bib_value = unicode_to_latex(bib_value)
 
-        lines.append("{} = {{{}}}".format(bib_key, bib_value))
+        lines.append(f"{bib_key} = {{{bib_value}}}")
 
     # Handle file for zotero exporting
     if (papis.config.getboolean("bibtex-export-zotero-file")
@@ -2915,8 +2915,8 @@ def unicode_to_latex(text: str) -> str:
     #    u"\u2AC6\u0338": r"\nsupseteqq",
     #    u"\u2AFD\u20E5": r"{\rlap{\textbackslash}{{/}\!\!{/}}}",
 
-    unicode_to_latex_table = dict(
-        (ord(k), v)
+    unicode_to_latex_table = {
+        ord(k): v
         for k, v in unicode_to_latex_table_base.items()
-    )
+    }
     return text.translate(unicode_to_latex_table)

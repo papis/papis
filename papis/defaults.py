@@ -46,6 +46,7 @@ settings: Dict[str, Any] = {
     "add-edit": False,
     "add-open": False,
     "add-fetch-citations": False,
+    "add-download-files": True,
 
     # papis-doctor configuration
     "doctor-default-checks": ["files", "keys-exist", "duplicated-keys"],
@@ -53,6 +54,7 @@ settings: Dict[str, Any] = {
     "doctor-duplicated-keys-keys": ["ref"],
     "doctor-html-codes-keys": ["title", "author", "abstract", "journal"],
     "doctor-html-tags-keys": ["title", "author", "abstract", "journal"],
+    "doctor-key-type-check-separator": None,
     "doctor-key-type-check-keys": [("year", "int"),
                                    ("month", "int"),
                                    ("files", "list"),

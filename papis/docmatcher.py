@@ -27,8 +27,8 @@ class ParseResult(NamedTuple):
     doc_key: Optional[str]
 
     def __repr__(self) -> str:
-        doc_key = "{!r}, ".format(self.doc_key) if self.doc_key is not None else ""
-        return "[{}{!r}]".format(doc_key, self.search)
+        doc_key = f"{self.doc_key!r}, " if self.doc_key is not None else ""
+        return f"[{doc_key}{self.search!r}]"
 
 
 class MatcherCallable(Protocol):

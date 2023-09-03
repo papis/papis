@@ -116,7 +116,7 @@ class Database(papis.database.base.Database):
     def query_dict(self,
                    dictionary: Dict[str, str]) -> List[papis.document.Document]:
         query_string = " AND ".join(
-            ['{}:"{}" '.format(key, val) for key, val in dictionary.items()])
+            [f'{key}:"{val}" ' for key, val in dictionary.items()])
         return self.query(query_string)
 
     def query(self, query_string: str) -> List[papis.document.Document]:
@@ -227,7 +227,7 @@ class Database(papis.database.base.Database):
             user_fields = self.get_schema_init_fields()
             db_fields = self.get_schema()
 
-            user_field_names = sorted(list(user_fields))
+            user_field_names = sorted(user_fields)
             db_field_names = sorted(db_fields.names())
 
             # If the user fields and the fields in the DB

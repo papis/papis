@@ -17,29 +17,51 @@
       pypkgs = pkgs.python310Packages;
       lib = pkgs.lib;
 
-      runtime_py_deps = with pypkgs; [
-        pyyaml
-        arxiv2bib
-        beautifulsoup4
-        bibtexparser
-        chardet
-        click
-        colorama
-        dominate
-        filetype
-        habanero
-        isbnlib
-        lxml
-        prompt_toolkit
-        pygments
-        pyparsing
-        python-doi
-        python-slugify
-        requests
-        stevedore
-        tqdm
-        whoosh
-      ];
+      runtime_py_deps = let
+        # manually package arxiv.py since it is not yet in upstream nixpkgs
+        arxivpy = python.pkgs.buildPythonPackage rec {
+          pname = "arxiv";
+          version = "1.4.8";
+
+          src = python.pkgs.fetchPypi {
+            inherit pname version;
+            sha256 = "sha256-KoGOp0nqpipuJPwx1Tt2m00z/1XPxd2nx7fTCaOyk3M=";
+          };
+
+          doCheck = false;
+          checkInputs = [ ];
+          propagatedBuildInputs = [pypkgs.feedparser];
+
+          meta = with lib; {
+            homepage = "https://github.com/lukasschwab/arxiv.py";
+            description = " Python wrapper for the arXiv API ";
+            license = licenses.mit;
+          };
+        };
+      in
+        with pypkgs; [
+          pyyaml
+          beautifulsoup4
+          bibtexparser
+          chardet
+          click
+          colorama
+          dominate
+          filetype
+          habanero
+          isbnlib
+          lxml
+          prompt_toolkit
+          pygments
+          pyparsing
+          python-doi
+          python-slugify
+          requests
+          stevedore
+          tqdm
+          whoosh
+          arxivpy
+        ];
       develop_py_deps = with pypkgs; [
         pip
         virtualenv

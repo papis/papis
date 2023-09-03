@@ -137,7 +137,7 @@ def parse_meta_authors(soup: "bs4.BeautifulSoup") -> List[Dict[str, Any]]:
     # convert to papis author format
     author_list: List[Dict[str, Any]] = []
     for author, aff in authors_and_affs:
-        fullname, = papis.document.split_authors_name([author.get("content")])
+        fullname = papis.document.split_author_name(author.get("content"))
         affiliation = [{"name": aff.get("content")}] if aff else []
 
         author_list.append({

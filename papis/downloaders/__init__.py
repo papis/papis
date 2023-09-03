@@ -90,7 +90,7 @@ class Downloader(papis.importer.Importer):
             cookies = {}
 
         super().__init__(uri=uri, name=name, ctx=ctx)
-        self.logger = papis.logging.get_logger("papis.downloader.{}".format(self.name))
+        self.logger = papis.logging.get_logger(f"papis.downloader.{self.name}")
 
         self.expected_document_extensions = expected_document_extension
         self.priority = priority
@@ -125,8 +125,8 @@ class Downloader(papis.importer.Importer):
             *None* otherwise.
         """
         raise NotImplementedError(
-            "Matching URI not implemented for '{}.{}'"
-            .format(cls.__module__, cls.__name__))
+            f"Matching URI not implemented for '{cls.__module__}.{cls.__name__}'"
+            )
 
     @papis.importer.cache
     def fetch(self) -> None:
@@ -210,7 +210,7 @@ class Downloader(papis.importer.Importer):
             if doc_rawdata and self.check_document_format():
                 extension = self.get_document_extension()
                 if extension:
-                    extension = ".{}".format(extension)
+                    extension = f".{extension}"
 
                 with tempfile.NamedTemporaryFile(
                         mode="wb+", delete=False,
@@ -240,7 +240,7 @@ class Downloader(papis.importer.Importer):
         return self._soup
 
     def __str__(self) -> str:
-        return "Downloader({}, uri={})".format(self.name, self.uri)
+        return f"Downloader({self.name}, uri={self.uri})"
 
     def get_bibtex_url(self) -> Optional[str]:
         """
@@ -248,8 +248,7 @@ class Downloader(papis.importer.Importer):
             metadata about the document.
         """
         raise NotImplementedError(
-            "Getting a BibTeX URL not implemented for the '{}' downloader".
-            format(self.name))
+            f"Getting a BibTeX URL not implemented for the '{self.name}' downloader")
 
     def get_bibtex_data(self) -> Optional[str]:
         """Get BibTeX data available at :meth:`get_bibtex_url`, if any.
@@ -283,24 +282,24 @@ class Downloader(papis.importer.Importer):
         APIs to gather metadata about the document.
         """
         raise NotImplementedError(
-            "Getting data is not implemented for the '{}' downloader"
-            .format(self.name))
+            f"Getting data is not implemented for the '{self.name}' downloader"
+            )
 
     def get_doi(self) -> Optional[str]:
         """
         :returns: a DOI for the document, if any.
         """
         raise NotImplementedError(
-            "Getting the DOI not implemented for the '{}' downloader"
-            .format(self.name))
+            f"Getting the DOI not implemented for the '{self.name}' downloader"
+            )
 
     def get_document_url(self) -> Optional[str]:
         """
         :returns: a URL to a file that should be downloaded.
         """
         raise NotImplementedError(
-            "Getting a document URL not implemented for the '{}' downloader"
-            .format(self.name))
+            f"Getting a document URL not implemented for the '{self.name}' downloader"
+            )
 
     def get_document_data(self) -> Optional[bytes]:
         """Get data for the downloaded file that is given by :meth:`get_document_url`.
@@ -474,7 +473,7 @@ def download_document(
                            "recognizable (binary) mimetype: '%s'.",
                            response.headers["Content-Type"])
 
-    ext = ".{}".format(ext) if ext else ""
+    ext = f".{ext}" if ext else ""
     with tempfile.NamedTemporaryFile(
             mode="wb+",
             suffix=ext,
