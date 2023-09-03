@@ -49,6 +49,7 @@ logger = papis.logging.get_logger(__name__)
 
 def run(document: papis.document.Document,
         filepaths: List[str],
+        link: bool = False,
         git: bool = False) -> None:
     doc_folder = document.get_main_folder()
     if not doc_folder or not os.path.exists(doc_folder):
@@ -92,9 +93,14 @@ def run(document: papis.document.Document,
             logger.warning("File '%s' already exists. Skipping...", out_file_path)
             continue
 
-        import shutil
-        logger.info("[CP] '%s' to '%s'.", local_in_file_path, out_file_path)
-        shutil.copy(local_in_file_path, out_file_path)
+        if link:
+            in_file_abspath = os.path.abspath(in_file_path)
+            logger.debug("[SYMLINK] '%s' to '%s'.", in_file_abspath, out_file_path)
+            os.symlink(in_file_abspath, out_file_path)
+        else:
+            import shutil
+            logger.info("[CP] '%s' to '%s'.", local_in_file_path, out_file_path)
+            shutil.copy(local_in_file_path, out_file_path)
 
         if tmp_file:
             os.unlink(tmp_file.name)
@@ -129,9 +135,15 @@ def run(document: papis.document.Document,
 @click.option("--file-name",
               help="File name for the document (papis format)",
               default=None)
+@click.option(
+    "--link/--no-link",
+    help="Instead of copying the file to the library, create a link to "
+         "its original location",
+    default=False)
 @papis.cli.doc_folder_option()
 def cli(query: str,
         git: bool,
+        link: bool,
         files: List[str],
         urls: List[str],
         file_name: Optional[str],
@@ -157,6 +169,6 @@ def cli(query: str,
         papis.config.set("add-file-name", file_name)
 
     try:
-        run(document, files + urls, git=git)
+        run(document, files + urls, git=git, link=link)
     except Exception as exc:
         logger.error("Failed to add files.", exc_info=exc)
