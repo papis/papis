@@ -126,7 +126,7 @@ settings: Dict[str, Any] = {
     "serve-timeline-css": ("https://cdn.knightlab.com/libs/timeline3/"
                            "latest/css/timeline.css"),
 
-    "browse-key": "url",
+    "browse-key": "auto",
     "browse-query-format": "{doc[title]} {doc[author]}",
     "search-engine": "https://duckduckgo.com",
     "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)",
