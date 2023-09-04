@@ -334,7 +334,7 @@ Bibtex options
 
 .. papis-config:: browse-key
 
-    This settings provides the key that is used to generate a URL for the
+    This setting provides the key that is used to generate a URL for the
     ``papis browse`` command. In the simplest case, ``browse-key`` is just a
     key in the document (e.g. ``url``) that contains a URL to open. It also
     supports the following special values:
