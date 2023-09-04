@@ -348,11 +348,13 @@ Bibtex options
     to ``doi`` constructs the url from ``dx.doi.org/<DOI>``, providing a
     much more accurate url.
 
-    Default value is set to ``url``. If you need functionality
-    with the ``search-engine`` option, set the option to an empty
-    string e.g.  ::
+    The key can be any existing key into the info.yaml file, but the only ones
+    currently mapped to a specific url construction in browse.py are:
+    doi, isbn, ads. If you need functionality with the ``search-engine`` option,
+    set the option to an empty string e.g.  :: browse-key = ''.
 
-        browse-key = ''
+    Default value is set to ``auto`` : it will automatically set the key to the
+    first one found in the yaml file, in order: url, doi, isbn, ads.
 
 .. _edit-command-options:
 
