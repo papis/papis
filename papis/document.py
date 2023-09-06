@@ -334,6 +334,15 @@ class Document(Dict[str, Any]):
         """
         return ""
 
+    def copy(self) -> "Document":
+        doc = Document(data=dict(self))
+
+        folder = self.get_main_folder()
+        if folder:
+            doc.set_folder(folder)
+
+        return doc
+
     @property
     def html_escape(self) -> DocHtmlEscaped:
         return DocHtmlEscaped(self)
