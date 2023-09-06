@@ -1,4 +1,5 @@
 from typing import Any, Dict, Optional
+import re
 
 import papis.config
 import papis.plugin
@@ -8,6 +9,7 @@ import papis.logging
 logger = papis.logging.get_logger(__name__)
 
 FORMATER: Optional["Formater"] = None
+FORMATER_CACHE: Dict[str, Any] = dict()
 
 #: The entry point name for formater plugins.
 FORMATER_EXTENSION_NAME = "papis.format"
@@ -147,22 +149,30 @@ def get_formater(name: Optional[str] = None) -> Formater:
     :param name: the name of the desired formater, by default this uses
         the value of :ref:`config-settings-formater`.
     """
-    global FORMATER
-
-    if FORMATER is None:
+    def obtain_registered_formater(name: str) -> Formater:
         mgr = papis.plugin.get_extension_manager(FORMATER_EXTENSION_NAME)
 
-        if name is None:
-            name = papis.config.getstring("formater")
-
         try:
-            FORMATER = mgr[name].plugin()
+            return mgr[name].plugin()
         except Exception as exc:
             entrypoints = (
                 papis.plugin.get_available_entrypoints(FORMATER_EXTENSION_NAME))
             logger.error("Invalid formater '%s'. Registered formaters are '%s'.",
                          name, "', '".join(entrypoints), exc_info=exc)
             raise InvalidFormaterError(f"Invalid formater: '{name}'")
+
+    if name is not None:
+        if name not in FORMATER_CACHE or FORMATER_CACHE[name] is None:
+            FORMATER_CACHE[name] = obtain_registered_formater(name)
+        logger.debug("Using '%s' formater locally.", name)
+        return FORMATER_CACHE[name]
+
+    global FORMATER
+    name = papis.config.getstring("formater")
+    if FORMATER is None:
+        if name not in FORMATER_CACHE or FORMATER_CACHE[name] is None:
+            FORMATER_CACHE[name] = obtain_registered_formater(name)
+        FORMATER = FORMATER_CACHE[name]
 
         logger.debug("Using '%s' formater.", name)
 
@@ -181,7 +191,14 @@ def format(fmt: str,
 
     Arguments match those of :meth:`Formater.format`.
     """
-    formater = get_formater()
+    match = re.match(r"^\[(python|jinja2)\](.*)", fmt)
+    if match is not None:
+        formater_name = match[1]
+        fmt = match[2]
+    else:
+        formater_name = None
+
+    formater = get_formater(formater_name)
     return formater.format(fmt, doc, doc_key=doc_key,
                            additional=additional,
                            default=default)
