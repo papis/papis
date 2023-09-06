@@ -459,7 +459,7 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
                     "'journal-key' key '%s' is not present for ref '%s'.",
                     journal_key, document["ref"])
 
-        override_key = bib_key + "_latex"
+        override_key = f"{bib_key}_latex"
         if override_key in document:
             bib_value = str(document[override_key])
 
