@@ -1,23 +1,29 @@
-"""The following table lists the field prefixes for all the fields
- that can be searched.
-
- Table:          search_query field prefixes
-============================================
- prefix          explanation
---------------------------------------------
- ti              Title
- au              Author
- abs             Abstract
- co              Comment
- jr              Journal Reference
- cat             Subject Category
- rn              Report Number
- id              Id (use id_list instead)
- all             All of the above
 """
+Table: search_query field prefixes
+==================================
+
+The following table lists the field prefixes for all the fields
+that can be searched. See the details of query construction in the
+`arXiv API docs <https://arxiv.org/help/api/user-manual#query_details>`__.
+
+====== ========================
+Prefix Explanation
+====== ========================
+ti     Title
+au     Author
+abs    Abstract
+co     Comment
+jr     Journal Reference
+cat    Subject Category
+rn     Report Number
+id     Id (use id_list instead)
+all    All of the above
+====== ========================
+"""
+
 import os
 import re
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 import click
 
@@ -27,11 +33,63 @@ import papis.filetype
 import papis.logging
 import papis.utils
 
+if TYPE_CHECKING:
+    import arxiv
+
 logger = papis.logging.get_logger(__name__)
 
 ARXIV_API_URL = "https://arxiv.org/api/query"
 ARXIV_ABS_URL = "https://arxiv.org/abs"
 ARXIV_PDF_URL = "https://arxiv.org/pdf"
+
+# NOTE: keys match attributes of arxiv.Result
+#   https://lukasschwab.me/arxiv.py/index.html#Result.__init__
+
+_k = papis.document.KeyConversionPair
+key_conversion = [
+    _k("authors", [{
+        "key": "author_list",
+        "action": lambda x: papis.document.split_authors_name([
+            author.name for author in x
+            ])
+    }]),
+    _k("doi", [{"key": "doi", "action": None}]),
+    _k("entry_id", [{"key": "url", "action": None}]),
+    _k("journal_ref", [{"key": "journal", "action": None}]),
+    _k("pdf_url", [{
+        "key": str(papis.config.get("doc-url-key-name")),
+        "action": None
+    }]),
+    _k("published", [
+        {"key": "year", "action": lambda x: x.year},
+        {"key": "month", "action": lambda x: x.month}
+    ]),
+    _k("summary", [{"key": "abstract", "action": lambda x: x.replace("\n", " ")}]),
+    _k("title", [{"key": "title", "action": None}]),
+    ]
+
+
+def arxiv_to_papis(result: "arxiv.Result") -> Dict[str, Any]:
+    data = papis.document.keyconversion_to_data(key_conversion, vars(result))
+
+    # NOTE: these tags are recognized by BibLaTeX
+    data["eprint"] = result.get_short_id()
+    data["eprinttype"] = "arxiv"
+    data["eprintclass"] = result.primary_category
+
+    # NOTE: not quite sure what to do about the type? it's not mentioned explicitly
+    data["type"] = "article"
+    if result.comment is not None:
+        comment = result.comment.lower()
+        if "thesis" in comment:
+            if "phd" in comment:
+                data["type"] = "phdthesis"
+            elif "master" in comment:
+                data["type"] = "mastersthesis"
+            else:
+                data["type"] = "thesis"
+
+    return data
 
 
 def get_data(
@@ -47,7 +105,10 @@ def get_data(
         page: int = 0,
         max_results: int = 30
         ) -> List[Dict[str, Any]]:
-    dict_params = {
+    from urllib.parse import quote
+
+    # form query
+    search_params = {
         "all": query,
         "ti": title,
         "au": author,
@@ -55,47 +116,26 @@ def get_data(
         "abs": abstract,
         "co": comment,
         "jr": journal,
-        "id_list": id_list,
         "rn": report_number
     }
-    result = []
-    clean_params = {x: dict_params[x] for x in dict_params if dict_params[x]}
-    search_query = "+AND+".join(
-        [f"{key}:{clean_params[key]}" for key in clean_params]
+    search_query = " AND ".join(
+        [f"{key}:{quote(value)}" for key, value in search_params.items() if value]
     )
     logger.debug("Performing query: '%s'.", search_query)
 
-    with papis.utils.get_session() as session:
-        response = session.get(
-            ARXIV_API_URL,
-            params={
-                "search_query": search_query,
-                "start": str(page),
-                "max_results": str(max_results),
-            })
+    # gather results
+    import arxiv
 
-    import bs4
-    soup = bs4.BeautifulSoup(response.content, features="lxml-xml")
+    try:
+        search = arxiv.Search(
+            query=search_query,
+            max_results=max_results,
+            id_list=id_list.split(";"),
+            )
+    except arxiv.arxiv.HTTPError:
+        return []
 
-    entries = soup.find_all("entry")
-    for entry in entries:
-        data = {}
-        data["abstract"] = entry.find("summary").get_text().replace("\n", " ")
-        data["url"] = entry.find("id").get_text()
-        data["published"] = entry.find("published").get_text()
-        published = data.get("published")
-        if published:
-            assert isinstance(published, str)
-            data["year"] = published[0:4]
-        data["title"] = entry.find("title").get_text().replace("\n", " ")
-        data["author"] = ", ".join(
-            [
-                author.get_text().replace("\n", "")
-                for author in entry.find_all("author")
-            ]
-        )
-        result.append(data)
-    return result
+    return [arxiv_to_papis(result) for result in search.results()]
 
 
 def validate_arxivid(arxivid: str) -> None:
@@ -111,7 +151,7 @@ def validate_arxivid(arxivid: str) -> None:
 
 def pdf_to_arxivid(
         filepath: str,
-        maxlines: float = float("inf"),      # noqa: B008
+        maxlines: float = float("inf"),
         ) -> Optional[str]:
     """Try to get arxivid from a filepath, it looks for a regex in the binary
     data and returns the first arxivid found, in the hopes that this arxivid
@@ -227,6 +267,7 @@ class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str) -> None:
         super().__init__(uri=url, name="arxiv", expected_document_extension="pdf")
+        self._result: Optional["arxiv.Result"] = None
         self._arxivid: Optional[str] = None
 
     @classmethod
@@ -248,26 +289,40 @@ class Downloader(papis.downloaders.Downloader):
 
         return self._arxivid
 
-    def download_bibtex(self) -> None:
-        arxivid = self.arxivid
-        if not arxivid:
-            return None
+    @property
+    def result(self) -> Optional["arxiv.Result"]:
+        if self._result is None:
+            import arxiv
 
-        import arxiv2bib
+            try:
+                results = list(arxiv.Search(id_list=[self.arxivid]).results())
+            except arxiv.arxiv.HTTPError:
+                results = []
 
-        bibtex_cli = arxiv2bib.Cli([arxivid])
-        bibtex_cli.run()
-        self.bibtex_data = "".join(bibtex_cli.output).replace("\n", " ")
+            if len(results) > 1:
+                self.logger.error(
+                    "Found multiple results for arxivid '%s'. Picking the first one!",
+                    self.arxivid)
+
+            if results:
+                self._result = results[0]
+
+        return self._result
+
+    def get_data(self) -> Dict[str, Any]:
+        result = self.result
+        if result is None:
+            return {}
+
+        return arxiv_to_papis(self.result)
 
     def get_document_url(self) -> Optional[str]:
-        arxivid = self.arxivid
-        if not arxivid:
+        result = self.result
+        if result is None:
             return None
 
-        pdf_url = f"{ARXIV_PDF_URL}/{arxivid}.pdf"
-        self.logger.debug("Using document URL: '%s'.", pdf_url)
-
-        return pdf_url
+        self.logger.debug("pdf_url = '%s'", result.pdf_url)
+        return str(result.pdf_url)
 
 
 class Importer(papis.importer.Importer):

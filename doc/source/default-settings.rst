@@ -41,15 +41,6 @@ General settings
     Some commands will issue git commands if this option is set to ``True``.
     For example in ``mv`` or ``rename``.
 
-.. papis-config:: browse-query-format
-
-    The query string that is to be searched for in the ``browse`` command
-    whenever a search engine is used.
-
-.. papis-config:: search-engine
-
-    Search engine to be used by some commands like ``browse``.
-
 .. papis-config:: user-agent
 
     User agent used by papis whenever it obtains information from external
@@ -334,21 +325,45 @@ BibTeX options
     Configure a default for the ``--subfolder`` command line option. Note that, this setting is not
     allowed to contain formatting options. However, one can also specify nested sub-folders.
 
+.. papis-config:: add-download-files
+
+    If set to *True* the ``--download-files`` flag will be added to every call
+    of the ``papis add`` command (and ``--no-download-files`` if set to *False*).
+    This flag is used to control downloading larger document files (e.g. PDFs)
+    by the importers and downloaders that support it (metadata is always
+    downloaded by ``papis add``).
+
 ``papis browse`` options
 ------------------------
 
 .. papis-config:: browse-key
 
-    This command provides the key that is used to generate the
-    url. For users that run ``papis add --from-doi``, setting browse-key
-    to ``doi`` constructs the url from ``dx.doi.org/<DOI>``, providing a
-    much more accurate url.
+    This setting provides the key that is used to generate a URL for the
+    ``papis browse`` command. In the simplest case, ``browse-key`` is just a
+    key in the document (e.g. ``url``) that contains a URL to open. It also
+    supports the following special values:
 
-    Default value is set to ``url``. If you need functionality
-    with the ``search-engine`` option, set the option to an empty
-    string e.g.  ::
+    * ``"doi"``: construct a URL from the DOI as ``https://dx.doi.org/<DOI>``.
+    * ``"isbn"``: construct a URL from the ISBN as ``https://isbnsearch/isbn/<ISBN>``.
+    * ``"ads"``: construct a URL for the Astrophysics Data System as
+      ``https://ui.adsabs.harvard.edu/abs/<DOI>``.
+    * ``"auto"``: automatically pick between ``url``, ``doi`` and ``isbn``
+      (first existing key is chosen).
+    * ``"search-engine"``: the :ref:`config-settings-search-engine` is used
+      to search for the contents of :ref:`config-settings-browse-query-format`.
 
-        browse-key = ''
+    If the required keys are not found in the document (e.g. the DOI or the
+    ISBN), the key will fallback to the ``"search-engine"`` case.
+
+.. papis-config:: browse-query-format
+
+    The query string that is to be searched for in the ``papis browse`` command
+    whenever a search engine is used (see :ref:`config-settings-browse-key`).
+
+.. papis-config:: search-engine
+
+    Search engine to be used by some commands like ``papis browse``. This should be
+    a base URL that is then used to construct a search as ``<BASE>/?<PARAMS>``.
 
 .. _edit-command-options:
 
@@ -408,7 +423,20 @@ BibTeX options
 
    A list of two tuples with ``(key, type)`` used by the ``key-type`` check. This
    check will show an error if the key does not have the corresponding type. The
-   type should be a builtin Python type that can be used with ``eval``.
+   type should be a builtin Python type that can be used with ``eval``. For
+   example, this can be ``[("year", "int"), ("tags", "list")]`` to check that the
+   year is an integers and the tags are given as a list in a document.
+
+.. papis-config:: doctor-key-type-check-separator
+
+    A separator used by the ``key-type`` check fixer. When converting from
+    :class:`str` to :class:`list`, it is used to split the string into a list,
+    and when converting from :class:`list` to :class:`str`, it is used to join
+    list items. The split will ignore additional whitespace around the separator
+    (for instance, when set to ``,``, the string ``"extra,    whitespace"`` will
+    be converted to the list ``["extra", "whitespace"]``). To preserve leading
+    or trailing whitespace in the separator, make sure to quote it (for instance,
+    ``", "``).
 
 Citations options
 -----------------

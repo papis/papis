@@ -16,18 +16,24 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ['3.8', '3.9', '3.10', '3.11']
-      fail-fast: False
+      fail-fast: false
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install
+    - name: Install dependencies
       run: make ci-install
+      shell: bash
 
-    - name: Run tests, mypy and linting
+    - name: Check linting and type annotations
+      run: make ci-lint
+      shell: bash
+
+    - name: Run tests
+      if: success() || failure()
       run: make ci-test
       shell: bash

@@ -172,30 +172,106 @@ def author_list_to_author(data: Dict[str, Any]) -> str:
         ])
 
 
-def split_authors_name(authors: List[str],
-                       separator: str = "and") -> List[Dict[str, Any]]:
-    """Convert list of authors to a fixed format.
+# NOTE: matches "Sanger, F. and Nicklen, S. and Coulson, A. R."
+_AUTHOR_FAMILY_FIRST_RE = re.compile(r"\S+\s*,\s*\S+\s+and\s+\S+\s*,")
+# NOTE: matches "F. Sanger and S. Nicklen and A. R. Coulson"
+_AUTHOR_AND_AS_SEP_RE = re.compile(r"[^,\s]\s+and\s+\S")
+# NOTE: matches "F. Sanger, and S. Nicklen, and A. R. Coulson"
+_AUTHOR_AND_COMMA_SEP_RE = re.compile(r",\s+and\s+\S")
+# NOTE: matches "Turing, A. M." or "Liddel Hart, Basil"
+_AUTHOR_SINGLE_AUTHOR_FAMILY_FIRST_RE = \
+    re.compile(r"^(\S+\s*,\s*[^,]+)|([^,]+\s*,\s*\S+)$")
+
+
+def guess_authors_separator(authors: str) -> str:
+    """Attempt to determine the separator for various non-BibTeX author lists.
+
+    :param authors: author string to determine the separator for.
+    :returns: a regex that can be used to split the authors string.
+
+    For example:
+
+    >>> s = "Sanger, F. and Nicklen, S. and Coulson, A. R."
+    >>> assert guess_authors_separator(s) == "and"
+    >>> s = "Fabian Sanger and Steven Nicklen and Alexander R. Coulson"
+    >>> assert guess_authors_separator(s) == "and"
+    >>> s = "Fabian Sanger, Steven Nicklen, Alexander R. Coulson"
+    >>> assert guess_authors_separator(s) == ","
+    >>> s = "Fabian Sanger, and Steven Nicklen, and Alexander R. Coulson"
+    >>> import re
+    >>> sep = guess_authors_separator(s)
+    >>> assert re.match(sep, ", and")
+    >>> s = "Dagobert Duck and von Beethoven, Ludwig and Ford, Jr., Henry"
+    >>> assert guess_authors_separator(s) == "and"
+    >>> s = "Turing, A. M."
+    >>> assert guess_authors_separator(s) == "and"
+    """
+    authors = authors.strip()
+    if not authors:
+        return "and"
+
+    if _AUTHOR_FAMILY_FIRST_RE.match(authors):
+        # found something like "Last, First and Last, First"
+        sep = "and"
+    elif _AUTHOR_AND_AS_SEP_RE.search(authors):
+        # found "Name and Name"
+        sep = "and"
+    elif _AUTHOR_AND_COMMA_SEP_RE.search(authors):
+        # found something like "Name, and Name": use a regex to capture all variants
+        sep = r",\s*(?:and)?"
+    elif _AUTHOR_SINGLE_AUTHOR_FAMILY_FIRST_RE.match(authors):
+        # found a single author "Last, First"
+        sep = "and"
+    elif "," in authors and " and " not in authors:
+        # found something like "Name, Name, Name"
+        sep = ","
+    else:
+        sep = "and"
+
+    return sep
+
+
+def split_author_name(author: str) -> Dict[str, Any]:
+    """Split an author name into a given and family name.
 
     This uses :func:`bibtexparser.customization.splitname` to correctly
     split and determine the first and last names of an author in the list.
     Note that this is just a heuristic and can give incorrect results for
     certain author names.
 
-    :param authors: a list of author names, where each entry can consists of
-        multiple authors separated by *separator*.
-    :param separator: a separator for entries in *authors* that contain
-        multiple authors.
+    :param author: a string containing an author name.
+    :returns: a :class:`dict` with the family and given name of the author.
     """
     from bibtexparser.customization import splitname
 
+    parts = splitname(author)
+    given = " ".join(parts["first"])
+    family = " ".join(parts["von"] + parts["last"] + parts["jr"])
+
+    return {"family": family, "given": given}
+
+
+def split_authors_name(authors: List[str],
+                       separator: Optional[str] = None) -> List[Dict[str, Any]]:
+    """Convert list of authors to a fixed format.
+
+    Uses :func:`split_author_name` to construct the individual authors and the
+    *separator* to split the authors in the list.
+
+    :param authors: a list of author names, where each entry can consists of
+        multiple authors separated by *separator*.
+    :param separator: a separator for entries in *authors* that contain
+        multiple authors. If *None*, a separator is guessed using
+        :func:`guess_authors_separator`.
+    """
+
     author_list = []
     for subauthors in authors:
-        for author in re.split(fr"\s+{separator}\s+", subauthors):
-            parts = splitname(author)
-            given = " ".join(parts["first"])
-            family = " ".join(parts["von"] + parts["last"] + parts["jr"])
-
-            author_list.append({"family": family, "given": given})
+        sep = separator if separator else guess_authors_separator(subauthors)
+        author_list.extend([
+            split_author_name(author)
+            for author in re.split(fr"\s*{sep}\s+", subauthors)
+        ])
 
     return author_list
 

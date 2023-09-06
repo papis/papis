@@ -1,6 +1,6 @@
 import os
 import configparser
-from typing import Dict, Any, List, Optional, Callable  # noqa: F401
+from typing import Dict, Any, List, Optional, Callable
 
 import papis.exceptions
 import papis.library

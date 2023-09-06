@@ -1,12 +1,20 @@
 VERSION v0.14
 =============
 
-## Add `cache` command (remove `papis --cc/--clear-cache`) ([#603](https://github.com/papis/papis/pull/603))
+## Dependency changes
+
+* Minimum required Python version bumped to 3.8
+  ([#552](https://github.com/papis/papis/pull/552)).
+* Removed [arxiv2bib](https://github.com/nathangrigg/arxiv2bib) in favor of
+  [arxiv.py](https://github.com/lukasschwab/arxiv.py).
+
+## Features
+
+### New: Add `cache` command ([#603](https://github.com/papis/papis/pull/603))
 
 The `cache` command has been added in order to provide more control for the
-papis cache.
-Accordingly, the equivalent commands `papis --cc` and `papis --clear-cache`
-have been replaced by
+papis cache. Accordingly, the equivalent commands `papis --cc` and
+`papis --clear-cache` have been removed and can be replaced by the equivalent
 
 ```
 papis cache clear
@@ -14,11 +22,78 @@ papis cache clear
 
 You can learn more about the cache command in the documentation.
 
-## Papis' default command
+### New: Exporter for the Typst Hayagriva format ([#559](https://github.com/papis/papis/pull/559))
 
-When invoking `papis` without a subcommand the help message is printed.
-This should avoid some confusions for new users ([#603](https://github.com/papis/papis/pull/603)).
+[Typst](https://github.com/typst/typst) is a new typesetting system with some
+very cool features and a more modern outlook compared to LaTeX. While it
+supports BibTeX, it also has its own bibliography format called Hayagriva
+(a YAML file). Papis can now export directly to this format using
+```
+papis export --format typst QUERY
+```
 
+### New: Add `init` command ([#620](https://github.com/papis/papis/pull/620))
+
+TODO
+
+### New: Add `tag` command ([648](https://github.com/papis/papis/pull/648))
+
+TODO
+
+### New: Major improvements to search syntax ([#602](https://github.com/papis/papis/pull/602))
+
+TODO
+
+## Other noteworthy features
+
+* Add more BibTeX key conversions
+  ([#561](https://github.com/papis/papis/pull/561)
+   [#562](https://github.com/papis/papis/pull/562)).
+* Allow setting refs in `papis update`
+  ([#593](https://github.com/papis/papis/pull/539)).
+* Add proper extensions to temporary downloaded files to better differentiate
+  ([#548](https://github.com/papis/papis/pull/548)).
+* Updated `Dockerfile` and added `release.Dockerfile`
+  ([#597](https://github.com/papis/papis/pull/597)).
+* Allow `papis.format.format` to set default values and not leak exceptions
+  into document fields.
+  ([#596](https://github.com/papis/papis/pull/596)).
+* Added a `flake.nix` script for easier use with the nix package manager
+  ([#600](https://github.com/papis/papis/pull/600)).
+* Updated default `opentool` on Windows
+  ([#569](https://github.com/papis/papis/pull/569)).
+* `papis` command: when invoking `papis` without a subcommand the help message
+  is printed. This should avoid some confusions for new users
+  ([#603](https://github.com/papis/papis/pull/603)).
+* Allow multiple `--doc-folder` arguments to commands that support it
+  ([#635](https://github.com/papis/papis/pull/635)).
+* Improve ScienceDirect abstract extraction
+  ([#637](https://github.com/papis/papis/pull/637))
+* Better support for `--batch` in `papis add`
+  ([#630](https://github.com/papis/papis/pull/630)).
+* Add `--[no-]download-files` flags to `papis add`
+  ([#641](https://github.com/papis/papis/pull/641)).
+* Add fixers for some errors in the `key-type` check of `papis doctor`
+  ([#652](https://github.com/papis/papis/pull/652)
+   [#656](https://github.com/papis/papis/pull/656)).
+
+## Bug fixes
+
+* Fixed Papis to BibTeX key conversions
+  ([#555](https://github.com/papis/papis/pull/555)).
+* Fix encoding of `info.yaml` files on Windows
+  ([#571](https://github.com/papis/papis/pull/571)).
+* Fixed quoting in some calls to external commands
+  ([#580](https://github.com/papis/papis/pull/580)).
+* Warn and specify how external scripts are loaded.
+  ([#594](https://github.com/papis/papis/pull/594)).
+* Fix manpage generation from Sphinx
+  ([#609](https://github.com/papis/papis/pull/609)).
+* Ensure that user provided data in `papis add` using `--set key value` is not
+  overwritten by importers
+  ([#616](https://github.com/papis/papis/pull/616)).
+* Fix some boolean flags working in an unexpected manner
+  ([#636](https://github.com/papis/papis/pull/636)).
 
 VERSION v0.13
 =============

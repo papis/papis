@@ -89,6 +89,14 @@ def run(document: papis.document.Document,
     key = papis.config.getstring("browse-key")
 
     try:
+        if "auto" == key:
+            if document["url"]:
+                key = "url"
+            elif document["doi"]:
+                key = "doi"
+            elif document["isbn"]:
+                key = "isbn"
+
         if "doi" == key:
             url = "https://doi.org/{}".format(document["doi"])
         elif "ads" == key:

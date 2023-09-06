@@ -46,6 +46,7 @@ settings: Dict[str, Any] = {
     "add-edit": False,
     "add-open": False,
     "add-fetch-citations": False,
+    "add-download-files": True,
 
     # papis-doctor configuration
     "doctor-default-checks": ["files", "keys-exist", "duplicated-keys"],
@@ -53,6 +54,7 @@ settings: Dict[str, Any] = {
     "doctor-duplicated-keys-keys": ["ref"],
     "doctor-html-codes-keys": ["title", "author", "abstract", "journal"],
     "doctor-html-tags-keys": ["title", "author", "abstract", "journal"],
+    "doctor-key-type-check-separator": None,
     "doctor-key-type-check-keys": [("year", "int"),
                                    ("month", "int"),
                                    ("files", "list"),
@@ -124,7 +126,7 @@ settings: Dict[str, Any] = {
     "serve-timeline-css": ("https://cdn.knightlab.com/libs/timeline3/"
                            "latest/css/timeline.css"),
 
-    "browse-key": "url",
+    "browse-key": "auto",
     "browse-query-format": "{doc[title]} {doc[author]}",
     "search-engine": "https://duckduckgo.com",
     "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)",

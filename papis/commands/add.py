@@ -545,9 +545,10 @@ def run(paths: List[str],
 @papis.cli.bool_flag(
     "--list-importers", "--li", "list_importers",
     help="List all available papis importers")
-@papis.cli.bool_flag(
-    "--force-download", "--fd", "force_download",
-    help="Download file with importer even if local file is passed")
+@click.option(
+    "--download-files/--no-download-files",
+    help="Download file with importer if available or not.",
+    default=lambda: True if papis.config.get("add-download-files") else False)
 @papis.cli.bool_flag(
     "--fetch-citations",
     help="Fetch citations from a DOI (Digital Object Identifier)",
@@ -566,7 +567,7 @@ def cli(files: List[str],
         git: bool,
         link: bool,
         list_importers: bool,
-        force_download: bool,
+        download_files: bool,
         fetch_citations: bool) -> None:
     """
     Command line interface for papis-add.
@@ -580,26 +581,19 @@ def cli(files: List[str],
 
         return
 
-    data = {}
-    for data_set in set_list:
-        data[data_set[0]] = data_set[1]
-
-    ctx = papis.importer.Context()
-    ctx.files = [f for f in files if os.path.exists(f)]
-    ctx.data.update(data)
-
     if batch:
         edit = False
         confirm = False
         open_file = False
 
-    only_data = bool(ctx.files) and not force_download
+    # gather importers / downloaders
     matching_importers = papis.utils.get_matching_importer_by_name(
-        from_importer, only_data=only_data)
+        from_importer, only_data=not download_files)
 
     if not from_importer and files:
         matching_importers = sum((
-            papis.utils.get_matching_importer_or_downloader(f, only_data=only_data)
+            papis.utils.get_matching_importer_or_downloader(
+                f, only_data=not download_files)
             for f in files), [])
 
         if matching_importers and not batch:
@@ -615,10 +609,22 @@ def cli(files: List[str],
 
             matching_importers = [matching_importers[i] for i in matching_indices]
 
+    # merge importer data + commandline data into a single set
     imported = papis.utils.collect_importer_data(
-        matching_importers, batch=batch, only_data=only_data)
-    ctx.data.update(imported.data)
-    ctx.files.extend(imported.files)
+        matching_importers, batch=batch, only_data=not download_files)
+
+    ctx = papis.importer.Context()
+    ctx.data = imported.data
+    ctx.files = [f for f in files if os.path.exists(f)] + imported.files
+
+    if set_list:
+        if batch or not ctx.data:
+            ctx.data.update(set_list)
+        else:
+            papis.utils.update_doc_from_data_interactively(
+                ctx.data,
+                dict(set_list),
+                "command-line")
 
     if not ctx:
         logger.error("No document is created, since no data or files have been "
