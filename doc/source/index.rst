@@ -36,6 +36,7 @@ command-line interface (*CLI*) is heavily tailored after
    :caption: User guides
 
    papis_id
+   bibtex
    citations
    web-application
    gui

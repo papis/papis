@@ -1,6 +1,7 @@
 import os
 import re
 import pytest
+from typing import Dict, Any
 
 from tests.testlib import ResourceCache, TemporaryConfiguration
 
@@ -114,26 +115,90 @@ def test_to_bibtex_no_ref(tmp_config: TemporaryConfiguration) -> None:
     assert not result
 
 
+def is_same_bibtex(data: Dict[str, Any], expected_bibtex: str) -> bool:
+    from papis.bibtex import to_bibtex
+    from papis.document import from_data
+
+    return to_bibtex(from_data(data)) == expected_bibtex
+
+
 def test_to_bibtex_formatting(tmp_config: TemporaryConfiguration) -> None:
     """Test formatting for the `to_bibtex` function."""
-    import papis.document
-    doc = papis.document.from_data({
+    assert is_same_bibtex({
         "type": "report",
         "author": "Albert Einstein",
         "title": "The Theory of Everything",
         "journal": "Nature",
         "year": 2350,
-        "ref": "MyDocument"
-        })
-
-    expected_bibtex = (
+        "ref": "MyDocument"},
+        #
         "@report{MyDocument,\n"
-        + "  author = {Albert Einstein},\n"
-        + "  journal = {Nature},\n"
-        + "  title = {The Theory of Everything},\n"
-        + "  year = {2350},\n"
-        + "}"
-        )
+        "  author = {Albert Einstein},\n"
+        "  journal = {Nature},\n"
+        "  title = {The Theory of Everything},\n"
+        "  year = {2350},\n"
+        "}")
 
+
+def test_overridable(tmp_config: TemporaryConfiguration) -> None:
+    import papis.config
+
+    doc = {
+        "type": "report",
+        "author": "Albert Einstein",
+        "title": "Ä α The Theory of Everything & Nothing",
+        "title_latex": r"The Theory of Everything \& Nothing",
+        "journal": "Nature",
+        "year": 2350,
+        "ref": "MyDocument"
+    }
+
+    papis.config.set("bibtex-unicode", True)
+    assert is_same_bibtex(doc,
+                          "@report{MyDocument,\n"
+                          "  author = {Albert Einstein},\n"
+                          "  journal = {Nature},\n"
+                          "  title = {The Theory of Everything \\& Nothing},\n"
+                          "  year = {2350},\n"
+                          "}")
+
+    papis.config.set("bibtex-unicode", False)
+    assert is_same_bibtex(doc,
+                          "@report{MyDocument,\n"
+                          "  author = {Albert Einstein},\n"
+                          "  journal = {Nature},\n"
+                          "  title = {The Theory of Everything "
+                          # this will sadly happen, and it makes sense
+                          r"\textbackslash \&"
+                          " Nothing},\n"
+                          "  year = {2350},\n"
+                          "}")
+
+
+def test_ignore_keys(tmp_config: TemporaryConfiguration,
+                     monkeypatch: pytest.MonkeyPatch) -> None:
     import papis.bibtex
-    assert papis.bibtex.to_bibtex(doc) == expected_bibtex
+    import papis.config
+
+    doc = {
+        "type": "report",
+        "author": "Albert Einstein",
+        "year": 2350,
+        "ref": "MyDocument"
+    }
+    assert is_same_bibtex(doc,
+                          "@report{MyDocument,\n"
+                          "  author = {Albert Einstein},\n"
+                          "  year = {2350},\n"
+                          "}")
+
+    # TODO: think about this since these keys are not updated
+    #       dynamically and it's possible is not worth it to update dynamically
+    papis.config.set("bibtex-ignore-keys", "['year']")
+    monkeypatch.setattr(papis.bibtex, "bibtex_ignore_keys",
+                        frozenset(papis.config.getlist("bibtex-ignore-keys")))
+
+    assert is_same_bibtex(doc,
+                          "@report{MyDocument,\n"
+                          "  author = {Albert Einstein},\n"
+                          "}")
