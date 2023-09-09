@@ -644,16 +644,28 @@ def cli(query: str,
         click.echo(json.dumps(list(map(error_to_dict, errors))))
         return
 
+    import colorama as c
+
     from papis.commands.edit import run as edit_run
 
-    for error in errors:
-        click.echo(f"{error.name}\t{error.payload}\t{error.path}")
+    for i, error in enumerate(errors):
+        if i != 0:
+            click.echo()
+
+        click.echo(
+            f"{c.Style.BRIGHT}{c.Fore.RED}{error.name}{c.Style.RESET_ALL}"
+            f"\t{c.Style.BRIGHT}{error.payload}{c.Style.RESET_ALL}"
+            f"\t{c.Fore.YELLOW}{error.path}{c.Style.RESET_ALL}")
 
         if explain:
-            click.echo(f"\tReason: {error.msg}")
+            click.echo(
+                f"\t{c.Style.BRIGHT}{c.Fore.CYAN}Reason{c.Style.RESET_ALL}: "
+                f"{error.msg}")
 
         if suggest:
-            click.echo(f"\tSuggestion: {error.suggestion_cmd}")
+            click.echo(
+                f"\t{c.Style.BRIGHT}{c.Fore.GREEN}Suggestion{c.Style.RESET_ALL}: "
+                f"{error.suggestion_cmd}")
 
         if fix:
             error.fix_action()
