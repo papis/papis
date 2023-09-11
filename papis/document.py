@@ -335,6 +335,7 @@ class Document(Dict[str, Any]):
         return ""
 
     def copy(self) -> "Document":
+        """Make a shallow copy of the :class:`Document`."""
         doc = Document(data=dict(self))
 
         folder = self.get_main_folder()

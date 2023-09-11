@@ -6,21 +6,34 @@ can add yourself through the Python configuration file (these cannot be added
 through the static configuration file). Currently, the following checks are
 implemented
 
-* ``files``: checks whether all the document files exist on the filesystem.
-* ``keys-exist``: checks that the keys provided by
-  :ref:`config-settings-doctor-keys-exist-keys` exist in the document.
+* ``biblatex-key-alias``: checks that the document does not contain any known
+  key (or field in BibLaTeX) from :data:`~papis.bibtex.bibtex_key_aliases`.
+* ``biblatex-required-keys``: checks that the document contains all the required
+  keys for its type. In BibLaTeX, each type (e.g. article) has a set of
+  required (or at least strongly recommended) keys that it needs to be
+  adequately shown in the bibliography.
+* ``biblatex-type-alias``: checks that the BibLaTeX type of the document is not
+  a known type alias (usually defined for backwards compatiblity reasons), as
+  defined by :data:`~papis.bibtex.bibtex_type_aliases`.
+* ``bibtex-type``: checks that the document type matches a known BibLaTeX type
+  from :data:`papis.bibtex.bibtex_types`.
 * ``duplicated-keys``: checks that the keys provided by
   :ref:`config-settings-doctor-duplicated-keys-keys` are not present in multiple
-  documents. This is mainly meant to be used to check the ``ref`` key.
-* ``bibtex-type``: checks that the document type matches a known BibTeX type.
-* ``refs``: checks that the document has a valid reference.
+  documents. This is mainly meant to be used to check the ``ref`` key or other
+  similar keys that are meant to be unique.
+* ``files``: checks whether all the document files exist on the filesystem.
 * ``html-codes``: checks that no HTML codes (e.g. ``&amp;``) appear in the keys
   provided by :ref:`config-settings-doctor-html-codes-keys`.
-* ``html-tags``: checks that no HTML tags (e.g. ``<a>``) appear in the keys
+* ``html-tags``: checks that no HTML or XML tags (e.g. ``<a>``) appear in the keys
   provided by :ref:`config-settings-doctor-html-tags-keys`.
 * ``key-type``: checks the type of keys provided by
-  :ref:`config-settings-doctor-key-type-check-keys`, e.g.
-  (year should be an ``int``).
+  :ref:`config-settings-doctor-key-type-check-keys`, e.g. year should be an ``int``.
+  Lists can be automatically fixed (by splitting or joining) using the
+  :ref:`config-settings-doctor-key-type-check-separator` setting.
+* ``keys-exist``: checks that the keys provided by
+  :ref:`config-settings-doctor-keys-exist-keys` exist in the document.
+* ``refs``: checks that the document has a valid reference (i.e. one that would
+  be accepted by BibTeX and only contains valid characters).
 
 If any custom checks are implemented, you can get a complete list at runtime from
 
