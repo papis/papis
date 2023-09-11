@@ -198,8 +198,8 @@ setup(
             "papis=papis.tui.picker:Picker",
         ],
         "papis.format": [
-            "jinja2=papis.format:Jinja2Formater",
-            "python=papis.format:PythonFormater",
+            "jinja2=papis.format:Jinja2Formatter",
+            "python=papis.format:PythonFormatter",
         ],
         "papis.command": [
             "add=papis.commands.add:cli",

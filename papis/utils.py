@@ -88,7 +88,7 @@ def parmap(f: Callable[[A], B],
     """
 
     # FIXME: load singleton plugins here instead of on all the processes
-    _ = papis.format.get_formater()
+    _ = papis.format.get_formatter()
 
     if np is None:
         np = int(os.environ.get("PAPIS_NP", str(os.cpu_count())))

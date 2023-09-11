@@ -7,14 +7,14 @@ import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
-FORMATER: Optional["Formater"] = None
+FORMATTER: Optional["Formatter"] = None
 
-#: The entry point name for formater plugins.
-FORMATER_EXTENSION_NAME = "papis.format"
+#: The entry point name for formatter plugins.
+FORMATTER_EXTENSION_NAME = "papis.format"
 
 
-class InvalidFormaterError(ValueError):
-    """An exception that is thrown when an invalid formater is selected."""
+class InvalidFormatterError(ValueError):
+    """An exception that is thrown when an invalid formatter is selected."""
 
 
 class FormatFailedError(Exception):
@@ -29,7 +29,7 @@ def unescape(fmt: str) -> str:
     return fmt.replace("\\n", "\n").replace("\\t", "\t").replace("\\r", "\r")
 
 
-class Formater:
+class Formatter:
     """A generic formatter that works on templated strings using a document."""
 
     def __init__(self) -> None:
@@ -42,7 +42,7 @@ class Formater:
                additional: Optional[Dict[str, Any]] = None,
                default: Optional[str] = None) -> str:
         """
-        :param fmt: a format string understood by the formater.
+        :param fmt: a format string understood by the formatter.
         :param doc: an object convertible to a document.
         :param doc_key: the name of the document in the format string. By
             default, this falls back to :ref:`config-settings-format-doc-name`.
@@ -50,19 +50,19 @@ class Formater:
             formatting fails. If no default is given, a :exc:`FormatFailedError`
             will be raised.
         :param additional: a :class:`dict` of additional entries to pass to the
-            formater.
+            formatter.
 
         :returns: a string with all the replacement fields filled in.
         """
         raise NotImplementedError(type(self).__name__)
 
 
-class PythonFormater(Formater):
+class PythonFormatter(Formatter):
     """Construct a string using a `PEP 3101 <https://peps.python.org/pep-3101/>`__
     (*str.format* based) format string.
 
-    This formater is named ``"python"`` and can be set using the
-    :ref:`config-settings-formater` setting in the configuration file.
+    This formatter is named ``"python"`` and can be set using the
+    :ref:`config-settings-formatter` setting in the configuration file.
     """
 
     def format(self,
@@ -91,12 +91,12 @@ class PythonFormater(Formater):
                 raise FormatFailedError(fmt) from exc
 
 
-class Jinja2Formater(Formater):
+class Jinja2Formatter(Formatter):
     """Construct a string using `Jinja2 <https://palletsprojects.com/p/jinja/>`__
     templates.
 
-    This formater is named ``"jinja2"`` and can be set using the
-    :ref:`config-settings-formater` setting in the configuration file.
+    This formatter is named ``"jinja2"`` and can be set using the
+    :ref:`config-settings-formatter` setting in the configuration file.
     """
 
     def __init__(self) -> None:
@@ -106,7 +106,7 @@ class Jinja2Formater(Formater):
             import jinja2       # noqa: F401
         except ImportError as exc:
             logger.error(
-                "The 'jinja2' formater requires the 'jinja' library. "
+                "The 'jinja2' formatter requires the 'jinja' library. "
                 "To use this functionality install it using e.g. "
                 "'pip install jinja2'.", exc_info=exc)
             raise exc
@@ -138,35 +138,43 @@ class Jinja2Formater(Formater):
                 raise FormatFailedError(fmt) from exc
 
 
-def get_formater(name: Optional[str] = None) -> Formater:
-    """Initialize and return a formater plugin.
+def get_formatter(name: Optional[str] = None) -> Formatter:
+    """Initialize and return a formatter plugin.
 
-    Note that the formater is cached and all subsequent calls to this function
-    will return the same formater.
+    Note that the formatter is cached and all subsequent calls to this function
+    will return the same formatter.
 
-    :param name: the name of the desired formater, by default this uses
-        the value of :ref:`config-settings-formater`.
+    :param name: the name of the desired formatter, by default this uses
+        the value of :ref:`config-settings-formatter`.
     """
-    global FORMATER
+    global FORMATTER
 
-    if FORMATER is None:
-        mgr = papis.plugin.get_extension_manager(FORMATER_EXTENSION_NAME)
+    if FORMATTER is None:
+        mgr = papis.plugin.get_extension_manager(FORMATTER_EXTENSION_NAME)
 
         if name is None:
-            name = papis.config.getstring("formater")
+            # FIXME: remove this special handling when we don't need to support
+            # the deprecated 'formater' configuration setting
+            value = papis.config.get("formater")
+            if value is None:
+                name = papis.config.getstring("formatter")
+            else:
+                logger.warning("The configuration option 'formater' is deprecated. "
+                               "Use 'formatter' instead.")
+                name = str(value)
 
         try:
-            FORMATER = mgr[name].plugin()
+            FORMATTER = mgr[name].plugin()
         except Exception as exc:
             entrypoints = (
-                papis.plugin.get_available_entrypoints(FORMATER_EXTENSION_NAME))
-            logger.error("Invalid formater '%s'. Registered formaters are '%s'.",
+                papis.plugin.get_available_entrypoints(FORMATTER_EXTENSION_NAME))
+            logger.error("Invalid formatter '%s'. Registered formatters are '%s'.",
                          name, "', '".join(entrypoints), exc_info=exc)
-            raise InvalidFormaterError(f"Invalid formater: '{name}'")
+            raise InvalidFormatterError(f"Invalid formatter: '{name}'")
 
-        logger.debug("Using '%s' formater.", name)
+        logger.debug("Using '%s' formatter.", name)
 
-    return FORMATER
+    return FORMATTER
 
 
 def format(fmt: str,
@@ -174,14 +182,33 @@ def format(fmt: str,
            doc_key: str = "",
            additional: Optional[Dict[str, Any]] = None,
            default: Optional[str] = None) -> str:
-    """Format a string using the selected formater.
+    """Format a string using the selected formatter.
 
-    This is the user-facing function that should be called when formating a
-    string. The formaters should not be called directly.
+    This is the user-facing function that should be called when formatting a
+    string. The formatters should not be called directly.
 
-    Arguments match those of :meth:`Formater.format`.
+    Arguments match those of :meth:`Formatter.format`.
     """
-    formater = get_formater()
-    return formater.format(fmt, doc, doc_key=doc_key,
-                           additional=additional,
-                           default=default)
+    formatter = get_formatter()
+    return formatter.format(fmt, doc, doc_key=doc_key,
+                            additional=additional,
+                            default=default)
+
+
+_DEPRECATIONS: Dict[str, Any] = {
+    "InvalidFormaterError": InvalidFormatterError,
+    "Formater": Formatter,
+    "PythonFormater": PythonFormatter,
+    "Jinja2Formater": Jinja2Formatter,
+    "get_formater": get_formatter,
+}
+
+
+def __getattr__(name: str) -> Any:
+    if name in _DEPRECATIONS:
+        from warnings import warn
+        warn(f"{name!r} is deprecated, use {_DEPRECATIONS[name].__name__!r} instead",
+             DeprecationWarning)
+        return _DEPRECATIONS[name]
+
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

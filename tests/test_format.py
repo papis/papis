@@ -7,9 +7,9 @@ import papis.document
 from tests.testlib import TemporaryConfiguration
 
 
-def test_python_formater(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
-    papis.config.set("formater", "python")
-    monkeypatch.setattr(papis.format, "FORMATER", None)
+def test_python_formatter(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
+    papis.config.set("formatter", "python")
+    monkeypatch.setattr(papis.format, "FORMATTER", None)
 
     document = papis.document.from_data({"author": "Fulano", "title": "A New Hope"})
     assert (
@@ -32,10 +32,10 @@ def test_python_formater(tmp_config: TemporaryConfiguration, monkeypatch) -> Non
         == ": The Phantom Menace ()")
 
 
-def test_jinja_formater(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
+def test_jinja_formatter(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
     pytest.importorskip("jinja2")
-    papis.config.set("formater", "jinja2")
-    monkeypatch.setattr(papis.format, "FORMATER", None)
+    papis.config.set("formatter", "jinja2")
+    monkeypatch.setattr(papis.format, "FORMATTER", None)
 
     document = papis.document.from_data({"author": "Fulano", "title": "A New Hope"})
     assert (

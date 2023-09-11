@@ -160,7 +160,9 @@ settings: Dict[str, Any] = {
         "[<ansiyellow>{doc.html_escape[tags]}</ansiyellow>]"
     ),
 
-    "formater": "python",
+    "formatter": "python",
+    # FIXME: this is deprecated and should be removed at some point
+    "formater": None,
     "time-stamp": True,
     "info-allow-unicode": True,
     "ref-format": "{doc[title]:.15} {doc[author]:.6} {doc[year]}",
