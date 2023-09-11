@@ -374,8 +374,9 @@ BibTeX options
 
     In ``papis edit`` you can edit notes about the document. ``notes-name``
     is the default name of the notes file, which by default is supposed
-    to be a TeX file. The ``notes-name`` is formated by the ``formater``, so
-    that the filename of notes can be dynamically defined, e.g.:  ::
+    to be a TeX file. The ``notes-name`` is formatted by the
+    :ref:`config-settings-formatter`, so that the filename of notes can be
+    dynamically defined, e.g.:  ::
 
         notes-name = notes_{doc[title]:.15}.tex
 
@@ -383,8 +384,9 @@ BibTeX options
 
     When editing notes for the first time, a preliminary note will be generated
     based on a template. The path to this template is specified by
-    ``notes-template``. The template will then be formated by ``formater``.
-    This can be useful to enforce the same style in the notes for all documents.
+    ``notes-template``. The template will then be formatted by
+    :ref:`config-settings-formatter`. This can be useful to enforce the same
+    style in the notes for all documents.
 
     Default value is set to ``""``, which will return an empty notes file. If
     no file is found at the path to the template, then also an empty notes file
@@ -853,14 +855,16 @@ Other
   papis. If documents have a timestamp, then they will be sortable
   using ``--sort time-added`` option.
 
-.. papis-config:: formater
+.. papis-config:: formatter
 
-    Picks the formater for templated strings in the configuration file and
-    in various strings presented to the user. Supported formaters are
+    Picks the formatter for templated strings in the configuration file and
+    in various strings presented to the user. Supported formatters are
 
-    * ``"python"``: based on :class:`papis.format.PythonFormater`.
-    * ``"jinja2"``: based on :class:`papis.format.Jinja2Formater`.
+    * ``"python"``: based on :class:`papis.format.PythonFormatter`.
+    * ``"jinja2"``: based on :class:`papis.format.Jinja2Formatter`.
 
     Note that the default values of many of the papis configuration settings are
     based on the Python formatter. These will need to all be specified explicitly
-    if another formater is chosen.
+    if another formatter is chosen.
+
+    **Note** The older (misspelled) version ``"formater"`` is deprecated.
