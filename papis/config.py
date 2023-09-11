@@ -401,8 +401,7 @@ def getint(key: str, section: Optional[str] = None) -> Optional[int]:
         return general_get(key, section=section, data_type=int)
     except ValueError:
         value = general_get(key, section=section)
-        raise ValueError("Key '{}' should be an integer: '{}' is of type '{}'"
-                         .format(key, value, type(key).__name__))
+        raise ValueError("Key '{}' should be an integer: '{}'".format(key, value))
 
 
 def getfloat(key: str, section: Optional[str] = None) -> Optional[float]:
@@ -416,8 +415,7 @@ def getfloat(key: str, section: Optional[str] = None) -> Optional[float]:
         return general_get(key, section=section, data_type=float)
     except ValueError:
         value = general_get(key, section=section)
-        raise ValueError("Key '{}' should be a float: '{}' is of type '{}'"
-                         .format(key, value, type(key).__name__))
+        raise ValueError("Key '{}' should be a float: '{}'".format(key, value))
 
 
 def getboolean(key: str, section: Optional[str] = None) -> Optional[bool]:
@@ -431,8 +429,7 @@ def getboolean(key: str, section: Optional[str] = None) -> Optional[bool]:
         return general_get(key, section=section, data_type=bool)
     except ValueError:
         value = general_get(key, section=section)
-        raise ValueError("Key '{}' should be a boolean: '{}' is of type '{}'"
-                         .format(key, value, type(key).__name__))
+        raise ValueError("Key '{}' should be a boolean: '{}'" .format(key, value))
 
 
 def getstring(key: str, section: Optional[str] = None) -> str:
@@ -444,8 +441,7 @@ def getstring(key: str, section: Optional[str] = None) -> str:
     """
     result = general_get(key, section=section, data_type=str)
     if not isinstance(result, str):
-        raise ValueError("Key '{}' should be a string: '{}' is of type '{}'"
-                         .format(key, result, type(key).__name__))
+        raise ValueError("Key '{}' should be a string: '{}'".format(key, result))
 
     return str(result)
 
