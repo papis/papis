@@ -246,7 +246,7 @@ BibTeX options
 
         ref-format = {doc[author_list][0][surname]}{doc[year]}
 
-    In general however I recomment the default behaviour of just using the
+    In general however I recommend the default behavior of just using the
     ``author`` key of the document, i.e.,
     ::
 

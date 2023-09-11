@@ -37,7 +37,7 @@ input
 
 This command is much faster than rebuilding the cache from scratch.
 You can therefore run this command once in a while in order to update
-the cache for those documents that have been synchronised by the means
+the cache for those documents that have been synchronized by the means
 of synchronization that you are using, for instance using git, Syncthing,
 Dropbox, etc.
 
@@ -136,7 +136,7 @@ def add(doc_folder: Tuple[str, ...]) -> None:
         db = papis.database.get()
         db.add(doc)
 
-        logger.info("Succesfully added '%s' to the cache",
+        logger.info("Successfully added '%s' to the cache",
                     papis.document.describe(doc))
 
 

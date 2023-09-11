@@ -13,7 +13,7 @@ implemented
   required (or at least strongly recommended) keys that it needs to be
   adequately shown in the bibliography.
 * ``biblatex-type-alias``: checks that the BibLaTeX type of the document is not
-  a known type alias (usually defined for backwards compatiblity reasons), as
+  a known type alias (usually defined for backwards compatibility reasons), as
   defined by :data:`~papis.bibtex.bibtex_type_aliases`.
 * ``bibtex-type``: checks that the document type matches a known BibLaTeX type
   from :data:`papis.bibtex.bibtex_types`.

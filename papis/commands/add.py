@@ -207,7 +207,7 @@ def get_file_name(
         )
     )
 
-    # Adding the recognised extension
+    # Adding the recognized extension
     return f"{filename_basename}.{ext}"
 
 

@@ -24,7 +24,7 @@ def format_if_has_id(doc: Dict[str, Any],
 
 def query_path(libname: str) -> str:
     """
-    Path for submiting queries.
+    Path for submitting queries.
     """
     return f"/library/{libname}/query"
 

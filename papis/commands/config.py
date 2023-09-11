@@ -229,7 +229,7 @@ def cli(options: List[str],
     """Print configuration values"""
     if len(options) == 1:
         # NOTE: a single option is printed directly for a bit of backwards
-        # compatiblity and easier use in shell scripts, so remove with care!
+        # compatibility and easier use in shell scripts, so remove with care!
         _, value = _get_option_safe(options[0], section, default=default)
         if value is not None:
             click.echo(value)

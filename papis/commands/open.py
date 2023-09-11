@@ -35,7 +35,7 @@ defining a ``marks`` list in a document. Let us look at a concrete example:
 
 This book has defined two marks. Each mark has a name and a value.
 If you tell the ``open`` command to open marks, then it will look for
-the marks and open the value (page number). This is the default behaviour.
+the marks and open the value (page number). This is the default behavior.
 However, if you go to the :ref:`configuration <marks-options>`
 you'll see that you can change the convention to what suits you.
 
