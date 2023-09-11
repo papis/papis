@@ -170,7 +170,7 @@ def bypass(
 
     For example, consider augmenting the ``add`` command, as seen
     when using ``papis add``. In this case, we may want to add some additional
-    options or behaviour before calling ``papis.commands.add``, but would like
+    options or behavior before calling ``papis.commands.add``, but would like
     to avoid writing it from scratch. This function can then be used as follows
     to allow this
 

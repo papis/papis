@@ -26,7 +26,7 @@ def notes_path(doc: papis.document.Document) -> str:
     the :ref:`config-settings-notes-name` setting) in the document's main folder.
 
     :returns: a absolute filename that corresponds to the attached notes for
-        *doc* (this file does not neccessarily exist).
+        *doc* (this file does not necessarily exist).
     """
     if not has_notes(doc):
         notes_name = papis.format.format(papis.config.getstring("notes-name"), doc,

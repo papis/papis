@@ -63,7 +63,7 @@ class Downloader(papis.importer.Importer):
     .. attribute:: priority
 
         A priority given to the downloader. This is used when trying to
-        automatically determine a prefered downloader for a given URL.
+        automatically determine a preferred downloader for a given URL.
 
     .. attribute:: session
 
@@ -348,7 +348,7 @@ class Downloader(papis.importer.Importer):
         """Check if the document downloaded by :meth:`download_document` has
         a file type supported by the downloader.
 
-        If the downloader has no prefered type, then all files are accepted.
+        If the downloader has no preferred type, then all files are accepted.
 
         :returns: *True* if the document has a supported file type and *False*
             otherwise.

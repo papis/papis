@@ -13,7 +13,7 @@ HAYAGRIVA_TYPES = frozenset({
     "scene", "artwork", "patent", "case", "newspaper", "legislation",
     "manuscript", "tweet", "misc", "periodical", "proceedings",
     "book", "blog", "reference", "conference", "anthology", "repository",
-    "thread", "video", "audio", "exibition",
+    "thread", "video", "audio", "exhibition",
 })
 
 HAYAGRIVA_PARENT_TYPES = {
