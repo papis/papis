@@ -44,6 +44,18 @@ If any custom checks are implemented, you can get a complete list at runtime fro
 Examples
 ^^^^^^^^
 
+- To run all available checks over all available documents in the library use
+
+    .. code:: sh
+
+        papis doctor --all-checks --all
+
+  This will likely generate too many results, but it can be useful to output in JSON
+
+    .. code:: sh
+
+        papis doctor --all-checks --all --json
+
 - To check if all the files of a document are present, use
 
     .. code:: sh
@@ -74,11 +86,13 @@ Examples
         papis doctor --suggestion --check keys-exist einstein
         >> Suggestion: papis edit --doc-folder /path/to/folder
 
-  If this is the case, you can also run
+  If this is the case, you can also run the following to automatically open
+  the ``info.yaml`` file for editing more complex changes
+
+    .. code:: sh
 
         papis doctor --edit --check keys-exist einstein
 
-  to automatically open the ``info.yaml`` file for editing.
 
 Implementing additional checks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -739,6 +753,8 @@ def run(doc: papis.document.Document, checks: List[str]) -> List[Error]:
                      help="Edit every file with the edit command.")
 @papis.cli.all_option()
 @papis.cli.doc_folder_option()
+@papis.cli.bool_flag("--all-checks", "all_checks",
+                     help="Run all available checks (ignores --checks)")
 @papis.cli.bool_flag("--list-checks", "list_checks",
                      help="List available checks and their descriptions")
 def cli(query: str,
@@ -752,6 +768,7 @@ def cli(query: str,
         _checks: List[str],
         _json: bool,
         suggest: bool,
+        all_checks: bool,
         list_checks: bool) -> None:
     """Check for common problems in documents"""
 
@@ -769,6 +786,12 @@ def cli(query: str,
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
+    if all_checks:
+        _checks = list(REGISTERED_CHECKS)
+    else:
+        # NOTE: ensure uniqueness of the checks so we don't run the same ones
+        _checks = list(set(_checks))
+
     logger.debug("Running checks: '%s'.", "', '".join(_checks))
 
     errors: List[Error] = []
@@ -783,7 +806,9 @@ def cli(query: str,
     if _json:
         import json
 
-        click.echo(json.dumps(list(map(error_to_dict, errors))))
+        click.echo(json.dumps(
+            list(map(error_to_dict, errors)),
+            indent=2))
         return
 
     import colorama as c
@@ -791,7 +816,7 @@ def cli(query: str,
     from papis.commands.edit import run as edit_run
 
     for i, error in enumerate(errors):
-        if i != 0:
+        if i != 0 and (explain or suggest):
             click.echo()
 
         click.echo(
