@@ -26,7 +26,48 @@ import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
-INIT_PROMPTS = ["opentool", "editor", "use-git", "notes-name"]
+INIT_PROMPTS = [
+    {
+        "key": "opentool",
+        "help": "Which program should be used to open files? e.g. evince"
+    },
+    {
+        "key": "editor",
+        "help": "Which program should be called when editing info.yaml files?"
+    },
+    {
+        "key": "use-git",
+        "help":
+        "Use git in some papis commands to issue commits automatically?"
+    },
+    {
+        "key": "notes-name",
+        "help": "The name of the file for notes."
+    },
+    {
+        "key": "database-backend",
+        "help": "You can choose between different kinds of databases."
+    },
+    {
+        "key": "bibtex-unicode",
+        "help": "Do you want to allow unicode in an exported bibtex?"
+    },
+    {
+        "key":
+        "ref-format",
+        "help":
+        "When adding a new document, "
+        "how would you like the reference string be built?"
+    },
+    {
+        "key": "multiple-authors-format",
+        "help": ""
+    },
+    {
+        "key": "citations-file-name",
+        "help": ""
+    },
+]
 
 
 @click.command("init")
@@ -74,14 +115,21 @@ def cli(dir_path: Optional[str]) -> None:
 
     local["dir"] = library_path
 
-    for setting in INIT_PROMPTS:
+    for setting_dict in INIT_PROMPTS:
+        setting, help_string = setting_dict.values()
         local[setting] = papis.tui.utils.prompt(
             "{}: ".format(setting),
             default=local.get(
                 setting,
                 str(defaults[papis.config.get_general_settings_name()]
-                    [setting])))
+                    [setting])),
+            bottom_toolbar=help_string)
 
     if papis.tui.utils.confirm("Do you want to save?"):
         with open(config_file, "w") as configfile:
             config.write(configfile)
+    else:
+        logger.info("exiting without saving")
+
+    logger.info("checkout more information in "
+                "https://papis.readthedocs.io/en/latest/configuration.html")
