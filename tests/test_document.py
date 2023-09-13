@@ -153,10 +153,10 @@ def test_dump() -> None:
 
     result = papis.document.dump(doc)
     expected_result = (
-        "author:            Turing, Alan\n"
-        "some-longer-key:   value\n"
-        "title:             Computing machinery and intelligence\n"
-        "year:              1950"
+        "author: Turing, Alan\n"
+        "some-longer-key: value\n"
+        "title: Computing machinery and intelligence\n"
+        "year: 1950"
         )
 
     assert result == expected_result

@@ -478,17 +478,22 @@ def dump(document: Document) -> str:
 
     >>> doc = from_data({'title': 'Hello World'})
     >>> dump(doc)
-    'title:     Hello World'
+    'title: Hello World'
     """
-    # NOTE: this tries to align all the values to the next multiple of 4 of the
-    # longest key length, for a minimum of visual consistency
-    width = max(len(key) for key in document)
-    width = (width // 4 + 2) * 4 - 1
+    import yaml
+    from papis.yaml import Dumper   # type: ignore[attr-defined]
 
-    return "\n".join([
-        "{:{}}{}".format(f"{key}:", width, value)
-        for key, value in sorted(document.items())
-        ])
+    data = dict(document)
+
+    # NOTE: poping some usually very long and unhelpful fields
+    data.pop("citations", None)
+    data.pop("abstract", None)
+    data.pop("papis_id", None)
+
+    return str(yaml.dump(data,
+                         Dumper=Dumper,
+                         allow_unicode=True,
+                         default_flow_style=False)).strip()
 
 
 def delete(document: Document) -> None:
