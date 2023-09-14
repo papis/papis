@@ -423,7 +423,7 @@ def get_cache_home() -> str:
 
 def get_matching_importer_or_downloader(
         uri: str,
-        only_data: bool = True,
+        download_files: bool = False,
         ) -> List[papis.importer.Importer]:
     """Gets all the importers and downloaders that match *uri*.
 
@@ -432,7 +432,8 @@ def get_matching_importer_or_downloader(
     importers that fetch the data without issues are returned.
 
     :param uri: an URI to match the importers against.
-    :param only_data: if *True*, attempt to only import document data, not files.
+    :param download_files: if *True*, importers and downloaders also try to
+        download files (PDFs, etc.) instead of just metadata.
     """
     result = []
 
@@ -454,15 +455,15 @@ def get_matching_importer_or_downloader(
 
         if importer:
             try:
-                if only_data:
+                if download_files:
+                    importer.fetch()
+                else:
                     # NOTE: not all importers can (or do) separate the fetching
                     # of data and files, so we try both cases for now
                     try:
                         importer.fetch_data()
                     except NotImplementedError:
                         importer.fetch()
-                else:
-                    importer.fetch()
             except Exception:
                 logger.debug("%s (%s) failed to fetch query: '%s'.",
                              name, importer.name, uri)
@@ -479,7 +480,7 @@ def get_matching_importer_or_downloader(
 
 def get_matching_importer_by_name(
         name_and_uris: Iterable[Tuple[str, str]],
-        only_data: bool = True,
+        download_files: bool = False,
         ) -> List[papis.importer.Importer]:
     """Get importers that match the given URIs.
 
@@ -489,7 +490,8 @@ def get_matching_importer_by_name(
 
     :param name_and_uris: an list of ``(name, uri)`` of importer names and
         URIs to match them against.
-    :param only_data: if *True*, attempt to only import document data, not files.
+    :param download_files: if *True*, importers and downloaders also try to
+        download files (PDFs, etc.) instead of just metadata.
     """
     import_mgr = papis.importer.get_import_mgr()
 
@@ -497,15 +499,15 @@ def get_matching_importer_by_name(
     for name, uri in name_and_uris:
         try:
             importer = import_mgr[name].plugin(uri=uri)
-            if only_data:
+            if download_files:
+                importer.fetch()
+            else:
                 # NOTE: not all importers can (or do) separate the fetching
                 # of data and files, so we try both cases for now
                 try:
                     importer.fetch_data()
                 except NotImplementedError:
                     importer.fetch()
-            else:
-                importer.fetch()
 
             if importer.ctx:
                 result.append(importer)
@@ -519,7 +521,7 @@ def get_matching_importer_by_name(
 def collect_importer_data(
         importers: Iterable[papis.importer.Importer],
         batch: bool = True,
-        only_data: bool = True,
+        use_files: bool = False,
         ) -> papis.importer.Context:
     """Collect all data from the given *importers*.
 
@@ -529,7 +531,8 @@ def collect_importer_data(
 
     :param batch: if *True*, overwrite data from previous importers, otherwise
         ask the user to manually merge.
-    :param only_data: if *True*, only import document data, not files.
+    :param use_files: if *True*, both metadata and files are collected
+        from the importers.
     """
     ctx = papis.importer.Context()
     if not importers:
@@ -550,7 +553,7 @@ def collect_importer_data(
                     # NOTE: first importer does not require interactive use
                     ctx.data.update(importer.ctx.data)
 
-        if not only_data and importer.ctx.files:
+        if use_files and importer.ctx.files:
             logger.info("Got files from importer '%s':\n\t%s",
                         importer.name,
                         "\n\t".join(importer.ctx.files))
