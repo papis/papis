@@ -588,12 +588,12 @@ def cli(files: List[str],
 
     # gather importers / downloaders
     matching_importers = papis.utils.get_matching_importer_by_name(
-        from_importer, only_data=not download_files)
+        from_importer, download_files=download_files)
 
     if not from_importer and files:
         matching_importers = sum((
             papis.utils.get_matching_importer_or_downloader(
-                f, only_data=not download_files)
+                f, download_files=download_files)
             for f in files), [])
 
         if matching_importers and not batch:
@@ -611,7 +611,7 @@ def cli(files: List[str],
 
     # merge importer data + commandline data into a single set
     imported = papis.utils.collect_importer_data(
-        matching_importers, batch=batch, only_data=not download_files)
+        matching_importers, batch=batch, use_files=download_files)
 
     ctx = papis.importer.Context()
     ctx.data = imported.data

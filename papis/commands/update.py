@@ -149,9 +149,8 @@ def cli(query: str,
             ctx.data.update(processed_tuples)
 
         # NOTE: use 'papis addto' to add files, so this only adds data
-        # by setting 'only_data' to True always
         matching_importers = papis.utils.get_matching_importer_by_name(
-            from_importer, only_data=True)
+            from_importer, download_files=False)
 
         if not from_importer and auto:
             for importer_cls in papis.importer.get_importers():
@@ -171,7 +170,7 @@ def cli(query: str,
                         matching_importers.append(importer)
 
         imported = papis.utils.collect_importer_data(
-            matching_importers, batch=batch, only_data=True)
+            matching_importers, batch=batch, use_files=False)
         if "ref" in imported.data:
             logger.debug(
                 "An importer set the 'ref' key. This is not allowed and will be "
