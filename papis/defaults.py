@@ -55,11 +55,11 @@ settings: Dict[str, Any] = {
     "doctor-html-codes-keys": ["title", "author", "abstract", "journal"],
     "doctor-html-tags-keys": ["title", "author", "abstract", "journal"],
     "doctor-key-type-check-separator": None,
-    "doctor-key-type-check-keys": [("year", "int"),
-                                   ("month", "int"),
-                                   ("files", "list"),
-                                   ("notes", "str"),
-                                   ("author_list", "list")],
+    "doctor-key-type-check-keys": ["year:int",
+                                   "month:int",
+                                   "files:list",
+                                   "notes:str",
+                                   "author_list:list"],
 
     # papis-serve configuration
     "serve-user-css": [],

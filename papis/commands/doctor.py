@@ -578,20 +578,23 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
         else:
             return fixer_convert_any
 
+    import builtins
+
     results = []
     for value in papis.config.getlist("doctor-key-type-check-keys"):
-        try:
-            key, cls_name = eval(value)
-        except Exception as exc:
-            logger.error("Invalid (key, type) pair: '%s'.",
-                         value, exc_info=exc)
+        if ":" not in value:
+            logger.error("Invalid (key, type) pair: '%s'. Must be 'key:type'.",
+                         value)
             continue
 
-        try:
-            cls = eval(cls_name)
-        except Exception as exc:
-            logger.error("Invalid type for key '%s': '%s'.",
-                         key, cls_name, exc_info=exc)
+        key, cls_name = value.split(":")
+        key, cls_name = key.strip(), cls_name.strip()
+
+        cls = getattr(builtins, cls_name, None)
+        if not isinstance(cls, type):
+            logger.error(
+                "Invalid type for key '%s': '%s'. Only builtin types are supported",
+                key, cls_name)
             continue
 
         doc_value = doc.get(key)
@@ -599,8 +602,9 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
             results.append(Error(name=KEY_TYPE_CHECK_NAME,
                                  path=folder,
                                  msg=(
-                                     f"Key '{key}' ({doc_value}) should be of type "
-                                     f"'{cls}' but got '{type(doc_value).__name__}'."),
+                                     f"Key '{key}' should be of type '{cls.__name__}' "
+                                     f"but got '{type(doc_value).__name__}': "
+                                     f"{doc_value!r}."),
                                  suggestion_cmd=f"papis edit --doc-folder {folder}",
                                  fix_action=make_fixer(key, cls),
                                  payload=key,
