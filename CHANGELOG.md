@@ -22,6 +22,13 @@ papis cache clear
 
 You can learn more about the cache command in the documentation.
 
+
+### New: Epub support for the web application
+
+Now you can read epub files from the comfort of the web application.
+The workflow is similar to the existing one with pdfjs
+and it uses the project [epubjs-reader](https://github.com/futurepress/epubjs-reader).
+
 ### New: Exporter for the Typst Hayagriva format ([#559](https://github.com/papis/papis/pull/559))
 
 [Typst](https://github.com/typst/typst) is a new typesetting system with some
