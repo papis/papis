@@ -14,6 +14,7 @@ import papis.web.info
 import papis.web.citations
 import papis.web.pdfjs
 import papis.web.djvujs
+import papis.web.epubjs
 
 
 def _click_tab_selector_link_in_url() -> None:
@@ -149,6 +150,9 @@ def html(libname: str, doc: papis.document.Document) -> t.html_tag:
 
                             if fpath.endswith("djvu"):
                                 papis.web.djvujs.widget(_unquoted_file_path)
+
+                            if fpath.endswith("epub"):
+                                papis.web.epubjs.widget(_unquoted_file_path)
 
                             elif (fpath.endswith("png")
                                   or fpath.endswith("jpg")):
