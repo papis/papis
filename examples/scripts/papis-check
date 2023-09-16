@@ -84,10 +84,10 @@ def run(keys: Sequence[str],
     result = []
     for document in documents:
         for key in keys:
-            if key not in document.keys():
-                result.append({"doc": document, "key": key, "msg": "Undefined"})
+            if key not in document:
+                result.append({"doc": document, "key": key, "msg": "Missing key"})
             elif not document[key] and document[key] is not False:
-                result.append({"doc": document, "key": key, "msg": "Ill-defined"})
+                result.append({"doc": document, "key": key, "msg": "Empty key"})
             elif key == "files":
                 if not check_files(document):
                     result.append({"doc": document, "key": key, "msg": "Missing files"})
@@ -99,15 +99,15 @@ def run(keys: Sequence[str],
 @click.help_option("--help", "-h")
 @papis.cli.query_argument()
 @click.option(
-    "--key", "-k",
+    "--key", "-k", "keys",
     help="Space separated fields to check against",
     multiple=True,
-    default=lambda: eval(papis.config.getstring("keys", section="check"))
+    default=lambda: papis.config.getlist("keys", section="check")
 )
-def cli(query: str, key: List[str]) -> None:
+def cli(query: str, keys: List[str]) -> None:
     """Check document from a given library"""
     documents = papis.database.get().query(query)
-    troubled_docs = run(key, documents)
+    troubled_docs = run(keys, documents)
 
     for doc in troubled_docs:
         print(
