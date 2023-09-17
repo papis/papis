@@ -91,17 +91,20 @@ def cli(dir_path: Optional[str]) -> None:
     config_file = papis.config.get_config_file()
 
     if os.path.exists(config_file):
+        logger.warning("Config file '%s' already exists!", config_file)
         logger.warning(
-            "Config file %s already exists,"
-            " this command may change some of its contents,", config_file)
+            "This command may change some of its contents, e.g. whitespace and "
+            "comments are not preserved.")
+
         if not papis.tui.utils.confirm("Do you want to continue?"):
             return
-
-    logger.info("Config file %s", config_file)
+    else:
+        logger.info("Using config file: '%s'.", config_file)
 
     library_name = papis.tui.utils.prompt(
         "Name of the library: ",
         default="papers" if dir_path is None else os.path.basename(dir_path))
+
     if library_name not in config:
         config[library_name] = {}
     local = config[library_name]
@@ -130,8 +133,11 @@ def cli(dir_path: Optional[str]) -> None:
     if papis.tui.utils.confirm("Do you want to save?"):
         with open(config_file, "w") as configfile:
             config.write(configfile)
-    else:
-        logger.info("exiting without saving")
 
-    logger.info("checkout more information in "
+    logger.info("Check out more information about papis!")
+    logger.info("   Configuration options: "
                 "https://papis.readthedocs.io/en/latest/configuration.html")
+    logger.info("   Library structure:     "
+                "https://papis.readthedocs.io/en/latest/library_structure.html")
+    logger.info("   Ask questions:         "
+                "https://github.com/papis/papis/discussions")
