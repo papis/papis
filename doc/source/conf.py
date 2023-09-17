@@ -30,13 +30,13 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.doctest",
-    "sphinx.ext.todo",
     "sphinx.ext.coverage",
+    "sphinx.ext.doctest",
     "sphinx.ext.ifconfig",
-    "sphinx.ext.viewcode",
-    "sphinx.ext.intersphinx",
     "sphinx.ext.inheritance_diagram",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.todo",
+    "sphinx.ext.viewcode",
     "sphinx_click.ext",
 ]
 
@@ -109,9 +109,18 @@ class PapisConfig(Directive):
         return node.children
 
 
+def remove_module_docstring(app, what, name, obj, options, lines):
+    # NOTE: this is used to remove the module documentation for commands so that
+    # we can show the module members in the `Developer API Reference` section
+    # without the tutorial / examples parts.
+    if what == "module" and ".commands." in name and options.get("members"):
+        del lines[:]
+
+
 def setup(app):
     app.add_directive("click", CustomClickDirective, override=True)
     app.add_directive("papis-config", PapisConfig)
+    app.connect("autodoc-process-docstring", remove_module_docstring)
 
 
 # }}} Exec directive #
