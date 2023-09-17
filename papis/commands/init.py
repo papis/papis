@@ -1,19 +1,36 @@
 r"""
 This command initializes a papis library interactively.
 
-Go to the directory where you want to have your papers
+.. warning::
 
-::
+    The command will modify your configuration file, if it exists. Unfortunately,
+    :mod:`configparser` does not preserve whitespace or comments when reading
+    and writing a file, so these will be lost.
 
-        mkdir -p ~/Documents/papers
-        cd ~/Documents/papers
+Examples
+^^^^^^^^
 
-::
+- To create a new library at a given directory, just run
+
+    .. code:: sh
+
+        papis init /path/to/my/library
+
+  and answer the questions interactively.
+
+- To create a library in the current directory, just run
+
+    .. code:: sh
 
         papis init
 
-and answer the questions.
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. click:: papis.commands.init:cli
+    :prog: papis init
 """
+
 from typing import Optional  # noqa: F401
 import os
 
