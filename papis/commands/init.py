@@ -31,7 +31,7 @@ Command-line Interface
     :prog: papis init
 """
 
-from typing import Optional  # noqa: F401
+from typing import NamedTuple, Optional
 import os
 
 import click
@@ -43,47 +43,33 @@ import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
+
+class Prompt(NamedTuple):
+    #: The name of the configuration option being suggested, e.g. ``opentool``.
+    name: str
+    #: A help message (in the form of a question) that describes the option.
+    message: str
+
+
 INIT_PROMPTS = [
-    {
-        "key": "opentool",
-        "help": "Which program should be used to open files? e.g. evince"
-    },
-    {
-        "key": "editor",
-        "help": "Which program should be called when editing info.yaml files?"
-    },
-    {
-        "key": "use-git",
-        "help":
-        "Use git in some papis commands to issue commits automatically?"
-    },
-    {
-        "key": "notes-name",
-        "help": "The name of the file for notes."
-    },
-    {
-        "key": "database-backend",
-        "help": "You can choose between different kinds of databases."
-    },
-    {
-        "key": "bibtex-unicode",
-        "help": "Do you want to allow unicode in an exported bibtex?"
-    },
-    {
-        "key":
-        "ref-format",
-        "help":
-        "When adding a new document, "
-        "how would you like the reference string be built?"
-    },
-    {
-        "key": "multiple-authors-format",
-        "help": ""
-    },
-    {
-        "key": "citations-file-name",
-        "help": ""
-    },
+    Prompt("opentool",
+           "Which program should be used to open files?"),
+    Prompt("editor",
+           "Which program should be used when editing documents?"),
+    Prompt("use-git",
+           "Should papis automatically commit changes to a git repository?"),
+    Prompt("notes-name",
+           "What name should document attached note files have?"),
+    Prompt("database-backend",
+           "What database backend do you want to use?"),
+    Prompt("bibtex-unicode",
+           "Do you want to allow unicode in an exported BibTeX entries?"),
+    Prompt("ref-format",
+           "How would you like the reference string for a document be built?"),
+    Prompt("multiple-authors-format",
+           "What format should newly added document author lists have?"),
+    Prompt("citations-file-name",
+           "What name should document attached citation files have?"),
 ]
 
 
@@ -132,8 +118,7 @@ def cli(dir_path: Optional[str]) -> None:
 
     local["dir"] = library_path
 
-    for setting_dict in INIT_PROMPTS:
-        setting, help_string = setting_dict.values()
+    for setting, help_string in INIT_PROMPTS:
         local[setting] = papis.tui.utils.prompt(
             "{}: ".format(setting),
             default=local.get(
