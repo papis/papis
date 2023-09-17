@@ -134,11 +134,16 @@ import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
+#: Callable for automatic doctor fixers. This callable is constructed by a
+#: check and is expected to wrap all the required data, so it takes no arguments.
 FixFn = Callable[[], None]
+#: Callable for doctor document checks.
 CheckFn = Callable[[papis.document.Document], List["Error"]]
 
 
 class Error(NamedTuple):
+    """A detailed error error returned by a doctor check."""
+
     #: Name of the check generating the error.
     name: str
     #: Path to the document that generated the error.
@@ -149,7 +154,9 @@ class Error(NamedTuple):
     msg: str
     #: A command to run to fix the error that can be suggested to the user.
     suggestion_cmd: str
-    #: A callable that can autofix the error.
+    #: A callable that can autofix the error (see :data:`FixFn`). Note that this
+    #: can change the attached :attr:`doc` and even the on-disk data, so it
+    #: should be used carefully.
     fix_action: FixFn
     #: The document that generated the error.
     doc: Optional[papis.document.Document]
@@ -159,7 +166,7 @@ class Check(NamedTuple):
     #: Name of the check
     name: str
     #: A callable that takes a document and returns a list of errors generated
-    #: by the current check.
+    #: by the current check (see :data:`CheckFn`).
     operate: CheckFn
 
 
@@ -174,14 +181,15 @@ def error_to_dict(e: Error) -> Dict[str, Any]:
         "suggestion": e.suggestion_cmd}
 
 
-def register_check(name: str, check_function: CheckFn) -> None:
+def register_check(name: str, check: CheckFn) -> None:
     """
-    Register a check.
+    Register a new check.
 
     Registered checks are recognized by ``papis`` and can be used by users
-    in their configuration files, for example.
+    in their configuration files through :ref:`config-settings-doctor-default-checks`
+    or on the command line through the ``--checks`` flag.
     """
-    REGISTERED_CHECKS[name] = Check(name=name, operate=check_function)
+    REGISTERED_CHECKS[name] = Check(name=name, operate=check)
 
 
 def registered_checks_names() -> List[str]:
@@ -235,7 +243,8 @@ KEYS_EXIST_CHECK_NAME = "keys-exist"
 def keys_exist_check(doc: papis.document.Document) -> List[Error]:
     """
     Checks whether the keys provided in the configuration
-    option ``doctor-keys-exist-keys`` exit in the document and are non-empty.
+    option :ref:`config-settings-doctor-keys-exist-keys` exit in the document
+    and are non-empty.
 
     :returns: a :class:`list` of errors, one for each key that does not exist.
     """
@@ -259,8 +268,8 @@ REFS_CHECK_NAME = "refs"
 
 def refs_check(doc: papis.document.Document) -> List[Error]:
     """
-    Checks that a ref exists and if not it tries to create one according to
-    the ``ref-format`` configuration option.
+    Checks that a ref exists and if not it tries to create one
+    according to the :ref:`config-settings-ref-format` configuration option.
 
     :returns: an error if the reference does not exist or contains invalid
         characters (as required by BibTeX).
@@ -322,7 +331,7 @@ DUPLICATED_KEYS_NAME = "duplicated-keys"
 def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
     """
     Check for duplicated keys in the list given by the
-    ``doctor-duplicated-keys-keys`` configuration option.
+    :ref:`config-settings-doctor-duplicated-keys-keys` configuration option.
 
     :returns: a :class:`list` of errors, one for each key with a value that already
         exist in the documents from the current query.
@@ -358,12 +367,11 @@ BIBTEX_TYPE_CHECK_NAME = "bibtex-type"
 
 def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
     """
-    Check that the document type is compatible with BibTeX or BibLaTeX type
-    descriptors.
+    Check that the document type is compatible with BibTeX or BibLaTeX type descriptors.
 
     :returns: an error if the types are not compatible.
     """
-    import papis.bibtex
+    from papis.bibtex import bibtex_types
     folder = doc.get_main_folder() or ""
     bib_type = doc.get("type")
 
@@ -376,7 +384,7 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
                       payload="type",
                       doc=doc)]
 
-    if bib_type not in papis.bibtex.bibtex_types:
+    if bib_type not in bibtex_types:
         return [Error(name=BIBTEX_TYPE_CHECK_NAME,
                       path=folder,
                       msg=f"Document type '{bib_type}' is not a valid BibTeX type.",
@@ -399,7 +407,7 @@ def biblatex_type_alias_check(doc: papis.document.Document) -> List[Error]:
 
     :returns: an error if the type of the document is an alias.
     """
-    import papis.bibtex
+    from papis.bibtex import bibtex_type_aliases
     from papis.api import save_doc
     folder = doc.get_main_folder() or ""
 
@@ -416,7 +424,7 @@ def biblatex_type_alias_check(doc: papis.document.Document) -> List[Error]:
         return errors
 
     bib_type = doc["type"]
-    bib_type_base = papis.bibtex.bibtex_type_aliases.get(bib_type)
+    bib_type_base = bibtex_type_aliases.get(bib_type)
     if bib_type is not None and bib_type_base is not None:
         return [Error(name=BIBLATEX_TYPE_ALIAS_CHECK_NAME,
                       path=folder,
@@ -442,13 +450,13 @@ def biblatex_key_alias_check(doc: papis.document.Document) -> List[Error]:
 
     :returns: an error for each key of the document that is an alias.
     """
-    import papis.bibtex
+    from papis.bibtex import bibtex_key_aliases
     from papis.api import save_doc
     folder = doc.get_main_folder() or ""
 
     def make_fixer(key: str) -> FixFn:
         def fixer() -> None:
-            new_key = papis.bibtex.bibtex_key_aliases[key]
+            new_key = bibtex_key_aliases[key]
             logger.info("[FIX] Renaming key '%s' to '%s'", key, new_key)
             doc[new_key] = doc[key]
             del doc[key]
@@ -457,7 +465,7 @@ def biblatex_key_alias_check(doc: papis.document.Document) -> List[Error]:
         return fixer
 
     # NOTE: `journal` is a key that papis relies on and we do not want to rename it
-    aliases = papis.bibtex.bibtex_key_aliases.copy()
+    aliases = bibtex_key_aliases.copy()
     del aliases["journal"]
 
     return [Error(name=BIBLATEX_KEY_ALIAS_CHECK_NAME,
@@ -619,8 +627,8 @@ HTML_CODES_CHECK_NAME = "html-codes"
 
 def html_codes_check(doc: papis.document.Document) -> List[Error]:
     """
-    Checks that the keys in ``doctor-html-code-keys`` configuration options do
-    not contain any HTML codes like ``&amp;`` etc.
+    Checks that the keys in :ref:`config-settings-doctor-html-codes-keys`
+    configuration options do not contain any HTML codes like ``&amp;`` etc.
 
     :returns: a :class:`list` of errors, one for each key that contains HTML codes.
     """
@@ -663,8 +671,8 @@ HTML_TAGS_REGEX = re.compile(r"<.*?>")
 
 def html_tags_check(doc: papis.document.Document) -> List[Error]:
     """
-    Checks that the keys in ``doctor-html-tags-keys`` configuration options do
-    not contain any HTML tags like ``<href>`` etc.
+    Checks that the keys in :ref:`config-settings-doctor-html-tags-keys`
+    configuration options do not contain any HTML tags like ``<href>`` etc.
 
     :returns: a :class:`list` of errors, one for each key that contains HTML codes.
     """
