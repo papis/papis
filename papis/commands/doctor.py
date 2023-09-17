@@ -438,6 +438,8 @@ def biblatex_type_alias_check(doc: papis.document.Document) -> List[Error]:
     return []
 
 
+# NOTE: `journal` is a key that papis relies on and we do not want to rename it
+BIBLATEX_KEY_ALIAS_IGNORED = {"journal"}
 BIBLATEX_KEY_ALIAS_CHECK_NAME = "biblatex-key-alias"
 
 
@@ -464,19 +466,16 @@ def biblatex_key_alias_check(doc: papis.document.Document) -> List[Error]:
 
         return fixer
 
-    # NOTE: `journal` is a key that papis relies on and we do not want to rename it
-    aliases = bibtex_key_aliases.copy()
-    del aliases["journal"]
-
     return [Error(name=BIBLATEX_KEY_ALIAS_CHECK_NAME,
                   path=folder,
                   msg=("Document key '{}' is an alias for '{}' in BibLaTeX."
-                       .format(key, aliases[key])),
+                       .format(key, bibtex_key_aliases[key])),
                   suggestion_cmd="papis edit --doc-folder {}".format(folder),
                   fix_action=make_fixer(key),
                   payload=key,
                   doc=doc)
-            for key in doc if key in aliases]
+            for key in doc
+            if key not in BIBLATEX_KEY_ALIAS_IGNORED and key in bibtex_key_aliases]
 
 
 BIBLATEX_REQUIRED_KEYS_CHECK_NAME = "biblatex-required-keys"
