@@ -106,7 +106,9 @@ def cli(dir_path: Optional[str]) -> None:
     dir_path = os.getcwd() if dir_path is None else dir_path
     library_name = papis.tui.utils.prompt(
         "Name of the library",
-        default=os.path.basename(dir_path))
+        default=os.path.basename(dir_path),
+        bottom_toolbar="Known libraries: '{}'".format(
+            "', '".join(papis.config.get_libs())))
 
     if library_name not in config:
         config[library_name] = {}
@@ -115,7 +117,8 @@ def cli(dir_path: Optional[str]) -> None:
 
     library_path = papis.tui.utils.prompt(
         "Path of the library",
-        default=local.get("dir", dir_path))
+        default=local.get("dir", dir_path),
+        bottom_toolbar="Give an existing folder for the library location")
 
     if papis.tui.utils.confirm(f"Make '{library_name}' the default library?",
                                yes=False):
