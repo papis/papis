@@ -87,7 +87,8 @@ def cli(dir_path: Optional[str]) -> None:
     """Initialize a papis library"""
 
     config = papis.config.get_configuration()
-    defaults = papis.config.get_default_settings()
+    general_settings_name = papis.config.get_general_settings_name()
+    defaults = papis.config.get_default_settings()[general_settings_name]
     config_file = papis.config.get_config_file()
 
     if os.path.exists(config_file):
@@ -101,33 +102,29 @@ def cli(dir_path: Optional[str]) -> None:
     else:
         logger.info("Using config file: '%s'.", config_file)
 
+    dir_path = os.getcwd() if dir_path is None else dir_path
     library_name = papis.tui.utils.prompt(
-        "Name of the library: ",
-        default="papers" if dir_path is None else os.path.basename(dir_path))
+        "Name of the library",
+        default=os.path.basename(dir_path))
 
     if library_name not in config:
         config[library_name] = {}
     local = config[library_name]
-    glob = config[papis.config.get_general_settings_name()]
+    glob = config[general_settings_name]
 
     library_path = papis.tui.utils.prompt(
-        "Path of the library: ",
-        default=local.get("dir",
-                          os.getcwd() if dir_path is None else dir_path))
+        "Path of the library",
+        default=local.get("dir", dir_path))
 
-    if papis.tui.utils.confirm(
-            "Make '{}' the default library?".format(library_name)):
+    if papis.tui.utils.confirm(f"Make '{library_name}' the default library?"):
         glob["default-library"] = library_name
 
     local["dir"] = library_path
 
     for setting, help_string in INIT_PROMPTS:
         local[setting] = papis.tui.utils.prompt(
-            "{}: ".format(setting),
-            default=local.get(
-                setting,
-                str(defaults[papis.config.get_general_settings_name()]
-                    [setting])),
+            setting,
+            default=str(local.get(setting, defaults.get(setting))),
             bottom_toolbar=help_string)
 
     if papis.tui.utils.confirm("Do you want to save?"):
