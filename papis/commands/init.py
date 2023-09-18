@@ -102,6 +102,7 @@ def cli(dir_path: Optional[str]) -> None:
     else:
         logger.info("Using config file: '%s'.", config_file)
 
+    logger.info("Setting library location.")
     dir_path = os.getcwd() if dir_path is None else dir_path
     library_name = papis.tui.utils.prompt(
         "Name of the library",
@@ -116,11 +117,13 @@ def cli(dir_path: Optional[str]) -> None:
         "Path of the library",
         default=local.get("dir", dir_path))
 
-    if papis.tui.utils.confirm(f"Make '{library_name}' the default library?"):
+    if papis.tui.utils.confirm(f"Make '{library_name}' the default library?",
+                               yes=False):
         glob["default-library"] = library_name
 
     local["dir"] = library_path
 
+    logger.info("Setting library custom options.")
     for setting, help_string in INIT_PROMPTS:
         local[setting] = papis.tui.utils.prompt(
             setting,
