@@ -19,10 +19,11 @@ class Downloader(papis.downloaders.Downloader):
         return Downloader(url) if re.match(r".*aclanthology\.org.*", url) else None
 
     def fetch_acl_data(self) -> Dict[str, str]:
-        try:
-            elem = self._soup.find("div", "row acl-paper-details").find("dl")  # type: ignore
-        except AttributeError:
-            elem = None
+        soup = self._get_soup()
+
+        elem: Any = soup.find("div", "row acl-paper-details")
+        if elem is not None:
+            elem = elem.find("dl")
 
         data = {}
         if elem is not None:
