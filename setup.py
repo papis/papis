@@ -4,11 +4,11 @@
 #   ./venv/bin/pip install --editable .
 #   ./venv/bin/pip install --editable .[dev]  # with dev requirements, too
 
-import glob
 import os
 import sys
+import glob
 
-from setuptools import find_packages, setup
+from setuptools import setup, find_packages
 
 import papis
 
@@ -21,32 +21,28 @@ else:
     # NOTE: see the documentation for 'bash-completion' at
     #   https://github.com/scop/bash-completion/blob/master/README.md#faq
     bash_completion_dir = os.environ.get(
-        "PAPIS_BASH_COMPLETION_DIR", "share/bash-completion/completions"
-    )
+        "PAPIS_BASH_COMPLETION_DIR", "share/bash-completion/completions")
     # NOTE: see the documentation for 'fish' at
     #   https://fishshell.com/docs/current/completions.html#where-to-put-completions
     fish_completion_dir = os.environ.get(
-        "PAPIS_FISH_COMPLETION_DIR", "share/fish/vendor_completions.d"
-    )
+        "PAPIS_FISH_COMPLETION_DIR", "share/fish/vendor_completions.d")
     # NOTE: 'site-functions' is included by default since zsh 5.0.7, see
     #   https://zsh.sourceforge.io/releases.html
     zsh_completion_dir = os.environ.get(
-        "PAPIS_ZSH_COMPLETION_DIR", "share/zsh/site-functions"
-    )
+        "PAPIS_ZSH_COMPLETION_DIR", "share/zsh/site-functions")
 
     data_files = [
-        (
-            "share/doc/papis",
-            [
-                "README.rst",
-                "CHANGELOG.md",
-                "AUTHORS",
-                "LICENSE",
-            ],
-        ),
+        ("share/doc/papis", [
+            "README.rst",
+            "CHANGELOG.md",
+            "AUTHORS",
+            "LICENSE",
+        ]),
+
         (bash_completion_dir, ["scripts/shell_completion/click/bash/papis.bash"]),
         (fish_completion_dir, ["scripts/shell_completion/click/fish/papis.fish"]),
         (zsh_completion_dir, ["scripts/shell_completion/click/zsh/_papis"]),
+
         ("share/man/man1", glob.glob("doc/build/man/*")),
         ("share/applications", ["contrib/papis.desktop"]),
     ]
@@ -85,7 +81,7 @@ setup(
     ],
     install_requires=[
         "PyYAML>=3.12",
-        "arxiv2bib>=1.0.7",
+        "arxiv>=1.0.0",
         "beautifulsoup4>=4.4.1",
         "bibtexparser>=0.6.2",
         "chardet>=3.0.2",
@@ -96,7 +92,7 @@ setup(
         "habanero>=0.6.0",
         "isbnlib>=3.9.1",
         "lxml>=4.3.5",
-        "prompt_toolkit>=2.0.5",
+        "prompt_toolkit>=3.0.0",
         "pygments>=2.2.0",
         "pyparsing>=2.2.0",
         "python-doi>=0.1.1",
@@ -126,7 +122,7 @@ setup(
             "python-coveralls",
             "python-lsp-server",
             "sphinx-click",
-            "sphinx_rtd_theme",
+            "sphinx-rtd-theme>=1",
             "types-PyYAML",
             "types-Pygments",
             "types-beautifulsoup4",
@@ -166,19 +162,21 @@ setup(
         "tui",
         "zotero",
     ],
-    package_data=dict(
-        papis=["py.typed"],
-    ),
+    package_data={
+        "papis": ["py.typed"],
+    },
     data_files=data_files,
     packages=included_packages,
     entry_points={
         "console_scripts": [
             "papis=papis.commands.default:run",
         ],
-        "papis.hook.on_edit_done": [],
+        "papis.hook.on_edit_done": [
+        ],
         "papis.exporter": [
             "bibtex=papis.bibtex:exporter",
             "json=papis.json:exporter",
+            "typst=papis.hayagriva:exporter",
             "yaml=papis.yaml:exporter",
         ],
         "papis.importer": [
@@ -200,8 +198,8 @@ setup(
             "papis=papis.tui.picker:Picker",
         ],
         "papis.format": [
-            "jinja2=papis.format:Jinja2Formater",
-            "python=papis.format:PythonFormater",
+            "jinja2=papis.format:Jinja2Formatter",
+            "python=papis.format:PythonFormatter",
         ],
         "papis.command": [
             "add=papis.commands.add:cli",
@@ -225,11 +223,13 @@ setup(
             "run=papis.commands.run:cli",
             "serve=papis.commands.serve:cli",
             "update=papis.commands.update:cli",
+            "cache=papis.commands.cache:cli",
+            "init=papis.commands.init:cli",
         ],
         "papis.downloader": [
             "acm=papis.downloaders.acm:Downloader",
-            "acl=papis.downloaders.acl:Downloader",
             "acs=papis.downloaders.acs:Downloader",
+            "acl=papis.downloaders.acl:Downloader",
             "annualreviews=papis.downloaders.annualreviews:Downloader",
             "aps=papis.downloaders.aps:Downloader",
             "arxiv=papis.arxiv:Downloader",
@@ -265,7 +265,7 @@ setup(
             "lib=papis.commands.explore:lib",
             "pick=papis.commands.explore:pick",
             "yaml=papis.yaml:explorer",
-        ],
+        ]
     },
     platforms=["linux", "osx", "win32"],
 )

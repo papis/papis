@@ -65,25 +65,3 @@ class Downloader(papis.downloaders.Downloader):
             return url
 
         return None
-
-
-if __name__ == "__main__":
-    TEST_CASES = [
-        (
-            "https://aclanthology.org/N04-1001",
-            {"acl_anthology_id": "N04-1001"},
-        ),
-        (
-            "https://aclanthology.org/2021.naacl-main.208/",
-            {"acl_anthology_id": "2021.naacl-main.208"},
-        ),
-    ]
-    for url, y_true in TEST_CASES:
-        d = Downloader(url)
-        d.fetch_data()
-
-        print(f"Test: {url}")
-        print("Fetched:")
-        print(f"\t {d.ctx.data}")
-        assert d.ctx.data["acl_anthology_id"] == y_true["acl_anthology_id"]
-        print("\n\n")
