@@ -2,7 +2,7 @@ import os
 import random
 import tempfile
 from types import TracebackType
-from typing import Any, Dict, Iterator, Optional, Sequence, Type
+from typing import Any, ClassVar, Dict, Iterator, Optional, Sequence, Type
 
 import pytest
 import click
@@ -10,6 +10,7 @@ import click.testing
 from _pytest.fixtures import SubRequest
 from _pytest.config import Config
 
+import papis.logging
 
 PAPIS_UPDATE_RESOURCES = os.environ.get("PAPIS_UPDATE_RESOURCES", "none").lower()
 if PAPIS_UPDATE_RESOURCES not in ("none", "remote", "local", "both"):
@@ -20,11 +21,25 @@ def create_random_file(filetype: Optional[str] = None,
                        prefix: Optional[str] = None,
                        suffix: Optional[str] = None,
                        dir: Optional[str] = None) -> str:
+    """Create a random file with the correct magic signature.
+
+    This function creates random empty files that can be used for testing. It
+    supports creating PDF, EPUB, DjVu or simple text files. These are
+    constructed in such a way that they are recognized by
+    :func:`papis.filetype.guess_content_extension`.
+
+    :arg filetype: the desired filetype of the result, which can be one of
+        ``("pdf", "epub", "djvu", "text")``.
+    :arg prefix: a prefix passed to :func:`tempfile.NamedTemporaryFile`.
+    :arg suffix: a suffix passed to :func:`tempfile.NamedTemporaryFile`.
+    :arg dir: a base directory passed to :func:`tempfile.NamedTemporaryFile`.
+    """
     if filetype is None:
         filetype = random.choice(["pdf", "epub", "djvu"])
 
     # NOTE: these are chosen to match using 'filetype.guess' and are not valid
     # files otherwise
+    filetype = filetype.lower()
     if filetype == "pdf":
         buf = b"%PDF-1.5%\n"
         suffix = ".pdf" if suffix is None else suffix
@@ -106,6 +121,10 @@ PAPIS_TEST_DOCUMENTS = [
 
 
 def populate_library(libdir: str) -> None:
+    """Add temporary documents with random files into the folder *libdir*.
+
+    :arg libdir: an existing empty library directory.
+    """
     import papis.id
     from papis.document import Document
 
@@ -130,23 +149,53 @@ def populate_library(libdir: str) -> None:
 
 
 class TemporaryConfiguration:
-    libname = "test"
+    """A context manager used to create a temporary papis configuration.
+
+    This configuration is created in a temporary directory and all the required
+    paths are set to point to that directory (e.g. ``XDG_CONFIG_HOME`` and
+    ``XDG_CACHE_HOME``). This is meant to be used by tests to create a default
+    environment in which to run.
+
+    It can be used in the standard way as
+
+    .. code:: python
+
+        # Set the configuration option `picktool`
+        papis.config.set("picktool", "fzf")
+
+        with TemporaryConfiguration() as config:
+            # In this block, it is back to its default value
+            value = papis.config.get("picktool")
+            assert value == "papis"
+    """
+
+    #: Name of the default library
+    libname: ClassVar[str] = "test"
 
     def __init__(self,
                  settings: Optional[Dict[str, Any]] = None,
                  overwrite: bool = False) -> None:
-        self.settings = settings
-        self.overwrite = overwrite
+        #: A set of settings to be added to the configuration on creation
+        self.settings: Optional[Dict[str, Any]] = settings
+        #: If *True*, any configuration settings are overwritten by *settings*.
+        self.overwrite: bool = overwrite
 
-        self.libdir = ""
-        self.configdir = ""
-        self.configfile = ""
+        #: When entering the context manager, this will contain the directory of
+        #: a temporary library to run tests on. The library is unpopulated by default
+        self.libdir: str = ""
+        #: When entering the context manager, this will contain the config
+        #: directory used by papis.
+        self.configdir: str = ""
+        #: When entering the context manager, this will contain the config
+        #: file used by papis.
+        self.configfile: str = ""
 
         self._tmpdir: Optional[tempfile.TemporaryDirectory[str]] = None
         self._monkeypatch: Optional[pytest.MonkeyPatch] = None
 
     @property
     def tmpdir(self) -> str:
+        """Base temporary directory name."""
         assert self._tmpdir
         return self._tmpdir.name
 
@@ -154,6 +203,7 @@ class TemporaryConfiguration:
                            filetype: Optional[str] = None,
                            prefix: Optional[str] = None,
                            suffix: Optional[str] = None) -> str:
+        """Create a random file in the :attr:`tmpdir` using `create_random_file`."""
         return create_random_file(
             filetype, suffix=suffix, prefix=prefix,
             dir=self.tmpdir)
@@ -224,12 +274,24 @@ class TemporaryConfiguration:
 
 
 class TemporaryLibrary(TemporaryConfiguration):
+    """A context manager used to create a temporary papis configuration with a
+    library.
+
+    This extends :class:`TemporaryConfiguration` with more support for creating
+    and maintaining a temporary library. This can be used by tests that
+    specifically require handling documents in a library.
+    """
+
     def __init__(self,
                  settings: Optional[Dict[str, Any]] = None,
                  use_git: bool = False,
                  populate: bool = True) -> None:
         super().__init__(settings=settings)
+
+        #: If *True*, a git repository is created in the library directory.
         self.use_git = use_git
+        #: If *True*, the library is prepopulated with a set of documents that
+        #: contain random files and keys, which can be used for testing.
         self.populate = populate
 
     def __enter__(self) -> "TemporaryLibrary":
@@ -265,6 +327,8 @@ class TemporaryLibrary(TemporaryConfiguration):
 
 
 class PapisRunner(click.testing.CliRunner):
+    """A wrapper around :class:`click.testing.CliRunner`."""
+
     def __init__(self, **kwargs: Any) -> None:
         if "mix_stderr" not in kwargs:
             kwargs["mix_stderr"] = False
@@ -274,6 +338,10 @@ class PapisRunner(click.testing.CliRunner):
     def invoke(self,        # type: ignore[override]
                cli: click.Command,
                args: Sequence[str], **kwargs: Any) -> click.testing.Result:
+        """A simple wrapper around the :meth:`click.testing.CliRunner.invoke`
+        method that does not catch exceptions by default.
+        """
+
         if "catch_exceptions" not in kwargs:
             kwargs["catch_exceptions"] = False
 
@@ -281,6 +349,35 @@ class PapisRunner(click.testing.CliRunner):
 
 
 class ResourceCache:
+    """A class that handles retrieving local and remote resources for tests from
+    default folders.
+
+    This class mainly exists to test importers and downloaders that require
+    getting a remote resource and testing it against results of the papis
+    converters.
+
+    It can be controlled by the ``PAPIS_UPDATE_RESOURCES`` environment variable,
+    which takes the values:
+
+    * ``"none"``: no resources are downloaded or updated (default).
+    * ``"remote"``: remote resources are downloaded and the on-disk files are
+      updated (used in :meth:`get_remote_resource`).
+    * ``"local"``: local resources are updated with the results of the papis
+      conversion (used in :meth:`get_local_resource`).
+    * ``"both"``: both local and remote resources are updated.
+
+    Resources can then be retrieved as
+
+    .. code:: python
+
+        # Call some function that retrieves and converts remote data
+        local = papis.arxiv.get_data(...)
+
+        # Check that the expected cached resource matches the result
+        expected_local = cache.get_local_resource("resources/test.json", local)
+        assert local == expected_local
+    """
+
     def __init__(self, cachedir: str) -> None:
         import papis.utils
 
@@ -289,6 +386,7 @@ class ResourceCache:
         if not os.path.exists(self.cachedir):
             raise ValueError(f"Cache directory does not exist: {self.cachedir}")
 
+        #: A :class:`requests.Session` used to download remote resources.
         self.session = papis.utils.get_session()
 
     def get_remote_resource(
@@ -298,7 +396,23 @@ class ResourceCache:
             headers: Optional[Dict[str, str]] = None,
             cookies: Optional[Dict[str, str]] = None,
             ) -> bytes:
+        """Retrieve a remote resource from the resource cache.
+
+        If *force* is *True*, the *filename* does not exist or
+        ``PAPIS_UPDATE_RESOURCES`` is set to ``("remote", "both")``, then the
+        resource is downloaded from the remote location at *url*. Otherwise, it
+        is retrieved from the locally cached version at *filename*.
+
+        :arg filename: a file where to store the remote resource.
+        :arg url: a remote URL from which to retrieve the resource.
+        :arg force: if *True*, force updating the resource cached at *filename*.
+        :arg params: additional params passed to :func:`requests.get`.
+        :arg headers: additional headers passed to :func:`requests.get`.
+        :arg cookies: additional cookies passed to :func:`requests.get`.
+        """
         filename = os.path.join(self.cachedir, filename)
+
+        force = force or not os.path.exists(filename)
         if force or PAPIS_UPDATE_RESOURCES in ("remote", "both"):
             if headers is None:
                 headers = {}
@@ -315,6 +429,17 @@ class ResourceCache:
     def get_local_resource(
             self, filename: str, data: Any,
             force: bool = False) -> Any:
+        """Retrieve a local resource from the resource cache.
+
+        If *force* is *True*, the *filename* does not exist or
+        ``PAPIS_UPDATE_RESOURCES`` is set to ``("local", "both")``, then the
+        local resource is updated using *data*. Otherwise, it is retrieved from
+        the locally cached version at *filename*.
+
+        :arg filename: a file where to store the local resource.
+        :arg data: data that should be retrieve from the resource.
+        :arg force: if *True*, force updating the resource cached at *filename*.
+        """
         filename = os.path.join(self.cachedir, filename)
         _, ext = os.path.splitext(filename)
 
@@ -322,6 +447,7 @@ class ResourceCache:
         import yaml
         import papis.yaml
 
+        force = force or not os.path.exists(filename)
         if force or PAPIS_UPDATE_RESOURCES in ("local", "both"):
             assert data is not None
             with open(filename, "w", encoding="utf-8") as f:
@@ -352,19 +478,41 @@ class ResourceCache:
 
 @pytest.fixture(scope="function")
 def tmp_config(request: SubRequest) -> Iterator[TemporaryConfiguration]:
+    """A fixture that creates a :class:`TemporaryConfiguration`.
+
+    Additional keyword arguments can be passed using the ``config_setup`` marker
+
+    .. code:: python
+
+        @pytest.mark.config_setup(overwrite=True)
+        def test_me(tmp_config: TemporaryConfiguration) -> None:
+            ...
+    """
     marker = request.node.get_closest_marker("config_setup")
     kwargs = marker.kwargs if marker else {}
 
     with TemporaryConfiguration(**kwargs) as config:
+        papis.logging.reset()
         yield config
 
 
 @pytest.fixture(scope="function")
 def tmp_library(request: SubRequest) -> Iterator[TemporaryLibrary]:
+    """A fixture that creates a :class:`TemporaryLibrary`.
+
+    Additional keyword arguments can be passed using the ``library_setup`` marker
+
+    .. code:: python
+
+        @pytest.mark.library_setup(use_git=False)
+        def test_me(tmp_library: TemporaryLibrary) -> None:
+            ...
+    """
     marker = request.node.get_closest_marker("library_setup")
     kwargs = marker.kwargs if marker else {}
 
     with TemporaryLibrary(**kwargs) as lib:
+        papis.logging.reset()
         yield lib
 
 
