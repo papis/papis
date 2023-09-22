@@ -1,20 +1,62 @@
 import os
 import random
 import tempfile
-from typing import Any, Dict, Sequence, Optional
+from types import TracebackType
+from typing import Any, Dict, Iterator, Optional, Sequence, Type
 
 import pytest
 import click
 import click.testing
+from _pytest.fixtures import SubRequest
+from _pytest.config import Config
 
-import papis.logging
-
-papis.logging.setup()
-random.seed(42)
 
 PAPIS_UPDATE_RESOURCES = os.environ.get("PAPIS_UPDATE_RESOURCES", "none").lower()
 if PAPIS_UPDATE_RESOURCES not in ("none", "remote", "local", "both"):
     raise ValueError("unsupported value of 'PAPIS_UPDATE_RESOURCES'")
+
+
+def create_random_file(filetype: Optional[str] = None,
+                       prefix: Optional[str] = None,
+                       suffix: Optional[str] = None,
+                       dir: Optional[str] = None) -> str:
+    if filetype is None:
+        filetype = random.choice(["pdf", "epub", "djvu"])
+
+    # NOTE: these are chosen to match using 'filetype.guess' and are not valid
+    # files otherwise
+    if filetype == "pdf":
+        buf = b"%PDF-1.5%\n"
+        suffix = ".pdf" if suffix is None else suffix
+    elif filetype == "epub":
+        buf = bytes(
+            [0x50, 0x4B, 0x3, 0x4]
+            + [0x00 for i in range(26)]
+            + [0x6D, 0x69, 0x6D, 0x65, 0x74, 0x79, 0x70, 0x65, 0x61, 0x70,
+                0x70, 0x6C, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6F, 0x6E, 0x2F,
+                0x65, 0x70, 0x75, 0x62, 0x2B, 0x7A, 0x69, 0x70]
+            + [0x00 for i in range(1)]
+            )
+        suffix = ".epub" if suffix is None else suffix
+    elif filetype == "djvu":
+        buf = bytes(
+            [0x41, 0x54, 0x26, 0x54, 0x46, 0x4F, 0x52, 0x4D]
+            + [0x00, 0x00, 0x00, 0x00]
+            + [0x44, 0x4A, 0x56, 0x4D]
+            )
+        suffix = ".djvu" if suffix is None else suffix
+    elif filetype == "text":
+        buf = b"papis-test-file-contents"
+    else:
+        raise ValueError("Unknown file type: '{}'".format(filetype))
+
+    with tempfile.NamedTemporaryFile(
+            dir=dir, suffix=suffix, prefix=prefix,
+            delete=False) as fd:
+        fd.write(buf)
+
+    return fd.name
+
 
 PAPIS_TEST_DOCUMENTS = [
     {
@@ -63,48 +105,6 @@ PAPIS_TEST_DOCUMENTS = [
 ]
 
 
-def create_random_file(filetype: Optional[str] = None,
-                       prefix: Optional[str] = None,
-                       suffix: Optional[str] = None,
-                       dir: Optional[str] = None) -> str:
-    if filetype is None:
-        filetype = random.choice(["pdf", "epub", "djvu"])
-
-    # NOTE: these are chosen to match using 'filetype.guess' and are not valid
-    # files otherwise
-    if filetype == "pdf":
-        buf = b"%PDF-1.5%\n"
-        suffix = ".pdf" if suffix is None else suffix
-    elif filetype == "epub":
-        buf = bytes(
-            [0x50, 0x4B, 0x3, 0x4]
-            + [0x00 for i in range(26)]
-            + [0x6D, 0x69, 0x6D, 0x65, 0x74, 0x79, 0x70, 0x65, 0x61, 0x70,
-                0x70, 0x6C, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6F, 0x6E, 0x2F,
-                0x65, 0x70, 0x75, 0x62, 0x2B, 0x7A, 0x69, 0x70]
-            + [0x00 for i in range(1)]
-            )
-        suffix = ".epub" if suffix is None else suffix
-    elif filetype == "djvu":
-        buf = bytes(
-            [0x41, 0x54, 0x26, 0x54, 0x46, 0x4F, 0x52, 0x4D]
-            + [0x00, 0x00, 0x00, 0x00]
-            + [0x44, 0x4A, 0x56, 0x4D]
-            )
-        suffix = ".djvu" if suffix is None else suffix
-    elif filetype == "text":
-        buf = b"papis-test-file-contents"
-    else:
-        raise ValueError("Unknown file type: '{}'".format(filetype))
-
-    with tempfile.NamedTemporaryFile(
-            dir=dir, suffix=suffix, prefix=prefix,
-            delete=False) as fd:
-        fd.write(buf)
-
-    return fd.name
-
-
 def populate_library(libdir: str) -> None:
     import papis.id
     from papis.document import Document
@@ -116,7 +116,7 @@ def populate_library(libdir: str) -> None:
         os.makedirs(folder_path)
 
         # add files
-        num_test_files = doc_data.pop("_test_files")
+        num_test_files = int(str(doc_data.pop("_test_files")))
         if num_test_files:
             doc_data["files"] = [
                 os.path.basename(create_random_file(dir=folder_path))
@@ -142,11 +142,12 @@ class TemporaryConfiguration:
         self.configdir = ""
         self.configfile = ""
 
-        self._tmpdir: Optional[tempfile.TemporaryDirectory] = None
+        self._tmpdir: Optional[tempfile.TemporaryDirectory[str]] = None
         self._monkeypatch: Optional[pytest.MonkeyPatch] = None
 
     @property
     def tmpdir(self) -> str:
+        assert self._tmpdir
         return self._tmpdir.name
 
     def create_random_file(self,
@@ -205,10 +206,15 @@ class TemporaryConfiguration:
 
         return self
 
-    def __exit__(self, exc_type, exc_value, exc_traceback) -> None:
+    def __exit__(self,
+                 exc_type: Optional[Type[BaseException]],
+                 exc_val: Optional[BaseException],
+                 exc_tb: Optional[TracebackType]) -> None:
         # cleanup
-        self._monkeypatch.undo()
-        self._tmpdir.cleanup()
+        if self._monkeypatch:
+            self._monkeypatch.undo()
+        if self._tmpdir:
+            self._tmpdir.cleanup()
 
         # reset variables
         self._tmpdir = None
@@ -265,7 +271,7 @@ class PapisRunner(click.testing.CliRunner):
 
         super().__init__(**kwargs)
 
-    def invoke(self,
+    def invoke(self,        # type: ignore[override]
                cli: click.Command,
                args: Sequence[str], **kwargs: Any) -> click.testing.Result:
         if "catch_exceptions" not in kwargs:
@@ -278,9 +284,10 @@ class ResourceCache:
     def __init__(self, cachedir: str) -> None:
         import papis.utils
 
-        self.cachedir = os.path.join(os.path.dirname(__file__), cachedir)
+        #: The location of the resource directory.
+        self.cachedir = os.path.abspath(cachedir)
         if not os.path.exists(self.cachedir):
-            os.makedirs(self.cachedir)
+            raise ValueError(f"Cache directory does not exist: {self.cachedir}")
 
         self.session = papis.utils.get_session()
 
@@ -341,3 +348,57 @@ class ResourceCache:
                 return papis.yaml.yaml_to_data(filename)
             else:
                 raise ValueError("Unknown file extension: '{}'".format(ext))
+
+
+@pytest.fixture(scope="function")
+def tmp_config(request: SubRequest) -> Iterator[TemporaryConfiguration]:
+    marker = request.node.get_closest_marker("config_setup")
+    kwargs = marker.kwargs if marker else {}
+
+    with TemporaryConfiguration(**kwargs) as config:
+        yield config
+
+
+@pytest.fixture(scope="function")
+def tmp_library(request: SubRequest) -> Iterator[TemporaryLibrary]:
+    marker = request.node.get_closest_marker("library_setup")
+    kwargs = marker.kwargs if marker else {}
+
+    with TemporaryLibrary(**kwargs) as lib:
+        yield lib
+
+
+@pytest.fixture(scope="function")
+def resource_cache(request: SubRequest) -> ResourceCache:
+    """A fixture that creates a :class:`ResourceCache`.
+
+    Additional keyword arguments can be passed using the ``resource_setup`` marker
+
+    .. code:: python
+
+        @pytest.mark.resource_setup(cachedir="resources")
+        def test_me(resource_cache: ResourceCache) -> None:
+            ...
+    """
+    marker = request.node.get_closest_marker("resource_setup")
+    kwargs = marker.kwargs if marker else {"cachedir": "resources"}
+
+    cachedir = kwargs.get("cachedir")
+    if cachedir is not None:
+        # NOTE: ensure that the resource folder is relative to the file
+        dirname = os.path.dirname(request.path)
+        kwargs["cachedir"] = os.path.join(dirname, cachedir)
+
+    return ResourceCache(**kwargs)
+
+
+def pytest_configure(config: Config) -> None:
+    config.addinivalue_line(
+        "markers",
+        "config_setup(**kwargs): pass kwargs to TemporaryConfiguration initialization")
+    config.addinivalue_line(
+        "markers",
+        "library_setup(**kwargs): pass kwargs to TemporaryLibrary initialization")
+    config.addinivalue_line(
+        "markers",
+        "resource_setup(**kwargs): pass kwargs to ResourceCache initialization")

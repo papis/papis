@@ -171,6 +171,9 @@ setup(
         "console_scripts": [
             "papis=papis.commands.default:run",
         ],
+        "pytest11": [
+            "papis_testing=papis.testing",
+        ],
         "papis.hook.on_edit_done": [
         ],
         "papis.exporter": [
