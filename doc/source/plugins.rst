@@ -14,93 +14,116 @@ TO DOCUMENT
 Importer
 --------
 
-The difference between a downloader and an importer in `papis` is largely
-semantic. Downloaders are mostly meant to scrape websites or download files
-from a remote location. They can be implemented in a similar way.
+Papis allows implementing additional plugins for importing external metadata
+into its database through so-called "importers" and "downloaders". The
+difference between a downloader and an importer is largely semantic. Downloaders
+are mostly meant to scrape websites or download files from a remote location.
 
-As a example we implement a custom downloader for the [ACL Anthology](https://aclanthology.org/).
-First create a downloader module in `papis.downloaders` and write a class that inherits from `papis.downloaders.Downloader`:
+As an example we show here how to implement a custom downloader for the
+`ACL Anthology <https://aclanthology.org/>`__. An :class:`~papis.importer.Importer`
+is generally simpler, as it does not require scraping remote websites. We
+recommend taking a look at one of the existing importers (e.g. in ``papis/crossref.py``)
+or downloaders (e.g. in ``papis/downloaders/sciencedirect.py``) to get an idea
+about existing features and implementations.
 
-```python
-from typing import Any, Dict, Optional
+For a downloader, we create a new file in ``papis/downloaders`` and start writing
+a class that inherits from :class:`papis.downloaders.Downloader`. This can look
+something like
 
-import papis.document
-import papis.downloaders.base
+.. code:: python
+
+    from typing import Any, Dict, Optional
+
+    import papis.document
+    import papis.downloaders.base
 
 
-class Downloader(papis.downloaders.Downloader):
-    def __init__(self, url: str) -> None:
-        super().__init__(
-            url,
-            name="acl",
-            expected_document_extension="pdf",
-            priority=10,
-        )
+    class Downloader(papis.downloaders.Downloader):
+        def __init__(self, url: str) -> None:
+            super().__init__(
+                url,
+                # A name for the downloader that is shown to the user at times
+                name="acl",
+                # The extensions that are expected from the downloaded files
+                expected_document_extension="pdf",
+                # Priority is sorted ascendingly (0 is the largest) and is used to
+                # present the downloaders to the user and in automatic merging
+                priority=10,
+            )
 
-```
+The main way to recognize if a downloader can be used with a given URI is
+through the :meth:`~papis.downloaders.Downloader.match` method. This generally
+checks if a given URI matches a website URL, e.g.
 
-We then implement the `Downloader.match` method, which generally checks if a given URI matches a website URL:
+.. code:: python
 
-```python
-@classmethod
-def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
-    return Downloader(url) if re.match(r".*aclanthology\.org.*", url) else None
-```
+    @classmethod
+    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
+        return Downloader(url) if re.match(r".*aclanthology\.org.*", url) else None
 
-The `Downloader` comes with a `get_data` method, which does already a good job
-in fetching basic metadata such as title, authors, etc. We can however extend this to our liking.
-For instance, some documents in the ACL Anthology
-provide a "code" field, with a link to e.g. a github repository.
-We will try to extract from the `soup` (the parsed html) the element containing the link to the code.
+By default, a downloader implements a :meth:`~papis.downloaders.Downloader.get_data`
+method to retrieve metadata. This already does a good job in fetching basic
+metadata (title, authors, etc) through standard elements such as the
+`Dublin Core Metadata <https://www.dublincore.org/specifications/dublin-core/dces/>`__.
+We can however extend it for any specific downloader. For instance, some
+documents in the ACL Anthology provide a "code" field, with a link to e.g. a
+Github repository. We will try to extract code repository URL using
+:mod:`bs4`. An instance of :mod:`bs4` with the parsed HTML can be obtained and
+manipulated as follows
 
-```python
-def get_data(self) -> Dict[str, Any]:
-    soup = self._get_soup()
-    data = papis.downloaders.base.parse_meta_headers(soup)
+.. code:: python
 
-    paper_details = soup.find("div", "row acl-paper-details").find("dl")  # type: ignore
+    def get_data(self) -> Dict[str, Any]:
+        soup = self._get_soup()
+        data = papis.downloaders.base.parse_meta_headers(soup)
 
-    for dt in elem.find_all("dt"):
-        if "Code" in dt.text:
-            data["code"] = dt.find_next_sibling().find("a").attrs["href"]
+        paper_details = soup.find("div", "row acl-paper-details").find("dl")
+        for dt in elem.find_all("dt"):
+            if "Code" in dt.text:
+                data["code"] = dt.find_next_sibling().find("a").attrs["href"]
+                break
 
-    return data
-```
+        return data
 
-Optionally you can extend it further by overriding the `Downloader.get_bibtex_url`.
-For instance, the `get_data` method fails to correctly identify the abstract section.
-In our example we can fix this by scraping the metadata found in the bibtex file.
-Luckily the bibtex url is simply the document url with a .bib extension.
+Metadata can also be obtained from BibTeX by overriding the
+:meth:`~papis.downloaders.Downloader.get_bibtex_url` method. This can be useful
+if, for instance, the `get_data` method fails to correctly identify the abstract
+section. In our example we can fix this by scraping the metadata found in the
+BibTeX file. Luckily, for ACL, the BibTeX URL is simply the document URL with a
+``.bib`` extension. We can implement it as
 
-```python
-def get_bibtex_url(self) -> Optional[str]:
-    url = self.ctx.data.get("url")
-    if url is not None:
-        url = url + ".bib"
-    return url
-```
+.. code:: python
 
-If you are not happy with the result the `data['pdf_url]`,
-which contain the file that papis will try to download,
-you can override the `Downloader.get_document_url`.
+    def get_bibtex_url(self) -> Optional[str]:
+        url = self.ctx.data.get("url")
+        return f"{url}.bib" if url is not None else url
 
-```python
-def get_document_url(self) -> Optional[str]:
-    if "pdf_url" in self.ctx.data:
-        url = str(self.ctx.data["pdf_url"])
-        self.logger.debug("Using document URL: '%s'.", url)
-        return url
+To download files from a remote resource, the downloader relies on
+`data["pdf_url"]` by default. However, if this does not exist or does not
+return the actual document PDF, we can override the
+:meth:`~papis.downloaders.Downloader.get_document_url` method.
 
-    return None
-```
+.. code:: python
 
-Finally, you need to edit the `setup.py` file to let papis know
-there's a new downloader available:
+    def get_document_url(self) -> Optional[str]:
+        if "pdf_url" in self.ctx.data:
+            return str(self.ctx.data["pdf_url"])
 
-```python
- 'papis.downloader': [ 
-     "acl=papis.downloaders.acl:Downloader", 
-```
+        return None
+
+Finally, to install the plugin and have it recognized by the extension system
+that papis uses, it needs to be added to ``setup.py``. This can be done with
+extending the ``papis.downloader`` entrypoint as follows
+
+.. code:: python
+
+    entry_points = {
+        "papis.downloader": [
+            # ...
+            "acl=papis.downloaders.acl:Downloader",
+            # ...
+            ]
+        }
 
 Explore
 -------

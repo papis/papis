@@ -42,6 +42,7 @@ extensions = [
 
 intersphinx_mapping = {
     # NOTE: docs on main seem to be broken at the moment (2023-06-04)
+    "beautifulsoup4": ("https://www.crummy.com/software/BeautifulSoup/bs4/doc/", None),
     "bibtexparser": ("https://bibtexparser.readthedocs.io/en/v1.4.0", None),
     "click": ("https://click.palletsprojects.com/en/latest", None),
     "python": ("https://docs.python.org/3", None),
