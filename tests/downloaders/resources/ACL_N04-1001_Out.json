@@ -1,0 +1,54 @@
+{
+  "acl_anthology_id": "N04-1001",
+  "author": "Florian, Radu and Hassan, H. and Ittycheriah, Abe and Jing, Hongyan and Kambhatla, Nanda and Luo, Xiaoqiang and Nicolov, Nicolas and Roukos, Salim",
+  "author_list": [
+    {
+      "affiliation": [],
+      "family": "Florian",
+      "given": "Radu"
+    },
+    {
+      "affiliation": [],
+      "family": "Hassan",
+      "given": "H."
+    },
+    {
+      "affiliation": [],
+      "family": "Ittycheriah",
+      "given": "Abe"
+    },
+    {
+      "affiliation": [],
+      "family": "Jing",
+      "given": "Hongyan"
+    },
+    {
+      "affiliation": [],
+      "family": "Kambhatla",
+      "given": "Nanda"
+    },
+    {
+      "affiliation": [],
+      "family": "Luo",
+      "given": "Xiaoqiang"
+    },
+    {
+      "affiliation": [],
+      "family": "Nicolov",
+      "given": "Nicolas"
+    },
+    {
+      "affiliation": [],
+      "family": "Roukos",
+      "given": "Salim"
+    }
+  ],
+  "firstpage": "1",
+  "lastpage": "8",
+  "pdf_url": "https://aclanthology.org/N04-1001.pdf",
+  "publication_date": "2004",
+  "title": "A Statistical Model for Multilingual Entity Detection and Tracking",
+  "type": "article",
+  "url": "https://aclanthology.org/N04-1001",
+  "year": "2004"
+}

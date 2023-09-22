@@ -229,6 +229,7 @@ setup(
         "papis.downloader": [
             "acm=papis.downloaders.acm:Downloader",
             "acs=papis.downloaders.acs:Downloader",
+            "acl=papis.downloaders.acl:Downloader",
             "annualreviews=papis.downloaders.annualreviews:Downloader",
             "aps=papis.downloaders.aps:Downloader",
             "arxiv=papis.arxiv:Downloader",
