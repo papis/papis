@@ -121,6 +121,12 @@ Developer API reference
 .. automodule:: papis.plugin
     :members:
 
+``papis.testing``
+-----------------
+
+.. automodule:: papis.testing
+    :members:
+
 ``papis.utils``
 ---------------
 

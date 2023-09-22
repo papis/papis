@@ -54,6 +54,10 @@ intersphinx_mapping = {
 
 autodoc_member_order = "bysource"
 
+nitpick_ignore_regex = [
+    ["py:class", r".*SubRequest"],
+    ]
+
 
 # Exec directive {{{
 
