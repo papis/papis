@@ -47,6 +47,7 @@ intersphinx_mapping = {
     "click": ("https://click.palletsprojects.com/en/latest", None),
     "prompt_toolkit": ("https://python-prompt-toolkit.readthedocs.io/en/master", None),
     "pyparsing": ("https://pyparsing-docs.readthedocs.io/en/latest", None),
+    "pytest": ("https://docs.pytest.org/en/latest", None),
     "python": ("https://docs.python.org/3", None),
     "requests": ("https://requests.readthedocs.io/en/latest", None),
     "stevedore": ("https://docs.openstack.org/stevedore/latest", None),
