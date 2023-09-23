@@ -22,7 +22,7 @@ python -m pip install -e '.[develop]'
 To run the tests, just use `pytest`. Some helpful wrappers are given in the
 `Makefile` (see `make help`), e.g. to run the tests
 ```bash
-make test
+make pytest
 ```
 which runs the full test suite and doctests for `papis`. To run the tests exactly
 as they are set up on the Github Actions CI use
@@ -37,7 +37,6 @@ make doc
 ```
 
 To quickly get things up and running, you can also use docker/podman:
-
 ```
 # build the image
 docker build -t papisdev .
@@ -48,6 +47,21 @@ docker run -v $(pwd):/papis --rm -it papisdev bash
 ```
 
 (or replace `docker` with `podman` if you prefer)
+
+Adding tests
+------------
+
+To add tests to the various parts of papis, use the functionality in
+`papis.testing`. This is documented in the
+[Testing](https://papis.readthedocs.io/en/latest/testing.html) section of the
+docs and more complex examples can be found in the existing `tests` folder.
+
+When adding functionality or fixing a bug with an accompanying test, make
+sure everything still works correctly by running
+```
+make ci-test
+make ci-lint
+```
 
 Issues
 ------
