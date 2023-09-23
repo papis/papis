@@ -56,6 +56,7 @@ command-line interface (*CLI*) is heavily tailored after
    api
    plugins
    hooks
+   testing
    developer_reference
 
 
