@@ -3,7 +3,7 @@ import tempfile
 
 import papis.database
 
-from tests.testlib import TemporaryLibrary, PapisRunner
+from papis.testing import TemporaryLibrary, PapisRunner
 
 
 def test_export_run(tmp_library: TemporaryLibrary) -> None:

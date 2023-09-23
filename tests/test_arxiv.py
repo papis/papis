@@ -1,7 +1,5 @@
 import pytest
-import papis.downloaders
-
-from tests.testlib import TemporaryConfiguration
+from papis.testing import TemporaryConfiguration
 
 ARXIV_TEST_URLS = [
     ("/URI(https://arxiv.org/abs/1305.2291v2)>>", "1305.2291v2"),
@@ -46,7 +44,7 @@ def test_downloader_match(tmp_config: TemporaryConfiguration) -> None:
     from papis.arxiv import Downloader, ARXIV_ABS_URL
 
     down = Downloader.match("arxiv.org/sdf")
-    assert isinstance(down, papis.arxiv.Downloader)
+    assert isinstance(down, Downloader)
 
     down = Downloader.match("arxiv.com/!@#!@$!%!@%!$chemed.6b00559")
     assert down is None
@@ -65,7 +63,9 @@ def test_downloader_match(tmp_config: TemporaryConfiguration) -> None:
     ])
 def test_importer_downloader_fetch(tmp_config: TemporaryConfiguration,
                                    url: str) -> None:
-    downs = papis.downloaders.get_matching_downloaders(url)
+    from papis.downloaders import get_matching_downloaders
+
+    downs = get_matching_downloaders(url)
     assert len(downs) >= 1
 
     down = downs[0]
@@ -82,12 +82,13 @@ def test_importer_downloader_fetch(tmp_config: TemporaryConfiguration,
 
 
 def test_validate_arxivid(tmp_config: TemporaryConfiguration) -> None:
+    from papis.arxiv import validate_arxivid
     # good
-    papis.arxiv.validate_arxivid("1206.6272")
-    papis.arxiv.validate_arxivid("1206.6272v1")
-    papis.arxiv.validate_arxivid("1206.6272v2")
+    validate_arxivid("1206.6272")
+    validate_arxivid("1206.6272v1")
+    validate_arxivid("1206.6272v2")
 
     # bad
     for bad in ["1206.6272v3", "blahv2"]:
         with pytest.raises(ValueError, match="not an arxivid"):
-            papis.arxiv.validate_arxivid(bad)
+            validate_arxivid(bad)

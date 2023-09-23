@@ -1,7 +1,7 @@
 import papis.utils
 from papis.document import from_data
 
-from tests.testlib import TemporaryLibrary, PapisRunner
+from papis.testing import TemporaryLibrary, PapisRunner
 
 
 def test_browse_run(tmp_library: TemporaryLibrary) -> None:

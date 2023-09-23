@@ -2,7 +2,7 @@ import os
 
 import papis.database
 
-from tests.testlib import TemporaryLibrary
+from papis.testing import TemporaryLibrary
 
 
 def test_list_run(tmp_library: TemporaryLibrary) -> None:

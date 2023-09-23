@@ -3,7 +3,7 @@ import re
 import pytest
 from typing import Dict, Any
 
-from tests.testlib import ResourceCache, TemporaryConfiguration
+from papis.testing import ResourceCache, TemporaryConfiguration
 
 BIBTEX_RESOURCES = os.path.join(os.path.dirname(__file__), "resources", "bibtex")
 

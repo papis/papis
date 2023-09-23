@@ -3,7 +3,7 @@ import pytest
 import papis.downloaders
 from papis.downloaders.fallback import Downloader
 
-from tests.testlib import TemporaryConfiguration, ResourceCache
+from papis.testing import TemporaryConfiguration, ResourceCache
 
 FALLBACK_URLS = (
     "https://peerj.com/articles/4886/",
@@ -11,7 +11,6 @@ FALLBACK_URLS = (
     )
 
 
-@pytest.mark.resource_setup(cachedir="downloaders/resources")
 @pytest.mark.parametrize("url", FALLBACK_URLS)
 def test_fallback_fetch(tmp_config: TemporaryConfiguration,
                         resource_cache: ResourceCache,

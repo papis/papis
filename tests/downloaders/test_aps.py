@@ -4,7 +4,7 @@ import pytest
 import papis.downloaders
 from papis.downloaders.aps import Downloader
 
-from tests.testlib import TemporaryConfiguration, ResourceCache
+from papis.testing import TemporaryConfiguration, ResourceCache
 
 APS_URLS = (
     "https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.122.145901",
@@ -13,7 +13,6 @@ APS_URLS = (
     )
 
 
-@pytest.mark.resource_setup(cachedir="downloaders/resources")
 @pytest.mark.parametrize("url", APS_URLS)
 def test_aps_fetch(tmp_config: TemporaryConfiguration,
                    resource_cache: ResourceCache,

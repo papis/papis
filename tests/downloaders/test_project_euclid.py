@@ -4,7 +4,7 @@ import pytest
 import papis.downloaders
 from papis.downloaders.projecteuclid import Downloader
 
-from tests.testlib import TemporaryConfiguration, ResourceCache
+from papis.testing import TemporaryConfiguration, ResourceCache
 
 PROJECT_EUCLID_URLS = (
     "https://projecteuclid.org/journals/advances-in-differential-equations/volume-19/"
@@ -17,7 +17,6 @@ PROJECT_EUCLID_URLS = (
     )
 
 
-@pytest.mark.resource_setup(cachedir="downloaders/resources")
 @pytest.mark.parametrize("url", PROJECT_EUCLID_URLS)
 def test_project_euclid_fetch(tmp_config: TemporaryConfiguration,
                               resource_cache: ResourceCache,

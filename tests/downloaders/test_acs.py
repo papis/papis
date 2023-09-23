@@ -4,7 +4,7 @@ import pytest
 import papis.downloaders
 from papis.downloaders.acs import Downloader
 
-from tests.testlib import TemporaryConfiguration, ResourceCache
+from papis.testing import TemporaryConfiguration, ResourceCache
 
 ACS_URLS = (
     "https://pubs.acs.org/doi/abs/10.1021/jp003647e",
@@ -31,7 +31,6 @@ def test_acs_match(tmp_config: TemporaryConfiguration) -> None:
 
 
 @pytest.mark.skip(reason="acs.org disallows web scrapers (cloudflare)")
-@pytest.mark.resource_setup(cachedir="downloaders/resources")
 @pytest.mark.parametrize("url", ACS_URLS)
 def test_acs_fetch(tmp_config: TemporaryConfiguration,
                    resource_cache: ResourceCache,

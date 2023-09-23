@@ -5,7 +5,7 @@ import tempfile
 import papis.api
 import papis.document
 
-from tests.testlib import TemporaryConfiguration
+from papis.testing import TemporaryConfiguration
 
 
 def test_files_check(tmp_config: TemporaryConfiguration,

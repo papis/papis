@@ -2,11 +2,8 @@ import tempfile
 import pickle
 import os
 
-import papis.config
-import papis.format
 import papis.document
-
-from tests.testlib import TemporaryConfiguration
+from papis.testing import TemporaryConfiguration
 
 DOCUMENT_RESOURCES = os.path.join(os.path.dirname(__file__), "resources")
 
@@ -78,6 +75,7 @@ def test_main_features() -> None:
 
 
 def test_to_bibtex(tmp_config: TemporaryConfiguration) -> None:
+    import papis.config
     import papis.bibtex
 
     papis.config.set("bibtex-journal-key", "journal_abbrev")

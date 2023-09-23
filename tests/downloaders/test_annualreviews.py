@@ -4,7 +4,7 @@ import pytest
 import papis.downloaders
 from papis.downloaders.annualreviews import Downloader
 
-from tests.testlib import TemporaryConfiguration, ResourceCache
+from papis.testing import TemporaryConfiguration, ResourceCache
 
 ANNUAL_REVIEWS_URLS = (
     "https://www.annualreviews.org/doi/10.1146/annurev-conmatphys-031214-014726",
@@ -31,7 +31,6 @@ def test_annual_review_match(tmp_config: TemporaryConfiguration) -> None:
 
 
 @pytest.mark.skip(reason="annualreviews.org disallows web scrapers (cloudflare)")
-@pytest.mark.resource_setup(cachedir="downloaders/resources")
 @pytest.mark.parametrize("url", ANNUAL_REVIEWS_URLS)
 def test_annual_review_fetch(tmp_config: TemporaryConfiguration,
                              resource_cache: ResourceCache,

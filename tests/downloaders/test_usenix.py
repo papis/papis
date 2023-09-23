@@ -5,7 +5,7 @@ from _pytest.monkeypatch import MonkeyPatch
 import papis.downloaders
 from papis.downloaders.usenix import Downloader
 
-from tests.testlib import TemporaryConfiguration, ResourceCache
+from papis.testing import TemporaryConfiguration, ResourceCache
 
 USENIX_LINK_URLS = (
     "https://www.usenix.org/conference/usenixsecurity22/presentation/bulekov",
@@ -37,7 +37,6 @@ def test_usenix_match() -> None:
         assert Downloader.match(url) is None
 
 
-@pytest.mark.resource_setup(cachedir="downloaders/resources")
 @pytest.mark.parametrize("url", USENIX_LINK_URLS)
 def test_usenix_fetch(tmp_config: TemporaryConfiguration,
                       resource_cache: ResourceCache,

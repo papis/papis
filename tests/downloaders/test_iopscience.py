@@ -4,7 +4,7 @@ import pytest
 import papis.downloaders
 from papis.downloaders.iopscience import Downloader
 
-from tests.testlib import TemporaryConfiguration, ResourceCache
+from papis.testing import TemporaryConfiguration, ResourceCache
 
 IOPSCIENCE_URLS = (
     "https://iopscience.iop.org/article/10.1088/0026-1394/12/4/002",
@@ -12,7 +12,6 @@ IOPSCIENCE_URLS = (
     )
 
 
-@pytest.mark.resource_setup(cachedir="downloaders/resources")
 @pytest.mark.parametrize("url", IOPSCIENCE_URLS)
 def test_iop_science_fetch(tmp_config: TemporaryConfiguration,
                            resource_cache: ResourceCache,

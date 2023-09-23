@@ -1,5 +1,5 @@
 import pytest
-from tests.testlib import TemporaryConfiguration
+from papis.testing import TemporaryConfiguration
 
 
 @pytest.mark.xfail(reason="remote pmid validity check can timeout")

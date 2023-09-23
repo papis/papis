@@ -4,7 +4,7 @@ import pytest
 import papis.config
 import papis.database
 
-from tests.testlib import TemporaryLibrary
+from papis.testing import TemporaryLibrary
 
 
 def database_init(libname: str) -> None:

@@ -1,4 +1,4 @@
-from tests.testlib import TemporaryConfiguration
+from papis.testing import TemporaryConfiguration
 
 
 def test_settings(tmp_config: TemporaryConfiguration) -> None:

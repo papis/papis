@@ -4,7 +4,7 @@ import pytest
 
 import papis.downloaders
 from papis.downloaders.acl import Downloader
-from tests.testlib import ResourceCache, TemporaryConfiguration
+from papis.testing import ResourceCache, TemporaryConfiguration
 
 ACL_URLS = (
     "https://aclanthology.org/N04-1001",
@@ -30,7 +30,6 @@ def test_acl_match(tmp_config: TemporaryConfiguration) -> None:
         assert Downloader.match(url) is None
 
 
-@pytest.mark.resource_setup(cachedir="downloaders/resources")
 @pytest.mark.parametrize("url", ACL_URLS)
 def test_acl_fetch(
     tmp_config: TemporaryConfiguration,
