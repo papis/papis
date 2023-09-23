@@ -3,7 +3,7 @@ import json
 from typing import Any, Dict
 
 import pytest
-from tests.testlib import TemporaryConfiguration
+from papis.testing import TemporaryConfiguration
 
 
 def _get_test_json(filename: str) -> Dict[str, Any]:

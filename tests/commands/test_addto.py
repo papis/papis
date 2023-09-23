@@ -1,7 +1,7 @@
 import os
 import papis.database
 
-from tests.testlib import TemporaryLibrary, PapisRunner
+from papis.testing import TemporaryLibrary, PapisRunner
 
 
 def test_addto_run(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:

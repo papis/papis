@@ -2,7 +2,7 @@ import os
 
 import papis.config
 
-from tests.testlib import TemporaryLibrary, PapisRunner
+from papis.testing import TemporaryLibrary, PapisRunner
 
 
 def test_git_cli(tmp_library: TemporaryLibrary) -> None:

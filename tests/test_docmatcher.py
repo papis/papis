@@ -4,7 +4,7 @@ from functools import partial
 from typing import Any, List, Optional, Pattern, Tuple
 
 import papis.document
-from tests.testlib import TemporaryConfiguration
+from papis.testing import TemporaryConfiguration
 
 
 def get_docs() -> List[papis.document.Document]:

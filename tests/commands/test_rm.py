@@ -4,7 +4,7 @@ from _pytest.monkeypatch import MonkeyPatch
 
 import papis.database
 
-from tests.testlib import TemporaryLibrary, PapisRunner
+from papis.testing import TemporaryLibrary, PapisRunner
 
 
 def test_rm_run(tmp_library: TemporaryLibrary) -> None:

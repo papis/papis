@@ -5,13 +5,12 @@ from typing import Any, Dict
 import papis.database
 from papis.document import Document
 
-from tests.testlib import TemporaryLibrary, PapisRunner, ResourceCache
+from papis.testing import TemporaryLibrary, PapisRunner, ResourceCache
 
 
 def _get_resource_file(filename: str) -> str:
     resources = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        "..", "resources", "commands", "update"
+        os.path.dirname(os.path.abspath(__file__)), "resources", "update"
     )
     filepath = os.path.join(resources, filename)
     assert os.path.exists(filepath)
@@ -72,8 +71,7 @@ def test_update_yaml_cli(tmp_library: TemporaryLibrary,
     from papis.commands.update import cli
     cli_runner = PapisRunner()
 
-    filename = os.path.join(resource_cache.cachedir,
-                            "commands", "update", "russell.yaml")
+    filename = os.path.join(resource_cache.cachedir, "update", "russell.yaml")
 
     import papis.utils
     with monkeypatch.context() as m:
@@ -100,8 +98,7 @@ def test_update_bibtex_cli(tmp_library: TemporaryLibrary,
     from papis.commands.update import cli
     cli_runner = PapisRunner()
 
-    filename = os.path.join(resource_cache.cachedir,
-                            "commands", "update", "wannier.bib")
+    filename = os.path.join(resource_cache.cachedir, "update", "wannier.bib")
 
     import papis.utils
     with monkeypatch.context() as m:

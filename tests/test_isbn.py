@@ -2,7 +2,7 @@ import os
 from typing import Any, Callable, Optional
 
 import pytest
-from tests.testlib import TemporaryConfiguration
+from papis.testing import TemporaryConfiguration
 
 
 def load_json(filename: str, data_getter: Optional[Callable[[], Any]] = None) -> Any:

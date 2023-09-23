@@ -1,6 +1,6 @@
 from papis.downloaders import get_available_downloaders, get_matching_downloaders
 
-from tests.testlib import TemporaryConfiguration
+from papis.testing import TemporaryConfiguration
 
 
 def test_get_available_downloaders(tmp_config: TemporaryConfiguration) -> None:

@@ -4,7 +4,7 @@ import pytest
 import papis.downloaders
 from papis.downloaders.tandfonline import Downloader
 
-from tests.testlib import TemporaryConfiguration, ResourceCache
+from papis.testing import TemporaryConfiguration, ResourceCache
 
 TANDFONLINE_URLS = (
     "https://www.tandfonline.com/doi/full/10.1080/00268976.2013.788745",
@@ -31,7 +31,6 @@ def test_tandfonline_match(tmp_config: TemporaryConfiguration) -> None:
 
 
 @pytest.mark.skip(reason="tandfonline.com seems to require javascript")
-@pytest.mark.resource_setup(cachedir="downloaders/resources")
 @pytest.mark.parametrize("url", TANDFONLINE_URLS)
 def test_tandfonline_fetch(tmp_config: TemporaryConfiguration,
                            resource_cache: ResourceCache,

@@ -5,7 +5,7 @@ import pytest
 import papis.config
 import papis.document
 
-from tests.testlib import TemporaryLibrary, PapisRunner
+from papis.testing import TemporaryLibrary, PapisRunner
 
 
 def make_document(name: str, dir: str, nfiles: int = 0) -> papis.document.Document:
@@ -13,7 +13,7 @@ def make_document(name: str, dir: str, nfiles: int = 0) -> papis.document.Docume
     if not os.path.exists(folder):
         os.makedirs(folder)
 
-    from tests.testlib import create_random_file
+    from papis.testing import create_random_file
     files = [os.path.basename(create_random_file(dir=folder)) for _ in range(nfiles)]
     data = {
         "author": "Plato",

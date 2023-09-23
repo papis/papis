@@ -2,7 +2,7 @@ import os
 import sys
 import pytest
 
-from tests.testlib import TemporaryLibrary, PapisRunner
+from papis.testing import TemporaryLibrary, PapisRunner
 
 script = os.path.join(os.path.dirname(__file__), "scripts.py")
 

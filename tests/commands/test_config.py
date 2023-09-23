@@ -2,7 +2,7 @@ import pytest
 
 import papis.config
 
-from tests.testlib import TemporaryConfiguration
+from papis.testing import TemporaryConfiguration
 
 
 @pytest.mark.config_setup(overwrite=True, settings={})

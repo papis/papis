@@ -4,7 +4,7 @@ import pytest
 import papis.downloaders
 from papis.downloaders.hal import Downloader
 
-from tests.testlib import TemporaryConfiguration, ResourceCache
+from papis.testing import TemporaryConfiguration, ResourceCache
 
 HAL_URLS = (
     "https://hal.archives-ouvertes.fr/jpa-00235190",
@@ -33,7 +33,6 @@ def test_hal_match(tmp_config: TemporaryConfiguration) -> None:
         assert Downloader.match(url) is None, url
 
 
-@pytest.mark.resource_setup(cachedir="downloaders/resources")
 @pytest.mark.parametrize("url", HAL_URLS[1::2])
 def test_hal_fetch(tmp_config: TemporaryConfiguration,
                    resource_cache: ResourceCache,

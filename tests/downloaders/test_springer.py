@@ -4,7 +4,7 @@ import pytest
 import papis.downloaders
 from papis.downloaders.springer import Downloader
 
-from tests.testlib import TemporaryConfiguration, ResourceCache
+from papis.testing import TemporaryConfiguration, ResourceCache
 
 SPRINGER_LINK_URLS = (
     "https://link.springer.com/article/10.1007/s10924-010-0192-1",
@@ -30,7 +30,6 @@ def test_springer_match(tmp_config: TemporaryConfiguration) -> None:
         assert Downloader.match(url) is None
 
 
-@pytest.mark.resource_setup(cachedir="downloaders/resources")
 @pytest.mark.parametrize("url", SPRINGER_LINK_URLS)
 def test_springer_fetch(tmp_config: TemporaryConfiguration,
                         resource_cache: ResourceCache,

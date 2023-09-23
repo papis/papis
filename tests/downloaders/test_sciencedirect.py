@@ -4,7 +4,7 @@ import pytest
 import papis.downloaders
 from papis.downloaders.sciencedirect import Downloader
 
-from tests.testlib import TemporaryConfiguration, ResourceCache
+from papis.testing import TemporaryConfiguration, ResourceCache
 
 SCIENCE_DIRECT_URLS = (
     "https://www.sciencedirect.com/science/article/abs/pii/S0009261497040141",
@@ -30,7 +30,6 @@ def test_sciencedirect_match(tmp_config: TemporaryConfiguration) -> None:
         assert Downloader.match(url) is None
 
 
-@pytest.mark.resource_setup(cachedir="downloaders/resources")
 @pytest.mark.parametrize("url", SCIENCE_DIRECT_URLS)
 def test_sciencedirect_fetch(tmp_config: TemporaryConfiguration,
                              resource_cache: ResourceCache,

@@ -2,7 +2,7 @@ import papis.config
 import papis.database
 
 import pytest
-from tests.testlib import TemporaryLibrary
+from papis.testing import TemporaryLibrary
 
 PAPIS_DB_BACKENDS = ["papis"]
 

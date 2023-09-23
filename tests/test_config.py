@@ -3,7 +3,7 @@ import re
 import sys
 import pytest
 
-from tests.testlib import TemporaryConfiguration
+from papis.testing import TemporaryConfiguration
 
 
 def test_default_opener(tmp_config: TemporaryConfiguration) -> None:

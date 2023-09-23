@@ -4,7 +4,7 @@ import pytest
 import papis.downloaders
 from papis.downloaders.citeseerx import Downloader
 
-from tests.testlib import TemporaryConfiguration, ResourceCache
+from papis.testing import TemporaryConfiguration, ResourceCache
 
 CITESEERX_URLS = (
     "https://citeseerx.ist.psu.edu/doc_view/pid/497490d0d3ab2724e58b03765055f7a134ce89d3",  # noqa: E501
@@ -24,7 +24,6 @@ def get_citeseerx_resource(
         headers={"token": "undefined", "referer": url})
 
 
-@pytest.mark.resource_setup(cachedir="downloaders/resources")
 @pytest.mark.parametrize("url", CITESEERX_URLS)
 def test_citeseerx_fetch(tmp_config: TemporaryConfiguration,
                          resource_cache: ResourceCache,

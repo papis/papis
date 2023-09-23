@@ -1,18 +1,20 @@
 import os
 
-import papis.yaml
-import papis.hayagriva
-
-from tests.testlib import TemporaryLibrary
+from papis.testing import TemporaryLibrary
 
 
 def test_exporter(tmp_library: TemporaryLibrary) -> None:
+    import papis.database
+
     db = papis.database.get()
     doc, = db.query_dict({"author": "turing"})
-
     filename = os.path.join(os.path.dirname(__file__),
                             "resources", "hayagriva_1_out.yml")
-    result = papis.hayagriva.to_hayagriva(doc)
-    expected = papis.yaml.yaml_to_data(filename)
+
+    from papis.hayagriva import to_hayagriva
+    result = to_hayagriva(doc)
+
+    from papis.yaml import yaml_to_data
+    expected = yaml_to_data(filename)
 
     assert result == expected

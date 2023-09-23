@@ -3,13 +3,12 @@ import sys
 import pytest
 import tempfile
 
-import papis.config
-
-from tests.testlib import TemporaryConfiguration
+from papis.testing import TemporaryConfiguration
 
 
 @pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
 def test_get_cache_home(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
+    import papis.config
     from papis.utils import get_cache_home
     tmpdir = tempfile.gettempdir()
 
