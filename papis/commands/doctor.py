@@ -620,15 +620,43 @@ def biblatex_required_keys_check(doc: papis.document.Document) -> List[Error]:
 KEY_TYPE_CHECK_NAME = "key-type"
 
 
-def key_type_check(doc: papis.document.Document) -> List[Error]:
+def get_key_type_check_keys() -> Dict[str, type]:
     """
-    Check document keys have expected types.
+    Check the `doctor-key-type-check-keys` configuration entry for correctness.
 
     The :ref:`config-settings-doctor-key-type-check-keys` configuration entry
     defines a mapping of keys and their expected types. If the desired type is
     a list, the :ref:`config-settings-doctor-key-type-check-separator` setting
     can be used to split an existing string (and, similarly, if the desired type
     is a string, it can be used to join a list of items).
+
+    :returns: A dictionary mapping key names to types.
+    """
+    import builtins
+
+    key_type_check_keys = papis.config.getlist("doctor-key-type-check-keys")
+    processed_key_type_check_keys: Dict[str, type] = {}
+    for value in key_type_check_keys:
+        if ":" not in value:
+            logger.error("Invalid (key, type) pair: '%s'. Must be 'key:type'.",
+                         value)
+            continue
+        key, cls_name = value.split(":")
+        key, cls_name = key.strip(), cls_name.strip()
+
+        cls = getattr(builtins, cls_name, None)
+        if not isinstance(cls, type):
+            logger.error(
+                "Invalid type for key '%s': '%s'. Only builtin types are supported",
+                key, cls_name)
+            continue
+        processed_key_type_check_keys[key] = cls
+    return processed_key_type_check_keys
+
+
+def key_type_check(doc: papis.document.Document) -> List[Error]:
+    """
+    Check document keys have expected types.
 
     :returns: a :class:`list` of errors, one for each key does not have the
         expected type (if it exists).
@@ -681,24 +709,8 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
         else:
             return fixer_convert_any
 
-    import builtins
-
     results = []
-    for value in papis.config.getlist("doctor-key-type-check-keys"):
-        if ":" not in value:
-            logger.error("Invalid (key, type) pair: '%s'. Must be 'key:type'.",
-                         value)
-            continue
-
-        key, cls_name = value.split(":")
-        key, cls_name = key.strip(), cls_name.strip()
-
-        cls = getattr(builtins, cls_name, None)
-        if not isinstance(cls, type):
-            logger.error(
-                "Invalid type for key '%s': '%s'. Only builtin types are supported",
-                key, cls_name)
-            continue
+    for key, cls in get_key_type_check_keys().items():
 
         doc_value = doc.get(key)
         if doc_value is not None and not isinstance(doc_value, cls):
