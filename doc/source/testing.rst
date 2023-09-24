@@ -152,7 +152,10 @@ can write something like
     def test_me(tmp_config: papis.testing.TemporaryConfiguration,
                 resource_cache: papis.testing.ResourceCache,
                 monkeypatch: pytest.MonkeyPatch) -> None:
-        # Pick a URL and some file names:
+        # Pick a URL and some filenames to cache
+        url = "https://aclanthology.org/2022.naacl-main.2/"
+        infile = "ACL-2022-naacl-main-2.html"
+        outfile = "ACL-2022-naacl-main-2-out.json"
 
         # Monkeypatch the downloader to use the resource_cache:
         downloader = papis.downloaders.get_downloader_by_name("acl")
