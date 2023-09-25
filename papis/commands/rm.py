@@ -142,9 +142,9 @@ def cli(query: str,
         for document in documents:
             if not force:
                 logger.warning("Removing folder: '%s'.", document.get_main_folder())
-                logger.warning("The following document will be removed:")
                 papis.tui.utils.text_area(
                     text=papis.document.dump(document),
+                    title="This document will be removed",
                     lexer_name="yaml")
                 if not papis.tui.utils.confirm(
                         "Do you want to remove the document?"):
