@@ -81,6 +81,7 @@ def test_importer_downloader_fetch(tmp_config: TemporaryConfiguration,
         assert doc is None
 
 
+@pytest.mark.xfail(reason="arxiv times out sometimes")
 def test_validate_arxivid(tmp_config: TemporaryConfiguration) -> None:
     from papis.arxiv import validate_arxivid
     # good
