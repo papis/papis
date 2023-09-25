@@ -437,14 +437,15 @@ def run(paths: List[str],
                 "', '".join(papis.config.getlist("unique-document-keys"))
                 )
 
+    has_duplicate = False
     try:
         found_document = papis.utils.locate_document_in_lib(tmp_document)
     except IndexError:
         logger.info("No document matching the new metadata found in the '%s' library.",
                     papis.config.get_lib_name())
     else:
-        click.echo("The following document is already in your library:")
         papis.tui.utils.text_area(papis.document.dump(found_document),
+                                  title="This document is already in your library",
                                   lexer_name="yaml")
 
         logger.warning("Duplication Warning")
@@ -464,13 +465,22 @@ def run(paths: List[str],
 
         # NOTE: we always want the user to confirm if a duplicate is found!
         confirm = True
+        has_duplicate = True
 
     if citations:
         papis.citations.save_citations(tmp_document, citations)
 
+    if not batch and confirm:
+        dup_text = " (duplicate) " if has_duplicate else " "
+        papis.tui.utils.text_area(
+            papis.document.dump(tmp_document),
+            title=f"This{dup_text}document will be added to your library",
+            lexer_name="yaml")
+
     if open_file:
         for d_path in tmp_document.get_files():
             papis.utils.open_file(d_path)
+
     if confirm:
         if not papis.tui.utils.confirm("Do you want to add the new document?"):
             return
