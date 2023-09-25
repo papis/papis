@@ -70,26 +70,36 @@ def confirm(prompt_string: str,
 
 
 def text_area(text: str,
+              title: str = "",
               lexer_name: str = "") -> None:
     """
     Small implementation of a pager for small pieces of text.
 
-    :param text: text
-    :param lexer_name: If the text should be highlighted with
-        some kind of grammar, examples are ``yaml``, ``python`` ...
+    :param text: main text to be displayed.
+    :param title: a title for the text.
+    :param lexer_name: a pygments lexer name (e.g. ``yaml``, ``python``) if the
+        text should be highlighted.
     """
-    from pygments import lex
     from pygments.lexers import find_lexer_class_by_name
 
     pygment_lexer = find_lexer_class_by_name(lexer_name)
-    tokens = lex(text, lexer=pygment_lexer())  # type: ignore[no-untyped-call]
 
-    from prompt_toolkit import print_formatted_text
+    from prompt_toolkit.lexers import PygmentsLexer
+    from prompt_toolkit.shortcuts import print_container
     from prompt_toolkit.styles import Style
-    from prompt_toolkit.formatted_text import PygmentsTokens
+    from prompt_toolkit.widgets import Frame, TextArea
 
     papis_style = Style.from_dict(PAPIS_PYGMENTS_DEFAULT_STYLE)
-    print_formatted_text(PygmentsTokens(tokens), style=papis_style)
+    print_container(
+        Frame(
+            TextArea(
+                text=text,
+                lexer=PygmentsLexer(pygment_lexer),  # type: ignore[arg-type]
+            ),
+            title=title,
+        ),
+        style=papis_style,
+    )
 
 
 def yes_no_dialog(title: str, text: str) -> Any:
