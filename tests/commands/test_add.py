@@ -321,6 +321,7 @@ def test_add_lib_cli(tmp_library: TemporaryLibrary,
     with monkeypatch.context() as m:
         m.setattr(papis.utils, "update_doc_from_data_interactively",
                   lambda doc, d, name: doc.update(d))
+        m.setattr(papis.tui.utils, "text_area", lambda *args, **kwargs: None)
         m.setattr(papis.utils, "open_file", lambda x: None)
         m.setattr(papis.tui.utils, "confirm", lambda *args: True)
 
