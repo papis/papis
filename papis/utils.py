@@ -423,7 +423,8 @@ def get_cache_home() -> str:
 
 def get_matching_importer_or_downloader(
         uri: str,
-        download_files: bool = False,
+        download_files: Optional[bool] = None,
+        only_data: Optional[bool] = None
         ) -> List[papis.importer.Importer]:
     """Gets all the importers and downloaders that match *uri*.
 
@@ -435,6 +436,17 @@ def get_matching_importer_or_downloader(
     :param download_files: if *True*, importers and downloaders also try to
         download files (PDFs, etc.) instead of just metadata.
     """
+    # FIXME: this is here for backwards compatiblity and should be removed
+    # before we release the next version
+    if only_data is not None and download_files is not None:
+        raise ValueError("Cannot pass both 'only_data' and 'download_files'")
+
+    if only_data is not None:
+        download_files = not only_data
+
+    if download_files is None:
+        download_files = False
+
     result = []
 
     all_importer_classes = (
@@ -480,7 +492,8 @@ def get_matching_importer_or_downloader(
 
 def get_matching_importer_by_name(
         name_and_uris: Iterable[Tuple[str, str]],
-        download_files: bool = False,
+        download_files: Optional[bool] = None,
+        only_data: Optional[bool] = None,
         ) -> List[papis.importer.Importer]:
     """Get importers that match the given URIs.
 
@@ -493,6 +506,17 @@ def get_matching_importer_by_name(
     :param download_files: if *True*, importers and downloaders also try to
         download files (PDFs, etc.) instead of just metadata.
     """
+    # FIXME: this is here for backwards compatiblity and should be removed
+    # before we release the next version
+    if only_data is not None and download_files is not None:
+        raise ValueError("Cannot pass both 'only_data' and 'download_files'")
+
+    if only_data is not None:
+        download_files = not only_data
+
+    if download_files is None:
+        download_files = False
+
     import_mgr = papis.importer.get_import_mgr()
 
     result = []
@@ -521,7 +545,8 @@ def get_matching_importer_by_name(
 def collect_importer_data(
         importers: Iterable[papis.importer.Importer],
         batch: bool = True,
-        use_files: bool = False,
+        use_files: Optional[bool] = None,
+        only_data: Optional[bool] = None,
         ) -> papis.importer.Context:
     """Collect all data from the given *importers*.
 
@@ -534,6 +559,17 @@ def collect_importer_data(
     :param use_files: if *True*, both metadata and files are collected
         from the importers.
     """
+    # FIXME: this is here for backwards compatiblity and should be removed
+    # before we release the next version
+    if only_data is not None and use_files is not None:
+        raise ValueError("Cannot pass both 'only_data' and 'use_files'")
+
+    if only_data is not None:
+        use_files = not only_data
+
+    if use_files is None:
+        use_files = False
+
     ctx = papis.importer.Context()
     if not importers:
         return ctx
