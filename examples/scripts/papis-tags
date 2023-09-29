@@ -44,7 +44,9 @@ TAG_SPACE_REGEX = re.compile(r"\W+")
 @click.option(
     "--confirm/--no-confirm",
     help="Ask to confirm before adding to the collection",
-    default=lambda: True if papis.config.getboolean("add-confirm") else False)
+    flag_value=True,
+    is_flag=True,
+    default=lambda: papis.config.getboolean("add-confirm"))
 def main(query: str, confirm: bool) -> None:
     """
     Search tags of the library and open a document

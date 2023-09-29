@@ -537,15 +537,15 @@ def run(paths: List[str],
 @click.option(
     "--confirm/--no-confirm",
     help="Ask to confirm before adding to the collection",
-    default=lambda: True if papis.config.getboolean("add-confirm") else False)
+    default=lambda: papis.config.getboolean("add-confirm"))
 @click.option(
     "--open/--no-open", "open_file",
     help="Open file before adding document",
-    default=lambda: True if papis.config.getboolean("add-open") else False)
+    default=lambda: papis.config.getboolean("add-open"))
 @click.option(
     "--edit/--no-edit",
     help="Edit info file before adding document",
-    default=lambda: True if papis.config.getboolean("add-edit") else False)
+    default=lambda: papis.config.getboolean("add-edit"))
 @click.option(
     "--link/--no-link",
     help="Instead of copying the file to the library, create a link to "
@@ -558,7 +558,7 @@ def run(paths: List[str],
 @click.option(
     "--download-files/--no-download-files",
     help="Download file with importer if available or not.",
-    default=lambda: True if papis.config.getboolean("add-download-files") else False)
+    default=lambda: papis.config.getboolean("add-download-files"))
 @papis.cli.bool_flag(
     "--fetch-citations",
     help="Fetch citations from a DOI (Digital Object Identifier)",
