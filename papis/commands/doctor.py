@@ -427,7 +427,8 @@ def biblatex_type_alias_check(doc: papis.document.Document) -> List[Error]:
 
     def make_fixer(value: str) -> FixFn:
         def fixer() -> None:
-            logger.info("[FIX] Setting BibLaTeX 'type' to '%s'.", value)
+            logger.info("[FIX] Setting BibLaTeX 'type' from '%s' to '%s'.",
+                        doc["type"], value)
             doc["type"] = value
 
         return fixer
@@ -649,9 +650,8 @@ def html_codes_check(doc: papis.document.Document) -> List[Error]:
 
     def make_fixer(key: str) -> FixFn:
         def fixer() -> None:
-            val = unescape(doc[key])
-            doc[key] = val
-            logger.info("[FIX] Removing HTML codes from key '%s'.", key)
+            doc[key] = unescape(doc[key])
+            logger.info("[FIX] Removing HTML codes from '%s'.", key)
 
         return fixer
 

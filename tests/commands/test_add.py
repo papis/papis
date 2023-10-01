@@ -124,7 +124,7 @@ def test_add_run(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
         "journal": "International Journal of Quantum Chemistry",
         "language": "en",
         "issue": "15",
-        "title": "How many-body perturbation theory has changed qm ",
+        "title": "How many-body perturbation theory has changed QM",
         "url": "http://doi.wiley.com/10.1002/qua.22384",
         "volume": "109",
         "author": "Kutzelnigg, Werner",
@@ -139,6 +139,37 @@ def test_add_run(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
 
     doc, = db.query_dict({"author": "Kutzelnigg"})
     assert len(doc.get_files()) == nfiles
+
+
+def test_add_auto_doctor_run(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.add import run
+
+    data = {
+        "journal": "International Journal of Quantum Chemistry",
+        "language": "en",
+        "issue": "15",
+        "title": "How many-body perturbation theory has changed QM",
+        "url": "http://doi.wiley.com/10.1002/qua.22384",
+        "volume": "109",
+        "author": "Kutzelnigg, Werner",
+        "type": "article",
+        "doi": "10.1002/qua.22384",
+        "year": "2009",
+        "ref": "#{2FJT2E3A}"
+    }
+    paths = []
+
+    # add document with auto-doctor on
+    papis.config.set("doctor-default-checks", ["keys-exist", "key-type", "refs"])
+    run(paths, data=data, auto_doctor=True)
+
+    # check that all the broken fields are fixed
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Kutzelnigg"})
+
+    assert doc["author_list"] == [{"given": "Werner", "family": "Kutzelnigg"}]
+    assert isinstance(doc["year"], int) and doc["year"] == 2009
+    assert doc["ref"] == "2FJT2E3A"
 
 
 def test_add_set_cli(tmp_library: TemporaryLibrary) -> None:

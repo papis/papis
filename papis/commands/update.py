@@ -72,8 +72,8 @@ def run(document: papis.document.Document,
 
     document.update(data)
     if auto_doctor:
-        logger.debug("Running doctor auto-fixers on document: '%s'.",
-                     papis.document.describe(document))
+        logger.info("Running doctor auto-fixers on document: '%s'.",
+                    papis.document.describe(document))
         papis.commands.doctor.fix_errors(document)
 
     from papis.api import save_doc
