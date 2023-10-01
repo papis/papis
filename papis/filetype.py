@@ -32,7 +32,8 @@ class DjVu(filetype.Type):      # type: ignore[misc]
             )
 
 
-filetype.add_type(DjVu())
+if filetype.get_type(DjVu.MIME) is None:
+    filetype.add_type(DjVu())
 
 
 def guess_content_extension(content: bytes) -> Optional[str]:
