@@ -246,6 +246,15 @@ class TemporaryConfiguration:
         self._monkeypatch.setenv("XDG_CONFIG_HOME", self.tmpdir)
         self._monkeypatch.setenv("XDG_CACHE_HOME", self.tmpdir)
 
+        # monkeypatch globals
+        import papis.format
+        self._monkeypatch.setattr(papis.format, "FORMATTER", None)
+        import papis.database
+        self._monkeypatch.setattr(papis.database, "DATABASES", {})
+        # FIXME: may need to also add the following:
+        #   * reset papis.bibtex globals
+        #   * reset papis.plugin managers
+
         # reload configuration
         import papis.config
         papis.config.set_config_file(self.configfile)
