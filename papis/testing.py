@@ -10,8 +10,6 @@ import click.testing
 from _pytest.fixtures import SubRequest
 from _pytest.config import Config
 
-import papis.logging
-
 PAPIS_UPDATE_RESOURCES = os.environ.get("PAPIS_UPDATE_RESOURCES", "none").lower()
 if PAPIS_UPDATE_RESOURCES not in ("none", "remote", "local", "both"):
     raise ValueError("unsupported value of 'PAPIS_UPDATE_RESOURCES'")
@@ -507,7 +505,6 @@ def tmp_config(request: SubRequest) -> Iterator[TemporaryConfiguration]:
     kwargs.update(getattr(request, "param", {}))
 
     with TemporaryConfiguration(**kwargs) as config:
-        papis.logging.reset()
         yield config
 
 
@@ -530,7 +527,6 @@ def tmp_library(request: SubRequest) -> Iterator[TemporaryLibrary]:
     kwargs.update(getattr(request, "param", {}))
 
     with TemporaryLibrary(**kwargs) as lib:
-        papis.logging.reset()
         yield lib
 
 

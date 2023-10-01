@@ -323,8 +323,8 @@ def run(paths: List[str],
     tmp_document = papis.document.Document(folder=temp_dir, data=data)
 
     if auto_doctor:
-        logger.debug("Running doctor auto-fixers on document: '%s'.",
-                     papis.document.describe(tmp_document))
+        logger.info("Running doctor auto-fixers on document: '%s'.",
+                    papis.document.describe(tmp_document))
         papis.commands.doctor.fix_errors(tmp_document)
 
     if base_path is None:
