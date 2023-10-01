@@ -284,7 +284,7 @@ def keys_exist_check(doc: papis.document.Document) -> List[Error]:
 
     return [Error(name=KEYS_EXIST_CHECK_NAME,
                   path=folder,
-                  msg=f"Key '{k}' does not exist.",
+                  msg=f"Key '{k}' does not exist",
                   suggestion_cmd=f"papis edit --doc-folder {folder}",
                   fix_action=make_fixer(k),
                   payload=k,
@@ -332,7 +332,7 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
     if not ref:
         return [Error(name=REFS_CHECK_NAME,
                       path=folder,
-                      msg="Reference missing.",
+                      msg="Reference missing",
                       suggestion_cmd=f"papis edit --doc-folder {folder}",
                       fix_action=create_ref_fixer,
                       payload="ref",
@@ -342,7 +342,7 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
     if m:
         return [Error(name=REFS_CHECK_NAME,
                       path=folder,
-                      msg=f"Bad characters ({set(m)}) found in reference.",
+                      msg=f"Bad characters ({set(m)}) found in reference",
                       suggestion_cmd=f"papis edit --doc-folder {folder}",
                       fix_action=clean_ref_fixer,
                       payload="ref",
@@ -380,7 +380,7 @@ def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
 
         results.append(Error(name=DUPLICATED_KEYS_NAME,
                              path=folder,
-                             msg=f"Key '{key}' is duplicated ({value}).",
+                             msg=f"Key '{key}' is duplicated ({value})",
                              suggestion_cmd=f"papis edit {key}:'{value}'",
                              fix_action=lambda: None,
                              payload=key,
@@ -405,7 +405,7 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
     if bib_type is None:
         return [Error(name=BIBTEX_TYPE_CHECK_NAME,
                       path=folder,
-                      msg="Document does not define a type.",
+                      msg="Document does not define a type",
                       suggestion_cmd=f"papis edit --doc-folder {folder}",
                       fix_action=lambda: None,
                       payload="type",
@@ -414,7 +414,7 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
     if bib_type not in bibtex_types:
         return [Error(name=BIBTEX_TYPE_CHECK_NAME,
                       path=folder,
-                      msg=f"Document type '{bib_type}' is not a valid BibTeX type.",
+                      msg=f"Document type '{bib_type}' is not a valid BibTeX type",
                       suggestion_cmd=f"papis edit --doc-folder {folder}",
                       fix_action=lambda: None,
                       payload=bib_type,
@@ -455,7 +455,7 @@ def biblatex_type_alias_check(doc: papis.document.Document) -> List[Error]:
     if bib_type is not None and bib_type_base is not None:
         return [Error(name=BIBLATEX_TYPE_ALIAS_CHECK_NAME,
                       path=folder,
-                      msg=("Document type '{}' is an alias for '{}' in BibLaTeX."
+                      msg=("Document type '{}' is an alias for '{}' in BibLaTeX"
                            .format(bib_type, bib_type_base)),
                       suggestion_cmd="papis edit --doc-folder {}".format(folder),
                       fix_action=make_fixer(bib_type_base),
@@ -495,7 +495,7 @@ def biblatex_key_alias_check(doc: papis.document.Document) -> List[Error]:
 
     return [Error(name=BIBLATEX_KEY_ALIAS_CHECK_NAME,
                   path=folder,
-                  msg=("Document key '{}' is an alias for '{}' in BibLaTeX."
+                  msg=("Document key '{}' is an alias for '{}' in BibLaTeX"
                        .format(key, bibtex_key_aliases[key])),
                   suggestion_cmd="papis edit --doc-folder {}".format(folder),
                   fix_action=make_fixer(key),
@@ -538,7 +538,7 @@ def biblatex_required_keys_check(doc: papis.document.Document) -> List[Error]:
     return [Error(name=BIBLATEX_REQUIRED_KEYS_CHECK_NAME,
                   path=folder,
                   msg=("Document of type '{}' requires one of the keys ['{}'] "
-                       "to be compatible with BibLaTeX."
+                       "to be compatible with BibLaTeX"
                        .format(bib_type, "', '".join(keys))),
                   suggestion_cmd="papis edit --doc-folder {}".format(folder),
                   fix_action=lambda: None,
@@ -644,7 +644,7 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
                                  msg=(
                                      f"Key '{key}' should be of type '{cls.__name__}' "
                                      f"but got '{type(doc_value).__name__}': "
-                                     f"{doc_value!r}."),
+                                     f"{doc_value!r}"),
                                  suggestion_cmd=f"papis edit --doc-folder {folder}",
                                  fix_action=make_fixer(key, cls),
                                  payload=key,
