@@ -497,8 +497,14 @@ def tmp_config(request: SubRequest) -> Iterator[TemporaryConfiguration]:
         def test_me(tmp_config: TemporaryConfiguration) -> None:
             ...
     """
+    # NOTE: using markers to pass arguments to fixtures as defined in
+    #   https://docs.pytest.org/en/latest/how-to/fixtures.html#using-markers-to-pass-data-to-fixtures
     marker = request.node.get_closest_marker("config_setup")
     kwargs = marker.kwargs if marker else {}
+
+    # NOTE: support indirect fixture parametrizations that overwrite markers
+    #   https://docs.pytest.org/en/latest/example/parametrize.html#apply-indirect-on-particular-arguments
+    kwargs.update(getattr(request, "param", {}))
 
     with TemporaryConfiguration(**kwargs) as config:
         papis.logging.reset()
@@ -519,6 +525,9 @@ def tmp_library(request: SubRequest) -> Iterator[TemporaryLibrary]:
     """
     marker = request.node.get_closest_marker("library_setup")
     kwargs = marker.kwargs if marker else {}
+
+    # NOTE: support indirect fixture parametrizations that overwrite markers
+    kwargs.update(getattr(request, "param", {}))
 
     with TemporaryLibrary(**kwargs) as lib:
         papis.logging.reset()
