@@ -97,7 +97,7 @@ def test_refs_check(tmp_config: TemporaryConfiguration,
 
     # check: missing ref
     error, = refs_check(doc)
-    assert error.msg == "Reference missing."
+    assert error.msg == "Reference missing"
 
     error.fix_action()
     assert "ref" in doc
@@ -106,7 +106,7 @@ def test_refs_check(tmp_config: TemporaryConfiguration,
     # check: empty ref
     doc["ref"] = "    "
     error, = refs_check(doc)
-    assert error.msg == "Reference missing."
+    assert error.msg == "Reference missing"
 
     # check: ref with invalid symbols
     doc["ref"] = "[myref]"
