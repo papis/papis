@@ -7,22 +7,10 @@ import papis.database
 from papis.testing import TemporaryLibrary
 
 
-def database_init(libname: str) -> None:
-    papis.config.set("database-backend", "whoosh", section=libname)
-
-    # ensure database exists for the library
-    db = papis.database.get(libname)
-    assert db is not None
-
-    # ensure that its clean
-    db.clear()
-    db.initialize()
-
-
+@pytest.mark.library_setup(settings={"database-backend": "whoosh"})
 def test_database_query(tmp_library: TemporaryLibrary) -> None:
     pytest.importorskip("whoosh")
 
-    database_init(tmp_library.libname)
     db = papis.database.get()
     assert db.get_backend_name() == "whoosh"
 
@@ -32,9 +20,8 @@ def test_database_query(tmp_library: TemporaryLibrary) -> None:
     assert len(docs) == len(all_docs)
 
 
+@pytest.mark.library_setup(settings={"database-backend": "whoosh"})
 def test_cache_path(tmp_library: TemporaryLibrary) -> None:
-    database_init(tmp_library.libname)
-
     db = papis.database.get()
 
     assert os.path.exists(db.get_cache_path())
