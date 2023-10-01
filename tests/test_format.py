@@ -7,9 +7,7 @@ from papis.testing import TemporaryConfiguration
 
 
 @pytest.mark.config_setup(settings={"formatter": "python"})
-def test_python_formatter(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
-    monkeypatch.setattr(papis.format, "FORMATTER", None)
-
+def test_python_formatter(tmp_config: TemporaryConfiguration) -> None:
     document = papis.document.from_data({"author": "Fulano", "title": "A New Hope"})
     assert (
         papis.format.format("{doc[author]}: {doc[title]}", document)
@@ -32,9 +30,8 @@ def test_python_formatter(tmp_config: TemporaryConfiguration, monkeypatch) -> No
 
 
 @pytest.mark.config_setup(settings={"formatter": "jinja2"})
-def test_jinja_formatter(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
+def test_jinja_formatter(tmp_config: TemporaryConfiguration) -> None:
     pytest.importorskip("jinja2")
-    monkeypatch.setattr(papis.format, "FORMATTER", None)
 
     document = papis.document.from_data({"author": "Fulano", "title": "A New Hope"})
     assert (
