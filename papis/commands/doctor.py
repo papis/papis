@@ -258,6 +258,8 @@ def keys_exist_check(doc: papis.document.Document) -> List[Error]:
             if "author_list" not in doc:
                 return
 
+            logger.info("[FIX] Parsing 'author_list' into 'author': '%s'.",
+                        doc["author_list"])
             doc["author"] = papis.document.author_list_to_author(doc)
             save_doc(doc)
 
@@ -265,6 +267,8 @@ def keys_exist_check(doc: papis.document.Document) -> List[Error]:
             if "author" not in doc:
                 return
 
+            logger.info("[FIX] Parsing 'author' into 'author_list': '%s'.",
+                        doc["author"])
             doc["author_list"] = papis.document.split_authors_name(doc["author"])
             save_doc(doc)
 
@@ -308,9 +312,7 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
 
     def create_ref_fixer() -> None:
         ref = papis.bibtex.create_reference(doc, force=True)
-        logger.info("[FIX] Setting ref to '%s': '%s'.",
-                    ref,
-                    papis.document.describe(doc))
+        logger.info("[FIX] Setting ref to '%s'.", ref)
 
         doc["ref"] = ref
         save_doc(doc)
@@ -320,9 +322,7 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
         if not ref:
             create_ref_fixer()
         else:
-            logger.info("[FIX] Cleaning ref from '%s' to '%s': '%s'.",
-                        doc["ref"], ref,
-                        papis.document.describe(doc))
+            logger.info("[FIX] Cleaning ref from '%s' to '%s'.", doc["ref"], ref)
 
             doc["ref"] = ref
 
@@ -440,7 +440,7 @@ def biblatex_type_alias_check(doc: papis.document.Document) -> List[Error]:
 
     def make_fixer(value: str) -> FixFn:
         def fixer() -> None:
-            logger.info("[FIX] Setting 'type' to '%s'", value)
+            logger.info("[FIX] Setting BibLaTeX 'type' to '%s'.", value)
             doc["type"] = value
             save_doc(doc)
 
@@ -486,7 +486,7 @@ def biblatex_key_alias_check(doc: papis.document.Document) -> List[Error]:
     def make_fixer(key: str) -> FixFn:
         def fixer() -> None:
             new_key = bibtex_key_aliases[key]
-            logger.info("[FIX] Renaming key '%s' to '%s'", key, new_key)
+            logger.info("[FIX] Renaming BibLaTeX key '%s' to '%s'.", key, new_key)
             doc[new_key] = doc[key]
             del doc[key]
             save_doc(doc)
@@ -575,6 +575,8 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
         def fixer_convert_list() -> None:
             value = doc[key]
 
+            logger.info("[FIX] Convert type of '%s' from '%s' to '%s'.",
+                        key, type(value).__name__, cls.__name__)
             if isinstance(value, str) and separator:
                 doc[key] = re.split(fr"\s*{separator}\s*", value)
             else:
@@ -585,6 +587,8 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
         def fixer_convert_str() -> None:
             value = doc[key]
 
+            logger.info("[FIX] Convert type of '%s' from '%s' to '%s'.",
+                        key, type(value).__name__, cls.__name__)
             if isinstance(value, list) and separator:
                 doc[key] = separator.join(value)
             else:
@@ -595,6 +599,8 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
         def fixer_convert_any() -> None:
             value = doc[key]
 
+            logger.info("[FIX] Convert type of '%s' from '%s' to '%s'.",
+                        key, type(value).__name__, cls.__name__)
             if isinstance(value, list) and len(value) == 1:
                 value = value[0]
 
@@ -668,7 +674,7 @@ def html_codes_check(doc: papis.document.Document) -> List[Error]:
         def fixer() -> None:
             val = unescape(doc[key])
             doc[key] = val
-            logger.info("[FIX] Setting '%s' to '%s'.", key, val)
+            logger.info("[FIX] Removing HTML codes from key '%s'.", key)
             save_doc(doc)
 
         return fixer
