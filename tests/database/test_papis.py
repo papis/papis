@@ -8,34 +8,25 @@ import pytest
 from papis.testing import TemporaryLibrary
 
 
-def database_init(libname: str) -> None:
-    papis.config.set("database-backend", "papis", section=libname)
-
-    # ensure database exists for the library
-    db = papis.database.get(libname)
-    assert isinstance(db, Database)
-
-    # ensure that its clean
-    db.clear()
-    db.initialize()
-    db.save()
-
-
+@pytest.mark.library_setup(settings={"database-backend": "papis"})
 def test_database_query(tmp_library: TemporaryLibrary) -> None:
-    database_init(tmp_library.libname)
     db = papis.database.get()
+    db.initialize()
+
     assert isinstance(db, Database)
     assert db.get_backend_name() == "papis"
-    assert os.path.exists(db._get_cache_file_path())
 
     docs = db.query(".")
     all_docs = db.get_all_documents()
     assert len(docs) > 0
     assert len(docs) == len(all_docs)
 
+    # NOTE: the filepath is only created once a document is queried
+    assert os.path.exists(db.get_cache_path())
 
+
+@pytest.mark.library_setup(settings={"database-backend": "papis"})
 def test_database_reload(tmp_library: TemporaryLibrary) -> None:
-    database_init(tmp_library.libname)
     db = papis.database.get()
     assert isinstance(db, Database)
 
@@ -47,8 +38,8 @@ def test_database_reload(tmp_library: TemporaryLibrary) -> None:
     assert ndocs == ndocs_reload
 
 
+@pytest.mark.library_setup(settings={"database-backend": "papis"})
 def test_database_missing(tmp_library: TemporaryLibrary) -> None:
-    database_init(tmp_library.libname)
     db = papis.database.get()
     assert isinstance(db, Database)
 
@@ -71,10 +62,10 @@ def test_filter_documents() -> None:
     assert len(filter_documents([document], search="title : ein")) != 1
 
 
+@pytest.mark.library_setup(settings={"database-backend": "papis"})
 def test_cache_path(tmp_library: TemporaryLibrary) -> None:
-    database_init(tmp_library.libname)
-
     db = papis.database.get()
+    _ = db.get_documents()
 
     assert os.path.exists(db.get_cache_path())
     assert not os.path.isdir(db.get_cache_path())

@@ -12,26 +12,14 @@ try:
 except ImportError:
     pass
 
-
-def database_init(libname: str, backend: str) -> None:
-    papis.config.set("database-backend", backend, section=libname)
-
-    # ensure database exists for the library
-    db = papis.database.get(libname)
-    assert db is not None
-
-    # ensure that its clean
-    db.clear()
-    db.initialize()
+PAPIS_DB_SETTINGS = [{"settings": {"database-backend": b}} for b in PAPIS_DB_BACKENDS]
 
 
-@pytest.mark.parametrize("backend", PAPIS_DB_BACKENDS)
-def test_database_paths(tmp_library: TemporaryLibrary, backend: str) -> None:
-    database_init(tmp_library.libname, backend)
-
+@pytest.mark.parametrize("tmp_library", PAPIS_DB_SETTINGS, indirect=True)
+def test_database_paths(tmp_library: TemporaryLibrary) -> None:
     db = papis.database.get()
     assert db is not None
-    assert db.get_backend_name() == backend
+    assert db.get_backend_name() == papis.config.get("database-backend")
     assert db.get_lib() == papis.config.get_lib_name()
     assert db.get_dirs() == papis.config.get_lib_dirs()
     assert db.get_all_query_string() == papis.database.get_all_query_string()
@@ -40,9 +28,8 @@ def test_database_paths(tmp_library: TemporaryLibrary, backend: str) -> None:
     assert len(docs) > 0
 
 
-@pytest.mark.parametrize("backend", PAPIS_DB_BACKENDS)
-def test_database_query(tmp_library: TemporaryLibrary, backend: str) -> None:
-    database_init(tmp_library.libname, backend)
+@pytest.mark.parametrize("tmp_library", PAPIS_DB_SETTINGS, indirect=True)
+def test_database_query(tmp_library: TemporaryLibrary) -> None:
     db = papis.database.get()
     docs = db.get_all_documents()
 
@@ -51,9 +38,8 @@ def test_database_query(tmp_library: TemporaryLibrary, backend: str) -> None:
     assert query_docs[0] == docs[0]
 
 
-@pytest.mark.parametrize("backend", PAPIS_DB_BACKENDS)
-def test_database_update(tmp_library: TemporaryLibrary, backend: str) -> None:
-    database_init(tmp_library.libname, backend)
+@pytest.mark.parametrize("tmp_library", PAPIS_DB_SETTINGS, indirect=True)
+def test_database_update(tmp_library: TemporaryLibrary) -> None:
     db = papis.database.get()
     docs = db.get_all_documents()
 
@@ -69,9 +55,8 @@ def test_database_update(tmp_library: TemporaryLibrary, backend: str) -> None:
     assert docs[0]["title"] == title
 
 
-@pytest.mark.parametrize("backend", PAPIS_DB_BACKENDS)
-def test_database_delete(tmp_library: TemporaryLibrary, backend: str) -> None:
-    database_init(tmp_library.libname, backend)
+@pytest.mark.parametrize("tmp_library", PAPIS_DB_SETTINGS, indirect=True)
+def test_database_delete(tmp_library: TemporaryLibrary) -> None:
     db = papis.database.get()
 
     docs = db.get_all_documents()
@@ -82,9 +67,8 @@ def test_database_delete(tmp_library: TemporaryLibrary, backend: str) -> None:
     assert ndocs == ndocs_after_delete + 1
 
 
-@pytest.mark.parametrize("backend", PAPIS_DB_BACKENDS)
-def test_database_add(tmp_library: TemporaryLibrary, backend: str) -> None:
-    database_init(tmp_library.libname, backend)
+@pytest.mark.parametrize("tmp_library", PAPIS_DB_SETTINGS, indirect=True)
+def test_database_add(tmp_library: TemporaryLibrary) -> None:
     db = papis.database.get()
     docs = db.get_all_documents()
     ndocs = len(docs)
