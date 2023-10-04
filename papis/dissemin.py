@@ -25,7 +25,7 @@ def dissemin_authors_to_papis_authors(data: Dict[str, Any]) -> Dict[str, Any]:
             )
         new_data["author_list"] = authors
         new_data["author"] = ",".join(
-            [f"{a['given_name']} {a['surname']}" for a in authors])
+            ["{} {}".format(a["given_name"], a["surname"]) for a in authors])
     return new_data
 
 
