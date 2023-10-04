@@ -334,7 +334,8 @@ class Picker(Application, Generic[Option]):  # type: ignore
         keys_info = get_keys_info()
         for k in keys_info:
             help_text += (
-                f"<ansired>{keys_info[k]['key']}</ansired>: {keys_info[k]['help']}\n"
+                "<ansired>{}</ansired>: {}\n"
+                .format(keys_info[k]["key"], keys_info[k]["help"])
             )
         self.help_window.text = HTML(help_text)
 
