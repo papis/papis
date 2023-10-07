@@ -220,13 +220,25 @@ def run(
     help="List default configuration setting values, instead of those in the "
          "configuration file")
 @papis.cli.bool_flag(
-    "--json", "json_",
+    "--json", "print_json",
     help="Print settings in a JSON format")
+@papis.cli.bool_flag(
+    "--list-paths",
+    help="List known configuration and script locations")
 def cli(options: List[str],
         section: Optional[str],
-        json_: bool,
-        default: bool) -> None:
+        default: bool,
+        print_json: bool,
+        list_paths: bool) -> None:
     """Print configuration values"""
+    if list_paths:
+        click.echo(format_option("Config home", papis.config.get_config_home()))
+        click.echo(format_option("Config folder", papis.config.get_config_folder()))
+        click.echo(format_option("Config file", papis.config.get_config_file()))
+        click.echo(format_option("Config.py file", papis.config.get_configpy_file()))
+        click.echo(format_option("Scripts folder", papis.config.get_scripts_folder()))
+        return
+
     if len(options) == 1:
         # NOTE: a single option is printed directly for a bit of backwards
         # compatibility and easier use in shell scripts, so remove with care!
@@ -239,28 +251,29 @@ def cli(options: List[str],
     if not result:
         return
 
-    if json_:
+    if print_json:
         import json
         click.echo(json.dumps(result, indent=2))
-    else:
-        lines = []
-        if len(options) == 0 and section is None:
-            # NOTE: no inputs prints all of the sections
-            is_first = True
-            for section, settings in result.items():
-                if not is_first:
-                    lines.append("")
+        return
 
-                is_first = False
-                lines.append(f"[{section}]")
+    lines = []
+    if len(options) == 0 and section is None:
+        # NOTE: no inputs prints all of the sections
+        is_first = True
+        for section, settings in result.items():
+            if not is_first:
+                lines.append("")
 
-                for key, value in settings.items():
-                    lines.append(format_option(key, value))
-        else:
-            if section is not None and all("." not in o for o in options):
-                lines.append(f"[{section}]")
+            is_first = False
+            lines.append(f"[{section}]")
 
-            for key, value in result.items():
+            for key, value in settings.items():
                 lines.append(format_option(key, value))
+    else:
+        if section is not None and all("." not in o for o in options):
+            lines.append(f"[{section}]")
 
-        click.echo("\n".join(lines))
+        for key, value in result.items():
+            lines.append(format_option(key, value))
+
+    click.echo("\n".join(lines))
