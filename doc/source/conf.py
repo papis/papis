@@ -30,13 +30,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.coverage",
-    "sphinx.ext.doctest",
-    "sphinx.ext.ifconfig",
-    "sphinx.ext.inheritance_diagram",
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
-    "sphinx.ext.viewcode",
+    "sphinx.ext.linkcode",
     "sphinx_click.ext",
 ]
 
@@ -127,6 +123,48 @@ def setup(app):
     app.add_directive("click", CustomClickDirective, override=True)
     app.add_directive("papis-config", PapisConfig)
     app.connect("autodoc-process-docstring", remove_module_docstring)
+
+
+def linkcode_resolve(domain, info):
+    url = None
+    if domain != "py" or not info["module"]:
+        return url
+
+    modname = info["module"]
+    objname = info["fullname"]
+
+    mod = sys.modules.get(modname)
+    if not mod:
+        return url
+
+    obj = mod
+    for part in objname.split("."):
+        try:
+            obj = getattr(obj, part)
+        except Exception:
+            return url
+
+    import inspect
+
+    dirname = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    try:
+        filename = inspect.getsourcefile(obj)
+    except Exception:
+        return url
+    else:
+        filepath = os.path.relpath(filename, dirname)
+
+    try:
+        source, lineno = inspect.getsourcelines(obj)
+    except Exception:
+        return url
+    else:
+        linestart, linestop = lineno, lineno + len(source) - 1
+
+    return (
+        "https://github.com/papis/papis/blob/main/{}#L{}-L{}"
+        .format(filepath, linestart, linestop)
+    )
 
 
 # }}} Exec directive #
