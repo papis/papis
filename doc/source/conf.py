@@ -146,13 +146,13 @@ def linkcode_resolve(domain, info):
 
     import inspect
 
-    dirname = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     try:
-        filename = inspect.getsourcefile(obj)
+        filepath = "{}.py".format(os.path.join(*obj.__module__.split(".")))
     except Exception:
         return url
-    else:
-        filepath = os.path.relpath(filename, dirname)
+
+    if filepath is None:
+        return url
 
     try:
         source, lineno = inspect.getsourcelines(obj)
