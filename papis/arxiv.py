@@ -135,7 +135,8 @@ def get_data(
     except arxiv.arxiv.HTTPError:
         return []
 
-    return [arxiv_to_papis(result) for result in search.results()]
+    client = arxiv.Client()
+    return [arxiv_to_papis(result) for result in client.results(search)]
 
 
 def validate_arxivid(arxivid: str) -> None:
@@ -294,8 +295,9 @@ class Downloader(papis.downloaders.Downloader):
         if self._result is None:
             import arxiv
 
+            client = arxiv.Client()
             try:
-                results = list(arxiv.Search(id_list=[self.arxivid]).results())
+                results = list(client.results(arxiv.Search(id_list=[self.arxivid])))
             except arxiv.arxiv.HTTPError:
                 results = []
 
