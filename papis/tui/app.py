@@ -1,3 +1,6 @@
+import threading
+from functools import partial
+
 from prompt_toolkit.application import Application
 from prompt_toolkit.formatted_text.html import HTML
 from prompt_toolkit.enums import EditingMode
@@ -215,9 +218,18 @@ def get_commands(app: "Picker[Any]") -> Tuple[List[Command], KeyBindings]:
             filter=has_focus(app.options_list.search_buffer))
     def open(event: Union[Command, KeyPressEvent]) -> None:
         from papis.commands.open import run
+
         docs = app.get_selection()
         for doc in docs:
-            run(doc)
+            # NOTE: `run` can spawn another picker if the document has more files
+            # but prompt_toolkit does not support multiple event loops at the same
+            # time. To get around this, we run it in a thread!
+            # Inspired by: https://github.com/ipython/ipython/pull/12141
+            thread = threading.Thread(target=partial(run, doc))
+            thread.start()
+            thread.join()
+
+        app.renderer.clear()
 
     @kb.add(keys_info["edit_document_key"]["key"],      # type: ignore[misc]
             filter=has_focus(app.options_list.search_buffer))
@@ -226,7 +238,6 @@ def get_commands(app: "Picker[Any]") -> Tuple[List[Command], KeyBindings]:
         docs = app.get_selection()
         for doc in docs:
             run(doc)
-        app.renderer.clear()
 
     @kb.add(keys_info["edit_notes_key"]["key"],         # type: ignore[misc]
             filter=has_focus(app.options_list.search_buffer))
