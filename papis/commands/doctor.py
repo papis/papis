@@ -21,6 +21,9 @@ implemented
   :ref:`config-settings-doctor-duplicated-keys-keys` are not present in multiple
   documents. This is mainly meant to be used to check the ``ref`` key or other
   similar keys that are meant to be unique.
+* ``duplicated-values``: checks if the keys provided by
+  :ref:`config-settings-doctor-duplicated-values-keys` have any duplicated
+  values. The keys are expected to be lists, e.g. ``files``.
 * ``files``: checks whether all the document files exist on the filesystem.
 * ``html-codes``: checks that no HTML codes (e.g. ``&amp;``) appear in the keys
   provided by :ref:`config-settings-doctor-html-codes-keys`.
@@ -377,6 +380,65 @@ def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
     return results
 
 
+DUPLICATED_VALUES_NAME = "duplicated-values"
+
+
+def duplicated_values_check(doc: papis.document.Document) -> List[Error]:
+    """
+    Check if the keys given by :ref:`config-settings-doctor-duplicated-values-keys`
+    contain any duplicate entries. These keys are expected to be lists of items.
+
+    :returns: a :class:`list` of errors, one for each key with a value that
+        has duplicate entries.
+    """
+    keys = papis.config.getlist("doctor-duplicated-values-keys")
+    folder = doc.get_main_folder() or ""
+
+    def make_fixer(key: str, entries: List[Any]) -> FixFn:
+        def fixer() -> None:
+            logger.info("[FIX] Removing duplicates entries from key '%s'.", key)
+            doc[key] = entries
+
+        return fixer
+
+    def make_hashable(f: Any) -> Any:
+        if isinstance(f, list):
+            return tuple([make_hashable(entry) for entry in f])
+        elif isinstance(f, dict):
+            return tuple([(k, make_hashable(v)) for k, v in f.items()])
+        else:
+            return f
+
+    results: List[Error] = []
+    for key in keys:
+        value = doc.get(key)
+        if value is None:
+            continue
+
+        if not isinstance(value, list):
+            logger.warning("Check '%s' expected key '%s' to be a list.",
+                           DUPLICATED_VALUES_NAME, key)
+            continue
+
+        seen = {}
+        dupes = [f for f in value
+                 if (h := make_hashable(f)) in seen or seen.update({h: f})]
+        if not dupes:
+            continue
+
+        results.append(Error(name=DUPLICATED_VALUES_NAME,
+                             path=folder,
+                             msg=(
+                                 "Key '{}' contains duplicate entries: '{}'"
+                                 .format(key, "', '".join(str(d) for d in dupes))),
+                             suggestion_cmd=f"papis edit --doc-folder {folder}",
+                             fix_action=make_fixer(key, list(seen.values())),
+                             payload=key,
+                             doc=doc))
+
+    return results
+
+
 BIBTEX_TYPE_CHECK_NAME = "bibtex-type"
 
 
@@ -724,6 +786,7 @@ def html_tags_check(doc: papis.document.Document) -> List[Error]:
 register_check(FILES_CHECK_NAME, files_check)
 register_check(KEYS_EXIST_CHECK_NAME, keys_exist_check)
 register_check(DUPLICATED_KEYS_NAME, duplicated_keys_check)
+register_check(DUPLICATED_VALUES_NAME, duplicated_values_check)
 register_check(BIBTEX_TYPE_CHECK_NAME, bibtex_type_check)
 register_check(BIBLATEX_TYPE_ALIAS_CHECK_NAME, biblatex_type_alias_check)
 register_check(BIBLATEX_KEY_ALIAS_CHECK_NAME, biblatex_key_alias_check)

@@ -54,6 +54,7 @@ settings: Dict[str, Any] = {
     "doctor-default-checks": ["files", "keys-exist", "duplicated-keys"],
     "doctor-keys-exist-keys": ["title", "author", "author_list", "ref"],
     "doctor-duplicated-keys-keys": ["ref"],
+    "doctor-duplicated-values-keys": ["files", "author_list"],
     "doctor-html-codes-keys": ["title", "author", "abstract", "journal"],
     "doctor-html-tags-keys": ["title", "author", "abstract", "journal"],
     "doctor-key-type-check-separator": None,
