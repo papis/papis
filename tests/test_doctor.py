@@ -132,6 +132,41 @@ def test_duplicated_keys_check(tmp_config: TemporaryConfiguration) -> None:
     assert error.payload == "ref"
 
 
+def test_duplicated_values_check(tmp_config: TemporaryConfiguration) -> None:
+    from papis.commands.doctor import duplicated_values_check
+
+    doc = papis.document.from_data({
+        "files": ["a.pdf"],
+        #: NOTE: this also tests entries that are not hashable
+        "author_list": [{"given": "John", "family": "Smith", "affiliation": []}]
+        })
+
+    errors = duplicated_values_check(doc)
+    assert not errors
+
+    doc = papis.document.from_data({
+        "files": ["a.pdf", "b.pdf", "c.pdf", "a.pdf"],
+        #: NOTE: this also tests entries that are not hashable
+        "author_list": [
+            {"given": "John", "family": "Smith", "affiliation": []},
+            {"given": "Jane", "family": "Smith", "affiliation": []},
+            {"given": "John", "family": "Smith", "affiliation": []},
+            ]
+        })
+
+    error_files, error_author_list = duplicated_values_check(doc)
+    assert error_files.payload == "files"
+    assert error_author_list.payload == "author_list"
+
+    error_files.fix_action()
+    assert doc["files"] == ["a.pdf", "b.pdf", "c.pdf"]
+
+    error_author_list.fix_action()
+    assert doc["author_list"] == [
+        {"given": "John", "family": "Smith", "affiliation": []},
+        {"given": "Jane", "family": "Smith", "affiliation": []}]
+
+
 def test_bibtex_type_check(tmp_config: TemporaryConfiguration) -> None:
     import papis.bibtex
     from papis.commands.doctor import bibtex_type_check
