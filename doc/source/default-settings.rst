@@ -411,6 +411,13 @@ BibTeX options
     A list of keys used by the ``duplicated-keys`` check. The check will show
     an error if the value of these keys is duplicated across multiple documents.
 
+.. papis-config:: doctor-duplicated-values-keys
+
+   A list of keys used by the ``duplicated-values`` check. The check will show
+   an error if any of the keys listed here have repeated values. This can check,
+   e.g., if a file was mistakenly added multiple times or of a tag already
+   exists in the document.
+
 .. papis-config:: doctor-html-codes-keys
 
     A list of keys used by the ``html-codes`` check. The check will show an error
