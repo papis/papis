@@ -534,19 +534,19 @@ def run(paths: List[str],
 @papis.cli.bool_flag(
     "-b", "--batch",
     help="Batch mode, do not prompt or otherwise")
-@click.option(
+@papis.cli.bool_flag(
     "--confirm/--no-confirm",
     help="Ask to confirm before adding to the collection",
     default=lambda: papis.config.getboolean("add-confirm"))
-@click.option(
+@papis.cli.bool_flag(
     "--open/--no-open", "open_file",
     help="Open file before adding document",
     default=lambda: papis.config.getboolean("add-open"))
-@click.option(
+@papis.cli.bool_flag(
     "--edit/--no-edit",
     help="Edit info file before adding document",
     default=lambda: papis.config.getboolean("add-edit"))
-@click.option(
+@papis.cli.bool_flag(
     "--link/--no-link",
     help="Instead of copying the file to the library, create a link to "
          "its original location",
@@ -555,9 +555,9 @@ def run(paths: List[str],
 @papis.cli.bool_flag(
     "--list-importers", "--li", "list_importers",
     help="List all available papis importers")
-@click.option(
+@papis.cli.bool_flag(
     "--download-files/--no-download-files",
-    help="Download file with importer if available or not.",
+    help="Download file with importer if available or not",
     default=lambda: papis.config.getboolean("add-download-files"))
 @papis.cli.bool_flag(
     "--fetch-citations",
