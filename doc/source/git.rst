@@ -1,120 +1,130 @@
-Git
-===
+Git support
+===========
 
-Papis is conceived to work well with the tool `git`, this would also work with
-`mercurial <https://www.mercurial-scm.org/>`__
-or `subversion <https://subversion.apache.org/>`__.
-
-Here you will find a description of a possible workflow using git with papis.
-This is not the only workflow, but it is the most obvious.
+Papis is made to work well with `git <https://git-scm.com/>`__ and has
+functionality in most of its command to interact with it. This functionality
+can be turned on by default by using the :ref:`config-settings-use-git`
+configuration setting. This guide gives a description of a possible workflow
+for using Git with Papis. This is not the only workflow, but it is the most
+obvious.
 
 Let's say you have a library named ``books`` in the directory
 ``~/Documents/MyNiceBooks``. You could turn the ``books`` library into
-a `git` repository, just doing for example
+a Git repository by running
 
-::
+.. code:: sh
 
-  papis -l books run git init
+    papis -l books git init
 
-or just going to the library directory and running the command there:
+which is completely equivalent to going into the library directory and running
+the commands there
 
-::
+.. code:: sh
 
-  cd ~/Documents/MyNiceBooks
-  git init
+    cd ~/Documents/MyNiceBooks
+    git init
 
-Now you can add everything you have in the library with ``git add .``
-if you are in the library's directory or
+As this is the first run, we can just add all the documents to the repository
+(equivalent to a ``git add .`` and a ``git commit -m '...'``)
 
-::
+.. code:: sh
 
-  papis -l books git add .
+    papis -l books git add .
+    papis -l books git commit -m 'initial commit'
 
-if you want to do it using the `papis`' ``git`` command.
+In general the ``papis git`` command will just forward any arguments directly
+to the underlying ``git`` command. This allows users to easily access any Git
+functionality.
 
 Interplay with other commands
 -----------------------------
 
-Some papis commands give you the opportunity of using ``git`` to manage
+.. warning::
+
+   Only the ``papis git`` command can be used to initialize a Git repository.
+   All other commands assume the repository exists in the directory of the
+   current library and their Git functionality will fail otherwise.
+
+Some papis commands give you the opportunity of using Git to manage
 changes. For instance, if you are adding a new document, you could use
-the ``--commit`` flag to also add a commit into your library, so if you do
+the ``--git`` flag to also commit the document into Git like this
 
-::
+.. code:: sh
 
-  papis add --set author "Pedrito" --set title "Super book" book.pdf --commit
+    papis add --git --set author 'Pedrito' --set title 'Super book' book.pdf
 
-then also papis will do an automatic commit for the book, so that you can
-push your library afterwards to a remote repository.
+In this case, Papis will do an automatic add + commit for the document. After
+that, you can push your library to a remote repository by running
 
-You can imagine that papis commands like ``rename`` and ``mv`` should also
-offer such functionality, and they indeed do through the ``--git`` flag.
-Go to their documentation for more information.
+.. code:: sh
+
+   papis git push origin main
+
+As expected, other Papis commands like ``update``, ``addto``, ``rename``, ``mv``,
+etc. also offer such functionality, and they all go through the ``--git`` flag.
 
 Updating the library
 --------------------
 
-You can use papis' simple ``git`` wrapper,
+To update the library from a remote repository, you can simply run
 
-::
+.. code:: sh
 
-  papis git pull
+    papis git pull
 
 Usual workflow
 --------------
 
-Usually the workflow is like this:
+With all this in mind, assuming the you have a ``git`` repository set up in
+the library folder, a ``papis git`` workflow could be based on the following.
 
 When adding a document that you know for sure you want in your library:
 
-  - Add the document and commit it, either by ``git add --commit``
-    or committing the document after adding it to the library.
+1. Add the document and commit it, either by ``papis add --git``
+   or by using ``papis git add`` after adding it to the library.
 
-  - Pull changes from the remote library, maybe you pushed something
-    at work (reference changes etc..) and you do not have it yet there,
-    you would do something like
+2. Pull changes from the remote repository, maybe you pushed something
+   on another machine (reference changes, etc.) and you do not have it on
+   you current machine. You would do something like
 
-    ::
+    .. code:: sh
 
-      papis git pull
+        papis git pull
 
-  - Push what you just added
+3. Push what you just added
 
-    ::
+    .. code:: sh
 
-      papis git push
+        papis git push
 
-  - Review the status of the library
+4. Review the status of the library
 
-    ::
+    .. code:: sh
 
-      papis git status
+        papis git status
+
 
 When editing a document's info file:
 
-  - Edit the file and then take a look at the ``diff``
+1. Edit the file and then take a look at the ``diff``
 
-    ::
+    .. code:: sh
 
-      papis git diff
+        papis git diff
 
-  - Add the changes
+2. Add the changes to the staging area
 
-    ::
+    .. code:: sh
 
-      papis git add --all
+        papis git add --all
 
-  - Commit
+3. Commit the changes
 
-    ::
+    .. code:: sh
 
-      papis git commit
+        papis git commit
 
-  - Pull/push:
+4. Push your changes.
 
-    ::
-
-      papis git pull
-      papis git push
-
-Of course these workflows are just very basic examples.
-Your optimal workflow could look completely different.
+Of course these workflows are just very basic examples. Your optimal workflow
+could look completely different.
