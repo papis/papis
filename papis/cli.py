@@ -89,7 +89,7 @@ def git_option(**attrs: Any) -> DecoratorCallable:
     git_help = attrs.pop("help", "Commit changes to git")
     return bool_flag(
         "--git/--no-git",
-        default=lambda: bool(papis.config.get("use-git")),
+        default=lambda: papis.config.getboolean("use-git"),
         help=git_help,
         **attrs)
 
