@@ -28,6 +28,11 @@ def test_python_formatter(tmp_config: TemporaryConfiguration) -> None:
             data)
         == ": The Phantom Menace ()")
 
+    assert papis.format.format("{doc[title]!y}", data) == "the-phantom-menace"
+    assert papis.format.format("{doc[title]:1.3S}", data) == "Phantom Menace"
+    assert papis.format.format("{doc[title]:.2S}", data) == "The Phantom"
+    assert papis.format.format("{doc[title]:2S}", data) == "The Phantom"
+
 
 @pytest.mark.config_setup(settings={"formatter": "jinja2"})
 def test_jinja_formatter(tmp_config: TemporaryConfiguration) -> None:

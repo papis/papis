@@ -1,3 +1,4 @@
+import string
 from typing import Any, Dict, Optional
 
 import papis.config
@@ -57,6 +58,51 @@ class Formatter:
         raise NotImplementedError(type(self).__name__)
 
 
+class _PythonStringFormatter(string.Formatter):
+    # https://docs.python.org/3/library/string.html#format-specification-mini-language
+    # NOTE: Known conversions are:
+    #   !s      -> calls str(value)
+    #   !r      -> calls repr(value)
+    #   !a      -> calls ascii(value)
+
+    def format_field(self, value: Any, format_spec: str) -> Any:
+        if format_spec and format_spec[-1] == "S":
+            format_spec = format_spec[:-1]
+            try:
+                if "." in format_spec:
+                    start, end = format_spec.split(".")
+                    start = start if start else "0"
+                else:
+                    start, end = "0", format_spec
+
+                istart, iend = int(start), int(end)
+            except ValueError:
+                raise ValueError(f"Invalid format specifier '{format_spec}'")
+
+            if isinstance(value, str):
+                return " ".join(value.split(" ")[istart:iend])
+            else:
+                raise ValueError(
+                    f"Unknown format code 'S' for type '{type(value).__name__}'")
+
+        return super().format_field(value, format_spec)
+
+    def convert_field(self, value: Any, conversion: str) -> Any:
+        if conversion == "l":
+            return str(value).lower()
+        if conversion == "u":
+            return str(value).upper()
+        if conversion == "t":
+            return str(value).title()
+        if conversion == "c":
+            return str(value).capitalize()
+        if conversion == "y":
+            from papis.utils import clean_document_name
+            return clean_document_name(str(value), is_path=False)
+
+        return super().convert_field(value, conversion)
+
+
 class PythonFormatter(Formatter):
     """Construct a string using a `PEP 3101 <https://peps.python.org/pep-3101/>`__
     (*str.format* based) format string.
@@ -76,8 +122,28 @@ class PythonFormatter(Formatter):
 
     .. code:: python
 
-        "{doc.title.lower()}"
+        "{doc[title].lower()}"
+
+    and should be replaced with
+
+    .. code:: python
+
+        "{doc[title]!l}"
+
+    The following special conversions are implemented: "l" for :func:`str.lower`,
+    "u" for :func:`str.upper`, "t" for :func:`str.title`, "c" for
+    :func:`str.capitalize`, "y" that uses ``slugify``. Additionally, the following
+    syntax is available to select subsets from a string
+
+    .. code:: python
+
+        "{doc[title]:1.3S}"
+
+    which will select the ``words[1:3]`` from the title (words are split by
+    single spaces).
     """
+
+    psf = _PythonStringFormatter()
 
     def format(self,
                fmt: str,
@@ -95,7 +161,7 @@ class PythonFormatter(Formatter):
         doc_name = doc_key or self.default_doc_name
 
         try:
-            return fmt.format(**{doc_name: doc}, **additional)
+            return self.psf.format(fmt, **{doc_name: doc}, **additional)
         except Exception as exc:
             if default is not None:
                 logger.warning("Could not format string '%s' for document '%s'",
