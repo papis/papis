@@ -62,7 +62,21 @@ class PythonFormatter(Formatter):
     (*str.format* based) format string.
 
     This formatter is named ``"python"`` and can be set using the
-    :ref:`config-settings-formatter` setting in the configuration file.
+    :ref:`config-settings-formatter` setting in the configuration file. The
+    formatted string has access to the ``doc`` variable, that is always a
+    :class:`papis.document.Document`. A string using this formatter can look
+    like
+
+    .. code:: python
+
+        "{doc[year]} - {doc[author_list][0][family]} - {doc[title]}"
+
+    Note, however, that according to PEP 3101 some simple formatting is not
+    possible. For example, the following is not allowed
+
+    .. code:: python
+
+        "{doc.title.lower()}"
     """
 
     def format(self,
@@ -96,7 +110,29 @@ class Jinja2Formatter(Formatter):
     templates.
 
     This formatter is named ``"jinja2"`` and can be set using the
-    :ref:`config-settings-formatter` setting in the configuration file.
+    :ref:`config-settings-formatter` setting in the configuration file. The
+    formatted string has access to the ``doc`` variable, that is always a
+    :class:`papis.document.Document`. A string using this formatter can look
+    like
+
+    .. code:: python
+
+        "{{ doc.year }} - {{ doc.author_list[0].family }} - {{ doc.title }}"
+
+    This formatter supports the whole range of Jinja2 control structures and
+    `filters <https://jinja.palletsprojects.com/en/3.1.x/templates/#filters>`__
+    so more advanced string processing is possible. For example, we can titlecase
+    the title using
+
+    .. code:: python
+
+        "{{ doc.title | title }}"
+
+    or give a default value if a key is missing in the document using
+
+    .. code:: python
+
+        "{{ doc.isbn | default('ISBN-NONE', true) }}"
     """
 
     def __init__(self) -> None:
