@@ -237,6 +237,17 @@ def run(verbose: bool,
             papis.config.get_configuration())
 
     # read in configuration from command-line
+    sections = papis.config.get_configuration().sections()
     for pair in set_list:
-        logger.debug("Setting '%s' to '%s'.", *pair)
-        papis.config.set(pair[0], pair[1])
+        # NOTE: search for a matching section so that we can overwrite entries
+        # from the command-line as well (the section takes precendence)
+        key, value, section = pair[0], pair[1], None
+        for s in sections:
+            if key.startswith(s):
+                key, section = key[len(s) + 1:], s
+
+        logger.debug("Setting '%s' to '%s' (section '%s').",
+                     key, value,
+                     section if section else papis.config.GENERAL_SETTINGS_NAME)
+
+        papis.config.set(key, value, section=section)
