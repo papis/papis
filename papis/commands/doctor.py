@@ -862,7 +862,8 @@ def fix_errors(doc: papis.document.Document,
                          error.name, papis.document.describe(doc), error.msg,
                          exc_info=exc)
 
-    logger.info("Auto-fixed %d / %d errors!", fixed, len(errors))
+    if errors:
+        logger.info("Auto-fixed %d / %d errors!", fixed, len(errors))
 
 
 def process_errors(errors: List[Error],
@@ -928,7 +929,7 @@ def process_errors(errors: List[Error],
             elif fix and error.fix_action:
                 save_doc(error.doc)
 
-    if fix:
+    if fix and errors:
         logger.info("Auto-fixed %d / %d errors!", fixed, len(errors))
 
 
