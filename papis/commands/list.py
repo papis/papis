@@ -153,7 +153,7 @@ def list_documents(documents: Sequence[papis.document.Document],
                    show_id: bool = False,
                    show_info: bool = False,
                    show_notes: bool = False,
-                   show_format: str = "",
+                   show_format: papis.strings.AnyString = "",
                    template: Optional[str] = None
                    ) -> List[str]:
     """List document properties.
@@ -217,6 +217,7 @@ run = list_documents
 @click.option(
     "--format", "show_format",
     help="Show documents using a custom format, e.g. '{doc[year]} {doc[title]}",
+    type=papis.cli.FormattedStringParamType(),
     default="")
 @papis.cli.bool_flag(
     "--paths", "show_paths",
@@ -259,7 +260,7 @@ def cli(query: str,
         show_files: bool,
         show_notes: bool,
         show_dir: bool,
-        show_format: str,
+        show_format: papis.strings.FormattedString,
         show_paths: bool,
         show_libraries: bool,
         show_exporters: bool,
