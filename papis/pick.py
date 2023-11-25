@@ -99,14 +99,15 @@ def pick_doc(
     :arg documents: a sequence of documents.
     :returns: a subset of *documents* that was picked.
     """
+    from papis.strings import FormattedString
 
     header_format_path = papis.config.get("header-format-file")
     if header_format_path is not None:
         with open(os.path.expanduser(header_format_path)) as fd:
-            header_format = fd.read().rstrip()
+            header_format = FormattedString(None, fd.read().rstrip())
     else:
-        header_format = papis.config.getstring("header-format")
-    match_format = papis.config.getstring("match-format")
+        header_format = papis.config.getformattedstring("header-format")
+    match_format = papis.config.getformattedstring("match-format")
 
     from functools import partial
 

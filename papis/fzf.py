@@ -82,7 +82,7 @@ class Picker(papis.pick.Picker[T]):
                    "--bind", ",".join(bindings)
                    ] + papis.config.getlist("fzf-extra-flags")
 
-        _fmt = papis.config.getstring("fzf-header-format")
+        _fmt = papis.config.getformattedstring("fzf-header-format")
 
         def _header_filter(d: T) -> str:
             if isinstance(d, papis.document.Document):

@@ -68,7 +68,7 @@ def test_get_file_name(tmp_library: TemporaryLibrary) -> None:
 
     from papis.commands.add import get_file_name
 
-    assert papis.config.get("add-file-name") is None
+    assert not papis.config.get("add-file-name")
     filename = get_file_name({"title": "blah"}, path, suffix="3")
     assert re.match(r"^papis-get-name-.*\.data$", filename) is not None
     # With suffix

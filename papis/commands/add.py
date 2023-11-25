@@ -168,6 +168,7 @@ def get_file_name(
         doc: papis.document.Document,
         original_filepath: str,
         suffix: str = "",
+        file_name_format: Optional[papis.strings.AnyString] = None,
         base_name_limit: int = 150) -> str:
     """Generate a file name for the document.
 
@@ -186,16 +187,14 @@ def get_file_name(
         Papis library.
     """
 
-    file_name_opt = papis.config.get("add-file-name")
+    if not file_name_format:
+        try:
+            file_name_format = papis.config.getformattedstring("add-file-name")
+        except ValueError:
+            file_name_format = os.path.basename(original_filepath)
+
     ext = papis.filetype.get_document_extension(original_filepath)
-
-    if file_name_opt is None:
-        file_name_opt = os.path.basename(original_filepath)
-
-    file_name_base = papis.format.format(
-        file_name_opt, doc,
-        default=""
-    )
+    file_name_base = papis.format.format(file_name_format, doc, default="")
 
     file_name_base = papis.utils.clean_document_name(file_name_base, False)
     if not file_name_base:
@@ -259,8 +258,8 @@ def ensure_new_folder(path: str) -> str:
 
 def run(paths: List[str],
         data: Optional[Dict[str, Any]] = None,
-        folder_name: Optional[str] = None,
-        file_name: Optional[str] = None,
+        folder_name: Optional[papis.strings.AnyString] = None,
+        file_name: Optional[papis.strings.AnyString] = None,
         subfolder: Optional[str] = None,
         base_path: Optional[str] = None,
         batch: bool = False,
@@ -339,7 +338,7 @@ def run(paths: List[str],
     out_folder_path = base_path
 
     if folder_name:
-        temp_path = os.path.join(out_folder_path, folder_name)
+        temp_path = os.path.join(out_folder_path, str(folder_name))
         components: List[str] = []
 
         temp_path = os.path.normpath(temp_path)
@@ -391,7 +390,7 @@ def run(paths: List[str],
     logger.debug("Document includes files: '%s'.", "', '".join(in_documents_paths))
 
     # First prepare everything in the temporary directory
-    if file_name is not None:  # Use args if set
+    if file_name:
         papis.config.set("add-file-name", file_name)
 
     g = papis.utils.create_identifier()
@@ -529,17 +528,17 @@ def run(paths: List[str],
     help="Pick from existing subfolders")
 @click.option(
     "--folder-name",
-    help="Name for the document's folder (papis format)",
-    default=lambda: papis.config.getstring("add-folder-name"))
+    help="Name format for the document main folder",
+    type=papis.cli.FormattedStringParamType(),
+    default=lambda: papis.config.getformattedstring("add-folder-name"))
 @click.option(
     "--file-name",
-    help="File name for the document (papis format)",
+    help="File name format for the document",
+    type=papis.cli.FormattedStringParamType(),
     default=None)
 @click.option(
     "--from", "from_importer",
-    help="Add document from a specific importer ({})".format(
-        ", ".join(papis.importer.available_importers())
-    ),
+    help="Add document from a specific importer",
     type=(click.Choice(papis.importer.available_importers()), str),
     nargs=2,
     multiple=True,
@@ -586,8 +585,8 @@ def cli(files: List[str],
         set_list: List[Tuple[str, str]],
         subfolder: str,
         pick_subfolder: bool,
-        folder_name: str,
-        file_name: Optional[str],
+        folder_name: papis.strings.FormattedString,
+        file_name: Optional[papis.strings.FormattedString],
         from_importer: List[Tuple[str, str]],
         batch: bool,
         confirm: bool,
