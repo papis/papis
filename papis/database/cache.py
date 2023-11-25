@@ -9,6 +9,7 @@ import papis.config
 import papis.format
 import papis.database.base
 import papis.logging
+from papis.strings import AnyString
 
 logger = papis.logging.get_logger(__name__)
 
@@ -88,7 +89,7 @@ def filter_documents(
 def match_document(
         document: papis.document.Document,
         search: Pattern[str],
-        match_format: Optional[str] = None,
+        match_format: Optional[AnyString] = None,
         doc_key: Optional[str] = None) -> Optional[Match[str]]:
     """Match a document's keys to a given search pattern.
 
@@ -103,10 +104,10 @@ def match_document(
     >>> match_document(document, regex('einstein'), '{doc[title]}') is None
     True
     """
-    match_format = match_format or papis.config.getstring("match-format")
     if doc_key is not None:
         match_string = str(document[doc_key])
     else:
+        match_format = match_format or papis.config.getformattedstring("match-format")
         match_string = papis.format.format(match_format, document)
 
     return search.match(match_string)

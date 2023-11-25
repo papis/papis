@@ -182,6 +182,7 @@ def get_file_name(
         doc: papis.document.Document,
         original_filepath: str,
         suffix: str = "",
+        file_name_format: Optional[papis.strings.AnyString] = None,
         base_name_limit: int = 150) -> str:
     warn("'get_file_name' is deprecated and will be removed in the next "
          "version. Use 'papis.paths.get_document_file_name' instead.",
@@ -212,8 +213,8 @@ def ensure_new_folder(path: str) -> str:
 
 def run(paths: List[str],
         data: Optional[Dict[str, Any]] = None,
-        folder_name: Optional[str] = None,
-        file_name: Optional[str] = None,
+        folder_name: Optional[papis.strings.AnyString] = None,
+        file_name: Optional[papis.strings.AnyString] = None,
         subfolder: Optional[str] = None,
         base_path: Optional[str] = None,
         batch: bool = False,
@@ -426,17 +427,17 @@ def run(paths: List[str],
     help="Pick from existing subfolders")
 @click.option(
     "--folder-name",
-    help="Name for the document's folder (papis format)",
-    default=lambda: papis.config.getstring("add-folder-name"))
+    help="Name format for the document main folder",
+    type=papis.cli.FormattedStringParamType(),
+    default=lambda: papis.config.getformattedstring("add-folder-name"))
 @click.option(
     "--file-name",
-    help="File name for the document (papis format)",
+    help="File name format for the document",
+    type=papis.cli.FormattedStringParamType(),
     default=None)
 @click.option(
     "--from", "from_importer",
-    help="Add document from a specific importer ({})".format(
-        ", ".join(papis.importer.available_importers())
-    ),
+    help="Add document from a specific importer",
     type=(click.Choice(papis.importer.available_importers()), str),
     nargs=2,
     multiple=True,
@@ -483,8 +484,8 @@ def cli(files: List[str],
         set_list: List[Tuple[str, str]],
         subfolder: str,
         pick_subfolder: bool,
-        folder_name: str,
-        file_name: Optional[str],
+        folder_name: papis.strings.AnyString,
+        file_name: Optional[papis.strings.AnyString],
         from_importer: List[Tuple[str, str]],
         batch: bool,
         confirm: bool,

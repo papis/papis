@@ -101,7 +101,8 @@ def run(document: papis.document.Document,
               type=click.Path(exists=True))
 @click.option("-u", "--urls", help="URLs to documents", multiple=True)
 @click.option("--file-name",
-              help="File name for the document (papis format)",
+              help="File name format for the document",
+              type=papis.cli.FormattedStringParamType(),
               default=None)
 @click.option(
     "--link/--no-link",

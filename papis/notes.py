@@ -31,8 +31,9 @@ def notes_path(doc: papis.document.Document) -> str:
     from papis.paths import normalize_path
 
     if not has_notes(doc):
-        notes_name = papis.format.format(papis.config.getstring("notes-name"), doc,
-                                         default="notes.tex")
+        notes_name = papis.format.format(
+            papis.config.getformattedstring("notes-name"), doc,
+            default="notes.tex")
         doc["notes"] = normalize_path(notes_name)
         papis.api.save_doc(doc)
 

@@ -113,7 +113,7 @@ def run(document: papis.document.Document,
         import urllib.parse
         params = {
             "q": papis.format.format(
-                papis.config.getstring("browse-query-format"),
+                papis.config.getformattedstring("browse-query-format"),
                 document,
                 default="{} {}".format(document["author"], document["title"]))
         }

@@ -57,7 +57,6 @@ nitpick_ignore_regex = [
     ["py:class", r".*SubRequest"],
     ]
 
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
