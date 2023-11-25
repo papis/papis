@@ -268,7 +268,7 @@ def add(ctx: click.Context) -> None:
 @click.command("cmd")
 @click.pass_context
 @click.help_option("--help", "-h")
-@click.argument("command", type=str)
+@click.argument("command", type=papis.cli.FormattedStringParamType())
 def cmd(ctx: click.Context, command: str) -> None:
     """
     Run a general command on the document list.

@@ -10,6 +10,7 @@ from typing import (
 
 import papis
 import papis.config
+import papis.strings
 import papis.logging
 
 logger = papis.logging.get_logger(__name__)
@@ -141,9 +142,10 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
     return new_data
 
 
-def author_list_to_author(data: Dict[str, Any],
-                          separator: Optional[str] = None,
-                          multiple_authors_format: Optional[str] = None) -> str:
+def author_list_to_author(
+        data: Dict[str, Any],
+        separator: Optional[str] = None,
+        multiple_authors_format: Optional[papis.strings.AnyString] = None) -> str:
     """Convert a list of authors into a single author string.
 
     This uses the :confval:`multiple-authors-separator` and the
@@ -165,7 +167,8 @@ def author_list_to_author(data: Dict[str, Any],
         separator = papis.config.getstring("multiple-authors-separator")
 
     if multiple_authors_format is None:
-        multiple_authors_format = papis.config.getstring("multiple-authors-format")
+        multiple_authors_format = (
+            papis.config.getformattedstring("multiple-authors-format"))
 
     if separator is None or multiple_authors_format is None:
         raise ValueError(
@@ -542,7 +545,7 @@ def describe(document: Union[Document, Dict[str, Any]]) -> str:
         :confval:`document-description-format`.
     """
     return papis.format.format(
-        papis.config.getstring("document-description-format"),
+        papis.config.getformattedstring("document-description-format"),
         document, default=document.get("title", str(document)))
 
 

@@ -109,7 +109,7 @@ def run(document: papis.document.Document,
             logger.debug("Getting document's marks.")
             marks = document[papis.config.getstring("mark-key-name")]
             if marks:
-                _mark_fmt = papis.config.getstring("mark-header-format")
+                _mark_fmt = papis.config.getformattedstring("mark-header-format")
                 _mark_name = papis.config.getstring("mark-format-name")
                 _mark_opener = papis.config.getstring("mark-opener-format")
                 if not _mark_fmt:

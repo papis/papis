@@ -6,6 +6,7 @@ from warnings import warn
 
 import papis.config
 import papis.logging
+from papis.strings import AnyString, FormattedString
 from papis.document import DocumentLike
 from papis.document import from_data
 
@@ -139,7 +140,7 @@ def get_document_file_name(
         doc: DocumentLike,
         orig_path: PathLike,
         suffix: str = "", *,
-        file_name_format: Optional[Union[str, Literal[False]]] = None,
+        file_name_format: Optional[Union[AnyString, Literal[False]]] = None,
         base_name_limit: int = 150) -> str:
     """Generate a file name based on *orig_path* for the document *doc*.
 
@@ -165,12 +166,13 @@ def get_document_file_name(
     orig_path = pathlib.Path(orig_path)
 
     if file_name_format is None:
-        file_name_format = papis.config.get("add-file-name")
+        try:
+            file_name_format = papis.config.getformattedstring("add-file-name")
+        except ValueError:
+            file_name_format = None
 
     if not file_name_format:
         file_name_format = orig_path.name
-
-    assert isinstance(file_name_format, str)
 
     from papis.filetype import get_document_extension
 
@@ -214,7 +216,7 @@ def get_document_hash_folder(
 def get_document_folder(
         doc: DocumentLike,
         dirname: PathLike, *,
-        folder_name_format: Optional[str] = None) -> str:
+        folder_name_format: Optional[AnyString] = None) -> str:
     """Generate a folder name for the document at *dirname*.
 
     This function uses :confval:`add-folder-name` to generate a folder name for
@@ -234,11 +236,17 @@ def get_document_folder(
     out_folder_path = dirname
 
     if folder_name_format is None:
-        folder_name_format = papis.config.get("add-folder-name")
+        try:
+            folder_name_format = papis.config.getformattedstring("add-folder-name")
+        except ValueError:
+            folder_name_format = None
+
+    if isinstance(folder_name_format, str):
+        folder_name_format = FormattedString(None, folder_name_format)
 
     # try to get a folder name from folder_name_format
     if folder_name_format:
-        tmp_path = os.path.normpath(os.path.join(dirname, folder_name_format))
+        tmp_path = os.path.normpath(os.path.join(dirname, folder_name_format.value))
 
         # NOTE: the folder_name_format can contain subfolders, so we go through
         # them one by one and expand them here to get the full path
@@ -251,7 +259,9 @@ def get_document_folder(
             tmp_component = os.path.basename(tmp_path)
 
             try:
-                tmp_component = papis.format.format(tmp_component, doc)
+                tmp_component = papis.format.format(
+                    FormattedString(folder_name_format.formatter, tmp_component),
+                    doc)
             except papis.format.FormatFailedError as exc:
                 logger.error("Could not format path for document.", exc_info=exc)
                 components.clear()
@@ -313,7 +323,7 @@ def _make_unique_file(filename: PathLike) -> str:
 def get_document_unique_folder(
         doc: DocumentLike,
         dirname: PathLike, *,
-        folder_name_format: Optional[str] = None) -> str:
+        folder_name_format: Optional[AnyString] = None) -> str:
     """A wrapper around :func:`get_document_folder` that ensures that the
     folder is unique by adding suffixes.
 
@@ -334,7 +344,7 @@ def _is_remote(uri: str) -> bool:
 def rename_document_files(
         doc: DocumentLike,
         in_document_paths: Iterable[str], *,
-        file_name_format: Optional[Union[str, Literal[False]]] = None,
+        file_name_format: Optional[Union[AnyString, Literal[False]]] = None,
         allow_remote: bool = True,
         ) -> List[str]:
     """Rename *in_document_paths* according to *file_name_format* and ensure
@@ -354,7 +364,10 @@ def rename_document_files(
         are renamed based on *file_name_format* and suffixed for uniqueness.
     """
     if file_name_format is None:
-        file_name_format = papis.config.get("add-file-name")
+        try:
+            file_name_format = papis.config.getformattedstring("add-file-name")
+        except ValueError:
+            file_name_format = None
 
     from collections import Counter
 

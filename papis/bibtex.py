@@ -492,9 +492,11 @@ def create_reference(doc: Dict[str, Any], force: bool = False) -> str:
         return ref
 
     # Otherwise, try to generate one somehow
-    ref_format = papis.config.get("ref-format")
-    if ref_format is not None:
-        ref = papis.format.format(str(ref_format), doc, default="")
+    try:
+        ref_format = papis.config.getformattedstring("ref-format")
+        ref = papis.format.format(ref_format, doc, default="")
+    except ValueError:
+        ref = ""
 
     if not ref:
         ref = str(doc.get("doi", ""))

@@ -287,7 +287,8 @@ class TemporaryConfiguration:
 
         # monkeypatch globals
         import papis.format
-        self._monkeypatch.setattr(papis.format, "FORMATTER", None)
+        self._monkeypatch.setattr(papis.format, "FORMATTER", {})
+
         import papis.database
         self._monkeypatch.setattr(papis.database, "DATABASES", {})
         # FIXME: may need to also add the following:

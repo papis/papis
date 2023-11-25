@@ -96,6 +96,8 @@ def parse_option(
     """
     :returns: a ``(section, key)`` tuple parsed from *option*.
     """
+    from papis.format import get_available_formatters
+    formatters = set(get_available_formatters())
 
     parts = option.split(".")
     key = section = None
@@ -103,8 +105,12 @@ def parse_option(
         key = parts[0]
         section = default_section
     elif len(parts) == 2:
-        section = parts[0] if parts[0] else None
-        key = parts[1]
+        if parts[1] in formatters:
+            section = default_section
+            key = option
+        else:
+            section = parts[0] if parts[0] else None
+            key = parts[1]
     else:
         raise ValueError(f"Unsupported option format: '{option}'")
 

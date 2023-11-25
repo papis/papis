@@ -8,6 +8,7 @@ import platformdirs
 import papis.exceptions
 import papis.library
 import papis.logging
+from papis.strings import FormattedString
 
 logger = papis.logging.get_logger(__name__)
 
@@ -483,6 +484,62 @@ def getstring(key: str, section: Optional[str] = None) -> str:
         raise ValueError("Key '{}' should be a string: '{}'".format(key, result))
 
     return str(result)
+
+
+def getformattedstring(key: str, section: Optional[str] = None) -> FormattedString:
+    """Retrieve a formatted string value from the configuration file.
+
+    Formatted strings use the :class:`~papis.strings.FormattedString` class to
+    define a string that should be formatted by a specific
+    :class:`~papis.format.Formatter`. For configuration options, such strings
+    can be defined in the configuration file as::
+
+        [settings]
+        multiple-authors-format = {au[family]}, {au[given]}
+        multiple-authors-format.python = {au[family]}, {au[given]}
+        multiple-authors-format.jinja2 = {{ au[family] }}, {{ au[given] }}
+
+    i.e. like ``key[.formatter]``. If no formatter is provided in the key name,
+    the default formatter is used, as defined by :confval:`formatter`.
+    Formatters are checked in alphabetical order and the last one is returned.
+
+        >>> set("add-open", "hello world")
+        >>> r = getformattedstring("add-open")
+        >>> r.formatter
+        'python'
+
+        >>> set("add-open", FormattedString("python", "hello world"))
+        >>> r = getformattedstring("add-open")
+        >>> r.formatter
+        'python'
+
+        >>> set("add-open.python", "hello world")
+        >>> r = getformattedstring("add-open")
+        >>> r.formatter
+        'python'
+    """
+    from papis.format import get_available_formatters, get_default_formatter
+
+    formatter = get_default_formatter()
+    result: Optional[str] = None
+
+    for f in get_available_formatters():
+        try:
+            tmp = general_get(f"{key}.{f}", section=section, data_type=str)
+        except papis.exceptions.DefaultSettingValueMissing:
+            pass
+        else:
+            result, formatter = tmp, f
+
+    if result is None:
+        result = general_get(key, section=section, data_type=str)
+
+    if isinstance(result, FormattedString):
+        return result
+    elif isinstance(result, str):
+        return FormattedString(formatter, result)
+    else:
+        raise ValueError(f"Key '{key}' should be a string: '{result}'")
 
 
 def getlist(key: str, section: Optional[str] = None) -> List[str]:
