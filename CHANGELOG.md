@@ -17,22 +17,25 @@ VERSION NEXT
 
 ### New: Add `cache` command ([#603](https://github.com/papis/papis/pull/603))
 
-The `cache` command has been added in order to provide more control for the
+The `cache` command has been added in order to provide more control over the
 papis cache. Accordingly, the equivalent commands `papis --cc` and
 `papis --clear-cache` have been removed and can be replaced by the equivalent
-
-```
+```sh
 papis cache clear
+```
+
+The command can now also update only specific documents using
+```sh
+papis cache update QUERY
 ```
 
 You can learn more about the cache command in the documentation.
 
+### New: EPUB support for the web application
 
-### New: Epub support for the web application
-
-Now you can read epub files from the comfort of the web application.
-The workflow is similar to the existing one with pdfjs
-and it uses the project [epubjs-reader](https://github.com/futurepress/epubjs-reader).
+Now you can read EPUB files from the comfort of the web application. The
+workflow is similar to the existing one for PDFs and it uses the
+[epubjs-reader](https://github.com/futurepress/epubjs-reader) library.
 
 ### New: Exporter for the Typst Hayagriva format ([#559](https://github.com/papis/papis/pull/559))
 
@@ -57,7 +60,7 @@ papis init /path/to/my/library
 preserve comments. This means that updating a configuration file using `papis init`
 will remove any comments and possibly reorder some options.
 
-### New: Add `tag` command ([648](https://github.com/papis/papis/pull/648))
+### New: Add `tag` command ([#648](https://github.com/papis/papis/pull/648))
 
 A new `papis tag` command was added to handle adding and removing tags
 (or keywords) for a document. For example, to add a few tags to a set of
@@ -83,11 +86,30 @@ papis \
 ```
 where you may need to change the separator to match your choice.
 
-### New: Major improvements to search syntax ([#602](https://github.com/papis/papis/pull/602))
+### Major: Improved formatter support ([#711](https://github.com/papis/papis/pull/711))
 
-TODO
+Papis supports [formatter plugins](https://papis.readthedocs.io/en/latest/configuration.html#config-settings-formatter)
+that act on certain configuration settings that can depend on the current
+document. Until now, when changing from one formatter to another, all settings
+needed to be rewritten (including default ones, since they used the `python`
+formatter).
 
-### Major: Expand `update` command ([681](https://github.com/papis/papis/pull/681))
+It is now possible to use the following syntax to set the formatter per
+configuration key
+```ini
+    [settings]
+    ref-format.jinja2 = {{ doc.author_list | slice(3) | join("", attribute="family") }}{{ doc.year }}
+```
+
+The syntax is always `key[.formatter]`. The formatted strings are searched
+alphabetically and the last one is picked, i.e. if both `key.python` and
+`key.jinja2` are provided, the `python` version will be chosen regardless of the
+order in the configuration file. If no formatter is provided for a formatted
+string of this type, then it will fall back to the default formatter set by the
+`formatter` setting. All default settings are now clearly marked as using the
+`python` formatter, so they no longer need to be rewritten when changing formatters.
+
+### Major: Expand `update` command ([#681](https://github.com/papis/papis/pull/681))
 
 The update command got some major improvements this release. It now allows much
 more fine-grained modifications of a document without requiring the user to open
@@ -189,11 +211,11 @@ make use of the same infrastructure.
 * Add a `--move` flag to `papis add`
   ([#740](https://github.com/papis/papis/pull/740))
 * Enhance `python` formatter with some additional conversions
-  ([709](https://github.com/papis/papis/pull/709))
+  ([#709](https://github.com/papis/papis/pull/709))
 * Fix the `these.fr` downloader
-  ([729](https://github.com/papis/papis/pull/792)).
+  ([#729](https://github.com/papis/papis/pull/792)).
 * Add a Zenodo downloader
-  ([770](https://github.com/papis/papis/pull/770)). This uses some of the
+  ([#770](https://github.com/papis/papis/pull/770)). This uses some of the
   fields from [biblatex-software](https://ctan.org/pkg/biblatex-software?lang=en)
 
 ## Bug fixes
