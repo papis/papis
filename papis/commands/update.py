@@ -128,7 +128,7 @@ Command-line Interface
 """
 
 import ast
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import click
 
@@ -142,6 +142,7 @@ import papis.importer
 import papis.logging
 import papis.strings
 import papis.utils
+from papis.strings import AnyString, process_formatted_string_pair
 
 logger = papis.logging.get_logger(__name__)
 
@@ -164,7 +165,7 @@ def try_parsing_str(key: str, value: str) -> str:
 
 def run_set(
     document: papis.document.DocumentLike,
-    to_set: List[Tuple[str, str]],
+    to_set: Sequence[Tuple[str, AnyString]],
     key_types: Dict[str, type],
 ) -> None:
     """
@@ -175,8 +176,10 @@ def run_set(
     from papis.paths import normalize_path
 
     for key, value in to_set:
-        value = papis.format.format(value, document, default=value)
+        key, value = process_formatted_string_pair(key, value)
+        value = papis.format.format(value, document, default=str(value))
         value = try_parsing_str(key, value)
+
         if isinstance(value, int) and key_types.get(key) is str:
             value = str(value)
         if key == "notes" and isinstance(value, str):
@@ -206,7 +209,7 @@ def run_set(
 
 def run_append(
     document: papis.document.DocumentLike,
-    to_append: List[Tuple[str, str]],
+    to_append: Sequence[Tuple[str, AnyString]],
     key_types: Dict[str, type],
     batch: bool,
 ) -> bool:
@@ -223,8 +226,10 @@ def run_append(
     processed_lists = set()
     supported_keys = key_types.keys() | document
     for key, value in to_append:
+        key, value = process_formatted_string_pair(key, value)
+
         if key in supported_keys:
-            value = papis.format.format(value, document, default=value)
+            value = papis.format.format(value, document, default=str(value))
             type_doc = type(document.get(key))
             type_conf = key_types.get(key)
             if type_doc is str or (type_doc is type(None) and type_conf is str):
@@ -264,7 +269,9 @@ def run_append(
 
 
 def run_remove(
-    document: papis.document.DocumentLike, to_remove: List[Tuple[str, str]], batch: bool
+    document: papis.document.DocumentLike,
+    to_remove: Sequence[Tuple[str, AnyString]],
+    batch: bool
 ) -> bool:
     """
     Processes a list of ``to_remove`` tuples and applies the resulting changes
@@ -275,13 +282,15 @@ def run_remove(
     """
     success = True
     for key, value in to_remove:
+        key, value = process_formatted_string_pair(key, value)
+
         if key in document:
             if isinstance(document.get(key), list):
                 try:
                     document[key].remove(value)
                 except ValueError:
                     try:
-                        document[key].remove(int(value))
+                        document[key].remove(int(str(value)))
                     except ValueError:
                         pass  # do nothing if there is nothing to remove
             else:
@@ -305,7 +314,7 @@ def run_remove(
     return success
 
 
-def run_drop(document: papis.document.DocumentLike, to_remove: List[str]) -> None:
+def run_drop(document: papis.document.DocumentLike, to_remove: Sequence[str]) -> None:
     """
     Processes a list of ``to_drop`` strings and applies the resulting changes
     to the input document. Each string is a KEY whose value is set to None
@@ -323,7 +332,7 @@ def run_drop(document: papis.document.DocumentLike, to_remove: List[str]) -> Non
 
 def run_rename(
     document: papis.document.DocumentLike,
-    to_rename: List[Tuple[str, str, str]],
+    to_rename: Sequence[Tuple[str, AnyString, AnyString]],
     batch: bool,
 ) -> bool:
     """
@@ -417,9 +426,9 @@ def run(
     "-s",
     "--set",
     "to_set",
-    help="Set the key to the given value (<KEY VALUE>).",
+    help="Set the key to the given value.",
     multiple=True,
-    type=(str, str),
+    type=(str, papis.cli.FormattedStringParamType()),
 )
 @click.option(
     "-d",
@@ -433,25 +442,27 @@ def run(
     "-p",
     "--append",
     "to_append",
-    help="Append a value to a document key (<KEY VALUE>).",
+    help="Append a value to a document key.",
     multiple=True,
-    type=(str, str),
+    type=(str, papis.cli.FormattedStringParamType()),
 )
 @click.option(
     "-r",
     "--remove",
     "to_remove",
-    help="Remove an item from a list (<KEY VALUE>).",
+    help="Remove an item from a list.",
     multiple=True,
-    type=(str, str),
+    type=(str, papis.cli.FormattedStringParamType()),
 )
 @click.option(
     "-n",
     "--rename",
     "to_rename",
-    help="Rename an item in a list (<KEY OLD-VALUE NEW-VALUE>).",
+    help="Rename an item in a list.",
     multiple=True,
-    type=(str, str, str),
+    type=(str,
+          papis.cli.FormattedStringParamType(),
+          papis.cli.FormattedStringParamType()),
 )
 @papis.cli.bool_flag("-b", "--batch", help="Batch mode, do not prompt or otherwise")
 def cli(
@@ -502,10 +513,7 @@ def cli(
             success = run_rename(ctx.data, to_rename, batch)
 
         if success:
-            logger.info(
-                "Updating {c.Back.WHITE}{c.Fore.BLACK}%s{c.Style.RESET_ALL}.",
-                papis.document.describe(document),
-            )
+            logger.info("Updating %s.", papis.document.describe(document))
 
             # NOTE: use 'papis addto' to add files, so this only adds data
             # by setting 'only_data' to True always
