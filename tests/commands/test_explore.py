@@ -35,7 +35,7 @@ def test_explore_bibtex_cli(tmp_library: TemporaryLibrary) -> None:
         exported_bibtex = fd.read()
 
     assert exported_bibtex == (
-        "@article{FreedomFromThJKri2009,\n"
+        "@article{Freedom_from_th_J_Kri_2009,\n"
         "  author = {J. Krishnamurti},\n"
         "  title = {Freedom from the known},\n"
         "  year = {2009},\n"

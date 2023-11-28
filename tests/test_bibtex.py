@@ -69,9 +69,9 @@ def test_clean_ref(tmp_config: TemporaryConfiguration) -> None:
     import papis.bibtex
 
     for (r, rc) in [
-            ("Einstein über etwas und so 1923", "EinsteinUberEtwasUndSo1923"),
-            ("Äöasf () : Aλבert Eιنς€in", "AoasfAlbertEinseurin"),
-            (r"Albert_Ein\_stein\.1923.b", "AlbertEin_stein.1923B"),
+            ("Einstein über etwas und so 1923", "Einstein_uber_etwas_und_so_1923"),
+            ("Äöasf () : Aλבert Eιنς€in", "Aoasf_Albert_EinsEURin"),
+            (r"Albert_Ein\_stein\.1923.b", "Albert_Ein__stein_.1923_b"),
             ]:
         assert rc == papis.bibtex.ref_cleanup(r)
 

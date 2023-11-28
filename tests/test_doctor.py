@@ -97,7 +97,7 @@ def test_refs_check(tmp_config: TemporaryConfiguration) -> None:
 
     error.fix_action()
     assert "ref" in doc
-    assert doc["ref"] == "DnaSequencingSanger"
+    assert doc["ref"] == "DNA_sequencing_Sanger"
 
     # check: empty ref
     doc["ref"] = "    "

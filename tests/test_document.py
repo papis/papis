@@ -89,7 +89,7 @@ def test_to_bibtex(tmp_config: TemporaryConfiguration) -> None:
     doc.set_folder("path/to/superfolder")
 
     assert papis.bibtex.to_bibtex(doc) == (
-        "@book{HelloFernan3200bce,\n"
+        "@book{Hello_Fernan_3200BCE,\n"
         "  author = {Fernandez, Gilgamesh},\n"
         "  journal = {jcp},\n"
         "  title = {Hello},\n"
@@ -97,7 +97,7 @@ def test_to_bibtex(tmp_config: TemporaryConfiguration) -> None:
         "}")
     doc["journal_abbrev"] = "j"
     assert papis.bibtex.to_bibtex(doc) == (
-        "@book{HelloFernan3200bce,\n"
+        "@book{Hello_Fernan_3200BCE,\n"
         "  author = {Fernandez, Gilgamesh},\n"
         "  journal = {j},\n"
         "  title = {Hello},\n"

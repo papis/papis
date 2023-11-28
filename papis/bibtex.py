@@ -408,12 +408,13 @@ def ref_cleanup(ref: str) -> str:
     """
     import slugify
     allowed_characters = r"([^a-zA-Z0-9._]+|(?<!\\)[._])"
-    return string.capwords(str(slugify.slugify(
-        ref,
-        lowercase=False,
-        word_boundary=False,
-        separator=" ",
-        regex_pattern=allowed_characters))).replace(" ", "")
+    ref = slugify.slugify(ref,
+                          lowercase=False,
+                          word_boundary=False,
+                          separator="_",
+                          regex_pattern=allowed_characters)
+
+    return str(ref).strip()
 
 
 def create_reference(doc: Dict[str, Any], force: bool = False) -> str:
@@ -451,6 +452,7 @@ def create_reference(doc: Dict[str, Any], force: bool = False) -> str:
         # Just try to get something out of the data
         ref = "{:.30}".format(
               " ".join(string.capwords(str(d)) for d in doc.values()))
+        ref = string.capwords(ref).replace(" ", "").strip()
 
     logger.debug("Generated ref '%s'.", ref)
     return ref_cleanup(ref)
