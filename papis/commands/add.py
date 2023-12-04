@@ -562,7 +562,7 @@ def run(paths: List[str],
     help="Download file with importer if available or not",
     default=lambda: papis.config.getboolean("add-download-files"))
 @papis.cli.bool_flag(
-    "--fetch-citations",
+    "--fetch-citations/--no-fetch-citations",
     help="Fetch citations from a DOI (Digital Object Identifier)",
     default=lambda: papis.config.getboolean("add-fetch-citations"))
 def cli(files: List[str],

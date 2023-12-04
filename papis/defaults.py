@@ -44,7 +44,6 @@ settings: Dict[str, Any] = {
     "add-folder-name": "",
     "add-subfolder": "",
     "add-file-name": None,
-    "add-interactive": False,
     "add-edit": False,
     "add-open": False,
     "add-fetch-citations": False,
