@@ -1,3 +1,5 @@
+.. _git-support:
+
 Git support
 ===========
 
