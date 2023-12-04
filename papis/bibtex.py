@@ -250,6 +250,10 @@ bibtex_ignore_keys = (
     frozenset(papis.config.getlist("bibtex-ignore-keys"))
 )
 
+#: A regex for acceptable characters to use in a reference string. These are
+#: used by :func:`ref_cleanup` to remove any undesired characters.
+ref_allowed_characters = r"([^a-zA-Z0-9._]+|(?<!\\)[._])"
+
 
 def exporter(documents: List[papis.document.Document]) -> str:
     return "\n\n".join(to_bibtex_multiple(documents))
@@ -402,17 +406,20 @@ def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
 
 
 def ref_cleanup(ref: str) -> str:
-    """Function to cleanup references to be acceptable for LaTeX.
+    """Function to cleanup reference strings so that they are accepted by BibLaTeX.
 
-    :returns: a slugified reference without any disallowed characters.
+    This uses the :data:`ref_allowed_characters` to remove any disallowed characters
+    from the given *ref*. Furthermore, ``slugify`` is used to remove unicode
+    characters and ensure consistent use of the underscrore ``_`` as a separator.
+
+    :returns: a reference without any disallowed characters.
     """
     import slugify
-    allowed_characters = r"([^a-zA-Z0-9._]+|(?<!\\)[._])"
     ref = slugify.slugify(ref,
                           lowercase=False,
                           word_boundary=False,
                           separator="_",
-                          regex_pattern=allowed_characters)
+                          regex_pattern=ref_allowed_characters)
 
     return str(ref).strip()
 
@@ -430,7 +437,7 @@ def create_reference(doc: Dict[str, Any], force: bool = False) -> str:
 
     :param force: if *True*, the reference is re-created even if the document
         already has a ``"ref"`` key.
-    :returns: a clean reference for the document.
+    :returns: a clean (see :func:`ref_cleanup`) reference for the document.
     """
     # Check first if the paper has a reference
     ref = str(doc.get("ref", ""))

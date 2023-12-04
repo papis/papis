@@ -237,41 +237,40 @@ BibTeX options
 
 .. papis-config:: ref-format
 
-    This flag is set to change the ``ref`` flag in the info.yaml file
-    when a document is imported. For example: I prefer the format
-    FirstAuthorYear e.g. Plews2019. This would be achieved by the
-    following:
+    This option is used to set the ``ref`` key in the *info file* when a document
+    is created. In BibLaTeX, the reference (or ref for short) is also sometimes
+    called a citation key. The reference format is usually heavily customized
+    by users, depending on their personal preferences. For example to use a
+    ``FirstAuthorYear`` format, set
 
-    ::
+    .. code:: ini
 
-        ref-format = {doc[author_list][0][surname]}{doc[year]}
+        ref-format = {doc[author_list][0][family]}{doc[year]}
 
-    In general however I recommend the default behavior of just using the
-    ``author`` key of the document, i.e.,
-    ::
+    However, any custom string can be used, e.g.
+
+    .. code:: ini
 
         ref-format = {doc[title]:.15} {doc[author]:.6} {doc[year]}
 
-    The spaces in the value of the format will be important in order
-    to capitalize the string, i.e., if you have a title like
-    ``STUDIES ABOUT EARTH AND HIMMEL`` and and an author list like
-    ``mesh-ki-ang-nuna`` then the built reference will be
-    ``StudiesAboutEMeshKi``.
+    The resulting reference is also cleaned up by Papis to ensure that no invalid
+    characters make it into final version. If a reference does not exist in the
+    document, it is created using :func:`papis.bibtex.create_reference`. Any
+    reference is then cleaned up using :func:`papis.bibtex.ref_cleanup`.
 
-    .. note::
-        Special characters will be replaced when generating the ``ref`` entry
-        (e.g.  ``Ö → O``, ``.`` and other symbols will be striped from the
-        string).
+    .. warning::
 
-    If you want to add some punctuation, dots (``.``) and underscores (``_``)
-    can be escaped by a backslash. For example,
+        Note that the reference clean up can result in a heavily modified version
+        compared to the string that was set by the ``ref-format`` option. For example,
+        all spaces are transformed into underscores and all unicode characters are
+        converted to their closest ASCII representation.
 
-    ::
+        If you want to add some punctuation, dots (``.``) and underscores (``_``)
+        can be escaped by a backslash. For example,
 
-        ref-format = {doc[author_list][0][surname]}\.{doc[year]}
+        .. code:: ini
 
-    would result in 'Plews.2019'. To ensure correct capitalization you might
-    consider inserting whitespaces after an escaped character.
+            ref-format = {doc[author_list][0][surname]}\.{doc[year]}
 
 .. papis-config:: add-confirm
 
