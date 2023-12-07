@@ -56,15 +56,66 @@ import papis.logging
 logger = papis.logging.get_logger(__name__)
 
 
-def run(documents: Sequence[papis.document.Document],
-        show_files: bool = False,
-        show_dir: bool = False,
-        show_id: bool = False,
-        show_info: bool = False,
-        show_notes: bool = False,
-        show_format: str = "",
-        template: Optional[str] = None
-        ) -> List[str]:
+def list_plugins(show_libraries: bool = False,
+                 show_exporters: bool = False,
+                 show_explorers: bool = False,
+                 show_importers: bool = False,
+                 show_downloaders: bool = False,
+                 show_pickers: bool = False,
+                 verbose: bool = False) -> List[str]:
+    import colorama as c
+    from papis.plugin import get_extension_manager
+
+    def _stringify(namespace: str) -> List[str]:
+        results = []
+        for p in get_extension_manager(namespace):
+            results.append(
+                f"{c.Style.BRIGHT}{p.name}{c.Style.RESET_ALL}"
+                f" {c.Fore.YELLOW}{p.module_name}.{p.attr}{c.Style.RESET_ALL}")
+            if verbose and p.plugin.__doc__:
+                lines = [line for line in p.plugin.__doc__.split("\n") if line]
+                results.append(f"    {lines[0].strip()}")
+
+        return results
+
+    if show_libraries:
+        return [
+            f"{lib} {papis.config.get('dir', section=lib)}"
+            for lib in papis.config.get_libs()
+        ]
+
+    if show_exporters:
+        from papis.commands.export import EXPORTER_EXTENSION_NAME
+        return _stringify(EXPORTER_EXTENSION_NAME)
+
+    if show_explorers:
+        from papis.commands.explore import EXPLORER_EXTENSION_NAME
+        return _stringify(EXPLORER_EXTENSION_NAME)
+
+    if show_importers:
+        from papis.importer import IMPORTER_EXTENSION_NAME
+        return _stringify(IMPORTER_EXTENSION_NAME)
+
+    if show_downloaders:
+        from papis.downloaders import DOWNLOADERS_EXTENSION_NAME
+        return _stringify(DOWNLOADERS_EXTENSION_NAME)
+
+    if show_pickers:
+        from papis.pick import PICKER_EXTENSION_NAME
+        return _stringify(PICKER_EXTENSION_NAME)
+
+    raise ValueError("At least one of the flags should be True")
+
+
+def list_documents(documents: Sequence[papis.document.Document],
+                   show_files: bool = False,
+                   show_dir: bool = False,
+                   show_id: bool = False,
+                   show_info: bool = False,
+                   show_notes: bool = False,
+                   show_format: str = "",
+                   template: Optional[str] = None
+                   ) -> List[str]:
     """List document properties.
 
     :arg template: a path to a file containing a format string that can be
@@ -103,6 +154,9 @@ def run(documents: Sequence[papis.document.Document],
         return [f for d in documents if (f := d.get_main_folder()) is not None]
 
     raise ValueError("At least one of the flags should be True")
+
+
+run = list_documents
 
 
 @click.command("list")
@@ -149,6 +203,9 @@ def run(documents: Sequence[papis.document.Document],
     "--template",
     help="Template file containing a papis format to list documents",
     default=None)
+@papis.cli.bool_flag(
+    "--verbose",
+    help="Show short description for entrypoints (exporters, etc.)")
 @papis.cli.all_option()
 @papis.cli.sort_option()
 @papis.cli.doc_folder_option()
@@ -166,51 +223,26 @@ def cli(query: str,
         show_downloaders: bool,
         show_pickers: bool,
         template: Optional[str],
+        verbose: bool,
         _all: bool,
         doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
         sort_reverse: bool) -> None:
     """List document metadata"""
-    from papis.plugin import get_extension_manager
 
-    if show_libraries:
-        for lib in papis.config.get_libs():
-            click.echo(f"{lib} {papis.config.get('dir', section=lib)}")
-        return
+    objects = list_plugins(
+        show_libraries=show_libraries,
+        show_exporters=show_exporters,
+        show_explorers=show_explorers,
+        show_importers=show_importers,
+        show_downloaders=show_downloaders,
+        show_pickers=show_pickers,
+        verbose=verbose)
 
-    if show_exporters:
-        from papis.commands.export import EXPORTER_EXTENSION_NAME
-        for p in get_extension_manager(EXPORTER_EXTENSION_NAME):
-            c = p.plugin
-            click.echo(f"{p.name} {c.__module__}.{c.__name__}")
-        return
+    for o in objects:
+        click.echo(o)
 
-    if show_explorers:
-        from papis.commands.explore import EXPLORER_EXTENSION_NAME
-        for p in get_extension_manager(EXPLORER_EXTENSION_NAME):
-            c = p.plugin.callback
-            click.echo(f"{p.name} {c.__module__}.{c.__name__}")
-        return
-
-    if show_importers:
-        from papis.importer import IMPORTER_EXTENSION_NAME
-        for p in get_extension_manager(IMPORTER_EXTENSION_NAME):
-            c = p.plugin
-            click.echo(f"{p.name} {c.__module__}.{c.__name__}")
-        return
-
-    if show_downloaders:
-        from papis.downloaders import DOWNLOADERS_EXTENSION_NAME
-        for p in get_extension_manager(DOWNLOADERS_EXTENSION_NAME):
-            c = p.plugin
-            click.echo(f"{p.name} {c.__module__}.{c.__name__}")
-        return
-
-    if show_pickers:
-        from papis.pick import PICKER_EXTENSION_NAME
-        for p in get_extension_manager(PICKER_EXTENSION_NAME):
-            c = p.plugin
-            click.echo(f"{p.name} {c.__module__}.{c.__name__}")
+    if objects:
         return
 
     documents = papis.cli.handle_doc_folder_query_all_sort(
