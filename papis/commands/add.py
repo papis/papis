@@ -558,9 +558,6 @@ def run(paths: List[str],
     default=lambda: papis.config.getboolean("auto-doctor"))
 @papis.cli.git_option(help="Git add and commit the new document")
 @papis.cli.bool_flag(
-    "--list-importers", "--li", "list_importers",
-    help="List all available papis importers")
-@papis.cli.bool_flag(
     "--download-files/--no-download-files",
     help="Download file with importer if available or not",
     default=lambda: papis.config.getboolean("add-download-files"))
@@ -582,20 +579,11 @@ def cli(files: List[str],
         auto_doctor: bool,
         git: bool,
         link: bool,
-        list_importers: bool,
         download_files: bool,
         fetch_citations: bool) -> None:
     """
     Command line interface for papis-add.
     """
-
-    if list_importers:
-        mgr = papis.importer.get_import_mgr()
-        click.echo("\n".join(papis.utils.dump_object_doc([
-            (name, mgr[name].plugin) for name in mgr.names()
-            ], sep="\n    ")))
-
-        return
 
     if batch:
         edit = False
