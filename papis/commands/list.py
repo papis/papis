@@ -10,23 +10,11 @@ Examples
 
         papis list --all --file
 
-    .. raw:: HTML
-
-        <script type="text/javascript"
-        src="https://asciinema.org/a/XwD0ZaUORoOonwDw4rXoQDkjZ.js"
-        id="asciicast-XwD0ZaUORoOonwDw4rXoQDkjZ" async></script>
-
 - List the year and title of all documents with some custom formatting:
 
     .. code:: sh
 
         papis list --all --format '{doc[year]} {doc[title]}'
-
-    .. raw:: HTML
-
-        <script type="text/javascript"
-        src="https://asciinema.org/a/NZ8Ii1wWYPo477CIL4vZhUqOy.js"
-        id="asciicast-NZ8Ii1wWYPo477CIL4vZhUqOy" async></script>
 
 - List all documents according to the ``bibitem`` formatting (stored in a template
   file ``bibitem.template``):
@@ -34,12 +22,6 @@ Examples
     .. code:: sh
 
         papis list --all --template bibitem.template
-
-    .. raw:: HTML
-
-        <script type="text/javascript"
-        src="https://asciinema.org/a/QZTBZ3tFfyk9WQuJ9WWB2UpSw.js"
-        id="asciicast-QZTBZ3tFfyk9WQuJ9WWB2UpSw" async></script>
 
 - For scripting, printing the id of a series of documents is valuable in order
   to further use the id in other scripts.
