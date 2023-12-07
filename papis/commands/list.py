@@ -62,6 +62,7 @@ def list_plugins(show_libraries: bool = False,
                  show_importers: bool = False,
                  show_downloaders: bool = False,
                  show_pickers: bool = False,
+                 show_doctor: bool = False,
                  verbose: bool = False) -> List[str]:
     import colorama as c
     from papis.plugin import get_extension_manager
@@ -83,6 +84,20 @@ def list_plugins(show_libraries: bool = False,
             f"{lib} {papis.config.get('dir', section=lib)}"
             for lib in papis.config.get_libs()
         ]
+
+    if show_doctor:
+        from papis.commands.doctor import REGISTERED_CHECKS
+        results = []
+        for name, check in REGISTERED_CHECKS.items():
+            results.append(
+                f"{c.Style.BRIGHT}{name}{c.Style.RESET_ALL}"
+                f" {c.Fore.YELLOW}{check.operate.__module__}.{check.operate.__name__}"
+                f"{c.Style.RESET_ALL}")
+            if verbose:
+                lines = [line for line in str(check.operate.__doc__).split("\n\n")
+                         if line]
+                results.append(f"    {lines[0].strip()}")
+        return results
 
     if show_exporters:
         from papis.commands.export import EXPORTER_EXTENSION_NAME
@@ -199,6 +214,9 @@ run = list_documents
 @papis.cli.bool_flag(
     "--pickers", "show_pickers",
     help="List available pickers")
+@papis.cli.bool_flag(
+    "--doctors", "show_doctor",
+    help="List available doctor checks")
 @click.option(
     "--template",
     help="Template file containing a papis format to list documents",
@@ -222,6 +240,7 @@ def cli(query: str,
         show_importers: bool,
         show_downloaders: bool,
         show_pickers: bool,
+        show_doctor: bool,
         template: Optional[str],
         verbose: bool,
         _all: bool,
@@ -237,6 +256,7 @@ def cli(query: str,
         show_importers=show_importers,
         show_downloaders=show_downloaders,
         show_pickers=show_pickers,
+        show_doctor=show_doctor,
         verbose=verbose)
 
     for o in objects:
