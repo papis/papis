@@ -67,13 +67,12 @@ from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)
 
+#: The entry point name for exporter plugins.
+EXPORTER_EXTENSION_NAME = "papis.exporter"
+
 
 def available_formats() -> List[str]:
-    return papis.plugin.get_available_entrypoints(_extension_name())
-
-
-def _extension_name() -> str:
-    return "papis.exporter"
+    return papis.plugin.get_available_entrypoints(EXPORTER_EXTENSION_NAME)
 
 
 def run(documents: List[papis.document.Document], to_format: str) -> str:
@@ -84,7 +83,7 @@ def run(documents: List[papis.document.Document], to_format: str) -> str:
     :param to_format: what format to use
     """
     ret_string = (
-        papis.plugin.get_extension_manager(_extension_name())[to_format]
+        papis.plugin.get_extension_manager(EXPORTER_EXTENSION_NAME)[to_format]
         .plugin(document for document in documents))
     return str(ret_string)
 

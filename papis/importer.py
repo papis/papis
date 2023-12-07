@@ -7,7 +7,7 @@ import papis.logging
 if TYPE_CHECKING:
     import stevedore.extension
 
-IMPORTER_PLUGIN_ID = "papis.importer"
+IMPORTER_EXTENSION_NAME = "papis.importer"
 
 #: Invariant :class:`TypeVar` bound to the :class:`Importer` class.
 ImporterT = TypeVar("ImporterT", bound="Importer")
@@ -173,12 +173,12 @@ def get_import_mgr() -> "stevedore.extension.ExtensionManager":
     """Retrieve the :class:`stevedore.extension.ExtensionManager` for
     importer plugins.
     """
-    return papis.plugin.get_extension_manager(IMPORTER_PLUGIN_ID)
+    return papis.plugin.get_extension_manager(IMPORTER_EXTENSION_NAME)
 
 
 def available_importers() -> List[str]:
     """Get a list of available importer names."""
-    return papis.plugin.get_available_entrypoints(IMPORTER_PLUGIN_ID)
+    return papis.plugin.get_available_entrypoints(IMPORTER_EXTENSION_NAME)
 
 
 def get_importers() -> List[Type[Importer]]:
