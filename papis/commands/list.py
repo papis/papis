@@ -79,13 +79,7 @@ def run(documents: Sequence[papis.document.Document],
         return [papis.id.get(d) for d in documents]
 
     if show_notes:
-        return [
-            os.path.join(d.get_main_folder() or "", d["notes"])
-            for d in documents
-            if d.get_main_folder() is not None
-            and "notes" in d and isinstance(d["notes"], str)
-            and os.path.exists(
-                os.path.join(d.get_main_folder() or "", d["notes"]))]
+        return [f for doc in documents for f in doc.get_notes()]
 
     if show_info:
         return [d.get_info_file() for d in documents]

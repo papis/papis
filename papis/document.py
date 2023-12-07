@@ -390,6 +390,18 @@ class Document(Dict[str, Any]):
         """
         return self._info_file_path
 
+    def _get_absolute_paths(self, key: str) -> List[str]:
+        folder = self.get_main_folder()
+        if folder is None:
+            return []
+
+        relative_files = self.get(key)
+        if relative_files is None:
+            return []
+
+        files = relative_files if isinstance(relative_files, list) else [relative_files]
+        return [os.path.join(folder, f) for f in files]
+
     def get_files(self) -> List[str]:
         """Get the files linked to the document.
 
@@ -401,16 +413,15 @@ class Document(Dict[str, Any]):
         :returns: a :class:`list` of absolute file paths in the document's
             main folder, if any.
         """
-        folder = self.get_main_folder()
-        if folder is None:
-            return []
+        return self._get_absolute_paths("files")
 
-        relative_files = self.get("files")
-        if relative_files is None:
-            return []
+    def get_notes(self) -> List[str]:
+        """Get all notes linked to the document.
 
-        files = relative_files if isinstance(relative_files, list) else [relative_files]
-        return [os.path.join(folder, f) for f in files]
+        :returns: a :class:`list` of absolute file paths in the document's
+            main folder, if any, similar to :meth:`get_files`.
+        """
+        return self._get_absolute_paths("notes")
 
     def save(self) -> None:
         """Saves the current document fields into the info file."""
