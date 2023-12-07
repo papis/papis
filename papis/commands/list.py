@@ -128,11 +128,23 @@ def run(documents: Sequence[papis.document.Document],
     help="Show documents using a custom format, e.g. '{doc[year]} {doc[title]}",
     default="")
 @papis.cli.bool_flag(
+    "--libraries", "show_libraries",
+    help="List defined libraries")
+@papis.cli.bool_flag(
+    "--exporters", "show_exporters",
+    help="List available exporters")
+@papis.cli.bool_flag(
+    "--explorers", "show_explorers",
+    help="List available explorers")
+@papis.cli.bool_flag(
+    "--importers", "show_importers",
+    help="List available importers")
+@papis.cli.bool_flag(
     "--downloaders", "show_downloaders",
     help="List available downloaders")
 @papis.cli.bool_flag(
-    "--libraries", "show_libraries",
-    help="List defined libraries")
+    "--pickers", "show_pickers",
+    help="List available pickers")
 @click.option(
     "--template",
     help="Template file containing a papis format to list documents",
@@ -147,42 +159,65 @@ def cli(query: str,
         show_notes: bool,
         show_dir: bool,
         show_format: str,
-        show_downloaders: bool,
         show_libraries: bool,
+        show_exporters: bool,
+        show_explorers: bool,
+        show_importers: bool,
+        show_downloaders: bool,
+        show_pickers: bool,
         template: Optional[str],
         _all: bool,
         doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
         sort_reverse: bool) -> None:
     """List document metadata"""
-    documents: List[papis.document.Document] = []
-
-    show_doc = (
-        show_info or show_id or show_files or show_notes or show_dir or show_format
-    )
-    show_entrypoints = show_downloaders
-
-    if not show_libraries and not show_entrypoints and not show_doc:
-        show_dir = show_doc = True
-
-    if not show_libraries and not show_downloaders and show_doc:
-        documents = papis.cli.handle_doc_folder_query_all_sort(
-            query, doc_folder, sort_field, sort_reverse, _all)
-
-        if not documents:
-            logger.warning(papis.strings.no_documents_retrieved_message)
-            return
+    from papis.plugin import get_extension_manager
 
     if show_libraries:
         for lib in papis.config.get_libs():
             click.echo(f"{lib} {papis.config.get('dir', section=lib)}")
         return
 
+    if show_exporters:
+        from papis.commands.export import EXPORTER_EXTENSION_NAME
+        for p in get_extension_manager(EXPORTER_EXTENSION_NAME):
+            c = p.plugin
+            click.echo(f"{p.name} {c.__module__}.{c.__name__}")
+        return
+
+    if show_explorers:
+        from papis.commands.explore import EXPLORER_EXTENSION_NAME
+        for p in get_extension_manager(EXPLORER_EXTENSION_NAME):
+            c = p.plugin.callback
+            click.echo(f"{p.name} {c.__module__}.{c.__name__}")
+        return
+
+    if show_importers:
+        from papis.importer import IMPORTER_EXTENSION_NAME
+        for p in get_extension_manager(IMPORTER_EXTENSION_NAME):
+            c = p.plugin
+            click.echo(f"{p.name} {c.__module__}.{c.__name__}")
+        return
+
     if show_downloaders:
-        from papis.downloaders import get_available_downloaders
-        for d in get_available_downloaders():
-            down = d("https://www.example.com")
-            click.echo(f"{down.name} {d.__module__}")
+        from papis.downloaders import DOWNLOADERS_EXTENSION_NAME
+        for p in get_extension_manager(DOWNLOADERS_EXTENSION_NAME):
+            c = p.plugin
+            click.echo(f"{p.name} {c.__module__}.{c.__name__}")
+        return
+
+    if show_pickers:
+        from papis.pick import PICKER_EXTENSION_NAME
+        for p in get_extension_manager(PICKER_EXTENSION_NAME):
+            c = p.plugin
+            click.echo(f"{p.name} {c.__module__}.{c.__name__}")
+        return
+
+    documents = papis.cli.handle_doc_folder_query_all_sort(
+        query, doc_folder, sort_field, sort_reverse, _all)
+
+    if not documents:
+        logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
     objects = run(

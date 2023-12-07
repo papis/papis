@@ -14,9 +14,7 @@ if TYPE_CHECKING:
 
 logger = papis.logging.get_logger(__name__)
 
-
-def _extension_name() -> str:
-    return "papis.downloader"
+DOWNLOADERS_EXTENSION_NAME = "papis.downloader"
 
 
 class Importer(papis.importer.Importer):
@@ -369,7 +367,7 @@ class Downloader(papis.importer.Importer):
 
 def get_available_downloaders() -> List[Type[Downloader]]:
     """Get all declared downloader classes."""
-    return papis.plugin.get_available_plugins(_extension_name())
+    return papis.plugin.get_available_plugins(DOWNLOADERS_EXTENSION_NAME)
 
 
 def get_matching_downloaders(url: str) -> List[Downloader]:
@@ -402,7 +400,7 @@ def get_downloader_by_name(name: str) -> Type[Downloader]:
     :returns: a downloader class.
     """
     downloader_class: Type[Downloader] = (
-        papis.plugin.get_extension_manager(_extension_name())[name].plugin
+        papis.plugin.get_extension_manager(DOWNLOADERS_EXTENSION_NAME)[name].plugin
     )
     return downloader_class
 
