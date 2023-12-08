@@ -42,7 +42,7 @@ If any custom checks are implemented, you can get a complete list at runtime fro
 
 .. code:: sh
 
-    papis doctor --list-checks
+    papis list --doctors
 
 Examples
 ^^^^^^^^
@@ -965,8 +965,6 @@ def run(doc: papis.document.Document,
 @papis.cli.doc_folder_option()
 @papis.cli.bool_flag("--all-checks", "all_checks",
                      help="Run all available checks (ignores --checks)")
-@papis.cli.bool_flag("--list-checks", "list_checks",
-                     help="List available checks and their descriptions")
 def cli(query: str,
         doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
@@ -978,16 +976,8 @@ def cli(query: str,
         _checks: List[str],
         _json: bool,
         suggest: bool,
-        all_checks: bool,
-        list_checks: bool) -> None:
+        all_checks: bool) -> None:
     """Check for common problems in documents"""
-    if list_checks:
-        click.echo("\n".join(papis.utils.dump_object_doc([
-            (name, fn.operate) for name, fn in REGISTERED_CHECKS.items()
-            ], sep="\n    ")))
-
-        return
-
     documents = papis.cli.handle_doc_folder_query_all_sort(
         query, doc_folder, sort_field, sort_reverse, _all)
 
