@@ -6,6 +6,8 @@ import papis.downloaders
 
 
 class Downloader(papis.downloaders.Downloader):
+    """Retrieve documents from `ACS Publications <https://pubs.acs.org>`__"""
+
     DOCUMENT_URL: ClassVar[str] = (
         "https://pubs.acs.org/doi/pdf/{doi}"
         )

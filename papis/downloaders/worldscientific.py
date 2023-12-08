@@ -5,6 +5,7 @@ import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):
+    """Retrieve documents from `World Scientific <https://www.worldscientific.com>`__"""
 
     def __init__(self, url: str) -> None:
         super().__init__(

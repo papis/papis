@@ -86,6 +86,7 @@ def _parse_full_abstract(data: List[Dict[str, Any]]) -> str:
 
 
 class Downloader(papis.downloaders.Downloader):
+    """Retrieve documents from `ScienceDirect <https://www.sciencedirect.com>`__"""
 
     def __init__(self, url: str) -> None:
         super().__init__(

@@ -226,7 +226,7 @@ def explorer(
         journal: str, report_number: str, category: str, id_list: str,
         page: int, max_results: int) -> None:
     """
-    Look for documents on `arXiv.org <arxiv.org/>`__.
+    Look for documents on `arXiv.org <https://arxiv.org/>`__.
 
 
     For example, to search for documents with the authors "Hummer" and
@@ -265,6 +265,7 @@ def explorer(
 
 
 class Downloader(papis.downloaders.Downloader):
+    """Retrieve documents from `arXiv <https://arxiv.org>`__"""
 
     def __init__(self, url: str) -> None:
         super().__init__(uri=url, name="arxiv", expected_document_extension="pdf")

@@ -5,6 +5,7 @@ import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):
+    """Retrieve documents from `ACM <https://www.acm.org>`__"""
 
     def __init__(self, url: str) -> None:
         super().__init__(

@@ -5,6 +5,8 @@ import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):
+    """Retrieve documents from `IOPscience <https://iopscience.iop.org>`__"""
+
     DOCUMENT_URL: ClassVar[str] = (
         "https://iopscience.iop.org/article/{doi}/pdf"
         )

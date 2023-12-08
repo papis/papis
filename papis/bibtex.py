@@ -256,6 +256,7 @@ ref_allowed_characters = r"([^a-zA-Z0-9._]+|(?<!\\)[._])"
 
 
 def exporter(documents: List[papis.document.Document]) -> str:
+    """Convert documents into a list of BibLaTeX entries"""
     return "\n\n".join(to_bibtex_multiple(documents))
 
 
