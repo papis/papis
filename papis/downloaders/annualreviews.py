@@ -5,6 +5,8 @@ import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):
+    """Retrieve documents from `Annual Reviews <https://www.annualreviews.org>`__"""
+
     DOCUMENT_URL: ClassVar[str] = "https://annualreviews.org/doi/pdf/{doi}"
 
     BIBTEX_URL: ClassVar[str] = (

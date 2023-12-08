@@ -5,6 +5,8 @@ import papis.downloaders.fallback
 
 
 class Downloader(papis.downloaders.fallback.Downloader):
+    """Retrieve documents from `Project Euclid <https://projecteuclid.org>`__"""
+
     _BIBTEX_URL = "https://projecteuclid.org/citation/download/citation-{}.bib"
 
     def __init__(self, url: str) -> None:

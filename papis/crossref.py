@@ -465,6 +465,7 @@ class FromCrossrefImporter(papis.importer.Importer):
 
 
 class Downloader(papis.downloaders.Downloader):
+    """Retrieve documents by DOI from `Crossref <https://www.crossref.org>`__"""
 
     def __init__(self, uri: str) -> None:
         super().__init__(uri=uri, name="doi")

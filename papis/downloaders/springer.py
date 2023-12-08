@@ -6,6 +6,8 @@ import papis.document
 
 
 class Downloader(papis.downloaders.Downloader):
+    """Retrieve documents from `SpringerLink <https://link.springer.com>`__"""
+
     DOCUMENT_URL: ClassVar[str] = (
         "https://link.springer.com/content/pdf/{doi}.pdf"
         )

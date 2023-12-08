@@ -33,6 +33,15 @@ Examples
         papis edit papis_id:${papis_id}
         # etc.
 
+- List various plugins and extensions that Papis sees
+
+    .. code:: sh
+
+        papis list --libraries
+        papis list --importers
+        papis list --exporters
+        papis list --doctors
+
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
@@ -41,6 +50,7 @@ Command-line Interface
 """
 
 import os
+import re
 from typing import List, Optional, Sequence, Tuple
 
 import click
@@ -67,21 +77,26 @@ def list_plugins(show_libraries: bool = False,
     import colorama as c
     from papis.plugin import get_extension_manager
 
+    def _format(name: str, ids: str) -> str:
+        return (f"{c.Style.BRIGHT}{name}{c.Style.RESET_ALL}"
+                f" {c.Fore.YELLOW}{ids}{c.Style.RESET_ALL}")
+
     def _stringify(namespace: str) -> List[str]:
         results = []
         for p in get_extension_manager(namespace):
-            results.append(
-                f"{c.Style.BRIGHT}{p.name}{c.Style.RESET_ALL}"
-                f" {c.Fore.YELLOW}{p.module_name}.{p.attr}{c.Style.RESET_ALL}")
+            results.append(_format(p.name, f"{p.module_name}.{p.attr}"))
+
             if verbose and p.plugin.__doc__:
                 lines = [line for line in p.plugin.__doc__.split("\n") if line]
-                results.append(f"    {lines[0].strip()}")
+                if lines:
+                    line = re.sub(r"`(.*) <(.*)>`__", r"\1 <\2>", lines[0].strip())
+                    results.append(f"    {line}")
 
         return results
 
     if show_libraries:
         return [
-            f"{lib} {papis.config.get('dir', section=lib)}"
+            _format(lib, papis.config.get("dir", section=lib))
             for lib in papis.config.get_libs()
         ]
 
@@ -90,13 +105,13 @@ def list_plugins(show_libraries: bool = False,
         results = []
         for name, check in REGISTERED_CHECKS.items():
             results.append(
-                f"{c.Style.BRIGHT}{name}{c.Style.RESET_ALL}"
-                f" {c.Fore.YELLOW}{check.operate.__module__}.{check.operate.__name__}"
-                f"{c.Style.RESET_ALL}")
+                _format(name, f"{check.operate.__module__}.{check.operate.__name__}")
+            )
             if verbose:
                 lines = [line for line in str(check.operate.__doc__).split("\n\n")
                          if line]
-                results.append(f"    {lines[0].strip()}")
+                line = re.sub(r":ref:`config-settings-(.*)`", r"'\1'", lines[0].strip())
+                results.append(f"    {line}")
         return results
 
     if show_exporters:
@@ -222,8 +237,9 @@ run = list_documents
     help="Template file containing a papis format to list documents",
     default=None)
 @papis.cli.bool_flag(
-    "--verbose",
-    help="Show short description for entrypoints (exporters, etc.)")
+    "--quiet",
+    help="Do not show short descriptions for plugins (exporters, etc.)",
+    default=False)
 @papis.cli.all_option()
 @papis.cli.sort_option()
 @papis.cli.doc_folder_option()
@@ -242,7 +258,7 @@ def cli(query: str,
         show_pickers: bool,
         show_doctor: bool,
         template: Optional[str],
-        verbose: bool,
+        quiet: bool,
         _all: bool,
         doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
@@ -257,7 +273,7 @@ def cli(query: str,
         show_downloaders=show_downloaders,
         show_pickers=show_pickers,
         show_doctor=show_doctor,
-        verbose=verbose)
+        verbose=not quiet)
 
     for o in objects:
         click.echo(o)

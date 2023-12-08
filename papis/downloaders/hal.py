@@ -5,6 +5,8 @@ import papis.downloaders.fallback
 
 
 class Downloader(papis.downloaders.fallback.Downloader):
+    """Retrieve documents from the `HAL <https://hal.science>`__ family of websites"""
+
     # NOTE: this only advertises subdomains maintained by CCSD
     # https://www.ccsd.cnrs.fr/2022/06/hal-archives-ouvertes-fr-va-devenir-hal-science/
 

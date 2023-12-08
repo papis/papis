@@ -5,6 +5,7 @@ import papis.downloaders.fallback
 
 
 class Downloader(papis.downloaders.fallback.Downloader):
+    """Retrieve documents from `APS <https://aps.org>`__"""
 
     def __init__(self, url: str) -> None:
         super().__init__(

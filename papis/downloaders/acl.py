@@ -6,6 +6,8 @@ import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):
+    """Retrieve documents from `ACL Anthology <https://aclanthology.org>`__"""
+
     def __init__(self, url: str) -> None:
         super().__init__(
             url,

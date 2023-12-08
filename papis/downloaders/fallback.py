@@ -4,6 +4,7 @@ import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):
+    """Retrieve documents from websites using Dublin Core or Google Scholar metadata"""
 
     def __init__(self, uri: str, name: str = "fallback",
                  expected_document_extension: Optional[Union[str, List[str]]] = None,

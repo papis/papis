@@ -37,6 +37,8 @@ def _parse_month(date: str) -> Optional[int]:
 
 
 class Downloader(papis.downloaders.Downloader):
+    """Retrieve documents from `Taylor & Francis <https://www.tandfonline.com>`__"""
+
     DOCUMENT_URL: ClassVar[str] = (
         "https://www.tandfonline.com/doi/pdf/{doi}"
         )

@@ -6,6 +6,7 @@ import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):
+    """Retrieve documents from `IEEE Xplore <https://ieeexplore.ieee.org>`__"""
 
     def __init__(self, url: str) -> None:
         super().__init__(url, name="ieee", expected_document_extension="pdf")
