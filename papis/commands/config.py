@@ -222,23 +222,11 @@ def run(
 @papis.cli.bool_flag(
     "--json", "print_json",
     help="Print settings in a JSON format")
-@papis.cli.bool_flag(
-    "--list-paths",
-    help="List known configuration and script locations")
 def cli(options: List[str],
         section: Optional[str],
         default: bool,
-        print_json: bool,
-        list_paths: bool) -> None:
+        print_json: bool) -> None:
     """Print configuration values"""
-    if list_paths:
-        click.echo(format_option("Config home", papis.config.get_config_home()))
-        click.echo(format_option("Config folder", papis.config.get_config_folder()))
-        click.echo(format_option("Config file", papis.config.get_config_file()))
-        click.echo(format_option("Config.py file", papis.config.get_configpy_file()))
-        click.echo(format_option("Scripts folder", papis.config.get_scripts_folder()))
-        return
-
     if len(options) == 1:
         # NOTE: a single option is printed directly for a bit of backwards
         # compatibility and easier use in shell scripts, so remove with care!
