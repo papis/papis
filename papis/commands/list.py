@@ -66,7 +66,8 @@ import papis.logging
 logger = papis.logging.get_logger(__name__)
 
 
-def list_plugins(show_libraries: bool = False,
+def list_plugins(show_paths: bool = False,
+                 show_libraries: bool = False,
                  show_exporters: bool = False,
                  show_explorers: bool = False,
                  show_importers: bool = False,
@@ -94,9 +95,18 @@ def list_plugins(show_libraries: bool = False,
 
         return results
 
+    if show_paths:
+        return [
+            _format("PAPIS_CONFIG_HOME", papis.config.get_config_home()),
+            _format("PAPIS_CONFIG_FOLDER", papis.config.get_config_folder()),
+            _format("PAPIS_CONFIG_FILE", papis.config.get_config_file()),
+            _format("PAPIS_CONFIG_PY_FILE", papis.config.get_configpy_file()),
+            _format("PAPIS_SCRIPTS_FOLDER", papis.config.get_scripts_folder()),
+        ]
+
     if show_libraries:
         return [
-            _format(lib, papis.config.get("dir", section=lib))
+            _format(lib, papis.config.getstring("dir", section=lib))
             for lib in papis.config.get_libs()
         ]
 
@@ -212,6 +222,9 @@ run = list_documents
     help="Show documents using a custom format, e.g. '{doc[year]} {doc[title]}",
     default="")
 @papis.cli.bool_flag(
+    "--paths", "show_paths",
+    help="List configuration paths used by papis")
+@papis.cli.bool_flag(
     "--libraries", "show_libraries",
     help="List defined libraries")
 @papis.cli.bool_flag(
@@ -250,6 +263,7 @@ def cli(query: str,
         show_notes: bool,
         show_dir: bool,
         show_format: str,
+        show_paths: bool,
         show_libraries: bool,
         show_exporters: bool,
         show_explorers: bool,
@@ -266,6 +280,7 @@ def cli(query: str,
     """List document metadata"""
 
     objects = list_plugins(
+        show_paths=show_paths,
         show_libraries=show_libraries,
         show_exporters=show_exporters,
         show_explorers=show_explorers,
