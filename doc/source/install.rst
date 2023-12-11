@@ -74,20 +74,32 @@ This command will provide you a shell with all the dependencies required.
 
 Guix
 ----
-At this moment there were no known recipes of ``papis`` package in main Guix repositories.
 
-However, if you are running `Guix System <https://guix.gnu.org/>`__ or you have the
-`guix <https://guix.gnu.org/>`__ package manager installed and you would like to install ``papis`` the 'Guix way', you can copy a following scheme file with the working recipe for the latest papis stable (v0.13) from here https://github.com/papis/papis/contrib/python-papis.scm and then install it by running the following command from the directory where you copied the python-papis.scm file.
+.. note::
 
-::
+    At this moment there are no recipes for Papis in the main Guix repositories.
+    If such a recipe is added, it is recommended to install from the official
+    sources.
 
-  guix package --install-from-file=python-papis.scm
+If you are running the `Guix System <https://guix.gnu.org/>`__ or you have the
+`guix <https://guix.gnu.org/>`__ package manager installed and you would like
+to install ``papis`` the 'Guix way', you can use the included recipe from
+:download:`python-papis.scm <../../contrib/python-papis.scm>`. This recipe can
+be downloaded locally and installed using
 
-Note: This guix recipe was made by running the following command, manually fixing some dependencies and switching off some failing tests so that the package could be build with Guix.
+.. code:: sh
 
-::
-   
+    guix package --install-from-file=python-papis.scm
+
+This Guix recipe was made by running the following command
+
+.. code:: sh
+
   guix import pypi papis@0.13 --recursive
+
+manually fixing some dependencies and switching off some failing tests so
+that the package could be build with Guix. This can be used for newer versions
+until an official recipe in the main Guix repositories is published.
 
 From source
 -----------
