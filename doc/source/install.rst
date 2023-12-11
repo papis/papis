@@ -83,6 +83,11 @@ However, if you are running `Guix System <https://guix.gnu.org/>`__ or you have 
 
   guix package --install-from-file=python-papis.scm
 
+Note: This guix recipe was made by running the following command, manually fixing some dependencies and switching off some failing tests so that the package could be build with Guix.
+
+::
+   
+  guix import pypi papis@0.13 --recursive
 
 From source
 -----------
