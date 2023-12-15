@@ -144,7 +144,7 @@ def list_plugins(show_paths: bool = False,
         from papis.pick import PICKER_EXTENSION_NAME
         return _stringify(PICKER_EXTENSION_NAME)
 
-    raise ValueError("At least one of the flags should be True")
+    return []
 
 
 def list_documents(documents: Sequence[papis.document.Document],
@@ -190,10 +190,7 @@ def list_documents(documents: Sequence[papis.document.Document],
             for document in documents
         ]
 
-    if show_dir:
-        return [f for d in documents if (f := d.get_main_folder()) is not None]
-
-    raise ValueError("At least one of the flags should be True")
+    return [f for d in documents if (f := d.get_main_folder()) is not None]
 
 
 run = list_documents
