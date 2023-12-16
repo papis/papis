@@ -32,74 +32,148 @@ def make_document(name: str, dir: str, nfiles: int = 0) -> papis.document.Docume
 
 
 def test_get_hash_folder(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.add import get_hash_folder
+
     data = {"author": "don quijote de la mancha"}
     filename = tmp_library.create_random_file()
 
-    from papis.commands.add import get_hash_folder
+    # check folder with one filename
     hh = get_hash_folder(data, [filename])
     assert re.match(r".*-don-quijote-de-la-ma$", hh) is not None
 
+    # check folder with more files
     three_files_hh = get_hash_folder(data, [filename, filename, filename])
     assert re.match(r".*-don-quijote-de-la-ma$", three_files_hh) is not None
-    assert not three_files_hh == hh
+    assert three_files_hh != hh
 
-    # Without data
+    # check folder with no files
     no_files_hh = get_hash_folder(data, [])
     assert re.match(r".*-don-quijote-de-la-ma$", no_files_hh) is not None
-    assert not no_files_hh == hh
+    assert no_files_hh != hh
 
+    # check folder with no data
     data = {}
     hh = get_hash_folder(data, [filename])
     assert re.match(r".*-don-quijote-de-la-ma$", hh) is None
 
+    # check folder with a different file
     filename = tmp_library.create_random_file()
-
     newhh = get_hash_folder(data, [filename])
-    assert not hh == newhh
+    assert hh != newhh
 
+    # check folder with same file (hash has a random seed)
     newnewhh = get_hash_folder(data, [filename])
-    assert not newnewhh == newhh
+    assert newnewhh != newhh
 
 
 def test_get_file_name(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.add import get_file_name
+
+    doc = papis.document.from_data({"title": "blah"})
     pdf = tmp_library.create_random_file("pdf")
     path = tmp_library.create_random_file(
         "text", prefix="papis-get-name-", suffix=".data")
 
-    from papis.commands.add import get_file_name
-
+    # make sure the configuration is empty
     assert not papis.config.get("add-file-name")
-    filename = get_file_name({"title": "blah"}, path, suffix="3")
-    assert re.match(r"^papis-get-name-.*\.data$", filename) is not None
-    # With suffix
-    filename = get_file_name({"title": "blah"}, pdf, suffix="3")
-    assert len(re.split("[.]pdf", filename)) == 2
-    # Without suffix
-    filename = get_file_name({"title": "blah"}, pdf)
-    assert len(re.split("[.]pdf", filename)) == 2
+
+    filename = get_file_name(doc, path, suffix="3")
+    assert re.match(r"^papis-get-name-.*-3\.data$", filename) is not None
+
+    # with suffix
+    filename = get_file_name(doc, pdf, suffix="3")
+    assert len(re.split(r".*-3\.pdf", filename)) == 2
+
+    # without suffix
+    filename = get_file_name(doc, pdf)
+    assert len(re.split(r".*\.pdf", filename)) == 2
 
     papis.config.set(
         "add-file-name",
         "{doc[title]} {doc[author]} {doc[yeary]}"
     )
 
-    filename = get_file_name({"title": "blah"}, path, suffix="2")
+    # check file name generation
+    filename = get_file_name(doc, path, suffix="2")
     assert filename == "blah-2.data"
 
-    filename = get_file_name({"title": "b" * 200}, path, suffix="2")
-    assert filename == "b" * 150 + "-2.data"
-
     pdf = tmp_library.create_random_file("pdf")
-    filename = get_file_name({"title": "blah"}, pdf, suffix="2")
+    filename = get_file_name(doc, pdf, suffix="2")
     assert filename == "blah-2.pdf"
 
     pdf = tmp_library.create_random_file("pdf")
-    filename = get_file_name({"title": "blah"}, pdf, suffix="2")
+    filename = get_file_name(doc, pdf, suffix="2")
     assert filename == "blah-2.pdf"
 
     yaml = tmp_library.create_random_file("text", suffix=".yaml")
-    filename = get_file_name({"title": "blah"}, yaml, suffix="2")
+    filename = get_file_name(doc, yaml, suffix="2")
     assert filename == "blah-2.yaml"
+
+    # check over limit
+    base_name_limit = 100
+    doc = papis.document.from_data({"title": "b" * 200})
+    filename = get_file_name(doc, path,
+                             base_name_limit=base_name_limit, suffix="2")
+    assert filename == "b" * base_name_limit + "-2.data"
+
+
+def test_get_file_name_format(tmp_library: TemporaryLibrary) -> None:
+    pytest.importorskip("jinja2")
+
+    from papis.strings import FormattedString
+    from papis.commands.add import get_file_name
+
+    doc = papis.document.from_data({"title": "blah"})
+    pdf = tmp_library.create_random_file("pdf")
+
+    filename = get_file_name(
+        doc, pdf, suffix="2",
+        file_name_format=FormattedString("jinja2", "{{ doc.title }} {{ doc.year }}"))
+    assert filename == "blah-2.pdf"
+
+
+def test_get_folder_name(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.add import get_folder_name
+
+    pdf = tmp_library.create_random_file("pdf")
+    doc = papis.document.from_data({
+        "author": "Niels / Bohr",
+        "title": "On the constitution of atoms and molecules",
+        "year": 1913,
+        "volume": 26,
+        "doi": "10.1080/14786441308634955",
+        })
+
+    # check no folder_name_format
+    folder_name = get_folder_name(doc, tmp_library.libdir, [pdf])
+    assert re.match(r"\w{32}-niels-bohr", os.path.basename(folder_name)) is not None
+
+    # check simple folder_name_format
+    folder_name = get_folder_name(doc, tmp_library.libdir, [pdf],
+                                  folder_name_format="{doc[author]}")
+    assert os.path.basename(folder_name) == "niels-bohr"
+
+    # check uniqueness with suffices
+    os.mkdir(folder_name)
+    folder_name = get_folder_name(doc, tmp_library.libdir, [pdf],
+                                  folder_name_format="{doc[author]}")
+    assert os.path.basename(folder_name) == "niels-bohr-a"
+
+    # check incorrect folder_name_format
+    folder_name = get_folder_name(doc, tmp_library.libdir, [pdf],
+                                  folder_name_format="{doc.author}")
+    assert re.match(r"\w{32}-niels-bohr", os.path.basename(folder_name)) is not None
+
+    # check multiple subfolders in folder_name_format
+    folder_name = get_folder_name(doc, tmp_library.libdir, [pdf],
+                                  folder_name_format="{doc[year]}/{doc[author]}")
+    assert os.path.basename(folder_name) == "niels-bohr"
+    assert os.path.basename(os.path.dirname(folder_name)) == "1913"
+
+    # check path that is not relative to libdir -> we get get_hash_folder
+    folder_name = get_folder_name(doc, tmp_library.libdir, [pdf],
+                                  folder_name_format="../{doc[author]}")
+    assert re.match(r"\w{32}-niels-bohr", os.path.basename(folder_name)) is not None
 
 
 @pytest.mark.library_setup(use_git=True)
