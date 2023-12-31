@@ -3,6 +3,7 @@ A set of utilities for working with BibTeX and BibLaTeX (as described in
 the `manual`_).
 
 .. _manual: https://ctan.org/pkg/biblatex?lang=en
+.. _biblatex_software: https://ctan.org/pkg/biblatex-software?lang=en
 """
 import os
 import string
@@ -70,11 +71,22 @@ bibtex_non_standard_types = frozenset([
     "video",
 ])
 
+#: BibLaTeX Software types (`Section 2 <biblatex_software_>`_).
+biblatex_software_types = frozenset([
+    "software",
+    "softwareversion",
+    "softwaremodule",
+    "codefragment",
+])
+
 #: A set of known BibLaTeX types (as described in Section 2.1 of the `manual`_).
 #: These types are a union of the types above and can be extended with
 #: :ref:`config-settings-extra-bibtex-types`.
 bibtex_types = (
-    bibtex_standard_types | frozenset(bibtex_type_aliases) | bibtex_non_standard_types
+    bibtex_standard_types
+    | frozenset(bibtex_type_aliases)
+    | bibtex_non_standard_types
+    | biblatex_software_types
     | frozenset(papis.config.getlist("extra-bibtex-types")))
 
 
@@ -128,11 +140,24 @@ bibtex_special_keys = frozenset([
     # verb[a-c]
 ])
 
+#: BibLaTeX software keys (`Section 3 <biblatex_software_>`_). Most of these
+#: keys are already standard BibLaTeX keys from :data:`bibtex_standard_keys`.
+biblatex_software_keys = frozenset([
+    "abstract", "author", "date", "editor", "file", "doi", "eprint", "eprinttype",
+    "eprintclass", "hal_id", "hal_version", "license", "month", "note",
+    "institution", "introducedin", "organization", "publisher", "related",
+    "relatedtype", "relatedstring", "repository", "swhid", "subtitle",
+    "title", "url", "urldate", "version", "year",
+])
+
 #: A set of known BibLaTeX fields (as described in Section 2.2 of the `manual`_).
 #: These fields are a union of the above fields and can be extended with
 #: extended with :ref:`config-settings-extra-bibtex-keys`.
 bibtex_keys = (
-    bibtex_standard_keys | frozenset(bibtex_key_aliases) | bibtex_special_keys
+    bibtex_standard_keys
+    | frozenset(bibtex_key_aliases)
+    | bibtex_special_keys
+    | biblatex_software_keys
     | frozenset(papis.config.getlist("extra-bibtex-keys")))
 
 #: A mapping of supported BibLaTeX entry types (see :data:`bibtex_types`) to
@@ -163,10 +188,18 @@ bibtex_type_required_keys = {
     # "set": (),
     "thesis": ({"author"}, {"title"}, {"type"}, {"institution"}, {"year", "date"}),
     "unpublished": ({"author"}, {"title"}, {"year", "date"}),
+
     # field aliases (Section 2.1.2)
     # NOTE: use the `bibtex_type_aliases` dict to replace before looking here
     # non-standard type (Section 2.1.3)
     # NOTE: these have no required keys
+
+    # biblatex-software (Section 2)
+    "software": ({"author", "editor"}, {"title"}, {"url"}, {"year"}),
+    "softwareversion": (
+        {"author", "editor"}, {"title"}, {"url"}, {"version"}, {"year"}),
+    "softwaremodule": ({"author"}, {"subtitle"}, {"url"}, {"year"}),
+    "codefragment": ({"url"},),
 }
 
 #: A mapping for additional BibLaTeX types that have the same required fields. This
@@ -183,7 +216,6 @@ bibtex_type_required_keys_aliases = {
     "reference": "collection",
     "mvreference": "collection",
     "inreference": "incollection",
-    "software": "misc",
 }
 
 # NOTE: Zotero translator fields are defined in
