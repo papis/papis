@@ -523,7 +523,7 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
       field values can contain unicode characters.
     * :ref:`config-settings-bibtex-journal-key` is used to define the field
       name for the journal.
-    * :ref:`config-settings-bibtex-export-zotero-file` is used to also add a
+    * :ref:`config-settings-bibtex-export-file` is used to also add a
       ``"file"`` field to the BibTeX entry, which can be used by e.g. Zotero to
       import documents.
 
@@ -593,11 +593,19 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
 
         lines.append(f"{bib_key} = {{{bib_value}}}")
 
-    # Handle file for zotero exporting
-    if (papis.config.getboolean("bibtex-export-zotero-file")
-            and document.get_files()):
-        lines.append("{} = {{{}}}".format("file",
-                                          ";".join(document.get_files())))
+    # handle file exporting
+    from papis.exceptions import DefaultSettingValueMissing
+    try:
+        # NOTE: this option is deprecated and should be removed in the future
+        export_file = papis.config.getboolean("bibtex-export-zotero-file")
+        logger.warning("The 'bibtex-export-zotero-file' option is deprecated. "
+                       "Use 'bibtex-export-file' instead.")
+    except DefaultSettingValueMissing:
+        export_file = papis.config.getboolean("bibtex-export-file")
+
+    files = document.get_files()
+    if export_file and files:
+        lines.append("{} = {{{}}}".format("file", ";".join(files)))
 
     separator = ",\n" + " " * indent
     return "@{type}{{{keys},\n}}".format(type=bibtex_type,

@@ -147,7 +147,7 @@ settings: Dict[str, Any] = {
     "file-browser": get_default_opener(),
     "bibtex-unicode": False,
     "bibtex-journal-key": "journal",
-    "bibtex-export-zotero-file": False,
+    "bibtex-export-file": False,
     "bibtex-ignore-keys": "[]",
     "extra-bibtex-keys": "[]",
     "extra-bibtex-types": "[]",
