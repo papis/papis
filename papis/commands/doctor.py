@@ -227,6 +227,17 @@ def files_check(doc: papis.document.Document) -> List[Error]:
 
         return fixer
 
+    if "file" in doc:
+        error = [Error(name=FILES_CHECK_NAME,
+                       path=folder,
+                       msg="Use the 'files' key instead of 'file' to list files",
+                       suggestion_cmd=f"papis edit --doc-folder {folder}",
+                       fix_action=None,
+                       payload="file",
+                       doc=doc)]
+    else:
+        error = []
+
     return [Error(name=FILES_CHECK_NAME,
                   path=folder,
                   msg=f"File '{f}' declared but does not exist",
@@ -234,7 +245,7 @@ def files_check(doc: papis.document.Document) -> List[Error]:
                   fix_action=make_fixer(f),
                   payload=f,
                   doc=doc)
-            for f in files if not os.path.exists(f)]
+            for f in files if not os.path.exists(f)] + error
 
 
 KEYS_EXIST_CHECK_NAME = "keys-exist"
