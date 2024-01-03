@@ -279,7 +279,8 @@ bibtex_key_converter: Dict[str, str] = {
 #: A set of BibLaTeX fields to ignore when exporting from the Papis database.
 #: These can be extended with :ref:`config-settings-bibtex-ignore-keys`.
 bibtex_ignore_keys = (
-    frozenset(papis.config.getlist("bibtex-ignore-keys"))
+    frozenset(["file"])
+    | frozenset(papis.config.getlist("bibtex-ignore-keys"))
 )
 
 #: A regex for acceptable characters to use in a reference string. These are
