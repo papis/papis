@@ -13,7 +13,7 @@ Development
 -----------
 
 For development, consider creating a new virtual environment (with any
-prefered method, e.g. [venv](https://docs.python.org/3/library/venv.html)).
+preferred method, e.g. [venv](https://docs.python.org/3/library/venv.html)).
 All development packages can be installed with
 ```bash
 python -m pip install -e '.[develop]'
