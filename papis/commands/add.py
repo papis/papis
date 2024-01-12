@@ -196,10 +196,10 @@ def get_file_name(
         default=""
     )
 
-    file_name_base = papis.utils.clean_document_name(file_name_base)
+    file_name_base = papis.utils.clean_document_name(file_name_base, False)
     if not file_name_base:
         file_name_base = papis.utils.clean_document_name(
-            os.path.basename(original_filepath))
+            os.path.basename(original_filepath), False)
 
     if len(file_name_base) > base_name_limit:
         logger.warning(
@@ -237,7 +237,7 @@ def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
     ).hexdigest()
 
     result = md5 + author
-    result = papis.utils.clean_document_name(result)
+    result = papis.utils.clean_document_name(result, False)
 
     return result
 
@@ -356,7 +356,7 @@ def run(paths: List[str],
                 components = []
                 break
 
-            component_cleaned = papis.utils.clean_document_name(formatted)
+            component_cleaned = papis.utils.clean_document_name(formatted, False)
             components.insert(0, component_cleaned)
 
             # continue with parent path component
@@ -403,7 +403,7 @@ def run(paths: List[str],
             get_file_name(
                 tmp_document,
                 in_file_path,
-                suffix=string_append))
+                suffix=string_append), False)
         new_file_list.append(new_filename)
 
         tmp_end_filepath = os.path.join(
