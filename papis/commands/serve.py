@@ -144,7 +144,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         db.initialize()
 
     @ok_html
-    def page_tags(self, libname: Optional[str] = None) -> None:
+    def page_tags(self, libname: Optional[str] = None,
+                  sort_by: Optional[str] = None) -> None:
         global TAGS_LIST
         libname = libname or papis.api.get_lib_name()
         self._handle_lib(libname)
@@ -159,7 +160,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
         page = papis.web.tags.html(libname=libname,
                                    pretitle="TAGS",
-                                   tags=TAGS_LIST[libname] or {})
+                                   tags=TAGS_LIST[libname] or {},
+                                   sort_by=sort_by or "")
 
         self.wfile.write(bytes(str(page), "utf-8"))
         self.wfile.flush()
@@ -445,7 +447,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.page_query),
             ("^/library/?([^/]+)?/document/([a-z0-9]+)$",
                 self.page_document),
-            ("^/library/([^/]+)/tags$",
+            ("^/library/([^/]+)/tags(?:[?]sort=(.*))?$",
                 self.page_tags),
             ("^/library/([^/]+)/tags/refresh$",
                 self.page_tags_refresh),
