@@ -52,10 +52,13 @@ def html(pretitle: str, libname: str, tags: Dict[str, int],
                         wh.icon("arrow-down-1-9")
                 with wh.container():
                     # either sort by number of occurrences or alphabetical
+                    # if option is not set, use the default config
+                    if sort_by == "":
+                        sort_by = papis.config.get("serve-default-tag-sorting")
                     if sort_by == "alpha":
-                    	tags = sorted(tags)
-                    elif sort_by in ("", "numeric"):
-                    	tags = sorted(tags, key=lambda k: tags[k], reverse=True)
+                        tags = sorted(tags)
+                    elif sort_by == "numeric":
+                        tags = sorted(tags, key=lambda k: tags[k], reverse=True)
                     for tag in tags:
                         _tag(tag=tag, libname=libname)
     return result

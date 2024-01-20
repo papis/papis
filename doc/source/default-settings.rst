@@ -449,6 +449,15 @@ BibTeX options
     or trailing whitespace in the separator, make sure to quote it (for instance,
     ``", "``).
 
+``papis serve`` options
+------------------------
+
+.. papis-config:: serve-default-tag-sorting
+
+   The default sorting strategy used on the "Tags" tab of the web ui. Can be either
+   ``'alpha'`` for sorting by tags' names or ``'numeric'`` for sorting by their frequency
+   of use.
+
 Citations options
 -----------------
 
