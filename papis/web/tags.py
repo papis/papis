@@ -48,7 +48,7 @@ def html(pretitle: str, libname: str, tags: Dict[str, int],
                              title="Sort by name"):
                         wh.icon("arrow-down-a-z")
                     with t.a(href=f"/library/{libname}/tags?sort=numeric",
-                             title="sort by number of occurences"):
+                             title="Sort by number of occurrences"):
                         wh.icon("arrow-down-1-9")
                 with wh.container():
                     # either sort by number of occurences or alphabetical
