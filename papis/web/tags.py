@@ -51,14 +51,21 @@ def html(pretitle: str, libname: str, tags: Dict[str, int],
                              title="Sort by number of occurrences"):
                         wh.icon("arrow-down-1-9")
                 with wh.container():
+                    sorted_tags = []
                     # either sort by number of occurrences or alphabetical
                     # if option is not set, use the default config
                     if sort_by == "":
-                        sort_by = papis.config.get("serve-default-tag-sorting")
+                        sort_by = str(
+                            papis.config.get("serve-default-tag-sorting")
+                        )
                     if sort_by == "alpha":
-                        tags = sorted(tags)
+                        sorted_tags = sorted(tags)
                     elif sort_by == "numeric":
-                        tags = sorted(tags, key=lambda k: tags[k], reverse=True)
-                    for tag in tags:
+                        sorted_tags = sorted(
+                            tags,
+                            key=lambda k: tags[k],
+                            reverse=True
+                        )
+                    for tag in sorted_tags:
                         _tag(tag=tag, libname=libname)
     return result
