@@ -35,7 +35,8 @@ def tags_list_div(tags: Tags, libname: str) -> None:
             _tag(tag=tag, libname=libname)
 
 
-def html(pretitle: str, libname: str, tags: Dict[str, int]) -> t.html_tag:
+def html(pretitle: str, libname: str, tags: Dict[str, int],
+         sort_by: str) -> t.html_tag:
     with papis.web.header.main_html_document(pretitle) as result:
         with result.body:
             papis.web.navbar.navbar(libname=libname)
@@ -43,9 +44,28 @@ def html(pretitle: str, libname: str, tags: Dict[str, int]) -> t.html_tag:
                 with t.h1("TAGS"):
                     with t.a(href=f"/library/{libname}/tags/refresh"):
                         wh.icon("refresh")
+                    with t.a(href=f"/library/{libname}/tags?sort=alpha",
+                             title="Sort by name"):
+                        wh.icon("arrow-down-a-z")
+                    with t.a(href=f"/library/{libname}/tags?sort=numeric",
+                             title="Sort by number of occurrences"):
+                        wh.icon("arrow-down-1-9")
                 with wh.container():
-                    for tag in sorted(tags,
-                                      key=lambda k: tags[k],
-                                      reverse=True):
+                    sorted_tags = []
+                    # either sort by number of occurrences or alphabetical
+                    # if option is not set, use the default config
+                    if sort_by == "":
+                        sort_by = str(
+                            papis.config.get("serve-default-tag-sorting")
+                        )
+                    if sort_by == "alpha":
+                        sorted_tags = sorted(tags)
+                    elif sort_by == "numeric":
+                        sorted_tags = sorted(
+                            tags,
+                            key=lambda k: tags[k],
+                            reverse=True
+                        )
+                    for tag in sorted_tags:
                         _tag(tag=tag, libname=libname)
     return result

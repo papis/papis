@@ -116,6 +116,7 @@ settings: Dict[str, Any] = {
                        ],
 
     "serve-empty-query-get-all-documents": False,
+    "serve-default-tag-sorting": "numeric",
 
     # citations configuration
     "citations-file-name": "citations.yaml",
