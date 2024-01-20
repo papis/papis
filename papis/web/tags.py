@@ -51,10 +51,11 @@ def html(pretitle: str, libname: str, tags: Dict[str, int],
                              title="Sort by number of occurrences"):
                         wh.icon("arrow-down-1-9")
                 with wh.container():
-                    # either sort by number of occurences or alphabetical
-                    sort_kwargs = dict(key=lambda k: tags[k], reverse=True)
+                    # either sort by number of occurrences or alphabetical
                     if sort_by == "alpha":
-                        sort_kwargs = dict()
-                    for tag in sorted(tags, **sort_kwargs):
+                    	tags = sorted(tags)
+                    elif sort_by in ("", "numeric"):
+                    	tags = sorted(tags, key=lambda k: tags[k], reverse=True)
+                    for tag in tags:
                         _tag(tag=tag, libname=libname)
     return result
