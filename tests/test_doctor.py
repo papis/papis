@@ -185,6 +185,12 @@ def test_bibtex_type_check(tmp_config: TemporaryConfiguration) -> None:
     assert error.payload == "blog"
     assert "not a valid BibTeX type" in error.msg
 
+    doc["type"] = "podcast"
+    error, = bibtex_type_check(doc)
+    assert error.payload == "podcast"
+    error.fix_action()
+    assert doc["type"] == "audio"
+
     for bib_type in papis.bibtex.bibtex_types:
         doc["type"] = bib_type
         errors = bibtex_type_check(doc)
