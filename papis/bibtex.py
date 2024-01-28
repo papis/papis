@@ -263,6 +263,8 @@ bibtex_type_converter: Dict[str, str] = {
     # Others
     "journal": "article",
     "monograph": "book",
+    # Dublin Core
+    "OriginalPaper": "article",
 }
 
 #: A mapping of arbitrary fields to BibLaTeX fields in :data:`bibtex_keys`. This
@@ -540,7 +542,7 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
         elif document["type"] in bibtex_type_converter:
             bibtex_type = bibtex_type_converter[document["type"]]
         else:
-            logger.error("BibTeX type '%s' not valid in document: '%s'.",
+            logger.error("Invalid BibTeX type '%s' in document: '%s'.",
                          document["type"],
                          document.get_info_file())
             return ""
