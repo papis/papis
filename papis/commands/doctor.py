@@ -459,10 +459,21 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
 
     :returns: an error if the types are not compatible.
     """
-    from papis.bibtex import bibtex_types
+    from papis.bibtex import bibtex_types, bibtex_type_converter
     folder = doc.get_main_folder() or ""
-    bib_type = doc.get("type")
 
+    def make_fixer(bib_type: str) -> Optional[FixFn]:
+        def fixer() -> None:
+            new_bib_type = bibtex_type_converter[bib_type]
+            logger.info("[FIX] Replacing type '%s' with '%s'.", bib_type, new_bib_type)
+            doc["type"] = new_bib_type
+
+        if bib_type in bibtex_type_converter:
+            return fixer
+        else:
+            return None
+
+    bib_type = doc.get("type")
     if bib_type is None:
         return [Error(name=BIBTEX_TYPE_CHECK_NAME,
                       path=folder,
@@ -477,7 +488,7 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
                       path=folder,
                       msg=f"Document type '{bib_type}' is not a valid BibTeX type",
                       suggestion_cmd=f"papis edit --doc-folder {folder}",
-                      fix_action=None,
+                      fix_action=make_fixer(bib_type),
                       payload=bib_type,
                       doc=doc)]
 
