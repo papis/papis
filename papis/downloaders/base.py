@@ -111,6 +111,12 @@ def parse_meta_headers(soup: "bs4.BeautifulSoup") -> Dict[str, Any]:
         data["author_list"] = author_list
         data["author"] = papis.document.author_list_to_author(data)
 
+    from papis.bibtex import bibtex_type_converter
+
+    bib_type = data.get("type")
+    if bib_type in bibtex_type_converter:
+        data["type"] = bibtex_type_converter[bib_type]
+
     return data
 
 
