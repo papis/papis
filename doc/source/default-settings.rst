@@ -409,6 +409,14 @@ Add options
     In this case, the fetching can be disabled by using ``--no-fetch-citations``
     on an individual basis.
 
+.. papis-config:: auto-doctor
+
+   A setting that controls the default for the ``--auto-doctor`` flag of
+   ``papis add`` and ``papis update``. If set to *True*, then the flag will be
+   enabled by default and the doctor fixes will be applied to new documents.
+   In this case, the automatic fixers can be disabled by using
+   ``--no-auto-doctor`` on an individual basis.
+
 .. papis-config:: time-stamp
 
     A setting that controls if a timestamp is added to a document on
@@ -603,6 +611,97 @@ Serve (Web App) options
    The default sorting strategy used on the "Tags" tab of the Web UI. Can be
    either ``'alpha'`` for sorting by tags' names or ``'numeric'`` for sorting by
    their frequency of use.
+
+.. papis-config:: serve-empty-query-get-all-documents
+
+    If *True*, when no documents are found by a query then all documents are
+    shown instead. By default this is false, since showing all the documents
+    can be slow.
+
+.. papis-config:: serve-enable-timeline
+
+    If *True*, the :ref:`config-settings-time-stamp` of documents is used to
+    create a timeline for when the documents were added.
+
+.. papis-config:: serve-timeline-max
+
+    Maximum number of documents to display in the timeline.
+
+Frameworks
+^^^^^^^^^^
+
+All the frameworks used by the web UI are taken from the configuration file. This
+allows users to easily provide newer versions that may fix some bugs or other
+inconsistencies.
+
+.. warning::
+
+    Updating the URLs for one of the frameworks may result in a broken UI, as
+    Papis is not compatible with all versions. For safety only update minor
+    bugfix releases, not major new updates.
+
+.. papis-config:: serve-user-css
+
+    A list of ``href`` URLs that will be added to the header of each webpage
+    of the web UI. These style sheets are added to the end and can be used to
+    overwrite previous entries.
+
+.. papis-config:: serve-user-js
+
+    A list of ``href`` URLs that will be added to the header of each webpage
+    of the web UI. These scripts are added to the end and can be used to
+    overwrite previous entries.
+
+.. papis-config:: serve-bootstrap-css
+
+    Link to the desired version of the Bootstrap framework.
+
+.. papis-config:: serve-bootstrap-js
+
+    Link to the desired version of the Bootstrap framework.
+
+.. papis-config:: serve-jquery-js
+
+    Link to the desired version of the jQuery framework.
+
+.. papis-config:: serve-jquery.dataTables-css
+
+    Link to the desired version of the `jQuery DataTables <https://datatables.net/>`__
+    framework.
+
+.. papis-config:: serve-jquery.dataTables-js
+
+    Link to the desired version of the `jQuery DataTables <https://datatables.net/>`__
+    framework.
+
+.. papis-config:: serve-katex-css
+
+    Link to the desired version of the `KaTeX <https://katex.org/>`__ framework.
+
+.. papis-config:: serve-katex-js
+
+    Link to the desired version of the `KaTeX <https://katex.org/>`__ framework.
+
+.. papis-config:: serve-katex-auto-render-js
+
+    Link to the desired version of the
+   `KaTeX Auto-render <https://katex.org/docs/autorender.html>`__ extension.
+
+.. papis-config:: serve-ace-urls
+
+    A list of links to the desired version of the `Ace editor <https://ace.c9.io/>`__.
+    This should contain all necessary links to all the desired modes and
+    keybindings, as exemplified by the default values.
+
+.. papis-config:: serve-timeline-css
+
+    Link to the desired version of the `Timeline <https://timeline.knightlab.com/>`__
+    widget.
+
+.. papis-config:: serve-timeline-js
+
+    Link to the desired version of the `Timeline <https://timeline.knightlab.com/>`__
+    widget.
 
 Citations options
 -----------------
