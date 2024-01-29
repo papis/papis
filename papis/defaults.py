@@ -200,6 +200,15 @@ settings: Dict[str, Any] = {
                           "{c.Style.RESET_ALL}"
                           ":{doc[tags]}"),
 
+    # Diff fzf options
+    "diff-fzf-flags": [],
+    "diff-fzf-extra-flags": ['--color', 'marker:red'],
+    "diff-fzf-extra-bindings": ['ctrl-a:select-all',
+                                'alt-a:deselect-all'],
+    "diff-fzf-color-ab": "\033[32m",
+    "diff-fzf-color-b": "\033[37m",
+    "diff-fzf-color-a": "\033[31m",
+
     # importer / downloader options
     "downloader-proxy": None,
     "isbn-service": "openl",
