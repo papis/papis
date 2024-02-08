@@ -289,6 +289,11 @@ bibtex_ignore_keys = (
 #: used by :func:`ref_cleanup` to remove any undesired characters.
 ref_allowed_characters = r"([^a-zA-Z0-9._]+|(?<!\\)[._])"
 
+#: A list of fields that should not be escaped. In general, these will be
+#: escaped by the BibTeX engine and should not be modified
+#: (e.g. Verbatim fields and URI fields in `Section 2.2.1 <manual_>`_).
+bibtex_verbatim_fields = frozenset({"doi", "eprint", "file", "pdf", "url", "urlraw"})
+
 
 def exporter(documents: List[papis.document.Document]) -> str:
     """Convert documents into a list of BibLaTeX entries"""
@@ -565,7 +570,11 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
     # process keys
     supports_unicode = papis.config.getboolean("bibtex-unicode")
     journal_key = papis.config.getstring("bibtex-journal-key")
-    lines = [f"{ref}"]
+
+    entry = {
+        "ID": ref,
+        "ENTRYTYPE": bibtex_type,
+    }
 
     for key in sorted(document):
         bib_key = bibtex_key_converter.get(key, key)
@@ -590,10 +599,10 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
         if override_key in document:
             bib_value = str(document[override_key])
 
-        if not supports_unicode:
+        if not supports_unicode and bib_key not in bibtex_verbatim_fields:
             bib_value = string_to_latex(bib_value)
 
-        lines.append(f"{bib_key} = {{{bib_value}}}")
+        entry[bib_key] = bib_value
 
     # handle file exporting
     from papis.exceptions import DefaultSettingValueMissing
@@ -607,8 +616,17 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
 
     files = document.get_files()
     if export_file and files:
-        lines.append("{} = {{{}}}".format("file", ";".join(files)))
+        entry["file"] = ";".join(files)
 
-    separator = ",\n" + " " * indent
-    return "@{type}{{{keys},\n}}".format(type=bibtex_type,
-                                         keys=separator.join(lines))
+    from bibtexparser import dumps
+    from bibtexparser.bibdatabase import BibDatabase
+    from bibtexparser.bwriter import BibTexWriter
+
+    db = BibDatabase()
+    db.entries = [entry]
+
+    writer = BibTexWriter()
+    writer.add_trailing_comma = True
+    writer.indent = " " * indent
+
+    return str(dumps(db, writer=writer).strip())
