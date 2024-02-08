@@ -268,6 +268,7 @@ def run(paths: List[str],
         edit: bool = False,
         git: bool = False,
         link: bool = False,
+        move: bool = False,
         citations: Optional[papis.citations.Citations] = None,
         auto_doctor: bool = False) -> None:
     """
@@ -389,13 +390,15 @@ def run(paths: List[str],
     logger.debug("Document includes files: '%s'.", "', '".join(in_documents_paths))
 
     # First prepare everything in the temporary directory
-    from string import ascii_lowercase
-    g = papis.utils.create_identifier(ascii_lowercase)
-    string_append = ""
     if file_name is not None:  # Use args if set
         papis.config.set("add-file-name", file_name)
-    new_file_list = []
 
+    g = papis.utils.create_identifier()
+    string_append = ""
+
+    import shutil
+
+    new_file_list = []
     for in_file_path in in_documents_paths:
 
         # Rename the file in the staging area
@@ -415,10 +418,11 @@ def run(paths: List[str],
             in_file_abspath = os.path.abspath(in_file_path)
             logger.debug("[SYMLINK] '%s' to '%s'.", in_file_abspath, tmp_end_filepath)
             os.symlink(in_file_abspath, tmp_end_filepath)
+        elif move:
+            logger.debug("[MV] '%s' to '%s'.", in_file_path, tmp_end_filepath)
+            shutil.copy(in_file_path, tmp_end_filepath)
         else:
             logger.debug("[CP] '%s' to '%s'.", in_file_path, tmp_end_filepath)
-
-            import shutil
             shutil.copy(in_file_path, tmp_end_filepath)
 
     tmp_document["files"] = new_file_list
@@ -496,6 +500,13 @@ def run(paths: List[str],
             str(tmp_document.get_main_folder()), ".",
             "Add document '{}'".format(papis.document.describe(tmp_document)))
 
+    if move:
+        for in_file_path in in_documents_paths:
+            try:
+                os.remove(in_file_path)
+            except Exception as exc:
+                logger.error("Failed to move file: '%s'.", in_file_path, exc_info=exc)
+
 
 @click.command(
     "add",
@@ -553,6 +564,11 @@ def run(paths: List[str],
          "its original location",
     default=False)
 @papis.cli.bool_flag(
+    "--move/--no-move",
+    help="Instead of copying the file to the library, "
+         "move it from its original location",
+    default=False)
+@papis.cli.bool_flag(
     "--auto-doctor/--no-auto-doctor",
     help="Apply papis doctor to newly added documents.",
     default=lambda: papis.config.getboolean("auto-doctor"))
@@ -579,6 +595,7 @@ def cli(files: List[str],
         auto_doctor: bool,
         git: bool,
         link: bool,
+        move: bool,
         download_files: bool,
         fetch_citations: bool) -> None:
     """
@@ -668,5 +685,6 @@ def cli(files: List[str],
         edit=edit,
         git=git,
         link=link,
+        move=move,
         citations=citations,
         auto_doctor=auto_doctor)
