@@ -1,7 +1,6 @@
 import os
 import re
 import pytest
-from typing import Dict, Any
 
 from papis.testing import ResourceCache, TemporaryConfiguration
 
@@ -115,23 +114,19 @@ def test_to_bibtex_no_ref(tmp_config: TemporaryConfiguration) -> None:
     assert not result
 
 
-def is_same_bibtex(data: Dict[str, Any], expected_bibtex: str) -> bool:
+def test_to_bibtex_formatting(tmp_config: TemporaryConfiguration) -> None:
+    """Test formatting for the `to_bibtex` function."""
     from papis.bibtex import to_bibtex
     from papis.document import from_data
 
-    return to_bibtex(from_data(data)) == expected_bibtex
-
-
-def test_to_bibtex_formatting(tmp_config: TemporaryConfiguration) -> None:
-    """Test formatting for the `to_bibtex` function."""
-    assert is_same_bibtex({
+    assert to_bibtex(from_data({
         "type": "report",
         "author": "Albert Einstein",
         "title": "The Theory of Everything",
         "journal": "Nature",
         "year": 2350,
-        "ref": "MyDocument"},
-        #
+        "ref": "MyDocument"})
+        ) == (
         "@report{MyDocument,\n"
         "  author = {Albert Einstein},\n"
         "  journal = {Nature},\n"
@@ -139,9 +134,23 @@ def test_to_bibtex_formatting(tmp_config: TemporaryConfiguration) -> None:
         "  year = {2350},\n"
         "}")
 
+    assert to_bibtex(from_data({
+        "type": "misc",
+        "ref": "SDbwLashko2019",
+        "author": "Alexander Lashkov",
+        "url": "https://github.com/alashkov83/S_Dbw"})
+        ) == (
+        "@misc{SDbwLashko2019,\n"
+        "  author = {Alexander Lashkov},\n"
+        "  url = {https://github.com/alashkov83/S_Dbw},\n"
+        "}")
+
 
 def test_overridable(tmp_config: TemporaryConfiguration) -> None:
     import papis.config
+
+    from papis.bibtex import to_bibtex
+    from papis.document import from_data
 
     doc = {
         "type": "report",
@@ -154,25 +163,25 @@ def test_overridable(tmp_config: TemporaryConfiguration) -> None:
     }
 
     papis.config.set("bibtex-unicode", True)
-    assert is_same_bibtex(doc,
-                          "@report{MyDocument,\n"
-                          "  author = {Albert Einstein},\n"
-                          "  journal = {Nature},\n"
-                          "  title = {The Theory of Everything \\& Nothing},\n"
-                          "  year = {2350},\n"
-                          "}")
+    assert to_bibtex(from_data(doc)) == (
+        "@report{MyDocument,\n"
+        "  author = {Albert Einstein},\n"
+        "  journal = {Nature},\n"
+        "  title = {The Theory of Everything \\& Nothing},\n"
+        "  year = {2350},\n"
+        "}")
 
     papis.config.set("bibtex-unicode", False)
-    assert is_same_bibtex(doc,
-                          "@report{MyDocument,\n"
-                          "  author = {Albert Einstein},\n"
-                          "  journal = {Nature},\n"
-                          "  title = {The Theory of Everything "
-                          # this will sadly happen, and it makes sense
-                          r"\textbackslash \&"
-                          " Nothing},\n"
-                          "  year = {2350},\n"
-                          "}")
+    assert to_bibtex(from_data(doc)) == (
+        "@report{MyDocument,\n"
+        "  author = {Albert Einstein},\n"
+        "  journal = {Nature},\n"
+        "  title = {The Theory of Everything "
+        # this will sadly happen, and it makes sense
+        r"\textbackslash \&"
+        " Nothing},\n"
+        "  year = {2350},\n"
+        "}")
 
 
 def test_ignore_keys(tmp_config: TemporaryConfiguration,
@@ -180,17 +189,20 @@ def test_ignore_keys(tmp_config: TemporaryConfiguration,
     import papis.bibtex
     import papis.config
 
+    from papis.bibtex import to_bibtex
+    from papis.document import from_data
+
     doc = {
         "type": "report",
         "author": "Albert Einstein",
         "year": 2350,
         "ref": "MyDocument"
     }
-    assert is_same_bibtex(doc,
-                          "@report{MyDocument,\n"
-                          "  author = {Albert Einstein},\n"
-                          "  year = {2350},\n"
-                          "}")
+    assert to_bibtex(from_data(doc)) == (
+        "@report{MyDocument,\n"
+        "  author = {Albert Einstein},\n"
+        "  year = {2350},\n"
+        "}")
 
     # TODO: think about this since these keys are not updated
     #       dynamically and it's possible is not worth it to update dynamically
@@ -198,7 +210,7 @@ def test_ignore_keys(tmp_config: TemporaryConfiguration,
     monkeypatch.setattr(papis.bibtex, "bibtex_ignore_keys",
                         frozenset(papis.config.getlist("bibtex-ignore-keys")))
 
-    assert is_same_bibtex(doc,
-                          "@report{MyDocument,\n"
-                          "  author = {Albert Einstein},\n"
-                          "}")
+    assert to_bibtex(from_data(doc)) == (
+        "@report{MyDocument,\n"
+        "  author = {Albert Einstein},\n"
+        "}")
