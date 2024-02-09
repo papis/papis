@@ -78,7 +78,7 @@ INIT_PROMPTS = [
 @click.argument(
     "dir_path",
     required=False,
-    type=click.Path(),
+    type=click.Path(file_okay=False),
     default=None,
     metavar="<LIBRARY DIRECTORY>",
     nargs=1,
