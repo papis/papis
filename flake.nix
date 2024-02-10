@@ -70,11 +70,12 @@
         flake8
         mypy
         pep8-naming
-        pylint
         pytest
         pytest-cov
-        python-lsp-server
-        sphinx_rtd_theme
+        # not used in tests
+        # pylint
+        # python-lsp-server
+        # sphinx_rtd_theme
 
         # not packaged
         # python-coveralls
