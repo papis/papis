@@ -84,7 +84,7 @@ setup(
         "PyYAML>=3.12",
         "arxiv>=1.0.0",
         "beautifulsoup4>=4.4.1",
-        "bibtexparser>=0.6.2",
+        "bibtexparser>=1.4,<2",
         "chardet>=3.0.2",
         "click>=7.0.0",
         "colorama>=0.2",
