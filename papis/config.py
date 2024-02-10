@@ -3,6 +3,7 @@ import configparser
 from typing import Dict, Any, List, Optional, Callable
 
 import click
+import platformdirs
 
 import papis.exceptions
 import papis.library
@@ -53,7 +54,7 @@ class Configuration(configparser.ConfigParser):
         self.file_location: str = get_config_file()
         self.default_info: PapisConfigType = {
             "papers": {
-                "dir": "~/Documents/papers"
+                "dir": os.path.join(platformdirs.user_documents_dir(), "papers")
             },
             GENERAL_SETTINGS_NAME: {
                 "default-library": "papers"
@@ -77,10 +78,32 @@ class Configuration(configparser.ConfigParser):
                 self[section][field] = self.default_info[section][field]
 
     def initialize(self) -> None:
+        deprecated_config = _get_deprecated_config_folder()
+        has_deprecated_config = (
+            self.dir_location != deprecated_config
+            and os.path.exists(deprecated_config))
+
         # ensure all configuration directories exist
-        if not os.path.exists(self.dir_location):
-            self.include_defaults()
-            return
+        if os.path.exists(self.dir_location):
+            if has_deprecated_config:
+                click.echo(
+                    f"The configuration is loaded from '{self.dir_location}'. A "
+                    "deprecated configuration folder was found at "
+                    f"'{deprecated_config}' and skipped. Please remove it to "
+                    "avoid seeing this warning in the future.")
+        else:
+            if has_deprecated_config:
+                click.echo(
+                    "A deprecated configuration folder was found at "
+                    f"'{deprecated_config}' and has been copied to the new "
+                    f"location '{self.dir_location}'. Please remove the deprecated "
+                    "folder to avoid seeing this warning in the future.")
+
+                import shutil
+                shutil.copytree(deprecated_config, self.dir_location)
+            else:
+                self.include_defaults()
+                return
 
         # load settings
         if os.path.exists(self.file_location):
@@ -172,61 +195,69 @@ def register_default_settings(settings_dictionary: PapisConfigType) -> None:
             default_settings[section] = settings
 
 
-def get_config_home() -> str:
-    """
-    :returns: the base directory relative to which user specific configuration
-        files should be stored.
-    """
-    xdg_home = os.environ.get("XDG_CONFIG_HOME")
-    if xdg_home:
-        return os.path.expanduser(xdg_home)
+def _get_deprecated_config_folder() -> str:
+    xdg_config_home = os.environ.get("XDG_CONFIG_HOME")
+    if xdg_config_home:
+        xdg_config_home = os.path.expanduser(xdg_config_home)
     else:
-        return os.path.join(os.path.expanduser("~"), ".config")
+        xdg_config_home = os.path.join(os.path.expanduser("~"), ".config")
 
+    # NOTE: configuration directories are search in the following order
+    # 1. user config in `~/.config/papis` (see XDG_CONFIG_HOME)
+    # 2. site config in `/etc/papis` (see XDG_CONFIG_DIRS)
+    # 3. deprecated config in `~/.papis`
+    config_dirs = [os.path.join(xdg_config_home, "papis")]
 
-def get_config_dirs() -> List[str]:
-    """
-    :returns: a list of directories where the configuration files might be stored.
-    """
-    dirs: List[str] = []
+    xdg_config_dirs = os.environ.get("XDG_CONFIG_DIRS")
+    if xdg_config_dirs:
+        config_dirs += [os.path.join(d, "papis") for d in xdg_config_dirs.split(":")]
 
-    # get_config_home should also be included on top of XDG_CONFIG_DIRS
-    config_dirs = os.environ.get("XDG_CONFIG_DIRS")
-    if config_dirs:
-        dirs += [os.path.join(d, "papis") for d in config_dirs.split(":")]
-
-    # NOTE: Take XDG_CONFIG_HOME and $HOME/.papis for backwards compatibility
-    dirs += [
-        os.path.join(get_config_home(), "papis"),
-        os.path.join(os.path.expanduser("~"), ".papis")]
-
-    return dirs
-
-
-def get_config_folder() -> str:
-    """Get the main configuration folder.
-
-    :returns: the folder where the configuration files are stored, e.g.
-        ``$HOME/.config/papis``, by looking in the directories returned by
-        :func:`get_config_dirs`.
-    """
-    config_dirs = get_config_dirs()
+    config_dirs += [os.path.join(os.path.expanduser("~"), ".papis")]
 
     for config_dir in config_dirs:
         if os.path.exists(config_dir):
             return config_dir
 
     # NOTE: If no folder is found, then get the config home
-    return os.path.join(get_config_home(), "papis")
+    return os.path.join(xdg_config_home, "papis")
+
+
+def get_config_home() -> str:
+    """
+    :returns: a (platform dependent) base directory relative to which user
+        specific configuration files should be stored.
+    """
+    # NOTE: this environment variable is added mainly for testing purposes, so
+    # we don't have to monkeypatch platformdirs in an awkward way
+    home = os.environ.get("PAPIS_CONFIG_DIR")
+    if home is None:
+        home = platformdirs.user_config_dir()
+    else:
+        home = os.path.dirname(home)
+
+    return home
+
+
+def get_config_folder() -> str:
+    """Get the main configuration folder.
+
+    :returns: a (platform dependent) folder where the configuration files are
+        stored, e.g. ``$HOME/.config/papis`` on POSIX platforms.
+    """
+    folder = os.environ.get("PAPIS_CONFIG_DIR")
+    if folder is None:
+        # FIXME: should also check XDG_CONFIG_DIRS as we did before
+        folder = platformdirs.user_config_dir("papis")
+
+    return folder
 
 
 def get_config_file() -> str:
     """Get the main configuration file.
 
-    This file can be changed by :func:`set_config_file`.
-
-    :returns: the path of the main configuration file, e.g. ``$CONFIG_FOLDER/config``,
-        in the directory returned by :func:`get_config_folder`.
+    :returns: the path of the main configuration file, which by default is in
+        :func:`get_config_folder`, but can be overwritten using
+        :func:`set_config_file`.
     """
 
     global OVERRIDE_VARS
@@ -248,16 +279,21 @@ def set_config_file(filepath: str) -> None:
 
 
 def get_configpy_file() -> str:
-    """
-    :returns: the path of the main Python configuration file, e.g.
-        ``$CONFIG_FOLDER/config.py``.
+    r"""Get the main Python configuration file.
+
+    This is a file that will get automatically :func:`eval`\ ed if it exists
+    and allows for more dynamic configuration.
+
+    :returns: the path of the main Python configuration file, which by default
+        is in :func:`get_config_folder`.
     """
     return os.path.join(get_config_folder(), "config.py")
 
 
 def get_scripts_folder() -> str:
     """
-    :returns: the folder where the scripts are stored, e.g. ``$CONFIG_FOLDER/scripts``.
+    :returns: the folder where additional scripts are stored, which by default
+        is in :func:`get_config_folder`.
     """
     return os.path.join(get_config_folder(), "scripts")
 

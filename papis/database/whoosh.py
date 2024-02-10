@@ -2,9 +2,9 @@
 here are some considerations.
 
 Whoosh works with 3 main objects, the Index, the Writer and the Schema.
-The indices are stored in a folder which by default is in
-``$XDG_CACHE_HOME/papis/whoosh``. The name of the indices
-folders is similar to the cache files of the papis cache database.
+The indices are stored in a subfolder of :func:`~papis.utils.get_cache_home`.
+The name of the indices folders is similar to the cache files of the papis
+cache database.
 
 Once the index is created in the mentioned folder, a Schema is initialized,
 which is a declaration of the data prototype of the database, or the

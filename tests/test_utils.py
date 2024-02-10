@@ -6,26 +6,11 @@ import tempfile
 from papis.testing import TemporaryConfiguration
 
 
-@pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
 def test_get_cache_home(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
     import papis.config
     from papis.utils import get_cache_home
-    tmpdir = tempfile.gettempdir()
 
-    with monkeypatch.context() as m:
-        m.delenv("XDG_CACHE_HOME", raising=False)
-        assert get_cache_home() == os.path.join(os.path.expanduser("~/.cache"), "papis")
-
-    with monkeypatch.context() as m:
-        m.setenv("XDG_CACHE_HOME", os.path.expanduser("~/.cache"))
-        assert get_cache_home() == os.path.join(os.environ["XDG_CACHE_HOME"], "papis")
-
-    with monkeypatch.context() as m:
-        m.setenv("XDG_CACHE_HOME", os.path.join(tmpdir, ".cache"))
-
-        assert get_cache_home() == os.path.join(tmpdir, ".cache", "papis")
-        assert os.path.exists(get_cache_home())
-
+    assert get_cache_home() == os.path.join(tmp_config.tmpdir, "papis")
     with tempfile.TemporaryDirectory(dir=tmp_config.tmpdir) as d:
         tmp = os.path.join(d, "blah")
         papis.config.set("cache-dir", tmp)
