@@ -16,6 +16,8 @@ VERSION NEXT
   `bs4`, `requests` and `feedparser` and should be installed if possible.
 * Added [markdownify](https://github.com/matthewwithanm/python-markdownify) as
   an optional dependency for the Zenodo downloader.
+* Added [platformdirs](https://github.com/platformdirs/platformdirs) dependency
+  for platform-specific config locations.
 
 ## Features
 

@@ -12,6 +12,8 @@ try:
 except ImportError:
     HAS_MULTIPROCESSING = False
 
+import platformdirs
+
 import papis.config
 import papis.database
 import papis.defaults
@@ -401,21 +403,16 @@ def get_cache_home() -> str:
     """Get default cache directory.
 
     This will retrieve the :confval:`cache-dir` configuration setting.
-    It is ``XDG`` standard compatible.
+    If not provided, a platform-dependent cache folder is chosen instead.
 
     :returns: the absolute path for the cache main folder.
     """
     cachedir = papis.config.get("cache-dir")
-
     if cachedir is None:
-        xdg_cache_dir = os.environ.get("XDG_CACHE_HOME")
-        if xdg_cache_dir:
-            cachedir = os.path.join(xdg_cache_dir, "papis")
-        else:
-            cachedir = os.path.join("~", ".cache", "papis")
+        cachedir = os.environ.get("PAPIS_CACHE_DIR")
+        if cachedir is None:
+            cachedir = platformdirs.user_cache_dir("papis")
 
-    # ensure the directory exists
-    cachedir = os.path.expanduser(cachedir)
     if not os.path.exists(cachedir):
         os.makedirs(cachedir)
 

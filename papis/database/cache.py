@@ -13,11 +13,11 @@ import papis.logging
 logger = papis.logging.get_logger(__name__)
 
 
-def get_cache_file_name(directory: str) -> str:
+def get_cache_file_name(libpaths: str) -> str:
     """Create a cache file name out of the path of a given directory.
 
-    :param directory: Folder name to be used as a seed for the cache name.
-    :returns: Name for the cache file.
+    :param libpaths: folder names to be used as a seed for the cache name.
+    :returns: a name for the cache file specific to *libpaths*.
 
     >>> get_cache_file_name('path/to/my/lib')
     'a8c689820a94babec20c5d6269c7d488-lib'
@@ -26,24 +26,20 @@ def get_cache_file_name(directory: str) -> str:
     """
     import hashlib
     return "{}-{}".format(
-        hashlib.md5(directory.encode()).hexdigest(),
-        os.path.basename(directory))
+        hashlib.md5(libpaths.encode()).hexdigest(),
+        os.path.basename(libpaths))
 
 
-def get_cache_file_path(directory: str) -> str:
-    """Get the full path to the cache file
+def get_cache_file_path(libpaths: str) -> str:
+    """Get the full path to the cache file.
 
-    :param directory: Library folder
-
-    >>> import os; os.environ["XDG_CACHE_HOME"] = '/tmp'
-    >>> os.path.basename(get_cache_file_path('blah/papers'))
-    'c39177eca0eaea2e21134b0bd06631b6-papers'
+    :param libpaths: a cache file specific for the given library paths.
     """
-    cache_name = get_cache_file_name(directory)
-    folder = os.path.expanduser(
-        os.path.join(papis.utils.get_cache_home(), "database"))
+    cache_name = get_cache_file_name(libpaths)
+    folder = os.path.join(papis.utils.get_cache_home(), "database")
     if not os.path.exists(folder):
         os.makedirs(folder)
+
     return os.path.join(folder, cache_name)
 
 
