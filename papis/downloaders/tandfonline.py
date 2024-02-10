@@ -39,6 +39,8 @@ def _parse_month(date: str) -> Optional[int]:
 class Downloader(papis.downloaders.Downloader):
     """Retrieve documents from `Taylor & Francis <https://www.tandfonline.com>`__"""
 
+    BASE_URL: ClassVar[str] = "https://www.tandfonline.com/doi/full"
+
     DOCUMENT_URL: ClassVar[str] = (
         "https://www.tandfonline.com/doi/pdf/{doi}"
         )
@@ -64,8 +66,13 @@ class Downloader(papis.downloaders.Downloader):
         soup = self._get_soup()
         data = papis.downloaders.base.parse_meta_headers(soup)
 
-        return papis.document.keyconversion_to_data(
+        data = papis.document.keyconversion_to_data(
             article_key_conversion, data, keep_unknown_keys=True)
+
+        if "doi" not in data and "doi" in self.uri:
+            data["doi"] = self.uri[len(self.BASE_URL) + 1:]
+
+        return data
 
     def get_bibtex_url(self) -> Optional[str]:
         doi = self.ctx.data.get("doi")
