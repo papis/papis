@@ -67,8 +67,8 @@
         pip
         virtualenv
 
-        flake8-bugbear
         flake8
+        flake8-bugbear
         mypy
         pep8-naming
         pylint
@@ -78,9 +78,9 @@
         sphinx_rtd_theme
 
         # not packaged
+        # flake8-quotes
         # python-coveralls
         # sphinx-click
-        # flake8-quotes
         # types-PyYAML
         # types-Pygments
         # types-beautifulsoup4

@@ -1,4 +1,5 @@
 PYTHON?=python -X dev
+NIX?=nix --extra-experimental-features nix-command --extra-experimental-features flakes
 
 all: help
 
@@ -69,17 +70,17 @@ ci-lint:							## Run linting like on the CI
 .PHONY: ci-lint
 
 nix-build: 							## Build using nix
-	nix build
+	$(NIX) build
 .PHONY: nix-build
 
 nix-update: 						## Update the nix flake.lock file
-	nix flake update
+	$(NIX) flake update
 .PHONY: nix-update
 
 nix-test: 							## Run the tests within nix
-	nix develop --command bash -c "source .venv/bin/activate; python -m pytest -v papis tests"
+	$(NIX) develop --command bash -c "source .venv/bin/activate; python -m pytest -v papis tests"
 .PHONY: nix-update
 
 nix-install: 						## Install nix flake to local profile
-	nix profile install '.#papis'
+	$(NIX) profile install '.#papis'
 .PHONY: nix-install
