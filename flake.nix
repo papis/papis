@@ -2,7 +2,7 @@
   description = "Papis - Powerful command-line document and bibliography manager";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -13,8 +13,8 @@
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
-      python = pkgs.python310;
-      pypkgs = pkgs.python310Packages;
+      python = pkgs.python311;
+      pypkgs = pkgs.python311Packages;
       lib = pkgs.lib;
 
       runtime_py_deps = let
