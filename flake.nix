@@ -13,8 +13,8 @@
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
-      python = pkgs.python311;
-      pypkgs = pkgs.python311Packages;
+      python = pkgs.python3;
+      pypkgs = pkgs.python3Packages;
       lib = pkgs.lib;
 
       runtime_py_deps = let
@@ -159,7 +159,7 @@
             python --version
             python -m venv .venv
             source .venv/bin/activate
-            pip install -e .[develop,optional]
+            pip install -e ".[develop,optional]"
           '';
         };
       };
