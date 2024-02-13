@@ -100,9 +100,9 @@ def cli(dir_path: Optional[str]) -> None:
         if not papis.tui.utils.confirm("Do you want to continue?"):
             return
     else:
-        logger.info("Using config file: '%s'.", config_file)
+        logger.info("Initializing a new config file: '%s'.", config_file)
 
-    logger.info("Setting library location.")
+    logger.info("Setting library location:")
     dir_path = os.getcwd() if dir_path is None else dir_path
     library_name = papis.tui.utils.prompt(
         "Name of the library",
