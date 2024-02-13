@@ -109,12 +109,13 @@ setup(
         # for example:
         # $ pip install -e .[develop]
         "optional": [
+            "Jinja2>=3.0.0",
             "Whoosh>=2.7.4",
         ],
         "develop": [
+            "flake8",
             "flake8-bugbear",
             "flake8-quotes",
-            "flake8",
             "mypy>=0.7",
             "pep8-naming",
             "pylint",
