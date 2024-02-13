@@ -2,6 +2,8 @@ import os
 import configparser
 from typing import Dict, Any, List, Optional, Callable
 
+import click
+
 import papis.exceptions
 import papis.library
 import papis.logging
@@ -66,46 +68,36 @@ class Configuration(configparser.ConfigParser):
         for name in self["include"]:
             fullpath = os.path.expanduser(self.get("include", name))
             if os.path.exists(fullpath):
-                logger.debug("Including file '%s'.", name)
                 self.read(fullpath)
-            else:
-                logger.warning("'%s' not included because it does not exist.",
-                               fullpath)
+
+    def include_defaults(self) -> None:
+        for section in self.default_info:
+            self[section] = {}
+            for field in self.default_info[section]:
+                self[section][field] = self.default_info[section][field]
 
     def initialize(self) -> None:
         # ensure all configuration directories exist
         if not os.path.exists(self.dir_location):
-            logger.warning("Creating configuration folder in '%s'.", self.dir_location)
-            os.makedirs(self.dir_location)
-
-        if not os.path.exists(self.scripts_location):
-            logger.warning(
-                "Creating scripts folder in '%s'", self.scripts_location)
-            os.makedirs(self.scripts_location)
+            self.include_defaults()
+            return
 
         # load settings
         if os.path.exists(self.file_location):
-            logger.debug("Reading configuration from '%s'.", self.file_location)
             try:
                 self.read(self.file_location)
                 self.handle_includes()
             except configparser.DuplicateOptionError as exc:
-                logger.error("%s: %s", type(exc).__name__, exc, exc_info=exc)
+                click.echo("Failed to read configuration file "
+                           f"'{self.file_location}'.")
+                click.echo(f"Error: Duplicate option '{exc.option}' "
+                           f"in section {exc.section}")
                 raise SystemExit(1)
 
         # if no sections were actually read, add default ones
         if not self.sections():
-            logger.warning(
-                "No sections were found in the configuration file. "
-                "Adding default ones (with a default library named 'papers')!")
-
-            for section in self.default_info:
-                self[section] = {}
-                for field in self.default_info[section]:
-                    self[section][field] = self.default_info[section][field]
-
+            self.include_defaults()
             with open(self.file_location, "w") as configfile:
-                logger.info("Creating configuration file at '%s'.", self.file_location)
                 self.write(configfile)
 
         # ensure the general section and default-library exist in the config
@@ -115,17 +107,11 @@ class Configuration(configparser.ConfigParser):
                 libs[0] if libs else
                 self.default_info[GENERAL_SETTINGS_NAME]["default-library"])
 
-            logger.warning(
-                "No main '%s' section found in the configuration file. "
-                "Setting '%s' as the default library!",
-                GENERAL_SETTINGS_NAME, default_library)
-
             self[GENERAL_SETTINGS_NAME] = {"default-library": default_library}
 
         # evaluate the python config
         configpy = get_configpy_file()
         if os.path.exists(configpy):
-            logger.debug("Executing configuration script '%s'.", configpy)
             with open(configpy) as fd:
                 exec(fd.read())
 
