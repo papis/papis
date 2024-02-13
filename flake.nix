@@ -40,7 +40,7 @@
         };
       in
         with pypkgs; [
-          pyyaml
+          arxivpy
           beautifulsoup4
           bibtexparser
           chardet
@@ -50,17 +50,18 @@
           filetype
           habanero
           isbnlib
+          jinja2
           lxml
           prompt_toolkit
           pygments
           pyparsing
           python-doi
           python-slugify
+          pyyaml
           requests
           stevedore
           tqdm
           whoosh
-          arxivpy
         ];
       develop_py_deps = with pypkgs; [
         pip
