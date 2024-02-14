@@ -20,7 +20,7 @@ class PapisConfig(Directive):
     has_content: bool = True
     optional_arguments: int = 3
     required_arguments: int = 1
-    option_spec: Dict[str, type] = {"default": str, "section": str, "description": str}
+    option_spec: Dict[str, type] = {"default": str, "section": str, "type": str}
     add_index: int = True
 
     def run(self) -> Any:
@@ -34,26 +34,33 @@ class PapisConfig(Directive):
             "default",
             default_settings.get(section, {}).get(key, "<missing>"))
 
-        lines = []
-        lines.append("")
-        lines.append(".. _config-{section}-{key}:".format(section=section, key=key))
-        lines.append("")
-        lines.append("`{key} <#config-{section}-{key}>`__"
-                     .format(section=section, key=key))
-
-        if "\n" in str(default):
-            lines.append("    - **Default**: ")
-            lines.append("        .. code::")
-            lines.append("")
-            for lindef in default.split("\n"):
-                lines.append(3 * "    " + lindef)
+        # NOTE: try to get some type information for display purposes
+        if "type" in self.options:
+            default_type = self.options["type"].strip()
+            if not default_type.startswith(":"):
+                default_type = f":class:`~{default_type}`"
         else:
-            lines.append("    - **Default**: ``{value!r}``"
-                         .format(value=default))
-        lines.append("")
+            tp = type(default)
+            if isinstance(default, list) and len(default) > 0:
+                item_type = type(default[0]).__name__
+                default_type = f":class:`~typing.List` [:class:`{item_type}`]"
+            else:
+                if tp.__module__ == "builtins":
+                    default_type = f":class:`{tp.__name__}`"
+                else:
+                    default_type = f":class:`~{tp.__module__}.{tp.__name__}`"
 
-        view = docutils.statemachine.ViewList(lines)
-        self.content = view + self.content  # type: ignore[has-type]
+        lines = [
+            f".. confval:: {key}",
+            "",
+            f"    :type: {default_type}"
+            if default is not None else "",
+            f"    :section: ``{section}``"
+            if section != get_general_settings_name() else "",
+            f"    :default: ``{default!r}``",
+            "",
+        ] + [f"    {line}" for line in self.content]
+        self.content = docutils.statemachine.ViewList(lines)
 
         node = docutils.nodes.paragraph()
         node.document = self.state.document
@@ -123,11 +130,24 @@ def remove_module_docstring(app: application.Sphinx,
 
 
 def setup(app: application.Sphinx) -> Dict[str, Any]:
+    from sphinx.util.docfields import Field
+
     app.setup_extension("sphinx.ext.linkcode")
     app.setup_extension("sphinx_click.ext")
 
     app.add_directive("click", CustomClickDirective, override=True)
     app.add_directive("papis-config", PapisConfig)
+
+    app.add_object_type(
+        "confval",
+        "confval",
+        objname="configuration value",
+        indextemplate="pair: %s; configuration value",
+        doc_field_types=[
+            Field("type", label="Type", has_arg=False, names=("type",)),
+            Field("default", label="Default", has_arg=False, names=("default",)),
+            Field("section", label="Section", has_arg=False, names=("section",)),
+        ])
 
     app.connect("autodoc-process-docstring", remove_module_docstring)
 
