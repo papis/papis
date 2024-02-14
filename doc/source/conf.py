@@ -9,11 +9,9 @@
 
 import os
 import sys
-import papis
-import docutils
 
-from docutils.parsers.rst import Directive
-from sphinx_click.ext import ClickDirective
+from papis import __version__
+from papis.sphinx_ext import make_link_resolve
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -33,7 +31,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
     "sphinx.ext.linkcode",
-    "sphinx_click.ext",
+    "papis.sphinx_ext",
 ]
 
 intersphinx_mapping = {
@@ -49,125 +47,14 @@ intersphinx_mapping = {
     "stevedore": ("https://docs.openstack.org/stevedore/latest", None),
 }
 
+linkcode_resolve = make_link_resolve("https://github.com/papis/papis", "main")
+
 autodoc_member_order = "bysource"
 
 nitpick_ignore_regex = [
     ["py:class", r".*SubRequest"],
     ]
 
-
-# Exec directive {{{
-
-class CustomClickDirective(ClickDirective):
-    def run(self):
-        sections = super().run()
-
-        # NOTE: just remove the title section so we can add our own
-        return sections[0].children[1:]
-
-
-class PapisConfig(Directive):
-    has_content = True
-    optional_arguments = 3
-    required_arguments = 1
-    option_spec = {"default": str, "section": str, "description": str}
-    add_index = True
-
-    def run(self):
-        from papis.config import get_general_settings_name, get_default_settings
-        key = self.arguments[0]
-        section = self.options.get(
-            "section",
-            get_general_settings_name())
-        default = self.options.get(
-            "default",
-            get_default_settings().get(section, {}).get(key, "<missing>"))
-
-        lines = []
-        lines.append("")
-        lines.append(".. _config-{section}-{key}:".format(section=section, key=key))
-        lines.append("")
-        lines.append("`{key} <#config-{section}-{key}>`__"
-                     .format(section=section, key=key))
-
-        if "\n" in str(default):
-            lines.append("    - **Default**: ")
-            lines.append("        .. code::")
-            lines.append("")
-            for lindef in default.split("\n"):
-                lines.append(3 * "    " + lindef)
-        else:
-            lines.append("    - **Default**: ``{value!r}``"
-                         .format(value=default))
-        lines.append("")
-
-        view = docutils.statemachine.ViewList(lines)
-        self.content = view + self.content
-
-        node = docutils.nodes.paragraph()
-        node.document = self.state.document
-        self.state.nested_parse(self.content, self.content_offset, node)
-
-        return node.children
-
-
-def remove_module_docstring(app, what, name, obj, options, lines):
-    # NOTE: this is used to remove the module documentation for commands so that
-    # we can show the module members in the `Developer API Reference` section
-    # without the tutorial / examples parts.
-    if what == "module" and ".commands." in name and options.get("members"):
-        del lines[:]
-
-
-def setup(app):
-    app.add_directive("click", CustomClickDirective, override=True)
-    app.add_directive("papis-config", PapisConfig)
-    app.connect("autodoc-process-docstring", remove_module_docstring)
-
-
-def linkcode_resolve(domain, info):
-    url = None
-    if domain != "py" or not info["module"]:
-        return url
-
-    modname = info["module"]
-    objname = info["fullname"]
-
-    mod = sys.modules.get(modname)
-    if not mod:
-        return url
-
-    obj = mod
-    for part in objname.split("."):
-        try:
-            obj = getattr(obj, part)
-        except Exception:
-            return url
-
-    import inspect
-
-    try:
-        filepath = "{}.py".format(os.path.join(*obj.__module__.split(".")))
-    except Exception:
-        return url
-
-    if filepath is None:
-        return url
-
-    try:
-        source, lineno = inspect.getsourcelines(obj)
-    except Exception:
-        return url
-    else:
-        linestart, linestop = lineno, lineno + len(source) - 1
-
-    return (
-        "https://github.com/papis/papis/blob/main/{}#L{}-L{}"
-        .format(filepath, linestart, linestop)
-    )
-
-
-# }}} Exec directive #
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -190,7 +77,7 @@ copyright = "2017, Alejandro Gallo"
 # built documents.
 #
 # The short X.Y version.
-version = papis.__version__
+version = __version__
 # The full version, including alpha/beta/rc tags.
 # release = re.sub('^v', '', os.popen('git describe').read().strip())
 release = version
