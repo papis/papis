@@ -361,6 +361,7 @@ Add options
     be a duplicate, a suffix ``-a``, ``-b``, etc. is added to the names.
 
 .. papis-config:: add-file-name
+    :type: str
 
     Set the default file name for newly added documents, similarly to
     :ref:`config-settings-add-folder-name`. If it is not set, the names of the
@@ -528,6 +529,7 @@ Doctor options
    tags are given as a list in a document.
 
 .. papis-config:: doctor-key-type-check-separator
+    :type: str
 
     A separator used by the ``key-type`` check fixer. When converting from
     :class:`str` to :class:`list`, it is used to split the string into a list,
@@ -720,11 +722,14 @@ Downloaders
 -----------
 
 .. papis-config:: downloader-proxy
+    :type: str
 
     There is the possibility of download papers using a proxy. We use :mod:`requests`
     to handle web queries, which has extensive documentation on how to use
     proxies
     `here <https://docs.python-requests.org/en/latest/user/advanced/#proxies>`__.
+    This value should give a URL that can be used as a proxy for both HTTP
+    and HTTPS.
 
 .. papis-config:: isbn-service
 
