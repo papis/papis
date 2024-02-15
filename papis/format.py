@@ -45,7 +45,7 @@ class Formatter:
         :param fmt: a format string understood by the formatter.
         :param doc: an object convertible to a document.
         :param doc_key: the name of the document in the format string. By
-            default, this falls back to :ref:`config-settings-format-doc-name`.
+            default, this falls back to :confval:`format-doc-name`.
         :param default: an optional string to use as a default value if the
             formatting fails. If no default is given, a :exc:`FormatFailedError`
             will be raised.
@@ -62,7 +62,7 @@ class PythonFormatter(Formatter):
     (*str.format* based) format string.
 
     This formatter is named ``"python"`` and can be set using the
-    :ref:`config-settings-formatter` setting in the configuration file. The
+    :confval:`formatter` setting in the configuration file. The
     formatted string has access to the ``doc`` variable, that is always a
     :class:`papis.document.Document`. A string using this formatter can look
     like
@@ -110,7 +110,7 @@ class Jinja2Formatter(Formatter):
     templates.
 
     This formatter is named ``"jinja2"`` and can be set using the
-    :ref:`config-settings-formatter` setting in the configuration file. The
+    :confval:`formatter` setting in the configuration file. The
     formatted string has access to the ``doc`` variable, that is always a
     :class:`papis.document.Document`. A string using this formatter can look
     like
@@ -181,7 +181,7 @@ def get_formatter(name: Optional[str] = None) -> Formatter:
     will return the same formatter.
 
     :param name: the name of the desired formatter, by default this uses
-        the value of :ref:`config-settings-formatter`.
+        the value of :confval:`formatter`.
     """
     global FORMATTER
 

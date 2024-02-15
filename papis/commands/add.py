@@ -170,7 +170,7 @@ def get_file_name(
         base_name_limit: int = 150) -> str:
     """Generate a file name for the document.
 
-    This function uses :ref:`config-settings-add-file-name` to generate a file
+    This function uses :confval:`add-file-name` to generate a file
     name for the *original_filepath* based on the document data. If the document
     does not provide the necessary keys, the original file name will be preserved
     (mostly as is).

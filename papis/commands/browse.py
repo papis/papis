@@ -7,14 +7,14 @@ to open it in a browser.  Also if it has a ``doc_url`` key, or a DOI, it will tr
 to compose URLs out of these to open it.
 
 If none of the above work, then it will try to use a search engine with the
-document's information (using the :ref:`config-settings-browse-query-format`
+document's information (using the :confval:`browse-query-format`
 configuration option).  You can select which search engine you want to use
-with the :ref:`config-settings-search-engine` setting.
+with the :confval:`search-engine` setting.
 
 Examples
 ^^^^^^^^
 
-By default, it will use the configuration option :ref:`config-settings-browse-key`
+By default, it will use the configuration option :confval:`browse-key`
 to try and form an URL to browse. You can bypass this option using the ``-k``
 flag issuing the command
 

@@ -144,8 +144,8 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
 def author_list_to_author(data: Dict[str, Any]) -> str:
     """Convert a list of authors into a single author string.
 
-    This uses the :ref:`config-settings-multiple-authors-separator` and the
-    :ref:`config-settings-multiple-authors-format` settings to construct the
+    This uses the :confval:`multiple-authors-separator` and the
+    :confval:`multiple-authors-format` settings to construct the
     concatenated authors.
 
     :param data: a :class:`dict` that contains an ``"author_list"`` key to
@@ -525,7 +525,7 @@ def delete(document: Document) -> None:
 def describe(document: Union[Document, Dict[str, Any]]) -> str:
     """
     :returns: a string description of the current document using
-        :ref:`config-settings-document-description-format`.
+        :confval:`document-description-format`.
     """
     return papis.format.format(
         papis.config.getstring("document-description-format"),

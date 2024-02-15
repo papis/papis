@@ -15,7 +15,7 @@ If you are using TeX engines like XeTeX or LuaTeX, then you can use unicode
 characters for your BibTeX files as well. This means there is no need to write
 ``\`{a}`` instead of ``à`` in words such as ``apareixerà``. To control the
 output of unicode characters in papis, use the
-:ref:`config-settings-bibtex-unicode` setting.
+:confval:`bibtex-unicode` setting.
 
 Override keys
 -------------
@@ -44,5 +44,5 @@ Ignore keys
 -----------
 
 If you do not want to export certain keys to the BibTeX file,
-like the ``abstract``, you might use the :ref:`config-settings-bibtex-ignore-keys`
+like the ``abstract``, you might use the :confval:`bibtex-ignore-keys`
 setting to omit them in the exporting process.

@@ -120,7 +120,7 @@ def list_plugins(show_paths: bool = False,
             if verbose:
                 lines = [line for line in str(check.operate.__doc__).split("\n\n")
                          if line]
-                line = re.sub(r":ref:`config-settings-(.*)`", r"'\1'", lines[0].strip())
+                line = re.sub(r":confval:`(.*)`", r"'\1'", lines[0].strip())
                 results.append(f"    {line}")
         return results
 

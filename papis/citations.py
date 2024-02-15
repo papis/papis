@@ -179,7 +179,7 @@ def fetch_and_save_citations(doc: papis.document.Document) -> None:
 
 def get_citations_file(doc: papis.document.Document) -> Optional[str]:
     """Get the document's citation file path (see
-    :ref:`config-settings-citations-file-name`).
+    :confval:`citations-file-name`).
 
     :returns: an absolute path to the citations file for *doc*.
     """
@@ -222,7 +222,7 @@ def get_citations(doc: papis.document.Document) -> Citations:
 
 
 def get_cited_by_file(doc: papis.document.Document) -> Optional[str]:
-    """Get the documents cited-by file (see :ref:`config-settings-cited-by-file-name`).
+    """Get the documents cited-by file (see :confval:`cited-by-file-name`).
 
     :returns: an absolute path to the cited-by file for *doc*.
     """
