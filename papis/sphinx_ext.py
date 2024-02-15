@@ -109,7 +109,7 @@ class PapisConfig(Directive):
             default_type = self.options["type"].strip()
             if not default_type.startswith(":"):
                 default_type = f":class:`~{default_type}`"
-        else:
+        elif default is not None:
             tp = type(default)
             if isinstance(default, list) and len(default) > 0:
                 item_type = type(default[0]).__name__
@@ -119,12 +119,14 @@ class PapisConfig(Directive):
                     default_type = f":class:`{tp.__name__}`"
                 else:
                     default_type = f":class:`~{tp.__module__}.{tp.__name__}`"
+        else:
+            default_type = None
 
         lines = [
             f".. confval:: {key}",
             "",
             f"    :type: {default_type}"
-            if default is not None else "",
+            if default_type is not None else "",
             f"    :section: ``{section}``"
             if section != get_general_settings_name() else "",
             f"    :default: ``{default!r}``",

@@ -130,9 +130,9 @@ class PythonFormatter(Formatter):
 
         "{doc[title]!l}"
 
-    The following special conversions are implemented: "l" for :func:`str.lower`,
-    "u" for :func:`str.upper`, "t" for :func:`str.title`, "c" for
-    :func:`str.capitalize`, "y" that uses ``slugify``. Additionally, the following
+    The following special conversions are implemented: "l" for :meth:`str.lower`,
+    "u" for :meth:`str.upper`, "t" for :meth:`str.title`, "c" for
+    :meth:`str.capitalize`, "y" that uses ``slugify``. Additionally, the following
     syntax is available to select subsets from a string
 
     .. code:: python
