@@ -101,6 +101,7 @@ General settings
     This can be a complex multiline string containing any key from a document.
 
 .. papis-config:: header-format-file
+    :type: str
 
     If the :confval:`header-format` grows too complex, it can be
     stored in a separate file. This option should give the path to that file (in
@@ -138,6 +139,7 @@ General settings
     easily identifying which document is being referenced.
 
 .. papis-config:: sort-field
+    :type: str
 
     This setting controls which field queries are sorted by before being presented
     to the user in, e.g., the picker. Most commands support a ``--sort`` option
