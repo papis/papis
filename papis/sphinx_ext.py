@@ -1,3 +1,22 @@
+"""A collection of Papis-specific Sphinx extensions.
+
+This can be included directly into the ``conf.py`` file as a normal extension, i.e.
+
+.. code:: python
+
+    extensions = [
+        ...,
+        "papis.sphinx_ext",
+    ]
+
+It will include a custom :class:`~papis.sphinx_ext.CustomClickDirective` for
+documenting Papis commands and a :class:`~papis.sphinx_ext.PapisConfig` directive
+for documenting Papis configuration values.
+
+These are included by default when adding it to the ``extensions`` list in your
+Sphinx configuration.
+"""
+
 import os
 import sys
 import docutils
@@ -9,6 +28,15 @@ from docutils.parsers.rst import Directive
 
 
 class CustomClickDirective(ClickDirective):     # type: ignore[misc]
+    """A custom
+    `sphinx_click.ClickDirective <https://sphinx-click.readthedocs.io/en/latest/>`__
+    that removes the automatic title from the generated documentation. Otherwise it
+    can be used in the exact same way, e.g.::
+
+        .. click:: papis.commands.add:cli
+            :prog: papis add
+    """
+
     def run(self) -> Any:
         sections = super().run()
 
@@ -17,9 +45,48 @@ class CustomClickDirective(ClickDirective):     # type: ignore[misc]
 
 
 class PapisConfig(Directive):
+    """A directive for describing Papis configuration values.
+
+    The directive is given as::
+
+        .. papis-config:: config-value-name
+
+    and has the following optional arguments.
+
+    * ``:section:``: The section in which the configuration value is given. The
+      section defaults to :func:`~papis.config.get_general_settings_name`.
+    * ``:type:``: The type of the configuration value, e.g. a string or an integer.
+      If not provided, the type of the default value is used.
+    * ``:default:``: The default value for the configuration value. If not
+      provided, this is taken from the default Papis settings.
+
+    It can be used as:
+
+    .. code-block:: rst
+
+        .. papis-config:: info-file
+            :default: info.yml
+            :type: str
+            :section: settings
+
+            This is the file name for where the document metadata should be
+            stored. It is a relative path in the document's main folder.
+
+    In text, these configuration values can be referenced using standard role
+    references, e.g.
+
+    .. code-block:: rst
+
+        The document metadata is found in its :confval:`info-file`.
+    """
+
+    #: The directive can have a longer description.
     has_content: bool = True
+    #: Number of optional arguments to the directive.
     optional_arguments: int = 3
+    #: Number of required arguments to the directive.
     required_arguments: int = 1
+    #: A descrption of the arguments, mapping names to validator functions.
     option_spec: Dict[str, type] = {"default": str, "section": str, "type": str}
     add_index: int = True
 
@@ -62,7 +129,7 @@ class PapisConfig(Directive):
             if section != get_general_settings_name() else "",
             f"    :default: ``{default!r}``",
             "",
-        ] + [f"    {line}" for line in self.content]
+        ] + [f"    {line}" for line in self.content]    # type: ignore[has-type]
         self.content = docutils.statemachine.ViewList(lines)
 
         node = docutils.nodes.paragraph()
@@ -75,6 +142,18 @@ class PapisConfig(Directive):
 def make_link_resolve(
         github_project_url: str,
         revision: str) -> Callable[[str, Dict[str, Any]], Optional[str]]:
+    """Create a function that can be used with ``sphinx.ext.linkcode``.
+
+    This can be used in the ``conf.py`` file as
+
+    .. code:: python
+
+        linkcode_resolve = make_link_resolve("https://github.com/papis/papis", "main")
+
+    :param github_project_url: the URL to a GitHub project to which to link.
+    :param revision: the revision to which to point to, e.g. ``main``.
+    """
+
     def linkcode_resolve(domain: str, info: Dict[str, Any]) -> Optional[str]:
         url = None
         if domain != "py" or not info["module"]:
