@@ -97,8 +97,6 @@ class Configuration(configparser.ConfigParser):
         # if no sections were actually read, add default ones
         if not self.sections():
             self.include_defaults()
-            with open(self.file_location, "w") as configfile:
-                self.write(configfile)
 
         # ensure the general section and default-library exist in the config
         if GENERAL_SETTINGS_NAME not in self:
