@@ -296,6 +296,31 @@ BibTeX options
     By default, this is set to ``and``, which is the separator used by
     BibTeX in its so-called *name-lists*.
 
+.. _bibtex-command-options:
+
+BibTeX command options
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. papis-config:: default-read-bibfile
+    :section: bibtex
+
+    A path to a BibTex file that should be automatically read when using the
+    ``papis bibtex`` command. This should be equivalent to using
+    ``papis bibtex read file.bib`` when used with :confval:`auto-read`.
+
+.. papis-config:: default-save-bibfile
+    :section: bibtex
+
+    A path to a BibTex file that should be automatically saved when using the
+    ``papis bibtex`` command. This should be equivalent to using
+    ``papis bibtex save file.bib``.
+
+.. papis-config:: auto-read
+    :section: bibtex
+
+    A flag used in conjunction with :confval:`default-read-bibfile` to
+    automatically read a BibTeX file.
+
 .. _add-command-options:
 
 Add options
