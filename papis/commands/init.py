@@ -104,11 +104,23 @@ def cli(dir_path: Optional[str]) -> None:
 
     logger.info("Setting library location:")
     dir_path = os.getcwd() if dir_path is None else dir_path
+
+    # FIXME: this is necessary because incorrectly configured libraries still
+    # show up in `papis.config.get_libs()`. We need better handling of missing
+    # libraries or ill-configured libraries.
+    known_libraries = []
+    for libname in papis.config.get_libs():
+        lib = papis.config.get_lib_from_name(libname)
+        if lib.paths and all(os.path.exists(path) for path in lib.paths):
+            known_libraries.append(libname)
+
     library_name = papis.tui.utils.prompt(
         "Name of the library",
         default=os.path.basename(dir_path),
-        bottom_toolbar="Known libraries: '{}'".format(
-            "', '".join(papis.config.get_libs())))
+        bottom_toolbar=(
+            "Known libraries: '{}'".format("', '".join(known_libraries))
+            if known_libraries else "No currently configured libraries")
+        )
 
     if library_name not in config:
         config[library_name] = {}
