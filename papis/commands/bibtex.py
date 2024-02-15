@@ -29,8 +29,10 @@ Local configuration file
 
 If you are working in a local folder where you have a ``bib`` file called
 ``main.bib``, you can avoid adding the repetitive ``read main.bib`` and
-``save main.bib`` by writing a local configuration file ``.papis.config`` for
-``papis bibtex`` to read and write automatically. This file should contain::
+``save main.bib`` by using the configuration values described in the
+:ref:`documentation <bibtex-command-options>`. You can create a local
+configuration file ``.papis.config`` for ``papis bibtex`` to read and write
+automatically. This file should contain::
 
     [bibtex]
     default-read-bibfile = main.bib

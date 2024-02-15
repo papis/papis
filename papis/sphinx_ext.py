@@ -24,6 +24,9 @@ class PapisConfig(Directive):
     add_index: int = True
 
     def run(self) -> Any:
+        # NOTE: these are imported to register additional config settings
+        import papis.commands.bibtex    # noqa: F401
+
         from papis.config import get_general_settings_name, get_default_settings
 
         default_settings = get_default_settings()
