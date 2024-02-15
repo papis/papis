@@ -37,8 +37,8 @@ def get_session() -> "requests.Session":
     """Create a :class:`requests.Session` for ``papis``.
 
     This session has the expected ``User-Agent`` (see
-    :ref:`config-settings-user-agent`), proxy (see
-    :ref:`config-settings-downloader-proxy`) and other settings used
+    :confval:`user-agent`), proxy (see
+    :confval:`downloader-proxy`) and other settings used
     for ``papis``. It is recommended to use it instead of creating a
     :class:`requests.Session` at every call site.
     """
@@ -171,7 +171,7 @@ def general_open(file_name: str,
 
     :param file_name: a file path to open.
     :param key: a key in the configuration file to determine the opener used,
-        e.g. :ref:`config-settings-opentool`.
+        e.g. :confval:`opentool`.
     :param default_opener: an existing executable that can be used to open the
         file given by *file_name*. By default, the opener given by
         *key*, if any, or the default ``papis`` opener are used.
@@ -202,7 +202,7 @@ def general_open(file_name: str,
 
 
 def open_file(file_path: str, wait: bool = True) -> None:
-    """Open file using the configured :ref:`config-settings-opentool`.
+    """Open file using the configured :confval:`opentool`.
 
     :param file_path: a file path to open.
     :param wait: if *True* wait for the process to finish, otherwise detach the
@@ -217,7 +217,7 @@ def get_folders(folder: str) -> List[str]:
     This is the main indexing routine. It looks inside *folder* and crawls
     the whole directory structure in search of subfolders containing an ``info``
     file. The name of the file must match the configured
-    :ref:`config-settings-info-name`.
+    :confval:`info-name`.
 
     :param folder: root folder to look into.
     :returns: List of folders containing an ``info`` file.
@@ -296,7 +296,7 @@ def locate_document_in_lib(document: papis.document.Document,
                            library: Optional[str] = None) -> papis.document.Document:
     """Locate a document in a library.
 
-    This function uses the :ref:`config-settings-unique-document-keys`
+    This function uses the :confval:`unique-document-keys`
     to determine if the current document matches any document in the library.
     The first document for which a key matches exactly will be returned.
 
@@ -331,7 +331,7 @@ def locate_document(
         ) -> Optional[papis.document.Document]:
     """Locate a *document* in a list of *documents*.
 
-    This function uses the :ref:`config-settings-unique-document-keys`
+    This function uses the :confval:`unique-document-keys`
     to determine if the current document matches any document in the list.
     The first document for which a key matches exactly will be returned.
 
@@ -399,7 +399,7 @@ def update_doc_from_data_interactively(
 def get_cache_home() -> str:
     """Get default cache directory.
 
-    This will retrieve the :ref:`config-settings-cache-dir` configuration setting.
+    This will retrieve the :confval:`cache-dir` configuration setting.
     It is ``XDG`` standard compatible.
 
     :returns: the absolute path for the cache main folder.

@@ -18,23 +18,23 @@ implemented
 * ``bibtex-type``: checks that the document type matches a known BibLaTeX type
   from :data:`papis.bibtex.bibtex_types`.
 * ``duplicated-keys``: checks that the keys provided by
-  :ref:`config-settings-doctor-duplicated-keys-keys` are not present in multiple
+  :confval:`doctor-duplicated-keys-keys` are not present in multiple
   documents. This is mainly meant to be used to check the ``ref`` key or other
   similar keys that are meant to be unique.
 * ``duplicated-values``: checks if the keys provided by
-  :ref:`config-settings-doctor-duplicated-values-keys` have any duplicated
+  :confval:`doctor-duplicated-values-keys` have any duplicated
   values. The keys are expected to be lists, e.g. ``files``.
 * ``files``: checks whether all the document files exist on the filesystem.
 * ``html-codes``: checks that no HTML codes (e.g. ``&amp;``) appear in the keys
-  provided by :ref:`config-settings-doctor-html-codes-keys`.
+  provided by :confval:`doctor-html-codes-keys`.
 * ``html-tags``: checks that no HTML or XML tags (e.g. ``<a>``) appear in the keys
-  provided by :ref:`config-settings-doctor-html-tags-keys`.
+  provided by :confval:`doctor-html-tags-keys`.
 * ``key-type``: checks the type of keys provided by
-  :ref:`config-settings-doctor-key-type-check-keys`, e.g. year should be an ``int``.
+  :confval:`doctor-key-type-check-keys`, e.g. year should be an ``int``.
   Lists can be automatically fixed (by splitting or joining) using the
-  :ref:`config-settings-doctor-key-type-check-separator` setting.
+  :confval:`doctor-key-type-check-separator` setting.
 * ``keys-exist``: checks that the keys provided by
-  :ref:`config-settings-doctor-keys-exist-keys` exist in the document.
+  :confval:`doctor-keys-exist-keys` exist in the document.
 * ``refs``: checks that the document has a valid reference (i.e. one that would
   be accepted by BibTeX and only contains valid characters).
 
@@ -188,7 +188,7 @@ def register_check(name: str, check: CheckFn) -> None:
     Register a new check.
 
     Registered checks are recognized by ``papis`` and can be used by users
-    in their configuration files through :ref:`config-settings-doctor-default-checks`
+    in their configuration files through :confval:`doctor-default-checks`
     or on the command line through the ``--checks`` flag.
     """
     REGISTERED_CHECKS[name] = Check(name=name, operate=check)
@@ -254,7 +254,7 @@ KEYS_EXIST_CHECK_NAME = "keys-exist"
 def keys_exist_check(doc: papis.document.Document) -> List[Error]:
     """
     Checks whether the keys provided in the configuration
-    option :ref:`config-settings-doctor-keys-exist-keys` exit in the document
+    option :confval:`doctor-keys-exist-keys` exit in the document
     and are non-empty.
 
     :returns: a :class:`list` of errors, one for each key that does not exist.
@@ -304,7 +304,7 @@ REFS_CHECK_NAME = "refs"
 def refs_check(doc: papis.document.Document) -> List[Error]:
     """
     Checks that a ref exists and if not it tries to create one
-    according to the :ref:`config-settings-ref-format` configuration option.
+    according to the :confval:`ref-format` configuration option.
 
     :returns: an error if the reference does not exist or contains invalid
         characters (as required by BibTeX).
@@ -360,7 +360,7 @@ DUPLICATED_KEYS_NAME = "duplicated-keys"
 def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
     """
     Check for duplicated keys in the list given by the
-    :ref:`config-settings-doctor-duplicated-keys-keys` configuration option.
+    :confval:`doctor-duplicated-keys-keys` configuration option.
 
     :returns: a :class:`list` of errors, one for each key with a value that already
         exist in the documents from the current query.
@@ -396,7 +396,7 @@ DUPLICATED_VALUES_NAME = "duplicated-values"
 
 def duplicated_values_check(doc: papis.document.Document) -> List[Error]:
     """
-    Check if the keys given by :ref:`config-settings-doctor-duplicated-values-keys`
+    Check if the keys given by :confval:`doctor-duplicated-values-keys`
     contain any duplicate entries. These keys are expected to be lists of items.
 
     :returns: a :class:`list` of errors, one for each key with a value that
@@ -624,9 +624,9 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
     """
     Check document keys have expected types.
 
-    The :ref:`config-settings-doctor-key-type-check-keys` configuration entry
+    The :confval:`doctor-key-type-check-keys` configuration entry
     defines a mapping of keys and their expected types. If the desired type is
-    a list, the :ref:`config-settings-doctor-key-type-check-separator` setting
+    a list, the :confval:`doctor-key-type-check-separator` setting
     can be used to split an existing string (and, similarly, if the desired type
     is a string, it can be used to join a list of items).
 
@@ -722,7 +722,7 @@ HTML_CODES_CHECK_NAME = "html-codes"
 
 def html_codes_check(doc: papis.document.Document) -> List[Error]:
     """
-    Checks that the keys in :ref:`config-settings-doctor-html-codes-keys`
+    Checks that the keys in :confval:`doctor-html-codes-keys`
     configuration options do not contain any HTML codes like ``&amp;`` etc.
 
     :returns: a :class:`list` of errors, one for each key that contains HTML codes.
@@ -763,7 +763,7 @@ HTML_TAGS_REGEX = re.compile(r"<.*?>")
 
 def html_tags_check(doc: papis.document.Document) -> List[Error]:
     """
-    Checks that the keys in :ref:`config-settings-doctor-html-tags-keys`
+    Checks that the keys in :confval:`doctor-html-tags-keys`
     configuration options do not contain any HTML tags like ``<href>`` etc.
 
     :returns: a :class:`list` of errors, one for each key that contains HTML codes.
@@ -827,7 +827,7 @@ def gather_errors(documents: List[papis.document.Document],
     unrecongnized checks are automatically skipped.
 
     :param checks: a list of checks to run over the documents. If not provided,
-        the default :ref:`config-settings-doctor-default-checks` are used.
+        the default :confval:`doctor-default-checks` are used.
     :returns: a list of all the errors gathered from the documents.
     """
     if not checks:
