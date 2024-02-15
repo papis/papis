@@ -121,6 +121,12 @@ Developer API reference
 .. automodule:: papis.plugin
     :members:
 
+``papis.sphinx_ext``
+--------------------
+
+.. automodule:: papis.sphinx_ext
+    :members:
+
 ``papis.testing``
 -----------------
 
