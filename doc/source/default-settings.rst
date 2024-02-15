@@ -23,7 +23,7 @@ General settings
 
     Then, you can share your library (through e.g. Dropbox or a network drive)
     and have the same settings for the library across machines, e.g. to generate
-    consistent references with :ref:`config-settings-ref-format`. In this setup,
+    consistent references with :confval:`ref-format`. In this setup,
     whenever Fulano uses that library, their Papis calls will also read the
     configuration settings and use the same settings.
 
@@ -77,10 +77,10 @@ General settings
 .. papis-config:: format-doc-name
 
     This setting controls the name of the document in the papis format strings
-    like in format strings such as :ref:`config-settings-match-format` or
-    :ref:`config-settings-header-format`. For instance, if you are managing
+    like in format strings such as :confval:`match-format` or
+    :confval:`header-format`. For instance, if you are managing
     videos, you might want to set this option to ``vid`` in order to set  the
-    :ref:`config-settings-header-format` to
+    :confval:`header-format` to
 
     .. code:: ini
 
@@ -92,7 +92,7 @@ General settings
     and in the ``papis`` database backend. For example, if the ``match-format``
     is set to ``{doc[year]} {doc[author]}``, then words from the title will not
     match the document, only using the year or the author will work. It is
-    recommended to set this to all the keys used by :ref:`config-settings-header-format`,
+    recommended to set this to all the keys used by :confval:`header-format`,
     so that any visible information can be matched.
 
 .. papis-config:: header-format
@@ -102,7 +102,7 @@ General settings
 
 .. papis-config:: header-format-file
 
-    If the :ref:`config-settings-header-format` grows too complex, it can be
+    If the :confval:`header-format` grows too complex, it can be
     stored in a separate file. This option should give the path to that file (in
     which case the ``header-format`` option will be ignored). For example, this
     can be set to
@@ -145,7 +145,7 @@ General settings
 
 .. papis-config:: sort-reverse
 
-    A setting that augments :ref:`config-settings-sort-field` by allowing the
+    A setting that augments :confval:`sort-field` by allowing the
     documents to be sorted in reverse order. Most commands support a ``--reverse``
     flag that uses this setting as a default value.
 
@@ -202,7 +202,7 @@ Tools options
     Editor used to edit files in papis, e.g., for the ``papis edit``
     command. This will search for the ``$EDITOR`` environment variable or the
     ``$VISUAL`` environment variables to obtain a default if it is not set.
-    Otherwise, the default :ref:`config-settings-opentool` will be used.
+    Otherwise, the default :confval:`opentool` will be used.
 
 .. papis-config:: file-browser
 
@@ -287,11 +287,11 @@ BibTeX options
     which for the author ``{"family": "Einstein", "given": "Albert"}`` would
     construct the string ``Einstein -- Albert``. In most circumstances, multiple
     authors are then concatenated together using
-    :ref:`config-settings-multiple-authors-separator`.
+    :confval:`multiple-authors-separator`.
 
 .. papis-config:: multiple-authors-separator
 
-    A string used with :ref:`config-settings-multiple-authors-format` to
+    A string used with :confval:`multiple-authors-format` to
     concatenate multiple authors, e.g. into the ``authors`` document key.
     By default, this is set to ``and``, which is the separator used by
     BibTeX in its so-called *name-lists*.
@@ -364,7 +364,7 @@ Add options
     :type: str
 
     Set the default file name for newly added documents, similarly to
-    :ref:`config-settings-add-folder-name`. If it is not set, the names of the
+    :confval:`add-folder-name`. If it is not set, the names of the
     files will be cleaned and taken *as-is*.
 
 .. papis-config:: add-subfolder
@@ -440,8 +440,8 @@ Browse options
       ``https://ui.adsabs.harvard.edu/abs/<DOI>``.
     * ``"auto"``: automatically pick between ``url``, ``doi`` and ``isbn``
       (first existing key is chosen).
-    * ``"search-engine"``: the :ref:`config-settings-search-engine` is used
-      to search for the contents of :ref:`config-settings-browse-query-format`.
+    * ``"search-engine"``: the :confval:`search-engine` is used
+      to search for the contents of :confval:`browse-query-format`.
 
     If the required keys are not found in the document (e.g. the DOI or the
     ISBN), the key will fallback to the ``"search-engine"`` case.
@@ -449,7 +449,7 @@ Browse options
 .. papis-config:: browse-query-format
 
     The query string that is to be searched for in the ``papis browse`` command
-    whenever a search engine is used (see :ref:`config-settings-browse-key`).
+    whenever a search engine is used (see :confval:`browse-key`).
 
 .. papis-config:: search-engine
 
@@ -465,7 +465,7 @@ Edit options
 
     In ``papis edit`` you can edit notes about the document. ``notes-name``
     is the default name of the notes file. The ``notes-name`` is formatted by the
-    :ref:`config-settings-formatter`, so that the filename of notes can be
+    :confval:`formatter`, so that the filename of notes can be
     dynamically defined, e.g.:
 
     .. code:: ini
@@ -477,7 +477,7 @@ Edit options
     When editing notes for the first time, a preliminary notes file will be
     generated based on a template. The path to this template is specified by
     ``notes-template``. The template will then be formatted by
-    :ref:`config-settings-formatter`. This can be useful to enforce the same
+    :confval:`formatter`. This can be useful to enforce the same
     style in the notes for all documents.
 
     Default value is set to the empty ``""``, which will return an empty notes
@@ -566,8 +566,8 @@ Open options
 .. papis-config:: mark-format-name
 
     This is the name of the mark to be passed to
-    :ref:`config-settings-mark-header-format` and other such settings, similarly
-    to :ref:`config-settings-format-doc-name`. For example, if we want to set
+    :confval:`mark-header-format` and other such settings, similarly
+    to :confval:`format-doc-name`. For example, if we want to set
     it to ``m``, then other settings must be consistent, e.g.
 
     .. code:: ini
@@ -578,14 +578,14 @@ Open options
 .. papis-config:: mark-header-format
 
     This is the format of the mark when shown in a picker, similarly to
-    :ref:`config-settings-header-format`. This can be changed to allow for
+    :confval:`header-format`. This can be changed to allow for
     more complex marks. However, by default, we just assume that each mark is
     of the form ``{"name": <NAME>, "value": <VALUE>}``.
 
 .. papis-config:: mark-match-format
 
     Format in which the mark name has to match the user input, similarly to
-    :ref:`config-settings-match-format`.
+    :confval:`match-format`.
 
 .. papis-config:: mark-opener-format
 
@@ -622,7 +622,7 @@ Serve (Web App) options
 
 .. papis-config:: serve-enable-timeline
 
-    If *True*, the :ref:`config-settings-time-stamp` of documents is used to
+    If *True*, the :confval:`time-stamp` of documents is used to
     create a timeline for when the documents were added.
 
 .. papis-config:: serve-timeline-max
@@ -748,7 +748,7 @@ Databases
 
         default-query-string = author:"John Smith"
 
-    would do the trick. Note that each :ref:`config-settings-database-backend`
+    would do the trick. Note that each :confval:`database-backend`
     will have a different search query, so this setting is specific to the
     default ``papis`` backend.
 
@@ -936,7 +936,7 @@ of fzf.
     Format for the entries for fzf.
     Notice that if you want colors you should add the ``--ansi`` flag to
     ``fzf-extra-flags`` and include the colors in the
-    :ref:`config-settings-header-format` as ``ansi`` escape sequences.
+    :confval:`header-format` as ``ansi`` escape sequences.
 
     The papis format string is given the additional variable ``c`` which
     contains the package ``colorama`` in it. Refer to the ``colorama``

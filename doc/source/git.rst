@@ -5,7 +5,7 @@ Git support
 
 Papis is made to work well with `git <https://git-scm.com/>`__ and has
 functionality in most of its command to interact with it. This functionality
-can be turned on by default by using the :ref:`config-settings-use-git`
+can be turned on by default by using the :confval:`use-git`
 configuration setting. This guide gives a description of a possible workflow
 for using Git with Papis. This is not the only workflow, but it is the most
 obvious.

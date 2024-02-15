@@ -54,7 +54,7 @@ Examples
 
         papis open -d bohm
 
-  The file browser used is given by the :ref:`config-settings-file-browser` setting.
+  The file browser used is given by the :confval:`file-browser` setting.
 
 - Open a mark defined in the info file
 

@@ -76,7 +76,7 @@ all the options and more extensive descriptions)
 
    Many configuration options use special formatted strings that can depend on
    the document that is being worked on. When using these, make sure to also
-   set the :ref:`config-settings-formatter` to your desired choice. Below, we
+   set the :confval:`formatter` to your desired choice. Below, we
    are using the default ``python`` formatter that is based on :meth:`str.format`.
 
 .. code:: ini
@@ -161,7 +161,7 @@ Local configuration files
 
 Papis also offers the possibility of creating local configuration files.
 The name of the local configuration file can be configured with the
-:ref:`config-settings-local-config-file` setting. The local configuration files
+:confval:`local-config-file` setting. The local configuration files
 are looked for in the current directory (where the papis command is issued) or
 in the directory of the current library.
 

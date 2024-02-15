@@ -23,7 +23,7 @@ def notes_path(doc: papis.document.Document) -> str:
     """Get the path to the notes file corresponding to *doc*.
 
     If the document does not have attached notes, a filename is constructed (using
-    the :ref:`config-settings-notes-name` setting) in the document's main folder.
+    the :confval:`notes-name` setting) in the document's main folder.
 
     :returns: a absolute filename that corresponds to the attached notes for
         *doc* (this file does not necessarily exist).
@@ -43,7 +43,7 @@ def notes_path_ensured(doc: papis.document.Document) -> str:
 
     If the notes do not exist, a new file is created using :func:`notes_path`
     and filled with the contents of the template given by the
-    :ref:`config-settings-notes-template` configuration option.
+    :confval:`notes-template` configuration option.
 
     :returns: an absolute filename that corresponds to the attached notes for *doc*.
     """

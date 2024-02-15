@@ -64,7 +64,7 @@ def pick(items: Sequence[T],
     """Load a :class:`Picker` plugin and select a subset of *items*.
 
     The arguments to this function match those of :meth:`Picker.__call__`. The
-    specific picker is chosen through the :ref:`config-settings-picktool`
+    specific picker is chosen through the :confval:`picktool`
     configuration option.
 
     :returns: a subset of *items* that were picked.
@@ -91,10 +91,10 @@ def pick_doc(
         ) -> List[papis.document.Document]:
     """Pick from a sequence of *documents* using :func:`pick`.
 
-    This function uses the :ref:`config-settings-header-format-file` setting
-    or, if not available, the :ref:`config-settings-header-format` setting
+    This function uses the :confval:`header-format-file` setting
+    or, if not available, the :confval:`header-format` setting
     to construct a *header_filter* for the picker. It also uses the configuration
-    setting :ref:`config-settings-match-format` to construct a *match_filter*.
+    setting :confval:`match-format` to construct a *match_filter*.
 
     :arg documents: a sequence of documents.
     :returns: a subset of *documents* that was picked.

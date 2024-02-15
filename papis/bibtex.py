@@ -81,7 +81,7 @@ biblatex_software_types = frozenset([
 
 #: A set of known BibLaTeX types (as described in Section 2.1 of the `manual`_).
 #: These types are a union of the types above and can be extended with
-#: :ref:`config-settings-extra-bibtex-types`.
+#: :confval:`extra-bibtex-types`.
 bibtex_types = (
     bibtex_standard_types
     | frozenset(bibtex_type_aliases)
@@ -152,7 +152,7 @@ biblatex_software_keys = frozenset([
 
 #: A set of known BibLaTeX fields (as described in Section 2.2 of the `manual`_).
 #: These fields are a union of the above fields and can be extended with
-#: extended with :ref:`config-settings-extra-bibtex-keys`.
+#: extended with :confval:`extra-bibtex-keys`.
 bibtex_keys = (
     bibtex_standard_keys
     | frozenset(bibtex_key_aliases)
@@ -279,7 +279,7 @@ bibtex_key_converter: Dict[str, str] = {
 }
 
 #: A set of BibLaTeX fields to ignore when exporting from the Papis database.
-#: These can be extended with :ref:`config-settings-bibtex-ignore-keys`.
+#: These can be extended with :confval:`bibtex-ignore-keys`.
 bibtex_ignore_keys = (
     frozenset(["file"])
     | frozenset(papis.config.getlist("bibtex-ignore-keys"))
@@ -472,7 +472,7 @@ def create_reference(doc: Dict[str, Any], force: bool = False) -> str:
     to create one, otherwise the existing key is returned. When creating a new
     reference:
 
-    * the :ref:`config-settings-ref-format` key is used, if available,
+    * the :confval:`ref-format` key is used, if available,
     * the document DOI is used, if available,
     * a string is constructed from the document data (author, title, etc.).
 
@@ -526,11 +526,11 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
     are exported, while other keys are ignored (see :data:`bibtex_ignore_keys`)
     with the following rules:
 
-    * :ref:`config-settings-bibtex-unicode` is used to control whether the
+    * :confval:`bibtex-unicode` is used to control whether the
       field values can contain unicode characters.
-    * :ref:`config-settings-bibtex-journal-key` is used to define the field
+    * :confval:`bibtex-journal-key` is used to define the field
       name for the journal.
-    * :ref:`config-settings-bibtex-export-file` is used to also add a
+    * :confval:`bibtex-export-file` is used to also add a
       ``"file"`` field to the BibTeX entry, which can be used by e.g. Zotero to
       import documents.
 

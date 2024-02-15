@@ -27,8 +27,7 @@ you will have ample performance with the two first options.
 However if you're reaching higher numbers,
 you'll probably want to use the ``Whoosh`` backend for very good performance.
 
-You can select a database by using the flag
-:ref:`database-backend <config-settings-database-backend>`.
+You can select a database by using the flag :confval:`database-backend`.
 
 Papis database
 --------------
@@ -146,8 +145,8 @@ In other words, the whoosh index will store only certain fields from the
 document's info files. The good news is that we can tell papis exactly
 which fields we want to index. These flags are
 
-- :ref:`whoosh-schema-fields <config-settings-whoosh-schema-fields>`
-- :ref:`whoosh-schema-prototype <config-settings-whoosh-schema-prototype>`
+- :confval:`whoosh-schema-fields`
+- :confval:`whoosh-schema-prototype`
 
 The prototype is for advanced users. If you just want to, say, include
 the publisher to the fields that you can search in, then you can put

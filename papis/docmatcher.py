@@ -86,7 +86,7 @@ class DocMatcher:
     #: A :class:`MatcherCallable` used to match the document to the
     #: :attr:`parsed_search`.
     matcher: ClassVar[Optional[MatcherCallable]] = None
-    #: A format string (defaulting to :ref:`config-settings-match-format`) used
+    #: A format string (defaulting to :confval:`match-format`) used
     #: to match the parsed search results if no document key is present.
     match_format: ClassVar[str] = papis.config.getstring("match-format")
 
