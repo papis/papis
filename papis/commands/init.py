@@ -127,13 +127,18 @@ def cli(dir_path: Optional[str]) -> None:
     local["dir"] = library_path
 
     logger.info("Setting library custom options.")
-    for setting, help_string in INIT_PROMPTS:
-        local[setting] = papis.tui.utils.prompt(
-            setting,
-            default=str(local.get(setting, defaults.get(setting))),
-            bottom_toolbar=help_string)
+    if papis.tui.utils.confirm("Want to add some standard settings?", yes=False):
+        for setting, help_string in INIT_PROMPTS:
+            local[setting] = papis.tui.utils.prompt(
+                setting,
+                default=str(local.get(setting, defaults.get(setting))),
+                bottom_toolbar=help_string)
 
     if papis.tui.utils.confirm("Do you want to save?"):
+        config_folder = papis.config.get_config_folder()
+        if not os.path.exists(config_folder):
+            os.makedirs(config_folder)
+
         with open(config_file, "w") as configfile:
             config.write(configfile)
 
