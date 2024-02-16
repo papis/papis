@@ -72,7 +72,7 @@ try:
 except FileNotFoundError:
     LTWA_ABBREVS = {}
 
-# List of short words that are ommited in abbreviations
+# List of short words that are omitted in abbreviations
 ABBREV_IGNORE_WORDS = frozenset([
     # en
     "of", "in", "the", "and", "part",

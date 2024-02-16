@@ -107,11 +107,11 @@ class Database(ABC):
 
     def maybe_compute_id(self, doc: papis.document.Document) -> None:
         """
-        Compute a papis id for the document doc.
-        If the document has already an id, then ignore the document,
-        and it *will not check for duplications*.
-        Otherwise it will try to create a new id that is unique in this
-        database and update the document yaml accordignly.
+        Compute a Papis ID for the document doc.
+
+        If the document already has an ID, then the document is skipped (without
+        checking for duplicates). Otherwise try to create a new ID that is
+        unique in this database and update the document YAML accordingly.
         """
         key_name = papis.id.key_name()
         if key_name in doc:

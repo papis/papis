@@ -59,7 +59,7 @@ def test_rm_add_update(tmp_library: TemporaryLibrary) -> None:
 
     # update
     ###################################################
-    # NOTE: modifying `doc` diretly may modify the version in the database, so
+    # NOTE: modifying `doc` directly may modify the version in the database, so
     # this modifies the info file behind its back completely to check the update
     doc_dict = {**dict(doc), "cache": "test-update"}
     papis.yaml.data_to_yaml(doc.get_info_file(), doc_dict, allow_unicode=True)

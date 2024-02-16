@@ -55,7 +55,7 @@ papis.config.register_default_settings({
 
 
 def check_files(document: papis.document.Document) -> bool:
-    """Check for the exsitence of the document's files.
+    """Check for the existence of the document's files.
 
     :returns: *False* if some file does not exist, *True* otherwise
 

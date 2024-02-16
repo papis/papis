@@ -240,7 +240,7 @@ def run(verbose: bool,
     sections = papis.config.get_configuration().sections()
     for pair in set_list:
         # NOTE: search for a matching section so that we can overwrite entries
-        # from the command-line as well (the section takes precendence)
+        # from the command-line as well (the section takes precedence)
         key, value, section = pair[0], pair[1], None
         for s in sections:
             if key.startswith(s):

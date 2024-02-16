@@ -436,7 +436,7 @@ def get_matching_importer_or_downloader(
     :param download_files: if *True*, importers and downloaders also try to
         download files (PDFs, etc.) instead of just metadata.
     """
-    # FIXME: this is here for backwards compatiblity and should be removed
+    # FIXME: this is here for backwards compatibility and should be removed
     # before we release the next version
     if only_data is not None and download_files is not None:
         raise ValueError("Cannot pass both 'only_data' and 'download_files'")
@@ -506,7 +506,7 @@ def get_matching_importer_by_name(
     :param download_files: if *True*, importers and downloaders also try to
         download files (PDFs, etc.) instead of just metadata.
     """
-    # FIXME: this is here for backwards compatiblity and should be removed
+    # FIXME: this is here for backwards compatibility and should be removed
     # before we release the next version
     if only_data is not None and download_files is not None:
         raise ValueError("Cannot pass both 'only_data' and 'download_files'")
@@ -559,7 +559,7 @@ def collect_importer_data(
     :param use_files: if *True*, both metadata and files are collected
         from the importers.
     """
-    # FIXME: this is here for backwards compatiblity and should be removed
+    # FIXME: this is here for backwards compatibility and should be removed
     # before we release the next version
     if only_data is not None and use_files is not None:
         raise ValueError("Cannot pass both 'only_data' and 'use_files'")
