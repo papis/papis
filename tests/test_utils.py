@@ -76,7 +76,7 @@ def test_locate_document(tmp_config: TemporaryConfiguration) -> None:
         from_data(
             {
                 "doi": "10.123/12afad12",
-                "author": "noone really",
+                "author": "no one really",
                 "title": "Hello world"
             }
         ),
@@ -92,7 +92,7 @@ def test_locate_document(tmp_config: TemporaryConfiguration) -> None:
     found_doc = locate_document(doc, docs)
     assert found_doc is None
 
-    doc = from_data({"author": "noone really"})
+    doc = from_data({"author": "no one really"})
     found_doc = locate_document(doc, docs)
     assert found_doc is None
 

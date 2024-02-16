@@ -20,7 +20,7 @@ if [[ ! -e ${folder_name} ]]; then
   exit 1
 fi
 
-echo "Ziping folder (${folder_name} => ${zip_name})"
+echo "Zipping folder (${folder_name} => ${zip_name})"
 zip -r "${zip_name}" "${folder_name}"
 
 ${mail_agent} -a "${zip_name}"

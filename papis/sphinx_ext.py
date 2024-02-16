@@ -86,7 +86,7 @@ class PapisConfig(Directive):
     optional_arguments: int = 3
     #: Number of required arguments to the directive.
     required_arguments: int = 1
-    #: A descrption of the arguments, mapping names to validator functions.
+    #: A description of the arguments, mapping names to validator functions.
     option_spec: Dict[str, type] = {"default": str, "section": str, "type": str}
     add_index: int = True
 
