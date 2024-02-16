@@ -160,7 +160,7 @@ def pdf_to_arxivid(
 
     :param filepath: Path to the pdf file
     :param maxlines: Maximum number of lines that should be checked
-        For some documnets, it would spend a long time trying to look for
+        For some documents, it would spend a long time trying to look for
         a arxivid, and arxivids in the middle of documents don't tend to be the
         correct arxivid of the document.
     :returns: arxivid or None

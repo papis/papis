@@ -499,7 +499,7 @@ def dump(document: Document) -> str:
 
     data = dict(document)
 
-    # NOTE: poping some usually very long and unhelpful fields
+    # NOTE: popping some usually very long and unhelpful fields
     data.pop("citations", None)
     data.pop("abstract", None)
     data.pop("papis_id", None)
