@@ -66,7 +66,7 @@ def test_export_json_cli(tmp_library: TemporaryLibrary) -> None:
 
     assert len(data) == 1
     assert "Krishnamurti" in data[0]["author"]
-    assert data[0]["year"] == "2009"
+    assert data[0]["year"] == 2009
 
     outfile = os.path.join(tmp_library.tmpdir, "test.json")
     result = cli_runner.invoke(
@@ -96,7 +96,7 @@ def test_export_yaml_cli(tmp_library: TemporaryLibrary) -> None:
     data = yaml.safe_load(result.output)
 
     assert "Krishnamurti" in data["author"]
-    assert data["year"] == "2009"
+    assert data["year"] == 2009
 
     outfile = os.path.join(tmp_library.tmpdir, "test.yaml")
     result = cli_runner.invoke(
