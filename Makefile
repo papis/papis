@@ -48,6 +48,14 @@ mypy:								## Run mypy (type annotations)
 	$(PYTHON) -m mypy papis
 .PHONY: mypy
 
+codespell:							## Run codespell (spellchecking)
+	@codespell --summary \
+		--skip build --skip resources --skip data --skip LTWA.json \
+		--uri-ignore-words-list '*' \
+		--ignore-words .codespell-ignore \
+		contrib doc examples papis scripts tests tools
+.PHONY: codespell
+
 ci-install:							## Install dependencies like on the CI
 	bash tools/ci-install.sh
 .PHONY: ci-install
