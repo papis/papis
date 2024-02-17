@@ -41,7 +41,16 @@ papis export --format typst QUERY
 
 ### New: Add `init` command ([#620](https://github.com/papis/papis/pull/620))
 
-TODO
+A new `papis init` command was added to initialize a new configuration file
+and add additional libraries. The command is mainly interactive and sets some
+standard default options. It can be used as
+```sh
+papis init /path/to/my/library
+```
+
+**Warning**: We currently use the standard Python `configparser` which does not
+preserve comments. This means that updating a configuration file using `papis init`
+will remove any comments and possibly reorder some options.
 
 ### New: Add `tag` command ([648](https://github.com/papis/papis/pull/648))
 
@@ -50,6 +59,68 @@ TODO
 ### New: Major improvements to search syntax ([#602](https://github.com/papis/papis/pull/602))
 
 TODO
+
+### Major: Expand `update` command ([681](https://github.com/papis/papis/pull/681))
+
+The update command got some major improvements this release. It now allows much
+more fine-grained modifications of a document without requiring the user to open
+a full editor. For example, it can now
+
+* Append to a key using
+    ```sh
+    papis update --append title ' (Volume 2)' <QUERY>
+    ```
+
+* Remove items from a list using
+    ```sh
+    papis update --remove tags 'physics' <QUERY>
+    ```
+
+* Remove a key completely from the document
+    ```sh
+    papis update --drop eprinttype <QUERY>
+    ```
+
+For more examples see the documentation.
+
+### Major: Expand `doctor` command
+
+The `papis doctor` command has seen many additions and modifications in this
+release. First, the `papis add` and `papis update` commands can now automatically
+run selected fixed with the `--auto-doctor` flag
+([#598](https://github.com/papis/papis/pull/598)). This makes it less likely for
+ill-formatted documents to make it into the library in the first place!
+
+Many checks for BibTeX have been added: `biblatex-type-alias`, `biblatex-key-alias`
+and `biblatex-required-keys` ([#663](https://github.com/papis/papis/pull/663)).
+These checks ensure that the document has all the keys required by the BibLaTeX
+engine to output well-formatted entries for each document type.
+
+Other smaller noteworthy changes:
+
+* `key-type`: added fixers that automatically convert some types
+  ([#652](https://github.com/papis/papis/pull/652)
+   [#656](https://github.com/papis/papis/pull/656)).
+* `keys-exist`: added fixers for `author` and `author_list`
+  ([#655](https://github.com/papis/papis/pull/655))
+* `duplicated-values`: new check for duplicate values inside lists
+  ([#695](https://github.com/papis/papis/pull/695))
+* `bibtex-type`: add fixer to automatically convert known document types
+  ([#732](https://github.com/papis/papis/pull/732))
+
+### Minor: Plugin helpers
+
+A new module `papis.testing` was introduced to help with testing Papis-related
+functionality. They allow easy setup of temporary configurations and temporary
+libraries for testing purposes.
+
+A new module `papis.sphinx_ext` was introduced to help with Papis-related
+documentation. This allows defining configuration options in the Sphinx documentation
+that describe their types and default values in sync with the ones used in the
+code.
+
+These have mostly been promoted to separate module so that plugins can easily
+make use of the same infrastructure.
 
 ## Other noteworthy features
 
@@ -80,9 +151,18 @@ TODO
   ([#630](https://github.com/papis/papis/pull/630)).
 * Add `--[no-]download-files` flags to `papis add`
   ([#641](https://github.com/papis/papis/pull/641)).
-* Add fixers for some errors in the `key-type` check of `papis doctor`
-  ([#652](https://github.com/papis/papis/pull/652)
-   [#656](https://github.com/papis/papis/pull/656)).
+* Add a downloader for ACL Anthology documents
+  ([#575](https://github.com/papis/papis/pull/575))
+* Expand `papis list` to list all plugins and other extensions
+  ([#716](https://github.com/papis/papis/pull/716))
+* Add `biblatex-software` types to our BibTeX module
+  ([#719](https://github.com/papis/papis/pull/719))
+* Sort tags alphabetically in `papis serve`
+  ([#730](https://github.com/papis/papis/pull/730))
+* Add a `--move` flag to `papis add`
+  ([#740](https://github.com/papis/papis/pull/740))
+* Enhance `python` formatter with some additional conversions
+  ([709](https://github.com/papis/papis/pull/709))
 
 ## Bug fixes
 
@@ -101,6 +181,10 @@ TODO
   ([#616](https://github.com/papis/papis/pull/616)).
 * Fix some boolean flags working in an unexpected manner
   ([#636](https://github.com/papis/papis/pull/636)).
+* Fix opening multiple files in the default picker
+  ([#693](https://github.com/papis/papis/pull/693))
+* Do not escape verbatim BibTeX fields like `url`
+  ([#739](https://github.com/papis/papis/pull/739))
 
 VERSION v0.13
 =============
