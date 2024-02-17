@@ -35,6 +35,7 @@ The docs can be generated with
 ```
 make doc
 ```
+### Containers
 
 To quickly get things up and running, you can also use docker/podman:
 ```
@@ -47,6 +48,16 @@ docker run -v $(pwd):/papis --rm -it papisdev bash
 ```
 
 (or replace `docker` with `podman` if you prefer)
+
+### Nix
+
+If you're using Nix, you can also use the flake and get a development shell up with `nix develop`.
+
+This also gives you access to the following convenience commands to interact with the containers (they require either docker or podman to run):
+
+- `papis-build-container`: build the container
+- `papis-run-container-tests`: run the CI tests in the container
+- `papis-run-container-interactive`: enter the container interactively and populate the library with some test documents
 
 Adding tests
 ------------
