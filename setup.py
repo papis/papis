@@ -227,6 +227,7 @@ setup(
             "rm=papis.commands.rm:cli",
             "run=papis.commands.run:cli",
             "serve=papis.commands.serve:cli",
+            "tag=papis.commands.tag:cli",
             "update=papis.commands.update:cli",
             "cache=papis.commands.cache:cli",
             "init=papis.commands.init:cli",
