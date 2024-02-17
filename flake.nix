@@ -29,7 +29,7 @@
           };
 
           doCheck = false;
-          checkInputs = [ ];
+          checkInputs = [];
           propagatedBuildInputs = [pypkgs.feedparser];
 
           meta = with lib; {
@@ -150,11 +150,73 @@
       };
       devShells = {
         default = pkgs.mkShell {
-          buildInputs = with pkgs;
+          buildInputs = let
+            check-container-cmd =
+              # bash
+              ''
+                if command -v podman &> /dev/null
+                then
+                    container_cmd="podman"
+                elif command -v docker &> /dev/null
+                then
+                    container_cmd="docker"
+                else
+                    echo "Neither Podman or Docker could be found. Aborting..."
+                    exit 1
+                fi
+              '';
+
+            # convenience command to build a papis container with docker/podman
+            papis-build-container = pkgs.writeShellApplication {
+              name = "papis-build-container";
+              text =
+                check-container-cmd
+                +
+                # bash
+                ''
+                  "$container_cmd" build -t papisdev .
+                '';
+            };
+
+            # convenience command to run containerised tests
+            papis-run-container-tests = pkgs.writeShellApplication {
+              name = "papis-run-container-tests";
+              text =
+                check-container-cmd
+                +
+                # bash
+                ''
+                  "$container_cmd" run -v "$(pwd)":/papis --rm -it papisdev
+                '';
+            };
+
+            # convenience command to enter a container with a populated test library
+            papis-run-container-interactive = pkgs.writeShellApplication {
+              name = "papis-run-container-interactive";
+              text =
+                check-container-cmd
+                +
+                # bash
+                ''
+                  populateLibPy=$(cat << END
+                  import papis.testing
+                  papis.testing.populate_library('/root/Documents/papers')
+                  END
+                  )
+                  entryCmd="python -c \"$populateLibPy\"; bash"
+
+                  "$container_cmd" run -v "$(pwd)":/papis --rm -it papisdev bash -c "$entryCmd"
+                '';
+            };
+          in
             [python]
-            ++ []
             ++ runtime_py_deps
-            ++ develop_py_deps;
+            ++ develop_py_deps
+            ++ [
+              papis-build-container
+              papis-run-container-tests
+              papis-run-container-interactive
+            ];
 
           shellHook = ''
             python --version
