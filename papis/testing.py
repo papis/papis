@@ -75,13 +75,14 @@ PAPIS_TEST_DOCUMENTS = [
     {
         "author": "doc without files",
         "title": "Title of doc without files",
-        "year": "1093",
+        "year": 1093,
         "_test_files": 0,
     },
     {
         "author": "J. Krishnamurti",
         "title": "Freedom from the known",
-        "year": "2009",
+        "year": 2009,
+        "tags": ["tag1", 1234],
         "_test_files": 1,
     }, {
         "author": "K. Popper",
@@ -100,19 +101,19 @@ PAPIS_TEST_DOCUMENTS = [
         "title": "On Computable Numbers with an Application to the Entscheidungsproblem",           # noqa: E501
         "url": "https://api.wiley.com/onlinelibrary/tdm/v1/articles/10.1112%2Fplms%2Fs2-42.1.230",  # noqa: E501
         "volume": "s2-42",
-        "year": "1937",
+        "year": 1937,
         "_test_files": 2,
     },
     {
         "author": "test_author",
         "title": "Test Document 1 (wRkdff)",
-        "year": "2019",
+        "year": 2019,
         "_test_files": 1
     },
     {
         "author": "test_author",
         "title": "Test Document 2 (ZD9QRz)",
-        "year": "2019",
+        "year": 2019,
         "_test_files": 1
     },
 ]

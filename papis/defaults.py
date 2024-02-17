@@ -104,7 +104,17 @@ settings: Dict[str, Any] = {
                                    "month:int",
                                    "files:list",
                                    "notes:str",
-                                   "author_list:list"],
+                                   "author_list:list",
+                                   "doi:str",
+                                   "ref:str",
+                                   "isbn:str",
+                                   "author:str",
+                                   "journal:str",
+                                   "note:str",
+                                   "type:str",
+                                   "publisher:str",
+                                   "title:str",
+                                   "shorttitle:str"],
     "doctor-key-type-check-separator": None,
 
     # open
