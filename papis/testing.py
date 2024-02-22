@@ -9,6 +9,7 @@ import click
 import click.testing
 from _pytest.fixtures import SubRequest
 from _pytest.config import Config
+from _pytest.config.argparsing import Parser
 
 PAPIS_UPDATE_RESOURCES = os.environ.get("PAPIS_UPDATE_RESOURCES", "none").lower()
 if PAPIS_UPDATE_RESOURCES not in ("none", "remote", "local", "both"):
@@ -484,6 +485,26 @@ class ResourceCache:
                 raise ValueError("Unknown file extension: '{}'".format(ext))
 
 
+@pytest.fixture(autouse=True)
+def _docconf(request: SubRequest) -> Iterator[None]:
+    """A fixture for doctests to ensure that they run in a clean environment.
+
+    This fixture is enabled automatically for all doctests using the
+    ``--wrap-doctests`` command-line flag.
+    """
+    # NOTE: taken from https://stackoverflow.com/a/46991331
+    doctest_plugin = request.config.pluginmanager.getplugin("doctest")
+
+    # NOTE: this should only run for papis doctests
+    if (
+            isinstance(request.node, doctest_plugin.DoctestItem)
+            and request.config.getoption("--wrap-doctests")):
+        with TemporaryConfiguration():
+            yield
+    else:
+        yield
+
+
 @pytest.fixture(scope="function")
 def tmp_config(request: SubRequest) -> Iterator[TemporaryConfiguration]:
     """A fixture that creates a :class:`TemporaryConfiguration`.
@@ -553,6 +574,11 @@ def resource_cache(request: SubRequest) -> ResourceCache:
         kwargs["cachedir"] = os.path.join(dirname, cachedir)
 
     return ResourceCache(**kwargs)
+
+
+def pytest_addoption(parser: Parser) -> None:
+    parser.addoption("--wrap-doctests", dest="wrap_doctests", action="store_true",
+                     help="Use a temporary configuration file for doctests")
 
 
 def pytest_configure(config: Config) -> None:
