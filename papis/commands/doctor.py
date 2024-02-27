@@ -683,8 +683,13 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
 
             logger.info("[FIX] Convert type of '%s' from '%s' to '%s'.",
                         key, type(value).__name__, cls.__name__)
-            if isinstance(value, list) and separator:
-                doc[key] = separator.join(value)
+            if isinstance(value, list):
+                if len(value) == 1:
+                    doc[key] = str(value[0])
+                elif separator:
+                    doc[key] = separator.join(value)
+                else:
+                    doc[key] = str(value)
             else:
                 doc[key] = str(value)
 
