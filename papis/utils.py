@@ -245,7 +245,7 @@ def create_identifier(input_list: Optional[str] = None, skip: int = 0) -> Iterat
     to ensure uniqueness.
 
     :param input_list: list to iterate over
-    :param skip: number of identifiers to skip.
+    :param skip: number of identifiers to skip (negative integers are set to 0).
 
     >>> import string
     >>> m = create_identifier(string.ascii_lowercase)
@@ -262,7 +262,7 @@ def create_identifier(input_list: Optional[str] = None, skip: int = 0) -> Iterat
             for s in product(inputs, repeat=n):
                 yield "".join(s)
 
-    yield from islice(ids(), skip, None)
+    yield from islice(ids(), max(skip, 0), None)
 
 
 def clean_document_name(doc_path: str, is_path: bool = True) -> str:
