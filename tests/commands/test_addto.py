@@ -4,6 +4,25 @@ import papis.database
 from papis.testing import TemporaryLibrary, PapisRunner
 
 
+def test_addto_run_no_files(tmp_library: TemporaryLibrary) -> None:
+    import papis.config
+
+    papis.config.set("add-file-name", "{doc[author]}-{doc[title]}")
+
+    from papis.commands.addto import run
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "popper"})
+    assert len(doc.get_files()) == 0
+
+    inputfile = tmp_library.create_random_file("pdf")
+    run(doc, [inputfile])
+
+    files = doc.get_files()
+    assert len(files) == 1
+    assert os.path.basename(files[0]) == "k.-popper-the-open-society.pdf"
+
+
 def test_addto_run(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
     from papis.commands.addto import run
 
