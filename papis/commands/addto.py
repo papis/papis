@@ -56,7 +56,10 @@ def run(document: papis.document.Document,
         raise DocumentFolderNotFound(papis.document.describe(document))
 
     from papis.utils import create_identifier
-    suffix = create_identifier(skip=len(document.get_files()))
+
+    nfiles = len(document.get_files())
+    gen_suffix = create_identifier(skip=nfiles - 1)
+    suffix = "" if nfiles == 0 else next(gen_suffix)
 
     from papis.downloaders import download_document
     from papis.commands.add import get_file_name
@@ -78,7 +81,7 @@ def run(document: papis.document.Document,
         new_filename = get_file_name(
             document,
             local_in_file_path,
-            suffix=next(suffix)
+            suffix=suffix
         )
         out_file_path = os.path.join(doc_folder, new_filename)
         new_file_list.append(new_filename)
@@ -106,6 +109,8 @@ def run(document: papis.document.Document,
             os.unlink(tmp_file.name)
             tmp_file = None
 
+        suffix = next(gen_suffix)
+
     if "files" not in document:
         document["files"] = []
 
@@ -113,7 +118,6 @@ def run(document: papis.document.Document,
     papis.api.save_doc(document)
 
     if git:
-
         for r in new_file_list + [document.get_info_file()]:
             papis.git.add(doc_folder, r)
         papis.git.commit(
