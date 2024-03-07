@@ -93,12 +93,16 @@ def test_get(tmp_config: TemporaryConfiguration) -> None:
     papis.config.set("test_getint", "42")
     assert papis.config.getint("test_getint") == 42
     assert papis.config.getint("test_getint", section=general_name) == 42
-    assert type(papis.config.getint("test_getint", section=general_name)) is int
+    assert isinstance(papis.config.getint("test_getint", section=general_name),
+                      int
+                      )
 
     papis.config.set("test_getfloat", "3.14")
     assert papis.config.getfloat("test_getfloat") == 3.14
     assert papis.config.getfloat("test_getfloat", section=general_name) == 3.14
-    assert type(papis.config.getfloat("test_getfloat", section=general_name)) is float
+    assert isinstance(papis.config.getfloat("test_getfloat", section=general_name),
+                      float
+                      )
 
     papis.config.set("test_getbool", "True")
     assert papis.config.getboolean("test_getbool") is True
