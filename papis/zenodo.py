@@ -1,15 +1,14 @@
+import datetime
+import json
 from typing import Any, Dict, List, Optional, TypedDict
 
-import json
-import datetime
-
-from markdownify import markdownify
+from markdownify import markdownify  # type: ignore[import-untyped]
 
 import papis
-import papis.utils
-import papis.importer
 import papis.document
 import papis.downloaders.base
+import papis.importer
+import papis.utils
 from papis.downloaders import download_document
 
 ZENODO_URL = "https://www.zenodo.org/api/records/{record_id}"
