@@ -155,7 +155,7 @@ def get_data(record_id: str) -> Dict[str, Any]:
     except json.JSONDecodeError as exc:
         logger.error("Failed to decode response from Zenodo.", exc_info=exc)
 
-    return zenodo_data_to_papis_data(json_data)
+    return json_data
 
 
 class LinkInfo(TypedDict):
@@ -202,6 +202,8 @@ class Importer(papis.importer.Importer):
         return None
 
     def fetch_data(self) -> None:
+        zenodo_data = get_data(self.uri)
+        self.ctx.data = zenodo_data_to_papis_data(zenodo_data)
         self.ctx.files = self.ctx.data["files"]
         del self.ctx.data["files"]
 
