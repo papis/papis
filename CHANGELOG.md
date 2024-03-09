@@ -1,5 +1,5 @@
-VERSION v0.14
-=============
+VERSION NEXT
+============
 
 ## Dependency changes
 
@@ -186,8 +186,8 @@ make use of the same infrastructure.
 * Do not escape verbatim BibTeX fields like `url`
   ([#739](https://github.com/papis/papis/pull/739))
 
-VERSION v0.13
-=============
+VERSION v0.13 (May 7, 2023)
+===========================
 
 ## Features
 
@@ -300,8 +300,8 @@ And many other general interface and robustness improvements.
 * Fix crash on trying to add a duplicate document ([#510](https://github.com/papis/papis/pull/510)).
 * Fix many typos ([#540](https://github.com/papis/papis/pull/540)).
 
-VERSION v0.12
-=============
+VERSION v0.12 (May 23, 2022)
+============================
 
 Many issues were resolved and new (and old) contributors
 made the following changes possible.
@@ -356,8 +356,8 @@ Check out the
 ## Community
 - usage of github discussions and #papis channel on libera.
 
-VERSION v0.11
-=============
+VERSION v0.11 (October 17, 2020)
+================================
 
 ## `papis explore`
 - Add `add` command to simply add documents retrieved.
@@ -395,8 +395,8 @@ VERSION v0.11
   using a doi.
 
 
-VERSION v0.10
-=============
+VERSION v0.10 (May 2, 2020)
+===========================
 
 - Fix several bugs.
 - Typecheck the whole codebase
@@ -430,8 +430,8 @@ VERSION v0.10
 
 
 
-VERSION v0.9
-============
+VERSION v0.9 (October 21, 2019)
+===============================
 
 ## Plugin architecture ##
 
@@ -540,14 +540,14 @@ papis module `papis.git`.
   been added. Now you will be able to retrieve information
   from many more websites by by virtue of the metadata of html websites.
 
-VERSION v0.8.1
-==============
+VERSION v0.8.1 (February 27, 2019)
+==================================
 
 - Change default colors for `header_formater`.
 - Update `prompt_toolkit` version to `2.0.5`.
 
-VERSION v0.8
-============
+VERSION v0.8 (February 26, 2019)
+================================
 
 One of the main developments for version `0.8` is to make `papis` less
 dependent on `PyPi`, for which some important dependencies have been
