@@ -16,6 +16,15 @@ logger = papis.logging.get_logger(__name__)
 
 
 def get_author_info(authors: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    """Formats each of the authors as a dictionary with given name,
+    family name, and affiliation if available.
+
+    :param authors: The list of authors
+    :type authors: (List[Dict[str, str]])
+
+    :return: A list of formatted authors
+    :rtype: List[Dict[str, str]]:
+    """
     out = []
     for author in authors:
         current_author = papis.document.split_author_name(author["name"])
@@ -92,6 +101,13 @@ key_conversion = [
 
 
 def zenodo_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Converts the dictionary from Zenodo to the conventional papis format.
+
+    :param data: the raw dictionary from Zenodo
+    :type data: Dict[str, Any]
+    :return: a new dictionary in a conventional papis form
+    :rtype: Dict[str, Any]
+    """
     # Merge metadata into data
     data.update(data["metadata"])
     del data["metadata"]
@@ -103,6 +119,14 @@ def zenodo_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def is_valid_record_id(record_id: str) -> bool:
+    """Checks if a record is a valid Zenodo record, first checking its form and then
+    testing against Zenodo
+
+    :param record_id: a Zenodo record id
+    :type record_id: str
+    :return: whether the record is valid
+    :rtype: bool
+    """
     record_id = record_id.strip()
     if not record_id.isdigit():
         return False
