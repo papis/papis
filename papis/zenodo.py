@@ -11,7 +11,6 @@ from papis.downloaders import download_document
 
 ZENODO_URL = "https://www.zenodo.org/api/records/{record_id}"
 
-# https://docs.citationstyles.org/en/1.0.1/specification.html#appendix-iii-types
 logger = papis.logging.get_logger(__name__)
 
 
