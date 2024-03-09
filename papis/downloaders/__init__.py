@@ -469,7 +469,7 @@ def download_document(
         file_path = os.path.join(tempfile.gettempdir(), filename)
         with open(file_path, mode="wb") as f:
             f.write(response.content)
-            return file_path
+        return file_path
 
     ext = expected_document_extension
     if ext is None:
