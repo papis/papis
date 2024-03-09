@@ -113,10 +113,17 @@ def is_valid_record_id(record_id: str) -> bool:
     return response.ok
 
 
-def get_data(query: str = "") -> Dict[str, Any]:
+def get_data(record_id: str) -> Dict[str, Any]:
+    """Fetches a record from the Zenodo API and processes it with a helper function
+
+    :param record_id: a Zenodo record id
+    :type record_id: str
+    :return: a processed zenodo record
+    :rtype: Dict[str, Any]
+    """
     with papis.utils.get_session() as session:
         response = session.get(
-            ZENODO_URL.format(record_id=query.strip()),
+            ZENODO_URL.format(record_id=record_id.strip()),
             headers={"user-agent": f"papis/{papis.__version__}"},
         )
 
