@@ -19,10 +19,8 @@ def get_author_info(authors: List[Dict[str, str]]) -> List[Dict[str, str]]:
     family name, and affiliation if available.
 
     :param authors: The list of authors
-    :type authors: (List[Dict[str, str]])
 
     :return: A list of formatted authors
-    :rtype: List[Dict[str, str]]:
     """
     out = []
     for author in authors:
@@ -38,12 +36,8 @@ def get_text_from_html(html: str) -> str:
     Processes the HTML and returns it in markdown format if a dependency is found,
     or raw HTML otherwise.
 
-    Args:
-
-        html (str): The raw HTML as embedded in the incoming Zenodo JSON data.
-
-    Returns:
-        str: Either the raw HTML as text, or the markdown-annotated plain text.
+    :param html: The raw HTML as embedded in the incoming Zenodo JSON data.
+    :return: Either the raw HTML as text, or the markdown-annotated plain text.
     """
     try:
         from markdownify import markdownify  # type: ignore[import-untyped]
@@ -99,13 +93,11 @@ key_conversion = [
 ]
 
 
-def zenodo_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
+def zenodo_data_to_papis_data(data: Dict[str, Any]):
     """Converts the dictionary from Zenodo to the conventional papis format.
 
     :param data: the raw dictionary from Zenodo
-    :type data: Dict[str, Any]
     :return: a new dictionary in a conventional papis form
-    :rtype: Dict[str, Any]
     """
     # Merge metadata into data
     data.update(data["metadata"])
@@ -122,9 +114,7 @@ def is_valid_record_id(record_id: str) -> bool:
     testing against Zenodo
 
     :param record_id: a Zenodo record id
-    :type record_id: str
     :return: whether the record is valid
-    :rtype: bool
     """
     record_id = record_id.strip()
     if not record_id.isdigit():
@@ -140,9 +130,7 @@ def get_data(record_id: str) -> Dict[str, Any]:
     """Fetches a record from the Zenodo API and processes it with a helper function
 
     :param record_id: a Zenodo record id
-    :type record_id: str
     :return: a processed zenodo record
-    :rtype: Dict[str, Any]
     """
     with papis.utils.get_session() as session:
         response = session.get(
