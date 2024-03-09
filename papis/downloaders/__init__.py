@@ -467,8 +467,8 @@ def download_document(
     if filename:
         import os.path
         file_path = os.path.join(tempfile.gettempdir(), filename)
-        with open(file_path, mode="wb") as f:
-            f.write(response.content)
+        with open(file_path, mode="wb") as writer:
+            writer.write(response.content)
         return file_path
 
     ext = expected_document_extension
