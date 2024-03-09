@@ -22,8 +22,8 @@ def _get_test_json(filename: str) -> Dict[str, Any]:
 
 @pytest.mark.parametrize(("zenodo_id",), [("7391177",), ("10794563",)])
 def test_zenodo_id_to_data(monkeypatch: Any, zenodo_id: str) -> None:
-    mock_data_file = "input_{}.json".format(zenodo_id)
-    expected_data_file = "output_{}.json".format(zenodo_id)
+    mock_data_file = "{}.json".format(zenodo_id)
+    expected_data_file = "{}_out.json".format(zenodo_id)
 
     monkeypatch.setattr(
         papis.zenodo, "get_data", lambda x: _get_test_json(mock_data_file)
