@@ -2,8 +2,6 @@ import datetime
 import json
 from typing import Any, Dict, List, Optional, TypedDict
 
-from markdownify import markdownify  # type: ignore[import-untyped]
-
 import papis
 import papis.document
 import papis.downloaders.base
@@ -25,6 +23,31 @@ def get_author_info(authors: List[Dict[str, str]]) -> List[Dict[str, str]]:
             current_author["affiliation"] = affiliation
         out.append(current_author)
     return out
+
+
+def get_text_from_html(html: str) -> str:
+    """
+    Processes the HTML and returns it in markdown format if a dependency is found,
+    or raw HTML otherwise.
+
+    Args:
+
+        html (str): The raw HTML as embedded in the incoming Zenodo JSON data.
+
+    Returns:
+        str: Either the raw HTML as text, or the markdown-annotated plain text.
+    """
+    try:
+        from markdownify import markdownify  # type: ignore[import-untyped]
+
+        result = markdownify(html)  # type: str
+        return result
+
+    except ImportError:
+        logger.info(
+            "Saving text as raw HTML.  Install `markdownify` to convert it to markdown."
+        )
+        return html
 
 
 KeyConversionPair = papis.document.KeyConversionPair
@@ -55,14 +78,16 @@ key_conversion = [
     ),
     KeyConversionPair("creators", [{"key": "author_list", "action": get_author_info}]),
     KeyConversionPair("links", [{"key": "url", "action": lambda x: x["self"]}]),
-    KeyConversionPair("notes", [{"key": "notes", "action": markdownify}]),
-    KeyConversionPair("method", [{"key": "method", "action": markdownify}]),
+    KeyConversionPair("notes", [{"key": "notes", "action": get_text_from_html}]),
+    KeyConversionPair("method", [{"key": "method", "action": get_text_from_html}]),
     KeyConversionPair(
         "resource_type", [{"key": "type", "action": lambda x: x["type"]}]
     ),
     KeyConversionPair("revision", [{"key": "revision", "action": None}]),
     KeyConversionPair("license", [{"key": "license", "action": lambda x: x["id"]}]),
-    KeyConversionPair("description", [{"key": "description", "action": markdownify}]),
+    KeyConversionPair(
+        "description", [{"key": "description", "action": get_text_from_html}]
+    ),
 ]
 
 

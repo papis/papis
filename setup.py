@@ -101,7 +101,6 @@ setup(
         "requests>=2.11.1",
         "stevedore>=1.30",
         "tqdm>=4.1",
-        "markdownify>=0.11.6",
     ],
     python_requires=">=3.8",
     extras_require={
@@ -112,6 +111,7 @@ setup(
         "optional": [
             "Jinja2>=3.0.0",
             "Whoosh>=2.7.4",
+            "markdownify>=0.11.6",
         ],
         "develop": [
             "flake8",
