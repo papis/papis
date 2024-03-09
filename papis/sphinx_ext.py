@@ -87,7 +87,9 @@ class PapisConfig(Directive):
     #: Number of required arguments to the directive.
     required_arguments: int = 1
     #: A description of the arguments, mapping names to validator functions.
-    option_spec: Dict[str, type] = {"default": str, "section": str, "type": str}
+    option_spec: Dict[str, Callable[[str], Any]] = {
+        "default": str, "section": str, "type": str
+        }
     add_index: int = True
 
     def run(self) -> Any:
@@ -131,8 +133,8 @@ class PapisConfig(Directive):
             if section != get_general_settings_name() else "",
             f"    :default: ``{default!r}``",
             "",
-        ] + [f"    {line}" for line in self.content]    # type: ignore[has-type]
-        self.content = docutils.statemachine.ViewList(lines)
+        ] + [f"    {line}" for line in self.content]
+        self.content = docutils.statemachine.StringList(lines)
 
         node = docutils.nodes.paragraph()
         node.document = self.state.document
