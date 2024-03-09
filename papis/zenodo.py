@@ -112,7 +112,7 @@ def zenodo_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
     del data["metadata"]
 
     new_data = papis.document.keyconversion_to_data(key_conversion, data)
-    new_data["file_urls"] = data["files"]
+    new_data["files"] = data["files"]
 
     return new_data
 
@@ -189,7 +189,6 @@ class Importer(papis.importer.Importer):
 
     def __init__(self, uri: str = "") -> None:
         super().__init__(name="zenodo", uri=uri)
-        self._file_urls: List[FileInfo] = []
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
@@ -203,18 +202,17 @@ class Importer(papis.importer.Importer):
         return None
 
     def fetch_data(self) -> None:
-        self.ctx.data = get_data(self.uri)
-        self._file_urls = self.ctx.data["file_urls"]
-        del self.ctx.data["file_urls"]
+        self.ctx.files = self.ctx.data["files"]
+        del self.ctx.data["files"]
 
     def fetch_files(self) -> None:
-        if not self.ctx.data:
+        if not self.ctx.files:
             return
 
-        for url_data in self._file_urls:
+        for url_data in self.ctx.files:
             url = url_data["links"]["self"]
             self.logger.info("Trying to download document from '%s'.", url)
 
-            filename = download_document(url, filename=url_data["key"])
-            if filename is not None:
-                self.ctx.files.append(filename)
+            out_filename = download_document(url, filename=filename)
+            if out_filename is not None:
+                self.ctx.files.append(out_filename)
