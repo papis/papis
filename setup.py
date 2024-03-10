@@ -128,6 +128,7 @@ setup(
             "types-PyYAML",
             "types-Pygments",
             "types-beautifulsoup4",
+            "types-docutils",
             "types-python-slugify",
             "types-requests",
             "types-tqdm",
