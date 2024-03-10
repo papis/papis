@@ -23,6 +23,34 @@ def test_context() -> None:
     assert not ctx
 
 
+def test_custom_context_importer() -> None:
+    from papis.importer import Context, Importer
+
+    class CustomContext(Context):
+        def __init__(self) -> None:
+            super().__init__()
+            self.extra = ""
+
+    class CustomContextImporter(Importer):
+        ctx: CustomContext
+
+        def __init__(self, uri: str = "", **kwargs: Any) -> None:
+            super().__init__(uri=uri, name="SimpleImporter", ctx=CustomContext())
+
+        @classmethod
+        def match(cls, uri: str) -> "CustomContextImporter":
+            importer = CustomContextImporter(uri=uri, ctx=CustomContext())
+            return importer
+
+        def fetch(self) -> None:
+            self.ctx.extra = "foobar"
+
+    importer = CustomContextImporter()
+    assert importer.ctx.extra == ""
+    importer.fetch()
+    assert importer.ctx.extra == "foobar"
+
+
 def test_cache() -> None:
     from papis.importer import Importer, cache
 

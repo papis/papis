@@ -83,7 +83,7 @@ class Importer:
         if not name:
             name = type(self).__module__.split(".")[-1]
 
-        self.ctx: Context = ctx or Context()
+        self.ctx: Context = ctx
         self.uri: str = uri
         self.name: str = name
         self.logger = papis.logging.get_logger(f"papis.importer.{self.name}")
