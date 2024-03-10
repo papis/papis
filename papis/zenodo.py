@@ -104,8 +104,6 @@ def zenodo_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
     del data["metadata"]
 
     new_data = papis.document.keyconversion_to_data(key_conversion, data)
-    new_data["files"] = data["files"]
-
     return new_data
 
 
@@ -146,11 +144,19 @@ def get_data(record_id: str) -> Dict[str, Any]:
     return json_data
 
 
+class Context(papis.importer.Context):
+    def __init__(self) -> None:
+        super().__init__()
+        self.file_info: Dict[str, Any] = {}
+
+
 class Importer(papis.importer.Importer):
     """Importer downloading data from a Zenodo ID"""
 
+    ctx: Context
+
     def __init__(self, uri: str = "") -> None:
-        super().__init__(name="zenodo", uri=uri)
+        super().__init__(name="zenodo", uri=uri, ctx=Context())
 
     @classmethod
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
@@ -165,16 +171,17 @@ class Importer(papis.importer.Importer):
 
     def fetch_data(self) -> None:
         zenodo_data = get_data(self.uri)
+        # Build a filename to URL dictionary
+        self.ctx.file_info = {
+            file["key"]: file["links"]["self"] for file in zenodo_data["files"]
+        }
         self.ctx.data = zenodo_data_to_papis_data(zenodo_data)
-        self.ctx.files = self.ctx.data["files"]
-        del self.ctx.data["files"]
 
     def fetch_files(self) -> None:
-        if not self.ctx.files:
+        if not self.ctx.file_info:
             return
 
-        for url_data in self.ctx.files:
-            url = url_data["links"]["self"]
+        for filename, url in self.ctx.file_info.items():
             self.logger.info("Trying to download document from '%s'.", url)
 
             out_filename = download_document(url, filename=filename)
