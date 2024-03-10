@@ -54,16 +54,37 @@ def get_text_from_html(html: str) -> str:
 
 KeyConversionPair = papis.document.KeyConversionPair
 key_conversion = [
+    # Fields from biblatex-software and biblatex docs
+    KeyConversionPair(
+        "description", [{"key": "abstract", "action": get_text_from_html}]
+    ),
+    KeyConversionPair("creators", [{"key": "author_list", "action": get_author_info}]),
     KeyConversionPair(
         "id",
         [
-            {"key": "zenodo_record_id", "action": None},
+            {"key": "eprint", "action": None},
         ],
     ),
-    KeyConversionPair("conceptrecid", [{"key": "concept_record_id", "action": None}]),
     KeyConversionPair("doi", [{"key": "doi", "action": None}]),
+    KeyConversionPair(
+        "contributors",
+        [
+            {
+                "key": "editor",
+                "action": lambda x: filter(lambda e: e["role"]["id"] == "editor", x),
+            },
+            {
+                "key": "organization",
+                "action": lambda x: filter(
+                    lambda e: e["person_or_org"]["type"] == "organizational", x
+                ),
+            },
+        ],
+    ),
+    KeyConversionPair("license", [{"key": "license", "action": lambda x: x["id"]}]),
+    KeyConversionPair("notes", [{"key": "note", "action": get_text_from_html}]),
+    KeyConversionPair("publisher", [{"key": "publisher", "action": None}]),
     KeyConversionPair("title", [{"key": "title", "action": None}]),
-    KeyConversionPair("keywords", [{"key": "tags", "action": None}]),
     KeyConversionPair(
         "publication_date",
         [
@@ -78,18 +99,16 @@ key_conversion = [
             {"key": "day", "action": lambda x: datetime.datetime.fromisoformat(x).day},
         ],
     ),
-    KeyConversionPair("creators", [{"key": "author_list", "action": get_author_info}]),
-    KeyConversionPair("links", [{"key": "url", "action": lambda x: x["self"]}]),
-    KeyConversionPair("notes", [{"key": "notes", "action": get_text_from_html}]),
-    KeyConversionPair("method", [{"key": "method", "action": get_text_from_html}]),
+    KeyConversionPair("status", [{"key": "pubstate", "action": get_text_from_html}]),
     KeyConversionPair(
         "resource_type", [{"key": "type", "action": lambda x: x["type"]}]
     ),
+    KeyConversionPair("version", [{"key": "version", "action": None}]),
+    # extra fields
+    KeyConversionPair("keywords", [{"key": "tags", "action": None}]),
     KeyConversionPair("revision", [{"key": "revision", "action": None}]),
-    KeyConversionPair("license", [{"key": "license", "action": lambda x: x["id"]}]),
-    KeyConversionPair(
-        "description", [{"key": "description", "action": get_text_from_html}]
-    ),
+    KeyConversionPair("links", [{"key": "url", "action": lambda x: x["self"]}]),
+    KeyConversionPair("method", [{"key": "method", "action": get_text_from_html}]),
 ]
 
 
