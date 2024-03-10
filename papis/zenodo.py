@@ -1,6 +1,6 @@
 import datetime
 import json
-from typing import Any, Dict, List, Optional, TypedDict
+from typing import Any, Dict, List, Optional
 
 import papis
 import papis.document
@@ -93,7 +93,7 @@ key_conversion = [
 ]
 
 
-def zenodo_data_to_papis_data(data: Dict[str, Any]):
+def zenodo_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
     """Converts the dictionary from Zenodo to the conventional papis format.
 
     :param data: the raw dictionary from Zenodo
@@ -139,37 +139,11 @@ def get_data(record_id: str) -> Dict[str, Any]:
         )
 
     try:
-        json_data = json.loads(response.content.decode())
+        json_data = json.loads(response.content.decode())  # type: Dict[str, Any]
     except json.JSONDecodeError as exc:
         logger.error("Failed to decode response from Zenodo.", exc_info=exc)
 
     return json_data
-
-
-class LinkInfo(TypedDict):
-    """Represents a the url for a Zenodo record.
-    Attributes:
-    - id, the uuid of the file
-    """
-
-    self: str
-
-
-class FileInfo(TypedDict):
-    """Represents a file info entry from a Zenodo record.
-
-    - id, the uuid of the file
-    - key, the filename
-    - size: the size of a file in bytes
-    - checksum: md5sum hash of the file.
-    - links: dict with the url to download the file
-    """
-
-    id: str
-    key: str
-    size: int
-    checksum: str
-    links: LinkInfo
 
 
 class Importer(papis.importer.Importer):
