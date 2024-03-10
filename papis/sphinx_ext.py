@@ -20,7 +20,7 @@ Sphinx configuration.
 import os
 import sys
 import docutils
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, ClassVar, Dict, List, Optional
 
 from sphinx import application
 from sphinx_click.ext import ClickDirective
@@ -81,13 +81,13 @@ class PapisConfig(Directive):
     """
 
     #: The directive can have a longer description.
-    has_content: bool = True
+    has_content: ClassVar[bool] = True
     #: Number of optional arguments to the directive.
-    optional_arguments: int = 3
+    optional_arguments: ClassVar[int] = 3
     #: Number of required arguments to the directive.
-    required_arguments: int = 1
+    required_arguments: ClassVar[int] = 1
     #: A description of the arguments, mapping names to validator functions.
-    option_spec: Dict[str, Callable[[str], Any]] = {
+    option_spec: ClassVar[Dict[str, Callable[[str], Any]]] = {
         "default": str, "section": str, "type": str
         }
     add_index: int = True
