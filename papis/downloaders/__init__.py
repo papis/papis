@@ -439,12 +439,14 @@ def download_document(
         url: str,
         expected_document_extension: Optional[str] = None,
         cookies: Optional[Dict[str, Any]] = None,
+        filename: Optional[str] = None,
         ) -> Optional[str]:
     """Download a document from *url* and store it in a local file.
 
     :param url: the URL of a remote file.
     :param expected_document_extension: an expected file type. If *None*, then
         an extension is guessed from the file contents, but this can also fail.
+    :param filename: overrides the file name, ignoring file naming rules.
     :returns: a path to a local file containing the data from *url*.
     """
     if cookies is None:
@@ -461,6 +463,13 @@ def download_document(
         logger.error("Could not download document '%s'. (HTTP status: %s %d).",
                      url, response.reason, response.status_code)
         return None
+
+    if filename:
+        import os.path
+        file_path = os.path.join(tempfile.gettempdir(), filename)
+        with open(file_path, mode="wb") as writer:
+            writer.write(response.content)
+        return file_path
 
     ext = expected_document_extension
     if ext is None:

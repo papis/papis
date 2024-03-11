@@ -111,6 +111,7 @@ setup(
         "optional": [
             "Jinja2>=3.0.0",
             "Whoosh>=2.7.4",
+            "markdownify>=0.11.6",
         ],
         "develop": [
             "flake8",
