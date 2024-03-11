@@ -1,51 +1,51 @@
 {
-    "abstract": "Epistasis is often portrayed as unimportant in evolution. While random patterns of epistasis may have limited effects on the response to selection, systematic directional epistasis can have substantial effects on evolutionary dynamics. Directional epistasis occurs when allelic substitutions that change a trait also modify the effects of allelic substitutions at other loci in a systematic direction. In this case, trait evolution may induce correlated changes in allelic effects and effective genetic variance (evolvability) that modify further evolution. Although theory thus suggests a potentially important role for directional epistasis in evolution, we still lack empirical evidence about its prevalence and magnitude. Using a new framework to estimate systematic patterns of epistasis from line-crosses experiments, we quantify its effects on 197 size-related traits from diverging natural populations in 24 animal and 17 plant species. We show that directional epistasis is common and tends to become stronger with increasing morphological divergence. In animals, most traits displayed negative directionality toward larger size, suggesting that epistasis constraints reducing evolvability toward larger size may be common. Dominance was also common and did not systematically alter the effects of epistasis.",
-    "author_list": [
-        {
-            "family": "Bourg",
-            "given": "Salom\u00e9",
-            "affiliation": "Norwegian University of Science and Technology"
-        },
-        {
-            "family": "Bolstad",
-            "given": "Geir H.",
-            "affiliation": "Norwegian Institute for Nature Research"
-        },
-        {
-            "family": "Griffin",
-            "given": "Donald V.",
-            "affiliation": "Florida State University"
-        },
-        {
-            "family": "P\u00e9labon",
-            "given": "Christophe",
-            "affiliation": "Norwegian University of Science and Technology"
-        },
-        {
-            "family": "Hansen",
-            "given": "Thomas F.",
-            "affiliation": "University of Oslo"
-        }
-    ],
-    "eprint": 10794563,
-    "doi": "10.5061/dryad.66t1g1k7m",
-    "license": "cc-zero",
-    "note": "Funding provided by: Norwegian research council (RCN)\\*  \nCrossref Funder Registry ID:   \nAward Number: 287214\n\nFunding provided by: Centre for Advanced Study  \nCrossref Funder Registry ID: https://ror.org/05rbhea42  \nAward Number: 223257",
-    "title": "Directional epistasis is common in morphological divergence",
-    "year": 2024,
-    "month": 3,
-    "day": 7,
-    "pubstate": "published",
-    "type": "dataset",
-    "tags": [
-        "linecross",
-        "Epistasis",
-        "Genetic dominance",
-        "evolvability",
-        "Evolutionary biology"
-    ],
-    "revision": 5,
-    "url": "https://zenodo.org/api/records/10794563",
-    "method": "The data were collected through a literature search.",
-    "author": "Bourg, Salom\u00e9 and Bolstad, Geir H. and Griffin, Donald V. and P\u00e9labon, Christophe and Hansen, Thomas F."
+  "abstract": "Epistasis is often portrayed as unimportant in evolution. While random patterns of epistasis may have limited effects on the response to selection, systematic directional epistasis can have substantial effects on evolutionary dynamics. Directional epistasis occurs when allelic substitutions that change a trait also modify the effects of allelic substitutions at other loci in a systematic direction. In this case, trait evolution may induce correlated changes in allelic effects and effective genetic variance (evolvability) that modify further evolution. Although theory thus suggests a potentially important role for directional epistasis in evolution, we still lack empirical evidence about its prevalence and magnitude. Using a new framework to estimate systematic patterns of epistasis from line-crosses experiments, we quantify its effects on 197 size-related traits from diverging natural populations in 24 animal and 17 plant species. We show that directional epistasis is common and tends to become stronger with increasing morphological divergence. In animals, most traits displayed negative directionality toward larger size, suggesting that epistasis constraints reducing evolvability toward larger size may be common. Dominance was also common and did not systematically alter the effects of epistasis.",
+  "author": "Bourg, Salomé and Bolstad, Geir H. and Griffin, Donald V. and Pélabon, Christophe and Hansen, Thomas F.",
+  "author_list": [
+    {
+      "affiliation": "Norwegian University of Science and Technology",
+      "family": "Bourg",
+      "given": "Salomé"
+    },
+    {
+      "affiliation": "Norwegian Institute for Nature Research",
+      "family": "Bolstad",
+      "given": "Geir H."
+    },
+    {
+      "affiliation": "Florida State University",
+      "family": "Griffin",
+      "given": "Donald V."
+    },
+    {
+      "affiliation": "Norwegian University of Science and Technology",
+      "family": "Pélabon",
+      "given": "Christophe"
+    },
+    {
+      "affiliation": "University of Oslo",
+      "family": "Hansen",
+      "given": "Thomas F."
+    }
+  ],
+  "day": 7,
+  "doi": "10.5061/dryad.66t1g1k7m",
+  "eprint": 10794563,
+  "license": "cc-zero",
+  "method": "The data were collected through a literature search.",
+  "month": 3,
+  "note": "Funding provided by: Norwegian research council (RCN)\\*  \nCrossref Funder Registry ID:   \nAward Number: 287214\n\nFunding provided by: Centre for Advanced Study  \nCrossref Funder Registry ID: https://ror.org/05rbhea42  \nAward Number: 223257",
+  "pubstate": "published",
+  "revision": 5,
+  "tags": [
+    "linecross",
+    "Epistasis",
+    "Genetic dominance",
+    "evolvability",
+    "Evolutionary biology"
+  ],
+  "title": "Directional epistasis is common in morphological divergence",
+  "type": "dataset",
+  "url": "https://zenodo.org/api/records/10794563",
+  "year": 2024
 }
