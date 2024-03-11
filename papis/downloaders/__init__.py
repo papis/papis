@@ -1,4 +1,5 @@
 import re
+import os
 import tempfile
 from typing import List, Optional, Any, Sequence, Type, Dict, Union, TYPE_CHECKING
 
@@ -446,8 +447,11 @@ def download_document(
     :param url: the URL of a remote file.
     :param expected_document_extension: an expected file type. If *None*, then
         an extension is guessed from the file contents, but this can also fail.
-    :param filename: overrides the file name, ignoring file naming rules.
-    :returns: a path to a local file containing the data from *url*.
+    :param filename: a file name for the document, regardless of the given URL and
+        extension. If not given, a temporary file with the desired extension is
+        used instead.
+
+    :returns: an absolute path to a local file containing the data from *url*.
     """
     if cookies is None:
         cookies = {}
@@ -465,26 +469,25 @@ def download_document(
         return None
 
     if filename:
-        import os.path
-        file_path = os.path.join(tempfile.gettempdir(), filename)
-        with open(file_path, mode="wb") as writer:
-            writer.write(response.content)
-        return file_path
+        outfile = os.path.join(tempfile.gettempdir(), os.path.basename(filename))
+        with open(outfile, mode="wb") as f:
+            f.write(response.content)
+    else:
+        ext = expected_document_extension
+        if ext is None:
+            from papis.filetype import guess_content_extension
+            ext = guess_content_extension(response.content)
+            if not ext:
+                logger.warning("Downloaded document does not have a "
+                               "recognizable (binary) mimetype: '%s'.",
+                               response.headers["Content-Type"])
 
-    ext = expected_document_extension
-    if ext is None:
-        from papis.filetype import guess_content_extension
-        ext = guess_content_extension(response.content)
-        if not ext:
-            logger.warning("Downloaded document does not have a "
-                           "recognizable (binary) mimetype: '%s'.",
-                           response.headers["Content-Type"])
+        ext = f".{ext}" if ext else ""
+        with tempfile.NamedTemporaryFile(
+                mode="wb+",
+                suffix=ext,
+                delete=False) as f:
+            f.write(response.content)
+            outfile = f.name
 
-    ext = f".{ext}" if ext else ""
-    with tempfile.NamedTemporaryFile(
-            mode="wb+",
-            suffix=ext,
-            delete=False) as f:
-        f.write(response.content)
-
-    return f.name
+    return outfile
