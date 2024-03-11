@@ -121,8 +121,7 @@ def zenodo_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
     # Merge metadata into data
     data.update(data.pop("metadata", {}))
 
-    new_data = papis.document.keyconversion_to_data(key_conversion, data)
-    return new_data
+    return papis.document.keyconversion_to_data(key_conversion, data)
 
 
 def is_valid_record_id(record_id: str) -> bool:
