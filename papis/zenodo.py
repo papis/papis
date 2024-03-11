@@ -141,24 +141,33 @@ def is_valid_record_id(record_id: str) -> bool:
     return response.ok
 
 
-def get_data(record_id: str) -> Dict[str, Any]:
-    """Fetches a record from the Zenodo API and processes it with a helper function
-
-    :param record_id: a Zenodo record id
-    :return: a processed zenodo record
-    """
+def _get_zenodo_response(record_id: str) -> str:
     with papis.utils.get_session() as session:
         response = session.get(
             ZENODO_URL.format(record_id=record_id.strip()),
             headers={"user-agent": f"papis/{papis.__version__}"},
         )
 
+    return response.content.decode()
+
+
+def get_data(record_id: str) -> Dict[str, Any]:
+    """Fetches a record from the Zenodo API and processes it with a helper function
+
+    :param record_id: a Zenodo record id
+    :return: a processed zenodo record
+    """
     try:
-        json_data = json.loads(response.content.decode())  # type: Dict[str, Any]
+        json_data = json.loads(_get_zenodo_response(record_id))
     except json.JSONDecodeError as exc:
         logger.error("Failed to decode response from Zenodo.", exc_info=exc)
 
-    return json_data
+    if isinstance(json_data, dict):
+        return json_data
+    else:
+        logger.error("Zenodo reponse has unsupported type: '%s'",
+                     type(json_data).__name__)
+        return {}
 
 
 class Context(papis.importer.Context):
