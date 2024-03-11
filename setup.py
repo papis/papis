@@ -199,6 +199,7 @@ setup(
             "pdf2doi=papis.crossref:DoiFromPdfImporter",
             "pmid=papis.pubmed:Importer",
             "yaml=papis.yaml:Importer",
+            "zenodo=papis.zenodo:Importer",
         ],
         "papis.picker": [
             "fzf=papis.fzf:Picker",
