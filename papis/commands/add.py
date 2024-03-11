@@ -416,13 +416,13 @@ def run(paths: List[str],
 
         if link:
             in_file_abspath = os.path.abspath(in_file_path)
-            logger.debug("[SYMLINK] '%s' to '%s'.", in_file_abspath, tmp_end_filepath)
+            logger.info("[SYMLINK] '%s' to '%s'.", in_file_abspath, tmp_end_filepath)
             os.symlink(in_file_abspath, tmp_end_filepath)
         elif move:
-            logger.debug("[MV] '%s' to '%s'.", in_file_path, tmp_end_filepath)
+            logger.info("[MV] '%s' to '%s'.", in_file_path, tmp_end_filepath)
             shutil.copy(in_file_path, tmp_end_filepath)
         else:
-            logger.debug("[CP] '%s' to '%s'.", in_file_path, tmp_end_filepath)
+            logger.info("[CP] '%s' to '%s'.", in_file_path, tmp_end_filepath)
             shutil.copy(in_file_path, tmp_end_filepath)
 
     tmp_document["files"] = new_file_list
