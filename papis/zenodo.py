@@ -119,8 +119,7 @@ def zenodo_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
     :return: a new dictionary in a conventional papis form
     """
     # Merge metadata into data
-    data.update(data["metadata"])
-    del data["metadata"]
+    data.update(data.pop("metadata", {}))
 
     new_data = papis.document.keyconversion_to_data(key_conversion, data)
     return new_data
