@@ -9,6 +9,10 @@ def test_zenodo_id_to_data(tmp_library: TemporaryLibrary,
                            resource_cache: ResourceCache,
                            monkeypatch: pytest.MonkeyPatch,
                            zenodo_id: str) -> None:
+    # NOTE: the functionality doesn't require markdownify, but the output files
+    # are formatted using it so the test would fail otherwise.
+    pytest.importorskip("markdownify")
+
     import papis.zenodo
 
     infile = "{}.json".format(zenodo_id)
