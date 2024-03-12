@@ -40,11 +40,9 @@ def get_text_from_html(html: str) -> str:
     :return: Either the raw HTML as text, or the markdown-annotated plain text.
     """
     try:
-        from markdownify import markdownify  # type: ignore[import-untyped]
+        from markdownify import markdownify
 
-        result = markdownify(html)  # type: str
-        return result
-
+        return str(markdownify(html))
     except ImportError:
         logger.info(
             "Saving text as raw HTML.  Install `markdownify` to convert it to markdown."
