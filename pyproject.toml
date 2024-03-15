@@ -229,11 +229,11 @@ exclude = [".github", "docs/build"]
 packages = ["papis"]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"contrib/papis.desktop" = "share/applications"
+"contrib/papis.desktop" = "share/applications/papis.desktop"
 "doc/build/man" = "share/man/man1"
-"scripts/shell_completion/click/bash/papis.bash" = "share/bash-completion/completions"
-"scripts/shell_completion/click/fish/papis.fish" = "share/fish/vendor_completions.d"
-"scripts/shell_completion/click/zsh/_papis" = "share/zsh/site-functions"
+"scripts/shell_completion/click/bash/papis.bash" = "share/bash-completion/completions/papis.bash"
+"scripts/shell_completion/click/fish/papis.fish" = "share/fish/vendor_completions.d/papis.fish"
+"scripts/shell_completion/click/zsh/_papis" = "share/zsh/site-functions/_papis"
 
 [tool.pytest.ini_options]
 addopts = [
