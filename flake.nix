@@ -264,6 +264,7 @@
           # Create a devShell like normal.
           pkgs.mkShell {
             packages = [
+              self.packages.${system}.papis
               pythonEnv
               papis-build-container
               papis-run-container-tests
