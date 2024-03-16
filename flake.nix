@@ -2,230 +2,277 @@
   description = "Papis - Powerful command-line document and bibliography manager";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    pyproject-nix.url = "github:nix-community/pyproject.nix";
+    pyproject-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
     self,
     nixpkgs,
     flake-utils,
+    pyproject-nix,
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
-      python = pkgs.python3;
+      python = pkgs.python3.override {
+        packageOverrides = self: super: {
+          arxiv = arxiv;
+          flake8-quotes = flake8-quotes;
+          flake8-pyproject = flake8-pyproject;
+          python-coveralls = python-coveralls;
+          types-pygments = types-pygments;
+          types-python-slugify = types-python-slugify;
+          sphinx-click = sphinx-click;
+        };
+      };
       pypkgs = pkgs.python3Packages;
-      lib = pkgs.lib;
+      project = pyproject-nix.lib.project.loadPyproject {
+        projectRoot = ./.;
+      };
 
-      runtime_py_deps = let
-        # manually package arxiv.py since it is not yet in upstream nixpkgs
-        arxivpy = python.pkgs.buildPythonPackage rec {
-          pname = "arxiv";
-          version = "1.4.8";
+      arxiv = python.pkgs.buildPythonPackage rec {
+        pname = "arxiv";
+        version = "2.1.0";
 
-          src = python.pkgs.fetchPypi {
-            inherit pname version;
-            sha256 = "sha256-KoGOp0nqpipuJPwx1Tt2m00z/1XPxd2nx7fTCaOyk3M=";
-          };
-
-          doCheck = false;
-          checkInputs = [];
-          propagatedBuildInputs = [pypkgs.feedparser];
-
-          meta = with lib; {
-            homepage = "https://github.com/lukasschwab/arxiv.py";
-            description = " Python wrapper for the arXiv API ";
-            license = licenses.mit;
-          };
+        src = python.pkgs.fetchPypi {
+          inherit pname version;
+          sha256 = "sha256-60sdWrnf1mAnw0S7MkwgviHVb+FfbOIW7VsgnfdH3qg=";
         };
-      in
-        with pypkgs; [
-          arxivpy
-          beautifulsoup4
-          bibtexparser
-          chardet
-          click
-          colorama
-          dominate
-          filetype
-          habanero
-          hatchling
-          isbnlib
-          jinja2
-          lxml
-          prompt_toolkit
-          pygments
-          pyparsing
-          python-doi
-          python-slugify
-          pyyaml
-          requests
-          stevedore
-          tqdm
-          whoosh
-        ];
-      develop_py_deps = with pypkgs; [
-        pip
-        virtualenv
 
-        flake8
-        flake8-bugbear
-        mypy
-        pep8-naming
-        pylint
-        pytest
-        pytest-cov
-        python-lsp-server
-        sphinx_rtd_theme
+        doCheck = false;
+        checkInputs = [];
+        propagatedBuildInputs = [pypkgs.feedparser];
 
-        # not packaged
-        # flake8-quotes
-        # python-coveralls
-        # sphinx-click
-        # types-PyYAML
-        # types-Pygments
-        # types-beautifulsoup4
-        # types-python-slugify
-        # types-requests
-        # types-tqdm
-      ];
-
-      buildf = isDevEnv:
-        python.pkgs.buildPythonPackage rec {
-          pname = "papis";
-          version = "0.13";
-          format = "pyproject";
-
-          # disabled = pythonOlder "3.8";
-
-          src = ./.;
-
-          propagatedBuildInputs = runtime_py_deps ++ lib.optionals isDevEnv develop_py_deps;
-
-          doCheck = false;
-          checkInputs = with python.pkgs; [
-            pytestCheckHook
-          ];
-
-          preCheck = ''
-            export HOME=$(mktemp -d);
-          '';
-
-          pytestFlagsArray = [
-            "papis tests"
-          ];
-
-          disabledTestPaths = [
-            "tests/downloaders"
-          ];
-
-          disabledTests = [
-            "get_document_url"
-            "match"
-            "test_doi_to_data"
-            "test_downloader_getter"
-            "test_general"
-            "test_get_data"
-            "test_validate_arxivid"
-            "test_yaml"
-            # ]
-            # ++ lib.optionals stdenv.isDarwin [
-            "test_default_opener"
-          ];
-
-          pythonImportsCheck = [
-            "papis"
-          ];
-
-          meta = with pkgs.lib; {
-            description = "Powerful command-line document and bibliography manager";
-            homepage = "https://papis.readthedocs.io/";
-            changelog = "https://github.com/papis/papis/blob/v${version}/CHANGELOG.md";
-            license = licenses.gpl3Only;
-          };
+        meta = with pkgs.lib; {
+          homepage = "https://github.com/lukasschwab/arxiv.py";
+          description = "Python wrapper for the arXiv API";
+          license = licenses.mit;
         };
+      };
+
+      flake8-quotes = python.pkgs.buildPythonPackage rec {
+        pname = "flake8-quotes";
+        version = "3.4.0";
+
+        src = python.pkgs.fetchPypi {
+          inherit pname version;
+          sha256 = "sha256-qthJL7cQotPqvmjF+GoUKN5lDISEEn4UxD0FBLowJ2w=";
+        };
+
+        doCheck = false;
+        checkInputs = [];
+
+        meta = with pkgs.lib; {
+          homepage = "http://github.com/zheller/flake8-quotes";
+          description = "Flake8 lint for quotes.";
+          license = licenses.mit;
+        };
+      };
+
+      flake8-pyproject = python.pkgs.buildPythonPackage {
+        pname = "flake8-pyproject";
+        version = "1.2.3";
+        pyproject = true;
+
+        src = pkgs.fetchFromGitHub {
+          owner = "john-hen";
+          repo = "Flake8-pyproject";
+          rev = "30b8444781d16edd54c11df08210a7c8fb79258d";
+          hash = "sha256-bPRIj7tYmm6I9eo1ZjiibmpVmGcHctZSuTvnKX+raPg=";
+        };
+
+        doCheck = false;
+        checkInputs = [];
+        propagatedBuildInputs = [pypkgs.flit-core pypkgs.flake8];
+
+        meta = with pkgs.lib; {
+          homepage = "https://github.com/john-hen/Flake8-pyproject";
+          description = "Flake8 plug-in loading the configuration from pyproject.toml";
+          license = licenses.mit;
+        };
+      };
+
+      python-coveralls = python.pkgs.buildPythonPackage rec {
+        pname = "python-coveralls";
+        version = "2.9.3";
+
+        src = python.pkgs.fetchPypi {
+          inherit pname version;
+          sha256 = "sha256-v694EefcVijoO2sWKWKk4khdv/GEsw5J84A3TtG87lU=";
+        };
+
+        doCheck = false;
+        checkInputs = [];
+
+        meta = with pkgs.lib; {
+          homepage = "http://github.com/z4r/python-coveralls";
+          description = "Python interface to coveralls.io API ";
+          license = licenses.asl20;
+        };
+      };
+
+      types-pygments = python.pkgs.buildPythonPackage rec {
+        pname = "types-Pygments";
+        version = "2.17.0.20240310";
+
+        src = python.pkgs.fetchPypi {
+          inherit pname version;
+          sha256 = "sha256-sdl+kFzjY0PHKDsDGRgq5tT5ZxiPNh9FUCoYrkPgPh8=";
+        };
+
+        doCheck = false;
+        checkInputs = [];
+
+        meta = with pkgs.lib; {
+          homepage = "https://github.com/python/typeshed";
+          description = "Typing stubs for Pygments";
+          license = licenses.asl20;
+        };
+      };
+
+      types-python-slugify = python.pkgs.buildPythonPackage rec {
+        pname = "types-python-slugify";
+        version = "8.0.2.20240310";
+
+        src = python.pkgs.fetchPypi {
+          inherit pname version;
+          sha256 = "sha256-UVe1CMf+1YdSDHDXf2KuoPr9xmIIk8LsiXLxOh+vVWA=";
+        };
+
+        doCheck = false;
+        checkInputs = [];
+
+        meta = with pkgs.lib; {
+          homepage = "https://github.com/python/typeshed";
+          description = "Typing stubs for python-slugify";
+          license = licenses.asl20;
+        };
+      };
+
+      sphinx-click = python.pkgs.buildPythonPackage rec {
+        pname = "sphinx-click";
+        version = "5.1.0";
+
+        src = python.pkgs.fetchPypi {
+          inherit pname version;
+          sha256 = "sha256-aBLC22LT+ucaSt2+WooKFsl+tJHzzWP+NLTtfgcjbzM=";
+        };
+
+        doCheck = false;
+        checkInputs = [];
+        propagatedBuildInputs = [pypkgs.pbr];
+
+        meta = with pkgs.lib; {
+          homepage = "https://github.com/click-contrib/sphinx-click";
+          description = "Sphinx extension that automatically documents click applications";
+          license = licenses.mit;
+        };
+      };
     in {
       packages = {
-        default = buildf false;
-        papis = buildf false;
+        papis = let
+          # Returns an attribute set that can be passed to `buildPythonPackage`.
+          attrs = project.renderers.buildPythonPackage {
+            inherit python;
+            extras = ["optional"];
+          };
+        in
+          # Pass attributes to buildPythonPackage.
+          # Here is a good spot to add on any missing or custom attributes.
+          python.pkgs.buildPythonPackage (attrs
+            // {
+              # Because we're following main, use the git rev as version
+              version =
+                if (self ? rev)
+                then self.rev
+                else self.dirtyShortRev;
+            });
+        default = self.packages.${system}.papis;
       };
       devShells = {
-        default = pkgs.mkShell {
-          buildInputs = let
-            check-container-cmd =
+        default = let
+          # Returns a function that can be passed to `python.withPackages`
+          arg = project.renderers.withPackages {
+            inherit python;
+            extras = ["develop" "docs" "lsp" "optional"];
+          };
+
+          # Returns a wrapped environment (virtualenv like) with all our packages
+          pythonEnv = python.withPackages arg;
+
+          # used in below scripts to check if docker or podman is available
+          check-container-cmd =
+            # bash
+            ''
+              if command -v podman &> /dev/null
+              then
+                  container_cmd="podman"
+              elif command -v docker &> /dev/null
+              then
+                  container_cmd="docker"
+              else
+                  echo "Neither Podman or Docker could be found. Aborting..."
+                  exit 1
+              fi
+            '';
+
+          # convenience command to build a papis container with docker/podman
+          papis-build-container = pkgs.writeShellApplication {
+            name = "papis-build-container";
+            text =
+              check-container-cmd
+              +
               # bash
               ''
-                if command -v podman &> /dev/null
-                then
-                    container_cmd="podman"
-                elif command -v docker &> /dev/null
-                then
-                    container_cmd="docker"
-                else
-                    echo "Neither Podman or Docker could be found. Aborting..."
-                    exit 1
-                fi
+                "$container_cmd" build -t papisdev .
               '';
+          };
 
-            # convenience command to build a papis container with docker/podman
-            papis-build-container = pkgs.writeShellApplication {
-              name = "papis-build-container";
-              text =
-                check-container-cmd
-                +
-                # bash
-                ''
-                  "$container_cmd" build -t papisdev .
-                '';
-            };
+          # convenience command to run containerised tests
+          papis-run-container-tests = pkgs.writeShellApplication {
+            name = "papis-run-container-tests";
+            text =
+              check-container-cmd
+              +
+              # bash
+              ''
+                "$container_cmd" run -v "$(pwd)":/papis --rm -it papisdev
+              '';
+          };
 
-            # convenience command to run containerised tests
-            papis-run-container-tests = pkgs.writeShellApplication {
-              name = "papis-run-container-tests";
-              text =
-                check-container-cmd
-                +
-                # bash
-                ''
-                  "$container_cmd" run -v "$(pwd)":/papis --rm -it papisdev
-                '';
-            };
+          # convenience command to enter a container with a populated test library
+          papis-run-container-interactive = pkgs.writeShellApplication {
+            name = "papis-run-container-interactive";
+            text =
+              check-container-cmd
+              +
+              # bash
+              ''
+                populateLibPy=$(cat << END
+                import papis.testing
+                papis.testing.populate_library('/root/Documents/papers')
+                END
+                )
+                entryCmd="python -c \"$populateLibPy\"; bash"
 
-            # convenience command to enter a container with a populated test library
-            papis-run-container-interactive = pkgs.writeShellApplication {
-              name = "papis-run-container-interactive";
-              text =
-                check-container-cmd
-                +
-                # bash
-                ''
-                  populateLibPy=$(cat << END
-                  import papis.testing
-                  papis.testing.populate_library('/root/Documents/papers')
-                  END
-                  )
-                  entryCmd="python -c \"$populateLibPy\"; bash"
-
-                  "$container_cmd" run -v "$(pwd)":/papis --rm -it papisdev bash -c "$entryCmd"
-                '';
-            };
-          in
-            [python]
-            ++ runtime_py_deps
-            ++ develop_py_deps
-            ++ [
+                "$container_cmd" run -v "$(pwd)":/papis --rm -it papisdev bash -c "$entryCmd"
+              '';
+          };
+        in
+          # Create a devShell like normal.
+          pkgs.mkShell {
+            packages = [
+              pythonEnv
               papis-build-container
               papis-run-container-tests
               papis-run-container-interactive
             ];
-
-          shellHook = ''
-            python --version
-            python -m venv .venv
-            source .venv/bin/activate
-            pip install -e ".[develop,docs,optional]"
-          '';
-        };
+            shellHook = ''
+              export PYTHONPATH="$(pwd):$PYTHONPATH"
+            '';
+          };
       };
     });
 }
