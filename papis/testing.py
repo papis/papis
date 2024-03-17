@@ -486,7 +486,7 @@ class ResourceCache:
 
 
 @pytest.fixture(autouse=True)
-def _docconf(request: SubRequest) -> Iterator[None]:
+def _doctest_tmp_config(request: SubRequest) -> Iterator[None]:
     """A fixture for doctests to ensure that they run in a clean environment.
 
     This fixture is enabled automatically for all doctests using the
@@ -579,9 +579,18 @@ def resource_cache(request: SubRequest) -> ResourceCache:
 def pytest_addoption(parser: Parser) -> None:
     parser.addoption("--wrap-doctests", dest="wrap_doctests", action="store_true",
                      help="Use a temporary configuration file for doctests")
+    parser.addoption("--tmp-xdg-config-home", dest="tmp_xdg_config_home",
+                     action="store_true",
+                     help="Set XDG_CONFIG_HOME to a temporary directory")
 
 
 def pytest_configure(config: Config) -> None:
+    if config.getoption("--tmp-xdg-config-home"):
+        # NOTE: some Papis modules call papis.config even before the tests have
+        # a chance to construct a TemporaryConfiguration. We set XDG_CONFIG_HOME
+        # here first to avoid them picking up any sort of user configuration.
+        os.environ["XDG_CONFIG_HOME"] = tempfile.gettempdir()
+
     config.addinivalue_line(
         "markers",
         "config_setup(**kwargs): pass kwargs to TemporaryConfiguration initialization")
