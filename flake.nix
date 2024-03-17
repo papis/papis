@@ -186,7 +186,7 @@
               # Because we're following main, use the git rev as version
               version =
                 if (self ? rev)
-                then self.rev
+                then self.shortRev
                 else self.dirtyShortRev;
             });
         default = self.packages.${system}.papis;
