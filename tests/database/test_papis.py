@@ -1,19 +1,17 @@
 import os
 
-import papis.config
-import papis.database
-from papis.database.cache import Database
-
 import pytest
 from papis.testing import TemporaryLibrary
 
 
 @pytest.mark.library_setup(settings={"database-backend": "papis"})
 def test_database_query(tmp_library: TemporaryLibrary) -> None:
+    import papis.database
+
     db = papis.database.get()
     db.initialize()
 
-    assert isinstance(db, Database)
+    assert isinstance(db, papis.database.Database)
     assert db.get_backend_name() == "papis"
 
     docs = db.query(".")
@@ -27,8 +25,10 @@ def test_database_query(tmp_library: TemporaryLibrary) -> None:
 
 @pytest.mark.library_setup(settings={"database-backend": "papis"})
 def test_database_reload(tmp_library: TemporaryLibrary) -> None:
+    import papis.database
+
     db = papis.database.get()
-    assert isinstance(db, Database)
+    assert isinstance(db, papis.database.Database)
 
     ndocs = len(db.get_all_documents())
     db.save()
@@ -40,8 +40,10 @@ def test_database_reload(tmp_library: TemporaryLibrary) -> None:
 
 @pytest.mark.library_setup(settings={"database-backend": "papis"})
 def test_database_missing(tmp_library: TemporaryLibrary) -> None:
+    import papis.database
+
     db = papis.database.get()
-    assert isinstance(db, Database)
+    assert isinstance(db, papis.database.Database)
 
     docs = db.get_all_documents()
     doc = docs[0]
@@ -54,8 +56,10 @@ def test_database_missing(tmp_library: TemporaryLibrary) -> None:
 
 
 def test_filter_documents() -> None:
+    from papis.document import from_data
     from papis.database.cache import filter_documents
-    document = papis.document.from_data({"author": "einstein"})
+
+    document = from_data({"author": "einstein"})
 
     assert len(filter_documents([document], search="einstein")) == 1
     assert len(filter_documents([document], search="author : ein")) == 1
@@ -64,6 +68,8 @@ def test_filter_documents() -> None:
 
 @pytest.mark.library_setup(settings={"database-backend": "papis"})
 def test_cache_path(tmp_library: TemporaryLibrary) -> None:
+    import papis.database
+
     db = papis.database.get()
     _ = db.get_documents()
 

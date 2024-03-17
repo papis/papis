@@ -66,8 +66,8 @@ def filter_documents(
 
     """
     papis.docmatcher.DocMatcher.set_search(search)
-    papis.docmatcher.DocMatcher.parse()
     papis.docmatcher.DocMatcher.set_matcher(match_document)
+    papis.docmatcher.DocMatcher.parse()
 
     logger.debug("Filtering %d docs (search '%s').", len(documents), search)
 

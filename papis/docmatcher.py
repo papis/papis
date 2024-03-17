@@ -88,7 +88,7 @@ class DocMatcher:
     matcher: ClassVar[Optional[MatcherCallable]] = None
     #: A format string (defaulting to :confval:`match-format`) used
     #: to match the parsed search results if no document key is present.
-    match_format: ClassVar[str] = papis.config.getstring("match-format")
+    match_format: ClassVar[str] = ""
 
     @classmethod
     def return_if_match(
@@ -135,6 +135,7 @@ class DocMatcher:
             >>> DocMatcher.search
             'author:Hummel'
         """
+
         cls.search = search
 
     @classmethod
@@ -169,7 +170,10 @@ class DocMatcher:
         """
         if search is None:
             search = cls.search
+
+        cls.match_format = papis.config.getstring("match-format")
         cls.parsed_search = parse_query(search)
+
         return cls.parsed_search
 
 
