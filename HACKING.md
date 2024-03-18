@@ -9,6 +9,11 @@ Coding Style
 * Follow the [PEP8 style guide](https://www.python.org/dev/peps/pep-0008/)
 * Try and run tests locally before submitting a new PR.
 
+Issues
+------
+
+You can open issues in the [GitHub issue tracker](https://github.com/papis/papis/issues).
+
 Development
 -----------
 
@@ -26,19 +31,20 @@ make pytest
 ```
 which runs the full test suite and doctests for `papis`. To run the tests exactly
 as they are set up on the Github Actions CI use
-```
+```bash
 make ci-install
 make ci-test
 ```
 
 The docs can be generated with
-```
+```bash
 make doc
 ```
+
 ### Containers
 
-To quickly get things up and running, you can also use docker/podman:
-```
+To quickly get things up and running, you can also use Docker:
+```bash
 # build the image
 docker build -t papisdev .
 # to run the CI tests
@@ -51,16 +57,19 @@ docker run -v $(pwd):/papis --rm -it papisdev bash
 
 ### Nix
 
-If you're using Nix, you can also use the flake and get a development shell up with `nix develop`.
+If you're using Nix, you can also use the included `flake.nix` and get a
+development shell up with `nix develop`.
 
-This also gives you access to the following convenience commands to interact with the containers (they require either docker or podman to run):
+This also gives you access to the following convenience commands to interact
+with the containers (they require either Docker or Podman to run):
 
-- `papis-build-container`: build the container
-- `papis-run-container-tests`: run the CI tests in the container
-- `papis-run-container-interactive`: enter the container interactively and populate the library with some test documents
+* `papis-build-container`: build the container.
+* `papis-run-container-tests`: run the CI tests in the container.
+* `papis-run-container-interactive`: enter the container interactively and
+  populate the library with some test documents.
 
-Adding tests
-------------
+Guidelines for Testing
+======================
 
 To add tests to the various parts of papis, use the functionality in
 `papis.testing`. This is documented in the
@@ -74,23 +83,8 @@ make ci-test
 make ci-lint
 ```
 
-Issues
-------
-
-You can open issues in the [GitHub issue tracker](https://github.com/papis/papis/issues).
-
-Version Numbering
------------------
-
-The versioning scheme generally follows semantic versioning. That is, we
-have three numbers, `A.B.C`, where:
-
-* `A` changes on a rewrite
-* `B` changes when major configuration incompatibilities occur
-* `C` changes with each release (bug fixes..)
-
-Extending Papis
-===============
+Guidelines for Extending Papis
+==============================
 
 Adding Configuration Options
 ----------------------------
