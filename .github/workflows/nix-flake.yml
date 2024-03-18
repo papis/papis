@@ -23,4 +23,4 @@ jobs:
     - uses: DeterminateSystems/flake-checker-action@main
     - run: nix build
     - run: nix flake check
-    - run: nix develop --command bash -c "pytest -v papis tests"
+    - run: nix develop --command bash -c "python -m pytest -v papis tests"
