@@ -490,7 +490,7 @@ def _doctest_tmp_config(request: SubRequest) -> Iterator[None]:
     """A fixture for doctests to ensure that they run in a clean environment.
 
     This fixture is enabled automatically for all doctests using the
-    ``--wrap-doctests`` command-line flag.
+    ``--papis-tmp-doctests`` command-line flag.
     """
     # NOTE: taken from https://stackoverflow.com/a/46991331
     doctest_plugin = request.config.pluginmanager.getplugin("doctest")
@@ -498,7 +498,7 @@ def _doctest_tmp_config(request: SubRequest) -> Iterator[None]:
     # NOTE: this should only run for papis doctests
     if (
             isinstance(request.node, doctest_plugin.DoctestItem)
-            and request.config.getoption("--wrap-doctests")):
+            and request.config.getoption("--papis-tmp-doctests")):
         with TemporaryConfiguration():
             yield
     else:
@@ -577,15 +577,14 @@ def resource_cache(request: SubRequest) -> ResourceCache:
 
 
 def pytest_addoption(parser: Parser) -> None:
-    parser.addoption("--wrap-doctests", dest="wrap_doctests", action="store_true",
+    parser.addoption("--papis-tmp-doctests", action="store_true",
                      help="Use a temporary configuration file for doctests")
-    parser.addoption("--tmp-xdg-config-home", dest="tmp_xdg_config_home",
-                     action="store_true",
+    parser.addoption("--papis-tmp-xdg-home", action="store_true",
                      help="Set XDG_CONFIG_HOME to a temporary directory")
 
 
 def pytest_configure(config: Config) -> None:
-    if config.getoption("--tmp-xdg-config-home"):
+    if config.getoption("--papis-tmp-xdg-home"):
         # NOTE: some Papis modules call papis.config even before the tests have
         # a chance to construct a TemporaryConfiguration. We set XDG_CONFIG_HOME
         # here first to avoid them picking up any sort of user configuration.

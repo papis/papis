@@ -76,6 +76,26 @@ manager should be used instead. It also has a corresponding fixture called
 
         assert tmp_library.libname == papis.config.get_lib_name()
 
+.. warning::
+
+   If the user also has a `~/.config/papis/config.py`, this is always read and
+   inserted into the Papis global scope using :func:`eval`. This cannot be handled
+   in a clean fashion by ``TemporaryConfiguration``, so a new ``pytest`` flag
+   was introduced to point to an empty configuration before the tests are loaded.
+   It can be used like (and is enabled by default in ``pyproject.toml``)::
+
+        python -m pytest --papis-tmp-xdg-home tests
+
+.. warning::
+
+   The doctests also try to load the global user configuration and cannot easily
+   use the ``TemporaryConfiguration`` context manager or the associated fixture.
+   To deal with this an ``autouse=True`` fixture is introduced. It can be used
+   like (and is enabled by default in ``pyproject.toml``)::
+
+        python -m pytest --papis-tmp-doctests papis
+
+
 Testing commands
 ----------------
 
