@@ -1,9 +1,11 @@
 import os
 
+import pytest
+
 from papis.testing import TemporaryLibrary
 
 
-def test_exporter(tmp_library: TemporaryLibrary) -> None:
+def test_simple(tmp_library: TemporaryLibrary) -> None:
     import papis.database
 
     db = papis.database.get()
@@ -18,3 +20,18 @@ def test_exporter(tmp_library: TemporaryLibrary) -> None:
     expected = yaml_to_data(filename)
 
     assert result == expected
+
+
+@pytest.mark.parametrize(("author", "editor_count"), [("schrute", 1), ("scott", 2)])
+def test_parent_editors(author: str,
+                        editor_count: int,
+                        tmp_library: TemporaryLibrary) -> None:
+    import papis.database
+    from papis.hayagriva import to_hayagriva
+
+    db = papis.database.get()
+
+    doc, = db.query_dict({"author": author})
+    result = to_hayagriva(doc)
+    assert "parent" in result.keys()
+    assert len(result["parent"]["editor"]) == editor_count
