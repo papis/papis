@@ -145,7 +145,7 @@ def test_export_folder_all_cli(tmp_library: TemporaryLibrary) -> None:
 
     import glob
     dirs = glob.glob(os.path.join(outdir, "*"))
-    assert len(dirs) == 6
+    assert len(dirs) == 8
 
     for d in dirs:
         assert os.path.exists(d)

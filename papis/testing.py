@@ -117,6 +117,33 @@ PAPIS_TEST_DOCUMENTS = [
         "year": 2019,
         "_test_files": 1
     },
+    {
+        "address": "Scranton, PA, USA",
+        "author": "Scott, Michael",
+        "booktitle": "Humor in the Workplace",
+        "editor_list": [{"family": "Halpert", "given": "Jim"},
+                        {"family": "Beesly", "given": "Pam"}],
+        "pages": "56-71",
+        "publisher": "Scranton Publishing",
+        "ref": "scott2008that",
+        "title": "That is What She Said: The Art of Office Banter",
+        "type": "incollection",
+        "year": "2008",
+        "_test_files": 1
+    },
+    {
+        "address": "Scranton, PA, USA",
+        "author": "Schrute, Dwight K.",
+        "booktitle": "Beets: The Ultimate Guide to Beet Farming",
+        "editor": "Martin, Angela",
+        "pages": "15-30",
+        "publisher": "Schrute Farms Publishing",
+        "ref": "schrute2020beet",
+        "title": "Beet Identity: Unraveling the Mysteries of Schrute Farms Secret Crop",
+        "type": "incollection",
+        "year": "2020",
+        "_test_files": 1
+    },
 ]
 
 
