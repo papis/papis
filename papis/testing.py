@@ -126,7 +126,7 @@ PAPIS_TEST_DOCUMENTS = [
         "pages": "56-71",
         "publisher": "Scranton Publishing",
         "ref": "scott2008that",
-        "title": "That is What She Said: The Art of Office Banter",
+        "title": "That is What She Said. The Art of Office Banter",
         "type": "incollection",
         "year": "2008",
         "_test_files": 1
@@ -139,7 +139,7 @@ PAPIS_TEST_DOCUMENTS = [
         "pages": "15-30",
         "publisher": "Schrute Farms Publishing",
         "ref": "schrute2020beet",
-        "title": "Beet Identity: Unraveling the Mysteries of Schrute Farms Secret Crop",
+        "title": "Beet Identity. Unraveling the Mysteries of Schrute Farms Secret Crop",
         "type": "incollection",
         "year": "2020",
         "_test_files": 1
