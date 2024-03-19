@@ -5,7 +5,10 @@ import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):
-    """Retrieve documents from `theses.fr <https://theses.fr/en/>`__"""
+    """Retrieve documents from `theses.fr <https://theses.fr/en/>`__
+
+    API Documentation: https://api.gouv.fr/documentation/scanR
+    """
 
     def __init__(self, url: str) -> None:
         super().__init__(url, name="thesesfr", expected_document_extension="pdf")
