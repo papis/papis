@@ -240,7 +240,6 @@ addopts = [
     "--wrap-doctests",
     "--tmp-xdg-config-home",
     "--doctest-modules",
-    "--ignore=papis/downloaders/thesesfr.py",
     "--cov=papis",
 ]
 doctest_optionflags = ["NORMALIZE_WHITESPACE", "ELLIPSIS"]
