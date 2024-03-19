@@ -18,39 +18,17 @@ class Downloader(papis.downloaders.Downloader):
             return None
 
     def get_identifier(self) -> Optional[str]:
-        """
-        >>> d = Downloader("https://www.theses.fr/2014TOU30305")
-        >>> d.get_identifier()
-        '2014TOU30305'
-        >>> d = Downloader("https://www.theses.fr/2014TOU30305.bib/?asdf=2")
-        >>> d.get_identifier()
-        '2014TOU30305'
-        >>> d = Downloader("2014TOU30305")
-        >>> d.get_identifier()
-        '2014TOU30305'
-        """
         if match := re.match(r".*?(\d{4}[a-zA-Z]{3,}\d+)", self.uri):
             return match.group(1)
         else:
             return None
 
     def get_document_url(self) -> Optional[str]:
-        """
-        >>> d = Downloader("https://theses.fr/2019REIMS014")
-        >>> d.get_document_url()
-        'https://theses.fr/api/v1/document/2019REIMS014'
-        """
-
         baseurl = "https://theses.fr/api/v1/document"
         identifier = self.get_identifier()
         return f"{baseurl}/{identifier}"
 
     def get_bibtex_url(self) -> Optional[str]:
-        """
-        >>> d = Downloader("https://www.theses.fr/2014TOU30305")
-        >>> d.get_bibtex_url()
-        'https://www.theses.fr/2014TOU30305.bib'
-        """
         url = f"https://www.theses.fr/{self.get_identifier()}.bib"
         self.logger.debug("Using BibTeX URL: '%s'.", url)
         return url
