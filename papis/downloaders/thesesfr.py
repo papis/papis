@@ -12,13 +12,17 @@ class Downloader(papis.downloaders.Downloader):
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
-        if re.match(r".*theses.fr.*|\d{4}[a-zA-Z]{3,}\d+", url):
+        # ID format ("nnt" in french). Not specified in the docs, but it's
+        # the pattern that all the published theses until now follow.
+        # https://documentation.abes.fr/aidetheses/thesesfr/index.html
+        if re.match(r"(?:https?://(:?www\.)?theses\.fr/)?(\d{4}[A-Z]{3,5}\d{3,5})",
+                    url):
             return Downloader(url)
         else:
             return None
 
     def get_identifier(self) -> Optional[str]:
-        if match := re.match(r".*?(\d{4}[a-zA-Z]{3,}\d+)", self.uri):
+        if match := re.search(r"(\d{4}[A-Z]{3,5}\d{3,5})", self.uri):
             return match.group(1)
         else:
             return None
