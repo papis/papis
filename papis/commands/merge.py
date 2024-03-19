@@ -7,7 +7,48 @@ pass the ``--pick`` flag to pick twice from the documents.
 Examples
 ^^^^^^^^
 
-TODO
+-   Pick the duplicate documents:
+
+    .. code:: sh
+
+        papis merge "prediction and subs"
+
+        /papers/de8d6373a8cef74b5245124ddb288d45-dejong-gerald
+        /papers/0e378c330dba4a4483660388183aa648-dejong-gerald
+
+    With the default picker and config, you can pick the two offending documents
+    with ``CTRL+T`` The selected entries will have a ``#`` in the beginning of
+    the document title.
+
+    papis will show the difference between the files and let you select which
+    ones you want to keep:
+
+    .. code:: diff
+
+        - collections: ['t3']
+        + collections: ['t3', 't3a2']
+
+    The lines are prefixed by an indication of what will happen on accepting the
+    change. papis will remove lines prefixed with a minus sign and add those
+    with a plus sign.
+
+-   Merge the documents that match the query "prediction and subs" and commit
+    the changes to git:
+
+    .. code:: sh
+
+        papis merge --git "prediction and subs"
+
+-   Choose which documents to keep:
+
+    .. code:: sh
+
+        papis merge --keep "belief revision"
+
+    After deciding which changes to apply, papis will prompt for files that
+    should be moved to the resulting location. The files can be chosen entering
+    the numbers that precede the documents.
+
 
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
