@@ -1,7 +1,7 @@
 """
 Merge two documents that might be potentially duplicated.
 
-If your papis picker does not support selecting two items, then
+If your Papis picker does not support selecting two items, then
 pass the ``--pick`` flag to pick twice from the documents.
 
 Examples
@@ -20,7 +20,7 @@ Examples
     with ``CTRL+T`` The selected entries will have a ``#`` in the beginning of
     the document title.
 
-    papis will show the difference between the files and let you select which
+    Papis will show the difference between the files and let you select which
     ones you want to keep:
 
     .. code:: diff
@@ -29,7 +29,7 @@ Examples
         + collections: ['t3', 't3a2']
 
     The lines are prefixed by an indication of what will happen on accepting the
-    change. papis will remove lines prefixed with a minus sign and add those
+    change. Papis will remove lines prefixed with a minus sign and add those
     with a plus sign.
 
 -   Merge the documents that match the query "prediction and subs" and commit
@@ -45,7 +45,7 @@ Examples
 
         papis merge --keep "belief revision"
 
-    After deciding which changes to apply, papis will prompt for files that
+    After deciding which changes to apply, Papis will prompt for files that
     should be moved to the resulting location. The files can be chosen entering
     the numbers that precede the documents.
 
