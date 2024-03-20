@@ -10,7 +10,7 @@ Installation
 Using pip
 ---------
 
-The easiest way of installing papis is using the ``PyPI`` repositories and
+The easiest way of installing Papis is using the ``PyPI`` repositories and
 the ``pip`` package manager. Open a terminal and type in
 
 .. code:: sh
@@ -30,7 +30,7 @@ If you prefer installing it locally then simply type
 
     pip install --user papis
 
-You can also **update** papis with ``pip``
+You can also **update** Papis with ``pip``
 
 .. code:: sh
 
@@ -112,7 +112,7 @@ until an official recipe in the main Guix repositories is published.
 From source
 -----------
 
-To install papis from source, you can clone the repository using
+To install Papis from source, you can clone the repository using
 
 .. code:: sh
 

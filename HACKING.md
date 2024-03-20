@@ -71,7 +71,7 @@ with the containers (they require either Docker or Podman to run):
 Guidelines for Testing
 ======================
 
-To add tests to the various parts of papis, use the functionality in
+To add tests to the various parts of Papis, use the functionality in
 `papis.testing`. This is documented in the
 [Testing](https://papis.readthedocs.io/en/latest/testing.html) section of the
 docs and more complex examples can be found in the existing `tests` folder.
@@ -115,7 +115,7 @@ Adding Scripts
 --------------
 
 Can add scripts for everyone to share to the folder `examples/scripts` in the
-repository. These scripts will not be shipped with papis, but they are there
+repository. These scripts will not be shipped with Papis, but they are there
 for other users to use and modify.
 
 Adding Importers

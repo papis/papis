@@ -1,6 +1,6 @@
 """
 This module describes which functions are intended to be used by users to
-create papis scripts.
+create Papis scripts.
 
 .. class:: T
 """

@@ -1,5 +1,5 @@
 """
-The ``add`` command is one of the central commands of the papis command-line
+The ``add`` command is one of the central commands of the Papis command-line
 interface. It is a very versatile command with a fair amount of options.
 
 There are also a few customization settings available for this command, which
@@ -44,14 +44,14 @@ Examples
             --from arxiv https://arxiv.org/abs/1712.03134
 
 - If you do not want copy the original PDFs into the library, you can
-  also tell papis to just create a link to them, for example
+  also tell Papis to just create a link to them, for example
 
     .. code:: sh
 
         papis add --link ~/Documents/interesting.pdf \\
             --from doi 10.10763/1.3237134
 
-  will add an entry into the papis library, but the PDF document will remain
+  will add an entry into the Papis library, but the PDF document will remain
   at ``~/Documents/interesting.pdf``. In the document's folder
   there will be a link to ``~/Documents/interesting.pdf`` instead of the
   file itself. Of course you always have to be sure that the
@@ -60,7 +60,7 @@ Examples
 
 - Papis also tries to make sense of the inputs that you have passed
   on the command-line. For instance you could provide only a DOI and
-  papis will figure out if this is indeed a DOI and download available metadata
+  Papis will figure out if this is indeed a DOI and download available metadata
   using Crossref. For example, you can try
 
     .. code:: sh

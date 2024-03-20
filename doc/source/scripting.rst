@@ -2,7 +2,7 @@ Custom scripts
 ==============
 
 As in `git <https://git-scm.com>`__, you can write custom scripts to
-include them in the command spectrum of papis.
+include them in the command spectrum of Papis.
 
 Example: Mail script
 --------------------
@@ -62,17 +62,17 @@ Then, if you type
 this will create a folder called ``this_paper`` with a selection of a
 document, zip it and send it to whoever you choose to.
 
-Example: Accessing papis from within mutt
+Example: Accessing Papis from within mutt
 -----------------------------------------
 
 You may want to pick documents to attach to your email in ``mutt``
-from the papis interface.
+from the Papis interface.
 
 Add this code to your ``muttrc``
 
 ::
 
-   # # macro to attach paper from papis
+   # # macro to attach paper from Papis
    macro attach,compose \cp \
    "\
    <enter-command>unset wait_key<enter>\                                 # Don't require 'press any key'
@@ -89,17 +89,17 @@ paper to the email, which you can rename to be more descriptive with
 ``R``.
 
 
-Example: Define papis mode in i3wm
+Example: Define Papis mode in i3wm
 ----------------------------------
 
-This is an example of using papis with the window manager `i3`.
+This is an example of using Papis with the window manager `i3`.
 
 ::
 
-  # Enter papis mode
+  # Enter Papis mode
   bindsym $mod+Ctrl+p mode "papis"
 
-  # Define papis mode
+  # Define Papis mode
   mode "papis" {
 
     # open documents

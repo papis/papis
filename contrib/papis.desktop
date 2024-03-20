@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=papis-open
-Comment=Launches the papis document opener after picking a library
+Comment=Launches the Papis document opener after picking a library
 Icon=utilities-terminal
 Terminal=true
 Exec=papis --pick-lib open

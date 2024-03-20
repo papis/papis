@@ -1,7 +1,7 @@
 The database
 ============
 
-One of the things that makes papis interesting is the fact that
+One of the things that makes Papis interesting is the fact that
 there can be many backends for the database system, including no database.
 
 Right now there are three types of databases that the user can use:
@@ -32,7 +32,7 @@ You can select a database by using the flag :confval:`database-backend`.
 Papis database
 --------------
 
-The fact that there is no database means that papis should crawl through
+The fact that there is no database means that Papis should crawl through
 the library folder and see which folders have an ``info.yaml`` file, which
 is for slow computers (and harddrives) quite bad.
 
@@ -46,13 +46,13 @@ These cache files are stored per default in
 
   ~/.cache/papis/
 
-Notice that most papis commands will update the cache if it has to be the case.
+Notice that most Papis commands will update the cache if it has to be the case.
 For instance the ``edit`` command will let you edit your document's information
 and after you are done editing it will update the information for the given
 document in the cache.
 If you go directly to the document and edit the info file without
-passing through the papis edit command, the cache will not be updated and
-therefore papis will not know of these changes, although they will be there.
+passing through the ``papis edit`` command, the cache will not be updated and
+therefore Papis will not`know of these changes, although they will be there.
 In such cases you will have to *clear the cache*.
 
 Clearing the cache
@@ -142,7 +142,7 @@ what is found in the index. This means that the index can not in general
 have all the information that the info file of the documents includes.
 
 In other words, the whoosh index will store only certain fields from the
-document's info files. The good news is that we can tell papis exactly
+document's info files. The good news is that we can tell Papis exactly
 which fields we want to index. These flags are
 
 - :confval:`whoosh-schema-fields`

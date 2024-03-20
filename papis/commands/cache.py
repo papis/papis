@@ -62,7 +62,7 @@ logger = papis.logging.get_logger(__name__)
 @click.help_option("--help", "-h")
 def cli() -> None:
     """
-    Manage the cache or database of a papis library.
+    Manage the cache or database of a Papis library.
     """
 
 

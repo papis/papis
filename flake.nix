@@ -218,7 +218,7 @@
               fi
             '';
 
-          # convenience command to build a papis container with docker/podman
+          # convenience command to build a Papis container with docker/podman
           papis-build-container = pkgs.writeShellApplication {
             name = "papis-build-container";
             text =

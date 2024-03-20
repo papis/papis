@@ -47,7 +47,7 @@ Interplay with other commands
    All other commands assume the repository exists in the directory of the
    current library and their Git functionality will fail otherwise.
 
-Some papis commands give you the opportunity of using Git to manage
+Some Papis commands give you the opportunity of using Git to manage
 changes. For instance, if you are adding a new document, you could use
 the ``--git`` flag to also commit the document into Git like this
 

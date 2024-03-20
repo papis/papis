@@ -162,7 +162,7 @@ Local configuration files
 Papis also offers the possibility of creating local configuration files.
 The name of the local configuration file can be configured with the
 :confval:`local-config-file` setting. The local configuration files
-are looked for in the current directory (where the papis command is issued) or
+are looked for in the current directory (where the ``papis`` command is issued) or
 in the directory of the current library.
 
 For instance, suppose that you are in some project folder ``~/Documents/myproject``
@@ -176,7 +176,7 @@ for your papers, for instance in::
 
     ~/Documents/papers/.papis.config
 
-Then, every time that you use this library papis will also source this
+Then, every time that you use this library Papis will also source this
 configuration file. This can be used as an alternative to adding more configuration
 options in the main configuration file or if you expect this library to be
 used on more machines with different configurations.
