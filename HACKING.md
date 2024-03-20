@@ -193,9 +193,8 @@ These tips can help you figure out which form, `papis` or Papis should be used.
 
 - When referring to the command-line interface, use `papis`, in lowercase and
 with code markup: 
-
   - Incorrect:
-      > The **papis** commands are `add`, `edit`, update`...
+      > The **papis** commands are `add`, `edit`, `update`...
   - Correct:
       > The **`papis`** commands are `add`, `edit`, `update`.
 
