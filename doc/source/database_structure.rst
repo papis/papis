@@ -52,7 +52,7 @@ and after you are done editing it will update the information for the given
 document in the cache.
 If you go directly to the document and edit the info file without
 passing through the ``papis edit`` command, the cache will not be updated and
-therefore Papis will not`know of these changes, although they will be there.
+therefore Papis will not know of these changes, although they will be there.
 In such cases you will have to *clear the cache*.
 
 Clearing the cache
