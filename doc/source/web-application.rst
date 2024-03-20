@@ -1,7 +1,7 @@
 Web Application
 ===============
 
-Since v0.12, papis ships with an experimental, simple yet handy web application.
+Since v0.12, Papis ships with an experimental, simple yet handy web application.
 
 You can start the web application by issuing the following command
 

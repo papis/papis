@@ -61,7 +61,7 @@ def html(pretitle: str,
          query: str,
          documents: List[papis.document.Document]) -> t.html_tag:
     """
-    Page for querying the papis database and present the results.
+    Page for querying the Papis database and present the results.
     """
     with papis.web.header.main_html_document(pretitle) as result:
         with result.body:

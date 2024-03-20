@@ -70,7 +70,7 @@ def ok_html(fun: AnyFn) -> AnyFn:
 class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
     """
-    The main request handler of the papis web application.
+    The main request handler of the Papis web application.
     """
 
     def log_message(self, fmt: str, *args: Any) -> None:

@@ -1,6 +1,6 @@
 """
 This command is mainly used to explore different databases and gather data
-for a project before adding it to the papis libraries.
+for a project before adding it to the Papis libraries.
 
 Examples
 ^^^^^^^^
@@ -75,11 +75,12 @@ file, e.g. the previously created ``docs.yaml``,
         cmd 'firefox {doc[url]}'
 
 In this last example, we read the documents from ``docs.yaml`` and pick a
-document, which we then feed into the ``explore cmd`` command, that accepts
-a papis formatting string to issue a general shell command.  In this case, the
-picked document gets fed into the ``papis scihub`` command which tries to
-download the document using ``scihub``. Also this very document is opened by
-Firefox (in case the document does have a ``url``).
+document, which we then feed into the ``explore cmd`` command.  This command
+accepts a string to issue a general shell command and allows formatting with the
+Papis template syntax.  In this case, the picked document gets fed into the
+``papis scihub`` command which tries to download the document using ``scihub``.
+Also this very document is opened by Firefox (in case the document does have a
+``url``).
 
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^

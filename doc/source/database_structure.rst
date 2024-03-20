@@ -46,7 +46,7 @@ These cache files are stored per default in
 
   ~/.cache/papis/
 
-Notice that most Papis commands will update the cache if it has to be the case.
+Notice that most ``papis`` commands will update the cache if it has to be the case.
 For instance the ``edit`` command will let you edit your document's information
 and after you are done editing it will update the information for the given
 document in the cache.

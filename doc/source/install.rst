@@ -18,7 +18,7 @@ the ``pip`` package manager. Open a terminal and type in
     pip install papis
 
 If you are on GNU/Linux-like systems you might need to type ``sudo`` to install
-papis globally like
+Papis globally like
 
 .. code:: sh
 
@@ -58,7 +58,7 @@ NixOS
 
 If you are running `NixOS <https://nixos.org/>`__ or you have the
 `nix <https://github.com/NixOS/nix>`__ package manager installed, you can install
-papis by running:
+Papis by running:
 
 .. code:: sh
 

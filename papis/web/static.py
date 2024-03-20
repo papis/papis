@@ -6,7 +6,7 @@ import papis.config
 
 def static_paths() -> List[str]:
     """
-    This is the static directories where the papis web-application
+    This is the static directories where the Papis web-application
     can access files.
     """
     return [

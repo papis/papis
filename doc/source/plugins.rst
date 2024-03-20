@@ -161,7 +161,7 @@ return the actual document PDF, we can override the
         return None
 
 Finally, to install the plugin and have it recognized by the extension system
-that papis uses, it needs to be added to ``pyproject.toml``. This can be done with
+that Papis uses, it needs to be added to ``pyproject.toml``. This can be done with
 extending the ``papis.downloader`` entrypoint as follows
 
 .. code:: toml

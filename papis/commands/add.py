@@ -1,6 +1,7 @@
 """
-The ``add`` command is one of the central commands of the Papis command-line
-interface. It is a very versatile command with a fair amount of options.
+The ``add`` command is one of the central commands of the ``papis``
+command-line interface It is a very versatile command with a fair amount of
+options.
 
 There are also a few customization settings available for this command, which
 are described on the :ref:`configuration page <add-command-options>` for add.
@@ -137,7 +138,7 @@ class FromFolderImporter(papis.importer.Importer):
 
 class FromLibImporter(papis.importer.Importer):
 
-    """Importer that queries a valid papis library (also paths) and adds files
+    """Importer that queries a valid Papis library (also paths) and adds files
     and data
     """
 

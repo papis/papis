@@ -84,10 +84,10 @@ class AliasedGroup(click.core.Group):
 
 
 class Script(NamedTuple):
-    """A papis command plugin or script.
+    """A ``papis`` command plugin or script.
 
-    These plugins are made available through the main Papis command-line as
-    subcommands.
+    These plugins are made available through the main ``papis`` command-line
+    interface as subcommands.
     """
 
     #: The name of the command.

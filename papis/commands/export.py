@@ -79,7 +79,7 @@ def run(documents: List[papis.document.Document], to_format: str) -> str:
     """
     Exports several documents into something else.
 
-    :param documents: A list of papis documents
+    :param documents: A list of Papis documents
     :param to_format: what format to use
     """
     ret_string = (

@@ -99,9 +99,9 @@ manager should be used instead. It also has a corresponding fixture called
 Testing commands
 ----------------
 
-To test Papis commands (such as ``papis add``), we make use of the infrastructure
+To test ``papis`` commands (such as ``papis add``), we make use of the infrastructure
 from :class:`click.testing.CliRunner` and, in particular, the customized
-:class:`papis.testing.PapisRunner`. To run a Papis command as it would be
+:class:`papis.testing.PapisRunner`. To run a ``papis`` command as it would be
 invoked from the command-line, use:
 
 .. code:: python

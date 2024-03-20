@@ -52,8 +52,8 @@ def filter_documents(
         search: str = "") -> List[papis.document.Document]:
     """Filter documents. It can be done in a multi core way.
 
-    :param documents: List of papis documents.
-    :param search: Valid papis search string.
+    :param documents: List of Papis documents.
+    :param search: Valid Papis search string.
     :returns: List of filtered documents
 
     >>> document = papis.document.from_data({'author': 'einstein'})

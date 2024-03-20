@@ -110,7 +110,7 @@ class DocMatcher:
             >>> DocMatcher.return_if_match(doc) is not None
             True
 
-        :param doc: a papis document to match against.
+        :param doc: a Papis document to match against.
         """
 
         match = None
@@ -197,7 +197,7 @@ def get_regex_from_search(search: str) -> Pattern[str]:
 def parse_query(query_string: str) -> List[ParseResult]:
     """Parse a query string using :mod:`pyparsing`.
 
-    The query language implemented by this function for papis supports strings
+    The query language implemented by this function for Papis supports strings
     of the form::
 
         'hello author : Einstein    title: "Fancy Title: Part 1" tags'

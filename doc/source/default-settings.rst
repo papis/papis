@@ -796,7 +796,7 @@ Databases
     effective when using the ``papis`` backend and disables the storage aspects,
     while keeping the query syntax.
 
-    If the cache is disabled, then every call to Papis commands will have to
+    If the cache is disabled, then every call to ``papis`` commands will have to
     walk the library directory tree to gather all the documents. This can be
     very slow for large libraries.
 

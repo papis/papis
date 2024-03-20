@@ -2,12 +2,12 @@ r"""
 This command is useful to execute Python scripts with the environment of your
 ``papis`` executable.
 
-Often papis is installed in a virtual environment or locally in the user's home
+Often Papis is installed in a virtual environment or locally in the user's home
 directory, and therefore the global Python executable does not have access to
-the papis environment.
+the Papis environment.
 
 This command tries to mend this issue by allowing the user to write a
-Python script and run it using the correct environment where papis is
+Python script and run it using the correct environment where Papis is
 installed.
 
 Examples
