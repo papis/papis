@@ -1,0 +1,32 @@
+name: Build Windows release
+
+on:
+  push:
+    branches: [ "main", "ci-*", "feat/windows"]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-windows-release:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.12']
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build Windows binary
+      run: |
+        docker run -v ${{github.workspace}}:/src \
+         -e PIP_GROUPS=windows,develop \
+         -e SPECFILE=scripts/windows/papis.spec \
+         ghcr.io/kiike/pyinstaller-windows:latest
+    
+    - name: Publish binary as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: workspace_artifacts
+        path: ${{ github.workspace }}/dist/papis.exe
