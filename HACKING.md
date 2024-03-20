@@ -158,3 +158,51 @@ from a remote location. They can be implemented in a very similar way:
 
 The downloader can then be added to the `project.entry-points."papis.downloader"`
 section, similarly to an importer.
+
+
+Guidelines for Documentation
+============================
+
+You'll find the source code of the Papis documentation under the `doc/src`
+directory. The documentation uses the Sphinx documentation stack to build the
+manual and HTML pages and, to format the text, the [Sphinx reStrucTured
+markup](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html).
+You'll notice that, under the `doc/source/commands` folder, most files are
+pretty sparse. The reason is that Sphinx populates the documentation
+automatically gathering information from the docstrings and the
+[Click](https://click.palletsprojects.com/) configuration of each command.
+
+
+To document existing or new features
+------------------------------------
+
+- Concise API documentation for a command or module as well as their usage
+examples should be generally placed in each module's source file. Visit the
+`papis/commands/add.py` or `papis/yaml.py` for examples of such use.
+
+- Longer-form texts, such as guides, tutorials or workflows can go to an
+appropriate file under `doc/source/`, and you can also use the
+`examples/scripts` directory to distribute scripts that you think will be
+helpful for other users.
+
+
+Deciding whether to write `papis` or Papis
+------------------------------------------
+
+These tips can help you figure out which form, `papis` or Papis should be used.
+
+- When referring to the command-line interface, use `papis`, in lowercase and
+with code markup: 
+
+  - Incorrect:
+      > The **papis** commands are `add`, `edit`, update`...
+  - Correct:
+      > The **`papis`** commands are `add`, `edit`, `update`.
+
+- When referring to the workflow or project, use uppercase P:
+  - Incorrect:
+      > The YAML files contain the metadata that **papis** uses for search
+      > The documentation for **papis** is built with Sphinx
+  - Correct:
+      > The YAML files contain the metadata that **Papis** uses for search
+      > The documentation for **Papis** is built using Python

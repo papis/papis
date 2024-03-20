@@ -38,7 +38,7 @@ Man pages
 ---------
 
 Papis documentation uses Sphinx, which can also generate man pages. By default,
-we create man pages for all the standard Papis commands and some general
+we create man pages for all the standard `papis` commands and some general
 documentation for the configuration file. These can be generated using
 ```
 make -C doc man
@@ -58,7 +58,7 @@ _PAPIS_COMPLETE=zsh_source papis
 ```
 
 Note that the generated completion files are not static and can pick up any
-custom Papis commands and plugins even after installation.
+custom `Papis` commands and plugins even after installation.
 
 Desktop file
 ------------
