@@ -23,7 +23,7 @@ def error_message() -> str:
 No installation of epubjs found.
 
 If you want to be able to read and see EPUB files from within
-the papis web applications you need to install epubjs-reader.
+the Papis web applications you need to install epubjs-reader.
 
 You can download the EPUBJS bundle from the url
 

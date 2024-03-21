@@ -1,12 +1,12 @@
 Quick start
 ===========
 
-This is a tutorial that should be enough to get you started using papis.  Papis
+This is a tutorial that should be enough to get you started using Papis.  Papis
 tries to be as simple and lightweight as possible, therefore its document model
 should be too as simple as possible.
 
 But before taking a look at its database structure let us show the daily
-usage of papis for a regular user. This tutorial is command-line based, so you
+usage of Papis for a regular user. This tutorial is command-line based, so you
 should be familiar with opening a terminal window on your system and
 do some general operations with it, like creating folders and files.
 
@@ -30,7 +30,7 @@ configuration file is found,
     ~/.config/papis/config
 
 Right now we will open this file for editing and we will create a library.  In
-papis everything should be human-readable and human-editable. So adding a
+Papis everything should be human-readable and human-editable. So adding a
 library is as easy as adding two lines to this configuration file.
 
 Say that you want to create a "papers" library, where you can finally order
@@ -45,7 +45,7 @@ by putting these two lines inside the config file:
 In the above lines we have created a library with the name ``papers`` which is
 located in the directory ``~/Documents/mypapers``.  So all the documents that
 we will be adding to the library will be located inside
-``~/Documents/mypapers``, and nowhere else. Everything that papis needs to take
+``~/Documents/mypapers``, and nowhere else. Everything that Papis needs to take
 care of your ``papers`` library is inside the ``~/Documents/mypapers`` directory,
 self-contained.
 
@@ -80,7 +80,7 @@ And it's done! We have added our first book to the library.
 Let us see how this works exactly. Papis consists of many commands, and one of
 these commands is ``add``. ``add`` itself has many flags, which are options for the
 given command. In the example above we have used the flags ``author`` and
-``title`` to tell papis to use ``Newton`` as the author's name and ``Principia
+``title`` to tell Papis to use ``Newton`` as the author's name and ``Principia
 Mathematica`` as the document's title. You can see all the possible flags
 for the command ``add`` if you use the ``help`` flag, i.e., if you issue the
 following command
@@ -91,7 +91,7 @@ following command
 
 Now you are asking yourself, what happened to the pdf-file? Where is it
 stored?  Is it stored in an obscure database somewhere in my computer? No,
-papis just copied the ``document.pdf`` file into a folder inside the library
+Papis just copied the ``document.pdf`` file into a folder inside the library
 folder ``~/Documents/papers/``. If you now go there, you will see that a folder
 with a weird name has been created. Inside of the folder there is the
 ``document.pdf`` file and another file, ``info.yaml``.
@@ -105,7 +105,7 @@ If you open the ``info.yaml`` file you will see the following contents:
   files:
   - document.pdf
 
-This file is all that papis uses to store the information of your newly added
+This file is all that Papis uses to store the information of your newly added
 document. It is stored in a nicely readable `YAML
 <https://en.wikipedia.org/wiki/YAML>`__ format.
 
@@ -135,7 +135,7 @@ desired paper very easily.
       id="asciicast-hrNaFMh4XwqVpWsGWDi5SASUC" async>
     </script>
 
-Of course papis shines really in other areas, for instance imagine
+Of course Papis shines really in other areas, for instance imagine
 you are browsing this paper
 `prl paper <https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.124.171801/>`__
 and you want to add it to your library, as of version ``v0.9``

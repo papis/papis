@@ -1,5 +1,5 @@
 r"""
-This command initializes a papis library interactively.
+This command initializes a Papis library interactively.
 
 .. warning::
 

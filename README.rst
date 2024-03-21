@@ -85,12 +85,12 @@ You can then open the indicated address (``http://localhost:8888``) in your brow
 
 |web_app|
 
-All Papis commands come with help messages:
+All ``papis`` commands come with help messages:
 
 .. code:: bash
 
     papis -h      # General help
-    papis add -h  # Help with a specific Papis command
+    papis add -h  # Help with a specific command
 
 Installation & setup
 --------------------

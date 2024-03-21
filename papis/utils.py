@@ -107,7 +107,7 @@ def run(cmd: Sequence[str],
     """Run a given command with :mod:`subprocess`.
 
     This is a simple wrapper around :class:`subprocess.Popen` with custom
-    defaults used to call Papis commands.
+    defaults used to call `papis` commands.
 
     :arg cmd: a sequence of arguments to run, where the first entry is expected
         to be the command name and the remaining entries its arguments.

@@ -10,7 +10,7 @@ This can be included directly into the ``conf.py`` file as a normal extension, i
     ]
 
 It will include a custom :class:`~papis.sphinx_ext.CustomClickDirective` for
-documenting Papis commands and a :class:`~papis.sphinx_ext.PapisConfig` directive
+documenting ``papis`` commands and a :class:`~papis.sphinx_ext.PapisConfig` directive
 for documenting Papis configuration values.
 
 These are included by default when adding it to the ``extensions`` list in your

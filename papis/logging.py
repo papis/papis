@@ -62,7 +62,7 @@ class ColoramaFormatter(logging.Formatter):
         """Format the specified record as text.
 
         This adds color coding to the logging levels, includes the exception
-        into the message, removes the papis namespace from the name, etc. Any
+        into the message, removes the ``papis`` namespace from the name, etc. Any
         formatting of the logging output is made here.
         """
 
@@ -193,10 +193,10 @@ def reset(level: Optional[Union[int, str]] = None,
 
 
 def get_logger(name: Optional[str] = None) -> logging.Logger:
-    """Get a logger instance for the given name under the papis namespace.
+    """Get a logger instance for the given name under the ``papis`` namespace.
 
     :arg name: the provisional name of the logger instance.
-    :returns: a :class:`logging.Logger` under the papis namespace, i.e. with a
+    :returns: a :class:`logging.Logger` under the ``papis`` namespace, i.e. with a
         name such as ``papis.<name>``.
     """
     if name is None or name.startswith("papis."):

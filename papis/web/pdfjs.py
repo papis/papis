@@ -52,7 +52,7 @@ def error_message() -> str:
 No installation of pdfjs found.
 
 If you want to be able to read and see PDF files from within
-the papis web applications you need to install pdfjs.
+the Papis web applications you need to install pdfjs.
 
 You can download the PDFJS bundle from the url
 

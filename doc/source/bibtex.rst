@@ -1,7 +1,7 @@
 Bibtex
 ======
 
-Exporting documents to BibTeX is done in the same way throughout papis.
+Exporting documents to BibTeX is done in the same way throughout Papis.
 However, given the nature of TeX, there are some special corner cases
 to bear in mind when deciding on a workflow.
 
@@ -14,7 +14,7 @@ Unicode output
 If you are using TeX engines like XeTeX or LuaTeX, then you can use unicode
 characters for your BibTeX files as well. This means there is no need to write
 ``\`{a}`` instead of ``à`` in words such as ``apareixerà``. To control the
-output of unicode characters in papis, use the
+output of unicode characters in Papis, use the
 :confval:`bibtex-unicode` setting.
 
 Override keys

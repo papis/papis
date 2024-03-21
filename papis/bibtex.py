@@ -401,7 +401,7 @@ def bibtexparser_entry_to_papis(entry: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
-    """Convert a BibTeX file (or string) to a list of papis-compatible dictionaries.
+    """Convert a BibTeX file (or string) to a list of Papis-compatible dictionaries.
 
     This will convert an entry like
 
@@ -534,7 +534,7 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
       ``"file"`` field to the BibTeX entry, which can be used by e.g. Zotero to
       import documents.
 
-    :param document: a papis document.
+    :param document: a Papis document.
     :param indent: set indentation for the BibTeX fields.
     :returns: a string containing the document metadata in a BibTeX format.
     """

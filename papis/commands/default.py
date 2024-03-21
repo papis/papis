@@ -1,5 +1,5 @@
 """
-The papis command-line (without any subcommands) can be used to set configuration
+The ``papis`` command (without any subcommands) can be used to set configuration
 options or select the library.
 
 Examples

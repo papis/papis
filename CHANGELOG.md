@@ -266,7 +266,7 @@ And many other general interface and robustness improvements.
 * Better notes handling in
   `papis update` ([#404](https://github.com/papis/papis/pull/404)),
   `papis edit` ([#391](https://github.com/papis/papis/pull/391)) and
-  the papis picker ([#319](https://github.com/papis/papis/pull/319)).
+  the Papis picker ([#319](https://github.com/papis/papis/pull/319)).
 * Improvements to BiBTeX export (
   [#412](https://github.com/papis/papis/pull/412)
   [#444](https://github.com/papis/papis/pull/444)
@@ -463,7 +463,7 @@ papis module `papis.git`.
 - The flag `--commit` now has the name `--git`.
 - The flag `--dir` now has the more descriptive name `--subfolder`.
 - The flag `--no-document` has been finally removed.
-- The most notable update is that papis is now able to guess a `doi`
+- The most notable update is that the `papis` commands are now able to guess a `doi`
   or `arxiv` id from a pdf that is being added, so the following could work
 
   ```
@@ -484,7 +484,7 @@ papis module `papis.git`.
 ## `papis export` ##
 
 - The configuration settings `export-text-format` has been removed along with
-  the export --text command. papis now support plugins so you should write your
+  the export --text command. Papis now support plugins so you should write your
   own instead.
 - The flags --bibtex/--json/--yaml of the `export` command have been replaced
   by `export --format=bibtex/json/yaml`
@@ -574,7 +574,7 @@ added into the main source and is installed with it.
 - Remove `xeditor` config parameter
 - Add external picker in api
 
-- Erase all guis from papis main repository, they should be used in external
+- Erase all guis from Papis main repository, they should be used in external
   scripts or projects, [docs](https://papis.readthedocs.io/en/latest/gui.html).
 
 - Fix downloader testing framework.

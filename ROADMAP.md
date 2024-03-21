@@ -29,7 +29,7 @@ no nice solution of a python library doing this.
 ## YouTube video explaining the main uses of `papis`.
 
 If someone has experience with youtube, it would be nice to have a review
-in youtube explaining the main uses of papis and of her workflow.
+in youtube explaining the main uses of Papis and of her workflow.
 
 ## Implement proxy to download papers. [X]
 

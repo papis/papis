@@ -76,7 +76,7 @@ General settings
 
 .. papis-config:: format-doc-name
 
-    This setting controls the name of the document in the papis format strings
+    This setting controls the name of the document in the Papis format strings
     like in format strings such as :confval:`match-format` or
     :confval:`header-format`. For instance, if you are managing
     videos, you might want to set this option to ``vid`` in order to set  the
@@ -159,7 +159,7 @@ General settings
     * ``"python"``: based on :class:`papis.format.PythonFormatter`.
     * ``"jinja2"``: based on :class:`papis.format.Jinja2Formatter`.
 
-    Note that the default values of many of the papis configuration settings are
+    Note that the default values of many of the Papis configuration settings are
     based on the Python formatter. These will need to all be specified explicitly
     if another formatter is chosen.
 
@@ -201,7 +201,7 @@ Tools options
 .. papis-config:: editor
     :default: $EDITOR
 
-    Editor used to edit files in papis, e.g., for the ``papis edit``
+    Editor used to edit files in Papis, e.g., for the ``papis edit``
     command. This will search for the ``$EDITOR`` environment variable or the
     ``$VISUAL`` environment variables to obtain a default if it is not set.
     Otherwise, the default :confval:`opentool` will be used.
@@ -796,7 +796,7 @@ Databases
     effective when using the ``papis`` backend and disables the storage aspects,
     while keeping the query syntax.
 
-    If the cache is disabled, then every call to Papis commands will have to
+    If the cache is disabled, then every call to ``papis`` commands will have to
     walk the library directory tree to gather all the documents. This can be
     very slow for large libraries.
 
@@ -965,7 +965,7 @@ of fzf.
     ``fzf-extra-flags`` and include the colors in the
     :confval:`header-format` as ``ansi`` escape sequences.
 
-    The papis format string is given the additional variable ``c`` which
+    The Papis format string is given the additional variable ``c`` which
     contains the package ``colorama`` in it. Refer to the ``colorama``
     `documentation <https://github.com/tartley/colorama/blob/master/colorama/ansi.py#L49>`__.
     to see which colors are available. For instance, if you want the title in

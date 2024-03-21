@@ -12,7 +12,7 @@ This command is also useful for plugin developers.
 Let us suppose that you are editing the YAML file of a document at path
 ``/path/to/info.yaml``.
 If you are editing this file without the machinery of papis
-you might want to make papis be aware of this change by using the ``update``
+you might want to make Papis be aware of this change by using the ``update``
 subcommand. You might do
 
 ::
@@ -28,7 +28,7 @@ or maybe by query
 Furthermore, a noteworthy subcommand is ``update-newer``, which
 updates the cache for those documents whose info file is newer than
 the cache itself.  This subcommand has the same interface as most
-papis commands, so that if you want to check all documents you have to
+``papis`` commands, so that if you want to check all documents you have to
 input
 
 ::
@@ -62,7 +62,7 @@ logger = papis.logging.get_logger(__name__)
 @click.help_option("--help", "-h")
 def cli() -> None:
     """
-    Manage the cache or database of a papis library.
+    Manage the cache or database of a Papis library.
     """
 
 

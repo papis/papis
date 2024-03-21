@@ -1,4 +1,4 @@
-"""This is the whoosh interface to papis. For future papis developers
+"""This is the whoosh interface to Papis. For future Papis developers
 here are some considerations.
 
 Whoosh works with 3 main objects, the Index, the Writer and the Schema.
@@ -9,7 +9,7 @@ folders is similar to the cache files of the papis cache database.
 Once the index is created in the mentioned folder, a Schema is initialized,
 which is a declaration of the data prototype of the database, or the
 definition of the table in sql parlance. This is controlled by the
-papis configuration through the `whoosh-schema-prototype`. For instance
+Papis configuration through the `whoosh-schema-prototype`. For instance
 if the database is supposed to only contain the key fields
 ``author``, ``title``, ``year`` and ``tags``, then the
 ``whoosh-schema-prototype`` STRING should look like the following:

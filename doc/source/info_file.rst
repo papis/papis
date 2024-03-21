@@ -3,7 +3,7 @@
 The ``info.yaml`` file
 ======================
 
-At the heart of papis there is the information file. The info file contains
+At the heart of Papis there is the information file. The info file contains
 all information about the documents.
 
 It uses the `YAML <https://yaml.org>`__ syntax to store
@@ -14,7 +14,7 @@ However it will interpret the field ``files`` as the files linked to the
 document for the ``papis open`` command. The ``files`` field
 should be formatted as a YAML list.
 
-For instance, if are storing papers with papis, then you most probably would
+For instance, if are storing papers with Papis, then you most probably would
 like to store author and title in there like this:
 
 .. code:: yaml
@@ -25,7 +25,7 @@ like to store author and title in there like this:
   files:
     - document.pdf
 
-Here we have used the ``files`` field to tell papis that the paper
+Here we have used the ``files`` field to tell Papis that the paper
 has a pdf document attached to it. You can of course attach many other documents
 so that you can open them when you are opening it with the ``papis open``
 command. For instance if you have a paper with supporting information, you

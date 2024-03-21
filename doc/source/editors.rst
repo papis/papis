@@ -16,9 +16,9 @@ original ``vim`` plugin `papis-vim <https://github.com/papis/papis-vim>`__.
 -------
 
 `papis.el <https://github.com/papis/papis.el>`__ is a compatibility layer for
-papis that tries to use as much of the existing packages as possible.
+Papis that tries to use as much of the existing packages as possible.
 In particular it tries to make use also of ``org-ref``
 to try not to reinvent the wheel.
 If you are used to ``org-ref`` or ``org-cite`` it strives
-to work seamless with them and still have your papis
+to work seamless with them and still have your Papis
 library intact.

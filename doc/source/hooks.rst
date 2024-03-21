@@ -1,8 +1,8 @@
 Hooks
 =====
 
-From version ``0.12`` papis has a minimal hook infrastructure.
-Some parts of papis define and run hooks so that users
+From version ``0.12`` Papis has a minimal hook infrastructure.
+Some parts of Papis define and run hooks so that users
 and plugin writers can also tap into this functionality.
 
 A hook is declared in the same way as a plugin, in fact
@@ -14,7 +14,7 @@ they are implemented in the same way within the
 
 Right now the only way to add a hook as a user is using your
 ``config.py`` configuration file, which gets loaded
-when your papis configuration gets loaded.
+when your Papis configuration gets loaded.
 
 As an example you can add a function to the ``on_edit_done``
 hook like

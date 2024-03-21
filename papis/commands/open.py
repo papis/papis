@@ -1,5 +1,5 @@
 """
-The ``open`` command is a very important command in the papis workflow.
+The ``open`` command is a very important command in the Papis workflow.
 With it you can open documents, folders or marks.
 
 Marks
