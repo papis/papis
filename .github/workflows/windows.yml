@@ -2,7 +2,7 @@ name: Build Windows release
 
 on:
   push:
-    branches: [ "main", "ci-*", "feat/windows"]
+    branches: [ "main", "ci-*"]
   pull_request:
     branches: [ "main" ]
 
@@ -13,11 +13,29 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: ['3.12']
-      fail-fast: false
+      fail-fast: true
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v4.1.2
+      with:
+        fetch-depth: 0
 
+    - name: Get short commit ref
+      run: |
+        version=$(
+            git describe --tags --dirty \
+            | sed -e 's/^v//' -e 's/\([^-]*-g\)/r\1/;s/-/./g'
+          )
+        echo "PAPIS_VERSION=$version" >> "$GITHUB_ENV"
+        
+
+    - name: Set version in pyproject.toml
+      run: |
+        set -x \
+        sed -i \
+          "s/^version =/version = \"${{env.PAPIS_VERSION}}\"/" \
+          pyproject.toml
+    
     - name: Build Windows binary
       run: |
         docker run -v ${{github.workspace}}:/src \
@@ -28,5 +46,5 @@ jobs:
     - name: Publish binary as artifact
       uses: actions/upload-artifact@v4
       with:
-        name: workspace_artifacts
+        name: papis-${{env.PAPIS_VERSION}}
         path: ${{ github.workspace }}/dist/papis.exe
