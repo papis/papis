@@ -26,7 +26,7 @@ jobs:
           )
         echo "PAPIS_VERSION=$version" >> "$GITHUB_ENV"
         sed -i \
-          "s/^version =/version =\"${{env.PAPIS_VERSION}}\"/" \
+          "s/^version =/version =\"${version}\"/" \
           pyproject.toml
     
     - name: Build Windows binary
