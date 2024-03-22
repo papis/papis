@@ -2,9 +2,7 @@ name: Build Windows release
 
 on:
   push:
-    branches: [ "main", "ci-*"]
-  pull_request:
-    branches: [ "main" ]
+    tags: ["v.*"]
 
 jobs:
   build-windows-release:
@@ -26,9 +24,9 @@ jobs:
           )
         echo "PAPIS_VERSION=$version" >> "$GITHUB_ENV"
         sed -i \
-          "s/^version =/version =\"${version}\"/" \
+          "s/^version =\".*\"/version =\"${version}\"/" \
           pyproject.toml
-    
+            
     - name: Build Windows binary
       run: |
         docker run -v ${{github.workspace}}:/src \
