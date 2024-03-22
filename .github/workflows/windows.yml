@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-windows-release:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     strategy:
       fail-fast: true
 
@@ -16,6 +16,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set version in pyproject.toml and environment
+      shell: bash
       run: |
         set -x
         version=$(
@@ -26,13 +27,14 @@ jobs:
         sed -i \
           "s/^version =\".*\"/version =\"${version}\"/" \
           pyproject.toml
-            
+    
+    - name: Install dependencies
+      run: make ci-install && pip install '.[windows]'
+      shell: bash
+
     - name: Build Windows binary
       run: |
-        docker run -v ${{github.workspace}}:/src \
-         -e PIP_GROUPS=windows,develop \
-         -e SPECFILE=scripts/windows/papis.spec \
-         ghcr.io/kiike/pyinstaller-windows:latest
+        pyinstaller --clean scripts/windows/papis.spec
     
     - name: Publish binary as artifact
       uses: actions/upload-artifact@v4
