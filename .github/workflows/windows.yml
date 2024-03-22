@@ -10,9 +10,6 @@ jobs:
   build-windows-release:
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python-version: ['3.12']
       fail-fast: true
 
     steps:
@@ -20,20 +17,16 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Get short commit ref
+    - name: Set version in pyproject.toml and environment
       run: |
+        set -x
         version=$(
             git describe --tags --dirty \
-            | sed -e 's/^v//' -e 's/\([^-]*-g\)/r\1/;s/-/./g'
+            | sed -e 's/^v//' -e 's/\([^-]*-g\)/dev\1/;s/-g.*//g'
           )
         echo "PAPIS_VERSION=$version" >> "$GITHUB_ENV"
-        
-
-    - name: Set version in pyproject.toml
-      run: |
-        set -x \
         sed -i \
-          "s/^version =/version = \"${{env.PAPIS_VERSION}}\"/" \
+          "s/^version =/version =\"${{env.PAPIS_VERSION}}\"/" \
           pyproject.toml
     
     - name: Build Windows binary
