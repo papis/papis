@@ -1,0 +1,48 @@
+name: Build Windows release
+
+on:
+  push:
+    tags: ["v.*"]
+    branches:
+      - main
+      - "*windows*"
+  pull_request:
+      branches: [ "main" ]
+
+jobs:
+  build-windows-release:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: true
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set version in pyproject.toml and environment
+      shell: bash
+      run: |
+        set -x
+        version=$(
+            git describe --tags --dirty \
+            | sed -e 's/^v//' -e 's/\([^-]*-g\)/dev\1/;s/-g.*//g'
+          )
+        echo "PAPIS_VERSION=$version" >> "$GITHUB_ENV"
+        sed -i \
+          "s/^version =\".*\"/version =\"${version}\"/" \
+          pyproject.toml
+    
+    - name: Install dependencies
+      run: make ci-install && pip install '.[windows]'
+      shell: bash
+
+    - name: Build Windows binary
+      run: |
+        pyinstaller --clean scripts/windows/papis.spec
+    
+    - name: Publish binary as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: papis-${{env.PAPIS_VERSION}}
+        path: ${{ github.workspace }}/dist/papis.exe

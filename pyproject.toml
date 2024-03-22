@@ -120,6 +120,9 @@ optional = [
     "Jinja2>=3.0.0",
     "markdownify>=0.11.6",
 ]
+windows = [
+    "pyinstaller"
+]
 
 [project.scripts]
 papis = "papis.commands.default:run"
