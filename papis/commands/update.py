@@ -1,6 +1,6 @@
 """
 This command allows you to update the document metadata stored in the
-`info.yaml` file. With it, you can either change individual values manually
+``info.yaml`` file. With it, you can either change individual values manually
 or update a document with information automatically retrieved from a variety
 of sources.
 
@@ -9,8 +9,8 @@ expressions can be used. See below examples for more information. The command
 also tries to sanitise filenames so that they don't contain any problematic
 characters.
 
-Normally, `papis update` will abort on encountering an error. If you want to
-skip errors and apply as many changes as possible, use the `--batch` flag.
+Normally, ``papis update`` will abort on encountering an error. If you want to
+skip errors and apply as many changes as possible, use the ``--batch`` flag.
 
 Examples
 ^^^^^^^^
@@ -31,7 +31,7 @@ Examples
 
         papis update --set author_list "[{'family': 'Einstein', 'given': 'Albert'}]"
 
-  As you can see, `papis update` tries to parse the input string as a python
+  As you can see, ``papis update`` tries to parse the input string as a python
   expression (such as a list or dictionary). When this succeeds, as in the above
   example where we're setting a dictionary, it's the parsed expression that is
   used to update the metadata.
@@ -44,7 +44,7 @@ Examples
         papis update --all --set journal "Mass and Energy" "journal:'Energy and Mass'"
 
 
-  The `--all` flag means that the tag is applied to all documents that match the
+  The ``--all`` flag means that the tag is applied to all documents that match the
   query, rather than allowing you to pick one individual document to update.
 
 - Update a document automatically and interactively (searching by DOI in
@@ -69,11 +69,11 @@ Examples
 
         papis update --set author "{doc[author]}, Albert" Einstein
 
-  The `papis update` command tries to format input strings using the configured
+  The ``papis update`` command tries to format input strings using the configured
   formatter. Here, it is used to get the existing author "Albert" and then add
   the string ", Einstein" to end up with "Einstein, Albert"
 
-- The above can also be achieved with the `--append` option:
+- The above can also be achieved with the ``--append`` option:
 
     .. code:: sh
 
@@ -91,7 +91,7 @@ Examples
     doesn't yet exist, it will be created. All duplicate items will be removed
     from the list.
 
-- To remove an item from a list, use `--remove`:
+- To remove an item from a list, use ``--remove``:
 
     .. code:: sh
 
@@ -99,7 +99,7 @@ Examples
 
     If the tag "physics" is in the list of tags, this command removes it.
 
-- To remove a key-value pair entirely, use `--drop`:
+- To remove a key-value pair entirely, use ``--drop``:
 
     .. code:: sh
 
@@ -107,15 +107,15 @@ Examples
 
     This removes the all tags.
 
-- There is also a convenience option `--rename` if you want to rename
-  a list item. It's equivalent to doing `--remove` and `--append` sequentially.
+- There is also a convenience option ``--rename`` if you want to rename
+  a list item. It's equivalent to doing ``--remove`` and ``--append`` sequentially.
 
     .. code:: sh
 
         papis update --rename tags physics philosophy
 
   This renames the tag 'physics' to 'philosophy'. Note that this option being a
-  combination of `--remove` and `--append`, it will append the desired values
+  combination of ``--remove`` and ``--append``, it will append the desired values
   even if the value to be removed didn't exist. Thus, the above command will add
   the tag "philosophy" even if the tag "physics" didn't exist before the
   operation.
@@ -168,7 +168,7 @@ def run_set(
     key_types: Dict[str, type],
 ) -> None:
     """
-    Processes a list of `to_set` tuples and applies the resulting changes to the
+    Processes a list of ``to_set`` tuples and applies the resulting changes to the
     input document. Each tuple is (KEY, VALUE) and results in setting the KEY to
     the VALUE in the document.
     """
@@ -207,7 +207,7 @@ def run_append(
     batch: bool,
 ) -> bool:
     """
-    Processes a list of `to_append` tuples and applies the resulting changes
+    Processes a list of ``to_append`` tuples and applies the resulting changes
     to the input document. Each tuple is (KEY, VALUE) and results in appending
     the VALUE to the KEY item.
 
@@ -261,7 +261,7 @@ def run_remove(
     document: papis.document.DocumentLike, to_remove: List[Tuple[str, str]], batch: bool
 ) -> bool:
     """
-    Processes a list of `to_remove` tuples and applies the resulting changes
+    Processes a list of ``to_remove`` tuples and applies the resulting changes
     to the input document. Each tuple is (KEY, VALUE) and results in removing
     the VALUE from the KEY item.
 
@@ -301,9 +301,9 @@ def run_remove(
 
 def run_drop(document: papis.document.DocumentLike, to_remove: List[str]) -> None:
     """
-    Processes a list of `to_drop` strings and applies the resulting changes
+    Processes a list of ``to_drop`` strings and applies the resulting changes
     to the input document. Each string is a KEY whose value is set to None
-    (and then later in `run()` dropped from the document entirely).
+    (and then later in ``run()`` dropped from the document entirely).
 
     """
     for key in to_remove:
@@ -321,7 +321,7 @@ def run_rename(
     batch: bool,
 ) -> bool:
     """
-    Processes a list of `to_rename` tuples and applies the resulting changes
+    Processes a list of ``to_rename`` tuples and applies the resulting changes
     to the input document. Each tuple is (KEY, VALUE_OLD, VALUE_NEW) and results in
     rename the KEY's VALUE_OLD to VALUE_NEW.
 
