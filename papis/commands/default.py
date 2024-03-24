@@ -175,7 +175,9 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
     help="Use number of processors for multicore functionalities in papis",
     type=str,
     default=None)
-def run(verbose: bool,
+@click.pass_context
+def run(ctx: click.Context,
+        verbose: bool,
         profile: str,
         config: str,
         lib: str,
@@ -220,21 +222,30 @@ def run(verbose: bool,
     papis.config.set_lib_from_name(lib)
     library = papis.config.get_lib()
 
-    if not library.paths:
-        raise RuntimeError(
-            f"Library '{lib}' does not have any existing folders attached to it. "
-            "Please define and create the paths in the configuration file"
-            )
-
-    # Now the library should be set, let us check if there is a
-    # local configuration file there, and if there is one, then
-    # merge its contents
-    local_config_file = papis.config.getstring("local-config-file")
-    for path in library.paths:
-        local_config_path = os.path.expanduser(os.path.join(path, local_config_file))
-        papis.config.merge_configuration_from_path(
-            local_config_path,
-            papis.config.get_configuration())
+    if library.paths:
+        # Now the library should be set, let us check if there is a
+        # local configuration file there, and if there is one, then
+        # merge its contents
+        local_config_file = papis.config.getstring("local-config-file")
+        for path in library.paths:
+            local_config_path = os.path.expanduser(
+                os.path.join(path, local_config_file))
+            papis.config.merge_configuration_from_path(
+                local_config_path,
+                papis.config.get_configuration())
+    else:
+        config_file = papis.config.get_config_file()
+        if os.path.exists(config_file):
+            logger.error(
+                "Library '%s' does not have any folders attached to it. Please "
+                "create and add the required paths to the configuration file.",
+                library)
+        elif ctx.invoked_subcommand != "init":
+            logger.warning("No configuration file exists at '%s'.", config_file)
+            logger.warning("Create a configuration file and define your "
+                           "libraries before using papis. You can use "
+                           "'papis init /path/to/my/library' for a quick "
+                           "interactive setup.")
 
     # read in configuration from command-line
     sections = papis.config.get_configuration().sections()

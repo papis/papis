@@ -144,7 +144,7 @@ class Database(papis.database.base.Database):
             import pickle
             with open(cache_path, "rb") as fd:
                 self.documents = pickle.load(fd)
-        else:
+        elif self.get_dirs():
             logger.info("Indexing library. This might take a while...")
             folders: List[str] = sum(
                 [papis.utils.get_folders(d) for d in self.get_dirs()],
@@ -155,6 +155,9 @@ class Database(papis.database.base.Database):
                 self.maybe_compute_id(doc)
             if use_cache:
                 self.save()
+        else:
+            self.documents = []
+
         logger.debug("Loaded %d documents.", len(self.documents))
         return self.documents
 
