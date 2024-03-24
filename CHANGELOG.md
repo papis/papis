@@ -5,8 +5,13 @@ VERSION NEXT
 
 * Minimum required Python version bumped to 3.8
   ([#552](https://github.com/papis/papis/pull/552)).
+* Move to `pyproject.toml` and removed `setup.py` completely. We use
+  [hatchling](https://github.com/pypa/hatch/tree/master/backend) as the build
+  backend.
 * Removed [arxiv2bib](https://github.com/nathangrigg/arxiv2bib) in favor of
   [arxiv.py](https://github.com/lukasschwab/arxiv.py).
+* Added [markdownify](https://github.com/matthewwithanm/python-markdownify) as
+  an optional dependency for the Zenodo downloader.
 
 ## Features
 
@@ -54,7 +59,29 @@ will remove any comments and possibly reorder some options.
 
 ### New: Add `tag` command ([648](https://github.com/papis/papis/pull/648))
 
-TODO
+A new `papis tag` command was added to handle adding and removing tags
+(or keywords) for a document. For example, to add a few tags to a set of
+documents
+```
+papis tag --add cool-project --add from-steve --all QUERY
+```
+or change a tag for a mislabeled document
+```
+papis tag --remove biology --add neuroscience QUERY
+```
+
+For more examples see the documentation.
+
+**Warning**: The `tag` command expects that the tags are a list, not a single
+string with a separator. You can quickly transform your tags into a list using
+`papis doctor` e.g.
+```sh
+papis \
+    --set doctor-key-type-check-keys '["tags:list"]' \
+    --set doctor-key-type-check-separator ' ' \
+    doctor --fix --all --explain -t key-type QUERY
+```
+where you may need to change the separator to match your choice.
 
 ### New: Major improvements to search syntax ([#602](https://github.com/papis/papis/pull/602))
 
@@ -163,6 +190,11 @@ make use of the same infrastructure.
   ([#740](https://github.com/papis/papis/pull/740))
 * Enhance `python` formatter with some additional conversions
   ([709](https://github.com/papis/papis/pull/709))
+* Fix the `these.fr` downloader
+  ([729](https://github.com/papis/papis/pull/792)).
+* Add a Zenodo downloader
+  ([770](https://github.com/papis/papis/pull/770)). This uses some of the
+  fields from [biblatex-software](https://ctan.org/pkg/biblatex-software?lang=en)
 
 ## Bug fixes
 
