@@ -4,14 +4,14 @@ This command allows users to add and remove tags to documents in their library.
 Examples
 ^^^^^^^^
 
-- To add a tag use the `--add` (or `--append`/`-p`) option:
+- To add a tag use the ``--add`` (or ``--append``/``-p``) option:
 
     .. code:: sh
 
         papis tag --add TAG1 --add TAG2 QUERY
 
   This will add TAG1 and TAG2 to a document matched by QUERY. You can repeat
-  `--add` as many times as you need. The query is any query supported by papis.
+  ``--add`` as many times as you need. The query is any query supported by papis.
   If the query matches more than one document, Papis' picker will be started to
   let you pick the document from those matched (just as with Papis' other
   commands).
@@ -19,27 +19,27 @@ Examples
   Tags are only added if they do not already exist, which is to say that the
   same tag cannot exist more than once in a given document.
 
-- To remove a tag use the `--remove` (or `-r`) option:
+- To remove a tag use the ``--remove`` (or ``-r``) option:
 
     .. code:: sh
 
         papis tag --remove TAG1 QUERY
 
   This removes TAG1 from the document. If it didn't exist before, nothing
-  happens. You can use `--remove` as many times as you like to remove multiple
+  happens. You can use ``--remove`` as many times as you like to remove multiple
   tags.
 
-- Use `--drop` (or `-d`) to remove all tags:
+- Use ``--drop`` (or ``-d``) to remove all tags:
 
     .. code:: sh
 
         papis tag --drop --add TAG1 QUERY
 
   This removes all tags from the document and then adds TAG1. You can of course
-  also use `--drop` by itself to simply remove all tags without adding new
+  also use ``--drop`` by itself to simply remove all tags without adding new
   ones.
 
-- Use `--all` (or `-a`) with any of the other options to apply the tagging
+- Use ``--all`` (or ``-a``) with any of the other options to apply the tagging
   operation to all matching documents:
 
     .. code:: sh
@@ -49,7 +49,14 @@ Examples
   This adds TAG1 to all documents matching the QUERY rather than opening the
   picker to let you choose one.
 
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. click:: papis.commands.tag:cli
+    :prog: papis tag
+
 """
+
 from typing import List, Optional, Tuple, Any, Dict
 
 import click
