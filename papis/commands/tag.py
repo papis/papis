@@ -49,6 +49,12 @@ Examples
   This adds TAG1 to all documents matching the QUERY rather than opening the
   picker to let you choose one.
 
+Command-line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. click:: papis.commands.tag:cli
+    :prog: papis tag
+
 """
 
 from typing import List, Optional, Tuple, Any, Dict
