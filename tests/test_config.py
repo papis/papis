@@ -31,40 +31,9 @@ def test_get_config_paths(tmp_config: TemporaryConfiguration) -> None:
     assert papis.config.get_scripts_folder() == scriptsdir
 
 
-@pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
 def test_get_config_home(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
     import papis.config
-
-    with monkeypatch.context() as m:
-        m.delenv("XDG_CONFIG_HOME", raising=False)
-        assert re.match(r".+config", papis.config.get_config_home()) is not None
-
-
-@pytest.mark.skipif(sys.platform != "linux", reason="uses linux paths")
-def test_get_config_dirs(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
-    import tempfile
-    import papis.config
-    tmpdir = tempfile.gettempdir()
-
-    with monkeypatch.context() as m:
-        m.setenv("XDG_CONFIG_HOME", tmpdir)
-        m.delenv("XDG_CONFIG_DIRS", raising=False)
-
-        dirs = papis.config.get_config_dirs()
-        assert os.environ.get("XDG_CONFIG_DIRS") is None
-        assert len(dirs) == 2
-        assert os.path.join(tmpdir, "papis") == dirs[0]
-
-    with monkeypatch.context() as m:
-        m.setenv("XDG_CONFIG_DIRS", "/etc/:/usr/local/etc")
-        m.setenv("XDG_CONFIG_HOME", os.path.expanduser("~"))
-
-        dirs = papis.config.get_config_dirs()
-        assert len(dirs) == 4
-        assert os.path.abspath("/etc/papis") == os.path.abspath(dirs[0])
-        assert os.path.abspath("/usr/local/etc/papis") == os.path.abspath(dirs[1])
-        assert os.path.expanduser("~/papis") == os.path.abspath(dirs[2])
-        assert os.path.expanduser("~/.papis") == os.path.abspath(dirs[3])
+    assert re.match(r".+papis", papis.config.get_config_home()) is not None
 
 
 def test_set(tmp_config: TemporaryConfiguration) -> None:
@@ -78,39 +47,35 @@ def test_set(tmp_config: TemporaryConfiguration) -> None:
 
 def test_get(tmp_config: TemporaryConfiguration) -> None:
     import papis.config
-    general_name = papis.config.get_general_settings_name()
+    section = papis.config.get_general_settings_name()
     libname = papis.config.get_lib_name()
 
     papis.config.set("test_get", "value1")
     assert papis.config.get("test_get") == "value1"
-    assert papis.config.get("test_get", section=general_name) == "value1"
+    assert papis.config.get("test_get", section=section) == "value1"
 
     papis.config.set("test_get", "value42", section=libname)
     assert papis.config.get("test_get") == "value42"
     assert papis.config.get("test_get", section=libname) == "value42"
-    assert papis.config.get("test_get", section=general_name) == "value1"
+    assert papis.config.get("test_get", section=section) == "value1"
 
     papis.config.set("test_getint", "42")
     assert papis.config.getint("test_getint") == 42
-    assert papis.config.getint("test_getint", section=general_name) == 42
-    assert isinstance(papis.config.getint("test_getint", section=general_name),
-                      int
-                      )
+    assert papis.config.getint("test_getint", section=section) == 42
+    assert isinstance(papis.config.getint("test_getint", section=section), int)
 
     papis.config.set("test_getfloat", "3.14")
     assert papis.config.getfloat("test_getfloat") == 3.14
-    assert papis.config.getfloat("test_getfloat", section=general_name) == 3.14
-    assert isinstance(papis.config.getfloat("test_getfloat", section=general_name),
-                      float
-                      )
+    assert papis.config.getfloat("test_getfloat", section=section) == 3.14
+    assert isinstance(papis.config.getfloat("test_getfloat", section=section), float)
 
     papis.config.set("test_getbool", "True")
     assert papis.config.getboolean("test_getbool") is True
-    assert papis.config.getboolean("test_getbool", section=general_name) is True
+    assert papis.config.getboolean("test_getbool", section=section) is True
 
     papis.config.set("test_getbool", "False")
     assert papis.config.getboolean("test_getbool") is False
-    assert papis.config.getboolean("test_getbool", section=general_name) is False
+    assert papis.config.getboolean("test_getbool", section=section) is False
 
     import papis.exceptions
     with pytest.raises(papis.exceptions.DefaultSettingValueMissing):

@@ -240,15 +240,17 @@ class TemporaryConfiguration:
             raise ValueError("{!r} cannot be nested".format(type(self).__name__))
 
         # create directories and files
+        self._monkeypatch = pytest.MonkeyPatch()
         self._tmpdir = tempfile.TemporaryDirectory(prefix="papis-test-")
 
         self.libdir = os.path.join(self.tmpdir, "lib")
         self.configdir = os.path.join(self.tmpdir, "papis")
         self.configfile = os.path.join(self.configdir, "config")
+        self.configscripts = os.path.join(self.configdir, "scrits")
 
         os.makedirs(self.libdir)
         os.makedirs(self.configdir)
-        os.makedirs(os.path.join(self.configdir, "scripts"))
+        os.makedirs(self.configscripts)
 
         # load settings
         settings = {
@@ -262,16 +264,20 @@ class TemporaryConfiguration:
             else:
                 settings["settings"].update(self.settings)
 
+        # NOTE: set variables to overwrite platformdirs
+        self._monkeypatch.setenv("PAPIS_CONFIG_DIR", self.configdir)
+        self._monkeypatch.setenv("PAPIS_CACHE_DIR", self.configdir)
+
+        # NOTE: set XDG variables so that old path still works
+        self._monkeypatch.setenv("XDG_CONFIG_HOME", self.tmpdir)
+        self._monkeypatch.setenv("XDG_CACHE_HOME", self.tmpdir)
+
+        # write settings
         import configparser
         with open(self.configfile, "w") as fd:
             config = configparser.ConfigParser()
             config.read_dict(settings)
             config.write(fd)
-
-        # monkeypatch environment
-        self._monkeypatch = pytest.MonkeyPatch()
-        self._monkeypatch.setenv("XDG_CONFIG_HOME", self.tmpdir)
-        self._monkeypatch.setenv("XDG_CACHE_HOME", self.tmpdir)
 
         # monkeypatch globals
         import papis.format
@@ -287,8 +293,12 @@ class TemporaryConfiguration:
         papis.config.set_config_file(self.configfile)
         papis.config.reset_configuration()
 
+        assert papis.config.get("default-library")
         assert papis.config.get_config_folder() == self.configdir
         assert papis.config.get_config_file() == self.configfile
+
+        from papis.config import _get_deprecated_config_folder
+        assert _get_deprecated_config_folder() == self.configdir
 
         return self
 
