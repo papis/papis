@@ -20,7 +20,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Set version in pyproject.toml and environment
+    - name: Set version in pyproject.toml, papis.wxs and environment
       shell: bash
       run: |
         set -x
@@ -32,7 +32,13 @@ jobs:
         sed -i \
           "s/^version =\".*\"/version =\"${version}\"/" \
           pyproject.toml
-    
+        msi_version=$(
+            git describe --tags --dirty \
+            | sed -e 's/^v//' -e 's/-\([^-]*-g\)/.\1/;s/-g.*//g'
+          )
+        sed -i "s/Version=\".*\"/Version=\"${msi_version}\"/" \
+          scripts/windows/papis.wxs
+
     - name: Install dependencies
       run: make ci-install && pip install '.[windows]'
       shell: bash
@@ -40,9 +46,27 @@ jobs:
     - name: Build Windows binary
       run: |
         pyinstaller --clean scripts/windows/papis.spec
-    
+
     - name: Publish binary as artifact
       uses: actions/upload-artifact@v4
       with:
-        name: papis-${{env.PAPIS_VERSION}}
+        name: papis-${{env.PAPIS_VERSION}}.exe
         path: ${{ github.workspace }}/dist/papis.exe
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Install WiX
+      run: dotnet tool install --global wix --version 4.0.5
+
+    - name: Install the UI extension
+      run: wix extension -g add WixToolset.UI.wixext/4.0.5
+
+    - name: Build the installer
+      run: wix build -ext WixToolset.UI.wixext -o dist/papis.msi .\scripts\windows\papis.wxs
+
+    - name: Publish installer as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: papis-${{env.PAPIS_VERSION}}.msi
+        path: ${{ github.workspace }}/dist/papis.msi
