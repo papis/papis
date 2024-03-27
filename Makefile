@@ -31,7 +31,7 @@ tags:								## Generate ctags for main codebase
 .PHONY: tags
 
 doc:								## Generate the documentation in doc/
-	cd doc && make html SPHINXOPTS="-W --keep-going -n"
+	cd doc && rm -rf build && make html SPHINXOPTS="-W --keep-going -n" || true
 	@echo ""
 	@echo -e "\e[1;32mRun '$$BROWSER doc/build/html/index.html' to see the docs\e[0m"
 	@echo ""
