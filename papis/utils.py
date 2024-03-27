@@ -13,7 +13,6 @@ except ImportError:
     HAS_MULTIPROCESSING = False
 
 import papis.config
-import papis.format
 import papis.exceptions
 import papis.importer
 import papis.downloaders
@@ -86,10 +85,6 @@ def parmap(f: Callable[[A], B],
     :param np: number of processes to use when applying the function *f* in
         parallel. This value defaults to ``PAPIS_NP`` or :func:`os.cpu_count`.
     """
-
-    # FIXME: load singleton plugins here instead of on all the processes
-    _ = papis.format.get_formatter()
-
     if np is None:
         np = int(os.environ.get("PAPIS_NP", str(os.cpu_count())))
 

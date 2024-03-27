@@ -168,8 +168,9 @@ def get_file_name(
         doc: papis.document.Document,
         original_filepath: str,
         suffix: str = "",
+        file_name_format: Optional[papis.strings.AnyString] = None,
         base_name_limit: int = 150) -> str:
-    """Generate a file name for the document.
+    """Generate a file name for the document at the location of *original_filepath*.
 
     This function uses :confval:`add-file-name` to generate a file
     name for the *original_filepath* based on the document data. If the document
@@ -177,30 +178,29 @@ def get_file_name(
     (mostly as is).
 
     :param original_filepath: absolute path to the original file, which is used
-        to determine the extension of the resulting filename.
+        to determine the extension of the resulting filename and can be reused.
     :param suffix: a suffix to be appended to the end of the new file name.
     :param base_name_limit: a maximum character length of the file name. This
-        is important on operating systems of filesystems that do not support
+        is important on operating systems or filesystems that do not support
         long file names.
+
     :returns: a new file name to be used for the *original_filepath* in the
         Papis library.
     """
 
-    file_name_opt = papis.config.get("add-file-name")
+    if not file_name_format:
+        file_name_format = papis.config.getformattedstring("add-file-name")
+
+    if not file_name_format:
+        file_name_format = os.path.basename(original_filepath)
+
     ext = papis.filetype.get_document_extension(original_filepath)
+    file_name_base = papis.format.format(file_name_format, doc, default="")
 
-    if file_name_opt is None:
-        file_name_opt = os.path.basename(original_filepath)
-
-    file_name_base = papis.format.format(
-        file_name_opt, doc,
-        default=""
-    )
-
-    file_name_base = papis.utils.clean_document_name(file_name_base, False)
+    file_name_base = papis.utils.clean_document_name(file_name_base, is_path=False)
     if not file_name_base:
         file_name_base = papis.utils.clean_document_name(
-            os.path.basename(original_filepath), False)
+            os.path.basename(original_filepath), is_path=False)
 
     if len(file_name_base) > base_name_limit:
         logger.warning(
@@ -214,33 +214,146 @@ def get_file_name(
     return f"{file_name_base}.{ext}"
 
 
-def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
-    """Folder name where the document will be stored.
+def get_hash_folder(doc: Dict[str, Any],
+                    in_document_paths: List[str],
+                    seed: Optional[str] = None) -> str:
+    """Generate a (likely) unique folder name for the *doc*.
 
-    :data: Data parsed for the actual document
-    :document_paths: Path of the document
+    The resulting folder name will have roughly the form ``MD5HASH-AUTHORS``.
+    The MD5 hash is a 32 character string, which we construct from a combination
+    of the fields from *doc* and the contents of *in_document_paths*.
 
+    Note that if *seed* is *None*, a random number is also added to the result,
+    so multiple calls to this function will not return the same string. Otherwise,
+    a deterministic value is constructed.
+
+    :arg doc: key-value pairs defining document metadata.
+    :arg in_document_paths: absolute paths to the files that will be stored in
+        the document.
+    :arg seed: a string added to the MD5 hash of the document metadata that is
+        random by default, ensuring uniqueness of the resulting folder name
+        with high probability.
+    :returns: a folder name that can be used for the *doc*.
     """
-    import random
-    author = "-{:.20}".format(data["author"]) if "author" in data else ""
+    if seed is None:
+        import random
+        seed = str(random.random())
+
+    # NOTE: sort the data to ensure deterministic results
+    data = sorted(doc.items())
+    in_document_paths = sorted(in_document_paths)
 
     document_strings = b""
-    for docpath in document_paths:
+    for docpath in in_document_paths:
         with open(docpath, "rb") as fd:
             document_strings += fd.read(2000)
 
     import hashlib
     md5 = hashlib.md5(
-        "".join(document_paths).encode()
+        "".join(in_document_paths).encode()
         + str(data).encode()
-        + str(random.random()).encode()
+        + seed.encode()
         + document_strings
     ).hexdigest()
 
-    result = md5 + author
-    result = papis.utils.clean_document_name(result, False)
+    result = "{}-{:.20}".format(md5, doc["author"]) if "author" in doc else md5
+    result = papis.utils.clean_document_name(result, is_path=False)
 
     return result
+
+
+def get_folder_name(
+        doc: papis.document.Document,
+        base_path: str,
+        in_document_paths: List[str],
+        folder_name_format: Optional[papis.strings.AnyString] = None) -> str:
+    """Generate a folder name for the document at *base_path*.
+
+    This function uses :ref:`config-settings-add-folder-name` to generate a
+    folder name for the *doc* at *base_path*. If no folder can be constructed
+    from the format, then :func:`get_hash_folder` is used instead. The returned
+    folder name is guaranteed to be unique and to be a subfolder of *base_path*.
+
+    :arg doc: the document used on the *folder_name_format*.
+    :arg base_path: the base directory in which to generate the document main
+        folder path.
+    :arg in_document_paths: a list of the files that are part of the document
+        (see :func:`get_hash_folder`).
+    :arg folder_name_format: a format to use for the folder name that will be
+        filled in using the given *doc*. If no format is given, we default to
+        :ref:`config-settings-add-folder-name`. This format can have additional
+        subfolders.
+
+    :returns: a folder name for *doc* with the root at *base_path*.
+    """
+    base_path = os.path.normpath(base_path)
+    out_folder_path = base_path
+
+    if folder_name_format is None:
+        folder_name_format = papis.config.getformattedstring("add-folder-name")
+
+    if isinstance(folder_name_format, str):
+        folder_name_format = papis.strings.FormattedString(None, folder_name_format)
+
+    # try to get a folder name from folder_name_format
+    if folder_name_format:
+        formatter = folder_name_format.formatter
+        tmp_path = os.path.normpath(os.path.join(base_path, folder_name_format.value))
+
+        # NOTE: the folder_name_format can contain subfolders, so we go through
+        # them one by one and expand them here to get the full path
+        #
+        # NOTE: we need to go through them one by one because e.g. doc[title]
+        # could contain a backslash and ruin the hierarchy -- instead we clean it
+        # and remove any such characters from messing up the folder name
+        from papis.utils import is_relative_to
+
+        components: List[str] = []
+        while tmp_path != base_path and is_relative_to(tmp_path, base_path):
+            tmp_component = os.path.basename(tmp_path)
+            try:
+                tmp_component = papis.format.format(
+                    papis.strings.FormattedString(formatter, tmp_component),
+                    doc)
+            except papis.format.FormatFailedError:
+                components.clear()
+                break
+            else:
+                components.append(
+                    papis.utils.clean_document_name(tmp_component, is_path=False)
+                )
+
+            tmp_path = os.path.dirname(tmp_path)
+
+        out_folder_path = os.path.normpath(os.path.join(base_path, *components[::-1]))
+
+    # if no folder name could be obtained from the format use get_hash_folder
+    if out_folder_path == base_path:
+        if folder_name_format:
+            logger.error(
+                "Could not produce a folder path from the provided data:\n"
+                "\tdata: %s", doc)
+
+        logger.info("Constructing an automatic (hashed) folder name.")
+        out_folder_name = get_hash_folder(doc, in_document_paths)
+        out_folder_path = os.path.join(base_path, out_folder_name)
+
+    if not papis.utils.is_relative_to(out_folder_path, base_path):
+        raise ValueError(
+            "Formatting produced a path outside of library: "
+            f"'{base_path}' not relative to '{out_folder_path}'")
+
+    # ensure the folder name is unique by adding a suffix
+    if os.path.exists(out_folder_path):
+        suffix = papis.utils.create_identifier()
+
+        out_folder_path_suffix = f"{out_folder_path}-{next(suffix)}"
+        while os.path.exists(out_folder_path_suffix):
+            out_folder_path_suffix = f"{out_folder_path}-{next(suffix)}"
+
+        out_folder_path = out_folder_path_suffix
+
+    return out_folder_path
 
 
 def ensure_new_folder(path: str) -> str:
@@ -259,8 +372,8 @@ def ensure_new_folder(path: str) -> str:
 
 def run(paths: List[str],
         data: Optional[Dict[str, Any]] = None,
-        folder_name: Optional[str] = None,
-        file_name: Optional[str] = None,
+        folder_name: Optional[papis.strings.AnyString] = None,
+        file_name: Optional[papis.strings.AnyString] = None,
         subfolder: Optional[str] = None,
         base_path: Optional[str] = None,
         batch: bool = False,
@@ -297,21 +410,12 @@ def run(paths: List[str],
 
     import tempfile
 
-    # The real paths of the documents to be added
     in_documents_paths = paths
-    # The basenames of the documents to be added
-    in_documents_names = []
-    # The folder name of the temporary document to be created
     temp_dir = tempfile.mkdtemp()
 
     for p in in_documents_paths:
         if not os.path.exists(p):
             raise FileNotFoundError(f"File '{p}' not found")
-
-    in_documents_names = [
-        papis.utils.clean_document_name(doc_path)
-        for doc_path in in_documents_paths
-    ]
 
     # reference building
     # NOTE: this needs to go before any papis.format calls, so that those can
@@ -336,62 +440,14 @@ def run(paths: List[str],
         base_path = os.path.join(base_path, subfolder)
 
     base_path = os.path.normpath(base_path)
-    out_folder_path = base_path
-
-    if folder_name:
-        temp_path = os.path.join(out_folder_path, folder_name)
-        components: List[str] = []
-
-        temp_path = os.path.normpath(temp_path)
-        out_folder_path = os.path.normpath(out_folder_path)
-
-        while temp_path != out_folder_path and papis.utils.is_relative_to(
-            temp_path, out_folder_path
-        ):
-            path_component = os.path.basename(temp_path)
-
-            formatted = None
-            try:
-                formatted = papis.format.format(path_component, tmp_document)
-            except papis.format.FormatFailedError:
-                out_folder_path = base_path
-                components = []
-                break
-
-            component_cleaned = papis.utils.clean_document_name(formatted, False)
-            components.insert(0, component_cleaned)
-
-            # continue with parent path component
-            temp_path = os.path.dirname(temp_path)
-
-        # components are formatted in reverse order, so we add then now in the
-        # right order to the path
-        out_folder_path = os.path.normpath(os.path.join(out_folder_path, *components))
-
-    if out_folder_path == base_path:
-        if folder_name:
-            logger.error(
-                "Could not produce a folder path from the provided data:\n"
-                "\tdata: %s\n\tfiles: %s",
-                tmp_document, in_documents_names)
-
-        logger.info("Constructing an automatic (hashed) folder name.")
-        out_folder_name = get_hash_folder(tmp_document, in_documents_paths)
-        out_folder_path = os.path.join(out_folder_path, out_folder_name)
-
-    if not papis.utils.is_relative_to(out_folder_path, base_path):
-        raise ValueError(
-            "Formatting produced a path outside of library: '{}' not relative to '{}'"
-            .format(base_path, out_folder_path))
-
-    if os.path.exists(out_folder_path):
-        out_folder_path = ensure_new_folder(out_folder_path)
+    out_folder_path = get_folder_name(tmp_document, base_path, in_documents_paths,
+                                      folder_name_format=folder_name)
 
     logger.info("Document folder is '%s'.", out_folder_path)
     logger.debug("Document includes files: '%s'.", "', '".join(in_documents_paths))
 
     # First prepare everything in the temporary directory
-    if file_name is not None:  # Use args if set
+    if file_name:
         papis.config.set("add-file-name", file_name)
 
     g = papis.utils.create_identifier()
@@ -407,7 +463,7 @@ def run(paths: List[str],
             get_file_name(
                 tmp_document,
                 in_file_path,
-                suffix=string_append), False)
+                suffix=string_append), is_path=False)
         new_file_list.append(new_filename)
 
         tmp_end_filepath = os.path.join(
@@ -529,17 +585,17 @@ def run(paths: List[str],
     help="Pick from existing subfolders")
 @click.option(
     "--folder-name",
-    help="Name for the document's folder (papis format)",
-    default=lambda: papis.config.getstring("add-folder-name"))
+    help="Name format for the document main folder",
+    type=papis.cli.FormattedStringParamType(),
+    default=lambda: papis.config.getformattedstring("add-folder-name"))
 @click.option(
     "--file-name",
-    help="File name for the document (papis format)",
+    help="File name format for the document",
+    type=papis.cli.FormattedStringParamType(),
     default=None)
 @click.option(
     "--from", "from_importer",
-    help="Add document from a specific importer ({})".format(
-        ", ".join(papis.importer.available_importers())
-    ),
+    help="Add document from a specific importer",
     type=(click.Choice(papis.importer.available_importers()), str),
     nargs=2,
     multiple=True,
@@ -586,8 +642,8 @@ def cli(files: List[str],
         set_list: List[Tuple[str, str]],
         subfolder: str,
         pick_subfolder: bool,
-        folder_name: str,
-        file_name: Optional[str],
+        folder_name: papis.strings.FormattedString,
+        file_name: Optional[papis.strings.FormattedString],
         from_importer: List[Tuple[str, str]],
         batch: bool,
         confirm: bool,

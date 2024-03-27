@@ -70,6 +70,8 @@ Developer API reference
 ``papis.format``
 ----------------
 
+.. autoclass:: papis.strings.FormattedString
+
 .. automodule:: papis.format
     :members:
 

@@ -992,7 +992,7 @@ def run(doc: papis.document.Document,
               type=click.Choice(registered_checks_names()),
               help="Checks to run on every document.")
 @papis.cli.bool_flag("--json", "_json",
-                     help="Output the results in json format")
+                     help="Output the results in JSON format")
 @papis.cli.bool_flag("--fix",
                      help="Auto fix the errors with the auto fixer mechanism")
 @papis.cli.bool_flag("-s", "--suggest",
