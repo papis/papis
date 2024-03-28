@@ -165,6 +165,41 @@ General settings
 
     **Note** The older (misspelled) version ``"formater"`` is deprecated.
 
+.. papis-config:: slugify-lowercase
+    :type: bool
+
+    This setting controls whether capital letters in a (generated or specified)
+    document path should be lowercased before the path is created.
+
+    **Note:** Lowercasing happens *before* removing disallowed characters.
+    If you disable it without allowing uppercase letters they will simply
+    disappear from document paths!
+
+.. papis-config:: slugify-regex-pattern
+    :type: str
+
+    This setting defines the set of *disallowed* characters for document paths.
+    It must be a valid regular expression matching all disallowed characters.
+    The default value disallows all characters except lowercase letters and
+    numbers (and dots for file extensions).
+
+    Possible alternative values are:
+
+    * ``r"[^a-zA-Z0-9.]+"``: Don't filter out uppercase letters from the path.
+    * ``r"[^a-z0-9._]+"``: Don't filter out underscores from the path.
+
+    **Note:** Allowing uppercase letters here will not yield the desired result
+    unless lowercasing is also turned off. Otherwise all uppercase letters are
+    lowercased before filtering happens and no uppercase letters will appear
+    in the path anyway.
+
+.. papis-config:: slugify-separator
+    :type: str
+
+    This setting defines the separator between words in document paths (usually
+    replacing spaces or other non-letter characters). By default this is the
+    hyphen ``"-"`` but it could, e.g., also be the underscore ``"_"``.
+
 Tools options
 -------------
 
