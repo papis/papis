@@ -196,6 +196,8 @@ def run_set(
                 "Document files renamed in the info.yaml file. This does not "
                 "rename any files on disk."
             )
+        elif key == "ref" and isinstance(value, str):
+            document[key] = papis.bibtex.ref_cleanup(value)
         else:
             document[key] = value
 
