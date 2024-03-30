@@ -285,9 +285,11 @@ def clean_document_name(doc_path: str, is_path: bool = True) -> str:
         doc_path = os.path.basename(doc_path)
 
     import slugify
-    lowercase = papis.config.getbool("slugify-lowercase")
+    lowercase = papis.config.getboolean("slugify-lowercase")
     regex_pattern = papis.config.getstring("slugify-regex-pattern")
     separator = papis.config.getstring("slugify-separator")
+    if lowercase is None:
+        lowercase = True
     return str(slugify.slugify(
         doc_path,
         word_boundary=True,
