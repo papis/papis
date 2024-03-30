@@ -50,9 +50,9 @@ settings: Dict[str, Any] = {
     "sort-field": None,
     "sort-reverse": False,
     "formatter": "python",
-    "slugify-lowercase": True,
-    "slugify-regex-pattern": r"[^a-z0-9.]+",
-    "slugify-separator": "-",
+    "doc-paths-lowercase": True,
+    "doc-paths-extra-chars": "",
+    "doc-paths-word-separator": "-",
 
     # tools
     "opentool": get_default_opener(),

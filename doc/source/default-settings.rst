@@ -165,35 +165,31 @@ General settings
 
     **Note** The older (misspelled) version ``"formater"`` is deprecated.
 
-.. papis-config:: slugify-lowercase
+.. papis-config:: doc-paths-lowercase
     :type: bool
 
     This setting controls whether capital letters in a (generated or specified)
     document path should be lowercased before the path is created.
 
-    **Note:** Lowercasing happens *before* removing disallowed characters.
-    If you disable it without allowing uppercase letters they will simply
-    disappear from document paths!
-
-.. papis-config:: slugify-regex-pattern
+.. papis-config:: doc-paths-extra-chars
     :type: str
 
-    This setting defines the set of *disallowed* characters for document paths.
-    It must be a valid regular expression matching all disallowed characters.
-    The default value disallows all characters except lowercase letters and
-    numbers (and dots for file extensions).
+    By default document paths in Papis libraries can contain only a limited set
+    of characters. This is mainly to exclude characters that are invalid for
+    file paths on any operating system or possibly unprintable. Allowed
+    characters are:
 
-    Possible alternative values are:
+    * latin letters (a to z)
+    * arabic digits (0 to 9)
+    * dots (for file extensions)
+    * directory separators (usually ``/`` on UNIX-like systems and ``\\``
+      on Windows)
 
-    * ``r"[^a-zA-Z0-9.]+"``: Don't filter out uppercase letters from the path.
-    * ``r"[^a-z0-9._]+"``: Don't filter out underscores from the path.
+    This setting allows to append additional characters to this set. It expects
+    a string containing all additional valid characters. A possible value would
+    be ``"_"`` to allow underscores in document paths.
 
-    **Note:** Allowing uppercase letters here will not yield the desired result
-    unless lowercasing is also turned off. Otherwise all uppercase letters are
-    lowercased before filtering happens and no uppercase letters will appear
-    in the path anyway.
-
-.. papis-config:: slugify-separator
+.. papis-config:: doc-paths-word-separator
     :type: str
 
     This setting defines the separator between words in document paths (usually
