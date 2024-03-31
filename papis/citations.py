@@ -1,9 +1,6 @@
 import os
 from typing import Dict, Any, List, Optional, Sequence, Tuple
 
-import tqdm
-import colorama
-
 import papis.config
 import papis.database
 import papis.crossref
@@ -79,14 +76,12 @@ def fetch_citations(doc: papis.document.Document) -> Citations:
     logger.info("Found %d citations in library.", len(dois_with_data))
     logger.info("Fetching %d citations from Crossref.", len(dois))
 
-    with tqdm.tqdm(iterable=dois) as progress:
-        for doi in progress:
-            crossref_data = papis.crossref.get_data(dois=[doi])
-            progress.set_description("{c.Fore.GREEN}{c.Back.BLACK}"
-                                     "{0: <22.22}{c.Style.RESET_ALL}"
-                                     .format(doi, c=colorama))
-            if crossref_data:
-                dois_with_data.extend(crossref_data)
+    from papis.tui.utils import progress_bar
+
+    for doi in progress_bar(dois):
+        crossref_data = papis.crossref.get_data(dois=[doi])
+        if crossref_data:
+            dois_with_data.extend(crossref_data)
 
     _delete_citations_key(dois_with_data)
     return dois_with_data
@@ -99,24 +94,16 @@ def get_citations_from_database(dois: Sequence[str]) -> Citations:
     :returns: a sequence of documents from the current library that match the
         given *dois*, if any.
     """
+    from papis.tui.utils import progress_bar
+
     db = papis.database.get()
+    dois_with_data = []
 
-    dois_with_data: List[Dict[str, Any]] = []
-    with tqdm.tqdm(iterable=dois) as progress:
-        for doi in progress:
-            citation = db.query_dict({"doi": doi})
-
-            if citation:
-                progress.set_description("{c.Fore.GREEN}{c.Back.BLACK}"
-                                         "{0: <22.22}"
-                                         "{c.Style.RESET_ALL}"
-                                         .format(doi, c=colorama))
-                data = papis.document.to_dict(citation[0])
-                dois_with_data.append(data)
-            else:
-                progress.set_description("{c.Fore.RED}{c.Back.BLACK}"
-                                         "{0: <22.22}{c.Style.RESET_ALL}"
-                                         .format(doi, c=colorama))
+    for doi in progress_bar(dois):
+        citation = db.query_dict({"doi": doi})
+        if citation:
+            data = papis.document.to_dict(citation[0])
+            dois_with_data.append(data)
 
     return dois_with_data
 

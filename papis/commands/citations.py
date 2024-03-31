@@ -99,7 +99,12 @@ def cli(query: str,
                 logger.info("[%d/%d] Fetching citations for '%s'.",
                             i + 1, len(documents),
                             papis.document.describe(document))
-                fetch_and_save_citations(document)
+                try:
+                    fetch_and_save_citations(document)
+                except ValueError as exc:
+                    logger.error("Failed to fetch citations for document: '%s'",
+                                 papis.document.describe(document), exc_info=exc)
+
         if update_from_database:
             if _has_citations_p:
                 logger.info("[%d/%d] Updating citations from library for '%s'.",
