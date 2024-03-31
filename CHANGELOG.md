@@ -5,11 +5,15 @@ VERSION NEXT
 
 * Minimum required Python version bumped to 3.8
   ([#552](https://github.com/papis/papis/pull/552)).
-* Move to `pyproject.toml` and removed `setup.py` completely. We use
+* Moved to `pyproject.toml` and removed `setup.py` completely. We use
   [hatchling](https://github.com/pypa/hatch/tree/master/backend) as the build
   backend.
 * Removed [arxiv2bib](https://github.com/nathangrigg/arxiv2bib) in favor of
   [arxiv.py](https://github.com/lukasschwab/arxiv.py).
+* Removed [tqdm](https://github.com/tqdm/tqdm) dependency (using a progress bar
+  from `prompt_toolkit` instead).
+* Made `chardet` an optional dependency. This is an optional dependency of
+  `bs4`, `requests` and `feedparser` and should be installed if possible.
 * Added [markdownify](https://github.com/matthewwithanm/python-markdownify) as
   an optional dependency for the Zenodo downloader.
 
