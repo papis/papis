@@ -307,7 +307,6 @@ module = [
     "markdownify.*",
     "sphinx_click.*",
     "stevedore.*",
-    "typing.re.*",
     "whoosh.*",
 ]
 ignore_missing_imports = true
