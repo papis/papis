@@ -107,7 +107,6 @@ import re
 
 from typing import List, Optional, Tuple
 import click
-import tqdm
 
 import papis.api
 import papis.database
@@ -167,10 +166,11 @@ cli.add_command(EXPLORER_MGR["bibtex"].plugin, "read")
 @click.help_option("-h", "--help")
 @papis.cli.all_option()
 @papis.cli.query_option()
-@click.option("-r", "--refs-file",
-              help=("File with references to query in the database "
-                    "and then add"),
-              default=None)
+@click.option(
+    "-r", "--refs-file",
+    help="File with references to query in the database and then add",
+    type=click.Path(exists=True),
+    default=None)
 @click.pass_context
 def _add(ctx: click.Context,
          query: str,
@@ -178,27 +178,34 @@ def _add(ctx: click.Context,
          refs_file: Optional[str]) -> None:
     """Add a reference to the BibTeX file."""
     docs = []
-    if not refs_file:
-        docs = papis.api.get_documents_in_lib(search=query)
+
     if refs_file:
+        from papis.tui.utils import progress_bar
+
+        db = papis.database.get()
+
         references = []
         found = 0
-        db = papis.database.get()
         logger.info("Adding and querying from reference file: '%s'.", refs_file)
+
         with open(refs_file) as fd:
             references = fd.readlines()
-        for ref in tqdm.tqdm(iterable=references):
+
+        for ref in progress_bar(references):
             cleaned_ref = ref.strip("\n\r")
             if not cleaned_ref:
                 continue
+
             results = db.query_dict({"ref": cleaned_ref})
             found += len(results)
-            if results:
-                docs.extend(results)
-        logger.info("Found %d / %d documents.", found, len(references))
-    # do not pick if refs_file is given
-    if not _all and not refs_file:
-        docs = list(papis.api.pick_doc(docs))
+            docs.extend(results)
+
+        logger.info("Found %d documents for %d references.", found, len(references))
+    else:
+        docs = papis.api.get_documents_in_lib(search=query)
+        if not _all:
+            docs = list(papis.api.pick_doc(docs))
+
     ctx.obj["documents"].extend(docs)
 
 
