@@ -1,7 +1,10 @@
 import re
-from typing import Optional, List, Callable, Any
+from typing import Optional, List, Callable, Any, Iterable
 
 import click
+
+from papis.api import T
+
 
 # Highlighting style used by pygments. This is a copy of the prompt_toolkit
 # default style, but changed to use ansi colors.
@@ -153,6 +156,33 @@ def prompt(
                                    validate_while_typing=True)
 
     return result or default
+
+
+def progress_bar(iterable: Iterable[T]) -> Iterable[T]:
+    from prompt_toolkit.styles import Style
+    from prompt_toolkit.shortcuts import ProgressBar
+    from prompt_toolkit.shortcuts.progress_bar import formatters
+
+    # NOTE: this style is chosen to make it look like the default tqdm bar
+    style = Style.from_dict({"bar-a": "reverse"})
+    fmt = [
+        formatters.Percentage(),
+        formatters.Bar(start="|", end="|", sym_a=" ", sym_b=" ", sym_c=" "),
+        formatters.Text(" "),
+        formatters.Progress(),
+        formatters.Text(" ["),
+        formatters.TimeElapsed(),
+        formatters.Text("<"),
+        formatters.TimeLeft(),
+        formatters.Text(", "),
+        formatters.IterationsPerSecond(),
+        formatters.Text(" it/s]"),
+        formatters.Text("  "),
+    ]
+
+    with ProgressBar(style=style, formatters=fmt) as pb:
+        for item in pb(iterable):
+            yield item
 
 
 def get_range(range_str: str) -> List[int]:

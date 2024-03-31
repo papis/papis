@@ -72,14 +72,13 @@ dependencies = [
     "habanero>=0.6",
     "isbnlib>=3.9.1",
     "lxml>=4.3.5",
-    "prompt_toolkit>=2.0.5",
+    "prompt_toolkit>=3.0.5",
     "pygments>=2.2",
     "pyparsing>=2.2",
     "python-doi>=0.1.1",
     "python-slugify>=1.2.6",
     "requests>=2.11.1",
     "stevedore>=1.30",
-    "tqdm>=4.1",
 ]
 
 [project.urls]
@@ -104,7 +103,6 @@ develop = [
     "types-python-slugify",
     "types-PyYAML",
     "types-requests",
-    "types-tqdm",
 ]
 docs = [
     "sphinx>=4",
