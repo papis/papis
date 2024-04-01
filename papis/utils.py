@@ -13,13 +13,13 @@ except ImportError:
     HAS_MULTIPROCESSING = False
 
 import papis.config
-import papis.format
-import papis.exceptions
-import papis.importer
-import papis.downloaders
-import papis.document
 import papis.database
 import papis.defaults
+import papis.document
+import papis.downloaders
+import papis.exceptions
+import papis.format
+import papis.importer
 import papis.logging
 
 logger = papis.logging.get_logger(__name__)
@@ -384,16 +384,17 @@ def update_doc_from_data_interactively(
     import copy
     docdata = copy.copy(document)
 
-    import papis.tui.widgets.diff
+    from papis.tui.widgets.diff import diffdict
+
     # do not compare some entries
     docdata.pop("files", None)
     docdata.pop("tags", None)
 
-    document.update(papis.tui.widgets.diff.diffdict(
-                    docdata,
+    diff = diffdict(docdata,
                     data,
                     namea=papis.document.describe(document),
-                    nameb=data_name))
+                    nameb=data_name)
+    document.update(diff)
 
 
 def get_cache_home() -> str:
@@ -559,6 +560,8 @@ def collect_importer_data(
     :param use_files: if *True*, both metadata and files are collected
         from the importers.
     """
+    from papis.tui.utils import confirm
+
     # FIXME: this is here for backwards compatibility and should be removed
     # before we release the next version
     if only_data is not None and use_files is not None:
@@ -597,7 +600,7 @@ def collect_importer_data(
             msg = f"Use this file? (from {importer.name})"
             for f in importer.ctx.files:
                 open_file(f)
-                if batch or papis.tui.utils.confirm(msg):
+                if batch or confirm(msg):
                     ctx.files.append(f)
 
     return ctx
