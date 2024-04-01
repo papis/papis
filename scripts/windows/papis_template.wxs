@@ -1,0 +1,62 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package Language="1033" Manufacturer="Papis" Name="Papis"
+    UpgradeCode="E68B8CFF-6DDC-4BB3-8633-C0FEAEA44CC9" Version="0.13" Scope="perUser">
+    <MajorUpgrade
+      DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
+    <MediaTemplate EmbedCab="yes" />
+    <UI Id="WixUI_Minimal_Papis">
+      <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
+      <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12" />
+      <TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="9" Bold="yes" />
+
+      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+      <Property Id="WixUI_Mode" Value="Minimal" />
+
+      <DialogRef Id="ErrorDlg" />
+      <DialogRef Id="FatalError" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="MsiRMFilesInUse" />
+      <DialogRef Id="PrepareDlg" />
+      <DialogRef Id="ProgressDlg" />
+      <DialogRef Id="ResumeDlg" />
+      <DialogRef Id="UserExit" />
+      <DialogRef Id="WelcomeDlg" />
+
+      <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999" />
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" />
+      <Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog"
+        Value="MaintenanceTypeDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog"
+        Value="VerifyReadyDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog"
+        Value="VerifyReadyDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="Back" Event="NewDialog"
+        Value="MaintenanceWelcomeDlg" />
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" />
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2"
+        Condition="Installed AND PATCH" />
+
+      <Property Id="WIXUI_EXITDIALOGOPTIONALTEXT"
+        Value="Papis has been installed into a location that was added to the PATH environment variable. For the changes to take effect, log out and log in again or reboot your system. Then you can use the program from a terminal. Thank you for installing Papis!" />
+      <Property Id="ARPNOMODIFY" Value="1" />
+    </UI>
+
+    <UIRef Id="WixUI_Common" />
+
+    <Feature Id="PapisFeature">
+      <ComponentRef Id="PapisComponent" />
+      <ComponentGroupRef Id="_internal" />
+    </Feature>
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="ProgramsFolder" Name="Programs">
+        <Directory Id="INSTALLFOLDER" Name="papis">
+          <Component Id="PapisComponent">
+            <File KeyPath="yes" Source="dist/papis\papis.exe" />
+            <Environment Name="PATH" Value="[INSTALLFOLDER]" Permanent="yes" Part="last"
+              Action="set" System="no" />
+          </Component>
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+  </Package>
+</Wix>

@@ -19,8 +19,16 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
+    - name: Set up python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
 
-    - name: Set version in pyproject.toml and environment
+    - name: Install dependencies
+      run: make ci-install && pip install '.[windows]'
+      shell: bash
+
+    - name: Set version in pyproject.toml, MSI and environment
       shell: bash
       run: |
         set -x
@@ -32,17 +40,44 @@ jobs:
         sed -i \
           "s/^version =\".*\"/version =\"${version}\"/" \
           pyproject.toml
-    
-    - name: Install dependencies
-      run: make ci-install && pip install '.[windows]'
-      shell: bash
+        msi_version=$(
+            git describe --tags --dirty \
+            | sed -e 's/^v//' -e 's/-\([^-]*-g\)/.\1/;s/-g.*//g'
+          )
+        echo "MSI_VERSION=${msi_version}" >> "$GITHUB_ENV"
+          
 
-    - name: Build Windows binary
+    - name: Build Windows binaries
       run: |
-        pyinstaller --clean scripts/windows/papis.spec
-    
+        pyinstaller --clean scripts/windows/papis_onefile.spec
+        pyinstaller --clean scripts/windows/papis_onedir.spec
+
     - name: Publish binary as artifact
       uses: actions/upload-artifact@v4
       with:
-        name: papis-${{env.PAPIS_VERSION}}
+        name: papis-${{env.PAPIS_VERSION}}.exe
         path: ${{ github.workspace }}/dist/papis.exe
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Install WiX
+      run: |
+        dotnet tool install --global wix --version 4.0.5
+        wix extension -g add WixToolset.UI.wixext/4.0.5
+    
+    - name: Render the MSI build manifest template
+      shell: bash
+      run: |
+        python scripts/windows/populate_wxs_artifacts.py
+        sed -i "s/Version=\".*\"/Version=\"${{env.MSI_VERSION}}\"/" \
+          scripts/windows/papis.wxs
+
+    - name: Build the installer
+      run: wix build -ext WixToolset.UI.wixext -o dist/papis.msi .\scripts\windows\papis.wxs
+
+    - name: Publish installer as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: papis-${{env.PAPIS_VERSION}}.msi
+        path: ${{ github.workspace }}/dist/papis.msi
