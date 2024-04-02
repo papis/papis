@@ -234,7 +234,7 @@ class Downloader(papis.importer.Importer):
             return self._soup
 
         import bs4
-        self._soup = bs4.BeautifulSoup(self._get_body(), features="lxml")
+        self._soup = bs4.BeautifulSoup(self._get_body())
 
         return self._soup
 
