@@ -6,7 +6,6 @@ import urllib.parse
 from typing import Any, List, Optional, Tuple, Callable, Dict
 
 import functools
-import cgi
 import collections
 import tempfile
 
@@ -319,10 +318,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 )
         return doc
 
-    def _get_form(self, method: str = "POST") -> cgi.FieldStorage:
-        return cgi.FieldStorage(fp=self.rfile,
-                                headers=self.headers,
-                                environ={"REQUEST_METHOD": method})
+    def _get_form(self, method: str = "POST") -> Any:
+        return None
 
     def update_notes(self, libname: str, papis_id: str) -> None:
         doc = self._get_document(libname, papis_id)
