@@ -25,8 +25,10 @@ jobs:
         python-version: "3.12"
 
     - name: Install dependencies
-      run: make ci-install && pip install '.[windows]'
       shell: bash
+      run: |
+        make ci-install
+        pip install '.[windows]'
 
     - name: Set version in pyproject.toml, MSI and environment
       shell: bash
@@ -45,7 +47,6 @@ jobs:
             | sed -e 's/^v//' -e 's/-\([^-]*-g\)/.\1/;s/-g.*//g'
           )
         echo "MSI_VERSION=${msi_version}" >> "$GITHUB_ENV"
-          
 
     - name: Build Windows binaries
       run: |
@@ -65,16 +66,17 @@ jobs:
       run: |
         dotnet tool install --global wix --version 4.0.5
         wix extension -g add WixToolset.UI.wixext/4.0.5
-    
+
     - name: Render the MSI build manifest template
       shell: bash
       run: |
-        python scripts/windows/populate_wxs_artifacts.py
-        sed -i "s/Version=\".*\"/Version=\"${{env.MSI_VERSION}}\"/" \
-          scripts/windows/papis.wxs
+        cd scripts\windows
+        python populate_wxs_artifacts.py papis_template.wxs -o papis.wxs
+        sed -i "s/Version=\".*\"/Version=\"${{env.MSI_VERSION}}\"/" papis.wxs
 
     - name: Build the installer
-      run: wix build -ext WixToolset.UI.wixext -o dist/papis.msi .\scripts\windows\papis.wxs
+      run: |
+        wix build -ext WixToolset.UI.wixext -o dist\papis.msi scripts\windows\papis.wxs
 
     - name: Publish installer as artifact
       uses: actions/upload-artifact@v4
