@@ -33,19 +33,19 @@ jobs:
     - name: Set version in pyproject.toml, MSI and environment
       shell: bash
       run: |
-        set -x
-        version=$(
+        # NOTE: python version follows "X.YdevZ+gHASH" format
+        py_version=$(
             git describe --tags --dirty \
-            | sed -e 's/^v//' -e 's/\([^-]*-g\)/dev\1/;s/-g.*//g'
-          )
-        echo "PAPIS_VERSION=$version" >> "$GITHUB_ENV"
-        sed -i \
-          "s/^version =\".*\"/version =\"${version}\"/" \
-          pyproject.toml
+            | awk -F '-' '{ printf "%s.dev%s+%s\n", substr($1, 2), $2, $3 }'
+        )
+        # NOTE: MSI version cannot have letters and is only "X.Y.Z"
         msi_version=$(
             git describe --tags --dirty \
-            | sed -e 's/^v//' -e 's/-\([^-]*-g\)/.\1/;s/-g.*//g'
-          )
+            | awk -F '-' '{ printf "%s.%s", substr($1, 2), $2 }'
+        )
+        sed -i "s/^version =\".*\"/version =\"${py_version}\"/" pyproject.toml
+
+        echo "PAPIS_VERSION=${py_version}" >> "$GITHUB_ENV"
         echo "MSI_VERSION=${msi_version}" >> "$GITHUB_ENV"
 
     - name: Build Windows binaries
@@ -70,13 +70,14 @@ jobs:
     - name: Render the MSI build manifest template
       shell: bash
       run: |
-        cd scripts\windows
-        python populate_wxs_artifacts.py papis_template.wxs -o papis.wxs
-        sed -i "s/Version=\".*\"/Version=\"${{env.MSI_VERSION}}\"/" papis.wxs
+        python scripts/windows/populate_wxs_artifacts.py \
+          scripts/windows/papis_template.wxs \
+          --outfile scripts/windows/papis.wxs \
+          --version '${{ env.MSI_VERSION }}'
 
     - name: Build the installer
       run: |
-        wix build -ext WixToolset.UI.wixext -o dist\papis.msi scripts\windows\papis.wxs
+        wix build -ext WixToolset.UI.wixext -o dist/papis.msi scripts\windows\papis.wxs
 
     - name: Publish installer as artifact
       uses: actions/upload-artifact@v4
