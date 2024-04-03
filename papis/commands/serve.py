@@ -6,7 +6,6 @@ import urllib.parse
 from typing import Any, List, Optional, Tuple, Callable, Dict
 
 import functools
-import cgi
 import collections
 import tempfile
 
@@ -32,6 +31,87 @@ TAGS_LIST: Dict[str, Optional[Dict[str, int]]] = {}
 
 
 AnyFn = Callable[..., Any]
+
+
+try:
+    # NOTE: the cgi module is being removed in python 3.13, so we add our own
+    # little copy of FieldStorage when it's not available
+    from cgi import FieldStorage
+except ImportError:
+    from email.message import Message
+    from dataclasses import dataclass, field
+    from typing import IO, Iterator, Union
+
+    @dataclass
+    class MiniFieldStorage:
+        name: str
+        value: str
+
+        def __repr__(self) -> str:
+            return f"MiniFieldStorage({self.name!r}, {self.value!r})"
+
+    @dataclass
+    class FieldStorage:  # type: ignore[no-redef]
+        # NOTE: fields taken from cgi.FieldStorage.__init__
+        # https://github.com/python/cpython/blob/3.12/Lib/cgi.py#L330
+
+        fp: Optional[IO[bytes]] = None
+        headers: Union[Dict[str, str], Message] = field(default_factory=dict)
+        outerboundary: bytes = b""
+        environ: Dict[str, str] = field(default_factory=dict)
+        keep_blank_values: bool = False
+        strict_parsing: bool = False
+        limit: Optional[int] = None
+        encoding: str = "utf-8"
+        errors: str = "replace"
+        max_num_fields: Optional[int] = None
+        separator: str = "&"
+
+        def __post_init__(self) -> None:
+            self.read_urlencoded()
+
+        @property
+        def length(self) -> int:
+            return int(self.headers.get("content-length", -1))
+
+        @property
+        def qs_on_post(self) -> Optional[str]:
+            return None
+
+        def read_urlencoded(self) -> None:
+            assert self.fp is not None
+
+            qs_b = self.fp.read(self.length)
+            if not isinstance(qs_b, bytes):
+                raise ValueError(
+                    f"'{self.fp}' should return bytes, got {type(qs_b).__name__}")
+
+            qs = qs_b.decode(self.encoding, self.errors)
+            if self.qs_on_post:
+                qs += "&" + self.qs_on_post
+
+            query = urllib.parse.parse_qsl(
+                qs,
+                self.keep_blank_values,
+                self.strict_parsing,
+                encoding=self.encoding,
+                errors=self.errors,
+                max_num_fields=self.max_num_fields,
+                separator=self.separator)
+
+            self.list = [MiniFieldStorage(key, value) for key, value in query]
+
+        def getvalue(self, name: str) -> str:
+            result = [fs for fs in self.list if fs.name == name]
+            assert len(result) == 1
+
+            return result[0].value
+
+        def __iter__(self) -> Iterator[str]:
+            return iter(self.keys())
+
+        def keys(self) -> List[str]:
+            return list({fs.name for fs in self.list})
 
 
 # Decorators
@@ -320,10 +400,10 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 )
         return doc
 
-    def _get_form(self, method: str = "POST") -> cgi.FieldStorage:
-        return cgi.FieldStorage(fp=self.rfile,
-                                headers=self.headers,
-                                environ={"REQUEST_METHOD": method})
+    def _get_form(self, method: str = "POST") -> FieldStorage:
+        return FieldStorage(fp=self.rfile,
+                            headers=self.headers,
+                            environ={"REQUEST_METHOD": method})
 
     def update_notes(self, libname: str, papis_id: str) -> None:
         doc = self._get_document(libname, papis_id)
