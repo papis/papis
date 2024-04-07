@@ -165,6 +165,37 @@ General settings
 
     **Note** The older (misspelled) version ``"formater"`` is deprecated.
 
+.. papis-config:: doc-paths-lowercase
+    :type: bool
+
+    This setting controls whether capital letters in a (generated or specified)
+    document path should be lowercased before the path is created.
+
+.. papis-config:: doc-paths-extra-chars
+    :type: str
+
+    By default document paths in Papis libraries can contain only a limited set
+    of characters. This is mainly to exclude characters that are invalid for
+    file paths on any operating system or possibly unprintable. Allowed
+    characters are:
+
+    * latin letters (a to z)
+    * arabic digits (0 to 9)
+    * dots (for file extensions)
+    * directory separators (usually ``/`` on UNIX-like systems and ``\\``
+      on Windows)
+
+    This setting allows to append additional characters to this set. It expects
+    a string containing all additional valid characters. A possible value would
+    be ``"_"`` to allow underscores in document paths.
+
+.. papis-config:: doc-paths-word-separator
+    :type: str
+
+    This setting defines the separator between words in document paths (usually
+    replacing spaces or other non-letter characters). By default this is the
+    hyphen ``"-"`` but it could, e.g., also be the underscore ``"_"``.
+
 Tools options
 -------------
 

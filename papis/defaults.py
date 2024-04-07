@@ -50,6 +50,9 @@ settings: Dict[str, Any] = {
     "sort-field": None,
     "sort-reverse": False,
     "formatter": "python",
+    "doc-paths-lowercase": True,
+    "doc-paths-extra-chars": "",
+    "doc-paths-word-separator": "-",
 
     # tools
     "opentool": get_default_opener(),

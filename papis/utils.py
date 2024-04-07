@@ -287,11 +287,25 @@ def clean_document_name(doc_path: str, is_path: bool = True) -> str:
         doc_path = os.path.basename(doc_path)
 
     import slugify
-    regex_pattern = r"[^a-z0-9.]+"
+
+    lowercase = papis.config.getboolean("doc-paths-lowercase")
+    extra_chars = papis.config.getstring("doc-paths-extra-chars")
+    separator = papis.config.getstring("doc-paths-word-separator")
+
+    if lowercase is None:
+        lowercase = True
+
+    if lowercase is True:
+        regex_pattern = fr"[^a-z0-9.{extra_chars}]+"
+    else:
+        regex_pattern = fr"[^a-zA-Z0-9.{extra_chars}]+"
+
     return str(slugify.slugify(
         doc_path,
         word_boundary=True,
-        regex_pattern=regex_pattern))
+        separator=separator,
+        regex_pattern=regex_pattern,
+        lowercase=lowercase))
 
 
 def locate_document_in_lib(document: papis.document.Document,
