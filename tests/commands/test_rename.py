@@ -1,7 +1,7 @@
 import os
 
 import papis.database
-from papis.testing import TemporaryLibrary, TemporaryConfiguration
+from papis.testing import TemporaryLibrary
 
 
 def test_rename_run(tmp_library: TemporaryLibrary) -> None:
@@ -21,13 +21,11 @@ def test_rename_run(tmp_library: TemporaryLibrary) -> None:
     assert os.path.exists(doc.get_main_folder())
 
 
-def test_regenerate_name(tmp_library: TemporaryLibrary,
-                         tmp_config: TemporaryConfiguration,
-                         ) -> None:
-    from click.testing import CliRunner
+def test_regenerate_name(tmp_library: TemporaryLibrary) -> None:
     from papis.commands.rename import cli
+    from papis.testing import PapisRunner
 
-    runner = CliRunner(mix_stderr=False)
+    runner = PapisRunner()
 
     magic_string = "Test42"
     papis.config.set("add-folder-name", magic_string)
@@ -36,14 +34,13 @@ def test_regenerate_name(tmp_library: TemporaryLibrary,
 
 
 def test_batch_regenerate_name(tmp_library: TemporaryLibrary,
-                               tmp_config: TemporaryConfiguration,
                                caplog) -> None:
     import logging
 
-    from click.testing import CliRunner
     from papis.commands.rename import cli
+    from papis.testing import PapisRunner
 
-    runner = CliRunner(mix_stderr=False)
+    runner = PapisRunner()
 
     docs = papis.database.get().get_all_documents()
     magic_string = "Test42"
@@ -52,4 +49,4 @@ def test_batch_regenerate_name(tmp_library: TemporaryLibrary,
         runner.invoke(cli, ["--all", "--regenerate", "--batch"])
         assert len(caplog.records) == len(docs)
         for record in caplog.records:
-            assert magic_string in record.text
+            assert magic_string in record.message
