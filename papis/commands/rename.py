@@ -11,7 +11,9 @@ from typing import Optional, Tuple
 
 import click
 
+import papis.config
 import papis.cli
+import papis.format
 import papis.utils
 import papis.database
 import papis.strings
@@ -55,29 +57,54 @@ def run(document: papis.document.Document,
 
 
 @click.command("rename")
+@papis.cli.bool_flag("--batch", "-b", default=False, help="Batch mode, do not prompt")
+@papis.cli.bool_flag("--slugify", "-s", default=False, help="Slugify the folder name")
+@papis.cli.bool_flag("--regenerate", "-r", default=False,
+                     help="Regenerate the folder name from the configured patttern")
 @click.help_option("--help", "-h")
+@papis.cli.all_option()
 @papis.cli.query_argument()
 @papis.cli.git_option()
 @papis.cli.sort_option()
 @papis.cli.doc_folder_option()
 def cli(query: str,
         git: bool,
+        regenerate: bool,
+        _all: bool,
+        batch: bool,
+        slugify: bool,
         sort_field: Optional[str],
         doc_folder: Tuple[str, ...],
         sort_reverse: bool) -> None:
     """Rename entry"""
-    documents = papis.cli.handle_doc_folder_query_sort(query,
-                                                       doc_folder,
-                                                       sort_field,
-                                                       sort_reverse)
+    documents = papis.cli.handle_doc_folder_query_all_sort(query,
+                                                           doc_folder,
+                                                           sort_field,
+                                                           sort_reverse,
+                                                           _all
+                                                           )
     if not documents:
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
-    document = documents[0]
 
-    new_name = papis.tui.utils.prompt(
-        "Enter new folder name:\n"
-        ">",
-        default=document.get_main_folder_name() or "")
+    if regenerate:
+        folder_name_pattern = papis.config.getstring("add-folder-name")
 
-    run(document, new_name, git=git)
+    for document in documents:
+        current_name = document.get_main_folder_name()
+        if regenerate:
+            new_name = papis.format.format(folder_name_pattern, document)
+            if slugify:
+                new_name = papis.utils.clean_document_name(new_name)
+
+            if batch:
+                logger.info("Renaming '%s' into '%s'", current_name, new_name)
+            else:
+                papis.tui.utils.confirm(f"Rename {current_name} into {new_name}?", True)
+        else:
+            new_name = papis.tui.utils.prompt(
+                "Enter new folder name:\n"
+                ">",
+                default=current_name or "")
+
+        run(document, new_name, git=git)
