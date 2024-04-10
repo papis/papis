@@ -1,4 +1,7 @@
 import os
+import sys
+
+import pytest
 
 import papis.database
 from papis.testing import TemporaryLibrary
@@ -21,13 +24,8 @@ def test_rename_run(tmp_library: TemporaryLibrary) -> None:
     assert os.path.exists(doc.get_main_folder())
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="prompt_toolkit won't work in CI")
 def test_regenerate_name(tmp_library: TemporaryLibrary) -> None:
-    # Avoids disabling loading windll on Windows if Sphinx is also detected
-    # see https://github.com/prompt-toolkit/python-prompt-toolkit/blob/465ab02854763fafc0099a2e38a56328c1cb0625/src/prompt_toolkit/output/win32.py#L30  # noqa
-    import sys
-    if "sphinx.ext.autodoc" in sys.modules:
-        sys.modules.pop("sphinx.ext.autodoc")
-
     from papis.commands.rename import cli
     from papis.testing import PapisRunner
 
@@ -39,14 +37,10 @@ def test_regenerate_name(tmp_library: TemporaryLibrary) -> None:
     assert magic_string in result.output
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="prompt_toolkit won't work in CI")
 def test_batch_regenerate_name(tmp_library: TemporaryLibrary,
                                caplog) -> None:
     import logging
-
-    # See comment on previous function
-    import sys
-    if "sphinx.ext.autodoc" in sys.modules:
-        sys.modules.pop("sphinx.ext.autodoc")
 
     from papis.commands.rename import cli
     from papis.testing import PapisRunner
