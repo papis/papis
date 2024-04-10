@@ -7,7 +7,7 @@ Command-line Interface
 """
 
 import os
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
 import click
 
@@ -56,6 +56,13 @@ def run(document: papis.document.Document,
     db.add(document)
 
 
+def prepare_run(operations: List[Tuple[papis.document.Document, str]],
+                git: bool
+                ) -> None:
+    for document, new_name in operations:
+        run(document, new_name, git)
+
+
 @click.command("rename")
 @papis.cli.bool_flag("--batch", "-b", default=False, help="Batch mode, do not prompt")
 @papis.cli.bool_flag("--slugify", "-s", default=False, help="Slugify the folder name")
@@ -90,6 +97,7 @@ def cli(query: str,
     if regenerate:
         folder_name_pattern = papis.config.getstring("add-folder-name")
 
+    renames = []
     for document in documents:
         current_name = document.get_main_folder_name()
         if regenerate:
@@ -107,4 +115,6 @@ def cli(query: str,
                 ">",
                 default=current_name or "")
 
-        run(document, new_name, git=git)
+        renames.append((document, new_name))
+
+    prepare_run(renames, git)
