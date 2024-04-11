@@ -120,7 +120,6 @@ def prepare_run(operations: List[Tuple[papis.document.Document, str]],
 @papis.cli.bool_flag("--batch", "-b", default=False, help="Batch mode, do not prompt")
 @papis.cli.bool_flag("--regenerate", "-r", default=False,
                      help="Regenerate the folder name from the configured patttern")
-@papis.cli.bool_flag("--slugify", "-s", default=False, help="Slugify the folder name")
 @click.help_option("--help", "-h")
 @papis.cli.all_option()
 @papis.cli.query_argument()
@@ -132,7 +131,6 @@ def cli(query: str,
         regenerate: bool,
         _all: bool,
         batch: bool,
-        slugify: bool,
         sort_field: Optional[str],
         doc_folder: Tuple[str, ...],
         sort_reverse: bool) -> None:
@@ -155,8 +153,7 @@ def cli(query: str,
         current_name = document.get_main_folder_name()
         if regenerate:
             new_name = papis.format.format(folder_name_pattern, document)
-            if slugify:
-                new_name = papis.utils.clean_document_name(new_name)
+            new_name = papis.utils.clean_document_name(new_name)
 
             if batch:
                 logger.info("Renaming '%s' into '%s'", current_name, new_name)

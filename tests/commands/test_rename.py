@@ -26,7 +26,7 @@ def test_rename_run(tmp_library: TemporaryLibrary) -> None:
 
 
 @pytest.mark.parametrize(["regenerate", "substring"],
-                         [[False, "Enter new folder name"], [True, "MAGIC_STRING"]])
+                         [[False, "Enter new folder name"], [True, "magic-string42"]])
 def test_rename_single_entry(regenerate: List,
                              substring: str,
                              tmp_library: TemporaryLibrary,
@@ -67,36 +67,13 @@ def test_rename_batch(tmp_library: TemporaryLibrary, caplog) -> None:
     runner = PapisRunner()
 
     docs = papis.database.get().get_all_documents()
-    magic_string = "Test42"
+    magic_string = "magic-string42"
     papis.config.set("add-folder-name", magic_string + "-{doc[papis_id]}")
     with caplog.at_level(logging.INFO):
         runner.invoke(cli, ["--all", "--regenerate", "--batch"])
         assert len(caplog.records) == len(docs)
         for record in caplog.records:
             assert magic_string in record.message
-
-
-def test_rename_and_slugify(tmp_library: TemporaryLibrary, caplog) -> None:
-    import logging
-    import re
-
-    from papis.commands.rename import cli
-    from papis.testing import PapisRunner
-
-    runner = PapisRunner()
-
-    docs = papis.database.get().get_all_documents()
-    papis.config.set("add-folder-name", "{doc[author]}-{doc[title]}")
-    with caplog.at_level(logging.INFO):
-        runner.invoke(cli, ["--all", "--regenerate", "--batch", "--slugify"])
-        assert len(caplog.records) == len(docs)
-        for record in caplog.records:
-            # Check that no filenames contain uppercase characters, punctuation
-            # or spaces
-            pattern = re.compile("Renaming.*into '([a-z-]+)'")
-            if match := pattern.match(record.message):
-                new_name = match.group(1)
-                assert "-" in new_name
 
 
 def test_rename_no_matching_documents(tmp_library: TemporaryLibrary, caplog) -> None:
