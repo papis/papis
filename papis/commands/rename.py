@@ -1,15 +1,13 @@
 """
-The ``rename`` is one of the facilities of Papis to suit the naming
-of folders to your liking.  Functioning without interaction, thanks to the
-``--batch`` mode, or with interaction when executed without flags, it can rename
-the folders that contain your documents, optionally committing the changes to Git.
+The ``rename`` command is used to rename document folders based on
+a provided format or using :confval:`add-folder-name`.
 
 
 Examples
 ^^^^^^^^
 
-- Manually rename all folders matching a query. ``papis`` will prompt for the
-  new folder name, being the current name the default.
+- Manually rename all folders for documents matching a query. ``papis`` will
+  prompt for the new folder name, with the current name as a default.
 
    .. code:: sh
 
@@ -25,7 +23,7 @@ Examples
 
         papis rename --regenerate author:"Rick Astley"
 
-- Same, without asking for confirmation.
+- Rename folders without asking for confirmation using ``--batch``.
 
    .. code:: sh
 
@@ -134,7 +132,7 @@ def cli(query: str,
         sort_field: Optional[str],
         doc_folder: Tuple[str, ...],
         sort_reverse: bool) -> None:
-    """Rename an entry"""
+    """Rename document folders"""
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,
                                                            sort_field,

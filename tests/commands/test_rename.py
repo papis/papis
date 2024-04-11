@@ -51,8 +51,12 @@ def test_rename_single_entry(regenerate: List,
         print(prompt)
         return default
 
+    def dumb_confirm(prompt, *_) -> bool:
+        print(prompt)
+        return True
+
     with monkeypatch.context() as m:
-        m.setattr(papis.tui.utils, "confirm", lambda prompt, *_: print(prompt))
+        m.setattr(papis.tui.utils, "confirm", dumb_confirm)
         m.setattr(papis.tui.utils, "prompt", dumb_prompt)
         result = runner.invoke(cli, args)
         assert substring in result.output
