@@ -1,10 +1,63 @@
 """
+The ``rename`` is one of the facilities of Papis to suit the naming
+of folders to your liking.  Functioning without interaction, thanks to the
+``--batch`` mode, or with interaction when executed without flags, it can rename
+the folders that contain your documents, optionally committing the changes to Git.
+
+
+Examples
+^^^^^^^^
+
+- Manually rename all folders matching a query. ``papis`` will prompt for the
+  new folder name, being the current name the default.
+
+   .. code:: sh
+
+        papis rename author:"Rick Astley"
+
+- Rename picked folders that match a query and automatically ``--regenerate``
+  the names following the pattern provided by the ``add-folder-name``
+  configuration option. It will ask for confirmation before each rename. It
+  doesn't slugify the names, so if the pattern results in "Rick Astley - Never
+  Gonna Give You Up", that will be the final folder name.
+
+   .. code:: sh
+
+        papis rename --regenerate author:"Rick Astley"
+
+- Same, without asking for confirmation.
+
+   .. code:: sh
+
+        papis rename -r --batch author:"Rick Astley"
+
+- The folder names can be slugified too with the ``--slugify`` flag. This avoids
+  uppercase or special characters, among others.  This can make it easier to type
+  the names into a terminal, share them via a web or to make the folder names
+  more portable.
+
+   .. code:: sh
+
+        papis rename -rb --slugify author:"Rick Astley"
+
+- There is also an option to avoid picking the entries, ``--all``. This is
+  a flag that should be used with caution, especially when used along with
+  ``--batch``, since it will make ``papis rename`` act on all matching documents.
+  To rename all matched folders with a name generated from config, "slugifying"
+  the names and asking for confirmation before each rename:
+
+   .. code:: sh
+
+        papis rename -rbs --all author:"Rick Astley"
+
+
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.rename:cli
     :prog: papis rename
 """
+
 
 import os
 from typing import Optional, Tuple, List
@@ -65,9 +118,9 @@ def prepare_run(operations: List[Tuple[papis.document.Document, str]],
 
 @click.command("rename")
 @papis.cli.bool_flag("--batch", "-b", default=False, help="Batch mode, do not prompt")
-@papis.cli.bool_flag("--slugify", "-s", default=False, help="Slugify the folder name")
 @papis.cli.bool_flag("--regenerate", "-r", default=False,
                      help="Regenerate the folder name from the configured patttern")
+@papis.cli.bool_flag("--slugify", "-s", default=False, help="Slugify the folder name")
 @click.help_option("--help", "-h")
 @papis.cli.all_option()
 @papis.cli.query_argument()
@@ -83,7 +136,7 @@ def cli(query: str,
         sort_field: Optional[str],
         doc_folder: Tuple[str, ...],
         sort_reverse: bool) -> None:
-    """Rename entry"""
+    """Rename an entry"""
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,
                                                            sort_field,
