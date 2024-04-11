@@ -2,5 +2,5 @@
 
 set -o errexit -o noglob -o pipefail
 
-python -m pip install --upgrade pip hatchling wheel
-python -m pip install --editable '.[develop,docs,optional]'
+uv pip install --upgrade pip hatchling wheel
+uv pip install --editable '.[develop,docs,optional]'

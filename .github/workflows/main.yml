@@ -25,6 +25,11 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Install uv
+      uses: yezz123/setup-uv@v4
+      with:
+        uv-venv: "venv"
+
     - name: Install dependencies
       run: make ci-install
       shell: bash

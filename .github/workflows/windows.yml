@@ -24,11 +24,16 @@ jobs:
       with:
         python-version: "3.12"
 
+    - name: Install uv
+      uses: yezz123/setup-uv@v4
+      with:
+        uv-venv: "venv"
+
     - name: Install dependencies
       shell: bash
       run: |
         make ci-install
-        pip install '.[windows]'
+        uv pip install '.[windows]'
 
     - name: Set version in pyproject.toml, MSI and environment
       shell: bash
