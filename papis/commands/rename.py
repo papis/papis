@@ -56,8 +56,6 @@ Command-line Interface
     :prog: papis rename
 """
 
-
-import os
 from typing import Optional, Tuple, List
 
 import click
@@ -80,6 +78,8 @@ logger = papis.logging.get_logger(__name__)
 
 def run(document: papis.document.Document,
         new_name: str, git: bool = False) -> None:
+    import os
+
     db = papis.database.get()
     folder = document.get_main_folder()
 
