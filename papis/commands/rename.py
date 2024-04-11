@@ -79,6 +79,7 @@ logger = papis.logging.get_logger(__name__)
 def run(document: papis.document.Document,
         new_name: str, git: bool = False) -> None:
     import os
+    import shutil
 
     db = papis.database.get()
     folder = document.get_main_folder()
@@ -93,13 +94,14 @@ def run(document: papis.document.Document,
         logger.warning("Path '%s' already exists.", new_folder_path)
         return
 
-    papis.utils.run((["git"] if git else []) + ["mv", folder, new_folder_path],
-                    cwd=folder)
-
     if git:
+        papis.utils.run(["git", "mv", folder, new_folder_path],
+                        cwd=folder)
         papis.git.commit(
             new_folder_path,
             f"Rename from '{folder}' to '{new_name}'")
+    else:
+        shutil.move(folder, new_folder_path)
 
     db.delete(document)
     logger.debug("New document folder: '%s'.", new_folder_path)
