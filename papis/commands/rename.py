@@ -13,7 +13,7 @@ Examples
 
         papis rename author:"Rick Astley"
 
-- Rename picked folders that match a query and automatically ``--regenerate``
+- Rename picked folders that match a query and automatically ``--folder-name``
   the names following the pattern provided by the ``add-folder-name``
   configuration option. It will ask for confirmation before each rename. It
   doesn't slugify the names, so if the pattern results in "Rick Astley - Never
@@ -21,7 +21,7 @@ Examples
 
    .. code:: sh
 
-        papis rename --regenerate author:"Rick Astley"
+        papis rename --folder-name author:"Rick Astley"
 
 - Rename folders without asking for confirmation using ``--batch``.
 
@@ -115,9 +115,11 @@ def prepare_run(operations: List[Tuple[papis.document.Document, str]],
 
 
 @click.command("rename")
+@click.option(
+    "--folder-name",
+    help="Name for the document's folder (papis format)",
+    default=lambda: papis.config.getstring("add-folder-name"))
 @papis.cli.bool_flag("--batch", "-b", default=False, help="Batch mode, do not prompt")
-@papis.cli.bool_flag("--regenerate", "-r", default=False,
-                     help="Regenerate the folder name from the configured patttern")
 @click.help_option("--help", "-h")
 @papis.cli.all_option()
 @papis.cli.query_argument()
@@ -126,7 +128,7 @@ def prepare_run(operations: List[Tuple[papis.document.Document, str]],
 @papis.cli.doc_folder_option()
 def cli(query: str,
         git: bool,
-        regenerate: bool,
+        folder_name: str,
         _all: bool,
         batch: bool,
         sort_field: Optional[str],
@@ -143,25 +145,16 @@ def cli(query: str,
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
-    if regenerate:
-        folder_name_pattern = papis.config.getstring("add-folder-name")
-
     renames = []
     for document in documents:
         current_name = document.get_main_folder_name()
-        if regenerate:
-            new_name = papis.format.format(folder_name_pattern, document)
-            new_name = papis.utils.clean_document_name(new_name)
+        new_name = papis.format.format(folder_name, document)
+        new_name = papis.utils.clean_document_name(new_name)
 
-            if batch:
-                logger.info("Renaming '%s' into '%s'", current_name, new_name)
-            else:
-                papis.tui.utils.confirm(f"Rename {current_name} into {new_name}?", True)
+        if batch:
+            logger.info("Renaming '%s' into '%s'", current_name, new_name)
         else:
-            new_name = papis.tui.utils.prompt(
-                "Enter new folder name:\n"
-                ">",
-                default=current_name or "")
+            papis.tui.utils.confirm(f"Rename {current_name} into {new_name}?", True)
 
         renames.append((document, new_name))
 

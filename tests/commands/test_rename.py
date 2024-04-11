@@ -1,7 +1,5 @@
 import os
-from typing import List
 
-import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
 import papis.database
@@ -25,41 +23,37 @@ def test_rename_run(tmp_library: TemporaryLibrary) -> None:
     assert os.path.exists(doc.get_main_folder())
 
 
-@pytest.mark.parametrize(["regenerate", "substring"],
-                         [[False, "Enter new folder name"], [True, "magic-string42"]])
-def test_rename_single_entry(regenerate: List,
-                             substring: str,
-                             tmp_library: TemporaryLibrary,
-                             monkeypatch: MonkeyPatch,
-                             ) -> None:
-    """
-    Check that we are getting asked for a new name in normal mode or for an
-    auto-generated name in --regenerate mode.
-    """
+def test_folder_name_flag(tmp_library: TemporaryLibrary,
+                          monkeypatch: MonkeyPatch,
+                          ) -> None:
+    import re
+
     from papis.commands.rename import cli
     from papis.testing import PapisRunner
-
-    runner = PapisRunner()
-
-    first_doc_id = papis.database.get().get_all_documents()[0]["papis_id"]
-    args = [f"papis_id:{first_doc_id}"]
-    if regenerate:
-        args.insert(0, "--regenerate")
-        papis.config.set("add-folder-name", substring)
-
-    def dumb_prompt(prompt, *_, default: str = "") -> str:
-        print(prompt)
-        return default
 
     def dumb_confirm(prompt, *_) -> bool:
         print(prompt)
         return True
 
+    runner = PapisRunner()
+    first_doc_id = papis.database.get().get_all_documents()[0]["papis_id"]
+    query = f"papis_id:{first_doc_id}"
+    papis.config.set("add-folder-name", "{doc[papis_id]}")
+
+    new_name_re = re.compile(r"Rename .* into (.*)\?")
+
     with monkeypatch.context() as m:
         m.setattr(papis.tui.utils, "confirm", dumb_confirm)
-        m.setattr(papis.tui.utils, "prompt", dumb_prompt)
-        result = runner.invoke(cli, args)
-        assert substring in result.output
+
+        # Check that the document will be renamed according to the default pattern
+        result = runner.invoke(cli, [query])
+        new_name = new_name_re.match(result.output).group(1)
+        assert new_name == first_doc_id
+
+        # Check that we can override the default pattern
+        result = runner.invoke(cli, ["--folder-name", "magicstring42", query])
+        new_name = new_name_re.match(result.output).group(1)
+        assert new_name == "magicstring42"
 
 
 def test_rename_batch(tmp_library: TemporaryLibrary, caplog) -> None:
@@ -74,7 +68,7 @@ def test_rename_batch(tmp_library: TemporaryLibrary, caplog) -> None:
     magic_string = "magic-string42"
     papis.config.set("add-folder-name", magic_string + "-{doc[papis_id]}")
     with caplog.at_level(logging.INFO):
-        runner.invoke(cli, ["--all", "--regenerate", "--batch"])
+        runner.invoke(cli, ["--all", "--batch"])
         assert len(caplog.records) == len(docs)
         for record in caplog.records:
             assert magic_string in record.message
@@ -87,7 +81,7 @@ def test_rename_no_matching_documents(tmp_library: TemporaryLibrary, caplog) -> 
     from papis.testing import PapisRunner
 
     runner = PapisRunner()
-    args = ["--all", "--regenerate", "--batch", "url:https://youtu.be/dQw4w9WgXcQ"]
+    args = ["--all", "--folder-name", "--batch", "url:https://youtu.be/dQw4w9WgXcQ"]
     with caplog.at_level(logging.INFO):
         runner.invoke(cli, args)
 
@@ -96,7 +90,6 @@ def test_rename_no_matching_documents(tmp_library: TemporaryLibrary, caplog) -> 
 
 
 def test_duplicate_new_names(tmp_library: TemporaryLibrary, caplog) -> None:
-
     import logging
 
     from papis.commands.rename import cli
@@ -104,9 +97,8 @@ def test_duplicate_new_names(tmp_library: TemporaryLibrary, caplog) -> None:
 
     docs = papis.database.get().get_all_documents()
     runner = PapisRunner()
-    papis.config.set("add-folder-name", "foobar")
-    with caplog.at_level(logging.INFO):
-        runner.invoke(cli, ["--all", "--regenerate", "--batch"])
+    with caplog.at_level(logging.WARN):
+        runner.invoke(cli, ["--all", "--folder-name", "same_name", "--batch"])
         warnings = [r for r in caplog.records if r.levelno == logging.WARN]
         # First document will rename, but all others should raise a warning
         assert len(warnings) == len(docs) - 1
