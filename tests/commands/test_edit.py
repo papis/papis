@@ -1,4 +1,5 @@
 import os
+import sys
 import pytest
 
 import papis.database
@@ -9,7 +10,7 @@ script = os.path.join(os.path.dirname(__file__), "scripts.py")
 
 
 @pytest.mark.library_setup(settings={
-    "editor": "python {} sed".format(script)
+    "editor": "{} {} sed".format(sys.executable, script)
     })
 def test_edit_run(tmp_library: TemporaryLibrary) -> None:
     import papis.config
