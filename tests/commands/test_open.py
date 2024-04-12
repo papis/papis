@@ -45,5 +45,5 @@ def test_open_windows_cli(tmp_library: TemporaryLibrary) -> None:
 
     result = cli_runner.invoke(
         cli,
-        ["--tool", 'cmd.exe /c start ""', "--all", "Krishnamurti"])
+        ["--tool", "cmd.exe /c type", "--all", "Krishnamurti"])
     assert result.exit_code == 0
