@@ -100,6 +100,7 @@ def run(document: papis.document.Document,
             folder, new_folder_path,
             f"Rename '{folder}' to '{new_folder_name}'")
     else:
+        logger.info("Rename '%s' to '%s'.", folder, new_folder_name)
         shutil.move(folder, new_folder_path)
 
     db.delete(document)
@@ -119,7 +120,9 @@ def prepare_run(operations: List[Tuple[papis.document.Document, str]],
     "--folder-name",
     help="Name for the document's folder (papis format)",
     default=lambda: papis.config.getstring("add-folder-name"))
-@papis.cli.bool_flag("--batch", "-b", default=False, help="Batch mode, do not prompt")
+@papis.cli.bool_flag(
+    "-b", "--batch",
+    help="Batch mode, do not prompt")
 @click.help_option("--help", "-h")
 @papis.cli.all_option()
 @papis.cli.query_argument()
@@ -127,10 +130,10 @@ def prepare_run(operations: List[Tuple[papis.document.Document, str]],
 @papis.cli.sort_option()
 @papis.cli.doc_folder_option()
 def cli(query: str,
-        git: bool,
         folder_name: str,
         _all: bool,
         batch: bool,
+        git: bool,
         sort_field: Optional[str],
         doc_folder: Tuple[str, ...],
         sort_reverse: bool) -> None:
@@ -151,10 +154,12 @@ def cli(query: str,
         new_name = papis.format.format(folder_name, document)
         new_name = papis.utils.clean_document_name(new_name)
 
-        if batch:
-            logger.info("Renaming '%s' into '%s'", current_name, new_name)
-        else:
-            papis.tui.utils.confirm(f"Rename {current_name} into {new_name}?", True)
+        if not batch:
+            confirm_rename = papis.tui.utils.confirm(
+                f"Rename '{current_name}' to '{new_name}'?")
+
+            if not confirm_rename:
+                continue
 
         renames.append((document, new_name))
 
