@@ -2,7 +2,6 @@
 The ``rename`` command is used to rename document folders based on
 a provided format or using :confval:`add-folder-name`.
 
-
 Examples
 ^^^^^^^^
 
@@ -77,7 +76,8 @@ logger = papis.logging.get_logger(__name__)
 
 
 def run(document: papis.document.Document,
-        new_name: str, git: bool = False) -> None:
+        new_folder_name: str,
+        git: bool = False) -> None:
     import os
     import shutil
 
@@ -87,24 +87,22 @@ def run(document: papis.document.Document,
     if not folder:
         raise DocumentFolderNotFound(papis.document.describe(document))
 
-    subfolder = os.path.dirname(folder)
-    new_folder_path = os.path.join(subfolder, new_name)
+    parent = os.path.dirname(folder)
+    new_folder_path = os.path.join(parent, new_folder_name)
+    logger.debug("New document folder: '%s'.", new_folder_path)
 
     if os.path.exists(new_folder_path):
         logger.warning("Path '%s' already exists.", new_folder_path)
         return
 
     if git:
-        papis.utils.run(["git", "mv", folder, new_folder_path],
-                        cwd=folder)
-        papis.git.commit(
-            new_folder_path,
-            f"Rename from '{folder}' to '{new_name}'")
+        papis.git.mv_and_commit_resource(
+            folder, new_folder_path,
+            f"Rename '{folder}' to '{new_folder_name}'")
     else:
         shutil.move(folder, new_folder_path)
 
     db.delete(document)
-    logger.debug("New document folder: '%s'.", new_folder_path)
     document.set_folder(new_folder_path)
     db.add(document)
 
