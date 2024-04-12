@@ -55,7 +55,7 @@ Command-line Interface
     :prog: papis rename
 """
 
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple
 
 import click
 
@@ -89,30 +89,22 @@ def run(document: papis.document.Document,
 
     parent = os.path.dirname(folder)
     new_folder_path = os.path.join(parent, new_folder_name)
-    logger.debug("New document folder: '%s'.", new_folder_path)
 
     if os.path.exists(new_folder_path):
         logger.warning("Path '%s' already exists.", new_folder_path)
         return
 
+    logger.info("Rename '%s' to '%s'.", folder, new_folder_name)
     if git:
         papis.git.mv_and_commit_resource(
             folder, new_folder_path,
             f"Rename '{folder}' to '{new_folder_name}'")
     else:
-        logger.info("Rename '%s' to '%s'.", folder, new_folder_name)
         shutil.move(folder, new_folder_path)
 
     db.delete(document)
     document.set_folder(new_folder_path)
     db.add(document)
-
-
-def prepare_run(operations: List[Tuple[papis.document.Document, str]],
-                git: bool
-                ) -> None:
-    for document, new_name in operations:
-        run(document, new_name, git)
 
 
 @click.command("rename")
@@ -163,4 +155,7 @@ def cli(query: str,
 
         renames.append((document, new_name))
 
-    prepare_run(renames, git)
+    # FIXME: these need to be done separately because the db.delete+db.add
+    # messes with the documents in some way (it's all mostly in place)
+    for document, new_name in renames:
+        run(document, new_name, git=git)

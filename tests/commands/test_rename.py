@@ -75,9 +75,10 @@ def test_rename_batch(tmp_library: TemporaryLibrary) -> None:
     from papis.testing import PapisRunner
 
     runner = PapisRunner()
-    runner.invoke(
+    result = runner.invoke(
         cli,
         ["--all", "--batch"])
+    assert result.exit_code == 0
 
     docs = papis.database.get().get_all_documents()
     for doc in docs:
@@ -94,9 +95,10 @@ def test_rename_no_matching_documents(tmp_library: TemporaryLibrary,
 
     with caplog.at_level("WARNING", logger="papis"):
         runner = PapisRunner()
-        runner.invoke(
+        result = runner.invoke(
             cli,
             ["--all", "--batch", "url:https://youtu.be/dQw4w9WgXcQ"])
+        assert result.exit_code == 0
 
         warning, = caplog.records
         assert warning.levelname == "WARNING"
@@ -112,9 +114,10 @@ def test_duplicate_new_names(tmp_library: TemporaryLibrary,
     doc_count = len(papis.database.get().get_all_documents())
 
     with caplog.at_level("WARNING", logger="papis"):
-        runner.invoke(
+        result = runner.invoke(
             cli,
             ["--all", "--folder-name", "same-name", "--batch"])
+        assert result.exit_code == 0
 
         # First document will rename, but all others should raise a warning
         assert len(caplog.records) == doc_count - 1
