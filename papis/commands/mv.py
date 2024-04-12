@@ -34,8 +34,12 @@ def run(document: papis.document.Document,
     if not folder:
         raise DocumentFolderNotFound(papis.document.describe(document))
 
-    papis.utils.run((["git"] if git else []) + ["mv", folder, new_folder_path],
-                    cwd=folder)
+    if git:
+        papis.utils.run(["git", "mv", folder, new_folder_path],
+                        cwd=folder)
+    else:
+        import shutil
+        shutil.move(folder, new_folder_path)
 
     db = papis.database.get()
     db.delete(document)
