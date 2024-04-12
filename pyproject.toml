@@ -92,12 +92,7 @@ Repository = "https://github.com/papis/papis"
 develop = ["papis[lint,typing,test]"]
 # Style enforcement
 lint = [
-    "flake8",
-    "flake8-bugbear",
-    "flake8-quotes",
-    "Flake8-pyproject",
-    "pep8-naming",
-    "pylint",
+    "ruff",
 ]
 # Test suite
 test = [
@@ -129,7 +124,7 @@ optional = [
     "citeproc-py>=0.6",
     "markdownify>=0.11.6",
 ]
-# Custom Sphinx directives for papis docs
+# Custom Sphinx directives for Papis docs
 "papis.sphinx_ext" = [
     "docutils",
     "sphinx",
@@ -139,7 +134,7 @@ optional = [
 "papis.testing" = [
     "pytest"
 ]
-# Needed when installing on windows
+# Needed when creating Windows installer
 windows = [
     "pyinstaller"
 ]
@@ -275,38 +270,29 @@ markers = [
     "resource_setup: setup for resource_cache",
 ]
 
-[tool.flake8]
-select = ["B", "D", "E", "F", "N", "Q", "W"]
-extend-ignore = ["B019", "E123", "N818", "W503"]
-exclude = ["doc", "build", "examples/scripts/papis-mail.sh"]
-filename = ["*.py", "examples*papis-*"]
-max-line-length = 88
+[tool.ruff]
+preview = true
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "B",   # flake8-bugbear
+    "E",   # pycodestyle
+    "F",   # pyflakes
+    "N",   # pep8-naming
+    "Q",   # flake8-quotes
+    "RUF", # ruff
+    "W",   # pycodestyle
+]
+ignore = [
+    # https://docs.astral.sh/ruff/rules/#rules
+    "N818",    # error-suffix-on-exception-name
+]
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
 inline-quotes = "double"
 multiline-quotes = "double"
-
-[tool.pylint.MAIN]
-jobs = "1"
-recursive = "yes"
-suggestion-mode = "yes"
-
-[tool.pylint."MESSAGES CONTROL"]
-disable = [
-    "C0103",
-    "missing-function-docstring",
-    "bad-inline-option",
-    "consider-using-f-string",
-    "consider-using-from-import",
-    "deprecated-pragma",
-    "file-ignored",
-    "locally-disabled",
-    "missing-module-docstring",
-    "raw-checker-failed",
-    "suppressed-message",
-    "too-many-arguments",
-    "unspecified-encoding",
-    "use-symbolic-message-instead",
-    "useless-suppression"
-]
 
 [tool.mypy]
 strict = true
@@ -341,7 +327,6 @@ extend-ignore-re = [
 [tool.typos.files]
 extend-exclude = [
     "examples/scripts/LTWA.json",
-    "examples/scripts/papis-abbrev",
     "tests/data",
     "tests/downloaders/resources",
     "tests/resources",
