@@ -90,6 +90,7 @@ Command-line Interface
 
 import os
 import re
+import sys
 from typing import List, Any, Optional, Dict, Tuple
 
 import click
@@ -417,8 +418,17 @@ def run(paths: List[str],
 
         if link:
             in_file_abspath = os.path.abspath(in_file_path)
-            logger.info("[SYMLINK] '%s' to '%s'.", in_file_abspath, tmp_end_filepath)
-            os.symlink(in_file_abspath, tmp_end_filepath)
+            try:
+                logger.info("[SYMLINK] '%s' to '%s'.", in_file_abspath,
+                            tmp_end_filepath)
+                os.symlink(in_file_abspath, tmp_end_filepath)
+            except OSError as e:
+                missing_privilege_error = 1314
+                if sys.platform == "win32" and e.winerror == missing_privilege_error:
+                    logger.error("Failed to link due to insufficient permissions.  You "
+                                 "can try again after enabling the 'Developer mode' "
+                                 "and restarting.")
+                raise
         elif move:
             logger.info("[MV] '%s' to '%s'.", in_file_path, tmp_end_filepath)
             shutil.copy(in_file_path, tmp_end_filepath)
