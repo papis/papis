@@ -7,12 +7,17 @@ import papis.database
 from papis.testing import TemporaryLibrary, PapisRunner
 
 
-def get_mock_script(commandlet: str) -> str:
+def get_mock_script(name: str) -> str:
+    """Constructs a command call for a command mocked by ``scripts.py``.
+
+    :param name: the name of the command, e.g. ``ls`` or ``echo``.
+    :returns: a string of the command
+    """
     import sys
 
     script = os.path.join(os.path.dirname(__file__), "scripts.py")
 
-    return "{} {} {}".format(sys.executable, script, commandlet)
+    return "{} {} {}".format(sys.executable, script, name)
 
 
 @pytest.mark.library_setup(settings={
