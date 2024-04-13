@@ -633,3 +633,26 @@ def is_relative_to(path: str, other: str) -> bool:
             return not os.path.relpath(path, start=other).startswith("..")
         except ValueError:
             return False
+
+
+def symlink(source: str, destination: str) -> None:
+    """Creates a symbolic link named ``destination`` that points to ``source``.
+
+    On Windows, Developer Mode can be enabled to allow unprivileged users to
+    allow creation of symlinks.  Failing to do so will raise an OSError exception,
+    with error code 1314.
+
+    :param source: the existing file that `destination` points to
+    :param destination: the name of the new symbolic link, pointing to `source`.
+    """
+    try:
+        logger.debug("[SYMLINK] '%s' to '%s'.", source, destination)
+        os.symlink(source, destination)
+    except OSError as exc:
+        windows_missing_privilege_error = 1314
+        if sys.platform == "win32" and exc.winerror == windows_missing_privilege_error:
+            # https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--1300-1699-
+            logger.error("Failed to link due to insufficient permissions.  You "
+                         "can try again after enabling the 'Developer mode' "
+                         "and restarting.", exc_info=exc)
+            raise

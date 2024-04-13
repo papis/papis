@@ -98,8 +98,7 @@ def run(document: papis.document.Document,
 
         if link:
             in_file_abspath = os.path.abspath(in_file_path)
-            logger.debug("[SYMLINK] '%s' to '%s'.", in_file_abspath, out_file_path)
-            os.symlink(in_file_abspath, out_file_path)
+            papis.utils.symlink(in_file_abspath, out_file_path)
         else:
             import shutil
             logger.info("[CP] '%s' to '%s'.", local_in_file_path, out_file_path)
