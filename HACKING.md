@@ -24,6 +24,24 @@ All development packages can be installed with
 python -m pip install -e '.[develop,docs]'
 ```
 
+The code is linted using [Flake8](https://flake8.pycqa.org) and some related
+modules that apply to apply additional rules. You can check that the code passes
+linting rules manually using
+```bash
+make flake8
+```
+To lint only the files that you are about to commit to version control, you can
+use a helper tool such as pre-commit. Papis distributes a sample configuration
+file for pre-commit that sets its up for applying Flake8 and Mypy to staged
+files. To install it, follow the [instructions](https://pre-commit.com/
+#installation). pre-commit will automatically run before a commit, making sure
+that the files that you are committing pass linting rules. Otherwise, it will
+reject the commit, letting you make the changes necessary for the linting rules
+to pass.
+
+pre-commit execution can temporarily be bypassed using the `--no-verify` flag
+for `git commit`.
+
 To run the tests, just use `pytest`. Some helpful wrappers are given in the
 `Makefile` (see `make help`), e.g. to run the tests
 ```bash
