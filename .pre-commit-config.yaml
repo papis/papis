@@ -1,0 +1,27 @@
+repos:
+  - repo: https://github.com/pycqa/flake8
+    rev: "7.0.0"
+    hooks:
+      - id: flake8
+        additional_dependencies:
+        - flake8-bugbear
+        - flake8-quotes
+        - Flake8-pyproject
+        - pep8-naming
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: "v1.9.0"
+    hooks:
+      - id: mypy
+        args:
+          - --strict
+          - --show-column-numbers
+          - --pretty
+        additional_dependencies:
+          - types-beautifulsoup4
+          - types-Pygments
+          - types-docutils
+          - types-python-slugify
+          - types-PyYAML
+          - types-requests
+          - types-tqdm
