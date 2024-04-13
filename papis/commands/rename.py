@@ -2,51 +2,49 @@
 The ``rename`` command is used to rename document folders based on
 a provided format or using :confval:`add-folder-name`.
 
+It will (except when run with ``--all``) bring up the picker with a list of
+documents that match the query. In the picker, you can select one or more
+documents and then initiate renaming by pressing enter. Folder names are cleaned,
+so that various characters (white spaces, punctuation, capital letters, and some
+others) are automatically converted.
+
 Examples
 ^^^^^^^^
 
-- Manually rename all folders for documents matching a query. ``papis`` will
-  prompt for the new folder name, with the current name as a default.
+- Rename folders for documents whose author is "Rick Astley". You can then either
+  enter a new folder name or accept Papis' suggestion. The suggested folder name
+  will be generated according to :confval:`add-folder-name` or, if this option
+  isn't set, the current folder name.
 
    .. code:: sh
 
         papis rename author:"Rick Astley"
 
-- Rename picked folders that match a query and automatically ``--folder-name``
-  the names following the pattern provided by the ``add-folder-name``
-  configuration option. It will ask for confirmation before each rename. It
-  doesn't slugify the names, so if the pattern results in "Rick Astley - Never
-  Gonna Give You Up", that will be the final folder name.
+- You can use ``--folder-name`` to pass in your desired name. This option
+  supports Papis formatting patterns. You will be asked for confirmation
+  before the folder is renamed.
 
    .. code:: sh
 
-        papis rename --folder-name author:"Rick Astley"
+        papis rename --folder-name "{doc[author]}-never-gonna" author:"Rick Astley"
 
-- Rename folders without asking for confirmation using ``--batch``.
+  This will give you a folder named "rick-astley-never-gonna".
 
-   .. code:: sh
 
-        papis rename -r --batch author:"Rick Astley"
-
-- The folder names can be slugified too with the ``--slugify`` flag. This avoids
-  uppercase or special characters, among others.  This can make it easier to type
-  the names into a terminal, share them via a web or to make the folder names
-  more portable.
+- To stop Papis from asking for confirmation, use the ``--batch`` flag:
 
    .. code:: sh
 
-        papis rename -rb --slugify author:"Rick Astley"
+        papis rename --batch author:"Rick Astley"
 
-- There is also an option to avoid picking the entries, ``--all``. This is
-  a flag that should be used with caution, especially when used along with
-  ``--batch``, since it will make ``papis rename`` act on all matching documents.
-  To rename all matched folders with a name generated from config, "slugifying"
-  the names and asking for confirmation before each rename:
+- If you want to rename all documents without narrowing down your selection in
+  the picker, you can use the ``--all`` flag. Be careful when combining this
+  with ``--batch``, as you might end up renaming a lot folders without
+  confirmation:
 
    .. code:: sh
 
-        papis rename -rbs --all author:"Rick Astley"
-
+        papis rename --all author:"Rick Astley"
 
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
