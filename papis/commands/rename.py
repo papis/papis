@@ -128,6 +128,12 @@ def cli(query: str,
         doc_folder: Tuple[str, ...],
         sort_reverse: bool) -> None:
     """Rename document folders"""
+    if not folder_name:
+        logger.warning("No folder name format specified, so no documents can be "
+                       "renamed. Set either the configuration option "
+                       "'add-folder-name' or use the '--folder-name' flag.")
+        return
+
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,
                                                            sort_field,

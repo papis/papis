@@ -90,6 +90,8 @@ def test_rename_batch(tmp_library: TemporaryLibrary) -> None:
 
 def test_rename_no_matching_documents(tmp_library: TemporaryLibrary,
                                       caplog: LogCaptureFixture) -> None:
+    papis.config.set("add-folder-name", "{doc[papis_id]}")
+
     from papis.commands.rename import cli
     from papis.testing import PapisRunner
 
