@@ -14,6 +14,7 @@ from typing import Optional, Tuple
 import click
 
 import papis.config
+import papis.git
 import papis.utils
 import papis.database
 import papis.document
@@ -35,8 +36,7 @@ def run(document: papis.document.Document,
         raise DocumentFolderNotFound(papis.document.describe(document))
 
     if git:
-        papis.utils.run(["git", "mv", folder, new_folder_path],
-                        cwd=folder)
+        papis.git.mv(folder, new_folder_path)
     else:
         import shutil
         shutil.move(folder, new_folder_path)
