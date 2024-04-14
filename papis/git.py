@@ -9,6 +9,16 @@ import papis.logging
 logger = papis.logging.get_logger(__name__)
 
 
+def add(path: str, resource: str) -> None:
+    """Adds changes in the *path* to the git index with a *message*.
+
+    :param path: a folder with an existing git repository.
+    :param resource: a resource (e.g. ``info.yaml`` file) to add to the index.
+    """
+    logger.info("Adding '%s'.", path)
+    papis.utils.run(["git", "add", resource], cwd=path)
+
+
 def commit(path: str, message: str) -> None:
     """Commits changes in the *path* with a *message*.
 
@@ -19,14 +29,15 @@ def commit(path: str, message: str) -> None:
     papis.utils.run(["git", "commit", "-m", message], cwd=path)
 
 
-def add(path: str, resource: str) -> None:
-    """Adds changes in the *path* to the git index with a *message*.
+def mv(from_path: str, to_path: str) -> None:
+    """Renames (moves) the path *from_path* to *to_path*.
 
-    :param path: a folder with an existing git repository.
-    :param resource: a resource (e.g. ``info.yaml`` file) to add to the index.
+    :param from_path: path to be moved (the source).
+    :param to_path: destination where *from_path* is moved. If this is in the
+        same parent directory as *from_path*, it is a simple rename.
     """
-    logger.info("Adding '%s'.", path)
-    papis.utils.run(["git", "add", resource], cwd=path)
+    logger.info("Moving '%s' to '%s'.", from_path, to_path)
+    papis.utils.run(["git", "mv", from_path, to_path], cwd=from_path)
 
 
 def remove(path: str, resource: str,
@@ -56,6 +67,17 @@ def add_and_commit_resource(path: str, resource: str, message: str) -> None:
     """
     add(path, resource)
     commit(path, message)
+
+
+def mv_and_commit_resource(from_path: str, to_path: str, message: str) -> None:
+    """Moves *from_path* and commits the change.
+
+    :param from_path: path to be moved (the source).
+    :param to_path: destination where *from_path* is moved.
+    :param message: a commit message.
+    """
+    mv(from_path, to_path)
+    commit(to_path, message)
 
 
 def add_and_commit_resources(path: str,
