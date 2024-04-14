@@ -21,6 +21,19 @@ VERSION NEXT
 
 ## Features
 
+### New: Improved Windows support
+
+The support for Windows has been significantly improved in this release. On top of
+a slew of fixes, there is also a build that creates a Windows executable and
+installer using [PyInstaller](https://pyinstaller.org/en/stable).
+
+These can currently be found only as artifacts under the
+[Windows release workflow](https://github.com/papis/papis/actions/workflows/windows.yml).
+We do urge anyone knowledgeable and interested to try them out and report any
+issues, so that they can be improved before they make it into regular releases.
+
+Huge thanks to @kiike for all the work on this!
+
 ### New: Add `cache` command ([#603](https://github.com/papis/papis/pull/603))
 
 The `cache` command has been added in order to provide more control for the
@@ -32,7 +45,6 @@ papis cache clear
 ```
 
 You can learn more about the cache command in the documentation.
-
 
 ### New: Epub support for the web application
 
@@ -63,7 +75,7 @@ papis init /path/to/my/library
 preserve comments. This means that updating a configuration file using `papis init`
 will remove any comments and possibly reorder some options.
 
-### New: Add `tag` command ([648](https://github.com/papis/papis/pull/648))
+### New: Add `tag` command ([#648](https://github.com/papis/papis/pull/648))
 
 A new `papis tag` command was added to handle adding and removing tags
 (or keywords) for a document. For example, to add a few tags to a set of
@@ -89,11 +101,7 @@ papis \
 ```
 where you may need to change the separator to match your choice.
 
-### New: Major improvements to search syntax ([#602](https://github.com/papis/papis/pull/602))
-
-TODO
-
-### Major: Expand `update` command ([681](https://github.com/papis/papis/pull/681))
+### Major: Expand `update` command ([#681](https://github.com/papis/papis/pull/681))
 
 The update command got some major improvements this release. It now allows much
 more fine-grained modifications of a document without requiring the user to open
@@ -141,7 +149,7 @@ Other smaller noteworthy changes:
 * `bibtex-type`: add fixer to automatically convert known document types
   ([#732](https://github.com/papis/papis/pull/732))
 
-### Minor: Plugin helpers
+### Minor: Plugin helpers ([#680](https://github.com/papis/papis/pull/680) and [#752](https://github.com/papis/papis/pull/752))
 
 A new module `papis.testing` was introduced to help with testing Papis-related
 functionality. They allow easy setup of temporary configurations and temporary
@@ -154,6 +162,17 @@ code.
 
 These have mostly been promoted to separate module so that plugins can easily
 make use of the same infrastructure.
+
+### Minor: Configuration file location ([#745](https://github.com/papis/papis/pull/745))
+
+The location of the configuration file has been standardized using
+[platformdirs](https://github.com/platformdirs/platformdirs). On Linux-y systems,
+this should not make any difference, since Papis has been using the XDG
+environment variables to get the proper location.
+
+However, on other systems, especially Windows and macOS, the **location of the
+configuration files will change**. Papis has implemented a simple migration, so
+this should be fairly automatic.
 
 ## Other noteworthy features
 
@@ -195,12 +214,16 @@ make use of the same infrastructure.
 * Add a `--move` flag to `papis add`
   ([#740](https://github.com/papis/papis/pull/740))
 * Enhance `python` formatter with some additional conversions
-  ([709](https://github.com/papis/papis/pull/709))
+  ([#709](https://github.com/papis/papis/pull/709))
 * Fix the `these.fr` downloader
-  ([729](https://github.com/papis/papis/pull/792)).
+  ([#729](https://github.com/papis/papis/pull/792)).
 * Add a Zenodo downloader
-  ([770](https://github.com/papis/papis/pull/770)). This uses some of the
-  fields from [biblatex-software](https://ctan.org/pkg/biblatex-software?lang=en)
+  ([#770](https://github.com/papis/papis/pull/770)). This uses some of the
+  fields from [biblatex-software](https://ctan.org/pkg/biblatex-software?lang=en).
+* Make file and folder cleanup more configurable
+  ([#803](https://github.com/papis/papis/pull/803)).
+* Expand the `rename` command
+  ([#810](https://github.com/papis/papis/pull/810)).
 
 ## Bug fixes
 
