@@ -34,6 +34,8 @@ A = TypeVar("A")
 #: Invariant :class:`typing.TypeVar`
 B = TypeVar("B")
 
+ERROR_PRIVILEGE_NOT_HELD = 1314
+
 
 def get_session() -> "requests.Session":
     """Create a :class:`requests.Session` for ``papis``.
@@ -649,10 +651,9 @@ def symlink(source: str, destination: str) -> None:
         logger.debug("[SYMLINK] '%s' to '%s'.", source, destination)
         os.symlink(source, destination)
     except OSError as exc:
-        windows_missing_privilege_error = 1314
-        if sys.platform == "win32" and exc.winerror == windows_missing_privilege_error:
+        if sys.platform == "win32" and exc.winerror == ERROR_PRIVILEGE_NOT_HELD:
             # https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--1300-1699-
-            logger.error("Failed to link due to insufficient permissions.  You "
-                         "can try again after enabling the 'Developer mode' "
-                         "and restarting.", exc_info=exc)
-            raise
+            raise OSError(exc.errno,
+                          "Failed to link due to insufficient permissions. You "
+                          "can try again after enabling the 'Developer mode' "
+                          "and restarting.", exc.filename, exc.winerror, exc.filename2)
