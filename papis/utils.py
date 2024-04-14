@@ -648,7 +648,6 @@ def symlink(source: str, destination: str) -> None:
     :param destination: the name of the new symbolic link, pointing to `source`.
     """
     try:
-        logger.debug("[SYMLINK] '%s' to '%s'.", source, destination)
         os.symlink(source, destination)
     except OSError as exc:
         if sys.platform == "win32" and exc.winerror == ERROR_PRIVILEGE_NOT_HELD:

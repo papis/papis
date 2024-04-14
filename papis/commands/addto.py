@@ -98,6 +98,7 @@ def run(document: papis.document.Document,
 
         if link:
             in_file_abspath = os.path.abspath(in_file_path)
+            logger.info("[SYMLINK] '%s' to '%s'.", in_file_abspath, out_file_path)
             papis.utils.symlink(in_file_abspath, out_file_path)
         else:
             import shutil
