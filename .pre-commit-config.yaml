@@ -1,4 +1,11 @@
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: "v4.6.0"
+    hooks:
+      - id: debug-statements
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+
   - repo: https://github.com/pycqa/flake8
     rev: "7.0.0"
     hooks:
