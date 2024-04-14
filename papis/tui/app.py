@@ -366,6 +366,9 @@ class Picker(Application, Generic[Option]):  # type: ignore
                 "options_list.unselected_margin": config.getstring(
                     "options_list.unselected_margin_style", section="tui"
                 ),
+                "options_list.marked_margin": config.getstring(
+                    "options_list.marked_margin_style", section="tui"
+                ),
                 "error_toolbar": config.getstring(
                     "error_toolbar_style", section="tui"
                 ),
