@@ -418,7 +418,7 @@ def run(paths: List[str],
         if link:
             in_file_abspath = os.path.abspath(in_file_path)
             logger.info("[SYMLINK] '%s' to '%s'.", in_file_abspath, tmp_end_filepath)
-            os.symlink(in_file_abspath, tmp_end_filepath)
+            papis.utils.symlink(in_file_abspath, tmp_end_filepath)
         elif move:
             logger.info("[MV] '%s' to '%s'.", in_file_path, tmp_end_filepath)
             shutil.copy(in_file_path, tmp_end_filepath)

@@ -1,6 +1,7 @@
 import re
 import os
 import pytest
+import sys
 
 import papis.config
 import papis.document
@@ -189,6 +190,7 @@ def test_add_set_cli(tmp_library: TemporaryLibrary) -> None:
     assert not doc.get_files()
 
 
+@pytest.mark.xfail(sys.platform == "win32", reason="Developer mode not enabled")
 def test_add_link_cli(tmp_library: TemporaryLibrary) -> None:
     from papis.commands.add import cli
     cli_runner = PapisRunner()

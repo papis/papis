@@ -34,6 +34,8 @@ A = TypeVar("A")
 #: Invariant :class:`typing.TypeVar`
 B = TypeVar("B")
 
+ERROR_PRIVILEGE_NOT_HELD = 1314
+
 
 def get_session() -> "requests.Session":
     """Create a :class:`requests.Session` for ``papis``.
@@ -633,3 +635,24 @@ def is_relative_to(path: str, other: str) -> bool:
             return not os.path.relpath(path, start=other).startswith("..")
         except ValueError:
             return False
+
+
+def symlink(source: str, destination: str) -> None:
+    """Creates a symbolic link named ``destination`` that points to ``source``.
+
+    On Windows, Developer Mode can be enabled to allow unprivileged users to
+    allow creation of symlinks.  Failing to do so will raise an OSError exception,
+    with error code 1314.
+
+    :param source: the existing file that `destination` points to
+    :param destination: the name of the new symbolic link, pointing to `source`.
+    """
+    try:
+        os.symlink(source, destination)
+    except OSError as exc:
+        if sys.platform == "win32" and exc.winerror == ERROR_PRIVILEGE_NOT_HELD:
+            # https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--1300-1699-
+            raise OSError(exc.errno,
+                          "Failed to link due to insufficient permissions. You "
+                          "can try again after enabling the 'Developer mode' "
+                          "and restarting.", exc.filename, exc.winerror, exc.filename2)

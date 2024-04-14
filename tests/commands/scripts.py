@@ -17,6 +17,11 @@ def echo(filename: str) -> None:
     print("Attempted to open '{}'".format(filename))
 
 
+def ls(filename: str) -> None:
+    # NOTE: This function is used by 'test_edit_cli' and 'test_run_run'
+    print(filename)
+
+
 if __name__ == "__main__":
     cmd, filename = sys.argv[-2:]
 
@@ -26,6 +31,8 @@ if __name__ == "__main__":
             sed_replace(filename)
         elif cmd == "echo":
             echo(filename)
+        elif cmd == "ls":
+            ls(filename)
         else:
             ret = 1
     except Exception:

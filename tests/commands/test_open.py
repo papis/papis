@@ -8,7 +8,7 @@ script = os.path.join(os.path.dirname(__file__), "scripts.py")
 
 
 @pytest.mark.library_setup(settings={
-    "file-browser": "echo"
+    "file-browser": "{} {} echo".format(sys.executable, script)
     })
 def test_open_cli(tmp_library: TemporaryLibrary) -> None:
     from papis.commands.open import cli
@@ -32,9 +32,11 @@ def test_open_cli(tmp_library: TemporaryLibrary) -> None:
         catch_exceptions=True)
     assert result.exit_code == 0
 
+    # Use a mock scriptlet
     result = cli_runner.invoke(
         cli,
-        ["--tool", "python {} echo".format(script), "--mark", "--all", "Krishnamurti"])
+        ["--tool", "{} {} echo".format(sys.executable, script),
+         "--mark", "--all", "Krishnamurti"])
     assert result.exit_code == 0
 
 
@@ -45,5 +47,5 @@ def test_open_windows_cli(tmp_library: TemporaryLibrary) -> None:
 
     result = cli_runner.invoke(
         cli,
-        ["--tool", 'cmd.exe /c start ""', "--all", "Krishnamurti"])
+        ["--tool", "cmd.exe /c type", "--all", "Krishnamurti"])
     assert result.exit_code == 0
