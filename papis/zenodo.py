@@ -163,7 +163,7 @@ def get_data(record_id: str) -> Dict[str, Any]:
     if isinstance(json_data, dict):
         return json_data
     else:
-        logger.error("Zenodo reponse has unsupported type: '%s'",
+        logger.error("Zenodo response has unsupported type: '%s'",
                      type(json_data).__name__)
         return {}
 

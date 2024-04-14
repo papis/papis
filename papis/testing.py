@@ -246,7 +246,7 @@ class TemporaryConfiguration:
         self.libdir = os.path.join(self.tmpdir, "lib")
         self.configdir = os.path.join(self.tmpdir, "papis")
         self.configfile = os.path.join(self.configdir, "config")
-        self.configscripts = os.path.join(self.configdir, "scrits")
+        self.configscripts = os.path.join(self.configdir, "scripts")
 
         os.makedirs(self.libdir)
         os.makedirs(self.configdir)
