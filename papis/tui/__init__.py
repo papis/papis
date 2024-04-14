@@ -15,6 +15,7 @@ def get_default_settings() -> PapisConfigType:
         "message_toolbar_style": "bg:ansiyellow fg:ansiblack",
         "options_list.selected_margin_style": "bg:ansiblack fg:ansigreen",
         "options_list.unselected_margin_style": "bg:ansiwhite",
+        "options_list.marked_margin_style": "bg:ansiblack fg:ansiwhite",
         "error_toolbar_style": "bg:ansired fg:ansiblack",
 
         "move_down_key": "down",
