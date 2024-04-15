@@ -1,3 +1,30 @@
+# VERSION NEXT (TDB)
+
+## Features
+
+### Major: Improved formatter support ([#711](https://github.com/papis/papis/pull/711))
+
+Papis supports [formatter plugins](https://papis.readthedocs.io/en/latest/configuration.html#config-settings-formatter)
+that act on certain configuration settings that can depend on the current
+document. Until now, when changing from one formatter to another, all settings
+needed to be rewritten (including default ones, since they used the `python`
+formatter).
+
+It is now possible to use the following syntax to set the formatter per
+configuration key
+```ini
+    [settings]
+    ref-format.jinja2 = {{ doc.author_list | slice(3) | join("", attribute="family") }}{{ doc.year }}
+```
+
+The syntax is always `key[.formatter]`. The formatted strings are searched
+alphabetically and the last one is picked, i.e. if both `key.python` and
+`key.jinja2` are provided, the `python` version will be chosen regardless of the
+order in the configuration file. If no formatter is provided for a formatted
+string of this type, then it will fall back to the default formatter set by the
+`formatter` setting. All default settings are now clearly marked as using the
+`python` formatter, so they no longer need to be rewritten when changing formatters.
+
 # VERSION 0.14.1 (March 1, 2025)
 
 ## Features
