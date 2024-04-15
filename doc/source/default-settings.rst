@@ -905,6 +905,12 @@ For styling the individual components, see the extensive documentation available
     Style of the margin of the unselected documents in the picker. If no
     styling is desired on these elements, this setting can be empty.
 
+.. papis-config:: options_list.marked_margin_style
+    :section: tui
+
+    Style of the margin of the marked documents in the picker. If no
+    styling is desired on these elements, this setting can be empty.
+
 .. papis-config:: error_toolbar_style
     :section: tui
 
