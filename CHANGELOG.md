@@ -228,6 +228,9 @@ this should be fairly automatic.
   ([#803](https://github.com/papis/papis/pull/803)).
 * Expand the `rename` command
   ([#810](https://github.com/papis/papis/pull/810)).
+* Allow configuration for marked lines margins and make marked and unmarked
+  margins span the whole document entry.
+  ([#820](https://github.com/papis/papis/pull/820))
 
 ## Bug fixes
 
