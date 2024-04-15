@@ -36,21 +36,25 @@ Huge thanks to @kiike for all the work on this!
 
 ### New: Add `cache` command ([#603](https://github.com/papis/papis/pull/603))
 
-The `cache` command has been added in order to provide more control for the
+The `cache` command has been added in order to provide more control over the
 papis cache. Accordingly, the equivalent commands `papis --cc` and
 `papis --clear-cache` have been removed and can be replaced by the equivalent
-
-```
+```sh
 papis cache clear
+```
+
+The command can now also update only specific documents using
+```sh
+papis cache update QUERY
 ```
 
 You can learn more about the cache command in the documentation.
 
-### New: Epub support for the web application
+### New: EPUB support for the web application
 
-Now you can read epub files from the comfort of the web application.
-The workflow is similar to the existing one with pdfjs
-and it uses the project [epubjs-reader](https://github.com/futurepress/epubjs-reader).
+Now you can read EPUB files from the comfort of the web application. The
+workflow is similar to the existing one for PDFs and it uses the
+[epubjs-reader](https://github.com/futurepress/epubjs-reader) library.
 
 ### New: Exporter for the Typst Hayagriva format ([#559](https://github.com/papis/papis/pull/559))
 
