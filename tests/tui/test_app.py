@@ -9,6 +9,7 @@ def test_settings(tmp_config: TemporaryConfiguration) -> None:
     papis.config.get("message_toolbar_style", section="tui")
     papis.config.get("options_list.selected_margin_style", section="tui")
     papis.config.get("options_list.unselected_margin_style", section="tui")
+    papis.config.get("options_list.marked_margin_style", section="tui")
     papis.config.get("error_toolbar_style", section="tui")
     papis.config.get("move_down_key", section="tui")
     papis.config.get("move_up_key", section="tui")
