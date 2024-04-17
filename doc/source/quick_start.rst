@@ -1,3 +1,5 @@
+# TODO review if this is relevant
+
 Quick start
 ===========
 
@@ -155,3 +157,41 @@ Here you can see it in action using the smart matching first alternative
       id="asciicast-i2kXyZMNaT8n7YRz7DcVIfqm5" async>
     </script>
 
+
+Tagging the documents
+---------------------
+
+Now that you have a starter library, it's easy to find any document at a
+glance. But, as soon as the library starts growing, you might want to tag the
+documents so that they are easier to reach, group, export, or organise. Papis
+doesn't impose a tag hierarchy or schema, so you are free to use the tags
+that make sense for your workflow. For instance, you could use tags that match
+the keywords of those documents, whether you've read the document, publishing
+status, etc.
+
+To put this into practice, let's add the tag ``physics`` to the documents by
+author Albert Einstein, ie. matching the query ``author:"Albert Einstein"``:
+
+.. code:: bash
+  papis tag --append physics author:"Albert Einstein"
+
+
+Organising the library
+----------------------
+
+While it is possible to mostly avoid opening the actual document files, you
+might want to ensure the library folders and files are organised to your
+liking. For this purpose, Papis offers some commands that help you with this.
+``rename`` changes the name of the folders, and ``mv`` modifies the nesting of
+the folders.
+
+To illustrate this, we'll imagine we've imported a document, but the metadata
+was wrong, so we've edited that using ``papis edit``. To make the folder name
+reflect the changes, it's enough to just run ``papis rename`` and pick the
+relevant document.
+
+To organise the library so that it nests the documents by year, for example, you
+can use the ``papis mv --folder-name "{doc[year]}"``, then pick the documents
+you want to apply this operation to.
+
+# TODO exporting
