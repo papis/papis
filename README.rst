@@ -153,7 +153,7 @@ Papis has grown over the years and there are now a number of projects that exten
      - `Alejandro Gallo <https://alejandrogallo.github.io/>`__
 
    * - `papis-zotero <https://github.com/papis/papis-zotero>`__
-     - `lennonhill <https://github.com/lennonhill>`__
+     - `Alex Fikl <https://github.com/alexfikl>`__
 
    * - `papis-libgen <https://github.com/papis/papis-zotero>`__
      - you?
