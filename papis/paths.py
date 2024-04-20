@@ -298,7 +298,7 @@ def get_document_folder(
 
         out_folder_path = os.path.normpath(os.path.join(dirname, *components[::-1]))
 
-    # if no folder name could be obtained from the format use get_hash_folder
+    # if no folder name could be obtained from the format use get_document_hash_folder
     if out_folder_path == dirname:
         if folder_name_format:
             logger.error(

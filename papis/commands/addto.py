@@ -62,8 +62,7 @@ def run(document: papis.document.Document,
     suffix = "" if nfiles == 0 else next(gen_suffix)
 
     from papis.downloaders import download_document
-    from papis.commands.add import get_file_name
-    from papis.paths import symlink
+    from papis.paths import symlink, get_document_file_name
 
     tmp_file = None
     new_file_list = []
@@ -79,19 +78,11 @@ def run(document: papis.document.Document,
             raise FileNotFoundError(f"File '{in_file_path}' not found")
 
         # Rename the file in the staging area
-        new_filename = get_file_name(
-            document,
-            local_in_file_path,
-            suffix=suffix
-        )
+        new_filename = get_document_file_name(
+            document, local_in_file_path,
+            suffix=suffix)
         out_file_path = os.path.join(doc_folder, new_filename)
         new_file_list.append(new_filename)
-
-        # Check if the absolute file path is > 255 characters
-        if len(os.path.abspath(out_file_path)) >= 255:
-            logger.warning(
-                "Length of absolute path is > 255 characters. "
-                "This may cause some issues with some PDF viewers.")
 
         if os.path.exists(out_file_path):
             logger.warning("File '%s' already exists. Skipping...", out_file_path)
