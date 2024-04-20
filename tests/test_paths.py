@@ -98,7 +98,7 @@ def test_get_document_file_name(tmp_library: TemporaryLibrary) -> None:
 
     papis.config.set(
         "add-file-name",
-        "{doc[title]} {doc[author]} {doc[yeary]}"
+        "{doc[title]} {doc[author]} {doc[year]}"
     )
 
     # check file name generation
@@ -188,3 +188,44 @@ def test_get_document_folder(tmp_library: TemporaryLibrary) -> None:
     folder_name = get_document_folder(doc, tmp_library.libdir,
                                       folder_name_format="../{doc[author]}")
     assert re.match(r"\w{32}", os.path.basename(folder_name))[0] == doc["papis_id"]
+
+
+def test_rename_document_files(tmp_config: TemporaryConfiguration) -> None:
+    import papis.config
+
+    papis.config.set("add-file-name", "{doc[year]} {doc[author]}")
+
+    from papis.paths import rename_document_files
+
+    doc = {
+        "author": "Niels Bohr",
+        "title": "On the constitution of atoms and molecules",
+        "year": 1913,
+    }
+
+    # check no existing files: no suffix should be added
+    new_files = rename_document_files(doc, [
+        tmp_config.create_random_file("pdf"),
+        tmp_config.create_random_file("text", suffix=".md"),
+        ], file_name_format="x {doc[year]} {doc[author]}")
+
+    assert new_files == ["x-1913-niels-bohr.pdf", "x-1913-niels-bohr.md"]
+
+    # check that correct suffixes are added base on existing files
+    doc["files"] = [
+        tmp_config.create_random_file("pdf"),
+        tmp_config.create_random_file("pdf"),
+        tmp_config.create_random_file("text", suffix=".md"),
+    ]
+
+    new_files = rename_document_files(doc, [
+        tmp_config.create_random_file("pdf"),
+        tmp_config.create_random_file("text", suffix=".md"),
+        tmp_config.create_random_file("djvu"),
+        ])
+
+    assert new_files == [
+        "1913-niels-bohr-b.pdf",
+        "1913-niels-bohr-a.md",
+        "1913-niels-bohr.djvu",
+        ]
