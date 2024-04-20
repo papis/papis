@@ -55,53 +55,23 @@ def run(document: papis.document.Document,
     if not doc_folder or not os.path.exists(doc_folder):
         raise DocumentFolderNotFound(papis.document.describe(document))
 
-    from papis.paths import unique_suffixes
+    import shutil
+    from papis.paths import symlink, rename_document_files
 
-    nfiles = len(document.get_files())
-    gen_suffix = unique_suffixes(skip=nfiles - 1)
-    suffix = "" if nfiles == 0 else next(gen_suffix)
+    new_file_list = rename_document_files(document, filepaths)
 
-    from papis.downloaders import download_document
-    from papis.paths import symlink, get_document_file_name
-
-    tmp_file = None
-    new_file_list = []
-    for in_file_path in filepaths:
-        if (
-                in_file_path.startswith("http://")
-                or in_file_path.startswith("https://")):
-            local_in_file_path = download_document(in_file_path) or ""
-        else:
-            local_in_file_path = in_file_path
-
-        if not os.path.exists(local_in_file_path):
-            raise FileNotFoundError(f"File '{in_file_path}' not found")
-
-        # Rename the file in the staging area
-        new_filename = get_document_file_name(
-            document, local_in_file_path,
-            suffix=suffix)
-        out_file_path = os.path.join(doc_folder, new_filename)
-        new_file_list.append(new_filename)
-
+    for in_file_path, out_file_name in zip(filepaths, new_file_list):
+        out_file_path = os.path.join(doc_folder, out_file_name)
         if os.path.exists(out_file_path):
             logger.warning("File '%s' already exists. Skipping...", out_file_path)
             continue
 
         if link:
-            in_file_abspath = os.path.abspath(in_file_path)
-            logger.info("[SYMLINK] '%s' to '%s'.", in_file_abspath, out_file_path)
-            symlink(in_file_abspath, out_file_path)
+            logger.info("[LN] '%s' to '%s'.", in_file_path, out_file_name)
+            symlink(in_file_path, out_file_path)
         else:
-            import shutil
-            logger.info("[CP] '%s' to '%s'.", local_in_file_path, out_file_path)
-            shutil.copy(local_in_file_path, out_file_path)
-
-        if tmp_file:
-            os.unlink(tmp_file.name)
-            tmp_file = None
-
-        suffix = next(gen_suffix)
+            logger.info("[CP] '%s' to '%s'.", in_file_path, out_file_name)
+            shutil.copy(in_file_path, out_file_path)
 
     if "files" not in document:
         document["files"] = []
@@ -110,10 +80,9 @@ def run(document: papis.document.Document,
     papis.api.save_doc(document)
 
     if git:
-        for r in new_file_list + [document.get_info_file()]:
-            papis.git.add(doc_folder, r)
-        papis.git.commit(
+        papis.git.add_and_commit_resources(
             doc_folder,
+            new_file_list + [document.get_info_file()],
             "Add new files to '{}'".format(papis.document.describe(document)))
 
 
