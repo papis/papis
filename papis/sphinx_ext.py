@@ -218,7 +218,6 @@ def remove_module_docstring(app: application.Sphinx,
 def setup(app: application.Sphinx) -> Dict[str, Any]:
     from sphinx.util.docfields import Field
 
-    app.setup_extension("sphinx.ext.linkcode")
     app.setup_extension("sphinx_click.ext")
 
     app.add_directive("click", CustomClickDirective, override=True)
