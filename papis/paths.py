@@ -1,6 +1,15 @@
-from typing import Iterator, Optional
+import os
+import pathlib
+import sys
+from typing import Iterator, Optional, Union
 
 import papis.config
+
+#: A union type for allowable paths.
+PathLike = Union[os.PathLike, str]
+
+# NOTE: private error codes for Windows
+WIN_ERROR_PRIVILEGE_NOT_HELD = 1314
 
 
 def unique_suffixes(chars: Optional[str] = None, skip: int = 0) -> Iterator[str]:
@@ -77,3 +86,40 @@ def normalize_path(path: str, *,
         separator=separator,
         regex_pattern=regex_pattern,
         lowercase=lowercase))
+
+
+def is_relative_to(path: PathLike, other: PathLike) -> bool:
+    """Check if paths are relative to each other.
+
+    This is equivalent to :meth:`pathlib.PurePath.is_relative_to`.
+
+    :returns: *True* if *path* is relative to the *other* path.
+    """
+    try:
+        return pathlib.Path(path).is_relative_to(other)
+    except AttributeError:
+        try:
+            return not os.path.relpath(path, start=other).startswith("..")
+        except ValueError:
+            return False
+
+
+def symlink(src: PathLike, dst: PathLike) -> None:
+    """Create a symbolic link pointing to *src* named *dst*.
+
+    This is a simple wrapper around :func:`os.symlink` that attempts to give
+    better error messages on different platforms. For example, it offers
+    suggestions for some missing priviledge issues.
+
+    :param src: the existing file that *dst* points to.
+    :param dst: the name of the new symbolic link, pointing to *src*.
+    """
+    try:
+        os.symlink(src, dst)
+    except OSError as exc:
+        if sys.platform == "win32" and exc.winerror == WIN_ERROR_PRIVILEGE_NOT_HELD:
+            # https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--1300-1699-
+            raise OSError(exc.errno,
+                          "Failed to link due to insufficient permissions. You "
+                          "can try again after enabling the 'Developer mode' "
+                          "and restarting.", exc.filename, exc.winerror, exc.filename2)
