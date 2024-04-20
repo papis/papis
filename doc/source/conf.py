@@ -31,6 +31,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
     "sphinx.ext.linkcode",
+    "sphinx_click.ext",
     "papis.sphinx_ext",
 ]
 
