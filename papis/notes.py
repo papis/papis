@@ -28,10 +28,12 @@ def notes_path(doc: papis.document.Document) -> str:
     :returns: a absolute filename that corresponds to the attached notes for
         *doc* (this file does not necessarily exist).
     """
+    from papis.paths import normalize_path
+
     if not has_notes(doc):
         notes_name = papis.format.format(papis.config.getstring("notes-name"), doc,
                                          default="notes.tex")
-        doc["notes"] = papis.utils.clean_document_name(notes_name)
+        doc["notes"] = normalize_path(notes_name)
         papis.api.save_doc(doc)
 
     return os.path.join(doc.get_main_folder() or "", doc["notes"])

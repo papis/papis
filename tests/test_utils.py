@@ -89,55 +89,6 @@ def test_extension(tmp_config: TemporaryConfiguration) -> None:
         assert get_document_extension(d[0]) == d[1]
 
 
-def test_slugify(tmp_config: TemporaryConfiguration) -> None:
-    from papis.utils import clean_document_name
-
-    assert (
-        clean_document_name("{{] __ }}albert )(*& $ß $+_ einstein (*]")
-        == "albert-ss-einstein"
-    )
-    assert (
-        clean_document_name('/ashfd/df/  #$%@#$ }{_+"[ ]hello öworld--- .pdf')
-        == "hello-oworld-.pdf"
-    )
-    assert clean_document_name("масса и енергиа.pdf") == "massa-i-energia.pdf"
-    assert clean_document_name("الامير الصغير.pdf") == "lmyr-lsgyr.pdf"
-
-
-def test_slugify_config(tmp_config: TemporaryConfiguration) -> None:
-    import papis.config
-
-    from papis.utils import clean_document_name
-
-    papis.config.set("doc-paths-lowercase", "False")
-    assert (
-        clean_document_name("{{] __ }}Albert )(*& $ß $+_ Einstein (*]")
-        == "Albert-ss-Einstein"
-    )
-
-    papis.config.set("doc-paths-extra-chars", "_")
-    assert (
-        clean_document_name("{{] __ }}Albert )(*& $ß $+_ Einstein (*]")
-        == "__-Albert-ss-_-Einstein"
-    )
-    assert (
-        clean_document_name("{{] __Albert )(*& $ß $+_ Einstein (*]")
-        == "__Albert-ss-_-Einstein"
-    )
-
-    papis.config.set("doc-paths-word-separator", "_")
-    assert (
-        clean_document_name("{{] __ }}Albert )(*& $ß $+_ Einstein (*]")
-        == "___Albert_ss___Einstein"
-    )
-
-    papis.config.set("doc-paths-lowercase", "True")
-    assert (
-        clean_document_name("{{] __ }}Albert )(*& $ß $+_ Einstein (*]")
-        == "___albert_ss___einstein"
-    )
-
-
 def test_yaml_unicode_dump(tmp_config: TemporaryConfiguration) -> None:
     from papis.crossref import get_data
 

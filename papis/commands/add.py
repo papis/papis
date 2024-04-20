@@ -236,21 +236,12 @@ def run(paths: List[str],
 
     import tempfile
 
-    # The real paths of the documents to be added
     in_documents_paths = paths
-    # The basenames of the documents to be added
-    in_documents_names = []
-    # The folder name of the temporary document to be created
     temp_dir = tempfile.mkdtemp()
 
     for p in in_documents_paths:
         if not os.path.exists(p):
             raise FileNotFoundError(f"File '{p}' not found")
-
-    in_documents_names = [
-        papis.utils.clean_document_name(doc_path)
-        for doc_path in in_documents_paths
-    ]
 
     # reference building
     # NOTE: this needs to go before any papis.format calls, so that those can
@@ -274,66 +265,17 @@ def run(paths: List[str],
     if subfolder:
         base_path = os.path.join(base_path, subfolder)
 
+    from papis.paths import get_document_file_name, get_document_unique_folder
+
     base_path = os.path.normpath(base_path)
-    out_folder_path = base_path
-
-    if folder_name:
-        temp_path = os.path.join(out_folder_path, folder_name)
-        components: List[str] = []
-
-        temp_path = os.path.normpath(temp_path)
-        out_folder_path = os.path.normpath(out_folder_path)
-
-        while temp_path != out_folder_path and papis.utils.is_relative_to(
-            temp_path, out_folder_path
-        ):
-            path_component = os.path.basename(temp_path)
-
-            formatted = None
-            try:
-                formatted = papis.format.format(path_component, tmp_document)
-            except papis.format.FormatFailedError:
-                out_folder_path = base_path
-                components = []
-                break
-
-            component_cleaned = papis.utils.clean_document_name(formatted, False)
-            components.insert(0, component_cleaned)
-
-            # continue with parent path component
-            temp_path = os.path.dirname(temp_path)
-
-        # components are formatted in reverse order, so we add then now in the
-        # right order to the path
-        out_folder_path = os.path.normpath(os.path.join(out_folder_path, *components))
-
-    if out_folder_path == base_path:
-        if folder_name:
-            logger.error(
-                "Could not produce a folder path from the provided data:\n"
-                "\tdata: %s\n\tfiles: %s",
-                tmp_document, in_documents_names)
-
-        logger.info("Constructing an automatic (hashed) folder name.")
-        out_folder_name = get_hash_folder(tmp_document, in_documents_paths)
-        out_folder_path = os.path.join(out_folder_path, out_folder_name)
-
-    if not papis.utils.is_relative_to(out_folder_path, base_path):
-        raise ValueError(
-            "Formatting produced a path outside of library: '{}' not relative to '{}'"
-            .format(base_path, out_folder_path))
-
-    if os.path.exists(out_folder_path):
-        out_folder_path = ensure_new_folder(out_folder_path)
+    out_folder_path = get_document_unique_folder(
+        tmp_document, base_path, in_documents_paths,
+        folder_name_format=folder_name)
 
     logger.info("Document folder is '%s'.", out_folder_path)
     logger.debug("Document includes files: '%s'.", "', '".join(in_documents_paths))
 
-    # First prepare everything in the temporary directory
-    if file_name is not None:  # Use args if set
-        papis.config.set("add-file-name", file_name)
-
-    from papis.paths import unique_suffixes
+    from papis.paths import symlink, unique_suffixes
 
     g = unique_suffixes()
     string_append = ""
@@ -342,24 +284,19 @@ def run(paths: List[str],
 
     new_file_list = []
     for in_file_path in in_documents_paths:
-
-        # Rename the file in the staging area
-        new_filename = papis.utils.clean_document_name(
-            get_file_name(
-                tmp_document,
-                in_file_path,
-                suffix=string_append), False)
+        new_filename = get_document_file_name(
+            tmp_document, in_file_path,
+            suffix=string_append,
+            file_name_format=file_name)
         new_file_list.append(new_filename)
 
-        tmp_end_filepath = os.path.join(
-            temp_dir,
-            new_filename)
+        tmp_end_filepath = os.path.join(temp_dir, new_filename)
         string_append = next(g)
 
         if link:
             in_file_abspath = os.path.abspath(in_file_path)
             logger.info("[SYMLINK] '%s' to '%s'.", in_file_abspath, tmp_end_filepath)
-            papis.utils.symlink(in_file_abspath, tmp_end_filepath)
+            symlink(in_file_abspath, tmp_end_filepath)
         elif move:
             logger.info("[MV] '%s' to '%s'.", in_file_path, tmp_end_filepath)
             shutil.copy(in_file_path, tmp_end_filepath)
