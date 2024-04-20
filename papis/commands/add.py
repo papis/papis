@@ -90,6 +90,7 @@ Command-line Interface
 
 import os
 from typing import List, Any, Optional, Dict, Tuple
+from warnings import warn
 
 import click
 
@@ -168,30 +169,31 @@ def get_file_name(
         original_filepath: str,
         suffix: str = "",
         base_name_limit: int = 150) -> str:
-    from papis.paths import get_document_file_name
+    warn("'get_file_name' is deprecated and will be removed in the next "
+         "version. Use 'papis.paths.get_document_file_name' instead.",
+         DeprecationWarning, stacklevel=2)
 
+    from papis.paths import get_document_file_name
     return get_document_file_name(doc, original_filepath, suffix,
                                   base_name_limit=base_name_limit)
 
 
 def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
-    from papis.paths import get_document_hash_folder
+    warn("'get_hash_folder' is deprecated and will be removed in the next "
+         "version. Use 'papis.paths.get_document_hash_folder' instead.",
+         DeprecationWarning, stacklevel=2)
 
+    from papis.paths import get_document_hash_folder
     return get_document_hash_folder(data, document_paths)
 
 
 def ensure_new_folder(path: str) -> str:
-    if not os.path.exists(path):
-        return path
+    warn("'ensure_new_folder' is deprecated and will be removed in the next "
+         "version. Use 'papis.paths.get_document_unique_folder' instead.",
+         DeprecationWarning, stacklevel=2)
 
-    from string import ascii_lowercase
-    suffix = papis.utils.create_identifier(ascii_lowercase)
-
-    new_path = path
-    while os.path.exists(new_path):
-        new_path = f"{path}-{next(suffix)}"
-
-    return new_path
+    from papis.paths import _make_unique_folder
+    return _make_unique_folder(path)
 
 
 def run(paths: List[str],

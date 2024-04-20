@@ -1,15 +1,13 @@
 import os
 import pathlib
 import sys
-from typing import TYPE_CHECKING, Iterable, Iterator, List, Optional, Union
+from typing import Iterable, Iterator, List, Optional, Union
 
 import papis.config
 import papis.logging
+from papis.document import DocumentLike
 
 logger = papis.logging.get_logger(__name__)
-
-if TYPE_CHECKING:
-    from papis.document import DocumentLike
 
 #: A union type for allowable paths.
 PathLike = Union[os.PathLike[str], str]
@@ -64,7 +62,7 @@ def normalize_path(path: str, *,
         output path besides the default ASCII alphanumeric characters
         (defaults to :confval:`doc-paths-extra-chars`).
     :arg separator: word separator used to replace any non-allowed characters
-        in the path (defaults to :confval:`doc-paths-separator`).
+        in the path (defaults to :confval:`doc-paths-word-separator`).
     :returns: a cleaned ASCII string.
     """
     if lowercase is None:
@@ -132,7 +130,7 @@ def symlink(src: PathLike, dst: PathLike) -> None:
 
 
 def get_document_file_name(
-        doc: "DocumentLike",
+        doc: DocumentLike,
         orig_path: PathLike,
         suffix: str = "", *,
         file_name_format: Optional[str] = None,
@@ -183,7 +181,7 @@ def get_document_file_name(
 
 
 def get_document_hash_folder(
-        doc: "DocumentLike",
+        doc: DocumentLike,
         paths: Optional[Iterable[str]] = None, *,
         file_read_limit: int = 2000,
         seed: Optional[str] = None) -> str:
@@ -246,7 +244,7 @@ def get_document_hash_folder(
 
 
 def get_document_folder(
-        doc: "DocumentLike",
+        doc: DocumentLike,
         dirname: PathLike,
         in_document_paths: Iterable[str], *,
         folder_name_format: Optional[str] = None) -> str:
@@ -335,11 +333,11 @@ def _make_unique_folder(out_folder_path: PathLike) -> str:
 
 
 def get_document_unique_folder(
-        doc: "DocumentLike",
+        doc: DocumentLike,
         dirname: PathLike,
         in_document_paths: Iterable[str], *,
         folder_name_format: Optional[str] = None) -> str:
-    """A wrapper around :func:`get_document_folder_name` that ensures that the
+    """A wrapper around :func:`get_document_folder` that ensures that the
     folder is unique by adding suffixes.
 
     :returns: a folder name for *doc* with the root at *dirname* that does not
