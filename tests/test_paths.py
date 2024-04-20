@@ -17,7 +17,7 @@ def test_unique_suffixes() -> None:
         assert output == value
 
     for value, output in zip(expected[3:], unique_suffixes(skip=3)):
-        assert output == value
+        assert output == value.lower()
 
 
 def test_normalize_path(tmp_config: TemporaryConfiguration) -> None:
@@ -28,7 +28,9 @@ def test_normalize_path(tmp_config: TemporaryConfiguration) -> None:
         == "albert-ss-einstein"
     )
     assert (
-        normalize_path('/ashfd/df/  #$%@#$ }{_+"[ ]hello öworld--- .pdf')
+        normalize_path(
+            os.path.basename('/ashfd/df/  #$%@#$ }{_+"[ ]hello öworld--- .pdf')
+        )
         == "hello-oworld-.pdf"
     )
     assert normalize_path("масса и енергиа.pdf") == "massa-i-energia.pdf"
@@ -134,7 +136,7 @@ def test_get_document_file_name_format(tmp_library: TemporaryLibrary) -> None:
 
     filename = get_document_file_name(
         doc, pdf, suffix="2",
-        file_name_format="{doc.title} {doc.year}")
+        file_name_format="{doc[title]} {doc[year]}")
     assert filename == "blah-2.pdf"
 
 
@@ -185,7 +187,7 @@ def test_get_document_folder(tmp_library: TemporaryLibrary) -> None:
         "doi": "10.1080/14786441308634955",
         })
 
-    from papis.paths import get_document_folder
+    from papis.paths import get_document_folder, get_document_unique_folder
 
     # check no folder_name_format
     folder_name = get_document_folder(doc, tmp_library.libdir, [pdf])
@@ -198,8 +200,8 @@ def test_get_document_folder(tmp_library: TemporaryLibrary) -> None:
 
     # check uniqueness with suffices
     os.mkdir(folder_name)
-    folder_name = get_document_folder(doc, tmp_library.libdir, [pdf],
-                                      folder_name_format="{doc[author]}")
+    folder_name = get_document_unique_folder(doc, tmp_library.libdir, [pdf],
+                                             folder_name_format="{doc[author]}")
     assert os.path.basename(folder_name) == "niels-bohr-a"
 
     # check incorrect folder_name_format

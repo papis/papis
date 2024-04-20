@@ -10,14 +10,14 @@ from papis.document import DocumentLike
 logger = papis.logging.get_logger(__name__)
 
 #: A union type for allowable paths.
-PathLike = Union[os.PathLike[str], str]
+PathLike = Union[pathlib.Path, str]
 
 # NOTE: private error codes for Windows
 WIN_ERROR_PRIVILEGE_NOT_HELD = 1314
 
 
 def unique_suffixes(chars: Optional[str] = None, skip: int = 0) -> Iterator[str]:
-    """Creates an infinite list of suffixes based on *input_list*.
+    """Creates an infinite list of suffixes based on *chars*.
 
     This creates a generator object capable of iterating over lists to
     create unique products of increasing cardinality
@@ -29,9 +29,12 @@ def unique_suffixes(chars: Optional[str] = None, skip: int = 0) -> Iterator[str]
     :param skip: number of suffices to skip (negative integers are set to 0).
 
     >>> import string
-    >>> m = make_suffix(string.ascii_lowercase)
-    >>> next(m)
+    >>> s = unique_suffixes(string.ascii_lowercase)
+    >>> next(s)
     'a'
+    >>> s = unique_suffixes(skip=3)
+    >>> next(s)
+    'd'
     """  # noqa: E501
 
     import string
@@ -99,13 +102,14 @@ def is_relative_to(path: PathLike, other: PathLike) -> bool:
 
     :returns: *True* if *path* is relative to the *other* path.
     """
-    try:
+    if sys.version_info >= (3, 9):
         return pathlib.Path(path).is_relative_to(other)
-    except AttributeError:
-        try:
-            return not os.path.relpath(path, start=other).startswith("..")
-        except ValueError:
-            return False
+
+    # NOTE: this should give the same result as above for older versions
+    try:
+        return not os.path.relpath(path, start=other).startswith("..")
+    except ValueError:
+        return False
 
 
 def symlink(src: PathLike, dst: PathLike) -> None:
@@ -135,7 +139,7 @@ def get_document_file_name(
         suffix: str = "", *,
         file_name_format: Optional[str] = None,
         base_name_limit: int = 150) -> str:
-    """Generate a file name based on *path* for the document *doc*.
+    """Generate a file name based on *orig_path* for the document *doc*.
 
     This function will generate a file name for the given file *path* (that
     does not necessarily exist) based on the document data. If the document
@@ -164,9 +168,13 @@ def get_document_file_name(
     if not file_name_format:
         file_name_format = orig_path.name
 
-    ext = papis.filetype.get_document_extension(str(orig_path))
+    from papis.filetype import get_document_extension
+
+    # get formatted file name
+    ext = get_document_extension(str(orig_path))
     file_name_base = papis.format.format(file_name_format, doc, default="")
 
+    # ensure the file name is valid and within limits
     file_name_base = normalize_path(file_name_base)
     if not file_name_base:
         file_name_base = normalize_path(orig_path.name)
@@ -176,8 +184,14 @@ def get_document_file_name(
             "Shortening file name for portability: '%s'.", file_name_base)
         file_name_base = file_name_base[:base_name_limit]
 
+    # ensure we do not add the extension twice
     file_name_path = pathlib.Path(file_name_base)
-    return "{}{}.{}".format(file_name_path.stem, f"-{suffix}" if suffix else "", ext)
+    if file_name_path.suffix == f".{ext}":
+        stem = file_name_path.stem
+    else:
+        stem = str(file_name_path)
+
+    return "{}{}.{}".format(stem, f"-{suffix}" if suffix else "", ext)
 
 
 def get_document_hash_folder(
