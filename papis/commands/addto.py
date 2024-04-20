@@ -55,10 +55,10 @@ def run(document: papis.document.Document,
     if not doc_folder or not os.path.exists(doc_folder):
         raise DocumentFolderNotFound(papis.document.describe(document))
 
-    from papis.utils import create_identifier
+    from papis.paths import unique_suffixes
 
     nfiles = len(document.get_files())
-    gen_suffix = create_identifier(skip=nfiles - 1)
+    gen_suffix = unique_suffixes(skip=nfiles - 1)
     suffix = "" if nfiles == 0 else next(gen_suffix)
 
     from papis.downloaders import download_document

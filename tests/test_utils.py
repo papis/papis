@@ -17,19 +17,6 @@ def test_get_cache_home(tmp_config: TemporaryConfiguration, monkeypatch) -> None
         assert get_cache_home() == tmp
 
 
-def test_create_identifier() -> None:
-    import string
-    from papis.utils import create_identifier
-
-    expected = [
-        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
-        "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-        "AA", "AB", "AC", "AD"
-    ]
-    for value, output in zip(expected, create_identifier(string.ascii_uppercase)):
-        assert output == value
-
-
 @pytest.mark.skipif(sys.platform != "linux", reason="uses linux tools")
 def test_general_open_with_spaces(tmp_config: TemporaryConfiguration) -> None:
     suffix = "File with at least a couple of spaces"

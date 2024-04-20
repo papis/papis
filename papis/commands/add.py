@@ -333,7 +333,9 @@ def run(paths: List[str],
     if file_name is not None:  # Use args if set
         papis.config.set("add-file-name", file_name)
 
-    g = papis.utils.create_identifier()
+    from papis.paths import unique_suffixes
+
+    g = unique_suffixes()
     string_append = ""
 
     import shutil
