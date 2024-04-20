@@ -4,6 +4,7 @@ import re
 import pathlib
 from typing import (Optional, List, Iterator, Iterable, Any, Dict,
                     Union, Callable, Sequence, TypeVar, Tuple, TYPE_CHECKING)
+from warnings import warn
 
 try:
     import multiprocessing.synchronize  # noqa: F401
@@ -240,33 +241,12 @@ def get_folders(folder: str) -> List[str]:
 
 
 def create_identifier(input_list: Optional[str] = None, skip: int = 0) -> Iterator[str]:
-    """Creates an infinite list of identifiers based on *input_list*.
+    warn("'create_identifier' is deprecated and will be removed in the next "
+         "version. Use 'papis.paths.unique_suffixes' instead.",
+         DeprecationWarning, stacklevel=2)
 
-    This creates a generator object capable of iterating over lists to
-    create unique products of increasing cardinality
-    (see `here <https://stackoverflow.com/questions/14381940/python-pair-alphabets-after-loop-is-completed>`__).
-    This is mainly intended to create suffixes for existing strings, e.g. file names,
-    to ensure uniqueness.
-
-    :param input_list: list to iterate over
-    :param skip: number of identifiers to skip (negative integers are set to 0).
-
-    >>> import string
-    >>> m = create_identifier(string.ascii_lowercase)
-    >>> next(m)
-    'a'
-    """  # noqa: E501
-    import string
-    from itertools import count, product, islice
-
-    def ids() -> Iterator[str]:
-        inputs = string.ascii_lowercase if input_list is None else input_list
-
-        for n in count(1):
-            for s in product(inputs, repeat=n):
-                yield "".join(s)
-
-    yield from islice(ids(), max(skip, 0), None)
+    from papis.paths import unique_suffixes
+    yield from unique_suffixes(input_list, skip=skip)
 
 
 def clean_document_name(doc_path: str, is_path: bool = True) -> str:
@@ -280,11 +260,18 @@ def clean_document_name(doc_path: str, is_path: bool = True) -> str:
     ``basename``. This can have unintended results for other strings and can
     be disabled by setting *is_path* to *False*.
 
+    If possible, prefer the :func:`~papis.paths.normalize_path` function
+    for this functionality.
+
     :param doc_path: a string to be cleaned.
     :param is_path: if *True*, only the basename of *doc_path* is cleaned, as
         obtained from :func:`os.path.basename`.
     :returns: a cleaned ASCII string.
     """
+    warn("'clean_document_name' is deprecated and will be removed in the next "
+         "version. Use 'papis.paths.normalize_path' instead.",
+         DeprecationWarning, stacklevel=2)
+
     if is_path:
         doc_path = os.path.basename(doc_path)
 

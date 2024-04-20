@@ -1,6 +1,37 @@
-from typing import Optional
+from typing import Iterator, Optional
 
 import papis.config
+
+
+def unique_suffixes(chars: Optional[str] = None, skip: int = 0) -> Iterator[str]:
+    """Creates an infinite list of suffixes based on *input_list*.
+
+    This creates a generator object capable of iterating over lists to
+    create unique products of increasing cardinality
+    (see `here <https://stackoverflow.com/questions/14381940/python-pair-alphabets-after-loop-is-completed>`__).
+    This is mainly intended to create suffixes for existing strings, e.g. file names,
+    to ensure uniqueness.
+
+    :param chars: list to iterate over
+    :param skip: number of suffices to skip (negative integers are set to 0).
+
+    >>> import string
+    >>> m = make_suffix(string.ascii_lowercase)
+    >>> next(m)
+    'a'
+    """  # noqa: E501
+
+    import string
+    from itertools import count, product, islice
+
+    def ids() -> Iterator[str]:
+        inputs = string.ascii_lowercase if chars is None else chars
+
+        for n in count(1):
+            for s in product(inputs, repeat=n):
+                yield "".join(s)
+
+    yield from islice(ids(), max(skip, 0), None)
 
 
 def normalize_path(path: str, *,
