@@ -89,7 +89,6 @@ Command-line Interface
 """
 
 import os
-import re
 from typing import List, Any, Optional, Dict, Tuple
 
 import click
@@ -169,78 +168,16 @@ def get_file_name(
         original_filepath: str,
         suffix: str = "",
         base_name_limit: int = 150) -> str:
-    """Generate a file name for the document.
+    from papis.paths import get_document_file_name
 
-    This function uses :confval:`add-file-name` to generate a file
-    name for the *original_filepath* based on the document data. If the document
-    does not provide the necessary keys, the original file name will be preserved
-    (mostly as is).
-
-    :param original_filepath: absolute path to the original file, which is used
-        to determine the extension of the resulting filename.
-    :param suffix: a suffix to be appended to the end of the new file name.
-    :param base_name_limit: a maximum character length of the file name. This
-        is important on operating systems of filesystems that do not support
-        long file names.
-    :returns: a new file name to be used for the *original_filepath* in the
-        Papis library.
-    """
-
-    file_name_opt = papis.config.get("add-file-name")
-    ext = papis.filetype.get_document_extension(original_filepath)
-
-    if file_name_opt is None:
-        file_name_opt = os.path.basename(original_filepath)
-
-    file_name_base = papis.format.format(
-        file_name_opt, doc,
-        default=""
-    )
-
-    file_name_base = papis.utils.clean_document_name(file_name_base, False)
-    if not file_name_base:
-        file_name_base = papis.utils.clean_document_name(
-            os.path.basename(original_filepath), False)
-
-    if len(file_name_base) > base_name_limit:
-        logger.warning(
-            "Shortening file name for portability: '%s'.", file_name_base)
-        file_name_base = file_name_base[:base_name_limit]
-
-    # NOTE: remove extension from file_name_base
-    file_name_base = re.sub(fr"([.]{ext})?$", "", file_name_base)
-    file_name_base = "{}{}".format(file_name_base, f"-{suffix}" if suffix else "")
-
-    return f"{file_name_base}.{ext}"
+    return get_document_file_name(doc, original_filepath, suffix,
+                                  base_name_limit=base_name_limit)
 
 
 def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
-    """Folder name where the document will be stored.
+    from papis.paths import get_document_hash_folder
 
-    :data: Data parsed for the actual document
-    :document_paths: Path of the document
-
-    """
-    import random
-    author = "-{:.20}".format(data["author"]) if "author" in data else ""
-
-    document_strings = b""
-    for docpath in document_paths:
-        with open(docpath, "rb") as fd:
-            document_strings += fd.read(2000)
-
-    import hashlib
-    md5 = hashlib.md5(
-        "".join(document_paths).encode()
-        + str(data).encode()
-        + str(random.random()).encode()
-        + document_strings
-    ).hexdigest()
-
-    result = md5 + author
-    result = papis.utils.clean_document_name(result, False)
-
-    return result
+    return get_document_hash_folder(data, document_paths)
 
 
 def ensure_new_folder(path: str) -> str:
