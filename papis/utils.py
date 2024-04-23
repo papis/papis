@@ -1,9 +1,9 @@
 import os
 import sys
 import re
-import pathlib
 from typing import (Optional, List, Iterator, Iterable, Any, Dict,
                     Union, Callable, Sequence, TypeVar, Tuple, TYPE_CHECKING)
+from warnings import warn
 
 try:
     import multiprocessing.synchronize  # noqa: F401
@@ -33,8 +33,6 @@ if TYPE_CHECKING:
 A = TypeVar("A")
 #: Invariant :class:`typing.TypeVar`
 B = TypeVar("B")
-
-ERROR_PRIVILEGE_NOT_HELD = 1314
 
 
 def get_session() -> "requests.Session":
@@ -240,74 +238,24 @@ def get_folders(folder: str) -> List[str]:
 
 
 def create_identifier(input_list: Optional[str] = None, skip: int = 0) -> Iterator[str]:
-    """Creates an infinite list of identifiers based on *input_list*.
+    warn("'create_identifier' is deprecated and will be removed in the next "
+         "version. Use 'papis.paths.unique_suffixes' instead.",
+         DeprecationWarning, stacklevel=2)
 
-    This creates a generator object capable of iterating over lists to
-    create unique products of increasing cardinality
-    (see `here <https://stackoverflow.com/questions/14381940/python-pair-alphabets-after-loop-is-completed>`__).
-    This is mainly intended to create suffixes for existing strings, e.g. file names,
-    to ensure uniqueness.
-
-    :param input_list: list to iterate over
-    :param skip: number of identifiers to skip (negative integers are set to 0).
-
-    >>> import string
-    >>> m = create_identifier(string.ascii_lowercase)
-    >>> next(m)
-    'a'
-    """  # noqa: E501
-    import string
-    from itertools import count, product, islice
-
-    def ids() -> Iterator[str]:
-        inputs = string.ascii_lowercase if input_list is None else input_list
-
-        for n in count(1):
-            for s in product(inputs, repeat=n):
-                yield "".join(s)
-
-    yield from islice(ids(), max(skip, 0), None)
+    from papis.paths import unique_suffixes
+    yield from unique_suffixes(input_list, skip=skip)
 
 
 def clean_document_name(doc_path: str, is_path: bool = True) -> str:
-    """Clean a string to only contain visible ASCII characters.
+    warn("'clean_document_name' is deprecated and will be removed in the next "
+         "version. Use 'papis.paths.normalize_path' instead.",
+         DeprecationWarning, stacklevel=2)
 
-    This function uses `slugify <https://github.com/un33k/python-slugify>`__ to
-    create ASCII strings that can be used safely as file names or printed to
-    consoles that do not necessarily support full unicode.
-
-    By default, it assumes that the input is a path and will only look at its
-    ``basename``. This can have unintended results for other strings and can
-    be disabled by setting *is_path* to *False*.
-
-    :param doc_path: a string to be cleaned.
-    :param is_path: if *True*, only the basename of *doc_path* is cleaned, as
-        obtained from :func:`os.path.basename`.
-    :returns: a cleaned ASCII string.
-    """
     if is_path:
         doc_path = os.path.basename(doc_path)
 
-    import slugify
-
-    lowercase = papis.config.getboolean("doc-paths-lowercase")
-    extra_chars = papis.config.getstring("doc-paths-extra-chars")
-    separator = papis.config.getstring("doc-paths-word-separator")
-
-    if lowercase is None:
-        lowercase = True
-
-    if lowercase is True:
-        regex_pattern = fr"[^a-z0-9.{extra_chars}]+"
-    else:
-        regex_pattern = fr"[^a-zA-Z0-9.{extra_chars}]+"
-
-    return str(slugify.slugify(
-        doc_path,
-        word_boundary=True,
-        separator=separator,
-        regex_pattern=regex_pattern,
-        lowercase=lowercase))
+    from papis.paths import normalize_path
+    return normalize_path(doc_path)
 
 
 def locate_document_in_lib(document: papis.document.Document,
@@ -620,39 +568,18 @@ def collect_importer_data(
 
 
 def is_relative_to(path: str, other: str) -> bool:
-    """Check if paths are relative to each other.
+    warn("'is_relative_to' is deprecated and will be removed in the next "
+         "version. Use 'papis.paths.is_relative_to' instead.",
+         DeprecationWarning, stacklevel=2)
 
-    This is equivalent to :meth:`pathlib.PurePath.is_relative_to`.
-
-    :returns: *True* if *path* is relative to the *other* path.
-    """
-    if sys.version_info >= (3, 9):
-        return pathlib.Path(path).is_relative_to(other)
-    # This should lead to the same result as the above for older versions of
-    # python.
-    else:
-        try:
-            return not os.path.relpath(path, start=other).startswith("..")
-        except ValueError:
-            return False
+    from papis.paths import is_relative_to as _is_relative_to
+    return _is_relative_to(path, other)
 
 
 def symlink(source: str, destination: str) -> None:
-    """Creates a symbolic link named ``destination`` that points to ``source``.
+    warn("'symlink' is deprecated and will be removed in the next "
+         "version. Use 'papis.paths.symlink' instead.",
+         DeprecationWarning, stacklevel=2)
 
-    On Windows, Developer Mode can be enabled to allow unprivileged users to
-    allow creation of symlinks.  Failing to do so will raise an OSError exception,
-    with error code 1314.
-
-    :param source: the existing file that `destination` points to
-    :param destination: the name of the new symbolic link, pointing to `source`.
-    """
-    try:
-        os.symlink(source, destination)
-    except OSError as exc:
-        if sys.platform == "win32" and exc.winerror == ERROR_PRIVILEGE_NOT_HELD:
-            # https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--1300-1699-
-            raise OSError(exc.errno,
-                          "Failed to link due to insufficient permissions. You "
-                          "can try again after enabling the 'Developer mode' "
-                          "and restarting.", exc.filename, exc.winerror, exc.filename2)
+    from papis.paths import symlink as _symlink
+    return _symlink(source, destination)

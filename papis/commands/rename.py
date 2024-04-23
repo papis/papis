@@ -144,11 +144,13 @@ def cli(query: str,
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
+    from papis.paths import normalize_path
+
     renames = []
     for document in documents:
         current_name = document.get_main_folder_name()
         new_name = papis.format.format(folder_name, document)
-        new_name = papis.utils.clean_document_name(new_name)
+        new_name = normalize_path(new_name)
 
         if not batch:
             confirm_rename = papis.tui.utils.confirm(

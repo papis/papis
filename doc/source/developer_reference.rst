@@ -109,6 +109,12 @@ Developer API reference
 .. automodule:: papis.notes
     :members:
 
+``papis.paths``
+---------------
+
+.. automodule:: papis.paths
+    :members:
+
 ``papis.pick``
 --------------
 

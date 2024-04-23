@@ -89,8 +89,8 @@ Command-line Interface
 """
 
 import os
-import re
 from typing import List, Any, Optional, Dict, Tuple
+from warnings import warn
 
 import click
 
@@ -169,92 +169,31 @@ def get_file_name(
         original_filepath: str,
         suffix: str = "",
         base_name_limit: int = 150) -> str:
-    """Generate a file name for the document.
+    warn("'get_file_name' is deprecated and will be removed in the next "
+         "version. Use 'papis.paths.get_document_file_name' instead.",
+         DeprecationWarning, stacklevel=2)
 
-    This function uses :confval:`add-file-name` to generate a file
-    name for the *original_filepath* based on the document data. If the document
-    does not provide the necessary keys, the original file name will be preserved
-    (mostly as is).
-
-    :param original_filepath: absolute path to the original file, which is used
-        to determine the extension of the resulting filename.
-    :param suffix: a suffix to be appended to the end of the new file name.
-    :param base_name_limit: a maximum character length of the file name. This
-        is important on operating systems of filesystems that do not support
-        long file names.
-    :returns: a new file name to be used for the *original_filepath* in the
-        Papis library.
-    """
-
-    file_name_opt = papis.config.get("add-file-name")
-    ext = papis.filetype.get_document_extension(original_filepath)
-
-    if file_name_opt is None:
-        file_name_opt = os.path.basename(original_filepath)
-
-    file_name_base = papis.format.format(
-        file_name_opt, doc,
-        default=""
-    )
-
-    file_name_base = papis.utils.clean_document_name(file_name_base, False)
-    if not file_name_base:
-        file_name_base = papis.utils.clean_document_name(
-            os.path.basename(original_filepath), False)
-
-    if len(file_name_base) > base_name_limit:
-        logger.warning(
-            "Shortening file name for portability: '%s'.", file_name_base)
-        file_name_base = file_name_base[:base_name_limit]
-
-    # NOTE: remove extension from file_name_base
-    file_name_base = re.sub(fr"([.]{ext})?$", "", file_name_base)
-    file_name_base = "{}{}".format(file_name_base, f"-{suffix}" if suffix else "")
-
-    return f"{file_name_base}.{ext}"
+    from papis.paths import get_document_file_name
+    return get_document_file_name(doc, original_filepath, suffix,
+                                  base_name_limit=base_name_limit)
 
 
 def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
-    """Folder name where the document will be stored.
+    warn("'get_hash_folder' is deprecated and will be removed in the next "
+         "version. Use 'papis.paths.get_document_hash_folder' instead.",
+         DeprecationWarning, stacklevel=2)
 
-    :data: Data parsed for the actual document
-    :document_paths: Path of the document
-
-    """
-    import random
-    author = "-{:.20}".format(data["author"]) if "author" in data else ""
-
-    document_strings = b""
-    for docpath in document_paths:
-        with open(docpath, "rb") as fd:
-            document_strings += fd.read(2000)
-
-    import hashlib
-    md5 = hashlib.md5(
-        "".join(document_paths).encode()
-        + str(data).encode()
-        + str(random.random()).encode()
-        + document_strings
-    ).hexdigest()
-
-    result = md5 + author
-    result = papis.utils.clean_document_name(result, False)
-
-    return result
+    from papis.paths import get_document_hash_folder
+    return get_document_hash_folder(data, document_paths)
 
 
 def ensure_new_folder(path: str) -> str:
-    if not os.path.exists(path):
-        return path
+    warn("'ensure_new_folder' is deprecated and will be removed in the next "
+         "version. Use 'papis.paths.get_document_unique_folder' instead.",
+         DeprecationWarning, stacklevel=2)
 
-    from string import ascii_lowercase
-    suffix = papis.utils.create_identifier(ascii_lowercase)
-
-    new_path = path
-    while os.path.exists(new_path):
-        new_path = f"{path}-{next(suffix)}"
-
-    return new_path
+    from papis.paths import _make_unique_folder
+    return _make_unique_folder(path)
 
 
 def run(paths: List[str],
@@ -297,21 +236,12 @@ def run(paths: List[str],
 
     import tempfile
 
-    # The real paths of the documents to be added
     in_documents_paths = paths
-    # The basenames of the documents to be added
-    in_documents_names = []
-    # The folder name of the temporary document to be created
     temp_dir = tempfile.mkdtemp()
 
     for p in in_documents_paths:
         if not os.path.exists(p):
             raise FileNotFoundError(f"File '{p}' not found")
-
-    in_documents_names = [
-        papis.utils.clean_document_name(doc_path)
-        for doc_path in in_documents_paths
-    ]
 
     # reference building
     # NOTE: this needs to go before any papis.format calls, so that those can
@@ -335,90 +265,38 @@ def run(paths: List[str],
     if subfolder:
         base_path = os.path.join(base_path, subfolder)
 
+    from papis.paths import get_document_file_name, get_document_unique_folder
+
     base_path = os.path.normpath(base_path)
-    out_folder_path = base_path
-
-    if folder_name:
-        temp_path = os.path.join(out_folder_path, folder_name)
-        components: List[str] = []
-
-        temp_path = os.path.normpath(temp_path)
-        out_folder_path = os.path.normpath(out_folder_path)
-
-        while temp_path != out_folder_path and papis.utils.is_relative_to(
-            temp_path, out_folder_path
-        ):
-            path_component = os.path.basename(temp_path)
-
-            formatted = None
-            try:
-                formatted = papis.format.format(path_component, tmp_document)
-            except papis.format.FormatFailedError:
-                out_folder_path = base_path
-                components = []
-                break
-
-            component_cleaned = papis.utils.clean_document_name(formatted, False)
-            components.insert(0, component_cleaned)
-
-            # continue with parent path component
-            temp_path = os.path.dirname(temp_path)
-
-        # components are formatted in reverse order, so we add then now in the
-        # right order to the path
-        out_folder_path = os.path.normpath(os.path.join(out_folder_path, *components))
-
-    if out_folder_path == base_path:
-        if folder_name:
-            logger.error(
-                "Could not produce a folder path from the provided data:\n"
-                "\tdata: %s\n\tfiles: %s",
-                tmp_document, in_documents_names)
-
-        logger.info("Constructing an automatic (hashed) folder name.")
-        out_folder_name = get_hash_folder(tmp_document, in_documents_paths)
-        out_folder_path = os.path.join(out_folder_path, out_folder_name)
-
-    if not papis.utils.is_relative_to(out_folder_path, base_path):
-        raise ValueError(
-            "Formatting produced a path outside of library: '{}' not relative to '{}'"
-            .format(base_path, out_folder_path))
-
-    if os.path.exists(out_folder_path):
-        out_folder_path = ensure_new_folder(out_folder_path)
+    out_folder_path = get_document_unique_folder(
+        tmp_document, base_path, in_documents_paths,
+        folder_name_format=folder_name)
 
     logger.info("Document folder is '%s'.", out_folder_path)
     logger.debug("Document includes files: '%s'.", "', '".join(in_documents_paths))
 
-    # First prepare everything in the temporary directory
-    if file_name is not None:  # Use args if set
-        papis.config.set("add-file-name", file_name)
+    from papis.paths import symlink, unique_suffixes
 
-    g = papis.utils.create_identifier()
+    g = unique_suffixes()
     string_append = ""
 
     import shutil
 
     new_file_list = []
     for in_file_path in in_documents_paths:
-
-        # Rename the file in the staging area
-        new_filename = papis.utils.clean_document_name(
-            get_file_name(
-                tmp_document,
-                in_file_path,
-                suffix=string_append), False)
+        new_filename = get_document_file_name(
+            tmp_document, in_file_path,
+            suffix=string_append,
+            file_name_format=file_name)
         new_file_list.append(new_filename)
 
-        tmp_end_filepath = os.path.join(
-            temp_dir,
-            new_filename)
+        tmp_end_filepath = os.path.join(temp_dir, new_filename)
         string_append = next(g)
 
         if link:
             in_file_abspath = os.path.abspath(in_file_path)
             logger.info("[SYMLINK] '%s' to '%s'.", in_file_abspath, tmp_end_filepath)
-            papis.utils.symlink(in_file_abspath, tmp_end_filepath)
+            symlink(in_file_abspath, tmp_end_filepath)
         elif move:
             logger.info("[MV] '%s' to '%s'.", in_file_path, tmp_end_filepath)
             shutil.copy(in_file_path, tmp_end_filepath)
