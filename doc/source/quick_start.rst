@@ -1,168 +1,130 @@
-# TODO review if this is relevant
-
 Quick start
 ===========
 
-This is a tutorial that should be enough to get you started using Papis.  Papis
-tries to be as simple and lightweight as possible, therefore its document model
-should be too as simple as possible.
-
-But before taking a look at its database structure let us show the daily
-usage of Papis for a regular user. This tutorial is command-line based, so you
-should be familiar with opening a terminal window on your system and
-do some general operations with it, like creating folders and files.
+In this quick start, we'll create a library, then download a couple documents
+with PDFs, open, tag and organise the files.  To do that, we'll use the Papis
+program with all its commands.  You can list the available commands executing
+``papis``, and get help with any of these commands with ``papis COMMAND
+--help``, where ``COMMAND`` is the command you want to know more about.
 
 Creating a new library
 ----------------------
 
 We will illustrate the process by creating a first library with a couple of
-``pdf`` documents in it. Papis can be highly configured using configuration
-files. Many programs use configuration files maybe without you being aware of
-it. Papis' configuration files are stored together inside the folder
+``pdf`` documents in it.  While you can manually create and edit the configuration file, we can use a wizard.  For that, we'll execute the command
 
-::
+.. code:: bash
 
-    ~/.config/papis
+    papis init
 
-Bear in mind that ``~`` means "Home Directory". Inside this directory a
-configuration file is found,
+It will prompt us for some settings, like the name of the library, where to
+place it, which programs to use to edit and open files, etc.  None of the
+settings are irreversible, so feel free to accept the defaults and edit them
+after getting used to the program.
 
-::
-
-    ~/.config/papis/config
-
-Right now we will open this file for editing and we will create a library.  In
-Papis everything should be human-readable and human-editable. So adding a
-library is as easy as adding two lines to this configuration file.
-
-Say that you want to create a "papers" library, where you can finally order
-all those pdf's hanging around on your computer. We create this library
-by putting these two lines inside the config file:
-
-.. code:: ini
-
-    [papers]
-    dir = ~/Documents/mypapers
-
-In the above lines we have created a library with the name ``papers`` which is
-located in the directory ``~/Documents/mypapers``.  So all the documents that
-we will be adding to the library will be located inside
-``~/Documents/mypapers``, and nowhere else. Everything that Papis needs to take
-care of your ``papers`` library is inside the ``~/Documents/mypapers`` directory,
-self-contained.
-
-If you have not already, add the two lines to the ``~/.config/papis/config``
-file and save it, and we will proceed to add some documents.
-Of course, you have to make sure that the folder ``~/Documents/mypapers``
-exists, so go ahead and create it
-
-::
-
-    mkdir -p ~/Documents/mypapers
+After following the wizard, it's important that you manually create the folder
+that will store the library.  The default location in Linux is the ``papers``
+directory under the system-defined document path (usually ``$HOME/Documents``).
 
 
 Adding the first document
 -------------------------
 
-If you don't have any special pdf lying around let me choose one for you:
-`link <https://www.gutenberg.org/files/28233/28233-pdf.pdf?session_id=8cecccb488f337378d5826ba1f31984f612f7ff5/>`__.
-You can download this document and we are going to add it into the ``papers``
-library.
-
-Assuming that you have the document in the current directory and you have renamed
-the document to ``document.pdf``, do the following to add the pdf into your
-library:
+Now we'll add the first article to the library.  There are several ways to
+do so, like automatically fetching a PDF file along with its metadata from a
+website, or manually using an existing file.  Let's start with the automatic
+method, which will download an `example article from arXiv <https://arxiv.org/
+abs/2404.14339>`, show the file as downloaded, and then automatically add to
+the library:
 
 .. code:: bash
 
-  papis add document.pdf --set author "Newton" --set title "Principia Mathematica"
+    papis add --from arxiv https://arxiv.org/abs/2404.14339
 
-And it's done! We have added our first book to the library.
+This uses the ``add`` command, which can fetch a PDF from a local file or also
+from some supported websites thanks to downloaders, specialized functions of
+Papis that visit a website, download the document and its metadata.  There are
+several available downloaders, listed, for instance in ``papis add --help``
+and ``papis list --downloaders``.  In this example, we've used the `` `arxiv``
+downloader, and we've supplied it with the full URL to the article.
 
-Let us see how this works exactly. Papis consists of many commands, and one of
-these commands is ``add``. ``add`` itself has many flags, which are options for the
-given command. In the example above we have used the flags ``author`` and
-``title`` to tell Papis to use ``Newton`` as the author's name and ``Principia
-Mathematica`` as the document's title. You can see all the possible flags
-for the command ``add`` if you use the ``help`` flag, i.e., if you issue the
-following command
+If Papis doesn't provide a downloader for the website you normally use, you
+can manually download a PDF from there.  Here we'll illustrate this workflow,
+assumming we download the PDF of `Isaac Newton's Principia Mathematica <https://
+www.gutenberg.org/files/28233/28233-pdf.pdf>` and then tell Papis about the file
+and some of its information:
+
+.. code:: bash
+
+    papis add 28233-pdf.pdf --set author "Isaac Newton" --set title "Principia Mathematica"
+
+Let us see how this works exactly.  In the example above we have used the flag
+``--set`` to manually attribute the ``author`` and ``title`` to the document.
+You can see all the possible flags for the command ``add`` if you use the
+``help`` flag:
 
 .. code:: bash
 
   papis add --help
 
-Now you are asking yourself, what happened to the pdf-file? Where is it
-stored?  Is it stored in an obscure database somewhere in my computer? No,
-Papis just copied the ``document.pdf`` file into a folder inside the library
-folder ``~/Documents/papers/``. If you now go there, you will see that a folder
-with a weird name has been created. Inside of the folder there is the
-``document.pdf`` file and another file, ``info.yaml``.
 
-If you open the ``info.yaml`` file you will see the following contents:
+Listing documents
+-----------------
 
-.. code:: yaml
+In both automatic and manual ``add`` methods above, Papis copied the
+``document.pdf`` file into a folder inside the library.  To know where it stored
+the files, you can use the ``papis list`` program, with an optional query to
+filter the database.  Following the examples above, we can thus issue
 
-  author: Newton
-  title: Principia Mathematica
-  files:
-  - document.pdf
+.. code:: bash
 
-This file is all that Papis uses to store the information of your newly added
-document. It is stored in a nicely readable `YAML
-<https://en.wikipedia.org/wiki/YAML>`__ format.
+    papis list
 
-Now you already have your first document, and.. you can open it!
-Just do
+to list all the files on the database, or
 
-::
+.. code:: bash
 
-  papis open
+    papis list author:newton
 
-and the document should open in your default pdf-viewer.
-You can change the default pdf-viewer in your configuration file
-(see section on :ref:`configuration-file`).
+to list only the documents that have author metadata containing ``newton``.  You can supply other filters.  To know which fields you can filter, visit the :ref:info.yaml article to learn more about the document information model.  We'll use one of the built-in fields, ``title``:
 
-Now you can try to repeat the same process with another pdf-file lying around.
-When you hit ``papis open`` again, it will ask you which one you want.
-If you input parts of the title or the author's name it will try to match
-what you typed with the paper you are looking for, so that you can get the
-desired paper very easily.
+.. code:: bash
+
+    papis list title:principia
+
+These commands will output the document locations within a database, and these
+can be visited to open the PDF files.  Papis also provides facilities to avoid
+manually going to this folders, as we'll see in the following section.
 
 
-.. comment
-  .. raw:: html
+Opening documents
+-----------------
 
-    <script type="text/javascript"
-      src="https://asciinema.org/a/hrNaFMh4XwqVpWsGWDi5SASUC.js"
-      id="asciicast-hrNaFMh4XwqVpWsGWDi5SASUC" async>
-    </script>
+Now that we have a couple of documents, we can execute the command
 
-Of course Papis shines really in other areas, for instance imagine
-you are browsing this paper
-`prl paper <https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.124.171801/>`__
-and you want to add it to your library, as of version ``v0.9``
-you can issue one of these commands
+.. code:: bash
 
-::
+    papis open
 
-  papis add https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.124.171801/
-  papis add --from doi 10.1103/PhysRevLett.124.171801/
+Papis will now ask us which document we want to open.  Use the arrow keys to
+navigate within this interface, or type some text to filter the list.  Papis
+then will narrow down the list to those entries that contain the text you
+entered.  An alternative way would be to supply the command with the query, just
+like in the example before:
 
-Here you can see it in action using the smart matching first alternative
+.. code:: bash
 
-.. raw:: html
+    papis open author:newton
 
-    <script type="text/javascript"
-      src="https://asciinema.org/a/i2kXyZMNaT8n7YRz7DcVIfqm5.js"
-      id="asciicast-i2kXyZMNaT8n7YRz7DcVIfqm5" async>
-    </script>
+In this case, if we only have a document, Papis will directly open it, without
+making us pick from a list.
 
 
 Tagging the documents
 ---------------------
 
 Now that you have a starter library, it's easy to find any document at a
-glance. But, as soon as the library starts growing, you might want to tag the
+glance.  But, as soon as the library starts growing, you might want to tag the
 documents so that they are easier to reach, group, export, or organise. Papis
 doesn't impose a tag hierarchy or schema, so you are free to use the tags
 that make sense for your workflow. For instance, you could use tags that match
@@ -170,10 +132,18 @@ the keywords of those documents, whether you've read the document, publishing
 status, etc.
 
 To put this into practice, let's add the tag ``physics`` to the documents by
-author Albert Einstein, ie. matching the query ``author:"Albert Einstein"``:
+author Isaac Newton, ie. matching the query ``author:"Isaac Newton"``:
 
 .. code:: bash
-  papis tag --append physics author:"Albert Einstein"
+
+  papis tag --append physics author:"Isaac Newton"
+
+
+And now, let's assume we want to keep these documents handy for citing within our next project.  We could add the tag "project" to them using the command
+
+.. code:: bash
+
+  papis tag --append project author:"Isaac Newton"
 
 
 Organising the library
@@ -181,12 +151,12 @@ Organising the library
 
 While it is possible to mostly avoid opening the actual document files, you
 might want to ensure the library folders and files are organised to your
-liking. For this purpose, Papis offers some commands that help you with this.
+liking.  For this purpose, Papis offers some commands that help you with this.
 ``rename`` changes the name of the folders, and ``mv`` modifies the nesting of
 the folders.
 
 To illustrate this, we'll imagine we've imported a document, but the metadata
-was wrong, so we've edited that using ``papis edit``. To make the folder name
+was wrong, so we've edited that using ``papis edit``.  To make the folder name
 reflect the changes, it's enough to just run ``papis rename`` and pick the
 relevant document.
 
@@ -194,4 +164,101 @@ To organise the library so that it nests the documents by year, for example, you
 can use the ``papis mv --folder-name "{doc[year]}"``, then pick the documents
 you want to apply this operation to.
 
-# TODO exporting
+
+Exporting documents
+-------------------
+
+After adding and organising the documents in the library, exporting their
+information to a BibTex file or any other supported format becomes very similar
+to opening or tagging them.  To export, for instance, all documents from the
+library to a file called ``project.tex``, we can use the command
+
+.. code:: bash
+
+    papis export --all --output project.tex
+
+To export part of the library, for instance, only those documents that contain
+the tag "project", the command becomes
+
+.. code:: bash
+
+    papis export --all --output project.text tags:project
+
+
+Sample workflow
+---------------
+
+Let's tie this up with an example workflow that utilizes ``add``, ``export``,
+``open```, and introduces some other commmands.  We'll imagine we are now
+starting from a blank slate, and that we have to deliver a short thesis on the
+computational linguistics topic of coreference resolution, and experiments on
+that, and we only have one reference, from an anthology.
+
+This anthology has some reference, one of which is Hobbs (1979).  We'll search
+Google Scholar for the reference "hobs 1979".  We get a result from the Wiley
+Online Library.  Since this is an open access document, we can give Papis the
+DOI of the document:
+
+.. code:: bash
+
+    papis add --from doi https://doi.org/10.1207/s15516709cog0301_4
+
+Papis has downloaded the information for the document, but, from the output,
+you'll notice that the actual PDF file couldn't be downloaded.  Turns out, the
+document is freely downloadable, but the publisher wants us using a browser to
+download this file.  This can be solved by downloading the file and using the
+``addto`` Papis command, which attaches files to documents.  Assuming the file
+has been downloaded to ``/tmp/document.pdf``, the next command would be
+
+.. code:: bash
+
+    papis addto -f /tmp/document.pdf hobbs
+
+This command will also be helpful to also add all those documents downloader
+after logging into a paywall.  Now, We can open the PDF to start researching the
+topic, using
+
+.. code:: bash
+
+    papis open hobbs
+
+and take notes with
+
+.. code:: bash
+
+    papis edit --notes hobbs
+
+After these two commands, we'll take notes of the document.  For instance, we
+see some definitions of the topic that have good examples, so we can just have a
+some bullet points in the notes.  These can include the page numbers where they
+are located, for later reference:
+
+.. code::
+
+    - introductions, p 3
+    - definitions, p. 5
+    - coherence relations, p. 6
+    - bridge with traditional linguistics, p. 7
+    ... and so on ...
+
+    - Linguists have identified various relations connecting text units, often without formal definitions. p. 20
+    ... and so on...
+
+Once we're done with this article, we could find one that cites it.  Again, we
+could use a tool such as Semantic Scholar or Google Scholar.  We've found one
+that cites Hobbs (1979) and that has some experiments with LLMs.  We'll repeat
+the steps before, now with the URL of the desired document:
+
+.. code:: bash
+
+    papis add https://aclanthology.org/P19-1442.pdf
+
+Papis may now prompt which downloader to use, to which we can reply with ``all``
+or the number of the matching document.  The rest of the steps will be the same
+as before.
+
+After repeating the steps as desired, we could now start writing our
+deliverable, using the notes and the documents as reference.  To cite
+articles, for instance, we could use the facilities in our text editor if it
+has integration with Papis (such as nvim), or with BibTex after exporting the
+``bib`` file.
