@@ -31,7 +31,7 @@ Command-line Interface
     :prog: papis init
 """
 
-from typing import List, NamedTuple, Optional
+from typing import NamedTuple, Optional
 import os
 
 import click
@@ -70,19 +70,6 @@ INIT_PROMPTS = [
     Prompt("citations-file-name",
            "What name should document attached citation files have?"),
 ]
-
-
-def _get_known_libraries() -> List[str]:
-    # FIXME: this is necessary because incorrectly configured libraries still
-    # show up in `papis.config.get_libs()`. We need better handling of missing
-    # libraries or ill-configured libraries.
-    known_libraries = []
-    for libname in papis.config.get_libs():
-        lib = papis.config.get_lib_from_name(libname)
-        if lib.paths and all(os.path.exists(path) for path in lib.paths):
-            known_libraries.append(libname)
-
-    return known_libraries
 
 
 def _is_git_repository(path: str) -> bool:
@@ -124,7 +111,8 @@ def cli(dir_path: Optional[str]) -> None:
     defaults = papis.config.get_default_settings()[general_settings_name]
     config_file = papis.config.get_config_file()
 
-    if os.path.exists(config_file):
+    has_config_file = os.path.exists(config_file)
+    if has_config_file:
         logger.warning("Config file '%s' already exists!", config_file)
         logger.warning(
             "This command may change some of its contents, e.g. whitespace and "
@@ -138,7 +126,7 @@ def cli(dir_path: Optional[str]) -> None:
     logger.info("Setting library location:")
     dir_path = os.getcwd() if dir_path is None else dir_path
 
-    known_libraries = _get_known_libraries()
+    known_libraries = papis.config.get_libs() if has_config_file else {}
     library_name = prompt(
         "Name of the library",
         default=os.path.basename(dir_path),
@@ -161,10 +149,15 @@ def cli(dir_path: Optional[str]) -> None:
         if confirm(f"Library path '{library_path}' does not exist. Create it?"):
             os.makedirs(library_path)
 
-    if confirm(f"Make '{library_name}' the default library?", yes=not known_libraries):
+    default_library = (
+        glob.get("default-library", defaults.get("default-library"))
+        if has_config_file else None)
+    if confirm(f"Make '{library_name}' the default library? "
+               f"(currently '{default_library}')",
+               yes=not known_libraries):
         glob["default-library"] = library_name
 
-    local["dir"] = library_path
+    local["dir"] = os.path.abspath(library_path)
 
     logger.info("Setting library custom options.")
     if confirm("Want to add some standard settings?", yes=False):
@@ -187,8 +180,13 @@ def cli(dir_path: Optional[str]) -> None:
         if not os.path.exists(config_folder):
             os.makedirs(config_folder)
 
+        if not has_config_file:
+            config.remove_section("papers")
+
         with open(config_file, "w") as configfile:
             config.write(configfile)
+
+        logger.info("Configuration file saved at '%s'.", config_file)
 
     logger.info("Check out more information about papis!")
     logger.info("   Configuration options: "
