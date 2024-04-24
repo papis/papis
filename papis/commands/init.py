@@ -31,14 +31,13 @@ Command-line Interface
     :prog: papis init
 """
 
-from typing import NamedTuple, Optional
+from typing import List, NamedTuple, Optional
 import os
 
 import click
 
 import papis.utils
 import papis.config
-import papis.tui.utils
 import papis.logging
 
 logger = papis.logging.get_logger(__name__)
@@ -73,6 +72,38 @@ INIT_PROMPTS = [
 ]
 
 
+def _get_known_libraries() -> List[str]:
+    # FIXME: this is necessary because incorrectly configured libraries still
+    # show up in `papis.config.get_libs()`. We need better handling of missing
+    # libraries or ill-configured libraries.
+    known_libraries = []
+    for libname in papis.config.get_libs():
+        lib = papis.config.get_lib_from_name(libname)
+        if lib.paths and all(os.path.exists(path) for path in lib.paths):
+            known_libraries.append(libname)
+
+    return known_libraries
+
+
+def _is_git_repository(path: str) -> bool:
+    path = os.path.abspath(path)
+
+    while True:
+        # check if a '.git' subdirectory exists
+        git_path = os.path.join(path, ".git")
+        if os.path.exists(git_path):
+            return True
+
+        # check if we reached the root
+        parent = os.path.dirname(path)
+        if parent == path:
+            break
+
+        path = parent
+
+    return False
+
+
 @click.command("init")
 @click.help_option("--help", "-h")
 @click.argument(
@@ -86,6 +117,8 @@ INIT_PROMPTS = [
 def cli(dir_path: Optional[str]) -> None:
     """Initialize a papis library"""
 
+    from papis.tui.utils import confirm, prompt
+
     config = papis.config.get_configuration()
     general_settings_name = papis.config.get_general_settings_name()
     defaults = papis.config.get_default_settings()[general_settings_name]
@@ -97,7 +130,7 @@ def cli(dir_path: Optional[str]) -> None:
             "This command may change some of its contents, e.g. whitespace and "
             "comments are not preserved.")
 
-        if not papis.tui.utils.confirm("Do you want to continue?"):
+        if not confirm("Do you want to continue?"):
             return
     else:
         logger.info("Initializing a new config file: '%s'.", config_file)
@@ -105,16 +138,8 @@ def cli(dir_path: Optional[str]) -> None:
     logger.info("Setting library location:")
     dir_path = os.getcwd() if dir_path is None else dir_path
 
-    # FIXME: this is necessary because incorrectly configured libraries still
-    # show up in `papis.config.get_libs()`. We need better handling of missing
-    # libraries or ill-configured libraries.
-    known_libraries = []
-    for libname in papis.config.get_libs():
-        lib = papis.config.get_lib_from_name(libname)
-        if lib.paths and all(os.path.exists(path) for path in lib.paths):
-            known_libraries.append(libname)
-
-    library_name = papis.tui.utils.prompt(
+    known_libraries = _get_known_libraries()
+    library_name = prompt(
         "Name of the library",
         default=os.path.basename(dir_path),
         bottom_toolbar=(
@@ -123,30 +148,33 @@ def cli(dir_path: Optional[str]) -> None:
         )
 
     if library_name not in config:
-        config[library_name] = {}
+        config.add_section(library_name)
     local = config[library_name]
     glob = config[general_settings_name]
 
-    library_path = papis.tui.utils.prompt(
+    library_path = prompt(
         "Path of the library",
         default=local.get("dir", dir_path),
         bottom_toolbar="Give an existing folder for the library location")
 
-    if papis.tui.utils.confirm(f"Make '{library_name}' the default library?",
-                               yes=False):
+    if not os.path.exists(library_path):
+        if confirm(f"Library path '{library_path}' does not exist. Create it?"):
+            os.makedirs(library_path)
+
+    if confirm(f"Make '{library_name}' the default library?", yes=not known_libraries):
         glob["default-library"] = library_name
 
     local["dir"] = library_path
 
     logger.info("Setting library custom options.")
-    if papis.tui.utils.confirm("Want to add some standard settings?", yes=False):
+    if confirm("Want to add some standard settings?", yes=False):
         for setting, help_string in INIT_PROMPTS:
-            local[setting] = papis.tui.utils.prompt(
+            local[setting] = prompt(
                 setting,
                 default=str(local.get(setting, defaults.get(setting))),
                 bottom_toolbar=help_string)
 
-    if papis.tui.utils.confirm("Do you want to save?"):
+    if confirm("Do you want to save?"):
         config_folder = papis.config.get_config_folder()
         if not os.path.exists(config_folder):
             os.makedirs(config_folder)
