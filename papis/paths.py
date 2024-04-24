@@ -117,7 +117,7 @@ def symlink(src: PathLike, dst: PathLike) -> None:
 
     This is a simple wrapper around :func:`os.symlink` that attempts to give
     better error messages on different platforms. For example, it offers
-    suggestions for some missing priviledge issues.
+    suggestions for some missing privilege issues.
 
     :param src: the existing file that *dst* points to.
     :param dst: the name of the new symbolic link, pointing to *src*.

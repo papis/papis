@@ -9,6 +9,13 @@ import papis.logging
 logger = papis.logging.get_logger(__name__)
 
 
+def init(path: str) -> None:
+    """Initialize a git repository at *path*."""
+
+    logger.info("Initializing git repository: '%s'.", path)
+    papis.utils.run(["git", "init"], cwd=path)
+
+
 def add(path: str, resource: str) -> None:
     """Adds changes in the *path* to the git index with a *message*.
 

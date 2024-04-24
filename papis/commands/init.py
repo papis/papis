@@ -174,6 +174,14 @@ def cli(dir_path: Optional[str]) -> None:
                 default=str(local.get(setting, defaults.get(setting))),
                 bottom_toolbar=help_string)
 
+    use_git = papis.config.getboolean("use-git", section=library_name)
+    if use_git and not _is_git_repository(library_path):
+        if confirm(f"Library '{library_path}' is not a git repository and 'use-git' "
+                   "is enabled. Would you like to initialize a git repository?"):
+            papis.git.init(library_path)
+            papis.git.add(library_path, ".")
+            papis.git.commit(library_path, f"Initialized library '{library_name}'")
+
     if confirm("Do you want to save?"):
         config_folder = papis.config.get_config_folder()
         if not os.path.exists(config_folder):
