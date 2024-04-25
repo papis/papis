@@ -87,7 +87,7 @@ class _PythonStringFormatter(string.Formatter):
 
         return super().format_field(value, format_spec)
 
-    def convert_field(self, value: Any, conversion: str) -> Any:
+    def convert_field(self, value: Any, conversion: Optional[str]) -> Any:
         if conversion == "l":
             return str(value).lower()
         if conversion == "u":
