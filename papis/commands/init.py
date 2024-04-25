@@ -167,7 +167,8 @@ def cli(dir_path: Optional[str]) -> None:
                 default=str(local.get(setting, defaults.get(setting))),
                 bottom_toolbar=help_string)
 
-    use_git = papis.config.getboolean("use-git", section=library_name)
+    papis.config.set_lib_from_name(library_name)
+    use_git = papis.config.getboolean("use-git")
     if use_git and not _is_git_repository(library_path):
         if confirm(f"Library '{library_path}' is not a git repository and 'use-git' "
                    "is enabled. Would you like to initialize a git repository?"):
