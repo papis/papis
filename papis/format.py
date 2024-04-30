@@ -100,7 +100,7 @@ class _PythonStringFormatter(string.Formatter):
             from papis.paths import normalize_path
             return normalize_path(str(value))
 
-        return super().convert_field(value, conversion)
+        return super().convert_field(value, conversion or "s")
 
 
 class PythonFormatter(Formatter):
