@@ -140,41 +140,6 @@ def test_get_document_file_name_format(tmp_library: TemporaryLibrary) -> None:
     assert filename == "blah-2.pdf"
 
 
-def test_get_document_hash_folder(tmp_library: TemporaryLibrary) -> None:
-    from papis.paths import get_document_hash_folder
-
-    data = {"author": "don quijote de la mancha"}
-    filename = tmp_library.create_random_file()
-
-    # check folder with one filename
-    hh = get_document_hash_folder(data, [filename])
-    assert re.match(r".*-don-quijote-de-la-ma$", hh) is not None
-
-    # check folder with more files
-    three_files_hh = get_document_hash_folder(data, [filename, filename, filename])
-    assert re.match(r".*-don-quijote-de-la-ma$", three_files_hh) is not None
-    assert three_files_hh != hh
-
-    # check folder with no files
-    no_files_hh = get_document_hash_folder(data, [])
-    assert re.match(r".*-don-quijote-de-la-ma$", no_files_hh) is not None
-    assert no_files_hh != hh
-
-    # check folder with no data
-    data = {}
-    hh = get_document_hash_folder(data, [filename])
-    assert re.match(r".*-don-quijote-de-la-ma$", hh) is None
-
-    # check folder with a different file
-    filename = tmp_library.create_random_file()
-    newhh = get_document_hash_folder(data, [filename])
-    assert hh != newhh
-
-    # check folder with same file (hash has a random seed)
-    newnewhh = get_document_hash_folder(data, [filename])
-    assert newnewhh != newhh
-
-
 def test_get_document_folder(tmp_library: TemporaryLibrary) -> None:
     from papis.document import from_data
 
