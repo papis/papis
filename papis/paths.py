@@ -195,20 +195,17 @@ def get_document_file_name(
 
 def get_document_folder(
         doc: DocumentLike,
-        dirname: PathLike,
-        in_document_paths: Iterable[str], *,
+        dirname: PathLike, *,
         folder_name_format: Optional[str] = None) -> str:
     """Generate a folder name for the document at *dirname*.
 
     This function uses :confval:`add-folder-name` to generate a folder name for
     the *doc* at *dirname*. If no folder can be constructed from the format, then
-    :func:`get_document_hash_folder` is used instead. The returned folder name
-    is guaranteed to be unique and to be a subfolder of *dirname*.
+    the reference's papis_id is used instead as a subfolder of *dirname*. The
+    papis_id is guaranteed to be unique.
 
     :arg doc: the document used on the *folder_name_format*.
     :arg dirname: the base directory in which to generate the document main folder.
-    :arg in_document_paths: a list of the files that are part of the document
-        (only used by :func:`get_document_hash_folder`).
     :arg folder_name_format: a format to use for the folder name that will be
         filled in using the given *doc*. If no format is given, we default to
         :confval:`add-folder-name`. This format can have additional subfolders.
@@ -248,16 +245,15 @@ def get_document_folder(
 
         out_folder_path = os.path.normpath(os.path.join(dirname, *components[::-1]))
 
-    # if no folder name could be obtained from the format use get_document_hash_folder
+    # if no folder name could be obtained from the format use papis_id
     if out_folder_path == dirname:
         if folder_name_format:
             logger.error(
                 "Could not produce a folder path from the provided data:\n"
                 "\tdata: %s", doc)
 
-        logger.info("Constructing an automatic (hashed) folder name.")
-        out_folder_name = get_document_hash_folder(doc, in_document_paths)
-        out_folder_path = os.path.join(dirname, out_folder_name)
+        logger.info("using database (hashed) index as reference folder name.")
+        out_folder_path = os.path.join(dirname, doc["papis_id"])
 
     if not is_relative_to(out_folder_path, dirname):
         raise ValueError(
@@ -284,8 +280,7 @@ def _make_unique_folder(out_folder_path: PathLike) -> str:
 
 def get_document_unique_folder(
         doc: DocumentLike,
-        dirname: PathLike,
-        in_document_paths: Iterable[str], *,
+        dirname: PathLike, *,
         folder_name_format: Optional[str] = None) -> str:
     """A wrapper around :func:`get_document_folder` that ensures that the
     folder is unique by adding suffixes.
@@ -294,7 +289,7 @@ def get_document_unique_folder(
         yet exist on the filesystem.
     """
     out_folder_path = get_document_folder(
-        doc, dirname, in_document_paths,
+        doc, dirname,
         folder_name_format=folder_name_format)
 
     return _make_unique_folder(out_folder_path)
