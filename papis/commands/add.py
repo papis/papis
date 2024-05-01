@@ -260,11 +260,15 @@ def run(paths: List[str],
     # reference building
     # NOTE: this needs to go before any papis.format calls, so that those can
     # potentially use the 'ref' key in the formatted strings.
+    # This constrains the option to use the papis_id in a ref.
+    # This is acceptable because refs should be human readable.
+    # to enable this requires decoupling adding tmp files from formatting in
+    # get_document_file_name
     if "ref" not in data:
         new_ref = papis.bibtex.create_reference(data)
         if new_ref:
             logger.info("Created reference '%s'.", new_ref)
-            data["ref"] = new_ref
+            tmp_document["ref"] = new_ref
 
     if auto_doctor:
         logger.info("Running doctor auto-fixers on document: '%s'.",
