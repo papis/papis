@@ -281,22 +281,12 @@ def run(paths: List[str],
     if subfolder:
         base_path = os.path.join(base_path, subfolder)
 
-    from papis.paths import get_document_file_name, get_document_unique_folder
-
-    base_path = os.path.normpath(base_path)
-    out_folder_path = get_document_unique_folder(
-        tmp_document, base_path, in_documents_paths,
-        folder_name_format=folder_name)
-
-    logger.info("Document folder is '%s'.", out_folder_path)
-    logger.debug("Document includes files: '%s'.", "', '".join(in_documents_paths))
-
+    import shutil
     from papis.paths import symlink, unique_suffixes
+    from papis.paths import get_document_file_name, get_document_unique_folder
 
     g = unique_suffixes()
     string_append = ""
-
-    import shutil
 
     new_file_list = []
     for in_file_path in in_documents_paths:
@@ -322,6 +312,14 @@ def run(paths: List[str],
 
     tmp_document["files"] = new_file_list
     tmp_document.save()
+
+    base_path = os.path.normpath(base_path)
+    out_folder_path = get_document_unique_folder(
+        tmp_document, base_path,
+        folder_name_format=folder_name)
+
+    logger.info("Document folder is '%s'.", out_folder_path)
+    logger.debug("Document includes files: '%s'.", "', '".join(in_documents_paths))
 
     # Check if the user wants to edit before submitting the doc
     # to the library
