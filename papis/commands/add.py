@@ -247,14 +247,15 @@ def run(paths: List[str],
     if citations is None:
         citations = []
 
+    for p in paths:
+        if not os.path.exists(p):
+            raise FileNotFoundError(f"File '{p}' not found")
+
     import tempfile
 
     in_documents_paths = paths
     temp_dir = tempfile.mkdtemp()
-
-    for p in in_documents_paths:
-        if not os.path.exists(p):
-            raise FileNotFoundError(f"File '{p}' not found")
+    tmp_document = papis.document.Document(folder=temp_dir, data=data)
 
     # reference building
     # NOTE: this needs to go before any papis.format calls, so that those can
@@ -264,8 +265,6 @@ def run(paths: List[str],
         if new_ref:
             logger.info("Created reference '%s'.", new_ref)
             data["ref"] = new_ref
-
-    tmp_document = papis.document.Document(folder=temp_dir, data=data)
 
     if auto_doctor:
         logger.info("Running doctor auto-fixers on document: '%s'.",
