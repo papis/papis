@@ -303,7 +303,9 @@ def exporter(documents: List[papis.document.Document]) -> str:
 class Importer(papis.importer.Importer):
     """
     Importer that parses BibTeX files or strings.
-    Here, `uri` can either be a bibtex string, or point to a bibtex file or http/s url
+
+    Here, `uri` can either be a BibTeX string, local BibTeX file or a remote URL
+    (with a HTTP or HTTPS protocol).
     """
 
     def __init__(self, **kwargs: Any) -> None:

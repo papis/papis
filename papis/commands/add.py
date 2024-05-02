@@ -81,8 +81,8 @@ Examples
   in the document's main folder with a list of citations. You can check out
   the ``papis citations`` command for more advanced usage.
 
-- Bibtex can be imported directly as a string, or read from a file or URL.
-  The following all work:
+- BibTeX can be imported directly as a string, or read from a local file or
+  from a remote URL. The following all work:
 
     .. code:: sh
 
