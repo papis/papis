@@ -301,7 +301,10 @@ def exporter(documents: List[papis.document.Document]) -> str:
 
 
 class Importer(papis.importer.Importer):
-    """Importer that parses BibTeX files."""
+    """
+    Importer that parses BibTeX files or strings.
+    Here, `uri` can either be a bibtex string, or point to a bibtex file or http/s url
+    """
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(name="bibtex", **kwargs)
@@ -316,7 +319,7 @@ class Importer(papis.importer.Importer):
         return importer if importer.ctx else None
 
     def fetch_data(self: papis.importer.Importer) -> Any:
-        self.logger.info("Reading input file: '%s'.", self.uri)
+        self.logger.info("Reading input file or string: '%s'.", self.uri)
 
         from papis.downloaders import download_document
         if (
@@ -329,12 +332,13 @@ class Importer(papis.importer.Importer):
         try:
             bib_data = bibtex_to_dict(filename) if filename is not None else []
         except Exception as exc:
-            self.logger.error("Error reading BibTeX file: '%s'.",
+            self.logger.error("Error reading BibTeX file or string: '%s'.",
                               self.uri, exc_info=exc)
             return
 
         if not bib_data:
-            self.logger.warning("Empty or invalid BibTeX entry at '%s'.", self.uri)
+            self.logger.warning(
+                "Failed parsing the following file or string: '%s'.", self.uri)
             return
 
         if len(bib_data) > 1:

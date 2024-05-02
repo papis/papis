@@ -81,6 +81,19 @@ Examples
   in the document's main folder with a list of citations. You can check out
   the ``papis citations`` command for more advanced usage.
 
+- Bibtex can be imported directly as a string, or read from a file or URL.
+  The following all work:
+
+    .. code:: sh
+
+        papis add --from bibtex someFile.bib
+        papis add --from bibtex "https://example.com/someFile.bib"
+        papis add --from bibtex "@book{someReference,
+            author = {John Doe},
+            ...more fields...
+            }"
+        papis add --from bibtex "$(xclip -o)"
+
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
