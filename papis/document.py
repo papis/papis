@@ -308,6 +308,9 @@ class Document(Dict[str, Any]):
 
         A :class:`DocHtmlEscaped` instance that can be used to escape keys
         in the document for use in HTML documents.
+
+    WARNING: running doc.save() without first running doc.set_folder()
+    will fail due to an unset info file path.
     """
 
     subfolder: str = ""
