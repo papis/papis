@@ -2,10 +2,12 @@ import os
 import pathlib
 import sys
 from typing import Iterable, Iterator, List, Optional, Union
+from warnings import warn
 
 import papis.config
 import papis.logging
 from papis.document import DocumentLike
+from papis.document import from_data
 
 logger = papis.logging.get_logger(__name__)
 
@@ -192,6 +194,20 @@ def get_document_file_name(
         stem = str(file_name_path)
 
     return "{}{}.{}".format(stem, f"-{suffix}" if suffix else "", ext)
+
+
+def get_document_hash_folder(
+        doc: DocumentLike,
+        paths: Optional[Iterable[str]] = None, *,
+        file_read_limit: int = 2000,
+        seed: Optional[str] = None) -> str:
+    warn("'get_document_hash_folder' is deprecated and will be removed"
+         "Use 'papis.id.compute_an_id' instead.",
+         DeprecationWarning, stacklevel=2)
+
+    from papis.id import compute_an_id
+    return compute_an_id(from_data(dict(doc)), seed)
+
 
 def get_document_folder(
         doc: DocumentLike,
