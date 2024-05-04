@@ -308,9 +308,6 @@ class Document(Dict[str, Any]):
 
         A :class:`DocHtmlEscaped` instance that can be used to escape keys
         in the document for use in HTML documents.
-
-    WARNING: running doc.save() without first running doc.set_folder()
-    will fail due to an unset info file path.
     """
 
     subfolder: str = ""
@@ -428,6 +425,14 @@ class Document(Dict[str, Any]):
 
     def save(self) -> None:
         """Saves the current document fields into the info file."""
+
+        folder = self.get_main_folder()
+        if not folder or not os.path.exists(folder):
+            from papis.exceptions import DocumentFolderNotFound
+            logger.error("running doc.save() without first running doc.set_folder() "
+                         "will fail due to an unset info file path.")
+            raise DocumentFolderNotFound(describe(self))
+
         import papis.yaml
 
         allow_unicode = papis.config.getboolean("info-allow-unicode")
