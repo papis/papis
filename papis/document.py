@@ -426,11 +426,8 @@ class Document(Dict[str, Any]):
     def save(self) -> None:
         """Saves the current document fields into the info file."""
 
-        folder = self.get_main_folder()
-        if not folder or not os.path.exists(folder):
+        if not self._folder or not os.path.exists(self._folder):
             from papis.exceptions import DocumentFolderNotFound
-            logger.error("running doc.save() without first running doc.set_folder() "
-                         "will fail due to an unset info file path.")
             raise DocumentFolderNotFound(describe(self))
 
         import papis.yaml
