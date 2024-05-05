@@ -217,8 +217,8 @@ def get_document_folder(
 
     This function uses :confval:`add-folder-name` to generate a folder name for
     the *doc* at *dirname*. If no folder can be constructed from the format, then
-    the reference's papis_id is used instead as a subfolder of *dirname*. The
-    papis_id is guaranteed to be unique.
+    the document's ``papis_id`` is used instead as a subfolder of *dirname*. The
+    ``papis_id`` is guaranteed to be unique.
 
     :arg doc: the document used on the *folder_name_format*.
     :arg dirname: the base directory in which to generate the document main folder.
