@@ -154,7 +154,7 @@ def test_get_document_folder(tmp_library: TemporaryLibrary) -> None:
         })
     doc.set_folder(os.path.join(tmp_library.libdir,
                                 doc["papis_id"]))
-    db.add(doc)
+    db.maybe_compute_id(doc)
 
     from papis.paths import get_document_folder, get_document_unique_folder
 
