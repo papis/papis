@@ -268,7 +268,7 @@ def get_document_folder(
                 "Could not produce a folder path from the provided data:\n"
                 "\tdata: %s", doc)
 
-        logger.info("using database (hashed) index as reference folder name.")
+        logger.info("Falling back to 'papis_id' as a reference folder name.")
         out_folder_path = os.path.join(dirname, doc["papis_id"])
 
     if not is_relative_to(out_folder_path, dirname):
