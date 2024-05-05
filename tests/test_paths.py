@@ -144,7 +144,7 @@ def test_get_document_folder(tmp_library: TemporaryLibrary) -> None:
     from papis.document import from_data
     import papis.database
 
-    db = papis.database.get(library_name=tmp_library.libname)
+    db = papis.database.get()
     doc = from_data({
         "author": "Niels / Bohr",
         "title": "On the constitution of atoms and molecules",
