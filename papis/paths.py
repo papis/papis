@@ -2,10 +2,12 @@ import os
 import pathlib
 import sys
 from typing import Iterable, Iterator, List, Optional, Union
+from warnings import warn
 
 import papis.config
 import papis.logging
 from papis.document import DocumentLike
+from papis.document import from_data
 
 logger = papis.logging.get_logger(__name__)
 
@@ -199,80 +201,27 @@ def get_document_hash_folder(
         paths: Optional[Iterable[str]] = None, *,
         file_read_limit: int = 2000,
         seed: Optional[str] = None) -> str:
-    """Generate a folder name based on hashed data from the given *doc*.
+    warn("'get_document_hash_folder' is deprecated and will be removed. "
+         "Use 'papis.paths.get_document_folder' instead.",
+         DeprecationWarning, stacklevel=2)
 
-    The hash is constructed from the *doc*, the given *paths* and their contents,
-    and a potentially random *seed* value. If given, the contents of the files
-    in *paths* are also added to the hash (the first *file_read_limit* bytes).
-
-    If not given, the *seed* value is random, so the folder name will be
-    different on each call to this function. If this is not desired, the seed
-    can be set to the empty string instead.
-
-    :param doc: a document from which to generate a folder name.
-    :param paths: a list of document files. If not provided, *doc* is searched
-        for a *files* key and the documents inside are used as a default.
-    :param file_read_limit: number of bytes to read from each file in *paths*,
-        if it exists. This can be set to 0 to omit adding file contents to the
-        hash.
-    :param seed: a string to add to the hash of the document.
-
-    :returns: a (potentially non-deterministic) folder name based on the
-        contents of *doc* and *paths* of the form ``HASH[-authors]``.
-    """
-    import hashlib
-    import random
-
-    if paths is None:
-        from papis.document import Document
-
-        if isinstance(doc, Document):
-            paths = doc.get_files()
-        else:
-            paths = doc.get("files", [])
-
-    if seed is None:
-        seed = str(random.random())
-
-    # NOTE: these are sorted to ensure deterministic results if seed is given
-    docdata = sorted(doc.items())
-    paths = sorted(paths)
-
-    md5 = hashlib.md5()
-    md5.update(seed.encode())
-    md5.update(str(docdata).encode())
-
-    if paths:
-        md5.update("".join(paths).encode())
-
-    if file_read_limit > 0:
-        for path in paths:
-            if not os.path.exists(path):
-                continue
-
-            with open(path, "rb") as fd:
-                md5.update(fd.read(file_read_limit))
-
-    author = "-{:.20}".format(doc["author"]) if "author" in doc else ""
-    return normalize_path(f"{md5.hexdigest()}{author}")
+    from papis.id import compute_an_id
+    return compute_an_id(from_data(dict(doc)), seed)
 
 
 def get_document_folder(
         doc: DocumentLike,
-        dirname: PathLike,
-        in_document_paths: Iterable[str], *,
+        dirname: PathLike, *,
         folder_name_format: Optional[str] = None) -> str:
     """Generate a folder name for the document at *dirname*.
 
     This function uses :confval:`add-folder-name` to generate a folder name for
     the *doc* at *dirname*. If no folder can be constructed from the format, then
-    :func:`get_document_hash_folder` is used instead. The returned folder name
-    is guaranteed to be unique and to be a subfolder of *dirname*.
+    the document's ``papis_id`` is used instead as a subfolder of *dirname*. The
+    ``papis_id`` is guaranteed to be unique.
 
     :arg doc: the document used on the *folder_name_format*.
     :arg dirname: the base directory in which to generate the document main folder.
-    :arg in_document_paths: a list of the files that are part of the document
-        (only used by :func:`get_document_hash_folder`).
     :arg folder_name_format: a format to use for the folder name that will be
         filled in using the given *doc*. If no format is given, we default to
         :confval:`add-folder-name`. This format can have additional subfolders.
@@ -312,16 +261,15 @@ def get_document_folder(
 
         out_folder_path = os.path.normpath(os.path.join(dirname, *components[::-1]))
 
-    # if no folder name could be obtained from the format use get_document_hash_folder
+    # if no folder name could be obtained from the format use papis_id
     if out_folder_path == dirname:
         if folder_name_format:
             logger.error(
                 "Could not produce a folder path from the provided data:\n"
                 "\tdata: %s", doc)
 
-        logger.info("Constructing an automatic (hashed) folder name.")
-        out_folder_name = get_document_hash_folder(doc, in_document_paths)
-        out_folder_path = os.path.join(dirname, out_folder_name)
+        logger.info("Falling back to 'papis_id' as a reference folder name.")
+        out_folder_path = os.path.join(dirname, doc["papis_id"])
 
     if not is_relative_to(out_folder_path, dirname):
         raise ValueError(
@@ -348,8 +296,7 @@ def _make_unique_folder(out_folder_path: PathLike) -> str:
 
 def get_document_unique_folder(
         doc: DocumentLike,
-        dirname: PathLike,
-        in_document_paths: Iterable[str], *,
+        dirname: PathLike, *,
         folder_name_format: Optional[str] = None) -> str:
     """A wrapper around :func:`get_document_folder` that ensures that the
     folder is unique by adding suffixes.
@@ -358,7 +305,7 @@ def get_document_unique_folder(
         yet exist on the filesystem.
     """
     out_folder_path = get_document_folder(
-        doc, dirname, in_document_paths,
+        doc, dirname,
         folder_name_format=folder_name_format)
 
     return _make_unique_folder(out_folder_path)

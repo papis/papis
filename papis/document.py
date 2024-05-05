@@ -425,6 +425,11 @@ class Document(Dict[str, Any]):
 
     def save(self) -> None:
         """Saves the current document fields into the info file."""
+
+        if not self._folder or not os.path.exists(self._folder):
+            from papis.exceptions import DocumentFolderNotFound
+            raise DocumentFolderNotFound(describe(self))
+
         import papis.yaml
 
         allow_unicode = papis.config.getboolean("info-allow-unicode")

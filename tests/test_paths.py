@@ -140,45 +140,11 @@ def test_get_document_file_name_format(tmp_library: TemporaryLibrary) -> None:
     assert filename == "blah-2.pdf"
 
 
-def test_get_document_hash_folder(tmp_library: TemporaryLibrary) -> None:
-    from papis.paths import get_document_hash_folder
-
-    data = {"author": "don quijote de la mancha"}
-    filename = tmp_library.create_random_file()
-
-    # check folder with one filename
-    hh = get_document_hash_folder(data, [filename])
-    assert re.match(r".*-don-quijote-de-la-ma$", hh) is not None
-
-    # check folder with more files
-    three_files_hh = get_document_hash_folder(data, [filename, filename, filename])
-    assert re.match(r".*-don-quijote-de-la-ma$", three_files_hh) is not None
-    assert three_files_hh != hh
-
-    # check folder with no files
-    no_files_hh = get_document_hash_folder(data, [])
-    assert re.match(r".*-don-quijote-de-la-ma$", no_files_hh) is not None
-    assert no_files_hh != hh
-
-    # check folder with no data
-    data = {}
-    hh = get_document_hash_folder(data, [filename])
-    assert re.match(r".*-don-quijote-de-la-ma$", hh) is None
-
-    # check folder with a different file
-    filename = tmp_library.create_random_file()
-    newhh = get_document_hash_folder(data, [filename])
-    assert hh != newhh
-
-    # check folder with same file (hash has a random seed)
-    newnewhh = get_document_hash_folder(data, [filename])
-    assert newnewhh != newhh
-
-
 def test_get_document_folder(tmp_library: TemporaryLibrary) -> None:
     from papis.document import from_data
+    import papis.database
 
-    pdf = tmp_library.create_random_file("pdf")
+    db = papis.database.get()
     doc = from_data({
         "author": "Niels / Bohr",
         "title": "On the constitution of atoms and molecules",
@@ -186,36 +152,39 @@ def test_get_document_folder(tmp_library: TemporaryLibrary) -> None:
         "volume": 26,
         "doi": "10.1080/14786441308634955",
         })
+    doc.set_folder(os.path.join(tmp_library.libdir,
+                                doc["papis_id"]))
+    db.maybe_compute_id(doc)
 
     from papis.paths import get_document_folder, get_document_unique_folder
 
     # check no folder_name_format
-    folder_name = get_document_folder(doc, tmp_library.libdir, [pdf])
-    assert re.match(r"\w{32}-niels-bohr", os.path.basename(folder_name)) is not None
+    folder_name = get_document_folder(doc, tmp_library.libdir)
+    assert re.match(r"\w{32}", os.path.basename(folder_name))[0] == doc["papis_id"]
 
     # check simple folder_name_format
-    folder_name = get_document_folder(doc, tmp_library.libdir, [pdf],
+    folder_name = get_document_folder(doc, tmp_library.libdir,
                                       folder_name_format="{doc[author]}")
     assert os.path.basename(folder_name) == "niels-bohr"
 
     # check uniqueness with suffices
     os.mkdir(folder_name)
-    folder_name = get_document_unique_folder(doc, tmp_library.libdir, [pdf],
+    folder_name = get_document_unique_folder(doc, tmp_library.libdir,
                                              folder_name_format="{doc[author]}")
     assert os.path.basename(folder_name) == "niels-bohr-a"
 
     # check incorrect folder_name_format
-    folder_name = get_document_folder(doc, tmp_library.libdir, [pdf],
+    folder_name = get_document_folder(doc, tmp_library.libdir,
                                       folder_name_format="{doc.author}")
-    assert re.match(r"\w{32}-niels-bohr", os.path.basename(folder_name)) is not None
+    assert re.match(r"\w{32}", os.path.basename(folder_name))[0] == doc["papis_id"]
 
     # check multiple subfolders in folder_name_format
-    folder_name = get_document_folder(doc, tmp_library.libdir, [pdf],
+    folder_name = get_document_folder(doc, tmp_library.libdir,
                                       folder_name_format="{doc[year]}/{doc[author]}")
     assert os.path.basename(folder_name) == "niels-bohr"
     assert os.path.basename(os.path.dirname(folder_name)) == "1913"
 
-    # check path that is not relative to libdir -> we get get_document_hash_folder
-    folder_name = get_document_folder(doc, tmp_library.libdir, [pdf],
+    # check path that is not relative to libdir
+    folder_name = get_document_folder(doc, tmp_library.libdir,
                                       folder_name_format="../{doc[author]}")
-    assert re.match(r"\w{32}-niels-bohr", os.path.basename(folder_name)) is not None
+    assert re.match(r"\w{32}", os.path.basename(folder_name))[0] == doc["papis_id"]
