@@ -201,8 +201,8 @@ def get_document_hash_folder(
         paths: Optional[Iterable[str]] = None, *,
         file_read_limit: int = 2000,
         seed: Optional[str] = None) -> str:
-    warn("'get_document_hash_folder' is deprecated and will be removed"
-         "Use 'papis.id.compute_an_id' instead.",
+    warn("'get_document_hash_folder' is deprecated and will be removed. "
+         "Use 'papis.paths.get_document_folder' instead.",
          DeprecationWarning, stacklevel=2)
 
     from papis.id import compute_an_id
