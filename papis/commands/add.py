@@ -310,8 +310,6 @@ def run(paths: List[str],
     tmp_document["files"] = new_file_list
     tmp_document.save()
 
-    papis.database.get().add(tmp_document)
-
     base_path = os.path.normpath(base_path)
     out_folder_path = get_document_unique_folder(
         tmp_document, base_path,
@@ -384,6 +382,8 @@ def run(paths: List[str],
 
     logger.info("[MV] '%s' to '%s'.", tmp_document.get_main_folder(), out_folder_path)
     papis.document.move(tmp_document, out_folder_path)
+
+    papis.database.get().add(tmp_document)
 
     if git:
         papis.git.add_and_commit_resource(
