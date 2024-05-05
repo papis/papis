@@ -413,10 +413,10 @@ Add options
 
         add-folder-name = ``{doc[year]} / {doc[author]}-{doc[title]}``
 
-    If this setting is empty, a (MD5) hash of some document contents is used.
-    This will generally result in unique folder names.
-    If a folder name is not unique and the document does not appear to
-    be a duplicate, a suffix ``-a``, ``-b``, etc. is added to the names.
+    This setting should aim to result in unique (sub)folder names.
+    If a (sub)folder name is not unique and the document does not appear to
+    be a duplicate, a suffix ``-a``, ``-b``, etc. is added to the name.
+    If this setting is ``None`` the template ``{doc[papis_id]}`` is used.
 
 .. papis-config:: add-file-name
     :type: str
