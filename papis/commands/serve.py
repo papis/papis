@@ -25,14 +25,6 @@ import papis.notes
 import papis.citations
 import papis.logging
 
-import papis.web.static
-import papis.web.libraries
-import papis.web.tags
-import papis.web.docview
-import papis.web.search
-import papis.web.pdfjs
-
-
 logger = papis.logging.get_logger(__name__)
 
 USE_GIT = False
@@ -113,6 +105,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                   libname: Optional[str] = None,
                   docs: Optional[List[papis.document.Document]] = None,
                   query: Optional[str] = None) -> None:
+        import papis.web.search
+
         if docs is None:
             docs = []
 
@@ -125,6 +119,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         if len(docs) == 0:
             if papis.config.getboolean("serve-empty-query-get-all-documents"):
                 docs = papis.api.get_all_documents_in_lib(libname)
+
         libfolder = papis.config.get_lib_from_name(libname).paths[0]
         placeholder = papis.web.search.QUERY_PLACEHOLDER
         page = papis.web.search.html(documents=docs,
@@ -146,6 +141,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     @ok_html
     def page_tags(self, libname: Optional[str] = None,
                   sort_by: Optional[str] = None) -> None:
+        import papis.web.tags
+
         global TAGS_LIST
         libname = libname or papis.api.get_lib_name()
         self._handle_lib(libname)
@@ -175,6 +172,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
     @ok_html
     def page_libraries(self) -> None:
+        import papis.web.libraries
+
         libname = papis.api.get_lib_name()
         page = papis.web.libraries.html(libname=libname)
         self.wfile.write(bytes(str(page), "utf-8"))
@@ -182,6 +181,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
     @ok_html
     def page_document(self, libname: str, papis_id: str) -> None:
+        import papis.web.docview
+
         doc = self._get_document(libname, papis_id)
         page = papis.web.docview.html(libname=libname, doc=doc)
         self.wfile.write(bytes(str(page), "utf-8"))
@@ -386,6 +387,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self._redirect_back()
 
     def serve_static(self, static_path: str, params: str) -> None:
+        import papis.web.static
+
         folders = papis.web.static.static_paths()
         partial_path = urllib.parse.unquote_plus(static_path)
         for folder in folders:
@@ -490,6 +493,8 @@ def cli(address: str, port: int, git: bool) -> None:
     global USE_GIT
     USE_GIT = git
     server_address = (address, port)
+
+    import papis.web.pdfjs
 
     if not papis.web.pdfjs.detect_pdfjs():
         logger.warning(papis.web.pdfjs.error_message())
