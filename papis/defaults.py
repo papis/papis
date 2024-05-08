@@ -110,7 +110,6 @@ settings: Dict[str, Any] = {
                                    "author_list:list",
                                    "doi:str",
                                    "ref:str",
-                                   "isbn:str",
                                    "author:str",
                                    "journal:str",
                                    "note:str",
