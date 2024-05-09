@@ -1,0 +1,191 @@
+{
+  "status": "ok",
+  "message-type": "work",
+  "message-version": "1.0.0",
+  "message": {
+    "indexed": {
+      "date-parts": [
+        [
+          2024,
+          4,
+          30
+        ]
+      ],
+      "date-time": "2024-04-30T11:17:07Z",
+      "timestamp": 1714475827478
+    },
+    "publisher-location": "Basel",
+    "reference-count": 7,
+    "publisher": "Birkhäuser Basel",
+    "isbn-type": [
+      {
+        "value": "9783034897426",
+        "type": "print"
+      },
+      {
+        "value": "9783034887205",
+        "type": "electronic"
+      }
+    ],
+    "content-domain": {
+      "domain": [],
+      "crossmark-restriction": false
+    },
+    "short-container-title": [],
+    "published-print": {
+      "date-parts": [
+        [
+          1999
+        ]
+      ]
+    },
+    "DOI": "10.1007/978-3-0348-8720-5_13",
+    "type": "book-chapter",
+    "created": {
+      "date-parts": [
+        [
+          2011,
+          8,
+          10
+        ]
+      ],
+      "date-time": "2011-08-10T19:54:35Z",
+      "timestamp": 1313006075000
+    },
+    "page": "113-118",
+    "source": "Crossref",
+    "is-referenced-by-count": 15,
+    "title": [
+      "Differentiability with Respect to Initial Data for a Scalar Conservation Law"
+    ],
+    "prefix": "10.1007",
+    "author": [
+      {
+        "given": "François",
+        "family": "Bouchut",
+        "sequence": "first",
+        "affiliation": []
+      },
+      {
+        "given": "François",
+        "family": "James",
+        "sequence": "additional",
+        "affiliation": []
+      }
+    ],
+    "member": "297",
+    "reference": [
+      {
+        "key": "13_CR1",
+        "first-page": "1097",
+        "volume": "320",
+        "author": "F Bouchut",
+        "year": "1995",
+        "unstructured": "F. Bouchut and F. James, Équations de transport unidimensionnelles é coefficients discontinus, C.R. Acad. Sci. Paris, Série I, 320 (1995), 1097–1102.",
+        "journal-title": "C.R. Acad. Sci. Paris, Série I"
+      },
+      {
+        "key": "13_CR2",
+        "first-page": "891",
+        "volume": "32",
+        "author": "F Bouchut",
+        "year": "1998",
+        "unstructured": "F. Bouchut and F. James, One-dimensional transport equations with discontinuous coefficients, Prépublication MAPMO n° 96–13, université d’Orléans, avril 1996, Nonlinear Analysis, TMA, 32 (1998), No 7, 891–933",
+        "journal-title": "Prépublication MAPMO n° 96–13, université d’Orléans, avril 1996"
+      },
+      {
+        "key": "13_CR3",
+        "first-page": "549",
+        "volume-title": "Équations aux dérivées partielles et applications, articles dédiés é J.-L. Lions",
+        "author": "E Godlewski",
+        "year": "1998",
+        "unstructured": "E. Godlewski, M. Olazabal and P.-A. Raviart, On the linearization of hyperbolic systems of conservation laws. Application to stability, Équations aux dérivées partielles et applications, articles dédiés é J.-L. Lions, Gauthier-Villars, Paris, 1998, 549–570"
+      },
+      {
+        "key": "13_CR4",
+        "doi-asserted-by": "publisher",
+        "first-page": "217",
+        "DOI": "10.1070/SM1970v010n02ABEH002156",
+        "volume": "10",
+        "author": "SN Kružkov",
+        "year": "1970",
+        "unstructured": "S.N. Kružkov, First-order quasilinear equations in several independent variables, Math. USSR Sb., 10 (1970), 217–243.",
+        "journal-title": "Math. USSR Sb"
+      },
+      {
+        "key": "13_CR5",
+        "doi-asserted-by": "crossref",
+        "unstructured": "A. Majda, The stability of multi-dimensional shock fronts, Mem. Amer. Math. Soc, 275 (1982).",
+        "DOI": "10.1090/memo/0275"
+      },
+      {
+        "key": "13_CR6",
+        "unstructured": "M. Olazabal Résolution numérique du système des perturbations linéaires d’unécoulement MHD, Thèse Université Paris 6, 1998."
+      },
+      {
+        "issue": "2",
+        "key": "13_CR7",
+        "first-page": "95",
+        "volume": "26",
+        "author": "OA Oleinik",
+        "year": "1963",
+        "unstructured": "O.A. Oleinik, Discontinuous solutions of nonlinear differential equations, Amer. Math. Soc. Transi. (2), 26 (1963), 95–172.",
+        "journal-title": "Amer. Math. Soc. Transi"
+      }
+    ],
+    "container-title": [
+      "Hyperbolic Problems: Theory, Numerics, Applications"
+    ],
+    "original-title": [],
+    "language": "en",
+    "link": [
+      {
+        "URL": "http://link.springer.com/content/pdf/10.1007/978-3-0348-8720-5_13.pdf",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "deposited": {
+      "date-parts": [
+        [
+          2020,
+          12,
+          10
+        ]
+      ],
+      "date-time": "2020-12-10T16:13:45Z",
+      "timestamp": 1607616825000
+    },
+    "score": 1,
+    "resource": {
+      "primary": {
+        "URL": "http://link.springer.com/10.1007/978-3-0348-8720-5_13"
+      }
+    },
+    "subtitle": [],
+    "short-title": [],
+    "issued": {
+      "date-parts": [
+        [
+          1999
+        ]
+      ]
+    },
+    "ISBN": [
+      "9783034897426",
+      "9783034887205"
+    ],
+    "references-count": 7,
+    "URL": "http://dx.doi.org/10.1007/978-3-0348-8720-5_13",
+    "relation": {},
+    "subject": [],
+    "published": {
+      "date-parts": [
+        [
+          1999
+        ]
+      ]
+    }
+  }
+}

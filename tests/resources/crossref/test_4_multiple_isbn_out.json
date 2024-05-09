@@ -1,0 +1,76 @@
+{
+  "author": "Bouchut, François and James, François",
+  "author_list": [
+    {
+      "affiliation": [],
+      "family": "Bouchut",
+      "given": "François"
+    },
+    {
+      "affiliation": [],
+      "family": "James",
+      "given": "François"
+    }
+  ],
+  "citations": [
+    {
+      "author": "F Bouchut",
+      "first-page": "1097",
+      "journal-title": "C.R. Acad. Sci. Paris, Série I",
+      "unstructured": "F. Bouchut and F. James, Équations de transport unidimensionnelles é coefficients discontinus, C.R. Acad. Sci. Paris, Série I, 320 (1995), 1097–1102.",
+      "volume": "320",
+      "year": "1995"
+    },
+    {
+      "author": "F Bouchut",
+      "first-page": "891",
+      "journal-title": "Prépublication MAPMO n° 96–13, université d’Orléans, avril 1996",
+      "unstructured": "F. Bouchut and F. James, One-dimensional transport equations with discontinuous coefficients, Prépublication MAPMO n° 96–13, université d’Orléans, avril 1996, Nonlinear Analysis, TMA, 32 (1998), No 7, 891–933",
+      "volume": "32",
+      "year": "1998"
+    },
+    {
+      "author": "E Godlewski",
+      "first-page": "549",
+      "unstructured": "E. Godlewski, M. Olazabal and P.-A. Raviart, On the linearization of hyperbolic systems of conservation laws. Application to stability, Équations aux dérivées partielles et applications, articles dédiés é J.-L. Lions, Gauthier-Villars, Paris, 1998, 549–570",
+      "volume-title": "Équations aux dérivées partielles et applications, articles dédiés é J.-L. Lions",
+      "year": "1998"
+    },
+    {
+      "author": "SN Kružkov",
+      "doi": "10.1070/SM1970v010n02ABEH002156",
+      "first-page": "217",
+      "journal-title": "Math. USSR Sb",
+      "unstructured": "S.N. Kružkov, First-order quasilinear equations in several independent variables, Math. USSR Sb., 10 (1970), 217–243.",
+      "volume": "10",
+      "year": "1970"
+    },
+    {
+      "doi": "10.1090/memo/0275",
+      "unstructured": "A. Majda, The stability of multi-dimensional shock fronts, Mem. Amer. Math. Soc, 275 (1982)."
+    },
+    {
+      "unstructured": "M. Olazabal Résolution numérique du système des perturbations linéaires d’unécoulement MHD, Thèse Université Paris 6, 1998."
+    },
+    {
+      "author": "OA Oleinik",
+      "first-page": "95",
+      "issue": "2",
+      "journal-title": "Amer. Math. Soc. Transi",
+      "unstructured": "O.A. Oleinik, Discontinuous solutions of nonlinear differential equations, Amer. Math. Soc. Transi. (2), 26 (1963), 95–172.",
+      "volume": "26",
+      "year": "1963"
+    }
+  ],
+  "doc_url": "http://link.springer.com/content/pdf/10.1007/978-3-0348-8720-5_13.pdf",
+  "doi": "10.1007/978-3-0348-8720-5_13",
+  "isbn": "9783034887205",
+  "journal": "Hyperbolic Problems: Theory, Numerics, Applications",
+  "language": "en",
+  "pages": "113--118",
+  "publisher": "Birkhäuser Basel",
+  "title": "Differentiability with Respect to Initial Data for a Scalar Conservation Law",
+  "type": "inbook",
+  "url": "http://dx.doi.org/10.1007/978-3-0348-8720-5_13",
+  "year": 1999
+}
