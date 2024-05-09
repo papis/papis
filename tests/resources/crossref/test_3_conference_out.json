@@ -115,8 +115,6 @@
   "doi": "10.1145/3184558.3186235",
   "year": 2018,
   "author": "Bühmann, Lorenz and Lehmann, Jens and Westphal, Patrick and Bin, Simon",
-  "isbn": [
-    "9781450356404"
-  ],
+  "isbn": "9781450356404",
   "title": "DL-Learner Structured Machine Learning on Semantic Web Data"
 }

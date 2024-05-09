@@ -32,9 +32,9 @@ def test_get_data(tmp_config: TemporaryConfiguration) -> None:
 
 
 @pytest.mark.parametrize(("doi", "basename"), [
-    ("10.1103/physrevb.89.140501", "test1"),
-    ("10.1103/physrevb.89.140501", "test_2"),
-    ("10.1145/3184558.3186235", "test_conference")
+    ("10.1103/physrevb.89.140501", "test_1_multiple_authors"),
+    ("10.1103/physrevb.89.140501", "test_2_abstract"),
+    ("10.1145/3184558.3186235", "test_3_conference")
     ])
 def test_doi_to_data(tmp_config: TemporaryConfiguration, monkeypatch,
                      doi: str, basename: str) -> None:
