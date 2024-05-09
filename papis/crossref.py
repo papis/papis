@@ -93,6 +93,8 @@ type_converter = {
     "standard": "techreport",
 }
 
+# NOTE: fields checked against the official API format
+# https://github.com/CrossRef/rest-api-doc/blob/583a8dbad0a063da4aa5ec319df33130a26ef650/api_format.md
 key_conversion = [
     KeyConversionPair("DOI", [{"key": "doi", "action": None}]),
     KeyConversionPair("URL", [{"key": "url", "action": None}]),
@@ -109,7 +111,14 @@ key_conversion = [
     # "issued": {"key": "",},
     KeyConversionPair("language", [papis.document.EmptyKeyConversion]),
     KeyConversionPair("abstract", [papis.document.EmptyKeyConversion]),
-    KeyConversionPair("ISBN", [{"key": "isbn", "action": None}]),
+    KeyConversionPair("ISBN", [{
+        "key": "isbn",
+        "action": lambda x: x[0] if isinstance(x, list) else x
+    }]),
+    KeyConversionPair("isbn-type", [{
+        "key": "isbn",
+        "action": lambda x: [i for i in x if i["type"] == "electronic"][0]["value"]
+    }]),
     KeyConversionPair("page", [{
         "key": "pages",
         "action": lambda p: re.sub(r"(-[^-])", r"-\1", p),
