@@ -374,13 +374,20 @@ def _edit(ctx: click.Context,
 @click.pass_context
 def _browse(ctx: click.Context, key: Optional[str]) -> None:
     """Browse a document in the document list."""
-    docs = papis.api.pick_doc(ctx.obj["documents"])
+    from papis.api import pick_doc
+
+    docs = pick_doc(ctx.obj["documents"])
+    if not docs:
+        logger.warning(papis.strings.no_documents_retrieved_message)
+        return
+
     if key:
         papis.config.set("browse-key", key)
-    if not docs:
-        return
+
+    from papis.commands.browse import run
+
     for d in docs:
-        papis.commands.browse.run(d)
+        run(d)
 
 
 @cli.command("rm")
@@ -397,10 +404,15 @@ def _rm(ctx: click.Context) -> None:
 @click.pass_context
 def _ref(ctx: click.Context, out: Optional[str]) -> None:
     """Print the reference for a document."""
+    from papis.api import pick_doc
+
     docs = ctx.obj["documents"]
-    docs = papis.api.pick_doc(docs)
+    docs = pick_doc(docs)
+
     if not docs:
+        logger.warning(papis.strings.no_documents_retrieved_message)
         return
+
     ref = docs[0]["ref"]
     if out:
         with open(out, "w+") as fd:
@@ -420,14 +432,18 @@ def _ref(ctx: click.Context, out: Optional[str]) -> None:
 def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
     """Save the documents in the BibTeX format."""
     docs = ctx.obj["documents"]
+
     if not force:
-        c = papis.tui.utils.confirm("Are you sure you want to save?")
-        if not c:
-            click.echo("Not saving..")
+        from papis.tui.utils import confirm
+
+        if not confirm("Are you sure you want to save?"):
             return
+
+    from papis.commands.export import run
+
     with open(bibfile, "w+") as fd:
         logger.info("Saving %d documents in '%s'.", len(docs), bibfile)
-        fd.write(papis.commands.export.run(docs, to_format="bibtex"))
+        fd.write(run(docs, to_format="bibtex"))
 
 
 @cli.command("sort")
