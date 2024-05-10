@@ -230,7 +230,7 @@ def _update(ctx: click.Context, _all: bool,
     picked_doc = None
     if not _all:
         picked_docs = pick_doc(docs)
-        if picked_docs is None or picked_docs[0] is None:
+        if not picked_docs or not picked_docs[0]:
             logger.warning(papis.strings.no_documents_retrieved_message)
             return
 
@@ -269,6 +269,8 @@ def _update(ctx: click.Context, _all: bool,
                     libdoc.clear()
                     libdoc.update(doc)
                     save_doc(libdoc)
+
+        logger.info("")
 
     ctx.obj["documents"] = docs
 
