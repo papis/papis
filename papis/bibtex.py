@@ -358,7 +358,7 @@ class Importer(papis.importer.Importer):
 def explorer(ctx: click.core.Context, bibfile: str) -> None:
     """Import documents from a BibTeX file.
 
-    This explorer be used as
+    This explorer can be used as
 
     .. code:: sh
 
