@@ -219,43 +219,69 @@ def _add(ctx: click.Context,
 @papis.cli.all_option()
 @papis.cli.bool_flag("--from", "-f", "fromdb",
                      help="Update the document from the library")
-@papis.cli.bool_flag("-t", "--to",
-                     help="Update the library document from retrieved document")
+@papis.cli.bool_flag("-t", "--to", "todb",
+                     help="Update the library document from the BibTeX file")
 @click.option("-k", "--keys",
               help="Update only given keys (can be given multiple times)",
               type=str,
               multiple=True)
 @click.pass_context
 def _update(ctx: click.Context, _all: bool,
-            fromdb: bool, to: bool, keys: List[str]) -> None:
-    """Update documents from and to the library."""
-    docs = click.get_current_context().obj["documents"]
+            fromdb: bool, todb: bool, keys: List[str]) -> None:
+    """Update documents from and to the library"""
+    if fromdb and todb:
+        logger.error("Cannot pass both '--from' and '--to'.")
+        return
+
+    from papis.api import pick_doc, save_doc
+    from papis.utils import locate_document_in_lib
+
+    docs = ctx.obj["documents"]
+
     picked_doc = None
     if not _all:
-        picked_docs = papis.api.pick_doc(docs)
+        picked_docs = pick_doc(docs)
         if picked_docs is None or picked_docs[0] is None:
+            logger.warning(papis.strings.no_documents_retrieved_message)
             return
+
         picked_doc = picked_docs[0]
+
+    logger.info("This uses the keys ['%s'] to determine a match in the library.",
+                "', '".join(papis.config.getlist("unique-document-keys")))
+
     for j, doc in enumerate(docs):
         if picked_doc and doc["ref"] != picked_doc["ref"]:
             continue
+
+        logger.info("Checking for BibTeX entry in the '%s' library: '%s'.",
+                    papis.config.get_lib_name(), papis.document.describe(doc))
+
         try:
-            libdoc = papis.utils.locate_document_in_lib(doc)
-        except IndexError as e:
-            logger.info(
-                "{c.Fore.YELLOW}%s:\n\t'{c.Fore.RED}%-80.80s{c.Style.RESET_ALL}'",
-                e, papis.document.describe(doc))
+            libdoc = locate_document_in_lib(doc)
+        except IndexError:
+            logger.warning(
+                "No document matching the BibTeX entry found in the '%s' library.",
+                papis.config.get_lib_name())
         else:
             if fromdb:
-                logger.info(
-                    "Updating '{c.Fore.GREEN}%-80.80s{c.Style.RESET_ALL}'",
-                    papis.document.describe(doc))
+                logger.info("Updating BibTeX entry from library.")
                 if keys:
-                    docs[j].update(
-                        {k: libdoc.get(k) for k in keys if k in libdoc})
+                    docs[j].update({k: libdoc[k] for k in keys if k in libdoc})
                 else:
-                    docs[j] = libdoc
-    click.get_current_context().obj["documents"] = docs
+                    docs[j] = libdoc.copy()
+
+            if todb:
+                logger.info("Adding BibTeX entry to library document: '%s'.",
+                            papis.document.describe(libdoc))
+                if keys:
+                    libdoc.update({k: doc[k] for k in keys if k in doc})
+                else:
+                    libdoc.clear()
+                    libdoc.update(doc)
+                    save_doc(libdoc)
+
+    ctx.obj["documents"] = docs
 
 
 @cli.command("open")
