@@ -108,21 +108,10 @@ import re
 from typing import List, Optional, Tuple
 import click
 
-import papis.api
 import papis.database
 import papis.cli
 import papis.config
-import papis.utils
 import papis.format
-import papis.tui.utils
-import papis.commands
-import papis.commands.explore as explore
-import papis.commands.add
-import papis.commands.open
-import papis.commands.edit
-import papis.commands.browse
-import papis.commands.export
-import papis.bibtex
 import papis.logging
 from papis.commands import AliasedGroup
 from papis.commands.explore import get_explorer_by_name
@@ -338,14 +327,14 @@ def _edit(ctx: click.Context,
 
         papis bibtex read article.bib edit --set __proj focal-point --all
     """
-    from papis.api import save_doc
+    from papis.api import pick_doc, save_doc
 
     not_found = 0
     docs = ctx.obj["documents"]
     if not docs:
         return
     if not _all:
-        docs = papis.api.pick_doc(docs)
+        docs = pick_doc(docs)
     for doc in docs:
         try:
             located = papis.utils.locate_document_in_lib(doc)
@@ -358,7 +347,8 @@ def _edit(ctx: click.Context,
                                      k, v, exc_info=exc)
                 save_doc(located)
             else:
-                papis.commands.edit.run(located)
+                from papis.commands.edit import run
+                run(located)
         except IndexError:
             not_found += 1
             logger.warning("Document not found in library '%s': %s.",
@@ -505,10 +495,13 @@ def _unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
     logger.info("Discarded %d duplicated documents.", len(duplicated_docs))
 
     ctx.obj["documents"] = unique_docs
+
+    from papis.commands.export import run
+
     if o:
         logger.info("Saving %d duplicate documents in '%s'.", len(duplicated_docs), o)
         with open(o, "w+") as f:
-            f.write(papis.commands.export.run(duplicated_docs, to_format="bibtex"))
+            f.write(run(duplicated_docs, to_format="bibtex"))
 
 
 @cli.command("doctor")
@@ -620,16 +613,20 @@ def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
 
         papis bibtex read mybib.bib import
     """
+    from papis.api import pick_doc
+
     docs = ctx.obj["documents"]
 
     if not _all:
-        docs = papis.api.pick_doc(docs)
+        docs = pick_doc(docs)
 
     if out is not None:
         logger.info("Setting library to '%s'.", out)
         if not os.path.exists(out):
             os.makedirs(out)
         papis.config.set_lib_from_name(out)
+
+    from papis.commands.add import run
 
     for j, doc in enumerate(docs):
         file_value = None
@@ -656,4 +653,4 @@ def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
         else:
             logger.info("\tFound %d file(s).", len(filepaths))
 
-        papis.commands.add.run(filepaths, data=doc)
+        run(filepaths, data=doc)
