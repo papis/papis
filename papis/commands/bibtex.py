@@ -124,6 +124,8 @@ import papis.commands.browse
 import papis.commands.export
 import papis.bibtex
 import papis.logging
+from papis.commands import AliasedGroup
+from papis.commands.explore import get_explorer_by_name
 
 logger = papis.logging.get_logger(__name__)
 
@@ -134,18 +136,17 @@ papis.config.register_default_settings({"bibtex": {
     "default-save-bibfile": ""
 }})
 
-EXPLORER_MGR = explore.get_explorer_mgr()
+BIBTEX_EXPLORER = get_explorer_by_name("bibtex")
 
 
-@click.group("bibtex", cls=papis.commands.AliasedGroup, chain=True)
+@click.group("bibtex", cls=AliasedGroup, chain=True)
 @click.help_option("-h", "--help")
 @papis.cli.bool_flag(
     "--noar", "--no-auto-read", "no_auto_read",
-    help="Do not auto read even if the configuration file says it")
+    help="Do not auto read the 'default-read-file' (must call 'read' explicitly)")
 @click.pass_context
 def cli(ctx: click.Context, no_auto_read: bool) -> None:
-    """A papis script to interact with bibtex files"""
-    global EXPLORER_MGR
+    """Interact with BibTeX files"""
     ctx.obj = {"documents": []}
 
     if no_auto_read:
@@ -156,10 +157,12 @@ def cli(ctx: click.Context, no_auto_read: bool) -> None:
     bibfile = papis.config.get("default-read-bibfile", section="bibtex")
     if not no_auto_read and bibfile and os.path.exists(bibfile):
         logger.info("Auto-reading '%s'.", bibfile)
-        EXPLORER_MGR["bibtex"].plugin.callback(bibfile)
+        if BIBTEX_EXPLORER and BIBTEX_EXPLORER.callback:
+            BIBTEX_EXPLORER.callback(bibfile)
 
 
-cli.add_command(EXPLORER_MGR["bibtex"].plugin, "read")
+if BIBTEX_EXPLORER:
+    cli.add_command(BIBTEX_EXPLORER, "read")
 
 
 @cli.command("add")
