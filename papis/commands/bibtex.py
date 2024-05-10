@@ -179,7 +179,9 @@ def _add(ctx: click.Context,
          query: str,
          _all: bool,
          refs_file: Optional[str]) -> None:
-    """Add a reference to the BibTeX file."""
+    """Add documents from the library to the BibTeX file"""
+    from papis.api import get_documents_in_lib, pick_doc
+
     docs = []
 
     if refs_file:
@@ -205,9 +207,9 @@ def _add(ctx: click.Context,
 
         logger.info("Found %d documents for %d references.", found, len(references))
     else:
-        docs = papis.api.get_documents_in_lib(search=query)
+        docs = get_documents_in_lib(search=query)
         if not _all:
-            docs = list(papis.api.pick_doc(docs))
+            docs = list(pick_doc(docs))
 
     ctx.obj["documents"].extend(docs)
 
