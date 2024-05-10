@@ -289,12 +289,31 @@ def _update(ctx: click.Context, _all: bool,
 @click.pass_context
 def _open(ctx: click.Context) -> None:
     """Open a document using the default application."""
+    from papis.api import pick_doc
+
     docs = ctx.obj["documents"]
-    docs = papis.api.pick_doc(docs)
+    docs = pick_doc(docs)
+
     if not docs:
+        logger.warning(papis.strings.no_documents_retrieved_message)
         return
-    doc = papis.utils.locate_document_in_lib(docs[0])
-    papis.commands.open.run(doc)
+
+    doc = docs[0]
+    logger.info("Checking the '%s' library for document: '%s'",
+                papis.config.get_lib_name(), papis.document.describe(doc))
+
+    from papis.utils import locate_document_in_lib
+
+    try:
+        libdoc = locate_document_in_lib(doc)
+    except IndexError:
+        logger.warning(
+            "No document matching the BibTeX entry found in the '%s' library.",
+            papis.config.get_lib_name())
+    else:
+        from papis.commands.open import run
+
+        run(libdoc)
 
 
 @cli.command("edit")
