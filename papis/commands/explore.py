@@ -131,6 +131,15 @@ def get_explorer_mgr() -> "ExtensionManager":
     return papis.plugin.get_extension_manager(EXPLORER_EXTENSION_NAME)
 
 
+def get_explorer_by_name(name: str) -> Optional[click.Command]:
+    try:
+        mgr = get_explorer_mgr()
+        plugin: click.Command = mgr[name].plugin
+        return plugin
+    except KeyError:
+        return None
+
+
 @click.command("lib")
 @click.pass_context
 @click.help_option("--help", "-h")
