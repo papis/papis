@@ -162,7 +162,7 @@ def cli(query: str,
     document = docs[0]
 
     if file_name is not None:  # Use args if set
-        papis.config.set("add-file-name", file_name)
+        papis.config.set("add-file-name", papis.config.escape_interp(file_name))
 
     try:
         run(document, files + urls, git=git, link=link)

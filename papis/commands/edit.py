@@ -108,7 +108,7 @@ def cli(query: str,
         return
 
     if editor is not None:
-        papis.config.set("editor", editor)
+        papis.config.set("editor", papis.config.escape_interp(editor))
 
     for document in documents:
         if notes:

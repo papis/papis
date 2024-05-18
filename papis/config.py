@@ -549,7 +549,8 @@ def set_lib(library: papis.library.Library) -> None:
 
     if library.name not in config:
         # NOTE: can't use set(...) here due to cyclic dependencies
-        config[library.name] = {"dirs": str(library.paths)}
+        paths = [escape_interp(path) for path in library.paths]
+        config[library.name] = {"dirs": str(paths)}
 
     CURRENT_LIBRARY = library
 
@@ -577,7 +578,7 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
 
             lib = papis.library.from_paths([libname])
             # NOTE: can't use set(...) here due to cyclic dependencies
-            config[lib.name] = {"dirs": str(lib.paths)}
+            config[lib.name] = {"dirs": str([escape_interp(libname)])}
         else:
             raise RuntimeError(
                 f"Library '{libname}' does not seem to exist. "
@@ -679,3 +680,18 @@ def reset_configuration() -> Configuration:
 
     logger.debug("Resetting configuration.")
     return get_configuration()
+
+
+def escape_interp(path: str) -> str:
+    """Escape paths added to the configuration file.
+
+    By default, the :class:`papis.config.Configuration` enables string interpolation
+    in the key values (e.g. using ``key = %(other_key)s-suffix)``). Any paths
+    added to the configuration should then be escaped so that they do not
+    interfere with the interpolation.
+    """
+    import re
+
+    # FIXME: this should be smart enough to not double quote valid interpolation
+    # paths? Would need a regex to skip things like `%\(\w+\)`?
+    return re.sub(r"([^%])%([^%(])", r"\1%%\2", path)

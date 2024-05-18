@@ -31,9 +31,21 @@ def test_get_config_paths(tmp_config: TemporaryConfiguration) -> None:
     assert papis.config.get_scripts_folder() == scriptsdir
 
 
-def test_get_config_home(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
+def test_get_config_home(tmp_config: TemporaryConfiguration,
+                         monkeypatch: pytest.MonkeyPatch) -> None:
     import papis.config
     assert re.match(r".+papis", papis.config.get_config_home()) is not None
+
+
+def test_config_interpolation() -> None:
+    with TemporaryConfiguration(prefix="papis%test%") as tmp_config:
+        import papis.config
+
+        assert papis.config.get("dir", section=tmp_config.libname) == tmp_config.libdir
+
+        papis.config.set("some_value", "value1")
+        papis.config.set("more_value", "more_%(some_value)s")
+        assert papis.config.get("more_value") == "more_value1"
 
 
 def test_set(tmp_config: TemporaryConfiguration) -> None:
@@ -119,7 +131,8 @@ def test_get_types(tmp_config: TemporaryConfiguration) -> None:
         value = papis.config.getboolean("boolean_config")
 
 
-def test_get_configuration(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
+def test_get_configuration(tmp_config: TemporaryConfiguration,
+                           monkeypatch: pytest.MonkeyPatch) -> None:
     import papis.config
 
     general_name = papis.config.get_general_settings_name()
@@ -178,6 +191,7 @@ def test_set_lib_from_path(tmp_config: TemporaryConfiguration) -> None:
     import papis.config
 
     assert tmp_config.libdir is not None
+
     papis.config.set_lib_from_name(tmp_config.libdir)
     assert papis.config.get_lib_name() == tmp_config.libdir
 
@@ -186,7 +200,9 @@ def test_set_lib_from_real_lib(tmp_config: TemporaryConfiguration) -> None:
     import papis.config
 
     libname = "test-set-lib"
-    papis.config.set("dir", tmp_config.libdir, section=libname)
+    papis.config.set("dir",
+                     papis.config.escape_interp(tmp_config.libdir),
+                     section=libname)
 
     assert tmp_config.libdir is not None
     assert os.path.exists(tmp_config.libdir)
