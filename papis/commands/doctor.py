@@ -33,8 +33,8 @@ implemented
   :confval:`doctor-key-type-check-keys`, e.g. year should be an ``int``.
   Lists can be automatically fixed (by splitting or joining) using the
   :confval:`doctor-key-type-check-separator` setting.
-* ``keys-exist``: checks that the keys provided by
-  :confval:`doctor-keys-exist-keys` exist in the document.
+* ``keys-missing``: checks that the keys provided by
+  :confval:`doctor-keys-missing-keys` exist in the document.
 * ``refs``: checks that the document has a valid reference (i.e. one that would
   be accepted by BibTeX and only contains valid characters).
 
@@ -86,7 +86,7 @@ Examples
 
     .. code:: sh
 
-        papis doctor --suggestion --check keys-exist einstein
+        papis doctor --suggestion --check keys-missing einstein
         >> Suggestion: papis edit --doc-folder /path/to/folder
 
   If this is the case, you can also run the following to automatically open
@@ -94,7 +94,7 @@ Examples
 
     .. code:: sh
 
-        papis doctor --edit --check keys-exist einstein
+        papis doctor --edit --check keys-missing einstein
 
 
 Implementing additional checks
@@ -248,19 +248,24 @@ def files_check(doc: papis.document.Document) -> List[Error]:
             for f in files if not os.path.exists(f)] + error
 
 
-KEYS_EXIST_CHECK_NAME = "keys-exist"
+KEYS_MISSING_CHECK_NAME = "keys-missing"
 
 
-def keys_exist_check(doc: papis.document.Document) -> List[Error]:
+def keys_missing_check(doc: papis.document.Document) -> List[Error]:
     """
     Checks whether the keys provided in the configuration
-    option :confval:`doctor-keys-exist-keys` exit in the document
+    option :confval:`doctor-keys-missing-keys` exist in the document
     and are non-empty.
 
-    :returns: a :class:`list` of errors, one for each key that does not exist.
+    :returns: a :class:`list` of errors, one for each missing key.
     """
     folder = doc.get_main_folder() or ""
-    keys = papis.config.getlist("doctor-keys-exist-keys")
+    has_key = papis.config.get("doctor-keys-exist-keys") is not None
+    if has_key:
+        # FIXME: this is deprecated and should be removed
+        keys = papis.config.getlist("doctor-keys-exist-keys")
+    else:
+        keys = papis.config.getlist("doctor-keys-missing-keys")
 
     def make_fixer(key: str) -> Optional[FixFn]:
         def fixer_author_from_author_list() -> None:
@@ -286,7 +291,7 @@ def keys_exist_check(doc: papis.document.Document) -> List[Error]:
         else:
             return None
 
-    return [Error(name=KEYS_EXIST_CHECK_NAME,
+    return [Error(name=KEYS_MISSING_CHECK_NAME,
                   path=folder,
                   msg=f"Key '{k}' does not exist",
                   suggestion_cmd=f"papis edit --doc-folder {folder}",
@@ -823,7 +828,7 @@ def html_tags_check(doc: papis.document.Document) -> List[Error]:
 
 
 register_check(FILES_CHECK_NAME, files_check)
-register_check(KEYS_EXIST_CHECK_NAME, keys_exist_check)
+register_check(KEYS_MISSING_CHECK_NAME, keys_missing_check)
 register_check(DUPLICATED_KEYS_NAME, duplicated_keys_check)
 register_check(DUPLICATED_VALUES_NAME, duplicated_values_check)
 register_check(BIBTEX_TYPE_CHECK_NAME, bibtex_type_check)
@@ -834,6 +839,10 @@ register_check(REFS_CHECK_NAME, refs_check)
 register_check(HTML_CODES_CHECK_NAME, html_codes_check)
 register_check(HTML_TAGS_CHECK_NAME, html_tags_check)
 register_check(KEY_TYPE_CHECK_NAME, key_type_check)
+
+DEPRECATED_CHECK_NAMES = {
+    "keys-exist": "keys-missing",
+}
 
 
 def gather_errors(documents: List[papis.document.Document],
@@ -989,7 +998,8 @@ def run(doc: papis.document.Document,
 @click.option("-t", "--checks", "_checks",
               default=lambda: papis.config.getlist("doctor-default-checks"),
               multiple=True,
-              type=click.Choice(registered_checks_names()),
+              type=click.Choice(registered_checks_names()
+                                + list(DEPRECATED_CHECK_NAMES)),
               help="Checks to run on every document.")
 @papis.cli.bool_flag("--json", "_json",
                      help="Output the results in json format")
@@ -1030,6 +1040,18 @@ def cli(query: str,
     else:
         # NOTE: ensure uniqueness of the checks so we don't run the same ones
         _checks = list(set(_checks))
+
+    new_checks = []
+    for check in _checks:
+        new_check = DEPRECATED_CHECK_NAMES.get(check)
+        if new_check is not None:
+            check = new_check
+            logger.warning("Check '%s' is deprecated and has been replace by "
+                           "'%s'. Please use this in the future.",
+                           check, new_check)
+
+        new_checks.append(check)
+    _checks = new_checks
 
     errors = gather_errors(documents, checks=_checks)
     if errors:

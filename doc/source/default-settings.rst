@@ -557,9 +557,9 @@ Doctor options
 
     A list of checks that are performed by default.
 
-.. papis-config:: doctor-keys-exist-keys
+.. papis-config:: doctor-keys-missing-keys
 
-    A list of keys used by the ``keys-exist`` check. The check will show an
+    A list of keys used by the ``keys-missing`` check. The check will show an
     error if these keys are not present in a document.
 
 .. papis-config:: doctor-duplicated-keys-keys

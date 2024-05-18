@@ -29,10 +29,10 @@ def test_files_check(tmp_config: TemporaryConfiguration) -> None:
         assert "non-existent-file" not in doc["files"]
 
 
-def test_keys_check(tmp_config: TemporaryConfiguration) -> None:
-    from papis.commands.doctor import keys_exist_check
+def test_keys_missing_check(tmp_config: TemporaryConfiguration) -> None:
+    from papis.commands.doctor import keys_missing_check
 
-    papis.config.set("doctor-keys-exist-keys",
+    papis.config.set("doctor-keys-missing-keys",
                      ["ref", "author", "author_list", "title"])
 
     doc = papis.document.from_data({
@@ -40,15 +40,15 @@ def test_keys_check(tmp_config: TemporaryConfiguration) -> None:
         "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
         })
 
-    error1, error2 = keys_exist_check(doc)
+    error1, error2 = keys_missing_check(doc)
     assert error1.payload == "ref" or error2.payload == "ref"
     assert error1.payload == "author_list" or error2.payload == "author_list"
 
 
-def test_keys_check_authors(tmp_config: TemporaryConfiguration) -> None:
-    from papis.commands.doctor import keys_exist_check
+def test_keys_missing_check_authors(tmp_config: TemporaryConfiguration) -> None:
+    from papis.commands.doctor import keys_missing_check
 
-    papis.config.set("doctor-keys-exist-keys", ["author_list", "author"])
+    papis.config.set("doctor-keys-missing-keys", ["author_list", "author"])
     full_doc = papis.document.from_data(
         {
             "title": "DNA sequencing with chain-terminating inhibitors",
@@ -61,12 +61,12 @@ def test_keys_check_authors(tmp_config: TemporaryConfiguration) -> None:
     )
 
     doc = full_doc.copy()
-    errors = keys_exist_check(doc)
+    errors = keys_missing_check(doc)
     assert not errors
 
     # check author -> author_list
     del doc["author_list"]
-    error, = keys_exist_check(doc)
+    error, = keys_missing_check(doc)
 
     error.fix_action()
     assert doc["author_list"][0]["family"] == "Doe"
@@ -78,7 +78,7 @@ def test_keys_check_authors(tmp_config: TemporaryConfiguration) -> None:
     doc = full_doc.copy()
     del doc["author"]
 
-    error, = keys_exist_check(doc)
+    error, = keys_missing_check(doc)
     error.fix_action()
     assert doc["author"] == "Doe, John and Doe, Jane"
 
