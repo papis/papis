@@ -182,10 +182,10 @@ if BIBTEX_EXPLORER:
     type=click.Path(exists=True),
     default=None)
 @click.pass_context
-def _add(ctx: click.Context,
-         query: str,
-         _all: bool,
-         refs_file: Optional[str]) -> None:
+def cli_add(ctx: click.Context,
+            query: str,
+            _all: bool,
+            refs_file: Optional[str]) -> None:
     """Add documents from the library to the BibTeX file"""
     from papis.api import get_documents_in_lib, pick_doc
 
@@ -233,8 +233,8 @@ def _add(ctx: click.Context,
               type=str,
               multiple=True)
 @click.pass_context
-def _update(ctx: click.Context, _all: bool,
-            fromdb: bool, todb: bool, keys: List[str]) -> None:
+def cli_update(ctx: click.Context, _all: bool,
+               fromdb: bool, todb: bool, keys: List[str]) -> None:
     """Update documents from and to the library"""
     if fromdb and todb:
         logger.error("Cannot pass both '--from' and '--to'.")
@@ -296,7 +296,7 @@ def _update(ctx: click.Context, _all: bool,
 @cli.command("open")
 @click.help_option("-h", "--help")
 @click.pass_context
-def _open(ctx: click.Context) -> None:
+def cli_open(ctx: click.Context) -> None:
     """Open a document using the default application."""
     from papis.api import pick_doc
 
@@ -334,9 +334,9 @@ def _open(ctx: click.Context) -> None:
               type=(str, str),)
 @papis.cli.all_option()
 @click.pass_context
-def _edit(ctx: click.Context,
-          set_tuples: List[Tuple[str, str]],
-          _all: bool) -> None:
+def cli_edit(ctx: click.Context,
+             set_tuples: List[Tuple[str, str]],
+             _all: bool) -> None:
     """
     Edit documents by adding keys or opening an editor.
 
@@ -382,7 +382,7 @@ def _edit(ctx: click.Context,
 @click.help_option("-h", "--help")
 @click.option("-k", "--key", default=None, help="doi, url, ...")
 @click.pass_context
-def _browse(ctx: click.Context, key: Optional[str]) -> None:
+def cli_browse(ctx: click.Context, key: Optional[str]) -> None:
     """Browse a document in the document list."""
     from papis.api import pick_doc
 
@@ -403,7 +403,7 @@ def _browse(ctx: click.Context, key: Optional[str]) -> None:
 @cli.command("rm")
 @click.help_option("-h", "--help")
 @click.pass_context
-def _rm(ctx: click.Context) -> None:
+def cli_rm(ctx: click.Context) -> None:
     """Remove a document from the documents list."""
     click.echo("Sorry, TODO...")
 
@@ -412,7 +412,7 @@ def _rm(ctx: click.Context) -> None:
 @click.help_option("-h", "--help")
 @click.option("-o", "--out", help="Output ref to a file", default=None)
 @click.pass_context
-def _ref(ctx: click.Context, out: Optional[str]) -> None:
+def cli_ref(ctx: click.Context, out: Optional[str]) -> None:
     """Print the reference for a document."""
     from papis.api import pick_doc
 
@@ -439,7 +439,7 @@ def _ref(ctx: click.Context, out: Optional[str]) -> None:
     required=True, type=click.Path())
 @papis.cli.bool_flag("-f", "--force", help="Do not ask for confirmation when saving")
 @click.pass_context
-def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
+def cli_save(ctx: click.Context, bibfile: str, force: bool) -> None:
     """Save the documents in the BibTeX format."""
     docs = ctx.obj["documents"]
 
@@ -465,7 +465,7 @@ def _save(ctx: click.Context, bibfile: str, force: bool) -> None:
               required=True)
 @papis.cli.bool_flag("-r", "--reverse", help="Reverse the sort order")
 @click.pass_context
-def _sort(ctx: click.Context, key: Optional[str], reverse: bool) -> None:
+def cli_sort(ctx: click.Context, key: Optional[str], reverse: bool) -> None:
     """Sort the documents in the BibTeX file."""
     docs = ctx.obj["documents"]
     ctx.obj["documents"] = sorted(docs,
@@ -484,7 +484,7 @@ def _sort(ctx: click.Context, key: Optional[str], reverse: bool) -> None:
               default=None,
               type=str)
 @click.pass_context
-def _unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
+def cli_unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
     """Remove duplicate BibTeX entries."""
     docs = ctx.obj["documents"]
     unique_docs = []
@@ -532,7 +532,7 @@ def _unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
               default=("doi", "url", "year", "title", "author"),
               type=str)
 @click.pass_context
-def _doctor(ctx: click.Context, key: List[str]) -> None:
+def cli_doctor(ctx: click.Context, key: List[str]) -> None:
     """
     Check BibTeX file for correctness.
 
@@ -561,7 +561,7 @@ def _doctor(ctx: click.Context, key: List[str]) -> None:
               help="Text file to check for references",
               multiple=True, required=True, type=str)
 @click.pass_context
-def _filter_cited(ctx: click.Context, _files: List[str]) -> None:
+def cli_filter_cited(ctx: click.Context, _files: List[str]) -> None:
     """
     Filter cited documents from the BibTeX file.
 
@@ -591,7 +591,7 @@ def _filter_cited(ctx: click.Context, _files: List[str]) -> None:
               help="Text file to check for references",
               multiple=True, required=True, type=str)
 @click.pass_context
-def _iscited(ctx: click.Context, _files: List[str]) -> None:
+def cli_iscited(ctx: click.Context, _files: List[str]) -> None:
     """
     Check which documents are not cited.
 
@@ -623,7 +623,7 @@ def _iscited(ctx: click.Context, _files: List[str]) -> None:
 @click.option("-o", "--out", help="Out folder to export", default=None)
 @papis.cli.all_option()
 @click.pass_context
-def _import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
+def cli_import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
     """
     Import documents from a BibTeX file to the current library.
 
