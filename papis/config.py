@@ -312,7 +312,15 @@ def set(key: str, value: Any, section: Optional[str] = None) -> None:
     if not config.has_section(section):
         config.add_section(section)
 
-    config[section][key] = str(value)
+    try:
+        config[section][key] = str(value)
+    except ValueError as exc:
+        logger.error("Failed to set the key '%s' in section '%s' with value '%s'.",
+                     key, section, value)
+        logger.error("If the value contains a '%', this should be properly "
+                     "escaped (using a double percent '%%') or the proper "
+                     "interpolation syntax should be used (i.e. '%(other_key)').",
+                     exc_info=exc)
 
 
 def general_get(key: str,
