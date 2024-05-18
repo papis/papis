@@ -95,7 +95,7 @@ def run(document: papis.document.Document,
         folder: bool = False,
         mark: bool = False) -> None:
     if opener is not None:
-        papis.config.set("opentool", opener)
+        papis.config.set("opentool", papis.config.escape_interp(opener))
 
     _doc_folder = document.get_main_folder()
     if _doc_folder is None:
@@ -136,7 +136,7 @@ def run(document: papis.document.Document,
                         papis.document.from_data(mark_dict[0]),
                         doc_key=_mark_name)
                     logger.info("Setting opener to '%s'.", opener)
-                    papis.config.set("opentool", opener)
+                    papis.config.set("opentool", papis.config.escape_interp(opener))
         files = document.get_files()
         if not files:
             logger.error("The chosen document has no files attached: '%s'.",
@@ -169,7 +169,7 @@ def cli(query: str, doc_folder: Tuple[str, ...], tool: str, folder: bool,
         mark: bool) -> None:
     """Open document from a given library"""
     if tool:
-        papis.config.set("opentool", tool)
+        papis.config.set("opentool", papis.config.escape_interp(tool))
 
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,

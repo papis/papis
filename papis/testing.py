@@ -200,6 +200,7 @@ class TemporaryConfiguration:
     libname: ClassVar[str] = "test"
 
     def __init__(self,
+                 prefix: str = "papis-test-",
                  settings: Optional[Dict[str, Any]] = None,
                  overwrite: bool = False) -> None:
         #: A set of settings to be added to the configuration on creation
@@ -216,6 +217,9 @@ class TemporaryConfiguration:
         #: When entering the context manager, this will contain the config
         #: file used by papis.
         self.configfile: str = ""
+
+        #: Prefix for the temporary directory created for the test.
+        self.prefix = prefix
 
         self._tmpdir: Optional[tempfile.TemporaryDirectory[str]] = None
         self._monkeypatch: Optional[pytest.MonkeyPatch] = None
@@ -241,7 +245,7 @@ class TemporaryConfiguration:
 
         # create directories and files
         self._monkeypatch = pytest.MonkeyPatch()
-        self._tmpdir = tempfile.TemporaryDirectory(prefix="papis-test-")
+        self._tmpdir = tempfile.TemporaryDirectory(prefix=self.prefix)
 
         self.libdir = os.path.join(self.tmpdir, "lib")
         self.configdir = os.path.join(self.tmpdir, "papis")
@@ -253,8 +257,10 @@ class TemporaryConfiguration:
         os.makedirs(self.configscripts)
 
         # load settings
+        import papis.config
+
         settings = {
-            self.libname: {"dir": self.libdir},
+            self.libname: {"dir": papis.config.escape_interp(self.libdir)},
             "settings": {"default-library": self.libname}
         }
 
@@ -289,7 +295,6 @@ class TemporaryConfiguration:
         #   * reset papis.plugin managers
 
         # reload configuration
-        import papis.config
         papis.config.set_config_file(self.configfile)
         papis.config.reset_configuration()
 

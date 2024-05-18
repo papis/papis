@@ -4,11 +4,24 @@ import pytest
 
 from papis.testing import TemporaryLibrary, PapisRunner
 
-script = os.path.join(os.path.dirname(__file__), "scripts.py")
+
+def get_mock_script(name: str) -> str:
+    """Constructs a command call for a command mocked by ``scripts.py``.
+
+    :param name: the name of the command, e.g. ``ls`` or ``echo``.
+    :returns: a string of the command
+    """
+    import sys
+
+    script = os.path.join(os.path.dirname(__file__), "scripts.py")
+
+    from papis.config import escape_interp
+
+    return escape_interp("{} {} {}".format(sys.executable, script, name))
 
 
 @pytest.mark.library_setup(settings={
-    "file-browser": "{} {} echo".format(sys.executable, script)
+    "file-browser": get_mock_script("echo")
     })
 def test_open_cli(tmp_library: TemporaryLibrary) -> None:
     from papis.commands.open import cli
@@ -35,7 +48,7 @@ def test_open_cli(tmp_library: TemporaryLibrary) -> None:
     # Use a mock scriptlet
     result = cli_runner.invoke(
         cli,
-        ["--tool", "{} {} echo".format(sys.executable, script),
+        ["--tool", get_mock_script("echo"),
          "--mark", "--all", "Krishnamurti"])
     assert result.exit_code == 0
 

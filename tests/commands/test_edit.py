@@ -17,7 +17,9 @@ def get_mock_script(name: str) -> str:
 
     script = os.path.join(os.path.dirname(__file__), "scripts.py")
 
-    return "{} {} {}".format(sys.executable, script, name)
+    from papis.config import escape_interp
+
+    return escape_interp("{} {} {}".format(sys.executable, script, name))
 
 
 @pytest.mark.library_setup(settings={
@@ -66,7 +68,8 @@ def test_edit_cli(tmp_library: TemporaryLibrary) -> None:
         cli,
         ["--all", "--editor", ls, "krishnamurti"])
     assert result.exit_code == 0
-    assert papis.config.get("editor") == get_mock_script("ls")
+    assert (papis.config.escape_interp(papis.config.get("editor"))
+            == get_mock_script("ls"))
 
     # check --notes
     notes_name = papis.config.get("notes-name")
@@ -76,7 +79,8 @@ def test_edit_cli(tmp_library: TemporaryLibrary) -> None:
         cli,
         ["--all", "--editor", get_mock_script("echo"), "--notes", "krishnamurti"])
     assert result.exit_code == 0
-    assert papis.config.get("editor") == get_mock_script("echo")
+    assert (papis.config.escape_interp(papis.config.get("editor"))
+            == get_mock_script("echo"))
 
     db = papis.database.get()
     doc, = db.query_dict({"author": "Krishnamurti"})

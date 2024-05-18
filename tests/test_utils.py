@@ -13,7 +13,7 @@ def test_get_cache_home(tmp_config: TemporaryConfiguration, monkeypatch) -> None
     assert get_cache_home() == os.path.join(tmp_config.tmpdir, "papis")
     with tempfile.TemporaryDirectory(dir=tmp_config.tmpdir) as d:
         tmp = os.path.join(d, "blah")
-        papis.config.set("cache-dir", tmp)
+        papis.config.set("cache-dir", papis.config.escape_interp(tmp))
         assert get_cache_home() == tmp
 
 
