@@ -1,14 +1,25 @@
 r"""
-This command helps interacting with BibTeX ``bib`` files in your LaTeX projects.
+This command is used for interacting with BibTeX ``bib`` files in your LaTeX projects.
+
+It is meant to be used when the BibTeX file is a companion to your Papis library.
+Then, ``papis bibtex`` can be used to add, remove, update, and generally clean
+the file using information from the library.
 
 Examples
 ^^^^^^^^
 
-You can use it for opening some papers by calling::
+You can use it for opening some papers from the BibTeX file by calling
+
+.. code:: sh
 
     papis bibtex read new_papers.bib open
 
-or to add papers to the BibTeX file by calling::
+This is done by matching the entry in the BibTeX file with a document in your
+library and then opening the correspond files. If no document can be found in
+the library, then the file cannot be opened, of course. To add papers to the
+BibTeX file (from the current library) you can call
+
+.. code:: sh
 
     papis bibtex             \
         read new_papers.bib  \ # Read bib file
@@ -16,13 +27,20 @@ or to add papers to the BibTeX file by calling::
         add -q heisenberg    \ # Pick a doc with query 'heisenberg' from library
         save new_papers.bib    # Save in new_papers.bib
 
-or to update some information that was modified in papis'
-:ref:`YAML files <info-file>` by calling::
+To update some information that was modified in Papis'
+:ref:`YAML files <info-file>`, you can call
+
+.. code:: sh
 
     papis bibtex            \
         read new_papers.bib \ # Read bib file
         update -f           \ # Update what has been read from papis library
         save new_papers.bib   # save everything to new_papers.bib, overwriting
+
+.. note::
+
+    Reading, adding, and then saving documents in this fashion will re-export
+    them and may change the formatting of your BibTeX file.
 
 Local configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -72,7 +90,7 @@ to the project's ``Makefile`` like
 Vim integration
 ^^^^^^^^^^^^^^^
 
-This command can also be easily used from vim with these simple lines
+This command can also be easily used from Vim with these simple lines
 
 .. code:: vim
 
