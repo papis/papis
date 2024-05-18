@@ -89,7 +89,7 @@ def test_add_auto_doctor_run(tmp_library: TemporaryLibrary) -> None:
     paths = []
 
     # add document with auto-doctor on
-    papis.config.set("doctor-default-checks", ["keys-exist", "key-type", "refs"])
+    papis.config.set("doctor-default-checks", ["keys-missing", "key-type", "refs"])
     run(paths, data=data, auto_doctor=True)
 
     # check that all the broken fields are fixed
