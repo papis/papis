@@ -1,4 +1,4 @@
-Bibtex
+BibTeX
 ======
 
 Exporting documents to BibTeX is done in the same way throughout Papis.
