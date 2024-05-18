@@ -614,6 +614,8 @@ def resource_cache(request: SubRequest) -> ResourceCache:
 
 
 def pytest_addoption(parser: Parser) -> None:
+    parser.addoption("--papis-enable-logging", action="store_true",
+                     help="Enable logging while running tests")
     parser.addoption("--papis-tmp-doctests", action="store_true",
                      help="Use a temporary configuration file for doctests")
     parser.addoption("--papis-tmp-xdg-home", action="store_true",
@@ -626,6 +628,10 @@ def pytest_configure(config: Config) -> None:
         # a chance to construct a TemporaryConfiguration. We set XDG_CONFIG_HOME
         # here first to avoid them picking up any sort of user configuration.
         os.environ["XDG_CONFIG_HOME"] = tempfile.gettempdir()
+
+    if config.getoption("--papis-enable-logging"):
+        import papis.logging
+        papis.logging.setup()
 
     config.addinivalue_line(
         "markers",
