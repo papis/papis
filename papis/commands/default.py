@@ -215,7 +215,7 @@ def run(ctx: click.Context,
 
     # read in configuration from current library
     if pick_lib:
-        picked_libs = papis.pick.pick(papis.api.get_libraries())
+        picked_libs = papis.pick.pick_library()
         if picked_libs:
             lib = picked_libs[0]
 

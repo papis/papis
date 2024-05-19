@@ -196,6 +196,12 @@ General settings
     replacing spaces or other non-letter characters). By default this is the
     hyphen ``"-"`` but it could, e.g., also be the underscore ``"_"``.
 
+.. papis-config:: library-header-format
+
+    The format of a library when shown in a picker, e.g. when using
+   ``papis --pick-lib export --all``. The format takes a dictionary named
+   ``library`` with the keys *name*, *dir*, and *paths*.
+
 Tools options
 -------------
 

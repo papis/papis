@@ -53,6 +53,10 @@ settings: Dict[str, Any] = {
     "doc-paths-lowercase": True,
     "doc-paths-extra-chars": "",
     "doc-paths-word-separator": "-",
+    "library-header-format": (
+        "<ansired>{library[name]}</ansired>"
+        " <ansiblue>{library[paths]}</ansiblue>"
+    ),
 
     # tools
     "opentool": get_default_opener(),
