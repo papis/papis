@@ -1,6 +1,6 @@
 import os
 from abc import ABC, abstractmethod
-from typing import Any, Callable, TypeVar, Generic, Sequence, Type, List
+from typing import Any, Callable, TypeVar, Generic, Sequence, Type, Optional, List
 
 import papis.config
 import papis.document
@@ -138,3 +138,26 @@ def pick_subfolder_from_lib(lib: str) -> List[str]:
     folders = sorted(set(folders))
 
     return pick(folders)
+
+
+def pick_library(libs: Optional[List[str]] = None) -> List[str]:
+    """Pick a library from the current configuration.
+
+    :arg libs: a list of libraries to pick from.
+    """
+    if libs is None:
+        libs = papis.api.get_libraries()
+
+    header_format = papis.config.getstring("library-header-format")
+
+    def header_filter(lib: str) -> str:
+        library = papis.config.get_lib_from_name(lib)
+        return papis.format.format(header_format, {
+            "name": library.name,
+            "dir": library.paths[0],
+            "paths": library.paths
+            }, doc_key="library")
+
+    return pick(libs,
+                header_filter=header_filter,
+                match_filter=str)
