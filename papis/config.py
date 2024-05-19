@@ -571,8 +571,10 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
         to an existing folder that should be considered a library.
     """
     config = get_configuration()
+    default_settings = get_default_settings()
+    libs = get_libs_from_config(config)
 
-    if libname not in config:
+    if libname not in libs:
         if os.path.isdir(libname):
             logger.warning("Setting path '%s' as the main library folder.", libname)
 
@@ -588,6 +590,9 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
                 f"\tdir = path/to/your/{libname}/folder"
                 )
     else:
+        if libname in default_settings and libname not in config:
+            config[libname] = default_settings[libname]
+
         try:
             # NOTE: can't use `getstring(...)` due to cyclic dependency
             paths = [os.path.expanduser(config[libname]["dir"])]
@@ -667,7 +672,17 @@ def get_libs_from_config(config: Configuration) -> List[str]:
         if "dir" in sec or "dirs" in sec:
             libs.append(section)
 
-    return libs
+    # NOTE: also look through default settings in case they were registered
+    # in `config.py` using `register_default_settings`.
+    default_settings = get_default_settings()
+    for name, values in default_settings.items():
+        if name in config:
+            continue
+
+        if "dir" in values or "dirs" in values:
+            libs.append(name)
+
+    return sorted(libs)
 
 
 def reset_configuration() -> Configuration:
