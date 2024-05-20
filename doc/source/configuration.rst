@@ -155,6 +155,26 @@ all the options and more extensive descriptions)
     browse-query-format = {doc[first_name]} {doc[last_name]}
     add-open = False
 
+.. note::
+
+   Papis uses the standard :class:`~configparser.ConfigParser` to read and write
+   configuration options. It also allows interpolation of values
+   (using :class:`~configparser.BasicInterpolation`) so that previous values
+   can be referred back to. For example, one can do
+
+   .. code:: ini
+
+        [DEFAULT]
+        basedir = /path/to/libraries
+
+        [papers]
+        dir = %(basedir)s/papers
+
+        [books]
+        dir = %(basedir)s/books
+
+   Interpolation variables are looked for in the current section and in the
+   standard ``DEFAULT`` section.
 
 Local configuration files
 -------------------------
