@@ -20,7 +20,6 @@ command-line interface (*CLI*) is heavily tailored after
    configuration
    info_file
    library_structure
-   database_structure
 
 .. toctree::
    :hidden:
@@ -35,6 +34,7 @@ command-line interface (*CLI*) is heavily tailored after
    :maxdepth: 1
    :caption: User guides
 
+   database_structure
    papis_id
    bibtex
    citations
