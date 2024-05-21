@@ -13,6 +13,22 @@
  (guix build-system python)
  ((guix licenses) #:prefix license:))
 
+(define python-types-tqdm
+  (package
+   (name "python-types-tqdm")
+   (version "4.66.0.2")
+   (source (origin
+            (method url-fetch)
+            (uri (pypi-uri "types-tqdm" version))
+            (sha256
+             (base32
+              "0pylandfajknxprd2y06hxzfihy0cnyvh1gm3775yj0x9kjaalwm"))))
+   (build-system pyproject-build-system)
+   (home-page "https://github.com/python/typeshed")
+   (synopsis "Typing stubs for tqdm")
+   (description "Typing stubs for tqdm")
+   (license #f)))
+
 (define python-types-pyyaml
   (package
    (name "python-types-pyyaml")
@@ -180,7 +196,7 @@ an elegant DOM API.")
                 "02792xxr4mwa17khw6szmpvdlck28sz0npfw57c2rb9dnh0rwvqr"))))
     (build-system pyproject-build-system)
     (arguments '(#:tests? #f))
-    (propagated-inputs (list python-requests))
+    (propagated-inputs (list python-requests python-tqdm))
     (native-inputs (list python-pytest))
     (home-page "https://github.com/sckott/habanero")
     (synopsis "Low Level Client for Crossref Search API")
@@ -216,6 +232,7 @@ an elegant DOM API.")
                           python-requests
                           python-slugify ;added
                           python-stevedore
+                          python-tqdm
                           python-typing-extensions))
  (native-inputs (list python-flake8
                       python-flake8-bugbear
@@ -233,7 +250,8 @@ an elegant DOM API.")
                       python-types-pygments
                       python-types-python-slugify
                       python-types-pyyaml
-                      python-types-requests))
+                      python-types-requests
+                      python-types-tqdm))
  (home-page "https://github.com/papis/papis")
  (synopsis
   "Powerful and highly extensible command-line based document and bibliography manager")
