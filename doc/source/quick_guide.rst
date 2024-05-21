@@ -36,7 +36,7 @@ or add the document manually. Adding documents is done with the ``papis add``
 command.
 
 Let's start with the automatic method. We will download an example article from
-arXiv: <https://arxiv.org/abs/2404.14339>`. The command will download all the
+arXiv: `<https://arxiv.org/abs/2404.14339>`_. The command will download all the
 data, show the downloaded file, and then (after asking for confirmation)
 automatically add it to the library:
 
@@ -58,13 +58,14 @@ file along with some basic metadata:
 .. code:: bash
 
     wget https://www.gutenberg.org/files/28233/28233-pdf.pdf -O principia.pdf
-    papis add principia.pdf --set author "Isaac Newton" \
-    --set title "Principia Mathematica"
+    papis add principia.pdf \
+        --set author "Isaac Newton" \
+        --set title "Principia Mathematica"
 
 First, we download the file with ``wget``. We then run ``papis add`` with the
 filename as the first argument and two instances of the ``--set`` option to
 manually set the ``author`` and ``title`` (the ``papis add`` command is split
-over two lines with ``\`` just so it displays better in this guide).
+over multiple lines with ``\`` just so it displays better in this guide).
 
 Finally, a situation that is unfortunately familiar to most: papers behind
 paywalls. The importer might be able to get the metadata automatically but fail
@@ -75,14 +76,14 @@ entry in your library.
 .. code:: bash
 
     wget https://www.unicode.org/L2/L2017/17407-frowning-poo.pdf
-    papis add 17407-frowning-poo.pdf \
-    --from doi https://doi.org/10.1007/s11192-017-2554-0
+    papis add \
+        17407-frowning-poo.pdf \
+        --from doi "10.1007/s11192-017-2554-0"
 
 First, we're downloading a PDF about the Unicode frowning poop emoji as
 a substitute for the paywalled paper that you'd have downloaded yourself. We
 then use ``papis add`` with the ``doi`` importer, which downloads metadata based
-on an article's ``doi`` identifier (from `Crossref
-<https://www.crossref.org/>`__).
+on an article's DOI (from `Crossref <https://www.crossref.org/>`_).
 
 Adding files
 ------------
@@ -250,6 +251,12 @@ the tag "project", you can add a query:
 .. code:: bash
 
     papis export --all --output project_apple.bib tags:"project apple"
+
+Papis supports exporting to several formats, which you can check out using
+
+.. code:: bash
+
+    papis list --exporters
 
 Renaming folders
 ----------------
