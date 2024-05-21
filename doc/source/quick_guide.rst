@@ -57,12 +57,12 @@ file along with some basic metadata:
 
 .. code:: bash
 
-    wget https://www.gutenberg.org/files/28233/28233-pdf.pdf -O principia.pdf
+    curl https://www.gutenberg.org/files/28233/28233-pdf.pdf -o principia.pdf
     papis add principia.pdf \
         --set author "Isaac Newton" \
         --set title "Principia Mathematica"
 
-First, we download the file with ``wget``. We then run ``papis add`` with the
+First, we download the file with ``curl``. We then run ``papis add`` with the
 filename as the first argument and two instances of the ``--set`` option to
 manually set the ``author`` and ``title`` (the ``papis add`` command is split
 over multiple lines with ``\`` just so it displays better in this guide).
@@ -75,15 +75,14 @@ entry in your library.
 
 .. code:: bash
 
-    wget https://www.unicode.org/L2/L2017/17407-frowning-poo.pdf
-    papis add \
-        17407-frowning-poo.pdf \
-        --from doi "10.1007/s11192-017-2554-0"
+    curl https://www.unicode.org/L2/L2017/17407-frowning-poo.pdf -o poop.pdf
+    papis add poop.pdf --from doi https://doi.org/10.1007/s11192-017-2554-0
 
 First, we're downloading a PDF about the Unicode frowning poop emoji as
 a substitute for the paywalled paper that you'd have downloaded yourself. We
 then use ``papis add`` with the ``doi`` importer, which downloads metadata based
-on an article's DOI (from `Crossref <https://www.crossref.org/>`_).
+on an article's ``doi`` identifier (from `Crossref
+<https://www.crossref.org/>`__).
 
 Adding files
 ------------
@@ -98,7 +97,7 @@ up with two PDFs attached to it):
 
 .. code:: bash
 
-    papis addto --files 17407-frowning-poo.pdf mikki
+    papis addto --files poop.pdf mikki
 
 The path specified after ``--files`` tells Papis where to find the file. Papis
 will attach the file to the document that matches the query "mikki" or open the
