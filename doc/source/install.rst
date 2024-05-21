@@ -147,32 +147,3 @@ rights on your computer you can simply type
     .. code:: sh
 
         export PATH=$PATH:$HOME/.local/bin
-
-Running tests
--------------
-
-In order to run the necessary tests to submit a pull request, make sure that
-the following commands pass
-
-.. code:: sh
-
-    python -m pytest papis/ tests/ --cov=papis
-    python -m mypy papis
-    python -m flake8 papis
-
-for it, make sure that you have ``pytest``, ``flake8`` and ``mypy``
-installed.
-
-You can make sure that you have everything you need to run the tests
-by doing in the root directory
-
-.. code:: sh
-
-    pip install .[develop]
-
-this command installs the necessary dependencies for developing
-and running the tests. Look inside of the ``pyproject.toml`` file for
-further information.
-
-You can also look at the folder ``tools`` for scripts used in the
-CI testing phase for further context.
