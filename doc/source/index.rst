@@ -15,8 +15,8 @@ command-line interface (*CLI*) is heavily tailored after
    :maxdepth: 1
    :caption: Getting started
 
-   quick_start
    install
+   quick_guide
    configuration
    info_file
    library_structure
