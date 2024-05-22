@@ -102,7 +102,7 @@ settings: Dict[str, Any] = {
     "notes-template": "",
 
     # doctor
-    "doctor-default-checks": ["files", "keys-missing", "duplicated-keys"],
+    "doctor-default-checks": ["files", "biblatex-required-keys", "bibtex-type", "refs"],
     "doctor-keys-missing-keys": ["title", "author", "author_list", "ref"],
     "doctor-duplicated-keys-keys": ["ref"],
     "doctor-duplicated-values-keys": ["files", "author_list"],
