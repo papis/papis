@@ -524,7 +524,7 @@ def biblatex_type_alias_check(doc: papis.document.Document) -> List[Error]:
 
     errors = bibtex_type_check(doc)
     if errors:
-        return errors
+        return [e._replace(name=BIBLATEX_TYPE_ALIAS_CHECK_NAME) for e in errors]
 
     bib_type = doc["type"]
     bib_type_base = bibtex_type_aliases.get(bib_type)
@@ -597,7 +597,7 @@ def biblatex_required_keys_check(doc: papis.document.Document) -> List[Error]:
 
     errors = bibtex_type_check(doc)
     if errors:
-        return errors
+        return [e._replace(name=BIBLATEX_REQUIRED_KEYS_CHECK_NAME) for e in errors]
 
     # translate bibtex type
     bib_type = doc["type"]
