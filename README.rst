@@ -166,13 +166,13 @@ Related software
 
 Papis isn't the only fish in the pond. You might also be interested in:
 
-- `bibman <https://codeberg.org/KMIJPH/bibman>`__ (opensource)
-- `cobib <https://github.com/mrossinek/cobib>`__ (opensource)
-- `jabref <https://www.jabref.org/>`__ (opensource)
+- `bibman <https://codeberg.org/KMIJPH/bibman>`__ (open source)
+- `cobib <https://github.com/mrossinek/cobib>`__ (open source)
+- `jabref <https://www.jabref.org/>`__ (open source)
 - `Mendeley <https://www.mendeley.com/>`__ (proprietary)
-- `pubs <https://github.com/pubs/pubs/>`__ (opensource)
-- `Xapers <https://finestructure.net/xapers/>`__ (opensource)
-- `Zotero <https://www.zotero.org/>`__ (opensource)
+- `pubs <https://github.com/pubs/pubs/>`__ (open source)
+- `Xapers <https://finestructure.net/xapers/>`__ (open source)
+- `Zotero <https://www.zotero.org/>`__ (open source)
 
 
 .. |ghbadge| image:: https://github.com/papis/papis/workflows/CI/badge.svg
