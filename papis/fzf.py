@@ -1,12 +1,33 @@
 import re
+import subprocess as sp
 from abc import ABC, abstractmethod
-from typing import Callable, Sequence, TypeVar, List, Optional, Generic, Pattern
+from typing import Callable, Sequence, TypeVar, List, Optional, Generic, Pattern, Tuple
 
 import papis.pick
 import papis.config
 import papis.format
 
 T = TypeVar("T")
+
+# NOTE: This version is required for the 'become' action used in the commands
+#   https://github.com/junegunn/fzf/releases/tag/0.38.0
+MIN_FZF_VERSION = (0, 38, 0)
+
+
+def fzf_version(exe: str = "fzf") -> Tuple[int, int, int]:
+    result = sp.run([exe, "--version"], capture_output=True)
+    version, _ = result.stdout.decode("utf-8").split()
+
+    parts = version.split(".")
+    if len(parts) == 3:
+        major, minor, patch = parts
+    elif len(parts) == 2:
+        major, minor = parts
+        patch = "0"
+    else:
+        major = minor = patch = "0"
+
+    return int(major), int(minor), int(patch)
 
 
 class Command(ABC, Generic[T]):
@@ -28,7 +49,7 @@ class Command(ABC, Generic[T]):
 
 class Choose(Command[T]):
     regex = re.compile(r"choose ([\d ]+)")
-    command = "execute(echo choose {+n})+accept"
+    command = "become(echo choose {+n})"
     key = "enter"
 
     def run(self, docs: List[T]) -> List[T]:
@@ -37,7 +58,7 @@ class Choose(Command[T]):
 
 class Edit(Command[T]):
     regex = re.compile(r"edit ([\d ]+)")
-    command = "execute(echo edit {+n})"
+    command = "become(echo edit {+n})"
     key = "ctrl-e"
 
     def run(self, docs: List[T]) -> List[T]:
@@ -50,7 +71,7 @@ class Edit(Command[T]):
 
 class Open(Command[T]):
     regex = re.compile(r"open ([\d ]+)")
-    command = "execute(echo open {+n})"
+    command = "become(echo open {+n})"
     key = "ctrl-o"
 
     def run(self, docs: List[T]) -> List[T]:
@@ -67,20 +88,28 @@ class Picker(papis.pick.Picker[T]):
                  header_filter: Callable[[T], str] = str,
                  match_filter: Callable[[T], str] = str,
                  default_index: int = 0) -> List[T]:
-
         if len(items) == 0:
             return []
+
         if len(items) == 1:
             return [items[0]]
 
+        fzf = papis.config.getstring("fzf-binary")
+        version = fzf_version(fzf)
+        if version < MIN_FZF_VERSION:
+            raise ValueError(
+                f"Found 'fzf' version {version} but "
+                f"version >={MIN_FZF_VERSION} is required")
+
         commands: List[Command[T]] = [Choose(), Open(), Edit()]
 
-        bindings = [c.binding() for c in commands
-                    ] + papis.config.getlist("fzf-extra-bindings")
+        bindings = (
+            [c.binding() for c in commands]
+            + papis.config.getlist("fzf-extra-bindings"))
 
-        command = [papis.config.getstring("fzf-binary"),
-                   "--bind", ",".join(bindings)
-                   ] + papis.config.getlist("fzf-extra-flags")
+        command = (
+            [fzf, "--bind", ",".join(bindings)]
+            + papis.config.getlist("fzf-extra-flags"))
 
         _fmt = papis.config.getstring("fzf-header-format")
 
@@ -96,7 +125,6 @@ class Picker(papis.pick.Picker[T]):
         headers = [_header_filter(o) for o in items]
         docs: List[T] = []
 
-        import subprocess as sp
         with sp.Popen(command, stdin=sp.PIPE, stdout=sp.PIPE) as p:
             if p.stdin is not None:
                 with p.stdin as stdin:
