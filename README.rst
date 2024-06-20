@@ -160,6 +160,8 @@ Papis has grown over the years and there are now a number of projects that exten
 
    * - `papis-firefox <https://github.com/papis/papis-firefox>`__
      - `wavefrontshaping <https://github.com/wavefrontshaping>`__
+   * - `papis-qa <https://github.com/isaksamsten/papisqa>`__ (AI for Papis)
+     - `Isak Samsten <https://github.com/isaksamsten>`__
 
 Related software
 ----------------
