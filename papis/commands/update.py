@@ -25,17 +25,6 @@ Examples
   This will open the picker containing all documents that match the query from
   where you can select the document you want to update.
 
-- Set the author_list to the surname "Einstein" and name "Albert":
-
-    .. code:: sh
-
-        papis update --set author_list "[{'family': 'Einstein', 'given': 'Albert'}]"
-
-  As you can see, ``papis update`` tries to parse the input string as a python
-  expression (such as a list or dictionary). When this succeeds, as in the above
-  example where we're setting a dictionary, it's the parsed expression that is
-  used to update the metadata.
-
 - Update the journal to "Mass and Energy" for all documents with the journal
   "Energy and Mass":
 
@@ -119,6 +108,17 @@ Examples
   even if the value to be removed didn't exist. Thus, the above command will add
   the tag "philosophy" even if the tag "physics" didn't exist before the
   operation.
+
+- As an advanced feature, ``papis update`` also supports the parsing of python
+  expressions (such as lists or dictionaries). This can be used as follows:
+
+    .. code:: sh
+
+        papis update --set author_list "[{'family': 'Einstein', 'given': 'Albert'}]"
+
+  Because the above string is a valid python expression, ``author_list`` is
+  updated to a set that contains a dictionary.
+
 
 Command-line Interface
 ^^^^^^^^^^^^^^^^^^^^^^
