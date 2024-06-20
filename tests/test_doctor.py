@@ -271,7 +271,7 @@ def test_html_codes_check(tmp_config: TemporaryConfiguration) -> None:
     errors = html_codes_check(doc)
     assert not errors
 
-    for amp in ("&amp;", "&#38;", "&#x26;"):
+    for amp in ("&amp;", "&#38;", "&#x26;", "&Amp;"):
         doc["title"] = (
             "DNA sequencing with chain-terminating inhibitors {} stuff"
             .format(amp))

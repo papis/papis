@@ -123,7 +123,7 @@ Command-line Interface
 import os
 import re
 import collections
-from typing import Any, Optional, List, NamedTuple, Callable, Dict, Set, Tuple
+from typing import Any, Optional, List, NamedTuple, Callable, Dict, Set, Tuple, Match
 
 import click
 
@@ -738,7 +738,7 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
 
 
 # NOTE: https://www.w3schools.com/html/html_symbols.asp
-HTML_CODES_REGEX = re.compile(r"&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-fA-F]{1,6});")
+HTML_CODES_REGEX = re.compile(r"&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-fA-F]{1,6});", re.I)
 HTML_CODES_CHECK_NAME = "html-codes"
 
 
@@ -755,8 +755,12 @@ def html_codes_check(doc: papis.document.Document) -> List[Error]:
     folder = doc.get_main_folder() or ""
 
     def make_fixer(key: str) -> FixFn:
+        def lower(p: Match[str]) -> str:
+            result, = p.groups()
+            return f"&{result.lower()};"
+
         def fixer() -> None:
-            doc[key] = unescape(doc[key])
+            doc[key] = unescape(HTML_CODES_REGEX.sub(lower, doc[key]))
             logger.info("[FIX] Removing HTML codes from '%s'.", key)
 
         return fixer
@@ -768,9 +772,10 @@ def html_codes_check(doc: papis.document.Document) -> List[Error]:
 
         m = HTML_CODES_REGEX.findall(str(value))
         if m:
+            codes = "', '".join([f"&{c.lower()};" for c in m])
             results.append(Error(name=HTML_CODES_CHECK_NAME,
                                  path=folder,
-                                 msg=f"Field '{key}' contains HTML codes {m}",
+                                 msg=f"Field '{key}' contains HTML codes: '{codes}'",
                                  suggestion_cmd=f"papis edit --doc-folder {folder}",
                                  fix_action=make_fixer(key),
                                  payload=key,
