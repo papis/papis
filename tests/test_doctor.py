@@ -1,10 +1,14 @@
 import os
 import tempfile
 
+import pytest
+
 import papis.api
 import papis.document
 
 from papis.testing import TemporaryConfiguration
+
+DOCTOR_RESOURCES = os.path.join(os.path.dirname(__file__), "resources")
 
 
 def test_files_check(tmp_config: TemporaryConfiguration) -> None:
@@ -315,3 +319,31 @@ def test_html_tags_check(tmp_config: TemporaryConfiguration) -> None:
 
     error.fix_action()
     assert doc["title"] == "DNA sequencing with chain terminating inhibitors"
+
+
+@pytest.mark.parametrize("basename", [
+    "doctor_html_tags_jats_1",
+    "doctor_html_tags_jats_2",
+    "doctor_html_tags_jats_3",
+    "doctor_html_tags_jats_4",
+    ])
+def test_html_tags_check_jats(tmp_config: TemporaryConfiguration,
+                              basename: str) -> None:
+    from papis.commands.doctor import html_tags_check
+
+    with open(os.path.join(DOCTOR_RESOURCES, f"{basename}.xml"),
+              encoding="utf-8") as f:
+        abstract = f.read()
+
+    with open(os.path.join(DOCTOR_RESOURCES, f"{basename}_out.txt"),
+              encoding="utf-8") as f:
+        expected = f.read()
+
+    doc = papis.document.from_data({"abstract": abstract})
+
+    error, = html_tags_check(doc)
+    assert error.payload == "abstract"
+
+    error.fix_action()
+    assert "\n".join(doc["abstract"].split()) == "\n".join(expected.strip().split())
+    assert doc["abstract"] == expected.strip()

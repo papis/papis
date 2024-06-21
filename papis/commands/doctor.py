@@ -786,6 +786,7 @@ def html_codes_check(doc: papis.document.Document) -> List[Error]:
 
 HTML_TAGS_CHECK_NAME = "html-tags"
 HTML_TAGS_REGEX = re.compile(r"<.*?>")
+HTML_TAGS_WHITESPACE_REGEX = re.compile(r"\s+")
 
 
 def html_tags_check(doc: papis.document.Document) -> List[Error]:
@@ -795,18 +796,56 @@ def html_tags_check(doc: papis.document.Document) -> List[Error]:
 
     :returns: a :class:`list` of errors, one for each key that contains HTML codes.
     """
+    from bs4 import BeautifulSoup
 
     results = []
     folder = doc.get_main_folder() or ""
 
+    def convert_markup(text: str) -> str:
+        if "<jats:" in text or "<mml:" in text:
+            soup = BeautifulSoup(text, features="lxml")
+
+            for tag in soup.find_all("jats:inline-formula"):
+                tex = tag.find("jats:tex-math")
+                if tex:
+                    tag.replace_with(f" {tex.text.strip()} ")
+                else:
+                    tag.replace_with(f" {tag.text.strip()} ")
+
+            for tag in soup.find_all("jats:title"):
+                if tag.text.strip() == "Abstract":
+                    tag.extract()
+                else:
+                    # NOTE: these will get cleaned up in `make_fixer`
+                    tag.insert_before("\n")
+                    tag.insert_after("\n\n")
+
+            for tag in soup.find_all("inline-formula"):
+                annotation = tag.find("mml:annotation")
+                if annotation:
+                    tag.replace_with(f" {annotation.text.strip()} ")
+                else:
+                    tag.replace_with(f" {tag.text.strip()} ")
+
+            # NOTE: can't use `soup.text` here because it doesn't add some spaces
+            # around cases like "<p>Text</p>some more text", so we hack it manually
+            text = str(soup)
+
+        return text
+
     def make_fixer(key: str) -> FixFn:
         def fixer() -> None:
-            # NOTE: this replaces tags with whitespace and then replaces any
-            # repeated spaces with a single one. This is done to handle tags
-            # such as "<p>Text</p>some more text" being replaced without a space
-            new_value = HTML_TAGS_REGEX.sub(" ", str(doc[key]))
-            doc[key] = re.sub(r"\s+", " ", new_value).strip()
+            # Step 1: remove all markup with special care for JATS / MML / ??
+            text = convert_markup(str(doc[key]))
+            text = HTML_TAGS_REGEX.sub(" ", text)
 
+            # Step 2: cleanup paragraphs, if any
+            text = "\n\n".join([
+                HTML_TAGS_WHITESPACE_REGEX.sub(" ", line).strip()
+                for p in text.split("\n\n") if (line := p.strip())
+                ]).strip()
+
+            doc[key] = text
             logger.info("[FIX] Removing HTML tags from key '%s'.", key)
 
         return fixer
