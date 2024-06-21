@@ -801,11 +801,13 @@ def html_tags_check(doc: papis.document.Document) -> List[Error]:
 
     def make_fixer(key: str) -> FixFn:
         def fixer() -> None:
-            old_value = str(doc[key])
-            new_value = HTML_TAGS_REGEX.sub("", old_value).strip()
+            # NOTE: this replaces tags with whitespace and then replaces any
+            # repeated spaces with a single one. This is done to handle tags
+            # such as "<p>Text</p>some more text" being replaced without a space
+            new_value = HTML_TAGS_REGEX.sub(" ", str(doc[key]))
+            doc[key] = re.sub(r"\s+", " ", new_value).strip()
 
             logger.info("[FIX] Removing HTML tags from key '%s'.", key)
-            doc[key] = new_value
 
         return fixer
 

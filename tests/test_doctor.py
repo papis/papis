@@ -291,9 +291,12 @@ def test_html_tags_check(tmp_config: TemporaryConfiguration) -> None:
         "title": "DNA sequencing with chain-terminating inhibitors",
         "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
         })
+
+    # check no errors
     errors = html_tags_check(doc)
     assert not errors
 
+    # check multiple nested tags
     doc["title"] = (
         "<emph>DNA sequencing with chain-terminating <div>inhibitors</div></emph>"
         )
@@ -302,3 +305,13 @@ def test_html_tags_check(tmp_config: TemporaryConfiguration) -> None:
 
     error.fix_action()
     assert doc["title"] == "DNA sequencing with chain-terminating inhibitors"
+
+    # check tags with missing spaces
+    doc["title"] = (
+        "<emph>DNA</emph>sequencing with chain terminating inhibitors"
+        )
+    error, = html_tags_check(doc)
+    assert error.payload == "title"
+
+    error.fix_action()
+    assert doc["title"] == "DNA sequencing with chain terminating inhibitors"
