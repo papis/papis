@@ -1,0 +1,63 @@
+<p>Let <inline-formula content-type="math/mathml">
+<mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" alttext="upper M Subscript n">
+<mml:semantics>
+<mml:msub>
+<mml:mi>M</mml:mi>
+<mml:mi>n</mml:mi>
+</mml:msub>
+<mml:annotation encoding="application/x-tex">M_n</mml:annotation>
+</mml:semantics>
+</mml:math>
+</inline-formula> be a random <inline-formula content-type="math/mathml">
+<mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" alttext="n times n">
+<mml:semantics>
+<mml:mrow>
+<mml:mi>n</mml:mi>
+<mml:mo>×<!-- × --></mml:mo>
+<mml:mi>n</mml:mi>
+</mml:mrow>
+<mml:annotation encoding="application/x-tex">n \times n</mml:annotation>
+</mml:semantics>
+</mml:math>
+</inline-formula> unitary matrix with distribution given by Haar measure on the unitary group. Using explicit moment calculations, a general criterion is given for linear combinations of traces of powers of <inline-formula content-type="math/mathml">
+<mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" alttext="upper M Subscript n">
+<mml:semantics>
+<mml:msub>
+<mml:mi>M</mml:mi>
+<mml:mi>n</mml:mi>
+</mml:msub>
+<mml:annotation encoding="application/x-tex">M_n</mml:annotation>
+</mml:semantics>
+</mml:math>
+</inline-formula> to converge to a Gaussian limit as <inline-formula content-type="math/mathml">
+<mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" alttext="n right-arrow normal infinity">
+<mml:semantics>
+<mml:mrow>
+<mml:mi>n</mml:mi>
+<mml:mo stretchy="false">→<!-- → --></mml:mo>
+<mml:mi mathvariant="normal">∞<!-- ∞ --></mml:mi>
+</mml:mrow>
+<mml:annotation encoding="application/x-tex">n \rightarrow \infty</mml:annotation>
+</mml:semantics>
+</mml:math>
+</inline-formula>. By Fourier analysis, this result leads to central limit theorems for the measure on the circle that places a unit mass at each of the eigenvalues of <inline-formula content-type="math/mathml">
+<mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" alttext="upper M Subscript n">
+<mml:semantics>
+<mml:msub>
+<mml:mi>M</mml:mi>
+<mml:mi>n</mml:mi>
+</mml:msub>
+<mml:annotation encoding="application/x-tex">M_n</mml:annotation>
+</mml:semantics>
+</mml:math>
+</inline-formula>. For example, the integral of this measure against a function with suitably decaying Fourier coefficients converges to a Gaussian limit without any normalisation. Known central limit theorems for the number of eigenvalues in a circular arc and the logarithm of the characteristic polynomial of <inline-formula content-type="math/mathml">
+<mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" alttext="upper M Subscript n">
+<mml:semantics>
+<mml:msub>
+<mml:mi>M</mml:mi>
+<mml:mi>n</mml:mi>
+</mml:msub>
+<mml:annotation encoding="application/x-tex">M_n</mml:annotation>
+</mml:semantics>
+</mml:math>
+</inline-formula> are also derived from the criterion. Similar results are sketched for Haar distributed orthogonal and symplectic matrices.</p>
