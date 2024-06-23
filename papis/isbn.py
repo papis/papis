@@ -59,8 +59,15 @@ def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
         ]
 
     data = {k.lower(): data[k] for k in data}
-    return papis.document.keyconversion_to_data(
+    result = papis.document.keyconversion_to_data(
         key_conversion, data, keep_unknown_keys=True)
+
+    # NOTE: 'isbnlib' does not give a type at all, so we can't know if this is
+    # a proceeding or any other book-like format. Also, 'isbnlib' always uses
+    # the 'book' type when converting to BibTeX, so we'll do the same.
+    result["type"] = "book"
+
+    return result
 
 
 @click.command("isbn")
