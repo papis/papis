@@ -10,6 +10,7 @@ from typing import (
 
 import papis
 import papis.config
+import papis.strings
 import papis.logging
 
 logger = papis.logging.get_logger(__name__)
@@ -160,7 +161,7 @@ def author_list_to_author(data: Dict[str, Any]) -> str:
         return ""
 
     separator = papis.config.getstring("multiple-authors-separator")
-    fmt = papis.config.getstring("multiple-authors-format")
+    fmt = papis.config.getformattedstring("multiple-authors-format")
 
     if separator is None or fmt is None:
         raise ValueError(
@@ -168,7 +169,8 @@ def author_list_to_author(data: Dict[str, Any]) -> str:
             "and 'multiple-authors-format' are not present in the configuration")
 
     return separator.join([
-        fmt.format(au=author) for author in data["author_list"]
+        papis.format.format(fmt, author, doc_key="au")
+        for author in data["author_list"]
         ])
 
 
@@ -533,7 +535,7 @@ def describe(document: Union[Document, Dict[str, Any]]) -> str:
         :confval:`document-description-format`.
     """
     return papis.format.format(
-        papis.config.getstring("document-description-format"),
+        papis.config.getformattedstring("document-description-format"),
         document, default=document.get("title", str(document)))
 
 

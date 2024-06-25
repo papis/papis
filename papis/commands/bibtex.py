@@ -131,6 +131,7 @@ import papis.cli
 import papis.config
 import papis.format
 import papis.logging
+import papis.strings
 from papis.commands import AliasedGroup
 from papis.commands.explore import get_explorer_by_name
 
@@ -328,14 +329,13 @@ def cli_open(ctx: click.Context) -> None:
 @cli.command("edit")
 @click.help_option("-h", "--help")
 @click.option("-s", "--set", "set_tuples",
-              help="Update document's information with key value. "
-              "The value can be a papis format.",
+              help="Update a document with key value pairs",
               multiple=True,
-              type=(str, str),)
+              type=(str, papis.cli.FormattedStringParamType()),)
 @papis.cli.all_option()
 @click.pass_context
 def cli_edit(ctx: click.Context,
-             set_tuples: List[Tuple[str, str]],
+             set_tuples: List[Tuple[str, papis.strings.FormattedString]],
              _all: bool) -> None:
     """
     Edit documents by adding keys or opening an editor.
@@ -360,6 +360,7 @@ def cli_edit(ctx: click.Context,
             located = papis.utils.locate_document_in_lib(doc)
             if set_tuples:
                 for k, v in set_tuples:
+                    k, v = papis.strings.process_formatted_string_pair(k, v)
                     try:
                         located[k] = papis.format.format(v, located)
                     except papis.format.FormatFailedError as exc:

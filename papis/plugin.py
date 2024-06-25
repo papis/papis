@@ -40,10 +40,11 @@ def get_extension_manager(namespace: str) -> ExtensionManager:
 
 def get_available_entrypoints(namespace: str) -> List[str]:
     """
-    :returns: a list of all available entry points in the given *namespace*.
+    :returns: a list of all available entry points in the given *namespace*
+        sorted alphabetically.
     """
     manager = get_extension_manager(namespace)
-    return [str(e) for e in manager.entry_points_names()]
+    return sorted(str(e) for e in manager.entry_points_names())
 
 
 def get_available_plugins(namespace: str) -> List[Any]:
