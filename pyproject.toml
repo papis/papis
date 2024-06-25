@@ -88,16 +88,11 @@ Repository = "https://github.com/papis/papis"
 
 [project.optional-dependencies]
 develop = [
-    "flake8",
-    "flake8-bugbear",
-    "flake8-quotes",
-    "Flake8-pyproject",
     "mypy>=0.7",
-    "pep8-naming",
-    "pylint",
     "pytest",
     "pytest-cov",
     "python-coveralls",
+    "ruff",
     "types-beautifulsoup4",
     "types-Pygments",
     "types-docutils",
@@ -253,38 +248,61 @@ markers = [
     "resource_setup: setup for resource_cache",
 ]
 
-[tool.flake8]
-select = ["B", "D", "E", "F", "N", "Q", "W"]
-extend-ignore = ["B019", "E123", "N818", "W503"]
-exclude = ["doc", "build", "examples/scripts/papis-mail"]
-filename = ["*.py", "examples*papis-*"]
-max-line-length = 88
-inline-quotes = "double"
-multiline-quotes = "double"
+[tool.ruff]
+line-length = 88
 
-[tool.pylint.MAIN]
-jobs = "1"
-recursive = "yes"
-suggestion-mode = "yes"
-
-[tool.pylint."MESSAGES CONTROL"]
-disable = [
-    "C0103",
-    "missing-function-docstring",
-    "bad-inline-option",
-    "consider-using-f-string",
-    "consider-using-from-import",
-    "deprecated-pragma",
-    "file-ignored",
-    "locally-disabled",
-    "missing-module-docstring",
-    "raw-checker-failed",
-    "suppressed-message",
-    "too-many-arguments",
-    "unspecified-encoding",
-    "use-symbolic-message-instead",
-    "useless-suppression"
+[tool.ruff.lint]
+select = [
+    # Pyflakes
+    "F",
+    # pycodestyle
+    "E",
+    "W",
+    # pydocstyle
+    "D",
+    # pyupgrade
+    "UP",
+    # pylint
+    "PL",
+    # flake8-pytest
+    "PT",
+    # flake8-quotes
+    "Q"
 ]
+ignore = [
+    # Missing docstring in public module
+    "D100",
+    # Missing docstring in public class docstring
+    "D101",
+    # Missing docstring in public method
+    "D102",
+    # Missing docstring in public function
+    "D103",
+    # Missing docstring in `__init__`
+    "D107",
+    # Multi-line docstring summary should start at the first line
+    "D212",
+    # First line of docstring should be in imperative mood
+    "D401",
+    # 1 blank line required between summary line and description
+    "D205",
+    # First line should end with a period
+    "D400",
+    # First line of docstring should be in imperative mood
+    "D401",
+    # First line should end with a period, question mark, or exclamation point
+    "D415",
+    # Use f-string instead of `format` call
+    "UP032",
+    # Too many arguments in function definition
+    "PLR0913",
+    # Magic values
+    "PLR2004",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
 
 [tool.mypy]
 strict = true
