@@ -137,7 +137,7 @@ title, you can use the following:
     papis list title:principia
 
 Instead of by "title", you can filter by any other field stored in the Papis
-library. The :ref:`info.yaml section <info-file>` gives an overview of these
+library. The :doc:`info.yaml section <info_file>` gives an overview of these
 fields.
 
 Opening documents
@@ -175,8 +175,7 @@ functionality for this:
 
 We called ``papis edit`` with the ``--notes`` flag, which tells Papis that we
 want to edit the note file (or create one if it doesn't yet exist). We need to
-specify ``--notes`` because ``papis edit`` will otherwise open the `info.yaml
-file <info-file>` where Papis stores the document's metadata. The command ends
+specify ``--notes`` because ``papis edit`` will otherwise open the :doc:`info.yaml <info_file>` where Papis stores the document's metadata. The command ends
 with the query "newton", which we use to select the document in which we're
 interested.
 
