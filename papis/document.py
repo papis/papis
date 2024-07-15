@@ -254,7 +254,9 @@ def split_author_name(author: str) -> Dict[str, Any]:
     given = " ".join(parts["first"])
     family = " ".join(parts["von"] + parts["last"] + parts["jr"])
 
-    return {"family": family, "given": given}
+    from bibtexparser.latexenc import latex_to_unicode
+
+    return {"family": latex_to_unicode(family), "given": latex_to_unicode(given)}
 
 
 def split_authors_name(authors: Union[str, List[str]],
