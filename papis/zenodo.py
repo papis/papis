@@ -40,14 +40,20 @@ def get_text_from_html(html: str) -> str:
     :return: Either the raw HTML as text, or the markdown-annotated plain text.
     """
     try:
-        from markdownify import markdownify
-
-        return str(markdownify(html))
+        import markdownify
     except ImportError:
         logger.info(
             "Saving text as raw HTML.  Install `markdownify` to convert it to markdown."
         )
         return html
+
+    options = {}
+    if hasattr(markdownify.MarkdownConverter.Options, "escape_misc"):
+        # NOTE: markdownify 0.13 introduced some more escaping that we do not
+        # want for now, so we turn it off!
+        options["escape_misc"] = False
+
+    return str(markdownify.markdownify(html, **options))
 
 
 KeyConversionPair = papis.document.KeyConversionPair
@@ -155,8 +161,10 @@ def get_data(record_id: str) -> Dict[str, Any]:
     :param record_id: a Zenodo record id
     :return: a processed zenodo record
     """
+    data = _get_zenodo_response(record_id)
+
     try:
-        json_data = json.loads(_get_zenodo_response(record_id))
+        json_data = json.loads(data)
     except json.JSONDecodeError as exc:
         logger.error("Failed to decode response from Zenodo.", exc_info=exc)
 
