@@ -512,6 +512,29 @@ def create_reference(doc: Dict[str, Any], force: bool = False) -> str:
     return ref_cleanup(ref)
 
 
+def author_list_to_author(author_list: List[Dict[str, Any]]) -> str:
+    if not author_list:
+        return ""
+
+    result = []
+    fmt = "{au[family]}, {au[given]}"
+
+    for author in author_list:
+        family = author.get("family")
+        given = author.get("given")
+        if family and given:
+            result.append(fmt.format(au=author))
+        elif family:
+            result.append(f"{{{family}}}")
+        elif given:
+            result.append(f"{{{given}}}")
+        else:
+            # NOTE: empty author, just skip it
+            pass
+
+    return " and ".join(result)
+
+
 def to_bibtex_multiple(documents: List[papis.document.Document]) -> Iterator[str]:
     for doc in documents:
         bib = to_bibtex(doc)
@@ -600,6 +623,8 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
                 logger.warning(
                     "'journal-key' key '%s' is not present for ref '%s'.",
                     journal_key, document["ref"])
+        elif bib_key == "author" and "author_list" in document:
+            bib_value = author_list_to_author(document["author_list"])
 
         override_key = f"{bib_key}_latex"
         if override_key in document:
