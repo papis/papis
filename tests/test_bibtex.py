@@ -122,13 +122,14 @@ def test_to_bibtex_formatting(tmp_config: TemporaryConfiguration) -> None:
     assert to_bibtex(from_data({
         "type": "report",
         "author": "Albert Einstein",
+        "author_list": [{"given": "Albert", "family": "Einstein"}],
         "title": "The Theory of Everything",
         "journal": "Nature",
         "year": 2350,
         "ref": "MyDocument"})
         ) == (
         "@report{MyDocument,\n"
-        "  author = {Albert Einstein},\n"
+        "  author = {Einstein, Albert},\n"
         "  journal = {Nature},\n"
         "  title = {The Theory of Everything},\n"
         "  year = {2350},\n"
@@ -138,10 +139,11 @@ def test_to_bibtex_formatting(tmp_config: TemporaryConfiguration) -> None:
         "type": "misc",
         "ref": "SDbwLashko2019",
         "author": "Alexander Lashkov",
+        "author_list": [{"given": "Alexander", "family": "Lashkov"}],
         "url": "https://github.com/alashkov83/S_Dbw"})
         ) == (
         "@misc{SDbwLashko2019,\n"
-        "  author = {Alexander Lashkov},\n"
+        "  author = {Lashkov, Alexander},\n"
         "  url = {https://github.com/alashkov83/S_Dbw},\n"
         "}")
 
@@ -155,6 +157,7 @@ def test_overridable(tmp_config: TemporaryConfiguration) -> None:
     doc = {
         "type": "report",
         "author": "Albert Einstein",
+        "author_list": [{"given": "Albert", "family": "Einstein"}],
         "title": "Ä α The Theory of Everything & Nothing",
         "title_latex": r"The Theory of Everything \& Nothing",
         "journal": "Nature",
@@ -165,7 +168,7 @@ def test_overridable(tmp_config: TemporaryConfiguration) -> None:
     papis.config.set("bibtex-unicode", True)
     assert to_bibtex(from_data(doc)) == (
         "@report{MyDocument,\n"
-        "  author = {Albert Einstein},\n"
+        "  author = {Einstein, Albert},\n"
         "  journal = {Nature},\n"
         "  title = {The Theory of Everything \\& Nothing},\n"
         "  year = {2350},\n"
@@ -174,7 +177,7 @@ def test_overridable(tmp_config: TemporaryConfiguration) -> None:
     papis.config.set("bibtex-unicode", False)
     assert to_bibtex(from_data(doc)) == (
         "@report{MyDocument,\n"
-        "  author = {Albert Einstein},\n"
+        "  author = {Einstein, Albert},\n"
         "  journal = {Nature},\n"
         "  title = {The Theory of Everything "
         # this will sadly happen, and it makes sense
@@ -195,12 +198,13 @@ def test_ignore_keys(tmp_config: TemporaryConfiguration,
     doc = {
         "type": "report",
         "author": "Albert Einstein",
+        "author_list": [{"given": "Albert", "family": "Einstein"}],
         "year": 2350,
         "ref": "MyDocument"
     }
     assert to_bibtex(from_data(doc)) == (
         "@report{MyDocument,\n"
-        "  author = {Albert Einstein},\n"
+        "  author = {Einstein, Albert},\n"
         "  year = {2350},\n"
         "}")
 
@@ -212,5 +216,28 @@ def test_ignore_keys(tmp_config: TemporaryConfiguration,
 
     assert to_bibtex(from_data(doc)) == (
         "@report{MyDocument,\n"
-        "  author = {Albert Einstein},\n"
+        "  author = {Einstein, Albert},\n"
         "}")
+
+
+def test_import_institution(tmp_config: TemporaryConfiguration) -> None:
+    from papis.bibtex import bibtex_to_dict, to_bibtex
+
+    orig = (
+        "@report{ipcc1990,\n"
+        "  author = {{Intergovernmental Panel on Climate Change}},\n"
+        "  title = {Contribution of Working Group I to the First Assessment "
+        "Report of the Intergovernmental Panel on Climate Change},\n"
+        "  year = {1990},\n"
+        "}"
+    )
+    to_result, = bibtex_to_dict(orig)
+
+    author, = to_result["author_list"]
+    assert not author["given"]
+    assert author["family"] == "Intergovernmental Panel on Climate Change"
+
+    from papis.document import from_data
+
+    from_result = to_bibtex(from_data(to_result))
+    assert from_result == orig
