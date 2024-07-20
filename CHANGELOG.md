@@ -708,7 +708,7 @@ papis module `papis.git`.
 
 # VERSION v0.8.1 (February 27, 2019)
 
-- Change default colors for `header_formater`.
+- Change default colors for `header-format`.
 - Update `prompt_toolkit` version to `2.0.5`.
 
 # VERSION v0.8 (February 26, 2019)

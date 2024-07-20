@@ -461,7 +461,7 @@ def _get_filename_from_response(response: "requests.Response") -> Optional[str]:
 
     # NOTE: we can guess the filename from the response headers
     #   Content-Disposition: inline; filename="some_file_name.ext"
-    #   Content-Disposition: attachement; filename="some_file_name.ext"
+    #   Content-Disposition: attachment; filename="some_file_name.ext"
     key = "Content-Disposition"
     if not filename and key in response.headers:
         from email.message import EmailMessage

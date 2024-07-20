@@ -21,7 +21,7 @@ article_key_conversion = [
 
 
 class Downloader(papis.downloaders.Downloader):
-    """Retrieve documents from `CiteSeerX <https://citeseerx.ist.psu.edu>`__"""
+    """Retrieve documents from `CiteSeerX <https://citeseerx.ist.psu.edu>`__"""  # noqa: E501 # spell: disable
 
     # NOTE: not sure if this API is open for the public, but it seems to work
     API_URL: ClassVar[str] = "https://citeseerx.ist.psu.edu/api/paper"
@@ -45,7 +45,7 @@ class Downloader(papis.downloaders.Downloader):
     def match(cls,
               url: str) -> Optional[papis.downloaders.Downloader]:
         return (Downloader(url)
-                if re.match(r".*citeseerx\.ist\.psu\.edu.*", url)
+                if re.match(r".*citeseerx\.ist\.psu\.edu.*", url)  # spell: disable
                 else None)
 
     def _get_raw_data(self) -> bytes:

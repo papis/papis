@@ -5,7 +5,7 @@ Papis: Command-line Bibliography Manager
 
    `This <https://papis.readthedocs.io/en/latest>`__ is the documentation for
    the current **in development** version of Papis. For the documentation of
-   the lastest **released** version see
+   the latest **released** version see
    `here <https://papis.readthedocs.io/en/stable>`__.
 
 .. grid:: 3

@@ -120,7 +120,7 @@ def pick_doc(
 
 
 def pick_subfolder_from_lib(lib: str) -> List[str]:
-    """Pick subfolders from all existings subfolders in *lib*.
+    """Pick subfolders from all existing subfolders in *lib*.
 
     Note that this includes document folders in *lib* as well nested library
     folders.

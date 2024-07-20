@@ -117,7 +117,7 @@ bibtex_standard_keys = frozenset([
 #: BibLaTeX field aliases (`Section 2.2.5 <manual_>`_).
 bibtex_key_aliases = {
     "address": "location",
-    "annote": "annotation",
+    "annote": "annotation",  # spell: disable
     "archiveprefix": "eprinttype",
     "journal": "journaltitle",
     "key": "sortkey",
@@ -457,7 +457,7 @@ def ref_cleanup(ref: str) -> str:
 
     This uses the :data:`ref_allowed_characters` to remove any disallowed characters
     from the given *ref*. Furthermore, ``slugify`` is used to remove unicode
-    characters and ensure consistent use of the underscrore ``_`` as a separator.
+    characters and ensure consistent use of the underscore ``_`` as a separator.
 
     :returns: a reference without any disallowed characters.
     """

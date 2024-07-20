@@ -14,7 +14,7 @@ class Downloader(papis.downloaders.fallback.Downloader):
     # https://hal.science/browse/portal
 
     SUPPORTED_HAL_SCIENCE_SUBDOMAINS: ClassVar[Tuple[str, ...]] = (
-        "hal", r"shs\.hal", r"theses\.hal", r"media\.hal",
+        "hal", r"shs\.hal", r"theses\.hal", r"media\.hal",  # spell: disable
         )
 
     SUPPORTED_ARCHIVES_OUVERTES_SUBDOMAINS: ClassVar[Tuple[str, ...]] = (

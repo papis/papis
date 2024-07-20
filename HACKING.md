@@ -170,7 +170,7 @@ Guidelines for Documentation
 
 You'll find the source code of the Papis documentation under the `doc/src`
 directory. The documentation uses the Sphinx documentation stack to build the
-manual and HTML pages and, to format the text, the [Sphinx reStrucTured
+manual and HTML pages and, to format the text, the [Sphinx reStructuredText
 markup](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html).
 
 To build the documentation you can directly run `make doc` in the main folder or

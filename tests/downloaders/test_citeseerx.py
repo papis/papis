@@ -24,7 +24,7 @@ def get_citeseerx_resource(
         headers={"token": "undefined", "referer": url})
 
 
-@pytest.mark.skip(reason="citeseerx.ist.psu.edu does not seem to be working anymore")
+@pytest.mark.skip(reason="citeseerx.ist.psu.edu does not seem to be working anymore")  # noqa: E501 # spell: disable
 @pytest.mark.parametrize("url", CITESEERX_URLS)
 def test_citeseerx_fetch(tmp_config: TemporaryConfiguration,
                          resource_cache: ResourceCache,

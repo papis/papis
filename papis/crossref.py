@@ -270,16 +270,17 @@ def get_data(
 
 
 def doi_to_data(doi_string: str) -> Dict[str, Any]:
-    """Search through crossref and get a dictionary containing the data
+    """Search through Crossref and get the document metadata.
 
-    :param doi_string: Doi identificator or an url with some doi
-    :returns: Dictionary containing the data
-    :raises ValueError: If no data could be retrieved for the doi
+    :param doi_string: DOI or an url that contains a DOI.
+    :returns: dictionary containing the data.
+    :raises ValueError: if no data could be retrieved for the DOI.
     """
     doi_string = doi.get_clean_doi(doi_string)
     results = get_data(dois=[doi_string])
     if results:
         return results[0]
+
     raise ValueError(
         f"Could not retrieve data for DOI '{doi_string}' from Crossref")
 
