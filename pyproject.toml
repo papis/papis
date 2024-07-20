@@ -311,3 +311,27 @@ module = [
     "whoosh.*",
 ]
 ignore_missing_imports = true
+
+[tool.typos.default]
+extend-ignore-re = [
+    "(?Rm)^.*#\\s*spell:\\s*disable$"
+]
+
+[tool.typos.files]
+extend-exclude = [
+    "examples/scripts/LTWA.json",
+    "examples/scripts/papis-abbrev",
+    "tests/data",
+    "tests/downloaders/resources",
+    "tests/resources",
+]
+
+[tool.typos.default.extend-words]
+# TODO: remove these ones the deprecation period is done
+Formater = "Formater"
+Jinja2Formater = "Jinja2Formater"
+PythonFormater = "PythonFormater"
+get_formater = "get_formater"
+# NOTE: these appear in some queries and urls
+ein = "ein"
+selv = "selv"

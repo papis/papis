@@ -154,7 +154,7 @@ def test_add_folder_name_cli(tmp_library: TemporaryLibrary) -> None:
     _, ext = os.path.splitext(filename)
     result = cli_runner.invoke(
         cli,
-        ["--set", "author", "Aristotel",
+        ["--set", "author", "Aristotle",
          "--set", "title", "The apology of Socrates",
          "--batch",
          "--folder-name", "test-the-apology",
@@ -163,7 +163,7 @@ def test_add_folder_name_cli(tmp_library: TemporaryLibrary) -> None:
     assert result.exit_code == 0
 
     db = papis.database.get()
-    doc, = db.query_dict({"author": "Aristotel"})
+    doc, = db.query_dict({"author": "Aristotle"})
 
     folder = doc.get_main_folder()
     assert folder is not None

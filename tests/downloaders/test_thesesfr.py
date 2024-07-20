@@ -7,10 +7,10 @@ from papis.downloaders.thesesfr import Downloader
 def test_match(tmp_config: TemporaryConfiguration):
     valid_urls = [
         "https://www.theses.fr/2014TOU30305",
-        "2014TOU30305",
+        "2014TOU30305",  # spell: disable
         "https://www.theses.fr/2014TOU30305.bib/?asdf=2",
     ]
-    invalid_urls = ["http://google.com", "2014TOU", "ASDF"]
+    invalid_urls = ["http://google.com", "2014TOU", "ASDF"]  # spell: disable
     for url in valid_urls:
         assert isinstance(Downloader.match(url), Downloader)
 
@@ -21,10 +21,10 @@ def test_match(tmp_config: TemporaryConfiguration):
 @pytest.mark.parametrize(
     ("query", "expected"),
     [
-        ("https://www.theses.fr/2014TOU30305", "2014TOU30305"),
-        ("https://www.theses.fr/2014TOU30305.bib/?asdf=2", "2014TOU30305"),
-        ("2014TOU30305", "2014TOU30305"),
-        ("2014TOU", None),
+        ("https://www.theses.fr/2014TOU30305", "2014TOU30305"),  # spell: disable
+        ("https://www.theses.fr/2014TOU30305.bib/?asdf=2", "2014TOU30305"),  # noqa: E501 # spell: disable
+        ("2014TOU30305", "2014TOU30305"),  # spell: disable
+        ("2014TOU", None),  # spell: disable
     ],
 )
 def test_get_identifier(query: str, expected: str, tmp_config: TemporaryConfiguration):

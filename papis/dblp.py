@@ -24,7 +24,7 @@ DBLP_BIB_FORMAT = "https://dblp.org/rec/{uri}.bib"
 DBLP_FORMATS = frozenset(["xml", "json", "jsonp"])
 
 # NOTE: caps due to bandwidth reasons
-DBLP_MAX_RESULS = 1000
+DBLP_MAX_RESULTS = 1000
 DBLP_MAX_COMPLETIONS = 1000
 
 # https://dblp.org/faq/What+types+does+dblp+use+for+publication+entries.html
@@ -93,9 +93,9 @@ def search(
 
     :result: the query response in the requested format.
     """
-    if not (0 < max_results <= DBLP_MAX_RESULS):
+    if not (0 < max_results <= DBLP_MAX_RESULTS):
         raise ValueError(
-            f"Cannot request more than {DBLP_MAX_RESULS} results (got {max_results})"
+            f"Cannot request more than {DBLP_MAX_RESULTS} results (got {max_results})"
             )
 
     if not (0 < max_completions <= DBLP_MAX_COMPLETIONS):

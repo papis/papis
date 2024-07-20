@@ -13,13 +13,13 @@ class Downloader(papis.downloaders.Downloader):
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
         """
-        >>> Downloader.match('https://wha2341!@#!@$%!@#file.pdf') is None
+        >>> Downloader.match('https://wha2341!@#!@$%!@#file.pdf') is None  # spell: disable
         False
         >>> Downloader.match('https://whateverpt?is?therefile.epub') is None
         False
         >>> Downloader.match('https://whatever?path?is?therefile') is None
         True
-        """
+        """  # noqa: E501
         endings = "pdf|djvu|epub|mobi|jpg|png|md"
         m = re.match(r"^http.*\.(%s)$" % endings, url, re.IGNORECASE)
         if m:

@@ -32,7 +32,7 @@ settings: Dict[str, Any] = {
     # unused or deprecated
     "add-interactive": False,
     "mvtool": "mv",
-    "formater": NOT_SET,
+    "formater": NOT_SET,  # spell: disable
     "doctor-keys-exist-keys": NOT_SET,
     "doctor-key-type-check-keys": NOT_SET,
     "doctor-key-type-check-separator": NOT_SET,
