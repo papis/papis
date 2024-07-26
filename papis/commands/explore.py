@@ -31,7 +31,7 @@ concatenate the commands ``crossref`` and ``export --format bibtex`` as such
 
 .. code:: sh
 
-    papis explore crossref -a 'Schrodinger' export --format bibtex lib.bib
+    papis explore crossref -a 'Schrodinger' export --format bibtex --out 'lib.bib'
 
 This will store everything that you got from Crossref in the ``lib.bib`` file.
 However, ``explore`` is much more flexible than that. You can also pick just
@@ -41,7 +41,7 @@ take care of it
 
 .. code:: sh
 
-    papis explore crossref -a 'Schrodinger' pick export --format bibtex lib.bib
+    papis explore crossref -a 'Schrodinger' pick export --format bibtex --out 'lib.bib'
 
 Notice how the ``pick`` command is situated before the ``export``.
 More generally you could write something like
@@ -49,18 +49,18 @@ More generally you could write something like
 .. code:: sh
 
     papis explore \\
-        crossref -a Schroedinger \\
-        crossref -a Einstein \\
+        crossref -a 'Schroedinger' \\
+        crossref -a 'Einstein' \\
         arxiv -a 'Felix Hummel' \\
-        export --format yaml docs.yaml \\
+        export --format yaml --out 'docs.yaml' \\
         pick  \\
-        export --format bibtex specially-picked-document.bib
+        export --format bibtex --out 'special-picked-documents.bib'
 
 The upper command will look in Crossref for documents authored by Schrodinger,
 then also by Einstein, and will look on the arXiv for papers authored by Felix
 Hummel. At the end, all these documents will be stored in the ``docs.yaml`` file.
 After that we pick one document from them and store the information in
-the file ``specially-picked-document.bib``, and we could go on and on.
+the file ``special-picked-documents.bib``, and we could go on and on.
 
 If you want to follow-up on these documents and get them again to pick one,
 you could use the ``yaml`` command to read in document information from a YAML
@@ -69,7 +69,7 @@ file, e.g. the previously created ``docs.yaml``,
 .. code:: sh
 
     papis explore \\
-        yaml docs.yaml \\
+        yaml 'docs.yaml' \\
         pick \\
         cmd 'papis scihub {doc[doi]}' \\
         cmd 'firefox {doc[url]}'
@@ -158,7 +158,7 @@ def lib(ctx: click.Context,
 
     .. code:: sh
 
-        papis lib -l books einstein pick
+        papis explore lib -l books 'einstein' pick
     """
 
     if doc_folder:
@@ -221,9 +221,9 @@ def citations(ctx: click.Context,
 
     .. code:: sh
 
-        papis explore citations 'einstein' export --format yaml einstein.yaml
-
+        papis explore citations 'einstein' export --format yaml --out 'einstein.yaml'
     """
+
     if doc_folder is not None:
         documents = [papis.document.from_folder(d) for d in doc_folder]
     else:
