@@ -9,8 +9,8 @@ A hook is declared in the same way as a plugin, in fact
 they are implemented in the same way within the
 `stevedore <https://github.com/openstack/stevedore>`__ plugin.
 
-1 Writing hooks as a user
--------------------------
+Writing hooks as a user
+-----------------------
 
 Right now the only way to add a hook as a user is using your
 ``config.py`` configuration file, which gets loaded
@@ -25,8 +25,8 @@ hook like
 
     papis.hooks.add("on_edit_done", lambda: print(42))
 
-2 Writing hooks as a developer
-------------------------------
+Writing hooks as a developer
+----------------------------
 
 To add a hook as a plugin writer or a developer you can just add the *entrypoint*
 to the ``pyproject.toml`` file. For instance for the ``on_edit_done`` hook you
@@ -36,3 +36,17 @@ would write
 
     [project.entry-points."papis.hook.on_edit_done"]
     my_hook_name = "path.module:function"
+
+Available hooks
+---------------
+
+``on_edit_done``
+^^^^^^^^^^^^^^^^
+
+This hook is called after editing with ``papis edit`` has finished, but before it
+is saved to the database. The callbacks for this hook have the following format:
+
+.. code:: python
+
+    def callback(doc: papis.document.Document) -> None:
+        ...

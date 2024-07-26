@@ -49,8 +49,8 @@ def run(document: papis.document.Document,
         logger.debug("No changes made to the document.")
         return
 
+    papis.hooks.run("on_edit_done", document)
     papis.database.get().update(document)
-    papis.hooks.run("on_edit_done")
     if git:
         papis.git.add_and_commit_resource(
             str(document.get_main_folder()),

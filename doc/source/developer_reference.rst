@@ -79,6 +79,12 @@ Developer API reference
 .. automodule:: papis.git
     :members:
 
+``papis.hooks``
+---------------
+
+.. automodule:: papis.hooks
+   :members:
+
 ``papis.id``
 ------------
 
