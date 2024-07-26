@@ -43,10 +43,25 @@ Available hooks
 ``on_edit_done``
 ^^^^^^^^^^^^^^^^
 
-This hook is called after editing with ``papis edit`` has finished, but before it
+This hook is called by ``papis edit`` after editing has finished, but before it
 is saved to the database. The callbacks for this hook have the following format:
 
 .. code:: python
 
     def callback(doc: papis.document.Document) -> None:
         ...
+
+``on_add_done``
+^^^^^^^^^^^^^^^
+
+This hook is called by ``papis add`` after all editing has finished, but before
+the document is searched for duplicates and added to the database. The callbacks
+for this hook have the following format:
+
+.. code:: python
+
+    def callback(tmp_doc: papis.document.Document) -> None:
+        ...
+
+Note that the ``tmp_doc`` argument is not the final document. It will be moved to
+a final location inside the chosen library after the hook was called.

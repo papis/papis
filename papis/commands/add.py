@@ -110,6 +110,7 @@ import click
 import papis.api
 import papis.pick
 import papis.utils
+import papis.hooks
 import papis.tui.utils
 import papis.filetype
 import papis.config
@@ -325,6 +326,8 @@ def run(paths: List[str],
         papis.api.edit_file(tmp_document.get_info_file(), wait=True)
         logger.debug("Loading the changes made by editing.")
         tmp_document.load()
+
+    papis.hooks.run("on_add_done", tmp_document)
 
     # Duplication checking
     logger.info("Checking if this document is already in the library. "
