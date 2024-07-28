@@ -1,4 +1,4 @@
-Importing from bibtex or zotero
+Importing from BibTeX or Zotero
 ===============================
 
 Many users will want to import a library from a bibtex file
