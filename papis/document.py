@@ -451,6 +451,7 @@ class Document(Dict[str, Any]):
                 "Error reading info file at '%s'. Please check it!",
                 self.get_info_file(), exc_info=exc)
         else:
+            self.clear()
             self.update(data)
 
 
