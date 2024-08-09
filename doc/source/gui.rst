@@ -1,4 +1,4 @@
-Gui
+GUI
 ===
 
 Papis is a program mainly intended for the command line, however,

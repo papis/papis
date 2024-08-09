@@ -1,3 +1,5 @@
+.. _developer-api-reference:
+
 Developer API reference
 =======================
 
