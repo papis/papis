@@ -254,7 +254,7 @@ def run(paths: List[str],
 
     import tempfile
 
-    in_documents_paths = paths
+    in_document_paths = paths
     temp_dir = tempfile.mkdtemp()
     tmp_document = papis.document.Document(folder=temp_dir, data=data)
     papis.database.get().maybe_compute_id(tmp_document)
@@ -273,43 +273,40 @@ def run(paths: List[str],
                     papis.document.describe(tmp_document))
         papis.commands.doctor.fix_errors(tmp_document)
 
+    # create a nice folder name for the new document
     if base_path is None:
         base_path = os.path.expanduser(papis.config.get_lib_dirs()[0])
 
     if subfolder:
         base_path = os.path.join(base_path, subfolder)
 
+    # rename all the given file names
+    from papis.paths import symlink, rename_document_files
+
+    new_file_list = rename_document_files(tmp_document, in_document_paths)
+
     import shutil
-    from papis.paths import symlink, unique_suffixes
-    from papis.paths import get_document_file_name, get_document_unique_folder
 
-    g = unique_suffixes()
-    string_append = ""
-
-    new_file_list = []
-    for in_file_path in in_documents_paths:
-        new_filename = get_document_file_name(
-            tmp_document, in_file_path,
-            suffix=string_append,
-            file_name_format=file_name)
-        new_file_list.append(new_filename)
-
-        tmp_end_filepath = os.path.join(temp_dir, new_filename)
-        string_append = next(g)
+    for in_file_path, out_file_name in zip(in_document_paths, new_file_list):
+        out_file_path = os.path.join(temp_dir, out_file_name)
+        if os.path.exists(out_file_path):
+            logger.warning("File '%s' already exists. Skipping...", out_file_path)
+            continue
 
         if link:
-            in_file_abspath = os.path.abspath(in_file_path)
-            logger.info("[SYMLINK] '%s' to '%s'.", in_file_abspath, tmp_end_filepath)
-            symlink(in_file_abspath, tmp_end_filepath)
+            logger.info("[LN] '%s' to '%s'.", in_file_path, out_file_name)
+            symlink(in_file_path, out_file_path)
         elif move:
-            logger.info("[MV] '%s' to '%s'.", in_file_path, tmp_end_filepath)
-            shutil.copy(in_file_path, tmp_end_filepath)
+            logger.info("[MV] '%s' to '%s'.", in_file_path, out_file_name)
+            shutil.copy(in_file_path, out_file_path)
         else:
-            logger.info("[CP] '%s' to '%s'.", in_file_path, tmp_end_filepath)
-            shutil.copy(in_file_path, tmp_end_filepath)
+            logger.info("[CP] '%s' to '%s'.", in_file_path, out_file_name)
+            shutil.copy(in_file_path, out_file_path)
 
     tmp_document["files"] = new_file_list
     tmp_document.save()
+
+    from papis.paths import get_document_unique_folder
 
     base_path = os.path.normpath(base_path)
     out_folder_path = get_document_unique_folder(
@@ -317,14 +314,14 @@ def run(paths: List[str],
         folder_name_format=folder_name)
 
     logger.info("Document folder is '%s'.", out_folder_path)
-    logger.debug("Document includes files: '%s'.", "', '".join(in_documents_paths))
+    logger.debug("Document includes files: '%s'.", "', '".join(in_document_paths))
 
     # Check if the user wants to edit before submitting the doc
     # to the library
     if edit:
         logger.info("Editing file before adding it.")
+
         papis.api.edit_file(tmp_document.get_info_file(), wait=True)
-        logger.debug("Loading the changes made by editing.")
         tmp_document.load()
 
     papis.hooks.run("on_add_done", tmp_document)
@@ -332,8 +329,7 @@ def run(paths: List[str],
     # Duplication checking
     logger.info("Checking if this document is already in the library. "
                 "This uses the keys ['%s'] to determine uniqueness.",
-                "', '".join(papis.config.getlist("unique-document-keys"))
-                )
+                "', '".join(papis.config.getlist("unique-document-keys")))
 
     has_duplicate = False
     try:
@@ -390,11 +386,11 @@ def run(paths: List[str],
 
     if git:
         papis.git.add_and_commit_resource(
-            str(tmp_document.get_main_folder()), ".",
+            out_folder_path, ".",
             "Add document '{}'".format(papis.document.describe(tmp_document)))
 
     if move:
-        for in_file_path in in_documents_paths:
+        for in_file_path in in_document_paths:
             try:
                 os.remove(in_file_path)
             except Exception as exc:
