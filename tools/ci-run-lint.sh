@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-EXIT_STATUS=0
+set -e
 
-python -m flake8 papis tests examples || EXIT_STATUS=$?
-python -m mypy papis || EXIT_STATUS=$?
-
-exit $EXIT_STATUS
+ruff check papis tests examples
+python -m mypy papis
