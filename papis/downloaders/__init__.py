@@ -1,5 +1,6 @@
 import re
 import os
+import pathlib
 import tempfile
 from typing import List, Optional, Any, Sequence, Type, Dict, Union, TYPE_CHECKING
 
@@ -444,12 +445,15 @@ def download_document(
         ) -> Optional[str]:
     """Download a document from *url* and store it in a local file.
 
+    An appropriate filename is deduced from the HTTP response in most cases.
+    If this is not possible, a temporary file is created instead. To ensure that
+    the desired filename is chosen, provide the *filename* argument instead.
+
     :param url: the URL of a remote file.
-    :param expected_document_extension: an expected file type. If *None*, then
-        an extension is guessed from the file contents, but this can also fail.
+    :param expected_document_extension: an expected file extension. If *None*, then
+        an extension is guessed from the file contents or from the *filename*.
     :param filename: a file name for the document, regardless of the given URL and
-        extension. If not given, a temporary file with the desired extension is
-        used instead.
+        extension.
 
     :returns: an absolute path to a local file containing the data from *url*.
     """
@@ -468,24 +472,61 @@ def download_document(
                      url, response.reason, response.status_code)
         return None
 
+    # NOTE: we can guess the filename from the response headers
+    #   Content-Disposition: inline; filename="some_file_name.ext"
+    #   Content-Disposition: attachement; filename="some_file_name.ext"
+    key = "Content-Disposition"
+    if not filename and key in response.headers:
+        from email.message import EmailMessage
+
+        msg = EmailMessage()
+        msg[key] = response.headers[key]
+        filename = msg.get_filename()
+
+    key = "Content-Type"
+    if not filename and key in response.headers:
+        from email.message import EmailMessage
+
+        msg = EmailMessage()
+        msg[key] = response.headers[key]
+
+        from mimetypes import guess_extension
+
+        ext = guess_extension(msg.get_content_type())
+
+        from urllib.parse import urlsplit
+
+        result = urlsplit(url)
+        if result.path.strip("/"):
+            basename = os.path.basename(result.path)
+        else:
+            basename = result.netloc
+        filename = f"{basename}{ext}"
+
+    # try go guess an extension
+    ext = expected_document_extension
+    if ext is None:
+        if filename is None:
+            from papis.filetype import guess_content_extension
+            ext = guess_content_extension(response.content)
+            ext = f".{ext}"
+        else:
+            _, ext = os.path.splitext(filename)
+    else:
+        if not ext.startswith("."):
+            ext = f".{ext}"
+
+    # write out the file contents
     if filename:
-        outfile = os.path.join(tempfile.gettempdir(), os.path.basename(filename))
+        root, _ = os.path.splitext(os.path.basename(filename))
+        outfile = os.path.join(tempfile.gettempdir(), f"{root}{ext}")
+
         with open(outfile, mode="wb") as f:
             f.write(response.content)
     else:
-        ext = expected_document_extension
-        if ext is None:
-            from papis.filetype import guess_content_extension
-            ext = guess_content_extension(response.content)
-            if not ext:
-                logger.warning("Downloaded document does not have a "
-                               "recognizable (binary) mimetype: '%s'.",
-                               response.headers["Content-Type"])
-
-        ext = f".{ext}" if ext else ""
         with tempfile.NamedTemporaryFile(
                 mode="wb+",
-                suffix=ext,
+                suffix=f"{ext}",
                 delete=False) as f:
             f.write(response.content)
             outfile = f.name
