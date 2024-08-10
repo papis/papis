@@ -1,7 +1,7 @@
 import os
 import pathlib
 import sys
-from typing import Iterable, Iterator, List, Optional, Union
+from typing import Iterable, Iterator, Literal, List, Optional, Union
 from warnings import warn
 
 import papis.config
@@ -139,7 +139,7 @@ def get_document_file_name(
         doc: DocumentLike,
         orig_path: PathLike,
         suffix: str = "", *,
-        file_name_format: Optional[str] = None,
+        file_name_format: Optional[Union[str, Literal[False]]] = None,
         base_name_limit: int = 150) -> str:
     """Generate a file name based on *orig_path* for the document *doc*.
 
@@ -169,6 +169,8 @@ def get_document_file_name(
 
     if not file_name_format:
         file_name_format = orig_path.name
+
+    assert isinstance(file_name_format, str)
 
     from papis.filetype import get_document_extension
 
@@ -273,7 +275,7 @@ def get_document_folder(
 
     if not is_relative_to(out_folder_path, dirname):
         raise ValueError(
-            "Formatting produced a path outside of library: "
+            "Formatting produced a path outside the root directory: "
             f"'{dirname}' not relative to '{out_folder_path}'")
 
     return out_folder_path
@@ -318,40 +320,33 @@ def _is_remote(uri: str) -> bool:
 def rename_document_files(
         doc: DocumentLike,
         in_document_paths: Iterable[str], *,
-        file_name_format: Optional[str] = None,
+        file_name_format: Optional[Union[str, Literal[False]]] = None,
         allow_remote: bool = True,
         ) -> List[str]:
     """Rename *in_document_paths* according to *file_name_format* and ensure
     uniqueness.
 
-    The files in the document (under the *files* key) are assumed fixed and the
-    new *in_document_paths* will be appended to that list such that they are
-    guaranteed to not overap. Namely, all files with a specific extension
-    *ext* will be suffixed with "-a", "-b", etc.
-
-    If all the document files should be renamed in this fashion, an easy way
-    to achieve that is by calling:
-
-    .. code:: python
-
-        files = doc.pop("files", [])
-        doc["files"] = rename_document_files(doc, files)
+    Uniqueness is required with respect to the files in *in_document_paths*
+    and those in the *doc* itself (under the *files* key). If a repeated file
+    name is found, a suffix is generated using :func:`unique_suffixes` and
+    appended to the new file.
 
     :param file_name_format: a format string used to construct a new file name
         from the document data (see :func:`papis.format.format`). This value
         defaults to :confval:`add-file-name` if not provided.
     :param allow_remote: if *True*, *in_document_paths* can also be remote
         URL, that will be downloaded to local files.
-    :returns:
+    :returns: a list of modified file names form *in_document_paths* that
+        are renamed based on *file_name_format* and suffixed for uniqueness.
     """
     if file_name_format is None:
         file_name_format = papis.config.get("add-file-name")
 
     from collections import Counter
-    from papis.filetype import get_document_extension
 
     # find next suffix for each extension
-    exts = Counter([pathlib.Path(d).suffix[1:] for d in doc.get("files", [])])
+    known_files = set(doc.get("files", []))
+    exts = Counter([pathlib.Path(d).suffix for d in known_files])
     suffixes = {ext: unique_suffixes(skip=n - 1) for ext, n in exts.items()}
 
     from papis.downloaders import download_document
@@ -373,20 +368,24 @@ def rename_document_files(
             logger.info("Skipping renaming file: '%s'.", in_file_path)
             continue
 
-        # get next suffix for this file extension
-        ext = get_document_extension(local_in_file_path)
+        # get suffix
+        _, ext = os.path.splitext(local_in_file_path)
         isuffix = suffixes.get(ext)
-        if isuffix:
-            suffix = next(isuffix)
-        else:
-            suffix = ""
-            suffixes[ext] = unique_suffixes()
+        if not isuffix:
+            suffixes[ext] = isuffix = unique_suffixes()
 
-        # cleanup the file name
+        # ensure a unique file name
         new_filename = get_document_file_name(
             doc, local_in_file_path,
-            suffix=suffix,
             file_name_format=file_name_format)
+
+        while new_filename in known_files:
+            new_filename = get_document_file_name(
+                doc, local_in_file_path,
+                suffix=next(isuffix),
+                file_name_format=file_name_format)
+
         new_files.append(new_filename)
+        known_files.add(new_filename)
 
     return new_files

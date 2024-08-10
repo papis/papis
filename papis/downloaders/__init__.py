@@ -1,6 +1,5 @@
 import re
 import os
-import pathlib
 import tempfile
 from typing import List, Optional, Any, Sequence, Type, Dict, Union, TYPE_CHECKING
 
