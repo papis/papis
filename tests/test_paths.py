@@ -212,13 +212,14 @@ def test_rename_document_files(tmp_config: TemporaryConfiguration) -> None:
     assert new_files == ["x-1913-niels-bohr.pdf", "x-1913-niels-bohr.md"]
 
     # check that correct suffixes are added base on existing files
-    doc["files"] = [
+    doc["files"] = rename_document_files(doc, [
         tmp_config.create_random_file("pdf"),
         tmp_config.create_random_file("pdf"),
         tmp_config.create_random_file("text", suffix=".md"),
-    ]
+        ])
 
     new_files = rename_document_files(doc, [
+        tmp_config.create_random_file("pdf"),
         tmp_config.create_random_file("pdf"),
         tmp_config.create_random_file("text", suffix=".md"),
         tmp_config.create_random_file("djvu"),
@@ -226,6 +227,20 @@ def test_rename_document_files(tmp_config: TemporaryConfiguration) -> None:
 
     assert new_files == [
         "1913-niels-bohr-b.pdf",
+        "1913-niels-bohr-c.pdf",
         "1913-niels-bohr-a.md",
         "1913-niels-bohr.djvu",
+        ]
+
+    # check that files are left alone when no 'file_name_format' is given
+    orig_files = [
+        tmp_config.create_random_file("pdf"),
+        tmp_config.create_random_file("text", suffix=".md"),
+        tmp_config.create_random_file("djvu"),
+        ]
+    new_files = rename_document_files(doc, orig_files, file_name_format=False)
+
+    from papis.paths import normalize_path
+    assert new_files == [
+        normalize_path(os.path.basename(filename)) for filename in orig_files
         ]
