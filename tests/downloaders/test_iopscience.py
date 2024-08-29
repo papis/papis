@@ -12,6 +12,7 @@ IOPSCIENCE_URLS = (
     )
 
 
+@pytest.mark.skip(reason="iopscience.iop.org blocked by radware captcha")
 @pytest.mark.parametrize("url", IOPSCIENCE_URLS)
 def test_iop_science_fetch(tmp_config: TemporaryConfiguration,
                            resource_cache: ResourceCache,
@@ -30,9 +31,6 @@ def test_iop_science_fetch(tmp_config: TemporaryConfiguration,
     monkeypatch.setattr(down, "_get_body",
                         lambda: resource_cache.get_remote_resource(infile, url))
     monkeypatch.setattr(down, "download_document", lambda: None)
-
-    # NOTE: bibtex add some extra fields, so we just disable it for the test
-    monkeypatch.setattr(down, "download_bibtex", lambda: None)
 
     down.fetch()
     extracted_data = down.ctx.data
