@@ -12,7 +12,7 @@ PUBMED_URL = \
     "https://api.ncbi.nlm.nih.gov/lit/ctxp/v1/{database}/?format=csl&id={pmid}"
 
 
-# https://docs.citationstyles.org/en/1.0.1/specification.html#appendix-iii-types
+# https://docs.citationstyles.org/en/stable/specification.html#appendix-iii-types
 type_converter = {
     "article": "article",
     "article-journal": "article",
