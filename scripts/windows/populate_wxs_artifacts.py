@@ -10,13 +10,14 @@ from typing import Optional
 def get_id(*path_components: str) -> str:
     """Create an element ID based on the WiX constraints.
 
-    The allowed characters as of version 4.0.5 can be found
+    The allowed characters, as of version 4.0.5, can be found
     `here <https://github.com/wixtoolset/wix/blob/289c93dc24ba203903d9c8a6261a68de95d3d911/src/wix/WixToolset.BuildTasks/ToolsCommon.cs#L18>`__.
     Largely, the identifier should be 72 chars or less, contain ``[a-zA-Z0-9_-]``,
-    and start with underscore or letter.
+    and start with an underscore or a letter.
 
-    This function uses the hash of the joined *path_components* as the identifier.
-    This is guaranteed to be less than 72 characters and only uses digits.
+    This function uses the MD5 hash of the joined *path_components* as the identifier.
+    This is guaranteed to be less than 72 characters and only uses letters and
+    numbers.
     """  # noqa: E501
 
     # NOTE: this needs to do an `os.path.join` so that the hash of
