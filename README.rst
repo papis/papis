@@ -8,7 +8,7 @@
 
    <a href="https://github.com/papis/papis/actions?query=branch%3Amain+workflow%3ACI">
        <img src="https://github.com/papis/papis/workflows/CI/badge.svg" alt="GitHub Badge"></a>
-   <a href="http://papis.readthedocs.io/en/latest/?badge=latest">
+   <a href="https://papis.readthedocs.io/en/latest/?badge=latest">
        <img src="https://readthedocs.org/projects/papis/badge/?version=latest" alt="Readthedocs"></a>
    <a href="https://github.com/papis/papis/actions?query=branch%3Amain+workflow%3ACodeQL">
        <img src="https://github.com/papis/papis/workflows/CodeQL/badge.svg" alt="CodeQL"></a>
@@ -56,8 +56,8 @@ Let's download a couple of documents:
 
 .. code:: bash
 
-    wget http://www.gnu.org/s/libc/manual/pdf/libc.pdf
-    wget http://www.ams.org/notices/201304/rnoti-p434.pdf
+    wget https://www.gnu.org/s/libc/manual/pdf/libc.pdf
+    wget https://www.ams.org/notices/201304/rnoti-p434.pdf
 
 We can now add these to the (default) library. This will automatically query for the metadata associated with the ``doi``.
 
@@ -131,7 +131,7 @@ Reviews and blog posts
 ----------------------
 
 - `Blog post <https://alejandrogallo.github.io/blog/posts/getting-paper-references-with-papis/>`__ about getting a paper's references with ``papis explore``.
-- `Blog post <http://nicolasshu.com/zotero_and_papis.html>`__ about using Papis with Zotero and Syncthing.
+- `Blog post <https://nicolasshu.com/zotero_and_papis.html>`__ about using Papis with Zotero and Syncthing.
 - GNU/Linux Switzerland `wrote about Papis <https://gnulinux.ch/papis-dokumentenverwaltung-fuer-die-kommandozeile>`__ *(in German)*.
 - The folks at OSTechNix wrote a review of `Papis
   <https://www.ostechnix.com/papis-command-line-based-document-bibliography-manager/>`__.

@@ -4,7 +4,8 @@ Table: search_query field prefixes
 
 The following table lists the field prefixes for all the fields
 that can be searched. See the details of query construction in the
-`arXiv API docs <https://arxiv.org/help/api/user-manual#query_details>`__.
+`arXiv API docs
+<https://info.arxiv.org/help/api/user-manual.html#51-details-of-query-construction>`__.
 
 ====== ========================
 Prefix Explanation
