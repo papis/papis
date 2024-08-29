@@ -30,6 +30,7 @@ def test_sciencedirect_match(tmp_config: TemporaryConfiguration) -> None:
         assert Downloader.match(url) is None
 
 
+@pytest.mark.skip(reason="sciencedirect.com disallows web scraping")
 @pytest.mark.parametrize("url", SCIENCE_DIRECT_URLS)
 def test_sciencedirect_fetch(tmp_config: TemporaryConfiguration,
                              resource_cache: ResourceCache,
