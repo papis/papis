@@ -465,7 +465,6 @@ def ref_cleanup(ref: str) -> str:
     ref = slugify.slugify(ref,
                           lowercase=False,
                           word_boundary=False,
-                          separator="_",
                           regex_pattern=ref_allowed_characters)
 
     return str(ref).strip()
