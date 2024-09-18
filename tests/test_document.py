@@ -2,6 +2,8 @@ import tempfile
 import pickle
 import os
 
+import pytest
+
 import papis.document
 from papis.testing import TemporaryConfiguration
 
@@ -143,7 +145,7 @@ def test_sort(tmp_config: TemporaryConfiguration) -> None:
     assert sdocs[0] == docs[1]
 
 
-def test_dump() -> None:
+def test_dump(tmp_config: TemporaryConfiguration) -> None:
     doc = papis.document.from_data({
         "author": "Turing, Alan",
         "title": "Computing machinery and intelligence",
@@ -162,7 +164,41 @@ def test_dump() -> None:
     assert result == expected_result
 
 
-def test_author_separator_heuristics() -> None:
+@pytest.mark.parametrize("formatter", ["python", "jinja2"])
+def test_multiple_authors_separator(tmp_config: TemporaryConfiguration,
+                                    formatter: str) -> None:
+    # Test fix for https://github.com/papis/papis/issues/905
+    papis.config.set("formatter", formatter)
+
+    if formatter == "jinja2":
+        pytest.importorskip("jinja2")
+        multiple_authors_format = "{{ au.family }}"
+    elif formatter == "python":
+        multiple_authors_format = "{au[family]}"
+    else:
+        raise ValueError(f"Unknown formatter: '{formatter}'")
+
+    data = {
+        "author_list": [
+            {"family": "Cox", "given": "David"},
+            {"family": "Little", "given": "John"},
+            {"family": "O'Shea", "given": "Donald"}
+        ],
+        "publisher": "Springer",
+        "title": "Ideals, Varieties, and Algorithms",
+        "type": "book",
+        "year": 2015
+    }
+
+    from papis.document import author_list_to_author
+
+    result = author_list_to_author(data, separator=" and ",
+                                   multiple_authors_format=multiple_authors_format)
+
+    assert result == "Cox and Little and O'Shea"
+
+
+def test_author_separator_heuristics(tmp_config: TemporaryConfiguration) -> None:
     import re
     from papis.document import guess_authors_separator, split_authors_name
 
