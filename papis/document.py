@@ -141,7 +141,9 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
     return new_data
 
 
-def author_list_to_author(data: Dict[str, Any]) -> str:
+def author_list_to_author(data: Dict[str, Any],
+                          separator: Optional[str] = None,
+                          multiple_authors_format: Optional[str] = None) -> str:
     """Convert a list of authors into a single author string.
 
     This uses the :confval:`multiple-authors-separator` and the
@@ -159,16 +161,20 @@ def author_list_to_author(data: Dict[str, Any]) -> str:
     if "author_list" not in data:
         return ""
 
-    separator = papis.config.getstring("multiple-authors-separator")
-    fmt = papis.config.getstring("multiple-authors-format")
+    if separator is None:
+        separator = papis.config.getstring("multiple-authors-separator")
 
-    if separator is None or fmt is None:
+    if multiple_authors_format is None:
+        multiple_authors_format = papis.config.getstring("multiple-authors-format")
+
+    if separator is None or multiple_authors_format is None:
         raise ValueError(
             "Cannot join the author list if the settings 'multiple-authors-separator' "
             "and 'multiple-authors-format' are not present in the configuration")
 
     return separator.join([
-        fmt.format(au=author) for author in data["author_list"]
+        papis.format.format(multiple_authors_format, author, doc_key="au")
+        for author in data["author_list"]
         ])
 
 
