@@ -145,7 +145,7 @@ If you're not finding a command or configuration value that shows up in the
 documentation in your local installation, you may just be looking at the wrong
 docs. You can find the documentation for the latest *released* version
 `here <https://papis.readthedocs.io/en/stable/>`__ and the documentation for
-the *in-development* version `here <https://papis.readthedocs.io/en/latest/>__`.
+the *in-development* version `here <https://papis.readthedocs.io/en/latest/>`__.
 
 Reviews and blog posts
 ----------------------
