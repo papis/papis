@@ -56,14 +56,30 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
+
     - uses: actions/setup-python@v5
       with:
         python-version: '3.12'
+
     - id: dist
-      uses: casperdcl/deploy-pypi@v2
-      with:
-        build: true
-        upload: false
+      run: |
+        # NOTE: need to make the wheels first so that the sdist doesn't add the
+        # extra generated `CHANGELOG-LATEST.md` file.
+        bash tools/make-wheels.sh
+        python tools/extract-changelog.py CHANGELOG.md -o CHANGELOG-LATEST.md
+
     - if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-      name: Publish package to PyPI
+      name: Publish Package to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
+
+    - if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+      name: Publish a GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        prerelease: ${{ contains(github.ref, 'rc') }}
+        name: Version ${{ github.ref_name }}
+        body: CHANGELOG-LATEST.md
+        files: |
+          dist/*.tar.gz
+          dist/*.whl
+        fail_on_unmatched_files: true
