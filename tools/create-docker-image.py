@@ -1,32 +1,60 @@
 #! /usr/bin/env python
 # vim-run: python % -p 3.3 ../Dockerfile --norun
 
-import argparse
-import itertools as it
-import os
-import subprocess
-import shlex
+import pathlib
+
+
+def main(dockerfile: pathlib.Path, py_version: str, *, norun: bool = False) -> int:
+    if not dockerfile.exists():
+        print(f"ERROR: Dockerfile does not exist: '{dockerfile}'")
+        return 1
+
+    import shutil
+
+    if not shutil.which("docker"):
+        print("ERROR: 'docker' command not found")
+        return 1
+
+    folder = dockerfile.parent.resolve()
+    command = [
+        "docker",
+        "build",
+        str(folder),
+        "-t",
+        f"papis:python{py_version}",
+        "--build-arg",
+        f"PYTHON_VERSION={py_version}",
+    ]
+
+    print(">> Command:")
+    print(" ".join(command))
+
+    if not norun:
+        import subprocess
+
+        try:
+            subprocess.check_call(command)
+        except subprocess.CalledProcessError as exc:
+            print(f"ERROR: {exc}")
+            return exc.returncode
+
+    return 0
+
 
 if __name__ == "__main__":
+    import argparse
+    from itertools import repeat
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-p", help="Python version",
-        choices=["{}.{}".format(*x) for x in zip(it.repeat(3), range(3, 8))])
-    parser.add_argument("dockerfile")
+        choices=[f"{major}.{minor}" for major, minor in zip(repeat(3), range(8, 13))],
+        default="3.12")
+    parser.add_argument("dockerfile", type=pathlib.Path, default="Dockerfile")
     parser.add_argument(
         "--norun",
-        help="Do not run the command, just print", action="store_true")
+        help="Do not run the command, just print",
+        action="store_true")
     args = parser.parse_args()
 
-    assert os.path.exists(args.dockerfile), "Dockerfile does not exist"
-    folder = os.path.abspath(os.path.dirname(args.dockerfile))
-
-    command = (
-        "sudo docker build {folder} -t papis:python{version} "
-        "--build-arg PYTHON_VERSION={version}".format(
-            folder=folder,
-            version=args.p
-        )
-    )
-    print(command)
-    args.norun or subprocess.check_call(shlex.split(command))
+    raise SystemExit(main(args.dockerfile, args.p, norun=args.norun))
