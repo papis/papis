@@ -1,15 +1,7 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 #vim-run: bash %
 
-gg='git log --decorate --oneline --date-order --all'
-tag=$(git tag | tail -1)
+tag=$(git tag | sort -V | tail -1)
 echo "What happened since last tag ($tag)"
 
-$gg | awk "
-{
-  print \$NL
-}
-/tag: $tag/ {
-  exit 1
-}
-" | sed "s/^\S*/-/"
+git log --pretty=format:'- %s' $tag..main
