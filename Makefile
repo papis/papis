@@ -42,11 +42,11 @@ pytest:								## Run pytest tests and doctests
 .PHONY: pytest
 
 flake8:								## Run flake8 (style checks)
-	$(PYTHON) -m flake8 papis tests examples
+	$(PYTHON) -m flake8 papis tests examples tools
 .PHONY: flake8
 
 mypy:								## Run mypy (type annotations)
-	$(PYTHON) -m mypy papis
+	$(PYTHON) -m mypy papis tools
 .PHONY: mypy
 
 codespell:							## Run codespell (spellchecking)
