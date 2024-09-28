@@ -10,7 +10,7 @@ help: 								## Show this help
 .PHONY: help
 
 shell-completion:					## Generate shell completion scripts
-	make -C scripts/shell_completion
+	make -C contrib/shell_completion
 .PHONY: shell-completion
 
 update-authors:						## Generate AUTHORS file from git commits
