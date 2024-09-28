@@ -50,8 +50,8 @@ jobs:
 
     - name: Build Windows binaries
       run: |
-        pyinstaller --clean scripts/windows/papis_onefile.spec
-        pyinstaller --clean scripts/windows/papis_onedir.spec
+        pyinstaller --clean tools/windows/papis_onefile.spec
+        pyinstaller --clean tools/windows/papis_onedir.spec
 
     - name: Publish binary as artifact
       uses: actions/upload-artifact@v4
@@ -70,14 +70,14 @@ jobs:
     - name: Render the MSI build manifest template
       shell: bash
       run: |
-        python scripts/windows/populate_wxs_artifacts.py \
-          scripts/windows/papis_template.wxs \
-          --outfile scripts/windows/papis.wxs \
+        python tools/windows/populate_wxs_artifacts.py \
+          tools/windows/papis_template.wxs \
+          --outfile tools/windows/papis.wxs \
           --version '${{ env.MSI_VERSION }}'
 
     - name: Build the installer
       run: |
-        wix build -ext WixToolset.UI.wixext -o dist/papis.msi scripts\windows\papis.wxs
+        wix build -ext WixToolset.UI.wixext -o dist/papis.msi tools\windows\papis.wxs
 
     - name: Publish installer as artifact
       uses: actions/upload-artifact@v4
