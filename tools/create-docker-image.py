@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-p", help="Python version",
+        "-p", "--python-version", help="Python version",
         choices=[f"{major}.{minor}" for major, minor in zip(repeat(3), range(8, 13))],
         default="3.12")
     parser.add_argument("dockerfile", type=pathlib.Path, default="Dockerfile")
@@ -57,4 +57,4 @@ if __name__ == "__main__":
         action="store_true")
     args = parser.parse_args()
 
-    raise SystemExit(main(args.dockerfile, args.p, norun=args.norun))
+    raise SystemExit(main(args.dockerfile, args.python_version, norun=args.norun))
