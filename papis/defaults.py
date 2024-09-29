@@ -119,6 +119,7 @@ settings: Dict[str, Any] = {
                                    "author:str",
                                    "journal:str",
                                    "note:str",
+                                   "tags:list",
                                    "type:str",
                                    "publisher:str",
                                    "title:str",
