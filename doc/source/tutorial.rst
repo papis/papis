@@ -1,9 +1,9 @@
-.. _quick-guide:
+.. _Tutorial:
 
-Quick guide
-===========
+Tutorial
+========
 
-In this quick guide, we'll create a library, download a couple documents, and
+In this tutorial, we'll create a library, download a couple documents, and
 then work on them by opening, tagging, updating, exporting, and organising them.
 In doing so, you will be introduced to the ``papis`` command and number of its
 subcommands. These subcommands (which we'll simply call "commands" from now on)

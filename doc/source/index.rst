@@ -16,9 +16,16 @@ Papis: Command-line Bibliography Manager
       :link-type: ref
       :class-card: getting-started
 
-    .. grid-item-card:: :material-regular:`rocket_launch;2em` Quick Guide
+
+    .. grid-item-card:: :material-regular:`rocket_launch;2em` Quick start
       :columns: 12 6 6 4
-      :link: quick-guide
+      :link: quick-start 
+      :link-type: ref
+      :class-card: getting-started
+
+    .. grid-item-card:: :material-regular:`library_books;2em` Tutorial 
+      :columns: 12 6 6 4
+      :link: tutorial
       :link-type: ref
       :class-card: getting-started
 
@@ -103,7 +110,8 @@ extend Papis' features or integrate it with other software.
    :caption: Getting started
 
    install
-   quick_guide
+   quick_start
+   tutorial
    configuration
    info_file
    library_structure
