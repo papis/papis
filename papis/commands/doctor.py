@@ -264,11 +264,16 @@ def keys_missing_check(doc: papis.document.Document) -> List[Error]:
     folder = doc.get_main_folder() or ""
     keys = papis.config.get("keys-exist-keys", section="doctor")
     if keys is NOT_SET:
-        keys = papis.config.getlist("keys-exist-keys", section="doctor")
+        keys = papis.config.getlist("keys-missing-keys", section="doctor")
     else:
         logger.warning("The configuration option 'doctor-keys-exist-keys' "
                        "is deprecated and will be removed in the next version. "
                        "Use 'doctor-keys-missing-keys' instead.")
+
+    if keys is None:
+        keys = []
+
+    keys.extend(papis.config.getlist("keys-missing-keys-extend", section="doctor"))
 
     def make_fixer(key: str) -> Optional[FixFn]:
         def fixer_author_from_author_list() -> None:
@@ -373,8 +378,10 @@ def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
     :returns: a :class:`list` of errors, one for each key with a value that already
         exist in the documents from the current query.
     """
-    keys = papis.config.getlist("duplicated-keys-keys", section="doctor")
     folder = doc.get_main_folder() or ""
+
+    keys = papis.config.getlist("duplicated-keys-keys", section="doctor")
+    keys.extend(papis.config.getlist("duplicated-keys-keys-extend", section="doctor"))
 
     results: List[Error] = []
     for key in keys:
@@ -411,6 +418,7 @@ def duplicated_values_check(doc: papis.document.Document) -> List[Error]:
         has duplicate entries.
     """
     keys = papis.config.getlist("duplicated-values-keys", section="doctor")
+    keys.extend(papis.config.getlist("duplicated-values-keys-extend", section="doctor"))
     folder = doc.get_main_folder() or ""
 
     def make_fixer(key: str, entries: List[Any]) -> FixFn:
@@ -644,18 +652,18 @@ def get_key_type_check_keys() -> Dict[str, type]:
 
     from papis.defaults import NOT_SET
 
-    key_type_check_keys = papis.config.get("key-type-check-keys", section="doctor")
-    if key_type_check_keys is NOT_SET:
-        key_type_check_keys = papis.config.getlist("key-type-keys", section="doctor")
+    keys = papis.config.get("key-type-check-keys", section="doctor")
+    if keys is NOT_SET:
+        keys = papis.config.getlist("key-type-keys", section="doctor")
     else:
-        key_type_check_keys = papis.config.getlist("key-type-check-keys",
-                                                   section="doctor")
+        keys = papis.config.getlist("key-type-check-keys", section="doctor")
         logger.warning("The configuration option 'doctor-key-type-check-keys' "
                        "is deprecated and will be removed in the next version. "
                        "Use 'doctor-key-type-keys' instead.")
 
-    processed_key_type_check_keys: Dict[str, type] = {}
-    for value in key_type_check_keys:
+    keys.extend(papis.config.getlist("key-type-keys-extend", section="doctor"))
+    processed_keys: Dict[str, type] = {}
+    for value in keys:
         if ":" not in value:
             logger.error("Invalid (key, type) pair: '%s'. Must be 'key:type'.",
                          value)
@@ -669,8 +677,9 @@ def get_key_type_check_keys() -> Dict[str, type]:
                 "Invalid type for key '%s': '%s'. Only builtin types are supported",
                 key, cls_name)
             continue
-        processed_key_type_check_keys[key] = cls
-    return processed_key_type_check_keys
+        processed_keys[key] = cls
+
+    return processed_keys
 
 
 def key_type_check(doc: papis.document.Document) -> List[Error]:
@@ -788,7 +797,10 @@ def html_codes_check(doc: papis.document.Document) -> List[Error]:
 
         return fixer
 
-    for key in papis.config.getlist("html-codes-keys", section="doctor"):
+    keys = papis.config.getlist("html-codes-keys", section="doctor")
+    keys.extend(papis.config.getlist("html-codes-keys-extend", section="doctor"))
+
+    for key in keys:
         value = doc.get(key)
         if value is None:
             continue
@@ -873,7 +885,10 @@ def html_tags_check(doc: papis.document.Document) -> List[Error]:
 
         return fixer
 
-    for key in papis.config.getlist("html-tags-keys", section="doctor"):
+    keys = papis.config.getlist("html-tags-keys", section="doctor")
+    keys.extend(papis.config.getlist("html-tags-keys-extend", section="doctor"))
+
+    for key in keys:
         value = doc.get(key)
         if value is None:
             logger.debug("Key '%s' not found in document: '%s'",
@@ -927,6 +942,7 @@ def gather_errors(documents: List[papis.document.Document],
     """
     if not checks:
         checks = papis.config.getlist("default-checks", section="doctor")
+        checks.extend(papis.config.getlist("default-checks-extend", section="doctor"))
 
     for check in checks:
         if check not in REGISTERED_CHECKS:
@@ -1065,7 +1081,9 @@ def run(doc: papis.document.Document,
 @papis.cli.query_argument()
 @papis.cli.sort_option()
 @click.option("-t", "--checks", "_checks",
-              default=lambda: papis.config.getlist("default-checks", section="doctor"),
+              default=lambda: (
+                  papis.config.getlist("default-checks", section="doctor")
+                  + papis.config.getlist("default-checks-extend", section="doctor")),
               multiple=True,
               type=click.Choice(registered_checks_names()
                                 + list(DEPRECATED_CHECK_NAMES)),

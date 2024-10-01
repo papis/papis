@@ -107,11 +107,17 @@ settings: Dict[str, Any] = {
 
     # doctor
     "doctor-default-checks": ["files", "biblatex-required-keys", "bibtex-type", "refs"],
+    "doctor-default-checks-extend": [],
     "doctor-keys-missing-keys": ["title", "author", "author_list", "ref"],
+    "doctor-keys-missing-keys-extend": [],
     "doctor-duplicated-keys-keys": ["ref"],
+    "doctor-duplicated-keys-keys-extend": [],
     "doctor-duplicated-values-keys": ["files", "author_list"],
+    "doctor-duplicated-values-keys-extend": [],
     "doctor-html-codes-keys": ["title", "author", "abstract", "journal"],
+    "doctor-html-codes-keys-extend": [],
     "doctor-html-tags-keys": ["title", "author", "abstract", "journal"],
+    "doctor-html-tags-keys-extend": [],
     "doctor-key-type-keys": ["year:int",
                              "month:int",
                              "files:list",
@@ -128,6 +134,7 @@ settings: Dict[str, Any] = {
                              "publisher:str",
                              "title:str",
                              "shorttitle:str"],
+    "doctor-key-type-keys-extend": [],
     "doctor-key-type-separator": None,
 
     # open
