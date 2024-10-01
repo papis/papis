@@ -357,11 +357,11 @@ def general_get(key: str,
 
     # Check data type for setting getter method
     method: Callable[[Any, Any], Any]
-    if data_type == int:
+    if data_type is int:
         method = config.getint
-    elif data_type == float:
+    elif data_type is float:
         method = config.getfloat
-    elif data_type == bool:
+    elif data_type is bool:
         method = config.getboolean
     else:
         method = config.get
