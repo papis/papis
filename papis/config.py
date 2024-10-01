@@ -405,10 +405,16 @@ def general_get(key: str,
             value = method(section_name, key_name)
 
     if value is None:
-        try:
-            return default_settings[section or global_section][key]
-        except KeyError as exc:
-            raise papis.exceptions.DefaultSettingValueMissing(qualified_key) from exc
+        if section is not None:
+            section_settings = default_settings.get(section, {})
+            if key in section_settings:
+                return section_settings[key]
+
+        general_settings = default_settings.get(global_section, {})
+        if qualified_key in general_settings:
+            return general_settings[qualified_key]
+
+        raise papis.exceptions.DefaultSettingValueMissing(qualified_key)
 
     return value
 
