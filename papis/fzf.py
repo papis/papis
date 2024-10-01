@@ -69,6 +69,19 @@ class Edit(Command[T]):
         return []
 
 
+class EditNote(Command[T]):
+    regex = re.compile(r"edit_notes ([\d ]+)")
+    command = "become(echo edit_notes {+n})"
+    key = "ctrl-q"
+
+    def run(self, docs: List[T]) -> List[T]:
+        from papis.commands.edit import edit_notes
+        for doc in docs:
+            if isinstance(doc, papis.document.Document):
+                edit_notes(doc)
+        return []
+
+
 class Open(Command[T]):
     regex = re.compile(r"open ([\d ]+)")
     command = "become(echo open {+n})"
@@ -101,7 +114,7 @@ class Picker(papis.pick.Picker[T]):
                 f"Found 'fzf' version {version} but "
                 f"version >={MIN_FZF_VERSION} is required")
 
-        commands: List[Command[T]] = [Choose(), Open(), Edit()]
+        commands: List[Command[T]] = [Choose(), Open(), Edit(), EditNote()]
 
         bindings = (
             [c.binding() for c in commands]
