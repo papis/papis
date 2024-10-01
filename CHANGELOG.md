@@ -99,8 +99,8 @@ string with a separator. You can quickly transform your tags into a list using
 `papis doctor` e.g.
 ```sh
 papis \
-    --set doctor-key-type-check-keys '["tags:list"]' \
-    --set doctor-key-type-check-separator ' ' \
+    --set doctor-key-type-keys '["tags:list"]' \
+    --set doctor-key-type-separator ' ' \
     doctor --fix --all --explain -t key-type QUERY
 ```
 where you may need to change the separator to match your choice.

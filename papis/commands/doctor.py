@@ -30,9 +30,9 @@ implemented
 * ``html-tags``: checks that no HTML or XML tags (e.g. ``<a>``) appear in the keys
   provided by :confval:`doctor-html-tags-keys`.
 * ``key-type``: checks the type of keys provided by
-  :confval:`doctor-key-type-check-keys`, e.g. year should be an ``int``.
+  :confval:`doctor-key-type-keys`, e.g. year should be an ``int``.
   Lists can be automatically fixed (by splitting or joining) using the
-  :confval:`doctor-key-type-check-separator` setting.
+  :confval:`doctor-key-type-separator` setting.
 * ``keys-missing``: checks that the keys provided by
   :confval:`doctor-keys-missing-keys` exist in the document.
 * ``refs``: checks that the document has a valid reference (i.e. one that would
@@ -259,13 +259,16 @@ def keys_missing_check(doc: papis.document.Document) -> List[Error]:
 
     :returns: a :class:`list` of errors, one for each missing key.
     """
+    from papis.defaults import NOT_SET
+
     folder = doc.get_main_folder() or ""
-    has_key = papis.config.get("doctor-keys-exist-keys") is not None
-    if has_key:
-        # FIXME: this is deprecated and should be removed
+    keys = papis.config.get("doctor-keys-exist-keys")
+    if keys is NOT_SET:
         keys = papis.config.getlist("doctor-keys-exist-keys")
     else:
-        keys = papis.config.getlist("doctor-keys-missing-keys")
+        logger.warning("The configuration option 'doctor-keys-exist-keys' "
+                       "is deprecated and will be removed in the next version. "
+                       "Use 'doctor-keys-missing-keys' instead.")
 
     def make_fixer(key: str) -> Optional[FixFn]:
         def fixer_author_from_author_list() -> None:
@@ -627,11 +630,11 @@ KEY_TYPE_CHECK_NAME = "key-type"
 
 def get_key_type_check_keys() -> Dict[str, type]:
     """
-    Check the `doctor-key-type-check-keys` configuration entry for correctness.
+    Check the `doctor-key-type-keys` configuration entry for correctness.
 
-    The :confval:`doctor-key-type-check-keys` configuration entry
+    The :confval:`doctor-key-type-keys` configuration entry
     defines a mapping of keys and their expected types. If the desired type is
-    a list, the :confval:`doctor-key-type-check-separator` setting
+    a list, the :confval:`doctor-key-type-separator` setting
     can be used to split an existing string (and, similarly, if the desired type
     is a string, it can be used to join a list of items).
 
@@ -639,7 +642,17 @@ def get_key_type_check_keys() -> Dict[str, type]:
     """
     import builtins
 
-    key_type_check_keys = papis.config.getlist("doctor-key-type-check-keys")
+    from papis.defaults import NOT_SET
+
+    key_type_check_keys = papis.config.get("doctor-key-type-check-keys")
+    if key_type_check_keys is NOT_SET:
+        key_type_check_keys = papis.config.getlist("doctor-key-type-keys")
+    else:
+        key_type_check_keys = papis.config.getlist("doctor-key-type-check-keys")
+        logger.warning("The configuration option 'doctor-key-type-check-keys' "
+                       "is deprecated and will be removed in the next version. "
+                       "Use 'doctor-key-type-keys' instead.")
+
     processed_key_type_check_keys: Dict[str, type] = {}
     for value in key_type_check_keys:
         if ":" not in value:
@@ -666,10 +679,19 @@ def key_type_check(doc: papis.document.Document) -> List[Error]:
     :returns: a :class:`list` of errors, one for each key does not have the
         expected type (if it exists).
     """
+    from papis.defaults import NOT_SET
+
     folder = doc.get_main_folder() or ""
 
     # NOTE: the separator can be quoted so that it can force whitespace
     separator = papis.config.get("doctor-key-type-check-separator")
+    if separator is NOT_SET:
+        separator = papis.config.get("doctor-key-type-separator")
+    else:
+        logger.warning("The configuration option 'doctor-key-type-check-separator' "
+                       "is deprecated and will be removed in the next version. "
+                       "Use 'doctor-key-type-separator' instead.")
+
     separator = separator.strip("'").strip('"') if separator else None
 
     def make_fixer(key: str, cls: type) -> FixFn:
