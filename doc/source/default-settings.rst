@@ -584,7 +584,7 @@ Doctor options
     A list of keys used by the ``html-tags`` check. The check will show an error
     if any of the keys contain unwanted HTML tags, e.g. ``<div>``.
 
-.. papis-config:: doctor-key-type-check-keys
+.. papis-config:: doctor-key-type-keys
 
    A list of strings ``key:type`` used by the ``key-type`` check. This
    check will show an error if the key does not have the corresponding type. The
@@ -592,7 +592,7 @@ Doctor options
    ``["year:int", "tags:list"]`` to check that the year is an integer and the
    tags are given as a list in a document.
 
-.. papis-config:: doctor-key-type-check-separator
+.. papis-config:: doctor-key-type-separator
     :type: str
 
     A separator used by the ``key-type`` check fixer. When converting from
