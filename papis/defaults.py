@@ -20,12 +20,16 @@ def get_default_opener() -> str:
 # document in the docs, so they can be easily checked and updated
 
 
+NOT_SET = object()
+
 settings: Dict[str, Any] = {
     # unused or deprecated
     "add-interactive": False,
     "mvtool": "mv",
-    "formater": None,
-    "doctor-keys-exist-keys": None,
+    "formater": NOT_SET,
+    "doctor-keys-exist-keys": NOT_SET,
+    "doctor-key-type-check-keys": NOT_SET,
+    "doctor-key-type-check-separator": NOT_SET,
 
     # general settings
     "local-config-file": ".papis.config",
@@ -108,23 +112,23 @@ settings: Dict[str, Any] = {
     "doctor-duplicated-values-keys": ["files", "author_list"],
     "doctor-html-codes-keys": ["title", "author", "abstract", "journal"],
     "doctor-html-tags-keys": ["title", "author", "abstract", "journal"],
-    "doctor-key-type-check-keys": ["year:int",
-                                   "month:int",
-                                   "files:list",
-                                   "notes:str",
-                                   "author_list:list",
-                                   "doi:str",
-                                   "ref:str",
-                                   "isbn:str",
-                                   "author:str",
-                                   "journal:str",
-                                   "note:str",
-                                   "tags:list",
-                                   "type:str",
-                                   "publisher:str",
-                                   "title:str",
-                                   "shorttitle:str"],
-    "doctor-key-type-check-separator": None,
+    "doctor-key-type-keys": ["year:int",
+                             "month:int",
+                             "files:list",
+                             "notes:str",
+                             "author_list:list",
+                             "doi:str",
+                             "ref:str",
+                             "isbn:str",
+                             "author:str",
+                             "journal:str",
+                             "note:str",
+                             "tags:list",
+                             "type:str",
+                             "publisher:str",
+                             "title:str",
+                             "shorttitle:str"],
+    "doctor-key-type-separator": None,
 
     # open
     "open-mark": False,
