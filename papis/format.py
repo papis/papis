@@ -256,13 +256,16 @@ def get_formatter(name: Optional[str] = None) -> Formatter:
         mgr = papis.plugin.get_extension_manager(FORMATTER_EXTENSION_NAME)
 
         if name is None:
+            from papis.defaults import NOT_SET
+
             # FIXME: remove this special handling when we don't need to support
             # the deprecated 'formater' configuration setting
             value = papis.config.get("formater")
-            if value is None:
+            if value is NOT_SET:
                 name = papis.config.getstring("formatter")
             else:
-                logger.warning("The configuration option 'formater' is deprecated. "
+                logger.warning("The configuration option 'formater' is deprecated "
+                               "and will be removed in the next version. "
                                "Use 'formatter' instead.")
                 name = str(value)
 
