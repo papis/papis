@@ -77,10 +77,9 @@ General settings
 .. papis-config:: format-doc-name
 
     This setting controls the name of the document in the Papis format strings
-    like in format strings such as :confval:`match-format` or
-    :confval:`header-format`. For instance, if you are managing
-    videos, you might want to set this option to ``vid`` in order to set  the
-    :confval:`header-format` to
+    such as :confval:`match-format` or :confval:`header-format`. For instance,
+    if you are managing videos, you might want to set this option to ``vid`` in
+    order to set  the :confval:`header-format` to
 
     .. code:: ini
 
@@ -116,7 +115,7 @@ General settings
 
     If *True*, this flag will allow unicode characters in your *info files*.
     Otherwise, the strings will be decoded and written as bytes. Unless you have
-    very strong reasons not to, this should always be set to *True* (we live
+    very strong reasons not to, this should always be set to *True* (we live in
     a unicode world after all!).
 
 .. papis-config:: unique-document-keys
@@ -135,7 +134,7 @@ General settings
 
     Papis sometimes will have to tell you which document it is processing. This
     format string can be used to display the document to the user in a
-    non-intrusive way. Preferable, this should be a short string that allows
+    non-intrusive way. Preferably, this should be a short string that allows
     easily identifying which document is being referenced.
 
 .. papis-config:: sort-field
@@ -254,8 +253,8 @@ Tools options
 
     * ``"papis"``: uses ``papis.picker.Picker`` to display and search
       through documents.
-    * ``"fzf"``: uses `fzf <https://github.com/junegunn/fzf>` to display and search
-      through documents.
+    * ``"fzf"``: uses `fzf <https://github.com/junegunn/fzf>`__ to display and
+      search through documents.
 
     Papis pickers use a plugin architecture similar to other components
     (see :ref:`plugin-architecture`) with the ``papis.picker`` entrypoint. Note
@@ -272,7 +271,7 @@ Tools options
 .. papis-config:: file-browser
 
     File browser used when opening a directory. It defaults to the default file
-    browser in your system. However, you can set it to different file browsers,
+    browser in your system. However, you can set it to a different file browser,
     such as ``dolphin``, ``thunar`` or ``ranger``, to name a few.
 
 .. _bibtex-options:
@@ -285,7 +284,7 @@ BibTeX options
     This option allows the user to set the key for the journal entry when using
     ``papis export --bibtex``. The intended use of such a setting is to allow
     selecting e.g. abbreviated journal titles for publishers that require it.
-    For example, if the document has a ``abbrev_journal_title`` key that should
+    For example, if the document has an ``abbrev_journal_title`` key that should
     be used instead of the default ``journal`` key.
 
 .. papis-config:: extra-bibtex-keys
@@ -326,7 +325,7 @@ BibTeX options
 
     A flag used to choose whether or not to allow direct Unicode characters in
     the document fields to be exported into the BibTeX text. Some engines, such
-    as `Biber <https://github.com/plk/biber>`__ support Unicode by default and
+    as `Biber <https://github.com/plk/biber>`__, support Unicode by default and
     should be used whenever possible.
 
 .. papis-config:: bibtex-export-file
@@ -369,14 +368,14 @@ BibTeX command options
 .. papis-config:: default-read-bibfile
     :section: bibtex
 
-    A path to a BibTex file that should be automatically read when using the
+    A path to a BibTeX file that should be automatically read when using the
     ``papis bibtex`` command. This should be equivalent to using
     ``papis bibtex read file.bib`` when used with :confval:`auto-read`.
 
 .. papis-config:: default-save-bibfile
     :section: bibtex
 
-    A path to a BibTex file that should be automatically saved when using the
+    A path to a BibTeX file that should be automatically saved when using the
     ``papis bibtex`` command. This should be equivalent to using
     ``papis bibtex save file.bib``.
 
@@ -430,7 +429,7 @@ Add options
 
 .. papis-config:: add-folder-name
 
-    Set the default name for the folder of newly added documents. For example,
+    Sets the default name for the folder of newly added documents. For example,
     if you want the folder of your documents to be named after the format
     ``author-title`` then you should set it to
 
@@ -453,15 +452,15 @@ Add options
 .. papis-config:: add-file-name
     :type: str
 
-    Set the default file name for newly added documents, similarly to
+    Sets the default file name for newly added documents, similarly to
     :confval:`add-folder-name`. If it is not set, the names of the
     files will be cleaned and taken *as-is*.
 
 .. papis-config:: add-subfolder
 
-    Configure a default for the ``--subfolder`` command-line option of ``papis add``.
-    Note that, this setting is not allowed to contain formatting options. However,
-    one can also specify nested sub-folders.
+    Configures a default for the ``--subfolder`` command-line option of ``papis
+    add``. Note that, this setting is not allowed to contain formatting options.
+    However, one can also specify nested sub-folders.
 
 .. papis-config:: add-confirm
 
@@ -494,7 +493,7 @@ Add options
 
 .. papis-config:: add-fetch-citations
 
-    A setting that controls the default for the ``--fetch-citations flag of
+    A setting that controls the default for the ``--fetch-citations`` flag of
     ``papis add``. If set to *True*, then the flag will be added by default
     and Papis will attempt to retrieve citations for the newly added document.
     In this case, the fetching can be disabled by using ``--no-fetch-citations``
@@ -573,8 +572,6 @@ Edit options
     Default value is set to the empty ``""``, which will return an empty notes
     file. If no file is found at the path to the template, then also an empty
     notes file will be generated.
-
-.. _marks-options:
 
 Doctor options
 --------------
@@ -681,6 +678,8 @@ Doctor options
 Open options
 ------------
 
+.. _marks-options:
+
 .. papis-config:: open-mark
 
     A setting that controls the default for the ``--mark`` flag of ``papis open``.
@@ -743,7 +742,7 @@ Open options
 
         mark-opener-format = zathura -P {mark[value]}
 
-Serve (Web App) options
+Serve (web app) options
 -----------------------
 
 .. papis-config:: serve-default-tag-sorting
@@ -862,12 +861,11 @@ Downloaders
 .. papis-config:: downloader-proxy
     :type: str
 
-    There is the possibility of download papers using a proxy. We use :mod:`requests`
-    to handle web queries, which has extensive documentation on how to use
-    proxies
-    `here <https://docs.python-requests.org/en/latest/user/advanced/#proxies>`__.
-    This value should give a URL that can be used as a proxy for both HTTP
-    and HTTPS.
+    It's possible to download papers using a proxy. We use :mod:`requests` to
+    handle web queries, which has extensive documentation on how to use proxies
+    `here
+    <https://docs.python-requests.org/en/latest/user/advanced/#proxies>`__. This
+    value should give a URL that can be used as a proxy for both HTTP and HTTPS.
 
 .. papis-config:: isbn-service
 
@@ -965,8 +963,8 @@ For styling the individual components, see the extensive documentation available
 .. papis-config:: status_line_style
     :section: tui
 
-    The style the status line should based on the ``prompt_toolkit`` styling,
-    e.g.``fg:#ff00aa bg:black``.
+    The style of the status line. The format is based on ``prompt_toolkit``
+    styling, e.g. ``fg:#ff00aa bg:black``.
 
 .. papis-config:: message_toolbar_style
     :section: tui
@@ -977,18 +975,18 @@ For styling the individual components, see the extensive documentation available
 .. papis-config:: options_list.selected_margin_style
     :section: tui
 
-    Style of the margin of the selected document in the picker.
+    The style of the margin of the selected document in the picker.
 
 .. papis-config:: options_list.unselected_margin_style
     :section: tui
 
-    Style of the margin of the unselected documents in the picker. If no
+    The style of the margin of the unselected documents in the picker. If no
     styling is desired on these elements, this setting can be empty.
 
 .. papis-config:: options_list.marked_margin_style
     :section: tui
 
-    Style of the margin of the marked documents in the picker. If no
+    The style of the margin of the marked documents in the picker. If no
     styling is desired on these elements, this setting can be empty.
 
 .. papis-config:: error_toolbar_style
@@ -1056,8 +1054,8 @@ FZF integration
 
 Papis ships with *out-of-the-box* `fzf <https://github.com/junegunn/fzf>`__
 integration for the picker.  A minimal terminal user interface is provided,
-together with options for its customization. You can set the picktool to
-``fzf`` to select this picker.
+together with options for its customization. You can set the :confval:`picktool`
+to ``fzf`` to select this picker.
 
 In comparison to the *built-in* Papis picker TUI, the advantage of the fzf
 picker is that it is much faster. However, a disadvantage is that it is
@@ -1065,8 +1063,8 @@ restricted to one-line entries. It is also important to note that ``fzf`` will
 **only** match against what is shown on the terminal screen, as opposed to the
 Papis matcher, that can match against the **whole** title and **whole** author
 text, since this is controlled by the ``match-format`` setting.
-However, for many uses it might not bother the user to have this limitation
-of fzf.
+However, for the usual use cases it might not bother the user to have this
+limitation of fzf.
 
 .. papis-config:: fzf-binary
 
@@ -1078,8 +1076,8 @@ of fzf.
 
 .. papis-config:: fzf-extra-bindings
 
-    Extra bindings to fzf as a Python list. Refer to the fzf documentation for
-    more details.
+    Extra key bindings to fzf as a Python list. Refer to the fzf documentation
+    for more details.
 
 .. papis-config:: fzf-header-format
 

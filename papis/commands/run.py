@@ -1,5 +1,5 @@
 r"""
-This command is useful to issue commands in the directory of your library.
+This command can be used to run shell commands in the directory of your library.
 
 Examples
 ^^^^^^^^
@@ -10,7 +10,7 @@ Examples
 
         papis run ls
 
-- Find a file the library directory using the ``find`` command
+- Find a file in the library directory using the ``find`` command
 
     .. code:: sh
 
@@ -44,7 +44,7 @@ Examples
         papis run -a -- sed -i 's/^note:/_note:/' info.yaml
 
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.run:cli
@@ -77,7 +77,7 @@ def run(folder: str, command: Optional[List[str]] = None) -> None:
 @click.help_option("--help", "-h")
 @click.option(
     "--pick", "-p",
-    help="Give a query to pick a document to run the command in its folder",
+    help="Give a query to pick a document to run the command in its folder.",
     metavar="<QUERY>",
     type=str,
     default="")
@@ -89,7 +89,7 @@ def run(folder: str, command: Optional[List[str]] = None) -> None:
     default=None,
     type=str,
     metavar="<PREFIX>",
-    help="Prefix shell commands by a prefix command")
+    help="Prefix shell commands by a prefix command.")
 @click.argument("run_command", metavar="<COMMANDS>", nargs=-1)
 def cli(run_command: List[str],
         pick: str,
@@ -98,7 +98,7 @@ def cli(run_command: List[str],
         prefix: Optional[str],
         doc_folder: Tuple[str, ...],
         _all: bool) -> None:
-    """Run an arbitrary shell command in the library or command folder"""
+    """Run an arbitrary shell command in the library or command folder."""
 
     documents = []
 

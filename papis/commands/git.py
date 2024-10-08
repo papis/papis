@@ -18,7 +18,7 @@ Examples
 
     papis git commit -a
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.git:cli
@@ -33,5 +33,5 @@ import papis.commands.run
 
 cli = copy.deepcopy(papis.commands.run.cli)
 cli.name = "git"
-cli.help = "Run git command in a library or document folder"
+cli.help = "Run git command in a library or document folder."
 cli = click.option("--prefix", hidden=True, default="git", type=str)(cli)

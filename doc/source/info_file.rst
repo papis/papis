@@ -3,19 +3,17 @@
 The ``info.yaml`` file
 ======================
 
-At the heart of Papis there is the information file. The info file contains
-all information about the documents.
+At the heart of Papis is the information file. The info file contains all
+information about the documents.
 
-It uses the `YAML <https://yaml.org>`__ syntax to store
-information, which is a very human-readable language.
-It is quite format-free:
-`papis` does not assume that any special information should be there.
-However it will interpret the field ``files`` as the files linked to the
-document for the ``papis open`` command. The ``files`` field
-should be formatted as a YAML list.
+It uses the `YAML <https://yaml.org>`__ syntax to store information, which is a
+very human-readable language. It is quite format-free: Papis does not assume
+that any special information should be there. However it will interpret the
+field ``files`` as the files linked to the document for the ``papis open``
+command. The ``files`` field should be formatted as a YAML list.
 
-For instance, if are storing papers with Papis, then you most probably would
-like to store author and title in there like this:
+For instance, when storing papers with Papis, you'd most probably like to store
+author and title in there like this:
 
 .. code:: yaml
 
@@ -25,11 +23,11 @@ like to store author and title in there like this:
   files:
     - document.pdf
 
-Here we have used the ``files`` field to tell Papis that the paper
-has a pdf document attached to it. You can of course attach many other documents
-so that you can open them when you are opening it with the ``papis open``
-command. For instance if you have a paper with supporting information, you
-could store it like such
+Here we have used the ``files`` field to tell Papis that the paper has a pdf
+document attached to it. You can of course attach many other documents so that
+you can open them when you are opening it with the ``papis open`` command. For
+instance if you have a paper with supporting information, you could store it
+like such
 
 .. code:: yaml
 

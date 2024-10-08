@@ -287,20 +287,20 @@ def doi_to_data(doi_string: str) -> Dict[str, Any]:
 @click.command("crossref")
 @click.pass_context
 @click.help_option("--help", "-h")
-@click.option("--query", "-q", help="General query", default="")
-@click.option("--author", "-a", help="Author of the query", default="")
-@click.option("--title", "-t", help="Title of the query", default="")
+@click.option("--query", "-q", help="General query.", default="")
+@click.option("--author", "-a", help="Author of the query.", default="")
+@click.option("--title", "-t", help="Title of the query.", default="")
 @click.option(
-    "--max", "-m", "_ma", help="Maximum number of results", default=20)
+    "--max", "-m", "_ma", help="Maximum number of results.", default=20)
 @click.option(
-    "--filter", "-f", "_filters", help="Filters to apply", default=(),
+    "--filter", "-f", "_filters", help="Filters to apply.", default=(),
     type=(click.Choice(list(_filter_names)), str),
     multiple=True)
 @click.option(
-    "--order", "-o", help="Order of appearance according to sorting",
+    "--order", "-o", help="Order of appearance according to sorting.",
     default="desc", type=click.Choice(list(_order_values)), show_default=True)
 @click.option(
-    "--sort", "-s", help="Sorting parameter", default="score",
+    "--sort", "-s", help="Sorting parameter.", default="score",
     type=click.Choice(list(_sort_values)), show_default=True)
 def explorer(
         ctx: click.core.Context,

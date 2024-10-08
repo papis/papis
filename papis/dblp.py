@@ -162,11 +162,11 @@ def is_valid_dblp_key(key: str) -> bool:
 @click.help_option("--help", "-h")
 @click.option(
     "--query", "-q",
-    help="General query",
+    help="General query.",
     default="")
 @click.option(
     "--max", "-m", "max_results",
-    help="Maximum number of results",
+    help="Maximum number of results.",
     default=30)
 def explorer(
         ctx: click.core.Context,

@@ -105,7 +105,7 @@ def yaml_to_list(yaml_path: str,
 
 
 def exporter(documents: List[papis.document.Document]) -> str:
-    """Convert document to the YAML format"""
+    """Convert document to the YAML format."""
     string = yaml.dump_all(
         [papis.document.to_dict(document) for document in documents],
         allow_unicode=True)
@@ -122,6 +122,8 @@ def explorer(ctx: click.Context, yamlfile: str) -> None:
 
     For example, you can call
 
+    .. code:: sh
+
         papis explore yaml 'lib.yaml' pick
     """
     logger.info("Reading YAML file '%s'...", yamlfile)
@@ -136,7 +138,7 @@ def explorer(ctx: click.Context, yamlfile: str) -> None:
 
 class Importer(papis.importer.Importer):
 
-    """Importer that parses a YAML file"""
+    """Importer that parses a YAML file."""
 
     def __init__(self, uri: str) -> None:
         super().__init__(name="yaml", uri=uri)

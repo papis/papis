@@ -25,6 +25,8 @@ def explorer(ctx: click.Context, jsonfile: str) -> None:
 
     For example, you can call
 
+    .. code:: sh
+
         papis explore json 'lib.json' pick
     """
     logger.info("Reading JSON file '%s'...", jsonfile)

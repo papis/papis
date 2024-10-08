@@ -112,11 +112,11 @@ checks if a given URI matches a website URL, e.g.
 
 By default, a downloader implements a :meth:`~papis.downloaders.Downloader.get_data`
 method to retrieve metadata. This already does a good job in fetching basic
-metadata (title, authors, etc) through standard elements such as the
+metadata (title, authors, etc.) through standard elements such as the
 `Dublin Core Metadata <https://www.dublincore.org/specifications/dublin-core/dces/>`__.
 We can however extend it for any specific downloader. For instance, some
 documents in the ACL Anthology provide a "code" field, with a link to e.g. a
-Github repository. We will try to extract code repository URL using
+GitHub repository. We will try to extract code repository URL using
 :mod:`bs4`. An instance of :mod:`bs4` with the parsed HTML can be obtained and
 manipulated as follows
 
@@ -136,7 +136,7 @@ manipulated as follows
 
 Metadata can also be obtained from BibTeX by overriding the
 :meth:`~papis.downloaders.Downloader.get_bibtex_url` method. This can be useful
-if, for instance, the `get_data` method fails to correctly identify the abstract
+if, for instance, the ``get_data`` method fails to correctly identify the abstract
 section. In our example we can fix this by scraping the metadata found in the
 BibTeX file. Luckily, for ACL, the BibTeX URL is simply the document URL with a
 ``.bib`` extension. We can implement it as
@@ -148,7 +148,7 @@ BibTeX file. Luckily, for ACL, the BibTeX URL is simply the document URL with a
         return f"{url}.bib" if url is not None else url
 
 To download files from a remote resource, the downloader relies on
-`data["pdf_url"]` by default. However, if this does not exist or does not
+``data["pdf_url"]`` by default. However, if this does not exist or does not
 return the actual document PDF, we can override the
 :meth:`~papis.downloaders.Downloader.get_document_url` method.
 

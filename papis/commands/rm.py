@@ -1,5 +1,11 @@
 """
-Command-line Interface
+The command to remove Papis documents. Can also be used to remove files within
+documents, rather than an entire document.
+
+Prompts for confirmation before removing, showing information about what is
+being removed.
+
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.rm:cli
@@ -73,18 +79,18 @@ def run(document: papis.document.Document,
 @click.command("rm")
 @click.help_option("-h", "--help")
 @papis.cli.query_argument()
-@papis.cli.git_option(help="Remove in git")
+@papis.cli.git_option(help="Remove in git.")
 @papis.cli.sort_option()
 @papis.cli.doc_folder_option()
 @papis.cli.bool_flag(
     "--file", "_file",
-    help="Remove files from a document instead of the whole folder")
+    help="Remove files from a document instead of the whole folder.")
 @papis.cli.bool_flag(
     "-n", "--notes", "_notes",
-    help="Remove the notes file from a document instead of the whole folder")
+    help="Remove the notes file from a document instead of the whole folder.")
 @papis.cli.bool_flag(
     "-f", "--force",
-    help="Do not confirm removal")
+    help="Do not confirm removal.")
 @papis.cli.all_option()
 def cli(query: str,
         git: bool,
@@ -96,7 +102,7 @@ def cli(query: str,
         sort_field: Optional[str],
         sort_reverse: bool) -> None:
     """
-    Delete a document, a file, or a notes-file
+    Remove a document, a file, or a notes-file.
     """
 
     documents = papis.cli.handle_doc_folder_query_all_sort(query,

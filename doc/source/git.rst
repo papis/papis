@@ -4,11 +4,11 @@ Git support
 ===========
 
 Papis is made to work well with `git <https://git-scm.com/>`__ and has
-functionality in most of its command to interact with it. This functionality
+functionality in most of its commands to interact with it. This functionality
 can be turned on by default by using the :confval:`use-git`
 configuration setting. This guide gives a description of a possible workflow
 for using Git with Papis. This is not the only workflow, but it is the most
-obvious.
+obvious one.
 
 Let's say you have a library named ``books`` in the directory
 ``~/Documents/MyNiceBooks``. You could turn the ``books`` library into
@@ -77,7 +77,7 @@ To update the library from a remote repository, you can simply run
 Usual workflow
 --------------
 
-With all this in mind, assuming the you have a ``git`` repository set up in
+With all this in mind, assuming you have a ``git`` repository set up in
 the library folder, a ``papis git`` workflow could be based on the following.
 
 When adding a document that you know for sure you want in your library:
@@ -87,7 +87,7 @@ When adding a document that you know for sure you want in your library:
 
 2. Pull changes from the remote repository, maybe you pushed something
    on another machine (reference changes, etc.) and you do not have it on
-   you current machine. You would do something like
+   your current machine. You would do something like
 
     .. code:: sh
 

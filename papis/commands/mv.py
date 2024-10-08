@@ -1,7 +1,7 @@
 """
 This command can be used to move a document to a new folder.
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.mv:cli
@@ -64,7 +64,7 @@ def cli(query: str,
         sort_field: Optional[str],
         doc_folder: Tuple[str, ...],
         sort_reverse: bool) -> None:
-    """Move a document into some other path"""
+    """Move a document into some other path."""
     # Leave this imports here for performance
     import prompt_toolkit
     import prompt_toolkit.completion

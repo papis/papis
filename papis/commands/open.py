@@ -5,11 +5,11 @@ With it you can open documents, folders or marks.
 Marks
 ^^^^^
 
-One of special things about this command is the possibility of
-creating marks for documents. As you would imagine, it is in general
-difficult to create marks for any kind of data. For instance,
-if our library consists of PDF files and EPUB files, we would like to define
-bookmarks in order to go back to them at some later point.
+One special thing about this command is the ability to use marks for
+documents. As you would imagine, it is in general difficult to create marks for
+any kind of data. For instance, if our library consists of PDF files and EPUB
+files, we would like to define bookmarks in order to go back to them at some
+later point.
 
 How you define marks can be customized through the marks configuration
 settings :ref:`here <marks-options>`. The default way of doing it is just by
@@ -33,11 +33,11 @@ defining a ``marks`` list in a document. Let us look at a concrete example:
     type: book
     year: '2009'
 
-This book has defined two marks. Each mark has a name and a value.
-If you tell the ``open`` command to open marks, then it will look for
-the marks and open the value (page number). This is the default behavior.
-However, if you go to the :ref:`configuration <marks-options>`
-you'll see that you can change the convention to what suits you.
+This book has defined two marks. Each mark has a name and a value. If you tell
+the ``open`` command to open marks, it will look for the marks and open the
+value (page number). This is the default behavior. However, if you go to the
+:ref:`configuration <marks-options>`, you'll see that you can change the
+convention to what suits you.
 
 Examples
 ^^^^^^^^
@@ -62,7 +62,7 @@ Examples
 
         papis open --mark bohm
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.open:cli
@@ -155,19 +155,19 @@ def run(document: papis.document.Document,
 @papis.cli.all_option()
 @click.option(
     "--tool",
-    help="Tool for opening the file (opentool)",
+    help="Tool for opening the file (opentool).",
     default="")
 @papis.cli.bool_flag(
     "-d", "--dir", "folder",
-    help="Open directory")
+    help="Open directory.")
 @papis.cli.bool_flag(
     "-m", "--mark/--no-mark",
-    help="Open mark",
+    help="Open mark.",
     default=lambda: papis.config.getboolean("open-mark"))
 def cli(query: str, doc_folder: Tuple[str, ...], tool: str, folder: bool,
         sort_field: Optional[str], sort_reverse: bool, _all: bool,
         mark: bool) -> None:
-    """Open document from a given library"""
+    """Open document from a given library."""
     if tool:
         papis.config.set("opentool", papis.config.escape_interp(tool))
 

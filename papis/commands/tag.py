@@ -49,7 +49,7 @@ Examples
   This adds TAG1 to all documents matching the QUERY rather than opening the
   picker to let you choose one.
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.tag:cli
@@ -75,7 +75,7 @@ logger = papis.logging.get_logger(__name__)
 @papis.cli.bool_flag(
     "-d",
     "--drop",
-    help="Drop all tags",
+    help="Drop all tags.",
     default=False,
 )
 @click.option(
@@ -83,7 +83,7 @@ logger = papis.logging.get_logger(__name__)
     "--add",
     "--append",
     "to_add",
-    help="Add a tag",
+    help="Add a tag.",
     multiple=True,
     type=str,
 )
@@ -91,7 +91,7 @@ logger = papis.logging.get_logger(__name__)
     "-r",
     "--remove",
     "to_remove",
-    help="Remove a tag",
+    help="Remove a tag.",
     multiple=True,
     type=str,
 )
@@ -99,7 +99,7 @@ logger = papis.logging.get_logger(__name__)
     "-n",
     "--rename",
     "to_rename",
-    help="Rename a tag (<OLD-TAG NEW-TAG>)",
+    help="Rename a tag (<OLD-TAG NEW-TAG>).",
     multiple=True,
     type=(str, str),
 )

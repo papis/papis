@@ -44,10 +44,10 @@ Arch Linux
 
 - The ``papis`` package is found in the Arch Linux AUR repository
   `here <https://aur.archlinux.org/packages/papis/>`__.
-  Thanks to `Joshua <https://jpellis.me/>`__ for maintaining this packages!.
+  Thanks to `Joshua <https://jpellis.me/>`__ for maintaining this package!
 - If you want to use the git version of ``papis`` instead, you can try
   the `papis-git <https://aur.archlinux.org/packages/papis-git/>`__ package.
-  Thanks to `Julian <https://julianhauser.com/>`__ for maintaining this packages!.
+  Thanks to `Julian <https://julianhauser.com/>`__ for maintaining this package!
 
 You can install either one with your favorite AUR helper, e.g.
 
@@ -140,11 +140,11 @@ rights on your computer you can simply type
 .. warning::
 
     If you install the package locally, the program ``papis`` will be installed
-    by default into your ``~/.local/bin`` directory, so that you will have to
+    by default into your ``~/.local/bin`` directory. You may have to
     set your ``PATH`` accordingly.
 
     One way of doing this in Bash shells (Linux, Ubuntu on Windows or Cygwin) is
-    by adding the following line to your ``~/.bashrc`` file::
+    by adding the following line to your ``~/.bashrc`` file:
 
     .. code:: sh
 

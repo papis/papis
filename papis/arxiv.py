@@ -230,7 +230,7 @@ def explorer(
     Look for documents on `arXiv.org <https://arxiv.org/>`__.
 
 
-    For example, to search for documents with the authors "Hummer" and
+    For example, to search for documents with the authors "Hummel" and
     "Garnet Chan" (a maximum of 100 articles), use
 
     .. code:: sh

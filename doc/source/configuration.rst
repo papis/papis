@@ -33,7 +33,7 @@ However, an important aspect of the configuration system is that you can overrid
 settings on a per library basis. This means that you can set options with different
 values for each of your libraries, depending on the use case you had in mind.
 For example, let's suppose you want to open your documents from ``papers``
-using the PDF reader ``okular`` however in ``books`` you want to open
+using the PDF reader ``okular``, however in ``books`` you want to open
 the documents in ``firefox`` (for some reason). Then, you would add the following
 lines to your configuration
 
@@ -53,7 +53,7 @@ lines to your configuration
     dir = ~/Documents/books
     opentool = firefox
 
-Here we also added the ``opentool`` setting the global section ``[settings]``.
+Here we also added the ``opentool`` setting in the global section ``[settings]``.
 With this configuration file, the two shown libraries will open documents with
 their respective tool, while any other library will default to ``evince``. There
 are many configuration options and you can check their values using the

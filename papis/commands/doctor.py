@@ -73,7 +73,7 @@ Examples
         papis doctor --explain --checks html-tags einstein
 
   The ``--explain`` flag can be used to give additional details of checks that
-  failed. Some fixes such as this also have automatic fixers. Here, we can just
+  failed. Some checks such as this also have automatic fixers. Here, we can just
   remove all the HTML tags by writing
 
     .. code:: sh
@@ -113,7 +113,7 @@ A skeleton implementation that gets added to ``config.py``
 
     register_check("my-custom-check", my_custom_check)
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.doctor:cli
@@ -145,7 +145,7 @@ CheckFn = Callable[[papis.document.Document], List["Error"]]
 
 
 class Error(NamedTuple):
-    """A detailed error error returned by a doctor check."""
+    """A detailed error returned by a doctor check."""
 
     #: Name of the check generating the error.
     name: str
@@ -1089,19 +1089,19 @@ def run(doc: papis.document.Document,
                                 + list(DEPRECATED_CHECK_NAMES)),
               help="Checks to run on every document.")
 @papis.cli.bool_flag("--json", "_json",
-                     help="Output the results in JSON format")
+                     help="Output the results in JSON format.")
 @papis.cli.bool_flag("--fix",
-                     help="Auto fix the errors with the auto fixer mechanism")
+                     help="Auto fix the errors with the auto fixer mechanism.")
 @papis.cli.bool_flag("-s", "--suggest",
-                     help="Suggest commands to be run for resolution")
+                     help="Suggest commands to be run for resolution.")
 @papis.cli.bool_flag("-e", "--explain",
-                     help="Give a short message for the reason of the error")
+                     help="Give a short message for the reason of the error.")
 @papis.cli.bool_flag("--edit",
                      help="Edit every file with the edit command.")
 @papis.cli.all_option()
 @papis.cli.doc_folder_option()
 @papis.cli.bool_flag("--all-checks", "all_checks",
-                     help="Run all available checks (ignores --checks)")
+                     help="Run all available checks (ignores --checks).")
 def cli(query: str,
         doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
@@ -1114,7 +1114,7 @@ def cli(query: str,
         _json: bool,
         suggest: bool,
         all_checks: bool) -> None:
-    """Check for common problems in documents"""
+    """Check for common problems in documents."""
     documents = papis.cli.handle_doc_folder_query_all_sort(
         query, doc_folder, sort_field, sort_reverse, _all)
 

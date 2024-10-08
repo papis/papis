@@ -1,10 +1,10 @@
-Shell Completion
+Shell completion
 ================
 
 Papis has shell completion for ``bash``, ``fish`` and ``zsh`` through the
 `click framework <https://click.palletsprojects.com/en/latest/shell-completion/#shell-completion>`__
 that comes with it when installed through ``pip``. To control the directory
-in which the completions gets installed use the environment variables
+in which the completions get installed, use the environment variables
 
 .. code:: bash
 

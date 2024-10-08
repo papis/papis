@@ -1,8 +1,8 @@
 Citations of documents: ``citations.yaml`` and ``cited-by.yaml`` files
 ----------------------------------------------------------------------
 
-Papis has support for downloading and exploring citations that documents reference,
-and also cited-by type references.
+Papis has support for downloading and exploring citations that documents
+reference, and also cited-by type references.
 
 If your document has a ``doi`` associated and you use the updater from
 this ``doi``, or you added information from the ``doi`` when you added the
@@ -23,9 +23,9 @@ your document. This is done by scanning your Papis library for
 documents that cite said document. You can also generate this
 file from the web application or from the ``papis citations`` command.
 
-The citation files try to include always first information already
-existing in the library. This is, before doing any online query,
-Papis tries to find the relevant information in your library.
+The citation files try to include information already existing in the library
+first, i.e. before doing any online query, Papis tries to find the relevant
+information in your library.
 
 Notice that Papis copies most of the metadata to the ``citations.yaml``
 and ``cited-by.yaml`` files. Even though this might seem quite heavy on

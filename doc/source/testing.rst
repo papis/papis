@@ -23,7 +23,7 @@ This is a set of environment variables used by the testing infrastructure.
   it acts the same as setting ``XDG_CACHE_HOME``. This overrides the default
   from :func:`papis.utils.get_cache_home` that uses ``platformdirs``.
 * ``PAPIS_DATABASE_BACKEND``: set to one of the supported database backends. Most
-  existing tests do no parametrize over the database backend, so this value lets
+  existing tests do not parametrize over the database backend, so this value lets
   us pick a different one.
 * ``PAPIS_UPDATE_RESOURCES``: one of "none", "remote", "local" or "both". This
   controls what resources are updated while running downloader tests (as explained

@@ -2,40 +2,40 @@
 This command will try its best to find a source in the internet for the
 document at hand.
 
-If the document has an URL key in its ``info.yaml`` file, it will use this URL
+If the document has a URL key in its ``info.yaml`` file, it will use this URL
 to open it in a browser.  Also if it has a ``doc_url`` key, or a DOI, it will try
 to compose URLs out of these to open it.
 
 If none of the above work, then it will try to use a search engine with the
 document's information (using the :confval:`browse-query-format`
-configuration option).  You can select which search engine you want to use
+configuration option). You can select which search engine you want to use
 with the :confval:`search-engine` setting.
 
 Examples
 ^^^^^^^^
 
 By default, it will use the configuration option :confval:`browse-key`
-to try and form an URL to browse. You can bypass this option using the ``-k``
+to try and form a URL to browse. You can bypass this option using the ``-k``
 flag issuing the command
 
 .. code:: sh
 
     papis browse -k doi einstein
 
-This will form an URL through the DOI of the document. Similarly,
+This will form a URL through the DOI of the document. Similarly,
 
 .. code:: sh
 
     papis browse -k isbn
 
-will form an URL through the ISBN of the document using
+will form a URL through the ISBN of the document using
 `isbnsearch.org <https://isbnsearch.org/>`__. It can also use
 
 .. code:: sh
 
     papis browse -k ads
 
-to form an URL using the great `ADS service <https://ui.adsabs.harvard.edu/>`__
+to form a URL using the great `ADS service <https://ui.adsabs.harvard.edu/>`__
 and there you can check for similar papers, citations, references and much more.
 Please note that for this to work the document should have a DOI attached to it.
 Using
@@ -54,7 +54,7 @@ assuming at this point that you'll know what you're doing. Finally, the default
 will do a ``search-engine`` search with the data of your paper and hopefully
 you'll find it there.
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.browse:cli
@@ -80,7 +80,7 @@ logger = papis.logging.get_logger(__name__)
 
 def run(document: papis.document.Document,
         browse: bool = True) -> Optional[str]:
-    """Browse document's url whenever possible and returns the url
+    """Browse document's url whenever possible and return the url
 
     :document: Document object
 
@@ -139,7 +139,7 @@ def run(document: papis.document.Document,
                    " the browser, e.g. doi, url, doc_url ...")
 @papis.cli.bool_flag(
     "-n", "--print", "_print",
-    help="Just print out the url, do not open it with browser")
+    help="Just print out the url, do not open it with browser.")
 @papis.cli.all_option()
 @papis.cli.doc_folder_option()
 def cli(query: str,
@@ -149,7 +149,7 @@ def cli(query: str,
         doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
         sort_reverse: bool) -> None:
-    """Open document's url in a browser"""
+    """Open document's url in a browser."""
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,
                                                            sort_field,

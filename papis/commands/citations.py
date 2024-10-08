@@ -1,6 +1,6 @@
 """
 The ``citations`` command updates and creates the ``citations.yaml`` and
-``cited.yaml`` files for every document.
+``cited-by.yaml`` files for every document.
 
 Examples
 ^^^^^^^^
@@ -38,7 +38,7 @@ Examples
 
         papis citations --fetch-cited-by --all
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.citations:cli
@@ -66,13 +66,13 @@ logger = papis.logging.get_logger(__name__)
 @papis.cli.query_argument()
 @papis.cli.sort_option()
 @papis.cli.bool_flag("-c", "--fetch-citations",
-                     help="Fetch and save citations from Crossref")
+                     help="Fetch and save citations from Crossref.")
 @papis.cli.bool_flag("-d", "--update-from-database",
-                     help="Fetch and save citations from database")
+                     help="Fetch and save citations from database.")
 @papis.cli.bool_flag("-b", "--fetch-cited-by",
-                     help="Fetch and save cited-by from database")
+                     help="Fetch and save cited-by from database.")
 @papis.cli.bool_flag("-f", "--force",
-                     help="Force action")
+                     help="Force action.")
 @papis.cli.all_option()
 @papis.cli.doc_folder_option()
 def cli(query: str,
@@ -84,7 +84,7 @@ def cli(query: str,
         fetch_citations: bool,
         fetch_cited_by: bool,
         update_from_database: bool) -> None:
-    """Handle document citations"""
+    """Handle document citations."""
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,
                                                            sort_field,

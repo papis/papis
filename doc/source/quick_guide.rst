@@ -5,7 +5,7 @@ Quick guide
 
 In this quick guide, we'll create a library, download a couple documents, and
 then work on them by opening, tagging, updating, exporting, and organising them.
-In doing so, you will be introduced to the ``papis`` command and number of its
+In doing so, you will be introduced to the ``papis`` command and a number of its
 subcommands. These subcommands (which we'll simply call "commands" from now on)
 are run with ``papis COMMAND`` (where ``COMMAND`` is the command you want). To
 get a list of all commands, simply run ``papis --help``. If you want to get help

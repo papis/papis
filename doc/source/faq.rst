@@ -15,5 +15,5 @@ Here are some problems that users have come across often:
   will do.
 
 
-For more information you can also check the
-`github faq <https://github.com/papis/papis/issues?utf8=%E2%9C%93&q=label:faq>`__ link.
+For more frequently asked questions, check out our
+`GitHub issues labeled with faq <https://github.com/papis/papis/issues?utf8=%E2%9C%93&q=label:faq>`__.

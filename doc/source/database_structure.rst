@@ -34,7 +34,7 @@ Papis database
 
 The fact that there is no database means that Papis should crawl through
 the library folder and see which folders have an ``info.yaml`` file, which
-is for slow computers (and harddrives) quite bad.
+is quite bad for slow computers (and hard drives).
 
 Papis implements a very rudimentary caching system. A cache is created for
 every library. Inside the cache the whole information already converted
@@ -74,22 +74,18 @@ In order to clear and rebuild the cache (i.e., reset it), you can simply run
 Query language
 ^^^^^^^^^^^^^^
 
-Since version `0.3` there is a query language in place for the searching
-of documents.
-The queries can contain any field of the info file, e.g.,
-``author:einstein publisher : review`` will match documents that have
-a matching ``author`` with ``einstein`` AND have a ``publisher``
-matching ``review``.
-The AND part here is important, since
-only the ``AND`` filter is implemented in this simple query
-language. At the moment it is not possible to do an ``OR``.
-If you need this, you should consider using the
-`Whoosh database`_.
+Since version ``v0.3`` there is a query language in place for the searching of
+documents. The queries can contain any field of the info file, e.g.,
+``author:einstein publisher : review`` will match documents that have ``author``
+match with ``einstein`` AND ``publisher`` match with ``review``. The AND part
+here is important, since only the ``AND`` filter is implemented in this simple
+query language. At the moment it is not possible to do an ``OR``. If you need
+this, you should consider using the `Whoosh database`_.
 
 For illustration, here are some examples:
 
   - Open documents where the author key matches 'albert' (ignoring case) and
-    year matches '19' (i.e., 1990, 2019, 1920):
+    year matches '05' (i.e. could be '1905' or '2005'):
 
     .. code::
 
@@ -130,19 +126,18 @@ and set it to ``False``, e.g.
 Whoosh database
 ---------------
 
-Papis has also the possibility to use the blazing fast and pure python
-`Whoosh library <https://whoosh.readthedocs.io/en/latest>`__.
-Its performance is orders of magnitude better than the crude cache based
-database.
+Papis can alternatively use the blazing fast and pure Python `Whoosh library
+<https://whoosh.readthedocs.io/en/latest>`__. Its performance is orders of
+magnitude better than the crude cache based database.
 
-Of course, the performance comes at a cost. To achieve more performance
+Of course, the performance comes at a cost. To achieve more performance,
 a database backend should create an index with information about the documents.
 Parsing a user query means going to the index and matching the query to
 what is found in the index. This means that the index can not in general
 have all the information that the info file of the documents includes.
 
 In other words, the whoosh index will store only certain fields from the
-document's info files. The good news is that we can tell Papis exactly
+documents' info files. The good news is that we can tell Papis exactly
 which fields we want to index. These flags are
 
 - :confval:`whoosh-schema-fields`
@@ -168,10 +163,10 @@ will not return anything, since the publisher field is not being stored.
 Query language
 ^^^^^^^^^^^^^^
 
-The whoosh database uses the whoosh query language which is much more
+The Whoosh database uses the Whoosh query language which is much more
 advanced than the query language in the `Papis database`_.
 
-The whoosh query language supports both ``AND`` and ``OR``, for instance
+The Whoosh query language supports both ``AND`` and ``OR``, for instance
 
 ::
 
@@ -180,5 +175,5 @@ The whoosh query language supports both ``AND`` and ``OR``, for instance
 will give papers of einstein in the year 1905 together with all papers
 where einstein appears in the title.
 
-You can read more about the whoosh query language
+You can read more about the Whoosh query language
 `here <https://whoosh.readthedocs.io/en/latest/querylang.html>`__.

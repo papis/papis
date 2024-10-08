@@ -21,8 +21,8 @@ def get_lib_name() -> str:
     """
     Get current library.
 
-    It either retrieves the library from the environment ``PAPIS_LIB`` variable,
-    the command-line arguments passed in by the user or the configuration
+    It either retrieves the library from the environment variable ``PAPIS_LIB``,
+    the command-line arguments passed in by the user, or the configuration
     files.
 
     :returns: the name of the library.
@@ -37,8 +37,8 @@ def set_lib_from_name(library: str) -> None:
     """
     Set current library.
 
-    It either sets the library from the environment ``PAPIS_LIB`` variable,
-    the command-line args passed by the user or the configuration files.
+    It either sets the library from the environment variable ``PAPIS_LIB``,
+    the command-line args passed by the user, or the configuration files.
 
     :param library: name of a library (as defined in the configuration files)
         or a path to an existing library.
@@ -51,7 +51,7 @@ def get_libraries() -> List[str]:
     Get all the libraries declared in the configuration files.
 
     A library in the configuration files is a section that has the ``dir``
-    or ``dirs`` keys defined.
+    or ``dirs`` key defined.
 
     :returns: a :class:`list` of library names.
 
@@ -86,6 +86,7 @@ def pick(items: Sequence[T],
     :param default_index: index used when no explicit item is picked.
     :param header_filter: a callable to stringify the given item for display.
     :param match_filter: a callable to stringify the given item for display.
+    :returns: a subset of *items* corresponding to the user selected ones.
     """
     import papis.pick
 
@@ -158,7 +159,7 @@ def get_documents_in_dir(
         directory: str,
         search: str = "") -> List[papis.document.Document]:
     """
-    Get documents contained in the given folder.
+    Get documents contained in the given *directory*.
 
     :param directory: a path to a folder containing documents.
     :param search: a search string used to filter the documents.
@@ -177,7 +178,7 @@ def get_documents_in_lib(
         library: Optional[str] = None,
         search: Union[Dict[str, Any], str] = "") -> List[papis.document.Document]:
     """
-    Get documents contained in the given library.
+    Get documents contained in the given *library*.
 
     :param library: a library name.
     :param search: a search parameter used to filter the documents.
@@ -225,7 +226,7 @@ def save_doc(doc: papis.document.Document) -> None:
     Save the document to disk.
 
     This commits the new document to the database and saves it to disk
-    by updating its *info.yaml* file.
+    by updating its ``info.yaml`` file.
 
     :param doc: an existing document.
     """
