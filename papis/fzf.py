@@ -47,6 +47,19 @@ class Command(ABC, Generic[T]):
         pass
 
 
+class Browse(Command[T]):
+    regex = re.compile(r"browse ([\d ]+)")
+    command = "become(echo browse {+n})"
+    key = "enter"
+
+    def run(self, docs: List[T]) -> List[T]:
+        from papis.commands.browse import run
+        for doc in docs:
+            if isinstance(doc, papis.document.Document):
+                run(doc)
+        return []
+
+
 class Choose(Command[T]):
     regex = re.compile(r"choose ([\d ]+)")
     command = "become(echo choose {+n})"
@@ -114,7 +127,7 @@ class Picker(papis.pick.Picker[T]):
                 f"Found 'fzf' version {version} but "
                 f"version >={MIN_FZF_VERSION} is required")
 
-        commands: List[Command[T]] = [Choose(), Open(), Edit(), EditNote()]
+        commands: List[Command[T]] = [Browse(), Choose(), Open(), Edit(), EditNote()]
 
         bindings = (
             [c.binding() for c in commands]
