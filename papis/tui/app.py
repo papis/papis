@@ -68,6 +68,10 @@ def get_keys_info() -> Dict[str, KeyInfo]:
                     config.getstring("focus_command_line_key", section="tui"),
                 "help": "Focus command line prompt",
             },
+            "browse_document_key": {
+                "key": config.getstring("browse_document_key", section="tui"),
+                "help": "Browse currently selected document",
+            },
             "edit_document_key": {
                 "key": config.getstring("edit_document_key", section="tui"),
                 "help": "Edit currently selected document",
@@ -230,6 +234,14 @@ def get_commands(app: "Picker[Any]") -> Tuple[List[Command], KeyBindings]:
             thread.join()
 
         app.renderer.clear()
+
+    @kb.add(keys_info["browse_document_key"]["key"],      # type: ignore[misc]
+            filter=has_focus(app.options_list.search_buffer))
+    def browse(event: Union[Command, KeyPressEvent]) -> None:
+        from papis.commands.browse import run
+        docs = app.get_selection()
+        for doc in docs:
+            run(doc)
 
     @kb.add(keys_info["edit_document_key"]["key"],      # type: ignore[misc]
             filter=has_focus(app.options_list.search_buffer))
