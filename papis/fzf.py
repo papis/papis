@@ -50,7 +50,7 @@ class Command(ABC, Generic[T]):
 class Browse(Command[T]):
     regex = re.compile(r"browse ([\d ]+)")
     command = "become(echo browse {+n})"
-    key = "enter"
+    key = "ctrl-b"
 
     def run(self, docs: List[T]) -> List[T]:
         from papis.commands.browse import run
