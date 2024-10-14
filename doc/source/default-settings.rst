@@ -950,6 +950,12 @@ For information about keybindings, see the corresponding
 .. papis-config:: focus_command_line_key
     :section: tui
 
+.. papis-config:: browse_document_key
+    :section: tui
+
+.. papis-config:: edit_notes_key
+    :section: tui
+
 .. papis-config:: edit_document_key
     :section: tui
 
