@@ -401,7 +401,9 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         return doc
 
     def _get_form(self, method: str = "POST") -> FieldStorage:
-        return FieldStorage(fp=self.rfile,
+        # FIXME: rfile is a BufferedIOBase and fp is a IO[Any]. This seems to be
+        # a bug in the type annotations for one of these classes
+        return FieldStorage(fp=self.rfile,  # type: ignore[arg-type]
                             headers=self.headers,
                             environ={"REQUEST_METHOD": method})
 
