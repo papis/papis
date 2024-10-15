@@ -557,15 +557,35 @@ Doctor options
 
     A list of checks that are performed by default.
 
+.. papis-config:: doctor-default-checks-extend
+    :type: :class:`~typing.List` [:class:`str`]
+
+    A list of checks that extend the default ones from :confval:`doctor-default-checks`.
+    This list extends instead of overwriting the given checks.
+
 .. papis-config:: doctor-keys-missing-keys
 
     A list of keys used by the ``keys-missing`` check. The check will show an
     error if these keys are not present in a document.
 
+.. papis-config:: doctor-keys-missing-keys-extend
+    :type: :class:`~typing.List` [:class:`str`]
+
+    A list of keys that extend the default ones from
+    :confval:`doctor-keys-missing-keys`. This list extends instead of overwriting
+    the given keys.
+
 .. papis-config:: doctor-duplicated-keys-keys
 
     A list of keys used by the ``duplicated-keys`` check. The check will show
     an error if the value of these keys is duplicated across multiple documents.
+
+.. papis-config:: doctor-duplicated-keys-keys-extend
+    :type: :class:`~typing.List` [:class:`str`]
+
+    A list of keys that extend the default ones from
+    :confval:`doctor-duplicated-keys-keys`. This list extends instead of overwriting
+    the given keys.
 
 .. papis-config:: doctor-duplicated-values-keys
 
@@ -574,17 +594,38 @@ Doctor options
    e.g., if a file was mistakenly added multiple times or if a tag already
    exists in the document.
 
+.. papis-config:: doctor-duplicated-values-keys-extend
+    :type: :class:`~typing.List` [:class:`str`]
+
+    A list of keys that extend the default ones from
+    :confval:`doctor-duplicated-values-keys`. This list extends instead of overwriting
+    the given keys.
+
 .. papis-config:: doctor-html-codes-keys
 
     A list of keys used by the ``html-codes`` check. The check will show an error
     if any of the keys contain unwanted HTML codes, e.g. ``&amp;``.
+
+.. papis-config:: doctor-html-codes-keys-extend
+    :type: :class:`~typing.List` [:class:`str`]
+
+    A list of keys that extend the default ones from
+    :confval:`doctor-html-codes-keys`. This list extends instead of overwriting
+    the given keys.
 
 .. papis-config:: doctor-html-tags-keys
 
     A list of keys used by the ``html-tags`` check. The check will show an error
     if any of the keys contain unwanted HTML tags, e.g. ``<div>``.
 
-.. papis-config:: doctor-key-type-check-keys
+.. papis-config:: doctor-html-tags-keys-extend
+    :type: :class:`~typing.List` [:class:`str`]
+
+    A list of keys that extend the default ones from
+    :confval:`doctor-html-tags-keys`. This list extends instead of overwriting
+    the given keys.
+
+.. papis-config:: doctor-key-type-keys
 
    A list of strings ``key:type`` used by the ``key-type`` check. This
    check will show an error if the key does not have the corresponding type. The
@@ -592,7 +633,14 @@ Doctor options
    ``["year:int", "tags:list"]`` to check that the year is an integer and the
    tags are given as a list in a document.
 
-.. papis-config:: doctor-key-type-check-separator
+.. papis-config:: doctor-key-type-keys-extend
+    :type: :class:`~typing.List` [:class:`str`]
+
+    A list of keys that extend the default ones from
+    :confval:`doctor-key-type-keys`. This list extends instead of overwriting
+    the given keys.
+
+.. papis-config:: doctor-key-type-separator
     :type: str
 
     A separator used by the ``key-type`` check fixer. When converting from

@@ -20,12 +20,16 @@ def get_default_opener() -> str:
 # document in the docs, so they can be easily checked and updated
 
 
+NOT_SET = object()
+
 settings: Dict[str, Any] = {
     # unused or deprecated
     "add-interactive": False,
     "mvtool": "mv",
-    "formater": None,
-    "doctor-keys-exist-keys": None,
+    "formater": NOT_SET,
+    "doctor-keys-exist-keys": NOT_SET,
+    "doctor-key-type-check-keys": NOT_SET,
+    "doctor-key-type-check-separator": NOT_SET,
 
     # general settings
     "local-config-file": ".papis.config",
@@ -103,28 +107,35 @@ settings: Dict[str, Any] = {
 
     # doctor
     "doctor-default-checks": ["files", "biblatex-required-keys", "bibtex-type", "refs"],
+    "doctor-default-checks-extend": [],
     "doctor-keys-missing-keys": ["title", "author", "author_list", "ref"],
+    "doctor-keys-missing-keys-extend": [],
     "doctor-duplicated-keys-keys": ["ref"],
+    "doctor-duplicated-keys-keys-extend": [],
     "doctor-duplicated-values-keys": ["files", "author_list"],
+    "doctor-duplicated-values-keys-extend": [],
     "doctor-html-codes-keys": ["title", "author", "abstract", "journal"],
+    "doctor-html-codes-keys-extend": [],
     "doctor-html-tags-keys": ["title", "author", "abstract", "journal"],
-    "doctor-key-type-check-keys": ["year:int",
-                                   "month:int",
-                                   "files:list",
-                                   "notes:str",
-                                   "author_list:list",
-                                   "doi:str",
-                                   "ref:str",
-                                   "isbn:str",
-                                   "author:str",
-                                   "journal:str",
-                                   "note:str",
-                                   "tags:list",
-                                   "type:str",
-                                   "publisher:str",
-                                   "title:str",
-                                   "shorttitle:str"],
-    "doctor-key-type-check-separator": None,
+    "doctor-html-tags-keys-extend": [],
+    "doctor-key-type-keys": ["year:int",
+                             "month:int",
+                             "files:list",
+                             "notes:str",
+                             "author_list:list",
+                             "doi:str",
+                             "ref:str",
+                             "isbn:str",
+                             "author:str",
+                             "journal:str",
+                             "note:str",
+                             "tags:list",
+                             "type:str",
+                             "publisher:str",
+                             "title:str",
+                             "shorttitle:str"],
+    "doctor-key-type-keys-extend": [],
+    "doctor-key-type-separator": None,
 
     # open
     "open-mark": False,
