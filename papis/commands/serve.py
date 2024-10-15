@@ -36,7 +36,7 @@ AnyFn = Callable[..., Any]
 try:
     # NOTE: the cgi module is being removed in python 3.13, so we add our own
     # little copy of FieldStorage when it's not available
-    from cgi import FieldStorage
+    from cgi import FieldStorage  # type: ignore[import-not-found,unused-ignore]
 except ImportError:
     from email.message import Message
     from dataclasses import dataclass, field
