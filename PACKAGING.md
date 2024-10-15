@@ -1,7 +1,7 @@
 Guidelines for Packaging
 ========================
 
-These are some loose notes about packing Papis meant to highlight the different
+These are some loose notes about packaging Papis meant to highlight the different
 components that are available and not to require a particular format.
 
 Version Numbering
@@ -23,7 +23,7 @@ See `pyproject.toml` for a complete list of dependencies and minimum versions.
 Wheels
 ------
 
-Papis uses the standard `pyproject.toml`-based format using `hatchling` as a
+Papis uses the standard `pyproject.toml`-based format and `hatchling` as a
 build backend. Wheels can be generated using
 ```
 python -m build --wheel --skip-dependency-check .
