@@ -94,7 +94,18 @@ Now open an attached file or edit an entry:
 
 |edit|
 
-Or export them to bibtex:
+The Papis picker (set using the ``picktool`` configuration option) has
+helpful shortcuts to call other functionality as well (press ``F1`` for 
+a complete list). It can be used to open (``Ctrl-o``), browse (``Ctrl-b``)
+or edit (``Ctrl-e``) selected documents (marked with ``Ctrl-t``).
+
+Import your bibliography into Papis from BibTeX:
+
+.. code:: bash
+
+    papis bibtex read mylib.bib import --all
+
+Or export it to BibTeX:
 
 .. code:: bash
 
