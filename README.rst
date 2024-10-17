@@ -94,7 +94,18 @@ Now open an attached file or edit an entry:
 
 |edit|
 
-Or export them to bibtex:
+If you change your mind after typing a command, there are shortcuts to
+browse (`Ctrl-b`), edit (`Ctrl-e`), edit notes (`Ctrl-q`) instead !
+
+|picker|
+
+Import your bibliography into papis from bibex:
+
+.. code:: bash
+
+    papis bibtex read mylib.bib import -a --batch
+
+Or export it to bibtex:
 
 .. code:: bash
 
