@@ -36,8 +36,11 @@ def test_files_check(tmp_config: TemporaryConfiguration) -> None:
 def test_keys_missing_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.commands.doctor import keys_missing_check
 
+    # check extend functionality
     papis.config.set("doctor-keys-missing-keys",
-                     ["ref", "author", "author_list", "title"])
+                     ["author", "author_list", "title"])
+    papis.config.set("doctor-keys-missing-keys-extend",
+                     ["ref"])
 
     doc = papis.document.from_data({
         "title": "DNA sequencing with chain-terminating inhibitors",
@@ -120,17 +123,19 @@ def test_refs_check(tmp_config: TemporaryConfiguration) -> None:
 def test_duplicated_keys_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.commands.doctor import duplicated_keys_check
 
+    # check extend functionality
+    papis.config.set("doctor-duplicated-keys-keys-extend", ["year"])
     docs = [
-        papis.document.from_data({"ref": "ref1"}),
-        papis.document.from_data({"ref": "ref2"}),
-        papis.document.from_data({"ref": "ref1"}),
+        papis.document.from_data({"ref": "ref1", "year": 1901}),
+        papis.document.from_data({"ref": "ref2", "year": 1901}),
+        papis.document.from_data({"ref": "ref1", "year": 2024}),
     ]
 
     errors = duplicated_keys_check(docs[0])
     assert not errors
 
-    errors = duplicated_keys_check(docs[1])
-    assert not errors
+    error, = duplicated_keys_check(docs[1])
+    assert error.payload == "year"
 
     error, = duplicated_keys_check(docs[2])
     assert error.payload == "ref"
@@ -258,7 +263,8 @@ def test_key_type_check(tmp_config: TemporaryConfiguration) -> None:
     error.fix_action()
     assert doc["tags"] == ["test-key-tag-1", "test-key-tag-2", "test-key-tag-3"]
 
-    papis.config.set("doctor-key-type-keys", ["tags:str"])
+    papis.config.set("doctor-key-type-keys", [])
+    papis.config.set("doctor-key-type-keys-extend", ["tags:str"])
     error, = key_type_check(doc)
     assert error.payload == "tags"
     error.fix_action()
@@ -286,6 +292,17 @@ def test_html_codes_check(tmp_config: TemporaryConfiguration) -> None:
         error.fix_action()
         assert (doc["title"]
                 == "DNA sequencing with chain-terminating inhibitors & stuff")
+
+    # check extend functionality
+    doc["publisher"] = "Society for Industrial &amp; Applied Mathematics (SIAM)"
+
+    errors = html_codes_check(doc)
+    assert not errors
+
+    papis.config.set("doctor-html-codes-keys-extend", ["publisher"])
+
+    error, = html_codes_check(doc)
+    assert error.payload == "publisher"
 
 
 def test_html_tags_check(tmp_config: TemporaryConfiguration) -> None:
@@ -319,6 +336,17 @@ def test_html_tags_check(tmp_config: TemporaryConfiguration) -> None:
 
     error.fix_action()
     assert doc["title"] == "DNA sequencing with chain terminating inhibitors"
+
+    # check extend functionality
+    doc["publisher"] = "<strong>SIAM</strong>"
+
+    errors = html_tags_check(doc)
+    assert not errors
+
+    papis.config.set("doctor-html-tags-keys-extend", ["publisher"])
+
+    error, = html_tags_check(doc)
+    assert error.payload == "publisher"
 
 
 @pytest.mark.parametrize("basename", [
