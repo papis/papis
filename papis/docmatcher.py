@@ -4,6 +4,7 @@ from typing import Any, ClassVar, List, NamedTuple, Optional, Pattern, Protocol
 import papis.config
 import papis.document
 import papis.logging
+from papis.strings import AnyString, FormattedString
 
 logger = papis.logging.get_logger(__name__)
 
@@ -40,7 +41,7 @@ class MatcherCallable(Protocol):
     def __call__(self,
                  document: papis.document.Document,
                  search: Pattern[str],
-                 match_format: Optional[str] = None,
+                 match_format: Optional[AnyString] = None,
                  doc_key: Optional[str] = None,
                  ) -> Any:
         """Match a document's keys to a given search pattern.
@@ -88,7 +89,7 @@ class DocMatcher:
     matcher: ClassVar[Optional[MatcherCallable]] = None
     #: A format string (defaulting to :confval:`match-format`) used
     #: to match the parsed search results if no document key is present.
-    match_format: ClassVar[str] = ""
+    match_format: ClassVar[FormattedString] = FormattedString(None, "")
 
     @classmethod
     def return_if_match(
@@ -171,7 +172,7 @@ class DocMatcher:
         if search is None:
             search = cls.search
 
-        cls.match_format = papis.config.getstring("match-format")
+        cls.match_format = papis.config.getformattedstring("match-format")
         cls.parsed_search = parse_query(search)
 
         return cls.parsed_search
