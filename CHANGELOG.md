@@ -152,6 +152,12 @@ Other smaller noteworthy changes:
   ([#695](https://github.com/papis/papis/pull/695))
 * `bibtex-type`: add fixer to automatically convert known document types
   ([#732](https://github.com/papis/papis/pull/732))
+* `html-tags`: be smarter about removing JATS and MML tags in abstracts.
+  ([#881](https://github.com/papis/papis/pull/881)).
+* [#916](https://github.com/papis/papis/pull/916) added configuration keys with
+  and `-extend` suffix to enable appending instead of overwriting existing lists.
+  For example, you should use `doctor-default-checks-extend = ["html-tags"]` to
+  add more default checks.
 
 ### Minor: Plugin helpers ([#680](https://github.com/papis/papis/pull/680) and [#752](https://github.com/papis/papis/pull/752))
 
@@ -231,6 +237,14 @@ this should be fairly automatic.
 * Allow configuration for marked lines margins and make marked and unmarked
   margins span the whole document entry.
   ([#820](https://github.com/papis/papis/pull/820))
+* Be smarter about automatic naming of newly added files.
+  ([#831](https://github.com/papis/papis/pull/831))
+* Add nicer library picker.
+  ([#856](https://github.com/papis/papis/pull/856)).
+* Add an `edit_notes` action to the `fzf` picker.
+  ([#919](https://github.com/papis/papis/pull/919))
+* Add a `browse` action + shortcut to the default pickers.
+  ([#922](https://github.com/papis/papis/pull/922))
 
 ## Bug fixes
 
@@ -253,6 +267,10 @@ this should be fairly automatic.
   ([#693](https://github.com/papis/papis/pull/693))
 * Do not escape verbatim BibTeX fields like `url`
   ([#739](https://github.com/papis/papis/pull/739))
+* Fix loading documents with removed keys.
+  ([#896](https://github.com/papis/papis/pull/896))
+* Use formatter for `multiple-authors-format`.
+  ([#906](https://github.com/papis/papis/pull/906))
 
 VERSION v0.13 (May 7, 2023)
 ===========================
