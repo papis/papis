@@ -220,6 +220,7 @@ class Jinja2Formatter(Formatter):
 
     def __init__(self) -> None:
         super().__init__()
+        self.env.shared = True
 
     def format(self,
                fmt: str,
