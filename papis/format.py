@@ -8,8 +8,10 @@ import papis.logging
 
 try:
     from jinja2.environment import Environment
-except ImportError:
-    pass
+except ImportError as e:
+    exc = e
+else:
+    exc = None
 
 logger = papis.logging.get_logger(__name__)
 
@@ -207,19 +209,17 @@ class Jinja2Formatter(Formatter):
         "{{ doc.isbn | default('ISBN-NONE', true) }}"
     """
 
-    env: Environment = Environment()
+    if not exc:
+        env: Environment = Environment() # type: ignore
+    else:
+        logger.error(
+            "The 'jinja2' formatter requires the 'jinja' library. "
+            "To use this functionality install it using e.g. "
+            "'pip install jinja2'.", exc_info=exc)
+        raise exc
 
     def __init__(self) -> None:
         super().__init__()
-
-        try:
-            import jinja2       # noqa: F401
-        except ImportError as exc:
-            logger.error(
-                "The 'jinja2' formatter requires the 'jinja' library. "
-                "To use this functionality install it using e.g. "
-                "'pip install jinja2'.", exc_info=exc)
-            raise exc
 
     def format(self,
                fmt: str,
