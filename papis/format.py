@@ -6,6 +6,11 @@ import papis.plugin
 import papis.document
 import papis.logging
 
+try:
+    from jinja2.environment import Environment
+except ImportError:
+    pass
+
 logger = papis.logging.get_logger(__name__)
 
 FORMATTER: Optional["Formatter"] = None
@@ -202,6 +207,8 @@ class Jinja2Formatter(Formatter):
         "{{ doc.isbn | default('ISBN-NONE', true) }}"
     """
 
+    env: Environment = Environment()
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -223,15 +230,14 @@ class Jinja2Formatter(Formatter):
         if additional is None:
             additional = {}
 
-        from jinja2 import Template
-
         fmt = unescape(fmt)
         if not isinstance(doc, papis.document.Document):
             doc = papis.document.from_data(doc)
 
         doc_name = doc_key or self.default_doc_name
         try:
-            return str(Template(fmt).render(**{doc_name: doc}, **additional))
+            tmpl = self.env.from_string(fmt)
+            return str(tmpl.render(**{doc_name: doc}, **additional))
         except Exception as exc:
             if default is not None:
                 logger.warning("Could not format string '%s' for document '%s'",
