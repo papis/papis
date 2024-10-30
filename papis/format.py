@@ -9,9 +9,9 @@ import papis.logging
 try:
     from jinja2.environment import Environment
 except ImportError as e:
-    exc = e
+    exc: Optional[ImportError] = e
 else:
-    exc = None
+    exc: Optional[ImportError] = None
 
 logger = papis.logging.get_logger(__name__)
 
