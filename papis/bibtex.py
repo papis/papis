@@ -465,6 +465,7 @@ def ref_cleanup(ref: str) -> str:
     ref = slugify.slugify(ref,
                           lowercase=False,
                           word_boundary=False,
+                          separator=papis.config.getstring("ref-word-separator"),
                           regex_pattern=ref_allowed_characters)
 
     return str(ref).strip()

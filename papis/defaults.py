@@ -58,6 +58,7 @@ settings: Dict[str, Any] = {
     "doc-paths-lowercase": True,
     "doc-paths-extra-chars": "",
     "doc-paths-word-separator": "-",
+    "ref-word-separator": "_",
     "library-header-format": (
         "<ansired>{library[name]}</ansired>"
         " <ansiblue>{library[paths]}</ansiblue>"
