@@ -210,7 +210,7 @@ class Jinja2Formatter(Formatter):
     """
 
     if not exc:
-        env: Environment = Environment() # type: ignore
+        env: Environment = Environment()  # type: ignore
     else:
         logger.error(
             "The 'jinja2' formatter requires the 'jinja' library. "
