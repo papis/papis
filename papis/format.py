@@ -1,17 +1,11 @@
 import string
+from functools import lru_cache
 from typing import Any, Dict, Optional
 
 import papis.config
 import papis.plugin
 import papis.document
 import papis.logging
-
-try:
-    from jinja2.environment import Environment
-except ImportError as e:
-    exc: Optional[ImportError] = e
-else:
-    exc: Optional[ImportError] = None
 
 logger = papis.logging.get_logger(__name__)
 
@@ -179,6 +173,19 @@ class PythonFormatter(Formatter):
                 raise FormatFailedError(fmt) from exc
 
 
+@lru_cache(maxsize=None)
+def jinja_environment() -> Any:
+    try:
+        from jinja2.environment import Environment
+        return Environment()
+    except ImportError as e:
+        logger.error(
+            "The 'jinja2' formatter requires the 'jinja2' library. "
+            "To use this functionality install it using e.g. "
+            "'pip install jinja2'.", exc_info=e)
+        raise e
+
+
 class Jinja2Formatter(Formatter):
     """Construct a string using `Jinja2 <https://palletsprojects.com/p/jinja/>`__
     templates.
@@ -209,14 +216,7 @@ class Jinja2Formatter(Formatter):
         "{{ doc.isbn | default('ISBN-NONE', true) }}"
     """
 
-    if not exc:
-        env: Environment = Environment()  # type: ignore
-    else:
-        logger.error(
-            "The 'jinja2' formatter requires the 'jinja' library. "
-            "To use this functionality install it using e.g. "
-            "'pip install jinja2'.", exc_info=exc)
-        raise exc
+    env = jinja_environment()
 
     def __init__(self) -> None:
         super().__init__()
