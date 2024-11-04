@@ -493,6 +493,9 @@ class Downloader(papis.downloaders.Downloader):
 
         return self._doi
 
+    def fetch_data(self) -> None:
+        self.fetch()
+
     def fetch(self) -> None:
         if not self.doi:
             return
