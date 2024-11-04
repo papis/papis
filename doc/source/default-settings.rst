@@ -203,7 +203,7 @@ General settings
     replacing spaces or other non-letter characters). By default this is the
     underscore ``"_"`` but it could, e.g., also be the hyphen ``"-"``.
 
-    The ref is used as the bibtex key when creating bibtex format bibliographies.
+    The ``ref`` is used as the citation key when creating BibTeX format bibliographies.
     Therefore, characters ``" # ' ( ) , = { } %`` are not recommended for use as
     separators because neither ``bibtex`` nor ``biber`` can process them.
 
