@@ -196,6 +196,17 @@ General settings
     replacing spaces or other non-letter characters). By default this is the
     hyphen ``"-"`` but it could, e.g., also be the underscore ``"_"``.
 
+.. papis-config:: ref-word-separator
+    :type: str
+
+    This setting defines the separator between words in ref keys (usually
+    replacing spaces or other non-letter characters). By default this is the
+    underscore ``"_"`` but it could, e.g., also be the hyphen ``"-"``.
+
+    The ``ref`` is used as the citation key when creating BibTeX format bibliographies.
+    Therefore, characters ``" # ' ( ) , = { } %`` are not recommended for use as
+    separators because neither ``bibtex`` nor ``biber`` can process them.
+
 .. papis-config:: library-header-format
 
     The format of a library when shown in a picker, e.g. when using
