@@ -134,7 +134,7 @@ class Configuration(configparser.ConfigParser):
         configpy = get_configpy_file()
         if os.path.exists(configpy):
             with open(configpy) as fd:
-                exec(fd.read(), globals())
+                exec(fd.read(), globals())  # add user's defs to global name space
 
 
 def get_default_settings() -> PapisConfigType:
