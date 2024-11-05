@@ -259,26 +259,27 @@ def clean_document_name(doc_path: str, is_path: bool = True) -> str:
 
 
 def locate_document_in_lib(document: papis.document.Document,
-                           library: Optional[str] = None) -> papis.document.Document:
+                           library: Optional[str] = None,
+                           *,
+                           unique_document_keys: Optional[List[str]] = None,
+                           ) -> papis.document.Document:
     """Locate a document in a library.
 
-    This function uses the :confval:`unique-document-keys`
-    to determine if the current document matches any document in the library.
-    The first document for which a key matches exactly will be returned.
+    This function falls back to :confval:`unique-document-keys` to determine if the
+    current document matches any document in the library. The first document
+    for which one of the keys in the list matches exactly will be returned.
 
-    :param document: the document to search for.
-    :param library: the name of a valid ``papis`` library.
+    :param library: the name of a valid Papis library.
+    :param unique_document_keys: a list of keys to match when locating a document.
+
     :returns: a full document as found in the library.
-
     :raises IndexError: No document found in the library.
     """
+    if unique_document_keys is None:
+        unique_document_keys = papis.config.getlist("unique-document-keys")
 
     db = papis.database.get(library_name=library)
-
-    comparing_keys = papis.config.getlist("unique-document-keys")
-    assert comparing_keys is not None
-
-    for key in comparing_keys:
+    for key in unique_document_keys:
         value = document.get(key)
         if value is None:
             continue
