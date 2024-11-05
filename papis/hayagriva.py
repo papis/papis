@@ -113,7 +113,7 @@ BIBTEX_TO_HAYAGRIVA_TYPE_MAP = {
     # type aliases (Section 2.1.2)
     "conference": "conference",
     "electronic": "web",
-    "masterthesis": "thesis",
+    "mastersthesis": "thesis",
     "phdthesis": "thesis",
     "techreport": "report",
     "www": "web",
