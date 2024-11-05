@@ -254,39 +254,44 @@ def cli_update(ctx: click.Context, _all: bool,
 
         picked_doc = picked_docs[0]
 
-    logger.info("This uses the keys ['%s'] to determine a match in the library.",
-                "', '".join(papis.config.getlist("unique-document-keys")))
+    libname = papis.config.get_lib_name()
+    unique_document_keys = papis.config.getlist("unique-document-keys")
+    logger.info("This uses the keys %s to determine a match in the library.",
+                unique_document_keys)
 
     for j, doc in enumerate(docs):
         if picked_doc and doc["ref"] != picked_doc["ref"]:
             continue
 
         logger.info("Checking for BibTeX entry in the '%s' library: '%s'.",
-                    papis.config.get_lib_name(), papis.document.describe(doc))
+                    libname, papis.document.describe(doc))
 
         try:
-            libdoc = locate_document_in_lib(doc)
+            libdoc = locate_document_in_lib(
+                doc, libname, unique_document_keys=unique_document_keys
+                )
         except IndexError:
             logger.warning(
                 "No document matching the BibTeX entry found in the '%s' library.",
-                papis.config.get_lib_name())
-        else:
-            if fromdb:
-                logger.info("Updating BibTeX entry from library.")
-                if keys:
-                    docs[j].update({k: libdoc[k] for k in keys if k in libdoc})
-                else:
-                    docs[j] = libdoc.copy()
+                libname)
+            continue
 
-            if todb:
-                logger.info("Adding BibTeX entry to library document: '%s'.",
-                            papis.document.describe(libdoc))
-                if keys:
-                    libdoc.update({k: doc[k] for k in keys if k in doc})
-                else:
-                    libdoc.clear()
-                    libdoc.update(doc)
-                    save_doc(libdoc)
+        if fromdb:
+            logger.info("Updating BibTeX entry from library.")
+            if keys:
+                docs[j].update({k: libdoc[k] for k in keys if k in libdoc})
+            else:
+                docs[j] = libdoc.copy()
+
+        if todb:
+            logger.info("Adding BibTeX entry to library document: '%s'.",
+                        papis.document.describe(libdoc))
+            if keys:
+                libdoc.update({k: doc[k] for k in keys if k in doc})
+            else:
+                libdoc.clear()
+                libdoc.update(doc)
+                save_doc(libdoc)
 
         logger.info("")
 
@@ -308,17 +313,22 @@ def cli_open(ctx: click.Context) -> None:
         return
 
     doc = docs[0]
+
+    libname = papis.config.get_lib_name()
+    unique_document_keys = papis.config.getlist("unique-document-keys")
     logger.info("Checking the '%s' library for document: '%s'",
-                papis.config.get_lib_name(), papis.document.describe(doc))
+                libname, papis.document.describe(doc))
 
     from papis.utils import locate_document_in_lib
 
     try:
-        libdoc = locate_document_in_lib(doc)
+        libdoc = locate_document_in_lib(
+            doc, libname, unique_document_keys=unique_document_keys
+        )
     except IndexError:
         logger.warning(
             "No document matching the BibTeX entry found in the '%s' library.",
-            papis.config.get_lib_name())
+            libname)
     else:
         from papis.commands.open import run
 
@@ -349,31 +359,42 @@ def cli_edit(ctx: click.Context,
     """
     from papis.api import pick_doc, save_doc
 
-    not_found = 0
     docs = ctx.obj["documents"]
     if not docs:
         return
+
     if not _all:
         docs = pick_doc(docs)
+
+    libname = papis.config.get_lib_name()
+    unique_document_keys = papis.config.getlist("unique-document-keys")
+
+    not_found = 0
     for doc in docs:
         try:
-            located = papis.utils.locate_document_in_lib(doc)
-            if set_tuples:
-                for k, v in set_tuples:
-                    try:
-                        located[k] = papis.format.format(v, located)
-                    except papis.format.FormatFailedError as exc:
-                        logger.error("Could not format '%s' with value '%s'.",
-                                     k, v, exc_info=exc)
-                save_doc(located)
-            else:
-                from papis.commands.edit import run
-                run(located)
+            located = papis.utils.locate_document_in_lib(
+                doc, libname, unique_document_keys=unique_document_keys,
+            )
         except IndexError:
             not_found += 1
             logger.warning("Document not found in library '%s': %s.",
-                           papis.config.get_lib_name(),
+                           libname,
                            papis.document.describe(doc))
+            continue
+
+        if set_tuples:
+            for k, v in set_tuples:
+                try:
+                    located[k] = papis.format.format(v, located)
+                except papis.format.FormatFailedError as exc:
+                    logger.error("Could not format '%s' with value '%s'.",
+                                 k, v, exc_info=exc)
+
+            save_doc(located)
+        else:
+            from papis.commands.edit import run
+
+            run(located)
 
     logger.info("Found %d / %d documents.", len(docs) - not_found, len(docs))
 
