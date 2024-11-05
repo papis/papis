@@ -86,7 +86,7 @@ def arxiv_to_papis(result: "arxiv.Result") -> Dict[str, Any]:
             if "phd" in comment:
                 data["type"] = "phdthesis"
             elif "master" in comment:
-                data["type"] = "masterthesis"
+                data["type"] = "mastersthesis"
             else:
                 data["type"] = "thesis"
 

@@ -46,7 +46,7 @@ bibtex_standard_types = frozenset([
 bibtex_type_aliases = {
     "conference": "inproceedings",
     "electronic": "online",
-    "masterthesis": "thesis",
+    "mastersthesis": "thesis",
     "phdthesis": "thesis",
     "techreport": "report",
     "www": "online",
