@@ -50,7 +50,7 @@ settings: Dict[str, Any] = {
     ),
     "header-format-file": None,
     "info-allow-unicode": True,
-    "unique-document-keys": "['doi','ref','isbn','isbn10','url','doc_url']",
+    "unique-document-keys": ["doi", "isbn", "isbn10", "eprint", "url", "doc_url"],
     "document-description-format": "{doc[title]} - {doc[author]}",
     "sort-field": None,
     "sort-reverse": False,
