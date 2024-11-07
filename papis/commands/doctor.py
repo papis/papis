@@ -637,6 +637,42 @@ def biblatex_required_keys_check(doc: papis.document.Document) -> List[Error]:
             if not any(key in doc or aliases.get(key) in doc for key in keys)]
 
 
+BIBLATEX_EXPECTED_KEYS_IGNORED = {
+    "papis_id", "author_list", "citations", "doc_url",
+    "files", "ref", "time-added", "type"
+}
+BIBLATEX_EXPECTED_KEYS_CHECK_NAME = "biblatex-expected-keys"
+
+
+def biblatex_expected_keys_check(doc: papis.document.Document) -> List[Error]:
+    """
+    Check that all keys in info.yaml are expected by biblatex processors.
+
+    Note, in most circumstances using arbitrary keys is completely inconsequential.
+    This simply offers a check for users keep strict control over metadata.
+
+    :returns: an error per document key that is not a known key
+    """
+    from papis.bibtex import bibtex_keys
+    folder = doc.get_main_folder() or ""
+
+    errors = bibtex_type_check(doc)
+    if errors:
+        return [e._replace(name=BIBLATEX_REQUIRED_KEYS_CHECK_NAME) for e in errors]
+
+    return [Error(name=BIBLATEX_EXPECTED_KEYS_CHECK_NAME,
+                  path=folder,
+                  msg=f"Document contains key {key} not one of:\n{
+                  '\n'.join(bibtex_keys)
+                  }",
+                  suggestion_cmd=f"papis edit --doc-folder {folder}",
+                  fix_action=None,
+                  payload=key,
+                  doc=doc)
+            for key in doc
+            if key not in BIBLATEX_EXPECTED_KEYS_IGNORED and not key in bibtex_keys]
+
+
 KEY_TYPE_CHECK_NAME = "key-type"
 
 
@@ -923,6 +959,7 @@ register_check(BIBTEX_TYPE_CHECK_NAME, bibtex_type_check)
 register_check(BIBLATEX_TYPE_ALIAS_CHECK_NAME, biblatex_type_alias_check)
 register_check(BIBLATEX_KEY_ALIAS_CHECK_NAME, biblatex_key_alias_check)
 register_check(BIBLATEX_REQUIRED_KEYS_CHECK_NAME, biblatex_required_keys_check)
+register_check(BIBLATEX_EXPECTED_KEYS_CHECK_NAME, biblatex_expected_keys_check)
 register_check(REFS_CHECK_NAME, refs_check)
 register_check(HTML_CODES_CHECK_NAME, html_codes_check)
 register_check(HTML_TAGS_CHECK_NAME, html_tags_check)
