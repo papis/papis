@@ -493,7 +493,9 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
     if bib_type is None:
         return [Error(name=BIBTEX_TYPE_CHECK_NAME,
                       path=folder,
-                      msg="Document does not define a type",
+                      msg=f"Document does not define type as one of:\n{
+                      '\n'.join(sorted(bibtex_types))
+                      }",
                       suggestion_cmd=f"papis edit --doc-folder {folder}",
                       fix_action=None,
                       payload="type",
@@ -502,7 +504,9 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
     if bib_type not in bibtex_types:
         return [Error(name=BIBTEX_TYPE_CHECK_NAME,
                       path=folder,
-                      msg=f"Document type '{bib_type}' is not a valid BibTeX type",
+                      msg=f"Document type '{bib_type}' is not a valid BibTeX type:\n{
+                      papis.tui.utils.string_grid(sorted(bibtex_types))
+                      }",
                       suggestion_cmd=f"papis edit --doc-folder {folder}",
                       fix_action=make_fixer(bib_type),
                       payload=bib_type,
