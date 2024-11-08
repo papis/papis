@@ -641,7 +641,7 @@ def biblatex_required_keys_check(doc: papis.document.Document) -> List[Error]:
 BIBLATEX_EXPECTED_KEYS_IGNORED = {
     "papis_id", "author_list", "citations", "doc_url",
     "files", "ref", "time-added", "type"
-}
+} | frozenset(papis.config.getlist("bibtex-ignore-keys"))
 BIBLATEX_EXPECTED_KEYS_CHECK_NAME = "biblatex-expected-keys"
 
 
