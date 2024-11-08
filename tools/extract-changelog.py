@@ -15,11 +15,16 @@ def main(filename: pathlib.Path, *, outfile: Optional[pathlib.Path] = None) -> i
         print(f"ERROR: Could not find any sections in file: '{filename}'")
         return 1
 
+    # remove the h1 title and unindent all other sections
+    latest = "\n".join(
+        line.replace("##", "#") for line in result[0].strip().split("\n")[2:]
+    )
+
     if outfile is not None:
         with open(outfile, "w", encoding="utf-8") as outf:
-            print(result[0].strip(), file=outf)
+            print(latest, file=outf)
     else:
-        print(result[0].strip())
+        print(latest)
 
     return 0
 
