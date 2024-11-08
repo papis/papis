@@ -95,7 +95,7 @@ Now open an attached file or edit an entry:
 |edit|
 
 The Papis picker (set using the ``picktool`` configuration option) has
-helpful shortcuts to call other functionality as well (press ``F1`` for 
+helpful shortcuts to call other functionality as well (press ``F1`` for
 a complete list). It can be used to open (``Ctrl-o``), browse (``Ctrl-b``)
 or edit (``Ctrl-e``) selected documents (marked with ``Ctrl-t``).
 
@@ -243,6 +243,17 @@ Thanks
 
 We thank `Irteza Rehman <https://www.irtezarehman.com/>`__ for generously creating
 our beautiful logo.
+
+.. |ghbadge| image:: https://github.com/papis/papis/workflows/CI/badge.svg
+   :target: https://github.com/papis/papis/actions?query=branch%3Amain+workflow%3ACI
+.. |RTD| image:: https://readthedocs.org/projects/papis/badge/?version=latest
+   :target: http://papis.readthedocs.io/en/latest/?badge=latest
+.. |CodeQL| image:: https://github.com/papis/papis/workflows/CodeQL/badge.svg
+   :target: https://github.com/papis/papis/actions?query=branch%3Amain+workflow%3ACodeQL
+.. |Pypi| image:: https://badge.fury.io/py/papis.svg
+   :target: https://pypi.org/project/papis/
+.. |zenodo_badge| image:: https://zenodo.org/badge/82691622.svg
+   :target: https://zenodo.org/badge/latestdoi/82691622
 
 .. |first_glance| image:: https://papis.github.io/images/first_glance.gif
 .. |edit| image:: https://papis.github.io/images/edit.gif

@@ -4,7 +4,7 @@ requires = ["hatchling>=1.10.0"]
 
 [project]
 name = "papis"
-version = "0.13"
+version = "0.14rc2"
 description = "Powerful and highly extensible command-line based document and bibliography manager"
 readme = "README.rst"
 keywords = [
