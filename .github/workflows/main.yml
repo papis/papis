@@ -78,7 +78,7 @@ jobs:
       with:
         prerelease: ${{ contains(github.ref, 'rc') }}
         name: Version ${{ github.ref_name }}
-        body: CHANGELOG-LATEST.md
+        body_path: CHANGELOG-LATEST.md
         files: |
           dist/*.tar.gz
           dist/*.whl
