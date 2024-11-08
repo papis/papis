@@ -661,13 +661,35 @@ def biblatex_expected_keys_check(doc: papis.document.Document) -> List[Error]:
     if errors:
         return [e._replace(name=BIBLATEX_REQUIRED_KEYS_CHECK_NAME) for e in errors]
 
+    def make_fixer(key: str) -> FixFn:
+        def fixer() -> None:
+            config_file = papis.config.get_config_file()
+            config = papis.config.get_configuration()
+            lib = papis.config.get_lib_name()
+            logger.info("[FIX] Adding '%s' to %s.bibtex-ignore-keys", key, lib)
+
+            if os.path.exists(config_file):
+                logger.warning("file contents (whitespace, comments) may change")
+                if not papis.tui.utils.confirm("Proceed with overwrite?"):
+                    raise Exception("fix canceled by user")
+
+            ignores = papis.config.getlist("bibtex-ignore-keys")
+            ignores.append(key)
+            config[lib]["bibtex-ignore-keys"] = str(ignores)
+
+            with open(config_file, "w") as configfile:
+                config.write(configfile)
+            logger.info("Configuration file saved at '%s'.", config_file)
+
+        return fixer
+
     return [Error(name=BIBLATEX_EXPECTED_KEYS_CHECK_NAME,
                   path=folder,
                   msg=f"Document contains key '{key}' not a bibtex key:\n{
                   papis.tui.utils.string_grid(sorted(bibtex_keys))
                   }",
                   suggestion_cmd=f"papis edit --doc-folder {folder}",
-                  fix_action=None,
+                  fix_action=make_fixer(key),
                   payload=key,
                   doc=doc)
             for key in doc
