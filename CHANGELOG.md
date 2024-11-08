@@ -1,4 +1,4 @@
-# VERSION NEXT
+# VERSION 0.14 (November 8, 2024)
 
 ## Dependency changes
 
