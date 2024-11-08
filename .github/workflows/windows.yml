@@ -38,15 +38,9 @@ jobs:
       shell: bash
       run: |
         # NOTE: python version follows "X.YdevZ+gHASH" format
-        py_version=$(
-            git describe --tags --dirty \
-            | awk -F '-' '{ printf "%s.dev%s+%s\n", substr($1, 2), $2, $3 }'
-        )
+        py_version=$(python tools/windows/get_version.py python)
         # NOTE: MSI version cannot have letters and is only "X.Y.Z"
-        msi_version=$(
-            git describe --tags --dirty \
-            | awk -F '-' '{ printf "%s.%s", substr($1, 2), $2 }'
-        )
+        msi_version=$(python tools/windows/get_version.py msi)
         sed -i "s/^version =\".*\"/version =\"${py_version}\"/" pyproject.toml
 
         echo "PAPIS_VERSION=${py_version}" >> "$GITHUB_ENV"
