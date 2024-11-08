@@ -129,6 +129,7 @@ import click
 
 import papis
 import papis.cli
+import papis.tui.utils
 import papis.config
 import papis.strings
 import papis.database
@@ -494,7 +495,7 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
         return [Error(name=BIBTEX_TYPE_CHECK_NAME,
                       path=folder,
                       msg=f"Document does not define type as one of:\n{
-                      '\n'.join(sorted(bibtex_types))
+                      papis.tui.utils.string_grid(sorted(bibtex_types))
                       }",
                       suggestion_cmd=f"papis edit --doc-folder {folder}",
                       fix_action=None,
@@ -662,8 +663,8 @@ def biblatex_expected_keys_check(doc: papis.document.Document) -> List[Error]:
 
     return [Error(name=BIBLATEX_EXPECTED_KEYS_CHECK_NAME,
                   path=folder,
-                  msg=f"Document contains key {key} not one of:\n{
-                  '\n'.join(bibtex_keys)
+                  msg=f"Document contains key '{key}' not a bibtex key:\n{
+                  papis.tui.utils.string_grid(sorted(bibtex_keys))
                   }",
                   suggestion_cmd=f"papis edit --doc-folder {folder}",
                   fix_action=None,
