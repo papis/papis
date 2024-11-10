@@ -134,7 +134,12 @@ class Configuration(configparser.ConfigParser):
         configpy = get_configpy_file()
         if os.path.exists(configpy):
             with open(configpy) as fd:
-                exec(fd.read(), globals())  # add user's defs to global name space
+                # NOTE: this includes the `globals()` so that the user config.py
+                # can add entries to the global namespace. This was motivated
+                # by adding filters to `Jinja2Formatter.env`, which may be separated
+                # into multiple functions that would not be found otherwise.
+                #   https://github.com/papis/papis/pull/930
+                exec(fd.read(), globals())
 
 
 def get_default_settings() -> PapisConfigType:
