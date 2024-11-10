@@ -83,16 +83,15 @@ class ScriptLoaderGroup(click.Group):
             matches = list(map(
                 str, difflib.get_close_matches(name, self.scripts, n=2)))
 
-            if matches:
-                click.echo("Command '{name}' is unknown! Did you mean '{matches}'?"
-                           .format(name=name, matches="' or '".join(matches)))
-            else:
-                click.echo(f"Command '{name}' is unknown!")
-
-            # return the match if there was only one match
+            click.echo("Command '{name}' is unknown!".format(name=name))
             if len(matches) == 1:
+                # return the match if there was only one match
                 click.echo(f"I suppose you meant: '{matches[0]}'")
                 script = self.scripts[matches[0]]
+            elif matches:
+                click.echo("Did you mean '{matches}'?"
+                           .format(matches="' or '".join(matches)))
+                return None
             else:
                 return None
 
