@@ -18,7 +18,11 @@ have three numbers, `A.B.C`, where:
 Dependencies
 ------------
 
-See `pyproject.toml` for a complete list of dependencies and minimum versions.
+See `pyproject.toml` for a complete list of Python dependencies and minimum versions.
+We also have some additional optional non-Python dependencies:
+
+* `git`: The Git executable is required for the `papis git` command and other
+  Git integration in various commands.
 
 Wheels
 ------
