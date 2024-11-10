@@ -1,10 +1,16 @@
 import os
+import shutil
+
+import pytest
 
 import papis.config
 
 from papis.testing import TemporaryLibrary, PapisRunner
 
 
+@pytest.mark.skipif(
+    not shutil.which("git"),
+    reason="Test requires 'git' executable to be in the PATH")
 def test_git_cli(tmp_library: TemporaryLibrary) -> None:
     from papis.commands.git import cli
     cli_runner = PapisRunner()
