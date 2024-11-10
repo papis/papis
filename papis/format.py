@@ -1,5 +1,5 @@
 import string
-from typing import Any, Dict, Optional
+from typing import Any, ClassVar, Dict, Optional
 
 import papis.config
 import papis.plugin
@@ -202,17 +202,35 @@ class Jinja2Formatter(Formatter):
         "{{ doc.isbn | default('ISBN-NONE', true) }}"
     """
 
+    env: ClassVar[Any] = None
+    """The ``jinja2`` Environment used by the formatter. This should be obtained
+    with :meth:`~Jinja2Formatter.get_environment()` (cached) and modified as
+    required (e.g. by adding filters).
+    """
+
     def __init__(self) -> None:
         super().__init__()
 
         try:
-            import jinja2       # noqa: F401
+            import jinja2  # noqa: F401
         except ImportError as exc:
             logger.error(
-                "The 'jinja2' formatter requires the 'jinja' library. "
+                "The 'jinja2' formatter requires the 'jinja2' library. "
                 "To use this functionality install it using e.g. "
                 "'pip install jinja2'.", exc_info=exc)
             raise exc
+
+    @classmethod
+    def get_environment(cls, *, force: bool = False) -> Any:
+        if cls.env is None or force:
+            from jinja2 import Environment
+
+            # NOTE: this will kindly autoescape apostrophes otherwise
+            env = Environment(autoescape=False)
+            env.shared = True
+            cls.env = env
+
+        return cls.env
 
     def format(self,
                fmt: str,
@@ -223,15 +241,15 @@ class Jinja2Formatter(Formatter):
         if additional is None:
             additional = {}
 
-        from jinja2 import Template
-
         fmt = unescape(fmt)
         if not isinstance(doc, papis.document.Document):
             doc = papis.document.from_data(doc)
 
         doc_name = doc_key or self.default_doc_name
+        env = self.get_environment()
+
         try:
-            return str(Template(fmt).render(**{doc_name: doc}, **additional))
+            return str(env.from_string(fmt).render(**{doc_name: doc}, **additional))
         except Exception as exc:
             if default is not None:
                 logger.warning("Could not format string '%s' for document '%s'",
