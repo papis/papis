@@ -1,5 +1,6 @@
 import os
 import pytest
+import shutil
 from _pytest.monkeypatch import MonkeyPatch
 
 import papis.database
@@ -19,6 +20,9 @@ def test_rm_run(tmp_library: TemporaryLibrary) -> None:
     assert not os.path.exists(folder)
 
 
+@pytest.mark.skipif(
+    not shutil.which("git"),
+    reason="Test requires 'git' executable to be in the PATH")
 @pytest.mark.library_setup(use_git=True)
 def test_rm_files_run(tmp_library: TemporaryLibrary) -> None:
     from papis.commands.rm import run

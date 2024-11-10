@@ -1,5 +1,6 @@
 import os
 import pytest
+import shutil
 import sys
 
 import papis.config
@@ -31,6 +32,9 @@ def make_document(name: str, dir: str, nfiles: int = 0) -> papis.document.Docume
     return doc
 
 
+@pytest.mark.skipif(
+    not shutil.which("git"),
+    reason="Test requires 'git' executable to be in the PATH")
 @pytest.mark.library_setup(use_git=True)
 def test_add_run(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
     from papis.commands.add import run
