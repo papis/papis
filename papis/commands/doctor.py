@@ -649,8 +649,8 @@ def biblatex_expected_keys_check(doc: papis.document.Document) -> List[Error]:
     """
     Check that all keys in info.yaml are expected by biblatex processors.
 
-    Note, in most circumstances using arbitrary keys is completely inconsequential.
-    This simply offers a check for users keep strict control over metadata.
+    In most circumstances, using arbitrary keys is completely inconsequential.
+    This check simply helps users keep strict control over metadata.
 
     :returns: an error per document key that is not a known key
     """
