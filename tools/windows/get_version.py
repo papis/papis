@@ -12,11 +12,11 @@ Mode = Literal["python", "msi"]
 
 
 def get_version(description: str, mode: Mode) -> str:
-    # When the command returns something like v0.14
     if "-" in description:
+        # Expected version like v0.14-1-f00b4r
         raw_version, count, commit_hash = description.split("-")
-    # Otherwise, like v0.14-1-f00b4r
     else:
+        # Otherwise version like v0.14
         raw_version = description
         count = "0"
         commit_hash = ""
@@ -29,7 +29,7 @@ def get_version(description: str, mode: Mode) -> str:
             return raw_version
         # `git describe --tags` returns v0.14-1-f00b4r
         else:
-            return f"{raw_version}+dev{count}+g{commit_hash}"
+            return f"{raw_version}.dev{count}+g{commit_hash}"
 
     # MSI versions can be either X.Y.Z.W or X.Y.Z-LABEL.W
     elif mode == "msi":
