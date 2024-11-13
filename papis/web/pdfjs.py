@@ -1,4 +1,4 @@
-import os
+import os.path
 import urllib.parse
 
 import dominate.tags as t
@@ -11,8 +11,12 @@ PDFJS_URL = ("https://github.com/mozilla/pdf.js/releases/download/"
 VIEWER_PATH = "pdfjs/web/viewer.html"
 
 
-def widget(_unquoted_file_path: str) -> None:
-    _file_path = urllib.parse.quote(_unquoted_file_path, safe="")
+def widget(unquoted_file_path: str) -> None:
+    """
+    Widget for pdf files.
+    """
+
+    _file_path = urllib.parse.quote(unquoted_file_path, safe="")
 
     viewer_path = (f"/static/{VIEWER_PATH}?file={_file_path}")
 
@@ -21,22 +25,19 @@ def widget(_unquoted_file_path: str) -> None:
             with t.a(href=viewer_path,
                      cls="btn btn-outline-success",
                      target="_blank"):
-                wh.icon_span(
-                    "square-arrow-up-right",
-                    "Open in new window")
-            with t.a(href=_unquoted_file_path,
+                wh.icon_span("square-arrow-up-right", "Open in new window")
+            with t.a(href=unquoted_file_path,
                      cls="btn btn-outline-success",
                      target="_blank"):
-                wh.icon_span("download",
-                             "Download")
+                wh.icon_span("download", "Download")
+
     if detect_pdfjs():
         t.iframe(src=viewer_path,
                  style="resize: vertical",
                  width="100%",
                  height="800")
     else:
-        t.pre(papis.web.pdfjs.error_message(),
-              cls="alert alert-warning")
+        t.pre(error_message(), cls="alert alert-warning")
 
 
 def detect_pdfjs() -> bool:
@@ -48,6 +49,7 @@ def detect_pdfjs() -> bool:
 
 
 def error_message() -> str:
+    """Error message for when there is no pdfjs installation"""
     return f"""
 No installation of pdfjs found.
 
