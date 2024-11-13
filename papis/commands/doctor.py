@@ -299,14 +299,26 @@ def keys_missing_check(doc: papis.document.Document) -> List[Error]:
         else:
             return None
 
-    return [Error(name=KEYS_MISSING_CHECK_NAME,
-                  path=folder,
-                  msg=f"Key '{k}' does not exist",
-                  suggestion_cmd=f"papis edit --doc-folder {folder}",
-                  fix_action=make_fixer(k),
-                  payload=k,
-                  doc=doc)
-            for k in keys if k not in doc]
+    errors = []
+    for key in keys:
+        if key not in doc:
+            errors.append(Error(name=KEYS_MISSING_CHECK_NAME,
+                                path=folder,
+                                msg=f"Key '{key}' does not exist",
+                                suggestion_cmd=f"papis edit --doc-folder {folder}",
+                                fix_action=make_fixer(key),
+                                payload=key,
+                                doc=doc))
+
+        if not all(map(bool, doc[key])):
+            errors.append(Error(name=KEYS_MISSING_CHECK_NAME,
+                                path=folder,
+                                msg=f"Key '{key}' does not have a valid value",
+                                suggestion_cmd=f"papis edit --doc-folder {folder}",
+                                fix_action=None,
+                                payload=key,
+                                doc=doc))
+    return errors
 
 
 REFS_BAD_SYMBOL_REGEX = re.compile(r"[ ,{}\[\]@#`']")
