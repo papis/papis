@@ -251,6 +251,18 @@ def files_check(doc: papis.document.Document) -> List[Error]:
 KEYS_MISSING_CHECK_NAME = "keys-missing"
 
 
+def _is_nonempty(arg: Any) -> bool:
+    """compute truthiness of :param arg: as a boolean product."""
+    if isinstance(arg, bool):
+        return True
+    elif isinstance(arg, list):
+        return all(map(_is_nonempty, arg))
+    elif isinstance(arg, dict):
+        return all(map(_is_nonempty, [v for _, v in arg.items()]))
+    else:
+        return bool(arg)
+
+
 def keys_missing_check(doc: papis.document.Document) -> List[Error]:
     """
     Checks whether the keys provided in the configuration
@@ -310,7 +322,7 @@ def keys_missing_check(doc: papis.document.Document) -> List[Error]:
                                 payload=key,
                                 doc=doc))
 
-        if not all(map(bool, doc[key])):
+        elif not _is_nonempty(doc[key]):
             errors.append(Error(name=KEYS_MISSING_CHECK_NAME,
                                 path=folder,
                                 msg=f"Key '{key}' does not have a valid value",
