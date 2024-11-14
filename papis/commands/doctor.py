@@ -325,7 +325,9 @@ def keys_missing_check(doc: papis.document.Document) -> List[Error]:
         elif not _is_nonempty(doc[key]):
             errors.append(Error(name=KEYS_MISSING_CHECK_NAME,
                                 path=folder,
-                                msg=f"Key '{key}' does not have a valid value",
+                                msg=f"Value contains one or more empty entries:\n{
+                                papis.document.dump({f"{key}":doc[key]})
+                                }",
                                 suggestion_cmd=f"papis edit --doc-folder {folder}",
                                 fix_action=None,
                                 payload=key,
