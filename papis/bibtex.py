@@ -512,7 +512,8 @@ def create_reference(doc: Dict[str, Any], force: bool = False) -> str:
     return ref_cleanup(ref)
 
 
-def author_list_to_author(author_list: List[Dict[str, Any]]) -> str:
+def author_list_to_author(doc: papis.document.Document,
+                          author_list: List[Dict[str, Any]]) -> str:
     if not author_list:
         return ""
 
@@ -520,6 +521,11 @@ def author_list_to_author(author_list: List[Dict[str, Any]]) -> str:
     fmt = "{au[family]}, {au[given]}"
 
     for author in author_list:
+        if not isinstance(author, dict):
+            logger.error("Incorrect 'author_list' type (author is not a 'dict'): %s",
+                         papis.document.describe(doc))
+            continue
+
         family = author.get("family")
         given = author.get("given")
         if family and given:
@@ -624,7 +630,7 @@ def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
                     "'journal-key' key '%s' is not present for ref '%s'.",
                     journal_key, document["ref"])
         elif bib_key == "author" and "author_list" in document:
-            bib_value = author_list_to_author(document["author_list"])
+            bib_value = author_list_to_author(document, document["author_list"])
 
         override_key = f"{bib_key}_latex"
         if override_key in document:
