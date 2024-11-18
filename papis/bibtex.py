@@ -457,7 +457,7 @@ def ref_cleanup(ref: str) -> str:
 
     This uses the :data:`ref_allowed_characters` to remove any disallowed characters
     from the given *ref*. Furthermore, ``slugify`` is used to remove unicode
-    characters and ensure consistent use of the underscore ``_`` as a separator.
+    characters and ensure consistent use of the separator :confval:`ref-word-separator`
 
     :returns: a reference without any disallowed characters.
     """
