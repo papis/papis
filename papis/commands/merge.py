@@ -93,7 +93,7 @@ def run(keep: papis.document.Document,
             import shutil
             logger.info("Moving '%s' to '%s'.", f, to_folder)
             shutil.copy(f, to_folder)
-            keep["files"] += [os.path.basename(f)]
+            keep.get("files", []).extend([os.path.basename(f)])
     papis.commands.update.run(keep, data, git=git)
 
     if not keep_both:
