@@ -4,19 +4,28 @@ from papis.testing import TemporaryLibrary, ResourceCache
 
 
 @pytest.mark.resource_setup(cachedir="resources/zenodo")
+@pytest.mark.parametrize("markdownify", [True, False])
 @pytest.mark.parametrize("zenodo_id", ["7391177", "10794563"])
 def test_zenodo_id_to_data(tmp_library: TemporaryLibrary,
                            resource_cache: ResourceCache,
                            monkeypatch: pytest.MonkeyPatch,
+                           markdownify: bool,
                            zenodo_id: str) -> None:
-    # NOTE: the functionality doesn't require markdownify, but the output files
-    # are formatted using it so the test would fail otherwise.
-    pytest.importorskip("markdownify")
-
     import papis.zenodo
 
-    infile = "{}.json".format(zenodo_id)
-    outfile = "{}_out.json".format(zenodo_id)
+    if markdownify:
+        from importlib.metadata import version
+
+        pytest.importorskip("markdownify")
+        v = "_" if version("markdownify") >= "0.14" else "_pre_0_14_"
+    else:
+        v = "_html_"
+        monkeypatch.setattr(
+            papis.zenodo, "_get_text_from_html",
+            lambda html: html)
+
+    infile = f"{zenodo_id}.json"
+    outfile = f"{zenodo_id}{v}out.json"
 
     monkeypatch.setattr(
         papis.zenodo, "_get_zenodo_response",

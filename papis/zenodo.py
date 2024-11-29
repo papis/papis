@@ -31,14 +31,12 @@ def get_author_info(authors: List[Dict[str, str]]) -> List[Dict[str, str]]:
     return out
 
 
-def get_text_from_html(html: str) -> str:
-    """
-    Processes the HTML and returns it in markdown format if a dependency is found,
-    or raw HTML otherwise.
+def _get_text_from_html(html: str) -> str:
+    # NOTE: this needs to be a separate function for testing purposes. It is
+    # getting monkeypatched in `test_zenodo`, which isn't possible with
+    # `get_text_from_html` because it's already bound to variables in
+    # the global `key_conversion` mapping below.
 
-    :param html: The raw HTML as embedded in the incoming Zenodo JSON data.
-    :return: Either the raw HTML as text, or the markdown-annotated plain text.
-    """
     try:
         import markdownify
     except ImportError:
@@ -51,9 +49,22 @@ def get_text_from_html(html: str) -> str:
     if hasattr(markdownify.MarkdownConverter.Options, "escape_misc"):
         # NOTE: markdownify 0.13 introduced some more escaping that we do not
         # want for now, so we turn it off!
+        # NOTE: this is set to False by default in 0.14
         options["escape_misc"] = False
 
     return str(markdownify.markdownify(html, **options))
+
+
+def get_text_from_html(html: str) -> str:
+    """
+    Processes the HTML and returns it in markdown format if a dependency is found,
+    or raw HTML otherwise.
+
+    :param html: The raw HTML as embedded in the incoming Zenodo JSON data.
+    :return: Either the raw HTML as text, or the markdown-annotated plain text.
+    """
+
+    return _get_text_from_html(html)
 
 
 KeyConversionPair = papis.document.KeyConversionPair
