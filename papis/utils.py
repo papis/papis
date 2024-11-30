@@ -561,7 +561,6 @@ def collect_importer_data(
 
             msg = f"Use this file? (from {importer.name})"
             for f in importer.ctx.files:
-                open_file(f)
                 if batch or confirm(msg):
                     ctx.files.append(f)
 
