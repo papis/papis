@@ -283,14 +283,22 @@ def run(paths: List[str],
     # rename all the given file names
     from papis.paths import symlink, rename_document_files
 
-    new_file_list = rename_document_files(tmp_document, in_document_paths)
+    renamed_file_list = rename_document_files(tmp_document, in_document_paths)
 
     import shutil
 
-    for in_file_path, out_file_name in zip(in_document_paths, new_file_list):
+    document_file_list = []
+    for in_file_path, out_file_name in zip(in_document_paths, renamed_file_list):
         out_file_path = os.path.join(temp_dir, out_file_name)
         if os.path.exists(out_file_path):
             logger.warning("File '%s' already exists. Skipping...", out_file_path)
+            continue
+
+        if not batch and open_file:
+            papis.utils.open_file(in_file_path)
+
+        if not batch and confirm and not papis.tui.utils.confirm(
+                f"Add file '{os.path.basename(in_file_path)}' to document?"):
             continue
 
         if link:
@@ -303,7 +311,9 @@ def run(paths: List[str],
             logger.info("[CP] '%s' to '%s'.", in_file_path, out_file_name)
             shutil.copy(in_file_path, out_file_path)
 
-    tmp_document["files"] = new_file_list
+        document_file_list.append(out_file_name)
+
+    tmp_document["files"] = document_file_list
     tmp_document.save()
 
     from papis.paths import get_document_unique_folder
@@ -314,7 +324,7 @@ def run(paths: List[str],
         folder_name_format=folder_name)
 
     logger.info("Document folder is '%s'.", out_folder_path)
-    logger.debug("Document includes files: '%s'.", "', '".join(in_document_paths))
+    logger.debug("Document includes files: '%s'.", "', '".join(document_file_list))
 
     # Check if the user wants to edit before submitting the doc
     # to the library
@@ -370,10 +380,6 @@ def run(paths: List[str],
             papis.document.dump(tmp_document),
             title=f"This{dup_text}document will be added to your library",
             lexer_name="yaml")
-
-    if open_file:
-        for d_path in tmp_document.get_files():
-            papis.utils.open_file(d_path)
 
     if confirm:
         if not papis.tui.utils.confirm("Do you want to add the new document?"):
@@ -441,7 +447,7 @@ def run(paths: List[str],
     default=lambda: papis.config.getboolean("add-confirm"))
 @papis.cli.bool_flag(
     "--open/--no-open", "open_file",
-    help="Open file before adding document",
+    help="Open files before adding them to the document",
     default=lambda: papis.config.getboolean("add-open"))
 @papis.cli.bool_flag(
     "--edit/--no-edit",
@@ -521,7 +527,8 @@ def cli(files: List[str],
 
     # merge importer data + commandline data into a single set
     imported = papis.utils.collect_importer_data(
-        matching_importers, batch=batch, use_files=download_files)
+        matching_importers, batch=batch, use_files=download_files
+    )
 
     ctx = papis.importer.Context()
     ctx.data = imported.data

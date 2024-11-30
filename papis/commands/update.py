@@ -531,7 +531,7 @@ def cli(
                             matching_importers.append(importer)
 
             imported = papis.utils.collect_importer_data(
-                matching_importers, batch=batch, only_data=True
+                matching_importers, batch=batch, use_files=False
             )
             if "ref" in imported.data:
                 logger.debug(
