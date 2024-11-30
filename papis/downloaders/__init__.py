@@ -12,6 +12,7 @@ import papis.logging
 
 if TYPE_CHECKING:
     import bs4
+    import requests
 
 logger = papis.logging.get_logger(__name__)
 
@@ -99,6 +100,7 @@ class Downloader(papis.importer.Importer):
         # NOTE: used to cache data
         self._soup: Optional[bs4.BeautifulSoup] = None
         self.bibtex_data: Optional[str] = None
+        self.document_filename: Optional[str] = None
         self.document_data: Optional[bytes] = None
         self.document_extension: Optional[str] = None
 
@@ -205,18 +207,29 @@ class Downloader(papis.importer.Importer):
         except NotImplementedError:
             pass
         else:
-            doc_rawdata = self.get_document_data()
-            if doc_rawdata and self.check_document_format():
-                extension = self.get_document_extension()
-                if extension:
-                    extension = f".{extension}"
+            rawdata = self.get_document_data()
+            if rawdata and self.check_document_format():
+                if self.document_filename:
+                    from papis.paths import _make_unique_file
 
-                with tempfile.NamedTemporaryFile(
-                        mode="wb+", delete=False,
-                        suffix=extension) as f:
-                    f.write(doc_rawdata)
-                    self.logger.info("Saving downloaded file in '%s'.", f.name)
-                    self.ctx.files.append(f.name)
+                    filename = _make_unique_file(
+                        os.path.join(tempfile.gettempdir(), self.document_filename)
+                    )
+                    with open(filename, mode="wb") as f:
+                        f.write(rawdata)
+                else:
+                    extension = self.get_document_extension()
+                    if extension:
+                        extension = f".{extension}"
+
+                    with tempfile.NamedTemporaryFile(
+                            mode="wb+", delete=False,
+                            suffix=extension) as f:
+                        f.write(rawdata)
+                        filename = f.name
+
+                self.logger.info("Saving downloaded file in '%s'.", filename)
+                self.ctx.files.append(filename)
 
     def _get_body(self) -> bytes:
         """Download the content (body) at the given URL.
@@ -317,16 +330,22 @@ class Downloader(papis.importer.Importer):
             uses magic file signatures to determine the type. If no guess is valid,
             an empty string is returned.
         """
+        ext = None
+
+        if self.document_filename is not None:
+            _, ext = os.path.splitext(self.document_filename)
+            if ext.startswith("."):
+                ext = ext[1:]
+
+            self.document_extension = ext
+
         if self.document_extension is None:
             data = self.get_document_data()
-            document_extension = None
             if data is not None:
                 from papis.filetype import guess_content_extension
-                document_extension = guess_content_extension(data)
+                ext = guess_content_extension(data)
 
-            self.document_extension = (
-                document_extension if document_extension is not None else ""
-            )
+            self.document_extension = ext if ext is not None else ""
 
         return self.document_extension
 
@@ -341,6 +360,7 @@ class Downloader(papis.importer.Importer):
         self.logger.info("Downloading file from '%s'.", url)
 
         response = self.session.get(url, cookies=self.cookies)
+        self.document_filename = _get_filename_from_response(response)
         self.document_data = response.content
 
     def check_document_format(self) -> bool:
@@ -436,6 +456,43 @@ def get_info_from_url(
     return down.ctx
 
 
+def _get_filename_from_response(response: "requests.Response") -> Optional[str]:
+    filename = None
+
+    # NOTE: we can guess the filename from the response headers
+    #   Content-Disposition: inline; filename="some_file_name.ext"
+    #   Content-Disposition: attachement; filename="some_file_name.ext"
+    key = "Content-Disposition"
+    if not filename and key in response.headers:
+        from email.message import EmailMessage
+
+        msg = EmailMessage()
+        msg[key] = response.headers[key]
+        filename = msg.get_filename()
+
+    key = "Content-Type"
+    if not filename and key in response.headers:
+        from email.message import EmailMessage
+
+        msg = EmailMessage()
+        msg[key] = response.headers[key]
+
+        from mimetypes import guess_extension
+
+        ext = guess_extension(msg.get_content_type())
+
+        from urllib.parse import urlsplit
+
+        result = urlsplit(response.url)
+        if result.path.strip("/"):
+            basename = os.path.basename(result.path)
+        else:
+            basename = result.netloc
+        filename = f"{basename}{ext}"
+
+    return filename
+
+
 def download_document(
         url: str,
         expected_document_extension: Optional[str] = None,
@@ -471,36 +528,8 @@ def download_document(
                      url, response.reason, response.status_code)
         return None
 
-    # NOTE: we can guess the filename from the response headers
-    #   Content-Disposition: inline; filename="some_file_name.ext"
-    #   Content-Disposition: attachement; filename="some_file_name.ext"
-    key = "Content-Disposition"
-    if not filename and key in response.headers:
-        from email.message import EmailMessage
-
-        msg = EmailMessage()
-        msg[key] = response.headers[key]
-        filename = msg.get_filename()
-
-    key = "Content-Type"
-    if not filename and key in response.headers:
-        from email.message import EmailMessage
-
-        msg = EmailMessage()
-        msg[key] = response.headers[key]
-
-        from mimetypes import guess_extension
-
-        ext = guess_extension(msg.get_content_type())
-
-        from urllib.parse import urlsplit
-
-        result = urlsplit(url)
-        if result.path.strip("/"):
-            basename = os.path.basename(result.path)
-        else:
-            basename = result.netloc
-        filename = f"{basename}{ext}"
+    if not filename:
+        filename = _get_filename_from_response(response)
 
     # try go guess an extension
     ext = expected_document_extension

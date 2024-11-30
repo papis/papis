@@ -296,6 +296,20 @@ def _make_unique_folder(out_folder_path: PathLike) -> str:
     return out_folder_path_suffix
 
 
+def _make_unique_file(filename: PathLike) -> str:
+    if not os.path.exists(filename):
+        return str(filename)
+
+    suffix = unique_suffixes()
+    basename, ext = os.path.splitext(filename)
+
+    out_file_name = f"{basename}-{next(suffix)}{ext}"
+    while os.path.exists(out_file_name):
+        out_file_name = f"{basename}-{next(suffix)}{ext}"
+
+    return out_file_name
+
+
 def get_document_unique_folder(
         doc: DocumentLike,
         dirname: PathLike, *,
