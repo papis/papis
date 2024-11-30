@@ -518,12 +518,11 @@ def collect_importer_data(
     only do the aggregation.
 
     :param batch: if *True*, overwrite data from previous importers, otherwise
-        ask the user to manually merge.
+        ask the user to manually merge. Note that files are always kept, even
+        if they potentially contain duplicates.
     :param use_files: if *True*, both metadata and files are collected
         from the importers.
     """
-    from papis.tui.utils import confirm
-
     # FIXME: this is here for backwards compatibility and should be removed
     # before we release the next version
     if only_data is not None and use_files is not None:
@@ -559,11 +558,7 @@ def collect_importer_data(
                         importer.name,
                         "\n\t".join(importer.ctx.files))
 
-            msg = f"Use this file? (from {importer.name})"
-            for f in importer.ctx.files:
-                open_file(f)
-                if batch or confirm(msg):
-                    ctx.files.append(f)
+            ctx.files.extend(importer.ctx.files)
 
     return ctx
 
