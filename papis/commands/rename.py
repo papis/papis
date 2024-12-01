@@ -108,8 +108,9 @@ def run(document: papis.document.Document,
 @click.command("rename")
 @click.option(
     "--folder-name",
-    help="Name for the document's folder (papis format)",
-    default=lambda: papis.config.getstring("add-folder-name"))
+    help="Name format for the document main folder",
+    type=papis.cli.FormattedStringParamType(),
+    default=lambda: papis.config.getformattedstring("add-folder-name"))
 @papis.cli.bool_flag(
     "-b", "--batch",
     help="Batch mode, do not prompt")
@@ -120,7 +121,7 @@ def run(document: papis.document.Document,
 @papis.cli.sort_option()
 @papis.cli.doc_folder_option()
 def cli(query: str,
-        folder_name: str,
+        folder_name: papis.strings.AnyString,
         _all: bool,
         batch: bool,
         git: bool,

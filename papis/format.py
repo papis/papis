@@ -1,14 +1,15 @@
 import string
-from typing import Any, ClassVar, Dict, Optional
+from typing import Any, ClassVar, Dict, List, Optional
 
 import papis.config
 import papis.plugin
+import papis.strings
 import papis.document
 import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
-FORMATTER: Optional["Formatter"] = None
+FORMATTER: Dict[str, "Formatter"] = {}
 
 #: The entry point name for formatter plugins.
 FORMATTER_EXTENSION_NAME = "papis.format"
@@ -32,6 +33,9 @@ def unescape(fmt: str) -> str:
 
 class Formatter:
     """A generic formatter that works on templated strings using a document."""
+
+    #: A name for the formatter.
+    name: ClassVar[str]
 
     def __init__(self) -> None:
         self.default_doc_name = papis.config.getstring("format-doc-name")
@@ -144,6 +148,7 @@ class PythonFormatter(Formatter):
     single spaces).
     """
 
+    name: ClassVar[str] = "python"
     psf = _PythonStringFormatter()
 
     def format(self,
@@ -202,6 +207,8 @@ class Jinja2Formatter(Formatter):
         "{{ doc.isbn | default('ISBN-NONE', true) }}"
     """
 
+    name: ClassVar[str] = "jinja2"
+
     env: ClassVar[Any] = None
     """The ``jinja2`` Environment used by the formatter. This should be obtained
     with :meth:`~Jinja2Formatter.get_environment()` (cached) and modified as
@@ -259,6 +266,28 @@ class Jinja2Formatter(Formatter):
                 raise FormatFailedError(fmt) from exc
 
 
+def get_available_formatters() -> List[str]:
+    """Get a list of all the available formatter plugins."""
+    return papis.plugin.get_available_entrypoints(FORMATTER_EXTENSION_NAME)
+
+
+def get_default_formatter() -> str:
+    """Get the default formatter from :confval:`formatter`."""
+    from papis.defaults import NOT_SET
+
+    # FIXME: remove this special handling when we don't need to support
+    # the deprecated 'formater' configuration setting
+    value = papis.config.get("formater")
+    if value is NOT_SET:
+        name = papis.config.getstring("formatter")
+    else:
+        logger.warning("The configuration option 'formater' is deprecated. "
+                       "Use 'formatter' instead.")
+        name = str(value)
+
+    return name
+
+
 def get_formatter(name: Optional[str] = None) -> Formatter:
     """Initialize and return a formatter plugin.
 
@@ -270,38 +299,26 @@ def get_formatter(name: Optional[str] = None) -> Formatter:
     """
     global FORMATTER
 
-    if FORMATTER is None:
+    if name is None:
+        name = get_default_formatter()
+
+    f = FORMATTER.get(name)
+    if f is None:
         mgr = papis.plugin.get_extension_manager(FORMATTER_EXTENSION_NAME)
-
-        if name is None:
-            from papis.defaults import NOT_SET
-
-            # FIXME: remove this special handling when we don't need to support
-            # the deprecated 'formater' configuration setting
-            value = papis.config.get("formater")
-            if value is NOT_SET:
-                name = papis.config.getstring("formatter")
-            else:
-                logger.warning("The configuration option 'formater' is deprecated "
-                               "and will be removed in the next version. "
-                               "Use 'formatter' instead.")
-                name = str(value)
-
         try:
-            FORMATTER = mgr[name].plugin()
+            f = mgr[name].plugin()
         except Exception as exc:
-            entrypoints = (
-                papis.plugin.get_available_entrypoints(FORMATTER_EXTENSION_NAME))
             logger.error("Invalid formatter '%s'. Registered formatters are '%s'.",
-                         name, "', '".join(entrypoints), exc_info=exc)
+                         name, "', '".join(get_available_formatters()), exc_info=exc)
             raise InvalidFormatterError(f"Invalid formatter: '{name}'")
 
+        FORMATTER[name] = f
         logger.debug("Using '%s' formatter.", name)
 
-    return FORMATTER
+    return f
 
 
-def format(fmt: str,
+def format(fmt: papis.strings.AnyString,
            doc: papis.document.DocumentLike,
            doc_key: str = "",
            additional: Optional[Dict[str, Any]] = None,
@@ -313,8 +330,11 @@ def format(fmt: str,
 
     Arguments match those of :meth:`Formatter.format`.
     """
-    formatter = get_formatter()
-    return formatter.format(fmt, doc, doc_key=doc_key,
+    if isinstance(fmt, str):
+        fmt = papis.strings.FormattedString(None, fmt)
+
+    formatter = get_formatter(fmt.formatter)
+    return formatter.format(fmt.value, doc, doc_key=doc_key,
                             additional=additional,
                             default=default)
 

@@ -98,7 +98,8 @@ def run(document: papis.document.Document,
               type=click.Path(exists=True))
 @click.option("-u", "--urls", help="URLs to documents", multiple=True)
 @click.option("--file-name",
-              help="File name for the document (papis format)",
+              help="File name format for the document",
+              type=papis.cli.FormattedStringParamType(),
               default=None)
 @click.option(
     "--link/--no-link",
@@ -130,8 +131,11 @@ def cli(query: str,
 
     document = docs[0]
 
-    if file_name is not None:  # Use args if set
-        papis.config.set("add-file-name", papis.config.escape_interp(file_name))
+    if file_name is not None:
+        papis.config.set("add-file-name",
+                         papis.strings.FormattedString(
+                             None,
+                             papis.config.escape_interp(file_name)))
 
     try:
         run(document, files + urls, git=git, link=link)
