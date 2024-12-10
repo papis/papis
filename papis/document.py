@@ -284,7 +284,7 @@ def split_authors_name(authors: Union[str, List[str]],
         sep = separator if separator else guess_authors_separator(subauthors)
         author_list.extend([
             split_author_name(author)
-            for author in re.split(fr"\s*{sep}\s+", subauthors)
+            for author in re.split(fr"\s+{sep}\s+", subauthors)
         ])
 
     return author_list
