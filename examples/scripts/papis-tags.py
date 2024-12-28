@@ -90,7 +90,7 @@ def main(query: str, confirm: bool) -> None:
 
     # Allow the list set (no duplicates) ) to be sorted into alphabetical
     # order and picked from
-    sorted_tags = sorted(list(tag_list))
+    sorted_tags = sorted(tag_list)
     picked_tags = papis.api.pick(sorted_tags)
     if len(picked_tags) == 1:
         picked_tag, = picked_tags
@@ -111,7 +111,7 @@ def main(query: str, confirm: bool) -> None:
 
         if confirm:
             if not confirm_dialog(
-                    "Open folder for '{}'?".format(papis.document.describe(doc))
+                    f"Open folder for '{papis.document.describe(doc)}'?"
                     ):
                 continue
 

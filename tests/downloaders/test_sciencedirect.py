@@ -43,8 +43,8 @@ def test_sciencedirect_fetch(tmp_config: TemporaryConfiguration,
     assert down is not None
 
     uid = os.path.basename(url)
-    infile = "ScienceDirect_{}.html".format(uid)
-    outfile = "ScienceDirect_{}_Out.json".format(uid)
+    infile = f"ScienceDirect_{uid}.html"
+    outfile = f"ScienceDirect_{uid}_Out.json"
 
     monkeypatch.setattr(down, "_get_body",
                         lambda: resource_cache.get_remote_resource(infile, url))
