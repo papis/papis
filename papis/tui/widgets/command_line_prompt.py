@@ -49,7 +49,7 @@ class Command:
 
     @property
     def names(self) -> List[str]:
-        return [self.name] + self.aliases
+        return [self.name, *self.aliases]
 
 
 class CommandLinePrompt(ConditionalContainer):
@@ -61,8 +61,10 @@ class CommandLinePrompt(ConditionalContainer):
         if commands is None:
             commands = []
 
+        from itertools import chain
+
         self.commands = commands
-        names: List[str] = sum((c.names for c in commands), [])
+        names: List[str] = list(chain.from_iterable(c.names for c in commands))
         wc = WordCompleter(names)
         self.buf = Buffer(
             completer=wc, complete_while_typing=True

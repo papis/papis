@@ -133,16 +133,16 @@ class Picker(papis.pick.Picker[T]):
             [c.binding() for c in commands]
             + papis.config.getlist("fzf-extra-bindings"))
 
-        command = (
-            [fzf, "--bind", ",".join(bindings)]
-            + papis.config.getlist("fzf-extra-flags"))
+        command = [
+            fzf, "--bind", ",".join(bindings),
+            *papis.config.getlist("fzf-extra-flags")]
 
-        _fmt = papis.config.getformattedstring("fzf-header-format")
+        fmt = papis.config.getformattedstring("fzf-header-format")
 
         def _header_filter(d: T) -> str:
             if isinstance(d, papis.document.Document):
                 import colorama
-                return papis.format.format(_fmt,
+                return papis.format.format(fmt,
                                            d,
                                            additional={"c": colorama})
             else:

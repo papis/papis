@@ -335,7 +335,7 @@ class Picker(Application, Generic[Option]):  # type: ignore
         self.command_line_prompt = CommandLinePrompt(commands=commands)
         kb = merge_key_bindings([create_keybindings(self), commands_kb])
 
-        _root_container = HSplit([
+        root_container = HSplit([
             HSplit([
                 Window(
                     content=BufferControl(
@@ -362,7 +362,7 @@ class Picker(Application, Generic[Option]):  # type: ignore
             )
         self.help_window.text = HTML(help_text)
 
-        self.layout = Layout(_root_container)
+        self.layout = Layout(root_container)
 
         super().__init__(
             input=None,

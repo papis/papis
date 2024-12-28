@@ -41,10 +41,10 @@ pytest:								## Run pytest tests and doctests
 	$(PYTHON) -m pytest papis tests
 .PHONY: pytest
 
-flake8:								## Run flake8 (style checks)
-	$(PYTHON) -m flake8 papis tests examples tools
-	@echo -e "\e[1;32mflake8 clean!\e[0m"
-.PHONY: flake8
+ruff:								## Run ruff check (linting checks)
+	ruff check
+	@echo -e "\e[1;32mruff clean!\e[0m"
+.PHONY: ruff
 
 mypy:								## Run mypy (type annotations)
 	$(PYTHON) -m mypy papis tools
