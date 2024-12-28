@@ -26,8 +26,8 @@ def test_fallback_fetch(tmp_config: TemporaryConfiguration,
 
     result = urlparse(url)
     uid = result.netloc.split(".")[-2]
-    infile = "Fallback_{}.html".format(uid)
-    outfile = "Fallback_{}_Out.json".format(uid)
+    infile = f"Fallback_{uid}.html"
+    outfile = f"Fallback_{uid}_Out.json"
 
     monkeypatch.setattr(down, "_get_body",
                         lambda: resource_cache.get_remote_resource(infile, url))

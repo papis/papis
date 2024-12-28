@@ -54,7 +54,7 @@ def test_downloader_match(tmp_config: TemporaryConfiguration) -> None:
         assert isinstance(down, Downloader)
         assert down
         assert down.arxivid == arxivid
-        assert down.uri == "{}/{}".format(ARXIV_ABS_URL, arxivid)
+        assert down.uri == f"{ARXIV_ABS_URL}/{arxivid}"
 
 
 @pytest.mark.xfail(reason="arxiv times out sometimes")
