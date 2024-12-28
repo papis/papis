@@ -191,7 +191,7 @@ def run_set(
             )
         elif key == "files" and isinstance(value, list):
             # TODO: handle renames/deletions of files on disk
-            document[key] = list()
+            document[key] = []
             for file in value:
                 if isinstance(file, str):
                     document[key].append(normalize_path(file))
