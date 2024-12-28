@@ -40,7 +40,7 @@ you will not be able to parse the publisher through a search.
 
 """
 import os
-from typing import List, Dict, Optional, Any, KeysView, TYPE_CHECKING
+from typing import List, Dict, Optional, Any, Iterable, TYPE_CHECKING
 
 import papis.config
 import papis.strings
@@ -178,7 +178,7 @@ class Database(papis.database.base.Database):
     def add_document_with_writer(self,
                                  document: papis.document.Document,
                                  writer: "IndexWriter",
-                                 schema_keys: KeysView[str]) -> None:
+                                 schema_keys: Iterable[str]) -> None:
         """Helper function that takes a writer and a dictionary
         containing the keys of the schema and adds the document to the writer.
         Notice that this function does only two things, creating a suitable
@@ -197,7 +197,7 @@ class Database(papis.database.base.Database):
         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         self.maybe_compute_id(document)
         document["papis-folder"] = self._get_doc_folder(document)
-        doc_d = {k: str(document[k]) or "" for k in schema_keys}
+        doc_d = {k: (str(document[k]) or "") for k in schema_keys}
         writer.add_document(**doc_d)
 
     def do_indexing(self) -> None:
