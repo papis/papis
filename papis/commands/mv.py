@@ -92,10 +92,7 @@ def cli(query: str,
             prompt_toolkit.prompt(
                 message=(
                     "Enter directory  : (Tab completion enabled)\n"
-                    "Current directory: ({dir})\n".format(
-                        dir=document.get_main_folder_name()
-                    ) + ">  "
-                ),
+                    f"Current directory: ({document.get_main_folder_name()})\n >"),
                 completer=completer,
                 complete_while_typing=True
             ))

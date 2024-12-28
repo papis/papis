@@ -394,7 +394,7 @@ def run(
         papis.git.add_and_commit_resource(
             folder,
             info,
-            "Update information for '{}'".format(papis.document.describe(document)),
+            f"Update information for '{papis.document.describe(document)}'",
         )
 
 

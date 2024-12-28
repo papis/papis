@@ -27,7 +27,8 @@ type_converter = {
 def handle_pubmed_pages(pages: str) -> str:
     # returned data is in the form 561-7 meaning 562-567
     start, end = [x.strip() for x in pages.split("-")]
-    end = "{}{}".format(start[:max(0, len(start) - len(end))], end)
+    prefix = start[:max(0, len(start) - len(end))]
+    end = f"{prefix}{end}"
 
     return f"{start}--{end}"
 

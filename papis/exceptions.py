@@ -25,6 +25,4 @@ class DocumentFolderNotFound(FileNotFoundError):
     """Exception raised when a document has no main folder."""
 
     def __init__(self, doc: str) -> None:
-        super().__init__("{}: '{}'".format(
-            papis.strings.no_folder_attached_to_document,
-            doc))
+        super().__init__(f"{papis.strings.no_folder_attached_to_document}: '{doc}'")

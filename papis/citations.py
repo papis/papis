@@ -55,12 +55,12 @@ def fetch_citations(doc: papis.document.Document) -> Citations:
 
             if not metadata_citations:
                 raise ValueError(
-                    "Could not retrieve citations from the DOI '{}' for document '{}'"
-                    .format(doi, papis.document.describe(doc)))
+                    f"Could not retrieve citations from the DOI '{doi}' "
+                    f"for document '{papis.document.describe(doc)}'")
         else:
             raise ValueError(
-                "Cannot find citations in a document without a DOI: '{}'"
-                .format(papis.document.describe(doc)))
+                "Cannot find citations in a document without a DOI: "
+                f"'{papis.document.describe(doc)}'")
 
     dois = [str(d.get("doi")).lower() for d in metadata_citations if "doi" in d]
     logger.info("Found %d citations with a DOI.", len(dois))

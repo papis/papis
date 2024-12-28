@@ -181,8 +181,7 @@ def progress_bar(iterable: Iterable[T]) -> Iterable[T]:
     ]
 
     with ProgressBar(style=style, formatters=fmt) as pb:
-        for item in pb(iterable):
-            yield item
+        yield from pb(iterable)
 
 
 def get_range(range_str: str) -> List[int]:

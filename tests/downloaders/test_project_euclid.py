@@ -29,8 +29,8 @@ def test_project_euclid_fetch(tmp_config: TemporaryConfiguration,
     assert down is not None
 
     uid = os.path.basename(url[:-6]).replace("-", "_")
-    infile = "ProjectEuclid_{}.html".format(uid)
-    outfile = "ProjectEuclid_{}_Out.json".format(uid)
+    infile = f"ProjectEuclid_{uid}.html"
+    outfile = f"ProjectEuclid_{uid}_Out.json"
 
     monkeypatch.setattr(down, "_get_body",
                         lambda: resource_cache.get_remote_resource(infile, url))
