@@ -59,11 +59,11 @@ def test_explore_yaml_cli(tmp_library: TemporaryLibrary) -> None:
         exported_yaml = fd.read()
 
     assert re.match(
-        "author: K. Popper\n"
-        "doi: 10.1021/ct5004252\n"
-        "papis_id: .*\n"
-        "title: The open society\n"
-        "volume: I\n",
+        r"author: K. Popper\n"
+        r"doi: 10.1021/ct5004252\n"
+        r"papis_id: .*\n"
+        r"title: The open society\n"
+        r"volume: I\n",
         exported_yaml
     )
 

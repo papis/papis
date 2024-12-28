@@ -116,7 +116,7 @@ class Configuration(configparser.ConfigParser):
                            f"'{self.file_location}'.")
                 click.echo(f"Error: Duplicate option '{exc.option}' "
                            f"in section {exc.section}")
-                raise SystemExit(1)
+                raise SystemExit(1) from None
 
         # if no sections were actually read, add default ones
         if not self.sections():
@@ -436,9 +436,10 @@ def getint(key: str, section: Optional[str] = None) -> Optional[int]:
     """
     try:
         return general_get(key, section=section, data_type=int)
-    except ValueError:
+    except ValueError as exc:
         value = general_get(key, section=section)
-        raise ValueError("Key '{}' should be an integer: '{}'".format(key, value))
+        raise ValueError(
+            "Key '{}' should be an integer: '{}'".format(key, value)) from exc
 
 
 def getfloat(key: str, section: Optional[str] = None) -> Optional[float]:
@@ -450,9 +451,10 @@ def getfloat(key: str, section: Optional[str] = None) -> Optional[float]:
     """
     try:
         return general_get(key, section=section, data_type=float)
-    except ValueError:
+    except ValueError as exc:
         value = general_get(key, section=section)
-        raise ValueError("Key '{}' should be a float: '{}'".format(key, value))
+        raise ValueError(
+            "Key '{}' should be a float: '{}'".format(key, value)) from exc
 
 
 def getboolean(key: str, section: Optional[str] = None) -> Optional[bool]:
@@ -464,9 +466,10 @@ def getboolean(key: str, section: Optional[str] = None) -> Optional[bool]:
     """
     try:
         return general_get(key, section=section, data_type=bool)
-    except ValueError:
+    except ValueError as exc:
         value = general_get(key, section=section)
-        raise ValueError("Key '{}' should be a boolean: '{}'" .format(key, value))
+        raise ValueError(
+            "Key '{}' should be a boolean: '{}'" .format(key, value)) from exc
 
 
 def getstring(key: str, section: Optional[str] = None) -> str:
@@ -558,10 +561,10 @@ def getlist(key: str, section: Optional[str] = None) -> List[str]:
         return list(map(str, rawvalue))
     try:
         rawvalue = eval(rawvalue)
-    except Exception:
+    except Exception as exc:
         raise SyntaxError(
             f"The key '{key}' must be a valid Python object: {rawvalue}"
-            )
+            ) from exc
     else:
         if not isinstance(rawvalue, list):
             raise SyntaxError(
