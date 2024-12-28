@@ -63,7 +63,7 @@ def run(document: papis.document.Document,
             papis.git.remove(doc_folder, doc_folder, recursive=True)
             papis.git.commit(
                 topfolder,
-                "Remove document '{}'".format(papis.document.describe(document)))
+                f"Remove document '{papis.document.describe(document)}'")
         else:
             papis.document.delete(document)
         db.delete(document)
