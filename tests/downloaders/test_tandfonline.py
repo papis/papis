@@ -17,7 +17,7 @@ def test_tandfonline_match(tmp_config: TemporaryConfiguration) -> None:
         "https://tandfonline.com",
         "http://tandfonline.com",
         "https://tandfonline.com/bogus/link/10.1007",
-        ) + TANDFONLINE_URLS
+        *TANDFONLINE_URLS)
     invalid_urls = (
         "https://torfonline.com/article/123",
         "https://tandfonline.co.uk/article/123",

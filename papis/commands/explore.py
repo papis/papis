@@ -239,13 +239,13 @@ def citations(ctx: click.Context,
     for document in documents:
         logger.debug("Exploring document '%s'.", papis.document.describe(document))
         if cited_by:
-            _citations = papis.citations.get_cited_by(document)
+            citations = papis.citations.get_cited_by(document)
         else:
-            _citations = papis.citations.get_citations(document)
+            citations = papis.citations.get_citations(document)
 
-        logger.debug("Found %d citations.", len(_citations))
+        logger.debug("Found %d citations.", len(citations))
 
-        ctx.obj["documents"].extend(_citations)
+        ctx.obj["documents"].extend(citations)
 
 
 @click.command("add")

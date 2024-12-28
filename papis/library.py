@@ -1,5 +1,6 @@
 import os
 import glob
+from itertools import chain
 from typing import List, Sequence
 
 
@@ -11,9 +12,9 @@ class Library:
         #: defined there.
         self.name: str = name
         #: A list of paths with documents that form the library.
-        self.paths: List[str] = sum(
-            [glob.glob(os.path.expanduser(p)) for p in paths],
-            [])
+        self.paths: List[str] = list(
+            chain.from_iterable(glob.glob(os.path.expanduser(p)) for p in paths)
+            )
 
     def path_format(self) -> str:
         """

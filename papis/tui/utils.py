@@ -186,11 +186,13 @@ def progress_bar(iterable: Iterable[T]) -> Iterable[T]:
 
 
 def get_range(range_str: str) -> List[int]:
+    from itertools import chain
+
     range_regex = re.compile(r"(\d+)-?(\d+)?")
     try:
-        return sum([
-            list(range(int(p[0]), int(p[1] if p[1] else p[0]) + 1))
-            for p in range_regex.findall(range_str)], [])
+        return list(chain.from_iterable(
+            range(int(p[0]), int(p[1] if p[1] else p[0]) + 1)
+            for p in range_regex.findall(range_str)))
     except ValueError:
         return []
 

@@ -9,17 +9,17 @@ import papis.web.ace
 
 
 def widget(doc: papis.document.Document, libname: str) -> None:
-    _yaml_id = "info-yaml-source"
-    _yaml_input_id = "info-yaml-textarea"
-    _yaml_content = ""
+    yaml_id = "info-yaml-source"
+    yaml_input_id = "info-yaml-textarea"
+    yaml_content = ""
     editor_name = "yaml_editor"
     onsubmit_name = "update_info_text_form"
     onsubmit_body = papis.web.ace.make_onsubmit_function(onsubmit_name,
                                                          editor_name,
-                                                         _yaml_input_id)
+                                                         yaml_input_id)
 
     with open(doc.get_info_file()) as f:
-        _yaml_content = f.read()
+        yaml_content = f.read()
 
     with wh.flex("center"):
         with t.form(method="POST",
@@ -27,26 +27,26 @@ def widget(doc: papis.document.Document, libname: str) -> None:
                     cls="p-3",
                     action=wp.update_info(libname, doc)):
             t.textarea(type="text",
-                       id=_yaml_input_id,
+                       id=yaml_input_id,
                        style="display: none;",
                        name="value",
-                       value=_yaml_content)
+                       value=yaml_content)
             with t.button(cls="btn btn-success", type="submit"):
                 wh.icon_span("check", "overwrite info.yaml")
 
-    t.p(_yaml_content,
-        id=_yaml_id,
+    t.p(yaml_content,
+        id=yaml_id,
         width="100%",
         height=100,
         style="min-height: 500px",
         cls="form-control")
 
-    _script = f"""
-    let {editor_name} = ace.edit("{_yaml_id}");
+    script = f"""
+    let {editor_name} = ace.edit("{yaml_id}");
     {editor_name}.session.setMode("ace/mode/yaml");
     {onsubmit_body}
     """
 
-    t.script(tu.raw(_script),
+    t.script(tu.raw(script),
              charset="utf-8",
              type="text/javascript")

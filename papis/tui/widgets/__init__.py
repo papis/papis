@@ -16,11 +16,11 @@ from .command_line_prompt import CommandLinePrompt
 
 
 __all__ = [
-    "OptionsList",
     "CommandLinePrompt",
-    "MessageToolbar",
-    "InfoWindow",
     "HelpWindow",
+    "InfoWindow",
+    "MessageToolbar",
+    "OptionsList",
 ]
 
 

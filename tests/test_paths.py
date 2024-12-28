@@ -37,11 +37,11 @@ def test_normalize_path(tmp_config: TemporaryConfiguration) -> None:
     assert normalize_path("الامير الصغير.pdf") == "lmyr-lsgyr.pdf"
 
     assert (
-        normalize_path("post-truth: a meta‐analysis", extra_chars=" ", separator="")
+        normalize_path("post-truth: a meta-analysis", extra_chars=" ", separator="")
         == "posttruth a metaanalysis"
     )
     assert (
-        normalize_path("post-truth: a meta‐analysis", extra_chars="-", separator=" ")
+        normalize_path("post-truth: a meta-analysis", extra_chars="-", separator=" ")
         == "post-truth a meta-analysis"
     )
 

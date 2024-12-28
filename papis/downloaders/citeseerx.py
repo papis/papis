@@ -21,7 +21,7 @@ article_key_conversion = [
 
 
 class Downloader(papis.downloaders.Downloader):
-    """Retrieve documents from `CiteSeerX <https://citeseerx.ist.psu.edu>`__"""  # noqa: E501 # spell: disable
+    """Retrieve documents from `CiteSeerX <https://citeseerx.ist.psu.edu>`__"""  # spell: disable
 
     # NOTE: not sure if this API is open for the public, but it seems to work
     API_URL: ClassVar[str] = "https://citeseerx.ist.psu.edu/api/paper"

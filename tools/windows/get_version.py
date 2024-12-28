@@ -7,7 +7,6 @@ from typing import Literal
 import pytest
 import click
 
-
 Mode = Literal["python", "msi"]
 
 
