@@ -278,6 +278,7 @@ line-length = 88
 [tool.ruff.lint]
 select = [
     "B",   # flake8-bugbear
+    "C",   # flake8-comprehensions
     "E",   # pycodestyle
     "F",   # pyflakes
     "N",   # pep8-naming
@@ -287,6 +288,7 @@ select = [
 ]
 ignore = [
     # https://docs.astral.sh/ruff/rules/#rules
+    "C90",
     "B019",
     "N818",
 ]
