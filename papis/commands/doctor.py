@@ -542,9 +542,9 @@ def biblatex_type_alias_check(doc: papis.document.Document) -> List[Error]:
     if bib_type is not None and bib_type_base is not None:
         return [Error(name=BIBLATEX_TYPE_ALIAS_CHECK_NAME,
                       path=folder,
-                      msg=("Document type '{}' is an alias for '{}' in BibLaTeX"
-                           .format(bib_type, bib_type_base)),
-                      suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                      msg=(f"Document type '{bib_type}' is an alias for "
+                           f"'{bib_type_base}' in BibLaTeX"),
+                      suggestion_cmd=f"papis edit --doc-folder {folder!r}",
                       fix_action=make_fixer(bib_type_base),
                       payload=bib_type,
                       doc=doc)]
@@ -580,9 +580,9 @@ def biblatex_key_alias_check(doc: papis.document.Document) -> List[Error]:
 
     return [Error(name=BIBLATEX_KEY_ALIAS_CHECK_NAME,
                   path=folder,
-                  msg=("Document key '{}' is an alias for '{}' in BibLaTeX"
-                       .format(key, bibtex_key_aliases[key])),
-                  suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                  msg=(f"Document key '{key}' is an alias for "
+                       f"'{bibtex_key_aliases[key]}' in BibLaTeX"),
+                  suggestion_cmd=f"papis edit --doc-folder {folder!r}",
                   fix_action=make_fixer(key),
                   payload=key,
                   doc=doc)
@@ -625,7 +625,7 @@ def biblatex_required_keys_check(doc: papis.document.Document) -> List[Error]:
                   msg=("Document of type '{}' requires one of the keys ['{}'] "
                        "to be compatible with BibLaTeX"
                        .format(bib_type, "', '".join(keys))),
-                  suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                  suggestion_cmd=f"papis edit --doc-folder {folder!r}",
                   fix_action=None,
                   payload=",".join(keys),
                   doc=doc)

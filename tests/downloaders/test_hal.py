@@ -49,8 +49,8 @@ def test_hal_fetch(tmp_config: TemporaryConfiguration,
 
     domain = result.netloc.split(".")[0].upper()
     uid = os.path.basename(result.path).replace("-", "_")
-    infile = "HAL_{}_{}.html".format(domain, uid)
-    outfile = "HAL_{}_{}_Out.json".format(domain, uid)
+    infile = f"HAL_{domain}_{uid}.html"
+    outfile = f"HAL_{domain}_{uid}_Out.json"
 
     monkeypatch.setattr(down, "_get_body",
                         lambda: resource_cache.get_remote_resource(infile, url))

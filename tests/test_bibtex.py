@@ -54,7 +54,8 @@ def test_author_list_conversion(
         resource_cache: ResourceCache,
         bibfile: str,
         overwrite: bool = False) -> None:
-    jsonfile = "bibtex/{}_out.json".format(os.path.splitext(bibfile)[0])
+    basename, _ = os.path.splitext(bibfile)
+    jsonfile = f"bibtex/{basename}_out.json"
 
     import papis.bibtex
 

@@ -86,7 +86,7 @@ def run(document: papis.document.Document,
         papis.git.add_and_commit_resources(
             doc_folder,
             [*new_file_list, document.get_info_file()],
-            "Add new files to '{}'".format(papis.document.describe(document)))
+            f"Add new files to '{papis.document.describe(document)}'")
 
 
 @click.command("addto")

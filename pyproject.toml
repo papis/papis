@@ -280,9 +280,11 @@ select = [
     "C",   # flake8-comprehensions
     "E",   # pycodestyle
     "F",   # pyflakes
+    "G",   # flake8-logging-format
     "N",   # pep8-naming
     "Q",   # flake8-quotes
     "RUF", # ruff
+    "UP",  # pyupgrade
     "W",   # pycodestyle
 ]
 ignore = [
