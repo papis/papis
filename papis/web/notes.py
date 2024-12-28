@@ -12,22 +12,22 @@ import papis.web.ace
 
 
 def widget(libname: str, doc: papis.document.Document) -> None:
-    _notes_id = "notes-source"
-    _notes_input_id = "notes-input-source"
-    _notes_content = ""
+    notes_id = "notes-source"
+    notes_input_id = "notes-input-source"
+    notes_content = ""
     editor_name = "notes_editor"
     onsubmit_name = "update_notes_text_form"
     onsubmit_body = papis.web.ace.make_onsubmit_function(onsubmit_name,
                                                          editor_name,
-                                                         _notes_input_id)
+                                                         notes_input_id)
 
     # TODO add org mode somehow and check extensions
-    _notes_extension = "markdown"
+    notes_extension = "markdown"
     if papis.notes.has_notes(doc):
         filepath = papis.notes.notes_path(doc)
         if os.path.exists(filepath):
-            with open(filepath) as _fd:
-                _notes_content = _fd.read()
+            with open(filepath) as fd:
+                notes_content = fd.read()
 
     with wh.flex("center"):
         with t.form(method="POST",
@@ -35,32 +35,32 @@ def widget(libname: str, doc: papis.document.Document) -> None:
                     onsubmit=f"{onsubmit_name}()",
                     action=wp.update_notes(libname, doc)):
             t.textarea(type="text",
-                       id=_notes_input_id,
+                       id=notes_input_id,
                        style="display: none;",
                        name="value",
-                       value=_notes_content)
+                       value=notes_content)
             with t.button(cls="btn btn-success", type="submit"):
                 wh.icon_span("check", "update notes")
 
-    t.p(_notes_content,
-        id=_notes_id,
+    t.p(notes_content,
+        id=notes_id,
         width="100%",
         height=100,
         style="min-height: 500px")
 
-    _script = f"""
-let {editor_name} = ace.edit("{_notes_id}");
+    script = f"""
+let {editor_name} = ace.edit("{notes_id}");
 ace.require('ace/ext/settings_menu').init({editor_name});
 ace.config.loadModule('ace/ext/keybinding_menu',
                         (module) =>  {{
                             module.init({editor_name});
                         }});
 // {editor_name}.setKeyboardHandler('ace/keyboard/vim');
-{editor_name}.session.setMode("ace/mode/{_notes_extension}");
+{editor_name}.session.setMode("ace/mode/{notes_extension}");
 
 {onsubmit_body}
     """
 
-    t.script(tu.raw(_script),
+    t.script(tu.raw(script),
              charset="utf-8",
              type="text/javascript")

@@ -39,13 +39,13 @@ def run(document: papis.document.Document,
     if not info_file_path:
         raise DocumentFolderNotFound(papis.document.describe(document))
 
-    _old_dict = papis.document.to_dict(document)
+    old_dict = papis.document.to_dict(document)
     papis.utils.general_open(info_file_path, "editor", wait=wait)
     document.load()
-    _new_dict = papis.document.to_dict(document)
+    new_dict = papis.document.to_dict(document)
 
     # If nothing changed there is nothing else to be done
-    if _old_dict == _new_dict:
+    if old_dict == new_dict:
         logger.debug("No changes made to the document.")
         return
 

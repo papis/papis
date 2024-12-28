@@ -20,7 +20,7 @@ def test_hal_match(tmp_config: TemporaryConfiguration) -> None:
         "https://shs.hal.science/halshs-02285492",
         "https://medihal.archives-ouvertes.fr/hal-03523188",
         "https://media.hal.science/hal-03523188",
-        ) + HAL_URLS
+        *HAL_URLS)
     invalid_urls = (
         "https://data.archives-ouvertes.fr/hal-02285492",
         "https://data.hal.science/hal-02285492",

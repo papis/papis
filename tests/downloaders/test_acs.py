@@ -17,7 +17,7 @@ def test_acs_match(tmp_config: TemporaryConfiguration) -> None:
         "https://acs.org",
         "http://acs.org",
         "https://acs.org/bogus/link/10.1007",
-        ) + ACS_URLS
+        *ACS_URLS)
     invalid_urls = (
         "https://acs.co.uk/article/123",
         "https://abs.org/article/123",

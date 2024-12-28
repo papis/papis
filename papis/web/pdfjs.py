@@ -16,9 +16,8 @@ def widget(unquoted_file_path: str) -> None:
     Widget for pdf files.
     """
 
-    _file_path = urllib.parse.quote(unquoted_file_path, safe="")
-
-    viewer_path = (f"/static/{VIEWER_PATH}?file={_file_path}")
+    file_path = urllib.parse.quote(unquoted_file_path, safe="")
+    viewer_path = (f"/static/{VIEWER_PATH}?file={file_path}")
 
     with wh.flex("center"):
         with t.div(cls="btn-group", role="group"):

@@ -405,7 +405,7 @@ def test_biblatex_issue_to_number(tmp_config: TemporaryConfiguration) -> None:
         "number": "0",
         })
 
-    for value in (1, "3", "12", "No. 3", "1–2", "S1", "C2",
+    for value in (1, "3", "12", "No. 3", "1–2", "S1", "C2",  # noqa: RUF001
                   "4B", "4es", "A", "B", "A-1", "Suppl. 3"):
         del doc["number"]
         doc["issue"] = value

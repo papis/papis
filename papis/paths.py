@@ -18,7 +18,8 @@ PathLike = Union[pathlib.Path, str]
 # NOTE: private error codes for Windows
 WIN_ERROR_PRIVILEGE_NOT_HELD = 1314
 
-_SLUGIFY_HYPHEN_PLACEHOLDER = "slugifyhyphenfixer"
+# NOTE: private placeholder used to allow hyphens in slugified paths.
+_SLUGIFY_HYPHEN_PLACEHOLDER = "slugifyhyphenplaceholder"
 
 
 def unique_suffixes(chars: Optional[str] = None, skip: int = 0) -> Iterator[str]:
@@ -40,7 +41,7 @@ def unique_suffixes(chars: Optional[str] = None, skip: int = 0) -> Iterator[str]
     >>> s = unique_suffixes(skip=3)
     >>> next(s)
     'd'
-    """  # noqa: E501
+    """
 
     import string
     from itertools import count, product, islice
@@ -90,26 +91,27 @@ def normalize_path(path: str, *,
     else:
         regex_pattern = fr"[^a-zA-Z0-9.{extra_chars}]+"
 
-    # fix slugify forcefully replacing hyphens
+    # NOTE: workaround slugify forcefully replacing hyphens
     # see https://github.com/un33k/python-slugify/issues/107
     if "-" in extra_chars:
-        path = path.replace("\u2010", _SLUGIFY_HYPHEN_PLACEHOLDER).\
-            replace("-", _SLUGIFY_HYPHEN_PLACEHOLDER)
-
-        def replace_hyphen(s: str) -> str:
-            return s.replace(_SLUGIFY_HYPHEN_PLACEHOLDER, "-")
-    else:
-        def replace_hyphen(s: str) -> str:
-            return s
+        path = (
+            path
+            .replace("\u2010", _SLUGIFY_HYPHEN_PLACEHOLDER)
+            .replace("-", _SLUGIFY_HYPHEN_PLACEHOLDER))
 
     import slugify
 
-    return replace_hyphen(str(slugify.slugify(
+    result = slugify.slugify(
         path,
         word_boundary=True,
         separator=separator,
         regex_pattern=regex_pattern,
-        lowercase=lowercase)))
+        lowercase=lowercase)
+
+    if "-" in extra_chars:
+        result = result.replace(_SLUGIFY_HYPHEN_PLACEHOLDER, "-")
+
+    return result
 
 
 def is_relative_to(path: PathLike, other: PathLike) -> bool:
@@ -147,7 +149,8 @@ def symlink(src: PathLike, dst: PathLike) -> None:
             raise OSError(exc.errno,
                           "Failed to link due to insufficient permissions. You "
                           "can try again after enabling the 'Developer mode' "
-                          "and restarting.", exc.filename, exc.winerror, exc.filename2)
+                          "and restarting.", exc.filename, exc.winerror, exc.filename2
+                          ) from None
 
 
 def get_document_file_name(

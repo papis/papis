@@ -51,12 +51,13 @@ def test_update_set_general_cli(tmp_library: TemporaryLibrary) -> None:
     assert not result.output
 
     result = cli_runner.invoke(
-        cli,
-        ["--set", "doi", "10.213.phys.rev/213"]
-        + ["--set", "ref", "NewRef"]
-        + ["--set", "year", "1234"]
-        + ["--set", "author_list", "[{'family': 'Krishnamurti', 'given': 'J.'}]"]
-        + ["krishnamurti"],
+        cli, [
+            "--set", "doi", "10.213.phys.rev/213",
+            "--set", "ref", "NewRef",
+            "--set", "year", "1234",
+            "--set", "author_list", "[{'family': 'Krishnamurti', 'given': 'J.'}]",
+            "krishnamurti"
+        ],
     )
     assert result.exit_code == 0
 
@@ -78,10 +79,11 @@ def test_update_set_clean_cli(tmp_library: TemporaryLibrary) -> None:
     assert not result.output
 
     result = cli_runner.invoke(
-        cli,
-        ["--set", "notes", "a note $ to be cleaned.md"]
-        + ["--set", "files", "['file 1.pdf', 'file @.epub']"]
-        + ["krishnamurti"],
+        cli, [
+            "--set", "notes", "a note $ to be cleaned.md",
+            "--set", "files", "['file 1.pdf', 'file @.epub']",
+            "krishnamurti"
+        ],
     )
     assert result.exit_code == 0
 
@@ -101,8 +103,10 @@ def test_update_set_force_str_cli(tmp_library: TemporaryLibrary) -> None:
     assert not result.output
 
     result = cli_runner.invoke(
-        cli,
-        ["--set", "title", "1234"] + ["krishnamurti"],
+        cli, [
+            "--set", "title", "1234",
+            "krishnamurti"
+        ],
     )
     assert result.exit_code == 0
 
@@ -121,8 +125,10 @@ def test_update_append_general_cli(tmp_library: TemporaryLibrary) -> None:
     assert not result.output
 
     result = cli_runner.invoke(
-        cli,
-        ["--append", "title", "appended"] + ["krishnamurti"],
+        cli, [
+            "--append", "title", "appended",
+            "krishnamurti"
+        ],
     )
     assert result.exit_code == 0
 
@@ -141,8 +147,10 @@ def test_update_append_to_new_key_cli(tmp_library: TemporaryLibrary) -> None:
     assert not result.output
 
     result = cli_runner.invoke(
-        cli,
-        ["--append", "notes", "a-note.md"] + ["krishnamurti"],
+        cli, [
+            "--append", "notes", "a-note.md",
+            "krishnamurti"
+        ],
     )
     assert result.exit_code == 0
 
@@ -161,8 +169,10 @@ def test_update_append_to_int_cli(tmp_library: TemporaryLibrary) -> None:
     assert not result.output
 
     result = cli_runner.invoke(
-        cli,
-        ["--append", "year", "123"] + ["krishnamurti"],
+        cli, [
+            "--append", "year", "123",
+            "krishnamurti"
+        ],
     )
     assert result.exit_code == 0
 
@@ -181,8 +191,10 @@ def test_update_append_str_to_empty_int_cli(tmp_library: TemporaryLibrary) -> No
     assert not result.output
 
     result = cli_runner.invoke(
-        cli,
-        ["--append", "year", "string"] + ["popper"],
+        cli, [
+            "--append", "year", "string",
+            "popper"
+        ],
     )
     assert result.exit_code == 0
 
@@ -201,7 +213,7 @@ def test_update_append_clean_cli(tmp_library: TemporaryLibrary) -> None:
     assert not result.output
 
     result = cli_runner.invoke(
-        cli, ["--append", "files", "some file name.pdf"] + ["krishnamurti"]
+        cli, ["--append", "files", "some file name.pdf", "krishnamurti"]
     )
     assert result.exit_code == 0
 
@@ -222,10 +234,11 @@ def test_update_append_del_duplicates_in_list_cli(
     assert not result.output
 
     result = cli_runner.invoke(
-        cli,
-        ["--append", "files", "file1.pdf"]
-        + ["--append", "files", "file1.pdf"]
-        + ["krishnamurti"],
+        cli, [
+            "--append", "files", "file1.pdf",
+            "--append", "files", "file1.pdf",
+            "krishnamurti"
+        ],
     )
     assert result.exit_code == 0
 
@@ -246,8 +259,11 @@ def test_update_remove_general_cli(
     assert not result.output
 
     result = cli_runner.invoke(
-        cli,
-        ["--remove", "tags", "tag1"] + ["--remove", "tags", "1234"] + ["krishnamurti"],
+        cli, [
+            "--remove", "tags", "tag1",
+            "--remove", "tags", "1234",
+            "krishnamurti"
+        ],
     )
     assert result.exit_code == 0
 
@@ -268,10 +284,11 @@ def test_update_remove_from_missing_key_cli(
     assert not result.output
 
     result = cli_runner.invoke(
-        cli,
-        ["--remove", "missingkey", "value"]
-        + ["--remove", "tags", "tag1"]
-        + ["krishnamurti"],
+        cli, [
+            "--remove", "missingkey", "value",
+            "--remove", "tags", "tag1",
+            "krishnamurti"
+        ],
     )
     assert result.exit_code == 0
 
@@ -293,7 +310,7 @@ def test_update_remove_from_str_cli(
 
     result = cli_runner.invoke(
         cli,
-        ["--remove", "title", "known"] + ["krishnamurti"],
+        ["--remove", "title", "known", "krishnamurti"],
     )
     assert result.exit_code == 0
 
@@ -315,7 +332,7 @@ def test_update_drop_general_cli(
 
     result = cli_runner.invoke(
         cli,
-        ["--drop", "title"] + ["krishnamurti"],
+        ["--drop", "title", "krishnamurti"],
     )
     assert result.exit_code == 0
 
@@ -337,7 +354,7 @@ def test_update_drop_missing_key_cli(
 
     result = cli_runner.invoke(
         cli,
-        ["--drop", "notes"] + ["krishnamurti"],
+        ["--drop", "notes", "krishnamurti"],
     )
     assert result.exit_code == 0
 
@@ -354,10 +371,11 @@ def test_update_rename_general_cli(
     assert not result.output
 
     result = cli_runner.invoke(
-        cli,
-        ["--rename", "tags", "tag1", "tag_renamed1"]
-        + ["--rename", "tags", "1234", "2345"]
-        + ["krishnamurti"],
+        cli, [
+            "--rename", "tags", "tag1", "tag_renamed1",
+            "--rename", "tags", "1234", "2345",
+            "krishnamurti"
+        ],
     )
     assert result.exit_code == 0
 
@@ -379,8 +397,10 @@ def test_update_rename_missing_value_cli(
     assert not result.output
 
     result = cli_runner.invoke(
-        cli,
-        ["--rename", "tags", "tag_nonexistent", "tag_renamed1"] + ["krishnamurti"],
+        cli, [
+            "--rename", "tags", "tag_nonexistent", "tag_renamed1",
+            "krishnamurti"
+        ],
     )
     assert result.exit_code == 0
 
@@ -397,12 +417,13 @@ def test_update_batch_cli(
     assert not result.output
 
     result = cli_runner.invoke(
-        cli,
-        ["--batch"]
-        + ["--append", "year", "123"]  # this fails
-        + ["--remove", "year", "123"]  # this fails
-        + ["--append", "tags", "tag3"]  # but this should still work
-        + ["krishnamurti"],
+        cli, [
+            "--batch",
+            "--append", "year", "123",      # this fails
+            "--remove", "year", "123",      # this fails
+            "--append", "tags", "tag3",     # but this should still work
+            "krishnamurti"
+        ],
     )
     assert result.exit_code == 0
 

@@ -17,7 +17,7 @@ def test_sciencedirect_match(tmp_config: TemporaryConfiguration) -> None:
     valid_urls = (
         "https://www.sciencedirect.com",
         "http://www.sciencedirect.com/science/article/pii/S0009261497040141",
-        ) + SCIENCE_DIRECT_URLS
+        *SCIENCE_DIRECT_URLS)
     invalid_urls = {
         "https://www.scienceindirect.com",
         "http://www.sciencedirect.co.uk/science/article/pii/S0009261497040141",

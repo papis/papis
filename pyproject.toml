@@ -288,6 +288,10 @@ ignore = [
     # https://docs.astral.sh/ruff/rules/#rules
     "N818",    # error-suffix-on-exception-name
 ]
+task-tags = ["spell"]
+
+[tool.ruff.lint.pycodestyle]
+ignore-overlong-task-comments = true
 
 [tool.ruff.lint.flake8-quotes]
 docstring-quotes = "double"

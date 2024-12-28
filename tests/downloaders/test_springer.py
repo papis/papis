@@ -17,7 +17,7 @@ def test_springer_match(tmp_config: TemporaryConfiguration) -> None:
         "https://link.springer.com",
         "http://link.springer.com",
         "https://link.springer.com/bogus/link/10.1007",
-        ) + SPRINGER_LINK_URLS
+        *SPRINGER_LINK_URLS)
     invalid_urls = (
         "https://links.springer.com/article/123",
         "https://link.springer.co.uk/article/123",

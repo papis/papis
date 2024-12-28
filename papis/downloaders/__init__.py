@@ -32,7 +32,7 @@ class Importer(papis.importer.Importer):
     def match(cls, uri: str) -> Optional[papis.importer.Importer]:
         return (
             Importer(uri=uri)
-            if re.match(" *http(s)?.*", uri) is not None
+            if re.match(r" *http(s)?.*", uri) is not None
             else None
         )
 
