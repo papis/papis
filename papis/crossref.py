@@ -117,7 +117,7 @@ key_conversion = [
     }]),
     KeyConversionPair("isbn-type", [{
         "key": "isbn",
-        "action": lambda x: [i for i in x if i["type"] == "electronic"][0]["value"]
+        "action": lambda x: next(i for i in x if i["type"] == "electronic")["value"]
     }]),
     KeyConversionPair("page", [{
         "key": "pages",

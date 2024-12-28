@@ -210,7 +210,7 @@ class Database(DatabaseBase):
         from papis.utils import get_folders, folders_to_documents
 
         logger.debug("Indexing the library, this might take a while...")
-        folders: List[str] = sum([get_folders(d) for d in self.lib.paths], [])
+        folders = [f for path in self.lib.paths for f in get_folders(path)]
         documents = folders_to_documents(folders)
 
         schema_keys = self._get_schema_init_fields().keys()

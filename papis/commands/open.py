@@ -97,44 +97,44 @@ def run(document: papis.document.Document,
     if opener is not None:
         papis.config.set("opentool", papis.config.escape_interp(opener))
 
-    _doc_folder = document.get_main_folder()
-    if _doc_folder is None:
+    doc_folder = document.get_main_folder()
+    if doc_folder is None:
         raise DocumentFolderNotFound(papis.document.describe(document))
 
     if folder:
         # Open directory
-        papis.api.open_dir(_doc_folder)
+        papis.api.open_dir(doc_folder)
     else:
         if mark:
             logger.debug("Getting document's marks.")
             marks = document[papis.config.getstring("mark-key-name")]
             if marks:
-                _mark_fmt = papis.config.getformattedstring("mark-header-format")
-                _mark_name = papis.config.getstring("mark-format-name")
-                _mark_opener = papis.config.getstring("mark-opener-format")
-                if not _mark_fmt:
+                mark_fmt = papis.config.getformattedstring("mark-header-format")
+                mark_name = papis.config.getstring("mark-format-name")
+                mark_opener = papis.config.getstring("mark-opener-format")
+                if not mark_fmt:
                     raise ValueError(
                         "No mark header format given. Set 'mark-header-format' in "
                         "the configuration file")
-                if not _mark_name:
+                if not mark_name:
                     raise ValueError(
                         "No mark name format given. Set 'mark-format-name' "
                         "in the configuration file")
                 mark_dict = papis.api.pick(
                     marks,
                     header_filter=lambda x: papis.format.format(
-                        _mark_fmt, x, doc_key=_mark_name),
+                        mark_fmt, x, doc_key=mark_name),
                     match_filter=lambda x: papis.format.format(
-                        _mark_fmt, x, doc_key=_mark_name))
+                        mark_fmt, x, doc_key=mark_name))
                 if mark_dict:
-                    if not _mark_opener:
+                    if not mark_opener:
                         raise ValueError(
                             "No mark opener format given. Set 'mark-opener-format' "
                             "in the configuration file")
                     opener = papis.format.format(
-                        _mark_opener,
+                        mark_opener,
                         papis.document.from_data(mark_dict[0]),
-                        doc_key=_mark_name)
+                        doc_key=mark_name)
                     logger.info("Setting opener to '%s'.", opener)
                     papis.config.set("opentool", papis.config.escape_interp(opener))
         files = document.get_files()
