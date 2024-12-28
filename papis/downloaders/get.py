@@ -21,7 +21,7 @@ class Downloader(papis.downloaders.Downloader):
         True
         """  # noqa: E501
         endings = "pdf|djvu|epub|mobi|jpg|png|md"
-        m = re.match(r"^http.*\.(%s)$" % endings, url, re.IGNORECASE)
+        m = re.match(fr"^http.*\.({endings})$", url, re.IGNORECASE)
         if m:
             d = Downloader(url)
 

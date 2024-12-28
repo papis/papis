@@ -71,7 +71,7 @@ master_doc = "index"
 
 # General information about the project.
 project = papis.__name__
-copyright = "2017 {}".format(papis.__author__)
+copyright = f"2017 {papis.__author__}"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -226,7 +226,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ("index", "{}.tex".format(project), "{} Documentation".format(project),
+    ("index", f"{project}.tex", f"{project.capitalize()} Documentation",
      papis.__author__, "manual"),
 ]
 
@@ -268,9 +268,9 @@ man_pages = [
 for entry in os.scandir("commands"):
     name, _ = entry.name.split(".")
     man_pages.append((
-        "commands/{}".format(name),
-        "papis-{}".format(name),
-        "{} command".format(name),
+        f"commands/{name}",
+        f"papis-{name}",
+        f"{name} command",
         [papis.__author__],
         1,
         ))
@@ -284,7 +284,7 @@ for entry in os.scandir("commands"):
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ("index", project, "{} Documentation".format(project),
+    ("index", project.capitalize(), f"{project.capitalize()} Documentation",
      papis.__author__, project, "One line description of project.",
      "Miscellaneous"),
 ]
