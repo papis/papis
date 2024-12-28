@@ -397,7 +397,7 @@ def run(paths: List[str],
     if git:
         papis.git.add_and_commit_resource(
             out_folder_path, ".",
-            "Add document '{}'".format(papis.document.describe(tmp_document)))
+            f"Add document '{papis.document.describe(tmp_document)}'")
 
     if move:
         for in_file_path in in_document_paths:

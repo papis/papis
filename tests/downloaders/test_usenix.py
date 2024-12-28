@@ -49,8 +49,8 @@ def test_usenix_fetch(tmp_config: TemporaryConfiguration,
     assert down is not None
 
     uid = os.path.basename(url)
-    infile = "USENIX_{}.bib".format(uid)
-    outfile = "USENIX_{}_Out.json".format(uid)
+    infile = f"USENIX_{uid}.bib"
+    outfile = f"USENIX_{uid}_Out.json"
 
     monkeypatch.setattr(down, "download_document", lambda: None)
     monkeypatch.setattr(down, "download_bibtex",

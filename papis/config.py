@@ -441,8 +441,7 @@ def getint(key: str, section: Optional[str] = None) -> Optional[int]:
         return general_get(key, section=section, data_type=int)
     except ValueError as exc:
         value = general_get(key, section=section)
-        raise ValueError(
-            "Key '{}' should be an integer: '{}'".format(key, value)) from exc
+        raise ValueError(f"Key '{key}' should be an integer: '{value}'") from exc
 
 
 def getfloat(key: str, section: Optional[str] = None) -> Optional[float]:
@@ -456,8 +455,7 @@ def getfloat(key: str, section: Optional[str] = None) -> Optional[float]:
         return general_get(key, section=section, data_type=float)
     except ValueError as exc:
         value = general_get(key, section=section)
-        raise ValueError(
-            "Key '{}' should be a float: '{}'".format(key, value)) from exc
+        raise ValueError(f"Key '{key}' should be a float: '{value}'") from exc
 
 
 def getboolean(key: str, section: Optional[str] = None) -> Optional[bool]:
@@ -471,8 +469,7 @@ def getboolean(key: str, section: Optional[str] = None) -> Optional[bool]:
         return general_get(key, section=section, data_type=bool)
     except ValueError as exc:
         value = general_get(key, section=section)
-        raise ValueError(
-            "Key '{}' should be a boolean: '{}'" .format(key, value)) from exc
+        raise ValueError(f"Key '{key}' should be a boolean: '{value}'") from exc
 
 
 def getstring(key: str, section: Optional[str] = None) -> str:
@@ -484,7 +481,7 @@ def getstring(key: str, section: Optional[str] = None) -> str:
     """
     result = general_get(key, section=section, data_type=str)
     if not isinstance(result, str):
-        raise ValueError("Key '{}' should be a string: '{}'".format(key, result))
+        raise ValueError(f"Key '{key}' should be a string: {result!r}")
 
     return str(result)
 
@@ -571,8 +568,8 @@ def getlist(key: str, section: Optional[str] = None) -> List[str]:
     else:
         if not isinstance(rawvalue, list):
             raise SyntaxError(
-                "The key '{}' must be a valid Python list. Got: {} (type {!r})"
-                .format(key, rawvalue, type(rawvalue).__name__))
+                f"The key '{key}' must be a valid Python list. "
+                f"Got: {rawvalue} (type {type(rawvalue)})")
 
         return list(map(str, rawvalue))
 

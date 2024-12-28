@@ -43,8 +43,7 @@ def test_database_update(tmp_library: TemporaryLibrary) -> None:
     db = papis.database.get()
     docs = db.get_all_documents()
 
-    title = "title for {}::test_update".format(__name__)
-    print(title)
+    title = f"title for {__name__}::test_update"
     doc = docs[0]
     doc["title"] = title
     doc.save()

@@ -39,8 +39,8 @@ def test_get_data(tmp_config: TemporaryConfiguration) -> None:
     ])
 def test_doi_to_data(tmp_config: TemporaryConfiguration, monkeypatch,
                      doi: str, basename: str) -> None:
-    infile = "{}.json".format(basename)
-    outfile = "{}_out.json".format(basename)
+    infile = f"{basename}.json"
+    outfile = f"{basename}_out.json"
 
     import papis.crossref
 

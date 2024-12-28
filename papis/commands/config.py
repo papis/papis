@@ -84,10 +84,10 @@ logger = papis.logging.get_logger(__name__)
 
 
 def format_option(key: str, value: Any) -> str:
+    c = colorama
     return (
-        "{c.Style.BRIGHT}{key}{c.Style.NORMAL} "
-        "= {c.Fore.GREEN}{value!r}{c.Style.RESET_ALL}"
-        .format(c=colorama, key=key, value=value))
+        f"{c.Style.BRIGHT}{key}{c.Style.NORMAL} "
+        f"= {c.Fore.GREEN}{value!r}{c.Style.RESET_ALL}")
 
 
 def parse_option(

@@ -37,8 +37,8 @@ def test_citeseerx_fetch(tmp_config: TemporaryConfiguration,
     assert down is not None
 
     uid = os.path.basename(url)
-    infile = "CiteSeerX_{}.json".format(uid)
-    outfile = "CiteSeerX_{}_Out.json".format(uid)
+    infile = f"CiteSeerX_{uid}.json"
+    outfile = f"CiteSeerX_{uid}_Out.json"
 
     monkeypatch.setattr(down, "_get_raw_data",
                         lambda: get_citeseerx_resource(resource_cache, infile, url))

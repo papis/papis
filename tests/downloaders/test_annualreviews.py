@@ -43,8 +43,8 @@ def test_annual_review_fetch(tmp_config: TemporaryConfiguration,
     assert down is not None
 
     uid = os.path.basename(url).replace("-", "_")
-    infile = "AnnualReview_{}.html".format(uid)
-    outfile = "AnnualReview_{}_Out.json".format(uid)
+    infile = f"AnnualReview_{uid}.html"
+    outfile = f"AnnualReview_{uid}_Out.json"
 
     monkeypatch.setattr(down, "_get_body",
                         lambda: resource_cache.get_remote_resource(infile, url))

@@ -282,9 +282,7 @@ def test_html_codes_check(tmp_config: TemporaryConfiguration) -> None:
     assert not errors
 
     for amp in ("&amp;", "&#38;", "&#x26;", "&Amp;"):
-        doc["title"] = (
-            "DNA sequencing with chain-terminating inhibitors {} stuff"
-            .format(amp))
+        doc["title"] = f"DNA sequencing with chain-terminating inhibitors {amp} stuff"
 
         error, = html_codes_check(doc)
         assert error.payload == "title"

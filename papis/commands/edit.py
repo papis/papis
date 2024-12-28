@@ -55,8 +55,7 @@ def run(document: papis.document.Document,
         papis.git.add_and_commit_resource(
             str(document.get_main_folder()),
             info_file_path,
-            "Update information for '{}'".format(
-                papis.document.describe(document)))
+            f"Update information for '{papis.document.describe(document)}'")
 
 
 def edit_notes(document: papis.document.Document,
@@ -65,12 +64,11 @@ def edit_notes(document: papis.document.Document,
     notes_path = papis.notes.notes_path_ensured(document)
     papis.api.edit_file(notes_path)
     if git:
-        msg = "Update notes for '{}'".format(papis.document.describe(document))
         folder = document.get_main_folder()
         if folder:
+            msg = f"Update notes for '{papis.document.describe(document)}'"
             papis.git.add_and_commit_resources(folder,
-                                               [notes_path,
-                                                document.get_info_file()],
+                                               [notes_path, document.get_info_file()],
                                                msg)
 
 

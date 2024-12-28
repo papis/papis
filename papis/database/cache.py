@@ -27,9 +27,10 @@ def get_cache_file_name(libpaths: str) -> str:
     'a566b2bebc62611dff4cdaceac1a7bbd-papers'
     """
     import hashlib
-    return "{}-{}".format(
-        hashlib.md5(libpaths.encode()).hexdigest(),
-        os.path.basename(libpaths))
+
+    hash = hashlib.md5(libpaths.encode()).hexdigest()
+    basename = os.path.basename(libpaths)
+    return f"{hash}-{basename}"
 
 
 def get_cache_file_path(libpaths: str) -> str:
@@ -259,7 +260,7 @@ class Database(papis.database.base.Database):
             enumerate(self.get_documents())))
         if not result:
             raise ValueError(
-                "The document passed could not be found in the library: '{}'"
-                .format(papis.document.describe(document)))
+                "The document passed could not be found in the library: "
+                f"'{papis.document.describe(document)}'")
 
         return result

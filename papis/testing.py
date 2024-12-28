@@ -61,7 +61,7 @@ def create_random_file(filetype: Optional[str] = None,
     elif filetype == "text":
         buf = b"papis-test-file-contents"
     else:
-        raise ValueError("Unknown file type: '{}'".format(filetype))
+        raise ValueError(f"Unknown file type: '{filetype}'")
 
     with tempfile.NamedTemporaryFile(
             dir=dir, suffix=suffix, prefix=prefix,
@@ -157,7 +157,7 @@ def populate_library(libdir: str) -> None:
     for i, data in enumerate(PAPIS_TEST_DOCUMENTS):
         doc_data = data.copy()
 
-        folder_path = os.path.join(libdir, "test_doc_{}".format(i))
+        folder_path = os.path.join(libdir, f"test_doc_{i}")
         os.makedirs(folder_path)
 
         # add files
@@ -240,7 +240,7 @@ class TemporaryConfiguration:
 
     def __enter__(self) -> "TemporaryConfiguration":
         if self._tmpdir is not None:
-            raise ValueError("{!r} cannot be nested".format(type(self).__name__))
+            raise ValueError(f"'{type(self).__name__}' cannot be nested")
 
         # create directories and files
         self._monkeypatch = pytest.MonkeyPatch()
@@ -516,7 +516,7 @@ class ResourceCache:
                         sort_keys=True,
                         )
                 else:
-                    raise ValueError("Unknown file extension: '{}'".format(ext))
+                    raise ValueError(f"Unknown file extension: '{ext}'")
 
         with open(filename, encoding="utf-8") as f:
             if ext == ".json":
@@ -524,7 +524,7 @@ class ResourceCache:
             elif ext == ".yml" or ext == ".yaml":
                 return papis.yaml.yaml_to_data(filename)
             else:
-                raise ValueError("Unknown file extension: '{}'".format(ext))
+                raise ValueError(f"Unknown file extension: '{ext}'")
 
 
 @pytest.fixture(autouse=True)
