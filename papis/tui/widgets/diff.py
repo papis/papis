@@ -96,16 +96,12 @@ def diffshow(texta: str,
     assert isinstance(textb, str)
 
     import difflib
-    # diffs = difflib.unified_diff(
-    #         str(texta).splitlines(keepends=True),
-    #         str(textb).splitlines(keepends=True),
-    #         fromfile=namea, tofile=nameb)
 
-    diffs = difflib.ndiff(
-        texta.splitlines(keepends=True),
-        textb.splitlines(keepends=True),)
+    diffs = list(
+        difflib.ndiff(
+            texta.splitlines(keepends=True),
+            textb.splitlines(keepends=True)))
 
-    diffs = list(diffs)
     if len(diffs) == 1:
         # this means that _diffs is just a new line character, so there is
         # no real difference, in that case then do not instantiate a prompt
