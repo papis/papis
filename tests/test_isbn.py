@@ -62,12 +62,12 @@ def test_isbn_to_papis(tmp_config: TemporaryConfiguration, basename: str) -> Non
     import papis.isbn
 
     data = load_json(
-        "{}.json".format(basename),
+        f"{basename}.json",
         data_getter=lambda: get_unmodified_isbn_data("9781930217089"))
 
     to_papis_data = papis.isbn.data_to_papis(data)
     result = load_json(
-        "{}_out.json".format(basename),
+        f"{basename}_out.json",
         data_getter=lambda: to_papis_data)
 
     assert to_papis_data == result

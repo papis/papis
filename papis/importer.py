@@ -124,8 +124,8 @@ class Importer:
             *None* otherwise.
         """
         raise NotImplementedError(
-            "Matching metadata is not implemented for '{}.{}'"
-            .format(cls.__module__, cls.__name__))
+            "Matching metadata is not implemented for "
+            f"'{cls.__module__}.{cls.__name__}'")
 
     @cache
     def fetch(self) -> None:
@@ -153,8 +153,8 @@ class Importer:
         The imported metadata is stored in :attr:`~papis.importer.Importer.ctx`.
         """
         raise NotImplementedError(
-            "Fetching metadata is not implemented for '{}.{}'"
-            .format(type(self).__module__, type(self).__name__))
+            "Fetching metadata is not implemented for "
+            f"'{type(self).__module__}.{type(self).__name__}'")
 
     def fetch_files(self) -> None:
         """Fetch files from the given :attr:`~papis.importer.Importer.uri`.
@@ -162,8 +162,8 @@ class Importer:
         The imported files are stored in :attr:`~papis.importer.Importer.ctx`.
         """
         raise NotImplementedError(
-            "Fetching files is not implemented for '{}.{}'"
-            .format(type(self).__module__, type(self).__name__))
+            "Fetching files is not implemented for "
+            f"'{type(self).__module__}.{type(self).__name__}'")
 
     def __str__(self) -> str:
         return f"{type(self).__name__}({self.name}, uri={self.uri})"

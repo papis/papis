@@ -41,8 +41,8 @@ def test_get_data(tmp_config: TemporaryConfiguration) -> None:
 def test_doi_to_data(tmp_config: TemporaryConfiguration,
                      monkeypatch: pytest.MonkeyPatch,
                      doi: str, basename: str) -> None:
-    infile = os.path.join(RESOURCEDIR, "{}.json".format(basename))
-    outfile = os.path.join(RESOURCEDIR, "{}_out.json".format(basename))
+    infile = os.path.join(RESOURCEDIR, f"{basename}.json")
+    outfile = os.path.join(RESOURCEDIR, f"{basename}_out.json")
 
     import papis.crossref
 

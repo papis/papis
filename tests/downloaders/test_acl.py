@@ -44,8 +44,8 @@ def test_acl_fetch(
     assert down is not None
 
     uid = os.path.basename(url)
-    infile = "ACL_{}.html".format(uid)
-    outfile = "ACL_{}_Out.json".format(uid)
+    infile = f"ACL_{uid}.html"
+    outfile = f"ACL_{uid}_Out.json"
 
     monkeypatch.setattr(
         down, "_get_body", lambda: resource_cache.get_remote_resource(infile, url)

@@ -121,7 +121,7 @@ def ltwa_abbreviate(full_journal_name: str, d: Optional[Dict[str, str]] = None) 
     words = full_journal_name.replace("-", " _").split(" ")
     for word in words:
         # add a full stop to allow [:-i] to function as intended
-        lower_word = "{}.".format(word.lower())
+        lower_word = f"{word.lower()}."
         hyphenation = False
 
         if "-" in lower_word:
@@ -137,7 +137,7 @@ def ltwa_abbreviate(full_journal_name: str, d: Optional[Dict[str, str]] = None) 
             if suffix in d:
                 # ...add it to the list.
                 if hyphenation:
-                    return_list.append("-{}".format(d[suffix]))
+                    return_list.append(f"-{d[suffix]}")
                 else:
                     return_list.append(d[suffix])
                 break
@@ -150,7 +150,7 @@ def ltwa_abbreviate(full_journal_name: str, d: Optional[Dict[str, str]] = None) 
             elif i == len(lower_word[:-1]):
                 # ...add the full word to the list.
                 if hyphenation:
-                    return_list.append("-{}".format(lower_word[:-1]))
+                    return_list.append(f"-{lower_word[:-1]}")
                 else:
                     return_list.append(lower_word[:-1])
 

@@ -19,7 +19,7 @@ def get_mock_script(name: str) -> str:
 
     from papis.config import escape_interp
 
-    return escape_interp("{} {} {}".format(sys.executable, script, name))
+    return escape_interp(f"{sys.executable} {script} {name}")
 
 
 @pytest.mark.library_setup(settings={

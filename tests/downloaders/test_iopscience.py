@@ -25,8 +25,8 @@ def test_iop_science_fetch(tmp_config: TemporaryConfiguration,
     assert down is not None
 
     uid = os.path.basename(url)
-    infile = "IOPScience_{}.html".format(uid)
-    outfile = "IOPScience_{}_Out.json".format(uid)
+    infile = f"IOPScience_{uid}.html"
+    outfile = f"IOPScience_{uid}_Out.json"
 
     monkeypatch.setattr(down, "_get_body",
                         lambda: resource_cache.get_remote_resource(infile, url))

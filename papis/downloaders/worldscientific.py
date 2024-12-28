@@ -42,7 +42,9 @@ class Downloader(papis.downloaders.Downloader):
         return durl
 
     def get_bibtex_url(self) -> Optional[str]:
-        url = "https://www.worldscientific.com/action/downloadCitation"\
-              "?format=bibtex&cookieSet=1&doi=%s" % self.get_doi()
+        url = (
+            "https://www.worldscientific.com/action/downloadCitation"
+            f"?format=bibtex&cookieSet=1&doi={self.get_doi()}")
         self.logger.debug("Using BibTeX URL: '%s'.", url)
+
         return url

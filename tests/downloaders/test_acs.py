@@ -43,8 +43,8 @@ def test_acs_fetch(tmp_config: TemporaryConfiguration,
     assert down is not None
 
     uid = os.path.basename(url)
-    infile = "ACS_{}.html".format(uid)
-    outfile = "ACS_{}_Out.json".format(uid)
+    infile = f"ACS_{uid}.html"
+    outfile = f"ACS_{uid}_Out.json"
 
     monkeypatch.setattr(down, "_get_body",
                         lambda: resource_cache.get_remote_resource(infile, url))
