@@ -100,9 +100,8 @@ def search(
 
     if not (0 < max_completions <= DBLP_MAX_COMPLETIONS):
         raise ValueError(
-            "Cannot request more than {} completions (got {})"
-            .format(DBLP_MAX_COMPLETIONS, max_completions)
-            )
+            f"Cannot request more than {DBLP_MAX_COMPLETIONS} completions "
+            f"(got {max_completions})")
 
     if output_format not in DBLP_FORMATS:
         raise ValueError(
