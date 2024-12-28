@@ -31,8 +31,8 @@ def run(document: papis.document.Document,
     """Main method to the rm command
     """
     db = papis.database.get()
-    _doc_folder = document.get_main_folder()
-    if not _doc_folder:
+    doc_folder = document.get_main_folder()
+    if not doc_folder:
         raise DocumentFolderNotFound(papis.document.describe(document))
 
     if filepath is not None:
@@ -41,9 +41,9 @@ def run(document: papis.document.Document,
         document.save()
         db.update(document)
         if git:
-            papis.git.remove(_doc_folder, filepath)
-            papis.git.add(_doc_folder, document.get_info_file())
-            papis.git.commit(_doc_folder, f"Remove file '{filepath}'")
+            papis.git.remove(doc_folder, filepath)
+            papis.git.add(doc_folder, document.get_info_file())
+            papis.git.commit(doc_folder, f"Remove file '{filepath}'")
 
     if notespath is not None:
         os.remove(notespath)
@@ -51,20 +51,19 @@ def run(document: papis.document.Document,
         document.save()
         db.update(document)
         if git:
-            papis.git.remove(_doc_folder, notespath)
-            papis.git.add(_doc_folder, document.get_info_file())
-            papis.git.commit(_doc_folder,
+            papis.git.remove(doc_folder, notespath)
+            papis.git.add(doc_folder, document.get_info_file())
+            papis.git.commit(doc_folder,
                              f"Remove notes file '{notespath}'")
 
     # if neither files nor notes were deleted -> delete whole document
     if not (filepath or notespath):
         if git:
-            _topfolder = os.path.dirname(os.path.abspath(_doc_folder))
-            papis.git.remove(_doc_folder, _doc_folder, recursive=True)
+            topfolder = os.path.dirname(os.path.abspath(doc_folder))
+            papis.git.remove(doc_folder, doc_folder, recursive=True)
             papis.git.commit(
-                _topfolder,
-                "Remove document '{}'".format(
-                    papis.document.describe(document)))
+                topfolder,
+                "Remove document '{}'".format(papis.document.describe(document)))
         else:
             papis.document.delete(document)
         db.delete(document)

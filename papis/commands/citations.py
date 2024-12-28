@@ -92,10 +92,10 @@ def cli(query: str,
                                                            _all)
 
     for i, document in enumerate(documents):
-        _has_citations_p = has_citations(document)
-        _has_cited_by_p = has_cited_by(document)
+        has_citations_p = has_citations(document)
+        has_cited_by_p = has_cited_by(document)
         if fetch_citations:
-            if _has_citations_p and force or not _has_citations_p:
+            if (has_citations_p and force) or not has_citations_p:
                 logger.info("[%d/%d] Fetching citations for '%s'.",
                             i + 1, len(documents),
                             papis.document.describe(document))
@@ -106,13 +106,13 @@ def cli(query: str,
                                  papis.document.describe(document), exc_info=exc)
 
         if update_from_database:
-            if _has_citations_p:
+            if has_citations_p:
                 logger.info("[%d/%d] Updating citations from library for '%s'.",
                             i + 1, len(documents),
                             papis.document.describe(document))
                 update_and_save_citations_from_database_from_doc(document)
         if fetch_cited_by:
-            if _has_cited_by_p and force or not _has_cited_by_p:
+            if (has_cited_by_p and force) or not has_cited_by_p:
                 logger.info(
                     "[%d/%d] Fetching cited-by references from library for '%s'",
                     i + 1, len(documents),

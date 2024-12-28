@@ -22,7 +22,7 @@ def test_match(tmp_config: TemporaryConfiguration):
     ("query", "expected"),
     [
         ("https://www.theses.fr/2014TOU30305", "2014TOU30305"),  # spell: disable
-        ("https://www.theses.fr/2014TOU30305.bib/?asdf=2", "2014TOU30305"),  # noqa: E501 # spell: disable
+        ("https://www.theses.fr/2014TOU30305.bib/?asdf=2", "2014TOU30305"),  # spell: disable
         ("2014TOU30305", "2014TOU30305"),  # spell: disable
         ("2014TOU", None),  # spell: disable
     ],

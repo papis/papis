@@ -152,11 +152,11 @@ class Database(papis.database.base.Database):
         return str(document[self.get_id_key()])
 
     def _get_doc_folder(self, document: papis.document.Document) -> str:
-        _folder = document.get_main_folder()
-        if _folder is None:
+        folder = document.get_main_folder()
+        if folder is None:
             raise DocumentFolderNotFound(papis.document.describe(document))
         else:
-            return _folder
+            return folder
 
     def create_index(self) -> None:
         """Create a brand new index, notice that if an index already
@@ -207,10 +207,13 @@ class Database(papis.database.base.Database):
         expensive and will be called only if no index is present, so
         at the time of building a brand new index.
         """
+        from itertools import chain
+
         logger.debug("Indexing the library, this might take a while...")
-        folders: List[str] = sum([get_folders(d) for d in self.get_dirs()], [])
+        folders: List[str] = list(
+            chain.from_iterable(get_folders(d) for d in self.get_dirs()))
         documents = folders_to_documents(folders)
-        schema_keys = self.get_schema_init_fields().keys()
+        schema_keys = list(self.get_schema_init_fields())
         writer = self.get_writer()
         for doc in documents:
             self.add_document_with_writer(doc, writer, schema_keys)

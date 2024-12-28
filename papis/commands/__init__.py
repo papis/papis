@@ -9,7 +9,7 @@ import papis.logging
 import papis.plugin
 
 COMMAND_EXTENSION_NAME = "papis.command"
-EXTERNAL_COMMAND_REGEX = re.compile(".*papis-([^ .]+)$")
+EXTERNAL_COMMAND_REGEX = re.compile(r".*papis-([^ .]+)$")
 
 
 class AliasedGroup(click.core.Group):
@@ -108,7 +108,7 @@ def get_external_scripts() -> Dict[str, Script]:
     :returns: a mapping of scripts that have been found.
     """
     import glob
-    paths = [papis.config.get_scripts_folder()] + os.environ.get("PATH", "").split(":")
+    paths = [papis.config.get_scripts_folder(), *os.environ.get("PATH", "").split(":")]
 
     scripts: Dict[str, Script] = {}
     for path in paths:

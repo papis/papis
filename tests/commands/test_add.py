@@ -40,7 +40,7 @@ def test_add_run(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
     from papis.commands.add import run
 
     # add non-existent file
-    with pytest.raises(OSError, match="exist.pdf"):
+    with pytest.raises(OSError, match=r"exist.pdf"):
         run(
             ["/path/does/not/exist.pdf"],
             data={"author": "Bohm", "title": "My effect"})

@@ -383,16 +383,16 @@ def bibtexparser_entry_to_papis(entry: Dict[str, Any]) -> Dict[str, Any]:
     """
     from bibtexparser.latexenc import latex_to_unicode
 
-    _k = papis.document.KeyConversionPair
+    cls = papis.document.KeyConversionPair
     key_conversion = [
-        _k("ID", [{"key": "ref", "action": None}]),
-        _k("ENTRYTYPE", [{"key": "type", "action": None}]),
-        _k("link", [{"key": "url", "action": None}]),
-        _k("title", [{
+        cls("ID", [{"key": "ref", "action": None}]),
+        cls("ENTRYTYPE", [{"key": "type", "action": None}]),
+        cls("link", [{"key": "url", "action": None}]),
+        cls("title", [{
             "key": "title",
             "action": lambda x: latex_to_unicode(x.replace("\n", " "))
             }]),
-        _k("author", [{
+        cls("author", [{
             "key": "author_list",
             "action": lambda author: (
                 papis.document.split_authors_name([author], separator="and")

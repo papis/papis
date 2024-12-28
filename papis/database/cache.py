@@ -1,5 +1,6 @@
 import os
 import sys
+from itertools import chain
 from typing import Dict, List, Match, Optional, Pattern, Tuple
 
 import papis.utils
@@ -80,8 +81,8 @@ def filter_documents(
                                     documents)
         filtered_docs = [d for d in result if d is not None]
 
-    _delta = 1000 * (time.time() - begin_t)
-    logger.debug("Finished filtering in %.2fms (%d docs).", _delta, len(filtered_docs))
+    delta = 1000 * (time.time() - begin_t)
+    logger.debug("Finished filtering in %.2fms (%d docs).", delta, len(filtered_docs))
 
     return filtered_docs
 
@@ -143,9 +144,9 @@ class Database(papis.database.base.Database):
                 self.documents = pickle.load(fd)
         elif self.get_dirs():
             logger.info("Indexing library. This might take a while...")
-            folders: List[str] = sum(
-                [papis.utils.get_folders(d) for d in self.get_dirs()],
-                [])
+            folders: List[str] = list(
+                chain.from_iterable(papis.utils.get_folders(d) for d in self.get_dirs())
+                )
             self.documents = papis.utils.folders_to_documents(folders)
             logger.debug("Computing 'papis_id' for each document.")
             for doc in self.documents:
@@ -164,9 +165,9 @@ class Database(papis.database.base.Database):
         self.maybe_compute_id(document)
         docs.append(document)
         assert docs[-1].get_main_folder() == document.get_main_folder()
-        _folder = document.get_main_folder()
-        assert _folder is not None
-        assert os.path.exists(_folder)
+        folder = document.get_main_folder()
+        assert folder is not None
+        assert os.path.exists(folder)
         self.save()
 
     def update(self, document: papis.document.Document) -> None:

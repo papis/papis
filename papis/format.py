@@ -81,7 +81,7 @@ class _PythonStringFormatter(string.Formatter):
 
                 istart, iend = int(start), int(end)
             except ValueError:
-                raise ValueError(f"Invalid format specifier '{format_spec}'")
+                raise ValueError(f"Invalid format specifier '{format_spec}'") from None
 
             if isinstance(value, str):
                 return " ".join(value.split(" ")[istart:iend])
@@ -310,7 +310,7 @@ def get_formatter(name: Optional[str] = None) -> Formatter:
         except Exception as exc:
             logger.error("Invalid formatter '%s'. Registered formatters are '%s'.",
                          name, "', '".join(get_available_formatters()), exc_info=exc)
-            raise InvalidFormatterError(f"Invalid formatter: '{name}'")
+            raise InvalidFormatterError(f"Invalid formatter: '{name}'") from None
 
         FORMATTER[name] = f
         logger.debug("Using '%s' formatter.", name)
@@ -352,7 +352,7 @@ def __getattr__(name: str) -> Any:
     if name in _DEPRECATIONS:
         from warnings import warn
         warn(f"{name!r} is deprecated, use {_DEPRECATIONS[name].__name__!r} instead",
-             DeprecationWarning)
+             DeprecationWarning, stacklevel=2)
         return _DEPRECATIONS[name]
 
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

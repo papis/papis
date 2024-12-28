@@ -511,10 +511,13 @@ def cli(files: List[str],
         from_importer, download_files=download_files)
 
     if not from_importer and files:
-        matching_importers = sum((
-            papis.utils.get_matching_importer_or_downloader(
-                f, download_files=download_files)
-            for f in files), [])
+        from itertools import chain
+
+        matching_importers = list(
+            chain.from_iterable(
+                papis.utils.get_matching_importer_or_downloader(
+                    f, download_files=download_files)
+                for f in files))
 
         if matching_importers and not batch:
             logger.info("These importers where automatically matched. "
