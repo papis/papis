@@ -495,7 +495,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
         raise FileNotFoundError(f"File '{path}' does not exist")
 
-    def do_POST(self) -> None:              # noqa: N802
+    def do_POST(self) -> None:
         """
         HTTP POST route definitions
         """
@@ -513,7 +513,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         ]
         self.process_routes(routes)
 
-    def do_GET(self) -> None:               # noqa: N802
+    def do_GET(self) -> None:
         """
         HTTP GET route definitions
         """

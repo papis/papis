@@ -40,7 +40,7 @@ def test_add_run(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
     from papis.commands.add import run
 
     # add non-existent file
-    with pytest.raises(OSError, match="exist.pdf"):
+    with pytest.raises(OSError, match=r"exist.pdf"):
         run(
             ["/path/does/not/exist.pdf"],
             data={"author": "Bohm", "title": "My effect"})
@@ -179,8 +179,6 @@ def test_add_folder_name_cli(tmp_library: TemporaryLibrary) -> None:
 
     files = doc.get_files()
     assert len(files) == 1
-
-    basename, _ = os.path.splitext(os.path.basename(files[0]))
     assert os.path.basename(files[0]) == f"test-the-apology{ext}"
 
 

@@ -31,7 +31,7 @@ class Downloader(papis.downloaders.Downloader):
         >>> d = Downloader("https://www.usenix.org/conference/nsdi23/presentation/liu-tianfeng")
         >>> d.get_identifier()
         'nsdi23-liu-tianfeng'
-        """  # noqa: E501
+        """
         o = urlparse(self.uri)
         path = o.path
         path_components = list(path.split("/"))

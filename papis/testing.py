@@ -53,11 +53,10 @@ def create_random_file(filetype: Optional[str] = None,
             )
         suffix = ".epub" if suffix is None else suffix
     elif filetype == "djvu":
-        buf = bytes(
-            [0x41, 0x54, 0x26, 0x54, 0x46, 0x4F, 0x52, 0x4D]
-            + [0x00, 0x00, 0x00, 0x00]
-            + [0x44, 0x4A, 0x56, 0x4D]
-            )
+        buf = bytes([
+            0x41, 0x54, 0x26, 0x54, 0x46, 0x4F, 0x52, 0x4D,
+            0x00, 0x00, 0x00, 0x00,
+            0x44, 0x4A, 0x56, 0x4D])
         suffix = ".djvu" if suffix is None else suffix
     elif filetype == "text":
         buf = b"papis-test-file-contents"
@@ -100,7 +99,7 @@ PAPIS_TEST_DOCUMENTS = [
         "note": "First turing machine paper foundation of cs",
         "pages": "230--265",
         "title": "On Computable Numbers with an Application to the Entscheidungsproblem",           # noqa: E501
-        "url": "https://api.wiley.com/onlinelibrary/tdm/v1/articles/10.1112%2Fplms%2Fs2-42.1.230",  # noqa: E501
+        "url": "https://api.wiley.com/onlinelibrary/tdm/v1/articles/10.1112%2Fplms%2Fs2-42.1.230",
         "volume": "s2-42",
         "year": 1937,
         "_test_files": 2,

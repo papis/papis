@@ -189,7 +189,7 @@ def general_open(file_name: str,
 
     # NOTE: 'opener' can be a command with arguments, so we split it properly
     is_windows = sys.platform == "win32"
-    cmd = shlex.split(str(opener), posix=not is_windows) + [file_name]
+    cmd = [*shlex.split(str(opener), posix=not is_windows), file_name]
 
     import shutil
     if shutil.which(cmd[0]) is None:

@@ -114,7 +114,7 @@ def run(document: papis.document.Document,
     if git:
         papis.git.add_and_commit_resources(
             doc_folder,
-            new_filenames + [document.get_info_file()],
+            [*new_filenames, document.get_info_file()],
             "Add new files to '{}'".format(papis.document.describe(document)))
 
 

@@ -65,11 +65,11 @@ class Downloader(papis.downloaders.Downloader):
         for author in authors:
             affspan = author.find_all("span", attrs={"class": "overlay"})
             afftext = affspan[0].text if affspan else ""
-            fullname = re.sub(
-                ",", "", cleanregex.sub("", author.text.replace(afftext, "")))
+            fullname = (
+                cleanregex.sub("", author.text.replace(afftext, "")).replace(",", ""))
             split_fullname = re.split(r"\s+", fullname)
-            cafftext = re.sub(" ,", ",",
-                              morespace.sub(" ", cleanregex.sub("", afftext)))
+            cafftext = (
+                morespace.sub(" ", cleanregex.sub("", afftext)).replace(" ,", ","))
 
             if "Reviewing Editor" in fullname:
                 data["editor"] = cleanregex.sub(

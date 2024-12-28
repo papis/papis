@@ -27,7 +27,8 @@ def test_usenix_match() -> None:
         "https://usenix.org/conference",
         "http://usenix.org/conference",
         "https://usenix.org/bogus22/link/author",
-        ) + tuple(url for url, _ in USENIX_LINK_URLS)
+        *(url for url, _ in USENIX_LINK_URLS)
+        )
     invalid_urls = (
         "https://usewin.org/article/123",
         "https://usenix.com/article/123",
