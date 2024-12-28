@@ -122,11 +122,12 @@ class OptionsList(ConditionalContainer, Generic[Option]):
                 < self.options_headers_linecount[self.current_index]):
             return [("class:options_list.selected_margin", "|")]
         else:
-            marked_lines = []
+            marked_lines: List[int] = []
             for index in self.marks:
                 start_line = self.index_to_line(index)
                 end_line = start_line + self.options_headers_linecount[index]
                 marked_lines.extend(range(start_line, end_line))
+
             if line in marked_lines:
                 return [("class:options_list.marked_margin", "#")]
             else:
