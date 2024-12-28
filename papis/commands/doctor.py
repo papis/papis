@@ -430,9 +430,9 @@ def duplicated_values_check(doc: papis.document.Document) -> List[Error]:
 
     def make_hashable(f: Any) -> Any:
         if isinstance(f, list):
-            return tuple([make_hashable(entry) for entry in f])
+            return tuple(make_hashable(entry) for entry in f)
         elif isinstance(f, dict):
-            return tuple([(k, make_hashable(v)) for k, v in f.items()])
+            return tuple((k, make_hashable(v)) for k, v in f.items())
         else:
             return f
 
