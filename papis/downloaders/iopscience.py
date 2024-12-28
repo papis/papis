@@ -26,7 +26,7 @@ class Downloader(papis.downloaders.Downloader):
 
     @classmethod
     def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
-        url = re.sub(r"/pdf", "", url)
+        url = url.replace("/pdf", "")
         if re.match(r".*iopscience\.iop\.org.*", url):
             return Downloader(url)
         else:

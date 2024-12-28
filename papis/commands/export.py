@@ -191,17 +191,17 @@ def cli(query: str,
     import shutil
     for document in documents:
         if folder:
-            _doc_folder = document.get_main_folder()
-            _doc_folder_name = document.get_main_folder_name()
-            outdir = out or _doc_folder_name
-            if not _doc_folder or not _doc_folder_name or not outdir:
+            doc_folder = document.get_main_folder()
+            doc_folder_name = document.get_main_folder_name()
+            outdir = out or doc_folder_name
+            if not doc_folder or not doc_folder_name or not outdir:
                 raise DocumentFolderNotFound(papis.document.describe(document))
             if not len(documents) == 1:
-                outdir = os.path.join(out, _doc_folder_name)
+                outdir = os.path.join(out, doc_folder_name)
             logger.info(
                 "Exporting document '%s' to '%s'.",
                 papis.document.describe(document), outdir)
-            shutil.copytree(_doc_folder, outdir)
+            shutil.copytree(doc_folder, outdir)
 
 
 @click.command("export")

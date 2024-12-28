@@ -201,7 +201,7 @@ class Database(DatabaseBase):
             from papis.utils import get_folders, folders_to_documents
 
             logger.info("Indexing library. This might take a while...")
-            folders: List[str] = sum((get_folders(d) for d in self.lib.paths), [])
+            folders = [f for path in self.lib.paths for f in get_folders(path)]
             self.documents = folders_to_documents(folders)
 
             from papis.id import ID_KEY_NAME
