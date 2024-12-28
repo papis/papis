@@ -105,24 +105,25 @@ def diffshow(texta: str,
         texta.splitlines(keepends=True),
         textb.splitlines(keepends=True),)
 
-    _diffs = list(diffs)
-    if len(_diffs) == 1:
+    diffs = list(diffs)
+    if len(diffs) == 1:
         # this means that _diffs is just a new line character, so there is
         # no real difference, in that case then do not instantiate a prompt
         return
 
-    raw_text = _diffs + [
+    raw_text = [
+        *diffs,
         "^^^^^^^^^\ndiff from\n",
         f"----- {namea}\n",
         f"+++++ {nameb}\n",
     ]
 
     formatted_text = FormattedText([
-        line.startswith("@") and ("fg:ansimagenta bg:ansiblack", line)
-        or line.startswith("+") and ("fg:ansigreen bg:ansiblack", line)
-        or line.startswith("-") and ("fg:ansired bg:ansiblack", line)
-        or line.startswith("?") and ("fg:ansiyellow bg:ansiblack", line)
-        or line.startswith("^^^") and ("bg:ansiblack fg:ansimagenta", line)
+        (line.startswith("@") and ("fg:ansimagenta bg:ansiblack", line))
+        or (line.startswith("+") and ("fg:ansigreen bg:ansiblack", line))
+        or (line.startswith("-") and ("fg:ansired bg:ansiblack", line))
+        or (line.startswith("?") and ("fg:ansiyellow bg:ansiblack", line))
+        or (line.startswith("^^^") and ("bg:ansiblack fg:ansimagenta", line))
         or ("", line)
         for line in raw_text
     ])
@@ -213,7 +214,7 @@ def diffdict(dicta: Dict[str, Any],
 
     actions = [
         Action(name="Add", key="y", action=lambda e: oset(e, "add", True)),
-    ] + actions
+        *actions]
 
     for key in keys:
 

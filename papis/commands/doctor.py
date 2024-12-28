@@ -1123,13 +1123,13 @@ def cli(query: str,
         return
 
     if all_checks:
-        _checks = list(REGISTERED_CHECKS)
+        checks = list(REGISTERED_CHECKS)
     else:
         # NOTE: ensure uniqueness of the checks so we don't run the same ones
-        _checks = list(set(_checks))
+        checks = list(set(_checks))
 
     new_checks = []
-    for check in _checks:
+    for check in checks:
         new_check = DEPRECATED_CHECK_NAMES.get(check)
         if new_check is not None:
             check = new_check
@@ -1138,9 +1138,9 @@ def cli(query: str,
                            check, new_check)
 
         new_checks.append(check)
-    _checks = new_checks
+    checks = new_checks
 
-    errors = gather_errors(documents, checks=_checks)
+    errors = gather_errors(documents, checks=checks)
     if errors:
         logger.warning("Found %s errors.", len(errors))
     else:

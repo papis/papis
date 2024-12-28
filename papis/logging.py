@@ -144,7 +144,7 @@ def setup(level: Optional[Union[int, str]] = None,
         try:
             level = int(getattr(logging, level))
         except AttributeError:
-            raise ValueError(f"Unknown logger level: '{level}'")
+            raise ValueError(f"Unknown logger level: '{level}'") from None
     else:
         if logging.getLevelName(level).startswith("Level"):
             raise ValueError(f"Unknown logger level: '{level}'")
