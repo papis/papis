@@ -283,7 +283,9 @@ def run(paths: List[str],
     # rename all the given file names
     from papis.paths import symlink, rename_document_files
 
-    renamed_file_list = rename_document_files(tmp_document, in_document_paths)
+    renamed_file_list = rename_document_files(
+        tmp_document, in_document_paths,
+        file_name_format=file_name)
 
     import shutil
 
@@ -298,7 +300,8 @@ def run(paths: List[str],
             papis.utils.open_file(in_file_path)
 
         if not batch and confirm and not papis.tui.utils.confirm(
-                f"Add file '{os.path.basename(in_file_path)}' to document?"):
+                f"Add file '{os.path.basename(in_file_path)}' "
+                f"(renamed to '{os.path.basename(out_file_path)}') to document?"):
             continue
 
         if link:

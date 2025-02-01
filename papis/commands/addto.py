@@ -49,6 +49,7 @@ logger = papis.logging.get_logger(__name__)
 
 def run(document: papis.document.Document,
         filepaths: List[str],
+        file_name: Optional[str] = None,
         link: bool = False,
         git: bool = False) -> None:
     doc_folder = document.get_main_folder()
@@ -58,7 +59,9 @@ def run(document: papis.document.Document,
     import shutil
     from papis.paths import symlink, rename_document_files
 
-    new_file_list = rename_document_files(document, filepaths)
+    new_file_list = rename_document_files(
+        document, filepaths, file_name_format=file_name
+    )
 
     for in_file_path, out_file_name in zip(filepaths, new_file_list):
         out_file_path = os.path.join(doc_folder, out_file_name)
@@ -130,10 +133,7 @@ def cli(query: str,
 
     document = docs[0]
 
-    if file_name is not None:  # Use args if set
-        papis.config.set("add-file-name", papis.config.escape_interp(file_name))
-
     try:
-        run(document, files + urls, git=git, link=link)
+        run(document, files + urls, file_name=file_name, git=git, link=link)
     except Exception as exc:
         logger.error("Failed to add files.", exc_info=exc)
