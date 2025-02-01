@@ -1,3 +1,19 @@
+# VERSION 0.14.1
+
+## Features
+
+- Add a jinja2 Environment to `Jinja2Formatter`
+  [#930](https://github.com/papis/papis/pull/930).
+
+## Bug Fixes
+
+- Do not run tests that need git when unavailable
+  [#945](https://github.com/papis/papis/pull/945).
+- Fix `--no-open` and `--confirm` when adding files
+  [#957](https://github.com/papis/papis/pull/957).
+- Fix `--file-name` being ignored when adding files
+  [#964](https://github.com/papis/papis/pull/964).
+
 # VERSION 0.14 (November 8, 2024)
 
 ## Dependency changes
