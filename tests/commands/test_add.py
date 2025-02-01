@@ -151,12 +151,14 @@ def test_add_folder_name_cli(tmp_library: TemporaryLibrary) -> None:
     cli_runner = PapisRunner()
 
     filename = tmp_library.create_random_file()
+    _, ext = os.path.splitext(filename)
     result = cli_runner.invoke(
         cli,
         ["--set", "author", "Aristotel",
          "--set", "title", "The apology of Socrates",
          "--batch",
-         "--folder-name", "the-apology",
+         "--folder-name", "test-the-apology",
+         "--file-name", f"test-the-apology{ext}",
          filename])
     assert result.exit_code == 0
 
@@ -165,8 +167,13 @@ def test_add_folder_name_cli(tmp_library: TemporaryLibrary) -> None:
 
     folder = doc.get_main_folder()
     assert folder is not None
-    assert os.path.basename(folder) == "the-apology"
-    assert len(doc.get_files()) == 1
+    assert os.path.basename(folder) == "test-the-apology"
+
+    files = doc.get_files()
+    assert len(files) == 1
+
+    basename, _ = os.path.splitext(os.path.basename(files[0]))
+    assert os.path.basename(files[0]) == f"test-the-apology{ext}"
 
 
 def test_add_from_folder_cli(tmp_library: TemporaryLibrary,
