@@ -146,7 +146,7 @@ def cli(
                 "The document with papis_id '%s' contains tags that aren't "
                 "defined as a list of items. As `papis tag` only supports "
                 "lists, tagging has been aborted and no documents have been "
-                "changed. You can use `papis doctor --check key-type --fix` to "
+                "changed. You can use `papis doctor --checks key-type --fix` to "
                 "convert all your tags to use lists.",
                 document["papis_id"],
             )
