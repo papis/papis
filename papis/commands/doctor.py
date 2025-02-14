@@ -63,14 +63,14 @@ Examples
 
     .. code:: sh
 
-        papis doctor --check files einstein
+        papis doctor --checks files einstein
 
 - To check if any unwanted HTML tags are present in your documents (especially
   abstracts can be full of additional HTML or XML tags) use
 
     .. code:: sh
 
-        papis doctor --explain --check html-tags einstein
+        papis doctor --explain --checks html-tags einstein
 
   The ``--explain`` flag can be used to give additional details of checks that
   failed. Some fixes such as this also have automatic fixers. Here, we can just
@@ -78,7 +78,7 @@ Examples
 
     .. code:: sh
 
-        papis doctor --fix --check html-tags einstein
+        papis doctor --fix --checks html-tags einstein
 
 - If an automatic fix is not possible, some checks also have suggested
   commands or tips to fix the issue that was found. For example, if a key
@@ -86,7 +86,7 @@ Examples
 
     .. code:: sh
 
-        papis doctor --suggestion --check keys-missing einstein
+        papis doctor --suggestion --checks keys-missing einstein
         >> Suggestion: papis edit --doc-folder /path/to/folder
 
   If this is the case, you can also run the following to automatically open
@@ -94,7 +94,7 @@ Examples
 
     .. code:: sh
 
-        papis doctor --edit --check keys-missing einstein
+        papis doctor --edit --checks keys-missing einstein
 
 
 Implementing additional checks
