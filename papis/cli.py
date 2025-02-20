@@ -11,6 +11,27 @@ import papis.database
 DecoratorCallable = Callable[..., Any]
 
 
+class FormattedStringParamType(click.ParamType):
+    #: Name of the parameter type (shown in the command-line).
+    name: str = "formatted-text"
+
+    def convert(self,
+                value: Any,
+                param: Optional[click.Parameter],
+                ctx: Optional[click.Context]) -> Any:
+        from papis.strings import FormattedString
+
+        # NOTE: this is required to handle default values which have a formatter
+        # already set and we do not want to remove it
+        if isinstance(value, FormattedString):
+            return value
+
+        return str(value)
+
+    def __repr__(self) -> str:
+        return "FORMATTEDSTRING"
+
+
 def bool_flag(*args: Any, **kwargs: Any) -> DecoratorCallable:
     """A wrapper to :func:`click.option` that hardcodes a boolean flag option."""
     # NOTE: we set the flag_value regardless because the default might be a
