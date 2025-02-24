@@ -2,6 +2,12 @@ import sys
 import os
 from typing import Any, Dict
 
+from papis.strings import FormattedString
+
+
+def _f(value: str) -> FormattedString:
+    return FormattedString("python", value)
+
 
 def get_default_opener() -> str:
     """Get the default file opener for the current system
@@ -41,8 +47,9 @@ settings: Dict[str, Any] = {
     "doc-url-key-name": "doc_url",
     "default-library": "papers",
     "format-doc-name": "doc",
-    "match-format": "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}",
-    "header-format": (
+    "match-format": _f(
+        "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}"),
+    "header-format": _f(
         "<ansired>{doc.html_escape[title]}</ansired>\n"
         " <ansigreen>{doc.html_escape[author]}</ansigreen>\n"
         "  <ansiblue>({doc.html_escape[year]})</ansiblue> "
@@ -51,7 +58,7 @@ settings: Dict[str, Any] = {
     "header-format-file": None,
     "info-allow-unicode": True,
     "unique-document-keys": ["doi", "isbn", "isbn10", "eprint", "url", "doc_url"],
-    "document-description-format": "{doc[title]} - {doc[author]}",
+    "document-description-format": _f("{doc[title]} - {doc[author]}"),
     "sort-field": None,
     "sort-reverse": False,
     "formatter": "python",
@@ -59,7 +66,7 @@ settings: Dict[str, Any] = {
     "doc-paths-extra-chars": "",
     "doc-paths-word-separator": "-",
     "ref-word-separator": "_",
-    "library-header-format": (
+    "library-header-format": _f(
         "<ansired>{library[name]}</ansired>"
         " <ansiblue>{library[paths]}</ansiblue>"
     ),
@@ -82,12 +89,12 @@ settings: Dict[str, Any] = {
     "bibtex-unicode": False,
     "bibtex-export-file": False,
     "multiple-authors-separator": " and ",
-    "multiple-authors-format": "{au[family]}, {au[given]}",
+    "multiple-authors-format": _f("{au[family]}, {au[given]}"),
 
     # add
-    "ref-format": "{doc[title]:.15} {doc[author]:.6} {doc[year]}",
-    "add-folder-name": "",
-    "add-file-name": None,
+    "ref-format": _f("{doc[title]:.15} {doc[author]:.6} {doc[year]}"),
+    "add-folder-name": _f(""),
+    "add-file-name": _f(""),
     "add-subfolder": "",
     "add-confirm": False,
     "add-edit": False,
@@ -99,7 +106,7 @@ settings: Dict[str, Any] = {
 
     # browse
     "browse-key": "auto",
-    "browse-query-format": "{doc[title]} {doc[author]}",
+    "browse-query-format": _f("{doc[title]} {doc[author]}"),
     "search-engine": "https://duckduckgo.com",
 
     # edit
@@ -142,8 +149,8 @@ settings: Dict[str, Any] = {
     "open-mark": False,
     "mark-key-name": "marks",
     "mark-format-name": "mark",
-    "mark-header-format": "{mark[name]} - {mark[value]}",
-    "mark-match-format": "{mark[name]} - {mark[value]}",
+    "mark-header-format": _f("{mark[name]} - {mark[value]}"),
+    "mark-match-format": _f("{mark[name]} - {mark[value]}"),
     "mark-opener-format": get_default_opener(),
 
     # serve
@@ -231,15 +238,9 @@ settings: Dict[str, Any] = {
     "fzf-binary": "fzf",
     "fzf-extra-flags": ["--ansi", "--multi", "-i"],
     "fzf-extra-bindings": ["ctrl-s:jump"],
-    "fzf-header-format": ("{c.Fore.MAGENTA}"
-                          "{doc[title]:<70.70}"
-                          "{c.Style.RESET_ALL}"
-                          " :: "
-                          "{c.Fore.CYAN}"
-                          "{doc[author]:<20.20}"
-                          "{c.Style.RESET_ALL}"
-                          "{c.Fore.YELLOW}"
-                          "«{doc[year]:4}»"
-                          "{c.Style.RESET_ALL}"
-                          ":{doc[tags]}"),
+    "fzf-header-format": _f(
+        "{c.Fore.MAGENTA}{doc[title]:<70.70}{c.Style.RESET_ALL}"
+        " :: "
+        "{c.Fore.CYAN}{doc[author]:<20.20}{c.Style.RESET_ALL}"
+        "{c.Fore.YELLOW}«{doc[year]:4}»{c.Style.RESET_ALL}:{doc[tags]}"),
 }
