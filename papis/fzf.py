@@ -15,7 +15,7 @@ MIN_FZF_VERSION = (0, 38, 0)
 
 
 def fzf_version(exe: str = "fzf") -> Tuple[int, int, int]:
-    result = sp.run([exe, "--version"], capture_output=True)
+    result = sp.run([exe, "--version"], capture_output=True, check=True)
     version, _ = result.stdout.decode("utf-8").split()
 
     parts = version.split(".")
@@ -52,7 +52,7 @@ class Browse(Command[T]):
     command = "become(echo browse {+n})"
     key = "ctrl-b"
 
-    def run(self, docs: List[T]) -> List[T]:
+    def run(self, docs: List[T]) -> List[T]:  # noqa: PLR6301
         from papis.commands.browse import run
         for doc in docs:
             if isinstance(doc, papis.document.Document):
@@ -65,7 +65,7 @@ class Choose(Command[T]):
     command = "become(echo choose {+n})"
     key = "enter"
 
-    def run(self, docs: List[T]) -> List[T]:
+    def run(self, docs: List[T]) -> List[T]:  # noqa: PLR6301
         return docs
 
 
@@ -74,7 +74,7 @@ class Edit(Command[T]):
     command = "become(echo edit {+n})"
     key = "ctrl-e"
 
-    def run(self, docs: List[T]) -> List[T]:
+    def run(self, docs: List[T]) -> List[T]:  # noqa: PLR6301
         from papis.commands.edit import run
         for doc in docs:
             if isinstance(doc, papis.document.Document):
@@ -87,7 +87,7 @@ class EditNote(Command[T]):
     command = "become(echo edit_notes {+n})"
     key = "ctrl-q"
 
-    def run(self, docs: List[T]) -> List[T]:
+    def run(self, docs: List[T]) -> List[T]:  # noqa: PLR6301
         from papis.commands.edit import edit_notes
         for doc in docs:
             if isinstance(doc, papis.document.Document):
@@ -100,7 +100,7 @@ class Open(Command[T]):
     command = "become(echo open {+n})"
     key = "ctrl-o"
 
-    def run(self, docs: List[T]) -> List[T]:
+    def run(self, docs: List[T]) -> List[T]:  # noqa: PLR6301
         from papis.commands.open import run
         for doc in docs:
             if isinstance(doc, papis.document.Document):

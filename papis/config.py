@@ -134,7 +134,7 @@ class Configuration(configparser.ConfigParser):
         # evaluate the python config
         configpy = get_configpy_file()
         if os.path.exists(configpy):
-            with open(configpy) as fd:
+            with open(configpy, encoding="utf-8") as fd:
                 # NOTE: this includes the `globals()` so that the user config.py
                 # can add entries to the global namespace. This was motivated
                 # by adding filters to `Jinja2Formatter.env`, which may be separated
@@ -265,7 +265,6 @@ def get_config_file() -> str:
         :func:`get_config_folder`, but can be overwritten using
         :func:`set_config_file`.
     """
-
     if OVERRIDE_VARS["file"] is not None:
         config_file = OVERRIDE_VARS["file"]
     else:
