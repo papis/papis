@@ -14,7 +14,7 @@ DOCTOR_RESOURCES = os.path.join(os.path.dirname(__file__), "resources")
 def test_files_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.commands.doctor import files_check
 
-    with tempfile.NamedTemporaryFile("w") as tmp:
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8") as tmp:
         folder = os.path.dirname(tmp.name)
         doc = papis.document.from_data({
             "files": [os.path.basename(tmp.name), "non-existent-file"],

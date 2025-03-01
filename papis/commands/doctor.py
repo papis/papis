@@ -1130,14 +1130,15 @@ def cli(query: str,
 
     new_checks = []
     for check in checks:
-        new_check = DEPRECATED_CHECK_NAMES.get(check)
-        if new_check is not None:
-            check = new_check
+        check_name = check
+        new_check_name = DEPRECATED_CHECK_NAMES.get(check)
+        if new_check_name is not None:
+            check_name = new_check_name
             logger.warning("Check '%s' is deprecated and has been replace by "
                            "'%s'. Please use this in the future.",
-                           check, new_check)
+                           check_name, new_check_name)
 
-        new_checks.append(check)
+        new_checks.append(check_name)
     checks = new_checks
 
     errors = gather_errors(documents, checks=checks)

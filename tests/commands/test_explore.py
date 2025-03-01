@@ -31,7 +31,7 @@ def test_explore_bibtex_cli(tmp_library: TemporaryLibrary) -> None:
         ["lib", "krishnamurti", "export", "--format", "bibtex", "--out", path])
     assert result.exit_code == 0
 
-    with open(path) as fd:
+    with open(path, encoding="utf-8") as fd:
         exported_bibtex = fd.read()
 
     assert exported_bibtex == (
@@ -55,7 +55,7 @@ def test_explore_yaml_cli(tmp_library: TemporaryLibrary) -> None:
         ["lib", "popper", "export", "--format", "yaml", "--out", path])
     assert result.exit_code == 0
 
-    with open(path) as fd:
+    with open(path, encoding="utf-8") as fd:
         exported_yaml = fd.read()
 
     assert re.match(
@@ -80,7 +80,7 @@ def test_explore_citations_and_json_cli(tmp_library: TemporaryLibrary) -> None:
         ["citations", "krishnamurti", "export", "--format", "json", "--out", path])
     assert result.exit_code == 0
 
-    with open(path) as fd:
+    with open(path, encoding="utf-8") as fd:
         exported_json = fd.read()
 
     assert exported_json == "[]"
