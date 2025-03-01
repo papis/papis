@@ -1,4 +1,4 @@
-name: Build Windows release
+name: Windows
 
 on:
   push:
@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   build-windows-release:
+    name: Build Release
     runs-on: windows-latest
     strategy:
       fail-fast: true
