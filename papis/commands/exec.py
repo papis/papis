@@ -40,7 +40,7 @@ import click
 
 
 def run(_file: str) -> None:
-    with open(_file) as f:
+    with open(_file, encoding="utf-8") as f:
         exec(f.read())
 
 

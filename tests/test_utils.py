@@ -20,7 +20,9 @@ def test_get_cache_home(tmp_config: TemporaryConfiguration, monkeypatch) -> None
 @pytest.mark.skipif(sys.platform != "linux", reason="uses linux tools")
 def test_general_open_with_spaces(tmp_config: TemporaryConfiguration) -> None:
     suffix = "File with at least a couple of spaces"
-    with tempfile.NamedTemporaryFile("w", suffix=suffix, delete=False) as f:
+    with tempfile.NamedTemporaryFile(
+            "w", encoding="utf-8", suffix=suffix, delete=False
+            ) as f:
         filename = f.name
         f.write("Some content")
 
@@ -34,7 +36,7 @@ def test_general_open_with_spaces(tmp_config: TemporaryConfiguration) -> None:
         wait=True
     )
 
-    with open(filename) as fd:
+    with open(filename, encoding="utf-8") as fd:
         content = fd.read()
 
     assert content == "Sume cuntent"

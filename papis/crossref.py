@@ -125,7 +125,7 @@ key_conversion = [
     }]),
     KeyConversionPair("link", [{
         "key": str(papis.config.get("doc-url-key-name")),
-        "action": lambda x: _crossref_link(x)
+        "action": lambda x: _crossref_link(x)  # noqa: PLW0108
     }]),
     KeyConversionPair("issued", [
         {"key": "year", "action": lambda x: _crossref_date_parts(x, 0)},
@@ -149,7 +149,7 @@ key_conversion = [
         ]
     }]),
     KeyConversionPair("title", [
-        {"key": None, "action": lambda t: " ".join(t)}]),
+        {"key": None, "action": lambda t: " ".join(t)}]),  # noqa: PLW0108
     KeyConversionPair("type", [
         {"key": None, "action": lambda t: type_converter[t]}]),
     KeyConversionPair("volume", [papis.document.EmptyKeyConversion]),

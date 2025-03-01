@@ -184,7 +184,7 @@ def cli(dir_path: Optional[str]) -> None:
         if not has_config_file:
             config.remove_section("papers")
 
-        with open(config_file, "w") as configfile:
+        with open(config_file, "w", encoding="utf-8") as configfile:
             config.write(configfile)
 
         logger.info("Configuration file saved at '%s'.", config_file)

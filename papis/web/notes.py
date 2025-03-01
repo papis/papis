@@ -26,7 +26,7 @@ def widget(libname: str, doc: papis.document.Document) -> None:
     if papis.notes.has_notes(doc):
         filepath = papis.notes.notes_path(doc)
         if os.path.exists(filepath):
-            with open(filepath) as fd:
+            with open(filepath, encoding="utf-8") as fd:
                 notes_content = fd.read()
 
     with wh.flex("center"):

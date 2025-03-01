@@ -126,7 +126,7 @@ def explorer(ctx: click.Context, yamlfile: str) -> None:
     """
     logger.info("Reading YAML file '%s'...", yamlfile)
 
-    with open(yamlfile) as fd:
+    with open(yamlfile, encoding="utf-8") as fd:
         docs = [papis.document.from_data(d)
                 for d in yaml.load_all(fd, Loader=Loader)]
     ctx.obj["documents"] += docs
