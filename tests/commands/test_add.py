@@ -172,7 +172,6 @@ def test_add_folder_name_cli(tmp_library: TemporaryLibrary) -> None:
     files = doc.get_files()
     assert len(files) == 1
 
-    basename, _ = os.path.splitext(os.path.basename(files[0]))
     assert os.path.basename(files[0]) == f"test-the-apology{ext}"
 
 
@@ -228,7 +227,7 @@ def test_add_bibtex_cli(tmp_library: TemporaryLibrary,
     )
 
     bibfile = os.path.join(tmp_library.tmpdir, "test-add.bib")
-    with open(bibfile, "w") as f:
+    with open(bibfile, "w", encoding="utf-8") as f:
         f.write(bibtex_string)
 
     with monkeypatch.context() as m:

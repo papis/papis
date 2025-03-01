@@ -201,7 +201,7 @@ def cli_add(ctx: click.Context,
         found = 0
         logger.info("Adding and querying from reference file: '%s'.", refs_file)
 
-        with open(refs_file) as fd:
+        with open(refs_file, encoding="utf-8") as fd:
             references = fd.readlines()
 
         for ref in progress_bar(references):
@@ -280,7 +280,7 @@ def cli_update(ctx: click.Context, _all: bool,
         if fromdb:
             logger.info("Updating BibTeX entry from library.")
             if keys:
-                docs[j].update({k: libdoc[k] for k in keys if k in libdoc})
+                docs[j].update({k: libdoc[k] for k in keys if k in libdoc})  # noqa: PLR1736
             else:
                 docs[j] = libdoc.copy()
 
@@ -447,7 +447,7 @@ def cli_ref(ctx: click.Context, out: Optional[str]) -> None:
 
     ref = docs[0]["ref"]
     if out:
-        with open(out, "w+") as fd:
+        with open(out, "w+", encoding="utf-8") as fd:
             fd.write(ref)
     else:
         click.echo(ref)
@@ -473,7 +473,7 @@ def cli_save(ctx: click.Context, bibfile: str, force: bool) -> None:
 
     from papis.commands.export import run
 
-    with open(bibfile, "w+") as fd:
+    with open(bibfile, "w+", encoding="utf-8") as fd:
         logger.info("Saving %d documents in '%s'.", len(docs), bibfile)
         fd.write(run(docs, to_format="bibtex"))
 
@@ -542,7 +542,7 @@ def cli_unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
 
     if o:
         logger.info("Saving %d duplicate documents in '%s'.", len(duplicated_docs), o)
-        with open(o, "w+") as f:
+        with open(o, "w+", encoding="utf-8") as f:
             f.write(run(duplicated_docs, to_format="bibtex"))
 
 
@@ -597,7 +597,7 @@ def cli_filter_cited(ctx: click.Context, _files: List[str]) -> None:
     found = []
 
     for f in _files:
-        with open(f) as fd:
+        with open(f, encoding="utf-8") as fd:
             text = fd.read()
             for doc in ctx.obj["documents"]:
                 if re.search(doc["ref"], text):
@@ -627,7 +627,7 @@ def cli_iscited(ctx: click.Context, _files: List[str]) -> None:
     unfound = []
 
     for f in _files:
-        with open(f) as fd:
+        with open(f, encoding="utf-8") as fd:
             text = fd.read()
             for doc in ctx.obj["documents"]:
                 if not re.search(doc["ref"], text):

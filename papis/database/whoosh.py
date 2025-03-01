@@ -77,7 +77,7 @@ class Database(papis.database.base.Database):
     def get_cache_path(self) -> str:
         return self.index_dir
 
-    def get_backend_name(self) -> str:
+    def get_backend_name(self) -> str:  # noqa: PLR6301
         return "whoosh"
 
     def clear(self) -> None:
@@ -136,7 +136,7 @@ class Database(papis.database.base.Database):
                 for r in results]
         return documents
 
-    def get_all_query_string(self) -> str:
+    def get_all_query_string(self) -> str:  # noqa: PLR6301
         return "*"
 
     def get_all_documents(self) -> List[papis.document.Document]:
@@ -151,7 +151,7 @@ class Database(papis.database.base.Database):
         """
         return str(document[self.get_id_key()])
 
-    def _get_doc_folder(self, document: papis.document.Document) -> str:
+    def _get_doc_folder(self, document: papis.document.Document) -> str:  # noqa: PLR6301
         folder = document.get_main_folder()
         if folder is None:
             raise DocumentFolderNotFound(papis.document.describe(document))
@@ -292,7 +292,7 @@ class Database(papis.database.base.Database):
         from whoosh.fields import Schema
         return Schema(**fields)
 
-    def get_schema_init_fields(self) -> Dict[str, "FieldType"]:
+    def get_schema_init_fields(self) -> Dict[str, "FieldType"]:  # noqa: PLR6301
         """Returns the arguments to be passed to the whoosh schema
         object instantiation found in the method `get_schema`.
         """

@@ -12,7 +12,7 @@ from _pytest.config import Config
 from _pytest.config.argparsing import Parser
 
 PAPIS_UPDATE_RESOURCES = os.environ.get("PAPIS_UPDATE_RESOURCES", "none").lower()
-if PAPIS_UPDATE_RESOURCES not in ("none", "remote", "local", "both"):
+if PAPIS_UPDATE_RESOURCES not in {"none", "remote", "local", "both"}:
     raise ValueError("unsupported value of 'PAPIS_UPDATE_RESOURCES'")
 
 
@@ -279,7 +279,7 @@ class TemporaryConfiguration:
 
         # write settings
         import configparser
-        with open(self.configfile, "w") as fd:
+        with open(self.configfile, "w", encoding="utf-8") as fd:
             config = configparser.ConfigParser()
             config.read_dict(settings)
             config.write(fd)
@@ -464,7 +464,7 @@ class ResourceCache:
         filename = os.path.join(self.cachedir, filename)
 
         force = force or not os.path.exists(filename)
-        if force or PAPIS_UPDATE_RESOURCES in ("remote", "both"):
+        if force or PAPIS_UPDATE_RESOURCES in {"remote", "both"}:
             if headers is None:
                 headers = {}
 
@@ -499,7 +499,7 @@ class ResourceCache:
         import papis.yaml
 
         force = force or not os.path.exists(filename)
-        if force or PAPIS_UPDATE_RESOURCES in ("local", "both"):
+        if force or PAPIS_UPDATE_RESOURCES in {"local", "both"}:
             assert data is not None
             with open(filename, "w", encoding="utf-8") as f:
                 if ext == ".json":
@@ -509,7 +509,7 @@ class ResourceCache:
                         sort_keys=True,
                         ensure_ascii=False,
                         )
-                elif ext == ".yml" or ext == ".yaml":
+                elif ext in {".yml", ".yaml"}:
                     yaml.dump(
                         data, f,
                         indent=2,
@@ -521,7 +521,7 @@ class ResourceCache:
         with open(filename, encoding="utf-8") as f:
             if ext == ".json":
                 return json.load(f)
-            elif ext == ".yml" or ext == ".yaml":
+            elif ext in {".yml", ".yaml"}:
                 return papis.yaml.yaml_to_data(filename)
             else:
                 raise ValueError(f"Unknown file extension: '{ext}'")

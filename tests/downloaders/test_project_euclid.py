@@ -10,7 +10,6 @@ PROJECT_EUCLID_URLS = (
     "https://projecteuclid.org/journals/advances-in-differential-equations/volume-19/"
     "issue-3_2f_4/An-analysis-of-the-renormalization-group-method-for-asymptotic"
     "-expansions/ade/1391109086.short",
-    #
     "https://projecteuclid.org/journals/duke-mathematical-journal/volume-164/"
     "issue-13/Delocalization-of-eigenvectors-of-random-matrices-with-independent"
     "-entries/10.1215/00127094-3129809.short"

@@ -10,18 +10,21 @@ DATABASES: Dict[Library, Database] = {}
 
 
 def get(library_name: Optional[str] = None) -> Database:
-    global DATABASES
     import papis.config
+
     if library_name is None:
         library = papis.config.get_lib()
     else:
         library = papis.config.get_lib_from_name(library_name)
+
     backend = papis.config.get("database-backend") or "papis"
+
     try:
         database = DATABASES[library]
     except KeyError:
         database = _instantiate_database(backend, library)
         DATABASES[library] = database
+
     return database
 
 

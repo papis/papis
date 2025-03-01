@@ -126,7 +126,7 @@ class Database(papis.database.base.Database):
     def get_cache_path(self) -> str:
         return self._get_cache_file_path()
 
-    def get_backend_name(self) -> str:
+    def get_backend_name(self) -> str:  # noqa: PLR6301
         return "papis"
 
     def initialize(self) -> None:
@@ -193,7 +193,7 @@ class Database(papis.database.base.Database):
         docs.pop(index)
         self.save()
 
-    def match(self,
+    def match(self,  # noqa: PLR6301
               document: papis.document.Document,
               query_string: str) -> bool:
         from papis.docmatcher import get_regex_from_search
@@ -224,7 +224,7 @@ class Database(papis.database.base.Database):
         else:
             return filter_documents(docs, query_string)
 
-    def get_all_query_string(self) -> str:
+    def get_all_query_string(self) -> str:  # noqa: PLR6301
         return "."
 
     def get_all_documents(self) -> List[papis.document.Document]:
