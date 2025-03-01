@@ -183,7 +183,7 @@ def cli(query: str,
             msg = f"Writing to '{out}'."
 
         logger.info(msg)
-        with open(out, mode) as fd:
+        with open(out, mode, encoding="utf-8") as fd:
             fd.write(ret_string)
 
         return
@@ -240,7 +240,7 @@ def explorer(ctx: click.Context, fmt: str, out: str) -> None:
 
     outstring = run(docs, to_format=fmt)
     if out is not None:
-        with open(out, "a+") as fd:
+        with open(out, "a+", encoding="utf-8") as fd:
             logger.info(
                 "Writing %d documents in '%s' format to '%s'.", len(docs), fmt, out)
             fd.write(outstring)

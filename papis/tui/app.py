@@ -15,8 +15,8 @@ from prompt_toolkit.layout.controls import (
     BufferControl,
 )
 from prompt_toolkit.layout.layout import Layout
-import papis.config as config
 
+from papis import config
 from .widgets.command_line_prompt import Command, CommandLinePrompt
 from .widgets import InfoWindow, HelpWindow, MessageToolbar
 from .widgets.list import Option, OptionsList

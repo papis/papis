@@ -277,11 +277,12 @@ line-length = 88
 [tool.ruff.lint]
 select = [
     "B",   # flake8-bugbear
-    "C",   # flake8-comprehensions
+    "C4",  # flake8-comprehensions
     "E",   # pycodestyle
     "F",   # pyflakes
     "G",   # flake8-logging-format
     "N",   # pep8-naming
+    "PL",  # pylint
     "Q",   # flake8-quotes
     "RUF", # ruff
     "UP",  # pyupgrade
@@ -290,6 +291,18 @@ select = [
 ignore = [
     # https://docs.astral.sh/ruff/rules/#rules
     "N818",    # error-suffix-on-exception-name
+    "PLC0415", # import-outside-top-level
+    "PLC1901", # compare-to-empty-string
+    "PLR0904", # too-many-public-methods
+    "PLR0911", # too-many-return-statements
+    "PLR0912", # too-many-branches
+    "PLR0913", # too-many-arguments
+    "PLR0915", # too-many-statements
+    "PLR0917", # too-many-positional
+    "PLR1702", # too-many-nested-blocks
+    "PLR2004", # magic-value-comparison
+    "PLR5501", # collapsible-else-if
+    "PLW0603", # global-statement
 ]
 task-tags = ["spell"]
 

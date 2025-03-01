@@ -131,7 +131,7 @@ def setup(level: Optional[Union[int, str]] = None,
         except ValueError:
             verbose = False
 
-    if color not in ("always", "auto", "no"):
+    if color not in {"always", "auto", "no"}:
         raise ValueError(f"Unknown 'color' value: '{color}'")
 
     if _disable_color(color):

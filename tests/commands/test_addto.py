@@ -96,12 +96,12 @@ def _mock_download_document(
     elif filename:
         _, filetype = os.path.splitext(os.path.basename(filename))
     else:
-        filetype = url.split(".")[-1]
+        _, filetype = url.rsplit(".", maxsplit=1)
 
     if filename:
         prefix = filename
     else:
-        prefix = url.split("/")[-1]
+        _, prefix = url.rsplit("/", maxsplit=1)
 
     return create_random_file(filetype=filetype, prefix=prefix, suffix=suffix)
 

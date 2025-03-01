@@ -66,7 +66,12 @@ def main(mode: Mode) -> None:
     Return a version compatible with either Python modules or MSI packages.
     """
     cmd = "git describe --tags --no-dirty".split()
-    description = subprocess.run(cmd, capture_output=True, text=True)
+    try:
+        description = subprocess.run(cmd, capture_output=True, text=True, check=True)
+    except subprocess.CalledProcessError:
+        click.echo("ERROR: Failed to obtain version from 'git'.")
+        return
+
     result = get_version(description.stdout, mode)
     click.echo(result)
 

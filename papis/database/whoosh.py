@@ -68,13 +68,13 @@ class Database(DatabaseBase):
 
         self.initialize()
 
-    def get_backend_name(self) -> str:
+    def get_backend_name(self) -> str:  # noqa: PLR6301
         return "whoosh"
 
     def get_cache_path(self) -> str:
         return self.index_dir
 
-    def get_all_query_string(self) -> str:
+    def get_all_query_string(self) -> str:  # noqa: PLR6301
         return "*"
 
     def initialize(self) -> None:
@@ -235,7 +235,7 @@ class Database(DatabaseBase):
         fields = self._get_schema_init_fields()
         return Schema(**fields)
 
-    def _get_schema_init_fields(self) -> Dict[str, "FieldType"]:
+    def _get_schema_init_fields(self) -> Dict[str, "FieldType"]:  # noqa: PLR6301
         """
         :returns: the keyword arguments to be passed to the Whoosh schema object
             (see :meth:`_create_schema`).

@@ -13,7 +13,7 @@ def get_docs() -> List["Document"]:
     from papis.document import from_data
 
     yamlfile = os.path.join(os.path.dirname(__file__), "data", "licl.yaml")
-    with open(yamlfile) as f:
+    with open(yamlfile, encoding="utf-8") as f:
         return [from_data(data) for data in yaml.safe_load_all(f)]
 
 

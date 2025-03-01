@@ -97,13 +97,13 @@ class Database(DatabaseBase):
         self.documents: Optional[List[Document]] = None
         self.initialize()
 
-    def get_backend_name(self) -> str:
+    def get_backend_name(self) -> str:  # noqa: PLR6301
         return "papis"
 
     def get_cache_path(self) -> str:
         return self._get_cache_file_path()
 
-    def get_all_query_string(self) -> str:
+    def get_all_query_string(self) -> str:  # noqa: PLR6301
         return "."
 
     def initialize(self) -> None:
