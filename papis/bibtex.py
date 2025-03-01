@@ -443,7 +443,7 @@ def bibtex_to_dict(bibtex: str) -> List[papis.document.DocumentLike]:
     logging.getLogger("bibtexparser.bparser").setLevel(logging.WARNING)
 
     if os.path.exists(bibtex):
-        with open(bibtex) as fd:
+        with open(bibtex, encoding="utf-8") as fd:
             logger.debug("Reading in file: '%s'.", bibtex)
             text = fd.read()
     else:
