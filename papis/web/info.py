@@ -18,7 +18,7 @@ def widget(doc: papis.document.Document, libname: str) -> None:
                                                          editor_name,
                                                          yaml_input_id)
 
-    with open(doc.get_info_file()) as f:
+    with open(doc.get_info_file(), encoding="utf-8") as f:
         yaml_content = f.read()
 
     with wh.flex("center"):

@@ -12,7 +12,7 @@ def _get_test_json(filename: str) -> Dict[str, Any]:
         "resources", "crossref"
     )
     filepath = os.path.join(resources, filename)
-    with open(filepath) as fd:
+    with open(filepath, encoding="utf-8") as fd:
         result = json.load(fd)
 
     assert isinstance(result, dict)
