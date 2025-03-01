@@ -43,7 +43,7 @@ class AliasedGroup(click.core.Group):
             commands.append((subcommand, cmd))
 
         # allow for 3 times the default spacing
-        if len(commands):
+        if commands:
             limit = formatter.width - 6 - max(len(cmd[0]) for cmd in commands)
 
             rows = []

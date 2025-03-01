@@ -49,8 +49,8 @@ DBLP_KEY_CONVERSION = [
     _k("doi", [{"key": "doi", "action": None}]),
     _k("url", [{"key": "url", "action": None}]),
     _k("type", [{"key": "type", "action": DBLP_TYPE_TO_BIBTEX.get}]),
-    _k("venue", [{"key": "journal", "action": lambda x: _dblp_journal(x)}]),
-    _k("authors", [{"key": "author_list", "action": lambda x: _dblp_authors(x)}]),
+    _k("venue", [{"key": "journal", "action": lambda x: _dblp_journal(x)}]),  # noqa: PLW0108
+    _k("authors", [{"key": "author_list", "action": lambda x: _dblp_authors(x)}]),  # noqa: PLW0108
 ]
 
 

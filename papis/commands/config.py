@@ -254,12 +254,12 @@ def cli(options: List[str],
     if len(options) == 0 and section is None:
         # NOTE: no inputs prints all of the sections
         is_first = True
-        for section, settings in result.items():
+        for sec, settings in result.items():
             if not is_first:
                 lines.append("")
 
             is_first = False
-            lines.append(f"[{section}]")
+            lines.append(f"[{sec}]")
 
             for key, value in settings.items():
                 lines.append(format_option(key, value))

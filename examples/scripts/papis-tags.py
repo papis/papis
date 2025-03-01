@@ -81,7 +81,7 @@ def main(query: str, confirm: bool) -> None:
                          type(tags).__name__, papis.document.describe(doc))
             continue
 
-        tag_list = tag_list | set(tags)
+        tag_list |= set(tags)
 
     # if no tags are found, exit gracefully
     if not tag_list:
