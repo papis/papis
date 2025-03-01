@@ -145,7 +145,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     The main request handler of the Papis web application.
     """
 
-    def log_message(self, fmt: str, *args: Any) -> None:
+    def log_message(self, fmt: str, *args: Any) -> None:  # noqa: PLR6301
         logger.info(fmt, *args)
 
     def _ok(self) -> None:
@@ -384,7 +384,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                                   f"Server path {self.path} not understood"
                                   )
 
-    def _handle_lib(self, libname: str) -> None:
+    def _handle_lib(self, libname: str) -> None:  # noqa: PLR6301
         papis.api.set_lib_from_name(libname)
 
     def _get_document(self,
@@ -411,7 +411,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         form = self._get_form("POST")
         new_notes = form.getvalue("value")
         notes_path = papis.notes.notes_path(doc)
-        with open(notes_path, "w+") as fdr:
+        with open(notes_path, "w+", encoding="utf-8") as fdr:
             fdr.write(new_notes)
         self._redirect_back()
 
@@ -430,7 +430,9 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         info_path = doc.get_info_file()
 
         logger.info("Checking syntax of the info file: '%s'.", info_path)
-        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as fdr:
+        with tempfile.NamedTemporaryFile(
+                mode="w+", delete=False, encoding="utf-8"
+                ) as fdr:
             fdr.write(new_info)
         try:
             papis.yaml.yaml_to_data(fdr.name, raise_exception=True)
@@ -441,7 +443,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         else:
             os.unlink(fdr.name)
             logger.info("Info file is valid.")
-            with open(info_path, "w+") as _fdr:
+            with open(info_path, "w+", encoding="utf-8") as _fdr:
                 _fdr.write(new_info)
             doc.load()
             papis.api.save_doc(doc)

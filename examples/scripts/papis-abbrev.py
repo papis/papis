@@ -67,7 +67,7 @@ if not LTWA_FILE_PATH:
     LTWA_FILE_PATH = os.path.join(SCRIPT_PATH, "LTWA.json")
 
 try:
-    with open(LTWA_FILE_PATH) as f:
+    with open(LTWA_FILE_PATH, encoding="utf-8") as f:
         LTWA_ABBREVS = json.load(f)
 except FileNotFoundError:
     LTWA_ABBREVS = {}

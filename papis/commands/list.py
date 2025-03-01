@@ -181,7 +181,7 @@ def list_documents(documents: Sequence[papis.document.Document],
                 logger.error("Template file '%s' not found.", template)
                 return []
 
-            with open(template) as fd:
+            with open(template, encoding="utf-8") as fd:
                 show_format = fd.read()
 
         return [

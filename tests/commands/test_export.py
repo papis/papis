@@ -36,7 +36,9 @@ def test_export_run(tmp_library: TemporaryLibrary) -> None:
     exported_yaml = run(docs, to_format="yaml")
     assert exported_yaml
 
-    with tempfile.NamedTemporaryFile("w+", delete=False, dir=tmp_library.tmpdir) as fd:
+    with tempfile.NamedTemporaryFile(
+            "w+", delete=False, dir=tmp_library.tmpdir, encoding="utf-8"
+            ) as fd:
         fd.write(exported_yaml)
         path = fd.name
 
@@ -76,7 +78,7 @@ def test_export_json_cli(tmp_library: TemporaryLibrary) -> None:
     assert result.exit_code == 0
     assert os.path.exists(outfile)
 
-    with open(outfile) as fd:
+    with open(outfile, encoding="utf-8") as fd:
         data_out = json.load(fd)
 
     assert len(data_out) == 1
@@ -106,7 +108,7 @@ def test_export_yaml_cli(tmp_library: TemporaryLibrary) -> None:
     assert result.exit_code == 0
     assert os.path.exists(outfile)
 
-    with open(outfile) as fd:
+    with open(outfile, encoding="utf-8") as fd:
         data_out = yaml.safe_load(fd)
 
     assert data_out == data
@@ -135,7 +137,7 @@ def test_export_bibtex_append(tmp_library: TemporaryLibrary) -> None:
     assert result.exit_code == 0
     assert os.path.exists(outfile)
 
-    with open(outfile, "r") as fd:
+    with open(outfile, encoding="utf-8") as fd:
         single_text = fd.read()
 
     single_data = papis.bibtex.bibtex_to_dict(single_text)
@@ -148,7 +150,7 @@ def test_export_bibtex_append(tmp_library: TemporaryLibrary) -> None:
     assert result.exit_code == 0
     assert os.path.exists(outfile)
 
-    with open(outfile, "r") as fd:
+    with open(outfile, encoding="utf-8") as fd:
         appended_text = fd.read()
 
     appended_data = papis.bibtex.bibtex_to_dict(appended_text)

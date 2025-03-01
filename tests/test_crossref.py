@@ -12,7 +12,7 @@ RESOURCEDIR = os.path.join(
 
 
 def _get_test_json(filename: str) -> Dict[str, Any]:
-    with open(filename) as fd:
+    with open(filename, encoding="utf-8") as fd:
         result = json.load(fd)
 
     assert isinstance(result, dict)

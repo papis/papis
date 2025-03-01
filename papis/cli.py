@@ -16,7 +16,7 @@ class FormatPatternParamType(click.ParamType):
     #: Name of the parameter type (shown in the command-line).
     name: str = "pattern"
 
-    def convert(self,
+    def convert(self,  # noqa: PLR6301
                 value: Any,
                 param: Optional[click.Parameter],
                 ctx: Optional[click.Context]) -> Any:
@@ -37,7 +37,7 @@ class FormatPatternParamType(click.ParamType):
 class LibraryParamType(click.ParamType):
     name: str = "library"
 
-    def shell_complete(self,
+    def shell_complete(self,  # noqa: PLR6301
                        ctx: click.Context,
                        param: click.Parameter,
                        incomplete: str) -> List[CompletionItem]:

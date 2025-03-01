@@ -16,7 +16,7 @@ class DjVu(filetype.Type):      # type: ignore[misc]
     def __init__(self) -> None:
         super().__init__(mime=self.MIME, extension=self.EXTENSION)
 
-    def match(self, buf: bytes) -> bool:
+    def match(self, buf: bytes) -> bool:  # noqa: PLR6301
         # https://en.wikipedia.org/wiki/List_of_file_signatures
         # magic: AT&TFORMXXXXDJV[UM]
         return (

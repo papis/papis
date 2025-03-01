@@ -236,7 +236,7 @@ def test_add_bibtex_cli(tmp_library: TemporaryLibrary,
     )
 
     bibfile = os.path.join(tmp_library.tmpdir, "test-add.bib")
-    with open(bibfile, "w") as f:
+    with open(bibfile, "w", encoding="utf-8") as f:
         f.write(bibtex_string)
 
     import papis.utils

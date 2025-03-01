@@ -155,7 +155,7 @@ def test_merge_configuration_from_path(tmp_config: TemporaryConfiguration) -> No
     assert tmp_config.configdir is not None
     configpath = os.path.join(tmp_config.configdir, "config_extra")
 
-    with open(configpath, "w") as configfile:
+    with open(configpath, "w", encoding="utf-8") as configfile:
         configfile.write("""
 [settings]
 some-nice-setting = 42
