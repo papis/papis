@@ -45,7 +45,7 @@ def get(doc: papis.document.DocumentLike) -> str:
 
     if not has_id(doc):
         raise ValueError(
-            "Papis ID key '{}' not found in document: '{}'"
-            .format(key, papis.document.describe(doc)))
+            f"Papis ID key '{key}' not found in document: "
+            f"'{papis.document.describe(doc)}'")
 
     return str(doc[key])

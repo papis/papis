@@ -140,7 +140,7 @@ def cli(query: str,
     if ret_string is not None and not folder:
         if out is not None:
             logger.info("Dumping to '%s'.", out)
-            with open(out, "a+") as fd:
+            with open(out, "a+", encoding="utf-8") as fd:
                 fd.write(ret_string)
         else:
             logger.info("Dumping to STDOUT.")
@@ -150,17 +150,22 @@ def cli(query: str,
     import shutil
     for document in documents:
         if folder:
-            _doc_folder = document.get_main_folder()
-            _doc_folder_name = document.get_main_folder_name()
-            outdir = out or _doc_folder_name
-            if not _doc_folder or not _doc_folder_name or not outdir:
+            doc_main_folder = document.get_main_folder()
+            if doc_main_folder is None:
                 raise DocumentFolderNotFound(papis.document.describe(document))
+
+            doc_main_folder_name = document.get_main_folder_name()
+            if doc_main_folder_name is None:
+                raise DocumentFolderNotFound(papis.document.describe(document))
+
+            outdir = out or doc_main_folder_name
             if not len(documents) == 1:
-                outdir = os.path.join(out, _doc_folder_name)
+                outdir = os.path.join(out, doc_main_folder_name)
+
             logger.info(
                 "Exporting document '%s' to '%s'.",
                 papis.document.describe(document), outdir)
-            shutil.copytree(_doc_folder, outdir)
+            shutil.copytree(doc_main_folder, outdir)
 
 
 @click.command("export")
@@ -194,7 +199,7 @@ def explorer(ctx: click.Context, fmt: str, out: str) -> None:
 
     outstring = run(docs, to_format=fmt)
     if out is not None:
-        with open(out, "a+") as fd:
+        with open(out, "a+", encoding="utf-8") as fd:
             logger.info(
                 "Writing %d documents in '%s' format to '%s'.", len(docs), fmt, out)
             fd.write(outstring)

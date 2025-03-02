@@ -89,16 +89,11 @@ Repository = "https://github.com/papis/papis"
 
 [project.optional-dependencies]
 develop = [
-    "flake8",
-    "flake8-bugbear",
-    "flake8-quotes",
-    "Flake8-pyproject",
     "mypy>=0.7",
-    "pep8-naming",
-    "pylint",
     "pytest",
     "pytest-cov",
     "python-coveralls",
+    "ruff",
     "types-beautifulsoup4",
     "types-Pygments",
     "types-docutils",
@@ -256,38 +251,50 @@ markers = [
     "resource_setup: setup for resource_cache",
 ]
 
-[tool.flake8]
-select = ["B", "D", "E", "F", "N", "Q", "W"]
-extend-ignore = ["B019", "E123", "N818", "W503"]
-exclude = ["doc", "build", "examples/scripts/papis-mail"]
-filename = ["*.py", "examples*papis-*"]
-max-line-length = 88
+[tool.ruff]
+preview = true
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "E",   # pycodestyle
+    "F",   # pyflakes
+    "G",   # flake8-logging-format
+    "N",   # pep8-naming
+    "PL",  # pylint
+    "Q",   # flake8-quotes
+    "RUF", # ruff
+    "UP",  # pyupgrade
+    "W",   # pycodestyle
+]
+ignore = [
+    # https://docs.astral.sh/ruff/rules/#rules
+    "B019",
+    "N818",
+    "PLC0415", # import-outside-top-level
+    "PLC1901", # compare-to-empty-string
+    "PLR0904", # too-many-public-methods
+    "PLR0911", # too-many-return-statements
+    "PLR0912", # too-many-branches
+    "PLR0913", # too-many-arguments
+    "PLR0915", # too-many-statements
+    "PLR0917", # too-many-positional
+    "PLR1702", # too-many-nested-blocks
+    "PLR2004", # magic-value-comparison
+    "PLR5501", # collapsible-else-if
+    "PLW0603", # global-statement
+]
+task-tags = ["spell"]
+
+[tool.ruff.lint.pycodestyle]
+ignore-overlong-task-comments = true
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
 inline-quotes = "double"
 multiline-quotes = "double"
-
-[tool.pylint.MAIN]
-jobs = "1"
-recursive = "yes"
-suggestion-mode = "yes"
-
-[tool.pylint."MESSAGES CONTROL"]
-disable = [
-    "C0103",
-    "missing-function-docstring",
-    "bad-inline-option",
-    "consider-using-f-string",
-    "consider-using-from-import",
-    "deprecated-pragma",
-    "file-ignored",
-    "locally-disabled",
-    "missing-module-docstring",
-    "raw-checker-failed",
-    "suppressed-message",
-    "too-many-arguments",
-    "unspecified-encoding",
-    "use-symbolic-message-instead",
-    "useless-suppression"
-]
 
 [tool.mypy]
 strict = true

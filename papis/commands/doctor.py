@@ -430,9 +430,9 @@ def duplicated_values_check(doc: papis.document.Document) -> List[Error]:
 
     def make_hashable(f: Any) -> Any:
         if isinstance(f, list):
-            return tuple([make_hashable(entry) for entry in f])
+            return tuple(make_hashable(entry) for entry in f)
         elif isinstance(f, dict):
-            return tuple([(k, make_hashable(v)) for k, v in f.items()])
+            return tuple((k, make_hashable(v)) for k, v in f.items())
         else:
             return f
 
@@ -542,9 +542,9 @@ def biblatex_type_alias_check(doc: papis.document.Document) -> List[Error]:
     if bib_type is not None and bib_type_base is not None:
         return [Error(name=BIBLATEX_TYPE_ALIAS_CHECK_NAME,
                       path=folder,
-                      msg=("Document type '{}' is an alias for '{}' in BibLaTeX"
-                           .format(bib_type, bib_type_base)),
-                      suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                      msg=(f"Document type '{bib_type}' is an alias for "
+                           f"'{bib_type_base}' in BibLaTeX"),
+                      suggestion_cmd=f"papis edit --doc-folder {folder!r}",
                       fix_action=make_fixer(bib_type_base),
                       payload=bib_type,
                       doc=doc)]
@@ -580,9 +580,9 @@ def biblatex_key_alias_check(doc: papis.document.Document) -> List[Error]:
 
     return [Error(name=BIBLATEX_KEY_ALIAS_CHECK_NAME,
                   path=folder,
-                  msg=("Document key '{}' is an alias for '{}' in BibLaTeX"
-                       .format(key, bibtex_key_aliases[key])),
-                  suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                  msg=(f"Document key '{key}' is an alias for "
+                       f"'{bibtex_key_aliases[key]}' in BibLaTeX"),
+                  suggestion_cmd=f"papis edit --doc-folder {folder!r}",
                   fix_action=make_fixer(key),
                   payload=key,
                   doc=doc)
@@ -625,7 +625,7 @@ def biblatex_required_keys_check(doc: papis.document.Document) -> List[Error]:
                   msg=("Document of type '{}' requires one of the keys ['{}'] "
                        "to be compatible with BibLaTeX"
                        .format(bib_type, "', '".join(keys))),
-                  suggestion_cmd="papis edit --doc-folder {}".format(folder),
+                  suggestion_cmd=f"papis edit --doc-folder {folder!r}",
                   fix_action=None,
                   payload=",".join(keys),
                   doc=doc)
@@ -1123,24 +1123,25 @@ def cli(query: str,
         return
 
     if all_checks:
-        _checks = list(REGISTERED_CHECKS)
+        checks = list(REGISTERED_CHECKS)
     else:
         # NOTE: ensure uniqueness of the checks so we don't run the same ones
-        _checks = list(set(_checks))
+        checks = list(set(_checks))
 
     new_checks = []
-    for check in _checks:
-        new_check = DEPRECATED_CHECK_NAMES.get(check)
-        if new_check is not None:
-            check = new_check
+    for check in checks:
+        check_name = check
+        new_check_name = DEPRECATED_CHECK_NAMES.get(check)
+        if new_check_name is not None:
+            check_name = new_check_name
             logger.warning("Check '%s' is deprecated and has been replace by "
                            "'%s'. Please use this in the future.",
-                           check, new_check)
+                           check_name, new_check_name)
 
-        new_checks.append(check)
-    _checks = new_checks
+        new_checks.append(check_name)
+    checks = new_checks
 
-    errors = gather_errors(documents, checks=_checks)
+    errors = gather_errors(documents, checks=checks)
     if errors:
         logger.warning("Found %s errors.", len(errors))
     else:

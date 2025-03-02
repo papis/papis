@@ -19,8 +19,6 @@
       python = pkgs.python3.override {
         packageOverrides = self: super: {
           arxiv = arxiv;
-          flake8-quotes = flake8-quotes;
-          flake8-pyproject = flake8-pyproject;
           python-coveralls = python-coveralls;
           types-pygments = types-pygments;
           types-python-slugify = types-python-slugify;
@@ -48,48 +46,6 @@
         meta = with pkgs.lib; {
           homepage = "https://github.com/lukasschwab/arxiv.py";
           description = "Python wrapper for the arXiv API";
-          license = licenses.mit;
-        };
-      };
-
-      flake8-quotes = python.pkgs.buildPythonPackage rec {
-        pname = "flake8-quotes";
-        version = "3.4.0";
-
-        src = python.pkgs.fetchPypi {
-          inherit pname version;
-          sha256 = "sha256-qthJL7cQotPqvmjF+GoUKN5lDISEEn4UxD0FBLowJ2w=";
-        };
-
-        doCheck = false;
-        checkInputs = [];
-
-        meta = with pkgs.lib; {
-          homepage = "http://github.com/zheller/flake8-quotes";
-          description = "Flake8 lint for quotes.";
-          license = licenses.mit;
-        };
-      };
-
-      flake8-pyproject = python.pkgs.buildPythonPackage {
-        pname = "flake8-pyproject";
-        version = "1.2.3";
-        pyproject = true;
-
-        src = pkgs.fetchFromGitHub {
-          owner = "john-hen";
-          repo = "Flake8-pyproject";
-          rev = "30b8444781d16edd54c11df08210a7c8fb79258d";
-          hash = "sha256-bPRIj7tYmm6I9eo1ZjiibmpVmGcHctZSuTvnKX+raPg=";
-        };
-
-        doCheck = false;
-        checkInputs = [];
-        propagatedBuildInputs = [pypkgs.flit-core pypkgs.flake8];
-
-        meta = with pkgs.lib; {
-          homepage = "https://github.com/john-hen/Flake8-pyproject";
-          description = "Flake8 plug-in loading the configuration from pyproject.toml";
           license = licenses.mit;
         };
       };

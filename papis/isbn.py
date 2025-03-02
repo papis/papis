@@ -43,17 +43,17 @@ def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
     :param data: Dictionary with data
     :returns: Dictionary with Papis key names
     """
-    _k = papis.document.KeyConversionPair
+    cls = papis.document.KeyConversionPair
     key_conversion = [
-        _k("authors", [{
+        cls("authors", [{
             "key": "author_list",
             "action": papis.document.split_authors_name
         }]),
-        _k("isbn-13", [
+        cls("isbn-13", [
             {"key": "isbn", "action": None},
             {"key": "isbn-13", "action": None},
         ]),
-        _k("language", [
+        cls("language", [
             {"key": "language", "action": lambda x: x if x else "en"}
         ])
         ]
