@@ -91,6 +91,10 @@ settings: Dict[str, Any] = {
     "multiple-authors-separator": " and ",
     "multiple-authors-format": _f("{au[family]}, {au[given]}"),
 
+    # csl
+    "csl-style": "harvard1",
+    "csl-formatter": "plain",
+
     # add
     "ref-format": _f("{doc[title]:.15} {doc[author]:.6} {doc[year]}"),
     "add-folder-name": _f(""),

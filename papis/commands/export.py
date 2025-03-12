@@ -82,9 +82,15 @@ def run(documents: List[papis.document.Document], to_format: str) -> str:
     :param documents: A list of Papis documents
     :param to_format: what format to use
     """
-    ret_string = (
-        papis.plugin.get_extension_manager(EXPORTER_EXTENSION_NAME)[to_format]
-        .plugin(document for document in documents))
+    try:
+        ret_string = (
+            papis.plugin.get_extension_manager(EXPORTER_EXTENSION_NAME)[to_format]
+            .plugin(document for document in documents))
+    except KeyError as exc:
+        logger.error("Failed to load '%s' exporter. Cannot export to this format.",
+                     to_format, exc_info=exc)
+        return ""
+
     return str(ret_string)
 
 
@@ -137,7 +143,7 @@ def cli(query: str,
 
     ret_string = run(documents, to_format=fmt)
 
-    if ret_string is not None and not folder:
+    if ret_string and not folder:
         if out is not None:
             logger.info("Dumping to '%s'.", out)
             with open(out, "a+") as fd:
