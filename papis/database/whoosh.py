@@ -83,7 +83,7 @@ class Database(papis.database.base.Database):
     def clear(self) -> None:
         import shutil
         if self.index_exists():
-            logger.warning("Clearing the database.")
+            logger.warning("Clearing the database at '%s'...", self.get_cache_path())
             shutil.rmtree(self.index_dir)
 
     def add(self, document: papis.document.Document) -> None:
@@ -253,6 +253,9 @@ class Database(papis.database.base.Database):
                 if not rebuilt_db:
                     logger.debug("Initialized index found for library.")
                     return
+        else:
+            logger.info("Indexing library. This might take a while...")
+
         self.create_index()
         self.do_indexing()
 
