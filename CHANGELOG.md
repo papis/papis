@@ -1,5 +1,10 @@
 # VERSION NEXT (TDB)
 
+## Dependency Changes
+
+- The [citeproc-py](https://github.com/citeproc-py/citeproc-py) library is now
+  required for CSL exporter support.
+
 ## Features
 
 ### Major: Improved formatter support ([#711](https://github.com/papis/papis/pull/711))
@@ -24,6 +29,22 @@ order in the configuration file. If no formatter is provided for a formatted
 string of this type, then it will fall back to the default formatter set by the
 `formatter` setting. All default settings are now clearly marked as using the
 `python` formatter, so they no longer need to be rewritten when changing formatters.
+
+### Major: Support for CSL citation export ([#976](https://github.com/papis/papis/pull/976))
+
+A new exporter has been added that supports the popular CSL (Citation Style
+Language) through the [citeproc-py](https://github.com/citeproc-py/citeproc-py)
+library. Not all styles are supported, but we hope that this will quickly improve.
+
+The citation style can be set in the configuration file using
+```ini
+csl-style = "harvard1"
+csl-formatter = "plain"
+```
+or on the command-line as
+```bash
+papis --set csl-style harvard1 export --format csl <QUERY>
+```
 
 # VERSION 0.14.1 (March 1, 2025)
 
