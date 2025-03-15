@@ -112,8 +112,11 @@ def reset() -> None:
     """
     Reset the cache (clear and rebuild).
     """
-    papis.database.get().clear()
-    papis.database.get().get_all_documents()
+    db = papis.database.get()
+
+    db.clear()
+    db.initialize()
+    _ = db.get_all_documents()
 
 
 @cli.command("add")
