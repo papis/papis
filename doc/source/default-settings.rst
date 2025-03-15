@@ -213,6 +213,21 @@ General settings
    ``papis --pick-lib export --all``. The format takes a dictionary named
    ``library`` with the keys *name*, *dir*, and *paths*.
 
+.. papis-config:: csl-style
+
+    The CSL style name used by the CSL exporter. For a list of styles and their
+    naming see the `Zotero Style Repository <https://www.zotero.org/styles>`__.
+    This setting can also be a path to a local file that describes the style.
+    User styles can be placed in the ``styles`` subfolder of the Papis configuration
+    folder so that they are recognized just by their name.
+
+.. papis-config:: csl-formatter
+
+   The formatter used by the CSL exporter. Currently supported formatters are
+   "plain", "html" and "rst". Note that these are different to the Papis formatter
+   and are just used to add style to the resulting citation (e.g. marking titles
+   as italic).
+
 Tools options
 -------------
 
