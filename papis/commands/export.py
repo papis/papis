@@ -79,7 +79,9 @@ EXPORTER_EXTENSION_NAME = "papis.exporter"
 
 
 def available_formats() -> list[str]:
-    return papis.plugin.get_available_entrypoints(EXPORTER_EXTENSION_NAME)
+    from papis.plugin import get_plugin_names
+
+    return get_plugin_names(EXPORTER_EXTENSION_NAME)
 
 
 def run(documents: list[papis.document.Document], to_format: str) -> str:
@@ -89,16 +91,26 @@ def run(documents: list[papis.document.Document], to_format: str) -> str:
     :param documents: A list of Papis documents
     :param to_format: what format to use
     """
+    from papis.plugin import get_plugin_by_name
+
+    exporter = get_plugin_by_name(EXPORTER_EXTENSION_NAME, to_format)
+    if exporter is None:
+        logger.error("Could not find exporter for format '%s'.", to_format)
+        return ""
+
     try:
-        ret_string = (
-            papis.plugin.get_extension_manager(EXPORTER_EXTENSION_NAME)[to_format]
-            .plugin(document for document in documents))
+        result = exporter(documents)
     except KeyError as exc:
         logger.error("Failed to load '%s' exporter. Cannot export to this format.",
                      to_format, exc_info=exc)
         return ""
 
-    return str(ret_string)
+    if isinstance(result, str):
+        return result
+    else:
+        logger.warning("Exporter for format '%s' did not return a string. This "
+                       "is likely a bug!", to_format)
+        return str(result)
 
 
 @click.command("export")

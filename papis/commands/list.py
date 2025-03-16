@@ -77,7 +77,7 @@ def list_plugins(show_paths: bool = False,
                  verbose: bool = False) -> list[str]:
     import colorama as c
 
-    from papis.plugin import get_extension_manager
+    from papis.plugin import get_entrypoints
 
     def _format(name: str, ids: str) -> str:
         return (f"{c.Style.BRIGHT}{name}{c.Style.RESET_ALL}"
@@ -85,11 +85,17 @@ def list_plugins(show_paths: bool = False,
 
     def _stringify(namespace: str) -> list[str]:
         results = []
-        for p in get_extension_manager(namespace):
-            results.append(_format(p.name, f"{p.module_name}.{p.attr}"))
+        for ep in get_entrypoints(namespace):
+            results.append(_format(ep.name, f"{ep.module}.{ep.attr}"))
+            try:
+                p = ep.load()
+            except Exception as exc:
+                logger.error("Failed to load '%s' plugin from namespace '%s'.",
+                             ep.name, namespace, exc_info=exc)
+                continue
 
-            if verbose and p.plugin.__doc__:
-                lines = [line for line in p.plugin.__doc__.split("\n") if line]
+            if verbose and p.__doc__:
+                lines = [line for line in p.__doc__.split("\n") if line]
                 if lines:
                     line = re.sub(r"`(.*) <(.*)>`__", r"\1 <\2>", lines[0].strip())
                     results.append(f"    {line}")

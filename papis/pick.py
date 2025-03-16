@@ -10,7 +10,7 @@ import papis.plugin
 
 logger = papis.logging.get_logger(__name__)
 
-#: Name of the entry points for :class:`Picker` plugins.
+#: Name of the entrypoint group for :class:`Picker` plugins.
 PICKER_EXTENSION_NAME = "papis.picker"
 
 #: Invariant :class:`~typing.TypeVar` with no bounds.
@@ -51,11 +51,18 @@ def get_picker(name: str) -> type[Picker[Any]]:
     :arg name: the name of an entrypoint to load a :class:`Picker` plugin from.
     :returns: a :class:`Picker` subclass implemented in the plugin.
     """
-    picker: type[Picker[Any]] = (
-        papis.plugin.get_extension_manager(PICKER_EXTENSION_NAME)[name].plugin
-    )
+    from papis.plugin import InvalidPluginTypeError, get_plugin_by_name
 
-    return picker
+    cls = get_plugin_by_name(PICKER_EXTENSION_NAME, name)
+    if cls is None:
+        logger.error("Failed to load picker '%s'. "
+                     "Falling back to default 'papis' picker!", name)
+        cls = get_plugin_by_name(PICKER_EXTENSION_NAME, "papis")
+
+    if not issubclass(cls, Picker):
+        raise InvalidPluginTypeError(PICKER_EXTENSION_NAME, name)
+
+    return cls  # type: ignore[no-any-return]
 
 
 def pick(items: Sequence[T],
@@ -72,19 +79,14 @@ def pick(items: Sequence[T],
     """
 
     name = papis.config.getstring("picktool")
-    try:
-        picker: type[Picker[T]] = get_picker(name)
-    except KeyError:
-        entrypoints = papis.plugin.get_available_entrypoints(PICKER_EXTENSION_NAME)
-        logger.error(
-            "Invalid picker: '%s'. Registered pickers are '%s'.",
-            name, "', '".join(entrypoints))
+    picker: type[Picker[T]] | None = get_picker(name)
+    if picker is None:
         return []
-    else:
-        return picker()(items,
-                        header_filter,
-                        match_filter,
-                        default_index)
+
+    return picker()(items,
+                    header_filter,
+                    match_filter,
+                    default_index)
 
 
 def pick_doc(
