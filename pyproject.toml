@@ -78,7 +78,6 @@ dependencies = [
     "python-doi>=0.1.1",
     "python-slugify>=1.2.6",
     "requests>=2.11.1",
-    "stevedore>=1.30",
 ]
 
 [project.urls]
@@ -170,8 +169,8 @@ tag = "papis.commands.tag:cli"
 update = "papis.commands.update:cli"
 
 [project.entry-points."papis.downloader"]
-acl = "papis.downloaders.acl:Downloader"
 acm = "papis.downloaders.acm:Downloader"
+acl = "papis.downloaders.acl:Downloader"
 acs = "papis.downloaders.acs:Downloader"
 annualreviews = "papis.downloaders.annualreviews:Downloader"
 aps = "papis.downloaders.aps:Downloader"
@@ -338,7 +337,6 @@ module = [
     "isbnlib.*",
     "markdownify.*",
     "sphinx_click.*",
-    "stevedore.*",
     "whoosh.*",
 ]
 ignore_missing_imports = true
