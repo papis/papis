@@ -46,6 +46,16 @@ or on the command-line as
 papis --set csl-style harvard1 export --format csl <QUERY>
 ```
 
+## Other noteworthy features
+
+- Use the current directory as a "default-library" if configured
+  [#979](https://github.com/papis/papis/pull/979).
+
+## Bug Fixes
+
+- Fix crash on `papis cache reset` when using `whoosh`
+  [#977](https://github.com/papis/papis/pull/977).
+
 # VERSION 0.14.1 (March 1, 2025)
 
 ## Features
