@@ -389,7 +389,9 @@ class Downloader(papis.importer.Importer):
 
 def get_available_downloaders() -> list[type[Downloader]]:
     """Get all declared downloader classes."""
-    return papis.plugin.get_available_plugins(DOWNLOADERS_EXTENSION_NAME)
+    from papis.plugin import get_plugins
+
+    return list(get_plugins(DOWNLOADERS_EXTENSION_NAME).values())
 
 
 def get_matching_downloaders(url: str) -> list[Downloader]:
@@ -421,10 +423,13 @@ def get_downloader_by_name(name: str) -> type[Downloader]:
         be the same as its name, but this is not enforced.
     :returns: a downloader class.
     """
-    downloader_class: type[Downloader] = (
-        papis.plugin.get_extension_manager(DOWNLOADERS_EXTENSION_NAME)[name].plugin
-    )
-    return downloader_class
+    from papis.plugin import InvalidPluginTypeError, get_plugin_by_name
+
+    cls = get_plugin_by_name(DOWNLOADERS_EXTENSION_NAME, name)
+    if not issubclass(cls, Downloader):
+        raise InvalidPluginTypeError(DOWNLOADERS_EXTENSION_NAME, name)
+
+    return cls  # type: ignore[no-any-return]
 
 
 def get_info_from_url(

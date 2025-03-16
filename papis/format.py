@@ -9,9 +9,9 @@ import papis.strings
 
 logger = papis.logging.get_logger(__name__)
 
-FORMATTER: dict[str, "Formatter"] = {}
-
-#: The entry point name for formatter plugins.
+# A cache for loaded formatters
+FORMATTER_CACHE: dict[str, "Formatter"] = {}
+#: Name of the entrypoint group for :class:`Formatter` plugins.
 FORMATTER_EXTENSION_NAME = "papis.format"
 
 
@@ -277,7 +277,8 @@ class Jinja2Formatter(Formatter):
 
 def get_available_formatters() -> list[str]:
     """Get a list of all the available formatter plugins."""
-    return papis.plugin.get_available_entrypoints(FORMATTER_EXTENSION_NAME)
+    from papis.plugin import get_plugin_names
+    return get_plugin_names(FORMATTER_EXTENSION_NAME)
 
 
 def get_default_formatter() -> str:
@@ -309,17 +310,22 @@ def get_formatter(name: str | None = None) -> Formatter:
     if name is None:
         name = get_default_formatter()
 
-    f = FORMATTER.get(name)
+    f: Formatter | None = FORMATTER_CACHE.get(name)
     if f is None:
-        mgr = papis.plugin.get_extension_manager(FORMATTER_EXTENSION_NAME)
-        try:
-            f = mgr[name].plugin()
-        except Exception as exc:
-            logger.error("Invalid formatter '%s'. Registered formatters are '%s'.",
-                         name, "', '".join(get_available_formatters()), exc_info=exc)
-            raise InvalidFormatterError(f"Invalid formatter: '{name}'") from None
+        from papis.plugin import get_plugin_by_name
 
-        FORMATTER[name] = f
+        cls = get_plugin_by_name(FORMATTER_EXTENSION_NAME, name)
+        if cls is None:
+            logger.error("Unknown formatter '%s'. Registered formatters are '%s'.",
+                         name, "', '".join(get_available_formatters()))
+            raise InvalidFormatterError(f"Invalid formatter: '{name}'")
+
+        f = cls()
+        if not isinstance(f, Formatter):
+            logger.error("Formatter '%s' does not inherit from 'Formatter'.")
+            raise InvalidFormatterError(f"Invalid formatter: '{name}'")
+
+        FORMATTER_CACHE[name] = f
         logger.debug("Using '%s' formatter.", name)
 
     return f
@@ -345,6 +351,9 @@ def format(fmt: papis.strings.AnyString,
                             additional=additional,
                             default=default)
 
+
+# NOTE: this is deprecated and should be removed in the next version
+FORMATTER = FORMATTER_CACHE
 
 _DEPRECATIONS: dict[str, Any] = {
     "InvalidFormaterError": InvalidFormatterError,

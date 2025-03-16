@@ -6,9 +6,10 @@ import click.core
 
 import papis.config
 import papis.logging
-import papis.plugin
 
+#: Name of the entrypoint group for :class:`~click.core.Command` plugins.
 COMMAND_EXTENSION_NAME = "papis.command"
+#: Regex for determining external commands.
 EXTERNAL_COMMAND_REGEX = re.compile(r".*papis-([^ .]+)$")
 
 
@@ -125,13 +126,10 @@ def get_scripts() -> dict[str, Script]:
 
     :returns: a mapping of scripts that have been found.
     """
-    mgr = papis.plugin.get_extension_manager(COMMAND_EXTENSION_NAME)
+    from papis.plugin import get_plugins
 
     scripts = {}
-    for name in mgr.names():
-        extension = mgr[name]
-
-        plugin = extension.plugin
+    for name, plugin in get_plugins(COMMAND_EXTENSION_NAME).items():
         if not plugin.help:
             plugin.help = "No help message available"
 

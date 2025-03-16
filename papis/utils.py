@@ -476,13 +476,16 @@ def get_matching_importer_by_name(
     if download_files is None:
         download_files = False
 
-    import requests
+    from requests.exceptions import RequestException
 
-    import_mgr = papis.importer.get_import_mgr()
+    from papis.plugin import get_plugins
+
+    plugins = get_plugins(papis.importer.IMPORTER_EXTENSION_NAME)
+
     result = []
     for name, uri in name_and_uris:
         try:
-            importer = import_mgr[name].plugin(uri=uri)
+            importer = plugins[name](uri=uri)
             if download_files:
                 importer.fetch()
             else:
@@ -495,7 +498,7 @@ def get_matching_importer_by_name(
 
             if importer.ctx:
                 result.append(importer)
-        except requests.exceptions.RequestException as exc:
+        except RequestException as exc:
             # NOTE: this is probably some HTTP error, so we better let the
             # user know if there's something wrong with their network
             logger.error("Failed to match importer '%s': '%s'.",

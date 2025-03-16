@@ -299,13 +299,12 @@ class TemporaryConfiguration:
 
         # monkeypatch globals
         import papis.format
-        self._monkeypatch.setattr(papis.format, "FORMATTER", {})
+        self._monkeypatch.setattr(papis.format, "FORMATTER_CACHE", {})
 
         import papis.database
         self._monkeypatch.setattr(papis.database, "DATABASES", {})
         # FIXME: may need to also add the following:
         #   * reset papis.bibtex globals
-        #   * reset papis.plugin managers
 
         # reload configuration
         papis.config.set_config_file(self.configfile)
