@@ -46,7 +46,6 @@ intersphinx_mapping = {
     "pytest": ("https://docs.pytest.org/en/latest", None),
     "python": ("https://docs.python.org/3", None),
     "requests": ("https://requests.readthedocs.io/en/latest", None),
-    "stevedore": ("https://docs.openstack.org/stevedore/latest", None),
 }
 
 linkcode_resolve = make_link_resolve("https://github.com/papis/papis", "main")

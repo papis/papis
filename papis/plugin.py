@@ -1,52 +1,71 @@
-from typing import Any, Dict, List
+import sys
 
-from stevedore import ExtensionManager
+if sys.version_info[:2] >= (3, 10):
+    from importlib.metadata import EntryPoint, entry_points
+else:
+    # NOTE: `entry_points` got a keyword argument in 3.10 that we need
+    from importlib_metadata import EntryPoint, entry_points
+
+from typing import Any, Dict, List, Optional
 
 import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
-MANAGERS: Dict[str, ExtensionManager] = {}
 
-
-def stevedore_error_handler(manager: ExtensionManager,
-                            entrypoint: str, exception: str) -> None:
-    logger.error("Error while loading entrypoint '%s': %s.", entrypoint, exception)
-
-
-def get_extension_manager(namespace: str) -> ExtensionManager:
+def get_entrypoints(namespace: str) -> List[EntryPoint]:
     """
-    :arg namespace: the namespace for the entry points.
-    :returns: an extension manager for the given entry point namespace.
+    :returns: a list of available entrypoints in the given *namespace*.
     """
-    manager = MANAGERS.get(namespace)
-    if manager is None:
-        logger.debug("Creating manager for namespace '%s'.", namespace)
-
-        manager = ExtensionManager(
-            namespace=namespace,
-            invoke_on_load=False,
-            verify_requirements=True,
-            propagate_map_exceptions=True,
-            on_load_failure_callback=stevedore_error_handler
-        )
-
-        MANAGERS[namespace] = manager
-
-    return manager
+    return sorted(entry_points(group=namespace))
 
 
-def get_available_entrypoints(namespace: str) -> List[str]:
+def get_entrypoint_by_name(namespace: str, name: str) -> Optional[EntryPoint]:
+    """Get the entrypoint *name* from the given *namespace*.
+
+    If no such entrypoint exists, then *None* is returned. To load the plugin
+    defined by the entrypoint, use :meth:`importlib.metadata.Entrypoint.load`.
     """
-    :returns: a list of all available entry points in the given *namespace*
-        sorted alphabetically.
-    """
-    manager = get_extension_manager(namespace)
-    return sorted(str(e) for e in manager.entry_points_names())
+    entrypoints = entry_points(group=namespace).select(name=name)
+    if len(entrypoints) == 1:
+        return entrypoints[name]  # type: ignore[no-any-return]
+
+    return None
 
 
-def get_available_plugins(namespace: str) -> List[Any]:
+def get_plugin_names(namespace: str) -> List[str]:
     """
-    :returns: a list of all available plugins in the given *namespace*.
+    :returns: a list of available entrypoint names in the given *namespace*.
     """
-    return [e.plugin for e in get_extension_manager(namespace)]
+    return sorted(entry_points(group=namespace).names)
+
+
+def get_plugins(namespace: str) -> Dict[str, Any]:
+    """Load all available plugins from *namespace*."""
+
+    result = {}
+    for ep in get_entrypoints(namespace):
+        try:
+            plugin = ep.load()
+        except Exception as exc:
+            logger.error("Failed to load plugin '%s' from namespace '%s'.",
+                         ep.name, namespace, exc_info=exc)
+            continue
+
+        result[ep.name] = plugin
+
+    return result
+
+
+def get_plugin_by_name(namespace: str, name: str) -> Optional[Any]:
+    """Load a single plugin named *name* from *namespace*."""
+    ep = get_entrypoint_by_name(namespace, name)
+    if ep is None:
+        return None
+
+    try:
+        return ep.load()
+    except Exception as exc:
+        logger.error("Failed to load plugin '%s' from namespace '%s'.",
+                     ep.name, namespace, exc_info=exc)
+        return None
