@@ -1,8 +1,6 @@
 import time
 from typing import Any
 
-import pytest
-
 
 def test_context() -> None:
     from papis.importer import Context
@@ -92,5 +90,5 @@ def test_get_importer() -> None:
     for name in names:
         assert get_importer_by_name(name) is not None
 
-    with pytest.raises(KeyError):
-        get_importer_by_name("this_is_not_a_known_importer_hopefully")
+    result = get_importer_by_name("this_is_not_a_known_importer_hopefully")
+    assert result is None
