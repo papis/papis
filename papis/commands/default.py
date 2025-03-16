@@ -139,7 +139,7 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
     "-l", "--lib",
     help="Choose a library name or library path (unnamed library).",
     type=papis.cli.LibraryParamType(),
-    default=lambda: papis.config.getstring("default-library"))
+    default=None)
 @click.option(
     "-c",
     "--config",
@@ -180,7 +180,7 @@ def run(ctx: click.Context,
         verbose: bool,
         profile: str,
         config: str,
-        lib: str,
+        lib: Optional[str],
         log: str,
         logfile: Optional[str],
         pick_lib: bool,
@@ -219,20 +219,38 @@ def run(ctx: click.Context,
         if picked_libs:
             lib = picked_libs[0]
 
+    if lib is None:
+        # NOTE: check if the current folder is a configured library
+        libdir = os.getcwd()
+        config_lib_dirs = {
+            path: libname
+            for libname in papis.config.get_libs()
+            for path in papis.config.get_lib_from_name(libname).paths
+        }
+
+        while libdir != (nextlibdir := os.path.dirname(libdir)):
+            if libdir in config_lib_dirs:
+                lib = config_lib_dirs[libdir]
+                break
+
+            libdir = nextlibdir
+
+        # if the cwd does not match any library, use default library
+        if lib is None:
+            lib = papis.config.getstring("default-library")
+
     papis.config.set_lib_from_name(lib)
     library = papis.config.get_lib()
 
+    configuration = papis.config.get_configuration()
     if library.paths:
         # Now the library should be set, let us check if there is a
         # local configuration file there, and if there is one, then
         # merge its contents
         local_config_file = papis.config.getstring("local-config-file")
         for path in library.paths:
-            local_config_path = os.path.expanduser(
-                os.path.join(path, local_config_file))
-            papis.config.merge_configuration_from_path(
-                local_config_path,
-                papis.config.get_configuration())
+            local_config_path = os.path.join(path, local_config_file)
+            papis.config.merge_configuration_from_path(local_config_path, configuration)
     else:
         config_file = papis.config.get_config_file()
         if os.path.exists(config_file):
@@ -248,7 +266,7 @@ def run(ctx: click.Context,
                            "interactive setup.")
 
     # read in configuration from command-line
-    sections = papis.config.get_configuration().sections()
+    sections = configuration.sections()
     for pair in set_list:
         # NOTE: search for a matching section so that we can overwrite entries
         # from the command-line as well (the section takes precedence)
