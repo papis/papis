@@ -83,14 +83,16 @@ def test_cache() -> None:
 
 
 def test_get_importer() -> None:
-    from papis.importer import available_importers, get_importer_by_name
+    from papis.importer import Importer, available_importers, get_importer_by_name
+    from papis.plugin import PluginNotFoundError
 
     names = available_importers()
     assert isinstance(names, list)
     assert names
 
     for name in names:
-        assert get_importer_by_name(name) is not None
+        cls = get_importer_by_name(name)
+        assert issubclass(cls, Importer)
 
-    with pytest.raises(KeyError):
-        get_importer_by_name("this_is_not_a_known_importer_hopefully")
+    with pytest.raises(PluginNotFoundError):
+        _ = get_importer_by_name("this_is_not_a_known_importer_hopefully")
