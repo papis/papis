@@ -21,7 +21,6 @@
           arxiv = arxiv;
           flake8-quotes = flake8-quotes;
           flake8-pyproject = flake8-pyproject;
-          python-coveralls = python-coveralls;
           types-pygments = types-pygments;
           types-python-slugify = types-python-slugify;
           sphinx-click = sphinx-click;
@@ -91,25 +90,6 @@
           homepage = "https://github.com/john-hen/Flake8-pyproject";
           description = "Flake8 plug-in loading the configuration from pyproject.toml";
           license = licenses.mit;
-        };
-      };
-
-      python-coveralls = python.pkgs.buildPythonPackage rec {
-        pname = "python-coveralls";
-        version = "2.9.3";
-
-        src = python.pkgs.fetchPypi {
-          inherit pname version;
-          sha256 = "sha256-v694EefcVijoO2sWKWKk4khdv/GEsw5J84A3TtG87lU=";
-        };
-
-        doCheck = false;
-        checkInputs = [];
-
-        meta = with pkgs.lib; {
-          homepage = "http://github.com/z4r/python-coveralls";
-          description = "Python interface to coveralls.io API ";
-          license = licenses.asl20;
         };
       };
 

@@ -98,7 +98,6 @@ develop = [
     "pylint",
     "pytest",
     "pytest-cov",
-    "python-coveralls",
     "types-beautifulsoup4",
     "types-Pygments",
     "types-docutils",

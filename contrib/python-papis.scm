@@ -242,7 +242,6 @@ an elegant DOM API.")
                       python-pylint
                       python-pytest
                       python-pytest-cov
-                      python-coveralls
                       python-lsp-server
                       python-sphinx-click
                       python-sphinx-rtd-theme
