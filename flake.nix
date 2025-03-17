@@ -18,57 +18,14 @@
       pkgs = nixpkgs.legacyPackages.${system};
       python = pkgs.python3.override {
         packageOverrides = self: super: {
-          arxiv = arxiv;
-          flake8-quotes = flake8-quotes;
           flake8-pyproject = flake8-pyproject;
-          python-coveralls = python-coveralls;
           types-pygments = types-pygments;
           types-python-slugify = types-python-slugify;
-          sphinx-click = sphinx-click;
         };
       };
       pypkgs = pkgs.python3Packages;
       project = pyproject-nix.lib.project.loadPyproject {
         projectRoot = ./.;
-      };
-
-      arxiv = python.pkgs.buildPythonPackage rec {
-        pname = "arxiv";
-        version = "2.1.0";
-
-        src = python.pkgs.fetchPypi {
-          inherit pname version;
-          sha256 = "sha256-60sdWrnf1mAnw0S7MkwgviHVb+FfbOIW7VsgnfdH3qg=";
-        };
-
-        doCheck = false;
-        checkInputs = [];
-        propagatedBuildInputs = [pypkgs.feedparser];
-
-        meta = with pkgs.lib; {
-          homepage = "https://github.com/lukasschwab/arxiv.py";
-          description = "Python wrapper for the arXiv API";
-          license = licenses.mit;
-        };
-      };
-
-      flake8-quotes = python.pkgs.buildPythonPackage rec {
-        pname = "flake8-quotes";
-        version = "3.4.0";
-
-        src = python.pkgs.fetchPypi {
-          inherit pname version;
-          sha256 = "sha256-qthJL7cQotPqvmjF+GoUKN5lDISEEn4UxD0FBLowJ2w=";
-        };
-
-        doCheck = false;
-        checkInputs = [];
-
-        meta = with pkgs.lib; {
-          homepage = "http://github.com/zheller/flake8-quotes";
-          description = "Flake8 lint for quotes.";
-          license = licenses.mit;
-        };
       };
 
       flake8-pyproject = python.pkgs.buildPythonPackage {
@@ -94,32 +51,14 @@
         };
       };
 
-      python-coveralls = python.pkgs.buildPythonPackage rec {
-        pname = "python-coveralls";
-        version = "2.9.3";
-
-        src = python.pkgs.fetchPypi {
-          inherit pname version;
-          sha256 = "sha256-v694EefcVijoO2sWKWKk4khdv/GEsw5J84A3TtG87lU=";
-        };
-
-        doCheck = false;
-        checkInputs = [];
-
-        meta = with pkgs.lib; {
-          homepage = "http://github.com/z4r/python-coveralls";
-          description = "Python interface to coveralls.io API ";
-          license = licenses.asl20;
-        };
-      };
-
       types-pygments = python.pkgs.buildPythonPackage rec {
         pname = "types-Pygments";
-        version = "2.17.0.20240310";
+        version = "2.19.0.20250305";
 
         src = python.pkgs.fetchPypi {
-          inherit pname version;
-          sha256 = "sha256-sdl+kFzjY0PHKDsDGRgq5tT5ZxiPNh9FUCoYrkPgPh8=";
+          inherit version;
+          pname = "types_pygments";
+          sha256 = "sha256-BExQ6A7NQSjACnJo8gNV4W9cVUZtPUnf2gm+kgr0C0s=";
         };
 
         doCheck = false;
@@ -148,26 +87,6 @@
           homepage = "https://github.com/python/typeshed";
           description = "Typing stubs for python-slugify";
           license = licenses.asl20;
-        };
-      };
-
-      sphinx-click = python.pkgs.buildPythonPackage rec {
-        pname = "sphinx-click";
-        version = "5.1.0";
-
-        src = python.pkgs.fetchPypi {
-          inherit pname version;
-          sha256 = "sha256-aBLC22LT+ucaSt2+WooKFsl+tJHzzWP+NLTtfgcjbzM=";
-        };
-
-        doCheck = false;
-        checkInputs = [];
-        propagatedBuildInputs = [pypkgs.pbr];
-
-        meta = with pkgs.lib; {
-          homepage = "https://github.com/click-contrib/sphinx-click";
-          description = "Sphinx extension that automatically documents click applications";
-          license = licenses.mit;
         };
       };
     in {
