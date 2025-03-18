@@ -18,7 +18,6 @@
       pkgs = nixpkgs.legacyPackages.${system};
       python = pkgs.python3.override {
         packageOverrides = self: super: {
-          flake8-pyproject = flake8-pyproject;
           types-pygments = types-pygments;
           types-python-slugify = types-python-slugify;
         };
@@ -26,29 +25,6 @@
       pypkgs = pkgs.python3Packages;
       project = pyproject-nix.lib.project.loadPyproject {
         projectRoot = ./.;
-      };
-
-      flake8-pyproject = python.pkgs.buildPythonPackage {
-        pname = "flake8-pyproject";
-        version = "1.2.3";
-        pyproject = true;
-
-        src = pkgs.fetchFromGitHub {
-          owner = "john-hen";
-          repo = "Flake8-pyproject";
-          rev = "30b8444781d16edd54c11df08210a7c8fb79258d";
-          hash = "sha256-bPRIj7tYmm6I9eo1ZjiibmpVmGcHctZSuTvnKX+raPg=";
-        };
-
-        doCheck = false;
-        checkInputs = [];
-        propagatedBuildInputs = [pypkgs.flit-core pypkgs.flake8];
-
-        meta = with pkgs.lib; {
-          homepage = "https://github.com/john-hen/Flake8-pyproject";
-          description = "Flake8 plug-in loading the configuration from pyproject.toml";
-          license = licenses.mit;
-        };
       };
 
       types-pygments = python.pkgs.buildPythonPackage rec {
