@@ -134,6 +134,16 @@ optional = [
     "chardet>=3.0.2",
     "markdownify>=0.11.6",
 ]
+# Custom Sphinx directives for papis docs
+"papis.sphinx_ext" = [
+    "docutils",
+    "sphinx",
+    "sphinx_click",
+]
+# Pytest fixtures and helpers for testing Papis and plugins
+"papis.testing" = [
+    "pytest"
+]
 # Needed when installing on windows
 windows = [
     "pyinstaller"
