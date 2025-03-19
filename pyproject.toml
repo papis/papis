@@ -131,6 +131,16 @@ optional = [
     "chardet>=3.0.2",
     "markdownify>=0.11.6",
 ]
+# Plugins using papis.sphinx_ext need these
+external_plugin = [
+    "docutils",
+    "sphinx",
+    "sphinx-click",
+]
+# Plugins whose test suites use papis.testing need these
+external_plugin_test = [
+    "pytest"
+]
 # Needed when installing on windows
 windows = [
     "pyinstaller"
