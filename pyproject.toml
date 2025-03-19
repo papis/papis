@@ -89,22 +89,32 @@ Documentation = "https://papis.readthedocs.io"
 Repository = "https://github.com/papis/papis"
 
 [project.optional-dependencies]
-develop = [
+# Dev environment -- install if you're working on papis
+develop = ["papis[lint,typing,test]"]
+# Style enforcement
+lint = [
     "flake8",
     "flake8-bugbear",
     "flake8-quotes",
     "Flake8-pyproject",
-    "mypy>=0.7",
     "pep8-naming",
     "pylint",
+]
+# Test suite
+test = [
     "pytest",
     "pytest-cov",
+]
+# Type-checking
+typing = [
+    "mypy>=0.7",
     "types-beautifulsoup4",
     "types-Pygments",
     "types-docutils",
     "types-PyYAML",
     "types-requests",
 ]
+# To generate documentation
 docs = [
     "pytest",
     "sphinx>=4",
@@ -112,15 +122,19 @@ docs = [
     "sphinx_design",
     "sphinx_rtd_theme>=1",
 ]
+# Python LSP support
+# (provided for convenience setting up a devenv, not a workflow dependency)
 lsp = [
     "python-lsp-server",
 ]
+# Libraries that papis knows how to interact with if installed
 optional = [
     "Jinja2>=3.0.0",
     "Whoosh>=2.7.4",
     "chardet>=3.0.2",
     "markdownify>=0.11.6",
 ]
+# Needed when installing on windows
 windows = [
     "pyinstaller"
 ]
