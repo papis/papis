@@ -101,7 +101,6 @@ develop = [
     "types-beautifulsoup4",
     "types-Pygments",
     "types-docutils",
-    "types-python-slugify",
     "types-PyYAML",
     "types-requests",
 ]
