@@ -94,8 +94,8 @@ extend Papis' features or integrate it with other software.
    * - `papis-firefox <https://github.com/papis/papis-firefox>`__
      - `wavefrontshaping <https://github.com/wavefrontshaping>`__
 
-   * - `papis-qa <https://github.com/isaksamsten/papisqa>`__ (AI for Papis)
-     - `Isak Samsten <https://github.com/isaksamsten>`__
+   * - `papis-ask <https://github.com/jghauser/papis-ask>`__ (AI for Papis)
+     - `Julian Hauser <https://github.com/jghauser>`__
 
 .. toctree::
    :hidden:
