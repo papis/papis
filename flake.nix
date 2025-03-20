@@ -115,14 +115,18 @@
           # Returns a function that can be passed to `python.withPackages`
           arg = project.renderers.withPackages {
             inherit python;
-            # extras = ["develop" "docs" "lsp" "optional"];
+            # extras = ["develop" "docs" "optional"];
             # Until https://github.com/pyproject-nix/pyproject.nix/issues/278 is
             # resolved, we must explicitly enumerate the components of develop
-            extras = ["lint" "typing" "test" "docs" "lsp" "optional"];
+            extras = ["lint" "typing" "test" "docs" "optional"];
           };
 
           # Returns a wrapped environment (virtualenv like) with all our packages
           pythonEnv = python.withPackages arg;
+
+          extra-dev-tools = python.withPackages (ps: [
+            ps.python-lsp-server
+          ]);
 
           # used in below scripts to check if docker or podman is available
           check-container-cmd =
@@ -188,6 +192,7 @@
             packages = [
               self.packages.${system}.papis
               pythonEnv
+              extra-dev-tools
               papis-build-container
               papis-run-container-tests
               papis-run-container-interactive
