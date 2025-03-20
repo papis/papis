@@ -122,11 +122,6 @@ docs = [
     "sphinx_design",
     "sphinx_rtd_theme>=1",
 ]
-# Python LSP support
-# (provided for convenience setting up a devenv, not a workflow dependency)
-lsp = [
-    "python-lsp-server",
-]
 # Libraries that papis knows how to interact with if installed
 optional = [
     "Jinja2>=3.0.0",
