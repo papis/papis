@@ -1,25 +1,34 @@
 import hashlib
 import random
 from typing import Optional
+from warnings import warn
 
-import papis.document
+import papis.logging
+from papis.document import Document, DocumentLike
+
+logger = papis.logging.get_logger(__name__)
+
+#: Key name used to store the Papis ID. This key name is reserved for use in
+#: Papis databases and documents. It can also change in the future, so it is
+#: recommended to use this variable instead of hardcoding the name.
+ID_KEY_NAME: str = "papis_id"
 
 
-def compute_an_id(doc: papis.document.Document,
-                  separator: Optional[str] = None) -> str:
-    """Make an id for the input document *doc*.
+def compute_an_id(doc: Document, separator: Optional[str] = None) -> str:
+    """Make an ID for the input document *doc*.
 
     This is a non-deterministic function if *separator* is *None* (a random value
     is used). For a given value of *separator*, the result is deterministic.
 
-    :arg doc: a document for which to generate an id.
+    :arg doc: a document for which to generate an ID.
     :arg separator: a string used to separate the document fields that go into
-        constructing the id.
+        constructing the ID.
 
-    :returns: a (hexadecimal) id for the document that is unique to high probability.
+    :returns: a (hexadecimal) ID for the document that is unique to high probability.
     """
+    if separator is None:
+        separator = str(random.random())
 
-    separator = separator if separator is not None else str(random.random())
     string = separator.join([
         str(doc),
         str(doc.get_files()),
@@ -30,22 +39,43 @@ def compute_an_id(doc: papis.document.Document,
 
 
 def key_name() -> str:
-    """Reserved key name for databases and documents."""
-    return "papis_id"
+    """Get Papis ID key name."""
+    warn("This function is deprecated and will be removed in the next "
+         "version of Papis (after 0.15). Use 'papis.id.ID_KEY_NAME' instead.",
+         DeprecationWarning, stacklevel=2)
+
+    return ID_KEY_NAME
 
 
-def has_id(doc: papis.document.DocumentLike) -> bool:
-    """Check if the given *doc* has an id."""
-    return key_name() in doc
+def has_id(doc: DocumentLike) -> bool:
+    warn("This function is deprecated and will be removed in the next "
+         "version of Papis (after 0.15). Check for the 'papis.id.ID_KEY_NAME' "
+         "key directly in the document instead.",
+         DeprecationWarning, stacklevel=2)
+
+    return ID_KEY_NAME in doc
 
 
-def get(doc: papis.document.DocumentLike) -> str:
-    """Get the id from a document."""
-    key = key_name()
+def get(doc: DocumentLike) -> str:
+    """Get the Papis ID from *doc*.
 
-    if not has_id(doc):
+    This function does additional checking on the ID and can raise an error if it
+    does not exist. If the ID is known to exist, use :data:`ID_KEY_NAME` directly.
+    """
+
+    doc_id = doc.get(ID_KEY_NAME)
+    if doc_id is None:
+        from papis.document import describe
+
         raise ValueError(
-            "Papis ID key '{}' not found in document: '{}'"
-            .format(key, papis.document.describe(doc)))
+            f"Papis ID key '{ID_KEY_NAME}' not found in document: '{describe(doc)}'"
+            )
 
-    return str(doc[key])
+    if isinstance(doc_id, str):
+        return doc_id
+    else:
+        from papis.document import describe
+
+        logger.warning("The Papis ID '%s' is not a string '%s': %s.",
+                       ID_KEY_NAME, type(doc_id), describe(doc))
+        return str(doc_id)
