@@ -49,6 +49,10 @@ class Database(ABC):
         """
 
     @abstractmethod
+    def get_all_query_string(self) -> str:
+        """Get the default query string that will match all documents."""
+
+    @abstractmethod
     def add(self, document: Document) -> None:
         """Add a new document to the database."""
 
@@ -79,10 +83,6 @@ class Database(ABC):
     @abstractmethod
     def get_all_documents(self) -> List[Document]:
         """Get all documents in the database."""
-
-    @abstractmethod
-    def get_all_query_string(self) -> str:
-        """Get the default query string that will match all documents."""
 
     def find_by_id(self, identifier: str) -> Optional[Document]:
         """Find a document in the library by its Papis ID *identifier*."""
