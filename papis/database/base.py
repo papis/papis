@@ -128,7 +128,7 @@ class Database(ABC):
 
         If the document already has an ID, then the document is skipped and the
         ID is not checked for duplicates. Otherwise a new unique ID is created
-        and the document :ref:`info-file` is updated accordingly.
+        and the document :ref:`info.yaml <info-file>` is updated accordingly.
         """
         from papis.id import ID_KEY_NAME, compute_an_id
 

@@ -19,6 +19,7 @@ class FormattedStringParamType(click.ParamType):
                 value: Any,
                 param: Optional[click.Parameter],
                 ctx: Optional[click.Context]) -> Any:
+        """See :meth:`click.ParamType.convert`."""
         from papis.strings import FormattedString
 
         # NOTE: this is required to handle default values which have a formatter
