@@ -40,7 +40,7 @@ you will not be able to parse the publisher through a search.
 
 """
 import os
-from typing import List, Dict, Optional, Any, KeysView, TYPE_CHECKING
+from typing import List, Dict, Optional, Any, Iterable, TYPE_CHECKING
 
 import papis.config
 import papis.strings
@@ -77,7 +77,7 @@ class Database(papis.database.base.Database):
     def get_cache_path(self) -> str:
         return self.index_dir
 
-    def get_backend_name(self) -> str:
+    def get_backend_name(self) -> str:  # noqa: PLR6301
         return "whoosh"
 
     def clear(self) -> None:
@@ -136,7 +136,7 @@ class Database(papis.database.base.Database):
                 for r in results]
         return documents
 
-    def get_all_query_string(self) -> str:
+    def get_all_query_string(self) -> str:  # noqa: PLR6301
         return "*"
 
     def get_all_documents(self) -> List[papis.document.Document]:
@@ -151,12 +151,12 @@ class Database(papis.database.base.Database):
         """
         return str(document[self.get_id_key()])
 
-    def _get_doc_folder(self, document: papis.document.Document) -> str:
-        _folder = document.get_main_folder()
-        if _folder is None:
+    def _get_doc_folder(self, document: papis.document.Document) -> str:  # noqa: PLR6301
+        folder = document.get_main_folder()
+        if folder is None:
             raise DocumentFolderNotFound(papis.document.describe(document))
         else:
-            return _folder
+            return folder
 
     def create_index(self) -> None:
         """Create a brand new index, notice that if an index already
@@ -178,7 +178,7 @@ class Database(papis.database.base.Database):
     def add_document_with_writer(self,
                                  document: papis.document.Document,
                                  writer: "IndexWriter",
-                                 schema_keys: KeysView[str]) -> None:
+                                 schema_keys: Iterable[str]) -> None:
         """Helper function that takes a writer and a dictionary
         containing the keys of the schema and adds the document to the writer.
         Notice that this function does only two things, creating a suitable
@@ -197,7 +197,7 @@ class Database(papis.database.base.Database):
         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         self.maybe_compute_id(document)
         document["papis-folder"] = self._get_doc_folder(document)
-        doc_d = {k: str(document[k]) or "" for k in schema_keys}
+        doc_d = {k: (str(document[k]) or "") for k in schema_keys}
         writer.add_document(**doc_d)
 
     def do_indexing(self) -> None:
@@ -207,10 +207,13 @@ class Database(papis.database.base.Database):
         expensive and will be called only if no index is present, so
         at the time of building a brand new index.
         """
+        from itertools import chain
+
         logger.debug("Indexing the library, this might take a while...")
-        folders: List[str] = sum([get_folders(d) for d in self.get_dirs()], [])
+        folders: List[str] = list(
+            chain.from_iterable(get_folders(d) for d in self.get_dirs()))
         documents = folders_to_documents(folders)
-        schema_keys = self.get_schema_init_fields().keys()
+        schema_keys = list(self.get_schema_init_fields())
         writer = self.get_writer()
         for doc in documents:
             self.add_document_with_writer(doc, writer, schema_keys)
@@ -289,7 +292,7 @@ class Database(papis.database.base.Database):
         from whoosh.fields import Schema
         return Schema(**fields)
 
-    def get_schema_init_fields(self) -> Dict[str, "FieldType"]:
+    def get_schema_init_fields(self) -> Dict[str, "FieldType"]:  # noqa: PLR6301
         """Returns the arguments to be passed to the whoosh schema
         object instantiation found in the method `get_schema`.
         """

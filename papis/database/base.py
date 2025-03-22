@@ -41,8 +41,8 @@ class Database(ABC):
     def get_cache_path(self) -> str:
         """Get the path to the actual cache file or directory.
         """
-        raise NotImplementedError("Cache path not defined for backend '{}'"
-                                  .format(self.get_backend_name()))
+        raise NotImplementedError(
+            f"Cache path not defined for backend '{self.get_backend_name()}'")
 
     def match(
             self,
@@ -93,8 +93,8 @@ class Database(ABC):
     def find_by_id(self, identifier: str) -> Optional[papis.document.Document]:
         results = self.query_dict({Database.get_id_key(): identifier})
         if len(results) > 1:
-            raise ValueError("More than one document matches the unique id '{}'"
-                             .format(identifier))
+            raise ValueError(
+                f"More than one document matches the unique id '{identifier}'")
 
         return results[0] if results else None
 

@@ -17,7 +17,7 @@ def get_mock_script(name: str) -> str:
 
     from papis.config import escape_interp
 
-    return escape_interp("{} {} {}".format(sys.executable, script, name))
+    return escape_interp(f"{sys.executable} {script} {name}")
 
 
 @pytest.mark.library_setup(settings={
@@ -37,7 +37,7 @@ def test_open_cli(tmp_library: TemporaryLibrary) -> None:
         ["--tool", "nonexistingcommand", "Krishnamurti"],
         catch_exceptions=True)
     assert result.exit_code != 0
-    assert result.exc_info[0] == FileNotFoundError
+    assert result.exc_info[0] is FileNotFoundError
 
     result = cli_runner.invoke(
         cli,

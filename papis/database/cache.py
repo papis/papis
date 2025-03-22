@@ -1,5 +1,6 @@
 import os
 import sys
+from itertools import chain
 from typing import Dict, List, Match, Optional, Pattern, Tuple
 
 import papis.utils
@@ -26,9 +27,10 @@ def get_cache_file_name(libpaths: str) -> str:
     'a566b2bebc62611dff4cdaceac1a7bbd-papers'
     """
     import hashlib
-    return "{}-{}".format(
-        hashlib.md5(libpaths.encode()).hexdigest(),
-        os.path.basename(libpaths))
+
+    hash = hashlib.md5(libpaths.encode()).hexdigest()
+    basename = os.path.basename(libpaths)
+    return f"{hash}-{basename}"
 
 
 def get_cache_file_path(libpaths: str) -> str:
@@ -80,8 +82,8 @@ def filter_documents(
                                     documents)
         filtered_docs = [d for d in result if d is not None]
 
-    _delta = 1000 * (time.time() - begin_t)
-    logger.debug("Finished filtering in %.2fms (%d docs).", _delta, len(filtered_docs))
+    delta = 1000 * (time.time() - begin_t)
+    logger.debug("Finished filtering in %.2fms (%d docs).", delta, len(filtered_docs))
 
     return filtered_docs
 
@@ -124,7 +126,7 @@ class Database(papis.database.base.Database):
     def get_cache_path(self) -> str:
         return self._get_cache_file_path()
 
-    def get_backend_name(self) -> str:
+    def get_backend_name(self) -> str:  # noqa: PLR6301
         return "papis"
 
     def initialize(self) -> None:
@@ -143,9 +145,9 @@ class Database(papis.database.base.Database):
                 self.documents = pickle.load(fd)
         elif self.get_dirs():
             logger.info("Indexing library. This might take a while...")
-            folders: List[str] = sum(
-                [papis.utils.get_folders(d) for d in self.get_dirs()],
-                [])
+            folders: List[str] = list(
+                chain.from_iterable(papis.utils.get_folders(d) for d in self.get_dirs())
+                )
             self.documents = papis.utils.folders_to_documents(folders)
             logger.debug("Computing 'papis_id' for each document.")
             for doc in self.documents:
@@ -164,9 +166,9 @@ class Database(papis.database.base.Database):
         self.maybe_compute_id(document)
         docs.append(document)
         assert docs[-1].get_main_folder() == document.get_main_folder()
-        _folder = document.get_main_folder()
-        assert _folder is not None
-        assert os.path.exists(_folder)
+        folder = document.get_main_folder()
+        assert folder is not None
+        assert os.path.exists(folder)
         self.save()
 
     def update(self, document: papis.document.Document) -> None:
@@ -191,7 +193,7 @@ class Database(papis.database.base.Database):
         docs.pop(index)
         self.save()
 
-    def match(self,
+    def match(self,  # noqa: PLR6301
               document: papis.document.Document,
               query_string: str) -> bool:
         from papis.docmatcher import get_regex_from_search
@@ -222,7 +224,7 @@ class Database(papis.database.base.Database):
         else:
             return filter_documents(docs, query_string)
 
-    def get_all_query_string(self) -> str:
+    def get_all_query_string(self) -> str:  # noqa: PLR6301
         return "."
 
     def get_all_documents(self) -> List[papis.document.Document]:
@@ -258,7 +260,7 @@ class Database(papis.database.base.Database):
             enumerate(self.get_documents())))
         if not result:
             raise ValueError(
-                "The document passed could not be found in the library: '{}'"
-                .format(papis.document.describe(document)))
+                "The document passed could not be found in the library: "
+                f"'{papis.document.describe(document)}'")
 
         return result

@@ -54,7 +54,8 @@ def test_author_list_conversion(
         resource_cache: ResourceCache,
         bibfile: str,
         overwrite: bool = False) -> None:
-    jsonfile = "bibtex/{}_out.json".format(os.path.splitext(bibfile)[0])
+    basename, _ = os.path.splitext(bibfile)
+    jsonfile = f"bibtex/{basename}_out.json"
 
     import papis.bibtex
 
@@ -69,7 +70,7 @@ def test_clean_ref(tmp_config: TemporaryConfiguration) -> None:
 
     for (r, rc) in [
             ("Einstein über etwas und so 1923", "Einstein_uber_etwas_und_so_1923"),
-            ("Äöasf () : Aλבert Eιنς€in", "Aoasf_Albert_EinsEURin"),
+            ("Äöasf () : Aλבert Eιنς€in", "Aoasf_Albert_EinsEURin"),  # noqa: RUF001
             (r"Albert_Ein\_stein\.1923.b", "Albert_Ein__stein_.1923_b"),
             ]:
         assert rc == papis.bibtex.ref_cleanup(r)
@@ -158,7 +159,7 @@ def test_overridable(tmp_config: TemporaryConfiguration) -> None:
         "type": "report",
         "author": "Albert Einstein",
         "author_list": [{"given": "Albert", "family": "Einstein"}],
-        "title": "Ä α The Theory of Everything & Nothing",
+        "title": "Ä α The Theory of Everything & Nothing",  # noqa: RUF001
         "title_latex": r"The Theory of Everything \& Nothing",
         "journal": "Nature",
         "year": 2350,
