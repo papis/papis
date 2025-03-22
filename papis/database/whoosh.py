@@ -12,7 +12,7 @@ which is a declaration of the data prototype of the database, or the
 definition of the table in SQL parlance. This is controlled by the
 Papis configuration through the :confval:`whoosh-schema-prototype`. For instance
 if the database is supposed to only contain the key fields
-``[author, title, year, tags]``, then the :confval:`whoosh-schema-prototype``
+``[author, title, year, tags]``, then the :confval:`whoosh-schema-prototype`
 string should look like the following:
 
 .. code:: python
@@ -29,8 +29,8 @@ where all the fields are explained in the whoosh
 
 After this Schema is created, the folders of the library are traversed
 and the documents are added to the database. When adding documents, only the
-keys in the schema are stored. This means, if ``publisher`` is not in the schema,
-you will not be able to search for the publisher through a query.
+keys in the schema are stored. This means that, e.g., if ``publisher`` is not in
+the schema you will not be able to search for the publisher through a query.
 """
 
 import os

@@ -83,9 +83,9 @@ settings: Dict[str, Any] = {
 
     # bibtex
     "bibtex-journal-key": "journal",
-    "extra-bibtex-keys": "[]",
-    "bibtex-ignore-keys": "[]",
-    "extra-bibtex-types": "[]",
+    "extra-bibtex-keys": [],
+    "bibtex-ignore-keys": [],
+    "extra-bibtex-types": [],
     "bibtex-unicode": False,
     "bibtex-export-file": False,
     "multiple-authors-separator": " and ",
@@ -229,7 +229,7 @@ settings: Dict[str, Any] = {
     "database-backend": "papis",
     "use-cache": True,
     "cache-dir": None,
-    "whoosh-schema-fields": "['doi']",
+    "whoosh-schema-fields": ["doi"],
     "whoosh-schema-prototype":
     "{\n"
     '"author": TEXT(stored=True),\n'

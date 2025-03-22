@@ -229,6 +229,15 @@ class Jinja2Formatter(Formatter):
 
     @classmethod
     def get_environment(cls, *, force: bool = False) -> Any:
+        """Construct and cache the ``jinja2`` environment used by the formatter.
+
+        The environment is created on the first call to :meth:`format` and cached
+        for future use. If it should be recreated after that, this function can
+        be called with *force* set to *True*.
+
+        :arg force: if *True*, the environment will be recreated.
+        """
+
         if cls.env is None or force:
             from jinja2 import Environment
 
