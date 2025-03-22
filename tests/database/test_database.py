@@ -18,10 +18,11 @@ PAPIS_DB_SETTINGS = [{"settings": {"database-backend": b}} for b in PAPIS_DB_BAC
 @pytest.mark.parametrize("tmp_library", PAPIS_DB_SETTINGS, indirect=True)
 def test_database_paths(tmp_library: TemporaryLibrary) -> None:
     db = papis.database.get()
+
     assert db is not None
     assert db.get_backend_name() == papis.config.get("database-backend")
-    assert db.get_lib() == papis.config.get_lib_name()
-    assert db.get_dirs() == papis.config.get_lib_dirs()
+    assert db.lib.name == papis.config.get_lib_name()
+    assert db.lib.paths == papis.config.get_lib_dirs()
     assert db.get_all_query_string() == papis.database.get_all_query_string()
 
     docs = db.get_all_documents()

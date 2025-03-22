@@ -141,10 +141,10 @@ class Database(papis.database.base.Database):
             import pickle
             with open(cache_path, "rb") as fd:
                 self.documents = pickle.load(fd)
-        elif self.get_dirs():
+        elif self.lib.paths:
             logger.info("Indexing library. This might take a while...")
             folders: List[str] = sum(
-                [papis.utils.get_folders(d) for d in self.get_dirs()],
+                [papis.utils.get_folders(d) for d in self.lib.paths],
                 [])
             self.documents = papis.utils.folders_to_documents(folders)
             logger.debug("Computing 'papis_id' for each document.")
@@ -190,13 +190,6 @@ class Database(papis.database.base.Database):
         index = result[0][0]
         docs.pop(index)
         self.save()
-
-    def match(self,
-              document: papis.document.Document,
-              query_string: str) -> bool:
-        from papis.docmatcher import get_regex_from_search
-        query = get_regex_from_search(query_string)
-        return bool(match_document(document, query))
 
     def clear(self) -> None:
         cache_path = self._get_cache_file_path()

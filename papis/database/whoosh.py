@@ -48,6 +48,7 @@ import papis.document
 import papis.logging
 import papis.database.base
 import papis.database.cache
+from papis.id import ID_KEY_NAME
 from papis.utils import get_cache_home, get_folders, folders_to_documents
 from papis.exceptions import DocumentFolderNotFound
 
@@ -106,9 +107,7 @@ class Database(papis.database.base.Database):
         writer = self.get_writer()
 
         logger.debug("Deleting document: '%s'.", papis.document.describe(document))
-        writer.delete_by_term(
-            Database.get_id_key(),
-            self.get_id_value(document))
+        writer.delete_by_term(ID_KEY_NAME, self.get_id_value(document))
 
         logger.debug("Committing document: '%s'.", papis.document.describe(document))
         writer.commit()
@@ -149,7 +148,7 @@ class Database(papis.database.base.Database):
         :param document: Papis document
         :returns: The papis-id
         """
-        return str(document[self.get_id_key()])
+        return str(document[ID_KEY_NAME])
 
     def _get_doc_folder(self, document: papis.document.Document) -> str:
         _folder = document.get_main_folder()
@@ -208,7 +207,7 @@ class Database(papis.database.base.Database):
         at the time of building a brand new index.
         """
         logger.debug("Indexing the library, this might take a while...")
-        folders: List[str] = sum([get_folders(d) for d in self.get_dirs()], [])
+        folders: List[str] = sum([get_folders(d) for d in self.lib.paths], [])
         documents = folders_to_documents(folders)
         schema_keys = self.get_schema_init_fields().keys()
         writer = self.get_writer()
@@ -294,13 +293,15 @@ class Database(papis.database.base.Database):
         object instantiation found in the method `get_schema`.
         """
         from whoosh.fields import TEXT, ID, KEYWORD, STORED  # noqa: F401
+
         # This part is non-negotiable
-        fields = {Database.get_id_key(): ID(stored=True, unique=True),
-                  "papis-folder": TEXT(stored=True)}
+        fields = {
+            ID_KEY_NAME: ID(stored=True, unique=True),
+            "papis-folder": TEXT(stored=True)
+        }
 
         # TODO: this is a security risk, find a way to fix it
-        user_prototype = eval(
-            papis.config.getstring("whoosh-schema-prototype"))  # KeysView[str]
+        user_prototype = eval(papis.config.getstring("whoosh-schema-prototype"))
         fields.update(user_prototype)
 
         fields_list = papis.config.getlist("whoosh-schema-fields")
