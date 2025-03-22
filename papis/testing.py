@@ -152,7 +152,7 @@ def populate_library(libdir: str) -> None:
 
     :arg libdir: an existing empty library directory.
     """
-    import papis.id
+    from papis.id import ID_KEY_NAME, compute_an_id
     from papis.document import Document
 
     for i, data in enumerate(PAPIS_TEST_DOCUMENTS):
@@ -171,7 +171,7 @@ def populate_library(libdir: str) -> None:
 
         # create document
         doc = Document(folder_path, doc_data)
-        doc[papis.id.key_name()] = papis.id.compute_an_id(doc)
+        doc[ID_KEY_NAME] = compute_an_id(doc)
         doc.save()
 
 
