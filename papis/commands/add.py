@@ -122,7 +122,6 @@ import papis.downloaders
 import papis.git
 import papis.format
 import papis.citations
-import papis.id
 import papis.logging
 import papis.commands.doctor
 
@@ -143,9 +142,11 @@ class FromFolderImporter(papis.importer.Importer):
 
     def fetch(self) -> None:
         self.logger.info("Importing from folder '%s'.", self.uri)
+        from papis.id import ID_KEY_NAME
 
         doc = papis.document.from_folder(self.uri)
-        del doc[papis.id.key_name()]
+        del doc[ID_KEY_NAME]
+
         self.ctx.data = papis.document.to_dict(doc)
         self.ctx.files = doc.get_files()
 

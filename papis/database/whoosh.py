@@ -51,6 +51,9 @@ if TYPE_CHECKING:
 
 logger = papis.logging.get_logger(__name__)
 
+#: Field name used to store the document main folder the the Whoosh database.
+WHOOSH_FOLDER_FIELD = "papis-folder"
+
 
 class Database(DatabaseBase):
     def __init__(self, library: Optional[Library] = None) -> None:
@@ -140,7 +143,7 @@ class Database(DatabaseBase):
         query = qp.parse(query_string)
         with index.searcher() as searcher:
             results = searcher.search(query, limit=None)
-            documents = [from_folder(r.get("papis-folder")) for r in results]
+            documents = [from_folder(r.get(WHOOSH_FOLDER_FIELD)) for r in results]
 
         t_delta = 1000 * (time.time() - t_start)
         logger.debug("Finished querying in %.2fms (%d docs).", t_delta, len(documents))
@@ -183,16 +186,18 @@ class Database(DatabaseBase):
         change to the writer, so that has to be done separately.
         """
         # NOTE: `maybe_compute_id` overwrites the info file, so put it before
-        # anything else, otherwise get `papis-folder` in your info.yaml
+        # anything else, otherwise get `WHOOSH_FOLDER_FIELD` in your info.yaml
         self.maybe_compute_id(document)
 
         folder = document.get_main_folder()
         if not folder:
             raise DocumentFolderNotFound(describe(document))
 
-        document["papis-folder"] = folder
-        doc_d = {k: str(document[k]) or "" for k in schema_keys}
-        writer.add_document(**doc_d)
+        doc_schema = {
+            k: (folder if k == WHOOSH_FOLDER_FIELD else str(document[k]))
+            for k in schema_keys
+        }
+        writer.add_document(**doc_schema)
 
     def _index_documents(self) -> None:
         """Initializes the database with an index of all the documents.
@@ -244,7 +249,7 @@ class Database(DatabaseBase):
         # add default fields that should always be in the database
         fields = {
             ID_KEY_NAME: ID(stored=True, unique=True),
-            "papis-folder": TEXT(stored=True)
+            WHOOSH_FOLDER_FIELD: TEXT(stored=True)
         }
         # add user provided fields
         fields.update(user_prototype)

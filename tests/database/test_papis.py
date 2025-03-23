@@ -31,7 +31,7 @@ def test_database_reload(tmp_library: TemporaryLibrary) -> None:
     assert isinstance(db, papis.database.Database)
 
     ndocs = len(db.get_all_documents())
-    db.save()
+    db._save_documents()
     db.documents = None
 
     ndocs_reload = len(db.get_all_documents())
@@ -51,7 +51,7 @@ def test_database_missing(tmp_library: TemporaryLibrary) -> None:
 
     with pytest.raises(
             Exception,
-            match="document passed could not be found"):
+            match="Document could not be found"):
         db._locate_document(doc)
 
 
@@ -71,7 +71,7 @@ def test_cache_path(tmp_library: TemporaryLibrary) -> None:
     import papis.database
 
     db = papis.database.get()
-    _ = db.get_documents()
+    _ = db.get_all_documents()
 
     assert os.path.exists(db.get_cache_path())
     assert not os.path.isdir(db.get_cache_path())

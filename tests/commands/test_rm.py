@@ -40,6 +40,7 @@ def test_rm_files_run(tmp_library: TemporaryLibrary) -> None:
     assert not os.path.exists(filename)
 
     db.clear()
+    db.initialize()
     db.documents = None
 
     doc, = db.query_dict({"title": title})
