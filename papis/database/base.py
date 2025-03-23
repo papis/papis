@@ -1,9 +1,42 @@
+import os
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
 from warnings import warn
 
 from papis.document import Document
 from papis.library import Library
+
+
+def get_cache_file_name(libpaths: str) -> str:
+    """Create a cache file name out of the path of a given directory.
+
+    :param libpaths: folder names to be used as a seed for the cache name.
+    :returns: a name for the cache file specific to *libpaths*.
+
+    >>> get_cache_file_name('path/to/my/lib')
+    'a8c689820a94babec20c5d6269c7d488-lib'
+    >>> get_cache_file_name('papers')
+    'a566b2bebc62611dff4cdaceac1a7bbd-papers'
+    """
+    import hashlib
+    return "{}-{}".format(
+        hashlib.md5(libpaths.encode()).hexdigest(),
+        os.path.basename(libpaths))
+
+
+def get_cache_file_path(libpaths: str) -> str:
+    """Get the full path to the cache file.
+
+    :param libpaths: a cache file specific for the given library paths.
+    """
+    from papis.utils import get_cache_home
+
+    cache_name = get_cache_file_name(libpaths)
+    folder = os.path.join(get_cache_home(), "database")
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
+    return os.path.join(folder, cache_name)
 
 
 class Database(ABC):
@@ -20,15 +53,6 @@ class Database(ABC):
         self.lib = library
 
     @abstractmethod
-    def initialize(self) -> None:
-        """Initialize the caching database backend.
-
-        This can involve creating any necessary directories, opening files, etc.
-        This function should be called in the constructor of the database class,
-        as needed.
-        """
-
-    @abstractmethod
     def get_backend_name(self) -> str:
         """Get the name of the database backend.
 
@@ -41,6 +65,19 @@ class Database(ABC):
         """Get the path to the database cache file (or directory)."""
 
     @abstractmethod
+    def get_all_query_string(self) -> str:
+        """Get the default query string that will match all documents."""
+
+    @abstractmethod
+    def initialize(self) -> None:
+        """Initialize the caching database backend.
+
+        This can involve creating any necessary directories, opening files, etc.
+        This function should be called in the constructor of the database class,
+        as needed.
+        """
+
+    @abstractmethod
     def clear(self) -> None:
         """Clear the database by removing all files and directories.
 
@@ -49,20 +86,12 @@ class Database(ABC):
         """
 
     @abstractmethod
-    def get_all_query_string(self) -> str:
-        """Get the default query string that will match all documents."""
-
-    @abstractmethod
     def add(self, document: Document) -> None:
         """Add a new document to the database."""
 
     @abstractmethod
     def update(self, document: Document) -> None:
-        """Update an existing document in the database.
-
-        The given *document* will overwrite all the common fields of the document
-        that already exists in the database, if any.
-        """
+        """Replace an existing document in the database."""
 
     @abstractmethod
     def delete(self, document: Document) -> None:
