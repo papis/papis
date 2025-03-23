@@ -107,7 +107,9 @@ class Database(DatabaseBase):
         return "."
 
     def initialize(self) -> None:
-        pass
+        # NOTE: ensure that all the documents are loaded on initialize to match
+        # the behaviour of the whoosh backend
+        _ = self._get_documents()
 
     def clear(self) -> None:
         cache_path = self._get_cache_file_path()

@@ -3,13 +3,11 @@ import pytest
 import shutil
 import sys
 
-import papis.config
-import papis.document
-
+from papis.document import Document
 from papis.testing import TemporaryLibrary, PapisRunner
 
 
-def make_document(name: str, dir: str, nfiles: int = 0) -> papis.document.Document:
+def make_document(name: str, dir: str, nfiles: int = 0) -> Document:
     folder = os.path.join(dir, name)
     if not os.path.exists(folder):
         os.makedirs(folder)
@@ -23,10 +21,10 @@ def make_document(name: str, dir: str, nfiles: int = 0) -> papis.document.Docume
         "files": files
     }
 
-    import papis.id
+    from papis.id import ID_KEY_NAME, compute_an_id
 
-    doc = papis.document.Document(folder, data)
-    doc[papis.id.key_name()] = papis.id.compute_an_id(doc)
+    doc = Document(folder, data)
+    doc[ID_KEY_NAME] = compute_an_id(doc)
     doc.save()
 
     return doc
@@ -47,6 +45,8 @@ def test_add_run(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
 
     # add no files
     run([], data={"author": "Evangelista", "title": "MRCI"})
+
+    import papis.database
 
     db = papis.database.get()
     doc, = db.query_dict({"author": "Evangelista"})
@@ -92,6 +92,8 @@ def test_add_auto_doctor_run(tmp_library: TemporaryLibrary) -> None:
     }
     paths = []
 
+    import papis.config
+
     # add document with auto-doctor on
     papis.config.set("doctor-default-checks", ["keys-missing", "key-type", "refs"])
     run(paths, data=data, auto_doctor=True)
@@ -116,6 +118,8 @@ def test_add_set_cli(tmp_library: TemporaryLibrary) -> None:
          "--batch"])
     assert result.exit_code == 0
 
+    import papis.database
+
     db = papis.database.get()
     doc, = db.query_dict({"author": "Bertrand Russell"})
     assert doc["title"] == "Principia"
@@ -136,6 +140,8 @@ def test_add_link_cli(tmp_library: TemporaryLibrary) -> None:
          "--link",
          filename])
     assert result.exit_code == 0
+
+    import papis.database
 
     db = papis.database.get()
     doc, = db.query_dict({"author": "Plato"})
@@ -198,8 +204,10 @@ def test_add_from_folder_cli(tmp_library: TemporaryLibrary,
         assert result.exit_code == 0
 
     from papis.database.cache import Database
+
     db = papis.database.get()
-    assert isinstance(db, Database)
+    if not isinstance(db, Database):
+        return
 
     db.documents = None
     doc, = db.query_dict({"author": "Plato"})
@@ -230,6 +238,9 @@ def test_add_bibtex_cli(tmp_library: TemporaryLibrary,
     bibfile = os.path.join(tmp_library.tmpdir, "test-add.bib")
     with open(bibfile, "w") as f:
         f.write(bibtex_string)
+
+    import papis.utils
+    import papis.tui.utils
 
     with monkeypatch.context() as m:
         m.setattr(papis.utils, "update_doc_from_data_interactively",
@@ -306,6 +317,8 @@ def test_add_lib_cli(tmp_library: TemporaryLibrary,
 def test_add_set_invalid_format_cli(tmp_library: TemporaryLibrary) -> None:
     from papis.commands.add import cli
     cli_runner = PapisRunner()
+
+    import papis.config
 
     papis.config.set("add-file-name",
                      "{doc[author_list][0][family]} - {doc[year]} - {doc[title]}")

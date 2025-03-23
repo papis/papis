@@ -9,9 +9,6 @@ from papis.testing import TemporaryLibrary, PapisRunner
 
 def test_clear(tmp_library: TemporaryLibrary) -> None:
     db = papis.database.get()
-
-    assert not os.path.exists(db.get_cache_path())
-    db.get_all_documents()
     assert os.path.exists(db.get_cache_path())
 
     cli_runner = PapisRunner()
@@ -61,16 +58,16 @@ def test_rm_add_update(tmp_library: TemporaryLibrary) -> None:
     ###################################################
     # NOTE: modifying `doc` directly may modify the version in the database, so
     # this modifies the info file behind its back completely to check the update
-    doc_dict = {**dict(doc), "cache": "test-update"}
+    doc_dict = {**dict(doc), "tags": "test-update"}
     papis.yaml.data_to_yaml(doc.get_info_file(), doc_dict, allow_unicode=True)
 
-    query_results = db.query_dict({"cache": "test-update"})
+    query_results = db.query_dict({"tags": "test-update"})
     assert len(query_results) == 0
 
     result = cli_runner.invoke(cli, ["update", "--doc-folder", folder])
     assert result.exit_code == 0
 
-    query_results = db.query_dict({"cache": "test-update"})
+    query_results = db.query_dict({"tags": "test-update"})
     assert len(query_results) == 1
 
     # update-newer
@@ -79,14 +76,14 @@ def test_rm_add_update(tmp_library: TemporaryLibrary) -> None:
     # meaningfully changed and the OS had time to update it
     time.sleep(1)
 
-    doc_dict = {**dict(doc), "cache": "test-update-newer"}
+    doc_dict = {**dict(doc), "tags": "test-update-newer"}
     papis.yaml.data_to_yaml(doc.get_info_file(), doc_dict, allow_unicode=True)
 
-    query_results = db.query_dict({"cache": "test-update-newer"})
+    query_results = db.query_dict({"tags": "test-update-newer"})
     assert len(query_results) == 0
 
     result = cli_runner.invoke(cli, ["update-newer", "--all"])
     assert result.exit_code == 0
 
-    query_results = db.query_dict({"cache": "test-update-newer"})
+    query_results = db.query_dict({"tags": "test-update-newer"})
     assert len(query_results) == 1
