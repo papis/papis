@@ -52,6 +52,32 @@ jobs:
       run: make ci-test
       shell: bash
 
+  database:
+    name: Database (${{ matrix.database }}/${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        database: ["whoosh"]
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: make ci-install
+      shell: bash
+
+    - name: Run tests for '${{ matrix.database }}' database
+      env:
+        PAPIS_DATABASE_BACKEND: ${{ matrix.database }}
+      run: make ci-test
+      shell: bash
+
   pypi-release:
     needs: [build]
     name: PyPI Release

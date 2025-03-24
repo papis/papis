@@ -261,7 +261,10 @@ class TemporaryConfiguration:
 
         settings = {
             self.libname: {"dir": papis.config.escape_interp(self.libdir)},
-            "settings": {"default-library": self.libname}
+            "settings": {
+                "default-library": self.libname,
+                "database-backend": os.environ.get("PAPIS_DATABASE_BACKEND", "papis"),
+            }
         }
 
         if self.settings is not None:
