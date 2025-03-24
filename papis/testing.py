@@ -259,9 +259,21 @@ class TemporaryConfiguration:
         # load settings
         import papis.config
 
+        database_backend = os.environ.get("PAPIS_DATABASE_BACKEND", "papis")
+        # FIXME: there should be a way to get the query string without fully
+        # initializing the whole database (which can be quite expensive)
+        default_query_string = {
+            "papis": ".",
+            "whoosh": "*",
+        }.get(database_backend, "papis")
+
         settings = {
             self.libname: {"dir": papis.config.escape_interp(self.libdir)},
-            "settings": {"default-library": self.libname}
+            "settings": {
+                "default-library": self.libname,
+                "database-backend": database_backend,
+                "default-query-string": default_query_string
+            }
         }
 
         if self.settings is not None:
