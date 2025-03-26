@@ -123,13 +123,8 @@
               # Returns a function that can be passed to `python.withPackages`
               arg = project.renderers.withPackages {
                 inherit python;
-                # extras = ["develop" "docs" "lsp" "optional"];
-                # Until https://github.com/pyproject-nix/pyproject.nix/issues/278 is
-                # resolved, we must explicitly enumerate the components of develop
                 extras = [
-                  "lint"
-                  "typing"
-                  "test"
+                  "develop"
                   "docs"
                   "lsp"
                   "optional"
