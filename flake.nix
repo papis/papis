@@ -21,9 +21,71 @@
         pkgs = nixpkgs.legacyPackages.${system};
         python = pkgs.python3.override {
           packageOverrides = self: super: {
-            flake8-pyproject = flake8-pyproject;
-            types-pygments = types-pygments;
-            types-python-slugify = types-python-slugify;
+
+            flake8-pyproject = python.pkgs.buildPythonPackage {
+              pname = "flake8-pyproject";
+              version = "1.2.3";
+              pyproject = true;
+
+              src = pkgs.fetchFromGitHub {
+                owner = "john-hen";
+                repo = "Flake8-pyproject";
+                rev = "30b8444781d16edd54c11df08210a7c8fb79258d";
+                hash = "sha256-bPRIj7tYmm6I9eo1ZjiibmpVmGcHctZSuTvnKX+raPg=";
+              };
+
+              doCheck = false;
+              checkInputs = [ ];
+              propagatedBuildInputs = [
+                pypkgs.flit-core
+                pypkgs.flake8
+              ];
+
+              meta = with pkgs.lib; {
+                homepage = "https://github.com/john-hen/Flake8-pyproject";
+                description = "Flake8 plug-in loading the configuration from pyproject.toml";
+                license = licenses.mit;
+              };
+            };
+
+            types-pygments = final.buildPythonPackage rec {
+              pname = "types-Pygments";
+              version = "2.19.0.20250305";
+
+              src = final.fetchPypi {
+                inherit version;
+                pname = "types_pygments";
+                sha256 = "sha256-BExQ6A7NQSjACnJo8gNV4W9cVUZtPUnf2gm+kgr0C0s=";
+              };
+
+              doCheck = false;
+              checkInputs = [ ];
+
+              meta = with pkgs.lib; {
+                homepage = "https://github.com/python/typeshed";
+                description = "Typing stubs for Pygments";
+                license = licenses.asl20;
+              };
+            };
+
+            types-python-slugify = python.pkgs.buildPythonPackage rec {
+              pname = "types-python-slugify";
+              version = "8.0.2.20240310";
+
+              src = python.pkgs.fetchPypi {
+                inherit pname version;
+                sha256 = "sha256-UVe1CMf+1YdSDHDXf2KuoPr9xmIIk8LsiXLxOh+vVWA=";
+              };
+
+              doCheck = false;
+              checkInputs = [ ];
+
+              meta = with pkgs.lib; {
+                homepage = "https://github.com/python/typeshed";
+                description = "Typing stubs for python-slugify";
+                license = licenses.asl20;
+              };
+            };
           };
         };
         pypkgs = pkgs.python3Packages;
@@ -31,70 +93,6 @@
           projectRoot = ./.;
         };
 
-        flake8-pyproject = python.pkgs.buildPythonPackage {
-          pname = "flake8-pyproject";
-          version = "1.2.3";
-          pyproject = true;
-
-          src = pkgs.fetchFromGitHub {
-            owner = "john-hen";
-            repo = "Flake8-pyproject";
-            rev = "30b8444781d16edd54c11df08210a7c8fb79258d";
-            hash = "sha256-bPRIj7tYmm6I9eo1ZjiibmpVmGcHctZSuTvnKX+raPg=";
-          };
-
-          doCheck = false;
-          checkInputs = [ ];
-          propagatedBuildInputs = [
-            pypkgs.flit-core
-            pypkgs.flake8
-          ];
-
-          meta = with pkgs.lib; {
-            homepage = "https://github.com/john-hen/Flake8-pyproject";
-            description = "Flake8 plug-in loading the configuration from pyproject.toml";
-            license = licenses.mit;
-          };
-        };
-
-        types-pygments = python.pkgs.buildPythonPackage rec {
-          pname = "types-Pygments";
-          version = "2.19.0.20250305";
-
-          src = python.pkgs.fetchPypi {
-            inherit version;
-            pname = "types_pygments";
-            sha256 = "sha256-BExQ6A7NQSjACnJo8gNV4W9cVUZtPUnf2gm+kgr0C0s=";
-          };
-
-          doCheck = false;
-          checkInputs = [ ];
-
-          meta = with pkgs.lib; {
-            homepage = "https://github.com/python/typeshed";
-            description = "Typing stubs for Pygments";
-            license = licenses.asl20;
-          };
-        };
-
-        types-python-slugify = python.pkgs.buildPythonPackage rec {
-          pname = "types-python-slugify";
-          version = "8.0.2.20240310";
-
-          src = python.pkgs.fetchPypi {
-            inherit pname version;
-            sha256 = "sha256-UVe1CMf+1YdSDHDXf2KuoPr9xmIIk8LsiXLxOh+vVWA=";
-          };
-
-          doCheck = false;
-          checkInputs = [ ];
-
-          meta = with pkgs.lib; {
-            homepage = "https://github.com/python/typeshed";
-            description = "Typing stubs for python-slugify";
-            license = licenses.asl20;
-          };
-        };
       in
       {
         packages = {
