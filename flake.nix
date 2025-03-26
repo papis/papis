@@ -95,6 +95,16 @@
                   extras = [ "optional" ];
                 };
               in
+              assert
+                project.validators.validateVersionConstraints {
+                  inherit python;
+                  extras = [
+                    "develop"
+                    "docs"
+                    "lsp"
+                    "optional"
+                  ];
+                } == { };
               # Pass attributes to buildPythonPackage.
               # Here is a good spot to add on any missing or custom attributes.
               final.buildPythonPackage (
