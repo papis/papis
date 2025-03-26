@@ -86,6 +86,24 @@
                 license = licenses.asl20;
               };
             };
+
+            papis =
+              let
+                # Returns an attribute set that can be passed to `buildPythonPackage`.
+                attrs = project.renderers.buildPythonPackage {
+                  inherit python;
+                  extras = [ "optional" ];
+                };
+              in
+              # Pass attributes to buildPythonPackage.
+              # Here is a good spot to add on any missing or custom attributes.
+              final.buildPythonPackage (
+                attrs
+                // {
+                  # Because we're following main, use the git rev as version
+                  version = if (self ? rev) then self.shortRev else self.dirtyShortRev;
+                }
+              );
           };
         };
 
@@ -96,24 +114,8 @@
       in
       {
         packages = {
-          papis =
-            let
-              # Returns an attribute set that can be passed to `buildPythonPackage`.
-              attrs = project.renderers.buildPythonPackage {
-                inherit python;
-                extras = [ "optional" ];
-              };
-            in
-            # Pass attributes to buildPythonPackage.
-            # Here is a good spot to add on any missing or custom attributes.
-            python.pkgs.buildPythonPackage (
-              attrs
-              // {
-                # Because we're following main, use the git rev as version
-                version = if (self ? rev) then self.shortRev else self.dirtyShortRev;
-              }
-            );
           default = self.packages.${system}.papis;
+          inherit (python.pkgs) papis;
         };
         devShells = {
           default =
