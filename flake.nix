@@ -20,9 +20,9 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         python = pkgs.python3.override {
-          packageOverrides = self: super: {
+          packageOverrides = final: prev: {
 
-            flake8-pyproject = python.pkgs.buildPythonPackage {
+            flake8-pyproject = final.buildPythonPackage {
               pname = "flake8-pyproject";
               version = "1.2.3";
               pyproject = true;
@@ -37,8 +37,8 @@
               doCheck = false;
               checkInputs = [ ];
               propagatedBuildInputs = [
-                pypkgs.flit-core
-                pypkgs.flake8
+                final.flit-core
+                final.flake8
               ];
 
               meta = with pkgs.lib; {
@@ -68,11 +68,11 @@
               };
             };
 
-            types-python-slugify = python.pkgs.buildPythonPackage rec {
+            types-python-slugify = final.buildPythonPackage rec {
               pname = "types-python-slugify";
               version = "8.0.2.20240310";
 
-              src = python.pkgs.fetchPypi {
+              src = final.fetchPypi {
                 inherit pname version;
                 sha256 = "sha256-UVe1CMf+1YdSDHDXf2KuoPr9xmIIk8LsiXLxOh+vVWA=";
               };
@@ -88,7 +88,7 @@
             };
           };
         };
-        pypkgs = pkgs.python3Packages;
+
         project = pyproject-nix.lib.project.loadPyproject {
           projectRoot = ./.;
         };
