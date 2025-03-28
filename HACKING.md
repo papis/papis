@@ -4,7 +4,7 @@ Guidelines for Code Modification
 Coding Style
 ------------
 
-* Use syntax compatible with Python `3.8+`.
+* Use syntax compatible with Python `3.10+`.
 * Use docstrings with [Sphinx](https://www.sphinx-doc.org/en/master/) in mind.
 * Follow the [PEP8 style guide](https://www.python.org/dev/peps/pep-0008/).
 * Try and run tests locally before submitting a new PR.
