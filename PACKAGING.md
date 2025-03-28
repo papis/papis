@@ -19,6 +19,19 @@ Dependencies
 ------------
 
 See `pyproject.toml` for a complete list of Python dependencies and minimum versions.
+Some optional dependencies are required for various Papis plugins
+
+* `Jinja2` is required for the `jinja` formatter, alternative to the default `python`
+  formatter.
+* `Whoosh` is required for the `whoosh` cache database, alternative to the default
+  `papis` database based on `pickle`.
+* `chardet` is used by `beautifulsoup4` when parsing webpages to improve character
+  detection. This is recommended when making heavy use of Papis downloaders and
+  importers.
+* `markdownify` is used by the `zenodo` importer to clean up some of the project
+  descriptions. By default, the raw HTML is kept as is and will appear in the
+  document abstract or other such fields.
+
 We also have some additional optional non-Python dependencies:
 
 * `git`: The Git executable is required for the `papis git` command and other
