@@ -89,23 +89,32 @@ Documentation = "https://papis.readthedocs.io"
 Repository = "https://github.com/papis/papis"
 
 [project.optional-dependencies]
-develop = [
+# Dev environment -- install if you're working on papis
+develop = ["papis[lint,typing,test]"]
+# Style enforcement
+lint = [
     "flake8",
     "flake8-bugbear",
     "flake8-quotes",
     "Flake8-pyproject",
-    "mypy>=0.7",
     "pep8-naming",
     "pylint",
+]
+# Test suite
+test = [
     "pytest",
     "pytest-cov",
+]
+# Type-checking
+typing = [
+    "mypy>=0.7",
     "types-beautifulsoup4",
     "types-Pygments",
     "types-docutils",
-    "types-python-slugify",
     "types-PyYAML",
     "types-requests",
 ]
+# To generate documentation
 docs = [
     "pytest",
     "sphinx>=4",
@@ -113,15 +122,31 @@ docs = [
     "sphinx_design",
     "sphinx_rtd_theme>=1",
 ]
+# Python LSP support -- useful to have in the dev environment, but not strictly
+# necessary to our workflow
 lsp = [
     "python-lsp-server",
 ]
+# Libraries that papis knows how to interact with if installed
 optional = [
     "Jinja2>=3.0.0",
     "Whoosh>=2.7.4",
     "chardet>=3.0.2",
     "markdownify>=0.11.6",
 ]
+# papis.sphinx_ext: utilities for generating Sphinx docs according to Papis
+# standards, exposed for use by plugins
+papis_sphinx_ext = [
+    "docutils",
+    "sphinx",
+    "sphinx_click",
+]
+# papis.testing: utilities for building tests using Papis, exposed for use by
+# plugins
+papis_testing = [
+    "pytest"
+]
+# Needed when installing on windows
 windows = [
     "pyinstaller"
 ]
