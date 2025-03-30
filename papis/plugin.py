@@ -19,8 +19,6 @@ def get_extension_manager(namespace: str) -> ExtensionManager:
     :arg namespace: the namespace for the entry points.
     :returns: an extension manager for the given entry point namespace.
     """
-    global MANAGERS
-
     manager = MANAGERS.get(namespace)
     if manager is None:
         logger.debug("Creating manager for namespace '%s'.", namespace)

@@ -266,7 +266,6 @@ def get_config_file() -> str:
         :func:`set_config_file`.
     """
 
-    global OVERRIDE_VARS
     if OVERRIDE_VARS["file"] is not None:
         config_file = OVERRIDE_VARS["file"]
     else:
@@ -278,8 +277,6 @@ def get_config_file() -> str:
 
 def set_config_file(filepath: str) -> None:
     """Override the main configuration file."""
-    global OVERRIDE_VARS
-
     logger.debug("Setting config file to '%s'.", filepath)
     OVERRIDE_VARS["file"] = filepath
 
@@ -698,8 +695,6 @@ def get_lib() -> papis.library.Library:
     If the ``PAPIS_LIB`` environment variable is defined, this is the
     library name (or path) that will be taken as a default.
     """
-    global CURRENT_LIBRARY
-
     libname = os.environ.get("PAPIS_LIB")
     if libname:
         set_lib_from_name(libname)
