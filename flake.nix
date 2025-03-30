@@ -82,7 +82,6 @@
                   extras = [
                     "develop"
                     "docs"
-                    "lsp"
                     "optional"
                   ];
                 } == { };
@@ -117,13 +116,18 @@
                 extras = [
                   "develop"
                   "docs"
-                  "lsp"
                   "optional"
                 ];
               };
 
               # Returns a wrapped environment (virtualenv like) with all our packages
               pythonEnv = python.withPackages arg;
+
+              # Tools useful to have in the dev environment but not strictly
+              # necessary to our workflow
+              extra-dev-tools = python.withPackages (ps: [
+                ps.python-lsp-server
+              ]);
 
               # used in below scripts to check if docker or podman is available
               check-container-cmd =
@@ -189,6 +193,7 @@
               packages = [
                 self.packages.${system}.papis
                 pythonEnv
+                extra-dev-tools
                 papis-build-container
                 papis-run-container-tests
                 papis-run-container-interactive

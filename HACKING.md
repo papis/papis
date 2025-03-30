@@ -43,6 +43,10 @@ The docs can be generated with
 make doc
 ```
 
+It is generally advisable to have `python-lsp-server` installed, as it enables
+your text editor to perform semantic operations on the codebase (eg Go to
+Definition, Replace All, refactorings, etc)
+
 ### Containers
 
 To quickly get things up and running, you can also use Docker with the included
