@@ -196,7 +196,6 @@ def _crossref_link(entry: List[Dict[str, str]]) -> Optional[str]:
 
 
 def crossref_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
-    global key_conversion
     new_data = papis.document.keyconversion_to_data(key_conversion, data)
     new_data["author"] = papis.document.author_list_to_author(new_data)
     return new_data

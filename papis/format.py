@@ -306,8 +306,6 @@ def get_formatter(name: Optional[str] = None) -> Formatter:
     :param name: the name of the desired formatter, by default this uses
         the value of :confval:`formatter`.
     """
-    global FORMATTER
-
     if name is None:
         name = get_default_formatter()
 

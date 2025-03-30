@@ -223,7 +223,6 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                   sort_by: Optional[str] = None) -> None:
         import papis.web.tags
 
-        global TAGS_LIST
         libname = libname or papis.api.get_lib_name()
         self._handle_lib(libname)
         docs = papis.api.get_all_documents_in_lib(libname)
