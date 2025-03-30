@@ -59,41 +59,41 @@ meta_equivalences: List[MetaEquivalence] = [
     # dc.{id} style
     {"tag": "meta",
         "key": "publisher",
-        "attrs": {"name": re.compile("dc.publisher", re.I)}},
+        "attrs": {"name": re.compile(r"dc.publisher", re.I)}},
     {"tag": "meta",
         "key": "publisher",
-        "attrs": {"name": re.compile(".*st.publisher.*", re.I)}},
+        "attrs": {"name": re.compile(r".*st.publisher.*", re.I)}},
     {"tag": "meta",
-        "key": "date", "attrs": {"name": re.compile("dc.date", re.I)}},
+        "key": "date", "attrs": {"name": re.compile(r"dc.date", re.I)}},
     {"tag": "meta",
-        "key": "language", "attrs": {"name": re.compile("dc.language", re.I)}},
+        "key": "language", "attrs": {"name": re.compile(r"dc.language", re.I)}},
     {"tag": "meta",
         "key": "issue",
-        "attrs": {"name": re.compile("dc.citation.issue", re.I)}},
+        "attrs": {"name": re.compile(r"dc.citation.issue", re.I)}},
     {"tag": "meta",
             "key": "volume",
-            "attrs": {"name": re.compile("dc.citation.volume", re.I)}},
+            "attrs": {"name": re.compile(r"dc.citation.volume", re.I)}},
     {"tag": "meta",
             "key": "keywords",
-            "attrs": {"name": re.compile("dc.subject", re.I)}},
+            "attrs": {"name": re.compile(r"dc.subject", re.I)}},
     {"tag": "meta",
-            "key": "title", "attrs": {"name": re.compile("dc.title", re.I)}},
+            "key": "title", "attrs": {"name": re.compile(r"dc.title", re.I)}},
     {"tag": "meta",
-            "key": "type", "attrs": {"name": re.compile("dc.type", re.I)}},
-    {"tag": "meta",
-            "key": "abstract",
-            "attrs": {"name": re.compile("dc.description", re.I)}},
+            "key": "type", "attrs": {"name": re.compile(r"dc.type", re.I)}},
     {"tag": "meta",
             "key": "abstract",
-            "attrs": {"name": re.compile("dc.description.abstract", re.I)}},
+            "attrs": {"name": re.compile(r"dc.description", re.I)}},
+    {"tag": "meta",
+            "key": "abstract",
+            "attrs": {"name": re.compile(r"dc.description.abstract", re.I)}},
     {"tag": "meta",
             "key": "journal_abbrev",
-            "attrs": {"name": re.compile("dc.relation.ispartof", re.I)}},
+            "attrs": {"name": re.compile(r"dc.relation.ispartof", re.I)}},
     {"tag": "meta",
-            "key": "year", "attrs": {"name": re.compile("dc.issued", re.I)}},
+            "key": "year", "attrs": {"name": re.compile(r"dc.issued", re.I)}},
     {"tag": "meta",
             "key": "doi",
-            "attrs": {"name": re.compile("dc.identifier", re.I),
+            "attrs": {"name": re.compile(r"dc.identifier", re.I),
                       "scheme": "doi"}},
 ]
 
@@ -125,7 +125,7 @@ def parse_meta_authors(soup: "bs4.BeautifulSoup") -> List[Dict[str, Any]]:
     authors = soup.find_all(name="meta", attrs={"name": "citation_author"})
     if not authors:
         authors = soup.find_all(
-            name="meta", attrs={"name": re.compile("dc.creator", re.I)})
+            name="meta", attrs={"name": re.compile(r"dc.creator", re.I)})
 
     if not authors:
         return []

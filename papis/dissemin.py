@@ -61,8 +61,12 @@ def get_data(query: str = "") -> List[Dict[str, Any]]:
                      response.status_code, response.reason, query)
         return []
 
+    from itertools import chain
+
     paperlist = response.json()
-    return sum([dissemindoc_to_papis(d) for d in paperlist["papers"]], [])
+    return list(
+        chain.from_iterable(dissemindoc_to_papis(d) for d in paperlist["papers"])
+    )
 
 
 @click.command("dissemin")

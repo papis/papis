@@ -49,8 +49,8 @@ DBLP_KEY_CONVERSION = [
     _k("doi", [{"key": "doi", "action": None}]),
     _k("url", [{"key": "url", "action": None}]),
     _k("type", [{"key": "type", "action": DBLP_TYPE_TO_BIBTEX.get}]),
-    _k("venue", [{"key": "journal", "action": lambda x: _dblp_journal(x)}]),
-    _k("authors", [{"key": "author_list", "action": lambda x: _dblp_authors(x)}]),
+    _k("venue", [{"key": "journal", "action": lambda x: _dblp_journal(x)}]),  # noqa: PLW0108
+    _k("authors", [{"key": "author_list", "action": lambda x: _dblp_authors(x)}]),  # noqa: PLW0108
 ]
 
 
@@ -100,9 +100,8 @@ def search(
 
     if not (0 < max_completions <= DBLP_MAX_COMPLETIONS):
         raise ValueError(
-            "Cannot request more than {} completions (got {})"
-            .format(DBLP_MAX_COMPLETIONS, max_completions)
-            )
+            f"Cannot request more than {DBLP_MAX_COMPLETIONS} completions "
+            f"(got {max_completions})")
 
     if output_format not in DBLP_FORMATS:
         raise ValueError(

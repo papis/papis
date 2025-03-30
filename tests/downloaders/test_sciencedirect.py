@@ -17,7 +17,7 @@ def test_sciencedirect_match(tmp_config: TemporaryConfiguration) -> None:
     valid_urls = (
         "https://www.sciencedirect.com",
         "http://www.sciencedirect.com/science/article/pii/S0009261497040141",
-        ) + SCIENCE_DIRECT_URLS
+        *SCIENCE_DIRECT_URLS)
     invalid_urls = {
         "https://www.scienceindirect.com",
         "http://www.sciencedirect.co.uk/science/article/pii/S0009261497040141",
@@ -43,8 +43,8 @@ def test_sciencedirect_fetch(tmp_config: TemporaryConfiguration,
     assert down is not None
 
     uid = os.path.basename(url)
-    infile = "ScienceDirect_{}.html".format(uid)
-    outfile = "ScienceDirect_{}_Out.json".format(uid)
+    infile = f"ScienceDirect_{uid}.html"
+    outfile = f"ScienceDirect_{uid}_Out.json"
 
     monkeypatch.setattr(down, "_get_body",
                         lambda: resource_cache.get_remote_resource(infile, url))
