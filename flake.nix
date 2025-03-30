@@ -68,25 +68,6 @@
               };
             };
 
-            types-python-slugify = final.buildPythonPackage rec {
-              pname = "types-python-slugify";
-              version = "8.0.2.20240310";
-
-              src = final.fetchPypi {
-                inherit pname version;
-                sha256 = "sha256-UVe1CMf+1YdSDHDXf2KuoPr9xmIIk8LsiXLxOh+vVWA=";
-              };
-
-              doCheck = false;
-              checkInputs = [ ];
-
-              meta = with pkgs.lib; {
-                homepage = "https://github.com/python/typeshed";
-                description = "Typing stubs for python-slugify";
-                license = licenses.asl20;
-              };
-            };
-
             papis =
               let
                 # Returns an attribute set that can be passed to `buildPythonPackage`.
