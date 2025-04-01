@@ -1,13 +1,13 @@
 import os
 from contextlib import suppress
-from typing import Any, Dict, List, Optional
-
-from citeproc.source import BibliographySource, Date, Name, Reference
-from citeproc.source.bibtex import BibTeX
+from typing import Any, List, Optional, TYPE_CHECKING
 
 import papis.config
 import papis.logging
 from papis.document import Document
+
+if TYPE_CHECKING:
+    from citeproc.source import Date, Reference
 
 logger = papis.logging.get_logger(__name__)
 
@@ -51,7 +51,7 @@ def _download_style(name: str) -> None:
     logger.info("Style '%s' downloaded to '%s'.", name, style_path)
 
 
-def _parse_date(doc: Document) -> Optional[Date]:
+def _parse_date(doc: Document) -> Optional["Date"]:
     """Extract a date from a document."""
 
     if "year" not in doc:
@@ -61,6 +61,9 @@ def _parse_date(doc: Document) -> Optional[Date]:
         year = int(doc["year"])
     except ValueError:
         return None
+
+    from citeproc.source import Date
+    from citeproc.source.bibtex import BibTeX
 
     date = {"year": year}
     if "month" in doc:
@@ -81,12 +84,14 @@ def _parse_date(doc: Document) -> Optional[Date]:
     return Date(**date)
 
 
-def to_csl(doc: Document) -> Dict[str, Any]:
+def to_csl(doc: Document) -> "Reference":
     """Convert a document into a dictionary of keys supported by :mod:`citeproc`.
 
     This function only converts keys that are supported, while other keys in the
     document are ignored.
     """
+    from citeproc.source import Name
+    from citeproc.source.bibtex import BibTeX
 
     # FIXME: we're using the fields from citeproc to make sure that we're
     # compatible with their CSL spec, but ideally this would map all BibTeX fields
@@ -124,16 +129,11 @@ def to_csl(doc: Document) -> Dict[str, Any]:
     if date is not None:
         result["issued"] = date
 
-    return result
+    from citeproc.source import Reference
+    from citeproc.source.bibtex import BibTeX
 
-
-class PapisSource(BibliographySource):  # type: ignore[misc]
-    def __init__(self, doc: Document) -> None:
-        super().__init__()
-
-        csl_type = BibTeX.types.get(doc["type"], BibTeX.types["misc"])
-        csl_fields = to_csl(doc)
-        self.add(Reference(doc["ref"].lower(), csl_type, **csl_fields))
+    csl_type = BibTeX.types.get(doc["type"], BibTeX.types["misc"])
+    return Reference(doc["ref"].lower(), csl_type, **result)
 
 
 def normalize_style_path(name: str) -> str:
@@ -177,11 +177,12 @@ def export_document(doc: Document,
                      os.path.basename(style_name), get_styles_folder())
         return ""
 
+    from citeproc.source import BibliographySource
+
+    source = BibliographySource(doc)
+    source.add(to_csl(doc))
+
     from citeproc import CitationStylesStyle
-
-    source = PapisSource(doc)
-    style = CitationStylesStyle(style_name, validate=False)
-
     from citeproc import CitationStylesBibliography, Citation, CitationItem, formatter
 
     fmt = getattr(formatter, formatter_name, None)
@@ -191,6 +192,7 @@ def export_document(doc: Document,
                      formatter_name)
         return ""
 
+    style = CitationStylesStyle(style_name, validate=False)
     bib = CitationStylesBibliography(style, source, fmt)
     citation = Citation([CitationItem(doc["ref"])])
     bib.register(citation)
@@ -215,6 +217,12 @@ def export_document(doc: Document,
 
 
 def exporter(documents: List[Document]) -> str:
+    try:
+        import citeproc  # noqa: F401
+    except ImportError:
+        logger.error("CSL export requires the 'citeproc-py' package.")
+        return ""
+
     formatter_name = papis.config.getstring("csl-formatter")
     style_name = papis.config.getstring("csl-style")
 
