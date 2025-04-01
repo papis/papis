@@ -25,6 +25,8 @@ Some optional dependencies are required for various Papis plugins
   formatter.
 * `Whoosh` is required for the `whoosh` cache database, alternative to the default
   `papis` database based on `pickle`.
+* `citeproc-py` is required for the `csl` exporter, which allows exporting through
+  the popular CSL (Citation Style Language) to styles like APA or MLA.
 * `chardet` is used by `beautifulsoup4` when parsing webpages to improve character
   detection. This is recommended when making heavy use of Papis downloaders and
   importers.

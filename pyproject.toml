@@ -66,7 +66,6 @@ dependencies = [
     "arxiv>=1.0.0",
     "beautifulsoup4>=4.4.1",
     "bibtexparser>=0.6.2,<2",
-    "citeproc-py",
     "click>=7",
     "colorama>=0.2",
     "dominate>=2.8",
@@ -132,6 +131,7 @@ optional = [
     "Jinja2>=3.0.0",
     "Whoosh>=2.7.4",
     "chardet>=3.0.2",
+    "citeproc-py>=0.6",
     "markdownify>=0.11.6",
 ]
 # Custom Sphinx directives for papis docs
