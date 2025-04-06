@@ -129,6 +129,7 @@ import click
 
 import papis
 import papis.cli
+import papis.tui.utils
 import papis.config
 import papis.strings
 import papis.database
@@ -493,7 +494,9 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
     if bib_type is None:
         return [Error(name=BIBTEX_TYPE_CHECK_NAME,
                       path=folder,
-                      msg="Document does not define a type",
+                      msg=f"Document does not define type as one of:\n{
+                      papis.tui.utils.string_grid(sorted(bibtex_types))
+                      }",
                       suggestion_cmd=f"papis edit --doc-folder {folder}",
                       fix_action=None,
                       payload="type",
@@ -502,7 +505,9 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
     if bib_type not in bibtex_types:
         return [Error(name=BIBTEX_TYPE_CHECK_NAME,
                       path=folder,
-                      msg=f"Document type '{bib_type}' is not a valid BibTeX type",
+                      msg=f"Document type '{bib_type}' is not a valid BibTeX type:\n{
+                      papis.tui.utils.string_grid(sorted(bibtex_types))
+                      }",
                       suggestion_cmd=f"papis edit --doc-folder {folder}",
                       fix_action=make_fixer(bib_type),
                       payload=bib_type,
@@ -631,6 +636,64 @@ def biblatex_required_keys_check(doc: papis.document.Document) -> List[Error]:
                   doc=doc)
             for keys in required_keys
             if not any(key in doc or aliases.get(key) in doc for key in keys)]
+
+
+BIBLATEX_EXPECTED_KEYS_IGNORED = {
+    "papis_id", "author_list", "editor_list", "citations", "doc_url",
+    "files", "ref", "time-added", "type", "tags"
+} | frozenset(papis.config.getlist("bibtex-ignore-keys"))
+BIBLATEX_EXPECTED_KEYS_CHECK_NAME = "biblatex-expected-keys"
+
+
+def biblatex_expected_keys_check(doc: papis.document.Document) -> List[Error]:
+    """
+    Check that all keys in info.yaml are expected by biblatex processors.
+
+    In most circumstances, using arbitrary keys is completely inconsequential.
+    This check simply helps users keep strict control over metadata.
+
+    :returns: an error per document key that is not a known key
+    """
+    from papis.bibtex import bibtex_keys
+    folder = doc.get_main_folder() or ""
+
+    errors = bibtex_type_check(doc)
+    if errors:
+        return [e._replace(name=BIBLATEX_REQUIRED_KEYS_CHECK_NAME) for e in errors]
+
+    def make_fixer(key: str) -> FixFn:
+        def fixer() -> None:
+            config_file = papis.config.get_config_file()
+            config = papis.config.get_configuration()
+            lib = papis.config.get_lib_name()
+            logger.info("[FIX] Adding '%s' to %s.bibtex-ignore-keys", key, lib)
+
+            if os.path.exists(config_file):
+                logger.warning("file contents (whitespace, comments) may change")
+                if not papis.tui.utils.confirm("Proceed with overwrite?"):
+                    raise Exception("fix canceled by user")
+
+            ignores = papis.config.getlist("bibtex-ignore-keys")
+            ignores.append(key)
+            config[lib]["bibtex-ignore-keys"] = str(ignores)
+
+            with open(config_file, "w") as configfile:
+                config.write(configfile)
+            logger.info("Configuration file saved at '%s'.", config_file)
+
+        return fixer
+
+    return [Error(name=BIBLATEX_EXPECTED_KEYS_CHECK_NAME,
+                  path=folder,
+                  msg=f"Document contains key '{key}' not a bibtex key:\n{
+                  papis.tui.utils.string_grid(sorted(bibtex_keys))
+                  }",
+                  suggestion_cmd=f"papis edit --doc-folder {folder}",
+                  fix_action=make_fixer(key),
+                  payload=key,
+                  doc=doc)
+            for key in doc
+            if key not in BIBLATEX_EXPECTED_KEYS_IGNORED and not key in bibtex_keys]
 
 
 KEY_TYPE_CHECK_NAME = "key-type"
@@ -919,6 +982,7 @@ register_check(BIBTEX_TYPE_CHECK_NAME, bibtex_type_check)
 register_check(BIBLATEX_TYPE_ALIAS_CHECK_NAME, biblatex_type_alias_check)
 register_check(BIBLATEX_KEY_ALIAS_CHECK_NAME, biblatex_key_alias_check)
 register_check(BIBLATEX_REQUIRED_KEYS_CHECK_NAME, biblatex_required_keys_check)
+register_check(BIBLATEX_EXPECTED_KEYS_CHECK_NAME, biblatex_expected_keys_check)
 register_check(REFS_CHECK_NAME, refs_check)
 register_check(HTML_CODES_CHECK_NAME, html_codes_check)
 register_check(HTML_TAGS_CHECK_NAME, html_tags_check)
