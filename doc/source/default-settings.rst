@@ -210,8 +210,8 @@ General settings
 .. papis-config:: library-header-format
 
     The format of a library when shown in a picker, e.g. when using
-   ``papis --pick-lib export --all``. The format takes a dictionary named
-   ``library`` with the keys *name*, *dir*, and *paths*.
+    ``papis --pick-lib export --all``. The format takes a dictionary named
+    ``library`` with the keys *name*, *dir*, and *paths*.
 
 .. papis-config:: csl-style
 
@@ -825,7 +825,7 @@ inconsistencies.
 .. papis-config:: serve-katex-auto-render-js
 
     Link to the desired version of the
-   `KaTeX Auto-render <https://katex.org/docs/autorender.html>`__ extension.
+    `KaTeX Auto-render <https://katex.org/docs/autorender.html>`__ extension.
 
 .. papis-config:: serve-ace-urls
 
