@@ -10,6 +10,25 @@ tested using their testing helpers.
 We give here an overview of the pieces needed to test the various parts of the
 Papis codebase, but in general mimicking existing tests is your best choice.
 
+Environment variables
+---------------------
+
+This is a set of environment variables used by the testing infrastructure.
+
+* ``PAPIS_CONFIG_DIR``: a path to the configuration directory used by Papis. On
+  Linux systems, it acts the same as setting ``XDG_CONFIG_HOME``. This overrides
+  the default from :func:`papis.config.get_config_folder` that uses
+  `platformdirs <https://github.com/tox-dev/platformdirs>`__.
+* ``PAPIS_CACHE_DIR``: a path to the cache directory used by Papis. On Linux systems,
+  it acts the same as setting ``XDG_CACHE_HOME``. This overrides the default
+  from :func:`papis.utils.get_cache_home` that uses ``platformdirs``.
+* ``PAPIS_DATABASE_BACKEND``: set to one of the supported database backends. Most
+  existing tests do no parametrize over the database backend, so this value lets
+  us pick a different one.
+* ``PAPIS_UPDATE_RESOURCES``: one of "none", "remote", "local" or "both". This
+  controls what resources are updated while running downloader tests (as explained
+  below).
+
 Using the default configuration
 -------------------------------
 
