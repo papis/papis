@@ -267,6 +267,7 @@ addopts = [
     "--cov=papis",
 ]
 doctest_optionflags = ["NORMALIZE_WHITESPACE", "ELLIPSIS"]
+testpaths = [ "papis", "tests" ]
 norecursedirs = [".git", "doc", "build", "dist"]
 python_files = "*.py"
 markers = [
