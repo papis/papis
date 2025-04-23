@@ -99,36 +99,36 @@ def test_get_types(tmp_config: TemporaryConfiguration) -> None:
 
     # getint
     papis.config.set("int_config", "1")
-    value = papis.config.getint("int_config")
-    assert isinstance(value, int)
-    assert value == 1
+    val_int = papis.config.getint("int_config")
+    assert isinstance(val_int, int)
+    assert val_int == 1
 
     papis.config.set("int_config", "x")
     with pytest.raises(ValueError,
                        match="Key 'int_config' should be an integer"):
-        value = papis.config.getint("int_config")
+        _ = papis.config.getint("int_config")
 
     # getfloat
     papis.config.set("float_config", "3.1415")
-    value = papis.config.getfloat("float_config")
-    assert isinstance(value, float)
-    assert value == 3.1415
+    val_float = papis.config.getfloat("float_config")
+    assert isinstance(val_float, float)
+    assert val_float == 3.1415
 
     papis.config.set("float_config", "not1")
     with pytest.raises(ValueError,
                        match="Key 'float_config' should be a float"):
-        value = papis.config.getfloat("float_config")
+        _ = papis.config.getfloat("float_config")
 
     # getboolean
     papis.config.set("boolean_config", "True")
-    value = papis.config.getboolean("boolean_config")
-    assert isinstance(value, bool)
-    assert value
+    val_bool = papis.config.getboolean("boolean_config")
+    assert isinstance(val_bool, bool)
+    assert val_bool
 
     papis.config.set("boolean_config", "not1")
     with pytest.raises(ValueError,
                        match="Key 'boolean_config' should be a boolean"):
-        value = papis.config.getboolean("boolean_config")
+        _ = papis.config.getboolean("boolean_config")
 
 
 def test_get_configuration(tmp_config: TemporaryConfiguration,
