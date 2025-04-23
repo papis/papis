@@ -279,7 +279,7 @@ markers = [
 [tool.flake8]
 select = ["B", "D", "E", "F", "N", "Q", "W"]
 extend-ignore = ["B019", "E123", "N818", "W503"]
-exclude = ["doc", "build", "examples/scripts/papis-mail"]
+exclude = ["doc", "build", "examples/scripts/papis-mail.sh"]
 filename = ["*.py", "examples*papis-*"]
 max-line-length = 88
 inline-quotes = "double"
@@ -314,7 +314,7 @@ strict = true
 show_column_numbers = true
 hide_error_codes = false
 pretty = true
-files = "papis"
+files = [ "papis", "tests", "examples", "tools" ]
 warn_unused_ignores = false
 
 [[tool.mypy.overrides]]

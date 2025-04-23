@@ -24,5 +24,3 @@ echo "Zipping folder (${folder_name} => ${zip_name})"
 zip -r "${zip_name}" "${folder_name}"
 
 ${mail_agent} -a "${zip_name}"
-
-
