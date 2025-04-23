@@ -57,7 +57,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "query",
-        default=papis.config.get("default-query-string"),
+        default=papis.config.getstring("default-query-string"),
         help="A query to run over the documents")
     parser.add_argument(
         "-a", "--all", dest="all_", action="store_true",

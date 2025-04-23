@@ -31,8 +31,8 @@ def test_config_section(tmp_config: TemporaryConfiguration) -> None:
     result = run(["editor", "auto-read", ".notes-name"], section="bibtex")
     assert "editor" not in result
     assert result == {
-        "auto-read": papis.config.get("auto-read", section="bibtex"),
-        "notes-name": papis.config.get("notes-name"),
+        "auto-read": papis.config.getstring("auto-read", section="bibtex"),
+        "notes-name": papis.config.getstring("notes-name"),
         }
 
     # checks:
@@ -62,8 +62,8 @@ def test_config_section_defaults(tmp_config: TemporaryConfiguration) -> None:
     result = run(["editor", "editmode", ".notes-name"], section="tui", default=True)
     assert "editor" not in result
     assert result == {
-        "editmode": papis.config.get("editmode", section="tui"),
-        "notes-name": papis.config.get("notes-name"),
+        "editmode": papis.config.getstring("editmode", section="tui"),
+        "notes-name": papis.config.getstring("notes-name"),
         }
 
     # checks:

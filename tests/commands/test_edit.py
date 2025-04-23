@@ -29,7 +29,7 @@ def test_edit_run(tmp_library: TemporaryLibrary) -> None:
     import papis.config
     from papis.commands.edit import run
 
-    print(papis.config.get("editor"))
+    print(papis.config.getstring("editor"))
     print(__file__)
 
     db = papis.database.get()
@@ -68,18 +68,18 @@ def test_edit_cli(tmp_library: TemporaryLibrary) -> None:
         cli,
         ["--all", "--editor", ls, "krishnamurti"])
     assert result.exit_code == 0
-    assert (papis.config.escape_interp(papis.config.get("editor"))
+    assert (papis.config.escape_interp(papis.config.getstring("editor"))
             == get_mock_script("ls"))
 
     # check --notes
-    notes_name = papis.config.get("notes-name")
+    notes_name = papis.config.getstring("notes-name")
     assert notes_name
 
     result = cli_runner.invoke(
         cli,
         ["--all", "--editor", get_mock_script("echo"), "--notes", "krishnamurti"])
     assert result.exit_code == 0
-    assert (papis.config.escape_interp(papis.config.get("editor"))
+    assert (papis.config.escape_interp(papis.config.getstring("editor"))
             == get_mock_script("echo"))
 
     db = papis.database.get()
