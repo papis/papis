@@ -29,11 +29,11 @@ def test_basic() -> None:
     # fg:ansired because it failed
     assert ol.get_tokens() == [
         ("", "hello\n"), ("", "world\n"), ("fg:ansired", "<bye\n")]
-    assert ol.get_line_prefix(2, None) == [
+    assert ol.get_line_prefix(2, 0) == [
         ("class:options_list.selected_margin", "|")]
-    assert ol.get_line_prefix(1, None) == [
+    assert ol.get_line_prefix(1, 0) == [
         ("class:options_list.unselected_margin", " ")]
-    assert ol.get_line_prefix(0, None) == [
+    assert ol.get_line_prefix(0, 0) == [
         ("class:options_list.marked_margin", "#")]
     assert ol.search_regex == re.compile(".*", re.I)
 
