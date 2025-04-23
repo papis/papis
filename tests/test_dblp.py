@@ -27,7 +27,8 @@ def get(code: int, url: str) -> requests.Response:
 
 
 @pytest.mark.xfail(reason="dblp times out sometimes")
-def test_valid_dblp_key(tmp_config: TemporaryConfiguration, monkeypatch,
+def test_valid_dblp_key(tmp_config: TemporaryConfiguration,
+                        monkeypatch: pytest.MonkeyPatch,
                         has_connection: bool = True) -> None:
     from papis.dblp import is_valid_dblp_key
 
@@ -47,7 +48,8 @@ def test_valid_dblp_key(tmp_config: TemporaryConfiguration, monkeypatch,
 
 
 @pytest.mark.xfail(reason="dblp times out sometimes")
-def test_importer_match(tmp_config: TemporaryConfiguration, monkeypatch,
+def test_importer_match(tmp_config: TemporaryConfiguration,
+                        monkeypatch: pytest.MonkeyPatch,
                         has_connection: bool = True) -> None:
     from papis.dblp import Importer, DBLP_URL_FORMAT
 
@@ -76,7 +78,8 @@ def test_importer_match(tmp_config: TemporaryConfiguration, monkeypatch,
 
 
 @pytest.mark.resource_setup(cachedir="resources/dblp")
-def test_importer_fetch(tmp_config: TemporaryConfiguration, monkeypatch,
+def test_importer_fetch(tmp_config: TemporaryConfiguration,
+                        monkeypatch: pytest.MonkeyPatch,
                         resource_cache: ResourceCache) -> None:
     from papis.dblp import Importer, DBLP_URL_FORMAT
 

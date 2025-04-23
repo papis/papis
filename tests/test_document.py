@@ -202,7 +202,7 @@ def test_author_separator_heuristics(tmp_config: TemporaryConfiguration) -> None
     import re
     from papis.document import guess_authors_separator, split_authors_name
 
-    def is_comma_and_re(sep):
+    def is_comma_and_re(sep: str) -> None:
         assert sep
         assert re.match(sep, ", and")
         assert re.match(sep, ",and")

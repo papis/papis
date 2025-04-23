@@ -4,7 +4,7 @@ from papis.testing import TemporaryConfiguration
 from papis.downloaders.thesesfr import Downloader
 
 
-def test_match(tmp_config: TemporaryConfiguration):
+def test_match(tmp_config: TemporaryConfiguration) -> None:
     valid_urls = [
         "https://www.theses.fr/2014TOU30305",
         "2014TOU30305",  # spell: disable
@@ -27,7 +27,8 @@ def test_match(tmp_config: TemporaryConfiguration):
         ("2014TOU", None),  # spell: disable
     ],
 )
-def test_get_identifier(query: str, expected: str, tmp_config: TemporaryConfiguration):
+def test_get_identifier(query: str, expected: str,
+                        tmp_config: TemporaryConfiguration) -> None:
     d = Downloader(query)
     actual = d.get_identifier()
     assert actual == expected
@@ -42,7 +43,7 @@ def test_get_identifier(query: str, expected: str, tmp_config: TemporaryConfigur
         )
     ],
 )
-def test_get_document_url(query: str, expected: str):
+def test_get_document_url(query: str, expected: str) -> None:
     d = Downloader(query)
     actual = d.get_document_url()
     assert actual == expected
@@ -57,7 +58,8 @@ def test_get_document_url(query: str, expected: str):
         ),
     ],
 )
-def test_get_bibtex_url(query: str, expected: str, tmp_config: TemporaryConfiguration):
+def test_get_bibtex_url(query: str, expected: str,
+                        tmp_config: TemporaryConfiguration) -> None:
     d = Downloader(query)
     actual = d.get_bibtex_url()
     assert actual == expected

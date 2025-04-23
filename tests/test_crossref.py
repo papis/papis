@@ -37,7 +37,8 @@ def test_get_data(tmp_config: TemporaryConfiguration) -> None:
     ("10.1145/3184558.3186235", "test_3_conference"),
     ("10.1007/978-3-0348-8720-5_13", "test_4_multiple_isbn"),
     ])
-def test_doi_to_data(tmp_config: TemporaryConfiguration, monkeypatch,
+def test_doi_to_data(tmp_config: TemporaryConfiguration,
+                     monkeypatch: pytest.MonkeyPatch,
                      doi: str, basename: str) -> None:
     infile = "{}.json".format(basename)
     outfile = "{}_out.json".format(basename)

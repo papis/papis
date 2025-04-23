@@ -124,6 +124,8 @@ def test_duplicate_new_names(tmp_library: TemporaryLibrary,
         # First document will rename, but all others should raise a warning
         assert len(caplog.records) == doc_count - 1
         assert all(
-            os.path.basename(record.args[0]) == "same-name"
+            isinstance(record.args, tuple)
+            and isinstance(record.args[0], str)
+            and os.path.basename(record.args[0]) == "same-name"
             for record in caplog.records
             )
