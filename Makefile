@@ -47,7 +47,7 @@ flake8:								## Run flake8 (style checks)
 .PHONY: flake8
 
 mypy:								## Run mypy (type annotations)
-	$(PYTHON) -m mypy papis tools
+	$(PYTHON) -m mypy papis tests examples tools
 	@echo -e "\e[1;32mmypy clean!\e[0m"
 .PHONY: mypy
 
