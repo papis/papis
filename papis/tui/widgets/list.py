@@ -113,7 +113,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):
     def get_line_prefix(
             self,
             line: int,
-            blih: int) -> AnyFormattedText:
+            text_width: int) -> AnyFormattedText:
         if self.current_index is None:
             return None
 
