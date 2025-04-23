@@ -22,8 +22,11 @@ def test_rename_run(tmp_library: TemporaryLibrary) -> None:
     run(doc, new_name)
 
     doc, = db.query_dict({"title": old_title})
+    folder = doc.get_main_folder()
+
+    assert folder is not None
     assert doc.get_main_folder_name() == new_name
-    assert os.path.exists(doc.get_main_folder())
+    assert os.path.exists(folder)
 
 
 def test_folder_name_flag(tmp_library: TemporaryLibrary,
@@ -41,6 +44,7 @@ def test_folder_name_flag(tmp_library: TemporaryLibrary,
     papis_id = doc["papis_id"]
 
     old_folder_name = doc.get_main_folder()
+    assert old_folder_name is not None
     assert os.path.exists(old_folder_name)
 
     with monkeypatch.context() as m:
@@ -52,9 +56,12 @@ def test_folder_name_flag(tmp_library: TemporaryLibrary,
             [f"papis_id:{papis_id}"])
 
         doc, = db.query_dict({"papis_id": papis_id})
+        folder = doc.get_main_folder()
+
+        assert folder is not None
         assert result.exit_code == 0
-        assert os.path.basename(doc.get_main_folder()) == papis_id
-        assert os.path.exists(doc.get_main_folder())
+        assert os.path.basename(folder) == papis_id
+        assert os.path.exists(folder)
         assert not os.path.exists(old_folder_name)
 
         # Check that we can override the default pattern
@@ -63,9 +70,11 @@ def test_folder_name_flag(tmp_library: TemporaryLibrary,
             ["--folder-name", "magicstring42", f"papis_id:{papis_id}"])
 
         doc, = db.query_dict({"papis_id": papis_id})
+        folder = doc.get_main_folder()
         assert result.exit_code == 0
-        assert os.path.basename(doc.get_main_folder()) == "magicstring42"
-        assert os.path.exists(doc.get_main_folder())
+        assert folder is not None
+        assert os.path.basename(folder) == "magicstring42"
+        assert os.path.exists(folder)
 
 
 def test_rename_batch(tmp_library: TemporaryLibrary) -> None:
@@ -84,6 +93,7 @@ def test_rename_batch(tmp_library: TemporaryLibrary) -> None:
     for doc in docs:
         folder = doc.get_main_folder()
 
+        assert folder is not None
         assert os.path.exists(folder)
         assert os.path.basename(folder).startswith("magic-string-42")
 

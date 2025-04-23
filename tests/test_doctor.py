@@ -28,6 +28,7 @@ def test_files_check(tmp_config: TemporaryConfiguration) -> None:
         doc.set_folder(folder)
         error, = files_check(doc)
         assert error.payload == os.path.join(folder, "non-existent-file")
+        assert error.fix_action is not None
 
         error.fix_action()
         assert "non-existent-file" not in doc["files"]
@@ -74,6 +75,7 @@ def test_keys_missing_check_authors(tmp_config: TemporaryConfiguration) -> None:
     # check author -> author_list
     del doc["author_list"]
     error, = keys_missing_check(doc)
+    assert error.fix_action is not None
 
     error.fix_action()
     assert doc["author_list"][0]["family"] == "Doe"
@@ -86,6 +88,8 @@ def test_keys_missing_check_authors(tmp_config: TemporaryConfiguration) -> None:
     del doc["author"]
 
     error, = keys_missing_check(doc)
+    assert error.fix_action is not None
+
     error.fix_action()
     assert doc["author"] == "Doe, John and Doe, Jane"
 
@@ -101,6 +105,7 @@ def test_refs_check(tmp_config: TemporaryConfiguration) -> None:
     # check: missing ref
     error, = refs_check(doc)
     assert error.msg == "Reference missing"
+    assert error.fix_action is not None
 
     error.fix_action()
     assert "ref" in doc
@@ -115,6 +120,7 @@ def test_refs_check(tmp_config: TemporaryConfiguration) -> None:
     doc["ref"] = "[myref]"
     error, = refs_check(doc)
     assert "Bad characters" in error.msg
+    assert error.fix_action is not None
 
     error.fix_action()
     assert doc["ref"] == "myref"
@@ -166,9 +172,11 @@ def test_duplicated_values_check(tmp_config: TemporaryConfiguration) -> None:
     error_files, error_author_list = duplicated_values_check(doc)
     assert error_files.payload == "files"
     assert error_author_list.payload == "author_list"
+    assert error_files.fix_action is not None
 
     error_files.fix_action()
     assert doc["files"] == ["a.pdf", "b.pdf", "c.pdf"]
+    assert error_author_list.fix_action is not None
 
     error_author_list.fix_action()
     assert doc["author_list"] == [
@@ -197,6 +205,7 @@ def test_bibtex_type_check(tmp_config: TemporaryConfiguration) -> None:
     doc["type"] = "podcast"
     error, = bibtex_type_check(doc)
     assert error.payload == "podcast"
+    assert error.fix_action is not None
     error.fix_action()
     assert doc["type"] == "audio"
 
@@ -239,6 +248,7 @@ def test_key_type_check(tmp_config: TemporaryConfiguration) -> None:
     papis.config.set("doctor-key-type-keys", ["year:int"])
     error, = key_type_check(doc)
     assert error.payload == "year"
+    assert error.fix_action is not None
     error.fix_action()
     assert doc["year"] == 2023
 
@@ -247,12 +257,14 @@ def test_key_type_check(tmp_config: TemporaryConfiguration) -> None:
     papis.config.set("doctor-key-type-keys", ["projects:list"])
     error, = key_type_check(doc)
     assert error.payload == "projects"
+    assert error.fix_action is not None
     error.fix_action()
     assert doc["projects"] == ["test-key-project"]
 
     papis.config.set("doctor-key-type-keys", ["tags:list"])
     error, = key_type_check(doc)
     assert error.payload == "tags"
+    assert error.fix_action is not None
     error.fix_action()
     assert doc["tags"] == ["test-key-tag-1", "test-key-tag-2", "test-key-tag-3"]
 
@@ -260,6 +272,7 @@ def test_key_type_check(tmp_config: TemporaryConfiguration) -> None:
     doc["tags"] = "test-key-tag-1,test-key-tag-2    ,  test-key-tag-3"
     error, = key_type_check(doc)
     assert error.payload == "tags"
+    assert error.fix_action is not None
     error.fix_action()
     assert doc["tags"] == ["test-key-tag-1", "test-key-tag-2", "test-key-tag-3"]
 
@@ -267,6 +280,7 @@ def test_key_type_check(tmp_config: TemporaryConfiguration) -> None:
     papis.config.set("doctor-key-type-keys-extend", ["tags:str"])
     error, = key_type_check(doc)
     assert error.payload == "tags"
+    assert error.fix_action is not None
     error.fix_action()
     assert doc["tags"] == "test-key-tag-1,test-key-tag-2,test-key-tag-3"
 
@@ -288,6 +302,7 @@ def test_html_codes_check(tmp_config: TemporaryConfiguration) -> None:
 
         error, = html_codes_check(doc)
         assert error.payload == "title"
+        assert error.fix_action is not None
 
         error.fix_action()
         assert (doc["title"]
@@ -323,6 +338,7 @@ def test_html_tags_check(tmp_config: TemporaryConfiguration) -> None:
         )
     error, = html_tags_check(doc)
     assert error.payload == "title"
+    assert error.fix_action is not None
 
     error.fix_action()
     assert doc["title"] == "DNA sequencing with chain-terminating inhibitors"
@@ -333,6 +349,7 @@ def test_html_tags_check(tmp_config: TemporaryConfiguration) -> None:
         )
     error, = html_tags_check(doc)
     assert error.payload == "title"
+    assert error.fix_action is not None
 
     error.fix_action()
     assert doc["title"] == "DNA sequencing with chain terminating inhibitors"
@@ -371,6 +388,7 @@ def test_html_tags_check_jats(tmp_config: TemporaryConfiguration,
 
     error, = html_tags_check(doc)
     assert error.payload == "abstract"
+    assert error.fix_action is not None
 
     error.fix_action()
     assert "\n".join(doc["abstract"].split()) == "\n".join(expected.strip().split())
