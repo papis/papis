@@ -71,7 +71,7 @@ def test_basic() -> None:
     try:
         from prompt_toolkit.data_structures import Point
     except ImportError:
-        from prompt_toolkit.layout.screen import Point
+        from prompt_toolkit.layout.screen import Point  # type: ignore [attr-defined]
 
     ol.update_cursor()
     assert ol.cursor == Point(0, 0)
