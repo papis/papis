@@ -26,6 +26,8 @@ import re
 
 import click
 
+from typing import Set
+
 import papis.api
 import papis.cli
 import papis.document
@@ -57,7 +59,7 @@ def main(query: str, confirm: bool) -> None:
     )
 
     # Create an empty tag list
-    tag_list = set()
+    tag_list: Set[str] = set()
     for doc in documents:
         tags = doc.get("tags")
         if tags is None:

@@ -3,6 +3,8 @@ import pytest
 import shutil
 import sys
 
+from typing import List
+
 from papis.document import Document
 from papis.testing import TemporaryLibrary, PapisRunner
 
@@ -90,7 +92,7 @@ def test_add_auto_doctor_run(tmp_library: TemporaryLibrary) -> None:
         "year": "2009",
         "ref": "#{2FJT2E3A}"
     }
-    paths = []
+    paths: List[str] = []
 
     import papis.config
 

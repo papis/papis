@@ -6,7 +6,8 @@ import tempfile
 from papis.testing import TemporaryConfiguration
 
 
-def test_get_cache_home(tmp_config: TemporaryConfiguration, monkeypatch) -> None:
+def test_get_cache_home(tmp_config: TemporaryConfiguration,
+                        monkeypatch: pytest.MonkeyPatch) -> None:
     import papis.config
     from papis.utils import get_cache_home
 
