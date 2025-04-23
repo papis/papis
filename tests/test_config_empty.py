@@ -15,7 +15,7 @@ def test_empty_config(tmp_config: TemporaryConfiguration) -> None:
     config = papis.config.get_configuration()
     assert papis.config.get_general_settings_name() in config
     assert papis.config.get_libs() == ["papers"]
-    assert papis.config.get("picktool") == settings["picktool"]
+    assert papis.config.getstring("picktool") == settings["picktool"]
 
 
 @pytest.mark.config_setup(overwrite=True, settings={
@@ -28,7 +28,7 @@ def test_config_with_no_general_settings(tmp_config: TemporaryConfiguration) -> 
     config = papis.config.get_configuration()
     assert papis.config.get_general_settings_name() in config
     assert papis.config.get_libs() == ["papers"]
-    assert papis.config.get("picktool") == settings["picktool"]
+    assert papis.config.getstring("picktool") == settings["picktool"]
 
 
 @pytest.mark.config_setup(overwrite=True, settings={
@@ -41,4 +41,4 @@ def test_config_different_default_library(tmp_config: TemporaryConfiguration) ->
     config = papis.config.get_configuration()
     assert papis.config.get_general_settings_name() in config
     assert papis.config.get_libs() == ["books"]
-    assert papis.config.get("picktool") == settings["picktool"]
+    assert papis.config.getstring("picktool") == settings["picktool"]

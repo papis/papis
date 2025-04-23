@@ -162,7 +162,7 @@ def cli(ctx: click.Context, no_auto_read: bool) -> None:
     else:
         no_auto_read = not papis.config.getboolean("auto-read", section="bibtex")
 
-    bibfile = papis.config.get("default-read-bibfile", section="bibtex")
+    bibfile = papis.config.getstring("default-read-bibfile", section="bibtex")
     if not no_auto_read and bibfile and os.path.exists(bibfile):
         logger.info("Auto-reading '%s'.", bibfile)
         if BIBTEX_EXPLORER and BIBTEX_EXPLORER.callback:
@@ -457,7 +457,7 @@ def cli_ref(ctx: click.Context, out: Optional[str]) -> None:
 @click.help_option("-h", "--help")
 @click.argument(
     "bibfile",
-    default=lambda: papis.config.get("default-save-bibfile", section="bibtex"),
+    default=lambda: papis.config.getstring("default-save-bibfile", section="bibtex"),
     required=True, type=click.Path())
 @papis.cli.bool_flag("-f", "--force", help="Do not ask for confirmation when saving")
 @click.pass_context

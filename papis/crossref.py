@@ -124,7 +124,7 @@ key_conversion = [
         "action": lambda p: re.sub(r"(-[^-])", r"-\1", p),
     }]),
     KeyConversionPair("link", [{
-        "key": str(papis.config.get("doc-url-key-name")),
+        "key": str(papis.config.getstring("doc-url-key-name")),
         "action": lambda x: _crossref_link(x)
     }]),
     KeyConversionPair("issued", [

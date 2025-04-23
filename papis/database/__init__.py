@@ -38,7 +38,7 @@ def get(library_name: Optional[str] = None) -> Database:
     else:
         library = get_lib_from_name(library_name)
 
-    backend = papis.config.get("database-backend") or "papis"
+    backend = papis.config.getstring("database-backend") or "papis"
     try:
         database = DATABASES[library]
     except KeyError:

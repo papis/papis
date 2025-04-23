@@ -19,7 +19,7 @@ def get_data(query: str = "",
     logger.debug("Trying to retrieve ISBN from query: '%s'.", query)
 
     if service is None:
-        service = papis.config.get("isbn-service")
+        service = papis.config.getstring("isbn-service")
 
     if service not in ISBN_SERVICE_NAMES:
         logger.error("ISBN service '%s' is not known. Available services: '%s'.",

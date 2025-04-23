@@ -162,7 +162,7 @@ def cli(query: str,
     if key:
         papis.config.set("browse-key", key)
 
-    logger.info("Using key '%s'.", papis.config.get("browse-key"))
+    logger.info("Using key '%s'.", papis.config.getstring("browse-key"))
 
     for document in documents:
         run(document, browse=not _print)

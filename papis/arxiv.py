@@ -58,7 +58,7 @@ key_conversion = [
     _k("entry_id", [{"key": "url", "action": None}]),
     _k("journal_ref", [{"key": "journal", "action": None}]),
     _k("pdf_url", [{
-        "key": str(papis.config.get("doc-url-key-name")),
+        "key": papis.config.getstring("doc-url-key-name"),
         "action": None
     }]),
     _k("published", [
