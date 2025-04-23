@@ -41,7 +41,6 @@ def test_rm_files_run(tmp_library: TemporaryLibrary) -> None:
 
     db.clear()
     db.initialize()
-    db.documents = None
 
     doc, = db.query_dict({"title": title})
     assert doc["title"] == title
