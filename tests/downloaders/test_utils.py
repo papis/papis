@@ -46,4 +46,5 @@ def test_download_document(tmp_config: TemporaryConfiguration,
     from papis.downloaders import download_document
 
     local_file_name = download_document(url, expected_document_extension=ext)
+    assert local_file_name is not None
     assert os.path.basename(local_file_name) == expected_file_name

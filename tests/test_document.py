@@ -18,6 +18,7 @@ def test_new(tmp_config: TemporaryConfiguration) -> None:
     doc = papis.document.new(tmp, {"author": "hello"}, files)
 
     folder = doc.get_main_folder()
+    assert folder is not None
     assert os.path.exists(folder)
     assert folder == tmp
 
@@ -27,9 +28,11 @@ def test_new(tmp_config: TemporaryConfiguration) -> None:
 
     tmp = os.path.join(tmp_config.tmpdir, "doc2")
     doc = papis.document.new(tmp, {"author": "hello"}, [])
+    folder = doc.get_main_folder()
 
-    assert os.path.exists(doc.get_main_folder())
-    assert doc.get_main_folder() == tmp
+    assert folder is not None
+    assert os.path.exists(folder)
+    assert folder == tmp
     assert len(doc["files"]) == 0
     assert len(doc.get_files()) == 0
 
@@ -65,8 +68,10 @@ def test_main_features() -> None:
     assert set(doc.keys()) == {"title", "author"}
 
     doc.set_folder(os.path.join(DOCUMENT_RESOURCES, "document"))
+    folder = doc.get_main_folder()
+    assert folder is not None
     assert doc.get_main_folder_name()
-    assert os.path.exists(doc.get_main_folder())
+    assert os.path.exists(folder)
     assert doc["author"] == "Turing, Alan"
 
     doc.load()

@@ -160,7 +160,9 @@ def test_get_document_folder(tmp_library: TemporaryLibrary) -> None:
 
     # check no folder_name_format
     folder_name = get_document_folder(doc, tmp_library.libdir)
-    assert re.match(r"\w{32}", os.path.basename(folder_name))[0] == doc["papis_id"]
+    matches = re.match(r"\w{32}", os.path.basename(folder_name))
+    assert matches is not None
+    assert matches[0] == doc["papis_id"]
 
     # check simple folder_name_format
     folder_name = get_document_folder(doc, tmp_library.libdir,
@@ -176,7 +178,9 @@ def test_get_document_folder(tmp_library: TemporaryLibrary) -> None:
     # check incorrect folder_name_format
     folder_name = get_document_folder(doc, tmp_library.libdir,
                                       folder_name_format="{doc.author}")
-    assert re.match(r"\w{32}", os.path.basename(folder_name))[0] == doc["papis_id"]
+    matches = re.match(r"\w{32}", os.path.basename(folder_name))
+    assert matches is not None
+    assert matches[0] == doc["papis_id"]
 
     # check multiple subfolders in folder_name_format
     folder_name = get_document_folder(doc, tmp_library.libdir,
@@ -187,7 +191,9 @@ def test_get_document_folder(tmp_library: TemporaryLibrary) -> None:
     # check path that is not relative to libdir
     folder_name = get_document_folder(doc, tmp_library.libdir,
                                       folder_name_format="../{doc[author]}")
-    assert re.match(r"\w{32}", os.path.basename(folder_name))[0] == doc["papis_id"]
+    matches = re.match(r"\w{32}", os.path.basename(folder_name))
+    assert matches is not None
+    assert matches[0] == doc["papis_id"]
 
 
 def test_rename_document_files(tmp_config: TemporaryConfiguration) -> None:
