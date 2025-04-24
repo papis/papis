@@ -12,6 +12,7 @@ from typing import Optional, List, Dict, Any, Iterator
 import click
 
 import papis.config
+import papis.document
 import papis.importer
 import papis.filetype
 import papis.document
@@ -406,7 +407,7 @@ def bibtexparser_entry_to_papis(entry: Dict[str, Any]) -> Dict[str, Any]:
     return result
 
 
-def bibtex_to_dict(bibtex: str) -> List[Dict[str, str]]:
+def bibtex_to_dict(bibtex: str) -> List[papis.document.DocumentLike]:
     """Convert a BibTeX file (or string) to a list of Papis-compatible dictionaries.
 
     This will convert an entry like
