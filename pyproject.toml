@@ -355,5 +355,6 @@ Jinja2Formater = "Jinja2Formater"
 PythonFormater = "PythonFormater"
 get_formater = "get_formater"
 # NOTE: these appear in some queries and urls
+ACI = "ACI"
 ein = "ein"
 selv = "selv"
