@@ -848,7 +848,7 @@ def html_tags_check(doc: papis.document.Document) -> List[Error]:
                     tag.replace_with(f" {tag.text.strip()} ")
 
             for tag in soup.find_all("jats:title"):
-                if tag.text.strip() == "Abstract":
+                if tag.text.strip().lower() in {"abstract", "summary", "synopsis"}:
                     tag.extract()
                 else:
                     # NOTE: these will get cleaned up in `make_fixer`
