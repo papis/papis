@@ -346,6 +346,7 @@ class TemporaryConfiguration:
         default_query_string = {
             "papis": ".",
             "whoosh": "*",
+            "sqlite": "*",
         }.get(database_backend, "papis")
 
         settings = {
@@ -404,6 +405,11 @@ class TemporaryConfiguration:
                  exc_type: type[BaseException] | None,
                  exc_val: BaseException | None,
                  exc_tb: TracebackType | None) -> None:
+        # NOTE: ensure that all databases are closed and files removed
+        from papis.database import DATABASES
+        for db in DATABASES.values():
+            db.clear()
+
         # cleanup
         if self._monkeypatch:
             self._monkeypatch.undo()
