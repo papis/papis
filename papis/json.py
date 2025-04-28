@@ -31,7 +31,7 @@ def explorer(ctx: click.Context, jsonfile: str) -> None:
 
     import json
 
-    with open(jsonfile) as f:
+    with open(jsonfile, encoding="utf-8") as f:
         docs = [papis.document.from_data(d) for d in json.load(f)]
         ctx.obj["documents"] += docs
 

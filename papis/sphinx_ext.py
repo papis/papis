@@ -195,8 +195,7 @@ def make_link_resolve(
             linestart, linestop = lineno, lineno + len(source) - 1
 
         return (
-            "{}/blob/{}/{}#L{}-L{}"
-            .format(github_project_url, revision, filepath, linestart, linestop)
+            f"{github_project_url}/blob/{revision}/{filepath}#L{linestart}-L{linestop}"
         )
 
     return linkcode_resolve

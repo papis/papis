@@ -114,18 +114,18 @@ def html(libname: str, doc: papis.document.Document) -> t.html_tag:
                                role="tabpanel",
                                aria_labelledby="bibtex-form",
                                cls="tab-pane fade"):
-                        _bibtex_id = "bibtex-source"
+                        bibtex_id = "bibtex-source"
                         t.div(papis.bibtex.to_bibtex(doc),
-                              id=_bibtex_id,
+                              id=bibtex_id,
                               width="100%",
                               height=100,
                               style="min-height: 500px",
                               cls="form-control")
-                        _script = f"""
-                            let bib_editor = ace.edit("{_bibtex_id}");
+                        script = f"""
+                            let bib_editor = ace.edit("{bibtex_id}");
                             bib_editor.session.setMode("ace/mode/bibtex");
                         """
-                        t.script(tu.raw(_script),
+                        t.script(tu.raw(script),
                                  charset="utf-8",
                                  type="text/javascript")
 
@@ -136,9 +136,9 @@ def html(libname: str, doc: papis.document.Document) -> t.html_tag:
                         papis.web.notes.widget(libname, doc)
 
                     for i, fpath in enumerate(doc.get_files()):
-                        _unquoted_file_path = wp.file_server_path(fpath,
-                                                                  libfolder,
-                                                                  libname)
+                        unquoted_file_path = wp.file_server_path(fpath,
+                                                                 libfolder,
+                                                                 libname)
 
                         with t.div(id=f"file-tab-{i}",
                                    role="tabpanel",
@@ -146,18 +146,18 @@ def html(libname: str, doc: papis.document.Document) -> t.html_tag:
                                    cls="tab-pane fade"):
 
                             if fpath.endswith("pdf"):
-                                papis.web.pdfjs.widget(_unquoted_file_path)
+                                papis.web.pdfjs.widget(unquoted_file_path)
 
                             if fpath.endswith("djvu"):
-                                papis.web.djvujs.widget(_unquoted_file_path)
+                                papis.web.djvujs.widget(unquoted_file_path)
 
                             if fpath.endswith("epub"):
-                                papis.web.epubjs.widget(_unquoted_file_path)
+                                papis.web.epubjs.widget(unquoted_file_path)
 
                             elif (fpath.endswith("png")
                                   or fpath.endswith("jpg")):
                                 with t.div():
-                                    t.img(src=_unquoted_file_path)
+                                    t.img(src=unquoted_file_path)
 
                     with t.div(id="citations-tab",
                                role="tabpanel",

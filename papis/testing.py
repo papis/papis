@@ -12,7 +12,7 @@ from _pytest.config import Config
 from _pytest.config.argparsing import Parser
 
 PAPIS_UPDATE_RESOURCES = os.environ.get("PAPIS_UPDATE_RESOURCES", "none").lower()
-if PAPIS_UPDATE_RESOURCES not in ("none", "remote", "local", "both"):
+if PAPIS_UPDATE_RESOURCES not in {"none", "remote", "local", "both"}:
     raise ValueError("unsupported value of 'PAPIS_UPDATE_RESOURCES'")
 
 
@@ -53,16 +53,15 @@ def create_random_file(filetype: Optional[str] = None,
             )
         suffix = ".epub" if suffix is None else suffix
     elif filetype == "djvu":
-        buf = bytes(
-            [0x41, 0x54, 0x26, 0x54, 0x46, 0x4F, 0x52, 0x4D]
-            + [0x00, 0x00, 0x00, 0x00]
-            + [0x44, 0x4A, 0x56, 0x4D]
-            )
+        buf = bytes([
+            0x41, 0x54, 0x26, 0x54, 0x46, 0x4F, 0x52, 0x4D,
+            0x00, 0x00, 0x00, 0x00,
+            0x44, 0x4A, 0x56, 0x4D])
         suffix = ".djvu" if suffix is None else suffix
     elif filetype == "text":
         buf = b"papis-test-file-contents"
     else:
-        raise ValueError("Unknown file type: '{}'".format(filetype))
+        raise ValueError(f"Unknown file type: '{filetype}'")
 
     with tempfile.NamedTemporaryFile(
             dir=dir, suffix=suffix, prefix=prefix,
@@ -100,7 +99,7 @@ PAPIS_TEST_DOCUMENTS = [
         "note": "First turing machine paper foundation of cs",
         "pages": "230--265",
         "title": "On Computable Numbers with an Application to the Entscheidungsproblem",           # noqa: E501
-        "url": "https://api.wiley.com/onlinelibrary/tdm/v1/articles/10.1112%2Fplms%2Fs2-42.1.230",  # noqa: E501
+        "url": "https://api.wiley.com/onlinelibrary/tdm/v1/articles/10.1112%2Fplms%2Fs2-42.1.230",
         "volume": "s2-42",
         "year": 1937,
         "_test_files": 2,
@@ -158,7 +157,7 @@ def populate_library(libdir: str) -> None:
     for i, data in enumerate(PAPIS_TEST_DOCUMENTS):
         doc_data = data.copy()
 
-        folder_path = os.path.join(libdir, "test_doc_{}".format(i))
+        folder_path = os.path.join(libdir, f"test_doc_{i}")
         os.makedirs(folder_path)
 
         # add files
@@ -241,7 +240,7 @@ class TemporaryConfiguration:
 
     def __enter__(self) -> "TemporaryConfiguration":
         if self._tmpdir is not None:
-            raise ValueError("{!r} cannot be nested".format(type(self).__name__))
+            raise ValueError(f"'{type(self).__name__}' cannot be nested")
 
         # create directories and files
         self._monkeypatch = pytest.MonkeyPatch()
@@ -292,7 +291,7 @@ class TemporaryConfiguration:
 
         # write settings
         import configparser
-        with open(self.configfile, "w") as fd:
+        with open(self.configfile, "w", encoding="utf-8") as fd:
             config = configparser.ConfigParser()
             config.read_dict(settings)
             config.write(fd)
@@ -477,7 +476,7 @@ class ResourceCache:
         filename = os.path.join(self.cachedir, filename)
 
         force = force or not os.path.exists(filename)
-        if force or PAPIS_UPDATE_RESOURCES in ("remote", "both"):
+        if force or PAPIS_UPDATE_RESOURCES in {"remote", "both"}:
             if headers is None:
                 headers = {}
 
@@ -512,7 +511,7 @@ class ResourceCache:
         import papis.yaml
 
         force = force or not os.path.exists(filename)
-        if force or PAPIS_UPDATE_RESOURCES in ("local", "both"):
+        if force or PAPIS_UPDATE_RESOURCES in {"local", "both"}:
             assert data is not None
             with open(filename, "w", encoding="utf-8") as f:
                 if ext == ".json":
@@ -522,22 +521,22 @@ class ResourceCache:
                         sort_keys=True,
                         ensure_ascii=False,
                         )
-                elif ext == ".yml" or ext == ".yaml":
+                elif ext in {".yml", ".yaml"}:
                     yaml.dump(
                         data, f,
                         indent=2,
                         sort_keys=True,
                         )
                 else:
-                    raise ValueError("Unknown file extension: '{}'".format(ext))
+                    raise ValueError(f"Unknown file extension: '{ext}'")
 
         with open(filename, encoding="utf-8") as f:
             if ext == ".json":
                 return json.load(f)
-            elif ext == ".yml" or ext == ".yaml":
+            elif ext in {".yml", ".yaml"}:
                 return papis.yaml.yaml_to_data(filename)
             else:
-                raise ValueError("Unknown file extension: '{}'".format(ext))
+                raise ValueError(f"Unknown file extension: '{ext}'")
 
 
 @pytest.fixture(autouse=True)

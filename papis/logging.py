@@ -4,16 +4,16 @@ import logging
 from typing import Any, Optional, Tuple, Union
 
 import click
-import colorama
+import colorama as c
 
 
 PAPIS_DEBUG = "PAPIS_DEBUG" in os.environ
 LEVEL_TO_COLOR = {
-    "CRITICAL": colorama.Style.BRIGHT + colorama.Fore.RED,
-    "ERROR": colorama.Style.BRIGHT + colorama.Fore.RED,
-    "WARNING": colorama.Style.BRIGHT + colorama.Fore.YELLOW,
-    "INFO": colorama.Fore.CYAN,
-    "DEBUG": colorama.Fore.WHITE,
+    "CRITICAL": c.Style.BRIGHT + c.Fore.RED,
+    "ERROR": c.Style.BRIGHT + c.Fore.RED,
+    "WARNING": c.Style.BRIGHT + c.Fore.YELLOW,
+    "INFO": c.Fore.CYAN,
+    "DEBUG": c.Fore.WHITE,
 }
 
 
@@ -55,8 +55,8 @@ class ColoramaFormatter(logging.Formatter):
                 msg = "{}...".format(msg[:48].rsplit(" ", 1)[0])
 
             return (
-                "(Caught exception '{}: {}'. Use `--log DEBUG` to see traceback)"
-                .format(exc_info[0].__name__, msg))
+                f"(Caught exception '{exc_info[0].__name__}: {msg}'. "
+                "Use `--log DEBUG` to see traceback)")
 
     def format(self, record: logging.LogRecord) -> str:
         """Format the specified record as text.
@@ -67,13 +67,13 @@ class ColoramaFormatter(logging.Formatter):
         """
 
         if isinstance(record.msg, str):
-            record.msg = record.msg.format(c=colorama)
+            record.msg = record.msg.format(c=c)
 
         if record.levelname in LEVEL_TO_COLOR:
-            record.levelname = "{}{}{}".format(
-                LEVEL_TO_COLOR[record.levelname],
-                record.levelname,
-                colorama.Style.RESET_ALL)
+            record.levelname = (
+                f"{LEVEL_TO_COLOR[record.levelname]}"
+                f"{record.levelname}"
+                f"{c.Style.RESET_ALL}")
 
         if record.name.startswith("papis."):
             record.name = record.name[6:]
@@ -131,27 +131,25 @@ def setup(level: Optional[Union[int, str]] = None,
         except ValueError:
             verbose = False
 
-    if color not in ("always", "auto", "no"):
+    if color not in {"always", "auto", "no"}:
         raise ValueError(f"Unknown 'color' value: '{color}'")
 
     if _disable_color(color):
         # Turn off colorama (strip escape sequences from the output)
-        colorama.init(strip=True)
+        c.init(strip=True)
     else:
-        colorama.init()
+        c.init()
 
     if isinstance(level, str):
         try:
             level = int(getattr(logging, level))
         except AttributeError:
-            raise ValueError(f"Unknown logger level: '{level}'")
+            raise ValueError(f"Unknown logger level: '{level}'") from None
     else:
         if logging.getLevelName(level).startswith("Level"):
             raise ValueError(f"Unknown logger level: '{level}'")
 
-    log_format = (
-        "{c.Fore.GREEN}%(name)s{c.Style.RESET_ALL}: %(message)s"
-        .format(c=colorama))
+    log_format = f"{c.Fore.GREEN}%(name)s{c.Style.RESET_ALL}: %(message)s"
 
     if verbose:
         level = logging.DEBUG

@@ -97,13 +97,13 @@ class Database(DatabaseBase):
         self.documents: Optional[List[Document]] = None
         self.initialize()
 
-    def get_backend_name(self) -> str:
+    def get_backend_name(self) -> str:  # noqa: PLR6301
         return "papis"
 
     def get_cache_path(self) -> str:
         return self._get_cache_file_path()
 
-    def get_all_query_string(self) -> str:
+    def get_all_query_string(self) -> str:  # noqa: PLR6301
         return "."
 
     def initialize(self) -> None:
@@ -201,7 +201,7 @@ class Database(DatabaseBase):
             from papis.utils import get_folders, folders_to_documents
 
             logger.info("Indexing library. This might take a while...")
-            folders: List[str] = sum((get_folders(d) for d in self.lib.paths), [])
+            folders = [f for path in self.lib.paths for f in get_folders(path)]
             self.documents = folders_to_documents(folders)
 
             from papis.id import ID_KEY_NAME

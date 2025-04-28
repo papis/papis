@@ -146,9 +146,8 @@ def validate_arxivid(arxivid: str) -> None:
 
     if not response.ok:
         raise ValueError(
-            "HTTP ({} {}): '{}' not an arxivid".format(
-                response.status_code, response.reason, arxivid)
-            )
+            f"HTTP ({response.status_code} {response.reason}): "
+            f"'{arxivid}' not an arxivid")
 
 
 def pdf_to_arxivid(
@@ -188,11 +187,8 @@ def find_arxivid_in_text(text: str) -> Optional[str]:
         r"(/abs|/pdf)?"
         r"\s*(=|:|/|\()\s*"
         r"(\"|')?"
-        r"(?P<arxivid>[^{fc}]+)"
-        r'("|\'|\))?'
-        .format(
-            fc=forbidden_arxivid_characters
-        ), re.I
+        fr"(?P<arxivid>[^{forbidden_arxivid_characters}]+)"
+        r'("|\'|\))?', re.I
     )
     miter = regex.finditer(text)
 
@@ -270,7 +266,7 @@ class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str) -> None:
         super().__init__(uri=url, name="arxiv", expected_document_extension="pdf")
-        self._result: Optional["arxiv.Result"] = None
+        self._result: Optional[arxiv.Result] = None
         self._arxivid: Optional[str] = None
 
     @classmethod

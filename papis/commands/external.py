@@ -19,7 +19,7 @@ logger = papis.logging.get_logger(__name__)
 def get_command_help(path: str) -> str:
     """Get help string from external commands."""
     magic_word = papis.config.getstring("scripts-short-help-regex")
-    with open(path) as fd:
+    with open(path, encoding="utf-8") as fd:
         for line in fd:
             match = re.match(magic_word, line)
             if match:
@@ -69,7 +69,7 @@ def external_cli(ctx: click.core.Context, flags: List[str]) -> None:
     if not path:
         raise FileNotFoundError(f"Path for script '{script}' not found")
 
-    cmd = [path] + list(flags)
+    cmd = [path, *flags]
     logger.debug("Calling external command '%s'.", cmd)
 
     params = ctx.parent.params if ctx.parent else {}
