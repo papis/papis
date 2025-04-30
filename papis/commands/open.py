@@ -5,7 +5,7 @@ With it you can open documents, folders or marks.
 Marks
 ^^^^^
 
-One special thing about this command is the ability to use marks for
+One special feature about this command is the ability to use marks for
 documents. As you would imagine, it is in general difficult to create marks for
 any kind of data. For instance, if our library consists of PDF files and EPUB
 files, we would like to define bookmarks in order to go back to them at some

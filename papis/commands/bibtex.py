@@ -61,8 +61,8 @@ With this setup, you can just do::
 
     papis bibtex add -q einstein save
 
-Check references' quality
-^^^^^^^^^^^^^^^^^^^^^^^^^
+Check reference quality
+^^^^^^^^^^^^^^^^^^^^^^^
 
 When you're collaborating with someone, you might come across malformed
 or incomplete references. Most journals want to have all the DOIs

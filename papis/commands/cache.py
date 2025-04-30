@@ -1,5 +1,5 @@
 """
-This command allows the user to interact with the Papis cache or database.
+This command allows the user to interact with the Papis cache (database).
 
 To clear the cache (remove it from the filesystem), you can run the following
 command

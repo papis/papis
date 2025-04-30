@@ -23,7 +23,7 @@ author and title in there like this:
   files:
     - document.pdf
 
-Here we have used the ``files`` field to tell Papis that the paper has a pdf
+Here we have used the ``files`` field to tell Papis that the paper has a PDF
 document attached to it. You can of course attach many other documents so that
 you can open them when you are opening it with the ``papis open`` command. For
 instance if you have a paper with supporting information, you could store it

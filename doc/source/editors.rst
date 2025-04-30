@@ -16,7 +16,6 @@ Emacs
 -----
 
 `papis.el <https://github.com/papis/papis.el>`__ is a compatibility layer for
-Papis that tries to use as much of the existing packages as possible. In
-particular it tries to make use also of ``org-ref`` to try not to reinvent the
-wheel. If you are used to ``org-ref`` or ``org-cite`` it strives to work
-seamlessly with them and still have your Papis library intact.
+Papis that tries to use as much of the existing Emacs ecosystem as possible. If
+you are used to ``org-ref`` or ``org-cite``, it will work seamlessly with them
+while keeping your Papis library intact.

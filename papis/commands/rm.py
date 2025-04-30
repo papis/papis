@@ -1,9 +1,6 @@
 """
-The command to remove Papis documents. Can also be used to remove files within
-documents, rather than an entire document.
-
-Prompts for confirmation before removing, showing information about what is
-being removed.
+The command to remove entire Papis documents or just remove files within
+documents.
 
 Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^

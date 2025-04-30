@@ -1,8 +1,9 @@
 Citations of documents: ``citations.yaml`` and ``cited-by.yaml`` files
 ----------------------------------------------------------------------
 
-Papis has support for downloading and exploring citations that documents
-reference, and also cited-by type references.
+Papis has support for downloading and exploring citations that are referenced by
+a document (citing references) and also that reference the document (cited-by
+references).
 
 If your document has a ``doi`` associated and you use the updater from
 this ``doi``, or you added information from the ``doi`` when you added the
@@ -23,12 +24,13 @@ your document. This is done by scanning your Papis library for
 documents that cite said document. You can also generate this
 file from the web application or from the ``papis citations`` command.
 
-The citation files try to include information already existing in the library
-first, i.e. before doing any online query, Papis tries to find the relevant
-information in your library.
+The citation commands first try to find information that already exists in the
+library. That is to say, before doing any online query, it tries to find the
+relevant information in your library (e.g. Crossref supports ``citations`` that
+can be cross-referenced).
 
 Notice that Papis copies most of the metadata to the ``citations.yaml``
 and ``cited-by.yaml`` files. Even though this might seem quite heavy on
-disk space, as a rule of thumb all the ``citation.yaml`` files of a
+disk space, as a rule of thumb all the ``citations.yaml`` files of a
 library with 2k papers containing physics papers will amount to only
 around 30MB.

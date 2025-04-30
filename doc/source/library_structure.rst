@@ -42,7 +42,7 @@ As an example let us consider the following library
 
 The first thing that you might notice is that there are many folders. Just to
 check that you understand exactly what is a document, please think about which
-of these pdfs is not a valid Papis document... That's right!
+of these PDFs is not a valid Papis document... That's right!
 ``folder1/paper.pdf`` is not a valid document since the ``folder1`` does not
 contain the ``info.yaml`` file. You see also that it does not matter how deep
 the folder structure is in your library: you can have a ``physics`` folder in
