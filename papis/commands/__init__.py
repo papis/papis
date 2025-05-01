@@ -12,6 +12,31 @@ COMMAND_EXTENSION_NAME = "papis.command"
 EXTERNAL_COMMAND_REGEX = re.compile(".*papis-([^ .]+)$")
 
 
+class FullHelpCommand(click.core.Command):
+    """This is a simple wrapper around :class:`click.core.Command` that does
+    not truncate the short help messages.
+
+    We still very much prefer that these stay short if at all possible, but the
+    default limit of 45 characters does not work well for many non-trivial commands.
+    """
+
+    def get_short_help_str(self, limit: int = 45) -> str:
+        # NOTE: this is copied from click/core.py::Command.get_short_help_str
+        # https://github.com/pallets/click/blob/b7c0ab471c339488766d9413349947b2a7b21543/src/click/core.py#L1067
+        # It creates the short help string from the main help string and does not
+        # truncate the resulting string to 45 characters like click does.
+        import inspect
+
+        if self.short_help:
+            text = self.short_help
+        elif self.help:
+            text = " ".join(self.help.strip().split("\n\n")[0].split())
+        else:
+            text = ""
+
+        return inspect.cleandoc(text).strip()
+
+
 class AliasedGroup(click.core.Group):
     """A :class:`click.Group` that accepts command aliases.
 
@@ -22,44 +47,7 @@ class AliasedGroup(click.core.Group):
     ``rem`` is also accepted as long as it is unique.
     """
 
-    def format_commands(self,
-                        ctx: click.Context,
-                        formatter: click.HelpFormatter) -> None:
-        """Overwrite the default formatting."""
-        # NOTE: this is copied from click/core.py::MultiCommand.format_commands
-        # https://github.com/pallets/click/blob/388b0e14093355e30b17ffaff0c7588533d9dbc8/src/click/core.py#L1611  # noqa: E501
-        # but instead of getting the short_help, we get the full help, strip it
-        # and wrap it nicely like click.Group does.
-
-        commands = []
-        for subcommand in self.list_commands(ctx):
-            cmd = self.get_command(ctx, subcommand)
-            # What is this, the tool lied about a command.  Ignore it
-            if cmd is None:
-                continue
-            if cmd.hidden:
-                continue
-
-            commands.append((subcommand, cmd))
-
-        # allow for 3 times the default spacing
-        if len(commands):
-            limit = formatter.width - 6 - max(len(cmd[0]) for cmd in commands)
-
-            rows = []
-            for subcommand, cmd in commands:
-                if cmd.help is not None:
-                    help = " ".join(cmd.help.strip().split("\n\n")[0].split())
-                elif cmd.short_help is not None:
-                    help = cmd.get_short_help_str(limit)
-                else:
-                    help = ""
-
-                rows.append((subcommand, help.strip().strip(".")))
-
-            if rows:
-                with formatter.section("Commands"):
-                    formatter.write_dl(rows)
+    command_class = FullHelpCommand
 
     def get_command(self,
                     ctx: click.core.Context,
