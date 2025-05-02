@@ -118,6 +118,7 @@ Command-line interface
 
 .. click:: papis.commands.bibtex:cli
     :prog: papis bibtex
+    :nested: full
 """
 
 import os

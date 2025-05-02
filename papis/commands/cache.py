@@ -41,6 +41,12 @@ the cache for those documents that have been synchronized by the means
 of synchronization that you are using, for instance using git, Syncthing,
 Dropbox, etc.
 
+Command-line interface
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. click:: papis.commands.cache:cli
+    :prog: papis cache
+    :nested: full
 """
 import os
 from typing import Optional, Tuple
@@ -62,7 +68,7 @@ logger = papis.logging.get_logger(__name__)
 @click.help_option("--help", "-h")
 def cli() -> None:
     """
-    Manage the cache or database of a Papis library.
+    Manage the cache (database) of a Papis library.
     """
 
 
