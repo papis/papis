@@ -37,7 +37,7 @@ Examples
   query, rather than allowing you to pick one individual document to update.
 
 - Update a document automatically and interactively (searching by DOI in
-  Crossref or in other sources...)
+  Crossref or in other sources...):
 
     .. code:: sh
 
@@ -97,7 +97,7 @@ Examples
     This removes all tags.
 
 - There is also a convenience option ``--rename`` if you want to rename
-  a list item. It's equivalent to doing ``--remove`` and ``--append`` sequentially.
+  a list item. It's equivalent to doing ``--remove`` and ``--append`` sequentially:
 
     .. code:: sh
 

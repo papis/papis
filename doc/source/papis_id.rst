@@ -10,7 +10,7 @@ The ``papis_id`` is added automatically when using ``papis add`` or other comman
 but is not updated after the initial creation of the document. If you manually
 add a document into your library, e.g. by creating an ``info.yaml`` file without
 Papis, you will have to clear the library cache in order to trigger a rebuild
-using
+using:
 
 .. code:: sh
 
@@ -33,14 +33,14 @@ Use of ``papis_id`` in scripts
 Since the ``papis_id`` key is a unique (ish) identifier, it is quite useful for
 scripts that do not depend on the actual path to the document in your system.
 
-For instance you can get the ``papis_id`` of a document using
+For instance you can get the ``papis_id`` of a document using:
 
 .. code:: sh
 
     id=$(papis list --id query)
 
-and subsequently use the ``id`` variable to trigger other commands. For example,
-you can open the files attached to the document using
+... and subsequently use the ``id`` variable to trigger other commands. For example,
+you can open the files attached to the document using:
 
 .. code:: sh
 

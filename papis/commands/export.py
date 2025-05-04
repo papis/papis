@@ -7,26 +7,26 @@ Examples
 
 Some examples of its usage are:
 
-- Export one of the documents matching the author with Einstein to BibTeX
+- Export one of the documents matching the author with Einstein to BibTeX:
 
 .. code:: sh
 
     papis export --format bibtex 'author : einstein'
 
-or export all of them
+... or export all of them:
 
 .. code:: sh
 
     papis export --format bibtex --all 'author : einstein'
 
-- Export all documents to BibTeX and save them into a ``lib.bib`` file
+- Export all documents to BibTeX and save them into a ``lib.bib`` file:
 
 .. code:: sh
 
     papis export --all --format bibtex --out lib.bib
 
 - Export a folder of one of the documents matching the word ``krebs``
-  into a folder named ``interesting-document``
+  into a folder named ``interesting-document``:
 
 .. code:: sh
 
@@ -188,7 +188,7 @@ def explorer(ctx: click.Context, fmt: str, out: str) -> None:
     Export retrieved documents into various formats.
 
     For example, to query Crossref and export all 200 documents to a YAML file,
-    you can call
+    you can call:
 
     .. code:: sh
 

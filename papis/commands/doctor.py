@@ -38,7 +38,7 @@ implemented
 * ``refs``: checks that the document has a valid reference (i.e. one that would
   be accepted by BibTeX and only contains valid characters).
 
-If any custom checks are implemented, you can get a complete list at runtime from
+If any custom checks are implemented, you can get a complete list at runtime from:
 
 .. code:: sh
 
@@ -47,26 +47,26 @@ If any custom checks are implemented, you can get a complete list at runtime fro
 Examples
 ^^^^^^^^
 
-- To run all available checks over all available documents in the library use
+- To run all available checks over all available documents in the library use:
 
     .. code:: sh
 
         papis doctor --all-checks --all
 
-  This will likely generate too many results, but it can be useful to output in JSON
+  This will likely generate too many results, but it can be useful to output in JSON:
 
     .. code:: sh
 
         papis doctor --all-checks --all --json
 
-- To check if all the files of a document are present, use
+- To check if all the files of a document are present, use:
 
     .. code:: sh
 
         papis doctor --checks files einstein
 
 - To check if any unwanted HTML tags are present in your documents (especially
-  abstracts can be full of additional HTML or XML tags) use
+  abstracts can be full of additional HTML or XML tags) use:
 
     .. code:: sh
 
@@ -74,7 +74,7 @@ Examples
 
   The ``--explain`` flag can be used to give additional details of checks that
   failed. Some checks such as this also have automatic fixers. Here, we can just
-  remove all the HTML tags by writing
+  remove all the HTML tags by writing:
 
     .. code:: sh
 
@@ -82,7 +82,7 @@ Examples
 
 - If an automatic fix is not possible, some checks also have suggested
   commands or tips to fix the issue that was found. For example, if a key
-  does not exist in the document, it can suggest editing the file to add it.
+  does not exist in the document, it can suggest editing the file to add it:
 
     .. code:: sh
 
@@ -90,7 +90,7 @@ Examples
         >> Suggestion: papis edit --doc-folder /path/to/folder
 
   If this is the case, you can also run the following to automatically open
-  the ``info.yaml`` file for editing more complex changes
+  the ``info.yaml`` file for editing more complex changes:
 
     .. code:: sh
 
@@ -102,7 +102,7 @@ Implementing additional checks
 
 A check is just a function that takes a document and returns a list of errors.
 A skeleton implementation that gets added to ``config.py``
-(see :ref:`config_py`) can be implemented as follows
+(see :ref:`config_py`) can be implemented as follows:
 
 .. code:: python
 

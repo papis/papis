@@ -3,16 +3,15 @@ FAQ
 
 Here are some problems that users have come across often:
 
-- When I remove a folder manually in a library or I synchronize
+- **Question**: When I remove a folder manually in a library or I synchronize
   the library manually, I do not see the new papers in the library.
-  **Answer**: You probably need to update the cache because Papis did not
-  know anything about your changes in the library since you did it by yourself.
+
+  **Answer**: You probably need to update the cache because Papis did not know
+  anything about your changes in the library since you did it by yourself. Run:
 
   .. code::
 
     papis cache clear
-
-  will do.
 
 
 For more frequently asked questions, check out our

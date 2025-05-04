@@ -4,19 +4,19 @@ This command can be used to run shell commands in the directory of your library.
 Examples
 ^^^^^^^^
 
-- List all files in the library directory
+- List all files in the library directory:
 
     .. code:: sh
 
         papis run ls
 
-- Find a file in the library directory using the ``find`` command
+- Find a file in the library directory using the ``find`` command:
 
     .. code:: sh
 
         papis run find -name 'document.pdf'
 
-- Find all PDFs in the document folders matching "einstein"
+- Find all PDFs in the document folders matching "einstein":
 
     .. code:: sh
 
@@ -27,7 +27,7 @@ Examples
 
     In this example you could also use pipes. For instance, to print the
     absolute path to the files, in Linux you can use the command
-    ``readlink -f`` and a pipe ``|`` to do this, i.e.
+    ``readlink -f`` and a pipe ``|`` to do this, i.e.:
 
     .. code:: sh
 
@@ -37,7 +37,7 @@ Examples
 - Replace some text in all ``info.yaml`` files by something.
   For instance imagine you want to replace all ``note`` field names
   in the ``info.yaml`` files by ``_note`` so that the ``note`` field
-  does not get exported. You can do
+  does not get exported. You can do:
 
     .. code:: sh
 

@@ -4,14 +4,14 @@ from typing import Any, Optional, NamedTuple, Tuple, Union
 class FormattedString(NamedTuple):
     """A tuple that defines a ``(formatter, string)`` pair.
 
-    In a configuration file, a formatted string can be defined as::
+    In a configuration file, a formatted string can be defined as:
 
     .. code:: ini
 
         key = formatted_value
         other_key.formatter = other_formatted_value
 
-    where the first key will use the default :confval:`formatter` and the second
+    ... where the first key will use the default :confval:`formatter` and the second
     key will use the specified formatter. These keys can be read using
     :func:`papis.config.getformattedstring`.
 

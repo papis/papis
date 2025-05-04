@@ -3,13 +3,13 @@ Web application
 
 Since ``v0.12``, Papis ships with an experimental, simple yet handy web application.
 
-You can start the web application by issuing the following command
+You can start the web application by issuing the following command:
 
 ::
 
    papis serve --port 8181 --host localhost
 
-Then input the following url in your browser
+Then input the following url in your browser:
 
 ::
 

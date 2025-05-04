@@ -24,7 +24,7 @@ string should look like the following:
         "tags": TEXT(stored=True),
     }
 
-where all the fields are explained in the whoosh
+... where all the fields are explained in the whoosh
 `documentation <https://whoosh.readthedocs.io/en/latest/schema.html>`__.
 
 After this Schema is created, the folders of the library are traversed

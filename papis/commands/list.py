@@ -24,7 +24,7 @@ Examples
         papis list --all --template bibitem.template
 
 - For scripting, printing the id of a series of documents is valuable in order
-  to further use the id in other scripts.
+  to further use the id in other scripts:
 
     .. code:: sh
 
@@ -33,7 +33,7 @@ Examples
         papis edit papis_id:${papis_id}
         # etc.
 
-- List various plugins and extensions that Papis sees
+- List various plugins and extensions that Papis sees:
 
     .. code:: sh
 

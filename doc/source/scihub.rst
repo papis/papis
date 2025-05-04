@@ -8,20 +8,20 @@ Papis has a script that uses the Sci-Hub platform to download scientific papers.
 Due to legal caution the script is not included directly as a ``papis`` command,
 and it has its own PyPI repository.
 
-To install it, just type
+To install it, just type:
 
 ::
 
   pip3 install papis-scihub
 
 
-Now you can type
+Now you can type:
 
 .. code:: bash
 
   papis scihub -h
 
-and see the help message of the script.
+... and see the help message of the script.
 
 Some usage examples are:
 

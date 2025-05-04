@@ -8,7 +8,7 @@ the file using information from the library.
 Examples
 ^^^^^^^^
 
-You can use it to open some papers from the BibTeX file by calling
+You can use it to open some papers from the BibTeX file by calling:
 
 .. code:: sh
 
@@ -17,7 +17,7 @@ You can use it to open some papers from the BibTeX file by calling
 This is done by matching the entry in the BibTeX file with a document in your
 library and then opening the corresponding files. If no document can be found in
 the library, then the file cannot be opened, of course. To add papers to the
-BibTeX file (from the current library) you can call
+BibTeX file (from the current library) you can call:
 
 .. code:: sh
 
@@ -28,7 +28,7 @@ BibTeX file (from the current library) you can call
         save new_papers.bib    # Save in new_papers.bib
 
 To update some information that was modified in Papis'
-:ref:`YAML files <info-file>`, you can call
+:ref:`YAML files <info-file>`, you can call:
 
 .. code:: sh
 
@@ -79,7 +79,7 @@ are not cited in the ``.tex`` files by calling::
 and you can then filter them out using the ``filter-cited`` command.
 
 To monitor the health of the project's BibTeX file, you can add a simple target
-to the project's ``Makefile`` like
+to the project's ``Makefile`` like:
 
 .. code:: make
 
@@ -90,7 +90,7 @@ to the project's ``Makefile`` like
 Vim integration
 ^^^^^^^^^^^^^^^
 
-This command can also be easily used from Vim with these simple lines
+This command can also be easily used from Vim with these simple lines:
 
 .. code:: vim
 
@@ -108,7 +108,7 @@ This command can also be easily used from Vim with these simple lines
     command! -nargs=0 BibRef call PapisBibtexRef()
     command! -nargs=0 BibOpen exec "!papis bibtex open"
 
-And use like such: |asciicast|
+And use as such: |asciicast|
 
 .. |asciicast| image:: https://asciinema.org/a/8KbLQJSVYVYNXHVF3wgcxx5Cp.svg
    :target: https://asciinema.org/a/8KbLQJSVYVYNXHVF3wgcxx5Cp
@@ -352,7 +352,7 @@ def cli_edit(ctx: click.Context,
     Edit documents by adding keys or opening an editor.
 
     For example, you can run the following to add a special key ``__proj`` to
-    all the documents
+    all the documents:
 
     .. code:: sh
 
@@ -559,7 +559,7 @@ def cli_doctor(ctx: click.Context, key: List[str]) -> None:
     """
     Check BibTeX file for correctness.
 
-    This can check missing keys, e.g. by running
+    This can check missing keys, e.g. by running:
 
     .. code:: sh
 
@@ -589,7 +589,7 @@ def cli_filter_cited(ctx: click.Context, _files: List[str]) -> None:
     Filter cited documents from the BibTeX file.
 
     for example to filter cited documents in ``main.tex`` and save a unique
-    list of documents in ``cited.bib``, you can run
+    list of documents in ``cited.bib``, you can run:
 
     .. code:: sh
 
@@ -619,7 +619,7 @@ def cli_iscited(ctx: click.Context, _files: List[str]) -> None:
     Check which documents are not cited.
 
     For example, to print a list of documents that have not been cited in
-    both ``main.tex`` and ``chapter-2.tex``, run
+    both ``main.tex`` and ``chapter-2.tex``, run:
 
     .. code:: sh
 
@@ -650,7 +650,7 @@ def cli_import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
     """
     Import documents from a BibTeX file to the current library.
 
-    For example, you can run
+    For example, you can run:
 
     .. code:: sh
 

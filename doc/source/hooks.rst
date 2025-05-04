@@ -15,7 +15,7 @@ Writing hooks as a user
 Right now the only way to add a hook as a user is using your ``config.py``
 configuration file, which loads along with your Papis configuration.
 
-As an example you can add a function to the ``on_edit_done`` hook like
+As an example you can add a function to the ``on_edit_done`` hook like:
 
 .. code:: python
 
@@ -28,7 +28,7 @@ Writing hooks as a developer
 
 To add a hook as a plugin writer or developer you can just add the *entrypoint*
 to the ``pyproject.toml`` file. For instance for the ``on_edit_done`` hook you
-would write
+would write:
 
 .. code:: toml
 

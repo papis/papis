@@ -60,7 +60,7 @@ of features. And for those who still want more, Papis makes it easy to write
 scripts that extend its features even further.
 
 Papis has grown over the years and there are now a number of projects that
-extend Papis' features or integrate it with other software.
+extend Papis' features or integrate it with other software:
 
 .. list-table::
    :widths: 33 67

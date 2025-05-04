@@ -13,7 +13,7 @@ called ``papers`` and another called ``books``. In general, these libraries
 work and can be configured independently from each other.
 
 In the simplest case, you would simply need to declare their location in your
-system, like so
+system, like so:
 
 .. code:: ini
 
@@ -35,7 +35,7 @@ values for each of your libraries, depending on the use case you had in mind.
 For example, let's suppose you want to open your documents from ``papers``
 using the PDF reader ``okular``, however in ``books`` you want to open
 the documents in ``firefox`` (for some reason). Then, you would add the following
-lines to your configuration
+lines to your configuration:
 
 .. code:: ini
 
@@ -57,7 +57,7 @@ Here we also added the ``opentool`` setting in the global section ``[settings]``
 With this configuration file, the two shown libraries will open documents with
 their respective tool, while any other library will default to ``evince``. There
 are many configuration options and you can check their values using the
-:ref:`papis config <command-config>` command, e.g.
+:ref:`papis config <command-config>` command, e.g.:
 
 .. code:: sh
 
@@ -70,7 +70,7 @@ are many configuration options and you can check their values using the
 
 A more complete example of a configuration file is the following
 (see :ref:`General Settings <general-settings>` for a comprehensive list of
-all the options and more extensive descriptions)
+all the options and more extensive descriptions):
 
 .. warning::
 
@@ -160,7 +160,7 @@ all the options and more extensive descriptions)
    Papis uses the standard :class:`~configparser.ConfigParser` to read and write
    configuration options. It also allows interpolation of values
    (using :class:`~configparser.BasicInterpolation`) so that previous values
-   can be referred back to. For example, one can do
+   can be referred back to. For example, one can do:
 
    .. code:: ini
 

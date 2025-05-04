@@ -27,7 +27,7 @@ Here we have used the ``files`` field to tell Papis that the paper has a PDF
 document attached to it. You can of course attach many other documents so that
 you can open them when you are opening it with the ``papis open`` command. For
 instance if you have a paper with supporting information, you could store it
-like such
+like this:
 
 .. code:: yaml
 
@@ -39,7 +39,7 @@ like such
     - supporting-information.pdf
 
 Therefore, in the folder where this document lives we have the following
-structure
+structure:
 
 ::
 

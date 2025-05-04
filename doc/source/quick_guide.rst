@@ -73,7 +73,7 @@ Finally, a situation that is unfortunately familiar to most: papers behind
 paywalls. The importer might be able to get the metadata automatically but fail
 at fetching the PDF. In this case, you might have to get the file yourself. You
 can use a slightly modified ``papis add`` command if you then want to create an
-entry in your library.
+entry in your library:
 
 .. code:: bash
 
@@ -109,7 +109,7 @@ Listing documents
 -----------------
 
 All the documents you add end up in folders inside your library. To find out
-where exactly a specific file is, use the ``papis list`` command.
+where exactly a specific file is, use the ``papis list`` command:
 
 .. code:: bash
 
@@ -196,7 +196,7 @@ Let's say you want to add the tag "physics" to all documents by Isaac Newton:
     papis tag --append physics newton
 
 Or maybe, you want to tag the documents used in a specific project. We could add
-the tag "project apple" to them using the command
+the tag "project apple" to them using the command:
 
 .. code:: bash
 
@@ -252,7 +252,7 @@ the tag "project", you can add a query:
 
     papis export --all --output project_apple.bib tags:"project apple"
 
-Papis supports exporting to several formats, which you can check out using
+Papis supports exporting to several formats, which you can check out using:
 
 .. code:: bash
 
@@ -290,7 +290,7 @@ init``. This resets everything, so that by running ``papis init`` again, you'll
 start anew.
 
 If you're unsure about the location of the library we've created for this quick
-guide, run the following command.
+guide, run the following command:
 
 .. code:: bash
 

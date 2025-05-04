@@ -231,14 +231,14 @@ def explorer(
 
 
     For example, to search for documents with the authors "Hummel" and
-    "Garnet Chan" (a maximum of 100 articles), use
+    "Garnet Chan" (a maximum of 100 articles), use:
 
     .. code:: sh
 
         papis explore arxiv -a 'Hummel' -m 100 arxiv -a 'Garnet Chan' pick
 
     If you want to search for the exact author name 'John Smith', you should
-    enclose it in extra quotes, as in the example below
+    enclose it in extra quotes, as in the example below:
 
     .. code:: sh
 

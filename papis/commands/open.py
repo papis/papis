@@ -42,13 +42,13 @@ convention to what suits you.
 Examples
 ^^^^^^^^
 
-- Open a PDF file linked to a document matching the string ``bohm``
+- Open a PDF file linked to a document matching the string ``bohm``:
 
     .. code:: sh
 
         papis open bohm
 
-- Open the folder where this last document is stored
+- Open the folder where this last document is stored:
 
     .. code:: sh
 
@@ -56,7 +56,7 @@ Examples
 
   The file browser used is given by the :confval:`file-browser` setting.
 
-- Open a mark defined in the info file
+- Open a mark defined in the info file:
 
     .. code:: sh
 

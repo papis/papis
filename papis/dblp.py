@@ -176,7 +176,7 @@ def explorer(
     Look for documents on `dblp.org <https://dblp.org/>`__.
 
     For example, to look for a document with the author "Albert Einstein" and
-    export it to a BibTeX file, you can call
+    export it to a BibTeX file, you can call:
 
     .. code:: sh
 

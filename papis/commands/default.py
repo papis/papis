@@ -7,7 +7,7 @@ Examples
 
 - To override some configuration options, you can use the ``--set`` flag. For
   instance, if you want to override the ``editor`` used to edit files or the
-  ``opentool`` used to open documents, you can just type
+  ``opentool`` used to open documents, you can just type:
 
     .. code:: sh
 
@@ -15,7 +15,7 @@ Examples
         papis --set editor gedit --set opentool firefox open
 
 - If you want to list the libraries and pick one before sending a database
-  query to Papis, use ``--pick-lib`` as such
+  query to Papis, use ``--pick-lib`` as such:
 
     .. code:: sh
 

@@ -18,16 +18,16 @@ You can use it by using the ``crossref`` subcommand:
 
 If you issue this command, you will see some text but basically nothing
 will happen. This is because ``explore`` is conceived as a concatenating command.
-Doing a simple
+Doing a simple:
 
 .. code:: sh
 
     papis explore crossref -h
 
-will tell you which commands are available. Let us suppose that you want to
+... will tell you which commands are available. Let us suppose that you want to
 look for some documents on Crossref, say some papers of Schrodinger's, and
 you want to store them into a BibTeX file called ``lib.bib``. Then you could
-concatenate the commands ``crossref`` and ``export --format bibtex`` as such
+concatenate the commands ``crossref`` and ``export --format bibtex`` as such:
 
 .. code:: sh
 
@@ -44,7 +44,7 @@ take care of it:
     papis explore crossref -a 'Schrodinger' pick export --format bibtex --out 'lib.bib'
 
 Notice how the ``pick`` command is situated before the ``export``.
-More generally you could write something like
+More generally you could write something like:
 
 .. code:: sh
 
@@ -64,7 +64,7 @@ the file ``special-picked-documents.bib``, and we could go on and on.
 
 If you want to follow up on these documents and get them to pick one again,
 you could use the ``yaml`` command to read in document information from a YAML
-file, e.g. the previously created ``docs.yaml``, do for example
+file, e.g. the previously created ``docs.yaml``, do for example:
 
 .. code:: sh
 
@@ -154,7 +154,7 @@ def lib(ctx: click.Context,
     Query for documents in your library.
 
     For example, to query all the documents containing "einstein" in the "books"
-    library, you can call
+    library, you can call:
 
     .. code:: sh
 
@@ -183,7 +183,7 @@ def pick(ctx: click.Context, number: Optional[int]) -> None:
     Pick a document from the retrieved documents.
 
     For example, to open a picker with the documents in a BibTeX file,
-    you can call
+    you can call:
 
     .. code:: sh
 
@@ -217,7 +217,7 @@ def citations(ctx: click.Context,
     Query the citations for a paper.
 
     For example, to go through the citations of a paper and export it in a
-    YAML file, you can call
+    YAML file, you can call:
 
     .. code:: sh
 
@@ -254,7 +254,7 @@ def add(ctx: click.Context) -> None:
     """
     Add selected documents to the current library.
 
-    For example, to add documents from a BibTeX file, you can call
+    For example, to add documents from a BibTeX file, you can call:
 
     .. code:: sh
 
@@ -275,7 +275,7 @@ def cmd(ctx: click.Context, command: str) -> None:
 
     For example, to look for 200 Schrodinger papers with
     `Crossref <https://www.crossref.org/>`__, pick one, and add it to the
-    current library via ``papis-scihub``, you can call
+    current library via ``papis-scihub``, you can call:
 
     .. code:: sh
 

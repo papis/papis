@@ -359,7 +359,7 @@ class Importer(papis.importer.Importer):
 def explorer(ctx: click.core.Context, bibfile: str) -> None:
     """Import documents from a BibTeX file.
 
-    This explorer can be used as
+    This explorer can be used as:
 
     .. code:: sh
 
@@ -410,7 +410,7 @@ def bibtexparser_entry_to_papis(entry: Dict[str, Any]) -> Dict[str, Any]:
 def bibtex_to_dict(bibtex: str) -> List[papis.document.DocumentLike]:
     """Convert a BibTeX file (or string) to a list of Papis-compatible dictionaries.
 
-    This will convert an entry like
+    This will convert an entry like:
 
     .. code:: tex
 
@@ -420,7 +420,7 @@ def bibtex_to_dict(bibtex: str) -> List[papis.document.DocumentLike]:
             ...,
         }
 
-    to a dictionary such as
+    ... to a dictionary such as:
 
     .. code:: python
 

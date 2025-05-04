@@ -120,7 +120,7 @@ def exporter(documents: List[papis.document.Document]) -> str:
 def explorer(ctx: click.Context, yamlfile: str) -> None:
     """Import documents from a YAML file.
 
-    For example, you can call
+    For example, you can call:
 
     .. code:: sh
 

@@ -11,14 +11,14 @@ Examples
 ^^^^^^^^
 
 - Add a document located in ``~/Documents/interesting.pdf`` and name the
-  folder where it will be stored in the database ``interesting-paper-2021``
+  folder where it will be stored in the database ``interesting-paper-2021``:
 
     .. code:: sh
 
         papis add ~/Documents/interesting.pdf \\
             --folder-name interesting-paper-2021
 
-  if you want to directly add some metadata, like author, title and tags,
+  If you want to directly add some metadata, like author, title and tags,
   you can also run the following:
 
     .. code:: sh
@@ -38,7 +38,7 @@ Examples
 
         papis add ~/Documents/interesting.pdf --from doi 10.10763/1.3237134
 
-- Add a paper from ``arxiv.org`` to a library named ``machine-learning``
+- Add a paper from ``arxiv.org`` to a library named ``machine-learning``:
 
     .. code:: sh
 
@@ -46,14 +46,14 @@ Examples
             --from arxiv https://arxiv.org/abs/1712.03134
 
 - If you do not want copy the original PDFs into the library, you can
-  also tell Papis to just create a link to them, for example
+  also tell Papis to just create a link to them, for example:
 
     .. code:: sh
 
         papis add --link ~/Documents/interesting.pdf \\
             --from doi 10.10763/1.3237134
 
-  will add an entry into the Papis library, but the PDF document will remain at
+  ... will add an entry into the Papis library, but the PDF document will remain at
   ``~/Documents/interesting.pdf``. In the document's folder there will be a link
   to ``~/Documents/interesting.pdf`` instead of the file itself. Of course you
   always have to be sure that the document at ``~/Documents/interesting.pdf``
@@ -62,7 +62,7 @@ Examples
 - Papis also tries to make sense of the inputs that you have passed on the
   command-line. For instance you could provide only a DOI and Papis will figure
   out if this is indeed a DOI and download available metadata using Crossref.
-  For example, you can try
+  For example, you can try:
 
     .. code:: sh
 

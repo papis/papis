@@ -33,7 +33,7 @@ settings can be accessed with:
     papis config --section bibtex
     papis config --default --section bibtex
 
-or with ``papis config`` (without the section argument) to show the settings
+... or with ``papis config`` (without the section argument) to show the settings
 available for all the known sections.
 
 You can also query a specific setting within a section. For example like this:

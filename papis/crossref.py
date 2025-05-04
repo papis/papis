@@ -315,7 +315,7 @@ def explorer(
     Look for documents on `Crossref <https://www.crossref.org/>`__.
 
     For example, to look for a document with the author "Albert Einstein" and
-    export it to a BibTeX file, you can call
+    export it to a BibTeX file, you can call:
 
     .. code:: sh
 

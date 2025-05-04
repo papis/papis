@@ -28,13 +28,13 @@ Papis defines environment variables such as ``PAPIS_LIB`` so that external
 scripts can make use of the user input.
 
 To use the script you can put it somewhere in your ``PATH`` or alternatively
-inside the ``~/.papis/scripts`` folder. In the latter case when you run
+inside the ``~/.papis/scripts`` folder. In the latter case when you run:
 
 ::
 
     papis -h
 
-you will see that there is another command besides the default commands called
+... you will see that there is another command besides the default commands called
 ``mail``:
 
 ::
@@ -45,17 +45,17 @@ you will see that there is another command besides the default commands called
       mail       Email a paper to my friend.
       ...        ...
 
-where the description ``Email a paper to my friend.`` is there because
+... where the description ``Email a paper to my friend.`` is there because
 we have defined the comment ``# papis-short-help: Email a paper to my friend.``
 in the header of the script.
 
-Then, if you type
+Then, if you type:
 
 ::
 
     papis -l mylib mail this_paper
 
-this will create a folder called ``this_paper`` with a selection of a
+... this will create a folder called ``this_paper`` with a selection of a
 document, zip it and send it to whoever you choose to.
 
 Example: Accessing Papis from within mutt
@@ -64,7 +64,7 @@ Example: Accessing Papis from within mutt
 You may want to pick documents to attach to your email in ``mutt``
 from the Papis interface.
 
-Add this code to your ``muttrc``
+Add this code to your ``muttrc``:
 
 ::
 
@@ -88,7 +88,7 @@ paper to the email, which you can rename to be more descriptive with
 Example: Define Papis mode in i3wm
 ----------------------------------
 
-This is an example of using Papis with the window manager `i3`.
+This is an example of using Papis with the window manager `i3`:
 
 ::
 
@@ -119,7 +119,7 @@ This is an example of using Papis with the window manager `i3`.
 Useful links
 ------------
 
-- `Get paper references with papis <https://alejandrogallo.github.io/blog/posts/getting-paper-references-with-papis/>`__
+- `Get paper references with papis <https://alejandrogallo.github.io/blog/posts/getting-paper-references-with-papis/>`__:
 
     .. code:: sh
 

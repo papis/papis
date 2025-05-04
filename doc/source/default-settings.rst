@@ -17,7 +17,7 @@ General settings
 
         ~/Documents/lib-with-fulano
 
-    and you've created a local configuration file at::
+    ... and you've created a local configuration file at::
 
         ~/Documents/lib-with-fulano/.papis.config
 
@@ -48,7 +48,7 @@ General settings
 
     This is the format of the short help indicator in external Papis
     commands. In general, for an external command, the first lines are expected
-    to resemble
+    to resemble:
 
     .. code:: python
 
@@ -79,7 +79,7 @@ General settings
     This setting controls the name of the document in the Papis format strings
     such as :confval:`match-format` or :confval:`header-format`. For instance,
     if you are managing videos, you might want to set this option to ``vid`` in
-    order to set  the :confval:`header-format` to
+    order to set  the :confval:`header-format` to:
 
     .. code:: ini
 
@@ -105,7 +105,7 @@ General settings
     If the :confval:`header-format` grows too complex, it can be
     stored in a separate file. This option should give the path to that file (in
     which case the ``header-format`` option will be ignored). For example, this
-    can be set to
+    can be set to:
 
     .. code:: ini
 
@@ -292,7 +292,7 @@ BibTeX options
     A list of additional keys, besides the known standard BibTeX keys from
     :data:`~papis.bibtex.bibtex_keys`, to add to the BibTeX export. This can be
     used to include keys such as ``doc_url`` or ``tags`` to the export by
-    setting
+    setting:
 
     .. code:: ini
 
@@ -314,7 +314,7 @@ BibTeX options
 
     A list of additional types, besides the known standard BibTeX types from
     :data:`~papis.bibtex.bibtex_types`, that should be allowed for a BibTeX export.
-    These types can be added as
+    These types can be added as:
 
     .. code:: ini
 
@@ -342,13 +342,13 @@ BibTeX options
     used for display purposes or for building the ``author`` key for the
     document. For example, when retrieving automatic author information from
     services like `Crossref <https://www.crossref.org>`__, Papis builds the
-    ``author`` using this setting. For instance, this can be set to
+    ``author`` using this setting. For instance, this can be set to:
 
     .. code:: ini
 
         multiple-authors-format = {au[family]} -- {au[given]}
 
-    which for the author ``{"family": "Einstein", "given": "Albert"}`` would
+    ... which for the author ``{"family": "Einstein", "given": "Albert"}`` would
     construct the string ``Einstein -- Albert``. In most circumstances, multiple
     authors are then concatenated together using
     :confval:`multiple-authors-separator`.
@@ -396,13 +396,13 @@ Add options
     is created. In BibLaTeX, the reference (or ref for short) is also sometimes
     called a citation key. The reference format is usually heavily customized
     by users, depending on their personal preferences. For example to use a
-    ``FirstAuthorYear`` format, set
+    ``FirstAuthorYear`` format, set:
 
     .. code:: ini
 
         ref-format = {doc[author_list][0][family]}{doc[year]}
 
-    However, any custom string can be used, e.g.
+    However, any custom string can be used, e.g.:
 
     .. code:: ini
 
@@ -421,7 +421,7 @@ Add options
         converted to their closest ASCII representation.
 
         If you want to add some punctuation, dots (``.``) and underscores (``_``)
-        can be escaped by a backslash. For example,
+        can be escaped by a backslash. For example:
 
         .. code:: ini
 
@@ -431,14 +431,14 @@ Add options
 
     Sets the default name for the folder of newly added documents. For example,
     if you want the folder of your documents to be named after the format
-    ``author-title`` then you should set it to
+    ``author-title`` then you should set it to:
 
     .. code:: ini
 
         add-folder-name = ``{doc[author]}-{doc[title]}``
 
     You can create formatted subfolders by using path separators
-    (i.e., ``/``) in this format string, e.g.
+    (i.e., ``/``) in this format string, e.g.:
 
     .. code:: ini
 
@@ -691,7 +691,7 @@ Open options
 
     This is the default key name for the marks in the *info file*. For
     example, if you set ``mark-key-name = bookmarks`` then you would have
-    in your ``info.yaml`` file
+    in your ``info.yaml`` file:
 
     .. code:: yaml
 
@@ -705,7 +705,7 @@ Open options
     This is the name of the mark to be passed to
     :confval:`mark-header-format` and other such settings, similarly
     to :confval:`format-doc-name`. For example, if we want to set
-    it to ``m``, then other settings must be consistent, e.g.
+    it to ``m``, then other settings must be consistent, e.g.:
 
     .. code:: ini
 
@@ -884,7 +884,7 @@ Databases
 
         default-query-string = author:"John Smith"
 
-    would do the trick. Note that each :confval:`database-backend`
+    ... would do the trick. Note that each :confval:`database-backend`
     will have a different search query, so this setting is specific to the
     default ``papis`` backend.
 
@@ -936,7 +936,7 @@ Terminal user interface (picker)
 These options are for the terminal user interface (TUI). The TUI is mainly used
 by the default Papis picker, but other small widgets also make use of some elements.
 The TUI can be heavily customized as well in the separate ``tui`` section. For
-example,
+example:
 
 .. code:: ini
 
@@ -1090,7 +1090,7 @@ limitation of fzf.
     contains the package ``colorama`` in it. Refer to the ``colorama``
     `documentation <https://github.com/tartley/colorama/blob/master/colorama/ansi.py#L49>`__.
     to see which colors are available. For instance, if you want the title in
-    red, you would put in your ``fzf-header-format``
+    red, you would put in your ``fzf-header-format``:
 
     .. code:: python
 
@@ -1102,7 +1102,7 @@ Preview window
 ``fzf`` has the disadvantage that it does not support multiline output and
 it matches only against what it shows on the screen. To get around this issue,
 we can try composing a ``fzf`` customization. The following will add a preview
-window to the picker
+window to the picker:
 
 .. code:: ini
 

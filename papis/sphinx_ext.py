@@ -1,6 +1,6 @@
 """A collection of Papis-specific Sphinx extensions.
 
-This can be included directly into the ``conf.py`` file as a normal extension, i.e.
+This can be included directly into the ``conf.py`` file as a normal extension, i.e.:
 
 .. code:: python
 
@@ -51,7 +51,7 @@ class PapisConfig(Directive):
 
         .. papis-config:: config-value-name
 
-    and has the following optional arguments.
+    ... and has the following optional arguments:
 
     * ``:section:``: The section in which the configuration value is given. The
       section defaults to :func:`~papis.config.get_general_settings_name`.
@@ -73,7 +73,7 @@ class PapisConfig(Directive):
             stored. It is a relative path in the document's main folder.
 
     In text, these configuration values can be referenced using standard role
-    references, e.g.
+    references, e.g.:
 
     .. code-block:: rst
 
@@ -148,7 +148,7 @@ def make_link_resolve(
         revision: str) -> Callable[[str, Dict[str, Any]], Optional[str]]:
     """Create a function that can be used with ``sphinx.ext.linkcode``.
 
-    This can be used in the ``conf.py`` file as
+    This can be used in the ``conf.py`` file as:
 
     .. code:: python
 

@@ -5,34 +5,34 @@ The ``citations`` command updates and creates the ``citations.yaml`` and
 Examples
 ^^^^^^^^
 
-- Create the ``citations.yaml`` file for a document that you pick
+- Create the ``citations.yaml`` file for a document that you pick:
 
     .. code:: sh
 
         papis citations --fetch-citations
 
-- Create the ``citations.yaml`` file for all documents matching an author
+- Create the ``citations.yaml`` file for all documents matching an author:
 
     .. code:: sh
 
         papis citations --all --fetch-citations 'author:einstein'
 
 - Overwrite the ``citations.yaml`` file with the ``--force`` flag for all
-  papers matching a query
+  papers matching a query:
 
     .. code:: sh
 
         papis citations --force --fetch-citations 'author:einstein'
 
 - Update the ``citations.yaml`` file with citations of documents existing in
-  your library
+  your library:
 
     .. code:: sh
 
         papis citations --all --update-from-database 'author:einstein'
 
 - Create the ``cited-by.yaml`` for all documents in your library (this might
-  take a while)
+  take a while):
 
     .. code:: sh
 

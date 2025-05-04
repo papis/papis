@@ -192,13 +192,13 @@ def bypass(
         command_name: str) -> Callable[..., Any]:
     """Overwrite existing ``papis`` commands.
 
-    This function is specially important for developing scripts in ``papis``.
+    This function is especially important for developing scripts in ``papis``.
 
     For example, consider augmenting the ``add`` command, as seen
     when using ``papis add``. In this case, we may want to add some additional
     options or behavior before calling ``papis.commands.add``, but would like
     to avoid writing it from scratch. This function can then be used as follows
-    to allow this
+    to allow this:
 
     .. code:: python
 

@@ -16,42 +16,42 @@ Examples
 
 By default, it will use the configuration option :confval:`browse-key`
 to try and form a URL to browse. You can bypass this option using the ``-k``
-flag issuing the command
+flag issuing the command:
 
 .. code:: sh
 
     papis browse -k doi einstein
 
-This will form a URL through the DOI of the document. Similarly,
+This will form a URL through the DOI of the document. Similarly:
 
 .. code:: sh
 
     papis browse -k isbn
 
-will form a URL through the ISBN of the document using
-`isbnsearch.org <https://isbnsearch.org/>`__. It can also use
+... will form a URL through the ISBN of the document using
+`isbnsearch.org <https://isbnsearch.org/>`__. It can also use:
 
 .. code:: sh
 
     papis browse -k ads
 
-to form a URL using the great `ADS service <https://ui.adsabs.harvard.edu/>`__
+... to form a URL using the great `ADS service <https://ui.adsabs.harvard.edu/>`__
 and there you can check for similar papers, citations, references and much more.
 Please note that for this to work the document should have a DOI attached to it.
-Using
+Using:
 
 .. code:: sh
 
     papis browse -k whatever
 
-will consider the key ``whatever`` from the document to be a valid URL,
-assuming at this point that you'll know what you're doing. Finally, the default
+... will consider the key ``whatever`` from the document to be a valid URL,
+assuming at this point that you'll know what you're doing. Finally, the default:
 
 .. code:: sh
 
     papis browse -k search-engine
 
-will do a ``search-engine`` search with the data of your paper and hopefully
+... will do a ``search-engine`` search with the data of your paper and hopefully
 you'll find it there.
 
 Command-line interface

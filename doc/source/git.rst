@@ -12,14 +12,14 @@ obvious one.
 
 Let's say you have a library named ``books`` in the directory
 ``~/Documents/MyNiceBooks``. You could turn the ``books`` library into
-a Git repository by running
+a Git repository by running:
 
 .. code:: sh
 
     papis -l books git init
 
-which is completely equivalent to going into the library directory and running
-the commands there
+... which is completely equivalent to going into the library directory and running
+the commands there:
 
 .. code:: sh
 
@@ -27,7 +27,7 @@ the commands there
     git init
 
 As this is the first run, we can just add all the documents to the repository
-(equivalent to a ``git add .`` and a ``git commit -m '...'``)
+(equivalent to a ``git add .`` and a ``git commit -m '...'``):
 
 .. code:: sh
 
@@ -49,14 +49,14 @@ Interplay with other commands
 
 Some ``papis`` commands give you the opportunity of using Git to manage
 changes. For instance, if you are adding a new document, you could use
-the ``--git`` flag to also commit the document into Git like this
+the ``--git`` flag to also commit the document into Git like this:
 
 .. code:: sh
 
     papis add --git --set author 'Pedrito' --set title 'Super book' book.pdf
 
 In this case, Papis will do an automatic add + commit for the document. After
-that, you can push your library to a remote repository by running
+that, you can push your library to a remote repository by running:
 
 .. code:: sh
 
@@ -68,7 +68,7 @@ etc. also offer such functionality, and they all go through the ``--git`` flag.
 Updating the library
 --------------------
 
-To update the library from a remote repository, you can simply run
+To update the library from a remote repository, you can simply run:
 
 .. code:: sh
 
@@ -87,19 +87,19 @@ When adding a document that you know for sure you want in your library:
 
 2. Pull changes from the remote repository, maybe you pushed something
    on another machine (reference changes, etc.) and you do not have it on
-   your current machine. You would do something like
+   your current machine. You would do something like:
 
     .. code:: sh
 
         papis git pull
 
-3. Push what you just added
+3. Push what you just added:
 
     .. code:: sh
 
         papis git push
 
-4. Review the status of the library
+4. Review the status of the library:
 
     .. code:: sh
 
@@ -108,19 +108,19 @@ When adding a document that you know for sure you want in your library:
 
 When editing a document's info file:
 
-1. Edit the file and then take a look at the ``diff``
+1. Edit the file and then take a look at the ``diff``:
 
     .. code:: sh
 
         papis git diff
 
-2. Add the changes to the staging area
+2. Add the changes to the staging area:
 
     .. code:: sh
 
         papis git add --all
 
-3. Commit the changes
+3. Commit the changes:
 
     .. code:: sh
 

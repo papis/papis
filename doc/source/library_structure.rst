@@ -10,7 +10,7 @@ and look for all subfolders that contain an information file, which by default
 is the ``info.yaml`` file.
 
 Every subfolder that has an ``info.yaml`` file in it is a valid Papis document.
-As an example let us consider the following library
+As an example let us consider the following library:
 
 ::
 
@@ -49,7 +49,7 @@ the folder structure is in your library: you can have a ``physics`` folder in
 which you have a ``newton`` folder in which you have a folder containing the
 actual book ``document.pdf`` plus some supplementary information
 ``supplements.pdf``.  In this case, inside the ``info.yaml`` you would have the
-following ``file`` section
+following ``file`` section:
 
 .. code:: yaml
 
@@ -57,4 +57,4 @@ following ``file`` section
   - document.pdf
   - supplements.pdf
 
-which tells Papis that this folder contains two relevant files.
+... which tells Papis that this folder contains two relevant files.

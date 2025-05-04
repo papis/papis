@@ -10,15 +10,15 @@ This command initializes a Papis library interactively.
 Examples
 ^^^^^^^^
 
-- To create a new library at a given directory, just run
+- To create a new library at a given directory, run:
 
     .. code:: sh
 
         papis init /path/to/my/library
 
-  and answer the questions interactively.
+  ... and answer the questions interactively.
 
-- To create a library in the current directory, just run
+- To create a library in the current directory, run:
 
     .. code:: sh
 

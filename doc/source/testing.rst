@@ -183,7 +183,7 @@ argument to :meth:`~papis.testing.ResourceCache.get_remote_resource` or
 :meth:`~papis.testing.ResourceCache.get_local_resource`. The resource cache can
 also be accessed through a fixture called :func:`~papis.testing.resource_cache`
 that can be configured through the ``resource_setup`` marker. For example, we
-can write something like
+can write something like:
 
 .. code:: python
 
