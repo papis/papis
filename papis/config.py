@@ -181,7 +181,7 @@ def register_default_settings(settings_dictionary: PapisConfigType) -> None:
         options = {"foobar": { "command": "open"}}
         papis.config.register_default_settings(options)
 
-    ... which can then be accessed globally through:
+    which can then be accessed globally through:
 
     .. code:: python
 
@@ -496,7 +496,7 @@ def getformattedstring(key: str, section: Optional[str] = None) -> FormattedStri
         multiple-authors-format.python = {au[family]}, {au[given]}
         multiple-authors-format.jinja2 = {{ au[family] }}, {{ au[given] }}
 
-    ... i.e. like ``key[.formatter]``. If no formatter is provided in the key name,
+    i.e. like ``key[.formatter]``. If no formatter is provided in the key name,
     the default formatter is used, as defined by :confval:`formatter`.
     Formatters are checked in alphabetical order and the last one is returned.
 

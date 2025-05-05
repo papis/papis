@@ -53,7 +53,7 @@ Examples
         papis add --link ~/Documents/interesting.pdf \\
             --from doi 10.10763/1.3237134
 
-  ... will add an entry into the Papis library, but the PDF document will remain at
+  will add an entry into the Papis library, but the PDF document will remain at
   ``~/Documents/interesting.pdf``. In the document's folder there will be a link
   to ``~/Documents/interesting.pdf`` instead of the file itself. Of course you
   always have to be sure that the document at ``~/Documents/interesting.pdf``

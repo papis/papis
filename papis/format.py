@@ -128,7 +128,7 @@ class PythonFormatter(Formatter):
 
         "{doc[title].lower()}"
 
-    ... and should be replaced with:
+    and should be replaced with:
 
     .. code:: python
 
@@ -144,7 +144,7 @@ class PythonFormatter(Formatter):
 
         "{doc[title]:1.3S}"
 
-    ... which will select the ``words[1:3]`` from the title (words are split by
+    which will select the ``words[1:3]`` from the title (words are split by
     single spaces).
     """
 
@@ -200,7 +200,7 @@ class Jinja2Formatter(Formatter):
 
         "{{ doc.title | title }}"
 
-    ... or give a default value if a key is missing in the document using:
+    or give a default value if a key is missing in the document using:
 
     .. code:: python
 

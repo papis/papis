@@ -57,4 +57,4 @@ following ``file`` section:
   - document.pdf
   - supplements.pdf
 
-... which tells Papis that this folder contains two relevant files.
+which tells Papis that this folder contains two relevant files.

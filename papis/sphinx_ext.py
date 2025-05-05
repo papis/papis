@@ -51,7 +51,7 @@ class PapisConfig(Directive):
 
         .. papis-config:: config-value-name
 
-    ... and has the following optional arguments:
+    and has the following optional arguments:
 
     * ``:section:``: The section in which the configuration value is given. The
       section defaults to :func:`~papis.config.get_general_settings_name`.

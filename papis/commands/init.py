@@ -16,7 +16,7 @@ Examples
 
         papis init /path/to/my/library
 
-  ... and answer the questions interactively.
+  and answer the questions interactively.
 
 - To create a library in the current directory, run:
 

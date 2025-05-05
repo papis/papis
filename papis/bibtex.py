@@ -420,7 +420,7 @@ def bibtex_to_dict(bibtex: str) -> List[papis.document.DocumentLike]:
             ...,
         }
 
-    ... to a dictionary such as:
+    to a dictionary such as:
 
     .. code:: python
 

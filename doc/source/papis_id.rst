@@ -39,7 +39,7 @@ For instance you can get the ``papis_id`` of a document using:
 
     id=$(papis list --id query)
 
-... and subsequently use the ``id`` variable to trigger other commands. For example,
+and subsequently use the ``id`` variable to trigger other commands. For example,
 you can open the files attached to the document using:
 
 .. code:: sh

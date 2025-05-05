@@ -34,7 +34,7 @@ inside the ``~/.papis/scripts`` folder. In the latter case when you run:
 
     papis -h
 
-... you will see that there is another command besides the default commands called
+you will see that there is another command besides the default commands called
 ``mail``:
 
 ::
@@ -45,7 +45,7 @@ inside the ``~/.papis/scripts`` folder. In the latter case when you run:
       mail       Email a paper to my friend.
       ...        ...
 
-... where the description ``Email a paper to my friend.`` is there because
+where the description ``Email a paper to my friend.`` is there because
 we have defined the comment ``# papis-short-help: Email a paper to my friend.``
 in the header of the script.
 
@@ -55,7 +55,7 @@ Then, if you type:
 
     papis -l mylib mail this_paper
 
-... this will create a folder called ``this_paper`` with a selection of a
+this will create a folder called ``this_paper`` with a selection of a
 document, zip it and send it to whoever you choose to.
 
 Example: Accessing Papis from within mutt

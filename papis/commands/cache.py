@@ -19,7 +19,7 @@ subcommand. You might do:
 
     papis cache update --doc-folder /path/to
 
-... or maybe by query:
+or maybe by query:
 
 ::
 

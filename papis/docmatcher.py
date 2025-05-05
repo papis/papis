@@ -203,7 +203,7 @@ def parse_query(query_string: str) -> List[ParseResult]:
 
         'hello author : Einstein    title: "Fancy Title: Part 1" tags'
 
-    ... which will result in:
+    which will result in:
 
     .. code:: python
 

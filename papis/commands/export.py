@@ -13,7 +13,7 @@ Some examples of its usage are:
 
     papis export --format bibtex 'author : einstein'
 
-... or export all of them:
+or export all of them:
 
 .. code:: sh
 

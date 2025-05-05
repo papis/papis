@@ -73,7 +73,7 @@ For the development version, just clone the repository:
     git clone git@github.com:papis/papis.git
     cd papis
 
-... and start hacking it with:
+and start hacking it with:
 
 .. code:: sh
 
@@ -107,7 +107,7 @@ This Guix recipe was made by running the following command:
 
   guix import pypi papis@0.13 --recursive
 
-... manually fixing some dependencies and switching off some failing tests so
+manually fixing some dependencies and switching off some failing tests so
 that the package could be build with Guix. This can be used for newer versions
 until an official recipe in the main Guix repositories is published.
 
@@ -120,7 +120,7 @@ To install Papis from source, you can clone the repository using:
 
     git clone https://github.com/papis/papis.git
 
-... or download the
+or download the
 `zip file <https://github.com/papis/papis/archive/refs/heads/main.zip>`__.
 
 Go inside of the ``papis`` source folder and you can install it in a standard

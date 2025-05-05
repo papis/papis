@@ -24,7 +24,7 @@ Doing a simple:
 
     papis explore crossref -h
 
-... will tell you which commands are available. Let us suppose that you want to
+will tell you which commands are available. Let us suppose that you want to
 look for some documents on Crossref, say some papers of Schrodinger's, and
 you want to store them into a BibTeX file called ``lib.bib``. Then you could
 concatenate the commands ``crossref`` and ``export --format bibtex`` as such:

@@ -21,7 +21,7 @@ Now you can type:
 
   papis scihub -h
 
-... and see the help message of the script.
+and see the help message of the script.
 
 Some usage examples are:
 

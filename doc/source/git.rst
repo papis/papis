@@ -18,7 +18,7 @@ a Git repository by running:
 
     papis -l books git init
 
-... which is completely equivalent to going into the library directory and running
+which is completely equivalent to going into the library directory and running
 the commands there:
 
 .. code:: sh

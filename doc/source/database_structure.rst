@@ -149,14 +149,14 @@ the publisher to the fields that you can search in, then you can put:
 
   whoosh-schema-fields = ['publisher']
 
-... and you will be able to find documents by their publisher.
+and you will be able to find documents by their publisher.
 For example, without this line set for publisher, the query:
 
 ::
 
   papis open publisher:*
 
-... will not return anything, since the publisher field is not being stored.
+will not return anything, since the publisher field is not being stored.
 
 
 Query language
@@ -171,7 +171,7 @@ The Whoosh query language supports both ``AND`` and ``OR``, for instance:
 
   papis open '(author:einstein AND year:1905) OR title:einstein'
 
-... will give papers of einstein in the year 1905 together with all papers
+will give papers of einstein in the year 1905 together with all papers
 where einstein appears in the title.
 
 You can read more about the Whoosh query language

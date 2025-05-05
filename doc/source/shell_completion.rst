@@ -10,7 +10,7 @@ in which the completions get installed, use the environment variables:
 
     PAPIS_<SHELL>_COMPLETION_DIR=my/custom/directory
 
-... where ``<SHELL>`` is the uppercase name of the shell (e.g. ``BASH``) and the
+where ``<SHELL>`` is the uppercase name of the shell (e.g. ``BASH``) and the
 paths are considered subdirectories of the chosen prefix. The default paths for
 each shell are given below.
 
@@ -51,6 +51,6 @@ Alternatively, the completion can be generated on-the-fly by running (see more i
 
    eval "$(_PAPIS_COMPLETE=<shell>_source papis)"
 
-... where ``<shell>`` is one of the shells supported by ``click``. Note that older
+where ``<shell>`` is one of the shells supported by ``click``. Note that older
 versions of ``click`` used ``source_<shell>`` instead for the values of
 ``_PAPIS_COMPLETE``.

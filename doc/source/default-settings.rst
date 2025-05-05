@@ -17,7 +17,7 @@ General settings
 
         ~/Documents/lib-with-fulano
 
-    ... and you've created a local configuration file at::
+    and you've created a local configuration file at::
 
         ~/Documents/lib-with-fulano/.papis.config
 
@@ -348,7 +348,7 @@ BibTeX options
 
         multiple-authors-format = {au[family]} -- {au[given]}
 
-    ... which for the author ``{"family": "Einstein", "given": "Albert"}`` would
+    which for the author ``{"family": "Einstein", "given": "Albert"}`` would
     construct the string ``Einstein -- Albert``. In most circumstances, multiple
     authors are then concatenated together using
     :confval:`multiple-authors-separator`.
@@ -884,7 +884,7 @@ Databases
 
         default-query-string = author:"John Smith"
 
-    ... would do the trick. Note that each :confval:`database-backend`
+    would do the trick. Note that each :confval:`database-backend`
     will have a different search query, so this setting is specific to the
     default ``papis`` backend.
 

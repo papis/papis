@@ -12,14 +12,14 @@ that you want to add to a document that matches with the query string
 
     papis addto 'einstein photon definition' -f a.pdf -f b.pdf
 
-... where the ``-f`` flag needs to be repeated for every file that is added. Remote
+where the ``-f`` flag needs to be repeated for every file that is added. Remote
 files can be similarly added using:
 
 .. code:: sh
 
     papis addto 'einstein photon definition' -u 'https://arxiv.org/pdf/2306.13122.pdf'
 
-... where the link needs to be to the actual remote PDF file.
+where the link needs to be to the actual remote PDF file.
 
 Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^

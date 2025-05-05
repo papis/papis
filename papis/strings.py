@@ -11,7 +11,7 @@ class FormattedString(NamedTuple):
         key = formatted_value
         other_key.formatter = other_formatted_value
 
-    ... where the first key will use the default :confval:`formatter` and the second
+    where the first key will use the default :confval:`formatter` and the second
     key will use the specified formatter. These keys can be read using
     :func:`papis.config.getformattedstring`.
 
