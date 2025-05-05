@@ -13,11 +13,15 @@ General settings
     do not clutter your global configuration file. This is particularly useful
     if the library is shared with someone else (or just on a different machine)
     and you want them to have the same settings. For example, say you're sharing
-    a library with your friend Fulano. You have your library at::
+    a library with your friend Fulano. You have your library at:
+
+    .. code-block:: text
 
         ~/Documents/lib-with-fulano
 
-    and you've created a local configuration file at::
+    and you've created a local configuration file at:
+
+    .. code-block:: text
 
         ~/Documents/lib-with-fulano/.papis.config
 

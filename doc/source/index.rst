@@ -16,7 +16,7 @@ Papis: Command-line Bibliography Manager
       :link-type: ref
       :class-card: getting-started
 
-    .. grid-item-card:: :material-regular:`rocket_launch;2em` Quick Guide
+    .. grid-item-card:: :material-regular:`rocket_launch;2em` Quick guide
       :columns: 12 6 6 4
       :link: quick-guide
       :link-type: ref
@@ -42,7 +42,7 @@ Papis: Command-line Bibliography Manager
       :link-type: ref
       :class-card: getting-started
 
-    .. grid-item-card:: :material-regular:`laptop_chromebook;2em` Developer Docs
+    .. grid-item-card:: :material-regular:`laptop_chromebook;2em` Developer docs
       :columns: 12 6 6 4
       :link: developer-api-reference
       :link-type: ref
