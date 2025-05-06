@@ -57,7 +57,7 @@ General settings
     .. code:: python
 
         #!/usr/bin/env python3
-        # papis-short-help: My awesome script fixes everything
+        # papis-short-help: My awesome script fixes everything.
 
 .. papis-config:: info-name
 
