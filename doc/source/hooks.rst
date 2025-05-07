@@ -15,7 +15,7 @@ Writing hooks as a user
 Right now the only way to add a hook as a user is using your ``config.py``
 configuration file, which loads along with your Papis configuration.
 
-As an example you can add a function to the ``on_edit_done`` hook like:
+For example you can add a function to the ``on_edit_done`` hook like:
 
 .. code:: python
 

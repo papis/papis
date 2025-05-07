@@ -116,7 +116,7 @@ metadata (title, authors, etc.) through standard elements such as the
 `Dublin Core Metadata <https://www.dublincore.org/specifications/dublin-core/dces/>`__.
 We can however extend it for any specific downloader. For instance, some
 documents in the ACL Anthology provide a "code" field, with a link to e.g. a
-GitHub repository. We will try to extract code repository URL using
+GitHub repository. We will try to extract a code repository URL using
 :mod:`bs4`. An instance of :mod:`bs4` with the parsed HTML can be obtained and
 manipulated as follows:
 

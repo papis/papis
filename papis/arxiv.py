@@ -231,7 +231,7 @@ def explorer(
 
 
     For example, to search for documents with the authors "Hummel" and
-    "Garnet Chan" (a maximum of 100 articles), use:
+    "Garnet Chan" (limited to a maximum of 100 articles), use:
 
     .. code:: sh
 

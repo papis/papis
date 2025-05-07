@@ -5,7 +5,7 @@ Sci-Hub support
     :target: https://badge.fury.io/py/papis-scihub
 
 Papis has a script that uses the Sci-Hub platform to download scientific papers.
-Due to legal caution the script is not included directly as a ``papis`` command,
+Due to legal caution, the script is not included directly as a ``papis`` command,
 and it has its own PyPI repository.
 
 To install it, just type:

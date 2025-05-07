@@ -77,15 +77,15 @@ To update the library from a remote repository, you can simply run:
 Usual workflow
 --------------
 
-With all this in mind, assuming you have a ``git`` repository set up in
-the library folder, a ``papis git`` workflow could be based on the following.
+Assuming you have a ``git`` repository set up in the library folder, a ``papis
+git`` workflow could be based on the following.
 
 When adding a document that you know for sure you want in your library:
 
 1. Add the document and commit it, either by ``papis add --git``
    or by using ``papis git add`` after adding it to the library.
 
-2. Pull changes from the remote repository, maybe you pushed something
+2. Pull changes from the remote repository. Maybe you pushed something
    on another machine (reference changes, etc.) and you do not have it on
    your current machine. You would do something like:
 

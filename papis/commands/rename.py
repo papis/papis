@@ -14,7 +14,7 @@ Examples
 - Rename folders for documents whose author is "Rick Astley". You can then either
   enter a new folder name or accept Papis' suggestion. The suggested folder name
   will be generated according to :confval:`add-folder-name` or, if this option
-  isn't set, the current folder name. For example:
+  isn't set, the current folder name.
 
    .. code:: sh
 
@@ -22,7 +22,7 @@ Examples
 
 - You can use ``--folder-name`` to pass in your desired name. This option
   supports Papis formatting patterns. You will be asked for confirmation
-  before the folder is renamed. For example:
+  before the folder is renamed.
 
    .. code:: sh
 

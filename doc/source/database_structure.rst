@@ -32,9 +32,9 @@ You can select a database by using the flag :confval:`database-backend`.
 Papis database
 --------------
 
-The fact that there is no database means that Papis should crawl through
-the library folder and see which folders have an ``info.yaml`` file, which
-is quite bad for slow computers (and hard drives).
+Without a database, Papis would need to crawl through the library folder and see
+which folders have an ``info.yaml`` file, which is slow on older computers (and
+hard drives).
 
 Papis implements a very rudimentary caching system. A cache is created for
 every library. Inside the cache the whole information already converted
@@ -73,13 +73,12 @@ In order to clear and rebuild the cache (i.e., reset it), you can simply run:
 Query language
 ^^^^^^^^^^^^^^
 
-Since version ``v0.3`` there is a query language in place for the searching of
-documents. The queries can contain any field of the info file, e.g.,
-``author:einstein publisher : review`` will match documents that have ``author``
-match with ``einstein`` AND ``publisher`` match with ``review``. The AND part
-here is important, since only the ``AND`` filter is implemented in this simple
-query language. At the moment it is not possible to do an ``OR``. If you need
-this, you should consider using the `Whoosh database`_.
+Since version ``v0.3``, Papis implements a query language to search documents.
+Queries can contain any field of the info file, so that ``author:einstein
+publisher:review`` will match documents that have ``author`` match with
+``einstein`` AND ``publisher`` match with ``review``. Note that only the ``AND``
+filter is implemented in this simple query language and that ``OR`` is not
+supported. If you need this, consider using the `Whoosh database`_.
 
 For illustration, here are some examples:
 

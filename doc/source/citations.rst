@@ -1,9 +1,9 @@
 Citations of documents: ``citations.yaml`` and ``cited-by.yaml`` files
 ----------------------------------------------------------------------
 
-Papis has support for downloading and exploring citations that are referenced by
-a document (citing references) and also that reference the document (cited-by
-references).
+Papis supports downloading and exploring citations. You can explore the
+citations referenced by a document (citing references) and those that reference
+the document (cited-by references).
 
 If your document has a ``doi`` associated and you use the updater from
 this ``doi``, or you added information from the ``doi`` when you added the

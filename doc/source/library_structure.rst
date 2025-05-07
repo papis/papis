@@ -40,16 +40,14 @@ As an example let us consider the following library:
           ├── notes.tex
           └── output.pdf
 
-The first thing that you might notice is that there are many folders. Just to
-check that you understand exactly what is a document, please think about which
-of these PDFs is not a valid Papis document... That's right!
-``folder1/paper.pdf`` is not a valid document since the ``folder1`` does not
-contain the ``info.yaml`` file. You see also that it does not matter how deep
-the folder structure is in your library: you can have a ``physics`` folder in
-which you have a ``newton`` folder in which you have a folder containing the
-actual book ``document.pdf`` plus some supplementary information
-``supplements.pdf``.  In this case, inside the ``info.yaml`` you would have the
-following ``file`` section:
+First, you can see there are a lot of folders. Note that not all of them contain
+valid documents. The PDF in ``folder1/paper.pdf`` is not valid since the
+``folder1`` does not contain a ``info.yaml`` file. It does not matter how deep
+your library's folder structure is: you can have a ``physics`` folder in which
+you have a ``newton`` folder in which you have a folder containing the actual
+book ``document.pdf`` plus some supplementary information ``supplements.pdf``.
+In this case, inside the ``info.yaml`` you would have the following ``file``
+section:
 
 .. code:: yaml
 

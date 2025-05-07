@@ -79,7 +79,7 @@ General settings
     This setting controls the name of the document in the Papis format strings
     such as :confval:`match-format` or :confval:`header-format`. For instance,
     if you are managing videos, you might want to set this option to ``vid`` in
-    order to set  the :confval:`header-format` to:
+    order to set the :confval:`header-format` to:
 
     .. code:: ini
 
@@ -493,11 +493,11 @@ Add options
 
 .. papis-config:: add-fetch-citations
 
-    A setting that controls the default for the ``--fetch-citations`` flag of
-    ``papis add``. If set to *True*, then the flag will be added by default
-    and Papis will attempt to retrieve citations for the newly added document.
-    In this case, the fetching can be disabled by using ``--no-fetch-citations``
-    on an individual basis.
+    Controls the default for the ``--fetch-citations`` flag of ``papis add``. If
+    set to *True*, then the flag will be added by default and Papis will attempt
+    to retrieve citations for the newly added document. In this case, the
+    fetching can be disabled by using ``--no-fetch-citations`` on an individual
+    basis.
 
 .. papis-config:: auto-doctor
 
@@ -864,8 +864,8 @@ Downloaders
     It's possible to download papers using a proxy. We use :mod:`requests` to
     handle web queries, which has extensive documentation on how to use proxies
     `here
-    <https://docs.python-requests.org/en/latest/user/advanced/#proxies>`__. This
-    value should give a URL that can be used as a proxy for both HTTP and HTTPS.
+    <https://docs.python-requests.org/en/latest/user/advanced/#proxies>`__. The
+    present setting sets the URL used as a proxy for HTTP and HTTPS.
 
 .. papis-config:: isbn-service
 

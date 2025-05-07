@@ -5,9 +5,8 @@ With it you can open documents, folders or marks.
 Marks
 ^^^^^
 
-One special feature about this command is the ability to use marks for
-documents. As you would imagine, it is in general difficult to create marks for
-any kind of data. For instance, if our library consists of PDF files and EPUB
+One of this command's special features is the ability to use marks for
+documents. For instance, if our library consists of PDF files and EPUB
 files, we would like to define bookmarks in order to go back to them at some
 later point.
 
@@ -33,7 +32,7 @@ defining a ``marks`` list in a document. Let us look at a concrete example:
     type: book
     year: '2009'
 
-This book has defined two marks. Each mark has a name and a value. If you tell
+This book has two defined marks. Each mark has a name and a value. If you tell
 the ``open`` command to open marks, it will look for the marks and open the
 value (page number). This is the default behavior. However, if you go to the
 :ref:`configuration <marks-options>`, you'll see that you can change the

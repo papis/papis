@@ -117,7 +117,7 @@ def run(keep: papis.document.Document,
          " at once, call the picker twice to get two documents.")
 @papis.cli.bool_flag(
     "-k", "--keep", "keep_both",
-    help="Do not erase any document.")
+    help="Keep both documents.")
 @click.option("-o",
               "--out",
               help="Create the resulting document in this path.",

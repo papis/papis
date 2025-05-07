@@ -53,15 +53,15 @@ Examples
         papis add --link ~/Documents/interesting.pdf \\
             --from doi 10.10763/1.3237134
 
-  will add an entry into the Papis library, but the PDF document will remain at
-  ``~/Documents/interesting.pdf``. In the document's folder there will be a link
-  to ``~/Documents/interesting.pdf`` instead of the file itself. Of course you
-  always have to be sure that the document at ``~/Documents/interesting.pdf``
-  does not disappear, otherwise you will end up without a document file.
+  adds an entry to the Papis library, but the PDF document remains at
+  ``~/Documents/interesting.pdf``. The document's folder will contain a link
+  to ``~/Documents/interesting.pdf`` instead of the file itself. Make sure that
+  the document at ``~/Documents/interesting.pdf`` does not disappear, or
+  you will end up without a document file.
 
-- Papis also tries to make sense of the inputs that you have passed on the
-  command-line. For instance you could provide only a DOI and Papis will figure
-  out if this is indeed a DOI and download available metadata using Crossref.
+- Papis tries to make sense of the arguments with which it is provided.
+  For instance, you could only provide a DOI, and Papis will verify that
+  this is a valid DOI and download available metadata using Crossref.
   For example, you can try:
 
     .. code:: sh

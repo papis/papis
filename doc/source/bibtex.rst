@@ -22,10 +22,10 @@ Override keys
 
 There might be some issues with the above approach though. If you are exporting
 the information from your ``info.yaml`` to a BibTeX file, characters like ``&``
-or ``$`` have a special meaning in TeX and would need to be escaped. With the
-default ``bibtex-unicode = False``, these characters would be exported as ``\&``
-and ``\$``, respectively. If it is just a couple of documents that are causing
-this problem, you can just override the problematic field like so:
+or ``$`` have a special meaning in TeX and need to be escaped. With the default
+``bibtex-unicode = False``, these characters are exported as ``\&`` and ``\$``,
+respectively. If it is just a couple of documents that are causing this problem,
+you can instead override the problematic field like so:
 
 .. code:: yaml
 

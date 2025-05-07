@@ -8,8 +8,7 @@ Example: Mail script
 --------------------
 
 Imagine you want to write a script to send papers to someone via the email
-client ``mutt`` (you can try to do it with another mail client). You could
-write the following script called ``papis-mail``:
+client ``mutt``. You could write the following script called ``papis-mail``:
 
 .. code:: sh
 
@@ -28,7 +27,7 @@ Papis defines environment variables such as ``PAPIS_LIB`` so that external
 scripts can make use of the user input.
 
 To use the script you can put it somewhere in your ``PATH`` or alternatively
-inside the ``~/.papis/scripts`` folder. In the latter case when you run:
+inside the ``~/.papis/scripts`` folder. In the latter case, when you run:
 
 ::
 
@@ -45,8 +44,8 @@ you will see that there is another command besides the default commands called
       mail       Email a paper to my friend.
       ...        ...
 
-where the description ``Email a paper to my friend.`` is there because
-we have defined the comment ``# papis-short-help: Email a paper to my friend.``
+Note the presence of the help text ``Email a paper to my friend.``, which
+we've defined in the comment ``# papis-short-help: Email a paper to my friend.``
 in the header of the script.
 
 Then, if you type:

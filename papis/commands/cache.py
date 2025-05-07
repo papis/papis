@@ -12,7 +12,7 @@ This command is also useful for plugin developers.
 Let us suppose that you are editing the YAML file of a document at path
 ``/path/to/info.yaml``.
 If you are editing this file without the machinery of Papis
-you might want to make Papis be aware of this change by using the ``update``
+you might want to make Papis aware of this change by using the ``update``
 subcommand. You might do:
 
 ::

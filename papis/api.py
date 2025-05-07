@@ -68,7 +68,7 @@ def pick_doc(
     Pick a subset of documents from the given *documents*.
 
     :param documents: a sequence of documents.
-    :returns: a subset of *documents* corresponding to the user selected ones.
+    :returns: the subset of *documents* selected by the user.
     """
     import papis.pick
 
@@ -86,7 +86,7 @@ def pick(items: Sequence[T],
     :param default_index: index used when no explicit item is picked.
     :param header_filter: a callable to stringify the given item for display.
     :param match_filter: a callable to stringify the given item for display.
-    :returns: a subset of *items* corresponding to the user selected ones.
+    :returns: the subset of *items* selected by the user.
     """
     import papis.pick
 

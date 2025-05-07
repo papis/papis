@@ -3,7 +3,7 @@ This command will try its best to find a source in the internet for the
 document at hand.
 
 If the document has a URL key in its ``info.yaml`` file, it will use this URL
-to open it in a browser.  Also if it has a ``doc_url`` key, or a DOI, it will try
+to open it in a browser. If it has a ``doc_url`` key, or a DOI, it will try
 to compose URLs out of these to open it.
 
 If none of the above work, then it will try to use a search engine with the

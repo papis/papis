@@ -73,16 +73,16 @@ Examples
         papis doctor --explain --checks html-tags einstein
 
   The ``--explain`` flag can be used to give additional details of checks that
-  failed. Some checks such as this also have automatic fixers. Here, we can just
-  remove all the HTML tags by writing:
+  failed. This check, and some others, also have automatic fixers. Here, we can
+  just remove all the HTML tags by writing:
 
     .. code:: sh
 
         papis doctor --fix --checks html-tags einstein
 
 - If an automatic fix is not possible, some checks also have suggested
-  commands or tips to fix the issue that was found. For example, if a key
-  does not exist in the document, it can suggest editing the file to add it:
+  commands or tips to fix issues. For example, if a key does not exist
+  in the document, it can suggest editing the file to add it:
 
     .. code:: sh
 

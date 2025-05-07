@@ -5,9 +5,9 @@ for a project before adding it to the Papis libraries.
 Examples
 ^^^^^^^^
 
-Imagine you want to search for some papers online, but you don't want to
-go into a browser and look for it. The ``explore`` command gives you a way to do
-this using several services available online. More should be coming on the way!
+Imagine you want to search for some papers online but don't want to open the
+browser to look for them. The ``explore`` command gives you a way to do this
+using several online services.
 
 An excellent resource for this is `Crossref <https://www.crossref.org/>`__.
 You can use it by using the ``crossref`` subcommand:
@@ -27,7 +27,7 @@ Doing a simple:
 will tell you which commands are available. Let us suppose that you want to
 look for some documents on Crossref, say some papers of Schrodinger's, and
 you want to store them into a BibTeX file called ``lib.bib``. Then you could
-concatenate the commands ``crossref`` and ``export --format bibtex`` as such:
+concatenate the commands ``crossref`` and ``export --format bibtex``:
 
 .. code:: sh
 
@@ -64,7 +64,7 @@ the file ``special-picked-documents.bib``, and we could go on and on.
 
 If you want to follow up on these documents and get them to pick one again,
 you could use the ``yaml`` command to read in document information from a YAML
-file, e.g. the previously created ``docs.yaml``, do for example:
+file, e.g. the previously created ``docs.yaml``:
 
 .. code:: sh
 
@@ -177,7 +177,7 @@ def lib(ctx: click.Context,
 @click.option("--number", "-n",
               type=int,
               default=None,
-              help="Pick automatically the n-th document.")
+              help="Automatically pick the n-th document.")
 def pick(ctx: click.Context, number: Optional[int]) -> None:
     """
     Pick a document from the retrieved documents.

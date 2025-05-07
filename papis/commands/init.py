@@ -10,7 +10,7 @@ This command initializes a Papis library interactively.
 Examples
 ^^^^^^^^
 
-- To create a new library at a given directory, run:
+- To create a new library in a given directory, run:
 
     .. code:: sh
 

@@ -31,11 +31,12 @@ system, like so:
 The ``[settings]`` section is used to set global configuration options.
 However, an important aspect of the configuration system is that you can override
 settings on a per library basis. This means that you can set options with different
-values for each of your libraries, depending on the use case you had in mind.
-For example, let's suppose you want to open your documents from ``papers``
-using the PDF reader ``okular``, however in ``books`` you want to open
-the documents in ``firefox`` (for some reason). Then, you would add the following
-lines to your configuration:
+values for each of your libraries.
+
+For example, let's suppose you want to open your documents from ``papers`` using
+the PDF reader ``okular``. In ``books``, however, you want to open the documents
+in ``firefox``. In this case, you would add the following lines to your
+configuration:
 
 .. code:: ini
 

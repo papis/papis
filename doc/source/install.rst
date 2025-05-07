@@ -13,7 +13,7 @@ Using pip
 ---------
 
 The easiest way of installing Papis is using the ``PyPI`` repositories and
-the ``pip`` package manager. Open a terminal and type in:
+the ``pip`` package manager. Open a terminal and type:
 
 .. code:: sh
 
@@ -140,8 +140,8 @@ rights on your computer you can simply type:
 .. warning::
 
     If you install the package locally, the program ``papis`` will be installed
-    by default into your ``~/.local/bin`` directory. You may have to
-    set your ``PATH`` accordingly.
+    into your ``~/.local/bin`` directory by default. You may have to set your
+    ``PATH`` accordingly.
 
     One way of doing this in Bash shells (Linux, Ubuntu on Windows or Cygwin) is
     by adding the following line to your ``~/.bashrc`` file:
