@@ -464,7 +464,11 @@ def run(
           papis.cli.FormattedStringParamType(),
           papis.cli.FormattedStringParamType()),
 )
-@papis.cli.bool_flag("-b", "--batch", help="Do not prompt, and skip documents containing errors.")
+@papis.cli.bool_flag(
+    "-b",
+    "--batch",
+    help="Do not prompt, and skip documents containing errors."
+)
 def cli(
     query: str,
     git: bool,
