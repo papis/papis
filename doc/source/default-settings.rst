@@ -1057,14 +1057,14 @@ integration for the picker.  A minimal terminal user interface is provided,
 together with options for its customization. You can set the :confval:`picktool`
 to ``fzf`` to select this picker.
 
-In comparison to the *built-in* Papis picker TUI, the advantage of the fzf
-picker is that it is much faster. However, a disadvantage is that it is
-restricted to one-line entries. It is also important to note that ``fzf`` will
-**only** match against what is shown on the terminal screen, as opposed to the
-Papis matcher, that can match against the **whole** title and **whole** author
-text, since this is controlled by the ``match-format`` setting.
-However, for the usual use cases it might not bother the user to have this
-limitation of fzf.
+In comparison to the *built-in* Papis picker TUI, the advantage of the ``fzf``
+picker is that it is much faster. However, a disadvantage is that Papis
+currently only supports one-line entries in ``fzf``. It is also important to
+note that ``fzf`` will **only** match against what is shown on the terminal
+screen, as opposed to the Papis matcher, that can match against the **whole**
+title and **whole** author text, since this is controlled by the
+``match-format`` setting. However, for the usual use cases it might not bother
+the user to have this limitation of ``fzf``.
 
 .. papis-config:: fzf-binary
 
@@ -1099,10 +1099,8 @@ limitation of fzf.
 Preview window
 ^^^^^^^^^^^^^^
 
-``fzf`` has the disadvantage that it does not support multiline output and
-it matches only against what it shows on the screen. To get around this issue,
-we can try composing a ``fzf`` customization. The following will add a preview
-window to the picker:
+``fzf`` can be configured to show additional information in a preview window. The
+following will add a preview window to the picker:
 
 .. code:: ini
 

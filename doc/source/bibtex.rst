@@ -11,11 +11,14 @@ in :ref:`bibtex-options`.
 Unicode output
 --------------
 
-Depending on the TeX engine used, you may be able to use unicode characters in
-your BibTeX files, such as with XeTeX or LuaTeX. In that case there is no need
-to write ``\`{a}`` instead of ``à`` in words such as ``apareixerà``. To control
-the output of unicode characters in Papis, use the :confval:`bibtex-unicode`
-setting.
+The setting :confval:`bibtex-unicode` can be used to allow unicode characters in
+documents.
+
+Even though this setting is set to False by default, many TeX setups support the
+use of unicode characters in BibTeX files. Enabling unicode avoids having to
+write ``\`{a}`` instead of just ``à`` to display words such as ``apareixerà``.
+If your setup supports unicode in BibTeX files, you can safely set
+:confval:`bibtex-unicode` to ``True``.
 
 Override keys
 -------------
