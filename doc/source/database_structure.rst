@@ -124,9 +124,8 @@ and set it to ``False``, e.g.:
 Whoosh database
 ---------------
 
-Papis can alternatively use the blazing fast and pure Python `Whoosh library
-<https://whoosh.readthedocs.io/en/latest>`__. Its performance is orders of
-magnitude better than the crude cache based database.
+Papis can alternatively use the performant `Whoosh library
+<https://whoosh.readthedocs.io/en/latest>`__.
 
 Of course, the performance comes at a cost. To achieve more performance,
 a database backend should create an index with information about the documents.

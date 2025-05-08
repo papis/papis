@@ -21,9 +21,9 @@ def get_lib_name() -> str:
     """
     Get current library.
 
-    It either retrieves the library from the environment variable ``PAPIS_LIB``,
-    the command-line arguments passed in by the user, or the configuration
-    files.
+    It retrieves the library from the environment variable ``PAPIS_LIB``, the
+    command-line arguments passed by the user, or the configuration files
+    (in this order of precedence).
 
     :returns: the name of the library.
 
@@ -37,8 +37,9 @@ def set_lib_from_name(library: str) -> None:
     """
     Set current library.
 
-    It either sets the library from the environment variable ``PAPIS_LIB``,
-    the command-line args passed by the user, or the configuration files.
+    It sets the library from the environment variable ``PAPIS_LIB``, the
+    command-line arguments passed by the user, or the configuration files
+    (in this order of precedence).
 
     :param library: name of a library (as defined in the configuration files)
         or a path to an existing library.

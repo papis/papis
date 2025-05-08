@@ -6,11 +6,11 @@ The ``info.yaml`` file
 At the heart of Papis is the information file (or info file, for short).
 All information about documents is contained in info files.
 
-It uses the `YAML <https://yaml.org>`__ syntax to store information, which is a
-very human-readable language. It is quite format-free: Papis does not assume
-that any special information should be there. However it will interpret the
-field ``files`` as the files linked to the document for the ``papis open``
-command. The ``files`` field should be formatted as a YAML list.
+It uses the `YAML <https://yaml.org>`__ syntax, which is very human-readable.
+The information file is flexible: Papis does not assume that any specific
+information is contained in it, except for the ``papis_id``, which is
+automatically generated when missing. However, certain functionality requires
+additional keys (e.g. the ``files`` key is required by ``papis open``).
 
 For instance, when storing papers with Papis, you likely want to store author
 and title in like this:

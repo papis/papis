@@ -1,13 +1,12 @@
 The library structure
 =====================
 
-One of the things that makes Papis interesting is the fact that its library
-structure is nearly nonexistent.
+The Papis library structure is very flexible. It is specified by directories
+(and, possibly, subdirectories) in the filesystem.
 
-A Papis library is linked to a directory, where all the documents are (and
-possibly sublibraries). What Papis does is simply go to the library folder
-and look for all subfolders that contain an information file, which by default
-is the ``info.yaml`` file.
+A Papis library is a directory containing subfolders with documents. Papis
+simply searches the library directory for (possibly nested) subfolders that
+contain an information file, which by default is an ``info.yaml`` file.
 
 Every subfolder that has an ``info.yaml`` file in it is a valid Papis document.
 As an example let us consider the following library:
