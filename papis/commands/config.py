@@ -8,13 +8,13 @@ Examples
 The ``config`` command returns the value used by Papis. Therefore, if you
 have not customized some setting, it will return the default value. In contrast,
 if you have customized it, it will return the value set in the configuration
-file. For example, to find out to what your "default-library" is set to, call:
+file. For example, to find out what your "default-library" is set to, call:
 
 .. code::
 
     papis config default-library
 
-The ``config`` command can also be used to query a settings' default
+The ``config`` command can also be used to query a setting's default
 value. This is done by adding the ``--default`` flag. This ignores all
 settings set in your Papis configuration file (note, however, that
 settings set in a ``config.py`` script can count as default values). Check the
@@ -63,7 +63,7 @@ You can find a list of all available settings in the configuration section
 at :ref:`general-settings`. Commands and other plugins can define their own
 settings, which are documented separately.
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.config:cli
@@ -219,20 +219,20 @@ def run(
 @click.argument("options", nargs=-1)
 @click.option(
     "-s", "--section",
-    help="select a default section for the options",
+    help="Select a default section for the options.",
     default=None)
 @papis.cli.bool_flag(
     "-d", "--default",
     help="List default configuration setting values, instead of those in the "
-         "configuration file")
+         "configuration file.")
 @papis.cli.bool_flag(
     "--json", "print_json",
-    help="Print settings in a JSON format")
+    help="Print settings in a JSON format.")
 def cli(options: List[str],
         section: Optional[str],
         default: bool,
         print_json: bool) -> None:
-    """Print configuration values"""
+    """Print configuration values."""
     if len(options) == 1:
         # NOTE: a single option is printed directly for a bit of backwards
         # compatibility and easier use in shell scripts, so remove with care!

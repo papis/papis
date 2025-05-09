@@ -13,26 +13,26 @@ Using pip
 ---------
 
 The easiest way of installing Papis is using the ``PyPI`` repositories and
-the ``pip`` package manager. Open a terminal and type in
+the ``pip`` package manager. Open a terminal and type:
 
 .. code:: sh
 
     pip install papis
 
 If you are on GNU/Linux-like systems you might need to type ``sudo`` to install
-Papis globally like
+Papis globally like:
 
 .. code:: sh
 
     sudo pip install papis
 
-If you prefer installing it locally then simply type
+If you prefer installing it locally then simply type:
 
 .. code:: sh
 
     pip install --user papis
 
-You can also **update** Papis with ``pip``
+You can also **update** Papis with ``pip``:
 
 .. code:: sh
 
@@ -44,12 +44,12 @@ Arch Linux
 
 - The ``papis`` package is found in the Arch Linux AUR repository
   `here <https://aur.archlinux.org/packages/papis/>`__.
-  Thanks to `Joshua <https://jpellis.me/>`__ for maintaining this packages!.
+  Thanks to `Joshua <https://jpellis.me/>`__ for maintaining this package!
 - If you want to use the git version of ``papis`` instead, you can try
   the `papis-git <https://aur.archlinux.org/packages/papis-git/>`__ package.
-  Thanks to `Julian <https://julianhauser.com/>`__ for maintaining this packages!.
+  Thanks to `Julian <https://julianhauser.com/>`__ for maintaining this package!
 
-You can install either one with your favorite AUR helper, e.g.
+You can install either one with your favorite AUR helper, e.g.:
 
 .. code:: sh
 
@@ -66,14 +66,14 @@ Papis by running:
 
     nix-env -i papis
 
-For the development version, just clone the repository
+For the development version, just clone the repository:
 
 .. code:: sh
 
     git clone git@github.com:papis/papis.git
     cd papis
 
-and start hacking it with
+and start hacking it with:
 
 .. code:: sh
 
@@ -95,13 +95,13 @@ If you are running the `Guix System <https://guix.gnu.org/>`__ or you have the
 `guix <https://guix.gnu.org/>`__ package manager installed and you would like
 to install ``papis`` the 'Guix way', you can use the included recipe from
 :download:`python-papis.scm <../../contrib/python-papis.scm>`. This recipe can
-be downloaded locally and installed using
+be downloaded locally and installed using:
 
 .. code:: sh
 
     guix package --install-from-file=python-papis.scm
 
-This Guix recipe was made by running the following command
+This Guix recipe was made by running the following command:
 
 .. code:: sh
 
@@ -114,7 +114,7 @@ until an official recipe in the main Guix repositories is published.
 From source
 -----------
 
-To install Papis from source, you can clone the repository using
+To install Papis from source, you can clone the repository using:
 
 .. code:: sh
 
@@ -124,14 +124,14 @@ or download the
 `zip file <https://github.com/papis/papis/archive/refs/heads/main.zip>`__.
 
 Go inside of the ``papis`` source folder and you can install it in a standard
-fashion. For example, using ``pip``
+fashion. For example, using ``pip``:
 
 .. code:: sh
 
     python -m pip install .
 
 If you want to install it locally because you don't have administrative
-rights on your computer you can simply type
+rights on your computer you can simply type:
 
 .. code:: sh
 
@@ -140,11 +140,11 @@ rights on your computer you can simply type
 .. warning::
 
     If you install the package locally, the program ``papis`` will be installed
-    by default into your ``~/.local/bin`` directory, so that you will have to
-    set your ``PATH`` accordingly.
+    into your ``~/.local/bin`` directory by default. You may have to set your
+    ``PATH`` accordingly to have access to it.
 
     One way of doing this in Bash shells (Linux, Ubuntu on Windows or Cygwin) is
-    by adding the following line to your ``~/.bashrc`` file::
+    by adding the following line to your ``~/.bashrc`` file:
 
     .. code:: sh
 

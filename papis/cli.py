@@ -64,7 +64,7 @@ def query_option(**attrs: Any) -> DecoratorCallable:
         "-q", "--query",
         default=lambda: papis.config.getstring("default-query-string"),
         type=str,
-        help="Query for a document in the database",
+        help="Query for a document in the database.",
         **attrs)
 
 
@@ -74,12 +74,12 @@ def sort_option(**attrs: Any) -> DecoratorCallable:
         sort = click.option(
             "--sort", "sort_field",
             default=lambda: papis.config.get("sort-field"),
-            help="Sort documents with respect to the FIELD",
+            help="Sort documents with respect to the FIELD.",
             metavar="FIELD",
             **attrs)
         reverse = bool_flag(
             "--reverse", "sort_reverse",
-            help="Reverse sort order",
+            help="Reverse sort order.",
             default=lambda: papis.config.getboolean("sort-reverse"))
 
         return sort(reverse(f))
@@ -94,7 +94,7 @@ def doc_folder_option(**attrs: Any) -> DecoratorCallable:
         default=None,
         type=click.Path(exists=True),
         multiple=True,
-        help="Document folder on which to apply action",
+        help="Document folder on which to apply action.",
         **attrs)
 
 
@@ -102,13 +102,13 @@ def all_option(**attrs: Any) -> DecoratorCallable:
     """Adds a ``--all`` option as a :mod:`click` decorator."""
     return bool_flag(
         "-a", "--all", "_all",
-        help="Apply action to all matching documents",
+        help="Apply action to all matching documents.",
         **attrs)
 
 
 def git_option(**attrs: Any) -> DecoratorCallable:
     """Adds a ``--git`` option as a :mod:`click` decorator."""
-    git_help = attrs.pop("help", "Commit changes to git")
+    git_help = attrs.pop("help", "Commit changes to git.")
     return bool_flag(
         "--git/--no-git",
         default=lambda: papis.config.getboolean("use-git"),
@@ -192,13 +192,13 @@ def bypass(
         command_name: str) -> Callable[..., Any]:
     """Overwrite existing ``papis`` commands.
 
-    This function is specially important for developing scripts in ``papis``.
+    This function is especially important for developing scripts in ``papis``.
 
     For example, consider augmenting the ``add`` command, as seen
     when using ``papis add``. In this case, we may want to add some additional
     options or behavior before calling ``papis.commands.add``, but would like
     to avoid writing it from scratch. This function can then be used as follows
-    to allow this
+    to allow this:
 
     .. code:: python
 

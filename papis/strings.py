@@ -4,7 +4,7 @@ from typing import Any, Optional, NamedTuple, Tuple, Union
 class FormattedString(NamedTuple):
     """A tuple that defines a ``(formatter, string)`` pair.
 
-    In a configuration file, a formatted string can be defined as::
+    In a configuration file, a formatted string can be defined as:
 
     .. code:: ini
 

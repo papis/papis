@@ -183,7 +183,7 @@ class TemporaryConfiguration:
     ``XDG_CACHE_HOME``). This is meant to be used by tests to create a default
     environment in which to run.
 
-    It can be used in the standard way as
+    It can be used in the standard way as:
 
     .. code:: python
 
@@ -430,7 +430,7 @@ class ResourceCache:
       conversion (used in :meth:`get_local_resource`).
     * ``"both"``: both local and remote resources are updated.
 
-    Resources can then be retrieved as
+    Resources can then be retrieved as:
 
     .. code:: python
 
@@ -564,7 +564,7 @@ def _doctest_tmp_config(request: SubRequest) -> Iterator[None]:
 def tmp_config(request: SubRequest) -> Iterator[TemporaryConfiguration]:
     """A fixture that creates a :class:`TemporaryConfiguration`.
 
-    Additional keyword arguments can be passed using the ``config_setup`` marker
+    Additional keyword arguments can be passed using the ``config_setup`` marker:
 
     .. code:: python
 
@@ -589,7 +589,7 @@ def tmp_config(request: SubRequest) -> Iterator[TemporaryConfiguration]:
 def tmp_library(request: SubRequest) -> Iterator[TemporaryLibrary]:
     """A fixture that creates a :class:`TemporaryLibrary`.
 
-    Additional keyword arguments can be passed using the ``library_setup`` marker
+    Additional keyword arguments can be passed using the ``library_setup`` marker:
 
     .. code:: python
 

@@ -74,7 +74,7 @@ def explorer(ctx: click.core.Context, query: str) -> None:
     Look for documents on `dissem.in <https://dissem.in/>`__.
 
     For example, to look for a document with the author "Albert Einstein" and
-    open it with Firefox, you can call
+    open it with Firefox, you can call:
 
     .. code:: sh
 

@@ -6,14 +6,14 @@ Examples
 
 For instance imagine you have two PDF files, ``a.pdf`` and ``b.pdf``
 that you want to add to a document that matches with the query string
-"einstein photon definition". Then you would use
+"einstein photon definition". Then you would use:
 
 .. code:: sh
 
     papis addto 'einstein photon definition' -f a.pdf -f b.pdf
 
 where the ``-f`` flag needs to be repeated for every file that is added. Remote
-files can be similarly added using
+files can be similarly added using:
 
 .. code:: sh
 
@@ -21,7 +21,7 @@ files can be similarly added using
 
 where the link needs to be to the actual remote PDF file.
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.addto:cli
@@ -92,22 +92,22 @@ def run(document: papis.document.Document,
 @click.command("addto")
 @click.help_option("--help", "-h")
 @papis.cli.query_argument()
-@papis.cli.git_option(help="Add and commit files")
+@papis.cli.git_option(help="Add and commit files.")
 @papis.cli.sort_option()
 @click.option("-f",
               "--files",
-              help="File fullpaths to documents",
+              help="File fullpaths to documents.",
               multiple=True,
               type=click.Path(exists=True))
-@click.option("-u", "--urls", help="URLs to documents", multiple=True)
+@click.option("-u", "--urls", help="URLs to documents.", multiple=True)
 @click.option("--file-name",
-              help="File name format for the document",
+              help="File name format for the document.",
               type=papis.cli.FormattedStringParamType(),
               default=None)
 @click.option(
     "--link/--no-link",
     help="Instead of copying the file to the library, create a link to "
-         "its original location",
+         "its original location.",
     default=False)
 @papis.cli.doc_folder_option()
 def cli(query: str,
@@ -119,7 +119,7 @@ def cli(query: str,
         sort_field: Optional[str],
         doc_folder: Tuple[str, ...],
         sort_reverse: bool) -> None:
-    """Add files to an existing document"""
+    """Add files to an existing document."""
     documents = papis.cli.handle_doc_folder_query_sort(
         query, doc_folder, sort_field, sort_reverse)
 

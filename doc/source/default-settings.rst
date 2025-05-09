@@ -48,12 +48,12 @@ General settings
 
     This is the format of the short help indicator in external Papis
     commands. In general, for an external command, the first lines are expected
-    to resemble
+    to resemble:
 
     .. code:: python
 
         #!/usr/bin/env python3
-        # papis-short-help: My awesome script fixes everything
+        # papis-short-help: My awesome script fixes everything.
 
 .. papis-config:: info-name
 
@@ -77,10 +77,9 @@ General settings
 .. papis-config:: format-doc-name
 
     This setting controls the name of the document in the Papis format strings
-    like in format strings such as :confval:`match-format` or
-    :confval:`header-format`. For instance, if you are managing
-    videos, you might want to set this option to ``vid`` in order to set  the
-    :confval:`header-format` to
+    such as :confval:`match-format` or :confval:`header-format`. For instance,
+    if you are managing videos, you might want to set this option to ``vid`` in
+    order to set the :confval:`header-format` to:
 
     .. code:: ini
 
@@ -106,7 +105,7 @@ General settings
     If the :confval:`header-format` grows too complex, it can be
     stored in a separate file. This option should give the path to that file (in
     which case the ``header-format`` option will be ignored). For example, this
-    can be set to
+    can be set to:
 
     .. code:: ini
 
@@ -114,10 +113,10 @@ General settings
 
 .. papis-config:: info-allow-unicode
 
-    If *True*, this flag will allow unicode characters in your *info files*.
+    If *True*, this flag will allow Unicode characters in your *info files*.
     Otherwise, the strings will be decoded and written as bytes. Unless you have
-    very strong reasons not to, this should always be set to *True* (we live
-    a unicode world after all!).
+    very strong reasons not to, this should always be set to *True* (we live in
+    a Unicode world after all!).
 
 .. papis-config:: unique-document-keys
 
@@ -135,7 +134,7 @@ General settings
 
     Papis sometimes will have to tell you which document it is processing. This
     format string can be used to display the document to the user in a
-    non-intrusive way. Preferable, this should be a short string that allows
+    non-intrusive way. Preferably, this should be a short string that allows
     easily identifying which document is being referenced.
 
 .. papis-config:: sort-field
@@ -254,8 +253,8 @@ Tools options
 
     * ``"papis"``: uses ``papis.picker.Picker`` to display and search
       through documents.
-    * ``"fzf"``: uses `fzf <https://github.com/junegunn/fzf>` to display and search
-      through documents.
+    * ``"fzf"``: uses `fzf <https://github.com/junegunn/fzf>`__ to display and
+      search through documents.
 
     Papis pickers use a plugin architecture similar to other components
     (see :ref:`plugin-architecture`) with the ``papis.picker`` entrypoint. Note
@@ -272,7 +271,7 @@ Tools options
 .. papis-config:: file-browser
 
     File browser used when opening a directory. It defaults to the default file
-    browser in your system. However, you can set it to different file browsers,
+    browser in your system. However, you can set it to a different file browser,
     such as ``dolphin``, ``thunar`` or ``ranger``, to name a few.
 
 .. _bibtex-options:
@@ -285,7 +284,7 @@ BibTeX options
     This option allows the user to set the key for the journal entry when using
     ``papis export --bibtex``. The intended use of such a setting is to allow
     selecting e.g. abbreviated journal titles for publishers that require it.
-    For example, if the document has a ``abbrev_journal_title`` key that should
+    For example, if the document has an ``abbrev_journal_title`` key that should
     be used instead of the default ``journal`` key.
 
 .. papis-config:: extra-bibtex-keys
@@ -293,7 +292,7 @@ BibTeX options
     A list of additional keys, besides the known standard BibTeX keys from
     :data:`~papis.bibtex.bibtex_keys`, to add to the BibTeX export. This can be
     used to include keys such as ``doc_url`` or ``tags`` to the export by
-    setting
+    setting:
 
     .. code:: ini
 
@@ -315,7 +314,7 @@ BibTeX options
 
     A list of additional types, besides the known standard BibTeX types from
     :data:`~papis.bibtex.bibtex_types`, that should be allowed for a BibTeX export.
-    These types can be added as
+    These types can be added as:
 
     .. code:: ini
 
@@ -326,7 +325,7 @@ BibTeX options
 
     A flag used to choose whether or not to allow direct Unicode characters in
     the document fields to be exported into the BibTeX text. Some engines, such
-    as `Biber <https://github.com/plk/biber>`__ support Unicode by default and
+    as `Biber <https://github.com/plk/biber>`__, support Unicode by default and
     should be used whenever possible.
 
 .. papis-config:: bibtex-export-file
@@ -343,7 +342,7 @@ BibTeX options
     used for display purposes or for building the ``author`` key for the
     document. For example, when retrieving automatic author information from
     services like `Crossref <https://www.crossref.org>`__, Papis builds the
-    ``author`` using this setting. For instance, this can be set to
+    ``author`` using this setting. For instance, this can be set to:
 
     .. code:: ini
 
@@ -369,14 +368,14 @@ BibTeX command options
 .. papis-config:: default-read-bibfile
     :section: bibtex
 
-    A path to a BibTex file that should be automatically read when using the
+    A path to a BibTeX file that should be automatically read when using the
     ``papis bibtex`` command. This should be equivalent to using
     ``papis bibtex read file.bib`` when used with :confval:`auto-read`.
 
 .. papis-config:: default-save-bibfile
     :section: bibtex
 
-    A path to a BibTex file that should be automatically saved when using the
+    A path to a BibTeX file that should be automatically saved when using the
     ``papis bibtex`` command. This should be equivalent to using
     ``papis bibtex save file.bib``.
 
@@ -397,13 +396,13 @@ Add options
     is created. In BibLaTeX, the reference (or ref for short) is also sometimes
     called a citation key. The reference format is usually heavily customized
     by users, depending on their personal preferences. For example to use a
-    ``FirstAuthorYear`` format, set
+    ``FirstAuthorYear`` format, set:
 
     .. code:: ini
 
         ref-format = {doc[author_list][0][family]}{doc[year]}
 
-    However, any custom string can be used, e.g.
+    However, any custom string can be used, e.g.:
 
     .. code:: ini
 
@@ -422,7 +421,7 @@ Add options
         converted to their closest ASCII representation.
 
         If you want to add some punctuation, dots (``.``) and underscores (``_``)
-        can be escaped by a backslash. For example,
+        can be escaped by a backslash. For example:
 
         .. code:: ini
 
@@ -430,16 +429,16 @@ Add options
 
 .. papis-config:: add-folder-name
 
-    Set the default name for the folder of newly added documents. For example,
+    Sets the default name for the folder of newly added documents. For example,
     if you want the folder of your documents to be named after the format
-    ``author-title`` then you should set it to
+    ``author-title`` then you should set it to:
 
     .. code:: ini
 
         add-folder-name = ``{doc[author]}-{doc[title]}``
 
     You can create formatted subfolders by using path separators
-    (i.e., ``/``) in this format string, e.g.
+    (i.e., ``/``) in this format string, e.g.:
 
     .. code:: ini
 
@@ -453,15 +452,15 @@ Add options
 .. papis-config:: add-file-name
     :type: str
 
-    Set the default file name for newly added documents, similarly to
+    Sets the default file name for newly added documents, similarly to
     :confval:`add-folder-name`. If it is not set, the names of the
     files will be cleaned and taken *as-is*.
 
 .. papis-config:: add-subfolder
 
-    Configure a default for the ``--subfolder`` command-line option of ``papis add``.
-    Note that, this setting is not allowed to contain formatting options. However,
-    one can also specify nested sub-folders.
+    Configures a default for the ``--subfolder`` command-line option of ``papis
+    add``. Note that, this setting is not allowed to contain formatting options.
+    However, one can also specify nested sub-folders.
 
 .. papis-config:: add-confirm
 
@@ -494,11 +493,11 @@ Add options
 
 .. papis-config:: add-fetch-citations
 
-    A setting that controls the default for the ``--fetch-citations flag of
-    ``papis add``. If set to *True*, then the flag will be added by default
-    and Papis will attempt to retrieve citations for the newly added document.
-    In this case, the fetching can be disabled by using ``--no-fetch-citations``
-    on an individual basis.
+    Controls the default for the ``--fetch-citations`` flag of ``papis add``. If
+    set to *True*, then the flag will be added by default and Papis will attempt
+    to retrieve citations for the newly added document. In this case, the
+    fetching can be disabled by using ``--no-fetch-citations`` on an individual
+    basis.
 
 .. papis-config:: auto-doctor
 
@@ -573,8 +572,6 @@ Edit options
     Default value is set to the empty ``""``, which will return an empty notes
     file. If no file is found at the path to the template, then also an empty
     notes file will be generated.
-
-.. _marks-options:
 
 Doctor options
 --------------
@@ -681,6 +678,8 @@ Doctor options
 Open options
 ------------
 
+.. _marks-options:
+
 .. papis-config:: open-mark
 
     A setting that controls the default for the ``--mark`` flag of ``papis open``.
@@ -692,7 +691,7 @@ Open options
 
     This is the default key name for the marks in the *info file*. For
     example, if you set ``mark-key-name = bookmarks`` then you would have
-    in your ``info.yaml`` file
+    in your ``info.yaml`` file:
 
     .. code:: yaml
 
@@ -706,7 +705,7 @@ Open options
     This is the name of the mark to be passed to
     :confval:`mark-header-format` and other such settings, similarly
     to :confval:`format-doc-name`. For example, if we want to set
-    it to ``m``, then other settings must be consistent, e.g.
+    it to ``m``, then other settings must be consistent, e.g.:
 
     .. code:: ini
 
@@ -743,7 +742,7 @@ Open options
 
         mark-opener-format = zathura -P {mark[value]}
 
-Serve (Web App) options
+Serve (web app) options
 -----------------------
 
 .. papis-config:: serve-default-tag-sorting
@@ -862,12 +861,11 @@ Downloaders
 .. papis-config:: downloader-proxy
     :type: str
 
-    There is the possibility of download papers using a proxy. We use :mod:`requests`
-    to handle web queries, which has extensive documentation on how to use
-    proxies
-    `here <https://docs.python-requests.org/en/latest/user/advanced/#proxies>`__.
-    This value should give a URL that can be used as a proxy for both HTTP
-    and HTTPS.
+    It's possible to download papers using a proxy. We use :mod:`requests` to
+    handle web queries, which has extensive documentation on how to use proxies
+    `here
+    <https://docs.python-requests.org/en/latest/user/advanced/#proxies>`__. The
+    present setting sets the URL used as a proxy for HTTP and HTTPS.
 
 .. papis-config:: isbn-service
 
@@ -938,7 +936,7 @@ Terminal user interface (picker)
 These options are for the terminal user interface (TUI). The TUI is mainly used
 by the default Papis picker, but other small widgets also make use of some elements.
 The TUI can be heavily customized as well in the separate ``tui`` section. For
-example,
+example:
 
 .. code:: ini
 
@@ -965,8 +963,8 @@ For styling the individual components, see the extensive documentation available
 .. papis-config:: status_line_style
     :section: tui
 
-    The style the status line should based on the ``prompt_toolkit`` styling,
-    e.g.``fg:#ff00aa bg:black``.
+    The style of the status line. The format is based on ``prompt_toolkit``
+    styling, e.g. ``fg:#ff00aa bg:black``.
 
 .. papis-config:: message_toolbar_style
     :section: tui
@@ -977,18 +975,18 @@ For styling the individual components, see the extensive documentation available
 .. papis-config:: options_list.selected_margin_style
     :section: tui
 
-    Style of the margin of the selected document in the picker.
+    The style of the margin of the selected document in the picker.
 
 .. papis-config:: options_list.unselected_margin_style
     :section: tui
 
-    Style of the margin of the unselected documents in the picker. If no
+    The style of the margin of the unselected documents in the picker. If no
     styling is desired on these elements, this setting can be empty.
 
 .. papis-config:: options_list.marked_margin_style
     :section: tui
 
-    Style of the margin of the marked documents in the picker. If no
+    The style of the margin of the marked documents in the picker. If no
     styling is desired on these elements, this setting can be empty.
 
 .. papis-config:: error_toolbar_style
@@ -1055,44 +1053,42 @@ FZF integration
 ---------------
 
 Papis ships with *out-of-the-box* `fzf <https://github.com/junegunn/fzf>`__
-integration for the picker.  A minimal terminal user interface is provided,
-together with options for its customization. You can set the picktool to
-``fzf`` to select this picker.
+integration in the form of a picker.  A minimal terminal user interface is provided,
+together with options for its customization. You can set the :confval:`picktool`
+to ``fzf`` to select this picker.
 
-In comparison to the *built-in* Papis picker TUI, the advantage of the fzf
-picker is that it is much faster. However, a disadvantage is that it is
-restricted to one-line entries. It is also important to note that ``fzf`` will
-**only** match against what is shown on the terminal screen, as opposed to the
-Papis matcher, that can match against the **whole** title and **whole** author
-text, since this is controlled by the ``match-format`` setting.
-However, for many uses it might not bother the user to have this limitation
-of fzf.
+In comparison to the default Papis picker TUI, the ``fzf`` picker is generally
+much faster, can be configured to show helpful previews of documents, and use
+other fancy ``fzf`` features. However, a disadvantage is that Papis currently
+only supports one-line entries per document. It is also important to note that
+``fzf`` will **only** match against what is shown on the terminal screen. In
+contrast, the default ``papis`` picker can match against other fields
+of the document, as described by the :confval:`match-format` setting.
 
 .. papis-config:: fzf-binary
 
-    Path to or name of the fzf binary.
+    Path to or name of the ``fzf`` binary.
 
 .. papis-config:: fzf-extra-flags
 
-    Extra flags to be passed to fzf every time it gets called.
+    Extra flags to be passed to ``fzf`` every time it gets called.
 
 .. papis-config:: fzf-extra-bindings
 
-    Extra bindings to fzf as a Python list. Refer to the fzf documentation for
-    more details.
+    Extra key bindings to ``fzf`` as a Python list. Refer to the ``fzf``
+    documentation for more details.
 
 .. papis-config:: fzf-header-format
 
-    Format for the entries for fzf.
-    Notice that if you want colors you should add the ``--ansi`` flag to
-    ``fzf-extra-flags`` and include the colors in the
-    :confval:`header-format` as ``ansi`` escape sequences.
+    Format for the entries for ``fzf``. Note that, if you want colors, you should
+    add the ``--ansi`` flag to :confval:`fzf-extra-flags` and include the colors
+    in the :confval:`header-format` as ``ansi`` escape sequences.
 
-    The Papis format string is given the additional variable ``c`` which
-    contains the package ``colorama`` in it. Refer to the ``colorama``
+    The Papis format string corresponding to this setting is given the additional
+    variable ``c``, which is the ``colorama`` library. Refer to the ``colorama``
     `documentation <https://github.com/tartley/colorama/blob/master/colorama/ansi.py#L49>`__.
     to see which colors are available. For instance, if you want the title in
-    red, you would put in your ``fzf-header-format``
+    red, you would put in your :confval:`fzf-header-format`:
 
     .. code:: python
 
@@ -1101,10 +1097,8 @@ of fzf.
 Preview window
 ^^^^^^^^^^^^^^
 
-``fzf`` has the disadvantage that it does not support multiline output and
-it matches only against what it shows on the screen. To get around this issue,
-we can try composing a ``fzf`` customization. The following will add a preview
-window to the picker
+``fzf`` can be configured to show additional information in a preview window. The
+following will add a preview window to the picker:
 
 .. code:: ini
 

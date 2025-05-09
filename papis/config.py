@@ -172,7 +172,7 @@ def register_default_settings(settings_dictionary: PapisConfigType) -> None:
 
     Notice that you can define sections or global options. For instance,
     let us suppose that a script called ``foobar`` defines some
-    configuration options. In the script there could be the following defined
+    configuration options. The script might define the following:
 
     .. code:: python
 
@@ -181,7 +181,7 @@ def register_default_settings(settings_dictionary: PapisConfigType) -> None:
         options = {"foobar": { "command": "open"}}
         papis.config.register_default_settings(options)
 
-    which can then be accessed globally through
+    which can then be accessed globally through:
 
     .. code:: python
 

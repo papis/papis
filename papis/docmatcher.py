@@ -12,7 +12,7 @@ logger = papis.logging.get_logger(__name__)
 class ParseResult(NamedTuple):
     """Result from parsing a search string.
 
-    For example, a search string such as ``"author:einstein"`` will result in
+    For example, a search string such as ``"author:einstein"`` will result in:
 
     .. code:: python
 
@@ -203,7 +203,7 @@ def parse_query(query_string: str) -> List[ParseResult]:
 
         'hello author : Einstein    title: "Fancy Title: Part 1" tags'
 
-    which will result in
+    which will result in:
 
     .. code:: python
 

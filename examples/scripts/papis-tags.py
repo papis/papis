@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-# papis-short-help: Search tags in the library
+# papis-short-help: Search tags in the library.
 # Copyright © 2018 Alejandro Gallo. GPLv3
 
 """

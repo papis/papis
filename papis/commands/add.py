@@ -1,23 +1,24 @@
 """
 The ``add`` command is one of the central commands of the ``papis``
-command-line interface It is a very versatile command with a fair amount of
+command-line interface. It is a very versatile command with a fair amount of
 options.
 
 There are also a few customization settings available for this command, which
-are described on the :ref:`configuration page <add-command-options>` for add.
+are described on the :ref:`configuration page <add-command-options>` for
+``add``.
 
 Examples
 ^^^^^^^^
 
 - Add a document located in ``~/Documents/interesting.pdf`` and name the
-  folder where it will be stored in the database ``interesting-paper-2021``
+  folder where it will be stored in the database ``interesting-paper-2021``:
 
     .. code:: sh
 
         papis add ~/Documents/interesting.pdf \\
             --folder-name interesting-paper-2021
 
-  if you want to directly add some metadata, like author, title and tags,
+  If you want to directly add some metadata, like author, title and tags,
   you can also run the following:
 
     .. code:: sh
@@ -37,7 +38,7 @@ Examples
 
         papis add ~/Documents/interesting.pdf --from doi 10.10763/1.3237134
 
-- Add paper to a library named ``machine-learning`` from ``arxiv.org``
+- Add a paper from ``arxiv.org`` to a library named ``machine-learning``:
 
     .. code:: sh
 
@@ -45,30 +46,30 @@ Examples
             --from arxiv https://arxiv.org/abs/1712.03134
 
 - If you do not want copy the original PDFs into the library, you can
-  also tell Papis to just create a link to them, for example
+  also tell Papis to just create a link to them, for example:
 
     .. code:: sh
 
         papis add --link ~/Documents/interesting.pdf \\
             --from doi 10.10763/1.3237134
 
-  will add an entry into the Papis library, but the PDF document will remain
-  at ``~/Documents/interesting.pdf``. In the document's folder
-  there will be a link to ``~/Documents/interesting.pdf`` instead of the
-  file itself. Of course you always have to be sure that the
-  document at ``~/Documents/interesting.pdf`` does not disappear, otherwise
+  adds an entry to the Papis library, but the PDF document remains at
+  ``~/Documents/interesting.pdf``. The document's folder will contain a link
+  to ``~/Documents/interesting.pdf`` instead of the file itself. Make sure that
+  the document at ``~/Documents/interesting.pdf`` does not disappear, or
   you will end up without a document file.
 
-- Papis also tries to make sense of the inputs that you have passed
-  on the command-line. For instance you could provide only a DOI and
-  Papis will figure out if this is indeed a DOI and download available metadata
-  using Crossref. For example, you can try
+- Papis tries to make sense of the arguments with which it is provided.
+  For instance, you could only provide a DOI, and Papis will verify that
+  this is a valid DOI and download available metadata using Crossref.
+  For example, you can try:
 
     .. code:: sh
 
         papis add 10.1103/PhysRevLett.123.156401
 
-  Similarly, a wide array of known journal are recognized by URL, so you can try:
+  Similarly, a wide array of known journals are recognized by URL, so you can
+  try:
 
     .. code:: sh
 
@@ -94,7 +95,7 @@ Examples
             }"
         papis add --from bibtex "$(xclip -o)"
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.add:cli
@@ -131,7 +132,7 @@ logger = papis.logging.get_logger(__name__)
 
 class FromFolderImporter(papis.importer.Importer):
 
-    """Importer that gets files and data from a valid papis folder"""
+    """Importer that gets files and data from a valid papis folder."""
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(name="folder", **kwargs)
@@ -154,7 +155,7 @@ class FromFolderImporter(papis.importer.Importer):
 class FromLibImporter(papis.importer.Importer):
 
     """Importer that queries a valid Papis library (also paths) and adds files
-    and data
+    and data.
     """
 
     def __init__(self, **kwargs: Any) -> None:
@@ -228,11 +229,11 @@ def run(paths: List[str],
         citations: Optional[papis.citations.Citations] = None,
         auto_doctor: bool = False) -> None:
     """
-    :param paths: Paths to the documents to be added
+    :param paths: Paths to the documents to be added.
     :param data: Data for the document to be added.
         If more data is to be retrieved from other sources, the data dictionary
         will be updated from these sources.
-    :param folder_name: Name of the folder where the document will be stored
+    :param folder_name: Name of the folder where the document will be stored.
     :param file_name: File name of the document's files to be stored.
     :param subfolder: Folder within the library where the document's folder
         should be stored.
@@ -410,76 +411,76 @@ def run(paths: List[str],
 
 @click.command(
     "add",
-    help="Add a document into a given library"
+    help="Add a document into a given library."
 )
 @click.help_option("--help", "-h")
 @click.argument("files", type=click.Path(), nargs=-1)
 @click.option(
     "-s", "--set", "set_list",
-    help="Set some information before",
+    help="Set some information before.",
     multiple=True,
     type=(str, str))
 @click.option(
     "-d", "--subfolder",
-    help="Subfolder in the library",
+    help="Subfolder in the library.",
     default=lambda: papis.config.getstring("add-subfolder"))
 @papis.cli.bool_flag(
     "-p", "--pick-subfolder",
-    help="Pick from existing subfolders")
+    help="Pick from existing subfolders.")
 @click.option(
     "--folder-name",
-    help="Name format for the document main folder",
+    help="Name format for the document main folder.",
     type=papis.cli.FormattedStringParamType(),
     default=lambda: papis.config.getformattedstring("add-folder-name"))
 @click.option(
     "--file-name",
-    help="File name format for the document",
+    help="File name format for the document.",
     type=papis.cli.FormattedStringParamType(),
     default=None)
 @click.option(
     "--from", "from_importer",
-    help="Add document from a specific importer",
+    help="Add document from a specific importer.",
     type=(click.Choice(papis.importer.available_importers()), str),
     nargs=2,
     multiple=True,
     default=(),)
 @papis.cli.bool_flag(
     "-b", "--batch",
-    help="Batch mode, do not prompt or otherwise")
+    help="Batch mode, do not prompt or otherwise.")
 @papis.cli.bool_flag(
     "--confirm/--no-confirm",
-    help="Ask to confirm before adding to the collection",
+    help="Ask to confirm before adding to the collection.",
     default=lambda: papis.config.getboolean("add-confirm"))
 @papis.cli.bool_flag(
     "--open/--no-open", "open_file",
-    help="Open files before adding them to the document",
+    help="Open files before adding them to the document.",
     default=lambda: papis.config.getboolean("add-open"))
 @papis.cli.bool_flag(
     "--edit/--no-edit",
-    help="Edit info file before adding document",
+    help="Edit info file before adding document.",
     default=lambda: papis.config.getboolean("add-edit"))
 @papis.cli.bool_flag(
     "--link/--no-link",
     help="Instead of copying the file to the library, create a link to "
-         "its original location",
+         "its original location.",
     default=False)
 @papis.cli.bool_flag(
     "--move/--no-move",
     help="Instead of copying the file to the library, "
-         "move it from its original location",
+         "move it from its original location.",
     default=False)
 @papis.cli.bool_flag(
     "--auto-doctor/--no-auto-doctor",
     help="Apply papis doctor to newly added documents.",
     default=lambda: papis.config.getboolean("auto-doctor"))
-@papis.cli.git_option(help="Git add and commit the new document")
+@papis.cli.git_option(help="Git add and commit the new document.")
 @papis.cli.bool_flag(
     "--download-files/--no-download-files",
-    help="Download file with importer if available or not",
+    help="Download file with importer if available or not.",
     default=lambda: papis.config.getboolean("add-download-files"))
 @papis.cli.bool_flag(
     "--fetch-citations/--no-fetch-citations",
-    help="Fetch citations from a DOI (Digital Object Identifier)",
+    help="Fetch citations from a DOI (Digital Object Identifier).",
     default=lambda: papis.config.getboolean("add-fetch-citations"))
 def cli(files: List[str],
         set_list: List[Tuple[str, str]],

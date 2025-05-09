@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-# papis-short-help: Check document keys
+# papis-short-help: Check document keys.
 # Copyright © 2018 Alejandro Gallo. GPLv3
 
 """

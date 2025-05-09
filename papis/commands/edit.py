@@ -3,7 +3,7 @@ This command edits the :ref:`info.yaml file <info-file>` of the documents.
 The editor used is defined by the :confval:`editor` configuration
 setting.
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.edit:cli
@@ -78,16 +78,16 @@ def edit_notes(document: papis.document.Document,
 @click.help_option("-h", "--help")
 @papis.cli.query_argument()
 @papis.cli.doc_folder_option()
-@papis.cli.git_option(help="Add changes made to the info file")
+@papis.cli.git_option(help="Add changes made to the info file.")
 @papis.cli.sort_option()
 @papis.cli.bool_flag(
     "-n", "--notes",
-    help="Edit notes associated to the document")
+    help="Edit notes associated to the document.")
 @papis.cli.all_option()
 @click.option(
     "-e",
     "--editor",
-    help="Editor to be used",
+    help="Editor to be used.",
     default=None)
 def cli(query: str,
         doc_folder: Tuple[str, ...],
@@ -97,7 +97,7 @@ def cli(query: str,
         editor: Optional[str],
         sort_field: Optional[str],
         sort_reverse: bool) -> None:
-    """Edit document information from a given library"""
+    """Edit document information from a given library."""
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,
                                                            sort_field,

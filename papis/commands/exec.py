@@ -26,7 +26,7 @@ Examples
 
         papis exec my-script.py -- -h
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.exec:cli

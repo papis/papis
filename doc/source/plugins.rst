@@ -17,7 +17,7 @@ objects that have been declared as
 (plugins) in the package
 `metadata <https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/>`__.
 
-For example, the ``yaml`` exporter in ``papis.yaml`` is defined as
+For example, the ``yaml`` exporter in ``papis.yaml`` is defined as:
 
 .. code:: python
 
@@ -27,7 +27,7 @@ For example, the ``yaml`` exporter in ``papis.yaml`` is defined as
             allow_unicode=True)
         return str(string)
 
-and declared in ``pyproject.toml`` as
+and declared in ``pyproject.toml`` as:
 
 .. code:: toml
 
@@ -37,7 +37,7 @@ and declared in ``pyproject.toml`` as
 where ``yaml`` is the name of the entrypoint, ``papis.yaml`` is the module
 in which it is located and ``exporter`` is the callable used to invoke the
 plugin, i.e. the format is ``<name> = "<module>:<callable>"``. The exporter can
-be retrieved by name using
+be retrieved by name using:
 
 .. code:: python
 
@@ -77,7 +77,7 @@ about existing features and implementations.
 
 For a downloader, we create a new file in ``papis/downloaders`` and start writing
 a class that inherits from :class:`papis.downloaders.Downloader`. This can look
-something like
+something like:
 
 .. code:: python
 
@@ -102,7 +102,7 @@ something like
 
 The main way to recognize if a downloader can be used with a given URI is
 through the :meth:`~papis.downloaders.Downloader.match` method. This generally
-checks if a given URI matches a website URL, e.g.
+checks if a given URI matches a website URL, e.g.:
 
 .. code:: python
 
@@ -112,13 +112,13 @@ checks if a given URI matches a website URL, e.g.
 
 By default, a downloader implements a :meth:`~papis.downloaders.Downloader.get_data`
 method to retrieve metadata. This already does a good job in fetching basic
-metadata (title, authors, etc) through standard elements such as the
+metadata (title, authors, etc.) through standard elements such as the
 `Dublin Core Metadata <https://www.dublincore.org/specifications/dublin-core/dces/>`__.
 We can however extend it for any specific downloader. For instance, some
 documents in the ACL Anthology provide a "code" field, with a link to e.g. a
-Github repository. We will try to extract code repository URL using
+GitHub repository. We will try to extract a code repository URL using
 :mod:`bs4`. An instance of :mod:`bs4` with the parsed HTML can be obtained and
-manipulated as follows
+manipulated as follows:
 
 .. code:: python
 
@@ -136,10 +136,10 @@ manipulated as follows
 
 Metadata can also be obtained from BibTeX by overriding the
 :meth:`~papis.downloaders.Downloader.get_bibtex_url` method. This can be useful
-if, for instance, the `get_data` method fails to correctly identify the abstract
+if, for instance, the ``get_data`` method fails to correctly identify the abstract
 section. In our example we can fix this by scraping the metadata found in the
 BibTeX file. Luckily, for ACL, the BibTeX URL is simply the document URL with a
-``.bib`` extension. We can implement it as
+``.bib`` extension. We can implement it as:
 
 .. code:: python
 
@@ -148,9 +148,9 @@ BibTeX file. Luckily, for ACL, the BibTeX URL is simply the document URL with a
         return f"{url}.bib" if url is not None else url
 
 To download files from a remote resource, the downloader relies on
-`data["pdf_url"]` by default. However, if this does not exist or does not
+``data["pdf_url"]`` by default. However, if this does not exist or does not
 return the actual document PDF, we can override the
-:meth:`~papis.downloaders.Downloader.get_document_url` method.
+:meth:`~papis.downloaders.Downloader.get_document_url` method:
 
 .. code:: python
 
@@ -162,7 +162,7 @@ return the actual document PDF, we can override the
 
 Finally, to install the plugin and have it recognized by the extension system
 that Papis uses, it needs to be added to ``pyproject.toml``. This can be done with
-extending the ``papis.downloader`` entrypoint as follows
+extending the ``papis.downloader`` entrypoint as follows:
 
 .. code:: toml
 

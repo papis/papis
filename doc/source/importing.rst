@@ -1,7 +1,7 @@
 Importing from BibTeX or Zotero
 ===============================
 
-Many users will want to import a library from a bibtex file
+Many users will want to import a library from a BibTeX file
 that another program such as ``zotero``, ``mendeley`` or
 ``jabref`` will have exported. These programs usually have a
 field called ``FILE`` or ``file`` that points to a path
@@ -20,4 +20,4 @@ You can also take a look at the
 in order to see a different workflow
 and different implementation of a converter script.
 `This <https://nicolasshu.com/zotero_and_papis.html>`__ blogpost
-explains the workflow using Papis with zotero and SyncThing.
+explains the workflow using Papis with Zotero and SyncThing.

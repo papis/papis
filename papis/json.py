@@ -23,7 +23,9 @@ def explorer(ctx: click.Context, jsonfile: str) -> None:
     """
     Import documents from a JSON file.
 
-    For example, you can call
+    For example, you can call:
+
+    .. code:: sh
 
         papis explore json 'lib.json' pick
     """

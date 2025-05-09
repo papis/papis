@@ -3,19 +3,17 @@
 The ``info.yaml`` file
 ======================
 
-At the heart of Papis there is the information file. The info file contains
-all information about the documents.
+At the heart of Papis is the information file (or info file, for short).
+All information about documents is contained in info files.
 
-It uses the `YAML <https://yaml.org>`__ syntax to store
-information, which is a very human-readable language.
-It is quite format-free:
-`papis` does not assume that any special information should be there.
-However it will interpret the field ``files`` as the files linked to the
-document for the ``papis open`` command. The ``files`` field
-should be formatted as a YAML list.
+It uses the `YAML <https://yaml.org>`__ syntax, which is very human-readable.
+The information file is flexible: Papis does not assume that any specific
+information is contained in it, except for the ``papis_id``, which is
+automatically generated when missing. However, certain functionality requires
+additional keys (e.g. the ``files`` key is required by ``papis open``).
 
-For instance, if are storing papers with Papis, then you most probably would
-like to store author and title in there like this:
+For instance, when storing papers with Papis, you likely want to store author
+and title in like this:
 
 .. code:: yaml
 
@@ -25,11 +23,10 @@ like to store author and title in there like this:
   files:
     - document.pdf
 
-Here we have used the ``files`` field to tell Papis that the paper
-has a pdf document attached to it. You can of course attach many other documents
-so that you can open them when you are opening it with the ``papis open``
-command. For instance if you have a paper with supporting information, you
-could store it like such
+Here, we have used the ``files`` field to tell Papis that the paper has a PDF
+document attached to it. You can of course attach many other documents so that
+you can open them with ``papis open``. For instance, if you have a paper with
+supporting information, you could store it like this:
 
 .. code:: yaml
 
@@ -41,7 +38,7 @@ could store it like such
     - supporting-information.pdf
 
 Therefore, in the folder where this document lives we have the following
-structure
+structure:
 
 ::
 

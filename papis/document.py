@@ -61,14 +61,14 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
     JSON data obtained from a website API and standard ``papis`` key names and
     formatting. The implementation is completely generic.
 
-    For example, we have the simple dictionary
+    For example, we have the simple dictionary:
 
     .. code:: python
 
         data = {"id": "10.1103/physrevb.89.140501"}
 
     which contains the DOI of a document with the wrong key. We can then write
-    the following rules
+    the following rules:
 
     .. code:: python
 

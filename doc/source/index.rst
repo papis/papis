@@ -16,7 +16,7 @@ Papis: Command-line Bibliography Manager
       :link-type: ref
       :class-card: getting-started
 
-    .. grid-item-card:: :material-regular:`rocket_launch;2em` Quick Guide
+    .. grid-item-card:: :material-regular:`rocket_launch;2em` Quick guide
       :columns: 12 6 6 4
       :link: quick-guide
       :link-type: ref
@@ -42,7 +42,7 @@ Papis: Command-line Bibliography Manager
       :link-type: ref
       :class-card: getting-started
 
-    .. grid-item-card:: :material-regular:`laptop_chromebook;2em` Developer Docs
+    .. grid-item-card:: :material-regular:`laptop_chromebook;2em` Developer docs
       :columns: 12 6 6 4
       :link: developer-api-reference
       :link-type: ref
@@ -60,7 +60,7 @@ of features. And for those who still want more, Papis makes it easy to write
 scripts that extend its features even further.
 
 Papis has grown over the years and there are now a number of projects that
-extend Papis' features or integrate it with other software.
+extend Papis' features or integrate it with other software:
 
 .. list-table::
    :widths: 33 67

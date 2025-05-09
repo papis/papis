@@ -46,11 +46,11 @@ Examples
         papis merge --keep "belief revision"
 
     After deciding which changes to apply, Papis will prompt for files that
-    should be moved to the resulting location. The files can be chosen entering
-    the numbers that precede the documents.
+    should be moved to the resulting location. The files can be chosen by
+    entering the numbers that precede the documents.
 
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.merge:cli
@@ -109,20 +109,20 @@ def run(keep: papis.document.Document,
 @papis.cli.sort_option()
 @papis.cli.bool_flag(
     "-s", "--second",
-    help="Keep the second document after merge and erase the first, "
-         "the default is keep the first")
+    help="Keep the second document after merge and erase the first "
+         "(the default is to keep the first).")
 @papis.cli.bool_flag(
     "-p", "--pick",
     help="If your picker does not support picking two documents"
-         " at once, call twice the picker to get two documents")
+         " at once, call the picker twice to get two documents.")
 @papis.cli.bool_flag(
     "-k", "--keep", "keep_both",
-    help="Do not erase any document")
+    help="Keep both documents.")
 @click.option("-o",
               "--out",
-              help="Create the resulting document in this path",
+              help="Create the resulting document in this path.",
               default=None)
-@papis.cli.git_option(help="Merge in git")
+@papis.cli.git_option(help="Merge in git.")
 def cli(query: str,
         sort_field: Optional[str],
         out: Optional[str],
@@ -131,7 +131,7 @@ def cli(query: str,
         keep_both: bool,
         sort_reverse: bool,
         pick: bool) -> None:
-    """Merge two documents from a given library"""
+    """Merge two documents from a given library."""
     documents = papis.database.get().query(query)
 
     if sort_field:

@@ -10,7 +10,7 @@ This command initializes a Papis library interactively.
 Examples
 ^^^^^^^^
 
-- To create a new library at a given directory, just run
+- To create a new library in a given directory, run:
 
     .. code:: sh
 
@@ -18,13 +18,13 @@ Examples
 
   and answer the questions interactively.
 
-- To create a library in the current directory, just run
+- To create a library in the current directory, run:
 
     .. code:: sh
 
         papis init
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.init:cli
@@ -102,7 +102,7 @@ def _is_git_repository(path: str) -> bool:
     nargs=1,
 )
 def cli(dir_path: Optional[str]) -> None:
-    """Initialize a papis library"""
+    """Initialize a Papis library."""
 
     from papis.tui.utils import confirm, prompt
 

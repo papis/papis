@@ -11,21 +11,24 @@ in :ref:`bibtex-options`.
 Unicode output
 --------------
 
-If you are using TeX engines like XeTeX or LuaTeX, then you can use unicode
-characters for your BibTeX files as well. This means there is no need to write
-``\`{a}`` instead of ``à`` in words such as ``apareixerà``. To control the
-output of unicode characters in Papis, use the
-:confval:`bibtex-unicode` setting.
+The :confval:`bibtex-unicode` setting can be used to allow Unicode characters in
+exported BibTeX files.
+
+Even though this setting is set to ``False`` by default, many TeX setups support
+the use of Unicode characters in BibTeX files. Enabling Unicode avoids having to
+write ``\`{a}`` instead of just ``à`` to display words such as ``apareixerà``.
+If your setup supports Unicode in BibTeX files, you can safely set
+:confval:`bibtex-unicode` to ``True``.
 
 Override keys
 -------------
 
-There might be some issues with this approach though. If you are
-exporting the information from your ``info.yaml`` to a BibTeX file, characters
-like ``&`` or ``$`` have a special meaning in TeX and would need to be escaped.
-When ``bibtex-unicode = False``, these characters would be exported as ``\&``
-and ``\$``, respectively. If it is just a couple of documents that are causing
-this problem, you can just override the problematic field like so
+There might be some issues with the above approach though. If you are exporting
+the information from your ``info.yaml`` to a BibTeX file, characters like ``&``
+or ``$`` have a special meaning in TeX and need to be escaped. With the default
+``bibtex-unicode = False``, these characters are exported as ``\&`` and ``\$``,
+respectively. If it is just a couple of documents that are causing this problem,
+you can instead override the problematic field like so:
 
 .. code:: yaml
 
@@ -44,5 +47,5 @@ Ignore keys
 -----------
 
 If you do not want to export certain keys to the BibTeX file,
-like the ``abstract``, you might use the :confval:`bibtex-ignore-keys`
+like the ``abstract``, you can use the :confval:`bibtex-ignore-keys`
 setting to omit them in the exporting process.

@@ -1,10 +1,10 @@
-Shell Completion
+Shell completion
 ================
 
 Papis has shell completion for ``bash``, ``fish`` and ``zsh`` through the
 `click framework <https://click.palletsprojects.com/en/latest/shell-completion/#shell-completion>`__
 that comes with it when installed through ``pip``. To control the directory
-in which the completions gets installed use the environment variables
+in which the completions get installed, use the environment variables:
 
 .. code:: bash
 
@@ -17,7 +17,7 @@ each shell are given below.
 * ``bash``: the completion script is installed in
   ``$PREFIX/share/bash-completion/completions`` and works directly with
   the `bash-completion <https://github.com/scop/bash-completion>`__ package.
-  It can also be sourced manually using (or added to your ``.bashrc``)
+  It can also be sourced manually using (or added to your ``.bashrc``):
 
     .. code:: bash
 
@@ -28,7 +28,7 @@ each shell are given below.
   automatically (see the
   `fish docs <https://fishshell.com/docs/current/completions.html#where-to-put-completions>`__
   for more details). It can also be sourced manually using (or added to your
-  ``config.fish``)
+  ``config.fish``):
 
     .. code:: bash
 
@@ -38,14 +38,14 @@ each shell are given below.
   which is sourced automatically starting with version ``5.0.7`` (see the
   `zsh docs <https://zsh.sourceforge.io/Doc/Release/Completion-System.html>`__
   for more details). It can also be sourced manually using (or added to your
-  ``.zshrc``)
+  ``.zshrc``):
 
     .. code:: bash
 
         source $PREFIX/share/zsh/site-functions/_papis
 
 Alternatively, the completion can be generated on-the-fly by running (see more in the
-`click docs <https://click.palletsprojects.com/en/latest/shell-completion/#shell-completion>`__)
+`click docs <https://click.palletsprojects.com/en/latest/shell-completion/#shell-completion>`__):
 
 .. code:: bash
 

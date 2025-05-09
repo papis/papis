@@ -1,7 +1,7 @@
 Hooks
 =====
 
-From version ``0.12`` Papis has a minimal hook infrastructure.
+From version ``v0.12`` Papis has a minimal hook infrastructure.
 Some parts of Papis define and run hooks so that users
 and plugin writers can also tap into this functionality.
 
@@ -12,12 +12,10 @@ they are implemented in the same way within the
 Writing hooks as a user
 -----------------------
 
-Right now the only way to add a hook as a user is using your
-``config.py`` configuration file, which gets loaded
-when your Papis configuration gets loaded.
+Right now the only way to add a hook as a user is using your ``config.py``
+configuration file, which loads along with your Papis configuration.
 
-As an example you can add a function to the ``on_edit_done``
-hook like
+For example you can add a function to the ``on_edit_done`` hook like:
 
 .. code:: python
 
@@ -28,9 +26,9 @@ hook like
 Writing hooks as a developer
 ----------------------------
 
-To add a hook as a plugin writer or a developer you can just add the *entrypoint*
+To add a hook as a plugin writer or developer you can just add the *entrypoint*
 to the ``pyproject.toml`` file. For instance for the ``on_edit_done`` hook you
-would write
+would write:
 
 .. code:: toml
 
@@ -43,8 +41,9 @@ Available hooks
 ``on_edit_done``
 ^^^^^^^^^^^^^^^^
 
-This hook is called by ``papis edit`` after editing has finished, but before it
-is saved to the database. The callbacks for this hook have the following format:
+This hook is called by ``papis edit`` after editing has finished, but before
+saving changes to the database. The callbacks for this hook have the following
+format:
 
 .. code:: python
 
@@ -64,4 +63,4 @@ for this hook have the following format:
         ...
 
 Note that the ``tmp_doc`` argument is not the final document. It will be moved to
-a final location inside the chosen library after the hook was called.
+a final location inside the chosen library after the hook has been called.

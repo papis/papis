@@ -37,7 +37,7 @@ Examples
   query, rather than allowing you to pick one individual document to update.
 
 - Update a document automatically and interactively (searching by DOI in
-  Crossref or in other sources...)
+  Crossref or in other sources...):
 
     .. code:: sh
 
@@ -68,7 +68,7 @@ Examples
 
         papis update --append author ", Albert" Einstein
 
-    This appends ", Einstein" to the existing author string.
+    This appends ", Albert" to the existing author string.
 
 - You can also append an item to a list:
 
@@ -94,10 +94,10 @@ Examples
 
         papis update --drop tags
 
-    This removes the all tags.
+    This removes all tags.
 
 - There is also a convenience option ``--rename`` if you want to rename
-  a list item. It's equivalent to doing ``--remove`` and ``--append`` sequentially.
+  a list item. It's equivalent to doing ``--remove`` and ``--append`` sequentially:
 
     .. code:: sh
 
@@ -120,7 +120,7 @@ Examples
   updated to a set that contains a dictionary.
 
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.update:cli
@@ -405,7 +405,7 @@ def run(
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @papis.cli.sort_option()
-@papis.cli.bool_flag("--auto", help="Try to parse information from different sources")
+@papis.cli.bool_flag("--auto", help="Try to parse information from different sources.")
 @papis.cli.bool_flag(
     "--auto-doctor/--no-auto-doctor",
     help="Apply papis doctor to newly added documents.",
@@ -414,7 +414,7 @@ def run(
 @click.option(
     "--from",
     "from_importer",
-    help="Add document from a specific importer ({})".format(
+    help="Add document from a specific importer ({}).".format(
         ", ".join(papis.importer.available_importers())
     ),
     type=(click.Choice(papis.importer.available_importers()), str),
@@ -464,7 +464,11 @@ def run(
           papis.cli.FormattedStringParamType(),
           papis.cli.FormattedStringParamType()),
 )
-@papis.cli.bool_flag("-b", "--batch", help="Batch mode, do not prompt or otherwise")
+@papis.cli.bool_flag(
+    "-b",
+    "--batch",
+    help="Do not prompt, and skip documents containing errors."
+)
 def cli(
     query: str,
     git: bool,
@@ -482,7 +486,7 @@ def cli(
     to_remove: List[Tuple[str, str]],
     to_rename: List[Tuple[str, str, str]],
 ) -> None:
-    """Update document metadata"""
+    """Update document metadata."""
     success = True
 
     documents = papis.cli.handle_doc_folder_query_all_sort(

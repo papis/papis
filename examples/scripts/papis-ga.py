@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-# papis-short-help: Git add <document>
+# papis-short-help: Git add <document>.
 # Copyright © 2017 Alejandro Gallo. GPLv3
 
 """

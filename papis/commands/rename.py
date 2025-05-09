@@ -46,7 +46,7 @@ Examples
 
         papis rename --all author:"Rick Astley"
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.rename:cli
@@ -106,15 +106,15 @@ def run(document: papis.document.Document,
 
 
 @click.command("rename")
+@click.help_option("-h", "--help")
 @click.option(
     "--folder-name",
-    help="Name format for the document main folder",
+    help="Name format for the document main folder.",
     type=papis.cli.FormattedStringParamType(),
     default=lambda: papis.config.getformattedstring("add-folder-name"))
 @papis.cli.bool_flag(
     "-b", "--batch",
-    help="Batch mode, do not prompt")
-@click.help_option("--help", "-h")
+    help="Batch mode, do not prompt.")
 @papis.cli.all_option()
 @papis.cli.query_argument()
 @papis.cli.git_option()
@@ -128,7 +128,7 @@ def cli(query: str,
         sort_field: Optional[str],
         doc_folder: Tuple[str, ...],
         sort_reverse: bool) -> None:
-    """Rename document folders"""
+    """Rename document folders."""
     if not folder_name:
         logger.warning("No folder name format specified, so no documents can be "
                        "renamed. Set either the configuration option "

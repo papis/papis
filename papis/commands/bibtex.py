@@ -8,16 +8,16 @@ the file using information from the library.
 Examples
 ^^^^^^^^
 
-You can use it for opening some papers from the BibTeX file by calling
+You can use it to open some papers from the BibTeX file by calling:
 
 .. code:: sh
 
     papis bibtex read new_papers.bib open
 
 This is done by matching the entry in the BibTeX file with a document in your
-library and then opening the correspond files. If no document can be found in
+library and then opening the corresponding files. If no document can be found in
 the library, then the file cannot be opened, of course. To add papers to the
-BibTeX file (from the current library) you can call
+BibTeX file (from the current library) you can call:
 
 .. code:: sh
 
@@ -28,14 +28,14 @@ BibTeX file (from the current library) you can call
         save new_papers.bib    # Save in new_papers.bib
 
 To update some information that was modified in Papis'
-:ref:`YAML files <info-file>`, you can call
+:ref:`YAML files <info-file>`, you can call:
 
 .. code:: sh
 
     papis bibtex            \
         read new_papers.bib \ # Read bib file
-        update -f           \ # Update what has been read from papis library
-        save new_papers.bib   # save everything to new_papers.bib, overwriting
+        update -f           \ # Update what has been read from Papis library
+        save new_papers.bib   # Save everything to new_papers.bib, overwriting
 
 .. note::
 
@@ -61,8 +61,8 @@ With this setup, you can just do::
 
     papis bibtex add -q einstein save
 
-Check references quality
-^^^^^^^^^^^^^^^^^^^^^^^^
+Check reference quality
+^^^^^^^^^^^^^^^^^^^^^^^
 
 When you're collaborating with someone, you might come across malformed
 or incomplete references. Most journals want to have all the DOIs
@@ -79,7 +79,7 @@ are not cited in the ``.tex`` files by calling::
 and you can then filter them out using the ``filter-cited`` command.
 
 To monitor the health of the project's BibTeX file, you can add a simple target
-to the project's ``Makefile`` like
+to the project's ``Makefile`` like:
 
 .. code:: make
 
@@ -90,7 +90,7 @@ to the project's ``Makefile`` like
 Vim integration
 ^^^^^^^^^^^^^^^
 
-This command can also be easily used from Vim with these simple lines
+This command can also be easily used from Vim with these simple lines:
 
 .. code:: vim
 
@@ -108,16 +108,17 @@ This command can also be easily used from Vim with these simple lines
     command! -nargs=0 BibRef call PapisBibtexRef()
     command! -nargs=0 BibOpen exec "!papis bibtex open"
 
-And use like such: |asciicast|
+And use as such: |asciicast|
 
 .. |asciicast| image:: https://asciinema.org/a/8KbLQJSVYVYNXHVF3wgcxx5Cp.svg
    :target: https://asciinema.org/a/8KbLQJSVYVYNXHVF3wgcxx5Cp
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.bibtex:cli
     :prog: papis bibtex
+    :nested: full
 """
 
 import os
@@ -151,10 +152,10 @@ BIBTEX_EXPLORER = get_explorer_by_name("bibtex")
 @click.help_option("-h", "--help")
 @papis.cli.bool_flag(
     "--noar", "--no-auto-read", "no_auto_read",
-    help="Do not auto read the 'default-read-file' (must call 'read' explicitly)")
+    help="Do not auto read the 'default-read-file' (must call 'read' explicitly).")
 @click.pass_context
 def cli(ctx: click.Context, no_auto_read: bool) -> None:
-    """Interact with BibTeX files"""
+    """Interact with BibTeX files."""
     ctx.obj = {"documents": []}
 
     if no_auto_read:
@@ -179,7 +180,7 @@ if BIBTEX_EXPLORER:
 @papis.cli.query_option()
 @click.option(
     "-r", "--refs-file",
-    help="File with references to query in the database and then add",
+    help="File with references to query in the database and then add.",
     type=click.Path(exists=True),
     default=None)
 @click.pass_context
@@ -187,7 +188,7 @@ def cli_add(ctx: click.Context,
             query: str,
             _all: bool,
             refs_file: Optional[str]) -> None:
-    """Add documents from the library to the BibTeX file"""
+    """Add documents from the library to the BibTeX file."""
     from papis.api import get_documents_in_lib, pick_doc
 
     docs = []
@@ -226,17 +227,17 @@ def cli_add(ctx: click.Context,
 @click.help_option("-h", "--help")
 @papis.cli.all_option()
 @papis.cli.bool_flag("--from", "-f", "fromdb",
-                     help="Update the document from the library")
+                     help="Update the document from the library.")
 @papis.cli.bool_flag("-t", "--to", "todb",
-                     help="Update the library document from the BibTeX file")
+                     help="Update the library document from the BibTeX file.")
 @click.option("-k", "--keys",
-              help="Update only given keys (can be given multiple times)",
+              help="Update only given keys (can be given multiple times).",
               type=str,
               multiple=True)
 @click.pass_context
 def cli_update(ctx: click.Context, _all: bool,
                fromdb: bool, todb: bool, keys: List[str]) -> None:
-    """Update documents from and to the library"""
+    """Update documents from and to the library."""
     if fromdb and todb:
         logger.error("Cannot pass both '--from' and '--to'.")
         return
@@ -339,7 +340,7 @@ def cli_open(ctx: click.Context) -> None:
 @cli.command("edit")
 @click.help_option("-h", "--help")
 @click.option("-s", "--set", "set_tuples",
-              help="Update a document with key value pairs",
+              help="Update a document with key value pairs.",
               multiple=True,
               type=(str, papis.cli.FormattedStringParamType()),)
 @papis.cli.all_option()
@@ -351,7 +352,7 @@ def cli_edit(ctx: click.Context,
     Edit documents by adding keys or opening an editor.
 
     For example, you can run the following to add a special key ``__proj`` to
-    all the documents
+    all the documents:
 
     .. code:: sh
 
@@ -432,7 +433,7 @@ def cli_rm(ctx: click.Context) -> None:
 
 @cli.command("ref")
 @click.help_option("-h", "--help")
-@click.option("-o", "--out", help="Output ref to a file", default=None)
+@click.option("-o", "--out", help="Output ref to a file.", default=None)
 @click.pass_context
 def cli_ref(ctx: click.Context, out: Optional[str]) -> None:
     """Print the reference for a document."""
@@ -459,7 +460,7 @@ def cli_ref(ctx: click.Context, out: Optional[str]) -> None:
     "bibfile",
     default=lambda: papis.config.getstring("default-save-bibfile", section="bibtex"),
     required=True, type=click.Path())
-@papis.cli.bool_flag("-f", "--force", help="Do not ask for confirmation when saving")
+@papis.cli.bool_flag("-f", "--force", help="Do not ask for confirmation when saving.")
 @click.pass_context
 def cli_save(ctx: click.Context, bibfile: str, force: bool) -> None:
     """Save the documents in the BibTeX format."""
@@ -481,11 +482,11 @@ def cli_save(ctx: click.Context, bibfile: str, force: bool) -> None:
 @cli.command("sort")
 @click.help_option("-h", "--help")
 @click.option("-k", "--key",
-              help="Field to order by",
+              help="Field to order by.",
               default=None,
               type=str,
               required=True)
-@papis.cli.bool_flag("-r", "--reverse", help="Reverse the sort order")
+@papis.cli.bool_flag("-r", "--reverse", help="Reverse the sort order.")
 @click.pass_context
 def cli_sort(ctx: click.Context, key: Optional[str], reverse: bool) -> None:
     """Sort the documents in the BibTeX file."""
@@ -498,11 +499,11 @@ def cli_sort(ctx: click.Context, key: Optional[str], reverse: bool) -> None:
 @cli.command("unique")
 @click.help_option("-h", "--help")
 @click.option("-k", "--key",
-              help="Field to test for uniqueness, default is ref",
+              help="Field to test for uniqueness, default is ref.",
               default="ref",
               type=str)
 @click.option("-o",
-              help="Output the discarded documents to a file",
+              help="Output the discarded documents to a file.",
               default=None,
               type=str)
 @click.pass_context
@@ -549,7 +550,7 @@ def cli_unique(ctx: click.Context, key: str, o: Optional[str]) -> None:
 @cli.command("doctor")
 @click.help_option("-h", "--help")
 @click.option("-k", "--key",
-              help="Field to test for uniqueness, default is ref",
+              help="Field to test for uniqueness, default is ref.",
               multiple=True,
               default=("doi", "url", "year", "title", "author"),
               type=str)
@@ -558,7 +559,7 @@ def cli_doctor(ctx: click.Context, key: List[str]) -> None:
     """
     Check BibTeX file for correctness.
 
-    This can check missing keys, e.g. by running
+    This can check missing keys, e.g. by running:
 
     .. code:: sh
 
@@ -580,7 +581,7 @@ def cli_doctor(ctx: click.Context, key: List[str]) -> None:
 @cli.command("filter-cited")
 @click.help_option("-h", "--help")
 @click.option("-f", "--file", "_files",
-              help="Text file to check for references",
+              help="Text file to check for references.",
               multiple=True, required=True, type=str)
 @click.pass_context
 def cli_filter_cited(ctx: click.Context, _files: List[str]) -> None:
@@ -588,7 +589,7 @@ def cli_filter_cited(ctx: click.Context, _files: List[str]) -> None:
     Filter cited documents from the BibTeX file.
 
     for example to filter cited documents in ``main.tex`` and save a unique
-    list of documents in ``cited.bib``, you can run
+    list of documents in ``cited.bib``, you can run:
 
     .. code:: sh
 
@@ -610,7 +611,7 @@ def cli_filter_cited(ctx: click.Context, _files: List[str]) -> None:
 @cli.command("iscited")
 @click.help_option("-h", "--help")
 @click.option("-f", "--file", "_files",
-              help="Text file to check for references",
+              help="Text file to check for references.",
               multiple=True, required=True, type=str)
 @click.pass_context
 def cli_iscited(ctx: click.Context, _files: List[str]) -> None:
@@ -618,7 +619,7 @@ def cli_iscited(ctx: click.Context, _files: List[str]) -> None:
     Check which documents are not cited.
 
     For example, to print a list of documents that have not been cited in
-    both ``main.tex`` and ``chapter-2.tex``, run
+    both ``main.tex`` and ``chapter-2.tex``, run:
 
     .. code:: sh
 
@@ -642,14 +643,14 @@ def cli_iscited(ctx: click.Context, _files: List[str]) -> None:
 
 @cli.command("import")
 @click.help_option("-h", "--help")
-@click.option("-o", "--out", help="Out folder to export", default=None)
+@click.option("-o", "--out", help="Out folder to export.", default=None)
 @papis.cli.all_option()
 @click.pass_context
 def cli_import(ctx: click.Context, out: Optional[str], _all: bool) -> None:
     """
     Import documents from a BibTeX file to the current library.
 
-    For example, you can run
+    For example, you can run:
 
     .. code:: sh
 

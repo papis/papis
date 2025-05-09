@@ -5,9 +5,9 @@ for a project before adding it to the Papis libraries.
 Examples
 ^^^^^^^^
 
-Imagine you want to search for some papers online, but you don't want to
-go into a browser and look for it. The ``explore`` command gives you way to do
-this using several services available online. More should be coming on the way!
+Imagine you want to search for some papers online but don't want to open the
+browser to look for them. The ``explore`` command gives you a way to do this
+using several online services.
 
 An excellent resource for this is `Crossref <https://www.crossref.org/>`__.
 You can use it by using the ``crossref`` subcommand:
@@ -18,16 +18,16 @@ You can use it by using the ``crossref`` subcommand:
 
 If you issue this command, you will see some text but basically nothing
 will happen. This is because ``explore`` is conceived as a concatenating command.
-Doing a simple
+Doing a simple:
 
 .. code:: sh
 
     papis explore crossref -h
 
 will tell you which commands are available. Let us suppose that you want to
-look for some documents on Crossref, say some papers of Schroedinger's, and
+look for some documents on Crossref, say some papers of Schrodinger's, and
 you want to store them into a BibTeX file called ``lib.bib``. Then you could
-concatenate the commands ``crossref`` and ``export --format bibtex`` as such
+concatenate the commands ``crossref`` and ``export --format bibtex``:
 
 .. code:: sh
 
@@ -37,19 +37,19 @@ This will store everything that you got from Crossref in the ``lib.bib`` file.
 However, ``explore`` is much more flexible than that. You can also pick just
 one document to store. For instance, let's assume that you don't want to store
 all retrieved documents but only one that you pick. The ``pick`` command will
-take care of it
+take care of it:
 
 .. code:: sh
 
     papis explore crossref -a 'Schrodinger' pick export --format bibtex --out 'lib.bib'
 
 Notice how the ``pick`` command is situated before the ``export``.
-More generally you could write something like
+More generally you could write something like:
 
 .. code:: sh
 
     papis explore \\
-        crossref -a 'Schroedinger' \\
+        crossref -a 'Schrodinger' \\
         crossref -a 'Einstein' \\
         arxiv -a 'Felix Hummel' \\
         export --format yaml --out 'docs.yaml' \\
@@ -62,9 +62,9 @@ Hummel. At the end, all these documents will be stored in the ``docs.yaml`` file
 After that we pick one document from them and store the information in
 the file ``special-picked-documents.bib``, and we could go on and on.
 
-If you want to follow-up on these documents and get them again to pick one,
+If you want to follow up on these documents and get them to pick one again,
 you could use the ``yaml`` command to read in document information from a YAML
-file, e.g. the previously created ``docs.yaml``,
+file, e.g. the previously created ``docs.yaml``:
 
 .. code:: sh
 
@@ -82,7 +82,7 @@ Papis template syntax.  In this case, the picked document gets fed into the
 Also this very document is opened by Firefox (in case the document does have a
 ``url``).
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.explore:cli
@@ -145,7 +145,7 @@ def get_explorer_by_name(name: str) -> Optional[click.Command]:
 @click.help_option("--help", "-h")
 @papis.cli.query_argument()
 @papis.cli.doc_folder_option()
-@click.option("--library", "-l", default=None, help="Papis library to look")
+@click.option("--library", "-l", default=None, help="Papis library to look in.")
 def lib(ctx: click.Context,
         query: str,
         doc_folder: Tuple[str, ...],
@@ -154,7 +154,7 @@ def lib(ctx: click.Context,
     Query for documents in your library.
 
     For example, to query all the documents containing "einstein" in the "books"
-    library, you can call
+    library, you can call:
 
     .. code:: sh
 
@@ -177,13 +177,13 @@ def lib(ctx: click.Context,
 @click.option("--number", "-n",
               type=int,
               default=None,
-              help="Pick automatically the n-th document")
+              help="Automatically pick the n-th document.")
 def pick(ctx: click.Context, number: Optional[int]) -> None:
     """
     Pick a document from the retrieved documents.
 
     For example, to open a picker with the documents in a BibTeX file,
-    you can call
+    you can call:
 
     .. code:: sh
 
@@ -206,7 +206,7 @@ def pick(ctx: click.Context, number: Optional[int]) -> None:
 @papis.cli.doc_folder_option()
 @click.help_option("--help", "-h")
 @papis.cli.bool_flag("-b", "--cited-by",
-                     help="Use the cited-by citations")
+                     help="Use the cited-by citations.")
 @papis.cli.all_option()
 def citations(ctx: click.Context,
               query: str,
@@ -217,7 +217,7 @@ def citations(ctx: click.Context,
     Query the citations for a paper.
 
     For example, to go through the citations of a paper and export it in a
-    YAML file, you can call
+    YAML file, you can call:
 
     .. code:: sh
 
@@ -254,7 +254,7 @@ def add(ctx: click.Context) -> None:
     """
     Add selected documents to the current library.
 
-    For example, to add documents from a BibTeX file, you can call
+    For example, to add documents from a BibTeX file, you can call:
 
     .. code:: sh
 
@@ -273,9 +273,9 @@ def cmd(ctx: click.Context, command: str) -> None:
     """
     Run a general command on the document list.
 
-    For example, to look for 200 Schroedinger papers with
+    For example, to look for 200 Schrodinger papers with
     `Crossref <https://www.crossref.org/>`__, pick one, and add it to the
-    current library via ``papis-scihub``, you can call
+    current library via ``papis-scihub``, you can call:
 
     .. code:: sh
 

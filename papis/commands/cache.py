@@ -1,8 +1,8 @@
 """
-This command allows the user to interact with the papis cache or papis database.
+This command allows the user to interact with the Papis cache (database).
 
 To clear the cache (remove it from the filesystem), you can run the following
-command
+command:
 
 ::
 
@@ -11,15 +11,15 @@ command
 This command is also useful for plugin developers.
 Let us suppose that you are editing the YAML file of a document at path
 ``/path/to/info.yaml``.
-If you are editing this file without the machinery of papis
-you might want to make Papis be aware of this change by using the ``update``
-subcommand. You might do
+If you are editing this file without the machinery of Papis
+you might want to make Papis aware of this change by using the ``update``
+subcommand. You might do:
 
 ::
 
     papis cache update --doc-folder /path/to
 
-or maybe by query
+or maybe by query:
 
 ::
 
@@ -29,7 +29,7 @@ Furthermore, a noteworthy subcommand is ``update-newer``, which
 updates the cache for those documents whose info file is newer than
 the cache itself.  This subcommand has the same interface as most
 ``papis`` commands, so that if you want to check all documents you have to
-input
+input:
 
 ::
 
@@ -41,6 +41,12 @@ the cache for those documents that have been synchronized by the means
 of synchronization that you are using, for instance using git, Syncthing,
 Dropbox, etc.
 
+Command-line interface
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. click:: papis.commands.cache:cli
+    :prog: papis cache
+    :nested: full
 """
 import os
 from typing import Optional, Tuple
@@ -62,7 +68,7 @@ logger = papis.logging.get_logger(__name__)
 @click.help_option("--help", "-h")
 def cli() -> None:
     """
-    Manage the cache or database of a Papis library.
+    Manage the cache (database) of a Papis library.
     """
 
 

@@ -162,11 +162,11 @@ def is_valid_dblp_key(key: str) -> bool:
 @click.help_option("--help", "-h")
 @click.option(
     "--query", "-q",
-    help="General query",
+    help="General query.",
     default="")
 @click.option(
     "--max", "-m", "max_results",
-    help="Maximum number of results",
+    help="Maximum number of results.",
     default=30)
 def explorer(
         ctx: click.core.Context,
@@ -176,7 +176,7 @@ def explorer(
     Look for documents on `dblp.org <https://dblp.org/>`__.
 
     For example, to look for a document with the author "Albert Einstein" and
-    export it to a BibTeX file, you can call
+    export it to a BibTeX file, you can call:
 
     .. code:: sh
 

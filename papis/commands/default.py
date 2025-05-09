@@ -7,7 +7,7 @@ Examples
 
 - To override some configuration options, you can use the ``--set`` flag. For
   instance, if you want to override the ``editor`` used to edit files or the
-  ``opentool`` used to open documents, you can just type
+  ``opentool`` used to open documents, you can just type:
 
     .. code:: sh
 
@@ -15,13 +15,13 @@ Examples
         papis --set editor gedit --set opentool firefox open
 
 - If you want to list the libraries and pick one before sending a database
-  query to papis, use ``--pick-lib`` as such
+  query to Papis, use ``--pick-lib`` as such:
 
     .. code:: sh
 
         papis --pick-lib open 'einstein relativity'
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.default:run
@@ -128,50 +128,50 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
 @click.version_option(version=papis.__version__)
 @papis.cli.bool_flag(
     "-v", "--verbose",
-    help="Make the output verbose (equivalent to --log DEBUG)",
+    help="Make the output verbose (equivalent to --log DEBUG).",
     default="PAPIS_DEBUG" in os.environ)
 @click.option(
     "--profile",
-    help="Print profiling information into file",
+    help="Print profiling information into file.",
     type=click.Path(),
     default=None)
 @click.option(
     "-l", "--lib",
-    help="Choose a library name or library path (unnamed library)",
+    help="Choose a library name or library path (unnamed library).",
     default=lambda: papis.config.getstring("default-library"))
 @click.option(
     "-c",
     "--config",
-    help="Configuration file to use",
+    help="Configuration file to use.",
     type=click.Path(exists=True),
     default=None)
 @papis.cli.bool_flag(
     "--pick-lib",
-    help="Pick library to use")
+    help="Pick library to use.")
 @click.option(
     "-s", "--set", "set_list",
     type=(str, str),
     multiple=True,
     help="Set key value, e.g., "
-         "--set info-name information.yaml --set opentool evince")
+         "'--set info-name information.yaml --set opentool evince'.")
 @click.option(
     "--color",
     type=click.Choice(["always", "auto", "no"]),
     default=os.environ.get("PAPIS_LOG_COLOR", "auto"),
-    help="Prevent the output from having color")
+    help="Prevent the output from having color.")
 @click.option(
     "--log",
-    help="Logging level",
+    help="Logging level.",
     type=click.Choice(["INFO", "DEBUG", "WARNING", "ERROR", "CRITICAL"]),
     default=os.environ.get("PAPIS_LOG_LEVEL", "INFO"))
 @click.option(
     "--logfile",
-    help="File to dump the log",
+    help="File to dump the log.",
     type=str,
     default=os.environ.get("PAPIS_LOG_FILE"))
 @click.option(
     "--np",
-    help="Use number of processors for multicore functionalities in papis",
+    help="Use number of processors for multicore functionalities in Papis.",
     type=str,
     default=None)
 @click.pass_context

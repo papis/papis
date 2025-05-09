@@ -115,20 +115,20 @@ class PythonFormatter(Formatter):
     :confval:`formatter` setting in the configuration file. The
     formatted string has access to the ``doc`` variable, that is always a
     :class:`papis.document.Document`. A string using this formatter can look
-    like
+    like:
 
     .. code:: python
 
         "{doc[year]} - {doc[author_list][0][family]} - {doc[title]}"
 
     Note, however, that according to PEP 3101 some simple formatting is not
-    possible. For example, the following is not allowed
+    possible. For example, the following is not allowed:
 
     .. code:: python
 
         "{doc[title].lower()}"
 
-    and should be replaced with
+    and should be replaced with:
 
     .. code:: python
 
@@ -138,7 +138,7 @@ class PythonFormatter(Formatter):
     "u" for :meth:`str.upper`, "t" for :meth:`str.title`, "c" for
     :meth:`str.capitalize`, "y" that uses ``slugify`` (through
     :func:`papis.paths.normalize_path`). Additionally, the following
-    syntax is available to select subsets from a string
+    syntax is available to select subsets from a string:
 
     .. code:: python
 
@@ -185,7 +185,7 @@ class Jinja2Formatter(Formatter):
     :confval:`formatter` setting in the configuration file. The
     formatted string has access to the ``doc`` variable, that is always a
     :class:`papis.document.Document`. A string using this formatter can look
-    like
+    like:
 
     .. code:: python
 
@@ -194,13 +194,13 @@ class Jinja2Formatter(Formatter):
     This formatter supports the whole range of Jinja2 control structures and
     `filters <https://jinja.palletsprojects.com/en/3.1.x/templates/#filters>`__
     so more advanced string processing is possible. For example, we can titlecase
-    the title using
+    the title using:
 
     .. code:: python
 
         "{{ doc.title | title }}"
 
-    or give a default value if a key is missing in the document using
+    or give a default value if a key is missing in the document using:
 
     .. code:: python
 

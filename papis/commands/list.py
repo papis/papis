@@ -24,7 +24,7 @@ Examples
         papis list --all --template bibitem.template
 
 - For scripting, printing the id of a series of documents is valuable in order
-  to further use the id in other scripts.
+  to further use the id in other scripts:
 
     .. code:: sh
 
@@ -33,7 +33,7 @@ Examples
         papis edit papis_id:${papis_id}
         # etc.
 
-- List various plugins and extensions that Papis sees
+- List various plugins and extensions that Papis sees:
 
     .. code:: sh
 
@@ -42,7 +42,7 @@ Examples
         papis list --exporters
         papis list --doctors
 
-Command-line Interface
+Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. click:: papis.commands.list:cli
@@ -201,55 +201,55 @@ run = list_documents
 @papis.cli.query_argument()
 @papis.cli.bool_flag(
     "-i", "--info", "show_info",
-    help="Show the info file for each document")
+    help="Show the info file for each document.")
 @papis.cli.bool_flag(
     "--id", "show_id",
-    help="Show the papis id for each document")
+    help="Show the papis id for each document.")
 @papis.cli.bool_flag(
     "-f", "--file", "show_files",
-    help="Show the files for each document")
+    help="Show the files for each document.")
 @papis.cli.bool_flag(
     "-d", "--dir", "show_dir",
-    help="Show the folder name containing each document")
+    help="Show the folder name containing each document.")
 @papis.cli.bool_flag(
     "-n", "--notes", "show_notes",
-    help="Show notes files for each document")
+    help="Show notes files for each document.")
 @click.option(
     "--format", "show_format",
-    help="Show documents using a custom format, e.g. '{doc[year]} {doc[title]}",
+    help="Show documents using a custom format, e.g. '{doc[year]} {doc[title]}'.",
     type=papis.cli.FormattedStringParamType(),
     default="")
 @papis.cli.bool_flag(
     "--paths", "show_paths",
-    help="List configuration paths used by papis")
+    help="List configuration paths used by papis.")
 @papis.cli.bool_flag(
     "--libraries", "show_libraries",
-    help="List defined libraries")
+    help="List defined libraries.")
 @papis.cli.bool_flag(
     "--exporters", "show_exporters",
-    help="List available exporters")
+    help="List available exporters.")
 @papis.cli.bool_flag(
     "--explorers", "show_explorers",
-    help="List available explorers")
+    help="List available explorers.")
 @papis.cli.bool_flag(
     "--importers", "show_importers",
-    help="List available importers")
+    help="List available importers.")
 @papis.cli.bool_flag(
     "--downloaders", "show_downloaders",
-    help="List available downloaders")
+    help="List available downloaders.")
 @papis.cli.bool_flag(
     "--pickers", "show_pickers",
-    help="List available pickers")
+    help="List available pickers.")
 @papis.cli.bool_flag(
     "--doctors", "show_doctor",
-    help="List available doctor checks")
+    help="List available doctor checks.")
 @click.option(
     "--template",
-    help="Template file containing a papis format to list documents",
+    help="Template file containing a papis format to list documents.",
     default=None)
 @papis.cli.bool_flag(
     "--quiet",
-    help="Do not show short descriptions for plugins (exporters, etc.)",
+    help="Do not show short descriptions for plugins (exporters, etc.).",
     default=False)
 @papis.cli.all_option()
 @papis.cli.sort_option()
@@ -275,7 +275,7 @@ def cli(query: str,
         doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
         sort_reverse: bool) -> None:
-    """List document metadata"""
+    """List document metadata."""
 
     objects = list_plugins(
         show_paths=show_paths,

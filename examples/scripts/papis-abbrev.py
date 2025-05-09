@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-# papis-short-help: Abbreviate journal titles
+# papis-short-help: Abbreviate journal titles.
 # Copyright © 2017 Alejandro Gallo. GPLv3
 
 """

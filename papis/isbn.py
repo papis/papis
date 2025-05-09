@@ -82,7 +82,7 @@ def explorer(ctx: click.core.Context, query: str, service: str) -> None:
     Look for documents using `isbnlib <https://isbnlib.readthedocs.io/en/latest/>`__.
 
     For example, to look for a document with the author "Albert Einstein" and
-    open it with Firefox, you can call
+    open it with Firefox, you can call:
 
     .. code:: sh
 

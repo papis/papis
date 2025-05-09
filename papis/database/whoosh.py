@@ -1,4 +1,4 @@
-"""This is the whoosh interface to Papis.
+"""This is the Whoosh interface to Papis.
 
 For future Papis developers here are some considerations.
 
@@ -24,7 +24,7 @@ string should look like the following:
         "tags": TEXT(stored=True),
     }
 
-where all the fields are explained in the whoosh
+where all the fields are explained in the Whoosh
 `documentation <https://whoosh.readthedocs.io/en/latest/schema.html>`__.
 
 After this Schema is created, the folders of the library are traversed
@@ -228,7 +228,7 @@ class Database(DatabaseBase):
         return open_dir(self.index_dir)
 
     def _create_schema(self) -> "Schema":
-        """Creates and returns whoosh schema to be applied to the library"""
+        """Creates and returns Whoosh schema to be applied to the library"""
         from whoosh.fields import Schema
         logger.debug("Creating schema.")
 
@@ -237,7 +237,7 @@ class Database(DatabaseBase):
 
     def _get_schema_init_fields(self) -> Dict[str, "FieldType"]:
         """
-        :returns: the keyword arguments to be passed to the whoosh schema object
+        :returns: the keyword arguments to be passed to the Whoosh schema object
             (see :meth:`_create_schema`).
         """
         # NOTE: these are imported here so that `eval` sees them
