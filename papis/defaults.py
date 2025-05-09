@@ -22,7 +22,7 @@ def get_default_opener() -> str:
         # NOTE: should work on Linux / FreeBSD / cygwin
         return "xdg-open"
 
-# NOTE: Try to keep these in the same order as in the `default-settings.rst`
+# NOTE: Try to keep these in the same order as in the `default_settings.rst`
 # document in the docs, so they can be easily checked and updated
 
 

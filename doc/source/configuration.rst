@@ -221,4 +221,4 @@ for most users it will be in::
     ~/.config/papis/config.py
 
 
-.. include:: default-settings.rst
+.. include:: default_settings.rst
