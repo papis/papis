@@ -1080,7 +1080,7 @@ of the document, as described by the :confval:`match-format` setting.
 
 .. papis-config:: fzf-header-format
 
-    Format for the entries for ``fzf`. Note that, if you want colors, you should
+    Format for the entries for ``fzf``. Note that, if you want colors, you should
     add the ``--ansi`` flag to :confval:`fzf-extra-flags` and include the colors
     in the :confval:`header-format` as ``ansi`` escape sequences.
 
