@@ -99,7 +99,7 @@ Adding Configuration Options
 To add a new main option:
 
 1. Add a default value in `defaults.py` in the `settings` dictionary.
-2. Document the option in `doc/source/default-settings.rst`. Try to answer the
+2. Document the option in `doc/source/default_settings.rst`. Try to answer the
    following questions:
   - What is it for?
   - Where is it used?
@@ -202,7 +202,7 @@ A new command is added in `papis/commands/mycommand.py`. To document the command
      based on [Click](https://click.palletsprojects.com/) (this requires
      `sphinx-click`).
    - If the command defines some new options, they should be added to
-     `doc/source/default-settings.rst` instead.
+     `doc/source/default_settings.rst` instead.
 
 2. Add a documentation file to `doc/source/commands/mycommand.rst` to include
    the command in the documentation.

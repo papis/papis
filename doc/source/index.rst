@@ -125,7 +125,7 @@ extend Papis' features or integrate it with other software:
    papis_id
    bibtex
    citations
-   web-application
+   web_application
    gui
    editors
    scripting
