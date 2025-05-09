@@ -109,6 +109,8 @@ class PapisConfig(Directive):
         # NOTE: try to get some type information for display purposes
         if "type" in self.options:
             default_type = self.options["type"].strip()
+            if default is None:
+                default_type = f"`~typing.Optional` [:class:`{default_type}`]"
             if not default_type.startswith(":"):
                 default_type = f":class:`~{default_type}`"
         elif default is not None:

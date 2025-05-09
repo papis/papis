@@ -9,9 +9,12 @@ from papis.testing import TemporaryConfiguration
 def test_config_single_option(tmp_config: TemporaryConfiguration) -> None:
     from papis.commands.config import run
 
-    assert run(["editor"]) == {"editor": papis.config.get("editor")}
-    assert run(["settings.editor"]) == {"editor": papis.config.get("editor")}
-    assert run(["papers.dir"]) == {"dir": papis.config.get("dir", section="papers")}
+    assert run(["editor"]) == {
+        "editor": papis.config.getstring("editor")}
+    assert run(["settings.editor"]) == {
+        "editor": papis.config.getstring("editor")}
+    assert run(["papers.dir"]) == {
+        "dir": papis.config.getstring("dir", section="papers")}
 
 
 @pytest.mark.config_setup(overwrite=True, settings={})

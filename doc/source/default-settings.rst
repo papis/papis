@@ -450,7 +450,6 @@ Add options
     If this setting is ``None`` the template ``{doc[papis_id]}`` is used.
 
 .. papis-config:: add-file-name
-    :type: str
 
     Sets the default file name for newly added documents, similarly to
     :confval:`add-folder-name`. If it is not set, the names of the
