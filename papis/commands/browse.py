@@ -136,8 +136,8 @@ def run(document: papis.document.Document,
 @papis.cli.query_argument()
 @papis.cli.sort_option()
 @click.option("-k", "--key", default="",
-              help="Use this key in the document as an URL to open in"
-                   " the browser (e.g. doi, url, doc_url)")
+              help="Use this key as the URL to open in the browser "
+                   "(e.g. doi, url, doc_url).")
 @papis.cli.bool_flag(
     "-n", "--print", "_print",
     help="Just print out the URL, do not open it in a browser.")
