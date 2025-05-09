@@ -113,10 +113,10 @@ General settings
 
 .. papis-config:: info-allow-unicode
 
-    If *True*, this flag will allow unicode characters in your *info files*.
+    If *True*, this flag will allow Unicode characters in your *info files*.
     Otherwise, the strings will be decoded and written as bytes. Unless you have
     very strong reasons not to, this should always be set to *True* (we live in
-    a unicode world after all!).
+    a Unicode world after all!).
 
 .. papis-config:: unique-document-keys
 
@@ -1053,44 +1053,42 @@ FZF integration
 ---------------
 
 Papis ships with *out-of-the-box* `fzf <https://github.com/junegunn/fzf>`__
-integration for the picker.  A minimal terminal user interface is provided,
+integration in the form of a picker.  A minimal terminal user interface is provided,
 together with options for its customization. You can set the :confval:`picktool`
 to ``fzf`` to select this picker.
 
-In comparison to the *built-in* Papis picker TUI, the advantage of the ``fzf``
-picker is that it is much faster. However, a disadvantage is that Papis
-currently only supports one-line entries in ``fzf``. It is also important to
-note that ``fzf`` will **only** match against what is shown on the terminal
-screen, as opposed to the Papis matcher, that can match against the **whole**
-title and **whole** author text, since this is controlled by the
-``match-format`` setting. However, for the usual use cases it might not bother
-the user to have this limitation of ``fzf``.
+In comparison to the default Papis picker TUI, the ``fzf`` picker is generally
+much faster, can be configured to show helpful previews of documents, and use
+other fancy ``fzf`` features. However, a disadvantage is that Papis currently
+only supports one-line entries per document. It is also important to note that
+``fzf`` will **only** match against what is shown on the terminal screen. In
+contrast, the default ``papis`` picker can match against other fields
+of the document, as described by the :confval:`match-format` setting.
 
 .. papis-config:: fzf-binary
 
-    Path to or name of the fzf binary.
+    Path to or name of the ``fzf`` binary.
 
 .. papis-config:: fzf-extra-flags
 
-    Extra flags to be passed to fzf every time it gets called.
+    Extra flags to be passed to ``fzf`` every time it gets called.
 
 .. papis-config:: fzf-extra-bindings
 
-    Extra key bindings to fzf as a Python list. Refer to the fzf documentation
-    for more details.
+    Extra key bindings to ``fzf`` as a Python list. Refer to the ``fzf``
+    documentation for more details.
 
 .. papis-config:: fzf-header-format
 
-    Format for the entries for fzf.
-    Notice that if you want colors you should add the ``--ansi`` flag to
-    ``fzf-extra-flags`` and include the colors in the
-    :confval:`header-format` as ``ansi`` escape sequences.
+    Format for the entries for ``fzf`. Note that, if you want colors, you should
+    add the ``--ansi`` flag to :confval:`fzf-extra-flags` and include the colors
+    in the :confval:`header-format` as ``ansi`` escape sequences.
 
-    The Papis format string is given the additional variable ``c`` which
-    contains the package ``colorama`` in it. Refer to the ``colorama``
+    The Papis format string corresponding to this setting is given the additional
+    variable ``c``, which is the ``colorama`` library. Refer to the ``colorama``
     `documentation <https://github.com/tartley/colorama/blob/master/colorama/ansi.py#L49>`__.
     to see which colors are available. For instance, if you want the title in
-    red, you would put in your ``fzf-header-format``:
+    red, you would put in your :confval:`fzf-header-format`:
 
     .. code:: python
 

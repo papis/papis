@@ -80,10 +80,11 @@ logger = papis.logging.get_logger(__name__)
 
 def run(document: papis.document.Document,
         browse: bool = True) -> Optional[str]:
-    """Browse document's url whenever possible and return the url
+    """Open the document's URL in the selected :confval:`browser`.
 
-    :document: Document object
-
+    :arg browse: if *True*, the URL is opened after it is found, instead of just
+        being returned.
+    :returns: the URL corresponding to this document.
     """
     url = None
     key = papis.config.getstring("browse-key")
@@ -135,11 +136,11 @@ def run(document: papis.document.Document,
 @papis.cli.query_argument()
 @papis.cli.sort_option()
 @click.option("-k", "--key", default="",
-              help="Use the value of the document's key to open in"
-                   " the browser, e.g. doi, url, doc_url ...")
+              help="Use this key in the document as an URL to open in"
+                   " the browser (e.g. doi, url, doc_url)")
 @papis.cli.bool_flag(
     "-n", "--print", "_print",
-    help="Just print out the url, do not open it with browser.")
+    help="Just print out the URL, do not open it in a browser.")
 @papis.cli.all_option()
 @papis.cli.doc_folder_option()
 def cli(query: str,
@@ -149,7 +150,7 @@ def cli(query: str,
         doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
         sort_reverse: bool) -> None:
-    """Open document's url in a browser."""
+    """Open a document URL in a browser."""
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,
                                                            sort_field,

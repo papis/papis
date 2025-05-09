@@ -11,13 +11,13 @@ in :ref:`bibtex-options`.
 Unicode output
 --------------
 
-The setting :confval:`bibtex-unicode` can be used to allow unicode characters in
-documents.
+The :confval:`bibtex-unicode` setting can be used to allow Unicode characters in
+exported BibTeX files.
 
-Even though this setting is set to False by default, many TeX setups support the
-use of unicode characters in BibTeX files. Enabling unicode avoids having to
+Even though this setting is set to ``False`` by default, many TeX setups support
+the use of Unicode characters in BibTeX files. Enabling Unicode avoids having to
 write ``\`{a}`` instead of just ``à`` to display words such as ``apareixerà``.
-If your setup supports unicode in BibTeX files, you can safely set
+If your setup supports Unicode in BibTeX files, you can safely set
 :confval:`bibtex-unicode` to ``True``.
 
 Override keys

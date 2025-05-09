@@ -1,7 +1,8 @@
 Editor support
 ==============
 
-There are some plugins for the major open source editors ``vim``/``nvim`` and ``emacs``.
+There are some plugins for the major open source editors ``vim``, ``neovim`` and
+``emacs``.
 
 Vim and Neovim
 --------------

@@ -1,6 +1,9 @@
 """
-The command to remove entire Papis documents or just remove files within
-documents.
+A simple command that can remove entire Papis documents from your library or
+just remove files within a document.
+
+This command should be used with care, since it will remove the document from
+your filesystem, not just from Papis' database.
 
 Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^

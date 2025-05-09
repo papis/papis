@@ -40,7 +40,7 @@ As an example let us consider the following library:
           └── output.pdf
 
 First, you can see there are a lot of folders. Note that not all of them contain
-valid documents. The PDF in ``folder1/paper.pdf`` is not valid since the
+valid documents. The PDF in ``folder1/paper.pdf`` is not valid since
 ``folder1`` does not contain a ``info.yaml`` file. It does not matter how deep
 your library's folder structure is: you can have a ``physics`` folder in which
 you have a ``newton`` folder in which you have a folder containing the actual

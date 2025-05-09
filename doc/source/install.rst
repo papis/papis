@@ -141,7 +141,7 @@ rights on your computer you can simply type:
 
     If you install the package locally, the program ``papis`` will be installed
     into your ``~/.local/bin`` directory by default. You may have to set your
-    ``PATH`` accordingly.
+    ``PATH`` accordingly to have access to it.
 
     One way of doing this in Bash shells (Linux, Ubuntu on Windows or Cygwin) is
     by adding the following line to your ``~/.bashrc`` file:

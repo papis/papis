@@ -24,10 +24,10 @@ your document. This is done by scanning your Papis library for
 documents that cite said document. You can also generate this
 file from the web application or from the ``papis citations`` command.
 
-The citation commands first try to find information that already exists in the
+The *citations* command first tries to find information that already exists in the
 library. That is to say, before doing any online query, it tries to find the
-relevant information in your library (e.g. Crossref supports ``citations`` that
-can be cross-referenced).
+relevant information in your library (e.g. the Crossref importer supports
+``citations`` that can be cross-referenced).
 
 Notice that Papis copies most of the metadata to the ``citations.yaml``
 and ``cited-by.yaml`` files. Even though this might seem quite heavy on

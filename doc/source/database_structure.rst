@@ -32,13 +32,13 @@ You can select a database by using the flag :confval:`database-backend`.
 Papis database
 --------------
 
-Without a database, Papis would need to crawl through the library folder and see
-which folders have an ``info.yaml`` file, which is slow on older computers (and
-hard drives).
+Without a database, Papis would need to crawl through the library folders and see
+which subfolders have an ``info.yaml`` file. Repeatedly accessing the filesystem
+like this can be slow on older computers, remotely mounted partitions, etc.
 
-Papis implements a very rudimentary caching system. A cache is created for
-every library. Inside the cache the whole information already converted
-into python is stored.
+To help with this, Papis implements a simple caching system. For each library,
+it creates a database (as defined by :confval:`database-backend`) that holds
+sufficient relevant information about the documents to avoid such slowdowns.
 
 These cache files are stored per default in:
 
@@ -133,7 +133,7 @@ Parsing a user query means going to the index and matching the query to
 what is found in the index. This means that the index can not in general
 have all the information that the info file of the documents includes.
 
-In other words, the whoosh index will store only certain fields from the
+In other words, the Whoosh index will store only certain fields from the
 documents' info files. The good news is that we can tell Papis exactly
 which fields we want to index. These flags are
 

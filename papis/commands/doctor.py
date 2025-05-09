@@ -73,7 +73,7 @@ Examples
         papis doctor --explain --checks html-tags einstein
 
   The ``--explain`` flag can be used to give additional details of checks that
-  failed. This check, and some others, also have automatic fixers. Here, we can
+  failed. This check (and some others) also has automatic fixers. Here, we can
   just remove all the HTML tags by writing:
 
     .. code:: sh
