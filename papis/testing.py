@@ -394,10 +394,12 @@ class PapisRunner(click.testing.CliRunner):
     """A wrapper around :class:`click.testing.CliRunner`."""
 
     def __init__(self, **kwargs: Any) -> None:
-        if "mix_stderr" not in kwargs:
-            kwargs["mix_stderr"] = False
-
         super().__init__(**kwargs)
+
+        # NOTE: click v8.2.0 removed mix_stderr, which was True by default before.
+        # This should have the streams not mix in all versions, hopefully.
+        if hasattr(self, "mix_stderr") and "mix_stderr" not in kwargs:
+            self.mix_stderr = False
 
     def invoke(self,        # type: ignore[override]
                cli: click.Command,
