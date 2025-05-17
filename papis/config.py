@@ -116,7 +116,7 @@ class Configuration(configparser.ConfigParser):
                            f"'{self.file_location}'.")
                 click.echo(f"Error: Duplicate option '{exc.option}' "
                            f"in section {exc.section}")
-                raise SystemExit(1)
+                raise SystemExit(1) from None
 
         # if no sections were actually read, add default ones
         if not self.sections():
@@ -134,7 +134,7 @@ class Configuration(configparser.ConfigParser):
         # evaluate the python config
         configpy = get_configpy_file()
         if os.path.exists(configpy):
-            with open(configpy) as fd:
+            with open(configpy, encoding="utf-8") as fd:
                 # NOTE: this includes the `globals()` so that the user config.py
                 # can add entries to the global namespace. This was motivated
                 # by adding filters to `Jinja2Formatter.env`, which may be separated
@@ -265,7 +265,6 @@ def get_config_file() -> str:
         :func:`get_config_folder`, but can be overwritten using
         :func:`set_config_file`.
     """
-
     if OVERRIDE_VARS["file"] is not None:
         config_file = OVERRIDE_VARS["file"]
     else:
@@ -436,9 +435,9 @@ def getint(key: str, section: Optional[str] = None) -> Optional[int]:
     """
     try:
         return general_get(key, section=section, data_type=int)
-    except ValueError:
+    except ValueError as exc:
         value = general_get(key, section=section)
-        raise ValueError("Key '{}' should be an integer: '{}'".format(key, value))
+        raise ValueError(f"Key '{key}' should be an integer: '{value}'") from exc
 
 
 def getfloat(key: str, section: Optional[str] = None) -> Optional[float]:
@@ -450,9 +449,9 @@ def getfloat(key: str, section: Optional[str] = None) -> Optional[float]:
     """
     try:
         return general_get(key, section=section, data_type=float)
-    except ValueError:
+    except ValueError as exc:
         value = general_get(key, section=section)
-        raise ValueError("Key '{}' should be a float: '{}'".format(key, value))
+        raise ValueError(f"Key '{key}' should be a float: '{value}'") from exc
 
 
 def getboolean(key: str, section: Optional[str] = None) -> Optional[bool]:
@@ -464,9 +463,9 @@ def getboolean(key: str, section: Optional[str] = None) -> Optional[bool]:
     """
     try:
         return general_get(key, section=section, data_type=bool)
-    except ValueError:
+    except ValueError as exc:
         value = general_get(key, section=section)
-        raise ValueError("Key '{}' should be a boolean: '{}'" .format(key, value))
+        raise ValueError(f"Key '{key}' should be a boolean: '{value}'") from exc
 
 
 def getstring(key: str, section: Optional[str] = None) -> str:
@@ -478,7 +477,7 @@ def getstring(key: str, section: Optional[str] = None) -> str:
     """
     result = general_get(key, section=section, data_type=str)
     if not isinstance(result, str):
-        raise ValueError("Key '{}' should be a string: '{}'".format(key, result))
+        raise ValueError(f"Key '{key}' should be a string: {result!r}")
 
     return str(result)
 
@@ -558,15 +557,15 @@ def getlist(key: str, section: Optional[str] = None) -> List[str]:
         return list(map(str, rawvalue))
     try:
         rawvalue = eval(rawvalue)
-    except Exception:
+    except Exception as exc:
         raise SyntaxError(
             f"The key '{key}' must be a valid Python object: {rawvalue}"
-            )
+            ) from exc
     else:
         if not isinstance(rawvalue, list):
             raise SyntaxError(
-                "The key '{}' must be a valid Python list. Got: {} (type {!r})"
-                .format(key, rawvalue, type(rawvalue).__name__))
+                f"The key '{key}' must be a valid Python list. "
+                f"Got: {rawvalue} (type {type(rawvalue)})")
 
         return list(map(str, rawvalue))
 

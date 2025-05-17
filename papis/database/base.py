@@ -19,9 +19,9 @@ def get_cache_file_name(libpaths: str) -> str:
     'a566b2bebc62611dff4cdaceac1a7bbd-papers'
     """
     import hashlib
-    return "{}-{}".format(
-        hashlib.md5(libpaths.encode()).hexdigest(),
-        os.path.basename(libpaths))
+
+    digest = hashlib.md5(libpaths.encode()).hexdigest()
+    return f"{digest}-{os.path.basename(libpaths)}"
 
 
 def get_cache_file_path(libpaths: str) -> str:
