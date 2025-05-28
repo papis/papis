@@ -106,13 +106,24 @@ def parse_meta_headers(soup: "bs4.BeautifulSoup") -> Dict[str, Any]:
             value = elements[0].attrs.get("content")
             data[equiv["key"]] = str(value).replace("\r", "")
 
+    # ensure that author and author_list are in sync
     author_list = parse_meta_authors(soup)
     if author_list:
         data["author_list"] = author_list
         data["author"] = papis.document.author_list_to_author(data)
 
+    # convert firstpage / lastpage to pages
+    firstpage = data.get("firstpage")
+    if firstpage:
+        lastpage = data.get("lastpage")
+        if lastpage:
+            data["pages"] = f"{firstpage}--{lastpage}"
+        else:
+            data["pages"] = firstpage
+
     from papis.bibtex import bibtex_type_converter
 
+    # ensure we use a standard BibTeX type
     bib_type = data.get("type")
     if bib_type in bibtex_type_converter:
         data["type"] = bibtex_type_converter[bib_type]
