@@ -81,7 +81,7 @@ def get_data(query: str = "") -> Dict[str, Any]:
     with papis.utils.get_session() as session:
         response = session.get(
             PUBMED_URL.format(pmid=query.strip(), database=PUBMED_DATABASE),
-            headers={"user-agent": f"papis/{papis.__version__}"},
+            headers={"user-agent": papis.PAPIS_USER_AGENT},
             )
 
     import json
