@@ -203,7 +203,15 @@ def crossref_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
 
 def _get_crossref_works(**kwargs: Any) -> "habanero.request_class.Request":
     import habanero
-    cr = habanero.Crossref()
+    from papis import PAPIS_USER_AGENT
+
+    cr = habanero.Crossref(
+        # TODO: Check if this is an acceptable value for the field. From the
+        # documentation, it's just meant to act as a contact point?
+        mailto="https://github.com/papis/papis/issues",
+        ua_string=PAPIS_USER_AGENT,
+    )
+
     return cr.works(**kwargs)
 
 

@@ -160,7 +160,7 @@ def _get_zenodo_response(record_id: str) -> str:
     with papis.utils.get_session() as session:
         response = session.get(
             ZENODO_URL.format(record_id=record_id.strip()),
-            headers={"user-agent": f"papis/{papis.__version__}"},
+            headers={"user-agent": papis.PAPIS_USER_AGENT},
         )
 
     return response.content.decode()
