@@ -1,6 +1,6 @@
 import re
 import os
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import doi
 import click
@@ -221,7 +221,7 @@ def crossref_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
     return new_data
 
 
-def _get_crossref_works(**kwargs: Any) -> Dict[str, Any] | List[Dict[str, Any]]:
+def _get_crossref_works(**kwargs: Any) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
     import habanero
     from papis import PAPIS_USER_AGENT
 
@@ -232,7 +232,7 @@ def _get_crossref_works(**kwargs: Any) -> Dict[str, Any] | List[Dict[str, Any]]:
         ua_string=PAPIS_USER_AGENT,
     )
 
-    return cr.works(**kwargs)
+    return cr.works(**kwargs)  # type: ignore[no-any-return]
 
 
 def get_data(
