@@ -1,0 +1,242 @@
+{
+  "author": "Donadi, Sandro and Hossenfelder, Sabine",
+  "author_list": [
+    {
+      "affiliation": [],
+      "family": "Donadi",
+      "given": "Sandro"
+    },
+    {
+      "affiliation": [],
+      "family": "Hossenfelder",
+      "given": "Sabine"
+    }
+  ],
+  "citations": [
+    {
+      "doi": "10.1103/PhysRev.85.166"
+    },
+    {
+      "doi": "10.1103/PhysRevD.34.470"
+    },
+    {
+      "doi": "10.1016/S0370-1573(03)00103-0"
+    },
+    {
+      "doi": "10.1088/1742-6596/361/1/012011"
+    },
+    {
+      "doi": "10.1103/PhysicsPhysiqueFizika.1.195"
+    },
+    {
+      "doi": "10.1007/BF00670750"
+    },
+    {
+      "author": "T.\u00a0N. Palmer",
+      "first-page": "585",
+      "journal-title": "Proc. Roy. Soc. A",
+      "volume": "451",
+      "year": "1995"
+    },
+    {
+      "doi": "10.1103/PhysRevA.72.062314"
+    },
+    {
+      "doi": "10.1098/rspa.2009.0080"
+    },
+    {
+      "doi": "10.1103/PhysRevLett.105.250404"
+    },
+    {
+      "author": "M.\u00a0J.\u00a0W. Hall",
+      "volume-title": "At the Frontier of Spacetime",
+      "year": "2016"
+    },
+    {
+      "doi": "10.1103/RevModPhys.17.195"
+    },
+    {
+      "doi": "10.1103/RevModPhys.17.157"
+    },
+    {
+      "author": "D.\u00a0T. Pegg",
+      "doi": "10.1016/0375-9601(80)90077-8",
+      "first-page": "233",
+      "journal-title": "PLA",
+      "volume": "78",
+      "year": "1980"
+    },
+    {
+      "doi": "10.1088/0031-8949/1986/T12/002"
+    },
+    {
+      "doi": "10.1103/RevModPhys.58.647"
+    },
+    {
+      "author": "R.\u00a0E. Kastner",
+      "volume-title": "The Transactional Interpretation of Quantum Mechanics: The Reality of Possibility",
+      "year": "2013"
+    },
+    {
+      "doi": "10.1016/j.shpsb.2011.12.003"
+    },
+    {
+      "doi": "10.3390/e23060749"
+    },
+    {
+      "doi": "10.1119/1.3456564"
+    },
+    {
+      "author": "L.\u00a0S. Schulman",
+      "doi": "10.1017/CBO9780511622878",
+      "volume-title": "Time's Arrows and Quantum Measurement",
+      "year": "1997"
+    },
+    {
+      "author": "G. Lindblad",
+      "first-page": "48",
+      "journal-title": "Commun. Math. Phys.",
+      "volume": "119",
+      "year": "1976"
+    },
+    {
+      "doi": "10.1063/1.522979"
+    },
+    {
+      "author": "M.\u00a0A. Nielsen",
+      "volume-title": "Quantum Computation and Quantum Information",
+      "year": "2010"
+    },
+    {
+      "doi": "10.1088/0305-4470/34/42/306"
+    },
+    {
+      "doi": "10.1016/j.aop.2020.168394"
+    },
+    {
+      "doi": "10.3389/fphy.2020.00139"
+    },
+    {
+      "doi": "10.1103/PhysRevA.75.032304"
+    },
+    {
+      "doi": "10.1007/s10701-012-9669-1"
+    },
+    {
+      "doi": "10.1088/1751-8113/47/42/424001"
+    },
+    {
+      "author": "P. Spirtes",
+      "doi": "10.7551/mitpress/1754.001.0001",
+      "volume-title": "Causation, Prediction, and Search",
+      "year": "2001"
+    },
+    {
+      "author": "J. Pearl",
+      "doi": "10.1017/CBO9780511803161",
+      "volume-title": "Causality: Models, Reasoning, and Inference",
+      "year": "2009"
+    },
+    {
+      "doi": "10.1088/1367-2630/17/3/033002"
+    },
+    {
+      "doi": "10.1103/RevModPhys.92.021002"
+    },
+    {
+      "doi": "10.3390/e20010041"
+    },
+    {
+      "doi": "10.1098/rspa.2021.0705"
+    },
+    {
+      "author": "A. Shimony",
+      "first-page": "1",
+      "journal-title": "Epistemological Lett.",
+      "volume": "13",
+      "year": "1976"
+    },
+    {
+      "author": "J.\u00a0S. Bell",
+      "journal-title": "Epistemological Lett.",
+      "volume": "15",
+      "year": "1977"
+    },
+    {
+      "doi": "10.1103/PhysRevA.97.042120"
+    },
+    {
+      "doi": "10.1038/s41586-018-0085-3"
+    },
+    {
+      "doi": "10.1103/PhysRevA.99.012121"
+    },
+    {
+      "doi": "10.1007/s11229-019-02377-5"
+    },
+    {
+      "author": "S. Hossenfelder",
+      "volume-title": "Lost in Math",
+      "year": "2018"
+    },
+    {
+      "doi": "10.1098/rspa.2020.0212"
+    },
+    {
+      "doi": "10.1098/rspa.2020.0214"
+    },
+    {
+      "author": "E.\u00a0K. Chen",
+      "volume-title": "The Routledge Companion to Philosophy of Physics",
+      "year": "2021"
+    },
+    {
+      "author": "N. Gisin",
+      "first-page": "363",
+      "journal-title": "Helv. Phys. Acta",
+      "volume": "62",
+      "year": "1989"
+    },
+    {
+      "doi": "10.1088/0143-0807/36/5/055027"
+    },
+    {
+      "doi": "10.1016/0375-9601(91)90116-P"
+    },
+    {
+      "doi": "10.1016/0375-9601(91)90330-B"
+    },
+    {
+      "author": "A. Valentini",
+      "volume-title": "Chance in Physics",
+      "year": "2001"
+    },
+    {
+      "doi": "10.1088/1751-8113/40/12/S24"
+    },
+    {
+      "doi": "10.1103/PhysRevD.101.043004"
+    },
+    {
+      "doi": "10.1119/1.3630940"
+    },
+    {
+      "doi": "10.1103/PhysRevD.24.1516"
+    },
+    {
+      "doi": "10.1007/s10701-011-9565-0"
+    }
+  ],
+  "doc_url": "http://harvest.aps.org/v2/journals/articles/10.1103/PhysRevA.106.022212/fulltext",
+  "doi": "10.1103/physreva.106.022212",
+  "issue": "2",
+  "journal": "Physical Review A",
+  "language": "en",
+  "month": 8,
+  "publisher": "American Physical Society (APS)",
+  "title": "Toy model for local and deterministic wave-function collapse",
+  "type": "article",
+  "url": "https://doi.org/10.1103/physreva.106.022212",
+  "volume": "106",
+  "year": 2022
+}
