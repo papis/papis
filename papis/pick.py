@@ -103,7 +103,7 @@ def pick_doc(
 
     header_format_path = papis.config.get("header-format-file")
     if header_format_path is not None:
-        with open(os.path.expanduser(header_format_path)) as fd:
+        with open(os.path.expanduser(header_format_path), encoding="utf-8") as fd:
             header_format = FormattedString(None, fd.read().rstrip())
     else:
         header_format = papis.config.getformattedstring("header-format")

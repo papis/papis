@@ -39,13 +39,13 @@ def run(document: papis.document.Document,
     if not info_file_path:
         raise DocumentFolderNotFound(papis.document.describe(document))
 
-    _old_dict = papis.document.to_dict(document)
+    old_dict = papis.document.to_dict(document)
     papis.utils.general_open(info_file_path, "editor", wait=wait)
     document.load()
-    _new_dict = papis.document.to_dict(document)
+    new_dict = papis.document.to_dict(document)
 
     # If nothing changed there is nothing else to be done
-    if _old_dict == _new_dict:
+    if old_dict == new_dict:
         logger.debug("No changes made to the document.")
         return
 
@@ -55,8 +55,7 @@ def run(document: papis.document.Document,
         papis.git.add_and_commit_resource(
             str(document.get_main_folder()),
             info_file_path,
-            "Update information for '{}'".format(
-                papis.document.describe(document)))
+            f"Update information for '{papis.document.describe(document)}'")
 
 
 def edit_notes(document: papis.document.Document,
@@ -65,12 +64,11 @@ def edit_notes(document: papis.document.Document,
     notes_path = papis.notes.notes_path_ensured(document)
     papis.api.edit_file(notes_path)
     if git:
-        msg = "Update notes for '{}'".format(papis.document.describe(document))
         folder = document.get_main_folder()
         if folder:
+            msg = f"Update notes for '{papis.document.describe(document)}'"
             papis.git.add_and_commit_resources(folder,
-                                               [notes_path,
-                                                document.get_info_file()],
+                                               [notes_path, document.get_info_file()],
                                                msg)
 
 
