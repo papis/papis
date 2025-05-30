@@ -5,14 +5,14 @@ from typing import Any, Dict
 import pytest
 from papis.testing import TemporaryConfiguration
 
+RESOURCEDIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "resources", "crossref"
+)
+
 
 def _get_test_json(filename: str) -> Dict[str, Any]:
-    resources = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        "resources", "crossref"
-    )
-    filepath = os.path.join(resources, filename)
-    with open(filepath) as fd:
+    with open(filename) as fd:
         result = json.load(fd)
 
     assert isinstance(result, dict)
@@ -36,20 +36,28 @@ def test_get_data(tmp_config: TemporaryConfiguration) -> None:
     ("10.1103/physrevb.89.140501", "test_2_abstract"),
     ("10.1145/3184558.3186235", "test_3_conference"),
     ("10.1007/978-3-0348-8720-5_13", "test_4_multiple_isbn"),
+    ("10.1103/PhysRevA.106.022212", "test_5_aps_article_number"),
     ])
 def test_doi_to_data(tmp_config: TemporaryConfiguration,
                      monkeypatch: pytest.MonkeyPatch,
                      doi: str, basename: str) -> None:
-    infile = "{}.json".format(basename)
-    outfile = "{}_out.json".format(basename)
+    infile = os.path.join(RESOURCEDIR, "{}.json".format(basename))
+    outfile = os.path.join(RESOURCEDIR, "{}_out.json".format(basename))
 
     import papis.crossref
+
+    # data = papis.crossref._get_crossref_works(ids=[doi])
+    # with open(infile, "w", encoding="utf-8") as f:
+    #     json.dump(data, f, sort_keys=True, indent=2)
 
     monkeypatch.setattr(papis.crossref,
                         "_get_crossref_works",
                         lambda **x: _get_test_json(infile))
 
     data = papis.crossref.doi_to_data(doi)
+    # with open(outfile, "w", encoding="utf-8") as f:
+    #     json.dump(data, f, sort_keys=True, indent=2)
+
     result = _get_test_json(outfile)
 
     assert data == result

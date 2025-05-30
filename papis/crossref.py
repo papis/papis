@@ -1,6 +1,6 @@
 import re
 import os
-from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import doi
 import click
@@ -12,9 +12,6 @@ import papis.document
 import papis.importer
 import papis.downloaders.base
 import papis.logging
-
-if TYPE_CHECKING:
-    import habanero
 
 logger = papis.logging.get_logger(__name__)
 
@@ -197,22 +194,45 @@ def _crossref_link(entry: List[Dict[str, str]]) -> Optional[str]:
 
 def crossref_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
     new_data = papis.document.keyconversion_to_data(key_conversion, data)
+
+    # ensure that author_list and author are consistent
     new_data["author"] = papis.document.author_list_to_author(new_data)
+
+    # special cleanup for APS journals
+    # xref: https://github.com/papis/papis/issues/1019
+    #       https://github.com/JabRef/jabref/issues/7019
+    #       https://journals.aps.org/pra/articleid
+    if "pages" not in new_data:
+        article_number = data.get("article-number", None)
+        if article_number:
+            # FIXME: add nicer DOI parsing (probably in `python-doi`)
+            # determine from DOI if the journal in question is an APS journal.
+            is_aps = False
+            doi = new_data.get("doi", "")
+            if "/" in doi:
+                prefix, _ = doi.split("/", maxsplit=1)
+                if "." in prefix:
+                    _, journal_id = prefix.split(".", maxsplit=1)
+                    is_aps = journal_id == "1103"
+
+            if is_aps:
+                new_data["pages"] = article_number
+
     return new_data
 
 
-def _get_crossref_works(**kwargs: Any) -> "habanero.request_class.Request":
+def _get_crossref_works(**kwargs: Any) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
     import habanero
     from papis import PAPIS_USER_AGENT
 
     cr = habanero.Crossref(
         # TODO: Check if this is an acceptable value for the field. From the
-        # documentation, it's just meant to act as a contact point?
+        # documentation, `mailto` is just meant to act as a contact point?
         mailto="https://github.com/papis/papis/issues",
         ua_string=PAPIS_USER_AGENT,
     )
 
-    return cr.works(**kwargs)
+    return cr.works(**kwargs)  # type: ignore[no-any-return]
 
 
 def get_data(

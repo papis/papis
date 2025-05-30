@@ -113,14 +113,14 @@ def create_keybindings(app: "Picker[Any]") -> KeyBindings:
     kb = KeyBindings()
 
     @kb.add("escape",
-            filter=Condition(lambda: app.message_toolbar.text))
+            filter=Condition(lambda: bool(app.message_toolbar.text)))
     def _escape_message(event: KeyPressEvent) -> None:
-        app.message_toolbar.text = None
+        app.message_toolbar.text = ""
 
     @kb.add("escape",
-            filter=Condition(lambda: app.error_toolbar.text))
+            filter=Condition(lambda: bool(app.error_toolbar.text)))
     def _escape_error(event: KeyPressEvent) -> None:
-        app.error_toolbar.text = None
+        app.error_toolbar.text = ""
 
     @kb.add("c-n",                                      # type: ignore[misc]
             filter=~has_focus(app.info_window))
@@ -161,7 +161,7 @@ def create_keybindings(app: "Picker[Any]") -> KeyBindings:
     def _help_quit(event: KeyPressEvent) -> None:
         app.layout.focus(app.help_window.window)
         app.layout.focus(app.command_line_prompt.window)
-        app.message_toolbar.text = None
+        app.message_toolbar.text = ""
         app.layout.focus(app.options_list.search_buffer)
 
     @kb.add("q",                                        # type: ignore[misc]
@@ -172,7 +172,7 @@ def create_keybindings(app: "Picker[Any]") -> KeyBindings:
             filter=has_focus(app.info_window))
     def _info(event: KeyPressEvent) -> None:
         app.layout.focus(app.options_list.search_buffer)
-        app.message_toolbar.text = None
+        app.message_toolbar.text = ""
 
     @kb.add(                                            # type: ignore[misc]
         keys_info["focus_command_line_key"]["key"],
