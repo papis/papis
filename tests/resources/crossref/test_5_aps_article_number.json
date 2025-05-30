@@ -1,0 +1,503 @@
+{
+  "message": {
+    "DOI": "10.1103/physreva.106.022212",
+    "ISSN": [
+      "2469-9926",
+      "2469-9934"
+    ],
+    "URL": "https://doi.org/10.1103/physreva.106.022212",
+    "article-number": "022212",
+    "author": [
+      {
+        "affiliation": [],
+        "family": "Donadi",
+        "given": "Sandro",
+        "sequence": "first"
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0002-2515-3842",
+        "affiliation": [],
+        "authenticated-orcid": true,
+        "family": "Hossenfelder",
+        "given": "Sabine",
+        "sequence": "additional"
+      }
+    ],
+    "container-title": [
+      "Physical Review A"
+    ],
+    "content-domain": {
+      "crossmark-restriction": true,
+      "domain": [
+        "journals.aps.org"
+      ]
+    },
+    "created": {
+      "date-parts": [
+        [
+          2022,
+          8,
+          19
+        ]
+      ],
+      "date-time": "2022-08-19T15:08:52Z",
+      "timestamp": 1660921732000
+    },
+    "deposited": {
+      "date-parts": [
+        [
+          2023,
+          11,
+          25
+        ]
+      ],
+      "date-time": "2023-11-25T23:24:21Z",
+      "timestamp": 1700954661000
+    },
+    "funder": [
+      {
+        "name": "Fetzer Franklin Fund"
+      }
+    ],
+    "indexed": {
+      "date-parts": [
+        [
+          2025,
+          5,
+          14
+        ]
+      ],
+      "date-time": "2025-05-14T00:11:45Z",
+      "timestamp": 1747181505507,
+      "version": "3.40.5"
+    },
+    "is-referenced-by-count": 9,
+    "issn-type": [
+      {
+        "type": "print",
+        "value": "2469-9926"
+      },
+      {
+        "type": "electronic",
+        "value": "2469-9934"
+      }
+    ],
+    "issue": "2",
+    "issued": {
+      "date-parts": [
+        [
+          2022,
+          8,
+          19
+        ]
+      ]
+    },
+    "journal-issue": {
+      "issue": "2",
+      "published-print": {
+        "date-parts": [
+          [
+            2022,
+            8
+          ]
+        ]
+      }
+    },
+    "language": "en",
+    "license": [
+      {
+        "URL": "https://link.aps.org/licenses/aps-default-license",
+        "content-version": "vor",
+        "delay-in-days": 0,
+        "start": {
+          "date-parts": [
+            [
+              2022,
+              8,
+              19
+            ]
+          ],
+          "date-time": "2022-08-19T00:00:00Z",
+          "timestamp": 1660867200000
+        }
+      }
+    ],
+    "link": [
+      {
+        "URL": "https://link.aps.org/article/10.1103/PhysRevA.106.022212",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "syndication"
+      },
+      {
+        "URL": "http://harvest.aps.org/v2/journals/articles/10.1103/PhysRevA.106.022212/fulltext",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "member": "16",
+    "original-title": [],
+    "prefix": "10.1103",
+    "published": {
+      "date-parts": [
+        [
+          2022,
+          8,
+          19
+        ]
+      ]
+    },
+    "published-online": {
+      "date-parts": [
+        [
+          2022,
+          8,
+          19
+        ]
+      ]
+    },
+    "publisher": "American Physical Society (APS)",
+    "reference": [
+      {
+        "DOI": "10.1103/PhysRev.85.166",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc1R1"
+      },
+      {
+        "DOI": "10.1103/PhysRevD.34.470",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc2R1"
+      },
+      {
+        "DOI": "10.1016/S0370-1573(03)00103-0",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc3R1"
+      },
+      {
+        "DOI": "10.1088/1742-6596/361/1/012011",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc4R1"
+      },
+      {
+        "DOI": "10.1103/PhysicsPhysiqueFizika.1.195",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc5R1"
+      },
+      {
+        "DOI": "10.1007/BF00670750",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc6R1"
+      },
+      {
+        "author": "T.\u00a0N. Palmer",
+        "first-page": "585",
+        "journal-title": "Proc. Roy. Soc. A",
+        "key": "PhysRevA.106.022212Cc7R1",
+        "volume": "451",
+        "year": "1995"
+      },
+      {
+        "DOI": "10.1103/PhysRevA.72.062314",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc8R1"
+      },
+      {
+        "DOI": "10.1098/rspa.2009.0080",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc9R1"
+      },
+      {
+        "DOI": "10.1103/PhysRevLett.105.250404",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc10R1"
+      },
+      {
+        "author": "M.\u00a0J.\u00a0W. Hall",
+        "key": "PhysRevA.106.022212Cc12R1",
+        "volume-title": "At the Frontier of Spacetime",
+        "year": "2016"
+      },
+      {
+        "DOI": "10.1103/RevModPhys.17.195",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc13R1"
+      },
+      {
+        "DOI": "10.1103/RevModPhys.17.157",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc14R1"
+      },
+      {
+        "DOI": "10.1016/0375-9601(80)90077-8",
+        "author": "D.\u00a0T. Pegg",
+        "doi-asserted-by": "crossref",
+        "first-page": "233",
+        "journal-title": "PLA",
+        "key": "PhysRevA.106.022212Cc15R1",
+        "volume": "78",
+        "year": "1980"
+      },
+      {
+        "DOI": "10.1088/0031-8949/1986/T12/002",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc16R1"
+      },
+      {
+        "DOI": "10.1103/RevModPhys.58.647",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc17R1"
+      },
+      {
+        "author": "R.\u00a0E. Kastner",
+        "key": "PhysRevA.106.022212Cc18R1",
+        "volume-title": "The Transactional Interpretation of Quantum Mechanics: The Reality of Possibility",
+        "year": "2013"
+      },
+      {
+        "DOI": "10.1016/j.shpsb.2011.12.003",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc19R1"
+      },
+      {
+        "DOI": "10.3390/e23060749",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc20R1"
+      },
+      {
+        "DOI": "10.1119/1.3456564",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc21R1"
+      },
+      {
+        "DOI": "10.1017/CBO9780511622878",
+        "author": "L.\u00a0S. Schulman",
+        "doi-asserted-by": "crossref",
+        "key": "PhysRevA.106.022212Cc22R1",
+        "volume-title": "Time's Arrows and Quantum Measurement",
+        "year": "1997"
+      },
+      {
+        "author": "G. Lindblad",
+        "first-page": "48",
+        "journal-title": "Commun. Math. Phys.",
+        "key": "PhysRevA.106.022212Cc23R1",
+        "volume": "119",
+        "year": "1976"
+      },
+      {
+        "DOI": "10.1063/1.522979",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc24R1"
+      },
+      {
+        "author": "M.\u00a0A. Nielsen",
+        "key": "PhysRevA.106.022212Cc25R1",
+        "volume-title": "Quantum Computation and Quantum Information",
+        "year": "2010"
+      },
+      {
+        "DOI": "10.1088/0305-4470/34/42/306",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc26R1"
+      },
+      {
+        "DOI": "10.1016/j.aop.2020.168394",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc27R2"
+      },
+      {
+        "DOI": "10.3389/fphy.2020.00139",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc28R1"
+      },
+      {
+        "DOI": "10.1103/PhysRevA.75.032304",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc29R1"
+      },
+      {
+        "DOI": "10.1007/s10701-012-9669-1",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc30R1"
+      },
+      {
+        "DOI": "10.1088/1751-8113/47/42/424001",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc31R1"
+      },
+      {
+        "DOI": "10.7551/mitpress/1754.001.0001",
+        "author": "P. Spirtes",
+        "doi-asserted-by": "crossref",
+        "key": "PhysRevA.106.022212Cc34R1",
+        "volume-title": "Causation, Prediction, and Search",
+        "year": "2001"
+      },
+      {
+        "DOI": "10.1017/CBO9780511803161",
+        "author": "J. Pearl",
+        "doi-asserted-by": "crossref",
+        "key": "PhysRevA.106.022212Cc35R1",
+        "volume-title": "Causality: Models, Reasoning, and Inference",
+        "year": "2009"
+      },
+      {
+        "DOI": "10.1088/1367-2630/17/3/033002",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc36R1"
+      },
+      {
+        "DOI": "10.1103/RevModPhys.92.021002",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc39R1"
+      },
+      {
+        "DOI": "10.3390/e20010041",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc40R1"
+      },
+      {
+        "DOI": "10.1098/rspa.2021.0705",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc42R1"
+      },
+      {
+        "author": "A. Shimony",
+        "first-page": "1",
+        "journal-title": "Epistemological Lett.",
+        "key": "PhysRevA.106.022212Cc43R1",
+        "volume": "13",
+        "year": "1976"
+      },
+      {
+        "author": "J.\u00a0S. Bell",
+        "journal-title": "Epistemological Lett.",
+        "key": "PhysRevA.106.022212Cc44R1",
+        "volume": "15",
+        "year": "1977"
+      },
+      {
+        "DOI": "10.1103/PhysRevA.97.042120",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc45R1"
+      },
+      {
+        "DOI": "10.1038/s41586-018-0085-3",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc46R1"
+      },
+      {
+        "DOI": "10.1103/PhysRevA.99.012121",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc47R1"
+      },
+      {
+        "DOI": "10.1007/s11229-019-02377-5",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc48R1"
+      },
+      {
+        "author": "S. Hossenfelder",
+        "key": "PhysRevA.106.022212Cc49R1",
+        "volume-title": "Lost in Math",
+        "year": "2018"
+      },
+      {
+        "DOI": "10.1098/rspa.2020.0212",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc50R1"
+      },
+      {
+        "DOI": "10.1098/rspa.2020.0214",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc51R1"
+      },
+      {
+        "author": "E.\u00a0K. Chen",
+        "key": "PhysRevA.106.022212Cc52R1",
+        "volume-title": "The Routledge Companion to Philosophy of Physics",
+        "year": "2021"
+      },
+      {
+        "author": "N. Gisin",
+        "first-page": "363",
+        "journal-title": "Helv. Phys. Acta",
+        "key": "PhysRevA.106.022212Cc53R1",
+        "volume": "62",
+        "year": "1989"
+      },
+      {
+        "DOI": "10.1088/0143-0807/36/5/055027",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc54R1"
+      },
+      {
+        "DOI": "10.1016/0375-9601(91)90116-P",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc55R1"
+      },
+      {
+        "DOI": "10.1016/0375-9601(91)90330-B",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc56R1"
+      },
+      {
+        "author": "A. Valentini",
+        "key": "PhysRevA.106.022212Cc57R1",
+        "volume-title": "Chance in Physics",
+        "year": "2001"
+      },
+      {
+        "DOI": "10.1088/1751-8113/40/12/S24",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc58R1"
+      },
+      {
+        "DOI": "10.1103/PhysRevD.101.043004",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc59R1"
+      },
+      {
+        "DOI": "10.1119/1.3630940",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc60R1"
+      },
+      {
+        "DOI": "10.1103/PhysRevD.24.1516",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc61R1"
+      },
+      {
+        "DOI": "10.1007/s10701-011-9565-0",
+        "doi-asserted-by": "publisher",
+        "key": "PhysRevA.106.022212Cc62R1"
+      }
+    ],
+    "reference-count": 56,
+    "references-count": 56,
+    "relation": {},
+    "resource": {
+      "primary": {
+        "URL": "https://link.aps.org/doi/10.1103/PhysRevA.106.022212"
+      }
+    },
+    "score": 1,
+    "short-container-title": [
+      "Phys. Rev. A"
+    ],
+    "short-title": [],
+    "source": "Crossref",
+    "subject": [],
+    "subtitle": [],
+    "title": [
+      "Toy model for local and deterministic wave-function collapse"
+    ],
+    "type": "journal-article",
+    "update-policy": "https://doi.org/10.1103/crossmark-policy",
+    "volume": "106"
+  },
+  "message-type": "work",
+  "message-version": "1.0.0",
+  "status": "ok"
+}
