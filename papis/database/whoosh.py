@@ -68,13 +68,13 @@ class Database(DatabaseBase):
 
         self.initialize()
 
-    def get_backend_name(self) -> str:
+    def get_backend_name(self) -> str:  # noqa: PLR6301
         return "whoosh"
 
     def get_cache_path(self) -> str:
         return self.index_dir
 
-    def get_all_query_string(self) -> str:
+    def get_all_query_string(self) -> str:  # noqa: PLR6301
         return "*"
 
     def initialize(self) -> None:
@@ -210,7 +210,7 @@ class Database(DatabaseBase):
         from papis.utils import get_folders, folders_to_documents
 
         logger.debug("Indexing the library, this might take a while...")
-        folders: List[str] = sum([get_folders(d) for d in self.lib.paths], [])
+        folders = [f for path in self.lib.paths for f in get_folders(path)]
         documents = folders_to_documents(folders)
 
         schema_keys = self._get_schema_init_fields().keys()
@@ -235,7 +235,7 @@ class Database(DatabaseBase):
         fields = self._get_schema_init_fields()
         return Schema(**fields)
 
-    def _get_schema_init_fields(self) -> Dict[str, "FieldType"]:
+    def _get_schema_init_fields(self) -> Dict[str, "FieldType"]:  # noqa: PLR6301
         """
         :returns: the keyword arguments to be passed to the Whoosh schema object
             (see :meth:`_create_schema`).

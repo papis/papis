@@ -175,9 +175,9 @@ def run_set(
     """
     from papis.paths import normalize_path
 
-    for key, value in to_set:
-        key, value = process_formatted_string_pair(key, value)
-        value = papis.format.format(value, document, default=str(value))
+    for key_orig, value_orig in to_set:
+        key, vformat = process_formatted_string_pair(key_orig, value_orig)
+        value = papis.format.format(vformat, document, default=str(vformat))
         value = try_parsing_str(key, value)
 
         if isinstance(value, int) and key_types.get(key) is str:
@@ -191,7 +191,7 @@ def run_set(
             )
         elif key == "files" and isinstance(value, list):
             # TODO: handle renames/deletions of files on disk
-            document[key] = list()
+            document[key] = []
             for file in value:
                 if isinstance(file, str):
                     document[key].append(normalize_path(file))
@@ -225,38 +225,37 @@ def run_append(
     success = True
     processed_lists = set()
     supported_keys = key_types.keys() | document
-    for key, value in to_append:
-        key, value = process_formatted_string_pair(key, value)
-
-        if key in supported_keys:
-            value = papis.format.format(value, document, default=str(value))
-            type_doc = type(document.get(key))
-            type_conf = key_types.get(key)
-            if type_doc is str or (type_doc is type(None) and type_conf is str):
-                document[key] = document.setdefault(key, "") + value
-            elif type_doc is list or (type_doc is type(None) and type_conf is list):
-                value = try_parsing_str(key, value)
-                if key == "files":
-                    value = normalize_path(str(value))
-                document.setdefault(key, []).append(value)
-                processed_lists.add(key)
-            else:
-                logger.error(
-                    "Items of key '%s' have the type '%s', for which Papis "
-                    "doesn't support the append operation.",
-                    key,
-                    type(document[key]).__name__
-                    if document.get(key)
-                    else key_types[key].__name__,
-                )
-                if not batch:
-                    success = False
-                    break
-        else:
+    for key_orig, value_orig in to_append:
+        key, vformat = process_formatted_string_pair(key_orig, value_orig)
+        if key not in supported_keys:
             logger.error(
                 "We cannot append to key '%s', because we do not know the "
                 "intended type. Please use `papis update --set` instead.",
                 key,
+            )
+            if not batch:
+                success = False
+                break
+
+        value = papis.format.format(vformat, document, default=str(vformat))
+        type_doc = type(document.get(key))
+        type_conf = key_types.get(key)
+        if type_doc is str or (type_doc is type(None) and type_conf is str):
+            document[key] = document.setdefault(key, "") + value
+        elif type_doc is list or (type_doc is type(None) and type_conf is list):
+            value = try_parsing_str(key, value)
+            if key == "files":
+                value = normalize_path(str(value))
+            document.setdefault(key, []).append(value)
+            processed_lists.add(key)
+        else:
+            logger.error(
+                "Items of key '%s' have the type '%s', for which Papis "
+                "doesn't support the append operation.",
+                key,
+                type(document[key]).__name__
+                if document.get(key)
+                else key_types[key].__name__,
             )
             if not batch:
                 success = False
@@ -281,8 +280,8 @@ def run_remove(
     :returns: A boolean indicating whether the update was successful.
     """
     success = True
-    for key, value in to_remove:
-        key, value = process_formatted_string_pair(key, value)
+    for key_orig, value_orig in to_remove:
+        key, value = process_formatted_string_pair(key_orig, value_orig)
 
         if key in document:
             if isinstance(document.get(key), list):
@@ -394,7 +393,7 @@ def run(
         papis.git.add_and_commit_resource(
             folder,
             info,
-            "Update information for '{}'".format(papis.document.describe(document)),
+            f"Update information for '{papis.document.describe(document)}'",
         )
 
 

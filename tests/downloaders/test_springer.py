@@ -17,7 +17,7 @@ def test_springer_match(tmp_config: TemporaryConfiguration) -> None:
         "https://link.springer.com",
         "http://link.springer.com",
         "https://link.springer.com/bogus/link/10.1007",
-        ) + SPRINGER_LINK_URLS
+        *SPRINGER_LINK_URLS)
     invalid_urls = (
         "https://links.springer.com/article/123",
         "https://link.springer.co.uk/article/123",
@@ -42,8 +42,8 @@ def test_springer_fetch(tmp_config: TemporaryConfiguration,
     assert down is not None
 
     uid = os.path.basename(url).replace("-", "_")
-    infile = "SpringerLink_{}.html".format(uid)
-    outfile = "SpringerLink_{}_Out.json".format(uid)
+    infile = f"SpringerLink_{uid}.html"
+    outfile = f"SpringerLink_{uid}_Out.json"
 
     monkeypatch.setattr(down, "_get_body",
                         lambda: resource_cache.get_remote_resource(infile, url))
