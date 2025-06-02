@@ -62,6 +62,15 @@ def run(document: papis.document.Document,
 def edit_notes(document: papis.document.Document,
                git: bool = False) -> None:
     logger.debug("Editing notes.")
+    notes = document.get("notes", None)
+    if notes is not None and not isinstance(notes, str):
+        logger.error(
+            "Cannot edit notes! Ensure that a single relative file name "
+            "is present in the 'info.yml' file.")
+        logger.error("Notes have type '%s' not 'str': %s",
+                     type(notes).__name__, papis.document.describe(document))
+        return
+
     notes_path = papis.notes.notes_path_ensured(document)
     papis.api.edit_file(notes_path)
     if git:
