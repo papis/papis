@@ -152,12 +152,13 @@ def pick_library(libs: Optional[List[str]] = None) -> List[str]:
     header_format = papis.config.getformattedstring("library-header-format")
 
     def header_filter(lib: str) -> str:
+        import colorama
         library = papis.config.get_lib_from_name(lib)
         return papis.format.format(header_format, {
             "name": library.name,
             "dir": library.paths[0],
             "paths": library.paths
-            }, doc_key="library")
+            }, doc_key="library", additional={"c": colorama})
 
     return pick(libs,
                 header_filter=header_filter,
