@@ -34,11 +34,11 @@ def test_python_formatter(tmp_config: TemporaryConfiguration) -> None:
     assert papis.format.format("{doc[title]:2S}", data) == "The Phantom"
 
     # test out a jinja2 format
-    from papis.strings import FormattedString
+    from papis.strings import FormatPattern
     assert len(papis.format.FORMATTER) == 1
     assert (
         papis.format.format(
-            FormattedString("jinja2", "{{ doc.author }}: {{ doc.title }}"),
+            FormatPattern("jinja2", "{{ doc.author }}: {{ doc.title }}"),
             document)
         == "Fulano: A New Hope")
     assert len(papis.format.FORMATTER) == 2
@@ -70,10 +70,10 @@ def test_jinja_formatter(tmp_config: TemporaryConfiguration) -> None:
 
     # test out a python format
     assert len(papis.format.FORMATTER) == 1
-    from papis.strings import FormattedString
+    from papis.strings import FormatPattern
     assert (
         papis.format.format(
-            FormattedString("python", "{doc[author]}: {doc[title]}"),
+            FormatPattern("python", "{doc[author]}: {doc[title]}"),
             document)
         == "Fulano: A New Hope")
     assert len(papis.format.FORMATTER) == 2
@@ -89,7 +89,7 @@ def test_overwritten_keys(tmp_config: TemporaryConfiguration) -> None:
         "author": "Fulano", "year": 2020, "title": "A New Hope"
     })
 
-    fmt = papis.config.getformattedstring("ref-format")
+    fmt = papis.config.getformatpattern("ref-format")
     assert fmt.formatter == "jinja2"
 
     ref = papis.format.format(fmt, document)

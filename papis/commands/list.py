@@ -217,7 +217,7 @@ run = list_documents
 @click.option(
     "--format", "show_format",
     help="Show documents using a custom format, e.g. '{doc[year]} {doc[title]}'.",
-    type=papis.cli.FormattedStringParamType(),
+    type=papis.cli.FormatPatternParamType(),
     default="")
 @papis.cli.bool_flag(
     "--paths", "show_paths",
