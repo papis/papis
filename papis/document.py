@@ -500,7 +500,7 @@ def to_dict(document: Document) -> Dict[str, Any]:
 
 
 def dump(document: Document) -> str:
-    """Dump the document into a formatted string.
+    """Dump the document into a string.
 
     The format of the string is not fixed and is meant to be used to display the
     document entries in a consistent way across ``papis``.

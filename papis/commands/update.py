@@ -4,7 +4,7 @@ This command allows you to update the document metadata stored in the
 or update a document with information automatically retrieved from a variety
 of sources.
 
-When using it to add information, Papis formatting strings and Python
+When using it to add information, Papis formatting patterns and Python
 expressions can be used. See below examples for more information. The command
 also tries to sanitise filenames so that they don't contain any problematic
 characters.

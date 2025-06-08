@@ -155,7 +155,7 @@ def get_document_file_name(
 
     :param orig_path: an input file path
     :param suffix: a suffix to be appended to the end of the new file name.
-    :param file_name_format: a format string used to construct a new file name
+    :param file_name_format: a format pattern used to construct a new file name
         from the document data (see :func:`papis.format.format`). This value
         defaults to :confval:`add-file-name` if not provided.
     :param base_name_limit: a maximum character length of the file name. This
@@ -355,7 +355,7 @@ def rename_document_files(
     name is found, a suffix is generated using :func:`unique_suffixes` and
     appended to the new file.
 
-    :param file_name_format: a format string used to construct a new file name
+    :param file_name_format: a format pattern used to construct a new file name
         from the document data (see :func:`papis.format.format`). This value
         defaults to :confval:`add-file-name` if not provided.
     :param allow_remote: if *True*, *in_document_paths* can also be remote
