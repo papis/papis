@@ -77,7 +77,7 @@ file, e.g. the previously created ``docs.yaml``:
 In this last example, we read the documents from ``docs.yaml`` and pick a
 document, which we then feed into the ``explore cmd`` command.  This command
 accepts a string to issue a general shell command and allows formatting with the
-Papis template syntax.  In this case, the picked document gets fed into the
+Papis format syntax.  In this case, the picked document gets fed into the
 ``papis scihub`` command which tries to download the document using ``scihub``.
 Also this very document is opened by Firefox (in case the document does have a
 ``url``).
@@ -268,7 +268,7 @@ def add(ctx: click.Context) -> None:
 @click.command("cmd")
 @click.pass_context
 @click.help_option("--help", "-h")
-@click.argument("command", type=papis.cli.FormattedStringParamType())
+@click.argument("command", type=papis.cli.FormatPatternParamType())
 def cmd(ctx: click.Context, command: str) -> None:
     """
     Run a general command on the document list.

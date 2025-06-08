@@ -264,7 +264,7 @@ def run(paths: List[str],
 
     # reference building
     # NOTE: this needs to go before any papis.format calls, so that those can
-    # potentially use the 'ref' key in the formatted strings.
+    # potentially use the 'ref' key in the format patterns.
     if "ref" not in data:
         new_ref = papis.bibtex.create_reference(data)
         if new_ref:
@@ -430,12 +430,12 @@ def run(paths: List[str],
 @click.option(
     "--folder-name",
     help="Name format for the document main folder.",
-    type=papis.cli.FormattedStringParamType(),
-    default=lambda: papis.config.getformattedstring("add-folder-name"))
+    type=papis.cli.FormatPatternParamType(),
+    default=lambda: papis.config.getformatpattern("add-folder-name"))
 @click.option(
     "--file-name",
     help="File name format for the document.",
-    type=papis.cli.FormattedStringParamType(),
+    type=papis.cli.FormatPatternParamType(),
     default=None)
 @click.option(
     "--from", "from_importer",

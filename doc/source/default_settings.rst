@@ -152,7 +152,7 @@ General settings
 
 .. papis-config:: formatter
 
-    Picks the formatter for templated strings in the configuration file and
+    Picks the formatter for format patterns in the configuration file and
     in various strings presented to the user. Supported formatters are
 
     * ``"python"``: based on :class:`papis.format.PythonFormatter`.
@@ -447,7 +447,7 @@ Add options
     This setting should aim to result in unique (sub)folder names.
     If a (sub)folder name is not unique and the document does not appear to
     be a duplicate, a suffix ``-a``, ``-b``, etc. is added to the name.
-    If this setting is ``None`` the template ``{doc[papis_id]}`` is used.
+    If this setting is ``None`` the pattern ``{doc[papis_id]}`` is used.
 
 .. papis-config:: add-file-name
     :type: str
