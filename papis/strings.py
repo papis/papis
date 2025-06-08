@@ -1,72 +1,72 @@
 from typing import Any, Optional, NamedTuple, Tuple, Union
 
 
-class FormattedString(NamedTuple):
+class FormatPattern(NamedTuple):
     """A tuple that defines a ``(formatter, string)`` pair.
 
-    In a configuration file, a formatted string can be defined as:
+    In a configuration file, a format pattern can be defined as:
 
     .. code:: ini
 
-        key = formatted_value
-        other_key.formatter = other_formatted_value
+        key = pattern
+        other_key.formatter = other_pattern
 
     where the first key will use the default :confval:`formatter` and the second
     key will use the specified formatter. These keys can be read using
-    :func:`papis.config.getformattedstring`.
+    :func:`papis.config.getformatpattern`.
 
     .. autoattribute:: formatter
-    .. autoattribute:: value
+    .. autoattribute:: pattern
     """
 
-    #: The formatter that should be used on the string :attr:`value`. If none
+    #: The formatter that should be used on the string :attr:`pattern`. If none
     #: is provided, the default formatter is used, as defined by
     #: :confval:`formatter`.
     formatter: Optional[str]
-    #: Value of the
-    value: str
+    #: Pattern that should be evaluated by the *formatter*.
+    pattern: str
 
     def __str__(self) -> str:
-        return self.value
+        return self.pattern
 
     def __repr__(self) -> str:
-        return repr(self.value)
+        return repr(self.pattern)
 
     def __bool__(self) -> bool:
-        return bool(self.value)
+        return bool(self.pattern)
 
-    # NOTE: __eq__ and __hash__ are implemented to ensure that formatted
-    # strings can be used in 'click.option' with 'click.Choice'. This is not
+    # NOTE: __eq__ and __hash__ are implemented to ensure that format
+    # pattern can be used in 'click.option' with 'click.Choice'. This is not
     # very intuitive, as strings with the same text, but different formatters
     # will be equal. However, this is only an issue if the formatters use the
     # same templating language.
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, str):
-            return self.value == other
-        elif isinstance(other, FormattedString):
-            return self.value == other.value
+            return self.pattern == other
+        elif isinstance(other, FormatPattern):
+            return self.pattern == other.pattern
         else:
             return False
 
     def __hash__(self) -> int:
-        return hash(self.value)
+        return hash(self.pattern)
 
 
-AnyString = Union[str, FormattedString]
+AnyString = Union[str, FormatPattern]
 
 
-def process_formatted_string_pair(
+def process_format_pattern_pair(
     key: str,
-    value: AnyString
-) -> Tuple[str, FormattedString]:
+    pattern: AnyString
+) -> Tuple[str, FormatPattern]:
     """
     :param key: a document key in the format ``key[.formatter]``.
-    :param value: an unformatted value.
+    :param pattern: an unformatted pattern.
 
-    :returns: a ``(key, value)`` pair, where the formatter was removed from the
-        *key* and the *value* is guaranteed to be a :class:`FormattedString`. If the
-        *value* already defines a formatter, it is overwritten by the one defined
+    :returns: a ``(key, pattern)`` pair, where the formatter was removed from the
+        *key* and the *pattern* is guaranteed to be a :class:`FormatPattern`. If the
+        *pattern* already defines a formatter, it is overwritten by the one defined
         by the *key*.
     """
     if "." in key:
@@ -74,13 +74,13 @@ def process_formatted_string_pair(
     else:
         formatter = None
 
-    if isinstance(value, FormattedString):
+    if isinstance(pattern, FormatPattern):
         if formatter is not None:
-            value = FormattedString(formatter, value.value)
+            pattern = FormatPattern(formatter, pattern.pattern)
     else:
-        value = FormattedString(formatter, value)
+        pattern = FormatPattern(formatter, pattern)
 
-    return key, value
+    return key, pattern
 
 
 no_documents_retrieved_message = "No documents retrieved"
