@@ -75,7 +75,7 @@ all the options and more extensive descriptions):
 
 .. warning::
 
-   Many configuration options use special formatted strings that can depend on
+   Many configuration options use special format patterns that can depend on
    the document that is being worked on. When using these, make sure to also
    set the :confval:`formatter` to your desired choice. Below, we
    are using the default ``python`` formatter that is based on :meth:`str.format`.

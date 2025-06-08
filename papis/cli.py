@@ -13,7 +13,7 @@ DecoratorCallable = Callable[..., Any]
 
 class FormatPatternParamType(click.ParamType):
     #: Name of the parameter type (shown in the command-line).
-    name: str = "formatted-text"
+    name: str = "pattern"
 
     def convert(self,
                 value: Any,
@@ -30,7 +30,7 @@ class FormatPatternParamType(click.ParamType):
         return str(value)
 
     def __repr__(self) -> str:
-        return "FORMATTEDSTRING"
+        return "FORMATPATTERN"
 
 
 def bool_flag(*args: Any, **kwargs: Any) -> DecoratorCallable:

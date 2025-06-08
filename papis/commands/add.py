@@ -264,7 +264,7 @@ def run(paths: List[str],
 
     # reference building
     # NOTE: this needs to go before any papis.format calls, so that those can
-    # potentially use the 'ref' key in the formatted strings.
+    # potentially use the 'ref' key in the format patterns.
     if "ref" not in data:
         new_ref = papis.bibtex.create_reference(data)
         if new_ref:

@@ -158,7 +158,7 @@ def list_documents(documents: Sequence[papis.document.Document],
                    ) -> List[str]:
     """List document properties.
 
-    :arg template: a path to a file containing a format string that can be
+    :arg template: a path to a file containing a format pattern that can be
         used instead of *show_format*.
     :return: a list of properties depending on the given flags.
     """

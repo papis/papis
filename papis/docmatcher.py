@@ -53,7 +53,7 @@ class MatcherCallable(Protocol):
 
         :param search: a regex pattern to match the query against
             (see :attr:`ParseResult.pattern`).
-        :param match_format: a format string (see :func:`papis.format.format`)
+        :param match_format: a format pattern (see :func:`papis.format.format`)
             to match against.
         :param doc_key: a specific key in the document to match against.
         :returns: *None* if the match fails and anything else otherwise.
@@ -87,7 +87,7 @@ class DocMatcher:
     #: A :class:`MatcherCallable` used to match the document to the
     #: :attr:`parsed_search`.
     matcher: ClassVar[Optional[MatcherCallable]] = None
-    #: A format string (defaulting to :confval:`match-format`) used
+    #: A format pattern (defaulting to :confval:`match-format`) used
     #: to match the parsed search results if no document key is present.
     match_format: ClassVar[FormatPattern] = FormatPattern(None, "")
 

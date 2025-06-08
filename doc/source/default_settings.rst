@@ -76,7 +76,7 @@ General settings
 
 .. papis-config:: format-doc-name
 
-    This setting controls the name of the document in the Papis format strings
+    This setting controls the name of the document in the Papis format patterns
     such as :confval:`match-format` or :confval:`header-format`. For instance,
     if you are managing videos, you might want to set this option to ``vid`` in
     order to set the :confval:`header-format` to:
@@ -133,7 +133,7 @@ General settings
 .. papis-config:: document-description-format
 
     Papis sometimes will have to tell you which document it is processing. This
-    format string can be used to display the document to the user in a
+    format pattern can be used to display the document to the user in a
     non-intrusive way. Preferably, this should be a short string that allows
     easily identifying which document is being referenced.
 
@@ -152,7 +152,7 @@ General settings
 
 .. papis-config:: formatter
 
-    Picks the formatter for templated strings in the configuration file and
+    Picks the formatter for format patterns in the configuration file and
     in various strings presented to the user. Supported formatters are
 
     * ``"python"``: based on :class:`papis.format.PythonFormatter`.
@@ -338,7 +338,7 @@ BibTeX options
 
 .. papis-config:: multiple-authors-format
 
-    A format string for concatenating author fields into a string that can be
+    A format pattern for concatenating author fields into a string that can be
     used for display purposes or for building the ``author`` key for the
     document. For example, when retrieving automatic author information from
     services like `Crossref <https://www.crossref.org>`__, Papis builds the
@@ -438,7 +438,7 @@ Add options
         add-folder-name = ``{doc[author]}-{doc[title]}``
 
     You can create formatted subfolders by using path separators
-    (i.e., ``/``) in this format string, e.g.:
+    (i.e., ``/``) in this format pattern, e.g.:
 
     .. code:: ini
 
@@ -447,7 +447,7 @@ Add options
     This setting should aim to result in unique (sub)folder names.
     If a (sub)folder name is not unique and the document does not appear to
     be a duplicate, a suffix ``-a``, ``-b``, etc. is added to the name.
-    If this setting is ``None`` the template ``{doc[papis_id]}`` is used.
+    If this setting is ``None`` the pattern ``{doc[papis_id]}`` is used.
 
 .. papis-config:: add-file-name
     :type: str
@@ -1084,7 +1084,7 @@ of the document, as described by the :confval:`match-format` setting.
     add the ``--ansi`` flag to :confval:`fzf-extra-flags` and include the colors
     in the :confval:`header-format` as ``ansi`` escape sequences.
 
-    The Papis format string corresponding to this setting is given the additional
+    The Papis format pattern corresponding to this setting is given the additional
     variable ``c``, which is the ``colorama`` library. Refer to the ``colorama``
     `documentation <https://github.com/tartley/colorama/blob/master/colorama/ansi.py#L49>`__.
     to see which colors are available. For instance, if you want the title in
