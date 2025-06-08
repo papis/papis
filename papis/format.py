@@ -20,10 +20,10 @@ class InvalidFormatterError(ValueError):
 
 
 class FormatFailedError(Exception):
-    """An exception that is thrown when a format string fails to be interpolated.
+    """An exception that is thrown when a format pattern fails to be interpolated.
 
     This can happen due to lack of data (e.g. missing fields in the document)
-    or invalid format strings (e.g. passed to the wrong formatter).
+    or invalid format patterns (e.g. passed to the wrong formatter).
     """
 
 
@@ -47,11 +47,11 @@ class Formatter:
                additional: Optional[Dict[str, Any]] = None,
                default: Optional[str] = None) -> str:
         """
-        :param fmt: a format string understood by the formatter.
+        :param fmt: a format pattern understood by the formatter.
         :param doc: an object convertible to a document.
-        :param doc_key: the name of the document in the format string. By
+        :param doc_key: the name of the document in the format pattern. By
             default, this falls back to :confval:`format-doc-name`.
-        :param default: an optional string to use as a default value if the
+        :param default: an optional pattern to use as a default value if the
             formatting fails. If no default is given, a :exc:`FormatFailedError`
             will be raised.
         :param additional: a :class:`dict` of additional entries to pass to the
@@ -109,12 +109,12 @@ class _PythonStringFormatter(string.Formatter):
 
 class PythonFormatter(Formatter):
     """Construct a string using a `PEP 3101 <https://peps.python.org/pep-3101/>`__
-    (*str.format* based) format string.
+    (*str.format* based) format pattern.
 
     This formatter is named ``"python"`` and can be set using the
     :confval:`formatter` setting in the configuration file. The
-    formatted string has access to the ``doc`` variable, that is always a
-    :class:`papis.document.Document`. A string using this formatter can look
+    format pattern has access to the ``doc`` variable, that is always a
+    :class:`papis.document.Document`. A pattern using this formatter can look
     like:
 
     .. code:: python
@@ -170,7 +170,7 @@ class PythonFormatter(Formatter):
             return self.psf.format(fmt, **{doc_name: doc}, **additional)
         except Exception as exc:
             if default is not None:
-                logger.warning("Could not format string '%s' for document '%s'",
+                logger.warning("Could not format pattern '%s' for document '%s'",
                                fmt, papis.document.describe(doc), exc_info=exc)
                 return default
             else:
@@ -183,8 +183,8 @@ class Jinja2Formatter(Formatter):
 
     This formatter is named ``"jinja2"`` and can be set using the
     :confval:`formatter` setting in the configuration file. The
-    formatted string has access to the ``doc`` variable, that is always a
-    :class:`papis.document.Document`. A string using this formatter can look
+    format pattern has access to the ``doc`` variable, that is always a
+    :class:`papis.document.Document`. A pattern using this formatter can look
     like:
 
     .. code:: python
@@ -268,7 +268,7 @@ class Jinja2Formatter(Formatter):
             return str(env.from_string(fmt).render(**{doc_name: doc}, **additional))
         except Exception as exc:
             if default is not None:
-                logger.warning("Could not format string '%s' for document '%s'",
+                logger.warning("Could not format pattern '%s' for document '%s'",
                                fmt, papis.document.describe(doc), exc_info=exc)
                 return default
             else:
