@@ -8,7 +8,7 @@ import platformdirs
 import papis.exceptions
 import papis.library
 import papis.logging
-from papis.strings import FormattedString
+from papis.strings import FormatPattern
 
 logger = papis.logging.get_logger(__name__)
 
@@ -483,10 +483,10 @@ def getstring(key: str, section: Optional[str] = None) -> str:
     return str(result)
 
 
-def getformattedstring(key: str, section: Optional[str] = None) -> FormattedString:
-    """Retrieve a formatted string value from the configuration file.
+def getformatpattern(key: str, section: Optional[str] = None) -> FormatPattern:
+    """Retrieve a format pattern from the configuration file.
 
-    Formatted strings use the :class:`~papis.strings.FormattedString` class to
+    Format patterns use the :class:`~papis.strings.FormatPattern` class to
     define a string that should be formatted by a specific
     :class:`~papis.format.Formatter`. For configuration options, such strings
     can be defined in the configuration file as::
@@ -501,17 +501,17 @@ def getformattedstring(key: str, section: Optional[str] = None) -> FormattedStri
     Formatters are checked in alphabetical order and the last one is returned.
 
         >>> set("add-open", "hello world")
-        >>> r = getformattedstring("add-open")
+        >>> r = getformatpattern("add-open")
         >>> r.formatter
         'python'
 
-        >>> set("add-open", FormattedString("python", "hello world"))
-        >>> r = getformattedstring("add-open")
+        >>> set("add-open", FormatPattern("python", "hello world"))
+        >>> r = getformatpattern("add-open")
         >>> r.formatter
         'python'
 
         >>> set("add-open.python", "hello world")
-        >>> r = getformattedstring("add-open")
+        >>> r = getformatpattern("add-open")
         >>> r.formatter
         'python'
     """
@@ -531,10 +531,10 @@ def getformattedstring(key: str, section: Optional[str] = None) -> FormattedStri
     if result is None:
         result = general_get(key, section=section, data_type=str)
 
-    if isinstance(result, FormattedString):
+    if isinstance(result, FormatPattern):
         return result
     elif isinstance(result, str):
-        return FormattedString(formatter, result)
+        return FormatPattern(formatter, result)
     else:
         raise ValueError(f"Key '{key}' should be a string: '{result}'")
 
