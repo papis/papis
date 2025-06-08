@@ -6,7 +6,7 @@ from warnings import warn
 
 import papis.config
 import papis.logging
-from papis.strings import AnyString, FormattedString
+from papis.strings import AnyString, FormatPattern
 from papis.document import DocumentLike
 from papis.document import from_data
 
@@ -167,7 +167,7 @@ def get_document_file_name(
 
     if file_name_format is None:
         try:
-            file_name_format = papis.config.getformattedstring("add-file-name")
+            file_name_format = papis.config.getformatpattern("add-file-name")
         except ValueError:
             file_name_format = None
 
@@ -237,16 +237,16 @@ def get_document_folder(
 
     if folder_name_format is None:
         try:
-            folder_name_format = papis.config.getformattedstring("add-folder-name")
+            folder_name_format = papis.config.getformatpattern("add-folder-name")
         except ValueError:
             folder_name_format = None
 
     if isinstance(folder_name_format, str):
-        folder_name_format = FormattedString(None, folder_name_format)
+        folder_name_format = FormatPattern(None, folder_name_format)
 
     # try to get a folder name from folder_name_format
     if folder_name_format:
-        tmp_path = os.path.normpath(os.path.join(dirname, folder_name_format.value))
+        tmp_path = os.path.normpath(os.path.join(dirname, folder_name_format.pattern))
 
         # NOTE: the folder_name_format can contain subfolders, so we go through
         # them one by one and expand them here to get the full path
@@ -260,7 +260,7 @@ def get_document_folder(
 
             try:
                 tmp_component = papis.format.format(
-                    FormattedString(folder_name_format.formatter, tmp_component),
+                    FormatPattern(folder_name_format.formatter, tmp_component),
                     doc)
             except papis.format.FormatFailedError as exc:
                 logger.error("Could not format path for document.", exc_info=exc)
@@ -365,7 +365,7 @@ def rename_document_files(
     """
     if file_name_format is None:
         try:
-            file_name_format = papis.config.getformattedstring("add-file-name")
+            file_name_format = papis.config.getformatpattern("add-file-name")
         except ValueError:
             file_name_format = None
 

@@ -342,7 +342,7 @@ def cli_open(ctx: click.Context) -> None:
 @click.option("-s", "--set", "set_tuples",
               help="Update a document with key value pairs.",
               multiple=True,
-              type=(str, papis.cli.FormattedStringParamType()),)
+              type=(str, papis.cli.FormatPatternParamType()),)
 @papis.cli.all_option()
 @click.pass_context
 def cli_edit(ctx: click.Context,
@@ -385,7 +385,7 @@ def cli_edit(ctx: click.Context,
 
         if set_tuples:
             for k, v in set_tuples:
-                kp, vp = papis.strings.process_formatted_string_pair(k, v)
+                kp, vp = papis.strings.process_format_pattern_pair(k, v)
                 try:
                     located[kp] = papis.format.format(vp, located)
                 except papis.format.FormatFailedError as exc:

@@ -81,7 +81,7 @@ def match_document(
     else:
         from papis.format import format
 
-        match_format = match_format or papis.config.getformattedstring("match-format")
+        match_format = match_format or papis.config.getformatpattern("match-format")
         match_string = format(match_format, document)
 
     return search.match(match_string)

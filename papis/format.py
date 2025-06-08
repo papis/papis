@@ -338,10 +338,10 @@ def format(fmt: papis.strings.AnyString,
     Arguments match those of :meth:`Formatter.format`.
     """
     if isinstance(fmt, str):
-        fmt = papis.strings.FormattedString(None, fmt)
+        fmt = papis.strings.FormatPattern(None, fmt)
 
     formatter = get_formatter(fmt.formatter)
-    return formatter.format(fmt.value, doc, doc_key=doc_key,
+    return formatter.format(fmt.pattern, doc, doc_key=doc_key,
                             additional=additional,
                             default=default)
 

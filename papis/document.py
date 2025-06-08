@@ -168,7 +168,7 @@ def author_list_to_author(
 
     if multiple_authors_format is None:
         multiple_authors_format = (
-            papis.config.getformattedstring("multiple-authors-format"))
+            papis.config.getformatpattern("multiple-authors-format"))
 
     if separator is None or multiple_authors_format is None:
         raise ValueError(
@@ -545,7 +545,7 @@ def describe(document: Union[Document, Dict[str, Any]]) -> str:
         :confval:`document-description-format`.
     """
     return papis.format.format(
-        papis.config.getformattedstring("document-description-format"),
+        papis.config.getformatpattern("document-description-format"),
         document, default=document.get("title", str(document)))
 
 
