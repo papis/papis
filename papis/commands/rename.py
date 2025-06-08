@@ -110,8 +110,8 @@ def run(document: papis.document.Document,
 @click.option(
     "--folder-name",
     help="Name format for the document main folder.",
-    type=papis.cli.FormattedStringParamType(),
-    default=lambda: papis.config.getformattedstring("add-folder-name"))
+    type=papis.cli.FormatPatternParamType(),
+    default=lambda: papis.config.getformatpattern("add-folder-name"))
 @papis.cli.bool_flag(
     "-b", "--batch",
     help="Batch mode, do not prompt.")

@@ -2,11 +2,11 @@ import sys
 import os
 from typing import Any, Dict
 
-from papis.strings import FormattedString
+from papis.strings import FormatPattern
 
 
-def _f(value: str) -> FormattedString:
-    return FormattedString("python", value)
+def _f(value: str) -> FormatPattern:
+    return FormatPattern("python", value)
 
 
 def get_default_opener() -> str:

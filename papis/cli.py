@@ -11,7 +11,7 @@ import papis.database
 DecoratorCallable = Callable[..., Any]
 
 
-class FormattedStringParamType(click.ParamType):
+class FormatPatternParamType(click.ParamType):
     #: Name of the parameter type (shown in the command-line).
     name: str = "formatted-text"
 
@@ -20,11 +20,11 @@ class FormattedStringParamType(click.ParamType):
                 param: Optional[click.Parameter],
                 ctx: Optional[click.Context]) -> Any:
         """See :meth:`click.ParamType.convert`."""
-        from papis.strings import FormattedString
+        from papis.strings import FormatPattern
 
         # NOTE: this is required to handle default values which have a formatter
         # already set and we do not want to remove it
-        if isinstance(value, FormattedString):
+        if isinstance(value, FormatPattern):
             return value
 
         return str(value)
