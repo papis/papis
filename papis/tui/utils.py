@@ -1,5 +1,6 @@
 import re
 from typing import Optional, List, Callable, Any, Iterable
+from collections.abc import Sequence
 
 import click
 
@@ -183,6 +184,17 @@ def progress_bar(iterable: Iterable[T]) -> Iterable[T]:
     with ProgressBar(style=style, formatters=fmt) as pb:
         for item in pb(iterable):
             yield item
+
+
+def string_grid(strings: Sequence[str]) -> str:
+    from shutil import get_terminal_size
+    from itertools import zip_longest
+    width, _ = get_terminal_size()
+    maxchars = len(max(strings, key=len)) + 4
+    maxwords = width // maxchars
+    lines = zip_longest(*[strings[i::maxwords] for i in range(maxwords)], fillvalue="")
+    lines_fixed_width = ["".join([f"{word:>{maxchars}}" for word in line]) for line in lines]
+    return '\n'.join(lines_fixed_width)
 
 
 def get_range(range_str: str) -> List[int]:
