@@ -142,7 +142,7 @@ import papis.importer
 import papis.logging
 import papis.strings
 import papis.utils
-from papis.strings import AnyString, process_formatted_string_pair
+from papis.strings import AnyString, process_format_pattern_pair
 
 logger = papis.logging.get_logger(__name__)
 
@@ -176,7 +176,7 @@ def run_set(
     from papis.paths import normalize_path
 
     for key, value in to_set:
-        key, value = process_formatted_string_pair(key, value)
+        key, value = process_format_pattern_pair(key, value)
         value = papis.format.format(value, document, default=str(value))
         value = try_parsing_str(key, value)
 
@@ -226,7 +226,7 @@ def run_append(
     processed_lists = set()
     supported_keys = key_types.keys() | document
     for key, value in to_append:
-        key, value = process_formatted_string_pair(key, value)
+        key, value = process_format_pattern_pair(key, value)
 
         if key in supported_keys:
             value = papis.format.format(value, document, default=str(value))
@@ -282,7 +282,7 @@ def run_remove(
     """
     success = True
     for key, value in to_remove:
-        key, value = process_formatted_string_pair(key, value)
+        key, value = process_format_pattern_pair(key, value)
 
         if key in document:
             if isinstance(document.get(key), list):
@@ -428,7 +428,7 @@ def run(
     "to_set",
     help="Set the key to the given value.",
     multiple=True,
-    type=(str, papis.cli.FormattedStringParamType()),
+    type=(str, papis.cli.FormatPatternParamType()),
 )
 @click.option(
     "-d",
@@ -444,7 +444,7 @@ def run(
     "to_append",
     help="Append a value to a document key.",
     multiple=True,
-    type=(str, papis.cli.FormattedStringParamType()),
+    type=(str, papis.cli.FormatPatternParamType()),
 )
 @click.option(
     "-r",
@@ -452,7 +452,7 @@ def run(
     "to_remove",
     help="Remove an item from a list.",
     multiple=True,
-    type=(str, papis.cli.FormattedStringParamType()),
+    type=(str, papis.cli.FormatPatternParamType()),
 )
 @click.option(
     "-n",
@@ -461,8 +461,8 @@ def run(
     help="Rename an item in a list.",
     multiple=True,
     type=(str,
-          papis.cli.FormattedStringParamType(),
-          papis.cli.FormattedStringParamType()),
+          papis.cli.FormatPatternParamType(),
+          papis.cli.FormatPatternParamType()),
 )
 @papis.cli.bool_flag(
     "-b",

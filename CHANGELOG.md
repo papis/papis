@@ -22,11 +22,11 @@ configuration key
     ref-format.jinja2 = {{ doc.author_list | slice(3) | join("", attribute="family") }}{{ doc.year }}
 ```
 
-The syntax is always `key[.formatter]`. The formatted strings are searched
+The syntax is always `key[.formatter]`. The format patterns are searched
 alphabetically and the last one is picked, i.e. if both `key.python` and
 `key.jinja2` are provided, the `python` version will be chosen regardless of the
-order in the configuration file. If no formatter is provided for a formatted
-string of this type, then it will fall back to the default formatter set by the
+order in the configuration file. If no formatter is provided for a format
+pattern of this type, then it will fall back to the default formatter set by the
 `formatter` setting. All default settings are now clearly marked as using the
 `python` formatter, so they no longer need to be rewritten when changing formatters.
 
