@@ -128,12 +128,12 @@ PAPIS_TO_HAYAGRIVA_KEY_CONVERSION_MAP = [
         # NOTE: this is mostly the case in tests, but might as well include it
         "action": lambda a: to_hayagriva_authors(papis.document.split_authors_name([a]))
     }]),
-    _k("author_list", [{"key": "author", "action": lambda a: to_hayagriva_authors(a)}]),
+    _k("author_list", [{"key": "author", "action": lambda a: to_hayagriva_authors(a)}]),  # noqa: PLW0108
     _k("year", [{"key": "date", "action": None}]),
     _k("date", [{"key": "date", "action": None}]),
     _k("editor", [{"key": "editor", "action": lambda a:
                    to_hayagriva_authors(papis.document.split_authors_name([a]))}]),
-    _k("editor_list", [{"key": "editor", "action": lambda a: to_hayagriva_authors(a)}]),
+    _k("editor_list", [{"key": "editor", "action": lambda a: to_hayagriva_authors(a)}]),  # noqa: PLW0108
     _k("publisher", [papis.document.EmptyKeyConversion]),
     _k("location", [papis.document.EmptyKeyConversion]),
     _k("venue", [{"key": "location", "action": None}]),

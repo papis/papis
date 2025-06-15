@@ -14,8 +14,8 @@ _K = papis.document.KeyConversionPair
 article_key_conversion = [
     _K("type", [{"key": None, "action": lambda x: tf_to_bibtex_converter.get(x, x)}]),
     _K("date", [
-        {"key": "year", "action": lambda x: _parse_year(x)},
-        {"key": "month", "action": lambda x: _parse_month(x)},
+        {"key": "year", "action": lambda x: _parse_year(x)},  # noqa: PLW0108
+        {"key": "month", "action": lambda x: _parse_month(x)},  # noqa: PLW0108
     ])
 ]
 

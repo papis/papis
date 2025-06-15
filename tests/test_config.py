@@ -155,7 +155,7 @@ def test_merge_configuration_from_path(tmp_config: TemporaryConfiguration) -> No
     assert tmp_config.configdir is not None
     configpath = os.path.join(tmp_config.configdir, "config_extra")
 
-    with open(configpath, "w") as configfile:
+    with open(configpath, "w", encoding="utf-8") as configfile:
         configfile.write("""
 [settings]
 some-nice-setting = 42
@@ -183,7 +183,7 @@ def test_set_lib_non_existing(tmp_config: TemporaryConfiguration) -> None:
     lib = "non-existing-library"
     with pytest.raises(
             Exception,
-            match="Library '{}' does not seem to exist".format(lib)):
+            match=f"Library '{lib}' does not seem to exist"):
         papis.config.set_lib_from_name(lib)
 
 
