@@ -2,6 +2,7 @@
 
 ## Dependency Changes
 
+- Minimum required Python version bumped to 3.10.
 - The [citeproc-py](https://github.com/citeproc-py/citeproc-py) library is now
   required for CSL exporter support.
 
