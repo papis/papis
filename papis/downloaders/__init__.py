@@ -357,6 +357,7 @@ class Downloader(papis.importer.Importer):
         url = self.get_document_url()
         if not url:
             return
+
         self.logger.info("Downloading file from '%s'.", url)
 
         response = self.session.get(url, cookies=self.cookies)

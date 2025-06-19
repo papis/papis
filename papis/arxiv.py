@@ -133,7 +133,8 @@ def get_data(
             max_results=max_results,
             id_list=id_list.split(";"),
             )
-    except arxiv.arxiv.HTTPError:
+    except arxiv.ArxivError as exc:
+        logger.error("Failed to download metadata from arXiv.", exc_info=exc)
         return []
 
     client = arxiv.Client()
@@ -300,7 +301,9 @@ class Downloader(papis.downloaders.Downloader):
             client = arxiv.Client()
             try:
                 results = list(client.results(arxiv.Search(id_list=[self.arxivid])))
-            except arxiv.arxiv.HTTPError:
+            except arxiv.ArxivError as exc:
+                self.logger.error(
+                    "Failed to download metadata from arXiv.", exc_info=exc)
                 results = []
 
             if len(results) > 1:

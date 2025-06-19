@@ -476,8 +476,9 @@ def get_matching_importer_by_name(
     if download_files is None:
         download_files = False
 
-    import_mgr = papis.importer.get_import_mgr()
+    import requests
 
+    import_mgr = papis.importer.get_import_mgr()
     result = []
     for name, uri in name_and_uris:
         try:
@@ -494,6 +495,11 @@ def get_matching_importer_by_name(
 
             if importer.ctx:
                 result.append(importer)
+        except requests.exceptions.RequestException as exc:
+            # NOTE: this is probably some HTTP error, so we better let the
+            # user know if there's something wrong with their network
+            logger.error("Failed to match importer '%s': '%s'.",
+                         name, uri, exc_info=exc)
         except Exception as exc:
             logger.debug("Failed to match importer '%s': '%s'.",
                          name, uri, exc_info=exc)
