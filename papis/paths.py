@@ -1,7 +1,7 @@
 import os
 import pathlib
 import sys
-from typing import Iterable, Iterator, Literal, List, Optional, Union
+from typing import Iterable, Iterator, Literal, List, Optional, Union, Tuple
 from warnings import warn
 
 import papis.config
@@ -346,7 +346,7 @@ def rename_document_files(
         in_document_paths: Iterable[str], *,
         file_name_format: Optional[Union[AnyString, Literal[False]]] = None,
         allow_remote: bool = True,
-        ) -> List[str]:
+        ) -> Tuple[List[str],List[str]]:
     """Rename *in_document_paths* according to *file_name_format* and ensure
     uniqueness.
 
@@ -379,6 +379,7 @@ def rename_document_files(
     from papis.downloaders import download_document
 
     new_files = []
+    orig_files = []
     for in_file_path in in_document_paths:
         if not in_file_path:
             continue
@@ -412,7 +413,8 @@ def rename_document_files(
                 suffix=next(isuffix),
                 file_name_format=file_name_format)
 
+        orig_files.append(local_in_file_path)
         new_files.append(new_filename)
         known_files.add(new_filename)
 
-    return new_files
+    return (orig_files, new_files)
