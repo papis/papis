@@ -50,13 +50,6 @@ HAYAGRIVA_TYPE_PARENT_KEYS = {
         "journal", "volume", "date", "isbn", "location", "publisher",
         "editor",
     }),
-    "web": frozenset({}),
-    "scene": frozenset({}),
-    "artwork": frozenset({}),
-    "legislation": frozenset({}),
-    "tweet": frozenset({}),
-    "video": frozenset({}),
-    "audio": frozenset({}),
 }
 
 # NOTE: only types that are different are stored
@@ -166,7 +159,7 @@ def to_hayagriva(doc: papis.document.Document) -> Dict[str, Any]:
     bibtype = doc["type"]
     htype = BIBTEX_TO_HAYAGRIVA_TYPE_MAP.get(bibtype, bibtype)
 
-    parent_known_keys = HAYAGRIVA_TYPE_PARENT_KEYS[htype]
+    parent_known_keys = HAYAGRIVA_TYPE_PARENT_KEYS.get(htype, frozenset())
     ptype: Optional[str] = None
 
     if htype == "article":
@@ -175,7 +168,7 @@ def to_hayagriva(doc: papis.document.Document) -> Dict[str, Any]:
             ptype = "proceedings" if "doi" in doc else "conference"
         elif "eprint" in doc or "ssrn" in doc.get("journal", "").lower():
             # NOTE: this mostly supports arXiv and SSRN
-            ptype = "Repository"
+            ptype = "repository"
         else:
             # NOTE: hayagriva also supports articles in blogs or newspapers, but
             # we don't really have a way to distinguish at the moment
