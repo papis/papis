@@ -155,39 +155,31 @@ def cli(query: str,
     ret_string = run(documents, to_format=fmt)
 
     if ret_string and not folder:
-        if out is not None:
-            if append:
-                if os.path.exists(out):
-                    logger.info("Appending to '%s'.", out)
-                else:
-                    logger.info("Writing to '%s'.", out)
-
-                with open(out, "a") as fd:
-                    fd.write(ret_string)
-                return
-
-            if os.path.exists(out) and not batch:
-                if papis.tui.utils.confirm(f"File '{out}' already exists. Overwrite?"):
-                    logger.info("Overwriting '%s'.", out)
-                    with open(out, "w") as fd:
-                        fd.write(ret_string)
-                else:
-                    logger.info("Aborting.")
-                return
-
-            if os.path.exists(out):
-                # Batch write
-                logger.info("Overwriting '%s'.", out)
-            else:
-                logger.info("Writing to '%s'.", out)
-
-            with open(out, "w") as fd:
-                fd.write(ret_string)
-            return
-        else:
+        if out is None:
             logger.info("Dumping to STDOUT.")
             click.echo(ret_string)
             return
+
+        mode = "a" if append else "w"
+
+        if os.path.exists(out):
+            if append:
+                msg = f"Appending to '{out}'."
+            else:
+                if not batch:
+                    prompt = f"File '{out}' already exists. Overwrite?"
+                    if not papis.tui.utils.confirm(prompt):
+                        logger.info("Aborting.")
+                        return
+                msg = f"Overwriting '{out}'."
+        else:
+            msg = f"Writing to '{out}'."
+
+        logger.info(msg)
+        with open(out, mode) as fd:
+            fd.write(ret_string)
+
+        return
 
     import shutil
     for document in documents:
