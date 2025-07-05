@@ -55,6 +55,7 @@ from typing import List, Optional, Tuple
 import click
 
 import papis
+import papis.tui.utils
 import papis.utils
 import papis.document
 import papis.cli
@@ -114,6 +115,14 @@ def run(documents: List[papis.document.Document], to_format: str) -> str:
     help="Format for the document.",
     type=click.Choice(available_formats()),
     default="bibtex",)
+@papis.cli.bool_flag(
+    "-p",
+    "--append",
+    help="Append to outfile instead of overwriting.")
+@papis.cli.bool_flag(
+    "-b",
+    "--batch",
+    help="Do not prompt when overwriting a file.")
 def cli(query: str,
         doc_folder: Tuple[str, ...],
         sort_field: Optional[str],
@@ -121,6 +130,8 @@ def cli(query: str,
         folder: str,
         out: str,
         fmt: str,
+        append: bool,
+        batch: bool,
         _all: bool) -> None:
     """Export a document from a given library."""
 
@@ -145,13 +156,38 @@ def cli(query: str,
 
     if ret_string and not folder:
         if out is not None:
-            logger.info("Dumping to '%s'.", out)
-            with open(out, "a+") as fd:
+            if append:
+                if os.path.exists(out):
+                    logger.info("Appending to '%s'.", out)
+                else:
+                    logger.info("Writing to '%s'.", out)
+
+                with open(out, "a") as fd:
+                    fd.write(ret_string)
+                return
+
+            if os.path.exists(out) and not batch:
+                if papis.tui.utils.confirm(f"File '{out}' already exists. Overwrite?"):
+                    logger.info("Overwriting '%s'.", out)
+                    with open(out, "w") as fd:
+                        fd.write(ret_string)
+                else:
+                    logger.info("Aborting.")
+                return
+
+            if os.path.exists(out):
+                # Batch write
+                logger.info("Overwriting '%s'.", out)
+            else:
+                logger.info("Writing to '%s'.", out)
+
+            with open(out, "w") as fd:
                 fd.write(ret_string)
+            return
         else:
             logger.info("Dumping to STDOUT.")
             click.echo(ret_string)
-        return
+            return
 
     import shutil
     for document in documents:
