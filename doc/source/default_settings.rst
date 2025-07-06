@@ -282,10 +282,10 @@ BibTeX options
 .. papis-config:: bibtex-journal-key
 
     This option allows the user to set the key for the journal entry when using
-    ``papis export --bibtex``. The intended use of such a setting is to allow
-    selecting e.g. abbreviated journal titles for publishers that require it.
-    For example, if the document has an ``abbrev_journal_title`` key that should
-    be used instead of the default ``journal`` key.
+    ``papis export --format bibtex``. The intended use is to allow selecting
+    e.g. abbreviated journal titles for publishers that require it. For
+    example, if the document has an ``abbrev_journal_title`` key that should be
+    used instead of the default ``journal`` key.
 
 .. papis-config:: extra-bibtex-keys
 
