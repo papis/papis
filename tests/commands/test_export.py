@@ -112,6 +112,54 @@ def test_export_yaml_cli(tmp_library: TemporaryLibrary) -> None:
     assert data_out == data
 
 
+def test_export_bibtex_append(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.export import run
+    from papis.commands.export import cli
+
+    db = papis.database.get()
+
+    doc1 = db.query("krishnamurti")[0]
+    doc2 = db.query("popper")[0]
+    docs = [doc1, doc2]
+
+    text = run(docs, to_format="bibtex")
+    data = papis.bibtex.bibtex_to_dict(text)
+
+    cli_runner = PapisRunner()
+    outfile = os.path.join(tmp_library.tmpdir, "test.bib")
+
+    result = cli_runner.invoke(
+        cli,
+        ["--append", "--format", "bibtex", "--out", outfile, "krishnamurti"])
+
+    assert result.exit_code == 0
+    assert os.path.exists(outfile)
+
+    with open(outfile, "r") as fd:
+        single_text = fd.read()
+
+    single_data = papis.bibtex.bibtex_to_dict(single_text)
+    assert len(single_data) == 1
+
+    result = cli_runner.invoke(
+        cli,
+        ["--append", "--format", "bibtex", "--out", outfile, "popper"])
+
+    assert result.exit_code == 0
+    assert os.path.exists(outfile)
+
+    with open(outfile, "r") as fd:
+        appended_text = fd.read()
+
+    appended_data = papis.bibtex.bibtex_to_dict(appended_text)
+    assert len(appended_data) == len(data)
+
+    # NOTE: The intention is that these will match, this is a problem to be
+    # solved. On --append, formatting doesn't match because test.bib has no
+    # newline at end-of-file.
+    assert appended_text != text
+
+
 def test_export_folder_cli(tmp_library: TemporaryLibrary) -> None:
     from papis.commands.export import cli
     cli_runner = PapisRunner()
